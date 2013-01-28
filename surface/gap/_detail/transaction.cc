@@ -100,14 +100,18 @@ namespace surface
                                         {{"cm1", std::to_string(files.size())},
                                          {"cm2", std::to_string(size)}});
 
-
-        auto const& res = this->_meta->create_transaction(recipient_id_or_email,
-                                                          first_filename,
-                                                          files.size(),
-                                                          size,
-                                                          fs::is_directory(first_filename),
-                                                          network_id,
-                                                          this->device_id());
+        plasma::meta::CreateTransactionResponse res;
+        try
+        {
+          res = this->_meta->create_transaction(recipient_id_or_email,
+                                                first_filename,
+                                                files.size(),
+                                                size,
+                                                fs::is_directory(first_filename),
+                                                network_id,
+                                                this->device_id());
+        }
+        CATCH_FAILURE_TO_METRICS("transaction:create");
 
         metrics::google::server().store("transaction:create:succeed",
                                         {{"cd2", res.created_transaction_id},
@@ -196,7 +200,7 @@ namespace surface
 
       QProcess p;
       p.start(transfer_binary.c_str(), arguments);
-      if (!p.waitForFinished())
+      if (!p.waitForFinished(-1))
         throw Exception(gap_internal_error, "8transfer binary failed");
       if (p.exitCode())
         throw Exception(gap_internal_error, "8transfer binary exited with errors");
@@ -341,10 +345,14 @@ namespace surface
       metrics::google::server().store("transaction:accept:attempt",
                                       {{"cd2", transaction.transaction_id}});
 
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      plasma::TransactionStatus::accepted,
-                                      this->device_id(),
-                                      this->device_name());
+      try
+      {
+        this->_meta->update_transaction(transaction.transaction_id,
+                                        plasma::TransactionStatus::accepted,
+                                        this->device_id(),
+                                        this->device_name());
+      }
+      CATCH_FAILURE_TO_METRICS("transaction:accept");
 
       metrics::google::server().store("transaction:accept:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -399,8 +407,12 @@ namespace surface
       metrics::google::server().store("transaction:prepare:attempt",
                                       {{"cd2", transaction.transaction_id}});
 
+      try
+      {
       this->_meta->update_transaction(transaction.transaction_id,
                                       plasma::TransactionStatus::prepared);
+      }
+      CATCH_FAILURE_TO_METRICS("transaction:prepare");
 
       metrics::google::server().store("transaction:prepare:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -440,8 +452,12 @@ namespace surface
       metrics::google::server().store("transaction:start:attempt",
                                       {{"cd2", transaction.transaction_id}});
 
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      plasma::TransactionStatus::started);
+      try
+      {
+        this->_meta->update_transaction(transaction.transaction_id,
+                                        plasma::TransactionStatus::started);
+      }
+      CATCH_FAILURE_TO_METRICS("transaction:start");
 
       metrics::google::server().store("transaction:start:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -499,8 +515,12 @@ namespace surface
       metrics::google::server().store("transaction:finish:attempt",
                                       {{"cd2", transaction.transaction_id}});
 
-      this->_meta->update_transaction(transaction.transaction_id,
-                                      plasma::TransactionStatus::finished);
+      try
+      {
+        this->_meta->update_transaction(transaction.transaction_id,
+                                        plasma::TransactionStatus::finished);
+      }
+      CATCH_FAILURE_TO_METRICS("transaction:finish");
 
       metrics::google::server().store("transaction:finish:succeed",
                                       {{"cd2", transaction.transaction_id}});
@@ -530,8 +550,12 @@ namespace surface
                                         {{"cd1", std::to_string(transaction.status)},
                                          {"cd2", transaction.transaction_id}});
 
-        this->_meta->update_transaction(transaction.transaction_id,
-                                        plasma::TransactionStatus::canceled);
+        try
+        {
+          this->_meta->update_transaction(transaction.transaction_id,
+                                          plasma::TransactionStatus::canceled);
+        }
+        CATCH_FAILURE_TO_METRICS("transaction:cancel:sender");
 
         metrics::google::server().store("transaction:cancel:sender:succeed",
                                         {{"cd1", std::to_string(transaction.status)},
@@ -541,10 +565,13 @@ namespace surface
       {
         metrics::google::server().store("transaction:cancel:recipient:attempt",
                                         {{"cd1", std::to_string(transaction.status)},
-                                          {"cd2", transaction.transaction_id}});
-
-        this->_meta->update_transaction(transaction.transaction_id,
-                                        plasma::TransactionStatus::canceled);
+                                         {"cd2", transaction.transaction_id}});
+        try
+        {
+          this->_meta->update_transaction(transaction.transaction_id,
+                                          plasma::TransactionStatus::canceled);
+        }
+        CATCH_FAILURE_TO_METRICS("transaction:cancel:recipient");
 
         metrics::google::server().store("transaction:cancel:recipient:succeed",
                                         {{"cd1", std::to_string(transaction.status)},
@@ -615,9 +642,15 @@ namespace surface
             {
               this->_handle_notification(*notif);
             }
+          catch (reactor::Exception const& e)
+            {
+              ELLE_WARN("reactor exception %s while handling notification '%s'",
+                        e, notif->notification_type);
+              continue;
+            }
           catch (std::runtime_error const& e)
             {
-              ELLE_WARN("error %s while handling notificaiton '%s'",
+              ELLE_WARN("error %s while handling notification '%s'",
                         e.what(), notif->notification_type);
               continue;
             }

@@ -54,8 +54,12 @@ namespace surface
 
       metrics::google::server().store("network:create:attempt");
 
-      auto response = this->_meta->create_network(name);
-
+      plasma::meta::CreateNetworkResponse response;
+      try
+      {
+        response = this->_meta->create_network(name);
+      }
+      CATCH_FAILURE_TO_METRICS("network:create");
       metrics::google::server().store("network:create:succeed");
 
       this->_networks_dirty = true;
@@ -79,7 +83,12 @@ namespace surface
 
       metrics::google::server().store("network:delete:attempt");
 
-      auto response = this->_meta->delete_network(network_id, force);
+      plasma::meta::DeleteNetworkResponse response;
+      try
+      {
+        response = this->_meta->delete_network(network_id, force);
+      }
+      CATCH_FAILURE_TO_METRICS("network:delete");
 
       metrics::google::server().store("network:delete:succeed");
 
@@ -127,44 +136,47 @@ namespace surface
       ELLE_TRACE("adding user '%s' to network '%s'", user, network_id);
 
       metrics::google::server().store("network:user:add:attempt");
+      try
+      {
+        // Retrieve user, ensuring he is on the user list.
+        std::string user_id = this->user(user)._id;
 
-      // Retrieve user, ensuring he is on the user list.
-      std::string user_id = this->user(user)._id;
+        ELLE_DEBUG("adding user '%s'", user);
 
-      ELLE_DEBUG("adding user '%s'", user);
+        auto it = this->networks().find(network_id);
+        ELLE_ASSERT(it != this->networks().end());
+        Network* network = it->second;
+        ELLE_ASSERT(network != nullptr);
 
-      auto it = this->networks().find(network_id);
-      ELLE_ASSERT(it != this->networks().end());
-      Network* network = it->second;
-      ELLE_ASSERT(network != nullptr);
+        ELLE_DEBUG("locating 8 group");
+        std::string const& group_binary = common::infinit::binary_path("8group");
 
-      ELLE_DEBUG("locating 8 group");
-      std::string const& group_binary = common::infinit::binary_path("8group");
+        QStringList arguments;
+        arguments << "--user" << this->_me._id.c_str()
+                  << "--type" << "user"
+                  << "--add"
+                  << "--network" << network->_id.c_str()
+                  << "--identity" << this->user(user_id).public_key.c_str()
+          ;
+        ELLE_DEBUG("LAUNCH: %s %s",
+                   group_binary,
+                   arguments.join(" ").toStdString());
+        QProcess p;
+        p.start(group_binary.c_str(), arguments);
+        if (!p.waitForFinished())
+          throw Exception(gap_internal_error, "8group binary failed");
+        if (p.exitCode())
+          throw Exception(gap_internal_error, "8group binary exited with errors");
 
-      QStringList arguments;
-      arguments << "--user" << this->_me._id.c_str()
-                << "--type" << "user"
-                << "--add"
-                << "--network" << network->_id.c_str()
-                << "--identity" << this->user(user_id).public_key.c_str()
-      ;
-      ELLE_DEBUG("LAUNCH: %s %s",
-                      group_binary,
-                      arguments.join(" ").toStdString());
-      QProcess p;
-      p.start(group_binary.c_str(), arguments);
-      if (!p.waitForFinished())
-        throw Exception(gap_internal_error, "8group binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8group binary exited with errors");
+        ELLE_DEBUG("set user in network in meta.");
 
-      ELLE_DEBUG("set user in network in meta.");
-
-      auto res = this->_meta->network_add_user(network_id, user_id);
-      if (std::find(network->users.begin(),
-                    network->users.end(),
-                    user_id) == network->users.end())
-        network->users.push_back(user_id);
+        auto res = this->_meta->network_add_user(network_id, user_id);
+        if (std::find(network->users.begin(),
+                      network->users.end(),
+                      user_id) == network->users.end())
+          network->users.push_back(user_id);
+      }
+      CATCH_FAILURE_TO_METRICS("network:user:add");
 
       metrics::google::server().store("network:user:add:succeed");;
     }

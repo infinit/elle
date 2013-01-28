@@ -471,7 +471,7 @@ namespace surface
             rpcs.slug_connect(result[0], std::stoi(result[1]));
 
             if (!rpcs.slug_wait(result[0], std::stoi(result[1])))
-              throw elle::Exception("enable to connect or authenticate both "
+              throw elle::Exception("unable to connect or authenticate both "
                                     "nodes.");
             ok = true;
           }
