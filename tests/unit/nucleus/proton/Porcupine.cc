@@ -443,14 +443,14 @@ test_porcupine_data_write(
 
   elle::Natural32 const N = 12360;
 
-  elle::Buffer buffer{N};
+  elle::Buffer input = cryptography::random::generate<elle::Buffer>(N);
 
   nucleus::proton::Door<nucleus::neutron::Data> data{
     porcupine.lookup(porcupine.size())};
 
   data.open();
 
-  data().write(0, elle::WeakBuffer{buffer});
+  data().write(0, elle::WeakBuffer{input});
 
   data.close();
 
@@ -462,6 +462,37 @@ test_porcupine_data_write(
     nucleus::proton::flags::capacity |
     nucleus::proton::flags::footprint |
     nucleus::proton::flags::state);
+
+  auto _index = static_cast<nucleus::proton::Capacity>(0);
+  auto _size = N;
+
+  elle::Buffer output;
+
+  while (_size > 0)
+    {
+      auto pair = porcupine.seek(_index);
+      auto& door = pair.first;
+      auto& base = pair.second;
+
+      door.open();
+
+      auto start = _index - base;
+      auto length = _size > (door().size() - start) ?
+        (door().size() - start) : _size;
+
+      ELLE_ASSERT(start == 0);
+      ELLE_ASSERT(length != 0);
+      ELLE_ASSERT(length == door().size());
+
+      door().read(start, length, output);
+
+      door.close();
+
+      _index += length;
+      _size -= length;
+    }
+
+  ELLE_ASSERT(input == output);
 }
 
 void
