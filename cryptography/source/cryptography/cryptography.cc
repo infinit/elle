@@ -16,8 +16,6 @@ namespace infinit
     | Functions |
     `----------*/
 
-    static elle::Boolean _initialized = false;
-
     void
     initialize()
     {
@@ -31,9 +29,6 @@ namespace infinit
 
       // Initialize the keypair class.
       KeyPair::initialize();
-
-      // Set the module has initialized.
-      _initialized = true;
 
       ELLE_TRACE_SCOPE("cryptography initialized");
     }
@@ -61,19 +56,28 @@ namespace infinit
       // Release the extra data.
       ::CRYPTO_cleanup_all_ex_data();
 
-      // Set the module has non-initialized.
-      _initialized = false;
-
       ELLE_TRACE_SCOPE("cryptography cleaned");
     }
+
+    class Initializer
+    {
+    public:
+      Initializer()
+      {
+        cryptography::initialize();
+      }
+
+      ~Initializer()
+      {
+        cryptography::clean();
+      }
+    };
 
     void
     require()
     {
       ELLE_DEBUG_SCOPE("require the cryptography");
-
-      if (_initialized == false)
-        initialize();
+      static Initializer initialize;
     }
 
   }
