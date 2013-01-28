@@ -106,8 +106,12 @@ namespace surface
 
       metrics::google::server().store("user:login:attempt");
 
-      auto res = this->_meta->login(lower_email, password);
-
+      plasma::meta::LoginResponse res;
+      try
+      {
+        res = this->_meta->login(lower_email, password);
+      }
+      CATCH_FAILURE_TO_METRICS("user:login");
       metrics::google::update_id(res._id);
       metrics::google::server().store("user:login:succeed", "cs", "start");
 
@@ -156,14 +160,20 @@ namespace surface
     void
     State::logout()
     {
-      // End session the session.
-      metrics::google::server().store("user:logout::attempt", "cs", "end");
+      if (this->_meta->token().empty())
+        return;
 
-      if (this->_meta->token().length())
+      // End session the session.
+      metrics::google::server().store("user:logout:attempt", "cs", "end");
+
+      try
+      {
         this->_meta->logout();
+      }
+      CATCH_FAILURE_TO_METRICS("user:logout");
 
       // End session the session.
-      metrics::google::server().store("user:logout::succeed");
+      metrics::google::server().store("user:logout:succeed");
     }
 
     void
@@ -185,7 +195,11 @@ namespace surface
       // Logout first, and ignore errors.
       try { this->logout(); } catch (elle::HTTPException const&) {}
 
-      this->_meta->register_(lower_email, fullname, password, activation_code);
+      try
+      {
+        this->_meta->register_(lower_email, fullname, password, activation_code);
+      }
+      CATCH_FAILURE_TO_METRICS("user:register");
 
       // Send file request successful.
       metrics::google::server().store("user:register:succeed");

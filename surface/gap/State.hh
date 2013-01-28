@@ -16,6 +16,27 @@
 
 # include "gap.h"
 
+# define CATCH_FAILURE_TO_METRICS(prefix)                               \
+  catch (elle::HTTPException const& e)                                  \
+  {                                                                     \
+    metrics::google::server().store(prefix  ":fail",                    \
+                                    "cd1", "http" + std::to_string((int) e.code)); \
+    throw;                                                              \
+  }                                                                     \
+  catch (surface::gap::Exception const& e)                              \
+  {                                                                     \
+    metrics::google::server().store(prefix ":fail",                     \
+                                    "cd1", "gap" + std::to_string((int) e.code)); \
+    throw;                                                              \
+  }                                                                     \
+  catch (...)                                                           \
+  {                                                                     \
+    metrics::google::server().store(prefix ":fail",                     \
+                                    "cd1", "unknown");                  \
+    throw;                                                              \
+  } /* */
+
+
 namespace surface
 {
   namespace gap
