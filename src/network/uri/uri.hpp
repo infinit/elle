@@ -39,19 +39,12 @@ namespace network {
 
   public:
 
-    uri_category_impl();
+    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
 
-#if defined(BOOST_NO_CXX11_NOEXCEPT)
-    virtual ~uri_category_impl();
-#else
-    virtual ~uri_category_impl() noexcept;
-#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
+    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
 
-#if defined(BOOST_NO_CXX11_NOEXCEPT)
-    virtual const char *name() const;
-#else
-    virtual const char *name() const noexcept;
-#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
+    virtual const char *name() const NETWORK_URI_NOEXCEPT;
+
     virtual std::string message(int ev) const;
 
   };

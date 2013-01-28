@@ -26,23 +26,17 @@
 #include <vector>
 
 namespace network {
+#if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
   uri_category_impl::uri_category_impl() {
 
   }
+#endif // defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
 
-#if defined(BOOST_NO_CXX11_NOEXCEPT)
-  uri_category_impl::~uri_category_impl() {
-#else
-  uri_category_impl::~uri_category_impl() noexcept {
-#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
+  uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {
 
   }
 
-#if defined(BOOST_NO_CXX11_NOEXCEPT)
-  const char *uri_category_impl::name() const {
-#else
-  const char *uri_category_impl::name() const noexcept {
-#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
+  const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
     return "uri_error";
   }
 
