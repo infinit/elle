@@ -192,24 +192,32 @@ namespace surface
       arguments << "-n" << trans.network_id.c_str()
                 << "-u" << this->_me._id.c_str()
                 << "--path" << this->_output_dir.c_str()
-                << "--from"
-      ;
+                << "--from";
+
       ELLE_DEBUG("LAUNCH: %s %s",
                  transfer_binary,
                  arguments.join(" ").toStdString());
 
-      QProcess p;
-      p.start(transfer_binary.c_str(), arguments);
-      if (!p.waitForFinished(-1))
-        throw Exception(gap_internal_error, "8transfer binary failed");
-      if (p.exitCode())
-        throw Exception(gap_internal_error, "8transfer binary exited with errors");
+      try
+      {
+        QProcess p;
+        p.start(transfer_binary.c_str(), arguments);
+        if (!p.waitForFinished(-1))
+          throw Exception(gap_internal_error, "8transfer binary failed");
+        if (p.exitCode())
+          throw Exception(gap_internal_error, "8transfer binary exited with errors");
 
-      ELLE_WARN("Download complete. Your file is at '%s'.",
-                this->_output_dir.c_str());
+        ELLE_WARN("Download complete. Your file is at '%s'.",
+                  this->_output_dir.c_str());
 
-      update_transaction(transaction_id,
+        update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
+      }
+      catch (...)
+      {
+        update_transaction(transaction_id,
+                         gap_TransactionStatus::gap_transaction_status_canceled);
+      }
     }
 
     static
