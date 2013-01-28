@@ -179,7 +179,7 @@ namespace nucleus
     {
       ELLE_TRACE_METHOD(offset, size);
 
-      elle::Buffer buffer{size};
+      elle::Buffer buffer;
 
       this->read(offset, size, buffer);
 
