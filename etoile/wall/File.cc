@@ -585,30 +585,29 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(source, destination, offset, size);
 
-      std::ofstream stream(destination, std::ios::binary);
-      nucleus::neutron::Offset _offset(offset);
+      std::ofstream stream(destination,
+                           std::ios::out | std::ios::binary | std::ios::app);
 
-      stream.seekp(offset);
+      stream.seekp(offset, std::ios_base::beg);
 
-      while (_offset < (offset + size))
-        {
-          ELLE_TRACE("reading %s bytes at offset %s",
-                     size, _offset);
+      if (!stream.good())
+        throw elle::Exception("unable to seek at %s in the output file",
+                              offset);
 
-          elle::standalone::Region data{
-            File::read(source, _offset, size)};
+      ELLE_TRACE("reading %s bytes at offset %s",
+                 size, offset);
 
-          ELLE_ASSERT(data.size != 0);
+      elle::standalone::Region data{
+        File::read(source, offset, size)};
 
-          stream.write((const char*)data.contents,
-                       static_cast<std::streamsize>(data.size));
+      ELLE_ASSERT(data.size != 0);
 
-          _offset += data.size;
-        }
+      stream.write((const char*)data.contents,
+                   static_cast<std::streamsize>(data.size));
 
       stream.close();
 
-      return (_offset - offset);
+      return (data.size);
     }
   }
 }
