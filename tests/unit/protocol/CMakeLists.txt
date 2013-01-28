@@ -1,1 +1,1 @@
-simple_test(NAME rpc LIB common elle)
+#simple_test(NAME rpc LIB common elle)
