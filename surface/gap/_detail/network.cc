@@ -106,6 +106,7 @@ namespace surface
       this->infinit_instance_manager().launch_network(
           response.created_network_id
       );
+      this->_wait_portal(response.created_network_id);
 
       this->_wait_portal(response.created_network_id);
       return response.created_network_id;
