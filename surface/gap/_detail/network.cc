@@ -267,6 +267,9 @@ namespace surface
       {
         ELLE_DEBUG("Built directory storage of %s", network_id);
 
+        ELLE_DEBUG("root block %s", network.root_block);
+        ELLE_DEBUG("descriptor %s", network.descriptor);
+
         ELLE_ASSERT(network.root_block.size());
         ELLE_ASSERT(network.descriptor.size());
 
@@ -365,11 +368,10 @@ namespace surface
           auto response = this->_meta->networks();
           for (auto const& network_id: response.networks)
             {
-              if (this->_networks.find(network_id) == this->_networks.end())
-                {
-                  auto response = this->_meta->network(network_id);
-                  this->_networks[network_id] = new Network{response};
-                }
+              auto response = this->_meta->network(network_id);
+              if (this->_networks.find(network_id) != this->_networks.end())
+                  delete this->_networks[network_id];
+              this->_networks[network_id] = new Network{response};
             }
           this->_networks_dirty = false;
         }
