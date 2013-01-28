@@ -119,10 +119,8 @@ namespace elle
       public:
         static Components& instance()
         {
-          static Components* ptr = nullptr;
-          if (ptr == nullptr)
-            ptr = new Components();
-          return *ptr;
+          static Components components;
+          return components;
         }
 
         void enable(std::string const& name)

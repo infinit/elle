@@ -55,26 +55,11 @@ auto make_worker = []
         {
             s.poll();
             ::sleep(1);
-            // ::nanosleep((struct timespec[]){{0, 500000000L}}, NULL);
         }
     };
     std::cerr << __PRETTY_FUNCTION__ << std::endl;
     return std::move(std::thread{poll});
 };
-// {{{
-auto dead = [] {
-  //std::vector<std::string> networks_id;
-
-  //networks_id.push_back(s.create_network("manger"));
-  //networks_id.push_back(s.create_network("des"));
-  //networks_id.push_back(s.create_network("enfants"));
-
-  //for (auto &id: networks_id)
-  //{
-  //    s.delete_network(id);
-  //}
-};
-// }}}
 
 void agregate()
 {
@@ -91,7 +76,6 @@ void agregate(T const &head, L ...tail)
 int main()
 {
   surface::gap::State s1;
-  //surface::gap::State s2;
 
   lune::Lune::Initialize();
 
@@ -99,20 +83,12 @@ int main()
   std::string email2 = "pichot.fabien@gmail.com";
 
   make_login(s1, "Bite", email1);
-  //make_login(s2, "Botte", email2);
-
-  //auto fn = [&] (TransactionNotification const &tn, bool) {
-  //    on_transaction_accepted_cb(tn, s2);
-  //};
-  //s2.transaction_callback(fn);
 
   s1.send_files(email2, {"/tmp/lol"});
 
-  std::thread t1 = make_worker(s1);
-  //std::thread t2 = make_worker(s2);
+  //std::thread t1 = make_worker(s1);
 
-  agregate([&] {t1.join();});
-           //[&] {t2.join();});
+  //agregate([&] {t1.join();});
 
   elle::print("tests done.");
   return 0;

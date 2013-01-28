@@ -1,0 +1,278 @@
+# Port randomization
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZN7reactor7network9UDTServer6listenEi
+   fun:_ZN4hole15implementations4slug7MachineC1ERNS1_14ImplementationEiN5boost10posix_time13time_durationE
+   fun:_ZN4hole15implementations4slug14Implementation5_joinEv
+   fun:_ZN4hole4Hole4joinEv
+   fun:_Z7InfinitjPPc
+   fun:_Z4MainjPPc
+   fun:_ZZ4mainENKUlvE_clEv
+   fun:_ZN5boost6detail8function21function_obj_invoker0IZ4mainEUlvE_N4elle6StatusEE6invokeERNS1_15function_bufferE
+   fun:_ZNK5boost9function0IN4elle6StatusEEclEv
+   fun:_ZN7reactorL15vthread_catcherIN4elle6StatusEEEvRKNS_7VThreadIT_E6ActionERS4_
+   fun:_ZN5boost3_bi5list2INS0_5valueINS_8functionIFN4elle6StatusEvEEEEENS_17reference_wrapperIS5_EEEclIPFvRKS7_RS5_ENS0_5list0EEEvNS0_4typeIvEERT_RT0_i
+   fun:_ZN5boost3_bi6bind_tIvPFvRKNS_8functionIFN4elle6StatusEvEEERS4_ENS0_5list2INS0_5valueIS6_EENS_17reference_wrapperIS4_EEEEEclEv
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Param
+   socketcall.bind(my_addr.sin_port)
+   fun:bind
+   fun:_ZN5boost4asio6detail10socket_ops9call_bindIjEEiM6msghdrT_iPK8sockaddrm
+   fun:_ZN5boost4asio6detail10socket_ops4bindEiPK8sockaddrmRNS_6system10error_codeE
+   fun:_ZN5boost4asio6detail23reactive_socket_serviceINS0_2ip3udpEE4bindERNS5_19implementation_typeERKNS3_14basic_endpointIS4_EERNS_6system10error_codeE
+   fun:_ZN5boost4asio23datagram_socket_serviceINS0_2ip3udpEE4bindERNS0_6detail23reactive_socket_serviceIS3_E19implementation_typeERKNS2_14basic_endpointIS3_EERNS_6system10error_codeE
+   fun:_ZN5boost4asio12basic_socketINS0_2ip3udpENS0_23datagram_socket_serviceIS3_EEE4bindERKNS2_14basic_endpointIS3_EE
+   fun:_ZN7reactor7network9UDPSocket4bindERKN5boost4asio2ip14basic_endpointINS4_3udpEEE
+   fun:_ZN7reactor7network9UDTServer6_punchEi
+   fun:_ZN7reactor7network9UDTServer6listenEi
+   fun:_ZN4hole15implementations4slug7MachineC1ERNS1_14ImplementationEiN5boost10posix_time13time_durationE
+   fun:_ZN4hole15implementations4slug14Implementation5_joinEv
+   fun:_ZN4hole4Hole4joinEv
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intIlEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecl
+   fun:_ZNSo9_M_insertIlEERSoT_
+   fun:_ZN4elle6detail30FeedItSwissMotherFuckingCheeseILb1EE7feed_itIRKiEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_j
+   fun:_ZN4elle6detail11format_feedIRKiIEEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_DpOT0_
+   fun:_ZN4elle6detail6formatIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle7sprintfIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle3log6detail4SendC1IIiEEENS0_6Logger5LevelENS4_4TypeERKSsPKcjSA_SA_DpRKT_
+   fun:_ZN7reactor7network9UDTServer6_punchEiRSt10unique_ptrINS0_9UDPSocketESt14default_deleteIS3_EE
+   fun:_ZN7reactor7network9UDTServer6_punchEi
+   fun:_ZN7reactor7network9UDTServer6listenEi
+   fun:_ZN4hole15implementations4slug7MachineC1ERNS1_14ImplementationEiN5boost10posix_time13time_durationE
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   obj:/usr/lib64/gcc/x86_64-pc-linux-gnu/4.7.1/libstdc++.so.6.0.17
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intIlEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecl
+   fun:_ZNSo9_M_insertIlEERSoT_
+   fun:_ZN4elle6detail30FeedItSwissMotherFuckingCheeseILb1EE7feed_itIRKiEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_j
+   fun:_ZN4elle6detail11format_feedIRKiIEEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_DpOT0_
+   fun:_ZN4elle6detail6formatIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle7sprintfIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle3log6detail4SendC1IIiEEENS0_6Logger5LevelENS4_4TypeERKSsPKcjSA_SA_DpRKT_
+   fun:_ZN7reactor7network9UDTServer6_punchEiRSt10unique_ptrINS0_9UDPSocketESt14default_deleteIS3_EE
+   fun:_ZN7reactor7network9UDTServer6_punchEi
+   fun:_ZN7reactor7network9UDTServer6listenEi
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   obj:/usr/lib64/gcc/x86_64-pc-linux-gnu/4.7.1/libstdc++.so.6.0.17
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE13_M_insert_intIlEES3_S3_RSt8ios_basecT_
+   fun:_ZNKSt7num_putIcSt19ostreambuf_iteratorIcSt11char_traitsIcEEE6do_putES3_RSt8ios_basecl
+   fun:_ZNSo9_M_insertIlEERSoT_
+   fun:_ZN4elle6detail30FeedItSwissMotherFuckingCheeseILb1EE7feed_itIRKiEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_j
+   fun:_ZN4elle6detail11format_feedIRKiIEEEvRN5boost12basic_formatIcSt11char_traitsIcESaIcEEEOT_DpOT0_
+   fun:_ZN4elle6detail6formatIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle7sprintfIIRKiEEESsPKcDpOT_
+   fun:_ZN4elle3log6detail4SendC1IIiEEENS0_6Logger5LevelENS4_4TypeERKSsPKcjSA_SA_DpRKT_
+   fun:_ZN7reactor7network9UDTServer6_punchEiRSt10unique_ptrINS0_9UDPSocketESt14default_deleteIS3_EE
+   fun:_ZN7reactor7network9UDTServer6_punchEi
+   fun:_ZN7reactor7network9UDTServer6listenEi
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZN7reactor7network9UDTServer6_punchEiRSt10unique_ptrINS0_9UDPSocketESt14default_deleteIS3_EE
+   fun:_ZN7reactor7network9UDTServer6_punchEi
+   fun:_ZN7reactor7network9UDTServer6listenEi
+   fun:_ZN4hole15implementations4slug7MachineC1ERNS1_14ImplementationEiN5boost10posix_time13time_durationE
+   fun:_ZN4hole15implementations4slug14Implementation5_joinEv
+   fun:_ZN4hole4Hole4joinEv
+   fun:_Z7InfinitjPPc
+   fun:_Z4MainjPPc
+   fun:_ZZ4mainENKUlvE_clEv
+   fun:_ZN5boost6detail8function21function_obj_invoker0IZ4mainEUlvE_N4elle6StatusEE6invokeERNS1_15function_bufferE
+   fun:_ZNK5boost9function0IN4elle6StatusEEclEv
+   fun:_ZN7reactorL15vthread_catcherIN4elle6StatusEEEvRKNS_7VThreadIT_E6ActionERS4_
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:_ZN7infinit12cryptography6random12_GLOBAL__N_19GeneratorISsE8generateEj
+   fun:_ZN7infinit12cryptography6random8generateISsEET_j
+   fun:_ZN6etoile6portal6Portal4_runEv
+   fun:_ZN6etoile6portal6Portal10InitializeEv
+   fun:_ZN6etoile6Etoile10InitializeEv
+   fun:_Z7InfinitjPPc
+   fun:_Z4MainjPPc
+   fun:_ZZ4mainENKUlvE_clEv
+   fun:_ZN5boost6detail8function21function_obj_invoker0IZ4mainEUlvE_N4elle6StatusEE6invokeERNS1_15function_bufferE
+   fun:_ZNK5boost9function0IN4elle6StatusEEclEv
+   fun:_ZN7reactorL15vthread_catcherIN4elle6StatusEEEvRKNS_7VThreadIT_E6ActionERS4_
+   fun:_ZN5boost3_bi5list2INS0_5valueINS_8functionIFN4elle6StatusEvEEEEENS_17reference_wrapperIS5_EEEclIPFvRKS7_RS5_ENS0_5list0EEEvNS0_4typeIvEERT_RT0_i
+}
+
+
+# # Invalid reads in swapcontext upon closure. Strange.
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:swapcontext
+#    obj:*
+#    obj:*
+#    obj:*
+#    fun:_ZN7reactor7backend7coro_io6Thread5yieldEv
+#    obj:/home/mefyl/dev/infinit/infinit/_build/linux64/lib/libreactor.so
+#    obj:/home/mefyl/dev/infinit/infinit/_build/linux64/lib/libreactor.so
+#    obj:*
+#    obj:*
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:swapcontext
+#    obj:*
+#    fun:_ZN7reactor7backend7coro_io6Thread5yieldEv
+#    fun:_ZN7reactor6Thread5yieldEv
+#    fun:_ZN7reactor6Thread7_freezeEv
+#    fun:_ZN7reactor6Thread4waitERSt6vectorIPNS_8WaitableESaIS3_EEN5boost8optionalINS7_10posix_time13time_durationEEE
+#    fun:_ZN7reactor6Thread4waitERNS_8WaitableEN5boost8optionalINS3_10posix_time13time_durationEEE
+#    fun:_ZN7reactor9Operation3runEN5boost8optionalINS1_10posix_time13time_durationEEE
+#    fun:_ZN7reactor7network9TCPServer6acceptEv
+#    fun:_ZN6etoile6portal6Portal6acceptEv
+#    fun:_ZN5boost3_bi5list0clIPFvvES1_EEvNS0_4typeIvEERT_RT0_i
+#    fun:_ZN5boost3_bi6bind_tIvPFvvENS0_5list0EEclEv
+# }
+
+# Lame non erroneous read errors ???
+
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    ...
+#    fun:_ZNKSs7compareERKSs
+#    fun:_ZStltIcSt11char_traitsIcESaIcEEbRKSbIT_T0_T1_ES8_
+#    fun:_ZNKSt4lessISsEclERKSsS2_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr1
+#    ...
+#    fun:_ZNKSs7compareERKSs
+#    fun:_ZStltIcSt11char_traitsIcESaIcEEbRKSbIT_T0_T1_ES8_
+#    fun:_ZNKSt4lessISsEclERKSsS2_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:_ZNSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE8_S_rightEPKSt18_Rb_tree_node_base
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE14_M_lower_boundEPKSt13_Rb_tree_nodeIS2_ESC_RS1_
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE4findERS1_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr1
+#    fun:_ZNSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE8_S_rightEPKSt18_Rb_tree_node_base
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE14_M_lower_boundEPKSt13_Rb_tree_nodeIS2_ESC_RS1_
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE4findERS1_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:_ZNSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE7_S_leftEPKSt18_Rb_tree_node_base
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE14_M_lower_boundEPKSt13_Rb_tree_nodeIS2_ESC_RS1_
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE4findERS1_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr1
+#    fun:_ZNSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE7_S_leftEPKSt18_Rb_tree_node_base
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE14_M_lower_boundEPKSt13_Rb_tree_nodeIS2_ESC_RS1_
+#    fun:_ZNKSt8_Rb_treeISsSt4pairIKSsbESt10_Select1stIS2_ESt4lessISsESaIS2_EE4findERS1_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr1
+#    fun:_ZNK4elle3log6detail10Components7enabledERKSs
+#    fun:_ZN4elle3log6detail4Send8_enabledENS0_6Logger4TypeENS3_5LevelERKSs
+#    fun:_ZN4elle3log6detail4SendC1IIN7reactor6ThreadEEEENS0_6Logger5LevelENS6_4TypeERKSsPKcjSC_SC_DpRKT_
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:_ZNK5boost13function_base5emptyEv
+#    fun:_ZNK5boost9function0IvEcvMNS1_5dummyEFvvEEv
+#    fun:_ZN7reactor6Thread5yieldEv
+#    fun:_ZN7reactor6Thread7_freezeEv
+#    ...
+# }
+#
+# {
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:_ZN7reactor6Thread5yieldEv
+#    fun:_ZN7reactor6Thread7_freezeEv
+#    fun:_ZN7reactor6Thread4waitERSt6vectorIPNS_8WaitableESaIS3_EEN5boost8optionalINS7_10posix_time13time_durationEEE
+#    fun:_ZN7reactor6Thread4waitERNS_8WaitableEN5boost8optionalINS3_10posix_time13time_durationEEE
+#    ...
+# }
+# {
+#
+#    <insert_a_suppression_name_here>
+#    Memcheck:Addr8
+#    fun:_ZN5boost4asio15basic_io_objectINS0_23socket_acceptor_serviceINS0_2ip3tcpEEELb1EE11get_serviceEv
+#    fun:_ZN5boost4asio21basic_socket_acceptorINS0_2ip3tcpENS0_23socket_acceptor_serviceIS3_EEE6cancelEv
+#    fun:_ZN7reactor7network9TCPAccept6_abortEv
+#    fun:_ZN7reactor9Operation5abortEv
+#    fun:_ZN7reactor9Operation3runEN5boost8optionalINS1_10posix_time13time_durationEEE
+#    fun:_ZN7reactor7network9TCPServer6acceptEv
+#    fun:_ZN6etoile6portal6Portal6acceptEv
+#    fun:_ZN5boost3_bi5list0clIPFvvES1_EEvNS0_4typeIvEERT_RT0_i
+#    fun:_ZN5boost3_bi6bind_tIvPFvvENS0_5list0EEclEv
+#    fun:_ZN5boost6detail8function26void_function_obj_invoker0INS_3_bi6bind_tIvPFvvENS3_5list0EEEvE6invokeERNS1_15function_bufferE
+#    fun:_ZNK5boost9function0IvEclEv
+#    fun:_ZN7reactor6Thread15_action_wrapperERKN5boost9function0IvEE
+#    fun:_ZNK5boost4_mfi3mf1IvN7reactor6ThreadERKNS_9function0IvEEEclEPS3_S7_
+#    fun:_ZN5boost3_bi5list2INS0_5valueIPN7reactor6ThreadEEENS2_INS_9function0IvEEEEEclINS_4_mfi3mf1IvS4_RKS8_EENS0_5list0EEEvNS0_4typeIvEERT_RT0_i
+#    fun:_ZN5boost3_bi6bind_tIvNS_4_mfi3mf1IvN7reactor6ThreadERKNS_9function0IvEEEENS0_5list2INS0_5valueIPS5_EENSC_IS7_EEEEEclEv
+#    fun:_ZN5boost6detail8function26void_function_obj_invoker0INS_3_bi6bind_tIvNS_4_mfi3mf1IvN7reactor6ThreadERKNS_9function0IvEEEENS3_5list2INS3_5valueIPS8_EENSF_ISA_EEEEEEvE6invokeERNS1_15function_bufferE
+#    fun:_ZNK5boost9function0IvEclEv
+#    fun:_ZN7reactor7backend7coro_io6Thread4_runEv
+#    fun:_ZN7reactor7backend7coro_io7starterEPv
+#    fun:Coro_StartWithArg
+#    obj:/lib64/libc-2.15.so
+# }
+
+# Memory leaks in gepwuid.
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:getpwuid
+   ...
+}

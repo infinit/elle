@@ -300,14 +300,15 @@ namespace hole
               auto interfaces = elle::network::Interface::get_map(
                 elle::network::Interface::Filter::only_up
                 | elle::network::Interface::Filter::no_loopback
+                | elle::network::Interface::Filter::no_autoip
                 );
               for (auto const& pair: interfaces)
                 if (pair.second.ipv4_address.size() > 0 &&
                     pair.second.mac_address.size() > 0)
                   {
-                    ELLE_DEBUG("local address: %s:%s",
-                               pair.second.ipv4_address,
-                               _server->port());
+                    auto const &ipv4   = pair.second.ipv4_address;
+
+                    ELLE_DEBUG("local address: %s:%s", ipv4, _server->port());
 
                     addresses.emplace_back(pair.second.ipv4_address,
                                            _server->port());
