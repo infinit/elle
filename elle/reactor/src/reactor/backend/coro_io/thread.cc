@@ -57,21 +57,14 @@ namespace reactor
         , _status(status::starting)
         , _manager(manager)
         , _action(action)
-        , _coro(0)
+        , _coro(Coro_new())
         , _caller(0)
-
       {}
 
       Thread::Thread(Manager& manager)
-        : _name("<root>")
-        , _status(status::running)
-        , _manager(manager)
-        , _action()
-        , _coro(0)
-        , _caller(0)
-
+        : Thread(manager, "<root>", Action())
       {
-        _coro = Coro_new();
+        _status = status::running;
         assert(_coro);
         Coro_initializeMainCoro(_coro);
       }
@@ -117,14 +110,12 @@ namespace reactor
       Thread::step()
       {
         assert(_caller == 0);
-        if (!_coro)
+        if (this->_status == status::starting)
         {
-          assert(_status == status::starting);
           _status = status::running;
           Thread* current = _manager._current;
           _caller = current;
           _manager._current = this;
-          _coro = Coro_new();
           assert(_coro);
           ELLE_TRACE("%s: start %s", current->_name , this->_name);
           Coro_startCoro_(_caller->_coro, _coro, this, &starter);
