@@ -4,7 +4,9 @@
 
 #include <elle/concurrency/Program.hh>
 #include <elle/io/Piece.hh>
+#include <elle/serialize/extract.hh>
 #include <elle/log.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/network/Interface.hh>
 #include <elle/utility/Parser.hh>
 #include <elle/cast.hh>
@@ -171,16 +173,24 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   //     ELLE_WARN("NAT punching error: %s", e.what());
   //   }
 
-  nucleus::proton::Network network(Infinit::Network);
-  elle::io::Path shelter_path(lune::Lune::Shelter);
-  shelter_path.Complete(elle::io::Piece{"%USER%", Infinit::User},
-                        elle::io::Piece{"%NETWORK%", Infinit::Network});
-  hole::storage::Directory storage(network, shelter_path.string());
+  static std::ofstream* out = new std::ofstream{
+    common::infinit::log_path(Infinit::User, Infinit::Network),
+    std::fstream::app | std::fstream::out
+  };
+  elle::log::logger(
+    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
+  );
 
-  elle::io::Path passport_path(lune::Lune::Passport);
-  passport_path.Complete(elle::io::Piece{"%USER%", Infinit::User});
-  elle::Passport passport;
-  passport.load(passport_path);
+  nucleus::proton::Network network(Infinit::Network);
+
+  hole::storage::Directory storage{
+    network,
+    common::infinit::network_shelter(Infinit::User, Infinit::Network)
+  };
+
+  elle::Passport passport{
+    elle::serialize::from_file(common::infinit::passport_path(Infinit::User))
+  };
 
   std::unique_ptr<hole::Hole> hole(
     infinit::hole_factory(storage, passport, Infinit::authority()));
