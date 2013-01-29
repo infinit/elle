@@ -11,6 +11,7 @@
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/utility/fwd.hh>
 
 # include <openssl/bn.h>
 # include <openssl/evp.h>
@@ -113,6 +114,18 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE(std::unique_ptr<interface::PrivateKey>, implementation);
     };
+
+    namespace privatekey
+    {
+      /*----------.
+      | Functions |
+      `----------*/
+
+      /// Return the factory used for building private key implementations given
+      /// a cryptosystem.
+      elle::utility::Factory<Cryptosystem> const&
+      factory();
+    }
   }
 }
 

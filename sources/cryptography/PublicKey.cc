@@ -1,8 +1,10 @@
 #include <cryptography/PublicKey.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/cryptography.hh>
+#include <cryptography/rsa/PublicKey.hh>
 
 #include <elle/log.hh>
+#include <elle/utility/Factory.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
 
@@ -120,6 +122,40 @@ namespace infinit
       ELLE_ASSERT(this->_implementation != nullptr);
 
       this->_implementation->print(stream);
+    }
+
+    namespace publickey
+    {
+      /*-----------------.
+      | Static Functions |
+      `-----------------*/
+
+      static
+      elle::utility::Factory<Cryptosystem>
+      _factory()
+      {
+        ELLE_DEBUG_FUNCTION("");
+
+        elle::utility::Factory<Cryptosystem> factory;
+
+        factory.record<rsa::PublicKey>(Cryptosystem::rsa);
+
+        return (factory);
+      }
+
+      /*----------.
+      | Functions |
+      `----------*/
+
+      elle::utility::Factory<Cryptosystem> const&
+      factory()
+      {
+        ELLE_TRACE_FUNCTION("");
+
+        static elle::utility::Factory<Cryptosystem> factory = _factory();
+
+        return (factory);
+      }
     }
   }
 }
