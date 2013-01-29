@@ -29,6 +29,10 @@ namespace nucleus
       this->_nest = nullptr;
     }
 
+    Node::~Node()
+    {
+    }
+
 //
 // ---------- methods ---------------------------------------------------------
 //
