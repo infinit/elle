@@ -96,6 +96,8 @@ parser.add_argument(
     action="store_true",
 )
 
+pollThread = None
+
 def make_simple_argument_parser(prog=None,
                                 description=None,
                                 add_help=False,
@@ -230,30 +232,6 @@ class InfinitShell(cmd.Cmd):
             self._state.refresh_networks()
         except Exception as e:
             print(e)
-
-    ###########################################################################
-    # Start infinit.
-
-    def do_start(self, args):
-        """Mount all infinit networks."""
-        try:
-            self._state.launch_watchdog()
-            self._state.connect()
-
-            self._thread = PollThread(self._state)
-            self._thread.start()
-        except Exception as e:
-            print(e)
-
-    ###########################################################################
-    # Stop infinit.
-
-    def do_stop(self, args):
-        try:
-            self._state.stop_watchdog()
-        except Exception as e:
-            print(e)
-
 
     ###########################################################################
     # Log out from infinit.
@@ -741,7 +719,10 @@ def login(state, email = None):
             continue
         try:
             state.login(email, password)
-            state.connect()
+            state.connect() # connect to trophonius
+            global pollThread
+            pollThread = PollThread(state)
+            pollThread.start()
         except Exception as e:
             print("Cannot login:", e)
         else:
@@ -837,8 +818,6 @@ def main():
     start_shell(state, args)
 
 class PollThread (threading.Thread):
-    close = False
-
     def __init__(self, state):
         super(PollThread, self).__init__()
         self.state = state
@@ -852,12 +831,12 @@ class PollThread (threading.Thread):
     def stop(self):
         self.running = False
 
+
 if __name__ == '__main__':
-    thread = 0
     try:
         main()
     except KeyboardInterrupt:
-        if thread:
-            thread.close()
-            time.sleep(0.1)
+        if pollThread:
+            pollThread.stop()
+            pollThread.join()
         pass
