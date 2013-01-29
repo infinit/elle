@@ -39,6 +39,7 @@ namespace infinit
         {
         case Cryptosystem::rsa:
           {
+            // Generate a RSA key pair.
             std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
               rsa::keypair::generate(length);
 
@@ -49,9 +50,9 @@ namespace infinit
               new rsa::PrivateKey{std::move(pair.second)}};
 
             // Construct a key pair based on both public and private key.
-            KeyPair keypair{std::move(K), std::move(k)};
+            KeyPair keypair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}};
 
-            return (std::move(keypair));
+            return (keypair);
           }
         default:
           throw elle::Exception("unknown or non-supported asymmetric "

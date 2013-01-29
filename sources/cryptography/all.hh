@@ -8,6 +8,7 @@
 # include <cryptography/cryptography.hh>
 # include <cryptography/Cryptosystem.hh>
 # include <cryptography/Digest.hh>
+# include <cryptography/evp.hh>
 # include <cryptography/factory.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/KeyPair.hh>

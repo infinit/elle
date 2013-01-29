@@ -27,6 +27,7 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
+      explicit
       Input(elle::WeakBuffer const& buffer);
 
       /*----------.

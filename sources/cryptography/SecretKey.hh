@@ -22,7 +22,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// Represents a secret key for symmetric cryptosystem operations.
+    /// Represent a secret key for symmetric cryptosystem operations.
     class SecretKey:
       public elle::concept::MakeUniquable<SecretKey>,
       public elle::Printable
@@ -65,6 +65,7 @@ namespace infinit
       SecretKey(elle::String const& password);
       /// Copy constructor.
       SecretKey(SecretKey const& other);
+      /// XXX[move]
       /// Derialization constructor.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
     private:

@@ -56,10 +56,6 @@ namespace infinit
       | Static Methods |
       `---------------*/
 
-      // Note that the value return is not an rvalue in order to benefit from
-      // the 'return value optimization'.
-      //
-      // The caller could very well 'std::move' the result if required. XXX remove
       Digest
       hash(Plain const& plain,
            Algorithm algorithm)
