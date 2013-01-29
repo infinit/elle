@@ -14,11 +14,6 @@ namespace infinit
       | Functions |
       `----------*/
 
-      /// Set up the random generator by adding entropy.
-      ///
-      /// !WARNING! Do not use unless you know exactly what you're doing.
-      void
-      setup();
       /// Generate a random value for the given type.
       template <typename T>
       T
@@ -62,6 +57,11 @@ namespace infinit
                 typename... A>
       T
       generate(A... arguments);
+      /// Set up the random generator by adding entropy.
+      ///
+      /// !WARNING! Do not use unless you know exactly what you're doing.
+      void
+      setup();
     }
   }
 }
