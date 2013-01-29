@@ -43,6 +43,12 @@ namespace surface
       _instances.erase(network_id);
     }
 
+    bool
+    InfinitInstanceManager::has_network(std::string const& network_id) const
+    {
+      return (_instances.find(network_id) != _instances.end());
+    }
+
     InfinitInstance const&
     InfinitInstanceManager::network_instance(std::string const& network_id) const
     {
