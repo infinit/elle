@@ -22,60 +22,40 @@ namespace infinit
     public:
       Initializer()
       {
-        cryptography::initialize();
+        // Load the crypto error strings.
+        ::ERR_load_crypto_strings();
+
+        // Enable the SSL algorithms, especially for RSA.
+        ::SSLeay_add_all_algorithms();
+
+        // Setup the random generator so as to generate more entropy if
+        // required.
+        if (::RAND_status() == 0)
+          random::setup();
       }
 
       ~Initializer()
       {
-        cryptography::clean();
+        // Free the current threads error queue.
+        ::ERR_remove_state(0);
+
+        // Clean the engine.
+        ::ENGINE_cleanup();
+
+        // Free the error strings.
+        ::ERR_free_strings();
+
+        // Clean the evp environment.
+        ::EVP_cleanup();
+
+        // Release the extra data.
+        ::CRYPTO_cleanup_all_ex_data();
       }
     };
 
     /*----------.
     | Functions |
     `----------*/
-
-    void
-    initialize()
-    {
-      ELLE_TRACE_SCOPE("initializing the cryptography");
-
-      // Load the crypto error strings.
-      ::ERR_load_crypto_strings();
-
-      // Enable the SSL algorithms, especially for RSA.
-      ::SSLeay_add_all_algorithms();
-
-      // Setup the random generator so as to generate more entropy if
-      // required.
-      if (::RAND_status() == 0)
-        random::setup();
-
-      ELLE_TRACE_SCOPE("cryptography initialized");
-    }
-
-    void
-    clean()
-    {
-      ELLE_TRACE_SCOPE("cleaning the cryptography");
-
-      // Free the current threads error queue.
-      ::ERR_remove_state(0);
-
-      // Clean the engine.
-      ::ENGINE_cleanup();
-
-      // Free the error strings.
-      ::ERR_free_strings();
-
-      // Clean the evp environment.
-      ::EVP_cleanup();
-
-      // Release the extra data.
-      ::CRYPTO_cleanup_all_ex_data();
-
-      ELLE_TRACE_SCOPE("cryptography cleaned");
-    }
 
     void
     require()
