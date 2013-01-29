@@ -71,10 +71,10 @@ namespace infinit
 `-------------*/
 
 # include <elle/serialize/Serializer.hh>
+# include <elle/utility/Factory.hh>
 
 # include <cryptography/KeyPair.hh>
 # include <cryptography/Cryptosystem.hh>
-# include <cryptography/factory.hh>
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::PublicKey);
 
@@ -103,7 +103,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
 
   ELLE_ASSERT(value._implementation == nullptr);
   value._implementation.reset(
-    infinit::cryptography::factory::K().allocate<
+    infinit::cryptography::publickey::factory().allocate<
       infinit::cryptography::interface::PublicKey>(cryptosystem));
 
   // XXX[improve by passing the archive to the factory]
