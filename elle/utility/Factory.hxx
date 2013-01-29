@@ -45,6 +45,12 @@ namespace elle
     `-------------*/
 
     template <typename P>
+    Factory<P>::Factory(Factory<P>&& other):
+      _container(std::move(other._container))
+    {
+    }
+
+    template <typename P>
     Factory<P>::~Factory()
     {
       for (auto scoutor: this->_container)

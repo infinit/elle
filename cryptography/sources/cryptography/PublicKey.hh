@@ -15,6 +15,7 @@
 # include <elle/Printable.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/utility/fwd.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -113,6 +114,18 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE(std::unique_ptr<interface::PublicKey>, implementation);
     };
+
+    namespace publickey
+    {
+      /*----------.
+      | Functions |
+      `----------*/
+
+      /// Return the factory used for building public key implementations given
+      /// a cryptosystem.
+      elle::utility::Factory<Cryptosystem> const&
+      factory();
+    }
   }
 }
 

@@ -2,8 +2,10 @@
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/Code.hh>
+#include <cryptography/rsa/PrivateKey.hh>
 
 #include <elle/log.hh>
+#include <elle/utility/Factory.hh>
 
 #include <comet/Comet.hh>
 
@@ -122,6 +124,40 @@ namespace infinit
       ELLE_ASSERT(this->_implementation != nullptr);
 
       this->_implementation->print(stream);
+    }
+
+    namespace privatekey
+    {
+      /*-----------------.
+      | Static Functions |
+      `-----------------*/
+
+      static
+      elle::utility::Factory<Cryptosystem>
+      _factory()
+      {
+        ELLE_DEBUG_FUNCTION("");
+
+        elle::utility::Factory<Cryptosystem> factory;
+
+        factory.record<rsa::PrivateKey>(Cryptosystem::rsa);
+
+        return (factory);
+      }
+
+      /*----------.
+      | Functions |
+      `----------*/
+
+      elle::utility::Factory<Cryptosystem> const&
+      factory()
+      {
+        ELLE_TRACE_FUNCTION("");
+
+        static elle::utility::Factory<Cryptosystem> factory = _factory();
+
+        return (factory);
+      }
     }
   }
 }
