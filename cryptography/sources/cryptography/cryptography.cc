@@ -12,6 +12,25 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*--------.
+    | Classes |
+    `--------*/
+
+    // The cryptography initializer.
+    class Initializer
+    {
+    public:
+      Initializer()
+      {
+        cryptography::initialize();
+      }
+
+      ~Initializer()
+      {
+        cryptography::clean();
+      }
+    };
+
     /*----------.
     | Functions |
     `----------*/
@@ -31,9 +50,6 @@ namespace infinit
       // required.
       if (::RAND_status() == 0)
         random::setup();
-
-      // Set the module has initialized.
-      _initialized = true;
 
       ELLE_TRACE_SCOPE("cryptography initialized");
     }
@@ -61,26 +77,12 @@ namespace infinit
       ELLE_TRACE_SCOPE("cryptography cleaned");
     }
 
-    class Initializer
-    {
-    public:
-      Initializer()
-      {
-        cryptography::initialize();
-      }
-
-      ~Initializer()
-      {
-        cryptography::clean();
-      }
-    };
-
     void
     require()
     {
-      ELLE_DEBUG_SCOPE("require the cryptography");
-      static Initializer initialize;
-    }
+      ELLE_DEBUG_FUNCTION("");
 
+      static Initializer initialized;
+    }
   }
 }
