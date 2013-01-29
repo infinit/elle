@@ -40,15 +40,15 @@ namespace surface
       ELLE_TRACE("stoping newtork");
       try
       {
-        auto& instance = this->network_instance(network_id);
+        auto const& instance = this->network_instance(network_id);
+        instance.process->terminate();
+        instance.process->wait();
       }
       catch (elle::Exception const& e)
       {
         ELLE_DEBUG("no network found, no infinit to kill");
         return;
       }
-      instance.process->terminate();
-      instance.process->wait();
       _instances.erase(network_id);
     }
 
