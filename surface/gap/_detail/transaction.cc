@@ -490,24 +490,27 @@ namespace surface
         return;
       }
 
-      std::exception_ptr exception;
-      reactor::Scheduler sched;
-      reactor::Thread sync{
-          sched,
-          "notify_8infinit",
-          [&] () -> void {
-              try {
-                this->_notify_8infinit(transaction, sched);
-              } catch (std::runtime_error const&) {
-                  exception = std::current_exception();
-              }
-          }
-      };
-
       if (this->_wait_portal(transaction.network_id) == false)
-          throw Exception{gap_error, "Couldn't find portal to infinit instance"};
+        throw Exception{gap_error, "Couldn't find portal to infinit instance"};
 
-      sched.run();
+      std::exception_ptr exception;
+      {
+        reactor::Scheduler sched;
+        reactor::Thread sync{
+            sched,
+            "notify_8infinit",
+            [&] () -> void {
+                try {
+                  this->_notify_8infinit(transaction, sched);
+                } catch (std::runtime_error const&) {
+                    exception = std::current_exception();
+                }
+            }
+        };
+
+        sched.run();
+      }
+
 
       if (exception != std::exception_ptr{})
         std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
