@@ -15,7 +15,6 @@ namespace infinit
     enum class Cryptosystem
     {
       rsa
-      // XXX[more even though not supported yet]
     };
 
     /*----------.

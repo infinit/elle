@@ -47,6 +47,7 @@ namespace infinit
     public:
       PublicKey(); // XXX[to deserialize]
       /// Construct a public key by providing its implementation.
+      explicit
       PublicKey(std::unique_ptr<interface::PublicKey>&& implementation);
       PublicKey(PublicKey const& other);
       PublicKey(PublicKey&& other);

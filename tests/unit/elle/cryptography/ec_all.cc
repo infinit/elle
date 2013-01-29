@@ -142,11 +142,10 @@ void test_rotation()
 
 int main()
 {
-  // XXX
-  //test_encryption();
+  test_encryption();
   test_noitpyrcne();
-  //test_signature();
-  //test_rotation();
+  test_signature();
+  test_rotation();
 
   std::cout << "tests done.\n";
   return 0;
