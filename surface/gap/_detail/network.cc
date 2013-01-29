@@ -45,18 +45,21 @@ namespace surface
     {
       ELLE_TRACE("_wait_portal for network %s", network_id);
 
-      // XXX: threaded "sendfiles" has some strange effect on QLocalSocket...
-
       ELLE_DEBUG("retrieving portal path");
       auto portal_path = common::infinit::portal_path(this->_me._id, network_id);
 
       ELLE_DEBUG("portal path is %s", portal_path);
+
+      if (!this->infinit_instance_manager().has_network(network_id))
+        this->infinit_instance_manager().launch_network(network_id);
 
       for (int i = 0; i < 45; ++i)
         {
           ELLE_DEBUG("Waiting for portal.");
           if (elle::os::path::exists(portal_path))
             return true;
+          if (!this->infinit_instance_manager().has_network(network_id))
+            throw Exception{gap_error, "Infinit instance has crashed"};
           ::sleep(1);
         }
       return false;
@@ -355,9 +358,12 @@ namespace surface
       metrics::google::server().store("network:delete:succeed");
 
       this->_networks_dirty = true; // XXX remove from _networks instead
-      this->infinit_instance_manager().stop_network(
-          response.deleted_network_id
-      );
+      if (this->infinit_instance_manager().has_network(response.deleted_network_id))
+        {
+          this->infinit_instance_manager().stop_network(
+              response.deleted_network_id
+          );
+        }
       return response.deleted_network_id;
     }
 
