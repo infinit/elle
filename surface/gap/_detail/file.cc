@@ -110,6 +110,8 @@ namespace surface
       if (it == this->networks().end())
         throw Exception(gap_error, "Wrong network id");
 
+      this->_wait_portal(infos.network_id);
+
       Network* network = it->second;
 
       std::string const& access_binary = common::infinit::binary_path("8access");
