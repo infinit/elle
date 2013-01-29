@@ -33,7 +33,8 @@ namespace infinit
           ::EVP_PKEY_CTX* context = nullptr;
 
           // Create the context for the RSA algorithm.
-          if ((context = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
+          if ((context =
+               ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
             throw elle::Exception("%s",
                                   ::ERR_error_string(ERR_get_error(), nullptr));
 

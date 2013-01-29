@@ -46,6 +46,7 @@ namespace infinit
     public:
       PrivateKey(); // XXX[deserialize]
       /// Construct a private key by providing its implementation.
+      explicit
       PrivateKey(std::unique_ptr<interface::PrivateKey>&& implementation);
       PrivateKey(PrivateKey const& other);
       PrivateKey(PrivateKey&& other);

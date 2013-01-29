@@ -30,19 +30,6 @@ namespace infinit
         public elle::serialize::SerializableMixin<PublicKey>,
         public elle::concept::MakeUniquable<PublicKey>
       {
-        /*----------.
-        | Constants |
-        `----------*/
-      public:
-        struct Constants
-        {
-          /// The length the the one-time secret key generated whenever
-          /// the public key encryption is requested.
-          ///
-          /// Note that the length is in bits.
-          static elle::Natural32 const secret_length;
-        };
-
         /*-------------.
         | Construction |
         `-------------*/
@@ -50,6 +37,7 @@ namespace infinit
         PublicKey(); // XXX[to deserialize]
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred to the public key.
+        explicit
         PublicKey(::EVP_PKEY* key);
         PublicKey(::BIGNUM* n,
                   ::BIGNUM* e);

@@ -119,7 +119,7 @@ namespace infinit
     {
       ELLE_ASSERT(this->_implementation != nullptr);
 
-      return (this->_implementation->print(stream));
+      this->_implementation->print(stream);
     }
   }
 }

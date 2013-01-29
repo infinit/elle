@@ -31,21 +31,6 @@ namespace infinit
         public elle::serialize::SerializableMixin<PrivateKey>,
         public elle::concept::MakeUniquable<PrivateKey>
       {
-        /*----------.
-        | Constants |
-        `----------*/
-      public:
-        struct Constants
-        {
-          /// The length the the one-time secret key generated whenever
-          /// the private key encryption is requested.
-          ///
-          /// Note that the length is in bits.
-          static elle::Natural32 const secret_length;
-          /// The algorithm used for hashing the content to sign.
-          static oneway::Algorithm const oneway_algorithm;
-        };
-
         /*-------------.
         | Construction |
         `-------------*/
@@ -53,6 +38,7 @@ namespace infinit
         PrivateKey(); // XXX[deserialize]
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred to the private key.
+        explicit
         PrivateKey(::EVP_PKEY* key);
         PrivateKey(::BIGNUM* n,
                    ::BIGNUM* e,

@@ -6,6 +6,7 @@
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
+#include <cryptography/evp.hh>
 
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -23,12 +24,6 @@ namespace infinit
   {
     namespace rsa
     {
-      /*----------.
-      | Constants |
-      `----------*/
-
-      elle::Natural32 const PublicKey::Constants::secret_length = 256;
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -346,60 +341,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(plain);
 
-        // 1) Generate a temporary secret key.
-        SecretKey secret =
-          SecretKey::generate(PublicKey::Constants::secret_length);
-
-        // 2) Cipher the plain text with the secret key.
-        Cipher data = secret.encrypt(plain);
-
-        // 3) Asymmetrically encrypt the secret with the public key.
-
-        // Serialize the secret.
-        elle::Buffer buffer;
-
-        buffer.writer() << secret;
-
-        ELLE_ASSERT(buffer.size() > 0);
-
-        // Compute the size of the archived symmetric key.
-        ::size_t size;
-
-        ELLE_ASSERT(this->_context_encrypt != nullptr);
-        ELLE_ASSERT(buffer.contents() != nullptr);
-
-        if (::EVP_PKEY_encrypt(
-              this->_context_encrypt,
-              nullptr,
-              &size,
-              buffer.contents(),
-              buffer.size()) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Prepare the key code for receiving the encrypted secret.
-        Code key{size};
-
-        // Encrypt the secret key's archive.
-        if (::EVP_PKEY_encrypt(
-              this->_context_encrypt,
-              reinterpret_cast<unsigned char*>(key.buffer().mutable_contents()),
-              &size,
-              reinterpret_cast<const unsigned char*>(buffer.contents()),
-              buffer.size()) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Set the final key size.
-        key.buffer().size(size);
-
-        // 4) Serialize the asymmetrically encrypted key and the symetrically
-        //    encrypted data.
-        Code code;
-
-        code.buffer().writer() << key << data;
-
-        return (code);
+        return (evp::encrypt(plain,
+                             this->_context_encrypt,
+                             ::EVP_PKEY_encrypt));
       }
 
       elle::Boolean
@@ -408,37 +352,10 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(signature, plain);
 
-        // Compute the plain's digest.
-        Digest digest =
-          oneway::hash(plain,
-                       PrivateKey::Constants::oneway_algorithm);
-
-        ELLE_ASSERT(this->_context_verify != nullptr);
-        ELLE_ASSERT(signature.buffer().contents() != nullptr);
-        ELLE_ASSERT(digest.buffer().contents() != nullptr);
-
-        // Verify the signature.
-        int result =
-          ::EVP_PKEY_verify(
-            this->_context_verify,
-            reinterpret_cast<const unsigned char*>(
-              signature.buffer().contents()),
-            signature.buffer().size(),
-            reinterpret_cast<const unsigned char*>(digest.buffer().contents()),
-            digest.buffer().size());
-
-        switch (result)
-          {
-          case 1:
-            return (true);
-          case 0:
-            return (false);
-          default:
-            throw elle::Exception("%s",
-                                  ::ERR_error_string(ERR_get_error(), nullptr));
-          }
-
-        elle::unreachable();
+        return (evp::verify(signature,
+                            plain,
+                            this->_context_verify,
+                            ::EVP_PKEY_verify));
       }
 
       Clear
@@ -446,59 +363,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(code);
 
-        // 1) Extract the encrypted key and data from the code.
-        Code key;
-        Cipher data;
-
-        code.buffer().reader() >> key >> data;
-
-        // 2) Decrypt the key with the public key so as to extract the
-        //    symmetric secret.
-
-        // Compute the size of the decrypted portion to come.
-        ::size_t size;
-
-        ELLE_ASSERT(this->_context_decrypt != nullptr);
-        ELLE_ASSERT(key.buffer().contents() != nullptr);
-
-        if (::EVP_PKEY_verify_recover(
-              this->_context_decrypt,
-              nullptr,
-              &size,
-              reinterpret_cast<const unsigned char*>(key.buffer().contents()),
-              key.buffer().size()) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Prepare the buffer for the decrypted data
-        elle::Buffer buffer{size};
-
-        // Perform the decryption.
-        //
-        // Note that since the encryption with the private key relies
-        // upon the sign() EVP functionality, the verify_recover()
-        // function is used here.
-        if (::EVP_PKEY_verify_recover(
-              this->_context_decrypt,
-              reinterpret_cast<unsigned char*>(buffer.mutable_contents()),
-              &size,
-              reinterpret_cast<const unsigned char*>(key.buffer().contents()),
-              key.buffer().size()) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Set the final size.
-        buffer.size(size);
-
-        // Extract the decrypted secret key.
-        SecretKey secret;
-
-        buffer.reader() >> secret;
-
-        // 3) Finally, decrypt the data with the secret.
-        Clear clear = secret.decrypt(data);
-
-        return (clear);
+        return (evp::decrypt(code,
+                             this->_context_decrypt,
+                             ::EVP_PKEY_verify_recover));
       }
 
       /*----------.
