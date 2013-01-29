@@ -118,19 +118,10 @@ namespace infinit
 
         // 1) Extract the key and ciphered data from the code which
         //    is supposed to be an archive.
-        /* XXX
-        Code key{code.buffer().reader()};
-        Cipher data{code.buffer().reader()};
+        auto extractor = code.buffer().reader();
 
-        // XXX
-        elle::printf("KEY: %s\n", key);
-        elle::printf("DATA: %s\n", data);
-        */
-
-        Code key;
-        Cipher data;
-
-        code.buffer().reader() >> key >> data;
+        Code key{extractor};
+        Cipher data{extractor};
 
         // 2) Decrypt the key so as to reveal the symmetric secret key.
 
@@ -167,9 +158,7 @@ namespace infinit
         buffer.size(size);
 
         // Finally extract the secret key since decrypted.
-        SecretKey secret;
-
-        buffer.reader() >> secret;
+        SecretKey secret{buffer.reader()};
 
         // 3) Decrypt the data with the secret key.
         Clear clear = secret.decrypt(data);
