@@ -29,6 +29,8 @@ namespace nucleus
       Node();
       Node(Node const&) = default;
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Node);
+      virtual
+      ~Node();
 
       //
       // methods

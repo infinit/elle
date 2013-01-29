@@ -47,6 +47,10 @@ namespace nucleus
     {
     }
 
+    Block::~Block()
+    {
+    }
+
     /*-----------.
     | Interfaces |
     `-----------*/
