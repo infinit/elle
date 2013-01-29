@@ -254,9 +254,8 @@ namespace reactor
     {
       // Randomize port manually
       if (desired_port == 0)
-        while (desired_port <= 1024)
-          desired_port =
-            infinit::cryptography::random::generate<elle::Natural16>();
+        desired_port =
+          infinit::cryptography::random::generate<elle::Natural16>(1025, 65536);
 
       // Punch the potential firewall
       ELLE_TRACE("punch hole in the firewall")
