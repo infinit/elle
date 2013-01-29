@@ -35,7 +35,9 @@ operator <<(std::ostream& stream,
       elle::String string(hexadecimal);
 
       // Otherwise chop it and display the begining and the end only.
-      stream << string.substr(0, length / 2) << "..."
+      stream << string.substr(0, length / 2)
+             << "..." << std::dec << BN_num_bytes(&bignum)
+             << " bytes" << "..."
              << string.substr(string.length() - (length / 2));
     }
 
