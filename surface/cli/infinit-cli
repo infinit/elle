@@ -741,6 +741,7 @@ def login(state, email = None):
             continue
         try:
             state.login(email, password)
+            state.connect()
         except Exception as e:
             print("Cannot login:", e)
         else:
