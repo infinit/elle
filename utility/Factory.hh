@@ -80,6 +80,8 @@ namespace elle
       | Construction |
       `-------------*/
     public:
+      Factory() = default;
+      Factory(Factory<P>&& other);
       ~Factory();
 
       /*---------.
