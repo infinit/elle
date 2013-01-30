@@ -23,7 +23,8 @@ namespace infinit
     {
     }
 
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output,
+                                    _buffer)
     {
     }
 

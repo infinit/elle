@@ -40,6 +40,8 @@ namespace infinit
         /// ownership is transferred to the private key.
         explicit
         PrivateKey(::EVP_PKEY* key);
+        /// Construct a private key by transferring ownership of some big
+        /// numbers so as to build an EVP_PKEY.
         PrivateKey(::BIGNUM* n,
                    ::BIGNUM* e,
                    ::BIGNUM* d,

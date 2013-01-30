@@ -7,6 +7,9 @@
 
 #include <elle/log.hh>
 
+# include <openssl/evp.h>
+# include <openssl/err.h>
+
 ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
 
 namespace infinit
@@ -19,28 +22,25 @@ namespace infinit
 
     elle::Character const SecretKey::Constants::magic[] = "Salted__";
 
-    ::EVP_CIPHER const* SecretKey::Algorithms::Cipher =
-      ::EVP_aes_256_cbc();
-    ::EVP_MD const* SecretKey::Algorithms::Digest =
-      ::EVP_md5();
-
     /*---------------.
     | Static Methods |
     `---------------*/
 
     SecretKey
-    SecretKey::generate(elle::Natural32 const length)
+    SecretKey::generate(cipher::Algorithm const cipher,
+                        elle::Natural32 const length,
+                        oneway::Algorithm const oneway)
     {
-      ELLE_TRACE_FUNCTION(length);
+      ELLE_TRACE_FUNCTION(cipher, length, oneway);
 
-      // Convert the length in a byte-specific size.
+      // Convert the length in a bit-specific size.
       elle::Natural32 size = length / 8;
 
       // Generate a buffer-based password.
       elle::Buffer password{random::generate<elle::Buffer>(size)};
 
       // Return a new secret key.
-      return (SecretKey{std::move(password)});
+      return (SecretKey{cipher, std::move(password), oneway});
     }
 
     /*-------------.
@@ -53,30 +53,52 @@ namespace infinit
       cryptography::require();
     }
 
-    SecretKey::SecretKey(elle::String const& password):
-      _buffer(reinterpret_cast<elle::Byte const*>(password.c_str()),
-              password.length())
+    SecretKey::SecretKey(cipher::Algorithm const cipher,
+                         elle::String const& password,
+                         oneway::Algorithm const oneway):
+      _cipher(cipher),
+      _password(reinterpret_cast<elle::Byte const*>(password.c_str()),
+                password.length()),
+      _oneway(oneway)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
     SecretKey::SecretKey(SecretKey const& other):
-      _buffer(other._buffer.contents(), other._buffer.size())
+      _cipher(other._cipher),
+      _password(other._password.contents(), other._password.size()),
+      _oneway(other._oneway)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(elle::Buffer&& buffer):
-      _buffer(std::move(buffer))
+    SecretKey::SecretKey(SecretKey&& other):
+      _cipher(other._cipher),
+      _password(std::move(other._password)),
+      _oneway(other._oneway)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey)
+    SecretKey::SecretKey(cipher::Algorithm const cipher,
+                         elle::Buffer&& password,
+                         oneway::Algorithm const oneway):
+      _cipher(cipher),
+      _password(std::move(password)),
+      _oneway(oneway)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey,
+                                    _password)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
     }
 
     /*--------.
@@ -96,17 +118,21 @@ namespace infinit
       // Check that the secret key's buffer has a non-null address.
       //
       // Otherwise, EVP_BytesToKey() is non-deterministic :(
-      ELLE_ASSERT(this->_buffer.contents() != nullptr);
+      ELLE_ASSERT(this->_password.contents() != nullptr);
+
+      // Resolve the cipher and oneway functions.
+      ::EVP_CIPHER const* cipher_algorithm = resolve(this->_cipher);
+      ::EVP_MD const* oneway_algorithm = oneway::resolve(this->_oneway);
 
       // Generate a key/IV tuple based on the salt.
       unsigned char key[EVP_MAX_KEY_LENGTH];
       unsigned char iv[EVP_MAX_IV_LENGTH];
 
-      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                           SecretKey::Algorithms::Digest,
+      if (::EVP_BytesToKey(cipher_algorithm,
+                           oneway_algorithm,
                            salt,
-                           this->_buffer.contents(),
-                           this->_buffer.size(),
+                           this->_password.contents(),
+                           this->_password.size(),
                            1,
                            key,
                            iv) > static_cast<int>(sizeof(key)))
@@ -121,7 +147,7 @@ namespace infinit
 
       // Initialise the ciphering process.
       if (::EVP_EncryptInit_ex(&context,
-                               SecretKey::Algorithms::Cipher,
+                               cipher_algorithm,
                                nullptr,
                                key,
                                iv) == 0)
@@ -207,20 +233,24 @@ namespace infinit
                cipher.buffer().contents() + sizeof (Constants::magic) - 1,
                sizeof (salt));
 
+      // Resolve the cipher and oneway functions.
+      ::EVP_CIPHER const* cipher_algorithm = resolve(this->_cipher);
+      ::EVP_MD const* oneway_algorithm = oneway::resolve(this->_oneway);
+
       // Check that the secret key's buffer has a non-null address.
       //
       // Otherwise, EVP_BytesToKey() is non-deterministic :(
-      ELLE_ASSERT(this->_buffer.contents() != nullptr);
+      ELLE_ASSERT(this->_password.contents() != nullptr);
 
       // Generate the key/IV tuple based on the salt.
       unsigned char key[EVP_MAX_KEY_LENGTH];
       unsigned char iv[EVP_MAX_IV_LENGTH];
 
-      if (::EVP_BytesToKey(SecretKey::Algorithms::Cipher,
-                           SecretKey::Algorithms::Digest,
+      if (::EVP_BytesToKey(cipher_algorithm,
+                           oneway_algorithm,
                            salt,
-                           this->_buffer.contents(),
-                           this->_buffer.size(),
+                           this->_password.contents(),
+                           this->_password.size(),
                            1,
                            key,
                            iv) > static_cast<int>(sizeof(key)))
@@ -235,7 +265,7 @@ namespace infinit
 
       // Initialise the ciphering process.
       if (::EVP_DecryptInit_ex(&context,
-                               SecretKey::Algorithms::Cipher,
+                               cipher_algorithm,
                                nullptr,
                                key,
                                iv) == 0)
@@ -296,7 +326,7 @@ namespace infinit
         return (true);
 
       // Compare the internal buffers.
-      return (this->_buffer == other._buffer);
+      return (this->_password == other._password);
     }
 
     /*----------.
@@ -306,7 +336,7 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      stream << this->_buffer;
+      stream << this->_cipher << "(" << this->_password << ")";
     }
   }
 }
