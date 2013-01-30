@@ -1,5 +1,6 @@
 add_library(cryptography
   sources/cryptography/bn.cc
+  sources/cryptography/Cipher.cc
   sources/cryptography/cryptography.cc
   sources/cryptography/Cryptosystem.cc
   sources/cryptography/evp.cc
