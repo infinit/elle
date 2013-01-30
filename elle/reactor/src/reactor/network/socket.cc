@@ -20,13 +20,14 @@ namespace reactor
   {
     namespace
     {
-      class StreamBuffer: public elle::PlainStreamBuffer
+      class StreamBuffer: public elle::DynamicStreamBuffer
       {
       public:
-        typedef elle::PlainStreamBuffer Super;
+        typedef elle::DynamicStreamBuffer Super;
         typedef Super::Size Size;
         StreamBuffer(Socket* socket)
-        : _socket(socket)
+        : Super(1 << 16)
+        , _socket(socket)
         {}
 
       protected:
