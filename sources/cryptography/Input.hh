@@ -8,7 +8,6 @@
 # include <elle/operator.hh>
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
-# include <elle/serialize/fwd.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -59,8 +58,6 @@ namespace infinit
       | Interfaces |
       `-----------*/
     public:
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(Input);
       // printable
       virtual
       void
@@ -74,7 +71,5 @@ namespace infinit
     };
   }
 }
-
-# include <cryptography/Input.hxx>
 
 #endif
