@@ -328,4 +328,12 @@ BOOST_PYTHON_MODULE(_gap)
   py::def("transaction_is_directory", &gap_transaction_is_directory);
   py::def("transaction_status", &gap_transaction_status);
   py::def("transaction_message", &gap_transaction_message);
+
+  //- Process ------------------------------------------------------------------
+  py::def("process_status", &gap_process_status);
+  py::enum_<int>("ProcessStatus")
+    .value("failure", gap_process_status_failure)
+    .value("success", gap_process_status_success)
+    .value("running", gap_process_status_running)
+  ;
 }
