@@ -116,4 +116,46 @@ namespace elle
     ELLE_TRACE("write %s bytes", size)
       write(_obuf, size);
   }
+
+  /*-------------------.
+  | DynamicStreamBuffer |
+  `-------------------*/
+
+  DynamicStreamBuffer::DynamicStreamBuffer(Size size)
+      : _bufsize{size}
+      , _ibuf(new Byte[size])
+      , _obuf(new Byte[size])
+  {
+  }
+
+  DynamicStreamBuffer::~DynamicStreamBuffer()
+  {
+      delete this->_ibuf;
+      delete this->_obuf;
+  }
+
+  WeakBuffer
+  DynamicStreamBuffer::read_buffer()
+  {
+      ELLE_TRACE("read at most %s bytes", this->_bufsize)
+        {
+            ssize_t size = read((char *)_ibuf, this->_bufsize);
+            ELLE_TRACE("got %s bytes", size);
+            return WeakBuffer{this->_ibuf, size};
+        }
+  }
+
+  WeakBuffer
+  DynamicStreamBuffer::write_buffer()
+  {
+      ELLE_TRACE("return WeakBuffer{%p, %d}", this->_obuf, _bufsize);
+      return WeakBuffer{this->_obuf, _bufsize};
+  }
+
+  void
+  DynamicStreamBuffer::flush(unsigned int size)
+  {
+    ELLE_TRACE("write %s bytes", size)
+      write((char *)this->_obuf, size);
+  }
 }
