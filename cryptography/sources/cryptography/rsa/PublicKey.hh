@@ -39,6 +39,8 @@ namespace infinit
         /// ownership is transferred to the public key.
         explicit
         PublicKey(::EVP_PKEY* key);
+        /// Construct a private key by transferring ownership of some big
+        /// numbers so as to build an EVP_PKEY.
         PublicKey(::BIGNUM* n,
                   ::BIGNUM* e);
         PublicKey(PublicKey const& other);

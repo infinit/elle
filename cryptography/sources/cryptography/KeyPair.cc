@@ -106,8 +106,11 @@ namespace infinit
       cryptography::require();
     }
 
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair,
+                                    _K, _k)
     {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
     }
 
     /*--------.

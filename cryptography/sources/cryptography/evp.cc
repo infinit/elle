@@ -29,7 +29,9 @@ namespace infinit
       ///
       /// Note that the length is in bits.
       static elle::Natural32 const secret_length = 256;
-
+      /// The cipher algorithm used for encrypting the data.
+      static cipher::Algorithm const cipher_algorithm =
+        cipher::Algorithm::aes256;
       /// The algorithm used for hashing the content to sign/verify.
       static oneway::Algorithm const oneway_algorithm =
         oneway::Algorithm::sha256;
@@ -50,7 +52,8 @@ namespace infinit
         ELLE_TRACE_FUNCTION(plain, context, function);
 
         // 1) Generate a temporary secret key.
-        SecretKey secret = SecretKey::generate(secret_length);
+        SecretKey secret = SecretKey::generate(cipher_algorithm,
+                                               secret_length);
 
         // 2) Cipher the plain text with the secret key.
         Cipher data = secret.encrypt(plain);

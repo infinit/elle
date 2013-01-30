@@ -67,6 +67,8 @@ namespace infinit
 
           static Initializer initialized;
 
+          ELLE_ASSERT(initialized.context() != nullptr);
+
           return (initialized.context());
         }
 
