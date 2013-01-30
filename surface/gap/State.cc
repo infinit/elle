@@ -90,7 +90,6 @@ namespace surface
       // XXX degeu !
       ELLE_LOG("Creating a new State");
 
-      namespace p = std::placeholders;
       this->transaction_callback(
           [&] (TransactionNotification const &n, bool is_new) -> void {
             this->_on_transaction(n, is_new);
