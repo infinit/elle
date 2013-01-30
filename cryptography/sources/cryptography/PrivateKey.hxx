@@ -1,13 +1,12 @@
 #ifndef INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HXX
 # define INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HXX
 
-# include <cryptography/finally.hh>
-# include <cryptography/bn.hh>
-
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
-# include <openssl/rsa.h>
+//
+// ---------- Class -----------------------------------------------------------
+//
 
 namespace infinit
 {
@@ -108,10 +107,30 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PrivateKey,
   ELLE_ASSERT(value._implementation == nullptr);
   value._implementation.reset(
     infinit::cryptography::privatekey::factory().allocate<
-      infinit::cryptography::interface::PrivateKey>(cryptosystem));
+      infinit::cryptography::privatekey::Interface>(cryptosystem));
 
   // XXX[improve by passing the archive to the factory]
   archive >> *value._implementation;
+}
+
+//
+// ---------- Interface -------------------------------------------------------
+//
+
+/*-------------.
+| Serializable |
+`-------------*/
+
+ELLE_SERIALIZE_SIMPLE(infinit::cryptography::privatekey::Interface,
+                      archive,
+                      value,
+                      format)
+{
+  enforce(format == 0);
+
+  // XXX[nothing to do]
+  (void)archive;
+  (void)value;
 }
 
 #endif

@@ -12,7 +12,6 @@
 # include <cryptography/finally.hh>
 # include <cryptography/KeyPair.hh>
 # include <cryptography/Input.hh>
-# include <cryptography/interface.hh>
 # include <cryptography/oneway.hh>
 # include <cryptography/Output.hh>
 # include <cryptography/Plain.hh>

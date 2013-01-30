@@ -9,7 +9,15 @@ namespace infinit
     class Input;
     class Output;
     class PrivateKey;
+    namespace privatekey
+    {
+      class Interface;
+    }
     class PublicKey;
+    namespace publickey
+    {
+      class Interface;
+    }
     class SecretKey;
     class Seed;
   }
