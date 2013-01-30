@@ -1,12 +1,8 @@
-add_subdirectory(access)
-add_subdirectory(authority)
-add_subdirectory(dictionary)
-add_subdirectory(group)
-add_subdirectory(network)
-add_subdirectory(passport)
-add_subdirectory(setup)
-# XXX add_subdirectory(shell)
-add_subdirectory(user)
-# XXX ADD_SUBDIRECTORY(diary)
-add_subdirectory(transfer)
-add_subdirectory(progress)
+set(LIST_OF_SATELLITES
+        "access;authority;dictionary;group;network;passport;progress;setup;transfer;user"
+        CACHE STRING "list of satellites")
+
+foreach(SATELLITE IN LISTS LIST_OF_SATELLITES)
+    message(STATUS "enable 8${SATELLITE} compilation")
+    add_subdirectory(${SATELLITE})
+endforeach()
