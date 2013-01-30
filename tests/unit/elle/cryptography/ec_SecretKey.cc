@@ -156,7 +156,9 @@ int main()
     "Nobody should read this, it's only here for testing purposes."
   ;
 
-  cryptography::SecretKey secret_key{cryptography::SecretKey::generate(256)};
+  cryptography::SecretKey secret_key =
+    cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
+                                      256);
 
   cryptography::Cipher cipher{secret_key.encrypt(secret_string)};
 
@@ -203,7 +205,8 @@ int main()
   }
 
   {
-    cryptography::SecretKey key{elle::String("")};
+    cryptography::SecretKey key(cryptography::cipher::Algorithm::aes256,
+                                elle::String(""));
     cryptography::KeyPair kp =
       cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
     cryptography::Cipher* cipher =

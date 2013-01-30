@@ -1,5 +1,6 @@
 #include <cryptography/KeyPair.hh>
-#include <cryptography/KeyPair.hh>
+#include <cryptography/PublicKey.hh>
+#include <cryptography/PrivateKey.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
@@ -44,9 +45,9 @@ namespace infinit
               rsa::keypair::generate(length);
 
             // Construct high-level public and private keys.
-            std::unique_ptr<interface::PublicKey> K{
+            std::unique_ptr<publickey::Interface> K{
               new rsa::PublicKey{std::move(pair.first)}};
-            std::unique_ptr<interface::PrivateKey> k{
+            std::unique_ptr<privatekey::Interface> k{
               new rsa::PrivateKey{std::move(pair.second)}};
 
             // Construct a key pair based on both public and private key.

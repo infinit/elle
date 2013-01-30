@@ -4,6 +4,10 @@
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -104,10 +108,30 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
   ELLE_ASSERT(value._implementation == nullptr);
   value._implementation.reset(
     infinit::cryptography::publickey::factory().allocate<
-      infinit::cryptography::interface::PublicKey>(cryptosystem));
+      infinit::cryptography::publickey::Interface>(cryptosystem));
 
   // XXX[improve by passing the archive to the factory]
   archive >> *value._implementation;
+}
+
+//
+// ---------- Interface -------------------------------------------------------
+//
+
+/*-------------.
+| Serializable |
+`-------------*/
+
+ELLE_SERIALIZE_SIMPLE(infinit::cryptography::publickey::Interface,
+                      archive,
+                      value,
+                      format)
+{
+  enforce(format == 0);
+
+  // XXX[nothing to do: we should not have to write this]
+  (void)archive;
+  (void)value;
 }
 
 #endif

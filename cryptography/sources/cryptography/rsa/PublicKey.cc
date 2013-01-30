@@ -301,7 +301,7 @@ namespace infinit
       `-----------*/
 
       elle::Boolean
-      PublicKey::operator ==(interface::PublicKey const& other) const
+      PublicKey::operator ==(publickey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -313,7 +313,7 @@ namespace infinit
       }
 
       elle::Boolean
-      PublicKey::operator <(interface::PublicKey const& other) const
+      PublicKey::operator <(publickey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -324,7 +324,7 @@ namespace infinit
         return (*this < static_cast<PublicKey const&>(other));
       }
 
-      interface::PublicKey*
+      publickey::Interface*
       PublicKey::clone() const
       {
         return (new PublicKey{*this});

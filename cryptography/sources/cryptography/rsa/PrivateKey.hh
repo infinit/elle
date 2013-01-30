@@ -5,7 +5,7 @@
 # include <cryptography/Clear.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
-# include <cryptography/interface.hh>
+# include <cryptography/PrivateKey.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -27,7 +27,7 @@ namespace infinit
     {
       /// Represent a private key in the RSA asymmetric cryptosystem.
       class PrivateKey:
-        public interface::PrivateKey,
+        public privatekey::Interface,
         public elle::serialize::SerializableMixin<PrivateKey>,
         public elle::concept::MakeUniquable<PrivateKey>
       {
@@ -96,12 +96,12 @@ namespace infinit
         // privatekey
         virtual
         elle::Boolean
-        operator ==(interface::PrivateKey const& other) const;
+        operator ==(privatekey::Interface const& other) const;
         virtual
         elle::Boolean
-        operator <(interface::PrivateKey const& other) const;
+        operator <(privatekey::Interface const& other) const;
         virtual
-        interface::PrivateKey*
+        privatekey::Interface*
         clone() const;
         virtual
         Cryptosystem

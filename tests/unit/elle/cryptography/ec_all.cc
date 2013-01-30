@@ -55,7 +55,9 @@ void test_cipher()
 {
   elle::Buffer buffer = cryptography::random::generate<elle::Buffer>(512);
   cryptography::Plain plain{elle::WeakBuffer{buffer}};
-  cryptography::SecretKey secret = cryptography::SecretKey::generate(256);
+  cryptography::SecretKey secret =
+    cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
+                                      256);
   cryptography::Cipher cipher = secret.encrypt(plain);
   cryptography::Clear clear = secret.decrypt(cipher);
 
