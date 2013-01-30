@@ -42,7 +42,8 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // XXX
-      static cryptography::SecretKey secret_key{ATTRIBUTES_SECRET_KEY};
+      static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                ATTRIBUTES_SECRET_KEY);
 
       if (context.attributes_porcupine != nullptr)
         return;
@@ -407,7 +408,8 @@ namespace etoile
           */
 
           // XXX
-          static cryptography::SecretKey secret_key{ATTRIBUTES_SECRET_KEY};
+          static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                    ATTRIBUTES_SECRET_KEY);
 
           // administrate the object.
           if (context.object->Administrate(

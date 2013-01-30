@@ -278,7 +278,9 @@ namespace etoile
           */
 
           // XXX[should provide a len but with a static const value]
-          cryptography::SecretKey key{cryptography::SecretKey::generate(CONTENTS_SECRET_KEY_LENGTH)}; // XXX
+          cryptography::SecretKey key =
+            cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
+                                              CONTENTS_SECRET_KEY_LENGTH);
 
           // update the object.
           if (context.object->Update(

@@ -43,7 +43,8 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // XXX
-      static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+      static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                ACCESS_SECRET_KEY);
 
       // check if the access has already been opened.
       if (context.access_porcupine != nullptr)
@@ -984,7 +985,8 @@ namespace etoile
           */
 
           // XXX
-          static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+          static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                    ACCESS_SECRET_KEY);
 
           // finally, update the object with the new access address.
           if (context.object->Update(

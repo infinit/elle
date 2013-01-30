@@ -71,7 +71,8 @@ namespace elle
   {
     ELLE_TRACE_METHOD(pass);
 
-    cryptography::SecretKey key{pass};
+    // XXX[setter l'algo en constant pour eviter la duplication avec decrypt()]
+    cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
 
     ELLE_ASSERT(this->type == Authority::TypePair);
 
@@ -92,7 +93,7 @@ namespace elle
     ELLE_ASSERT(this->type == Authority::TypePair);
     ELLE_ASSERT(this->cipher != nullptr);
 
-    cryptography::SecretKey key{pass};
+    cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
 
     delete this->k;
     this->k = nullptr;

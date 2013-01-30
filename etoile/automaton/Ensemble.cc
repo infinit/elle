@@ -33,7 +33,8 @@ namespace etoile
       ELLE_TRACE_FUNCTION(context);
 
       // XXX
-      static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+      static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                ENSEMBLE_SECRET_KEY);
 
       if (context.ensemble_porcupine != nullptr)
         return elle::Status::Ok;
@@ -241,7 +242,8 @@ namespace etoile
           // XXX
 
           // XXX
-          static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+          static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                    ENSEMBLE_SECRET_KEY);
 
           // upgrade the ensemble's tokens with the new pass.
           // besides, update the group's size with the number

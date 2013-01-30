@@ -259,7 +259,7 @@ namespace etoile
                                   ELLE_TRACE_SCOPE("the Ensemble block is present: lookup the subject");
 
                                   // XXX
-                                  static cryptography::SecretKey secret_key{ENSEMBLE_SECRET_KEY};
+                                  static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256, ENSEMBLE_SECRET_KEY);
 
                                   nucleus::proton::Limits ensemble_limits{
                                     nucleus::proton::limits::Porcupine{},

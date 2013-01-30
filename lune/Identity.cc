@@ -69,7 +69,8 @@ namespace lune
   ///
   elle::Status          Identity::Encrypt(const elle::String&   pass)
   {
-    cryptography::SecretKey key(pass);
+    // XXX[factor algo with decrypt()]
+    cryptography::SecretKey key(cryptography::cipher::Algorithm::aes256, pass);
 
     ELLE_ASSERT(this->_pair != nullptr);
 
@@ -89,7 +90,7 @@ namespace lune
     if (this->cipher == nullptr)
       escape("unable to decrypt an unencrypted identity");
 
-    cryptography::SecretKey key{pass};
+    cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
 
     // decrypt the authority.
     delete this->_pair;

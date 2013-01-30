@@ -375,6 +375,7 @@ namespace etoile
       // Note that the secret length has been provided in bits though the
       // string is calculated in characters.
       static cryptography::SecretKey secret{
+        cryptography::cipher::Algorithm::aes256,
         elle::String(static_cast<size_t>(this->_secret_length /
                                          (sizeof(elle::Character) * 8)),
                      static_cast<char>('*'))};
