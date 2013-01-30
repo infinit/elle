@@ -85,3 +85,11 @@ infinit_log_search() {
 		fi
 	done
 }
+
+infinit_log_disable() {
+	unset ELLE_LOG_LEVEL
+}
+
+infinit_log_enable() {
+	export ELLE_LOG_LEVEL=DEBUG
+}
