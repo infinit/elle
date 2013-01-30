@@ -5,6 +5,7 @@
 # include <elle/operator.hh>
 
 # include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
 
 # include <iosfwd>
 # include <memory>
@@ -64,6 +65,9 @@ namespace elle
     Buffer(Buffer&& other);
     Buffer&
     operator =(Buffer&& other);
+
+    /// Load constructor.
+    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Buffer);
 
     /// Buffer class is not virtual
     ~Buffer();

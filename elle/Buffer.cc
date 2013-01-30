@@ -83,6 +83,11 @@ namespace elle
 #endif
   }
 
+  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
+  {
+    this->_contents = nullptr;
+  }
+
   Buffer::~Buffer()
   {
     ::free(this->_contents);
