@@ -37,6 +37,9 @@ namespace surface
       void
       launch_network(std::string const& network_id);
 
+      bool
+      has_network(std::string const& network_id) const;
+
       void
       stop_network(std::string const& network_id);
 

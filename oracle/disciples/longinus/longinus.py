@@ -51,6 +51,8 @@ class PunchHelper(DatagramProtocol):
 
     def handle_local(self, (host, port), endpoint, *args):
         print("local endpoint is", endpoint);
+        me = "{}:{}".format(host, port)
+        self.public_endpoint = me;
         self.local_endpoint = endpoint.split()[0]
         self.transport.write(
                 "public {}\n".format(self.public_endpoint),

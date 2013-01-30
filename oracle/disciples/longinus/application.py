@@ -6,7 +6,7 @@ if "bsd" in sys.platform:
     from twisted.internet import kqreactor as _platform_reactor
 elif "linux" in sys.platform:
     from twisted.internet import epollreactor as _platform_reactor
-elif "win" in sys.platform:
+elif sys.platform.startswith('win'):
     from twisted.internet import iocpreactor as _platform_reactor
 else:
     from twisted.internet import selectreactor as _platform_reactor
