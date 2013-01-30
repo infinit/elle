@@ -41,7 +41,7 @@ namespace surface
 
       if (files.empty())
         throw Exception(gap_no_file,
-                            "no files to send");
+                        "no files to send");
 
       int size = 0;
       for (auto const& path : files)
@@ -78,53 +78,56 @@ namespace surface
       auto transfer_binary = common::infinit::binary_path("8transfer");
       ELLE_DEBUG("Using 8transfert binary '%s'", transfer_binary);
 
-      QStringList arguments;
-      arguments << "-n" << network_id.c_str()
-                << "-u" << this->_me._id.c_str()
-                << "--path" << files.cbegin()->c_str()
-                << "--to"
-      ;
-      ELLE_DEBUG("LAUNCH: %s %s",
-                 transfer_binary,
-                 arguments.join(" ").toStdString());
+      metrics::google::server().store("transaction:create:attempt",
+                                    {{"cm1", std::to_string(files.size())},
+                                     {"cm2", std::to_string(size)}});
+      try
+        {
+          for (auto& file: files)
+            {
+              QStringList arguments;
 
+              arguments << "-n" << network_id.c_str()
+                        << "-u" << this->_me._id.c_str()
+                        << "--path" << file.c_str()
+                        << "--to";
+
+              ELLE_DEBUG("LAUNCH: %s %s",
+                         transfer_binary,
+                         arguments.join(" ").toStdString());
+
+              QProcess p;
+              p.start(transfer_binary.c_str(), arguments);
+              if (!p.waitForFinished(-1))
+                throw Exception(gap_internal_error, "8transfer binary failed");
+              if (p.exitCode())
+                throw Exception(gap_internal_error, "8transfer binary exited with errors");
+            }
+        }
+      catch (...)
+        {
+          // Something went wrong, we need to destroy the network.
+          this->delete_network(network_id, false);
+          throw;
+        }
+
+      plasma::meta::CreateTransactionResponse res;
       try
       {
-        QProcess p;
-        p.start(transfer_binary.c_str(), arguments);
-        if (!p.waitForFinished(-1))
-          throw Exception(gap_internal_error, "8transfer binary failed");
-        if (p.exitCode())
-          throw Exception(gap_internal_error, "8transfer binary exited with errors");
-
-        metrics::google::server().store("transaction:create:attempt",
-                                        {{"cm1", std::to_string(files.size())},
-                                         {"cm2", std::to_string(size)}});
-
-        plasma::meta::CreateTransactionResponse res;
-        try
-        {
-          res = this->_meta->create_transaction(recipient_id_or_email,
-                                                first_filename,
-                                                files.size(),
-                                                size,
-                                                fs::is_directory(first_filename),
-                                                network_id,
-                                                this->device_id());
-        }
-        CATCH_FAILURE_TO_METRICS("transaction:create");
-
-        metrics::google::server().store("transaction:create:succeed",
-                                        {{"cd2", res.created_transaction_id},
-                                         {"cm1", std::to_string(files.size())},
-                                         {"cm2", std::to_string(size)}});
+        res = this->_meta->create_transaction(recipient_id_or_email,
+                                              first_filename,
+                                              files.size(),
+                                              size,
+                                              fs::is_directory(first_filename),
+                                              network_id,
+                                              this->device_id());
       }
-      catch (elle::Exception const&)
-      {
-        // Something went wrong, we need to destroy the network.
-        this->delete_network(network_id, false);
-        throw;
-      }
+      CATCH_FAILURE_TO_METRICS("transaction:create");
+
+      metrics::google::server().store("transaction:create:succeed",
+                                      {{"cd2", res.created_transaction_id},
+                                      {"cm1", std::to_string(files.size())},
+                                      {"cm2", std::to_string(size)}});
     }
 
     float
@@ -551,7 +554,7 @@ namespace surface
       ELLE_DEBUG("Closed transaction '%s'", transaction.transaction_id);
 
       // Delete networks.
-      this->delete_network(transaction.network_id);
+      this->delete_network(transaction.network_id, true /* force */);
     }
 
     void
