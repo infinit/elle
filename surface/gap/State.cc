@@ -101,6 +101,11 @@ namespace surface
             this->_on_transaction_status(n);
           }
       );
+      this->user_status_callback(
+          [&] (UserStatusNotification const &n) -> void {
+            this->_on_user_status_update(n);
+          }
+      );
 
       std::string user = elle::os::getenv("INFINIT_USER", "");
 
@@ -141,8 +146,8 @@ namespace surface
       metrics::google::server(common::metrics::google_server(),
                               common::metrics::google_port(),
                               "cd",
-                              metrics::google::retrieve_id(common::metrics::id_path()));
-
+                              metrics::google::retrieve_id(
+                                common::metrics::id_path()));
     }
 
     void
@@ -283,9 +288,9 @@ namespace surface
             std::for_each(std::begin(externals), std::end(externals), send_to_slug);
             std::for_each(std::begin(locals), std::end(locals), send_to_slug);
           }
-        catch (elle::Exception const &e)
+        catch (elle::Exception const& e)
           {
-            ELLE_TRACE("Caught exception %s", e.what());
+            ELLE_TRACE("caught exception %s", e.what());
             throw e;
           }
       }

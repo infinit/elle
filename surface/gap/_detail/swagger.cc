@@ -1,5 +1,7 @@
 #include "../State.hh"
 
+ELLE_LOG_COMPONENT("infinit.surface.gap.State");
+
 namespace surface
 {
   namespace gap
@@ -42,6 +44,20 @@ namespace surface
       return *(it->second);
     }
 
+    void
+    State::_on_user_status_update(UserStatusNotification const& notif)
+    {
+      try
+      {
+        auto it = this->swagger(notif.user_id);
+        it.status = notif.status;
+        ELLE_DEBUG("%s's status changed to %s", it.fullname, it.status);
+      }
+      catch (Exception const& e)
+      {
+          this->_swaggers_dirty = true;
+          this->swaggers();
+      }
+    }
   }
 }
-

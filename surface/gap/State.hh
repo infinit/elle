@@ -484,6 +484,9 @@ namespace surface
       void
       _on_network_update(NetworkUpdateNotification const& notif);
 
+      void
+      _on_user_status_update(UserStatusNotification const& notif);
+
     public:
       void
       _notify_8infinit(Transaction const& trans,
