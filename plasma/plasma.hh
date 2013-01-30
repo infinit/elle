@@ -1,6 +1,9 @@
 #ifndef PLASMA_PLASMA_HH
 # define PLASMA_PLASMA_HH
 
+# include <iosfwd>
+# include <string>
+
 namespace plasma
 {
 
@@ -30,6 +33,10 @@ namespace plasma
 # include <oracle/disciples/meta/resources/transaction_status.hh.inc>
 # undef TRANSACTION_STATUS
   };
+
+  std::ostream&
+  operator <<(std::ostream& out,
+              TransactionStatus t);
 }
 
 # include "plasma.hxx"

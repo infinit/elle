@@ -145,6 +145,9 @@ class InfinitShell(cmd.Cmd):
         self._state.transaction_status_callback(self._file_transfer_status_handler)
         self._state.message_callback(self._message_handler)
 
+    def _check_process_status(self, id_):
+        return self._state.process_status(id_)
+
     @property
     def prompt(self):
       return self._state.email + '(' + str(len(self._notifs)) + ') $ '
@@ -366,7 +369,8 @@ class InfinitShell(cmd.Cmd):
             },
             {
                 'flags': 'files',
-                'action': 'append',
+                'nargs': '+',
+#                'action': 'append',
                 'help': 'files to send.',
             }
         ],
@@ -385,7 +389,10 @@ class InfinitShell(cmd.Cmd):
             recipient = args.user
             files = args.files
 
+            # XXX: use a thread to ask "sendfile" status for time to time.
+            # using self._check_process_status(_id) with _id = value returned by sendfile.
             self._state.send_files(recipient, files)
+
         except Exception as e:
             print(e)
 

@@ -160,6 +160,28 @@ namespace common
     }
 
     std::string
+    network_shelter(std::string const& user_id,
+                    std::string const& network_id)
+    {
+      return path::join(
+        network_directory(user_id, network_id), "shelter");
+    }
+
+    std::string
+    passport_path(std::string const& user)
+    {
+      return path::join(infinit::user_directory(user), user + ".ppt");
+    }
+
+    std::string
+    log_path(std::string const& user_id,
+             std::string const& network_id)
+    {
+      return path::join(
+        network_directory(user_id, network_id), "err.log");
+    }
+
+    std::string
     portal_path(std::string const& user_id,
                 std::string const& network_id)
     {
@@ -347,12 +369,6 @@ namespace common
 
 
   //- scheduled for deletion --------------------------------------------------
-
-  std::string
-  passport_path(std::string const& user)
-  {
-    return path::join(infinit::user_directory(user), user + ".ppt");
-  }
 
   namespace watchdog
   {

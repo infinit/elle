@@ -44,6 +44,20 @@ namespace common
     network_directory(std::string const& user_id,
                       std::string const& network_id);
 
+    /// Returns passport path.
+    std::string
+    passport_path(std::string const& user);
+
+    /// Returns log file path.
+    std::string
+    log_path(std::string const& user_id,
+             std::string const& network_id);
+
+    // Returns the path to the shelter.
+    std::string
+    network_shelter(std::string const& user_id,
+                    std::string const& network_id);
+
     /// Returns portal file path.
     std::string
     portal_path(std::string const& user_id,
@@ -190,11 +204,6 @@ namespace common
     uint16_t
     google_port();
   }
-
-  // XXX scheduled for deletion
-  /// Returns the path to the passport file.
-  std::string
-  passport_path(std::string const& user);
 
 } // !common
 

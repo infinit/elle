@@ -38,6 +38,7 @@ namespace surface
     InfinitInstanceManager::stop_network(std::string const& network_id)
     {
       ELLE_TRACE("stoping newtork");
+
       try
       {
         auto const& instance = this->network_instance(network_id);
@@ -49,6 +50,7 @@ namespace surface
         ELLE_DEBUG("no network found, no infinit to kill");
         return;
       }
+
       _instances.erase(network_id);
     }
 

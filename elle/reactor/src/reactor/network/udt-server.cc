@@ -147,8 +147,8 @@ namespace reactor
     boost::asio::ip::udp::endpoint&
     UDTServer::_longinus()
     {
-      static auto lhost = "development.infinit.io";//common::longinus::host();
-      static auto lport = 9999;//common::longinus::port();
+      static auto lhost = common::longinus::host();
+      static auto lport = common::longinus::port();
       static auto longinus =
         resolve_udp(this->scheduler(), lhost,
                     boost::lexical_cast<std::string>(lport));

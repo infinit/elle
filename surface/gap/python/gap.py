@@ -79,6 +79,9 @@ class State:
             'transaction_callback',
             'transaction_status_callback',
             'message_callback',
+
+            # Process.
+            'process_status',
         ]
 
         def make_method(m):
@@ -93,6 +96,7 @@ class State:
 
         self.Status = getattr(_gap, "Status")
         self.TransactionStatus = getattr(_gap, "TransactionStatus")
+        self.ProcessStatus = getattr(_gap, "ProcessStatus")
 
     def __del__(self):
         _gap.free(self._state)
