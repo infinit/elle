@@ -4,7 +4,7 @@
 #include <elle/types.hh>
 #include <elle/Exception.hh>
 
-# include <openssl/err.h>
+#include <openssl/err.h>
 
 /*----------.
 | Operators |

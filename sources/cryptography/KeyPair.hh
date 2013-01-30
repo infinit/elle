@@ -36,6 +36,8 @@ namespace infinit
     public:
       /// Return a brand new, freshly generated key pair of the
       /// given length.
+      ///
+      /// Note that the length is given in bits.
       static
       KeyPair
       generate(Cryptosystem const cryptosystem,

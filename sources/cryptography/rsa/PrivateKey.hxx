@@ -21,7 +21,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
 {
   enforce(format == 0);
 
-  enforce(value._key != nullptr);
+  ELLE_ASSERT(value._key != nullptr);
 
   archive << *value._key->pkey.rsa->n
           << *value._key->pkey.rsa->e
@@ -57,6 +57,15 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
   INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
   INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
   INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
+
+  ELLE_ASSERT(n != nullptr);
+  ELLE_ASSERT(e != nullptr);
+  ELLE_ASSERT(d != nullptr);
+  ELLE_ASSERT(p != nullptr);
+  ELLE_ASSERT(q != nullptr);
+  ELLE_ASSERT(dmp1 != nullptr);
+  ELLE_ASSERT(dmq1 != nullptr);
+  ELLE_ASSERT(iqmp != nullptr);
 
   archive >> *n
           >> *e

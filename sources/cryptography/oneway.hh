@@ -6,6 +6,10 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Digest.hh>
 
+# include <openssl/evp.h>
+
+# include <iosfwd>
+
 namespace infinit
 {
   namespace cryptography
@@ -33,6 +37,9 @@ namespace infinit
       | Functions |
       `----------*/
 
+      /// Resolve a algorithm name into an EVP function pointer.
+      ::EVP_MD const*
+      resolve(Algorithm const name);
       /// Hash a plain text and return a digest.
       Digest
       hash(Plain const& plain,
@@ -42,13 +49,15 @@ namespace infinit
       Digest
       hash(T const& value,
            Algorithm algorithm);
+
+      /*----------.
+      | Operators |
+      `----------*/
+
+      std::ostream&
+      operator <<(std::ostream& stream,
+                  Algorithm const algorithm);
     }
-
-    /*----------.
-    | Operators |
-    `----------*/
-
-    // XXX operator << for Algorithm
   }
 }
 

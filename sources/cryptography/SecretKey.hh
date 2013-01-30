@@ -10,10 +10,8 @@
 # include <elle/concept/Uniquable.hh>
 
 # include <cryptography/fwd.hh>
-
-# include <openssl/evp.h>
-# include <openssl/err.h>
-# include <openssl/rand.h>
+# include <cryptography/oneway.hh>
+# include <cryptography/Cipher.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -39,21 +37,18 @@ namespace infinit
         static elle::Character const magic[];
       };
 
-      /// XXX[use enums and/or rename]
-      struct Algorithms
-      {
-        static const ::EVP_CIPHER*      Cipher;
-        static const ::EVP_MD*          Digest;
-      };
-
       /*---------------.
       | Static Methods |
       `---------------*/
     public:
-      /// Return a freshly generated secret key.
+      /// Return a freshly generated secret key of the given length.
+      ///
+      /// Note that the length is expressed in bits.
       static
       SecretKey
-      generate(elle::Natural32 const length);
+      generate(cipher::Algorithm const cipher,
+               elle::Natural32 const length,
+               oneway::Algorithm const oneway = oneway::Algorithm::sha1);
 
       /*-------------.
       | Construction |
@@ -62,15 +57,20 @@ namespace infinit
       SecretKey(); // XXX[to deserialize]
       /// Construct a secret key based on a string-based password.
       explicit
-      SecretKey(elle::String const& password);
-      /// Copy constructor.
+      /// Construct a secret key by providing the cipher algorithm and key
+      /// length, in bits, along with the oneway algorithm used internally.
+      SecretKey(cipher::Algorithm const cipher,
+                elle::String const& password,
+                oneway::Algorithm const oneway = oneway::Algorithm::sha1);
       SecretKey(SecretKey const& other);
-      /// XXX[move]
+      SecretKey(SecretKey&& other);
       /// Derialization constructor.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
     private:
       /// Construct a secret key based on a given buffer.
-      SecretKey(elle::Buffer&& buffer);
+      SecretKey(cipher::Algorithm const cipher,
+                elle::Buffer&& password,
+                oneway::Algorithm const oneway);
 
       /*--------.
       | Methods |
@@ -134,7 +134,9 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(elle::Buffer, buffer);
+      ELLE_ATTRIBUTE(cipher::Algorithm, cipher);
+      ELLE_ATTRIBUTE(elle::Buffer, password);
+      ELLE_ATTRIBUTE(oneway::Algorithm, oneway);
     };
   }
 }

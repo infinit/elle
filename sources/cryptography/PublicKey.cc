@@ -22,8 +22,9 @@ namespace infinit
       cryptography::require();
     }
 
-    PublicKey::PublicKey(std::unique_ptr<interface::PublicKey>&& impl):
-      _implementation(std::move(impl))
+    PublicKey::PublicKey(std::unique_ptr<interface::PublicKey>&&
+                           implementation):
+      _implementation(std::move(implementation))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();

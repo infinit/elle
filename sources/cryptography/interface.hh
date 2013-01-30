@@ -36,6 +36,7 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
+        virtual
         ~PublicKey()
         {
         }
@@ -93,6 +94,7 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
+        virtual
         ~PrivateKey()
         {
         }

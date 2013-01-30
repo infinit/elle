@@ -1,9 +1,9 @@
 #ifndef INFINIT_CRYPTOGRAPHY_BN_HXX
 # define INFINIT_CRYPTOGRAPHY_BN_HXX
 
-/*-------------.
-| Serializable |
-`-------------*/
+/*-----------.
+| Serializer |
+`-----------*/
 
 # include <elle/types.hh>
 # include <elle/serialize/Serializer.hh>

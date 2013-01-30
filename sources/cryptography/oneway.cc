@@ -4,14 +4,9 @@
 
 #include <elle/log.hh>
 
-#include <openssl/evp.h>
 #include <openssl/err.h>
 
 ELLE_LOG_COMPONENT("infinit.cryptograhy.oneway");
-
-/*----------------.
-| Macro-functions |
-`----------------*/
 
 namespace infinit
 {
@@ -19,15 +14,15 @@ namespace infinit
   {
     namespace oneway
     {
-      /*-----------------.
-      | Static Functions |
-      `-----------------*/
+      /*---------------.
+      | Static Methods |
+      `---------------*/
 
-      /// Resolve a algorithm name into an EVP function pointer.
-      static
       ::EVP_MD const*
       resolve(Algorithm const name)
       {
+        ELLE_TRACE_FUNCTION(name);
+
         switch (name)
           {
           case Algorithm::md5:
@@ -46,15 +41,11 @@ namespace infinit
             return (::EVP_sha512());
           default:
             throw elle::Exception("unable to resolve the given one-way "
-                                  "function name");
+                                  "function name '%s'", name);
           }
 
         elle::unreachable();
       }
-
-      /*---------------.
-      | Static Methods |
-      `---------------*/
 
       Digest
       hash(Plain const& plain,
@@ -106,6 +97,59 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         return (digest);
+      }
+
+      /*----------.
+      | Operators |
+      `----------*/
+
+      std::ostream&
+      operator <<(std::ostream& stream,
+                  Algorithm const algorithm)
+      {
+        switch (algorithm)
+          {
+          case Algorithm::md5:
+            {
+              stream << "md5";
+              break;
+            }
+          case Algorithm::sha:
+            {
+              stream << "sha";
+              break;
+            }
+          case Algorithm::sha1:
+            {
+              stream << "sha1";
+              break;
+            }
+          case Algorithm::sha224:
+            {
+              stream << "sha224";
+              break;
+            }
+          case Algorithm::sha256:
+            {
+              stream << "sha256";
+              break;
+            }
+          case Algorithm::sha384:
+            {
+              stream << "sha384";
+              break;
+            }
+          case Algorithm::sha512:
+            {
+              stream << "sha512";
+              break;
+            }
+          default:
+            throw elle::Exception("unknown one-way algorithm '%s'",
+                                  static_cast<int>(algorithm));
+          }
+
+        return (stream);
       }
     }
   }
