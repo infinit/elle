@@ -25,7 +25,7 @@ namespace infinit
       cryptography::require();
     }
 
-    PrivateKey::PrivateKey(std::unique_ptr<interface::PrivateKey>&&
+    PrivateKey::PrivateKey(std::unique_ptr<privatekey::Interface>&&
                              implementation):
       _implementation(std::move(implementation))
     {
@@ -126,7 +126,17 @@ namespace infinit
 
       this->_implementation->print(stream);
     }
+  }
+}
 
+//
+// ---------- Factory ---------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
     namespace privatekey
     {
       /*-----------------.

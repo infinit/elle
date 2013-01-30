@@ -4,7 +4,7 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
-# include <cryptography/interface.hh>
+# include <cryptography/PublicKey.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -26,7 +26,7 @@ namespace infinit
     {
       /// Represent a public key in the RSA asymmetric cryptosystem.
       class PublicKey:
-        public interface::PublicKey,
+        public publickey::Interface,
         public elle::serialize::SerializableMixin<PublicKey>,
         public elle::concept::MakeUniquable<PublicKey>
       {
@@ -83,12 +83,12 @@ namespace infinit
         // publickey
         virtual
         elle::Boolean
-        operator ==(interface::PublicKey const& other) const;
+        operator ==(publickey::Interface const& other) const;
         virtual
         elle::Boolean
-        operator <(interface::PublicKey const& other) const;
+        operator <(publickey::Interface const& other) const;
         virtual
-        interface::PublicKey*
+        publickey::Interface*
         clone() const;
         virtual
         Cryptosystem

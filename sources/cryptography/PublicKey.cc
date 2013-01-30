@@ -8,6 +8,10 @@
 
 ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -22,7 +26,7 @@ namespace infinit
       cryptography::require();
     }
 
-    PublicKey::PublicKey(std::unique_ptr<interface::PublicKey>&&
+    PublicKey::PublicKey(std::unique_ptr<publickey::Interface>&&
                            implementation):
       _implementation(std::move(implementation))
     {
@@ -124,7 +128,17 @@ namespace infinit
 
       this->_implementation->print(stream);
     }
+  }
+}
 
+//
+// ---------- Factory ---------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
     namespace publickey
     {
       /*-----------------.

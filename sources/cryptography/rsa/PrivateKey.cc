@@ -467,7 +467,7 @@ namespace infinit
       `------------*/
 
       elle::Boolean
-      PrivateKey::operator ==(interface::PrivateKey const& other) const
+      PrivateKey::operator ==(privatekey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -479,7 +479,7 @@ namespace infinit
       }
 
       elle::Boolean
-      PrivateKey::operator <(interface::PrivateKey const& other) const
+      PrivateKey::operator <(privatekey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -490,7 +490,7 @@ namespace infinit
         return (*this < static_cast<PrivateKey const&>(other));
       }
 
-      interface::PrivateKey*
+      privatekey::Interface*
       PrivateKey::clone() const
       {
         return (new PrivateKey{*this});
