@@ -89,9 +89,41 @@ namespace elle
     flush(unsigned int size);
 
   private:
-    static const int _bufsize = 512;
+    static const int _bufsize = (1 << 12); // == 4096 bytes.
     char _ibuf[_bufsize];
     char _obuf[_bufsize];
+  };
+
+  class DynamicStreamBuffer : public StreamBuffer
+  {
+  public:
+    typedef unsigned int    Size;
+    typedef unsigned char   Byte;
+
+    DynamicStreamBuffer(Size size);
+    ~DynamicStreamBuffer();
+
+  protected:
+    friend class IOStream;
+    virtual Size read(char *buffer, Size size) = 0;
+    virtual void write(char *buffer, Size size) = 0;
+
+    virtual
+    WeakBuffer
+    read_buffer();
+
+    virtual
+    WeakBuffer
+    write_buffer();
+
+    virtual
+    void
+    flush(unsigned int size);
+
+  private:
+    Size const  _bufsize;
+    Byte        *_ibuf;
+    Byte        *_obuf;
   };
 
 }

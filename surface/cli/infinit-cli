@@ -712,6 +712,10 @@ def register(state):
         activation_code = re_input("Activation code")
         try:
           state.register(fullname, email, password, dev_name, activation_code)
+          state.connect() # connect to trophonius
+          global pollThread
+          pollThread = PollThread(state)
+          pollThread.start()
         except:
           pass
         else:

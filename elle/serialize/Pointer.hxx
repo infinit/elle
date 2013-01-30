@@ -169,7 +169,7 @@ namespace elle
 
           if (value._ptr != nullptr)
             {
-              ELLE_WARN("deleting the previous pointed value");
+              ELLE_DEBUG("deleting the previous pointed value");
             }
 
           delete value._ptr;
