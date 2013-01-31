@@ -3,6 +3,7 @@
 
 # include <elle/Exception.hh>
 # include <elle/Buffer.hh>
+# include <elle/log.hh>
 
 # include <cryptography/cryptography.hh>
 
@@ -34,7 +35,7 @@
              _type_ maximum)                                            \
     {                                                                   \
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_TRACE_FUNCTION("");                                          \
+      ELLE_TRACE_FUNCTION(minimum, maximum);                            \
                                                                         \
       return (_rangify(_generate<_type_>(), minimum, maximum));         \
     }                                                                   \

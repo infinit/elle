@@ -14,7 +14,7 @@ public:
   //
   // constants
   //
-  static const elle::String             Key;
+  static elle::String const Key;
   static const elle::Version version;
   static const elle::String             Copyright;
 
