@@ -275,7 +275,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   # Cryptography
   cryptography_sources = drake.nodes(
-    'cryptography/sources/cryptography/Cipher.hh',
+    'cryptography/sources/cryptography/cipher.hh',
     'cryptography/sources/cryptography/Clear.hh',
     'cryptography/sources/cryptography/Code.hh',
     'cryptography/sources/cryptography/Digest.hh',
