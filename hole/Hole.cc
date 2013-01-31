@@ -1,8 +1,5 @@
 #include <elle/log.hh>
 
-// XXX[temporary: for cryptography]
-using namespace infinit;
-
 #include <hole/Hole.hh>
 
 #include <nucleus/proton/Address.hh>
