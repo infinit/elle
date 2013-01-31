@@ -18,8 +18,6 @@ void test_encrypt()
 
   cryptography::Code code = pair.K().encrypt(my_secret_text);
 
-  std::cout << "encrypted size: " << code.buffer().size() << "\n";
-
   std::string res = pair.k().decrypt<std::string>(code);
 }
 

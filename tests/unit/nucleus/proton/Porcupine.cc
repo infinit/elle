@@ -367,7 +367,8 @@ test_porcupine_catalog()
 #endif
 
   cryptography::SecretKey secret1 =
-    cryptography::SecretKey::generate(PORCUPINE_SECRET_LENGTH);
+    cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
+                                      PORCUPINE_SECRET_LENGTH);
 
   nucleus::proton::Radix radix1{
     test_porcupine_catalog_seal(*porcupine1, secret1)};
@@ -383,7 +384,8 @@ test_porcupine_catalog()
   test_porcupine_catalog_lookup(*porcupine2, vector);
 
   cryptography::SecretKey secret2 =
-    cryptography::SecretKey::generate(PORCUPINE_SECRET_LENGTH);
+    cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
+                                      PORCUPINE_SECRET_LENGTH);
 
   nucleus::proton::Radix radix2{
     test_porcupine_catalog_seal(*porcupine2, secret2)};

@@ -1,4 +1,3 @@
-
 set(ELLE_LIB
     elle
     ${Boost_LIBRARIES}
