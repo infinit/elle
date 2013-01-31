@@ -86,6 +86,8 @@ namespace elle
   ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
   {
     this->_contents = nullptr;
+    this->_size = 0;
+    this->_buffer_size = 0;
   }
 
   Buffer::~Buffer()
