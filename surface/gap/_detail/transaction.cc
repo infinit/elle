@@ -81,53 +81,56 @@ namespace surface
       metrics::google::server().store("transaction:create:attempt",
                                     {{"cm1", std::to_string(files.size())},
                                      {"cm2", std::to_string(size)}});
+
       try
         {
-          for (auto& file: files)
+          try
             {
-              QStringList arguments;
+              for (auto& file: files)
+              {
+                QStringList arguments;
 
-              arguments << "-n" << network_id.c_str()
-                        << "-u" << this->_me._id.c_str()
-                        << "--path" << file.c_str()
-                        << "--to";
+                arguments << "-n" << network_id.c_str()
+                          << "-u" << this->_me._id.c_str()
+                          << "--path" << file.c_str()
+                          << "--to";
 
-              ELLE_DEBUG("LAUNCH: %s %s",
-                         transfer_binary,
-                         arguments.join(" ").toStdString());
+                ELLE_DEBUG("LAUNCH: %s %s",
+                           transfer_binary,
+                           arguments.join(" ").toStdString());
 
-              QProcess p;
-              p.start(transfer_binary.c_str(), arguments);
-              if (!p.waitForFinished(-1))
-                throw Exception(gap_internal_error, "8transfer binary failed");
-              if (p.exitCode())
-                throw Exception(gap_internal_error, "8transfer binary exited with errors");
+                QProcess p;
+                p.start(transfer_binary.c_str(), arguments);
+                if (!p.waitForFinished(-1))
+                  throw Exception(gap_internal_error, "8transfer binary failed");
+                if (p.exitCode())
+                  throw Exception(gap_internal_error, "8transfer binary exited with errors");
+              }
             }
-        }
-      catch (...)
-        {
-          // Something went wrong, we need to destroy the network.
-          this->delete_network(network_id, false);
-          throw;
-        }
+          catch (...)
+            {
+              // Something went wrong, we need to destroy the network.
+              this->delete_network(network_id, false);
+              throw;
+            }
 
-      plasma::meta::CreateTransactionResponse res;
-      try
-      {
-        res = this->_meta->create_transaction(recipient_id_or_email,
-                                              first_filename,
-                                              files.size(),
-                                              size,
-                                              fs::is_directory(first_filename),
-                                              network_id,
-                                              this->device_id());
-      }
+          plasma::meta::CreateTransactionResponse res;
+
+          res = this->_meta->create_transaction(recipient_id_or_email,
+                                                first_filename,
+                                                files.size(),
+                                                size,
+                                                fs::is_directory(first_filename),
+                                                network_id,
+                                                this->device_id());
+
+          metrics::google::server().store("transaction:create:succeed",
+                                          {{"cd2", res.created_transaction_id},
+                                           {"cm1", std::to_string(files.size())},
+                                           {"cm2", std::to_string(size)}});
+
+        }
       CATCH_FAILURE_TO_METRICS("transaction:create");
-
-      metrics::google::server().store("transaction:create:succeed",
-                                      {{"cd2", res.created_transaction_id},
-                                      {"cm1", std::to_string(files.size())},
-                                      {"cm2", std::to_string(size)}});
     }
 
     float
@@ -313,7 +316,8 @@ namespace surface
     State::update_transaction(std::string const& transaction_id,
                               gap_TransactionStatus status)
     {
-      ELLE_DEBUG("Update transaction '%s': '%s'", transaction_id, status);
+      ELLE_DEBUG("Update transaction '%s': '%s'",
+                 transaction_id, status);
 
       auto pair = State::transactions().find(transaction_id);
 
