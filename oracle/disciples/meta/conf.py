@@ -16,10 +16,18 @@ COLLECTION_NAME = os.environ.get("META_COLLECTION_NAME", 'meta')
 MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 
+# release install path
 INFINIT_AUTHORITY_PATH = os.path.join(
     os.path.abspath(os.path.dirname(__file__)),
-    "../../../oracle/infinit.auth"
+    "infinit.auth"
 )
+
+if not os.path.exists(INFINIT_AUTHORITY_PATH):
+    # When used in build dir
+    INFINIT_AUTHORITY_PATH = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        "../../../oracle/infinit.auth"
+    )
 
 INFINIT_AUTHORITY_PASSWORD = ""
 
