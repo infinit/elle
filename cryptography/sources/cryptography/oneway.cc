@@ -1,6 +1,7 @@
 #include <cryptography/oneway.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
+#include <cryptography/evp.hh>
 
 #include <elle/log.hh>
 
@@ -54,49 +55,8 @@ namespace infinit
         ELLE_TRACE_FUNCTION(plain, algorithm);
 
         ::EVP_MD const* function = resolve(algorithm);
-        Digest digest(EVP_MD_size(function));
 
-        // Initialise the context.
-        ::EVP_MD_CTX context;
-
-        ::EVP_MD_CTX_init(&context);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
-
-        // Initialise the digest.
-        if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        ELLE_ASSERT(plain.buffer().contents() != nullptr);
-
-        // Update the digest with the given plain's data.
-        if (::EVP_DigestUpdate(&context,
-                               plain.buffer().contents(),
-                               plain.buffer().size()) <= 0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Finalise the digest.
-        unsigned int size;
-
-        if (::EVP_DigestFinal_ex(&context,
-                                 digest.buffer().mutable_contents(),
-                                 &size) <=0)
-          throw elle::Exception("%s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        // Update the digest final size.
-        digest.buffer().size(size);
-
-        // Clean the context.
-        if (::EVP_MD_CTX_cleanup(&context) <= 0)
-          throw elle::Exception("unable to clean the context: %s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-        return (digest);
+        return (evp::digest::hash(plain, function));
       }
 
       /*----------.

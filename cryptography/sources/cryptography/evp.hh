@@ -97,4 +97,25 @@ namespace infinit
   }
 }
 
+//
+// ---------- Digest ----------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace evp
+    {
+      namespace digest
+      {
+        /// Hash the given plain text with the message digest function.
+        Digest
+        hash(Plain const& plain,
+             ::EVP_MD const* function);
+      }
+    }
+  }
+}
+
 #endif
