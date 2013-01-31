@@ -439,7 +439,7 @@ namespace plasma
       if (device_name.length() > 0)
         request["device_name"] = device_name;
 
-      ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%ui'",
+      ELLE_DEBUG("Update '%s' transaction with device '%s'. New status '%s'",
                  transaction_id,
                  device_name,
                  status);
