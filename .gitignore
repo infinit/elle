@@ -20,3 +20,5 @@ xcdebugger
 *.xcuserdatad
 *.xcuserstate
 surface/macosx-old/medecine/Debug
+CTestTestfile.cmake
+Makefile
