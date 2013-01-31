@@ -1,7 +1,6 @@
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
-#include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
