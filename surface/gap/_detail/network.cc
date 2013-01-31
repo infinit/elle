@@ -187,7 +187,8 @@ namespace surface
 #define ACCESS_SECRET_KEY "no-secret-key"
 
       // XXX
-      static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+      static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                ACCESS_SECRET_KEY);
 
       ELLE_ASSERT(access_porcupine.strategy() == nucleus::proton::Strategy::value);
 
