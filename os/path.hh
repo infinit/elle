@@ -38,6 +38,10 @@ namespace elle
       void
       make_directory(std::string const& path);
 
+      /// Remove a directory. Throws if path is not a valid directory path.
+      void
+      remove_directory(std::string const& path);
+
       /// Create all required path components directories.
       void
       make_path(std::string const& path);
