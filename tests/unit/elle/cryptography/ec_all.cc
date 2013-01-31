@@ -6,7 +6,7 @@
 #include <cryptography/KeyPair.hh>
 #include <cryptography/random.hh>
 #include <cryptography/SecretKey.hh>
-#include <cryptography/Cipher.hh>
+#include <cryptography/Code.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Clear.hh>
@@ -58,8 +58,8 @@ void test_cipher()
   cryptography::SecretKey secret =
     cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
                                       256);
-  cryptography::Cipher cipher = secret.encrypt(plain);
-  cryptography::Clear clear = secret.decrypt(cipher);
+  cryptography::Code code = secret.encrypt(plain);
+  cryptography::Clear clear = secret.decrypt(code);
 
   ELLE_ASSERT(plain == clear);
 }

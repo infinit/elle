@@ -5,7 +5,7 @@
 #include <common/common.hh>
 
 #include <cryptography/KeyPair.hh>
-#include <cryptography/Cipher.hh>
+#include <cryptography/Code.hh>
 #include <cryptography/SecretKey.hh>
 #include <elle/os/path.hh>
 #include <elle/io/File.hh>
@@ -29,7 +29,7 @@ namespace lune
   Identity::Identity():
     _pair(nullptr),
     _signature(nullptr),
-    cipher(nullptr)
+    code(nullptr)
   {
   }
 
@@ -40,7 +40,7 @@ namespace lune
   {
     delete this->_signature;
     delete this->_pair;
-    delete this->cipher;
+    delete this->code;
   }
 
 //
@@ -74,8 +74,8 @@ namespace lune
 
     ELLE_ASSERT(this->_pair != nullptr);
 
-    // allocate the cipher.
-    this->cipher = new cryptography::Cipher{
+    // allocate the code.
+    this->code = new cryptography::Code{
       key.encrypt(*this->_pair)};
 
     return elle::Status::Ok;
@@ -86,8 +86,8 @@ namespace lune
   ///
   elle::Status          Identity::Decrypt(const elle::String&   pass)
   {
-    // check the cipher.
-    if (this->cipher == nullptr)
+    // check the code.
+    if (this->code == nullptr)
       escape("unable to decrypt an unencrypted identity");
 
     cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
@@ -95,24 +95,24 @@ namespace lune
     // decrypt the authority.
     delete this->_pair;
     this->_pair = new cryptography::KeyPair{
-      key.decrypt<cryptography::KeyPair>(*this->cipher)};
+      key.decrypt<cryptography::KeyPair>(*this->code)};
 
     return elle::Status::Ok;
   }
 
   ///
-  /// this method clears the identity i.e removes the cipher.
+  /// this method clears the identity i.e removes the code.
   ///
   /// this is required for the Serialize() method to consider the identity
   /// in its unencrypted form.
   ///
   elle::Status          Identity::Clear()
   {
-    if (this->cipher != nullptr)
+    if (this->code != nullptr)
       {
-        delete this->cipher;
+        delete this->code;
 
-        this->cipher = nullptr;
+        this->code = nullptr;
       }
 
     return elle::Status::Ok;
@@ -124,8 +124,8 @@ namespace lune
   elle::Status
   Identity::Seal(elle::Authority const& authority)
   {
-    // check the cipher.
-    if (this->cipher == nullptr)
+    // check the code.
+    if (this->code == nullptr)
       escape("unable to seal an unencrypted identity");
 
     // sign with the authority.
@@ -133,7 +133,7 @@ namespace lune
     this->_signature = nullptr;
     this->_signature = new cryptography::Signature{
       authority.k->sign(
-        elle::serialize::make_tuple(this->_id, this->name, *this->cipher))};
+        elle::serialize::make_tuple(this->_id, this->name, *this->code))};
 
     return elle::Status::Ok;
   }
@@ -145,8 +145,8 @@ namespace lune
   Identity::Validate(elle::Authority const& authority)
     const
   {
-    // check the cipher.
-    if (this->cipher == nullptr)
+    // check the code.
+    if (this->code == nullptr)
       escape("unable to verify an unencrypted identity");
 
     // verify the signature.
@@ -156,7 +156,7 @@ namespace lune
           *this->_signature,
           elle::serialize::make_tuple(this->_id,
                                       this->name,
-                                      *this->cipher)) == false)
+                                      *this->code)) == false)
       escape("unable to verify the signature");
 
     return elle::Status::Ok;
@@ -215,11 +215,11 @@ namespace lune
                   << "[Signature] " << *this->_signature << std::endl;
       }
 
-    // dump the cipher.
-    if (this->cipher != nullptr)
+    // dump the code.
+    if (this->code != nullptr)
       {
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Cipher] " << this->cipher << std::endl;
+                  << "[Code] " << this->code << std::endl;
       }
 
     return elle::Status::Ok;

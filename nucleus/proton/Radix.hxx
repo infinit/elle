@@ -8,7 +8,7 @@
 # include <nucleus/proton/Address.hh>
 # include <nucleus/proton/Root.hh>
 
-# include <cryptography/Cipher.hh>
+# include <cryptography/Code.hh>
 
 ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
                       archive,
@@ -27,7 +27,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Radix,
       }
     case nucleus::proton::Strategy::value:
       {
-        archive & elle::serialize::alive_pointer(value._cipher);
+        archive & elle::serialize::alive_pointer(value._code);
 
         break;
       }

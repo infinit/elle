@@ -1,8 +1,8 @@
-#include <cryptography/Cipher.hh>
+#include <cryptography/cipher.hh>
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.Cipher");
+ELLE_LOG_COMPONENT("infinit.cryptography.cipher");
 
 namespace infinit
 {

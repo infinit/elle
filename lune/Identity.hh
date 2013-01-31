@@ -50,7 +50,7 @@ namespace lune
     ELLE_ATTRIBUTE(cryptography::KeyPair*, pair);
     ELLE_ATTRIBUTE(cryptography::Signature*, signature);
   public: // XXX
-    cryptography::Cipher*       cipher;
+    cryptography::Code*       code;
 
   public:
     // XXX

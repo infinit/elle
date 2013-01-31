@@ -1,7 +1,7 @@
 #ifndef NUCLEUS_PROTON_CONTENTS_HXX
 # define NUCLEUS_PROTON_CONTENTS_HXX
 
-# include <cryptography/Cipher.hh>
+# include <cryptography/Code.hh>
 
 namespace nucleus
 {
@@ -19,7 +19,7 @@ namespace nucleus
 
       _nature(T::Constants::nature),
       _node(node),
-      _cipher(nullptr)
+      _code(nullptr)
     {
     }
   }
@@ -41,7 +41,7 @@ ELLE_SERIALIZE_SIMPLE(nucleus::proton::Contents,
   archive & base_class<nucleus::proton::ContentHashBlock>(value);
 
   archive & value._nature;
-  archive & elle::serialize::alive_pointer(value._cipher);
+  archive & elle::serialize::alive_pointer(value._code);
 }
 
 #endif

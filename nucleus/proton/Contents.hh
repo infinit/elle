@@ -117,7 +117,7 @@ namespace nucleus
       /// or passed at construction for encrypting.
       ELLE_ATTRIBUTE(Node*, node);
       /// The encrypted form of the node created through the encrypt() method.
-      ELLE_ATTRIBUTE(cryptography::Cipher*, cipher);
+      ELLE_ATTRIBUTE(cryptography::Code*, code);
     };
   }
 }

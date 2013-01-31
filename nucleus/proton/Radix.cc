@@ -2,7 +2,7 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/proton/Root.hh>
 
-#include <cryptography/Cipher.hh>
+#include <cryptography/Code.hh>
 
 namespace nucleus
 {
@@ -17,14 +17,14 @@ namespace nucleus
     {
       // Manually set all the union pointers to null so as to make sure all
       // the cases are handled.
-      this->_cipher = nullptr;
+      this->_code = nullptr;
       this->_address = nullptr;
       this->_root = nullptr;
     }
 
-    Radix::Radix(cryptography::Cipher const& value):
+    Radix::Radix(cryptography::Code const& value):
       _strategy(Strategy::value),
-      _cipher(new cryptography::Cipher{value})
+      _code(new cryptography::Code{value})
     {
     }
 
@@ -45,7 +45,7 @@ namespace nucleus
     {
       // Manually set all the union pointers to null so as to make sure all
       // the cases are handled.
-      this->_cipher = nullptr;
+      this->_code = nullptr;
       this->_address = nullptr;
       this->_root = nullptr;
 
@@ -57,9 +57,9 @@ namespace nucleus
           }
         case Strategy::value:
           {
-            ELLE_ASSERT(other._cipher != nullptr);
+            ELLE_ASSERT(other._code != nullptr);
 
-            this->_cipher = new cryptography::Cipher{*other._cipher};
+            this->_code = new cryptography::Code{*other._code};
 
             break;
           }
@@ -94,7 +94,7 @@ namespace nucleus
           }
         case Strategy::value:
           {
-            delete this->_cipher;
+            delete this->_code;
 
             break;
           }
@@ -125,13 +125,13 @@ namespace nucleus
       return (this->_strategy == Strategy::none);
     }
 
-    cryptography::Cipher const&
+    cryptography::Code const&
     Radix::value() const
     {
       ELLE_ASSERT(this->_strategy == Strategy::value);
-      ELLE_ASSERT(this->_cipher);
+      ELLE_ASSERT(this->_code);
 
-      return (*this->_cipher);
+      return (*this->_code);
     }
 
     Address const&
@@ -169,9 +169,9 @@ namespace nucleus
           }
         case Strategy::value:
           {
-            ELLE_ASSERT(this->_cipher != nullptr);
+            ELLE_ASSERT(this->_code != nullptr);
 
-            stream << "(" << *this->_cipher << ")";
+            stream << "(" << *this->_code << ")";
 
             break;
           }

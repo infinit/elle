@@ -2,7 +2,7 @@
 
 #include <cryptography/SecretKey.hh>
 #include <cryptography/KeyPair.hh>
-#include <cryptography/Cipher.hh>
+#include <cryptography/Code.hh>
 // XXX[temporary: for cryptography]
 using namespace infinit;
 
@@ -160,10 +160,10 @@ int main()
     cryptography::SecretKey::generate(cryptography::cipher::Algorithm::aes256,
                                       256);
 
-  cryptography::Cipher cipher{secret_key.encrypt(secret_string)};
+  cryptography::Code code{secret_key.encrypt(secret_string)};
 
   {
-    std::string res = secret_key.decrypt<std::string>(cipher);
+    std::string res = secret_key.decrypt<std::string>(code);
 
     ELLE_ASSERT(res == secret_string);
   }
@@ -171,9 +171,9 @@ int main()
   {
     A a{42.0, "hey ho", 12.2f};
 
-    cryptography::Cipher cipher{secret_key.encrypt(a)};
+    cryptography::Code code{secret_key.encrypt(a)};
 
-    A res{secret_key.decrypt<A>(cipher)};
+    A res{secret_key.decrypt<A>(code)};
 
     ELLE_ASSERT(res == a);
   }
@@ -184,10 +184,10 @@ int main()
     impl.impl = "pif";
     Virtual& virt = impl;
 
-    cryptography::Cipher c1{secret_key.encrypt(impl)};
-    cryptography::Cipher c2{secret_key.encrypt(impl)};
-    cryptography::Cipher c3{secret_key.encrypt(virt)};
-    cryptography::Cipher c4{secret_key.encrypt(virt)};
+    cryptography::Code c1{secret_key.encrypt(impl)};
+    cryptography::Code c2{secret_key.encrypt(impl)};
+    cryptography::Code c3{secret_key.encrypt(virt)};
+    cryptography::Code c4{secret_key.encrypt(virt)};
 
     Implem res1{secret_key.decrypt<Implem>(c1)};
     Implem res2{secret_key.decrypt<Implem>(c2)};
@@ -209,11 +209,11 @@ int main()
                                 elle::String(""));
     cryptography::KeyPair kp =
       cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
-    cryptography::Cipher* cipher =
-      new cryptography::Cipher{key.encrypt(kp.k())};
+    cryptography::Code* code =
+      new cryptography::Code{key.encrypt(kp.k())};
     cryptography::PrivateKey* k =
       new cryptography::PrivateKey{
-        key.decrypt<cryptography::PrivateKey>(*cipher)};
+        key.decrypt<cryptography::PrivateKey>(*code)};
 
     ELLE_ASSERT(*k == kp.k());
   }

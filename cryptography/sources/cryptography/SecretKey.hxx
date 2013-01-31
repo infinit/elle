@@ -13,7 +13,7 @@ namespace infinit
     `--------*/
 
     template <typename T>
-    Cipher
+    Code
     SecretKey::encrypt(T const& value) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
@@ -32,16 +32,16 @@ namespace infinit
 
     template <typename T>
     T
-    SecretKey::decrypt(Cipher const& cipher) const
+    SecretKey::decrypt(Code const& code) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_DEBUG_FUNCTION(cipher);
+      ELLE_DEBUG_FUNCTION(code);
 
       static_assert(!std::is_same<T, Clear>::value,
                     "this call should never have occured");
 
-      // Decrypt the cipher leading to a clear containing an archive.
-      Clear clear{this->decrypt(cipher)};
+      // Decrypt the code leading to a clear containing an archive.
+      Clear clear{this->decrypt(code)};
 
       // Deserialize the object from the clear.
       // XXX[this is should be used] T value{clear.buffer().reader()};

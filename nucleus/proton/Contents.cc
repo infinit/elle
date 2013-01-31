@@ -30,14 +30,14 @@ namespace nucleus
       proton::ContentHashBlock(),
 
       _node(nullptr),
-      _cipher(nullptr)
+      _code(nullptr)
     {
     }
 
     Contents::~Contents()
     {
       delete this->_node;
-      delete this->_cipher;
+      delete this->_code;
     }
 
     /*--------.
@@ -51,10 +51,11 @@ namespace nucleus
 
       ELLE_ASSERT(this->_node != nullptr);
 
-      // Delete the previous cipher: the contents may have been deserialized
+      // Delete the previous code: the contents may have been deserialized
       // then modified and re-encrypted.
-      delete this->_cipher;
-      this->_cipher = new cryptography::Cipher{
+      delete this->_code;
+      this->_code = nullptr;
+      this->_code = new cryptography::Code{
         key.encrypt(*this->_node)};
     }
 
@@ -64,9 +65,9 @@ namespace nucleus
       ELLE_TRACE_METHOD(key);
 
       ELLE_ASSERT(this->_node == nullptr);
-      ELLE_ASSERT(this->_cipher != nullptr);
+      ELLE_ASSERT(this->_code != nullptr);
 
-      ELLE_TRACE("decrypting the cipher with the secret key");
+      ELLE_TRACE("decrypting the code with the secret key");
 
       this->_node = factory::node().allocate<Node>(this->_nature);
       // XXX[below, the decrypt<T> decrypts an archive and then constructs
@@ -83,9 +84,9 @@ namespace nucleus
       //     it directly in the factory. therefore, a specific nucleus factory
       //     could be the solution.
       //     for example, the block factory would take a single argument: the
-      //     archive while the node factory would take a cipher and a key
+      //     archive while the node factory would take a code and a key
       //     which would be decrypted.]
-      key.decrypt(*this->_cipher, *this->_node);
+      key.decrypt(*this->_code, *this->_node);
     }
 
     Mode
@@ -146,14 +147,14 @@ namespace nucleus
         std::cout << alignment << elle::io::Dumpable::Shift
                   << "[Node] none" << std::endl;
 
-      if (this->_cipher != nullptr)
+      if (this->_code != nullptr)
         {
           std::cout << alignment << elle::io::Dumpable::Shift
-                    << "[Cipher] " << *this->_cipher << std::endl;
+                    << "[Code] " << *this->_code << std::endl;
         }
       else
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Cipher] none" << std::endl;
+                  << "[Code] none" << std::endl;
 
       return elle::Status::Ok;
     }

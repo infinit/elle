@@ -6,7 +6,7 @@
 #include <cryptography/PublicKey.hh>
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/KeyPair.hh>
-#include <cryptography/Cipher.hh>
+#include <cryptography/Code.hh>
 #include <cryptography/SecretKey.hh>
 
 ELLE_LOG_COMPONENT("infinit.lune.Authority")
@@ -21,31 +21,31 @@ namespace elle
     type(from.type),
     _K(from._K),
     k(nullptr),
-    cipher(nullptr)
+    code(nullptr)
   {
     if (from.k)
       this->k = new cryptography::PrivateKey(*from.k);
-    if (from.cipher)
-      this->cipher = new cryptography::Cipher(*from.cipher);
+    if (from.code)
+      this->code = new cryptography::Code(*from.code);
   }
 
   Authority::Authority(cryptography::KeyPair const& pair):
     type(Authority::TypePair),
     _K(pair.K()),
     k(new cryptography::PrivateKey{pair.k()}),
-    cipher(nullptr)
+    code(nullptr)
   {}
 
   Authority::Authority(cryptography::PublicKey const& K):
     type(Authority::TypePublic),
     _K(K),
     k(nullptr),
-    cipher(nullptr)
+    code(nullptr)
   {}
 
   Authority::Authority(elle::io::Path const& path):
     k(nullptr),
-    cipher(0)
+    code(0)
   {
     if (!elle::Authority::exists(path))
       throw reactor::Exception(
@@ -58,7 +58,7 @@ namespace elle
   Authority::~Authority()
   {
     delete this->k;
-    delete this->cipher;
+    delete this->code;
   }
 
 //
@@ -76,9 +76,9 @@ namespace elle
 
     ELLE_ASSERT(this->type == Authority::TypePair);
 
-    delete this->cipher;
-    this->cipher = nullptr;
-    this->cipher = new cryptography::Cipher{key.encrypt(*this->k)};
+    delete this->code;
+    this->code = nullptr;
+    this->code = new cryptography::Code{key.encrypt(*this->k)};
 
     return elle::Status::Ok;
   }
@@ -91,7 +91,7 @@ namespace elle
     ELLE_TRACE_METHOD(pass);
 
     ELLE_ASSERT(this->type == Authority::TypePair);
-    ELLE_ASSERT(this->cipher != nullptr);
+    ELLE_ASSERT(this->code != nullptr);
 
     cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
 
@@ -99,7 +99,7 @@ namespace elle
     this->k = nullptr;
     this->k =
       new cryptography::PrivateKey{
-        key.decrypt<cryptography::PrivateKey>(*this->cipher)};
+        key.decrypt<cryptography::PrivateKey>(*this->code)};
 
     return elle::Status::Ok;
   }
@@ -132,11 +132,11 @@ namespace elle
                   << "[k] " << *this->k << std::endl;
       }
 
-    // dump the cipher.
-    if (this->cipher != nullptr)
+    // dump the code.
+    if (this->code != nullptr)
       {
         std::cout << alignment << elle::io::Dumpable::Shift
-                  << "[Cipher] " << *this->cipher << std::endl;
+                  << "[Code] " << *this->code << std::endl;
       }
 
     return elle::Status::Ok;

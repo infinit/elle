@@ -3,7 +3,7 @@
 
 # include <elle/serialize/Pointer.hh>
 
-# include <cryptography/Cipher.hh>
+# include <cryptography/Code.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/KeyPair.hh>
 
@@ -14,11 +14,11 @@ ELLE_SERIALIZE_SIMPLE(lune::Identity,
 {
   enforce(version == 0);
 
-  archive & elle::serialize::pointer(value.cipher);
+  archive & elle::serialize::pointer(value.code);
 
   // XXX[way of serializing the identity in its decrypted form:
   //     not very elegant: to improve!]
-  if (value.cipher != nullptr)
+  if (value.code != nullptr)
     archive & elle::serialize::alive_pointer(value._pair);
 
   archive & value._id;

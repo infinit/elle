@@ -53,7 +53,7 @@ namespace nucleus
           }
         case Strategy::value:
           {
-            ELLE_TRACE("decrypting the radix' cipher with the secret key");
+            ELLE_TRACE("decrypting the radix' code with the secret key");
 
             this->_value = new T{
               secret.decrypt<T>(radix.value())};
@@ -1124,7 +1124,7 @@ namespace nucleus
                   ELLE_ASSERT(this->_value != nullptr);
 
                   // Encrypt the value.
-                  cryptography::Cipher cipher{
+                  cryptography::Code code{
                     secret.encrypt(*this->_value)};
 
                   // Update the value state.
@@ -1133,7 +1133,7 @@ namespace nucleus
                   // Update the porcupine state.
                   this->_state = this->_value->state();
 
-                  return (Radix(cipher));
+                  return (Radix(code));
                 }
               case Strategy::block:
                 {

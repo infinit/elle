@@ -38,7 +38,7 @@ namespace nucleus
       Radix();
       /// Construct a value-based radix.
       explicit
-      Radix(cryptography::Cipher const& value);
+      Radix(cryptography::Code const& value);
       /// Construct a radix based on a single block whose address is _address_.
       explicit
       Radix(Address const& address);
@@ -57,8 +57,8 @@ namespace nucleus
       /// Helper method returning true if there is no content.
       elle::Boolean
       empty() const;
-      /// Return the cipher should the radix represent an embedded value.
-      cryptography::Cipher const&
+      /// Return the code should the radix represent an embedded value.
+      cryptography::Code const&
       value() const;
       /// Return the address of the block representing the content.
       Address const&
@@ -104,7 +104,7 @@ namespace nucleus
         ///
         /// Note that any block-embedeed value is encrypted for the authorized
         /// users' eyes only.
-        cryptography::Cipher* _cipher;
+        cryptography::Code* _code;
         /// Represent a single block referenced through an address.
         Address* _address;
         /// Represent the type-independent root of a hierarchy of blocks

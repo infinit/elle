@@ -2,7 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_ALL_HH
 
 # include <cryptography/bn.hh>
-# include <cryptography/Cipher.hh>
+# include <cryptography/cipher.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/cryptography.hh>

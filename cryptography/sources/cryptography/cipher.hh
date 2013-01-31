@@ -9,14 +9,6 @@ namespace infinit
 {
   namespace cryptography
   {
-    /*------.
-    | Types |
-    `------*/
-
-    /// Represent a symetrically ciphered text output from the
-    /// SecretKey methods.
-    typedef Output Cipher;
-
     /// Contain some constants related to cipher algorithms.
     namespace cipher
     {
@@ -44,7 +36,7 @@ namespace infinit
       | Functions |
       `----------*/
 
-      /// return the cipher function associated with the given algorithm name.
+      /// Return the cipher function associated with the given algorithm name.
       ::EVP_CIPHER const*
       resolve(Algorithm const name);
 
