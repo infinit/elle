@@ -136,6 +136,7 @@ namespace plasma
       // Start connect operation.
       _impl->socket.connect(*endpoint_iterator);
       //_impl->socket.non_blocking(true);
+      // Do not inherit file descriptor when forking.
       ::fcntl(_impl->socket.native_handle(), F_SETFD, 1);
     }
 
