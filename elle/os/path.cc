@@ -1,9 +1,10 @@
+#include "path.hh"
 
-#include <cassert>
+#include <elle/Exception.hh>
 
 #include <boost/filesystem.hpp>
 
-#include "path.hh"
+#include <cassert>
 
 namespace elle
 {
@@ -53,6 +54,14 @@ namespace elle
       void make_directory(std::string const& path)
       {
         fs::create_directory(path);
+      }
+
+      void remove_directory(std::string const& path)
+      {
+        if (!is_directory(path))
+          throw elle::Exception(path + " is not a directory");
+
+        fs::remove_all(path);
       }
 
       void make_path(std::string const& path)
