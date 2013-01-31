@@ -3,7 +3,6 @@
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
-# include <elle/io/Dumpable.hh>
 
 # include <map>
 
@@ -21,9 +20,9 @@ namespace elle
     ///
     /// This class thus holds the mappings between products and the
     /// functionoids capable of generating types.
-    template <typename P>
+    template <typename P,
+              typename... A>
     class Factory:
-      public elle::io::Dumpable,
       private boost::noncopyable
     {
       /*--------.
@@ -45,7 +44,7 @@ namespace elle
       public:
         virtual
         void*
-        allocate() const = 0;
+        allocate(A... arguments) const = 0;
       };
 
       /// This functionoid contains a method for generating a void object
@@ -61,7 +60,7 @@ namespace elle
         // methods
       public:
         void*
-        allocate() const;
+        allocate(A... arguments) const;
 
         // attributes
       private:
@@ -81,33 +80,23 @@ namespace elle
       `-------------*/
     public:
       Factory() = default;
-      Factory(Factory<P>&& other);
+      Factory(Factory<P, A...>&& other);
       ~Factory();
 
-      /*---------.
-      |  Methods |
-      `---------*/
+      /*--------.
+      | Methods |
+      `--------*/
     public:
       /// Create a mapping between the given product number and its type.
       template <typename T>
       void
       record(P const&);
       /// Return a freshly allocated object of the type associated with the
-      /// product number.
-      ///
-      /// XXX[to remove when load constructors will be used: instead add an
-      ///     archive attribute to this method]]
+      /// product number and the associated arguments.
       template <typename T>
       T*
-      allocate(P const&) const;
-
-      /*-----------.
-      | Interfaces |
-      `-----------*/
-    public:
-      // dumpable
-      Status
-      Dump(const Natural32 = 0) const;
+      allocate(P const& product,
+               A... arguments) const;
 
       /*-----------.
       | Attributes |
@@ -115,7 +104,6 @@ namespace elle
     private:
       ELLE_ATTRIBUTE(Container, container);
     };
-
   }
 }
 
