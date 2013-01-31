@@ -157,8 +157,8 @@ class Create(Page):
         if self.data['files_count'] > 1:
             sent +=  " and %i other files" % (self.data['files_count'] - 1)
 
+        # XXX: MAIL DESACTIVATED
         if not self.connected(recipient_id):
-            print("Sending mail.")
             if not invitee_email:
                 invitee_email = database.users().find_one({'_id': database.ObjectId(id_or_email)})['email']
 
@@ -173,7 +173,10 @@ class Create(Page):
                 'file_name': sent,
             }
 
-            mail.send(invitee_email, subject, content, reply_to=self.user['email'])
+            # XXX Remove invitation mail.
+            # XXX Check registration status too.
+            if not new_user:
+                mail.send(invitee_email, subject, content, reply_to=self.user['email'])
 
         self.notifier.notify_some(
             notifier.FILE_TRANSFER,
