@@ -23,9 +23,9 @@ NETWORK_CHANGED = 128
 class Notifier(object):
     def open(self):
         raise Exception('Not implemented')
-    def notify_one(self, notif_type, to, message):
+    def notify_one(self, notif_type, to, message, store):
         raise Exception('Not implemented')
-    def notify_some(self, notif_type, to, message):
+    def notify_some(self, notif_type, to, message, store):
         raise Exception('Not implemented')
     def send_notification(self, message):
         raise Exception('Not implemented')
@@ -46,7 +46,6 @@ class TrophoniusNotify(Notifier):
         #     msg = message + json.dumps(_dict, default = str)
         else:
             log.err('Notification was bad formed.')
-
         # XXX: Log to remove.
         print("{}\n".format(msg))
         self.conn.send("{}\n".format(msg))
@@ -66,7 +65,7 @@ class TrophoniusNotify(Notifier):
 
         return user_
 
-    def notify_one(self, notification_type, recipient_id, message):
+    def notify_one(self, notification_type, recipient_id, message, store = True):
         message['notification_type'] = notification_type;
 
         user_ = self._add_notif_to_db(recipient_id, message)
@@ -79,7 +78,7 @@ class TrophoniusNotify(Notifier):
             message.update({'to': str(recipient_id)})
             self.send_notification(message)
 
-    def notify_some(self, notification_type, recipients_id, message):
+    def notify_some(self, notification_type, recipients_id, message, store = True):
         if not isinstance(recipients_id, list):
             return self.notify_one(notification_type, recipients_id, message)
 
@@ -90,8 +89,9 @@ class TrophoniusNotify(Notifier):
 
         message.update({'notification_type' : notification_type})
 
-        for _id in recipients_id:
-            self._add_notif_to_db(_id, message)
+        if store:
+            for _id in recipients_id:
+                self._add_notif_to_db(_id, message)
 
         message.update({'to': recipients_id})
 

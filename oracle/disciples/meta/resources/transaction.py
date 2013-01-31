@@ -28,7 +28,7 @@ _status_to_string = dict();
 
 def TRANSACTION_STATUS(name, value):
     globals()[name.upper()] = value
-    _status_to_string[name.upper()] = str(name)
+    _status_to_string[value] = str(name)
 
 filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'transaction_status.hh.inc'))
 
@@ -84,7 +84,6 @@ class Create(Page):
         if status:
             return self.error(*status)
 
-        print("Recieving send file.")
         message = 'message' in self.data and self.data['message'] or ""
 
         id_or_email = self.data['recipient_id_or_email'].strip()
@@ -158,25 +157,25 @@ class Create(Page):
         if self.data['files_count'] > 1:
             sent +=  " and %i other files" % (self.data['files_count'] - 1)
 
-        if not self.connected(recipient_id):
-            print("Sending mail.")
-            if not invitee_email:
-                invitee_email = database.users().find_one({'_id': database.ObjectId(id_or_email)})['email']
+        # XXX: MAIL DESACTIVATED
+        # if not self.connected(recipient_id):
+        #     print("Sending mail.")
+        #     if not invitee_email:
+        #         invitee_email = database.users().find_one({'_id': database.ObjectId(id_or_email)})['email']
 
-            subject = mail.USER_INVITATION_SUBJECT % {
-                'inviter_mail': self.user['email'],
-            }
+        #     subject = mail.USER_INVITATION_SUBJECT % {
+        #         'inviter_mail': self.user['email'],
+        #     }
 
-            content = (new_user and mail.USER_INVITATION_CONTENT or mail.USER_NEW_FILE_CONTENT) % {
-                'inviter_mail': self.user['email'],
-                'inviter_fullname': self.user['fullname'],
-                'message': message,
-                'file_name': sent,
-            }
+        #     content = (new_user and mail.USER_INVITATION_CONTENT or mail.USER_NEW_FILE_CONTENT) % {
+        #         'inviter_mail': self.user['email'],
+        #         'inviter_fullname': self.user['fullname'],
+        #         'message': message,
+        #         'file_name': sent,
+        #     }
 
-            mail.send(invitee_email, subject, content, reply_to=self.user['email'])
+        #     mail.send(invitee_email, subject, content, reply_to=self.user['email'])
 
-        print("Notifying some.")
         self.notifier.notify_some(
             notifier.FILE_TRANSFER,
             [database.ObjectId(recipient_id), database.ObjectId(_id)], # sender and recipient.

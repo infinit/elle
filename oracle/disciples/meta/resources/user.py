@@ -438,6 +438,14 @@ class Disconnection(Page):
 
         self._user['connected'] = bool(self.data['full'])
 
+        if not self._user['connected']:
+            self.notifySwaggers(
+                notifier.USER_STATUS,
+                {
+                    'status': 0, #Disconnected.
+                }
+            )
+
         database.users().save(self._user)
 
         return self.success()

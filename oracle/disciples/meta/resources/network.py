@@ -140,7 +140,8 @@ class AddUser(_Page):
         self.notifier.notify_some(
             notifier.NETWORK_CHANGED,
             network["users"],
-            {"network_id": str(network['_id']), "what": NEW_USER});
+            {"network_id": str(network['_id']), "what": NEW_USER},
+            store = False);
 
         return self.success({
             'updated_network_id': str(network['_id']),
@@ -227,6 +228,7 @@ class Endpoints(_Page):
         POST
                {
                 'device_id':
+                'self_device_id':
                }
             -> {
                 'success': True,
@@ -236,11 +238,11 @@ class Endpoints(_Page):
     """
     __pattern__ = "/network/(.+)/endpoints"
 
-    def POST(self, _id):
+    def POST(self, network_id):
         self.requireLoggedIn()
 
         device_id = self.data['device_id']
-        network_id = _id
+        self_device_id = self.data['self_device_id']
 
         network = self.network(network_id)
 
@@ -248,8 +250,11 @@ class Endpoints(_Page):
             return self.forbidden("You cannot get endpoint for a user in a"
                                   "network that does not belong to you")
 
+        if not self_device_id in network['nodes'].keys():
+            return self.error(error.DEVICE_NOT_FOUND, "you are not not connected to this network")
+
         if not device_id in network['nodes'].keys():
-            return self.error(error.DEVICE_NOT_FOUND, "This user is not connected in this network")
+            return self.error(error.DEVICE_NOT_FOUND, "This user is not connected to this network")
 
         res = dict();
 
@@ -261,10 +266,21 @@ class Endpoints(_Page):
                 continue
             for a in user_node[addr_kind]:
                 if a and a["ip"] and a["port"]:
+                    print(addr_kind, a["ip"], a["port"])
                     addrs[addr_kind].append(
-                        a["ip"] + ':' + str(a["port"]))
-        res['externals'] = addrs['externals']
-        res['locals'] = addrs['locals']
+                        (a["ip"], str(a["port"])))
+
+        self_externals = []
+        for node in network['nodes'][self_device_id]['externals']:
+            self_externals.append(node['ip'])
+        print("self", self_externals);
+        exts = addrs['externals']
+        print("dst", exts)
+        exts = [p for p in exts if p[0] not in self_externals]
+        print("dst", exts)
+
+        res['externals'] = ["{}:{}".format(*a) for a in exts]
+        res['locals'] =  ["{}:{}".format(*a) for a in addrs['locals']]
 
         return self.success(res)
 
@@ -364,7 +380,8 @@ class Update(_Page):
         self.notifier.notify_some(
             notifier.NETWORK_CHANGED,
             to_save["users"],
-            {"network_id": _id, "what": UPDATE});
+            {"network_id": _id, "what": UPDATE},
+            store = False);
 
         return self.success({
             'updated_network_id': _id
@@ -471,17 +488,26 @@ class ConnectDevice(_Page):
             return self.error(error.DEVICE_NOT_IN_NETWORK)
 
         local_addresses = self.data.get('locals') # notice the 's'
+        print("L================")
+        print(local_addresses)
+        print("L================")
+
+
         if local_addresses is not None:
             # Generate a list of dictionary ip:port.
             # We can not take the local_addresses content directly:
             # it's not checked before this point. Therefor, it's insecure.
-            node['locals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in local_addresses]
+            node['locals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in local_addresses if v["ip"] != "0.0.0.0"]
         else:
             node['locals'] = []
 
         external_addresses = self.data.get('externals')
+        print("E================")
+        print(external_addresses)
+        print("E================")
+
         if external_addresses is not None:
-            node['externals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in external_addresses]
+            node['externals'] = [{"ip" : v["ip"], "port" : v["port"]} for v in external_addresses if v["ip"] != "0.0.0.0"]
         else:
             node['externals'] = []
 
@@ -612,7 +638,8 @@ class Delete(_Page):
         self.notifier.notify_some(
             notifier.NETWORK_CHANGED,
             users,
-            {"network_id": network_id, "what": DELETED})
+            {"network_id": network_id, "what": DELETED},
+            store = False)
 
         database.networks().find_and_modify(
             {
