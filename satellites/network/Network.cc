@@ -207,7 +207,8 @@ namespace satellite
           access.update(subject);
 
           // XXX
-          static cryptography::SecretKey secret_key{ACCESS_SECRET_KEY};
+          static cryptography::SecretKey secret_key(cryptography::cipher::Algorithm::aes256,
+                                                    ACCESS_SECRET_KEY);
 
           access_radix = new nucleus::proton::Radix{access.seal(secret_key)};
 
