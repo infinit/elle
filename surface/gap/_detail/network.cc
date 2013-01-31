@@ -359,6 +359,13 @@ namespace surface
               response.deleted_network_id
           );
         }
+
+      std::string network_path = common::infinit::network_directory(
+        this->_me._id, network_id);
+
+      if (elle::os::path::exists(network_path))
+        elle::os::path::remove_directory(network_path);
+
       return response.deleted_network_id;
     }
 
