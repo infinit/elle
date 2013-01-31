@@ -14,10 +14,6 @@ namespace infinit
       | Functions |
       `----------*/
 
-      /// Generate a random value for the given type.
-      template <typename T>
-      T
-      generate();
       /// Generate a random value. The following versions are provided:
       ///
       ///   generate<elle::Boolean>();
