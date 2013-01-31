@@ -9,7 +9,8 @@ namespace elle
   {
 
     class Duration;
-    template <typename T>
+    template <typename P,
+              typename... A>
     class Factory;
     class Parser;
     class Settings;

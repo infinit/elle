@@ -10,16 +10,17 @@ namespace elle
   namespace utility
   {
 //
-// ---------- generatoid ------------------------------------------------------
+// ---------- Generatoid ------------------------------------------------------
 //
 
     /*-------------.
     | Construction |
     `-------------*/
 
-    template <typename P>
+    template <typename P,
+              typename... A>
     template <typename T>
-    Factory<P>::Generatoid<T>::Generatoid(P const& product):
+    Factory<P, A...>::Generatoid<T>::Generatoid(P const& product):
       _product(product)
     {
     }
@@ -28,30 +29,33 @@ namespace elle
     | Methods |
     `--------*/
 
-    template <typename P>
+    template <typename P,
+              typename... A>
     template <typename T>
     void*
-    Factory<P>::Generatoid<T>::allocate() const
+    Factory<P, A...>::Generatoid<T>::allocate(A... arguments) const
     {
-      return (new T);
+      return (new T{arguments...});
     }
 
 //
-// ---------- factory ---------------------------------------------------------
+// ---------- Factory ---------------------------------------------------------
 //
 
     /*-------------.
     | Construction |
     `-------------*/
 
-    template <typename P>
-    Factory<P>::Factory(Factory<P>&& other):
+    template <typename P,
+              typename... A>
+    Factory<P, A...>::Factory(Factory<P, A...>&& other):
       _container(std::move(other._container))
     {
     }
 
-    template <typename P>
-    Factory<P>::~Factory()
+    template <typename P,
+              typename... A>
+    Factory<P, A...>::~Factory()
     {
       for (auto scoutor: this->_container)
         delete scoutor.second;
@@ -63,10 +67,11 @@ namespace elle
     | Methods |
     `--------*/
 
-    template <typename P>
+    template <typename P,
+              typename... A>
     template <typename T>
     void
-    Factory<P>::record(P const& product)
+    Factory<P, A...>::record(P const& product)
     {
       ELLE_LOG_COMPONENT("elle.utility.Factory");
       ELLE_TRACE_METHOD(product);
@@ -76,13 +81,15 @@ namespace elle
         throw Exception("unable to register an already registered product");
 
       // Create a generatoid.
-      auto generatoid = new Factory<P>::Generatoid<T>(product);
+      auto generatoid = new Factory<P, A...>::Generatoid<T>(product);
 
       ELLE_FINALLY_ACTION_DELETE(generatoid);
 
       // Insert the generator in the container.
-      auto result = this->_container.insert(
-        std::pair<P const, Factory<P>::Functionoid*>(product, generatoid));
+      auto result =
+        this->_container.insert(
+          std::pair<P const, Factory<P, A...>::Functionoid*>(product,
+                                                             generatoid));
 
       // Check if the insertion was successful.
       if (result.second == false)
@@ -91,15 +98,17 @@ namespace elle
       ELLE_FINALLY_ABORT(generatoid);
     }
 
-    template <typename P>
+    template <typename P,
+              typename... A>
     template <typename T>
     T*
-    Factory<P>::allocate(P const& product) const
+    Factory<P, A...>::allocate(P const& product,
+                               A... arguments) const
     {
       ELLE_LOG_COMPONENT("elle.utility.Factory");
       ELLE_TRACE_METHOD(product);
 
-      Factory<P>::Scoutor scoutor;
+      Factory<P, A...>::Scoutor scoutor;
 
       // Retrieve the associated generator.
       if ((scoutor = this->_container.find(product)) ==
@@ -108,26 +117,7 @@ namespace elle
                         "given product '%s'", product);
 
       // Allocate and return the instance.
-      return (reinterpret_cast<T*>(scoutor->second->allocate()));
-    }
-
-    /*---------.
-    | Dumpable |
-    `---------*/
-
-    template <typename P>
-    Status
-    Factory<P>::Dump(const Natural32 margin) const
-    {
-      String            alignment(margin, ' ');
-
-      std::cout << alignment << "[Factory]" << std::endl;
-
-      for (auto scoutor: this->_container)
-        std::cout << alignment << io::Dumpable::Shift
-                  << scoutor.first << std::endl;
-
-      return Status::Ok;
+      return (reinterpret_cast<T*>(scoutor->second->allocate(arguments...)));
     }
   }
 }
