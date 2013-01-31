@@ -311,38 +311,23 @@ add_dependencies(infinit hole dependencies)
 # The whole project is linked against these libraries
 
 set(INFINIT_LIBRARIES
-  etoile
-  nucleus
-  lune
-  nucleus # circular dependency with lune
-
-  nucleus
   ${HORIZON_LIB}
   etoile
-
-  nucleus # circular dependency with etoile
-  common
   protocol
   infinit
   hole
-
-  agent
   metal
-
-  cryptography
+  agent
   lune
+  nucleus
+  cryptography
+  common
   elle
   comet
   asio-udt
-
-  cryptography
   ${INFINIT_OPENSSL_LIBRARIES}
   ${Boost_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}
-
-  nucleus
-  elle
-  comet
 )
 
 message(STATUS "Infinit libraries:")
