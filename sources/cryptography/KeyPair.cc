@@ -1,7 +1,6 @@
 #include <cryptography/KeyPair.hh>
 #include <cryptography/PublicKey.hh>
 #include <cryptography/PrivateKey.hh>
-#include <cryptography/Cipher.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>

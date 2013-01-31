@@ -1,5 +1,4 @@
 #include <cryptography/rsa/PrivateKey.hh>
-#include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Cipher.hh>
@@ -507,9 +506,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(code);
 
-        return (evp::decrypt(code,
-                             this->_context_decrypt,
-                             ::EVP_PKEY_decrypt));
+        return (evp::asymmetric::decrypt(code,
+                                         this->_context_decrypt,
+                                         ::EVP_PKEY_decrypt));
       }
 
       Signature
@@ -517,9 +516,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(plain);
 
-        return (evp::sign(plain,
-                          this->_context_sign,
-                          ::EVP_PKEY_sign));
+        return (evp::asymmetric::sign(plain,
+                                      this->_context_sign,
+                                      ::EVP_PKEY_sign));
       }
 
       // Since the private key size limits the size of the data that can be
@@ -534,9 +533,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(plain);
 
-        return (evp::encrypt(plain,
-                             this->_context_encrypt,
-                             ::EVP_PKEY_sign));
+        return (evp::asymmetric::encrypt(plain,
+                                         this->_context_encrypt,
+                                         ::EVP_PKEY_sign));
       }
 
       /*----------.
