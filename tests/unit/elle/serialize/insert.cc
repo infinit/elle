@@ -15,14 +15,13 @@ int main()
 
   // This string has been generated as follows:
   //
-//       cryptography::SecretKey key(cryptography::cipher::Algorithm::aes256,
-//                                   "password");
-//       elle::io::Unique unique;
-//       to_string<OutputBase64Archive>(unique) << key;
-//       std::cout << unique << std::endl;
+//       cryptography::SecretKey _key(cryptography::cipher::Algorithm::aes256,
+//                                    "password");
+//       elle::io::Unique _unique;
+//       to_string<OutputBase64Archive>(_unique) << _key;
+//       std::cout << _unique << std::endl;
 
-  std::string reference("AAAAAAgAAAAAAAAAcGFzc3dvcmQ=");
-
+  std::string reference("AAAKAAAACAAAAAAAAABwYXNzd29yZAIA");
   cryptography::SecretKey key(cryptography::cipher::Algorithm::aes256,
                               "password");
   elle::io::Unique unique;
