@@ -992,6 +992,20 @@ extern "C"
     return 0;
   }
 
+  gap_Status
+  gap_transaction_sync(gap_State* state,
+                         char const* transaction_id)
+  {
+    assert(state != nullptr);
+    assert(transaction_id != nullptr);
+    gap_Status ret = gap_ok;
+    try
+      {
+        __TO_CPP(state)->transaction_sync(transaction_id);
+      }
+    CATCH_ALL(transaction_update);
+    return ret;
+  }
   // - Notifications -----------------------------------------------------------
 
   gap_Status

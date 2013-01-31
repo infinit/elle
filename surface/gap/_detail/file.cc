@@ -105,14 +105,9 @@ namespace surface
                                       bool recursive)
     {
       FileInfos const& infos = this->file_infos(abspath);
-      auto it = this->networks().find(infos.network_id);
-
-      if (it == this->networks().end())
-        throw Exception(gap_error, "Wrong network id");
+      Network const& network = this->network(infos.network_id);
 
       this->_wait_portal(infos.network_id);
-
-      Network* network = it->second;
 
       std::string const& access_binary = common::infinit::binary_path("8access");
 
@@ -120,7 +115,7 @@ namespace surface
       arguments << "--user" << this->_me._id.c_str()
                 << "--type" << "user"
                 << "--grant"
-                << "--network" << network->_id.c_str()
+                << "--network" << network._id.c_str()
                 << "--path" << ("/" + infos.relative_path).c_str()
                 << "--identity" << this->user(user_id).public_key.c_str()
                 ;

@@ -139,8 +139,17 @@ namespace surface
 
       if (tr.status == gap_transaction_status_finished)
         return 1.0f;
+      else if (tr.status == gap_transaction_status_canceled)
+        return 0.0f;
       else if (tr.status != gap_transaction_status_started)
         return 0.0f;
+      else if (!this->infinit_instance_manager().has_network(tr.network_id))
+        {
+          throw Exception{
+              gap_network_not_found,
+              "Cannot launch 8progress without infinit instance"
+          };
+        }
 
       std::string const& progress_binary = common::infinit::binary_path("8progress");
       QStringList arguments;
@@ -632,12 +641,29 @@ namespace surface
     State::transaction(std::string const& id)
     {
       auto it = this->transactions().find(id);
-      if (it == this->transactions().end())
-        throw Exception{
-            gap_error,
-            "Cannot find any transaction for id '" + id + "'"
-        };
-      return it->second;
+      if (it != this->transactions().end())
+        return it->second;
+      return this->transaction_sync(id);
+    }
+
+    Transaction const&
+    State::transaction_sync(std::string const& id)
+    {
+      ELLE_TRACE("Synching transaction %s from meta", id);
+      try
+        {
+          auto transaction = this->_meta->transaction(id);
+          ELLE_DEBUG("Synched transaction %s has status %d",
+                     id, transaction.status);
+          return ((*this->_transactions)[id] = transaction);
+        }
+      catch (std::runtime_error const& e)
+        {
+          throw Exception{
+              gap_transaction_doesnt_exist,
+              e.what()
+          };
+        }
     }
 
     size_t

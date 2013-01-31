@@ -1,58 +1,43 @@
-#include <cstdlib>
-#include <fstream>
-#include <sstream>
-#include <pwd.h>
-#include <stdexcept>
-#include <sys/types.h>
-#include <thread>
-#include <unistd.h>
-
-#include <openssl/sha.h>
-
-#include <QString>
-#include <QByteArray>
-#include <QLocalSocket>
-#include <QProcess>
-
-#include <elle/format/json.hh>
-#include <elle/log.hh>
-#include <elle/log/TextLogger.hh>
-#include <elle/network/Host.hh>
-#include <elle/os/path.hh>
-#include <elle/os/getenv.hh>
-#include <elle/Passport.hh>
-#include <elle/serialize/HexadecimalArchive.hh>
-#include <elle/utility/Time.hh>
-#include <elle/io/Path.hh>
-#include <elle/io/Piece.hh>
-#include <elle/HttpClient.hh>
-#include <elle/CrashReporter.hh>
-
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/sleep.hh>
-#include <protocol/Serializer.hh>
-#include <protocol/ChanneledStream.hh>
-#include <etoile/portal/Portal.hh>
+#include "State.hh"
+#include "_detail/Process.hh"
+#include "MetricReporter.hh"
 
 #include <common/common.hh>
 
-#include <lune/Dictionary.hh>
-#include <lune/Identity.hh>
-#include <lune/Lune.hh>
-#include <lune/Phrase.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/ChanneledStream.hh>
 
-#include <nucleus/neutron/Permissions.hh>
+#include <etoile/portal/Portal.hh>
+
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/sleep.hh>
+
+#include <elle/log.hh>
+#include <elle/log/TextLogger.hh>
+#include <elle/os/path.hh>
+#include <elle/os/getenv.hh>
+//#include <elle/serialize/HexadecimalArchive.hh>
+//#include <elle/utility/Time.hh>
+//#include <elle/io/Path.hh>
+//#include <elle/io/Piece.hh>
+//#include <elle/HttpClient.hh>
+//#include <elle/CrashReporter.hh>
+//
+//
+//
+//#include <lune/Dictionary.hh>
+//#include <lune/Identity.hh>
+//#include <lune/Lune.hh>
+//#include <lune/Phrase.hh>
+//
+//#include <nucleus/neutron/Permissions.hh>
 
 #include <elle/idiom/Close.hh>
-#include <surface/gap/MetricReporter.hh>
-#include "State.hh"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
-#include <signal.h>
-
-#include "_detail/Process.hh"
+#include <fstream>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap.State");
 
@@ -61,7 +46,6 @@ namespace surface
   namespace gap
   {
     namespace fs = boost::filesystem;
-    namespace json = elle::format::json;
 
     // - Exception ------------------------------------------------------------
     Exception::Exception(gap_Status code, std::string const& msg)
@@ -72,11 +56,8 @@ namespace surface
     // - State ----------------------------------------------------------------
     State::State()
       : _meta{new plasma::meta::Client{
-        common::meta::host(),
-          common::meta::port(),
-          true,
-          }
-        }
+          common::meta::host(), common::meta::port(), true,
+        }}
       , _trophonius{nullptr}
       , _users{}
       , _logged{false}
@@ -177,9 +158,6 @@ namespace surface
     State::~State()
     {
       ELLE_WARN("Destroying state.");
-      for (auto& it: this->_networks)
-        delete it.second;
-      this->_networks.clear();
       this->logout();
     }
 

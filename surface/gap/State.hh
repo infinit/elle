@@ -202,6 +202,10 @@ namespace surface
       Transaction const&
       transaction(std::string const& transaction_id);
 
+      /// @brief Fetch transaction from server (and update it).
+      Transaction const&
+      transaction_sync(std::string const& id);
+
       /// @brief Returns a floating number in [0.0f, 1.0f]
       float
       transaction_progress(std::string const& transaction_id);
@@ -380,7 +384,8 @@ namespace surface
     /// Manipulate networks
     ///
     private:
-      std::map<std::string, Network*>       _networks;
+      typedef std::unique_ptr<Network> NetworkPtr;
+      std::map<std::string, NetworkPtr>     _networks;
       bool                                  _networks_dirty;
       typedef std::unique_ptr<InfinitInstanceManager> InfinitInstanceManagerPtr;
       InfinitInstanceManagerPtr             _infinit_instance_manager;
@@ -395,7 +400,12 @@ namespace surface
 
     public:
       /// Retrieve all networks.
-      std::map<std::string, Network*> const& networks();
+      std::map<std::string, NetworkPtr> const&
+      networks();
+
+      /// Retrieve a network.
+      Network&
+      network(std::string const& id);
 
       /// Create a new network.
       std::string
@@ -409,10 +419,6 @@ namespace surface
       std::string
       delete_network(std::string const& name,
                      bool force = false);
-
-      /// Retrieve a network.
-      Network const&
-      network(std::string const& id);
 
       /// Add a user to a network with its mail or id.
       void

@@ -339,13 +339,7 @@ namespace surface
     {
       ELLE_TRACE("deleting network %s", network_id);
 
-      auto const& net = this->_networks.find(network_id);
-
-      if (net != this->_networks.end())
-      {
-        delete net->second;
-        this->_networks.erase(net);
-      }
+      this->_networks[network_id].reset();
 
       metrics::google::server().store("network:delete:attempt");
 
@@ -368,7 +362,7 @@ namespace surface
       return response.deleted_network_id;
     }
 
-    std::map<std::string, Network*> const&
+    std::map<std::string, State::NetworkPtr> const&
     State::networks()
     {
       if (this->_networks_dirty)
@@ -377,24 +371,30 @@ namespace surface
           for (auto const& network_id: response.networks)
             {
               auto response = this->_meta->network(network_id);
-              if (this->_networks.find(network_id) != this->_networks.end())
-                  delete this->_networks[network_id];
-              this->_networks[network_id] = new Network{response};
+              this->_networks[network_id].reset(new Network{response});
             }
           this->_networks_dirty = false;
         }
       return this->_networks;
     }
 
-    Network const&
+    Network&
     State::network(std::string const& id)
     {
       auto it = this->networks().find(id);
-      if (it == this->networks().end())
-        throw Exception{
-            gap_error,
-            "Cannot find any network for id '" + id + "'"
-        };
+      if (it == this->networks().end() || it->second == nullptr)
+        {
+          try
+            {
+              auto response = this->_meta->network(id);
+              this->_networks[id].reset(new Network{response});
+              return *(this->_networks[id]);
+            }
+          catch (std::runtime_error const& e)
+            {
+              throw Exception{gap_network_not_found, e.what()};
+            }
+        }
       return *(it->second);
     }
 
@@ -412,10 +412,7 @@ namespace surface
 
         ELLE_DEBUG("adding user '%s'", user);
 
-        auto it = this->networks().find(network_id);
-        ELLE_ASSERT(it != this->networks().end());
-        Network* network = it->second;
-        ELLE_ASSERT(network != nullptr);
+        Network& network = this->network(network_id);
 
         ELLE_DEBUG("locating 8 group");
         std::string const& group_binary = common::infinit::binary_path("8group");
@@ -424,7 +421,7 @@ namespace surface
         arguments << "--user" << this->_me._id.c_str()
                   << "--type" << "user"
                   << "--add"
-                  << "--network" << network->_id.c_str()
+                  << "--network" << network._id.c_str()
                   << "--identity" << this->user(user_id).public_key.c_str()
           ;
         ELLE_DEBUG("LAUNCH: %s %s",
@@ -440,10 +437,10 @@ namespace surface
         ELLE_DEBUG("set user in network in meta.");
 
         auto res = this->_meta->network_add_user(network_id, user_id);
-        if (std::find(network->users.begin(),
-                      network->users.end(),
-                      user_id) == network->users.end())
-          network->users.push_back(user_id);
+        if (std::find(network.users.begin(),
+                      network.users.end(),
+                      user_id) == network.users.end())
+          network.users.push_back(user_id);
       }
       CATCH_FAILURE_TO_METRICS("network:user:add");
 

@@ -230,6 +230,11 @@ extern "C" {
   gap_transaction_progress(gap_State* state,
                            char const* transaction_id);
 
+  /// Force transaction to be fetched again from server.
+  gap_Status
+  gap_transaction_sync(gap_State* state,
+                       char const* transaction_id);
+
   /// - Message ---------------------------------------------------------------
   gap_Status
   gap_message(gap_State* state,
