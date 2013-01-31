@@ -87,7 +87,7 @@ namespace elle
     ELLE_ATTRIBUTE_R(cryptography::PublicKey, K);
     cryptography::PrivateKey*   k;
 
-    cryptography::Cipher*       cipher;
+    cryptography::Code*       code;
   };
 
 }
