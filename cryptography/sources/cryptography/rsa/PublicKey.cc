@@ -1,7 +1,6 @@
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/Digest.hh>
-#include <cryptography/SecretKey.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
@@ -341,9 +340,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(plain);
 
-        return (evp::encrypt(plain,
-                             this->_context_encrypt,
-                             ::EVP_PKEY_encrypt));
+        return (evp::asymmetric::encrypt(plain,
+                                         this->_context_encrypt,
+                                         ::EVP_PKEY_encrypt));
       }
 
       elle::Boolean
@@ -352,10 +351,10 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(signature, plain);
 
-        return (evp::verify(signature,
-                            plain,
-                            this->_context_verify,
-                            ::EVP_PKEY_verify));
+        return (evp::asymmetric::verify(signature,
+                                        plain,
+                                        this->_context_verify,
+                                        ::EVP_PKEY_verify));
       }
 
       Clear
@@ -363,9 +362,9 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(code);
 
-        return (evp::decrypt(code,
-                             this->_context_decrypt,
-                             ::EVP_PKEY_verify_recover));
+        return (evp::asymmetric::decrypt(code,
+                                         this->_context_decrypt,
+                                         ::EVP_PKEY_verify_recover));
       }
 
       /*----------.

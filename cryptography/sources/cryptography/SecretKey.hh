@@ -11,7 +11,7 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/oneway.hh>
-# include <cryptography/Cipher.hh>
+# include <cryptography/cipher.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -25,18 +25,6 @@ namespace infinit
       public elle::concept::MakeUniquable<SecretKey>,
       public elle::Printable
     {
-      /*----------.
-      | Constants |
-      `----------*/
-    public:
-      struct Constants
-      {
-        /// Define the magic which is embedded in every encrypted
-        /// text so for the decryption process to know that the text
-        /// has been salted.
-        static elle::Character const magic[];
-      };
-
       /*---------------.
       | Static Methods |
       `---------------*/
@@ -76,38 +64,37 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-      /// Encrypt the given plain text and return a cipher text.
-      Cipher
+      /// Encrypt the given plain text and return a ciphered text i.e
+      /// a code.
+      Code
       encrypt(Plain const& plain) const;
-      /// Encrypt any serializable object and return a cipher text
+      /// Encrypt any serializable object and return a ciphered text
       /// of its archive.
       template <typename T>
-      Cipher
+      Code
       encrypt(T const& value) const;
-      /// Decrypt the given cipher and return a clear text i.e the
+      /// Decrypt the given code and return a clear text i.e the
       /// equivalent of the plain text provided as input to the
       /// encryption process.
       Clear
-      decrypt(Cipher const& cipher) const;
-      /// Decrypt a cipher and return a deserializable object.
+      decrypt(Code const& code) const;
+      /// Decrypt a code and return a deserializable object.
       template <typename T>
       T
-      decrypt(Cipher const& cipher) const;
+      decrypt(Code const& code) const;
 
       /// XXX[temporary until the nucleus node factory is set to handle this
       //      case]
       template <typename T>
       void
-      decrypt(Cipher const& cipher,
+      decrypt(Code const& code,
               T& object) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-        ELLE_TRACE_METHOD(cipher);
+        ELLE_TRACE_METHOD(code);
 
-        // Decrypt the cipher leading to a clear containing an archive.
-        Clear clear{this->decrypt(cipher)};
+        Clear clear{this->decrypt(code)};
 
-        // Deserialize the object from the clear.
         clear.buffer().reader() >> object;
       }
 
