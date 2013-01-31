@@ -13,9 +13,6 @@
 # include <elle/concept/Uniquable.hh>
 # include <elle/utility/fwd.hh>
 
-# include <openssl/bn.h>
-# include <openssl/evp.h>
-
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
 

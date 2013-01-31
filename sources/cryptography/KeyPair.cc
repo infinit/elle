@@ -14,11 +14,6 @@
 
 #include <elle/log.hh>
 
-#include <openssl/engine.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
-#include <fcntl.h>
-
 ELLE_LOG_COMPONENT("infinit.cryptography.KeyPair");
 
 namespace infinit
