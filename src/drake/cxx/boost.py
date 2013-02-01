@@ -71,6 +71,8 @@ class Boost(drake.Configuration):
             self.cfg_regex.lib('boost_regex')
             self.cfg_program_options = Config()
             self.cfg_program_options.lib('boost_program_options')
+            self.cfg_python = Config()
+            self.cfg_python.lib('boost_python-3.2')
             return
 
         raise Exception('no matching boost for the requested version (%s) in %s. Found versions: %s.' % \
@@ -111,6 +113,10 @@ class Boost(drake.Configuration):
     def config_regex(self):
 
         return self.cfg_regex
+
+    def config_python(self):
+
+        return self.cfg_python
 
     def __repr__(self):
         return 'Boost(prefix = %s)' % repr(self.__prefix)
