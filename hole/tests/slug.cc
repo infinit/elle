@@ -52,23 +52,27 @@ static std::vector<elle::network::Locus> members()
   return res;
 }
 
-cryptography::KeyPair keys(cryptography::KeyPair::generate(1024));
+cryptography::KeyPair keys =
+  cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 elle::Authority authority(keys);
-cryptography::KeyPair user_keys(cryptography::KeyPair::generate(1024));
+cryptography::KeyPair user_keys =
+  cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 elle::Passport passport("n'importe quoi", "n'importe quoi",
                         user_keys.K(), authority);
 
 class Slug: public hole::implementations::slug::Implementation
 {
 public:
-  Slug(elle::Passport const& passport = ::passport,
+  Slug(nucleus::proton::Network const& network,
+       elle::Passport const& passport = ::passport,
        elle::Authority const& authority = ::authority,
        std::vector<elle::network::Locus> const& members = ::members())
     : hole::implementations::slug::Implementation(
-      _storage, passport, authority, members, 12345,
+      _storage, passport, authority,
+      reactor::network::Protocol::udt, members, 12345,
       boost::posix_time::seconds(1))
     , _tmp()
-    , _storage(_tmp.path().native())
+    , _storage(network, _tmp.path().native())
   {}
 
 private:
@@ -79,15 +83,15 @@ private:
 void
 test()
 {
-  Slug s1;
-  s1.join();
-  Slug s2;
-  s2.join();
-
   nucleus::proton::Network network("namespace");
 
-  cryptography::KeyPair user_keys(
-    cryptography::KeyPair::generate(1024));
+  Slug s1(network);
+  s1.join();
+  Slug s2(network);
+  s2.join();
+
+  cryptography::KeyPair user_keys =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
   nucleus::neutron::Object block(network, user_keys.K(),
                                  nucleus::neutron::Genre::file);
@@ -115,15 +119,15 @@ test()
 void
 test_separate_missing()
 {
-  Slug s1(passport, authority, std::vector<elle::network::Locus>());
+  Slug s1(network, passport, authority, std::vector<elle::network::Locus>());
   s1.join();
-  Slug s2(passport, authority, std::vector<elle::network::Locus>());
+  Slug s2(network, passport, authority, std::vector<elle::network::Locus>());
   s2.join();
 
   nucleus::proton::Network network("namespace");
 
-  cryptography::KeyPair user_keys(
-    cryptography::KeyPair::generate(1024));
+  cryptography::KeyPair user_keys =
+    cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
 
   nucleus::neutron::Object block(network, user_keys.K(),
                                  nucleus::neutron::Genre::file);
