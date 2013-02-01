@@ -104,7 +104,6 @@ def configure(cxx_toolkit, cxx_config):
     'io/Unique.hh',
     'io/fwd.hh',
     'log.hh',
-    'log.hxx',
     'log/Logger.cc',
     'log/Logger.hh',
     'log/Logger.hxx',
