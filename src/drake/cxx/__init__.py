@@ -370,7 +370,13 @@ class GccToolkit(Toolkit):
     def libname_dyn(self, cfg, path):
 
         path = Path(path)
-        return path.dirname() / ('lib%s.so' % str(path.basename()))
+        if self.os == drake.os.linux:
+            ext = 'so'
+        elif self.os == drake.os.macos:
+            ext = 'dylib'
+        else:
+            assert False
+        return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
 
     def libname_module(self, cfg, path):
 
