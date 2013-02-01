@@ -241,6 +241,9 @@ class GccToolkit(Toolkit):
         os = drake.os.linux
     elif sys.platform.startswith('darwin'):
         os = drake.os.macos
+    else:
+        raise Exception('unrecognized platform for a GCC toolkit: %s' % \
+                            sys.platform)
 
     def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
 
