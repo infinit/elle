@@ -10,6 +10,7 @@ import drake
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 
 _OS = __import__('os')
@@ -235,7 +236,11 @@ def concatenate(chunks, prefix = ''):
 class GccToolkit(Toolkit):
 
     arch = arch.x86
-    os = os.linux
+    os = None
+    if sys.platform.startswith('linux'):
+        os = drake.os.linux
+    elif sys.platform.startswith('darwin'):
+        os = drake.os.macos
 
     def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
 
