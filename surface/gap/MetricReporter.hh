@@ -8,6 +8,7 @@
 # include <queue>
 # include <list>
 # include <fstream>
+# include <mutex>
 
 namespace surface
 {
@@ -78,6 +79,7 @@ namespace surface
       elle::utility::Time _last_sent;
       std::string _tag;
       std::string _user_id;
+      std::mutex _store_mutex;
     };
 
     class ServerReporter:

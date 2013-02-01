@@ -53,6 +53,7 @@ namespace surface
     void
     MetricReporter::store(std::string const& caller, Metric const& metric)
     {
+      this->_store_mutex.lock();
       ELLE_TRACE("Storing new metric %s", caller);
 
       Metric& m = this->_push(metric);
@@ -63,6 +64,8 @@ namespace surface
       m.push_front(std::pair<std::string, std::string>{
                      this->_tag,
                      caller});
+
+      this->_store_mutex.unlock();
 
       // Suxx
       if (this->_requests.size() > 10)
@@ -108,10 +111,10 @@ namespace surface
       ELLE_TRACE("Flushing the metrics to server");
 
       while (this->_requests.size())
-      {
-        this->_send_data(this->_requests.front());
-        this->_requests.pop();
-      }
+        {
+          this->_send_data(this->_requests.front());
+          this->_requests.pop();
+        }
     }
 
     ServerReporter::ServerReporter(std::string const& tag,
@@ -130,6 +133,7 @@ namespace surface
     ServerReporter::_flush()
     {
       ELLE_TRACE("server flushing");
+      this->_store_mutex.lock();
       try
       {
         // We reenable the connection. So let push all stored metrics.
@@ -140,6 +144,8 @@ namespace surface
           // Pop if no throw.
           this->_fallback_storage.pop();
         }
+
+        MetricReporter::_flush();
       }
       catch(...) // Should be HTTP or Socket exception.
       {
@@ -147,8 +153,7 @@ namespace surface
         // Can't do anything in that case, just wait for the next flush to
         // try to reconnect.
       }
-
-      MetricReporter::_flush();
+      this->_store_mutex.unlock();
     }
 
     ServerReporter::~ServerReporter()
@@ -162,7 +167,13 @@ namespace surface
       auto request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
+#ifdef INFINIT_LINUX
         .user_agent("Infinit/1.0 (Linux x86_64)")
+#elif INFINIT_MACOSX
+        .user_agent("Infinit/1.0 (MacOSX 10.7)")
+#else
+# warning "machine not supported"
+#endif
         .post_field("dh", "infinit.io")      // Test.
         .post_field("av", "1.0.0")           // Type of interraction.
         .post_field("an", "Infinit")         // Application name.
@@ -188,7 +199,7 @@ namespace surface
       {
         request.fire();
       }
-      catch(...) // Should be HTTP or Socket exception.
+      catch (...) // Should be HTTP or Socket exception.
       {
         //XXX: missing some opti here.
 
