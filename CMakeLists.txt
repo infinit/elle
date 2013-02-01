@@ -38,7 +38,8 @@ set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 if(APPLE)
   set(INFINIT_MACOSX TRUE)
   set(INFINIT_PLATFORM_NO_ARCH macosx)
-  add_definitions(-DOSX) # UDT SUCKS ASS
+
+  add_definitions(-DHAVE_STATFS)
 elseif(WIN32)
   set(INFINIT_WINDOWS TRUE)
   set(INFINIT_PLATFORM_NO_ARCH windows)
@@ -46,6 +47,8 @@ elseif(UNIX)
   set(INFINIT_LINUX TRUE)
   set(INFINIT_PLATFORM_NO_ARCH linux)
 endif()
+
+add_definitions(-DHAVE_SETXATTR)
 
 # - Infinit architecture ------------------------------------------------------
 #
@@ -356,9 +359,3 @@ target_link_libraries(8infinit LINK_PRIVATE
 	${INFINIT_LIBRARIES}
 )
 add_dependencies(8infinit dependencies)
-
-## configuration --------------------------------------------------------------
-configure_file(
-	"${CMAKE_SOURCE_DIR}/config.hh.cmake"
-	"${CMAKE_SOURCE_DIR}/config.hh"
-)
