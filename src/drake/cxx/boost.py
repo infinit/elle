@@ -43,7 +43,8 @@ class Boost(drake.Configuration):
             # Create basic configuration for version checking.
             cfg = Config()
             cfg.add_system_include_path('%s/include' % path)
-            cfg.lib_path('%s/lib' % path)
+            lib_path = path / 'lib'
+            cfg.lib_path(lib_path)
             # Check the version.
             version_eff = cxx_toolkit.preprocess('#include <boost/version.hpp>\nBOOST_VERSION',
                                                  config = cfg)
@@ -56,27 +57,35 @@ class Boost(drake.Configuration):
             self.__prefix = path
             self.cfg = cfg
             self.cfg_test = Config()
-            self.cfg_test.lib('boost_unit_test_framework')
+            self.cfg_test.lib(self.__find_lib('boost_unit_test_framework', lib_path, cxx_toolkit))
             self.cfg_thread = Config()
-            self.cfg_thread.lib('boost_thread')
+            self.cfg_thread.lib(self.__find_lib('boost_thread', lib_path, cxx_toolkit))
             self.cfg_system = Config()
-            self.cfg_system.lib('boost_system')
+            self.cfg_system.lib(self.__find_lib('boost_system', lib_path, cxx_toolkit))
             self.cfg_filesystem = Config()
-            self.cfg_filesystem.lib('boost_filesystem')
+            self.cfg_filesystem.lib(self.__find_lib('boost_filesystem', lib_path, cxx_toolkit))
             self.cfg_signals = Config()
-            self.cfg_signals.lib('boost_signals')
+            self.cfg_signals.lib(self.__find_lib('boost_signals', lib_path, cxx_toolkit))
             self.cfg_date = Config()
-            self.cfg_date.lib('boost_date_time')
+            self.cfg_date.lib(self.__find_lib('boost_date_time', lib_path, cxx_toolkit))
             self.cfg_regex = Config()
-            self.cfg_regex.lib('boost_regex')
+            self.cfg_regex.lib(self.__find_lib('boost_regex', lib_path, cxx_toolkit))
             self.cfg_program_options = Config()
-            self.cfg_program_options.lib('boost_program_options')
+            self.cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
             self.cfg_python = Config()
-            self.cfg_python.lib('boost_python-3.2')
+            self.cfg_python.lib(self.__find_lib('boost_python-3.2', lib_path, cxx_toolkit))
             return
 
         raise Exception('no matching boost for the requested version (%s) in %s. Found versions: %s.' % \
                             (version, self._format_search(test), ', '.join(map(str, miss))))
+
+    def __find_lib(self, lib, lib_path, cxx_toolkit):
+        for suffix in ['-mt', '']:
+            libname = lib + suffix
+            test = lib_path / cxx_toolkit.libname_dyn(self.cfg, libname)
+            if test.exists():
+                return test
+        raise Exception('Unable to find boost library %s in %s' % (lib, lib_path))
 
     def config(self):
 
