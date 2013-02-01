@@ -61,8 +61,6 @@ namespace infinit
     void
     require()
     {
-      ELLE_DEBUG_FUNCTION("");
-
       static Initializer initialized;
     }
   }

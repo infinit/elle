@@ -165,8 +165,6 @@ namespace infinit
       elle::utility::Factory<Cryptosystem> const&
       factory()
       {
-        ELLE_DEBUG_FUNCTION("");
-
         static elle::utility::Factory<Cryptosystem> factory = _factory();
 
         return (factory);
