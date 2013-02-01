@@ -73,7 +73,11 @@ class Boost(drake.Configuration):
             self.cfg_program_options = Config()
             self.cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
             self.cfg_python = Config()
-            self.cfg_python.lib(self.__find_lib('boost_python-3.2', lib_path, cxx_toolkit))
+            # FIXME: do something smart here
+            try:
+                self.cfg_python.lib(self.__find_lib('boost_python-3.2', lib_path, cxx_toolkit))
+            except:
+                self.cfg_python.lib(self.__find_lib('boost_python3', lib_path, cxx_toolkit))
             return
 
         raise Exception('no matching boost for the requested version (%s) in %s. Found versions: %s.' % \
