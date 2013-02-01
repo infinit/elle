@@ -106,7 +106,6 @@ def configure(cxx_toolkit, cxx_config):
     'log.hh',
     'log/Logger.cc',
     'log/Logger.hh',
-    'log/Logger.hxx',
     'log/Send.cc',
     'log/Send.hh',
     'log/Send.hxx',

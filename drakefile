@@ -1,12 +1,37 @@
 import drake.cxx
 import drake.cxx.boost
 import drake.cxx.qt
+import drake
 
 def configure(cxx_toolkit, cxx_config, enable_horizon = True,
               optimization = True, prefix = '/usr', boost = None, qt = None):
 
   prefix = drake.Path(prefix)
 
+  # OS
+  if cxx_toolkit.os == drake.os.linux:
+    cxx_config.define('INFINIT_LINUX')
+  elif cxx_toolkit.os == drake.os.macos:
+    cxx_config.define('INFINIT_MACOSX')
+  elif cxx_toolkit.os == drake.os.windows:
+    cxx_config.define('INFINIT_WINDOWS')
+  else:
+    raise Exception('unsupported os')
+
+  cxx_config.define('HAVE_SETXATTR')
+
+  if cxx_toolkit.os == drake.os.macos:
+    cxx_config.define('HAVE_STATFS')
+
+  # Version
+  version_major = '0'
+  version_minor = '1'
+
+  cxx_config.define('INFINIT_VERSION_MAJOR', version_major)
+  cxx_config.define('INFINIT_VERSION_MINOR', version_minor)
+  cxx_config.define('INFINIT_VERSION', '%s.%s' % (version_major, version_minor))
+
+  # UDT
   asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
   udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
@@ -280,7 +305,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     'cryptography/sources/cryptography/Digest.hh',
     'cryptography/sources/cryptography/Input.cc',
     'cryptography/sources/cryptography/Input.hh',
-    'cryptography/sources/cryptography/Input.hxx',
     'cryptography/sources/cryptography/KeyPair.cc',
     'cryptography/sources/cryptography/KeyPair.hh',
     'cryptography/sources/cryptography/KeyPair.hxx',
@@ -616,31 +640,33 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
       'horizon/Handle.hh',
       'horizon/Horizon.cc',
       'horizon/Horizon.hh',
-      'horizon/linux/FUSE.cc',
-      'horizon/linux/FUSE.hh',
-      'horizon/linux/FUker.cc',
-      'horizon/linux/FUker.hh',
-      'horizon/linux/Linux.cc',
-      'horizon/linux/Linux.hh',
-      # 'horizon/macosx/MacOSX.cc',
-      # 'horizon/macosx/FUker.hh',
-      # 'horizon/macosx/FUSE.hh',
-      # 'horizon/macosx/Janitor.cc',
-      # 'horizon/macosx/FUker.cc',
-      # 'horizon/macosx/Handle.cc',
-      # 'horizon/macosx/FUSE.cc',
-      # 'horizon/macosx/Crux.hh',
-      # 'horizon/macosx/Janitor.hh',
-      # 'horizon/macosx/Crux.cc',
-      # 'horizon/macosx/Crib.hh',
-      # 'horizon/macosx/MacOSX.hh',
-      # 'horizon/macosx/Handle.hh',
-      # 'horizon/macosx/Crib.cc',
-      # 'horizon/macosx/Janitor.hxx',
-      # 'horizon/windows/Windows.cc',
-      # 'horizon/windows/Windows.hh',
       'horizon/operations.hh',
       )
+    if cxx_toolkit.os == drake.os.linux:
+      horizon_sources += drake.nodes(
+        'horizon/linux/FUSE.cc',
+        'horizon/linux/FUSE.hh',
+        'horizon/linux/FUker.cc',
+        'horizon/linux/FUker.hh',
+        'horizon/linux/Linux.cc',
+        'horizon/linux/Linux.hh',
+        'horizon/linux/fwd.hh',
+        )
+    elif cxx_toolkit.os == drake.os.macos:
+      horizon_sources += drake.nodes(
+        'horizon/macosx/Crux.hh',
+        'horizon/macosx/Crux.cc',
+        'horizon/macosx/FUSE.hh',
+        'horizon/macosx/FUSE.cc',
+        'horizon/macosx/FUker.hh',
+        'horizon/macosx/FUker.cc',
+        'horizon/macosx/MacOSX.hh',
+        'horizon/macosx/MacOSX.cc',
+        'horizon/macosx/fwd.hh',
+        )
+    else:
+      raise Exception('unsupport os')
+
     horizon_lib = drake.cxx.DynLib('lib/horizon', horizon_sources,
                                    cxx_toolkit, cxx_config)
     horizon_slib = drake.cxx.StaticLib('lib/horizon', horizon_sources,
