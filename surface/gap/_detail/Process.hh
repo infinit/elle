@@ -39,6 +39,15 @@ namespace surface
         ELLE_LOG("Creating long operation: %s", this->name);
       }
 
+      virtual ~Process()
+      {
+        ELLE_LOG_COMPONENT("infinit.surface.gap.State");
+        ELLE_LOG("Destroying long operation: %s", this->name);
+
+        if (this->thread.joinable())
+          this->thread.join();
+      }
+
     private:
       void _run()
       {
@@ -51,6 +60,7 @@ namespace surface
           }
         catch (...)
           {
+            ELLE_ERR("process threw an exception");
             this->exception = std::current_exception();
           }
         done = true;
