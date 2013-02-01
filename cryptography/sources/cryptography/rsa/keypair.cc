@@ -63,8 +63,6 @@ namespace infinit
         ::EVP_PKEY_CTX*
         _context()
         {
-          ELLE_DEBUG_FUNCTION("");
-
           static Initializer initialized;
 
           ELLE_ASSERT(initialized.context() != nullptr);
