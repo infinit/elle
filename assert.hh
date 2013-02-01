@@ -7,8 +7,6 @@
 # include <string>
 # include <stdexcept>
 
-# if defined(DEBUG) || !defined(NDEBUG)
-
 namespace elle
 {
 
@@ -29,6 +27,7 @@ namespace elle
 
 }
 
+# if defined(DEBUG) || !defined(NDEBUG)
 /// Throw if the condition is unmet.
 # define ELLE_ASSERT(_condition_)                                             \
   do                                                                          \
