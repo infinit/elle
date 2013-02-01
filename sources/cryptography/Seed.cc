@@ -120,11 +120,6 @@ namespace infinit
       return (this->region == element.region);
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Seed, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
