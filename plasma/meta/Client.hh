@@ -262,7 +262,7 @@ namespace plasma
       user_from_public_key(string const& public_key);
 
       UsersResponse
-      search_users(string const& key);
+      search_users(string const& text, int count = 10, int offset = 0);
 
       SwaggersResponse
       get_swaggers();

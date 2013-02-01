@@ -339,10 +339,12 @@ namespace plasma
     }
 
     UsersResponse
-    Client::search_users(string const& text)
+    Client::search_users(string const& text, int count, int offset)
     {
       json::Dictionary request;
       request["text"] = text;
+      request["count"] = count;
+      request["offset"] = offset;
       return this->_client.post<UsersResponse>("/user/search", request);
     }
 
