@@ -2,7 +2,6 @@
 # define INFINIT_CRYPTOGRAPHY_SEED_HH
 /* XXX
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
 # include <elle/standalone/Region.hh>
 
 # include <cryptography/fwd.hh>
@@ -16,8 +15,7 @@ namespace infinit
     /// this class represents a seed which can especially be used for
     /// rotating keys.
     ///
-    class Seed:
-      public elle::radix::Object
+    class Seed
     {
     public:
       //
@@ -41,7 +39,6 @@ namespace infinit
       //
 
       // object
-      declare(Seed);
       elle::Boolean           operator ==(const Seed&) const;
 
       // dumpable
