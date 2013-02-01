@@ -5,7 +5,6 @@
 
 # include <elle/Exception.hh>
 # include <elle/log.hh>
-# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -28,7 +27,7 @@ namespace etoile
       context.rights.role = T::Role::RoleUnknown;
 
       if (Rights::Determine(context) == elle::Status::Error)
-        escape("unable to determine the rights");
+        throw elle::Exception("unable to determine the rights");
 
       return elle::Status::Ok;
     }
@@ -50,7 +49,7 @@ namespace etoile
         {
         case gear::OperationUnknown:
           {
-            escape("unable to check the rights for a unknown operation");
+            throw elle::Exception("unable to check the rights for a unknown operation");
           }
         case gear::OperationDiscard:
           {
@@ -85,11 +84,11 @@ namespace etoile
 
             // determine the user's rights on this context.
             if (Rights::Determine(context) == elle::Status::Error)
-              escape("unable to determine the rights");
+              throw elle::Exception("unable to determine the rights");
 
             // check if the current user has the given role.
             if (context.rights.role != T::Role::RoleOwner)
-              escape("the user does not seem to have the permission to "
+              throw elle::Exception("the user does not seem to have the permission to "
                      "perform the requested operation");
 
             break;

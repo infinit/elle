@@ -7,7 +7,6 @@
 #include <agent/Agent.hh>
 #include <hole/Hole.hh>
 
-#include <elle/idiom/Open.hh>
 namespace etoile
 {
   namespace path
@@ -40,7 +39,7 @@ namespace etoile
 
       // create the reference root route.
       if (Route::Root.Create(root) == elle::Status::Error)
-        escape("unable to create the route");
+        throw elle::Exception("unable to create the route");
 
       return elle::Status::Ok;
     }
@@ -99,7 +98,7 @@ namespace etoile
 
       // check that the way starts with a leading '/'
       if (way.path[0] != elle::system::path::separator)
-        escape("the path must contain the leading path separator '%c'",
+        throw elle::Exception("the path must contain the leading path separator '%c'",
                elle::system::path::separator);
 
       // clear the elements.
@@ -278,11 +277,6 @@ namespace etoile
       // at this point, both routes seem identical.
       return false;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Route, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

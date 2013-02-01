@@ -1,11 +1,13 @@
 #ifndef ELLE_NETWORK_HOST_HH
 # define ELLE_NETWORK_HOST_HH
 
-# include <vector>
-
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 # include <elle/serialize/fwd.hh>
+
+# include <vector>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace elle
 {
@@ -13,8 +15,7 @@ namespace elle
   {
 
     /// This class represents a network host.
-    class Host:
-      public elle::radix::Object
+    class Host
     {
     public:
       //
@@ -59,12 +60,9 @@ namespace elle
       // interfaces
       //
 
-      // object
-# include <elle/idiom/Open.hh>
-      declare(Host);
+      ELLE_OPERATOR_ASSIGNMENT(Host); // XXX
       Boolean           operator==(const Host&) const;
       Boolean           operator<(const Host&) const;
-      Boolean           operator>(const Host&) const;
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;

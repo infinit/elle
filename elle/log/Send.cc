@@ -4,6 +4,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <elle/types.hh>
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>

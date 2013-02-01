@@ -1,5 +1,4 @@
 #include <elle/print.hh>
-#include <elle/idiom/Close.hh>
 
 #include <reactor/exception.hh>
 

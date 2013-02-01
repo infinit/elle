@@ -596,7 +596,6 @@ namespace horizon
     ELLE_TRACE_FUNCTION(path, mask);
 
     etoile::path::Way way(path);
-    etoile::abstract::Object abstract;
 
     // Resolve the path.
     etoile::path::Chemin chemin(etoile::wall::Path::resolve(way));
@@ -617,10 +616,11 @@ namespace horizon
 
     // Check the record.
     if (record == nucleus::neutron::Record::null())
-      goto _access;
+      return (-EACCES);
 
     // Retrieve information on the object.
-    abstract = etoile::wall::Object::information(identifier);
+    etoile::abstract::Object abstract =
+      etoile::wall::Object::information(identifier);
 
     // Check if the permissions match the mask for execution.
     if (mask & X_OK)
@@ -745,8 +745,8 @@ namespace horizon
     HORIZON_FINALLY_ACTION_DISCARD(identifier);
 
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(
-      etoile::wall::Object::information(identifier));
+    etoile::abstract::Object abstract =
+      etoile::wall::Object::information(identifier);
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Create a temporary subject based on the object owner's key.
@@ -868,8 +868,8 @@ namespace horizon
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(
-      etoile::wall::Object::information(identifier));
+    etoile::abstract::Object abstract =
+      etoile::wall::Object::information(identifier);
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
@@ -1028,8 +1028,8 @@ namespace horizon
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(
-      etoile::wall::Object::information(identifier));
+    etoile::abstract::Object abstract =
+      etoile::wall::Object::information(identifier);
 
     // Create a temporary subject based on the object owner's key.
     if (subject.Create(*abstract.keys.owner) == elle::Status::Error)
@@ -1860,8 +1860,8 @@ namespace horizon
     HORIZON_FINALLY_ACTION_DISCARD(identifier_child);
 
     // Retrieve information on the object.
-    etoile::abstract::Object abstract(
-      etoile::wall::Object::information(identifier_child));
+    etoile::abstract::Object abstract =
+      etoile::wall::Object::information(identifier_child);
 
 #ifdef HORIZON_CRUX_SAFETY_CHECKS
     // Create a temporary subject based on the object owner's key.

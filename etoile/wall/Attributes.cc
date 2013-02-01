@@ -37,7 +37,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -49,13 +49,13 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the set automaton on the context.
         if (automaton::Attributes::Set(*context,
                                        name,
                                        value) == elle::Status::Error)
-          escape("unable to set the attribute");
+          throw elle::Exception("unable to set the attribute");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
@@ -74,7 +74,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -87,13 +87,13 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the get automaton on the context.
         if (automaton::Attributes::Get(*context,
                                        name,
                                        trait) == elle::Status::Error)
-          escape("unable to get the attribute");
+          throw elle::Exception("unable to get the attribute");
       }
 
       // Return the trait according to the automaton's result.
@@ -114,7 +114,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -127,12 +127,12 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the fetch automaton on the context.
         if (automaton::Attributes::Fetch(*context,
                                          range) == elle::Status::Error)
-          escape("unable to fetch the attribute");
+          throw elle::Exception("unable to fetch the attribute");
       }
 
       return (range);
@@ -153,7 +153,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -164,12 +164,12 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the omit automaton on the context.
         if (automaton::Attributes::Omit(*context,
                                         name) == elle::Status::Error)
-          escape("unable to omit the attribute");
+          throw elle::Exception("unable to omit the attribute");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;

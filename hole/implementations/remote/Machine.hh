@@ -3,7 +3,6 @@
 
 # include <elle/network/Locus.hh>
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/network/Locus.hh>
 
 # include <hole/fwd.hh>
@@ -18,8 +17,7 @@ namespace hole
     namespace remote
     {
       /// The current host.
-      class Machine:
-        public elle::radix::Entity
+      class Machine
       {
       public:
         //

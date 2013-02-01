@@ -136,20 +136,6 @@ namespace elle
       return false;
     }
 
-    ///
-    /// compare two objects.
-    ///
-    Boolean             Host::operator>(const Host&             element) const
-    {
-      return (!(this->operator<=(element)));
-    }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-# include <elle/idiom/Open.hh>
-    embed(Host, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //

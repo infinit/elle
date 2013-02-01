@@ -38,7 +38,7 @@ namespace etoile
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
-        escape("unable to determine the rights");
+        throw elle::Exception("unable to determine the rights");
 
       // build the author object according to the subject's role.
       switch (context.rights.role)
@@ -54,7 +54,7 @@ namespace etoile
           {
             // open the access.
             if (Access::Open(context) == elle::Status::Error)
-              escape("unable to open the access");
+              throw elle::Exception("unable to open the access");
 
             auto pair = context.access_porcupine->find(agent::Agent::Subject);
             auto& door = pair.first;

@@ -53,7 +53,7 @@ namespace hole
 
         // check if the insertion was successful.
         if (result.second == false)
-          escape("unable to insert the neighbour in the container");
+          throw elle::Exception("unable to insert the neighbour in the container");
 
         return elle::Status::Ok;
       }
@@ -80,7 +80,7 @@ namespace hole
 
         // try to locate the label.
         if (this->Locate(label, &iterator) == false)
-          escape("unable to locate the given label");
+          throw elle::Exception("unable to locate the given label");
 
         // return the associated neighbour.
         neighbour = iterator->second;
@@ -100,7 +100,7 @@ namespace hole
 
         // try to locate the label.
         if (this->Locate(label, &iterator) == false)
-          escape("unable to locate the given label");
+          throw elle::Exception("unable to locate the given label");
 
         // erase the iterator.
         this->container.erase(iterator);
@@ -154,7 +154,7 @@ namespace hole
 
             // dump the label.
             if (scoutor->first.Dump(margin + 4) == elle::Status::Error)
-              escape("unable to dump the label");
+              throw elle::Exception("unable to dump the label");
 
             // dump the neighbour address.
             std::cout << alignment

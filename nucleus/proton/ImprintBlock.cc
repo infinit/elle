@@ -6,8 +6,6 @@
 
 #include <cryptography/PublicKey.hh>
 
-#include <elle/idiom/Open.hh>
-
 ELLE_LOG_COMPONENT("infinit.nucleus.proton.ImprintBlock");
 
 namespace nucleus
@@ -123,7 +121,7 @@ namespace nucleus
       std::cout << alignment << "[ImprintBlock]" << std::endl;
 
       if (MutableBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Owner]" << std::endl;
@@ -134,7 +132,7 @@ namespace nucleus
       if (this->_owner_subject != nullptr)
         {
           if (this->_owner_subject->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the subject");
+            throw Exception("unable to dump the subject");
         }
       else
         {

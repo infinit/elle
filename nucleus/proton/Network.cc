@@ -1,7 +1,5 @@
 #include <nucleus/proton/Network.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton

@@ -8,8 +8,6 @@
 #include <nucleus/neutron/Author.hh>
 #include <nucleus/neutron/Attributes.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -102,15 +100,15 @@ namespace etoile
 
       // dump the parent context.
       if (Context::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the parent context");
+        throw elle::Exception("unable to dump the parent context");
 
       // dump the location.
       if (this->location.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the location");
+        throw elle::Exception("unable to dump the location");
 
       // dump the object.
       if (this->object->Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the object");
+        throw elle::Exception("unable to dump the object");
 
       // dump the rights.
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -142,7 +140,7 @@ namespace etoile
       if (this->rights.record != nullptr)
         {
           if (this->rights.record->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the record");
+            throw elle::Exception("unable to dump the record");
         }
       else
         {
@@ -155,7 +153,7 @@ namespace etoile
       if (this->author != nullptr)
         {
           if (this->author->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the author");
+            throw elle::Exception("unable to dump the author");
         }
       else
         {

@@ -13,8 +13,6 @@
 
 #include <elle/assert.hh>
 
-#include <elle/idiom/Close.hh>
-
 #include <common/common.hh>
 
 namespace path = elle::os::path;

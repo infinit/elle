@@ -25,8 +25,6 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/neutron/Access.hh>
 
-#include <elle/idiom/Close.hh>
-
 #include <hole/storage/Directory.hh>
 
 #include <QDir>

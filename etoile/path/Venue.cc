@@ -50,7 +50,7 @@ namespace etoile
 
       // record the location.
       if (this->Record(location) == elle::Status::Error)
-        escape("unable to record the location");
+        throw elle::Exception("unable to record the location");
 
       return elle::Status::Ok;
     }
@@ -118,11 +118,6 @@ namespace etoile
       return true;
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Venue, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -146,7 +141,7 @@ namespace etoile
         {
           // dump the location.
           if (scoutor->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the address");
+            throw elle::Exception("unable to dump the address");
         }
 
       return elle::Status::Ok;

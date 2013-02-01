@@ -1,9 +1,7 @@
 #include <elle/io/Console.hh>
 
-#include <elle/idiom/Close.hh>
-# include <stdio.h>
-# include <unistd.h>
-#include <elle/idiom/Open.hh>
+#include <stdio.h>
+#include <unistd.h>
 
 #include <iostream>
 

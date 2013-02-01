@@ -2,8 +2,6 @@
 
 #include <elle/finally.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -77,7 +75,7 @@ namespace etoile
 
       for (auto action: this->_container)
         if (action->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the action");
+          throw elle::Exception("unable to dump the action");
 
       return elle::Status::Ok;
     }

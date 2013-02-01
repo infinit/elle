@@ -2,8 +2,6 @@
 #include <etoile/gear/Actor.hh>
 #include <etoile/gear/Scope.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -20,11 +18,11 @@ namespace etoile
     {
       // initialize the actor system.
       if (Actor::Initialize() == elle::Status::Error)
-        escape("unable to initialize the actor");
+        throw elle::Exception("unable to initialize the actor");
 
       // initialize the scope system.
       if (Scope::Initialize() == elle::Status::Error)
-        escape("unable to initialize the scope");
+        throw elle::Exception("unable to initialize the scope");
 
       return elle::Status::Ok;
     }
@@ -36,11 +34,11 @@ namespace etoile
     {
       // clean the actor system.
       if (Actor::Clean() == elle::Status::Error)
-        escape("unable to clean the actor");
+        throw elle::Exception("unable to clean the actor");
 
       // clean the scope system.
       if (Scope::Clean() == elle::Status::Error)
-        escape("unable to clean the scope");
+        throw elle::Exception("unable to clean the scope");
 
       return elle::Status::Ok;
     }

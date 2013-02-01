@@ -78,7 +78,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   # Nucleus
   nucleus_sources = drake.nodes(
-    'nucleus/Derivable.cc',
     'nucleus/Derivable.hh',
     'nucleus/Derivable.hxx',
     'nucleus/Exception.hh',

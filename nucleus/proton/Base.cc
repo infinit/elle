@@ -2,8 +2,6 @@
 #include <nucleus/proton/MutableBlock.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -74,7 +72,7 @@ namespace nucleus
 
       // dump the revision.
       if (this->_revision.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the revision");
+        throw Exception("unable to dump the revision");
 
       // dump the digest.
       std::cout << alignment << elle::io::Dumpable::Shift

@@ -5,16 +5,13 @@
 
 # include <elle/attribute.hh>
 # include <elle/network/Locus.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/types.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <reactor/network/fwd.hh>
-#  include <reactor/duration.hh>
-#  include <reactor/signal.hh>
-#  include <reactor/network/udt-server.hh>
-#  include <reactor/network/udt-socket.hh>
-# include <elle/idiom/Open.hh>
+# include <reactor/network/fwd.hh>
+# include <reactor/duration.hh>
+# include <reactor/signal.hh>
+# include <reactor/network/udt-server.hh>
+# include <reactor/network/udt-socket.hh>
 
 # include <hole/fwd.hh>
 
@@ -40,9 +37,8 @@ namespace hole
       ///
       /// XXX represents the current host
       ///
-      class Machine
-        : public elle::radix::Entity
-        , public elle::Printable
+      class Machine:
+        public elle::Printable
       {
       public:
         // constants

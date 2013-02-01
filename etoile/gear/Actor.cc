@@ -1,8 +1,6 @@
 #include <etoile/gear/Actor.hh>
 #include <etoile/gear/Scope.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -65,7 +63,7 @@ namespace etoile
 
       // check if this identifier has already been recorded.
       if (Actor::Actors.find(identifier) != Actor::Actors.end())
-        escape("this actor seems to have already been registered");
+        throw elle::Exception("this actor seems to have already been registered");
 
       // insert the actor in the container.
       result = Actor::Actors.insert(
@@ -73,7 +71,7 @@ namespace etoile
 
       // check the result.
       if (result.second == false)
-        escape("unable to insert the actor in the container");
+        throw elle::Exception("unable to insert the actor in the container");
 
       return elle::Status::Ok;
     }
@@ -89,7 +87,7 @@ namespace etoile
 
       // find the entry.
       if ((scoutor = Actor::Actors.find(identifier)) == Actor::Actors.end())
-        escape("unable to locate the actor associated with the identifier");
+        throw elle::Exception("unable to locate the actor associated with the identifier");
 
       // return the actor.
       actor = scoutor->second;
@@ -107,7 +105,7 @@ namespace etoile
 
       // find the entry.
       if ((iterator = Actor::Actors.find(identifier)) == Actor::Actors.end())
-        escape("unable to locate the actor associated with the identifier");
+        throw elle::Exception("unable to locate the actor associated with the identifier");
 
       // erase the entry.
       Actor::Actors.erase(iterator);
@@ -133,11 +131,11 @@ namespace etoile
         {
           // dump the identifier.
           if (scoutor->first.Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the identifier");
+            throw elle::Exception("unable to dump the identifier");
 
           // dump the actor.
           if (scoutor->second->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the actor");
+            throw elle::Exception("unable to dump the actor");
 
         }
 
@@ -240,7 +238,7 @@ namespace etoile
                 else
                   {
                     if (this->state != Actor::StateClean)
-                      escape("unable to discard previously performed "
+                      throw elle::Exception("unable to discard previously performed "
                              "modifications");
                   }
               }
@@ -281,7 +279,7 @@ namespace etoile
           }
         case OperationUnknown:
           {
-            escape("unable to process the closing operation '%u'\n",
+            throw elle::Exception("unable to process the closing operation '%u'\n",
                    operation);
           }
         }
@@ -304,7 +302,7 @@ namespace etoile
 
       // dump the identifier.
       if (this->identifier.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the identifier");
+        throw elle::Exception("unable to dump the identifier");
 
       // dump the scope's address.
       std::cout << alignment << elle::io::Dumpable::Shift

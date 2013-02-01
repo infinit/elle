@@ -100,7 +100,7 @@ namespace nucleus
       std::cout << alignment << "[Reference] " << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the value");
+        throw Exception("unable to dump the value");
 
       // dump the target.
       std::cout << alignment << elle::io::Dumpable::Shift << "[Target] "

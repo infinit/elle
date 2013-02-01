@@ -3,7 +3,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/idiom/Open.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.nucleus.proton.ContentHashBlock");
@@ -92,7 +91,7 @@ namespace nucleus
 
       // dump the parent class.
       if (ImmutableBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       return elle::Status::Ok;
     }

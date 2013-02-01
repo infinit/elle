@@ -14,8 +14,6 @@ using namespace infinit;
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton

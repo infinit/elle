@@ -7,7 +7,6 @@
 
 # include <elle/Printable.hh>
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
 
 # include <reactor/fwd.hh>
 # include <reactor/network/fwd.hh>
@@ -30,10 +29,9 @@ namespace hole
       ///
       /// Note that multiple clients can connect to the server in
       /// parallel.
-      class Server
-        : public elle::radix::Entity
-        , public boost::noncopyable
-        , public elle::Printable
+      class Server:
+        public boost::noncopyable,
+        public elle::Printable
       {
       /*------.
       | Types |

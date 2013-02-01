@@ -8,8 +8,6 @@
 #include <lune/Set.hh>
 #include <lune/Lune.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace lune
 {
 
@@ -25,7 +23,7 @@ namespace lune
     if (std::find(this->loci.begin(),
                   this->loci.end(),
                   locus) != this->loci.end())
-      escape("this locus already exists in the set");
+      throw elle::Exception("this locus already exists in the set");
 
     this->loci.push_back(locus);
 
@@ -43,7 +41,7 @@ namespace lune
                 locus);
 
     if (iterator == this->loci.end())
-      escape("this locus does not seem to exist in the set");
+      throw elle::Exception("this locus does not seem to exist in the set");
 
     this->loci.erase(iterator);
 
@@ -59,15 +57,6 @@ namespace lune
       network_id + ".set"
     );
   }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Set, _());
 
 //
 // ---------- dumpable --------------------------------------------------------
@@ -87,7 +76,7 @@ namespace lune
     for (; iterator != end; ++iterator)
       {
         if (iterator->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the locus");
+          throw elle::Exception("unable to dump the locus");
       }
 
     return elle::Status::Ok;

@@ -996,7 +996,7 @@ namespace nucleus
 
       // dump the parent nodule.
       if (Nodule<T>::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the parent nodule");
+        throw Exception("unable to dump the parent nodule");
 
       // dump the inlets.
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -1007,7 +1007,7 @@ namespace nucleus
         {
           // dump the inlet.
           if (scoutor->second->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the inlet");
+            throw Exception("unable to dump the inlet");
         }
 
       return elle::Status::Ok;

@@ -1,6 +1,7 @@
 #ifndef LUNE_DICTIONARY_HH
 # define LUNE_DICTIONARY_HH
 
+# include <elle/operator.hh>
 # include <elle/concept/Fileable.hh>
 
 # include <cryptography/PublicKey.hh>
@@ -11,7 +12,7 @@ using namespace infinit;
 
 # include <lune/Map.hh>
 
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
 
 namespace lune
 {
@@ -22,8 +23,8 @@ namespace lune
   /// system entities such as UNIX's UIDs/GIDs for instance.
   ///
   class Dictionary:
-    public elle::radix::Object,
-    public elle::concept::MakeFileable<Dictionary>
+    public elle::concept::MakeFileable<Dictionary>,
+    private boost::noncopyable
   {
   public:
     //
@@ -39,8 +40,7 @@ namespace lune
     // interfaces
     //
   public:
-    // object
-    declare(Dictionary);
+    ELLE_OPERATOR_NO_ASSIGNMENT(Dictionary);
 
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;

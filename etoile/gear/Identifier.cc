@@ -3,8 +3,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -81,11 +79,6 @@ namespace etoile
     {
       return (this->value < element.value);
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Identifier, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include <lune/Lune.hh>
-#include <elle/idiom/Close.hh>
 
 #include "identity.hh"
 #include "passport.hh"

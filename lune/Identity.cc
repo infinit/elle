@@ -33,6 +33,15 @@ namespace lune
   {
   }
 
+  Identity::Identity(Identity const& other):
+    _id(other._id),
+    name(other.name),
+    _pair(new cryptography::KeyPair{*other._pair}),
+    _signature(new cryptography::Signature{*other._signature}),
+    code(new cryptography::Code{*other.code})
+  {
+  }
+
   ///
   /// destructor.
   ///
@@ -88,7 +97,7 @@ namespace lune
   {
     // check the code.
     if (this->code == nullptr)
-      escape("unable to decrypt an unencrypted identity");
+      throw elle::Exception("unable to decrypt an unencrypted identity");
 
     cryptography::SecretKey key{cryptography::cipher::Algorithm::aes256, pass};
 
@@ -126,7 +135,7 @@ namespace lune
   {
     // check the code.
     if (this->code == nullptr)
-      escape("unable to seal an unencrypted identity");
+      throw elle::Exception("unable to seal an unencrypted identity");
 
     // sign with the authority.
     delete this->_signature;
@@ -147,7 +156,7 @@ namespace lune
   {
     // check the code.
     if (this->code == nullptr)
-      escape("unable to verify an unencrypted identity");
+      throw elle::Exception("unable to verify an unencrypted identity");
 
     // verify the signature.
     ELLE_ASSERT(this->_signature != nullptr);
@@ -157,7 +166,7 @@ namespace lune
           elle::serialize::make_tuple(this->_id,
                                       this->name,
                                       *this->code)) == false)
-      escape("unable to verify the signature");
+      throw elle::Exception("unable to verify the signature");
 
     return elle::Status::Ok;
   }
@@ -170,15 +179,6 @@ namespace lune
       user_id + ".idy"
     );
   }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Identity, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

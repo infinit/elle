@@ -1,11 +1,10 @@
 #ifndef  ELLE_IO_PATH_HH
 # define ELLE_IO_PATH_HH
 
-#include <elle/Printable.hh>
-#include <elle/idiom/Open.hh>
-#include <elle/io/fwd.hh>
-#include <elle/radix/Object.hh>
 #include <elle/types.hh>
+#include <elle/operator.hh>
+#include <elle/Printable.hh>
+#include <elle/io/fwd.hh>
 
 namespace elle
 {
@@ -19,7 +18,6 @@ namespace elle
     /// the pattern %name% as representing a component to be provided later.
     ///
     class Path:
-      public radix::Object,
       public elle::Printable
     {
     public:
@@ -36,6 +34,7 @@ namespace elle
       Path(Pattern const& pattern,
            T const& piece,
            TT const&... pieces);
+      Path(Path const& other) = default;
 
       //
       // methods
@@ -58,8 +57,8 @@ namespace elle
       // interfaces
       //
 
-      // object
-      declare(Path);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Path);
+
       Boolean           operator==(const Path&) const;
 
       // dumpable

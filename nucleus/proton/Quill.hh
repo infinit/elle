@@ -10,9 +10,7 @@
 # include <nucleus/proton/Flags.hh>
 # include <nucleus/proton/Porcupine.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <map>
-# include <elle/idiom/Open.hh>
+# include <map>
 
 namespace nucleus
 {

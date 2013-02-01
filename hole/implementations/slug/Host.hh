@@ -1,9 +1,7 @@
 #ifndef HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 # define HOLE_IMPLEMENTATIONS_SLUG_HOST_HH
 
-# include <elle/idiom/Close.hh>
 # include <reactor/network/socket.hh>
-# include <elle/idiom/Open.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -23,7 +21,6 @@ namespace hole
     namespace slug
     {
       class Host
-        : public elle::radix::Entity
       {
       public:
         // Enumerations

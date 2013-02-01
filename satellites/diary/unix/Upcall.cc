@@ -58,14 +58,14 @@ namespace satellite
                 << "[Inputs]" << std::endl;
 
       if (this->_inputs.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the archive");
+        throw elle::Exception("unable to dump the archive");
 
       // display the outputs.
       std::cout << alignment << elle::Dumpable::Shift
                 << "[Outputs]" << std::endl;
 
       if (this->_outputs.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the archive");
+        throw elle::Exception("unable to dump the archive");
 
       // display the result.
       std::cout << alignment << elle::Dumpable::Shift

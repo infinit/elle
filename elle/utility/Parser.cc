@@ -281,7 +281,7 @@ namespace elle
                  static_cast<struct ::option*>(
                    ::malloc((this->options.size() + 1) *
                             sizeof (struct ::option)))) == nullptr)
-            escape("unable to allocate memory");
+            throw Exception("unable to allocate memory");
 
           // initialize the structure with zeros, especially since the
           // last entry must be set to zero anyway.
@@ -344,7 +344,7 @@ namespace elle
               // display the usage.
               this->Usage();
 
-              escape("unknown option");
+              throw Exception("unknown option");
             }
 
           // missing argument.
@@ -353,12 +353,12 @@ namespace elle
               // display the usage.
               this->Usage();
 
-              escape("missing argument");
+              throw Exception("missing argument");
             }
 
           // locate the option.
           if (this->Locate(character, option) == false)
-            escape("unable to locate the option");
+            throw Exception("unable to locate the option");
 
           // activate the option.
           option->state = Parser::StateActivated;
@@ -370,7 +370,7 @@ namespace elle
               {
                 // if an argument is present, return an error.
                 if (optarg != nullptr)
-                  escape("this option is not supposed to take an argument");
+                  throw Exception("this option is not supposed to take an argument");
 
                 break;
               }
@@ -386,7 +386,7 @@ namespace elle
               {
                 // if no argument is provided, return an error.
                 if (optarg == nullptr)
-                  escape("this option is supposed to take an argument");
+                  throw Exception("this option is supposed to take an argument");
 
                 // allocate and set the value
                 option->value = new String(::optarg);
@@ -589,7 +589,7 @@ namespace elle
         {
           // dump the option.
           if (this->options[i]->Dump(margin + 4) == Status::Error)
-            escape("unable to dump the option");
+            throw Exception("unable to dump the option");
         }
 
       // dump the examples.

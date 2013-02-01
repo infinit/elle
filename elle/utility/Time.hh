@@ -2,19 +2,16 @@
 # define ELLE_UTILITY_TIME_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
-
-# include <elle/radix/Object.hh>
 
 # include <elle/utility/fwd.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <chrono>
-#  include <ctime>
-#  if defined(INFINIT_WINDOWS)
-#   include <windows.h>
-#  endif
-# include <elle/idiom/Open.hh>
+# include <chrono>
+# include <ctime>
+# if defined(INFINIT_WINDOWS)
+#  include <windows.h>
+# endif
 
 namespace elle
 {
@@ -26,7 +23,6 @@ namespace elle
     /// since epoch.
     ///
     class Time:
-      public radix::Object,
       public Printable
     {
       /*---------------.
@@ -62,8 +58,8 @@ namespace elle
       // interfaces
       //
 
-      // object
-      declare(Time);
+      ELLE_OPERATOR_ASSIGNMENT(Time); // XXX
+
       Boolean           operator==(const Time&) const;
       Boolean           operator<(const Time&) const;
       Boolean           operator>(const Time&) const;

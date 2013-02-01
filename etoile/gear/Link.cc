@@ -53,7 +53,7 @@ namespace etoile
 
       // dump the inherited object.
       if (Object::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the inherited object");
+        throw elle::Exception("unable to dump the inherited object");
 
       // dump the porcupine.
       if (this->contents_porcupine != nullptr)

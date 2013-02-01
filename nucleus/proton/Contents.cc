@@ -134,7 +134,7 @@ namespace nucleus
       std::cout << alignment << "[Contents]" << std::endl;
 
       if (proton::ContentHashBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       if (this->_node != nullptr)
         {

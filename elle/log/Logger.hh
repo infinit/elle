@@ -64,6 +64,4 @@ namespace elle
   }
 }
 
-# include <elle/log/Logger.hxx>
-
 #endif

@@ -2,10 +2,10 @@
 # define LUNE_IDENTITY_HH
 
 # include <elle/attribute.hh>
+# include <elle/operator.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/concept/Uniquable.hh>
 # include <elle/fwd.hh>
-# include <elle/radix/Object.hh>
 
 # include <cryptography/fwd.hh>
 # include <cryptography/KeyPair.hh>
@@ -14,8 +14,6 @@
 using namespace infinit;
 
 # include <lune/fwd.hh>
-
-# include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -28,7 +26,6 @@ namespace lune
   /// role of identifier.
   ///
   class Identity:
-    public elle::radix::Object,
     public elle::concept::MakeFileable<Identity>,
     public elle::concept::MakeUniquable<Identity>
   {
@@ -52,6 +49,8 @@ namespace lune
   public: // XXX
     cryptography::Code*       code;
 
+    ELLE_OPERATOR_NO_ASSIGNMENT(Identity);
+
   public:
     // XXX
     cryptography::KeyPair const&
@@ -64,6 +63,7 @@ namespace lune
 
   public:
     Identity();
+    Identity(Identity const& other);
     ~Identity();
 
   public:
@@ -89,9 +89,6 @@ namespace lune
     // interfaces
     //
   public:
-    // object
-    declare(Identity);
-
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;
 

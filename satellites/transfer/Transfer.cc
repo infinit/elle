@@ -28,11 +28,9 @@
 
 #include <elle/log.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/filesystem.hpp>
-# include <boost/algorithm/string.hpp>
-# include <limits>
-#include <elle/idiom/Open.hh>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
+#include <limits>
 
 #include <iostream>
 #include <fstream>
@@ -755,15 +753,15 @@ namespace satellite
 
     // set up the program.
     if (elle::concurrency::Program::Setup("Transfer") == elle::Status::Error)
-      escape("unable to set up the program");
+      throw elle::Exception("unable to set up the program");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      escape("unable to initialize Lune");
+      throw elle::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      escape("unable to initialize Infinit");
+      throw elle::Exception("unable to initialize Infinit");
 
     // initialize the operation.
     operation = Transfer::OperationUnknown;
@@ -773,7 +771,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-      escape("unable to set the description");
+      throw elle::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -782,7 +780,7 @@ namespace satellite
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -791,7 +789,7 @@ namespace satellite
           "user",
           "specifies the name of the user",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -800,7 +798,7 @@ namespace satellite
           "network",
           "specifies the name of the network",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -810,7 +808,7 @@ namespace satellite
           "specifies that the file is copied from the Infinit network to "
           "the local file system",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -820,7 +818,7 @@ namespace satellite
           "specifies that the file is copied from the local file system to "
           "the Infinit network",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -829,21 +827,21 @@ namespace satellite
           "path",
           "the path where the data must be copied from/to",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     if (Infinit::Parser->Example(
           "-u fistouille -n slug --to --path ~/Downloads/") ==
         elle::Status::Error)
-      escape("unable to register the example");
+      throw elle::Exception("unable to register the example");
 
     if (Infinit::Parser->Example(
           "-u fistouille -n slug --from --path /tmp/XXX/") ==
         elle::Status::Error)
-      escape("unable to register the example");
+      throw elle::Exception("unable to register the example");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      escape("unable to parse the command line");
+      throw elle::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -862,7 +860,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the user name");
+        throw elle::Exception("unable to retrieve the user name");
       }
 
     // retrieve the network name.
@@ -872,12 +870,12 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the network name");
+        throw elle::Exception("unable to retrieve the network name");
       }
 
     // initialize the Agent library.
     if (agent::Agent::Initialize() == elle::Status::Error)
-      escape("unable to initialize Agent");
+      throw elle::Exception("unable to initialize Agent");
 
     // check the mutually exclusive options.
     if ((Infinit::Parser->Test("From") == true) &&
@@ -886,7 +884,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the from and to options are mutually exclusive");
+        throw elle::Exception("the from and to options are mutually exclusive");
       }
 
     // test the option.
@@ -906,7 +904,7 @@ namespace satellite
     // retrieve the path.
     if (Infinit::Parser->Value("Path",
                                path) == elle::Status::Error)
-      escape("unable to retrieve the path value");
+      throw elle::Exception("unable to retrieve the path value");
 
     path =
       boost::algorithm::trim_right_copy_if(
@@ -934,7 +932,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw elle::Exception("please specify an operation to perform");
         }
       }
 
@@ -944,15 +942,15 @@ namespace satellite
 
     // clean the Agent library.
     if (agent::Agent::Clean() == elle::Status::Error)
-      escape("unable to clean Agent");
+      throw elle::Exception("unable to clean Agent");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      escape("unable to clean Infinit");
+      throw elle::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      escape("unable to clean Lune");
+      throw elle::Exception("unable to clean Lune");
   }
 
 }

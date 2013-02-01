@@ -87,26 +87,13 @@ elle::String                    Infinit::Mountpoint;
 ///
 elle::Status            Infinit::Initialize()
 {
-  // disable the meta logging.
-  if (elle::radix::Meta::Disable() == elle::Status::Error)
-    escape("unable to disable the meta logging");
+  // if the configuration file exists...
+  if (lune::Configuration::exists(Infinit::User) == true)
+    Infinit::Configuration.load(Infinit::User);
 
-  //
-  // load the configuration.
-  //
-  {
-    // if the configuration file exists...
-    if (lune::Configuration::exists(Infinit::User) == true)
-      Infinit::Configuration.load(Infinit::User);
-
-    // pull the parameters.
-    if (Infinit::Configuration.Pull() == elle::Status::Error)
-      escape("unable to pull the configuration parameters");
-  }
-
-  // enable the meta logging.
-  if (elle::radix::Meta::Enable() == elle::Status::Error)
-    escape("unable to enable the meta logging");
+  // pull the parameters.
+  if (Infinit::Configuration.Pull() == elle::Status::Error)
+    throw elle::Exception("unable to pull the configuration parameters");
 
   return elle::Status::Ok;
 }

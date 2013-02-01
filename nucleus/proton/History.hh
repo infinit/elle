@@ -9,9 +9,7 @@
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Revision.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <vector>
-# include <elle/idiom/Open.hh>
+# include <vector>
 
 # include <boost/noncopyable.hpp>
 

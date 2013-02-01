@@ -7,9 +7,7 @@
 #include <elle/io/File.hh>
 #include <elle/io/Piece.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/lexical_cast.hpp>
-#include <elle/idiom/Open.hh>
+#include <boost/lexical_cast.hpp>
 
 namespace nucleus
 {
@@ -61,13 +59,13 @@ namespace nucleus
       std::cout << alignment << "[MutableBlock]" << std::endl;
 
       if (Block::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the parent");
+        throw Exception("unable to dump the parent");
 
       if (this->_revision.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the revision");
+        throw Exception("unable to dump the revision");
 
       if (this->_base.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the revision");
+        throw Exception("unable to dump the revision");
 
       return elle::Status::Ok;
     }

@@ -4,7 +4,6 @@
 #include <nucleus/proton/Block.hh>
 
 #include <elle/assert.hh>
-#include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -67,10 +66,10 @@ namespace etoile
         std::cout << alignment << "[Push]" << std::endl;
 
         if (this->_address.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the address");
+          throw elle::Exception("unable to dump the address");
 
         if (this->_block->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the block");
+          throw elle::Exception("unable to dump the block");
 
         return elle::Status::Ok;
       }
@@ -114,7 +113,7 @@ namespace etoile
         std::cout << alignment << "[Wipe]" << std::endl;
 
         if (this->_address.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the address");
+          throw elle::Exception("unable to dump the address");
 
         return elle::Status::Ok;
       }

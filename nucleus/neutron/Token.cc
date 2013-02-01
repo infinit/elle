@@ -5,8 +5,6 @@
 #include <cryptography/PublicKey.hh>
 #include <cryptography/PrivateKey.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron

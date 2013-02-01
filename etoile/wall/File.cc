@@ -38,7 +38,7 @@ namespace etoile
 
       // acquire the scope.
       if (gear::Scope::Supply(scope) == elle::Status::Error)
-        escape("unable to supply the scope");
+        throw elle::Exception("unable to supply the scope");
 
       gear::Guard guard(scope);
       gear::Identifier identifier;
@@ -50,7 +50,7 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // allocate an actor.
         guard.actor(new gear::Actor(scope));
@@ -60,7 +60,7 @@ namespace etoile
 
         // apply the create automaton on the context.
         if (automaton::File::Create(*context) == elle::Status::Error)
-          escape("unable to create the file");
+          throw elle::Exception("unable to create the file");
 
         // set the actor's state.
         guard.actor()->state = gear::Actor::StateUpdated;
@@ -69,7 +69,7 @@ namespace etoile
 
         // waive the scope.
         if (guard.Release() == elle::Status::Error)
-          escape("unable to release the guard");
+          throw elle::Exception("unable to release the guard");
       }
 
       return (identifier);
@@ -85,7 +85,7 @@ namespace etoile
 
       // acquire the scope.
       if (gear::Scope::Acquire(chemin, scope) == elle::Status::Error)
-        escape("unable to acquire the scope");
+        throw elle::Exception("unable to acquire the scope");
 
       gear::Guard guard(scope);
       gear::Identifier identifier;
@@ -97,7 +97,7 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // allocate an actor.
         guard.actor(new gear::Actor(scope));
@@ -107,13 +107,13 @@ namespace etoile
 
         // locate the object based on the chemin.
         if (chemin.Locate(context->location) == elle::Status::Error)
-          escape("unable to locate the file");
+          throw elle::Exception("unable to locate the file");
 
         try
           {
             // apply the load automaton on the context.
             if (automaton::File::Load(*context) == elle::Status::Error)
-              escape("unable to load the file");
+              throw elle::Exception("unable to load the file");
           }
         catch (std::exception const&)
           {
@@ -125,7 +125,7 @@ namespace etoile
 
         // waive the actor and the scope.
         if (guard.Release() == elle::Status::Error)
-          escape("unable to release the guard");
+          throw elle::Exception("unable to release the guard");
       }
 
       return (identifier);
@@ -144,7 +144,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -156,13 +156,13 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the write automaton on the context.
         if (automaton::File::Write(*context,
                                    offset,
                                    data) == elle::Status::Error)
-          escape("unable to write the file");
+          throw elle::Exception("unable to write the file");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
@@ -182,7 +182,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -195,14 +195,14 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the read automaton on the context.
         if (automaton::File::Read(*context,
                                   offset,
                                   size,
                                   data) == elle::Status::Error)
-          escape("unable to read the file");
+          throw elle::Exception("unable to read the file");
       }
 
       return (data);
@@ -223,7 +223,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       // retrieve the scope.
       scope = actor->scope;
@@ -235,12 +235,12 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // apply the adjust automaton on the context.
         if (automaton::File::Adjust(*context,
                                     size) == elle::Status::Error)
-          escape("unable to adjust the file's size");
+          throw elle::Exception("unable to adjust the file's size");
 
         // set the actor's state.
         actor->state = gear::Actor::StateUpdated;
@@ -260,7 +260,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       gear::Guard guard(actor);
 
@@ -274,7 +274,7 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
@@ -282,26 +282,26 @@ namespace etoile
         if (automaton::Rights::Operate(
               *context,
               gear::OperationDiscard) == elle::Status::Error)
-          escape("the user does not seem to have the necessary permission for "
+          throw elle::Exception("the user does not seem to have the necessary permission for "
                  "discarding this file");
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationDiscard) == elle::Status::Error)
-          escape("this operation cannot be performed by this actor");
+          throw elle::Exception("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDiscard) == elle::Status::Error)
-          escape("unable to specify the operation being performed "
+          throw elle::Exception("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {
@@ -325,11 +325,11 @@ namespace etoile
             // relinquish the scope: at this point we know there is no
             // remaining actor.
             if (gear::Scope::Relinquish(scope) == elle::Status::Error)
-              escape("unable to relinquish the scope");
+              throw elle::Exception("unable to relinquish the scope");
 
             // record the scope in the journal.
             if (journal::Journal::Record(scope) == elle::Status::Error)
-              escape("unable to record the scope in the journal");
+              throw elle::Exception("unable to record the scope in the journal");
 
             break;
           }
@@ -355,7 +355,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       gear::Guard guard(actor);
 
@@ -369,7 +369,7 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
@@ -377,26 +377,26 @@ namespace etoile
         if (automaton::Rights::Operate(
               *context,
               gear::OperationStore) == elle::Status::Error)
-          escape("the user does not seem to have the necessary permission for "
+          throw elle::Exception("the user does not seem to have the necessary permission for "
                  "storing this file");
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationStore) == elle::Status::Error)
-          escape("this operation cannot be performed by this actor");
+          throw elle::Exception("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationStore) == elle::Status::Error)
-          escape("unable to specify the operation being performed "
+          throw elle::Exception("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {
@@ -420,11 +420,11 @@ namespace etoile
             // relinquish the scope: at this point we know there is no
             // remaining actor.
             if (gear::Scope::Relinquish(scope) == elle::Status::Error)
-              escape("unable to relinquish the scope");
+              throw elle::Exception("unable to relinquish the scope");
 
             // record the scope in the journal.
             if (journal::Journal::Record(scope) == elle::Status::Error)
-              escape("unable to record the scope in the journal");
+              throw elle::Exception("unable to record the scope in the journal");
 
             break;
           }
@@ -453,7 +453,7 @@ namespace etoile
 
       // select the actor.
       if (gear::Actor::Select(identifier, actor) == elle::Status::Error)
-        escape("unable to select the actor");
+        throw elle::Exception("unable to select the actor");
 
       gear::Guard               guard(actor);
 
@@ -467,7 +467,7 @@ namespace etoile
 
         // retrieve the context.
         if (scope->Use(context) == elle::Status::Error)
-          escape("unable to retrieve the context");
+          throw elle::Exception("unable to retrieve the context");
 
         // check the permissions before performing the operation in
         // order not to alter the scope should the operation not be
@@ -475,26 +475,26 @@ namespace etoile
         if (automaton::Rights::Operate(
               *context,
               gear::OperationDestroy) == elle::Status::Error)
-          escape("the user does not seem to have the necessary permission for "
+          throw elle::Exception("the user does not seem to have the necessary permission for "
                  "destroying this file");
 
         // specify the closing operation performed by the actor.
         if (actor->Operate(gear::OperationDestroy) == elle::Status::Error)
-          escape("this operation cannot be performed by this actor");
+          throw elle::Exception("this operation cannot be performed by this actor");
 
         // delete the actor.
         guard.actor(nullptr);
 
         // specify the closing operation performed on the scope.
         if (scope->Operate(gear::OperationDestroy) == elle::Status::Error)
-          escape("unable to specify the operation being performed "
+          throw elle::Exception("unable to specify the operation being performed "
                  "on the scope");
 
         // trigger the shutdown.
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {
@@ -518,11 +518,11 @@ namespace etoile
             // relinquish the scope: at this point we know there is no
             // remaining actor.
             if (gear::Scope::Relinquish(scope) == elle::Status::Error)
-              escape("unable to relinquish the scope");
+              throw elle::Exception("unable to relinquish the scope");
 
             // record the scope in the journal.
             if (journal::Journal::Record(scope) == elle::Status::Error)
-              escape("unable to record the scope in the journal");
+              throw elle::Exception("unable to record the scope in the journal");
 
             break;
           }

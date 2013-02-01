@@ -65,11 +65,9 @@ namespace elle
           in.read(&str[0], 256);
 
           std::string res(str, 256);
-#include <elle/idiom/Close.hh>
           return "Stream(state: " +
             std::string(in.eof() ? "EOF" : (in.fail() ? "FAIL" : "GOOD")) +
             "): '" + res + "'";
-#include <elle/idiom/Open.hh>
         }
       };
 
@@ -158,9 +156,7 @@ namespace elle
             if (c != '.')
               in.seekg(charpos);
           }
-#include <elle/idiom/Close.hh>
         if (in.fail() || c == '.')
-#include <elle/idiom/Open.hh>
           {
             in.clear();
             in.seekg(pos);
@@ -180,9 +176,7 @@ namespace elle
         auto pos = in.tellg();
         json::Float::Type f;
         in >> f;
-#include <elle/idiom/Close.hh>
         if (in.fail())
-#include <elle/idiom/Open.hh>
           {
             in.clear();
             in.seekg(pos);

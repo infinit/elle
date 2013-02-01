@@ -73,7 +73,7 @@ namespace etoile
 
       // generate the abstract based on the object.
       if (abstract.Create(*context.object) == elle::Status::Error)
-        escape("unable to generate the abstract");
+        throw elle::Exception("unable to generate the abstract");
 
       return elle::Status::Ok;
     }
@@ -119,7 +119,7 @@ namespace etoile
 
       // destroy the access.
       if (Access::Destroy(context) == elle::Status::Error)
-        escape("unable to destroy the access");
+        throw elle::Exception("unable to destroy the access");
 
       // mark the object as needing to be removed.
       context.transcript().record(
@@ -157,7 +157,7 @@ namespace etoile
           if (context.object->Seal(
                 agent::Agent::Identity.pair().k(),
                 fingerprint) == elle::Status::Error)
-            escape("unable to seal the object");
+            throw elle::Exception("unable to seal the object");
 
           // mark the block as needing to be stored.
           context.transcript().record(

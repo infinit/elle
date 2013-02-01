@@ -1,8 +1,6 @@
 #ifndef  PLASMA_WATCHDOG_INFINITNETWORK_HH
 # define PLASMA_WATCHDOG_INFINITNETWORK_HH
 
-# include <elle/idiom/Close.hh>
-
 # include <string>
 
 # include <QDir>

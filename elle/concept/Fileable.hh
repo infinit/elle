@@ -41,10 +41,8 @@
 # include <elle/io/fwd.hh>
 # include <elle/serialize/Serializable.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <string>
-#  include <typeinfo>
-# include <elle/idiom/Open.hh>
+# include <string>
+# include <typeinfo>
 
 # define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
   using elle::concept::Fileable<__VA_ARGS__>::store;                          \

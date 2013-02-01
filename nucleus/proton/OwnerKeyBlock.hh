@@ -14,8 +14,6 @@ using namespace infinit;
 # include <nucleus/neutron/Component.hh>
 # include <nucleus/neutron/Subject.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton

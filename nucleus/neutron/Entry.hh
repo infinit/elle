@@ -10,8 +10,6 @@
 # include <nucleus/proton/Address.hh>
 # include <nucleus/neutron/fwd.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron

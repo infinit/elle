@@ -2,12 +2,9 @@
 # define HOLE_IMPLEMENTATIONS_REMOTE_CLIENT_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/network/fwd.hh>
 
-# include <elle/idiom/Close.hh>
 # include <reactor/network/tcp-socket.hh>
-# include <elle/idiom/Open.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <hole/implementations/remote/Manifest.hh>
@@ -24,7 +21,6 @@ namespace hole
       /// A client machine and is therefore used whenever the current
       /// host is acting as a client of another host i.e the server.
       class Client
-        : public elle::radix::Entity
       {
       /*-------------.
       | Construction |

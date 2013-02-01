@@ -2,12 +2,10 @@
 # define ETOILE_PATH_WAY_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
-# include <elle/radix/Object.hh>
 
 # include <etoile/path/fwd.hh>
-
-# include <elle/idiom/Open.hh>
 
 namespace etoile
 {
@@ -18,7 +16,6 @@ namespace etoile
     /// this class represents a string-based path i.e a way.
     ///
     class Way:
-      public elle::radix::Object,
       public elle::Printable
     {
     public:
@@ -31,7 +28,7 @@ namespace etoile
       // constructors & destructors
       //
       Way();
-      Way(const Way&);
+      Way(const Way&) = default;
       Way(const elle::Character&);
       Way(const elle::String&);
       Way(const Way&,
@@ -43,12 +40,12 @@ namespace etoile
       //
       elle::Status              Capacity(Length&) const;
 
-
+      //
       // interfaces
       //
 
-      // object
-      declare(Way);
+      ELLE_OPERATOR_ASSIGNMENT(Way); // XXX
+
       elle::Boolean             operator==(const Way&) const;
 
       // dumpable

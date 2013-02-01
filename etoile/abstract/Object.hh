@@ -2,6 +2,7 @@
 # define ETOILE_ABSTRACT_OBJECT_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 # include <elle/utility/Time.hh>
 
 # include <cryptography/PublicKey.hh>
@@ -11,8 +12,6 @@
 # include <nucleus/neutron/Genre.hh>
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/neutron/Permissions.hh>
-
-# include <elle/idiom/Open.hh>
 
 // XXX[temporary: for cryptography]
 using namespace infinit;
@@ -25,8 +24,7 @@ namespace etoile
     ///
     /// this class describes an object's meta data.
     ///
-    class Object:
-      public elle::radix::Object
+    class Object
     {
     public:
       //
@@ -45,10 +43,7 @@ namespace etoile
       // interfaces
       //
 
-      // object
-      declare(Object);
-      // XXX[useless: to remove]
-      elle::Boolean     operator==(const Object&) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(Object);
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;

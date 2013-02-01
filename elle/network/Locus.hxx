@@ -4,9 +4,7 @@
 # include <cassert>
 # include <functional>
 
-# include <elle/idiom/Close.hh>
 # include <boost/functional/hash.hpp>
-# include <elle/idiom/Open.hh>
 
 # include <elle/serialize/Serializer.hh>
 

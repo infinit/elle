@@ -64,7 +64,7 @@ namespace hole
 
         // check if the insertion was successful.
         if (result.second == false)
-          escape("unable to insert the neighbour in the container");
+          throw elle::Exception("unable to insert the neighbour in the container");
 
         return elle::Status::Ok;
       }
@@ -91,7 +91,7 @@ namespace hole
 
         // try to locate the locus.
         if (this->Locate(locus, &iterator) == false)
-          escape("unable to locate the given locus");
+          throw elle::Exception("unable to locate the given locus");
 
         // return the associated neighbour.
         neighbour = iterator->second;
@@ -108,7 +108,7 @@ namespace hole
 
         // try to locate the locus.
         if (this->Locate(locus, &iterator) == false)
-          escape("unable to locate the given locus");
+          throw elle::Exception("unable to locate the given locus");
 
         // erase the iterator.
         this->container.erase(iterator);
@@ -158,7 +158,7 @@ namespace hole
           {
             // dump the neighbour.
             if (scoutor->second->Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the neighbour");
+              throw elle::Exception("unable to dump the neighbour");
           }
 
         return elle::Status::Ok;

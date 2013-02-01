@@ -2,6 +2,7 @@
 # define ETOILE_PATH_CHEMIN_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/neutron/Size.hh>
@@ -9,9 +10,9 @@
 # include <etoile/path/Route.hh>
 # include <etoile/path/Venue.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <limits>
-# include <elle/idiom/Open.hh>
+# include <limits>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace etoile
 {
@@ -25,8 +26,7 @@ namespace etoile
     /// note that for debugging purposes, the chemin embeds the route
     /// along with its associated venue.
     ///
-    class Chemin:
-      public elle::radix::Object
+    class Chemin
     {
     public:
       //
@@ -40,6 +40,7 @@ namespace etoile
       Chemin();
       Chemin(Route const& route,
              Venue const& venue);
+      Chemin(Chemin const&) = default;
 
       //
       // methods
@@ -58,8 +59,8 @@ namespace etoile
       // interfaces
       //
 
-      // object
-      declare(Chemin);
+      ELLE_OPERATOR_ASSIGNMENT(Chemin); // XXX
+
       elle::Boolean             operator==(const Chemin&) const;
       elle::Boolean             operator<(const Chemin&) const;
 

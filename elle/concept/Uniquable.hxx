@@ -6,9 +6,7 @@
 
 # include <elle/serialize/Base64Archive.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <sstream>
-# include <elle/idiom/Open.hh>
+# include <sstream>
 
 namespace elle
 {
@@ -31,7 +29,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            escape("%s", err.what());
+            throw Exception("%s", err.what());
           }
 
         out = ss.str();
@@ -55,7 +53,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            escape("%s", err.what());
+            throw Exception("%s", err.what());
           }
 
         return Status::Ok;
@@ -63,7 +61,5 @@ namespace elle
 
   }
 }
-
-# include <elle/idiom/Close.hh>
 
 #endif

@@ -78,12 +78,12 @@ void test_rotation()
 
                 // generate the initial seed.
                 if (seed.generate() == Status::Error)
-                  escape("unable to generate the seed");
+                  throw elle::Exception("unable to generate the seed");
 
                 // rotate the key pair once in order to be truly random
                 // i.e without a small exponent 'e' such as 3.
                 if (kp->Rotate(seed, initial) == Status::Error)
-                  escape("unable to rotate the initial key pair");
+                  throw elle::Exception("unable to rotate the initial key pair");
 
                 // generate a random number of rotations to apply.
                 rotations = random::generate(Test::MinimumKeyRotations,
@@ -101,14 +101,14 @@ void test_rotation()
 
                     // rotate the seed.
                     if (s.Rotate(kp->k, _s) == Status::Error)
-                      escape("unable to rotate the seed");
+                      throw elle::Exception("unable to rotate the seed");
 
                     // assign the seed.
                     s = _s;
 
                     // rotate the key pair.
                     if (p.Rotate(s, _p) == Status::Error)
-                      escape("unable to rotate the key pair");
+                      throw elle::Exception("unable to rotate the key pair");
 
                     // assign the key pair.
                     p = _p;
@@ -125,7 +125,7 @@ void test_rotation()
 
                     // derive the seed.
                     if (s.Derive(kp->K, _s) == Status::Error)
-                      escape("unable to derive the seed");
+                      throw elle::Exception("unable to derive the seed");
 
                     // assign the seed.
                     s = _s;
@@ -133,12 +133,12 @@ void test_rotation()
 
                 // derive the key from the seed.
                 if (k.Derive(s, K) == Status::Error)
-                  escape("unable to derive the key");
+                  throw elle::Exception("unable to derive the key");
 
                 // finally, compare the public and private key
                 // with the initial.
                 if ((initial.K != K) || (initial.k != k))
-                  escape("the keys differ from the initial");
+                  throw elle::Exception("the keys differ from the initial");
                 */
 }
 

@@ -7,6 +7,8 @@
 # include <etoile/gear/Identifier.hh>
 # include <etoile/gear/Operation.hh>
 
+# include <boost/noncopyable.hpp>
+
 # include <map>
 
 namespace etoile
@@ -34,7 +36,7 @@ namespace etoile
     /// and used by the application for referencing the actor.
     ///
     class Actor:
-      public elle::radix::Object
+      private boost::noncopyable
     {
     public:
       //

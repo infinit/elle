@@ -225,7 +225,7 @@ namespace nucleus
             std::cout << alignment << "[Address] " << this << std::endl;
 
             if (this->_valid->network().Dump(margin + 2) == elle::Status::Error)
-              escape("XXX");
+              throw Exception("XXX");
 
             // display the family.
             std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "

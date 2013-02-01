@@ -6,8 +6,6 @@
 #include <elle/io/Pattern.hh>
 #include <elle/standalone/Region.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace lune
 {
 
@@ -58,11 +56,6 @@ namespace lune
 
     return true;
   }
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Phrase, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

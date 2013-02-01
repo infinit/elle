@@ -9,7 +9,8 @@
 # include <nucleus/proton/Revision.hh>
 # include <nucleus/neutron/fwd.hh>
 
-# include <elle/idiom/Open.hh>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 // XXX[temporary: for cryptography]
 using namespace infinit;
@@ -22,8 +23,7 @@ namespace etoile
     ///
     /// this class describes an group's meta data.
     ///
-    class Group:
-      public elle::radix::Object
+    class Group
     {
     public:
       //
@@ -42,10 +42,9 @@ namespace etoile
       // interfaces
       //
 
-      // group
-      declare(Group);
-      // XXX[useless: to remove]
-      elle::Boolean     operator==(const Group&) const;
+      ELLE_OPERATOR_NO_ASSIGNMENT(Group);
+
+      elle::Boolean       operator==(const Group&    element) const;
 
       // dumpable
       elle::Status      Dump(const elle::Natural32 = 0) const;

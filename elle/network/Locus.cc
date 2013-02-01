@@ -1,6 +1,5 @@
 #include <elle/network/Locus.hh>
 #include <elle/io/Dumpable.hh>
-#include <elle/types.hh>
 
 namespace elle
 {
@@ -43,12 +42,12 @@ namespace elle
 
       // locate the ':' separator.
       if ((separator = string.find_first_of(':')) == string.npos)
-        escape("unable to locate the host/port separator in '%s'",
+        throw Exception("unable to locate the host/port separator in '%s'",
                string.c_str());
 
       // create the host.
       if (this->host.Create(string.substr(0, separator)) == Status::Error)
-        escape("unable to create the host");
+        throw Exception("unable to create the host");
 
       // create the port.
       this->port =
@@ -115,19 +114,6 @@ namespace elle
       return false;
     }
 
-    ///
-    /// compare two objects.
-    ///
-    Boolean             Locus::operator>(const Locus&           element) const
-    {
-      return (!(this->operator<=(element)));
-    }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Locus, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -142,7 +128,7 @@ namespace elle
       std::cout << alignment << "[Locus]" << std::endl;
 
       if (this->host.Dump(margin + 2) == Status::Error)
-        escape("unable to dump the host");
+        throw Exception("unable to dump the host");
 
       std::cout << alignment << io::Dumpable::Shift << "[Port] "
                 << std::dec << this->port << std::endl;

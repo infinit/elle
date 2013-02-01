@@ -137,7 +137,7 @@ namespace nucleus
 
       // dump the parent class.
       if (MutableBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       // dump the OKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -158,7 +158,7 @@ namespace nucleus
       if (this->_owner_subject != nullptr)
         {
           if (this->_owner_subject->Dump(margin + 6) == elle::Status::Error)
-            escape("unable to dump the subject");
+            throw Exception("unable to dump the subject");
         }
 
       return elle::Status::Ok;

@@ -20,15 +20,6 @@ namespace lune
   }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Dictionary, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -43,11 +34,11 @@ namespace lune
 
     // dump the users map.
     if (this->users.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the users map");
+      throw elle::Exception("unable to dump the users map");
 
     // dump the groups map.
     if (this->groups.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the groups map");
+      throw elle::Exception("unable to dump the groups map");
 
     return elle::Status::Ok;
   }

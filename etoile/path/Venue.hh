@@ -2,14 +2,12 @@
 # define ETOILE_PATH_VENUE_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <nucleus/proton/fwd.hh>
 # include <nucleus/proton/Location.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <vector>
-# include <elle/idiom/Open.hh>
+# include <vector>
 
 namespace etoile
 {
@@ -22,8 +20,7 @@ namespace etoile
     /// a venue is therefore composed of a sequence of Location, each
     /// of which indicates the address and revision number of the component.
     ///
-    class Venue:
-      public elle::radix::Object
+    class Venue
     {
     public:
       //
@@ -42,6 +39,7 @@ namespace etoile
       // constructors & destructors
       //
       Venue();
+      Venue(Venue const&) = default;
 
       //
       // methods
@@ -58,8 +56,8 @@ namespace etoile
       // interfaces
       //
 
-      // object
-      declare(Venue);
+      ELLE_OPERATOR_ASSIGNMENT(Venue); // XXX
+
       elle::Boolean             operator==(const Venue&) const;
 
       // dumpable

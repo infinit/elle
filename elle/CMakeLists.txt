@@ -30,10 +30,6 @@ add_library(elle ${LINK_METHOD}
 
   nat/Nat.cc
 
-  radix/Meta.cc
-  radix/Object.cc
-  radix/Trace.cc
-
   io/Console.cc
   io/Directory.cc
   io/Dumpable.cc

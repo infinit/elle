@@ -39,7 +39,7 @@ namespace satellite
 
       // dump the archive.
       if (this->archive.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the archive");
+        throw elle::Exception("unable to dump the archive");
 
       return elle::Status::Ok;
     }

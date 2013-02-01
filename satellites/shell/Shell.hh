@@ -5,10 +5,8 @@
 
 # include <nucleus/proton/Address.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <readline/readline.h>
-#  include <readline/history.h>
-# include <elle/idiom/Open.hh>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 namespace satellite
 {

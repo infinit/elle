@@ -201,7 +201,7 @@ namespace lune
 
     // dump the parent settings.
     if (elle::utility::Settings::Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the settings");
+      throw elle::Exception("unable to dump the settings");
 
     return elle::Status::Ok;
   }

@@ -3,7 +3,6 @@
 #include <common/common.hh>
 
 #include <elle/os/path.hh>
-#include <elle/idiom/Close.hh>
 
 #include <boost/filesystem.hpp>
 

@@ -416,7 +416,7 @@ namespace nucleus
                 << this->_container.size() << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying value");
+        throw Exception("unable to dump the underlying value");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Fellows]" << std::endl;
@@ -426,7 +426,7 @@ namespace nucleus
           auto& fellow = pair.second;
 
           if (fellow->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the fellow");
+            throw Exception("unable to dump the fellow");
         }
 
       return (elle::Status::Ok);

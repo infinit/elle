@@ -10,9 +10,7 @@
 
 # include <lune/Phrase.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <map>
-# include <elle/idiom/Open.hh>
+# include <map>
 
 namespace etoile
 {

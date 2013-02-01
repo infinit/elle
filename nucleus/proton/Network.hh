@@ -7,8 +7,6 @@
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton

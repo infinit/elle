@@ -7,7 +7,6 @@
 #include <lune/Identity.hh>
 
 #include <elle/serialize/HexadecimalArchive.hh>
-#include <elle/idiom/Close.hh>
 
 #include <boost/filesystem.hpp>
 

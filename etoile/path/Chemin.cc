@@ -49,11 +49,11 @@ namespace etoile
       // clear the route because the chemin may have been used for
       // something else before.
       if (this->route.Clear() == elle::Status::Error)
-        escape("unable to clear the route");
+        throw elle::Exception("unable to clear the route");
 
       // do the same for the venue.
       if (this->venue.Clear() == elle::Status::Error)
-        escape("unable to clear the venue");
+        throw elle::Exception("unable to clear the venue");
 
       //
       // import the route.
@@ -117,7 +117,7 @@ namespace etoile
     {
       // check the size of the venue.
       if (this->venue.elements.size() == 0)
-        escape("the venue seems to be empty");
+        throw elle::Exception("the venue seems to be empty");
 
       // set the location's attributes according to the venue last element.
       location = this->venue.elements[this->venue.elements.size() - 1];
@@ -162,11 +162,6 @@ namespace etoile
       return false;
     }
 
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Chemin, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -182,11 +177,11 @@ namespace etoile
 
       // dump the route.
       if (this->route.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the route");
+        throw elle::Exception("unable to dump the route");
 
       // dump the venue.
       if (this->venue.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the venue");
+        throw elle::Exception("unable to dump the venue");
 
       return elle::Status::Ok;
     }

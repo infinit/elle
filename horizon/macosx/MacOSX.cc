@@ -5,8 +5,6 @@
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace horizon
 {
   namespace macosx
@@ -73,7 +71,7 @@ namespace horizon
 
         // initialize FUSE.
         if (FUSE::Initialize(operations) == elle::Status::Error)
-          escape("unable to initialize FUSE");
+          throw elle::Exception("unable to initialize FUSE");
       }
 
       return elle::Status::Ok;
@@ -86,7 +84,7 @@ namespace horizon
     {
       // clean FUSE.
       if (FUSE::Clean() == elle::Status::Error)
-        escape("unable to clean FUSE");
+        throw elle::Exception("unable to clean FUSE");
 
       return elle::Status::Ok;
     }

@@ -8,14 +8,12 @@
 # include <elle/types.hh>
 # include <elle/system/platform.hh>
 
-# include <elle/idiom/Close.hh>
-#  define _GNU_SOURCE
-#  include <fuse.h>
-#  if defined(HAVE_SETXATTR)
-#   include <sys/xattr.h>
-#  endif
-#  include <pthread.h>
-# include <elle/idiom/Open.hh>
+# define _GNU_SOURCE
+# include <fuse.h>
+# if defined(HAVE_SETXATTR)
+#  include <sys/xattr.h>
+# endif
+# include <pthread.h>
 
 namespace horizon
 {

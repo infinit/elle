@@ -26,10 +26,8 @@ using namespace infinit;
 #include <lune/Lune.hh>
 #include <lune/Phrase.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/foreach.hpp>
-# include <limits>
-#include <elle/idiom/Open.hh>
+#include <boost/foreach.hpp>
+#include <limits>
 
 namespace satellite
 {
@@ -211,15 +209,15 @@ namespace satellite
 
     // set up the program.
     if (elle::concurrency::Program::Setup("Access") == elle::Status::Error)
-      escape("unable to set up the program");
+      throw elle::Exception("unable to set up the program");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      escape("unable to initialize Lune");
+      throw elle::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      escape("unable to initialize Infinit");
+      throw elle::Exception("unable to initialize Infinit");
 
     // initialize the operation.
     operation = Access::OperationUnknown;
@@ -229,7 +227,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-      escape("unable to set the description");
+      throw elle::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -238,7 +236,7 @@ namespace satellite
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -247,7 +245,7 @@ namespace satellite
           "user",
           "specifies the name of the user",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -256,7 +254,7 @@ namespace satellite
           "network",
           "specifies the name of the network",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -265,7 +263,7 @@ namespace satellite
           "lookup",
           "look up a specific access record",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -274,7 +272,7 @@ namespace satellite
           "consult",
           "consult the access records",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -283,7 +281,7 @@ namespace satellite
           "grant",
           "grant access to a user/group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -292,7 +290,7 @@ namespace satellite
           "revoke",
           "revoke an access for a user/group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -301,7 +299,7 @@ namespace satellite
           "type",
           "indicate the type of the entity: user or group",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -311,7 +309,7 @@ namespace satellite
           "indicate the local absolute path to the target object "
           "i.e file, directory or link",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -320,7 +318,7 @@ namespace satellite
           "identity",
           "specify the user/group base64 identity",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -329,7 +327,7 @@ namespace satellite
           "read",
           "indicate that the read permission must be granted",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -338,11 +336,11 @@ namespace satellite
           "write",
           "indicate that the write permission must be granted",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      escape("unable to parse the command line");
+      throw elle::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -361,7 +359,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the user name");
+        throw elle::Exception("unable to retrieve the user name");
       }
 
     // retrieve the network name.
@@ -371,7 +369,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the network name");
+        throw elle::Exception("unable to retrieve the network name");
       }
 
     // check the mutually exclusive options.
@@ -383,7 +381,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the create, destroy and information options are "
+        throw elle::Exception("the create, destroy and information options are "
                "mutually exclusive");
       }
 
@@ -416,16 +414,16 @@ namespace satellite
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
                                      path) == elle::Status::Error)
-            escape("unable to retrieve the path value");
+            throw elle::Exception("unable to retrieve the path value");
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type",
                                      string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -442,28 +440,28 @@ namespace satellite
                 if (Infinit::Parser->Value(
                       "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identity");
+                  throw elle::Exception("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'", type);
+                throw elle::Exception("unsupported entity type '%u'", type);
               }
             }
 
@@ -481,7 +479,7 @@ namespace satellite
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
                                      path) == elle::Status::Error)
-            escape("unable to retrieve the path value");
+            throw elle::Exception("unable to retrieve the path value");
 
           // declare additional local variables.
           etoile::path::Way             way(path);
@@ -500,16 +498,16 @@ namespace satellite
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
                                      path) == elle::Status::Error)
-            escape("unable to retrieve the path value");
+            throw elle::Exception("unable to retrieve the path value");
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type",
                                      string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -526,28 +524,28 @@ namespace satellite
                 if (Infinit::Parser->Value(
                       "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identity");
+                  throw elle::Exception("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'",
+                throw elle::Exception("unsupported entity type '%u'",
                        type);
               }
             }
@@ -579,16 +577,16 @@ namespace satellite
           // retrieve the path.
           if (Infinit::Parser->Value("Path",
                                      path) == elle::Status::Error)
-            escape("unable to retrieve the path value");
+            throw elle::Exception("unable to retrieve the path value");
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type",
                                      string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -605,28 +603,28 @@ namespace satellite
                 if (Infinit::Parser->Value(
                       "Identity",
                       res) == elle::Status::Error)
-                  escape("unable to retrieve the identity");
+                  throw elle::Exception("unable to retrieve the identity");
 
                 if (K.Restore(res) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identity");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'",
+                throw elle::Exception("unsupported entity type '%u'",
                        type);
               }
             }
@@ -643,7 +641,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw elle::Exception("please specify an operation to perform");
         }
       }
 
@@ -653,11 +651,11 @@ namespace satellite
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      escape("unable to clean Infinit");
+      throw elle::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      escape("unable to clean Lune");
+      throw elle::Exception("unable to clean Lune");
 
     return elle::Status::Ok;
   }

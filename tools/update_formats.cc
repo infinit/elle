@@ -170,8 +170,6 @@ struct Directory
   }
 };
 
-#include <elle/idiom/Close.hh>
-
 #include <boost/program_options.hpp>
 
 # define ADD_CLASS(__type, var) \

@@ -1,7 +1,5 @@
 #include <elle/io/Piece.hh>
 
-#include <elle/idiom/Open.hh>
-
 #include <iostream>
 
 namespace elle
@@ -49,11 +47,6 @@ namespace elle
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(Piece, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

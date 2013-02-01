@@ -67,7 +67,7 @@ namespace nucleus
             *this->_signature,
             elle::serialize::make_tuple(this->master,
                                         this->slave)) == false)
-        escape("this stamp seems not to have been issued by the oracle");
+        throw Exception("this stamp seems not to have been issued by the oracle");
 
       return elle::Status::Ok;
     }
@@ -114,7 +114,7 @@ namespace nucleus
                 << "[Master]" << std::endl;
 
       if (this->master.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the master");
+        throw Exception("unable to dump the master");
 
       // dump the master.
 
@@ -122,7 +122,7 @@ namespace nucleus
                 << "[Slave]" << std::endl;
 
       if (this->slave.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the slave");
+        throw Exception("unable to dump the slave");
 
       // dump the signature.
       if (this->_signature != nullptr)

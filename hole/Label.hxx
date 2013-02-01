@@ -1,8 +1,6 @@
 #ifndef HOLE_LABEL_HXX
 # define HOLE_LABEL_HXX
 
-# include <elle/idiom/Open.hh>
-
 namespace hole
 {
 
@@ -22,10 +20,6 @@ namespace hole
 //
 // ---------- serialize -------------------------------------------------------
 //
-
-# include <elle/idiom/Close.hh>
-#  include <cassert>
-# include <elle/idiom/Open.hh>
 
 # include <elle/serialize/Pointer.hh>
 # include <cryptography/Digest.hh>

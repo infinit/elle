@@ -177,7 +177,7 @@ namespace etoile
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)
-                escape("unable to destroy the ensemble block");
+                throw elle::Exception("unable to destroy the ensemble block");
             }
 
           // downgrade the group since it no longer reference an ensemble
@@ -213,7 +213,7 @@ namespace etoile
             {
               // destroy the ensemble block.
               if (Ensemble::Destroy(context) == elle::Status::Error)
-                escape("unable to destroy the ensemble block");
+                throw elle::Exception("unable to destroy the ensemble block");
             }
 
           /* XXX[in theory, a new pass should be generated but for now,
@@ -221,7 +221,7 @@ namespace etoile
                  history, which is less secure, but enough for now]
           // generate the new pass.
           if (pass.Generate() == elle::Status::Error) // XXX[use specific length]
-            escape("unable to generate the pass");
+            throw elle::Exception("unable to generate the pass");
           */
           /* XXX[instead the Group has been modified such that a keypair has
                  been generation at the construction. thus the group already

@@ -37,11 +37,11 @@ namespace satellite
 
     // check the argument.
     if (name.empty() == true)
-      escape("unable to create a user without a user name");
+      throw elle::Exception("unable to create a user without a user name");
 
     // check if the user already exists.
     if (lune::Identity::exists(name) == true)
-      escape("this user seems to already exist");
+      throw elle::Exception("this user seems to already exist");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for the authority: ";
@@ -50,14 +50,14 @@ namespace satellite
           pass,
           prompt,
           elle::io::Console::OptionPassword) == elle::Status::Error)
-      escape("unable to read the input");
+      throw elle::Exception("unable to read the input");
 
     // load the authority.
     elle::Authority authority(elle::io::Path{lune::Lune::Authority});
 
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
-      escape("unable to decrypt the authority");
+      throw elle::Exception("unable to decrypt the authority");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
@@ -66,7 +66,7 @@ namespace satellite
           pass,
           prompt,
           elle::io::Console::OptionPassword) == elle::Status::Error)
-      escape("unable to read the input");
+      throw elle::Exception("unable to read the input");
 
     // create the identity.
     if (identity.Create(
@@ -75,15 +75,15 @@ namespace satellite
           cryptography::KeyPair::generate(
             cryptography::Cryptosystem::rsa,
             lune::Identity::keypair_length)) == elle::Status::Error)
-      escape("unable to create the identity");
+      throw elle::Exception("unable to create the identity");
 
     // encrypt the identity.
     if (identity.Encrypt(pass) == elle::Status::Error)
-      escape("unable to encrypt the identity");
+      throw elle::Exception("unable to encrypt the identity");
 
     // seal the identity.
     if (identity.Seal(authority) == elle::Status::Error)
-      escape("unable to seal the identity");
+      throw elle::Exception("unable to seal the identity");
 
     // store the identity.
     identity.store();
@@ -107,11 +107,11 @@ namespace satellite
 
       // check the argument.
       if (name.empty() == true)
-        escape("unable to destroy a user without a user name");
+        throw elle::Exception("unable to destroy a user without a user name");
 
       // check if the user already exists.
       if (lune::Identity::exists(name) == false)
-        escape("this user does not seem to exist");
+        throw elle::Exception("this user does not seem to exist");
 
       // destroy the identity.
       lune::Identity::erase(name);
@@ -136,19 +136,19 @@ namespace satellite
 
       // create the user path.
       if (path.Create(lune::Lune::User) == elle::Status::Error)
-        escape("unable to create the path");
+        throw elle::Exception("unable to create the path");
 
       // complete the path with the user name.
       if (path.Complete(elle::io::Piece("%USER%", name)) == elle::Status::Error)
-        escape("unable to complete the path");
+        throw elle::Exception("unable to complete the path");
 
       // clear the user directory content.
       if (elle::io::Directory::Clear(path) == elle::Status::Error)
-        escape("unable to clear the directory");
+        throw elle::Exception("unable to clear the directory");
 
       // remove the directory.
       if (elle::io::Directory::Remove(path) == elle::Status::Error)
-        escape("unable to erase the directory");
+        throw elle::Exception("unable to erase the directory");
     }
 
     return elle::Status::Ok;
@@ -167,11 +167,11 @@ namespace satellite
 
     // check the argument.
     if (name.empty() == true)
-      escape("unable to create a user without a user name");
+      throw elle::Exception("unable to create a user without a user name");
 
     // check if the user already exists.
     if (lune::Identity::exists(name) == false)
-      escape("this user does not seem to exist");
+      throw elle::Exception("this user does not seem to exist");
 
     // prompt the user for the passphrase.
     prompt = "Enter passphrase for keypair '" + name + "': ";
@@ -180,26 +180,26 @@ namespace satellite
           pass,
           prompt,
           elle::io::Console::OptionPassword) == elle::Status::Error)
-      escape("unable to read the input");
+      throw elle::Exception("unable to read the input");
 
     // load the identity.
     identity.load(name);
 
     // verify the identity.
     if (identity.Validate(Infinit::authority()) == elle::Status::Error)
-      escape("the identity seems to be invalid");
+      throw elle::Exception("the identity seems to be invalid");
 
     // decrypt the identity.
     if (identity.Decrypt(pass) == elle::Status::Error)
-      escape("unable to decrypt the identity");
+      throw elle::Exception("unable to decrypt the identity");
 
     // dump the identity.
     if (identity.Dump() == elle::Status::Error)
-      escape("unable to dump the identity");
+      throw elle::Exception("unable to dump the identity");
 
     // retrieve the user's public key unique.
     if (identity.pair().K().Save(unique) == elle::Status::Error)
-      escape("unable to save the public key's unique");
+      throw elle::Exception("unable to save the public key's unique");
 
     // display the unique.
     std::cout << "[Unique] " << unique << std::endl;

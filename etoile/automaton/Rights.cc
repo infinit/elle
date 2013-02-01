@@ -99,7 +99,7 @@ namespace etoile
 
           // open the access.
           if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access block");
+            throw elle::Exception("unable to open the access block");
 
           // Retrieve a door on the access.
           nucleus::proton::Door<nucleus::neutron::Access> door =

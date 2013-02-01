@@ -425,7 +425,7 @@ namespace nucleus
                 << std::hex << this << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the value");
+        throw Exception("unable to dump the value");
 
       std::cout << alignment << elle::io::Dumpable::Shift << "[Traits] #"
                 << this->_container.size() << std::endl;

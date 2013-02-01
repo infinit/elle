@@ -6,7 +6,6 @@
 #include <nucleus/proton/fwd.hh>
 #include <nucleus/proton/Block.hh>
 
-#include <elle/idiom/Open.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.hole.implementations.local.Implementation");
@@ -108,7 +107,7 @@ namespace hole
 
         // dump the machine.
         if (Local::Computer->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the machine");
+          throw elle::Exception("unable to dump the machine");
 
         return elle::Status::Ok;
       }

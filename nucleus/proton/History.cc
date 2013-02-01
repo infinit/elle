@@ -6,7 +6,6 @@
 #include <elle/io/Piece.hh>
 
 #include <elle/Buffer.hh>
-#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -30,7 +29,7 @@ namespace nucleus
     {
       // check if the index is out of bound.
       if (index >= this->_container.size())
-        escape("the revision index is out of bound");
+        throw Exception("the revision index is out of bound");
 
       // return the revision.
       revision = this->_container[index];
@@ -108,7 +107,7 @@ namespace nucleus
 
           // dump the revision.
           if (revision.Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the revision");
+            throw Exception("unable to dump the revision");
         }
 
       return elle::Status::Ok;

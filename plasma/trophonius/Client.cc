@@ -13,8 +13,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <elle/idiom/Close.hh>
-
 #include <elle/print.hh>
 #include <elle/assert.hh>
 

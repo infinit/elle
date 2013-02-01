@@ -2,10 +2,11 @@
 # define ETOILE_GEAR_IDENTIFIER_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 # include <elle/Printable.hh>
 
-# include <elle/idiom/Open.hh>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace etoile
 {
@@ -17,7 +18,6 @@ namespace etoile
     /// to act on scopes.
     ///
     class Identifier:
-      public elle::radix::Object,
       public elle::Printable
     {
     public:
@@ -37,6 +37,7 @@ namespace etoile
       // constructors & destructors
       //
       Identifier();
+      Identifier(Identifier const&) = default;
 
       //
       // methods
@@ -47,8 +48,8 @@ namespace etoile
       // interfaces
       //
 
-      // object
-      declare(Identifier);
+      ELLE_OPERATOR_ASSIGNMENT(Identifier); // XXX
+
       elle::Boolean             operator==(const Identifier&) const;
       elle::Boolean             operator<(const Identifier&) const;
 

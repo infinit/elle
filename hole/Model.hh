@@ -2,9 +2,7 @@
 # define HOLE_MODEL_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
-
-# include <elle/idiom/Open.hh>
+# include <elle/operator.hh>
 
 namespace hole
 {
@@ -13,8 +11,7 @@ namespace hole
   /// this class defines the model of a network i.e its implementation.
   ///
   // FIXME: should not be in hole.
-  class Model:
-    public elle::radix::Object
+  class Model
   {
   public:
     //
@@ -72,8 +69,8 @@ namespace hole
     // interfaces
     //
 
-    // object
-    declare(Model);
+    ELLE_OPERATOR_ASSIGNMENT(Model); // XXX
+
     elle::Boolean       operator==(const Model&) const;
 
     // dumpable

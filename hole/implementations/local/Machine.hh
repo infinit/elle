@@ -4,7 +4,6 @@
 # include <memory>
 
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
 
 # include <hole/fwd.hh>
 
@@ -21,8 +20,7 @@ namespace hole
       /// Note that every host can emulate multiple nodes though in
       /// the case of the local implementation, a single host is
       /// present i.e the machine.
-      class Machine:
-        public elle::radix::Entity
+      class Machine
       {
       public:
         Machine(hole::Hole& hole);

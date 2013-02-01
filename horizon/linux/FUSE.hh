@@ -7,9 +7,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <fuse/fuse.h>
-# include <elle/idiom/Open.hh>
+# include <fuse/fuse.h>
 
 namespace horizon
 {

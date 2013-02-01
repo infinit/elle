@@ -25,8 +25,6 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-#include <elle/idiom/Close.hh>
-
 #include <QString>
 #include <QByteArray>
 #include <QLocalSocket>

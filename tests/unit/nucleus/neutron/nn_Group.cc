@@ -1,5 +1,4 @@
 #include <elle/print.hh>
-#include <elle/idiom/Open.hh>
 #include <elle/log.hh>
 
 #include <cryptography/KeyPair.hh>

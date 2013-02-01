@@ -60,7 +60,7 @@ namespace lune
 
     // check if the entry exists.
     if (this->Lookup(name) == true)
-      escape("this name is already registered");
+      throw elle::Exception("this name is already registered");
 
     // allocate a new entry.
     entry = new Map<T>::Entry;
@@ -162,17 +162,8 @@ namespace lune
           }
       }
 
-    escape("unable to locate the given name");
+    throw elle::Exception("unable to locate the given name");
   }
-
-//
-// ---------- object ----------------------------------------------------------
-//
-
-  ///
-  /// this macro-function call generates the object.
-  ///
-  embed(Map<T>, _(template <typename T>));
 
 //
 // ---------- dumpable --------------------------------------------------------

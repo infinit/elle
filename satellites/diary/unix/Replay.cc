@@ -53,17 +53,17 @@ namespace satellite
 
 
       if (upcall.ExtractInputs(inputs.path, inputs.stbuf) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (upcall.ExtractOutputs(outputs.stbuf) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       res = Replay::Reference->fuse.getattr(
               inputs.path.c_str(),
               reinterpret_cast<struct ::stat*>(inputs.stbuf.contents));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       struct ::stat*    stbuf =
@@ -73,16 +73,16 @@ namespace satellite
 
       /* XXX to check
       if (stbuf->st_uid != _stbuf->st_uid)
-        escape("invalid UID: got(%u) expected(%u)",
+        throw elle::Exception("invalid UID: got(%u) expected(%u)",
                stbuf->st_uid, _stbuf->st_uid);
       if (stbuf->st_gid != _stbuf->st_gid)
-        escape("invalid GID");
+        throw elle::Exception("invalid GID");
 
       if (stbuf->st_mode != _stbuf->st_mode)
-        escape("invalid mode");
+        throw elle::Exception("invalid mode");
 
       if (stbuf->st_size != _stbuf->st_size)
-        escape("invalid size");
+        throw elle::Exception("invalid size");
       */
 
       // debug.
@@ -115,7 +115,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.stbuf, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -123,7 +123,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.fgetattr(
               inputs.path.c_str(),
@@ -131,10 +131,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.stbuf, outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       struct ::stat*    stbuf =
@@ -144,17 +144,17 @@ namespace satellite
 
       /* XXX to check
       if (stbuf->st_uid != _stbuf->st_uid)
-        escape("invalid UID: got(%u) expected(%u)",
+        throw elle::Exception("invalid UID: got(%u) expected(%u)",
                stbuf->st_uid, _stbuf->st_uid);
 
       if (stbuf->st_gid != _stbuf->st_gid)
-        escape("invalid GID");
+        throw elle::Exception("invalid GID");
 
       if (stbuf->st_mode != _stbuf->st_mode)
-        escape("invalid mode");
+        throw elle::Exception("invalid mode");
 
       if (stbuf->st_size != _stbuf->st_size)
-        escape("invalid size");
+        throw elle::Exception("invalid size");
       */
 
       // debug.
@@ -180,14 +180,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.ts) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       res = Replay::Reference->fuse.utimens(
               inputs.path.c_str(),
               reinterpret_cast<struct ::timespec*>(inputs.ts.contents));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -218,7 +218,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -228,10 +228,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       struct ::fuse_file_info*  _fi =
@@ -240,7 +240,7 @@ namespace satellite
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to add the file information");
+        throw elle::Exception("unable to add the file information");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -300,7 +300,7 @@ namespace satellite
       // XXX to improve with buf
 
       if (upcall.ExtractInputs(inputs.path, inputs.offset, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -308,7 +308,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       /* XXX implement a filler-like function which must be passed
       res = Replay::Reference->fuse.readdir(
@@ -316,12 +316,12 @@ namespace satellite
               fi);
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
       */
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -351,7 +351,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -359,21 +359,21 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.releasedir(
               inputs.path.c_str(),
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (Live::Remove(identifier) == elle::Status::Error)
-        escape("unable to remove the file information");
+        throw elle::Exception("unable to remove the file information");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -398,14 +398,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.mode) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.mkdir(
               inputs.path.c_str(),
               static_cast<mode_t>(inputs.mode));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -430,13 +430,13 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.rmdir(
               inputs.path.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -462,14 +462,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.mask) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.access(
               inputs.path.c_str(),
               static_cast<int>(inputs.mask));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -495,14 +495,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.mode) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.chmod(
               inputs.path.c_str(),
               static_cast<mode_t>(inputs.mode));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -529,7 +529,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.uid, inputs.gid) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.chown(
               inputs.path.c_str(),
@@ -537,7 +537,7 @@ namespace satellite
               static_cast<gid_t>(inputs.gid));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -572,7 +572,7 @@ namespace satellite
                                inputs.value,
                                inputs.size,
                                inputs.flags) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.setxattr(
         inputs.path.c_str(),
@@ -582,7 +582,7 @@ namespace satellite
         static_cast<int>(inputs.flags));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -617,7 +617,7 @@ namespace satellite
                                inputs.name,
                                inputs.value,
                                inputs.size) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       char              value[inputs.size];
 
@@ -628,14 +628,14 @@ namespace satellite
         static_cast<size_t>(inputs.size));
 
       if (upcall.ExtractOutputs(outputs.value) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (elle::String(value, res) != outputs.value)
-        escape("invalid value: got(%s) expected(%s)",
+        throw elle::Exception("invalid value: got(%s) expected(%s)",
                elle::String(value, res).c_str(), outputs.value.c_str());
 
       // debug.
@@ -668,7 +668,7 @@ namespace satellite
       if (upcall.ExtractInputs(inputs.path,
                                inputs.list,
                                inputs.size) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       char              list[inputs.size];
 
@@ -678,14 +678,14 @@ namespace satellite
         static_cast<size_t>(inputs.size));
 
       if (upcall.ExtractOutputs(outputs.list) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (elle::String(list, res) != outputs.list)
-        escape("invalid value: got(%s) expected(%s)",
+        throw elle::Exception("invalid value: got(%s) expected(%s)",
                elle::String(list, res).c_str(), outputs.list.c_str());
 
       // debug.
@@ -711,14 +711,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.name) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.removexattr(
         inputs.path.c_str(),
         inputs.name.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -753,7 +753,7 @@ namespace satellite
                                inputs.size,
                                inputs.flags,
                                inputs.position) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.setxattr(
         inputs.path.c_str(),
@@ -764,7 +764,7 @@ namespace satellite
         static_cast<uint32_t>(inputs.position));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -801,7 +801,7 @@ namespace satellite
                                inputs.value,
                                inputs.size,
                                inputs.position) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       char              value[inputs.size];
 
@@ -813,14 +813,14 @@ namespace satellite
         static_cast<uint32_t>(inputs.position));
 
       if (upcall.ExtractOutputs(outputs.value) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (elle::String(value, res) != outputs.value)
-        escape("invalid value: got(%s) expected(%s)",
+        throw elle::Exception("invalid value: got(%s) expected(%s)",
                elle::String(value, res).c_str(), outputs.value.c_str());
 
       // debug.
@@ -851,7 +851,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.list, inputs.size) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       char              list[inputs.size];
 
@@ -861,14 +861,14 @@ namespace satellite
         static_cast<size_t>(inputs.size));
 
       if (upcall.ExtractOutputs(outputs.list) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (elle::String(list, res) != outputs.list)
-        escape("invalid value: got(%s) expected(%s)",
+        throw elle::Exception("invalid value: got(%s) expected(%s)",
                elle::String(list, res).c_str(), outputs.list.c_str());
 
       // debug.
@@ -894,14 +894,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.name) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.removexattr(
         inputs.path.c_str(),
         inputs.name.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -929,14 +929,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.to, inputs.from) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.symlink(
               inputs.to.c_str(),
               inputs.from.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -967,7 +967,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.buf, inputs.size) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       char              buf[inputs.size];
 
@@ -977,14 +977,14 @@ namespace satellite
               static_cast<size_t>(inputs.size));
 
       if (upcall.ExtractOutputs(outputs.buf) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (elle::String(buf) != outputs.buf)
-        escape("invalid value: got(%s) expected(%s)",
+        throw elle::Exception("invalid value: got(%s) expected(%s)",
                elle::String(buf).c_str(), outputs.buf.c_str());
 
       // debug.
@@ -1016,7 +1016,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.mode, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1027,10 +1027,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       struct ::fuse_file_info*  _fi =
@@ -1039,7 +1039,7 @@ namespace satellite
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to add the file information");
+        throw elle::Exception("unable to add the file information");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1069,7 +1069,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1079,10 +1079,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       struct ::fuse_file_info*  _fi =
@@ -1091,7 +1091,7 @@ namespace satellite
       identifier = _fi->fh;
 
       if (Live::Add(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to add the file information");
+        throw elle::Exception("unable to add the file information");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1124,7 +1124,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.buf, inputs.size, inputs.off, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1132,7 +1132,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.write(
               inputs.path.c_str(),
@@ -1142,10 +1142,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -1179,7 +1179,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.buf, inputs.size, inputs.off, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1187,7 +1187,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.read(
               inputs.path.c_str(),
@@ -1197,14 +1197,14 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.buf) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (inputs.buf != outputs.buf)
-        escape("invalid buffer");
+        throw elle::Exception("invalid buffer");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1229,14 +1229,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.size) == elle::Status::Error)
-        escape("unable to extract the number");
+        throw elle::Exception("unable to extract the number");
 
       res = Replay::Reference->fuse.truncate(
               inputs.path.c_str(),
               static_cast<off_t>(inputs.size));
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -1268,7 +1268,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.size, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1276,7 +1276,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
       res = Replay::Reference->fuse.ftruncate(
               inputs.path.c_str(),
@@ -1284,10 +1284,10 @@ namespace satellite
               fi);
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -1318,7 +1318,7 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path, inputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       struct ::fuse_file_info*  fi =
         reinterpret_cast<struct ::fuse_file_info*>(inputs.fi.contents);
@@ -1326,7 +1326,7 @@ namespace satellite
       identifier = fi->fh;
 
       if (Live::Retrieve(identifier, fi->fh) == elle::Status::Error)
-        escape("unable to retrieve the file information");
+        throw elle::Exception("unable to retrieve the file information");
 
 #include <elle/idiom/Close.hh>
       res = Replay::Reference->fuse.release(
@@ -1335,14 +1335,14 @@ namespace satellite
 #include <elle/idiom/Open.hh>
 
       if (upcall.ExtractOutputs(outputs.fi) == elle::Status::Error)
-        escape("unable to extract the region");
+        throw elle::Exception("unable to extract the region");
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       if (Live::Remove(identifier) == elle::Status::Error)
-        escape("unable to remove the file information");
+        throw elle::Exception("unable to remove the file information");
 
       // debug.
       if (Infinit::Configuration.satellites.debug == true)
@@ -1367,14 +1367,14 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.from, inputs.to) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.rename(
               inputs.from.c_str(),
               inputs.to.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -1399,13 +1399,13 @@ namespace satellite
                __FUNCTION__);
 
       if (upcall.ExtractInputs(inputs.path) == elle::Status::Error)
-        escape("unable to extract the string");
+        throw elle::Exception("unable to extract the string");
 
       res = Replay::Reference->fuse.unlink(
               inputs.path.c_str());
 
       if (res != upcall.result)
-        escape("invalid result: got(%d) expected(%d)",
+        throw elle::Exception("invalid result: got(%d) expected(%d)",
                res, upcall.result);
 
       // debug.
@@ -1426,7 +1426,7 @@ namespace satellite
 
       // initialize the live system.
       if (Live::Initialize() == elle::Status::Error)
-        escape("unable to initialize the live system");
+        throw elle::Exception("unable to initialize the live system");
 
       // allocate the entrance.
       new reactor::Thread
@@ -1439,7 +1439,7 @@ namespace satellite
         // note that the Linux is not set up i.e not mounted as this is
         // not required to replay a diary.
         if (horizon::linux::Linux::Initialize() == elle::Status::Error)
-          escape("unable to initialize the horizon");
+          throw elle::Exception("unable to initialize the horizon");
       }
 #elif defined(INFINIT_MACOSX)
       {
@@ -1448,7 +1448,7 @@ namespace satellite
         // note that the MacOS X is not set up i.e not mounted as this is
         // not required to replay a diary.
         if (horizon::macosx::MacOSX::Initialize() == elle::Status::Error)
-          escape("unable to initialize the horizon");
+          throw elle::Exception("unable to initialize the horizon");
       }
 #endif
 
@@ -1749,11 +1749,11 @@ namespace satellite
 #if defined(INFINIT_LINUX)
       // clean the horizon.
       if (horizon::linux::Linux::Clean() == elle::Status::Error)
-        escape("unable to clean the horizon");
+        throw elle::Exception("unable to clean the horizon");
 #elif defined(INFINIT_MACOSX)
       // clean the horizon.
       if (horizon::macosx::MacOSX::Clean() == elle::Status::Error)
-        escape("unable to clean the horizon");
+        throw elle::Exception("unable to clean the horizon");
 #endif
 
       // reset the memoirs pointer.
@@ -1761,7 +1761,7 @@ namespace satellite
 
       // clean the live system.
       if (Live::Clean() == elle::Status::Error)
-        escape("unable to clean the live system");
+        throw elle::Exception("unable to clean the live system");
 
       return elle::Status::Ok;
     }

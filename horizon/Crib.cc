@@ -22,7 +22,7 @@ namespace horizon
       std::pair<const elle::String, Handle*>(path, handle));
 
     if (result.second == false)
-      escape("unable to insert the scope in the container");
+      throw elle::Exception("unable to insert the scope in the container");
 
     return elle::Status::Ok;
   }
@@ -52,7 +52,7 @@ namespace horizon
     Crib::Iterator        iterator;
 
     if ((iterator = Crib::Handles.find(path)) == Crib::Handles.end())
-      escape("unable to locate the scope associated with the given chemin");
+      throw elle::Exception("unable to locate the scope associated with the given chemin");
 
     handle = iterator->second;
 
@@ -68,7 +68,7 @@ namespace horizon
     Crib::Iterator        iterator;
 
     if ((iterator = Crib::Handles.find(path)) == Crib::Handles.end())
-      escape("unable to locate the scope associated with the given chemin");
+      throw elle::Exception("unable to locate the scope associated with the given chemin");
 
     Crib::Handles.erase(iterator);
 

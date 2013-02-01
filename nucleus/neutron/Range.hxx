@@ -6,8 +6,6 @@
 # include <nucleus/neutron/Size.hh>
 # include <nucleus/Exception.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron
@@ -140,7 +138,7 @@ namespace nucleus
         {
           // dump the item.
           if (item->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the item");
+            throw Exception("unable to dump the item");
         }
 
       return elle::Status::Ok;

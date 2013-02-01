@@ -78,7 +78,7 @@ namespace hole
 
         // create the timer.
         if (this->timer->Create(elle::concurrency::Timer::ModeSingle) == elle::Status::Error)
-          escape("unable to create the timer");
+          throw elle::Exception("unable to create the timer");
 
         // XXX -discard +abort
 
@@ -86,11 +86,11 @@ namespace hole
         if (this->timer->signal.timeout.Subscribe(
               elle::concurrency::Callback<>::Infer(&Neighbour::Discard,
                                       this)) == elle::Status::Error)
-          escape("unable to subscribe to the signal");
+          throw elle::Exception("unable to subscribe to the signal");
 
         // start the timer.
         if (this->timer->Start(Neighbour::Timeout) == elle::Status::Error)
-          escape("unable to start the timer");
+          throw elle::Exception("unable to start the timer");
 
         return elle::Status::Ok;
       }
@@ -110,7 +110,7 @@ namespace hole
 
         // register the monitor callback.
         if (this->gate->Monitor(monitor) == elle::Status::Error)
-          escape("unable to monitor the connection");
+          throw elle::Exception("unable to monitor the connection");
 
         // XXX add timer for timeout
 
@@ -132,15 +132,15 @@ namespace hole
 
         // register the monitor callback.
         if (this->gate->Monitor(monitor) == elle::Status::Error)
-          escape("unable to monitor the connection");
+          throw elle::Exception("unable to monitor the connection");
 
         // create the gate.
         if (this->gate->Create() == elle::Status::Error)
-          escape("unable to create the gate");
+          throw elle::Exception("unable to create the gate");
 
         // connect the gate.
         if (this->gate->Connect(this->locus) == elle::Status::Error)
-          escape("unable to connect to the peer");
+          throw elle::Exception("unable to connect to the peer");
 
         return elle::Status::Ok;
       }
@@ -168,7 +168,7 @@ namespace hole
             // remove the neighbour from the neighbourhood.
             if (Cirkle::Computer->neighbourhood.Remove(
                   this->locus) == elle::Status::Error)
-              escape("unable to remove the neighbour from the "
+              throw elle::Exception("unable to remove the neighbour from the "
                      "neighbourhood");
 
             // delete the neighbour.
@@ -191,7 +191,7 @@ namespace hole
               // challenge the peer.
               if (this->gate->Send(
                     elle::network::Inputs<TagChallenge>()) == elle::Status::Error)
-                escape("unable to send the challenge");
+                throw elle::Exception("unable to send the challenge");
 
               break;
             }
@@ -204,14 +204,14 @@ namespace hole
                   // remove it.
                   if (Cirkle::Computer->routingtable.Remove(
                         this->label) == elle::Status::Error)
-                    escape("unable to remove the neighbour from the "
+                    throw elle::Exception("unable to remove the neighbour from the "
                            "routing table");
                 }
 
               // remove the neighbour from the neighbourhood.
               if (Cirkle::Computer->neighbourhood.Remove(
                     this->locus) == elle::Status::Error)
-                escape("unable to remove the neighbour from the "
+                throw elle::Exception("unable to remove the neighbour from the "
                        "neighbourhood");
 
               // delete the neighbour.
@@ -221,7 +221,7 @@ namespace hole
             }
           default:
             {
-              escape("unexpected socket state '%u'",
+              throw elle::Exception("unexpected socket state '%u'",
                      this->gate->state);
             }
           }
@@ -250,11 +250,11 @@ namespace hole
 
         // dump the locus.
         if (this->locus.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the locus");
+          throw elle::Exception("unable to dump the locus");
 
         // dump the label.
         if (this->label.Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the label");
+          throw elle::Exception("unable to dump the label");
 
         // dump the port.
         std::cout << alignment << elle::Dumpable::Shift
@@ -264,7 +264,7 @@ namespace hole
         if (this->gate != nullptr)
           {
             if (this->gate->Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the gate");
+              throw elle::Exception("unable to dump the gate");
           }
         else
           {

@@ -8,9 +8,7 @@
 
 #include <elle/log.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/format.hpp>
-#include <elle/idiom/Open.hh>
+#include <boost/format.hpp>
 
 ELLE_LOG_COMPONENT("infinit.hole.remote.Machine");
 
@@ -121,7 +119,7 @@ namespace hole
             {
               // dump the server.
               if (this->server->Dump(margin + 2) == elle::Status::Error)
-                escape("unable to dump the server");
+                throw elle::Exception("unable to dump the server");
 
               break;
             }
@@ -129,7 +127,7 @@ namespace hole
             {
               // dump the client.
               if (this->client->Dump(margin + 2) == elle::Status::Error)
-                escape("unable to dump the client");
+                throw elle::Exception("unable to dump the client");
 
               break;
             }

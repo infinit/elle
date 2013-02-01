@@ -3,12 +3,10 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
 
-#include <elle/idiom/Close.hh>
-# include <reactor/scheduler.hh>
-# include <reactor/signal.hh>
-# include <reactor/thread.hh>
-# include <signal.h>
-#include <elle/idiom/Open.hh>
+#include <reactor/scheduler.hh>
+#include <reactor/signal.hh>
+#include <reactor/thread.hh>
+#include <signal.h>
 
 #include <elle/log.hh>
 #include <elle/CrashReporter.hh>

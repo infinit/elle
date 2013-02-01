@@ -2,8 +2,9 @@
 # define LUNE_MAP_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
-# include <elle/idiom/Open.hh>
+# include <elle/operator.hh>
+
+# include <boost/noncopyable.hpp>
 
 namespace lune
 {
@@ -14,7 +15,7 @@ namespace lune
   ///
   template <typename T>
   class Map:
-    public elle::radix::Object
+    private boost::noncopyable
   {
   public:
     //
@@ -65,8 +66,7 @@ namespace lune
     // interfaces
     //
 
-    // object
-    declare(Map);
+    ELLE_OPERATOR_NO_ASSIGNMENT(Map);
 
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;

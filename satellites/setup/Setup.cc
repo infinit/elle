@@ -26,20 +26,20 @@ namespace satellite
     {
       // create the home path.
       if (path.Create(lune::Lune::Home) == elle::Status::Error)
-        escape("unable to create the path");
+        throw elle::Exception("unable to create the path");
 
       // if the user directory does not exist, create it.
       if (elle::io::Directory::Exist(path) == false)
         {
           // create the directory.
           if (elle::io::Directory::Create(path) == elle::Status::Error)
-            escape("unable to create the directory");
+            throw elle::Exception("unable to create the directory");
         }
       else
         {
           // clear the directory.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)
-            escape("unable to clear the directory");
+            throw elle::Exception("unable to clear the directory");
         }
     }
 
@@ -59,18 +59,18 @@ namespace satellite
     {
       // create the home path.
       if (path.Create(lune::Lune::Home) == elle::Status::Error)
-        escape("unable to create the path");
+        throw elle::Exception("unable to create the path");
 
       // if the user directory exists, clear it and remove it.
       if (elle::io::Directory::Exist(path) == true)
         {
           // clear the content.
           if (elle::io::Directory::Clear(path) == elle::Status::Error)
-            escape("unable to clear the directory");
+            throw elle::Exception("unable to clear the directory");
 
           // remove the directory.
           if (elle::io::Directory::Remove(path) == elle::Status::Error)
-            escape("unable to remove the directory");
+            throw elle::Exception("unable to remove the directory");
         }
     }
 
@@ -93,19 +93,19 @@ namespace satellite
 
     // set up the program.
     if (elle::concurrency::Program::Setup("Setup") == elle::Status::Error)
-      escape("unable to set up the program");
+      throw elle::Exception("unable to set up the program");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      escape("unable to initialize Lune");
+      throw elle::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      escape("unable to initialize Infinit");
+      throw elle::Exception("unable to initialize Infinit");
 
     // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::Status::Error)
-      escape("unable to initialize Etoile");
+      throw elle::Exception("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Setup::OperationUnknown;
@@ -115,7 +115,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-      escape("unable to set the description");
+      throw elle::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -124,7 +124,7 @@ namespace satellite
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -133,7 +133,7 @@ namespace satellite
           "initialize",
           "initialize the user's infinit environment",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -142,11 +142,11 @@ namespace satellite
           "clean",
           "clean the user's infinit environment",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      escape("unable to parse the command line");
+      throw elle::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -165,7 +165,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the initialize and clean options are mutually exclusive");
+        throw elle::Exception("the initialize and clean options are mutually exclusive");
       }
 
     // test the option.
@@ -183,7 +183,7 @@ namespace satellite
         {
           // initialize the environment.
           if (Setup::Initialize() == elle::Status::Error)
-            escape("unable to initialize the environment");
+            throw elle::Exception("unable to initialize the environment");
 
           // display a message.
           std::cout << "The infinit environment has been "
@@ -196,7 +196,7 @@ namespace satellite
         {
           // clean the environment.
           if (Setup::Clean() == elle::Status::Error)
-            escape("unable to clean the environment");
+            throw elle::Exception("unable to clean the environment");
 
           // display a message.
           std::cout << "The infinit environment has been "
@@ -211,7 +211,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw elle::Exception("please specify an operation to perform");
         }
       }
 
@@ -221,15 +221,15 @@ namespace satellite
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::Status::Error)
-      escape("unable to clean Etoile");
+      throw elle::Exception("unable to clean Etoile");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      escape("unable to clean Infinit");
+      throw elle::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      escape("unable to clean Lune");
+      throw elle::Exception("unable to clean Lune");
 
     return elle::Status::Ok;
   }

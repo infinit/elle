@@ -29,7 +29,7 @@ namespace satellite
         }
       catch (std::exception const& err)
         {
-          escape("Cannot serialize inputs: %s", err.what());
+          throw elle::Exception("Cannot serialize inputs: %s", err.what());
         }
 
       return elle::Status::Ok;
@@ -48,7 +48,7 @@ namespace satellite
         }
       catch (std::exception const& err)
         {
-          escape("Cannot serialize outputs: %s", err.what());
+          throw elle::Exception("Cannot serialize outputs: %s", err.what());
         }
       return elle::Status::Ok;
     }
@@ -63,7 +63,7 @@ namespace satellite
           }
         catch (std::exception const& err)
           {
-            escape("Cannot extract inputs: %s", err.what());
+            throw elle::Exception("Cannot extract inputs: %s", err.what());
           }
 
         return elle::Status::Ok;
@@ -79,7 +79,7 @@ namespace satellite
           }
         catch (std::exception const& err)
           {
-            escape("Cannot extract outputs: %s", err.what());
+            throw elle::Exception("Cannot extract outputs: %s", err.what());
           }
 
         return elle::Status::Ok;

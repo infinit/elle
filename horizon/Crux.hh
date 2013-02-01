@@ -10,16 +10,14 @@
 
 # include <nucleus/neutron/Size.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <fuse.h>
-#  if defined(HAVE_SETXATTR)
-#    if defined(INFINIT_LINUX)
-#     include <attr/xattr.h>
-#    elif defined(INFINIT_MACOSX)
-#     include <sys/xattr.h>
-#    endif
-#  endif
-# include <elle/idiom/Open.hh>
+# include <fuse.h>
+# if defined(HAVE_SETXATTR)
+#   if defined(INFINIT_LINUX)
+#    include <attr/xattr.h>
+#   elif defined(INFINIT_MACOSX)
+#    include <sys/xattr.h>
+#   endif
+# endif
 
 namespace horizon
 {

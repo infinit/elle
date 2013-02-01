@@ -264,7 +264,7 @@ namespace nucleus
       std::cout << alignment << "[Data] " << std::hex << this << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the value");
+        throw Exception("unable to dump the value");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Offset] " << std::dec << this->_offset << std::endl;

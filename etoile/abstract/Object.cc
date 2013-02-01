@@ -1,8 +1,6 @@
 #include <etoile/abstract/Object.hh>
 #include <nucleus/neutron/Object.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace abstract
@@ -21,8 +19,7 @@ namespace etoile
       this->keys.author = nullptr;
     }
 
-    Object::Object(Object const& other):
-      elle::radix::Object(other)
+    Object::Object(Object const& other)
     {
       this->genre = other.genre;
 
@@ -107,45 +104,6 @@ namespace etoile
     }
 
 //
-// ---------- object ----------------------------------------------------------
-//
-
-    ///
-    /// this operator compares two objects.
-    ///
-    elle::Boolean       Object::operator==(const Object&    element)
-      const
-    {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
-
-      ELLE_ASSERT(this->keys.owner != nullptr);
-      ELLE_ASSERT(element.keys.owner != nullptr);
-      ELLE_ASSERT(this->keys.author != nullptr);
-      ELLE_ASSERT(element.keys.author != nullptr);
-
-      // compare the attributes.
-      if ((this->genre != element.genre) ||
-          (this->timestamps.creation != element.timestamps.creation) ||
-          (this->timestamps.modification != element.timestamps.modification) ||
-          (this->size != element.size) ||
-          (*this->keys.owner != *element.keys.owner) ||
-          (*this->keys.author != *element.keys.author) ||
-          (this->permissions.owner != element.permissions.owner) ||
-          (this->revisions.meta != element.revisions.meta) ||
-          (this->revisions.data != element.revisions.data))
-        return false;
-
-      return true;
-    }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Object, _());
-
-//
 // ---------- dumpable --------------------------------------------------------
 //
 
@@ -175,7 +133,7 @@ namespace etoile
                   << "[Creation]" << std::endl;
 
         if (this->timestamps.creation.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the creation time");
+          throw elle::Exception("unable to dump the creation time");
 
         // dump the modification time.
         std::cout << alignment << elle::io::Dumpable::Shift
@@ -183,7 +141,7 @@ namespace etoile
                   << "[Modification]" << std::endl;
 
         if (this->timestamps.modification.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the modification time");
+          throw elle::Exception("unable to dump the modification time");
       }
 
       // dump the size.

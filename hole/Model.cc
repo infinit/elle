@@ -1,10 +1,8 @@
 #include <hole/Model.hh>
 
-#include <elle/idiom/Close.hh>
-# include <iostream>
-# include <algorithm>
-# include <string>
-#include <elle/idiom/Open.hh>
+#include <iostream>
+#include <algorithm>
+#include <string>
 
 namespace hole
 {
@@ -61,7 +59,7 @@ namespace hole
           }
       }
 
-    escape("unable to locate the given model name");
+    throw elle::Exception("unable to locate the given model name");
   }
 
   ///
@@ -85,7 +83,7 @@ namespace hole
           }
       }
 
-    escape("unable to locate the given model type");
+    throw elle::Exception("unable to locate the given model type");
   }
 
 //
@@ -130,7 +128,7 @@ namespace hole
   {
     // convert the name into a type.
     if (Model::Convert(name, this->type) == elle::Status::Error)
-      escape("unable to convert the model name into a valid type");
+      throw elle::Exception("unable to convert the model name into a valid type");
 
     return elle::Status::Ok;
   }
@@ -150,11 +148,6 @@ namespace hole
 
       return (this->type == element.type);
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Model, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -2,14 +2,12 @@
 # define ETOILE_PATH_ROUTE_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 
 # include <etoile/path/fwd.hh>
 # include <etoile/path/Slab.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <vector>
-# include <elle/idiom/Open.hh>
+# include <vector>
 
 namespace etoile
 {
@@ -25,8 +23,7 @@ namespace etoile
     /// directory. indeed, the first slab is always used for representing
     /// the root directory even though its slab is empty.
     ///
-    class Route:
-      public elle::radix::Object
+    class Route
     {
     public:
       //
@@ -52,6 +49,7 @@ namespace etoile
       // constructors & destructors
       //
       Route();
+      Route(Route const&) = default;
 
       //
       // methods
@@ -68,8 +66,8 @@ namespace etoile
       // interfaces
       //
 
-      // object
-      declare(Route);
+      ELLE_OPERATOR_ASSIGNMENT(Route); // XXX
+
       elle::Boolean             operator==(const Route&) const;
       elle::Boolean             operator<(const Route&) const;
 

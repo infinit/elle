@@ -6,8 +6,6 @@
 #include <cryptography/KeyPair.hh>
 #include <cryptography/PrivateKey.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron
@@ -212,7 +210,7 @@ namespace nucleus
       std::cout << alignment << "[Group]" << std::endl;
 
       if (ImprintBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Description] " << this->_description << std::endl;
@@ -228,7 +226,7 @@ namespace nucleus
                 << "[Modifcation Time]" << std::endl;
 
       if (this->_modification_timestamp.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the timestamp");
+        throw Exception("unable to dump the timestamp");
 
       ELLE_ASSERT(this->_ensemble != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -236,12 +234,12 @@ namespace nucleus
                 << *this->_ensemble << std::endl;
 
       if (this->_manager_token.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the token");
+        throw Exception("unable to dump the token");
 
       if (this->_manager_fellow != nullptr)
         {
           if (this->_manager_fellow->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the fellow");
+            throw Exception("unable to dump the fellow");
         }
       else
         {

@@ -392,7 +392,7 @@ namespace nucleus
       std::cout << alignment << "[Catalog] " << std::hex << this << std::endl;
 
       if (Value::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the value");
+        throw Exception("unable to dump the value");
 
       std::cout << alignment << elle::io::Dumpable::Shift << "[Entries] #"
                 << this->_container.size() << std::endl;
@@ -404,7 +404,7 @@ namespace nucleus
 
           // dump the entry.
           if (entry->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the entry");
+            throw Exception("unable to dump the entry");
         }
 
       return (elle::Status::Ok);

@@ -53,7 +53,7 @@ namespace etoile
         {
           // determine the rights the current user has on this object.
           if (Rights::Determine(context) == elle::Status::Error)
-            escape("unable to determine the user's rights");
+            throw elle::Exception("unable to determine the user's rights");
 
           // if the user has the permission to read, decrypt the content.
           if ((context.rights.permissions &
@@ -131,7 +131,7 @@ namespace etoile
               {
                 // open the contents.
                 if (Contents::Open(context) == elle::Status::Error)
-                  escape("unable to open the contents");
+                  throw elle::Exception("unable to open the contents");
 
                 ELLE_TRACE("record the content blocks for removal");
                 ELLE_ASSERT(context.contents_porcupine != nullptr);
@@ -190,7 +190,7 @@ namespace etoile
 
       // forge the author which will be attached to the modified object.
       if (Author::Forge(context) == elle::Status::Error)
-        escape("unable to forge an author");
+        throw elle::Exception("unable to forge an author");
 
       // modify the object according to the content.
       if (size == 0)
@@ -218,7 +218,7 @@ namespace etoile
             {
               // destroy the contents block.
               if (Contents::Destroy(context) == elle::Status::Error)
-                escape("unable to destroy the contents block");
+                throw elle::Exception("unable to destroy the contents block");
             }
 
           ELLE_TRACE("update the object with a null Contents address")
@@ -230,7 +230,7 @@ namespace etoile
                     0,
                     context.object->access(),
                     context.object->owner_token()) == elle::Status::Error)
-                escape("unable to update the object");
+                throw elle::Exception("unable to update the object");
             }
 
           //
@@ -242,7 +242,7 @@ namespace etoile
             {
               // open the access.
               if (Access::Open(context) == elle::Status::Error)
-                escape("unable to open the access");
+                throw elle::Exception("unable to open the access");
             }
 
           ELLE_TRACE("downgrade the Access record")
@@ -250,7 +250,7 @@ namespace etoile
               // downgrade the access entries i.e set the tokens as null
               // since no content is present.
               if (Access::Downgrade(context) == elle::Status::Error)
-                escape("unable to downgrade the accesses");
+                throw elle::Exception("unable to downgrade the accesses");
             }
         }
       else
@@ -273,7 +273,7 @@ namespace etoile
             {
               // destroy the contents block.
               if (Contents::Destroy(context) == elle::Status::Error)
-                escape("unable to destroy the contents block");
+                throw elle::Exception("unable to destroy the contents block");
             }
           */
 
@@ -289,7 +289,7 @@ namespace etoile
                 size,
                 context.object->access(),
                 context.object->owner_token()) == elle::Status::Error)
-            escape("unable to update the object");
+            throw elle::Exception("unable to update the object");
 
           // XXX[to slow without a nest optimization: to activate later]
           ELLE_STATEMENT(context.contents_porcupine->check(
@@ -306,11 +306,11 @@ namespace etoile
 
           // open the access.
           if (Access::Open(context) == elle::Status::Error)
-            escape("unable to open the access block");
+            throw elle::Exception("unable to open the access block");
 
           // upgrade the access entries with the new key.
           if (Access::Upgrade(context, key) == elle::Status::Error)
-            escape("unable to upgrade the accesses");
+            throw elle::Exception("unable to upgrade the accesses");
         }
 
       return elle::Status::Ok;

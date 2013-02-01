@@ -66,7 +66,7 @@ namespace satellite
     {
       // set up the crux.
       if (Crux::Setup(mirror) == elle::Status::Error)
-        escape("unable to set up the crux");
+        throw elle::Exception("unable to set up the crux");
 
       // set the mode.
       this->mode = Memoirs::ModeRecord;
@@ -75,7 +75,7 @@ namespace satellite
 
       // initialize the record.
       if (Record::Initialize(this, mountpoint) == elle::Status::Error)
-        escape("unable to initialize the record");
+        throw elle::Exception("unable to initialize the record");
 
       // set the attributes.
       this->fuse = Crux::Operations;
@@ -101,7 +101,7 @@ namespace satellite
 
       // initialize the replay.
       if (Replay::Initialize(this) == elle::Status::Error)
-        escape("unable to initialize the replay");
+        throw elle::Exception("unable to initialize the replay");
 
 #if defined(INFINIT_LINUX)
       // set the attributes.
@@ -126,7 +126,7 @@ namespace satellite
           {
             // clean the record.
             if (Record::Clean() == elle::Status::Error)
-              escape("unable to clean the recording session");
+              throw elle::Exception("unable to clean the recording session");
 
             break;
           }
@@ -134,7 +134,7 @@ namespace satellite
           {
             // clean the replay.
             if (Replay::Clean() == elle::Status::Error)
-              escape("unable to clean the replaying session");
+              throw elle::Exception("unable to clean the replaying session");
 
             break;
           }
@@ -154,7 +154,7 @@ namespace satellite
     {
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeRecord)
-        escape("unable to write an upcall in a non-recording memoirs");
+        throw elle::Exception("unable to write an upcall in a non-recording memoirs");
 
       // serialize the upcall.
       try
@@ -163,7 +163,7 @@ namespace satellite
         }
       catch (std::exception const& err)
         {
-          escape("unable to serialize the upcall: %s", err.what());
+          throw elle::Exception("unable to serialize the upcall: %s", err.what());
         }
 
       return elle::Status::Ok;
@@ -176,10 +176,10 @@ namespace satellite
     {
       // check the memoirs mode.
       if (this->mode != Memoirs::ModeReplay)
-        escape("unable to read an upcall from a non-replaying memoirs");
+        throw elle::Exception("unable to read an upcall from a non-replaying memoirs");
 
       if (this->archive.Size() >= this->offset)
-        escape("Nothing to read!");
+        throw elle::Exception("Nothing to read!");
 
       try
         {
@@ -190,7 +190,7 @@ namespace satellite
         }
       catch (std::exception const& err)
         {
-          escape("unable to extract the upcall: %s", err.what());
+          throw elle::Exception("unable to extract the upcall: %s", err.what());
         }
 
       return elle::Status::Ok;
@@ -223,7 +223,7 @@ namespace satellite
 
       // dump the parent class.
       if (satellite::Memoirs::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the parent class");
+        throw elle::Exception("unable to dump the parent class");
 
       // display the name.
       std::cout << alignment << elle::Dumpable::Shift

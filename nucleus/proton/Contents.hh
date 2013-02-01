@@ -10,10 +10,6 @@
 using namespace infinit;
 
 # include <elle/attribute.hh>
-# include <elle/idiom/Open.hh>
-
-// XXX
-# include <cryptography/KeyPair.hh>
 
 namespace nucleus
 {

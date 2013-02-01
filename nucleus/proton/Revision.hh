@@ -2,7 +2,6 @@
 # define NUCLEUS_PROTON_REVISION_HH
 
 # include <elle/Printable.hh>
-# include <elle/idiom/Open.hh>
 # include <elle/types.hh>
 # include <elle/operator.hh>
 

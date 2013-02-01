@@ -4,7 +4,6 @@
 #include <common/common.hh>
 
 #include <elle/utility/Time.hh>
-#include <elle/idiom/Close.hh>
 
 #include <boost/filesystem.hpp>
 

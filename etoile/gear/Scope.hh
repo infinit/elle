@@ -12,6 +12,8 @@
 
 # include <reactor/rw-mutex.hh>
 
+# include <boost/noncopyable.hpp>
+
 namespace etoile
 {
   namespace gear
@@ -33,8 +35,8 @@ namespace etoile
     /// structure for as long as necessary.
     ///
     class Scope:
-      public elle::radix::Object,
-      public elle::Printable
+      public elle::Printable,
+      private boost::noncopyable
     {
     public:
       //

@@ -1,7 +1,6 @@
 #ifndef HOLE_HOLE_HH
 # define HOLE_HOLE_HH
 
-# include <elle/idiom/Close.hh>
 # include <boost/signals.hpp>
 
 # include <elle/attribute.hh>

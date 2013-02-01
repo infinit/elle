@@ -40,8 +40,6 @@ using namespace infinit;
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Open.hh>
-
 ELLE_LOG_COMPONENT("infinit.etoile.portal.Portal");
 
 namespace etoile
@@ -130,7 +128,7 @@ namespace etoile
         }
       catch (std::runtime_error& e)
         {
-          escape("unable to set up the portal server: %s",
+          throw elle::Exception("unable to set up the portal server: %s",
                  e.what());
         }
 
@@ -145,7 +143,7 @@ namespace etoile
 
       if (Portal::phrase.Create(port,
                                 pass) == elle::Status::Error)
-        escape("unable to create the phrase");
+        throw elle::Exception("unable to create the phrase");
 
       Portal::phrase.store(Infinit::User, Infinit::Network, "portal");
     }
@@ -198,7 +196,7 @@ namespace etoile
       // check if this application has already been registered.
       if (Portal::applications.find(application->socket) !=
           Portal::applications.end())
-        escape("this application seems to have already been registered");
+        throw elle::Exception("this application seems to have already been registered");
 
       // insert the application in the container.
       result =
@@ -207,7 +205,7 @@ namespace etoile
 
       // check if the insertion was successful.
       if (result.second == false)
-        escape("unable to insert the application in the container");
+        throw elle::Exception("unable to insert the application in the container");
 
       return elle::Status::Ok;
     }
@@ -222,7 +220,7 @@ namespace etoile
       // locate the entry.
       if ((iterator =
            Portal::applications.find(socket)) == Portal::applications.end())
-        escape("unable to locate the given socket");
+        throw elle::Exception("unable to locate the given socket");
 
       // erase the entry.
       Portal::applications.erase(iterator);
@@ -253,7 +251,7 @@ namespace etoile
 
           // dump the application.
           if (application->Dump(margin + 4) == elle::Status::Error)
-            escape("unable to dump the application");
+            throw elle::Exception("unable to dump the application");
         }
 
       return elle::Status::Ok;

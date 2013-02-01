@@ -199,14 +199,14 @@ namespace nucleus
             std::cout << alignment << "[Record]" << std::endl;
 
             if (this->_valid->subject().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the subject");
+              throw Exception("unable to dump the subject");
 
             std::cout << alignment << elle::io::Dumpable::Shift
                       << "[Permissions] " << std::dec
                       << this->_valid->permissions() << std::endl;
 
             if (this->_valid->token().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the token");
+              throw Exception("unable to dump the token");
 
             break;
           }

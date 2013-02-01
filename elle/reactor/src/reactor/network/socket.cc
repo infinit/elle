@@ -10,7 +10,6 @@
 #include <reactor/scheduler.hh>
 
 #include <elle/log.hh>
-#include <elle/idiom/Close.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.Socket");
 

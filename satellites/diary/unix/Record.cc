@@ -1466,14 +1466,14 @@ namespace satellite
         // initialize FUSE.
         if (horizon::linux::FUSE::Initialize(
               Record::Operations) == elle::Status::Error)
-          escape("unable to initialize FUSE");
+          throw elle::Exception("unable to initialize FUSE");
       }
 #elif defined(INFINIT_MACOSX)
       {
         // initialize FUSE.
         if (horizon::macosx::FUSE::Initialize(
               Record::Operations) == elle::Status::Error)
-          escape("unable to initialize FUSE");
+          throw elle::Exception("unable to initialize FUSE");
       }
 #endif
 
@@ -1488,11 +1488,11 @@ namespace satellite
 #if defined(INFINIT_LINUX)
       // clean FUSE.
       if (horizon::linux::FUSE::Clean() == elle::Status::Error)
-        escape("unable to clean FUSE");
+        throw elle::Exception("unable to clean FUSE");
 #elif defined(INFINIT_MACOSX)
       // clean FUSE.
       if (horizon::macosx::FUSE::Clean() == elle::Status::Error)
-        escape("unable to clean FUSE");
+        throw elle::Exception("unable to clean FUSE");
 #endif
 
       // reset the memoirs pointer.

@@ -118,7 +118,7 @@ namespace satellite
             }
         }
 
-      escape("unable to locate this live item");
+      throw elle::Exception("unable to locate this live item");
     }
 
     ///
@@ -148,7 +148,7 @@ namespace satellite
             }
         }
 
-      escape("unable to locate this live item");
+      throw elle::Exception("unable to locate this live item");
     }
 
     ///

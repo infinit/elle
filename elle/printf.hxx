@@ -4,13 +4,12 @@
 # include <elle/assert.hh>
 # include <elle/print.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <cstddef>
-#  include <iostream>
-#  include <sstream>
-#  include <typeinfo>
-#  include <type_traits>
-#  include <boost/format.hpp>
+# include <cstddef>
+# include <iostream>
+# include <sstream>
+# include <typeinfo>
+# include <type_traits>
+# include <boost/format.hpp>
 
 namespace elle
 {

@@ -564,7 +564,7 @@ namespace nucleus
       std::cout << alignment << "[Nodule] " << this->_type << std::endl;
 
       if (Node::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the node");
+        throw Exception("unable to dump the node");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Capacity] " << this->_capacity << std::endl;

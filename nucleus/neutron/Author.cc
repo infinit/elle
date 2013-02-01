@@ -1,7 +1,5 @@
 #include <nucleus/neutron/Author.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron
@@ -132,7 +130,7 @@ namespace nucleus
           }
         default:
           {
-            escape("unknown role '%u'", this->role);
+            throw Exception("unknown role '%u'", this->role);
           }
         }
 

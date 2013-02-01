@@ -63,7 +63,7 @@ namespace nucleus
 
       // dump the address.
       if (this->_address.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the token");
+        throw Exception("unable to dump the token");
 
       // dump the footprint.
       std::cout << alignment << elle::io::Dumpable::Shift

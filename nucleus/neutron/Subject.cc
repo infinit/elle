@@ -1,9 +1,7 @@
 #include <nucleus/neutron/Subject.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/idiom/Close.hh>
-# include <algorithm>
-#include <elle/idiom/Open.hh>
+#include <algorithm>
 
 namespace nucleus
 {
@@ -48,7 +46,7 @@ namespace nucleus
             }
         }
 
-      escape("unable to locate the given entity name");
+      throw Exception("unable to locate the given entity name");
     }
 
     elle::Status
@@ -69,7 +67,7 @@ namespace nucleus
             }
         }
 
-      escape("unable to locate the given type");
+      throw Exception("unable to locate the given type");
     }
 
 //

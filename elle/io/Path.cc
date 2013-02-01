@@ -1,8 +1,6 @@
 #include <elle/io/Path.hh>
 #include <elle/io/Pattern.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace elle
 {
   namespace io
@@ -89,11 +87,6 @@ namespace elle
 
       return (this->_string == element.string());
     }
-
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(Path, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

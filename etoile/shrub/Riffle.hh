@@ -2,17 +2,16 @@
 # define ETOILE_SHRUB_RIFFLE_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/utility/Time.hh>
 
 # include <nucleus/proton/Location.hh>
 
 # include <etoile/path/Slab.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <map>
-#  include <utility>
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
+
+# include <map>
+# include <utility>
 
 namespace etoile
 {
@@ -31,7 +30,7 @@ namespace etoile
     /// variable, it would have been too much burden for no benefit.
     ///
     class Riffle:
-      public elle::radix::Entity
+      private boost::noncopyable
     {
     public:
       //

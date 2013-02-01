@@ -5,8 +5,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -63,7 +61,7 @@ namespace nucleus
       std::cout << alignment << "[Block]" << std::endl;
 
       if (this->_network.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the network");
+        throw Exception("unable to dump the network");
 
       std::cout << alignment << elle::io::Dumpable::Shift << "[Family] "
                 << std::dec << this->_family << std::endl;
@@ -78,7 +76,7 @@ namespace nucleus
                 << "[Creation Timestamp]" << std::endl;
 
       if (this->_creation_timestamp.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the timestamp");
+        throw Exception("unable to dump the timestamp");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << "[Salt] " << this->_salt << std::endl;

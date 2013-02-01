@@ -15,7 +15,6 @@
 using namespace infinit;
 
 #include <elle/serialize/TupleSerializer.hxx>
-#include <elle/idiom/Open.hh>
 
 namespace nucleus
 {
@@ -162,7 +161,7 @@ namespace nucleus
       {
         // set the last update time.
         if (this->_data.modification_timestamp.Current() == elle::Status::Error)
-          escape("unable to set the last update time");
+          throw Exception("unable to set the last update time");
 
         // XXX[hack to prevent too much allocations]
         if (this->_data.contents != &contents)
@@ -208,7 +207,7 @@ namespace nucleus
     {
       // set the last management time.
       if (this->_meta.modification_timestamp.Current() == elle::Status::Error)
-        escape("unable to set the last management time");
+        throw Exception("unable to set the last management time");
 
       // XXX[hack to prevent too much allocations]
       if (this->_meta.attributes != &attributes)
@@ -582,11 +581,11 @@ namespace nucleus
 
       // dump the parent class.
       if (proton::ImprintBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying owner key block");
+        throw Exception("unable to dump the underlying owner key block");
 
       // dump the author part.
       if (this->_author->Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the author");
+        throw Exception("unable to dump the author");
 
       // dump the meta part.
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -602,7 +601,7 @@ namespace nucleus
                 << (int)this->_meta.owner.permissions << std::endl;
 
       if (this->_meta.owner.token.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta owner's token");
+        throw Exception("unable to dump the meta owner's token");
 
       std::cout << alignment << elle::io::Dumpable::Shift
                 << elle::io::Dumpable::Shift
@@ -613,7 +612,7 @@ namespace nucleus
                 << elle::io::Dumpable::Shift
                 << "[Modification Timestamp] " << std::endl;
       if (this->_meta.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the meta timestamp");
+        throw Exception("unable to dump the meta timestamp");
 
       ELLE_ASSERT(this->_meta.attributes != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -626,7 +625,7 @@ namespace nucleus
                 << "[Access] " << *this->_meta.access << std::endl;
 
       if (this->_meta.revision.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the meta revision");
+        throw Exception("unable to dump the meta revision");
 
       ELLE_ASSERT(this->_meta.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift
@@ -654,10 +653,10 @@ namespace nucleus
                 << elle::io::Dumpable::Shift
                 << "[Modification Timestamp]" << std::endl;
       if (this->_data.modification_timestamp.Dump(margin + 6) == elle::Status::Error)
-        escape("unable to dump the data timestamp");
+        throw Exception("unable to dump the data timestamp");
 
       if (this->_data.revision.Dump(margin + 4) == elle::Status::Error)
-        escape("unable to dump the data revision");
+        throw Exception("unable to dump the data revision");
 
       ELLE_ASSERT(this->_data.signature != nullptr);
       std::cout << alignment << elle::io::Dumpable::Shift

@@ -4,9 +4,7 @@
 # include <nucleus/neutron/Component.hh>
 # include <nucleus/proton/Block.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <boost/noncopyable.hpp>
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
 
 namespace nucleus
 {

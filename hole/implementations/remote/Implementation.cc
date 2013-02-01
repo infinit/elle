@@ -6,8 +6,6 @@
 
 #include <elle/concurrency/Scheduler.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace hole
 {
   namespace implementations
@@ -104,7 +102,7 @@ namespace hole
 
         // dump the machine.
         if (Remote::Computer->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the machine");
+          throw elle::Exception("unable to dump the machine");
 
         return elle::Status::Ok;
       }

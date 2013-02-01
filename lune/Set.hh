@@ -2,12 +2,12 @@
 # define LUNE_SET_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 # include <elle/concept/Fileable.hh>
 
 # include <elle/network/fwd.hh>
 
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
 
 namespace lune
 {
@@ -17,8 +17,8 @@ namespace lune
   /// a hole implementation to initiate connections.
   ///
   class Set:
-    public elle::radix::Object,
-    public elle::concept::MakeFileable<Set>
+    public elle::concept::MakeFileable<Set>,
+    private boost::noncopyable
   {
   public:
     //
@@ -44,8 +44,7 @@ namespace lune
     // interfaces
     //
   public:
-    // object
-    declare(Set);
+    ELLE_OPERATOR_NO_ASSIGNMENT(Set);
 
     // dumpable
     elle::Status        Dump(const elle::Natural32 = 0) const;

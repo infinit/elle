@@ -157,10 +157,10 @@ namespace nucleus
             std::cout << alignment << "[Fellow]" << std::endl;
 
             if (this->_valid->subject().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the subject");
+              throw Exception("unable to dump the subject");
 
             if (this->_valid->token().Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the token");
+              throw Exception("unable to dump the token");
 
             break;
           }

@@ -16,6 +16,8 @@
 #include <elle/log/TextLogger.hh>
 #include <elle/os/path.hh>
 #include <elle/os/getenv.hh>
+
+// XXX[WTF?]
 //#include <elle/serialize/HexadecimalArchive.hh>
 //#include <elle/utility/Time.hh>
 //#include <elle/io/Path.hh>
@@ -31,8 +33,6 @@
 //#include <lune/Phrase.hh>
 //
 //#include <nucleus/neutron/Permissions.hh>
-
-#include <elle/idiom/Close.hh>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>

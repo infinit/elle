@@ -3,9 +3,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <reactor/signal.hh>
-# include <elle/idiom/Open.hh>
+# include <reactor/signal.hh>
 
 // XXX
 namespace reactor

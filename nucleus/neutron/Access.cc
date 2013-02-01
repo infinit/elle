@@ -452,7 +452,7 @@ namespace nucleus
           auto& record = pair.second;
 
           if (record->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the record");
+            throw Exception("unable to dump the record");
         }
 
       return elle::Status::Ok;

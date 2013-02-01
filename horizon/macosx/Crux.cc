@@ -3,9 +3,7 @@
 
 #include <elle/log.hh>
 
-#include <elle/idiom/Close.hh>
-# include <sys/statvfs.h>
-#include <elle/idiom/Open.hh>
+#include <sys/statvfs.h>
 
 ELLE_LOG_COMPONENT("infinit.horizon.macosx.Crux");
 

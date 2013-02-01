@@ -58,7 +58,7 @@ namespace hole
             // for incoming connections.
             if (locus.Create(neighbour->locus.host,
                              neighbour->port) == elle::Status::Error)
-              escape("unable to create the locus");
+              throw elle::Exception("unable to create the locus");
 
             // add the neighbour's locus.
             this->container.push_back(locus);
@@ -100,7 +100,7 @@ namespace hole
 
             // dump the locus.
             if (locus.Dump(margin + 2) == elle::Status::Error)
-              escape("unable to dump the locus");
+              throw elle::Exception("unable to dump the locus");
           }
 
         return elle::Status::Ok;

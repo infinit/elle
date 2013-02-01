@@ -17,9 +17,7 @@
 
 #include <elle/log.hh>
 
-#include <elle/idiom/Close.hh>
-# include <limits>
-#include <elle/idiom/Open.hh>
+#include <limits>
 
 ELLE_LOG_COMPONENT("infinit.etoile.automaton.Attributes");
 
@@ -95,11 +93,11 @@ namespace etoile
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
-        escape("unable to determine the rights");
+        throw elle::Exception("unable to determine the rights");
 
       // verify that the user can modify the attributes.
       if (context.rights.role != nucleus::neutron::Object::RoleOwner)
-        escape("the user does not seem to have the permission to update "
+        throw elle::Exception("the user does not seem to have the permission to update "
                "this object's attributes");
 
       Attributes::open(context);
@@ -135,7 +133,7 @@ namespace etoile
       if (context.object->Administrate(
             context.object->attributes(),
             context.object->owner_permissions()) == elle::Status::Error)
-        escape("unable to administrate the object");
+        throw elle::Exception("unable to administrate the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
@@ -238,11 +236,11 @@ namespace etoile
 
       // determine the rights over the object.
       if (Rights::Determine(context) == elle::Status::Error)
-        escape("unable to determine the rights");
+        throw elle::Exception("unable to determine the rights");
 
       // verify that the user can modify the attributes.
       if (context.rights.role != nucleus::neutron::Object::RoleOwner)
-        escape("the user does not seem to have the permission to update "
+        throw elle::Exception("the user does not seem to have the permission to update "
                "this object's attributes");
 
       Attributes::open(context);
@@ -265,7 +263,7 @@ namespace etoile
       if (context.object->Administrate(
             context.object->attributes(),
             context.object->owner_permissions()) == elle::Status::Error)
-        escape("unable to administrate the object");
+        throw elle::Exception("unable to administrate the object");
 
       // set the context's state.
       context.state = gear::Context::StateModified;
@@ -381,7 +379,7 @@ namespace etoile
           if (context.object->Administrate(
                     nucleus::proton::Radix{},
                     context.object->owner_permissions()) == elle::Status::Error)
-            escape("unable to update the object");
+            throw elle::Exception("unable to update the object");
         }
       else
         {
@@ -403,7 +401,7 @@ namespace etoile
             {
               // destroy the attributes block.
               if (Attributes::Destroy(context) == elle::Status::Error)
-                escape("unable to destroy the attributes block");
+                throw elle::Exception("unable to destroy the attributes block");
             }
           */
 
@@ -415,7 +413,7 @@ namespace etoile
           if (context.object->Administrate(
                 context.attributes_porcupine->seal(secret_key),
                 context.object->owner_permissions()) == elle::Status::Error)
-            escape("unable to update the object");
+            throw elle::Exception("unable to update the object");
 
           // XXX[too slow without a nest optimization: to activate later]
           ELLE_STATEMENT(context.attributes_porcupine->check(nucleus::proton::flags::all));

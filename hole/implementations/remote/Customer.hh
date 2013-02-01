@@ -4,7 +4,6 @@
 # include <boost/noncopyable.hpp>
 
 # include <elle/network/fwd.hh>
-# include <elle/radix/Entity.hh>
 # include <elle/types.hh>
 
 # include <reactor/network/socket.hh>
@@ -22,9 +21,8 @@ namespace hole
     namespace remote
     {
       /// A client connected to the server i.e the machine.
-      class Customer
-        : public elle::radix::Entity
-        , public boost::noncopyable
+      class Customer:
+        public boost::noncopyable
       {
       /*----------.
       | Constants |

@@ -2,8 +2,6 @@
 # define ETOILE_PORTAL_APPLICATION_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Entity.hh>
-# include <elle/radix/Object.hh>
 
 # include <reactor/network/fwd.hh>
 
@@ -22,7 +20,6 @@ namespace etoile
     /// use the message interface.
     ///
     class Application:
-      public elle::radix::Entity,
       public elle::Printable
     {
     public:

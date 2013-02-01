@@ -5,7 +5,6 @@
 #include <lune/Identity.hh>
 #include <elle/Authority.hh>
 
-
 #include <common/common.hh>
 
 #include <elle/io/File.hh>
@@ -19,8 +18,6 @@
 #include <nucleus/neutron/Subject.hh>
 
 #include <hole/Openness.hh>
-
-#include <elle/idiom/Open.hh>
 
 namespace lune
 {
@@ -123,10 +120,10 @@ namespace lune
     std::cout << alignment << "[Descriptor]" << std::endl;
 
     if (this->_meta.Dump(margin + 2) == elle::Status::Error)
-      escape("XXX");
+      throw elle::Exception("XXX");
 
     if (this->_data.Dump(margin + 2) == elle::Status::Error)
-      escape("XXX");
+      throw elle::Exception("XXX");
 
     return elle::Status::Ok;
   }
@@ -315,22 +312,22 @@ namespace lune
               << "[Administrator K] " << this->_administrator_K << std::endl;
 
     if (this->_model.Dump(margin + 2) == elle::Status::Error)
-      escape("unable to dump the model");
+      throw elle::Exception("unable to dump the model");
 
     std::cout << alignment << elle::io::Dumpable::Shift
               << "[Root] " << std::endl;
 
     if (this->_root.Dump(margin + 4) == elle::Status::Error)
-      escape("unable to dump the address");
+      throw elle::Exception("unable to dump the address");
 
     if (this->_everybody.identity.Save(unique) == elle::Status::Error)
-      escape("unable to save the address");
+      throw elle::Exception("unable to save the address");
 
     std::cout << alignment << elle::io::Dumpable::Shift
               << "[Everybody] " << unique << std::endl;
 
     if (this->_everybody.identity.Dump(margin + 4) == elle::Status::Error)
-      escape("unable to dump the address");
+      throw elle::Exception("unable to dump the address");
 
     std::cout << alignment << elle::io::Dumpable::Shift << "[History] "
               << static_cast<elle::Natural32>(this->_history) << std::endl;

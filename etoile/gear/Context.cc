@@ -1,7 +1,5 @@
 #include <etoile/gear/Context.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -88,7 +86,7 @@ namespace etoile
       // dump the transcript.
       if (this->_transcript != nullptr)
         if (this->_transcript->Dump(margin + 2) == elle::Status::Error)
-          escape("unable to dump the transcript");
+          throw elle::Exception("unable to dump the transcript");
 
       return elle::Status::Ok;
     }

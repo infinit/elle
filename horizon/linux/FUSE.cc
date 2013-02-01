@@ -2,7 +2,6 @@
 #include <horizon/linux/FUker.hh>
 
 #include <elle/Exception.hh>
-#include <elle/idiom/Open.hh>
 
 namespace horizon
 {
@@ -34,7 +33,7 @@ namespace horizon
 
       // initialize the FUker.
       if (FUker::Initialize() == elle::Status::Error)
-        escape("unable to initialize the FUker");
+        throw elle::Exception("unable to initialize the FUker");
 
       return elle::Status::Ok;
     }
@@ -46,7 +45,7 @@ namespace horizon
     {
       // clean the FUker.
       if (FUker::Clean() == elle::Status::Error)
-        escape("unable to clean the FUker");
+        throw elle::Exception("unable to clean the FUker");
 
       return elle::Status::Ok;
     }

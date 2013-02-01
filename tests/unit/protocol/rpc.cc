@@ -3,7 +3,6 @@
 
 #include <elle/concurrency/Scheduler.hh>
 #include <elle/serialize/BinaryArchive.hh>
-#include <elle/idiom/Close.hh>
 
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>

@@ -47,11 +47,11 @@ namespace nucleus
 
       // dump the address.
       if (this->_address.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the address");
+        throw Exception("unable to dump the address");
 
       // dump the revision.
       if (this->_revision.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the revision");
+        throw Exception("unable to dump the revision");
 
       return elle::Status::Ok;
     }

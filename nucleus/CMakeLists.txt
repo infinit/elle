@@ -2,7 +2,6 @@ project(Nucleus CXX)
 
 add_library(nucleus ${LINK_METHOD}
   factory.cc
-  Derivable.cc
 
   proton/Address.cc
   proton/Annals.cc

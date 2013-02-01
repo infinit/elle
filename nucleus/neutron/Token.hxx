@@ -8,8 +8,6 @@
 
 # include <nucleus/Exception.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace neutron

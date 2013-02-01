@@ -1,8 +1,6 @@
 #include <etoile/abstract/Group.hh>
 #include <nucleus/neutron/Group.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace abstract
@@ -22,8 +20,6 @@ namespace etoile
     }
 
     Group::Group(Group const& other):
-      elle::radix::Object(other),
-
       manager{new cryptography::PublicKey{*other.manager}},
       pass_K{new cryptography::PublicKey{*other.pass_K}}
     {
@@ -94,11 +90,6 @@ namespace etoile
       return true;
     }
 
-    ///
-    /// this macro-function call generates the group.
-    ///
-    embed(Group, _());
-
 //
 // ---------- dumpable --------------------------------------------------------
 //
@@ -128,7 +119,7 @@ namespace etoile
                   << "[Creation]" << std::endl;
 
         if (this->timestamps.creation.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the creation time");
+          throw elle::Exception("unable to dump the creation time");
 
         // dump the modification time.
         std::cout << alignment << elle::io::Dumpable::Shift
@@ -136,7 +127,7 @@ namespace etoile
                   << "[Modification]" << std::endl;
 
         if (this->timestamps.modification.Dump(margin + 6) == elle::Status::Error)
-          escape("unable to dump the modification time");
+          throw elle::Exception("unable to dump the modification time");
       }
 
       // dump the size.

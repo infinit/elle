@@ -51,7 +51,7 @@ namespace nucleus
 
       // dump the value.
       if (this->_value.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the value");
+        throw Exception("unable to dump the value");
 
       // dump the capacity.
       std::cout << alignment << elle::io::Dumpable::Shift

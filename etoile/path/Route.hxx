@@ -1,11 +1,7 @@
 #ifndef ETOILE_PATH_ROUTE_HXX
 # define ETOILE_PATH_ROUTE_HXX
 
-# include <cassert>
-
-# include <elle/idiom/Close.hh>
-#  include <elle/serialize/VectorSerializer.hxx>
-# include <elle/idiom/Open.hh>
+# include <elle/serialize/VectorSerializer.hxx>
 
 ELLE_SERIALIZE_SIMPLE(etoile::path::Route,
                       archive,

@@ -3,8 +3,6 @@
 #include <nucleus/proton/Address.hh>
 #include <nucleus/Exception.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton
@@ -95,7 +93,7 @@ namespace nucleus
 
       // dump the parent class.
       if (MutableBlock::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the underlying block");
+        throw Exception("unable to dump the underlying block");
 
       // dump the PKB's public key.
       std::cout << alignment << elle::io::Dumpable::Shift << "[K] "

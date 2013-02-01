@@ -6,25 +6,21 @@
 #include <elle/concurrency/Program.hh>
 #include <elle/concurrency/Scheduler.hh>
 
-#include <elle/idiom/Close.hh>
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
-#include <elle/idiom/Open.hh>
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 #include <hole/Hole.hh>
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/function.hpp>
-# include <boost/preprocessor/seq/for_each.hpp>
-# include <boost/preprocessor/seq/for_each_i.hpp>
-# include <boost/preprocessor/seq/pop_front.hpp>
-# include <pthread.h>
-# include <sys/param.h>
-# include <sys/mount.h>
-# include <fuse/fuse_lowlevel.h>
-#include <elle/idiom/Open.hh>
+#include <boost/function.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <boost/preprocessor/seq/pop_front.hpp>
+#include <pthread.h>
+#include <sys/param.h>
+#include <sys/mount.h>
+#include <fuse/fuse_lowlevel.h>
 
 ELLE_LOG_COMPONENT("infinit.horizon.FUker");
 

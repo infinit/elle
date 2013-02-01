@@ -30,10 +30,8 @@
 #include <hole/Hole.hh>
 #include <hole/storage/Directory.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/foreach.hpp>
-# include <limits>
-#include <elle/idiom/Open.hh>
+#include <boost/foreach.hpp>
+#include <limits>
 
 #include <HoleFactory.hh>
 
@@ -227,15 +225,15 @@ namespace satellite
 
     // set up the program.
     if (elle::concurrency::Program::Setup("Group") == elle::Status::Error)
-      escape("unable to set up the program");
+      throw elle::Exception("unable to set up the program");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      escape("unable to initialize Lune");
+      throw elle::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      escape("unable to initialize Infinit");
+      throw elle::Exception("unable to initialize Infinit");
 
     // initialize the operation.
     operation = Group::OperationUnknown;
@@ -245,7 +243,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-      escape("unable to set the description");
+      throw elle::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -254,7 +252,7 @@ namespace satellite
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -263,7 +261,7 @@ namespace satellite
           "user",
           "specifies the name of the user",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -272,7 +270,7 @@ namespace satellite
           "network",
           "specifies the name of the network",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -281,7 +279,7 @@ namespace satellite
           "information",
           "display information on a group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -290,7 +288,7 @@ namespace satellite
           "create",
           "create a group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -299,7 +297,7 @@ namespace satellite
           "description",
           "specify the group description on creation",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -308,7 +306,7 @@ namespace satellite
           "lookup",
           "look up a specific group record",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -317,7 +315,7 @@ namespace satellite
           "consult",
           "consult the group records",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -326,7 +324,7 @@ namespace satellite
           "add",
           "add a user/group to a group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -335,7 +333,7 @@ namespace satellite
           "remove",
           "remove a user/group from a group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -344,7 +342,7 @@ namespace satellite
           "destroy",
           "destroy the given group",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -353,7 +351,7 @@ namespace satellite
           "group",
           "indicate the group base64 identity on which to operate",
           elle::utility::Parser::KindOptional) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -362,7 +360,7 @@ namespace satellite
           "type",
           "indicate the type of the entity: user or group",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -371,11 +369,11 @@ namespace satellite
           "identity",
           "specify the user/group base64 identity to add/remove/lookup in the group",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      escape("unable to parse the command line");
+      throw elle::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -394,7 +392,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the user name");
+        throw elle::Exception("unable to retrieve the user name");
       }
 
     // retrieve the network name.
@@ -404,7 +402,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the network name");
+        throw elle::Exception("unable to retrieve the network name");
       }
 
     lune::Descriptor descriptor(Infinit::User, Infinit::Network);
@@ -421,7 +419,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the information, create, add, lookup, consult, remove and "
+        throw elle::Exception("the information, create, add, lookup, consult, remove and "
                "destroy options are mutually exclusive");
       }
 
@@ -459,14 +457,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -485,7 +483,7 @@ namespace satellite
           // retrieve the description.
           if (Infinit::Parser->Value("Description",
                                      description) == elle::Status::Error)
-            escape("unable to retrieve the description");
+            throw elle::Exception("unable to retrieve the description");
 
           Group::create(description);
 
@@ -502,14 +500,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -518,11 +516,11 @@ namespace satellite
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -537,28 +535,28 @@ namespace satellite
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value("Identity",
                                            string) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  throw elle::Exception("unable to retrieve the identifier");
 
                 if (K.Restore(string) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identifier");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'", type);
+                throw elle::Exception("unsupported entity type '%u'", type);
               }
             }
 
@@ -577,14 +575,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -593,11 +591,11 @@ namespace satellite
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -612,28 +610,28 @@ namespace satellite
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value("Identity",
                                            string) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  throw elle::Exception("unable to retrieve the identifier");
 
                 if (K.Restore(string) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identifier");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'", type);
+                throw elle::Exception("unsupported entity type '%u'", type);
               }
             }
 
@@ -650,14 +648,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -679,14 +677,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -695,11 +693,11 @@ namespace satellite
 
           // retrieve the type.
           if (Infinit::Parser->Value("Type", string) == elle::Status::Error)
-            escape("unable to retrieve the type value");
+            throw elle::Exception("unable to retrieve the type value");
 
           // convert the string into a subject type.
           if (nucleus::neutron::Subject::Convert(string, type) == elle::Status::Error)
-            escape("unable to convert the string '%s' into a "
+            throw elle::Exception("unable to convert the string '%s' into a "
                    "valid subject type",
                    string.c_str());
 
@@ -714,28 +712,28 @@ namespace satellite
                 // represent a user identity i.e a public key.
                 if (Infinit::Parser->Value("Identity",
                                            string) == elle::Status::Error)
-                  escape("unable to retrieve the identifier");
+                  throw elle::Exception("unable to retrieve the identifier");
 
                 if (K.Restore(string) == elle::Status::Error)
-                  escape("unable to retrieve the user's public key "
+                  throw elle::Exception("unable to retrieve the user's public key "
                          "through the identifier");
 
                 // build the subject.
                 if (subject.Create(K) == elle::Status::Error)
-                  escape("unable to create the subject");
+                  throw elle::Exception("unable to create the subject");
 
                 break;
               }
             case nucleus::neutron::Subject::TypeGroup:
               {
                 // XXX
-                escape("not yet supported");
+                throw elle::Exception("not yet supported");
 
                 break;
               }
             default:
               {
-                escape("unsupported entity type '%u'", type);
+                throw elle::Exception("unsupported entity type '%u'", type);
               }
             }
 
@@ -752,14 +750,14 @@ namespace satellite
           if (Infinit::Parser->Value("Group",
                                      string,
                                      elle::String()) == elle::Status::Error)
-            escape("unable to retrieve the group identity");
+            throw elle::Exception("unable to retrieve the group identity");
 
           // if no group is provided, use the "everybody" group of the network.
           if (string.empty() == false)
             {
               // convert the string into a group identity.
               if (group.Restore(string) == elle::Status::Error)
-                escape("unable to convert the string into a group identity");
+                throw elle::Exception("unable to convert the string into a group identity");
             }
           else
             {
@@ -776,7 +774,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw elle::Exception("please specify an operation to perform");
         }
       }
 
@@ -786,11 +784,11 @@ namespace satellite
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      escape("unable to clean Infinit");
+      throw elle::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      escape("unable to clean Lune");
+      throw elle::Exception("unable to clean Lune");
 
     return elle::Status::Ok;
   }

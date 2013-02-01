@@ -11,11 +11,9 @@
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Close.hh>
-# include <cassert>
-# include <stdexcept>
-# include <boost/foreach.hpp>
-#include <elle/idiom/Open.hh>
+#include <cassert>
+#include <stdexcept>
+#include <boost/foreach.hpp>
 
 ELLE_LOG_COMPONENT("infinit.etoile.journal.Journal");
 
@@ -75,7 +73,7 @@ namespace etoile
 
           delete transcript;
 
-          escape("unable to spawn a new thread: '%s'", err.what());
+          throw elle::Exception("unable to spawn a new thread: '%s'", err.what());
         }
 #else
       Journal::_process(transcript);

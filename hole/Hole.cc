@@ -8,9 +8,7 @@
 
 #include <Infinit.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/format.hpp>
-#include <elle/idiom/Open.hh>
+#include <boost/format.hpp>
 
 ELLE_LOG_COMPONENT("infinit.hole.Hole");
 
@@ -28,19 +26,9 @@ namespace hole
     _authority(authority),
     _state(State::offline)
   {
-    // Disable the meta logging.
-    if (elle::radix::Meta::Disable() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to disable the meta logging");
-
     if (!_passport.validate(this->authority()))
       throw reactor::Exception(elle::concurrency::scheduler(),
                                "unable to validate the passport");
-
-    // Enable the meta logging.
-    if (elle::radix::Meta::Enable() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to enable the meta logging");
   }
 
   Hole::~Hole()

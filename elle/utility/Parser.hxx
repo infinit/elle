@@ -3,9 +3,7 @@
 
 # include <elle/Exception.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <boost/lexical_cast.hpp>
-# include <elle/idiom/Open.hh>
+# include <boost/lexical_cast.hpp>
 
 namespace elle
 {

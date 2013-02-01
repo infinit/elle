@@ -8,13 +8,11 @@
 # include <elle/types.hh>
 # include <elle/system/platform.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <fuse.h>
-#  if defined(HAVE_SETXATTR)
-#   include <attr/xattr.h>
-#  endif
-#  include <pthread.h>
-# include <elle/idiom/Open.hh>
+# include <fuse.h>
+# if defined(HAVE_SETXATTR)
+#  include <attr/xattr.h>
+# endif
+# include <pthread.h>
 
 namespace horizon
 {

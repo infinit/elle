@@ -13,8 +13,6 @@ using namespace infinit;
 
 # include <nucleus/proton/Location.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace nucleus
 {
   namespace proton

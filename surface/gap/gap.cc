@@ -7,8 +7,6 @@
 
 #include <lune/Lune.hh>
 
-#include <elle/idiom/Close.hh>
-
 #include "gap.h"
 #include "State.hh"
 

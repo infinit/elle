@@ -2,11 +2,11 @@
 # define LUNE_PHRASE_HH
 
 # include <elle/types.hh>
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/network/Port.hh>
 
-# include <elle/idiom/Open.hh>
+# include <boost/noncopyable.hpp>
 
 namespace lune
 {
@@ -24,8 +24,8 @@ namespace lune
   /// connect to in order to issue requests to Infinit.
   ///
   class Phrase:
-    public elle::radix::Object,
-    public elle::concept::MakeFileable<Phrase>
+    public elle::concept::MakeFileable<Phrase>,
+    private boost::noncopyable
   {
   public:
     //
@@ -46,8 +46,8 @@ namespace lune
     // interfaces
     //
   public:
-    // object
-    declare(Phrase);
+    ELLE_OPERATOR_NO_ASSIGNMENT(Phrase);
+
     elle::Boolean       operator==(const Phrase&) const;
 
     // dumpable

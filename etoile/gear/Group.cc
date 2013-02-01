@@ -6,8 +6,6 @@
 #include <nucleus/proton/Porcupine.hh>
 #include <nucleus/neutron/Ensemble.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace etoile
 {
   namespace gear
@@ -52,17 +50,17 @@ namespace etoile
 
       // dump the parent context.
       if (Context::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the parent context");
+        throw elle::Exception("unable to dump the parent context");
 
       // dump the location.
       if (this->location.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the location");
+        throw elle::Exception("unable to dump the location");
 
       // dump the group.
       if (this->group != nullptr)
         {
           if (this->group->Dump(margin + 2) == elle::Status::Error)
-            escape("unable to dump the group");
+            throw elle::Exception("unable to dump the group");
         }
       else
         {

@@ -42,7 +42,7 @@ namespace satellite
       // check if the authority exists.
       if (elle::Authority::exists(elle::io::Path(lune::Lune::Authority))
           == false)
-        escape("unable to locate the authority file");
+        throw elle::Exception("unable to locate the authority file");
     }
 
     // Retrieve the authority.
@@ -56,14 +56,14 @@ namespace satellite
           pass,
           prompt,
           elle::io::Console::OptionPassword) == elle::Status::Error)
-      escape("unable to read the input");
+      throw elle::Exception("unable to read the input");
 
     // load the authority.
     elle::Authority authority(elle::io::Path{lune::Lune::Authority});
 
     // decrypt the authority.
     if (authority.Decrypt(pass) == elle::Status::Error)
-      escape("unable to decrypt the authority");
+      throw elle::Exception("unable to decrypt the authority");
 
     //
     // create the passport.
@@ -119,7 +119,7 @@ namespace satellite
     {
       // does the passport exist.
       if (elle::Passport::exists(passport_path) == false)
-        escape("this passport does not seem to exist");
+        throw elle::Exception("this passport does not seem to exist");
     }
 
     elle::Passport      passport;
@@ -133,7 +133,7 @@ namespace satellite
 
       // validate the passport.
       if (passport.validate(Infinit::authority()) == false)
-        escape("unable to validate the passport");
+        throw elle::Exception("unable to validate the passport");
     }
 
     passport.dump();
@@ -157,19 +157,19 @@ namespace satellite
 
     // set up the program.
     if (elle::concurrency::Program::Setup("Passport") == elle::Status::Error)
-      escape("unable to set up the program");
+      throw elle::Exception("unable to set up the program");
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      escape("unable to initialize Lune");
+      throw elle::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      escape("unable to initialize Infinit");
+      throw elle::Exception("unable to initialize Infinit");
 
     // initialize the Etoile library.
     if (etoile::Etoile::Initialize() == elle::Status::Error)
-      escape("unable to initialize Etoile");
+      throw elle::Exception("unable to initialize Etoile");
 
     // initialize the operation.
     operation = Passport::OperationUnknown;
@@ -179,7 +179,7 @@ namespace satellite
 
     // specify a program description.
     if (Infinit::Parser->Description(Infinit::Copyright) == elle::Status::Error)
-      escape("unable to set the description");
+      throw elle::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -188,7 +188,7 @@ namespace satellite
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -197,7 +197,7 @@ namespace satellite
           "create",
           "create a new passport",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -206,7 +206,7 @@ namespace satellite
           "destroy",
           "destroy an existing passport",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -215,7 +215,7 @@ namespace satellite
           "information",
           "display information regarding a passport",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -224,7 +224,7 @@ namespace satellite
           "user",
           "specifies the name of the user",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     if (Infinit::Parser->Register(
           "Name",
@@ -232,11 +232,11 @@ namespace satellite
           "name",
           "specifies the name of the passport (device)",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      escape("unable to register the option");
+      throw elle::Exception("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      escape("unable to parse the command line");
+      throw elle::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -253,7 +253,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("unable to retrieve the user name");
+        throw elle::Exception("unable to retrieve the user name");
       }
 
     // check the mutually exclusive options.
@@ -264,7 +264,7 @@ namespace satellite
         // display the usage.
         Infinit::Parser->Usage();
 
-        escape("the create, destroy and information options are "
+        throw elle::Exception("the create, destroy and information options are "
                "mutually exclusive");
       }
 
@@ -292,7 +292,7 @@ namespace satellite
               // display the usage.
               Infinit::Parser->Usage();
 
-              escape("unable to retrieve the passport name");
+              throw elle::Exception("unable to retrieve the passport name");
             }
 
           // create the passport.
@@ -308,7 +308,7 @@ namespace satellite
         {
           // destroy the passport.
           if (Passport::Destroy(Infinit::User) == elle::Status::Error)
-            escape("unable to destroy the passport");
+            throw elle::Exception("unable to destroy the passport");
 
           // display a message.
           std::cout << "The passport has been destroyed successfully!"
@@ -320,7 +320,7 @@ namespace satellite
         {
           // get information on the passport.
           if (Passport::Information(Infinit::User) == elle::Status::Error)
-            escape("unable to retrieve information on the passport");
+            throw elle::Exception("unable to retrieve information on the passport");
 
           break;
         }
@@ -330,7 +330,7 @@ namespace satellite
           // display the usage.
           Infinit::Parser->Usage();
 
-          escape("please specify an operation to perform");
+          throw elle::Exception("please specify an operation to perform");
         }
       }
 
@@ -340,15 +340,15 @@ namespace satellite
 
     // clean the Etoile.
     if (etoile::Etoile::Clean() == elle::Status::Error)
-      escape("unable to clean Etoile");
+      throw elle::Exception("unable to clean Etoile");
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      escape("unable to clean Infinit");
+      throw elle::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      escape("unable to clean Lune");
+      throw elle::Exception("unable to clean Lune");
 
     return elle::Status::Ok;
   }

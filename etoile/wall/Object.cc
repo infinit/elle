@@ -293,7 +293,7 @@ namespace etoile
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {
@@ -390,7 +390,7 @@ namespace etoile
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {
@@ -485,7 +485,7 @@ namespace etoile
         try
           {
             if (scope->Shutdown() == elle::Status::Error)
-              escape("unable to trigger the shutdown");
+              throw elle::Exception("unable to trigger the shutdown");
           }
         catch (elle::Exception const& e)
           {

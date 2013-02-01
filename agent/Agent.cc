@@ -6,9 +6,7 @@
 
 #include <common/common.hh>
 
-#include <elle/idiom/Close.hh>
-# include <boost/filesystem.hpp>
-#include <elle/idiom/Open.hh>
+#include <boost/filesystem.hpp>
 
 #include <Infinit.hh>
 
@@ -44,17 +42,13 @@ namespace agent
   {
     elle::String        prompt;
 
-    // disable the meta logging.
-    if (elle::radix::Meta::Disable() == elle::Status::Error)
-      escape("unable to disable the meta logging");
-
     //
     // load the identity.
     //
     {
       // does the identity exist.
       if (lune::Identity::exists(Infinit::User) == false)
-        escape("the user identity does not seem to exist");
+        throw elle::Exception("the user identity does not seem to exist");
 
       std::ifstream identity_file(common::infinit::identity_path(Infinit::User));
       if (identity_file.good())
@@ -64,7 +58,7 @@ namespace agent
           std::getline(identity_file, clear_identity);
           ELLE_TRACE("got token: %s", Agent::meta_token);
           if (Agent::Identity.Restore(clear_identity) == elle::Status::Error)
-            escape("unable to restore the identity");
+            throw elle::Exception("unable to restore the identity");
         }
       else
         {
@@ -80,7 +74,7 @@ namespace agent
                 pass,
                 prompt,
                 elle::io::Console::OptionPassword) == elle::Status::Error)
-            escape("unable to read the input");
+            throw elle::Exception("unable to read the input");
           */
           // XXX[temporary fix]
 
@@ -90,11 +84,11 @@ namespace agent
           // verify the identity.
           if (Agent::Identity.Validate(Infinit::authority())
               == elle::Status::Error)
-            escape("the identity seems to be invalid");
+            throw elle::Exception("the identity seems to be invalid");
 
           // decrypt the identity.
           if (Agent::Identity.Decrypt(pass) == elle::Status::Error)
-            escape("unable to decrypt the identity");
+            throw elle::Exception("unable to decrypt the identity");
         }
     }
 
@@ -104,12 +98,8 @@ namespace agent
     {
       // create the subject.
       if (Agent::Subject.Create(Agent::Identity.pair().K()) == elle::Status::Error)
-        escape("unable to create the user's subject");
+        throw elle::Exception("unable to create the user's subject");
     }
-
-    // enable the meta logging.
-    if (elle::radix::Meta::Enable() == elle::Status::Error)
-      escape("unable to enable the meta logging");
 
     return elle::Status::Ok;
   }

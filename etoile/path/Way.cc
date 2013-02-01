@@ -5,10 +5,8 @@
 
 #include <etoile/path/Way.hh>
 
-#include <elle/idiom/Close.hh>
-# include <iostream>
-# include <sstream>
-#include <elle/idiom/Open.hh>
+#include <iostream>
+#include <sstream>
 
 namespace etoile
 {
@@ -32,16 +30,6 @@ namespace etoile
     /// default constructor
     ///
     Way::Way()
-    {
-    }
-
-    ///
-    /// copy constructor
-    ///
-    Way::Way(const Way&                                         way):
-      Object(way),
-
-      path(way.path)
     {
     }
 
@@ -141,11 +129,6 @@ namespace etoile
 
       return (this->path == element.path);
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Way, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

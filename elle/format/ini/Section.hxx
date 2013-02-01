@@ -5,10 +5,8 @@
 
 # include <reactor/exception.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <sstream>
-#  include <stdexcept>
-# include <elle/idiom/Open.hh>
+# include <sstream>
+# include <stdexcept>
 
 namespace elle { namespace format { namespace ini {
 
@@ -21,9 +19,7 @@ namespace elle { namespace format { namespace ini {
             T value;
             std::stringstream ss(it->second);
             ss >> value;
-# include <elle/idiom/Close.hh>
             if (ss.fail())
-# include <elle/idiom/Open.hh>
               throw std::runtime_error("Could not convert '" + it->second + "'");
             return value;
           }
@@ -39,9 +35,7 @@ namespace elle { namespace format { namespace ini {
             T value;
             std::stringstream ss(it->second);
             ss >> value;
-# include <elle/idiom/Close.hh>
             if (ss.fail())
-# include <elle/idiom/Open.hh>
               throw reactor::Exception(elle::concurrency::scheduler(),
                                        "Could not convert '" + it->second + "'");
             return value;

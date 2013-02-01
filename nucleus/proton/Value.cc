@@ -1,4 +1,5 @@
 #include <nucleus/proton/Value.hh>
+#include <nucleus/Exception.hh>
 
 namespace nucleus
 {
@@ -29,7 +30,7 @@ namespace nucleus
       std::cout << alignment << "[Value]" << std::endl;
 
       if (Node::Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the node");
+        throw Exception("unable to dump the node");
 
       return (elle::Status::Ok);
     }

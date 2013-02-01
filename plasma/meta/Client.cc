@@ -7,8 +7,6 @@
 
 #include "Client.hh"
 
-#include <elle/idiom/Close.hh>
-
 ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
 
 // - API responses serializers ------------------------------------------------

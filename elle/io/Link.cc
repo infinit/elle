@@ -1,26 +1,22 @@
 #include <elle/io/Link.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
-#include <elle/idiom/Close.hh>
 #include <elle/io/Path.hh>
-#include <elle/idiom/Open.hh>
 #include <elle/os/path.hh>
 
 #include <elle/system/system.hh>
 #include <elle/system/platform.hh>
 
-#include <elle/idiom/Close.hh>
-# include <vector>
-# include <sstream>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <libgen.h>
-# include <string.h>
-# if defined(INFINIT_WINDOWS)
-#  include <windows.h>
-# endif
-#include <elle/idiom/Open.hh>
+#include <vector>
+#include <sstream>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <string.h>
+#if defined(INFINIT_WINDOWS)
+# include <windows.h>
+#endif
 
 namespace elle
 {
@@ -39,22 +35,22 @@ namespace elle
     {
       // does the link exist.
       if (Link::Exist(link) == true)
-        escape("the link seems to already exist");
+        throw Exception("the link seems to already exist");
 
       // does the target exist.
       if ((File::Exist(target) == false) &&
           (Directory::Exist(target) == false))
-        escape("the target does not seem to exist");
+        throw Exception("the target does not seem to exist");
 
       // create the link.
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (::symlink(target.string().c_str(), link.string().c_str()))
-        escape("symlink failed: %s -> %s: %s", link.string().c_str(),
+        throw Exception("symlink failed: %s -> %s: %s", link.string().c_str(),
                target.string().c_str(), ::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
       elle::os::path::make_symlink(link.string(), target.string());
       if (elle::os::path::check_symlink(target.string()))
-        escape("Symlink failed: '%s' -> '%s'.", link.string().c_str(),
+        throw Exception("Symlink failed: '%s' -> '%s'.", link.string().c_str(),
                target.string().c_str());
 #else
 # error "unsupported platform"
@@ -70,7 +66,7 @@ namespace elle
     {
       // does the link exist.
       if (Link::Exist(path) == false)
-        escape("the link does not seem to exist");
+        throw Exception("the link does not seem to exist");
 
       // unlink the link.
       ::unlink(path.string().c_str());
@@ -138,7 +134,7 @@ namespace elle
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)
-                escape("unable to create the intermediate directory");
+                throw Exception("unable to create the intermediate directory");
             }
         }
 

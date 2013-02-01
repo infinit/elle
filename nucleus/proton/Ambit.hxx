@@ -167,7 +167,7 @@ namespace nucleus
                 << "[State] " << this->_state << std::endl;
 
       if (this->_handle.Dump(margin + 2) == elle::Status::Error)
-        escape("unable to dump the handle");
+        throw Exception("unable to dump the handle");
 
       return elle::Status::Ok;
     }
