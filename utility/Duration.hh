@@ -2,8 +2,10 @@
 # define ELLE_UTILITY_DURATION_HH
 
 # include <elle/types.hh>
+# include <elle/operator.hh>
 
-# include <elle/radix/Object.hh>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace elle
 {
@@ -14,8 +16,7 @@ namespace elle
     /// this class defines durations of time which can then be used
     /// with the Time class to go forward and backward in time for instance.
     ///
-    class Duration:
-      public radix::Object
+    class Duration
     {
     public:
       //
@@ -38,15 +39,14 @@ namespace elle
       Duration();
       Duration(const Unit,
                const Natural64);
+      Duration(Duration const& other) = default;
 
       //
       // interfaces
       //
 
-      // object
-#include <elle/idiom/Open.hh>
-      declare(Duration);
-#include <elle/idiom/Close.hh>
+      ELLE_OPERATOR_NO_ASSIGNMENT(Duration);
+
       Boolean           operator==(const Duration&) const;
 
       // dumpable

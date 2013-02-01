@@ -1,8 +1,6 @@
 # include <elle/standalone/Region.hh>
 # include <elle/Exception.hh>
 
-# include <elle/idiom/Open.hh>
-
 namespace elle
 {
   namespace standalone
@@ -115,7 +113,7 @@ namespace elle
     {
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
-        escape("region already in use");
+        throw Exception("region already in use");
 
       // set the type.
       this->type = Region::TypeChunk;
@@ -135,7 +133,7 @@ namespace elle
     {
       // check if the operation is valid.
       if (this->type != Region::TypeUnknown)
-        escape("region already in use");
+        throw Exception("region already in use");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -156,7 +154,7 @@ namespace elle
     {
       // check the type.
       if (this->type == Region::TypeChunk)
-        escape("unable to prepare an already in use chunk region");
+        throw Exception("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -165,7 +163,7 @@ namespace elle
       // allocate memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, capacity))) == nullptr)
-        escape("%s", ::strerror(errno));
+        throw Exception("%s", ::strerror(errno));
 
       // update the capacity. note that the size should be updated
       // manually when the direct copy is made.
@@ -183,7 +181,7 @@ namespace elle
     {
       // check the type.
       if (this->type == Region::TypeChunk)
-        escape("unable to prepare an already in use chunk region");
+        throw Exception("unable to prepare an already in use chunk region");
 
       // set the type.
       this->type = Region::TypeBuffer;
@@ -192,7 +190,7 @@ namespace elle
       // allocate the required memory.
       if ((this->contents =
            static_cast<Byte*>(::realloc(this->contents, size))) == nullptr)
-        escape("%s", ::strerror(errno));
+        throw Exception("%s", ::strerror(errno));
 
       // copy the data.
       ::memcpy(this->contents, contents, size);
@@ -219,13 +217,13 @@ namespace elle
     {
       // check the type.
       if (this->type == Region::TypeChunk)
-        escape("unable to prepare an already in use chunk region");
+        throw Exception("unable to prepare an already in use chunk region");
 
       // if the region is a virgin.
       if (this->type == Region::TypeUnknown)
         {
           if (this->Prepare(size) == Status::Error)
-            escape("unable to prepare the region for the first time");
+            throw Exception("unable to prepare the region for the first time");
 
 #ifdef REGION_CLEAR
           // initialize the memory's content.
@@ -245,7 +243,7 @@ namespace elle
           if ((this->contents =
                static_cast<Byte*>(::realloc(this->contents,
                                             this->capacity))) == nullptr)
-            escape("%s", ::strerror(errno));
+            throw Exception("%s", ::strerror(errno));
 
 #ifdef REGION_CLEAR
           // initialize the memory's content.
@@ -266,15 +264,15 @@ namespace elle
     {
       // check the type.
       if (this->type == Region::TypeChunk)
-        escape("unable to prepare an already in use chunk region");
+        throw Exception("unable to prepare an already in use chunk region");
 
       // make sure the buffer is large enough.
       if (this->Adjust(this->size + size) == Status::Error)
-        escape("unable to reserve enough space for the new piece");
+        throw Exception("unable to reserve enough space for the new piece");
 
       // copy the region into the buffer.
       if (this->Write(this->size, contents, size) == Status::Error)
-        escape("unable to append the data");
+        throw Exception("unable to append the data");
 
       return Status::Ok;
     }
@@ -289,7 +287,7 @@ namespace elle
     {
       // check that the copy stays in the bounds.
       if ((offset + size) > this->size)
-        escape("this operation is out of bounds");
+        throw Exception("this operation is out of bounds");
 
       // copy the data.
       ::memcpy(contents, this->contents + offset, size);
@@ -307,7 +305,7 @@ namespace elle
     {
       // check that the copy stays in the bounds.
       if ((offset + size) > this->capacity)
-        escape("this operation is out of bounds");
+        throw Exception("this operation is out of bounds");
 
       // copy the data.
       ::memcpy(this->contents + offset, contents, size);
@@ -327,7 +325,7 @@ namespace elle
     {
       // check the type.
       if (this->type != Region::TypeBuffer)
-        escape("unable to detach non-buffer regions");
+        throw Exception("unable to detach non-buffer regions");
 
       // activate the option.
       this->options = Region::OptionDetach;

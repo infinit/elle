@@ -3,10 +3,9 @@
 
 # include <elle/Printable.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <iostream>
-#  include <sstream>
-# include <elle/idiom/Open.hh>
+# include <iostream>
+# include <sstream>
+# include <typeinfo>
 
 namespace elle
 {

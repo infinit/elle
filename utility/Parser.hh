@@ -3,15 +3,11 @@
 
 #include <elle/types.hh>
 
-#include <elle/radix/Entity.hh>
-
 #include <elle/Exception.hh>
 
-#include <elle/idiom/Close.hh>
 # include <vector>
 # include <unistd.h>
 # include <getopt.h>
-#include <elle/idiom/Open.hh>
 
 namespace elle
 {
@@ -35,8 +31,7 @@ namespace elle
     /// options but also to retrieve the passed arguments directly in
     /// their type by operating an automatic conversion.
     ///
-    class Parser:
-      public radix::Entity
+    class Parser
     {
     public:
       //
@@ -84,8 +79,7 @@ namespace elle
       //
       // classes
       //
-      class Option:
-        public radix::Entity
+      class Option
       {
       public:
         //

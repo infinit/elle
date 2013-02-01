@@ -14,7 +14,6 @@
 #include <reactor/scheduler.hh>
 
 #include <elle/printf.hh>
-#include <elle/idiom/Close.hh>
 #include <elle/log.hh>
 #include <elle/nat/Nat.hh>
 

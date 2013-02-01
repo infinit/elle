@@ -2,10 +2,7 @@
 # define ELLE_IO_PIECE_HH
 
 # include <elle/types.hh>
-
-# include <elle/radix/Object.hh>
-
-# include <elle/idiom/Open.hh>
+# include <elle/operator.hh>
 
 namespace elle
 {
@@ -15,8 +12,7 @@ namespace elle
     ///
     /// this class represents a variable piece of a pattern-based path.
     ///
-    class Piece:
-      public radix::Object
+    class Piece
     {
     public:
       //
@@ -25,13 +21,14 @@ namespace elle
       Piece();
       Piece(const String&,
             const String&);
+      Piece(Piece const& other) = default;
 
       //
       // interfaces
       //
 
-      // object
-      declare(Piece);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Piece);
+
       Boolean           operator==(const Piece&) const;
 
       // dumpable

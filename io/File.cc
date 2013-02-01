@@ -3,23 +3,19 @@
 
 #include <elle/io/File.hh>
 #include <elle/io/Directory.hh>
-#include <elle/idiom/Close.hh>
 #include <elle/io/Path.hh>
-#include <elle/idiom/Open.hh>
 
 #include <elle/standalone/Region.hh>
 
-#include <elle/idiom/Close.hh>
-# include <vector>
-# include <sstream>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <libgen.h>
-# if defined(INFINIT_WINDOWS)
-#  include <windows.h>
-# endif
-#include <elle/idiom/Open.hh>
+#include <vector>
+#include <sstream>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <libgen.h>
+#if defined(INFINIT_WINDOWS)
+# include <windows.h>
+#endif
 
 namespace elle
 {
@@ -43,19 +39,19 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-        escape("the file '%s' does not seem to exist", path);
+        throw Exception("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
-        escape("%s", ::strerror(errno));
+        throw Exception("%s", ::strerror(errno));
 
       // prepare the data.
       if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
-        escape("unable to prepare the region");
+        throw Exception("unable to prepare the region");
 
       // open the file.
       if ((fd = ::open(path.string().c_str(), O_RDONLY)) == -1)
-        escape("failed to open %s: %s",
+        throw Exception("failed to open %s: %s",
                path.string().c_str(), ::strerror(errno));
 
       // read the file's content.
@@ -76,7 +72,7 @@ namespace elle
 
               ::close(fd);
 
-              escape("read error: %s", ::strerror(errno));
+              throw Exception("read error: %s", ::strerror(errno));
             }
 
           roffset += rbytes;
@@ -101,13 +97,13 @@ namespace elle
 
       // dig the directory which will hold the target file.
       if (File::Dig(path) == Status::Error)
-        escape("unable to dig the chain of directories");
+        throw Exception("unable to dig the chain of directories");
 
       // open the file.
       if ((fd = ::open(path.string().c_str(),
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
-        escape("%s", ::strerror(errno));
+        throw Exception("%s", ::strerror(errno));
 
       // write the text to the file.
       while (woffset < data.size)
@@ -123,7 +119,7 @@ namespace elle
                 continue;
 
               ::close(fd);
-              escape("%s", ::strerror(errno));
+              throw Exception("%s", ::strerror(errno));
             }
 
           if (wbytes == 0)
@@ -150,15 +146,15 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-         escape("the file '%s' does not seem to exist", path);
+         throw Exception("the file '%s' does not seem to exist", path);
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
-        escape(::strerror(errno));
+        throw Exception(::strerror(errno));
 
       // prepare the data.
       if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
-        escape("unable to prepare the region");
+        throw Exception("unable to prepare the region");
 
       // open the file.
       fd = ::CreateFile(path.string().c_str(), GENERIC_READ,
@@ -167,7 +163,7 @@ namespace elle
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.string().c_str());
+        throw Exception("failed to open %s", path.string().c_str());
 
       // read the file's content.
       while (roffset < data.capacity)
@@ -183,7 +179,7 @@ namespace elle
           if (!succeed)
             {
               ::CloseHandle(fd);
-              escape("read error");
+              throw Exception("read error");
             }
 
           if (rbytes == 0)
@@ -211,7 +207,7 @@ namespace elle
 
       // dig the directory which will hold the target file.
       if (File::Dig(path) == Status::Error)
-        escape("unable to dig the chain of directories");
+        throw Exception("unable to dig the chain of directories");
 
       // open the file.
       fd = ::CreateFile(path.string().c_str(), GENERIC_WRITE,
@@ -220,7 +216,7 @@ namespace elle
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        escape("failed to open %s", path.string().c_str());
+        throw Exception("failed to open %s", path.string().c_str());
 
       // write the text to the file.
       while (woffset < data.size)
@@ -235,7 +231,7 @@ namespace elle
             {
               ::CloseHandle(fd);
 
-              escape("write error");
+              throw Exception("write error");
             }
 
           if (wbytes == 0)
@@ -260,7 +256,7 @@ namespace elle
     {
       // does the file exist.
       if (File::Exist(path) == false)
-        escape("the file '%s' does not seem to exist", path);
+        throw Exception("the file '%s' does not seem to exist", path);
 
       // unlink the file.
       ::unlink(path.string().c_str());
@@ -320,7 +316,7 @@ namespace elle
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)
-                escape("unable to create the intermediate directory");
+                throw Exception("unable to create the intermediate directory");
             }
         }
 

@@ -2,10 +2,7 @@
 
 #include <elle/Exception.hh>
 
-#include <elle/idiom/Close.hh>
-# include <iconv.h>
-#include <elle/idiom/Open.hh>
-
+#include <iconv.h>
 
 namespace elle
 {
@@ -17,7 +14,7 @@ namespace elle
                     wchar_t**,
                     ssize_t*)
     {
-      escape("XXX implement me with iconv_open/iconv/iconv_close");
+      throw Exception("XXX implement me with iconv_open/iconv/iconv_close");
       return Status::Ok;
     }
 
@@ -26,7 +23,7 @@ namespace elle
                     char**,
                     ssize_t*)
     {
-      escape("XXX implement me with iconv_open/iconv/iconv_close");
+      throw Exception("XXX implement me with iconv_open/iconv/iconv_close");
       return Status::Ok;
     }
 

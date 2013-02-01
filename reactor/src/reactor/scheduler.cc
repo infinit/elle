@@ -1,5 +1,4 @@
 #include <elle/log.hh>
-#include <elle/idiom/Close.hh>
 
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>

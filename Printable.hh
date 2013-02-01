@@ -1,8 +1,6 @@
 #ifndef ELLE_PRINTABLE_HH
 # define ELLE_PRINTABLE_HH
 
-# include <elle/idiom/Close.hh>
-
 # include <ostream>
 
 namespace elle

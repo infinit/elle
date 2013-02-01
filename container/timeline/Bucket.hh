@@ -3,11 +3,7 @@
 
 # include <elle/types.hh>
 
-# include <elle/radix/Entity.hh>
-
-# include <elle/idiom/Close.hh>
-#  include <vector>
-# include <elle/idiom/Open.hh>
+# include <vector>
 
 namespace elle
 {
@@ -25,8 +21,7 @@ namespace elle
       /// the same bucket.
       ///
       template <typename T>
-      class Bucket:
-        public radix::Entity
+      class Bucket
       {
       public:
         //

@@ -1,7 +1,5 @@
 #include <elle/io/Pattern.hh>
 
-#include <elle/idiom/Open.hh>
-
 #include <iostream>
 
 namespace elle
@@ -48,11 +46,6 @@ namespace elle
 
       return (this->string == element.string);
     }
-
-    ///
-    /// this macro-function call generates the entity.
-    ///
-    embed(Pattern, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

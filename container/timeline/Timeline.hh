@@ -3,15 +3,11 @@
 
 # include <elle/types.hh>
 
-# include <elle/radix/Entity.hh>
-
 # include <elle/utility/Time.hh>
 
 # include <elle/container/timeline/Bucket.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <map>
-# include <elle/idiom/Open.hh>
+# include <map>
 
 namespace elle
 {
@@ -32,8 +28,7 @@ namespace elle
       /// implementing cache policies for instance.
       ///
       template <typename T>
-      class Timeline:
-        public radix::Entity
+      class Timeline
       {
       public:
         //

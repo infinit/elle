@@ -1,5 +1,4 @@
 #include <elle/printf.hh>
-#include <elle/idiom/Close.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-server.hh>

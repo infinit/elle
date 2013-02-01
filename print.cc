@@ -1,4 +1,3 @@
-
 #include <elle/print.hh>
 
 namespace elle

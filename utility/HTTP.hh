@@ -5,21 +5,17 @@
 
 # include <elle/utility/fwd.hh>
 
-# include <elle/idiom/Close.hh>
-#  if defined(INFINIT_MACOSX)
-    ///
-    /// a bug exists in which, on MacOS X, curl includes <osreldate.h> if
-    /// __FreeBSD__ is defined, which it has to be for FUSE.
-    ///
-    /// therefore, __FreeBSD__ is undefined before including <curl/curl.h>
-    ///
-#   undef __FreeBSD__
-#   include <curl/curl.h>
-#   define __FreeBSD__ 10
-#  else
-#   include <curl/curl.h>
-#  endif
-# include <elle/idiom/Open.hh>
+# if defined(INFINIT_MACOSX)
+/// A bug exists in which, on MacOS X, curl includes <osreldate.h> if
+/// __FreeBSD__ is defined, which it has to be for FUSE.
+///
+/// Therefore, __FreeBSD__ is undefined before including <curl/curl.h>
+#  undef __FreeBSD__
+#  include <curl/curl.h>
+#  define __FreeBSD__ 10
+# else
+#  include <curl/curl.h>
+# endif
 
 namespace elle
 {

@@ -6,11 +6,9 @@
 # include "StoreFormat.hh"
 # include "StaticFormat.hh"
 
-# include <elle/idiom/Close.hh>
-#  include <iostream> // XXX
-#  include <boost/detail/endian.hpp>
-#  include <boost/call_traits.hpp>
-# include <elle/idiom/Open.hh>
+# include <iostream> // XXX
+# include <boost/detail/endian.hpp>
+# include <boost/call_traits.hpp>
 
 namespace elle
 {

@@ -1,25 +1,21 @@
 #include <elle/io/Directory.hh>
 #include <elle/io/File.hh>
 #include <elle/io/Link.hh>
-#include <elle/idiom/Close.hh>
 #include <elle/io/Path.hh>
-#include <elle/idiom/Open.hh>
 
 #include <elle/system/platform.hh>
 #include <elle/system/system.hh>
 
-#include <elle/idiom/Close.hh>
-# include <sstream>
-# include <stdexcept>
-# include <boost/noncopyable.hpp>
-# include <elle/os/path.hh>
-# include <sys/stat.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <libgen.h>
-# include <sys/types.h>
-# include <dirent.h>
-#include <elle/idiom/Open.hh>
+#include <sstream>
+#include <stdexcept>
+#include <boost/noncopyable.hpp>
+#include <elle/os/path.hh>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <libgen.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 // XXX[to rework completely]
 namespace // usefull classes
@@ -127,7 +123,7 @@ namespace elle
         }
       catch (std::exception const & e)
         {
-          escape("couldn't make path '%s': %s", path.string().c_str(), e.what());
+          throw Exception("couldn't make path '%s': %s", path.string().c_str(), e.what());
         }
 
       return Status::Ok;
@@ -136,19 +132,19 @@ namespace elle
 #if 0
       // does the directory already exist.
       if (Directory::Exist(path) == true)
-        escape("the directory seems to already exist");
+        throw Exception("the directory seems to already exist");
 
       // dig the directory which will hold the target directory.
       if (Directory::Dig(path) == Status::Error)
-        escape("unable to dig the chain of directories");
+        throw Exception("unable to dig the chain of directories");
 
       // create the directory.
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (::mkdir(path.string.c_str(), 0700) != 0)
-        escape(::strerror(errno));
+        throw Exception(::strerror(errno));
 #elif defined(INFINIT_WINDOWS)
       if (::mkdir(path.string.c_str()) != 0)
-        escape("unable to create %s: %s",
+        throw Exception("unable to create %s: %s",
                path.string.c_str(), ::strerror(errno));
 #else
 # error "unsupported platform"
@@ -165,7 +161,7 @@ namespace elle
     {
       // does the directory exist.
       if (Directory::Exist(path) == false)
-        escape("the directory does not seem to exist");
+        throw Exception("the directory does not seem to exist");
 
       // remove the directory.
       ::rmdir(path.string().c_str());
@@ -205,7 +201,7 @@ namespace elle
         }
       catch (std::exception const & e)
         {
-          escape("couldn't make path '%s': %s", directory.c_str(), e.what());
+          throw Exception("couldn't make path '%s': %s", directory.c_str(), e.what());
         }
 
       return Status::Ok;
@@ -237,7 +233,7 @@ namespace elle
             {
               // create the intermediate directory.
               if (Directory::Create(chemin) == Status::Error)
-                escape("unable to create the intermediate directory");
+                throw Exception("unable to create the intermediate directory");
             }
         }
 
@@ -253,13 +249,13 @@ namespace elle
     {
       // is the path pointing to a valid directory.
       if (Directory::Exist(path) == false)
-        escape("the path does not reference a directory");
+        throw Exception("the path does not reference a directory");
 
       _Directory directory(path);
 
       // open the directory.
       if (!directory)
-        escape("unable to open the directory");
+        throw Exception("unable to open the directory");
 
       auto it = directory.begin();
       auto end = directory.end();
@@ -277,7 +273,7 @@ namespace elle
                           system::path::separator +
                           *it);
           if (target.Create(path_str) == Status::Error)
-            escape("unable to create the target path");
+            throw Exception("unable to create the target path");
 
           // stat the entry as entry->d_type is not standard
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
@@ -297,28 +293,28 @@ namespace elle
             {
               // empty it as well.
               if (Directory::Clear(target) == Status::Error)
-                escape("unable to empty a subdirectory");
+                throw Exception("unable to empty a subdirectory");
 
               // remove the directory.
               if (Directory::Remove(target) == Status::Error)
-                escape("unable to remove the subdirectory");
+                throw Exception("unable to remove the subdirectory");
             }
           else if (S_ISREG(stat.st_mode))
             {
               // remove the file.
               if (File::Erase(target) == Status::Error)
-                escape("unable to remove the file");
+                throw Exception("unable to remove the file");
             }
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
           else if (S_ISLNK(stat.st_mode))
             {
               // remove the link.
               if (Link::Erase(target) == Status::Error)
-                escape("unable to remove the link");
+                throw Exception("unable to remove the link");
             }
 #endif
           else
-            escape("unhandled file system object type");
+            throw Exception("unhandled file system object type");
         }
 
       return Status::Ok;
@@ -334,7 +330,7 @@ namespace elle
 
       // open the directory.
       if(!directory)
-        escape("unable to open the directory");
+        throw Exception("unable to open the directory");
 
       // go through the entries.
       auto it = directory.begin(),

@@ -1,9 +1,6 @@
 #include <elle/types.hh>
 
-#include <elle/idiom/Close.hh>
-# include <windows.h>
-#include <elle/idiom/Open.hh>
-
+#include <windows.h>
 
 namespace elle
 {
@@ -23,11 +20,11 @@ namespace elle
                                          0);
 
       if (*output_size <= 0)
-        escape("failed to convert from UTF-16 to UTF-8\n");
+        throw Exception("failed to convert from UTF-16 to UTF-8\n");
 
       *output = (wchar_t *)::realloc(*output, (1 + *output_size) * sizeof (wchar_t));
       if (!*output)
-        escape("Out Of Memory!");
+        throw Exception("Out Of Memory!");
 
       auto nchars = MultiByteToWideChar(CP_UTF8, // CodePage
                                         0,       // dwFlags
@@ -38,7 +35,7 @@ namespace elle
       (*output)[*output_size] = L'\0';
 
       if (nchars != *output_size)
-        escape("failed to convert string");
+        throw Exception("failed to convert string");
 
       return Status::Ok;
     }
@@ -58,11 +55,11 @@ namespace elle
                                          nullptr);      // lpUsedDefaultChar
 
       if (*output_size <= 0)
-        escape("failed to convert from UTF-16 to UTF-8\n");
+        throw Exception("failed to convert from UTF-16 to UTF-8\n");
 
       *output = (char *)::realloc(*output, *output_size + 1);
       if (!*output)
-        escape("Out Of Memory!");
+        throw Exception("Out Of Memory!");
 
       auto nchars = WideCharToMultiByte(CP_UTF8,      // CodePage
                                         0,            // dwFlags
@@ -75,7 +72,7 @@ namespace elle
       (*output)[*output_size] = '\0';
 
       if (nchars != *output_size)
-        escape("failed to convert string");
+        throw Exception("failed to convert string");
 
       return Status::Ok;
     }

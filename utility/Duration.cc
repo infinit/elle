@@ -1,6 +1,5 @@
 #include <elle/utility/Duration.hh>
 #include <elle/io/Dumpable.hh>
-#include <elle/idiom/Open.hh>
 
 #include <iostream>
 
@@ -48,11 +47,6 @@ namespace elle
 
       return true;
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Duration, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

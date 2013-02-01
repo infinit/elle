@@ -1,15 +1,15 @@
 #ifndef ELLE_NETWORK_LOCUS_HH
 # define ELLE_NETWORK_LOCUS_HH
 
-# include <elle/Printable.hh>
 # include <elle/types.hh>
-
-# include <elle/radix/Object.hh>
+# include <elle/operator.hh>
+# include <elle/Printable.hh>
 
 # include <elle/network/Host.hh>
 # include <elle/network/Port.hh>
 
-# include <elle/idiom/Open.hh>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 namespace elle
 {
@@ -17,9 +17,8 @@ namespace elle
   {
 
     /// A network host and port.
-    class Locus
-      : public radix::Object
-      , public elle::Printable
+    class Locus:
+      public elle::Printable
     {
     public:
       //
@@ -33,6 +32,7 @@ namespace elle
     public:
       Locus();
       Locus(std::string const& hostname, int port);
+      Locus(Locus const&) = default;
 
       //
       // methods
@@ -45,11 +45,10 @@ namespace elle
       // interfaces
       //
 
-      // object
-      declare(Locus);
+      ELLE_OPERATOR_ASSIGNMENT(Locus); // XXX
+
       Boolean           operator==(const Locus&) const;
       Boolean           operator<(const Locus&) const;
-      Boolean           operator>(const Locus&) const;
 
       // dumpable
       Status            Dump(const Natural32 = 0) const;

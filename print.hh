@@ -1,9 +1,9 @@
 #ifndef  ELLE_PRINT_HH
 # define ELLE_PRINT_HH
 
-# include <elle/idiom/Close.hh>
-#  include <iosfwd>
-# include <elle/idiom/Open.hh>
+# include <iosfwd>
+
+# include <string>
 
 ///
 /// This module defines straightforward functions devoted to print or convert

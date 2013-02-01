@@ -1,9 +1,8 @@
 #ifndef  ELLE_PRINTF_HH
 # define ELLE_PRINTF_HH
 
-# include <elle/idiom/Close.hh>
-#  include <iosfwd>
-#  include <string>
+# include <iosfwd>
+# include <string>
 
 namespace elle
 {

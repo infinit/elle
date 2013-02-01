@@ -65,7 +65,7 @@ namespace elle
 
             // check the result.
             if (result.second == false)
-              escape("unable to insert the object");
+              throw Exception("unable to insert the object");
             else // the bucket was successfuly stored
               bucket = bucket_ptr.release();
           }
@@ -78,7 +78,7 @@ namespace elle
 
         // add the object to the bucket.
         if (bucket->Add(object) == Status::Error)
-          escape("unable to add the object to the bucket");
+          throw Exception("unable to add the object to the bucket");
 
         return Status::Ok;
       }
@@ -96,7 +96,7 @@ namespace elle
 
         // try to look up the bucket in the container.
         if (it == this->container.end())
-          escape("unable to locate the given timestamp");
+          throw Exception("unable to locate the given timestamp");
 
         // retrieve the bucket.
         bucket = it->second;
@@ -104,7 +104,7 @@ namespace elle
 
         // remove the object from the bucket.
         if (bucket->Remove(object) == Status::Error)
-          escape("unable to remove the object");
+          throw Exception("unable to remove the object");
 
         // check if the bucket is empty.
         if (bucket->container.empty() == true)
@@ -146,11 +146,11 @@ namespace elle
           {
             // dump the timestamp.
             if (it->first.Dump(margin + 2) == Status::Error)
-              escape("unable to dump the timestamp");
+              throw Exception("unable to dump the timestamp");
 
             // dump the bucket.
             if (it->second->Dump(margin + 2) == Status::Error)
-              escape("unable to dump the bucket");
+              throw Exception("unable to dump the bucket");
           }
         return Status::Ok;
       }

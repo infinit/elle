@@ -4,10 +4,8 @@
 
 #include <elle/utility/Duration.hh>
 
-#include <elle/idiom/Close.hh>
-# include <pthread.h>
-# include <ctime>
-#include <elle/idiom/Open.hh>
+#include <pthread.h>
+#include <ctime>
 
 ELLE_LOG_COMPONENT("elle.utility.Time");
 
@@ -281,11 +279,6 @@ namespace elle
 
       return (result);
     }
-
-    ///
-    /// this macro-function call generates the object.
-    ///
-    embed(Time, _());
 
 //
 // ---------- dumpable --------------------------------------------------------

@@ -6,8 +6,6 @@
 
 #include <elle/utility/URI.hh>
 
-#include <elle/idiom/Open.hh>
-
 namespace elle
 {
   namespace utility
@@ -108,7 +106,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape("%s", HTTP::Error);
+      throw Exception("%s", HTTP::Error);
     }
 
     ///
@@ -222,7 +220,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape("%s", HTTP::Error);
+      throw Exception("%s", HTTP::Error);
     }
 
     ///
@@ -354,7 +352,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape("%s", HTTP::Error);
+      throw Exception("%s", HTTP::Error);
     }
 
     ///
@@ -433,7 +431,7 @@ namespace elle
       // clean up the session.
       ::curl_easy_cleanup(curl);
 
-      escape("%s", HTTP::Error);
+      throw Exception("%s", HTTP::Error);
     }
 
 //

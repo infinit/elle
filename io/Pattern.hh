@@ -1,11 +1,8 @@
 #ifndef ELLE_IO_PATTERN_HH
 # define ELLE_IO_PATTERN_HH
 
-#include <elle/types.hh>
-
-#include <elle/radix/Object.hh>
-
-#include <elle/idiom/Open.hh>
+# include <elle/types.hh>
+# include <elle/operator.hh>
 
 namespace elle
 {
@@ -19,8 +16,7 @@ namespace elle
     /// representing a variable component, programmers are welcome to use
     /// the syntax they prefer.
     ///
-    class Pattern:
-      public radix::Object
+    class Pattern
     {
     public:
       //
@@ -28,6 +24,7 @@ namespace elle
       //
       Pattern();
       Pattern(elle::String const& string);
+      Pattern(Pattern const& other) = default;
 
       //
       // methods
@@ -38,8 +35,8 @@ namespace elle
       // interfaces
       //
 
-      // object
-      declare(Pattern);
+      ELLE_OPERATOR_NO_ASSIGNMENT(Pattern);
+
       Boolean           operator==(const Pattern&) const;
 
       // dumpable

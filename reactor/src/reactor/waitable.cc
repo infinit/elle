@@ -1,7 +1,6 @@
 #include <boost/foreach.hpp>
 
 #include <elle/log.hh>
-#include <elle/idiom/Close.hh>
 
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>

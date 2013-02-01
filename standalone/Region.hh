@@ -3,14 +3,10 @@
 
 # include <elle/types.hh>
 
-# include <elle/radix/Meta.hh>
-
 # include <elle/io/Dumpable.hh>
 
-# include <elle/idiom/Close.hh>
-#  include <iostream>
-#  include <iomanip>
-# include <elle/idiom/Open.hh>
+# include <iostream>
+# include <iomanip>
 
 namespace elle
 {
@@ -27,7 +23,6 @@ namespace elle
     /// along with fundamental methods such as Recycle() etc.
     ///
     class Region:
-      public radix::Meta,
       public io::Dumpable
     {
     public:
