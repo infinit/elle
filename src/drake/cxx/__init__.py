@@ -928,7 +928,7 @@ class Module(Binary):
     def __init__(self, path, sources, tk, cfg):
 
         Binary.__init__(self, tk.libname_module(cfg, path), sources, tk, cfg)
-        DynLibLinker(self.sources, self, self.tk, self.cfg)
+        DynLibLinker(self, self.tk, self.cfg)
 
 class StaticLib(Binary):
 
