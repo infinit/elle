@@ -220,14 +220,12 @@ namespace common
       static std::string const platform_ =
 #ifdef INFINIT_LINUX
         "linux";
-#else
-# ifdef INFINIT_MACOSX
+#elif INFINIT_MACOSX
         "macosx";
-# else
-#  ifdef INFINIT_WINDOWS
+#elif INFINIT_WINDOWS
         "windows";
-#  endif
-# endif
+#else
+# error "this platform is not supported"
 #endif
         return platform_;
     }
