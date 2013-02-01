@@ -3,7 +3,7 @@ import drake.cxx.boost
 import drake.cxx.qt
 
 def configure(cxx_toolkit, cxx_config, enable_horizon = True,
-              optimization = True, prefix = '/usr', boost = None):
+              optimization = True, prefix = '/usr', boost = None, qt = None):
 
   prefix = drake.Path(prefix)
 
@@ -35,7 +35,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
   # Qt
-  qt = drake.cxx.qt.Qt()
+  qt = qt or drake.cxx.qt.Qt()
   qt_cxx_config = drake.cxx.Config(cxx_config)
   qt_cxx_config.define('QT_NO_KEYWORDS')
   qt.plug(cxx_toolkit)
