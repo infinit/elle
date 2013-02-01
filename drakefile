@@ -3,11 +3,11 @@ import drake.cxx.boost
 import drake.cxx.qt
 
 def configure(cxx_toolkit, cxx_config, enable_horizon = True,
-              optimization = True, prefix = '/usr'):
+              optimization = True, prefix = '/usr', boost = None):
 
   prefix = drake.Path(prefix)
 
-  asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config)
+  asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
   udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
 
@@ -15,7 +15,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   cxx_config += asio_udt.config
   cxx_config.enable_debug_symbols()
   # Boost
-  boost = drake.cxx.boost.Boost()
+  boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config_signals()
   cxx_config += boost.config_system()
   cxx_config += boost.config_filesystem()
