@@ -91,7 +91,8 @@ class Qt:
                         continue
                     if isinstance(source, Header):
                         found = False
-                        for line in open(str(source.path()), 'r'):
+                        for line in open(str(source.path()), 'rb'):
+                            line = line.decode('utf-8')
                             if re.search(self.moc_re, line):
                                 found = True
                                 break
