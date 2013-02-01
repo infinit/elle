@@ -176,7 +176,7 @@ namespace common
              std::string const& network_id)
     {
       return path::join(
-        network_directory(user_id, network_id), "err.log");
+        user_directory(user_id), network_id + ".log");
     }
 
     std::string
