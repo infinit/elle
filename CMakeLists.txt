@@ -314,15 +314,18 @@ set(INFINIT_LIBRARIES
   ${HORIZON_LIB}
   etoile
   protocol
-  infinit
   hole
   metal
   agent
   lune
+  infinit # XXX(descriptor which depends on Infinit)
+  lune # XXX(infinit depends on lune)
+  hole # XXX(descriptor depends on model)
   nucleus
   cryptography
   common
   elle
+  cryptography # XXX(authority depends on crypto)
   comet
   asio-udt
   ${INFINIT_OPENSSL_LIBRARIES}
