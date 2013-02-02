@@ -6,5 +6,4 @@ add_executable(8dictionary
 target_link_libraries(
 	8dictionary
 	${INFINIT_LIBRARIES}
-	readline
 )

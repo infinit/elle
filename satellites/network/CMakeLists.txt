@@ -6,5 +6,4 @@ add_executable(8network
 target_link_libraries(
 	8network
 	${INFINIT_LIBRARIES}
-	readline
 )

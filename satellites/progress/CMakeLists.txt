@@ -6,5 +6,4 @@ add_executable(8progress
 target_link_libraries(
 	8progress
 	${INFINIT_LIBRARIES}
-	readline
 )

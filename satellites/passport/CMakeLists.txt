@@ -6,5 +6,4 @@ add_executable(8passport
 target_link_libraries(
 	8passport
 	${INFINIT_LIBRARIES}
-	readline
 )

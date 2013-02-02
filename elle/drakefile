@@ -14,7 +14,6 @@ def configure(cxx_toolkit, cxx_config):
 
   cxx_config = cxx_config + config
   cxx_config.lib('curl')
-  cxx_config.lib('readline')
 
   sources = drake.nodes(
     'Buffer.cc',

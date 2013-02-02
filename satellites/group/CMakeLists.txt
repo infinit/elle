@@ -6,5 +6,4 @@ add_executable(8group
 
 target_link_libraries(8group
 	${INFINIT_LIBRARIES}
-	readline
 )

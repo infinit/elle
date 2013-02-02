@@ -6,5 +6,4 @@ add_executable(8access
 target_link_libraries(
 	8access
 	${INFINIT_LIBRARIES}
-	readline
 )
