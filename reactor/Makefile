@@ -49,7 +49,7 @@ TEST_OBJECTS = $(TEST_SOURCES:.cc=.o)
 CPPFLAGS += -I src -I $(shell git rev-parse --show-toplevel)
 CPPFLAGS += -include boost/foreach.hpp
 CPPFLAGS += -Dforeach=BOOST_FOREACH
-#CPPFLAGS += -DINFINIT_REACTOR_ENABLE_DEBUG
+# XXX CPPFLAGS += -DINFINIT_REACTOR_ENABLE_DEBUG
 CXXFLAGS += -std=c++11
 CXXFLAGS += -g
 CXXFLAGS += -Woverloaded-virtual -Wall -Wno-parentheses

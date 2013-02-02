@@ -27,6 +27,7 @@ def configure(cxx_toolkit, cxx_config):
     'src/reactor/backtrace.cc',
     'src/reactor/backend/pthread/pthread.cc',
     'src/reactor/backend/coro_io/thread.cc',
+    'src/reactor/backend/coro_io/libcoroutine/asm.S',
     'src/reactor/backend/coro_io/libcoroutine/context.cc',
     'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
     'src/reactor/semaphore.cc',
