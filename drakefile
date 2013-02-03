@@ -35,10 +35,10 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
   udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
-
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += asio_udt.config
   cxx_config.enable_debug_symbols()
+
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.cfg
@@ -46,20 +46,34 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   cxx_config += boost.config_system()
   cxx_config += boost.config_filesystem()
   cxx_config += boost.config_thread()
+
   # OpenSSL
   openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h')
   cxx_config += openssl.config()
   cxx_config.lib('crypto')
+  if cxx_toolkit.os == drake.os.linux:
+    cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
+  elif cxx_toolkit.os == drake.os.macos:
+    cxx_config.add_system_include_path('dependencies/platforms/macosx64/work/include/')
+  else:
+    raise Exception("unsupported os")
+
   # Includes
   cxx_config.add_local_include_path('.')
+  # XXX[to put in cryptography]
   cxx_config.add_local_include_path('cryptography/sources')
-  cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
   reactor_lib = drake.copy(reactor.lib_dynamic, '', 'elle/reactor')
   cxx_config += reactor.config
+
   # Elle
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
+
+  # Cryptography
+  cryptography = drake.include('cryptography', cxx_toolkit, cxx_config)
+  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
+
   # Qt
   qt = qt or drake.cxx.qt.Qt()
   qt_cxx_config = drake.cxx.Config(cxx_config)
@@ -297,67 +311,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     )
   comet_lib = drake.cxx.DynLib('lib/comet', comet_sources,
                                cxx_toolkit, cxx_config)
-
-  # Cryptography
-  cryptography_sources = drake.nodes(
-    'cryptography/sources/cryptography/Clear.hh',
-    'cryptography/sources/cryptography/Code.hh',
-    'cryptography/sources/cryptography/Cryptosystem.cc',
-    'cryptography/sources/cryptography/Cryptosystem.hh',
-    'cryptography/sources/cryptography/Digest.hh',
-    'cryptography/sources/cryptography/Input.cc',
-    'cryptography/sources/cryptography/Input.hh',
-    'cryptography/sources/cryptography/KeyPair.cc',
-    'cryptography/sources/cryptography/KeyPair.hh',
-    'cryptography/sources/cryptography/KeyPair.hxx',
-    'cryptography/sources/cryptography/Output.cc',
-    'cryptography/sources/cryptography/Output.hh',
-    'cryptography/sources/cryptography/Output.hxx',
-    'cryptography/sources/cryptography/Plain.hh',
-    'cryptography/sources/cryptography/PrivateKey.cc',
-    'cryptography/sources/cryptography/PrivateKey.hh',
-    'cryptography/sources/cryptography/PrivateKey.hxx',
-    'cryptography/sources/cryptography/PublicKey.cc',
-    'cryptography/sources/cryptography/PublicKey.hh',
-    'cryptography/sources/cryptography/PublicKey.hxx',
-    'cryptography/sources/cryptography/SecretKey.cc',
-    'cryptography/sources/cryptography/SecretKey.hh',
-    'cryptography/sources/cryptography/SecretKey.hxx',
-    'cryptography/sources/cryptography/Seed.cc',
-    'cryptography/sources/cryptography/Seed.hh',
-    'cryptography/sources/cryptography/Seed.hxx',
-    'cryptography/sources/cryptography/Signature.hh',
-    'cryptography/sources/cryptography/all.hh',
-    'cryptography/sources/cryptography/bn.cc',
-    'cryptography/sources/cryptography/bn.hh',
-    'cryptography/sources/cryptography/bn.hxx',
-    'cryptography/sources/cryptography/cipher.cc'
-    'cryptography/sources/cryptography/cipher.hh'
-    'cryptography/sources/cryptography/cryptography.cc',
-    'cryptography/sources/cryptography/cryptography.hh',
-    'cryptography/sources/cryptography/evp.cc',
-    'cryptography/sources/cryptography/evp.hh',
-    'cryptography/sources/cryptography/finally.hh',
-    'cryptography/sources/cryptography/fwd.hh',
-    'cryptography/sources/cryptography/oneway.cc',
-    'cryptography/sources/cryptography/oneway.hh',
-    'cryptography/sources/cryptography/oneway.hxx',
-    'cryptography/sources/cryptography/random.cc',
-    'cryptography/sources/cryptography/random.hh',
-    'cryptography/sources/cryptography/random.hxx',
-    'cryptography/sources/cryptography/rsa/PrivateKey.cc',
-    'cryptography/sources/cryptography/rsa/PrivateKey.hh',
-    'cryptography/sources/cryptography/rsa/PrivateKey.hxx',
-    'cryptography/sources/cryptography/rsa/PublicKey.cc',
-    'cryptography/sources/cryptography/rsa/PublicKey.hh',
-    'cryptography/sources/cryptography/rsa/PublicKey.hxx',
-    'cryptography/sources/cryptography/rsa/all.hh',
-    'cryptography/sources/cryptography/rsa/fwd.hh',
-    'cryptography/sources/cryptography/rsa/keypair.cc',
-    'cryptography/sources/cryptography/rsa/keypair.hh',
-    )
-  cryptography_lib = drake.cxx.DynLib('lib/cryptography', cryptography_sources,
-                                      cxx_toolkit, cxx_config)
 
   # Protocol
   protocol_sources = drake.nodes(
