@@ -1,0 +1,76 @@
+import drake
+import drake.cxx
+
+config = None
+lib_static = None
+lib_dynamic = None
+
+def configure(cxx_toolkit, cxx_config):
+
+  global config, lib_static, lib_dynamic
+
+  config = drake.cxx.Config()
+  config.standard = drake.cxx.Config.cxx_0x
+
+  cxx_config = cxx_config + config
+
+  sources = drake.nodes(
+    'sources/cryptography/Clear.hh',
+    'sources/cryptography/Code.hh',
+    'sources/cryptography/Cryptosystem.cc',
+    'sources/cryptography/Cryptosystem.hh',
+    'sources/cryptography/Digest.hh',
+    'sources/cryptography/Input.cc',
+    'sources/cryptography/Input.hh',
+    'sources/cryptography/KeyPair.cc',
+    'sources/cryptography/KeyPair.hh',
+    'sources/cryptography/KeyPair.hxx',
+    'sources/cryptography/Output.cc',
+    'sources/cryptography/Output.hh',
+    'sources/cryptography/Output.hxx',
+    'sources/cryptography/Plain.hh',
+    'sources/cryptography/PrivateKey.cc',
+    'sources/cryptography/PrivateKey.hh',
+    'sources/cryptography/PrivateKey.hxx',
+    'sources/cryptography/PublicKey.cc',
+    'sources/cryptography/PublicKey.hh',
+    'sources/cryptography/PublicKey.hxx',
+    'sources/cryptography/SecretKey.cc',
+    'sources/cryptography/SecretKey.hh',
+    'sources/cryptography/SecretKey.hxx',
+    'sources/cryptography/Seed.cc',
+    'sources/cryptography/Seed.hh',
+    'sources/cryptography/Seed.hxx',
+    'sources/cryptography/Signature.hh',
+    'sources/cryptography/all.hh',
+    'sources/cryptography/bn.cc',
+    'sources/cryptography/bn.hh',
+    'sources/cryptography/bn.hxx',
+    'sources/cryptography/cipher.cc',
+    'sources/cryptography/cipher.hh',
+    'sources/cryptography/cryptography.cc',
+    'sources/cryptography/cryptography.hh',
+    'sources/cryptography/evp.cc',
+    'sources/cryptography/evp.hh',
+    'sources/cryptography/finally.hh',
+    'sources/cryptography/fwd.hh',
+    'sources/cryptography/oneway.cc',
+    'sources/cryptography/oneway.hh',
+    'sources/cryptography/oneway.hxx',
+    'sources/cryptography/random.cc',
+    'sources/cryptography/random.hh',
+    'sources/cryptography/random.hxx',
+    'sources/cryptography/rsa/PrivateKey.cc',
+    'sources/cryptography/rsa/PrivateKey.hh',
+    'sources/cryptography/rsa/PrivateKey.hxx',
+    'sources/cryptography/rsa/PublicKey.cc',
+    'sources/cryptography/rsa/PublicKey.hh',
+    'sources/cryptography/rsa/PublicKey.hxx',
+    'sources/cryptography/rsa/all.hh',
+    'sources/cryptography/rsa/fwd.hh',
+    'sources/cryptography/rsa/keypair.cc',
+    'sources/cryptography/rsa/keypair.hh',
+    )
+
+  lib_static = drake.cxx.StaticLib('cryptography', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('cryptography', sources, cxx_toolkit, cxx_config)
