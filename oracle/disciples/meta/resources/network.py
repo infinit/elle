@@ -625,7 +625,7 @@ class Delete(_Page):
                     'deleted_network_id': network_id
                 });
             else:
-                return self.error(error.NETWORK_NOT_FOUND, "The network '%s' was not found" % str(_id))
+                return self.error(error.NETWORK_NOT_FOUND)
 
         # copy users to notify them.
         users = network['users'][::]
