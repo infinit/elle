@@ -34,7 +34,7 @@
 #include <nucleus/neutron/Range.hh>
 
 #include <elle/log.hh>
-#include <elle/standalone/Region.hh>
+#include <elle/Buffer.hh>
 
 ELLE_LOG_COMPONENT("infinit.horizon.Crux");
 
@@ -1399,7 +1399,10 @@ namespace horizon
                         info);
 
     Handle*           handle;
-    elle::standalone::Region      region;
+
+    // XXX[dangerous cast]
+    elle::WeakBuffer data(const_cast<char*>(buffer),
+                          size);
 
     // Retrieve the handle;
     handle = reinterpret_cast<Handle*>(info->fh);
@@ -1416,15 +1419,10 @@ namespace horizon
       return (-EACCES);
 #endif
 
-    // Wrap the buffer.
-    if (region.Wrap(reinterpret_cast<const elle::Byte*>(buffer),
-                    size) == elle::Status::Error)
-      return (-EPERM);
-
     // Write the file.
     etoile::wall::File::write(handle->identifier,
                               static_cast<nucleus::neutron::Offset>(offset),
-                              region);
+                              data);
 
     return (size);
   }
@@ -1459,16 +1457,16 @@ namespace horizon
 #endif
 
     // Read the file.
-    elle::standalone::Region data(
+    elle::Buffer data =
       etoile::wall::File::read(
         handle->identifier,
         static_cast<nucleus::neutron::Offset>(offset),
-        static_cast<nucleus::neutron::Size>(size)));
+        static_cast<nucleus::neutron::Size>(size));
 
     // Copy the data to the output buffer.
-    ::memcpy(buffer, data.contents, data.size);
+    ::memcpy(buffer, data.contents(), data.size());
 
-    return (data.size);
+    return (data.size());
   }
 
   /// This method modifies the size of a file.

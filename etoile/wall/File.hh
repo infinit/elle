@@ -2,7 +2,7 @@
 # define ETOILE_WALL_FILE_HH
 
 # include <elle/types.hh>
-# include <elle/standalone/fwd.hh>
+# include <elle/fwd.hh>
 
 # include <nucleus/neutron/fwd.hh>
 
@@ -38,11 +38,11 @@ namespace etoile
       void
       write(gear::Identifier const& identifier,
             nucleus::neutron::Offset const& offset,
-            elle::standalone::Region const& data);
+            elle::WeakBuffer const& data);
       /// Read _size_ bytes of data from the file, at the given offset
       /// _offset_.
       static
-      elle::standalone::Region
+      elle::Buffer
       read(gear::Identifier const& idenifier,
            nucleus::neutron::Offset const& offset,
            nucleus::neutron::Size const& size);

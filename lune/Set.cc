@@ -1,6 +1,6 @@
 #include <elle/io/Piece.hh>
 #include <elle/io/File.hh>
-#include <elle/standalone/Region.hh>
+#include <elle/Buffer.hh>
 #include <elle/os/path.hh>
 
 #include <common/common.hh>
@@ -90,18 +90,19 @@ namespace lune
   Set::load(elle::String const& user,
             elle::String const& network)
   {
-    elle::standalone::Region region;
     std::istringstream stream;
     elle::String element;
 
     // read the file's content.
+    elle::Buffer buffer;
+
     if (elle::io::File::Read(elle::io::Path{Set::_path(user, network)},
-                             region) == elle::Status::Error)
+                             buffer) == elle::Status::Error)
       throw std::runtime_error("unable to read the file's content");
 
     // set up the stream.
-    stream.str(elle::String(reinterpret_cast<char*>(region.contents),
-                            region.size));
+    stream.str(elle::String(reinterpret_cast<char*>(buffer.mutable_contents()),
+                            buffer.size()));
 
     // for every string-based locus in the string.
     while (std::getline(stream, element, ' '))

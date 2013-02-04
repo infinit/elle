@@ -5,6 +5,7 @@
 # include <elle/operator.hh>
 # include <elle/concept/Fileable.hh>
 # include <elle/network/Port.hh>
+# include <elle/io/Dumpable.hh>
 
 # include <boost/noncopyable.hpp>
 
@@ -25,6 +26,7 @@ namespace lune
   ///
   class Phrase:
     public elle::concept::MakeFileable<Phrase>,
+    public elle::io::Dumpable,
     private boost::noncopyable
   {
   public:

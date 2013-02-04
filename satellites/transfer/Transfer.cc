@@ -411,16 +411,16 @@ namespace satellite
               // Copy the file.
               while (offset < abstract.size)
                 {
-                  elle::standalone::Region data(
+                  elle::Buffer data(
                     Transfer::rpcs->fileread(child, offset, N));
 
-                  stream.write((const char*)data.contents,
-                               static_cast<std::streamsize>(data.size));
+                  stream.write((const char*)data.contents(),
+                               static_cast<std::streamsize>(data.size()));
 
-                  offset += data.size;
+                  offset += data.size();
 
                   // Set the progress.
-                  Transfer::from_progress(data.size);
+                  Transfer::from_progress(data.size());
                 }
 
               // Make sure the right amount has been copied.
@@ -552,19 +552,19 @@ namespace satellite
     // Write the source file's content into the Infinit file freshly created.
     std::streamsize N = 5242880;
     std::ifstream stream(source, std::ios::binary);
-    unsigned char* buffer = new unsigned char[N];
+    elle::Buffer buffer(N);
 
     while (stream.good())
       {
-        stream.read((char*)buffer, N);
+        buffer.size(N);
 
-        elle::standalone::Region data(buffer, N);
+        stream.read((char*)buffer.mutable_contents(), buffer.size());
 
-        data.size = stream.gcount();
+        buffer.size(stream.gcount());
 
-        Transfer::rpcs->filewrite(file, offset, data);
+        Transfer::rpcs->filewrite(file, offset, elle::WeakBuffer{data});
 
-        offset += data.size;
+        offset += data.size();
       }
 
     stream.close();

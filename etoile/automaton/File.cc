@@ -6,6 +6,8 @@
 #include <etoile/automaton/Rights.hh>
 #include <etoile/gear/File.hh>
 
+#include <elle/Buffer.hh>
+
 #include <agent/Agent.hh>
 
 #include <elle/log.hh>
@@ -82,12 +84,12 @@ namespace etoile
     elle::Status        File::Write(
                           gear::File&                           context,
                           const nucleus::neutron::Offset& offset,
-                          const elle::standalone::Region& region)
+                          elle::WeakBuffer const& region)
     {
       ELLE_TRACE_FUNCTION(context, offset, region);
 
       // Ignore such zero-sized requests
-      if (region.size == 0)
+      if (region.size() == 0)
         return elle::Status::Ok;
 
       // determine the rights.
@@ -118,8 +120,8 @@ namespace etoile
       nucleus::neutron::Offset absolute_offset = offset;
       nucleus::neutron::Size absolute_size =
         offset < context.contents_porcupine->size() ?
-          ((offset + region.size) < context.contents_porcupine->size() ?
-           region.size : (context.contents_porcupine->size() - offset)) :
+          ((offset + region.size()) < context.contents_porcupine->size() ?
+           region.size() : (context.contents_porcupine->size() - offset)) :
           0;
 
       // Write the content [offset, offset + size[ which may span over
@@ -152,7 +154,7 @@ namespace etoile
 
           data().write(relative_offset,
                        elle::WeakBuffer{
-                         region.contents + (absolute_offset - offset),
+                         region.mutable_contents() + (absolute_offset - offset),
                          relative_size});
 
           data.close();
@@ -182,7 +184,7 @@ namespace etoile
       if (absolute_offset == context.contents_porcupine->size())
         {
           // Compute the expanding size.
-          nucleus::neutron::Size expanding_size = region.size;
+          nucleus::neutron::Size expanding_size = region.size();
 
           ELLE_TRACE("the end offset %s of the current content has been "
                      "reached with %s bytes remained to be written",
@@ -203,8 +205,9 @@ namespace etoile
               // data block.
               end().write(end().size(),
                           elle::WeakBuffer{
-                           region.contents + (absolute_offset - offset),
-                           expanding_size - (absolute_offset - offset)});
+                            region.mutable_contents() +
+                              (absolute_offset - offset),
+                            expanding_size - (absolute_offset - offset)});
 
               context.contents_porcupine->update(absolute_offset);
 
@@ -212,7 +215,7 @@ namespace etoile
             }
         }
 
-      ELLE_ASSERT(context.contents_porcupine->size() >= region.size);
+      ELLE_ASSERT(context.contents_porcupine->size() >= region.size());
 
       // update the object.
       if (context.object->Update(
@@ -232,17 +235,16 @@ namespace etoile
     ///
     /// this method returns a specific region of the file.
     ///
-    elle::Status        File::Read(
-                          gear::File&                           context,
-                          const nucleus::neutron::Offset& offset,
-                          const nucleus::neutron::Size& size,
-                          elle::standalone::Region&                         region)
+    elle::Buffer
+    File::read(gear::File&                           context,
+               const nucleus::neutron::Offset& offset,
+               const nucleus::neutron::Size& size)
     {
       ELLE_TRACE_FUNCTION(context, offset, size);
 
       // Ignore such zero-sized requests.
       if (size == 0)
-        return elle::Status::Ok;
+        return (elle::Buffer{});
 
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
@@ -266,7 +268,7 @@ namespace etoile
 
       // Check that there is enough data to be read.
       if (offset > context.contents_porcupine->size())
-        return elle::Status::Ok;
+        return (elle::Buffer{});
 
       // Initialize the offset which will move forward until it reaches
       // the size.
@@ -277,7 +279,7 @@ namespace etoile
 
       // Return if there is no more data to read.
       if (absolute_size == 0)
-        return elle::Status::Ok;
+        return (elle::Buffer{});
 
       ELLE_TRACE("about to read %s bytes of data at offset %s from "
                  "a porcupine of size %s",
@@ -331,12 +333,7 @@ namespace etoile
       ELLE_ASSERT(buffer.size() != 0);
       ELLE_ASSERT(buffer.size() <= size);
 
-      // XXX[not optimized: migrate to elle::Buffer so as to avoid
-      //     such stupid copies]
-      region.Prepare(buffer.size());
-      region.Write(0, buffer.contents(), buffer.size());
-
-      return elle::Status::Ok;
+      return (buffer);
     }
 
     ///

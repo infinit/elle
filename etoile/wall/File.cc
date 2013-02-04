@@ -13,6 +13,7 @@
 #include <nucleus/neutron/Size.hh>
 
 #include <elle/log.hh>
+#include <elle/Buffer.hh>
 #include <elle/concurrency/Scheduler.hh>
 
 #include <Infinit.hh>
@@ -134,7 +135,7 @@ namespace etoile
     void
     File::write(gear::Identifier const& identifier,
                 nucleus::neutron::Offset const& offset,
-                elle::standalone::Region const& data)
+                elle::WeakBuffer const& data)
     {
       ELLE_TRACE_FUNCTION(identifier, offset, data);
 
@@ -169,7 +170,7 @@ namespace etoile
       }
     }
 
-    elle::standalone::Region
+    elle::Buffer
     File::read(gear::Identifier const& identifier,
                nucleus::neutron::Offset const& offset,
                nucleus::neutron::Size const& size)
@@ -187,7 +188,9 @@ namespace etoile
       // retrieve the scope.
       scope = actor->scope;
 
-      elle::standalone::Region data;
+      elle::Buffer* buffer = nullptr;
+
+      ELLE_FINALLY_ACTION_DELETE(buffer);
 
       // declare a critical section.
       {
@@ -198,14 +201,16 @@ namespace etoile
           throw elle::Exception("unable to retrieve the context");
 
         // apply the read automaton on the context.
-        if (automaton::File::Read(*context,
-                                  offset,
-                                  size,
-                                  data) == elle::Status::Error)
-          throw elle::Exception("unable to read the file");
+        buffer = new elle::Buffer{std::move(automaton::File::read(*context,
+                                                                  offset,
+                                                                  size))};
       }
 
-      return (data);
+      // Thanks to the finally, the buffer will be deleted after being returned.
+      //
+      // Besides, the buffer is moved so as to make sure no copy is performed.
+      // We are forced to do so because Buffers are no-copyable by default.
+      return (std::move(*buffer));
     }
 
     ///
@@ -555,24 +560,22 @@ namespace etoile
       std::streamsize N = 5242880;
       std::ifstream stream(source, std::ios::binary);
       nucleus::neutron::Offset _offset(offset);
-      unsigned char* buffer = new unsigned char[N];
+      elle::Buffer buffer(N);
 
       while (stream.good())
         {
-          stream.read((char*)buffer, N);
+          buffer.size(N);
 
-          elle::standalone::Region data(buffer, N);
+          stream.read((char*)buffer.mutable_contents(), buffer.size());
 
-          data.size = stream.gcount();
+          buffer.size(stream.gcount());
 
-          File::write(destination, _offset, data);
+          File::write(destination, _offset, elle::WeakBuffer{buffer});
 
-          _offset += data.size;
+          _offset += buffer.size();
         }
 
       stream.close();
-
-      delete[] buffer;
 
       return (_offset - offset);
     }
@@ -597,17 +600,16 @@ namespace etoile
       ELLE_TRACE("reading %s bytes at offset %s",
                  size, offset);
 
-      elle::standalone::Region data{
-        File::read(source, offset, size)};
+      elle::Buffer buffer = File::read(source, offset, size);
 
-      ELLE_ASSERT(data.size != 0);
+      ELLE_ASSERT(buffer.size() != 0);
 
-      stream.write((const char*)data.contents,
-                   static_cast<std::streamsize>(data.size));
+      stream.write((const char*)buffer.contents(),
+                   static_cast<std::streamsize>(buffer.size()));
 
       stream.close();
 
-      return (data.size);
+      return (buffer.size());
     }
   }
 }

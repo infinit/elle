@@ -8,7 +8,6 @@
 # include <elle/io/fwd.hh>
 # include <elle/network/fwd.hh>
 # include <elle/serialize/fwd.hh>
-# include <elle/standalone/fwd.hh>
 # include <elle/utility/fwd.hh>
 
 namespace elle

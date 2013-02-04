@@ -2,7 +2,7 @@
 # define ETOILE_PORTAL_MANIFEST_HH
 
 # include <elle/types.hh>
-# include <elle/standalone/Region.hh>
+# include <elle/fwd.hh>
 
 # include <etoile/fwd.hh>
 # include <etoile/path/Chemin.hh>
@@ -72,8 +72,8 @@ namespace etoile
       RemoteProcedure<void,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Offset const&,
-                      elle::standalone::Region const&> filewrite;
-      RemoteProcedure<elle::standalone::Region,
+                      elle::Buffer const&> filewrite;
+      RemoteProcedure<elle::Buffer,
                       etoile::gear::Identifier const&,
                       nucleus::neutron::Offset const&,
                       nucleus::neutron::Size const&> fileread;

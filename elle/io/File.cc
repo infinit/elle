@@ -5,7 +5,7 @@
 #include <elle/io/Directory.hh>
 #include <elle/io/Path.hh>
 
-#include <elle/standalone/Region.hh>
+#include <elle/Buffer.hh>
 
 #include <vector>
 #include <sstream>
@@ -31,7 +31,7 @@ namespace elle
     /// this method reads the given file's content.
     ///
     Status              File::Read(const Path&                  path,
-                                   standalone::Region& data)
+                                   Buffer& data)
     {
       struct ::stat     status;
       int               fd;
@@ -46,8 +46,7 @@ namespace elle
         throw Exception("%s", ::strerror(errno));
 
       // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
-        throw Exception("unable to prepare the region");
+      data.size(status.st_size);
 
       // open the file.
       if ((fd = ::open(path.string().c_str(), O_RDONLY)) == -1)
@@ -55,11 +54,11 @@ namespace elle
                path.string().c_str(), ::strerror(errno));
 
       // read the file's content.
-      while (roffset < data.capacity)
+      while (roffset < data.size())
         {
           int rbytes = ::read(fd,
-                              data.contents + roffset,
-                              data.capacity - roffset);
+                              data.mutable_contents() + roffset,
+                              data.size() - roffset);
 
           if (rbytes == 0)
             break;
@@ -78,7 +77,7 @@ namespace elle
           roffset += rbytes;
         }
 
-      data.size = roffset;
+      data.size(roffset);
 
       // close the file.
       ::close(fd);
@@ -90,7 +89,7 @@ namespace elle
     /// this method writes the given data into the given file.
     ///
     Status              File::Write(const Path&                 path,
-                                    const standalone::Region& data)
+                                    Buffer const& data)
     {
       int               fd;
       Natural32         woffset = 0;
@@ -106,11 +105,13 @@ namespace elle
         throw Exception("%s", ::strerror(errno));
 
       // write the text to the file.
-      while (woffset < data.size)
+      while (woffset < data.size())
         {
           int           wbytes;
 
-          wbytes = ::write(fd, data.contents + woffset, data.size - woffset);
+          wbytes = ::write(fd,
+                           data.contents() + woffset,
+                           data.size() - woffset);
 
           if (wbytes < 0)
             {

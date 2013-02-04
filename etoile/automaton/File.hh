@@ -2,7 +2,7 @@
 # define ETOILE_AUTOMATON_FILE_HH
 
 # include <elle/types.hh>
-# include <elle/standalone/Region.hh>
+# include <elle/fwd.hh>
 
 # include <nucleus/neutron/fwd.hh>
 
@@ -27,11 +27,12 @@ namespace etoile
 
       static elle::Status       Write(gear::File&,
                                       const nucleus::neutron::Offset&,
-                                      const elle::standalone::Region&);
-      static elle::Status       Read(gear::File&,
-                                     const nucleus::neutron::Offset&,
-                                     const nucleus::neutron::Size&,
-                                     elle::standalone::Region&);
+                                      elle::WeakBuffer const&);
+      static
+      elle::Buffer
+      read(gear::File&,
+           const nucleus::neutron::Offset&,
+           const nucleus::neutron::Size&);
       static elle::Status       Adjust(gear::File&,
                                        const nucleus::neutron::Size&);
 
