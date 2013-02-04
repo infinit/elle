@@ -4,7 +4,7 @@
 # include <elle/types.hh>
 
 # include <elle/io/fwd.hh>
-# include <elle/standalone/fwd.hh>
+# include <elle/fwd.hh>
 
 namespace elle
 {
@@ -21,9 +21,9 @@ namespace elle
       // static methods
       //
       static Status     Read(const Path&,
-                             standalone::Region&);
+                             Buffer&);
       static Status     Write(const Path&,
-                              const standalone::Region&);
+                              Buffer const&);
       static Status     Erase(const Path&);
       static Boolean    Exist(const Path&);
       static Status     Dig(const Path&);

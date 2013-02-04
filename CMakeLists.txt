@@ -26,8 +26,6 @@ add_library(elle ${LINK_METHOD}
   Passport.cc
   Printable.cc
 
-  standalone/Region.cc
-
   nat/Nat.cc
 
   io/Console.cc

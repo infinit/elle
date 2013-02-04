@@ -1,3 +1,4 @@
+#if 0 // XXX[no longer used?]
 #include <elle/utility/HTTP.hh>
 
 #include <elle/types.hh>
@@ -494,3 +495,4 @@ namespace elle
 
   }
 }
+#endif
