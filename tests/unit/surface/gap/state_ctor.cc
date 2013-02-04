@@ -1,18 +1,47 @@
+// For std::this_thread::sleep_for until gcc4.8
+#define _GLIBCXX_USE_NANOSLEEP 1
+
 #include <surface/gap/State.hh>
+
 #include <lune/Lune.hh>
-#include <Infinit.hh>
+#include <elle/os/path.hh>
 #include <elle/print.hh>
+
 #include <thread>
+#include <chrono>
 #include <ctime>
 
-using State = surface::gap::State;
-using TransactionNotification = ::plasma::trophonius::TransactionNotification;
+ELLE_LOG_COMPONENT("test.State");
 
-auto on_transaction_accepted_cb = []
-(TransactionNotification const &tn, State &s) -> void {
+using State = surface::gap::State;
+using TransactionNotification =
+  ::plasma::trophonius::TransactionNotification;
+using TransactionStatusNotification =
+  ::plasma::trophonius::TransactionStatusNotification;
+
+int fail_counter = 0;
+
+void
+auto_accept_transaction_cb(TransactionNotification const &tn, State &s)
+{
     s.update_transaction(tn.transaction.transaction_id,
                          gap_transaction_status_accepted);
-};
+}
+
+void
+close_on_finished_transaction_cb(TransactionStatusNotification const &tn,
+                                 State &,
+                                 bool& finish_test)
+{
+  if (tn.status == gap_transaction_status_canceled)
+  {
+    ELLE_ERR("transaction canceled")
+    ++fail_counter;
+    finish_test = true;
+  }
+  else if (tn.status == gap_transaction_status_finished)
+    finish_test = true;
+}
 
 auto kill_all = []
 (State &s) {
@@ -50,45 +79,106 @@ auto make_worker = []
 (State &s) -> std::thread
 {
     auto poll = [&] {
-        std::cerr << __PRETTY_FUNCTION__ << std::endl;
-        while (1)
+        while (s.logged_in())
         {
             s.poll();
             ::sleep(1);
         }
     };
-    std::cerr << __PRETTY_FUNCTION__ << std::endl;
     return std::move(std::thread{poll});
 };
 
-void agregate()
+int
+main()
 {
-}
-
-template <typename T, typename ...L>
-void agregate(T const &head, L ...tail)
-{
-    std::cerr << "do " << __PRETTY_FUNCTION__ << std::endl;
-    head();
-    agregate(std::forward<L>(tail)...);
-}
-
-int main()
-{
-  surface::gap::State s1;
-
   lune::Lune::Initialize();
 
-  std::string email1 = "pif@pif.com";
-  std::string email2 = "pichot.fabien@gmail.com";
+  surface::gap::State s1, s2;
+  int timeout = 0;
+  bool finish = false;
+  std::string email1 = "usertest001@infinit.io";
+  std::string email2 = "usertest002@infinit.io";
 
+
+  std::string download_dir{"infinit_download_dir"};
+  std::string to_send{"castor_dir"};
+
+  elle::os::path::make_directory(download_dir);
+  elle::os::path::make_directory(to_send);
+
+  s2.transaction_callback([&] (TransactionNotification const& t, bool)
+                          { auto_accept_transaction_cb(t, s2); });
+
+  s1.transaction_status_callback([&] (TransactionStatusNotification const& t,
+                                      bool)
+                                 {
+                                   close_on_finished_transaction_cb(
+                                     t, s1, finish);
+                                 });
+
+  // s1._on_network_update([&] (NetworkUpdateNotification const& notif)
+  //                       {
+
+  //                       });
   make_login(s1, "Bite", email1);
+  make_login(s2, "Bite", email2);
 
-  s1.send_files(email2, {"/tmp/lol"});
+  std::thread t1 = make_worker(s1);
+  std::thread t2 = make_worker(s2);
 
-  //std::thread t1 = make_worker(s1);
+  s2.output_dir(download_dir);
+
+  unsigned int counter = 0;
+  try
+  {
+    for (counter = 0; counter < 50; ++counter)
+    {
+      std::cerr << "test " << counter << std::endl;
+      auto process_id = s1.send_files(email2, {to_send});
+
+      auto process_status = surface::gap::State::ProcessStatus::running;
+
+      timeout = 20;
+      while (process_status == surface::gap::State::ProcessStatus::running)
+      {
+        process_status = s1.process_status(process_id);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (--timeout < 0)
+          throw std::runtime_error{
+            "sending files timed out." + std::to_string(fail_counter)};
+      }
+      s1.process_finalize(process_id);
+
+      timeout = 60;
+      while (!finish)
+      {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        if (--timeout < 0)
+          throw std::runtime_error{
+            "downloading files timed out" + std::to_string(fail_counter)};
+      }
+
+      elle::os::path::remove_directory(download_dir);
+      elle::os::path::make_directory(download_dir);
+      finish = false;
+    }
+  }
+  catch (...)
+  {}
+
+  s1.logout();
+  s2.logout();
+
+  if (t1.joinable())
+    t1.join();
+
+  if (t2.joinable())
+    t2.join();
 
   //agregate([&] {t1.join();});
+
+  elle::print("try: %s > failed: %s", counter, fail_counter);
 
   elle::print("tests done.");
   return 0;
