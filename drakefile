@@ -11,6 +11,23 @@ def configure(cxx_toolkit, cxx_config):
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
+  config.add_local_include_path('..')
+  config.lib_path('.')
+
+  # OS
+  if cxx_toolkit.os == drake.os.linux:
+    config.define('INFINIT_LINUX')
+  elif cxx_toolkit.os == drake.os.macos:
+    config.define('INFINIT_MACOSX')
+  elif cxx_toolkit.os == drake.os.windows:
+    config.define('INFINIT_WINDOWS')
+  else:
+    raise Exception('unsupported os')
+
+  config.define('HAVE_SETXATTR')
+
+  if cxx_toolkit.os == drake.os.macos:
+    config.define('HAVE_STATFS')
 
   cxx_config = cxx_config + config
   cxx_config.lib('curl')
