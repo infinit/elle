@@ -46,6 +46,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   # Includes
   # XXX[should not be here since reactor should not depend on cryptography]
   cxx_config.add_local_include_path('cryptography/sources')
+  cxx_config.add_local_include_path('.')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
   reactor_lib = drake.copy(reactor.lib_dynamic, '', 'elle/reactor')
   cxx_config += reactor.config
@@ -53,6 +54,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   # Elle
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
+  elle.config.add_local_include_path('.')
 
   # Platform
   cxx_config += elle.config
