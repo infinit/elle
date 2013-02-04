@@ -1,9 +1,9 @@
-#include <elle/system/platform.hh>
-#include <elle/log.hh>
-#include <elle/Exception.hh>
-#include <elle/os/getenv.hh>
-
 #include <cryptography/random.hh>
+#include <cryptography/Exception.hh>
+
+#include <elle/system/platform.hh>
+#include <elle/os/getenv.hh>
+#include <elle/log.hh>
 
 #include <system_error>
 #include <iostream>
@@ -56,9 +56,10 @@ namespace infinit
           std::ifstream random_source_file(source);
 
           if (random_source_file.good() == false)
-            throw elle::Exception(
-              "%s",
-              std::error_code(errno, std::system_category()).message());
+            throw Exception("unable to open the random source file '%s': %s",
+                            source,
+                            std::error_code(errno,
+                                            std::system_category()).message());
 
           // Read random data.
           random_source_file.read(reinterpret_cast<char *>(temporary),
@@ -70,17 +71,17 @@ namespace infinit
 
           if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
                                       CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
-            throw elle::Exception("failed to acquire cryptographic context");
+            throw Exception("unable to acquire a cryptographic context");
 
           if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
             {
               ::CryptReleaseContext(h_provider, 0);
 
-              throw elle::Exception("failed to generate the random seed");
+              throw Exception("unable to generate random bytes");
             }
 
           if (!::CryptReleaseContext(h_provider, 0))
-            throw elle::Exception("failed to release cryptographic context");
+            throw Exception("failed to release cryptographic context");
         }
 #else
 # error "unsupported platform"

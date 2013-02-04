@@ -1,6 +1,5 @@
 #include <cryptography/Cryptosystem.hh>
-
-#include <elle/Exception.hh>
+#include <cryptography/Exception.hh>
 
 #include <ostream>
 
@@ -24,8 +23,8 @@ namespace infinit
             break;
           }
         default:
-          throw elle::Exception("unknown asymmetric cryptosystem '%s'",
-                                static_cast<int>(cryptosystem));
+          throw Exception("unknown asymmetric cryptosystem '%s'",
+                          static_cast<int>(cryptosystem));
         }
 
       return (stream);

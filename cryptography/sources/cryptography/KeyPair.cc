@@ -5,10 +5,10 @@
 #include <cryptography/Seed.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
+#include <cryptography/Exception.hh>
 #include <cryptography/rsa/keypair.hh>
 
 #include <elle/types.hh>
-#include <elle/Exception.hh>
 
 #include <comet/Comet.hh>
 
@@ -50,8 +50,8 @@ namespace infinit
             return (keypair);
           }
         default:
-          throw elle::Exception("unknown or non-supported asymmetric "
-                                "cryptosystem '%s'", cryptosystem);
+          throw Exception("unknown or non-supported asymmetric "
+                          "cryptosystem '%s'", cryptosystem);
         }
 
       elle::unreachable();
@@ -136,33 +136,33 @@ namespace infinit
 
       // create an EVP key.
       if ((scope.key = ::EVP_PKEY_new()) == nullptr)
-        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // create a new RSA key.
       if ((scope.rsa = ::RSA_new()) == nullptr)
-        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
                             ::BN_num_bits(this->_K.key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
-        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // stop tracking.
       scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
       if (pair._K.Create(scope.key) == elle::Status::Error)
-        throw elle::Exception("unable to create the public key");
+        throw Exception("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
       if (pair.k.Create(scope.key) == elle::Status::Error)
-        throw elle::Exception("unable to create the private key");
+        throw Exception("unable to create the private key");
 
       return elle::Status::Ok;
     }

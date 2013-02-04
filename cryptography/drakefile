@@ -14,12 +14,14 @@ def configure(cxx_toolkit, cxx_config):
 
   cxx_config = cxx_config + config
 
+  # Sources
   sources = drake.nodes(
     'sources/cryptography/Clear.hh',
     'sources/cryptography/Code.hh',
     'sources/cryptography/Cryptosystem.cc',
     'sources/cryptography/Cryptosystem.hh',
     'sources/cryptography/Digest.hh',
+    'sources/cryptography/Exception.hh',
     'sources/cryptography/Input.cc',
     'sources/cryptography/Input.hh',
     'sources/cryptography/KeyPair.cc',
@@ -74,3 +76,12 @@ def configure(cxx_toolkit, cxx_config):
 
   lib_static = drake.cxx.StaticLib('cryptography', sources, cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('cryptography', sources, cxx_toolkit, cxx_config)
+
+  # Tests
+  tests = drake.nodes(
+    'tests/cryptography/KeyPair.cc',
+    'tests/cryptography/test.hh',
+    )
+
+  # Rules
+  test = drake.Rule('tests', tests)

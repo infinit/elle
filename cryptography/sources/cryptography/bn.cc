@@ -1,8 +1,8 @@
 #include <cryptography/bn.hh>
 #include <cryptography/finally.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/types.hh>
-#include <elle/Exception.hh>
 
 #include <openssl/err.h>
 
@@ -19,8 +19,9 @@ operator <<(std::ostream& stream,
 
   // Transform the number in hexadecimal.
   if ((hexadecimal = ::BN_bn2hex(&bignum)) == nullptr)
-    throw elle::Exception("%s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+    throw Exception("unable to convert the big number into an hexadecimal "
+                    "representation: %s",
+                    ::ERR_error_string(ERR_get_error(), nullptr));
 
   INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(hexadecimal);
 
