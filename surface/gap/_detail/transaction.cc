@@ -529,8 +529,10 @@ namespace surface
 
 
       if (exception != std::exception_ptr{})
+      {
+        this->delete_network(transaction.network_id, true);
         std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
-
+      }
       if (transaction.recipient_device_id == this->device_id())
         _download_files(transaction.transaction_id);
     }
