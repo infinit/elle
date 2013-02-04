@@ -44,7 +44,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     raise Exception("unsupported os")
 
   # Includes
-  cxx_config.add_local_include_path('.')
   # XXX[should not be here since reactor should not depend on cryptography]
   cxx_config.add_local_include_path('cryptography/sources')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
@@ -55,8 +54,11 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   elle = drake.include('elle', cxx_toolkit, cxx_config)
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
 
+  # Platform
+  cxx_config += elle.config
+
   # Cryptography
-  cryptography = drake.include('cryptography', cxx_toolkit, None, elle.config, reactor.config, boost = boost)
+  cryptography = drake.include('cryptography', cxx_toolkit, reactor.config, elle.config, boost = boost)
   cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
 
   # Qt
