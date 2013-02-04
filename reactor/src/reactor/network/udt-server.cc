@@ -181,7 +181,8 @@ namespace reactor
 
       std::string buffer_data(1024, ' ');
       Buffer buffer(buffer_data);
-      auto size = socket->read_some(buffer);
+      // FIXME: make timeout parametrizable
+      auto size = socket->read_some(buffer, boost::posix_time::seconds(15));
       std::string answer(buffer_data.c_str(), size);
       ELLE_DUMP("longinus answer: %s", escape(answer));
 
