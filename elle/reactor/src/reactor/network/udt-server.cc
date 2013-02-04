@@ -144,7 +144,7 @@ namespace reactor
       return res + "\"";
     }
 
-    boost::asio::ip::udp::endpoint&
+    boost::asio::ip::udp::endpoint const&
     UDTServer::_longinus()
     {
       static auto lhost = common::longinus::host();
