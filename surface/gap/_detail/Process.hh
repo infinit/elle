@@ -36,7 +36,7 @@ namespace surface
         , thread{&Process::_run, this}
       {
         ELLE_LOG_COMPONENT("infinit.surface.gap.State");
-        ELLE_LOG("Creating long operation: %s", this->name);
+        ELLE_TRACE("Creating long operation: %s", this->name);
       }
 
       virtual ~Process()
@@ -54,14 +54,15 @@ namespace surface
         ELLE_LOG_COMPONENT("infinit.surface.gap.State");
         try
           {
-            ELLE_LOG("Running long operation: %s", this->name);
+            ELLE_TRACE("Running long operation: %s", this->name);
             (this->callback)();
             success = true;
           }
-        catch (...)
+        catch (std::runtime_error const& e)
           {
             ELLE_ERR("process threw an exception");
             this->exception = std::current_exception();
+            ELLE_ERR("process threw an exception %s", e.what());
           }
         done = true;
       }

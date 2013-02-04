@@ -58,6 +58,7 @@ namespace surface
     InfinitInstanceManager::has_network(std::string const& network_id) const
     {
       return (_instances.find(network_id) != _instances.end());
+//        && this->network_instance(network_id).process->running());
     }
 
     InfinitInstance const&

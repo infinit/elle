@@ -51,9 +51,5 @@ namespace surface
       _processes[++id].reset(new Process{name, cb});
       return id;
     }
-
-
-
   }
 }
-

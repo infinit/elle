@@ -68,6 +68,7 @@ namespace surface
     {
       if (!_infinit_instance_manager)
         {
+          ELLE_DEBUG("creating instance manager for state %s", *this);
           if (!this->logged_in())
             throw elle::Exception{
                 "Cannot use an infinit instances manager if not logged in"
@@ -130,7 +131,6 @@ namespace surface
             this->_create_network_root_block(network_id);
            this->_prepare_network_directory(network_id);
         }
-     // this->_register_device();
     }
 
     void
