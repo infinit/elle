@@ -4,6 +4,7 @@ add_library(cryptography
   sources/cryptography/cryptography.cc
   sources/cryptography/Cryptosystem.cc
   sources/cryptography/evp.cc
+  sources/cryptography/Exception.cc
   sources/cryptography/KeyPair.cc
   sources/cryptography/Input.cc
   sources/cryptography/oneway.cc
