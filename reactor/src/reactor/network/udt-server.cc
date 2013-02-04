@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <random>
+#include <chrono>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -18,8 +20,6 @@
 #include <elle/nat/Nat.hh>
 
 #include <common/common.hh>
-
-#include <cryptography/random.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
@@ -253,8 +253,16 @@ namespace reactor
     {
       // Randomize port manually
       if (desired_port == 0)
-        desired_port =
-          infinit::cryptography::random::generate<elle::Natural16>(1025, 65535);
+        {
+          auto seed =
+            std::chrono::system_clock::now().time_since_epoch().count();
+
+          std::default_random_engine generator(seed);
+
+          desired_port = (generator() % (65535 - 1025)) + 1025;
+
+          ELLE_ASSERT((desired_port > 1024) && (desired_port <= 65535));
+        }
 
       // Punch the potential firewall
       ELLE_TRACE("punch hole in the firewall")

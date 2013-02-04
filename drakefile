@@ -11,7 +11,7 @@ def configure(cxx_toolkit, cxx_config):
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
-  config.add_local_include_path('..')
+# XXX  config.add_local_include_path('..')
   config.lib_path('.')
 
   # OS
