@@ -5,14 +5,23 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config):
+def configure(cxx_toolkit, cxx_config, elle_config, reactor_config, boost = None):
 
   global config, lib_static, lib_dynamic
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
+  config.add_local_include_path('sources')
+  config.lib_path('lib')
 
-  cxx_config = cxx_config + config
+  # Configuration
+  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config.standard = drake.cxx.Config.cxx_0x
+  cxx_config += config
+  cxx_config += boost.cfg
+  cxx_config += boost.config_system()
+  cxx_config += elle_config
+  cxx_config += reactor_config
 
   # Sources
   sources = drake.nodes(
@@ -74,14 +83,24 @@ def configure(cxx_toolkit, cxx_config):
     'sources/cryptography/rsa/keypair.hh',
     )
 
-  lib_static = drake.cxx.StaticLib('cryptography', sources, cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('cryptography', sources, cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
   # Tests
-  tests = drake.nodes(
-    'tests/cryptography/KeyPair.cc',
-    'tests/cryptography/test.hh',
-    )
+# XXX  test = drake.Rule('tests', tests)
 
-  # Rules
-  test = drake.Rule('tests', tests)
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += config
+  tests_cxx_config += boost.cfg
+  tests_cxx_config += boost.config_test()
+  tests_cxx_config += elle_config
+  tests_cxx_config += reactor_config
+  tests_cxx_config.lib('elle')
+  tests_cxx_config.lib('reactor')
+  tests = ['tests/cryptography/KeyPair.cc']
+  for test in tests:
+    bin_path = drake.Path(test)
+    bin_path.extension = ''
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test) + [ lib_dynamic ],
+                               cxx_toolkit, tests_cxx_config)
