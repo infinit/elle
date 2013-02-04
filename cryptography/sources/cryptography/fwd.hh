@@ -5,6 +5,9 @@ namespace infinit
 {
   namespace cryptography
   {
+    template <typename T,
+              typename... A>
+    class Exception;
     class KeyPair;
     class Input;
     class Output;

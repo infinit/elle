@@ -1,4 +1,5 @@
 #include <cryptography/cipher.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/log.hh>
 
@@ -44,8 +45,8 @@ namespace infinit
           case Algorithm::aes256:
             return (::EVP_aes_256_cbc());
           default:
-            throw elle::Exception("unable to resolve the given cipher "
-                                  "function name '%s'", name);
+            throw Exception("unable to resolve the given cipher "
+                            "function name '%s'", name);
           }
 
         elle::unreachable();
@@ -117,8 +118,8 @@ namespace infinit
               break;
             }
           default:
-            throw elle::Exception("unknown cipher algorithm '%s'",
-                                  static_cast<int>(algorithm));
+            throw Exception("unknown cipher algorithm '%s'",
+                            static_cast<int>(algorithm));
           }
 
         return (stream);

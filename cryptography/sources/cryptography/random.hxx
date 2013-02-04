@@ -1,11 +1,12 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RANDOM_HXX
 # define INFINIT_CRYPTOGRAPHY_RANDOM_HXX
 
+# include <cryptography/cryptography.hh>
+# include <cryptography/Exception.hh>
+
 # include <elle/Exception.hh>
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
-
-# include <cryptography/cryptography.hh>
 
 # include <openssl/engine.h>
 # include <openssl/rand.h>
@@ -81,8 +82,8 @@ namespace infinit
 
         if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
                          sizeof (value)) == 0)
-          throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(),
-                                                         nullptr));
+          throw Exception("unable to generate random bytes: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr));
 
         return (value);
       }
@@ -179,8 +180,8 @@ namespace infinit
           if (::RAND_bytes(
                 reinterpret_cast<unsigned char*>(value.mutable_contents()),
                 value.size()) == 0)
-            throw elle::Exception("%s", ::ERR_error_string(ERR_get_error(),
-                                                           nullptr));
+            throw Exception("unable to generate random bytes: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr));
 
           return (value);
         }
