@@ -43,9 +43,11 @@ class OrderedSet:
   def __iter__(self):
     remove = []
     i = 0
+    seen = set()
     while i < len(self.__list):
       elt = self.__list[i]
-      if elt in self.__set:
+      if elt in self.__set and elt not in seen:
+        seen.add(elt)
         yield elt
         i += 1
       else:
