@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+import drake
+import drake.cxx
+import drake.cxx.boost
+import drake.cxx.qt
+
+cxx_toolkit = drake.cxx.GccToolkit(compiler = '/opt/local/bin/g++-mp-4.7')
+cxx_config = drake.cxx.Config()
+cxx_config.flag('-fPIC')
+cxx_config.flag('-Wall')
+cxx_config.flag('-m64') # XXX[to fix properly: we should have to specify this on a 64-bit machine]
+cxx_config.enable_debug_symbols()
+cxx_config.enable_optimization(False)
+cxx_config.add_system_include_path('/opt/local/Library/Frameworks/Python.framework/Versions/3.2/include/python3.2m/')
+
+boost = drake.cxx.boost.Boost(prefix = '/opt/local')
+qt = drake.cxx.qt.Qt(prefix = '/opt/local')
+
+drake.run('../..', cxx_toolkit, cxx_config, boost = boost, qt = qt)
