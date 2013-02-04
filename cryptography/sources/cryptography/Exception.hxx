@@ -1,17 +1,20 @@
-#ifndef CRYPTOGRAPHY_EXCEPTION_HXX
-# define CRYPTOGRAPHY_EXCEPTION_HXX
+#ifndef INFINIT_CRYPTOGRAPHY_EXCEPTION_HXX
+# define INFINIT_CRYPTOGRAPHY_EXCEPTION_HXX
 
-namespace cryptography
+namespace infinit
 {
-  /*-------------.
-  | Construction |
-  `-------------*/
-
-  template <typename... A>
-  Exception::Exception(elle::String const& format,
-                       A&&... arguments):
-    elle::Exception(format, std::forward<A>(arguments)...)
+  namespace cryptography
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    template <typename... A>
+    Exception::Exception(elle::String const& format,
+                         A&&... arguments):
+      elle::Exception(format, std::forward<A>(arguments)...)
+    {
+    }
   }
 }
 

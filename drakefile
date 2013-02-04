@@ -8,21 +8,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   prefix = drake.Path(prefix)
 
-  # OS
-  if cxx_toolkit.os == drake.os.linux:
-    cxx_config.define('INFINIT_LINUX')
-  elif cxx_toolkit.os == drake.os.macos:
-    cxx_config.define('INFINIT_MACOSX')
-  elif cxx_toolkit.os == drake.os.windows:
-    cxx_config.define('INFINIT_WINDOWS')
-  else:
-    raise Exception('unsupported os')
-
-  cxx_config.define('HAVE_SETXATTR')
-
-  if cxx_toolkit.os == drake.os.macos:
-    cxx_config.define('HAVE_STATFS')
-
   # Version
   version_major = '0'
   version_minor = '1'
@@ -60,7 +45,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   # Includes
   cxx_config.add_local_include_path('.')
-  # XXX[to put in cryptography]
+  # XXX[should not be here since reactor should not depend on cryptography]
   cxx_config.add_local_include_path('cryptography/sources')
   reactor = drake.include('elle/reactor', cxx_toolkit, cxx_config)
   reactor_lib = drake.copy(reactor.lib_dynamic, '', 'elle/reactor')
@@ -71,7 +56,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', 'elle')
 
   # Cryptography
-  cryptography = drake.include('cryptography', cxx_toolkit, cxx_config)
+  cryptography = drake.include('cryptography', cxx_toolkit, None, elle.config, reactor.config, boost = boost)
   cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
 
   # Qt

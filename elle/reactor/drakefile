@@ -10,8 +10,9 @@ def configure(cxx_toolkit, cxx_config):
   global config, lib_static, lib_dynamic
 
   config = drake.cxx.Config()
-  config.add_local_include_path('src/')
+  config.add_local_include_path('src')
   config.standard = drake.cxx.Config.cxx_0x
+  config.lib_path('lib')
 
   cxx_config = cxx_config + config
 
