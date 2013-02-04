@@ -170,18 +170,19 @@ namespace reactor
     UDTServer::_punch(int port, std::unique_ptr<UDPSocket>& socket)
     {
       ELLE_DEBUG_SCOPE("try punching port %s", port);
+      static auto longinus = _longinus();
+      ELLE_DEBUG("contact longinus on %s", longinus);
 
       std::stringstream ss;
       ss << "local " << socket->local_endpoint() << std::endl;
       std::string question = ss.str();
+      socket->send_to(Buffer(question), longinus);
       ELLE_DUMP("longinus question: %s", escape(question));
-      socket->send_to(Buffer(question), _longinus());
 
       std::string buffer_data(1024, ' ');
       Buffer buffer(buffer_data);
       auto size = socket->read_some(buffer);
       std::string answer(buffer_data.c_str(), size);
-
       ELLE_DUMP("longinus answer: %s", escape(answer));
 
       //XXX
