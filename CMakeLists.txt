@@ -30,6 +30,10 @@ set(INFINIT_VERSION_MAJOR "0")
 set(INFINIT_VERSION_MINOR "1")
 set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 
+add_definitions(-DINFINIT_VERSION_MAJOR=${INFINIT_VERSION_MAJOR})
+add_definitions(-DINFINIT_VERSION_MINOR=${INFINIT_VERSION_MINOR})
+add_definitions(-DINFINIT_VERSION=${INFINIT_VERSION})
+
 # - Infinit platform ----------------------------------------------------------
 #
 # Defines INFINIT_PLATFORM
@@ -38,7 +42,6 @@ set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 if(APPLE)
   set(INFINIT_MACOSX TRUE)
   set(INFINIT_PLATFORM_NO_ARCH macosx)
-
   add_definitions(-DHAVE_STATFS)
   add_definitions(-DINFINIT_MACOSX)
 elseif(WIN32)

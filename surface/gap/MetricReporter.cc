@@ -33,7 +33,6 @@ namespace surface
     {
       // Flush cant be done here, call it calls send_data for this object
       // which is pure virtual;
-      // this->_flush();
     }
 
     // Push data directly to server, without enqueuing.
@@ -183,26 +182,30 @@ namespace surface
     void
     ServerReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
     {
+      static elle::String version =
+        elle::sprintf("%s.%s", INFINIT_VERSION_MAJOR, INFINIT_VERSION_MINOR);
 
-#define _T(x) #x
       auto request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
+        .user_agent(elle::sprintf("Infinit/%s (%s)",
+                                  version,
 #ifdef INFINIT_LINUX
-        .user_agent("Infinit/" _T(INFINIT_VERSION) " (Linux x86_64)")
+                                  "Linux x86_64"))
 #elif INFINIT_MACOSX
-        .user_agent("Infinit/"  _T(INFINIT_VERSION) " (MacOSX 10.7)")
+        // XXX[10.7: should adapt to any MacOS X version]
+                                  "Mac OS X 10.7"))
 #else
 # warning "machine not supported"
 #endif
         .post_field("dh", "infinit.io")      // Test.
-        .post_field("av", _T(INFINIT_VERSION))  // Type of interraction.
+        .post_field("av", version)           // Type of interraction.
         .post_field("an", "Infinit")         // Application name.
         .post_field("t", "appview")          // Type of interraction.
         .post_field("cid", this->_user_id)   // Anonymous user.
         .post_field("tid", "UA-31957100-2")  // Tracking ID.
         .post_field("v", "1");               // Api version.
-#undef _T
+
       typedef MetricReporter::Metric::value_type Field;
       std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
                     {
