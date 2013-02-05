@@ -96,6 +96,15 @@ namespace surface
       this->_user_id = id;
     }
 
+    void
+    MetricReporter::flush()
+    {
+      if (this->_requests.empty() == true)
+        return;
+
+      this->_flush();
+    }
+
     MetricReporter::Metric&
     MetricReporter::_push(Metric const& metric)
     {
@@ -130,6 +139,16 @@ namespace surface
     }
 
     void
+    ServerReporter::flush()
+    {
+      if ((this->_fallback_storage.empty() == true) &&
+          (this->_requests.empty() == true))
+        return;
+
+      this->_flush();
+    }
+
+    void
     ServerReporter::_flush()
     {
       ELLE_TRACE("server flushing");
@@ -158,7 +177,7 @@ namespace surface
 
     ServerReporter::~ServerReporter()
     {
-      this->_flush();
+      this->flush();
     }
 
     void
