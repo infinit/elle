@@ -671,43 +671,6 @@ namespace surface
         }
     }
 
-    size_t
-    State::poll(size_t max)
-    {
-      if (!this->_trophonius)
-        throw Exception{gap_error, "Trophonius is not connected"};
-
-      size_t count = 0;
-      while (count < max)
-        {
-          std::unique_ptr<Notification> notif{
-              this->_trophonius->poll()
-          };
-
-          if (!notif)
-            break;
-          try
-            {
-              this->_handle_notification(*notif);
-            }
-          catch (reactor::Exception const& e)
-            {
-              ELLE_WARN("reactor exception %s while handling notification '%s'",
-                        e, notif->notification_type);
-              continue;
-            }
-          catch (std::runtime_error const& e)
-            {
-              ELLE_WARN("error %s while handling notification '%s'",
-                        e.what(), notif->notification_type);
-              continue;
-            }
-          ++count;
-        }
-
-      return count;
-    }
-
     void
     State::transaction_callback(TransactionNotificationCallback const& cb)
     {
