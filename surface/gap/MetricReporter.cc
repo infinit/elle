@@ -183,32 +183,34 @@ namespace surface
     void
     ServerReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
     {
+
+#define _T(x) #x
       auto request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
 #ifdef INFINIT_LINUX
-        .user_agent("Infinit/1.0 (Linux x86_64)")
+        .user_agent("Infinit/" _T(INFINIT_VERSION) " (Linux x86_64)")
 #elif INFINIT_MACOSX
-        .user_agent("Infinit/1.0 (MacOSX 10.7)")
+        .user_agent("Infinit/"  _T(INFINIT_VERSION) " (MacOSX 10.7)")
 #else
 # warning "machine not supported"
 #endif
         .post_field("dh", "infinit.io")      // Test.
-        .post_field("av", "1.0.0")           // Type of interraction.
+        .post_field("av", _T(INFINIT_VERSION))  // Type of interraction.
         .post_field("an", "Infinit")         // Application name.
         .post_field("t", "appview")          // Type of interraction.
         .post_field("cid", this->_user_id)   // Anonymous user.
         .post_field("tid", "UA-31957100-2")  // Tracking ID.
         .post_field("v", "1");               // Api version.
-
+#undef _T
       typedef MetricReporter::Metric::value_type Field;
       std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
                     {
                       std::string value=f.second;
                       size_t pos;
-                      // Replace "/" by a %20 (space)
+                      // Replace "/" by a :
                       while ((pos = value.find('/')) != std::string::npos)
-                        value.replace(pos, 1, "%20");
+                        value.replace(pos, 1, ":");
                       request.post_field(f.first, value); });
 
       _last_sent.Current();
