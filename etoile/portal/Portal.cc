@@ -74,6 +74,7 @@ namespace etoile
     ///
     elle::Status        Portal::Initialize()
     {
+      ELLE_TRACE_FUNCTION("");
       // XXX[to remove later: just a hack for now because some satellites
       //     do not need portal to be launched because there is no hole]
       if (depot::have_hole() == false)
@@ -88,11 +89,13 @@ namespace etoile
         {
         case hole::Hole::State::offline:
           {
+            ELLE_DEBUG("hole state is offline");
             depot::hole().ready_hook(&Portal::_run);
             break;
           }
         case hole::Hole::State::online:
           {
+            ELLE_DEBUG("hole state is already online");
             Portal::_run();
             break;
           }
@@ -104,6 +107,7 @@ namespace etoile
     void
     Portal::_run()
     {
+      ELLE_TRACE_FUNCTION("");
       elle::network::Port port;
 
       ELLE_TRACE("register the messages");
