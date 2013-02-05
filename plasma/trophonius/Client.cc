@@ -147,14 +147,15 @@ namespace plasma
     void Client::_on_read_socket(boost::system::error_code const& err,
                                  size_t bytes_transferred)
     {
-      ELLE_DEBUG_SCOPE("Read %s bytes from the socket (%s available)",
-                       bytes_transferred,
-                       _impl->response.in_avail());
       if (err || bytes_transferred == 0)
         {
           ELLE_WARN("Something went wrong while reading from socket: %s", err);
           return;
         }
+
+      ELLE_TRACE("Read %s bytes from the socket (%s available)",
+                 bytes_transferred,
+                 _impl->response.in_avail());
 
       try
         {
