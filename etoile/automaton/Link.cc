@@ -83,8 +83,6 @@ namespace etoile
     {
       ELLE_TRACE_FUNCTION(context, way);
 
-      nucleus::neutron::Size size;
-
       // determine the rights.
       if (Rights::Determine(context) == elle::Status::Error)
         throw elle::Exception("unable to determine the rights");
