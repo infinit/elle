@@ -1,7 +1,3 @@
-#include <fnmatch.h>
-#include <unordered_map>
-
-#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <elle/types.hh>
@@ -83,92 +79,6 @@ namespace elle
         return indentation.Get(0);
       }
 
-      struct Components
-      {
-      private:
-        std::vector<std::string>      _patterns;
-        std::map<std::string, bool>   _enabled;
-
-      public:
-        unsigned int                  _max_string_size;
-      public:
-        unsigned int max_string_size() const
-        { return this->_max_string_size; }
-
-      private:
-        Components()
-          : _patterns()
-          , _enabled()
-          , _max_string_size(0)
-        {
-          static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
-          if (components_str == nullptr)
-            this->_patterns.push_back("*");
-          else
-            {
-              boost::algorithm::split(this->_patterns, components_str,
-                                      boost::algorithm::is_any_of(","),
-                                      boost::algorithm::token_compress_on);
-              for (auto& pattern: this->_patterns)
-                boost::algorithm::trim(pattern);
-            }
-        }
-
-        ~Components()
-        {}
-
-      public:
-        static Components& instance()
-        {
-          static Components components;
-          return components;
-        }
-
-        void enable(std::string const& name)
-        {
-          this->_enabled[name] = false;
-          for (auto const& pattern: this->patterns())
-            {
-              if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0)
-                {
-                  this->_enabled[name] = true;
-                  break;
-                }
-            }
-          if (this->_enabled[name])
-            {
-              if (name.size() > this->_max_string_size)
-                this->_max_string_size = name.size();
-            }
-        }
-
-        void
-        update_max_size(std::string const& name)
-        {
-          if (name.size() > this->_max_string_size)
-            this->_max_string_size = name.size();
-        }
-
-        bool
-        enabled(std::string const& name) const
-        {
-          auto it = this->_enabled.find(name);
-          if (it == this->_enabled.end())
-            {
-              const_cast<Components*>(this)->enable(name);
-              it = this->_enabled.find(name);
-              assert(it != this->_enabled.end());
-            }
-          return it->second;
-        }
-
-      private:
-        std::vector<std::string> const& patterns()
-        {
-          return this->_patterns;
-        }
-      };
-
       Send::~Send()
       {
         if (!_proceed)
@@ -178,17 +88,11 @@ namespace elle
 
       bool
       Send::_enabled(elle::log::Logger::Type type,
-                             elle::log::Logger::Level level,
-                             elle::String const& component)
+                     elle::log::Logger::Level level,
+                     elle::String const& component)
       {
-        // FIXME: do we always want to print warnings and errors ?
-        if (type < Logger::Type::warning &&
-            (!Components::instance().enabled(component) ||
-             level > default_log_level()))
-            return false;
-
-        Components::instance().update_max_size(component);
-        return true;
+        return logger().component_enabled(component) &&
+          level <= default_log_level();
       }
 
       void
@@ -225,8 +129,8 @@ namespace elle
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
         unsigned int size = component.size();
-        assert(size <= Components::instance().max_string_size());
-        unsigned int pad = Components::instance().max_string_size() - size;
+        assert(size <= logger().component_max_size());
+        unsigned int pad = logger().component_max_size() - size;
         std::string s = (
           std::string(pad / 2, ' ') +
           component +

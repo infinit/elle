@@ -3,6 +3,8 @@
 
 # include <memory>
 # include <string>
+# include <unordered_map>
+# include <vector>
 
 # include <boost/noncopyable.hpp>
 
@@ -60,6 +62,17 @@ namespace elle
       _message(Level level,
                elle::log::Logger::Type type,
                std::string const& message) = 0;
+
+    /*-----------.
+    | Components |
+    `-----------*/
+    public:
+      bool
+      component_enabled(std::string const& name);
+    private:
+      std::vector<std::string> _component_patterns;
+      std::unordered_map<std::string, bool> _component_enabled;
+      ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
     };
   }
 }
