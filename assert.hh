@@ -28,6 +28,7 @@ namespace elle
 }
 
 # if defined(DEBUG) || !defined(NDEBUG)
+
 /// Throw if the condition is unmet.
 # define ELLE_ASSERT(_condition_)                                             \
   do                                                                          \

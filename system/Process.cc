@@ -151,8 +151,16 @@ namespace elle
 
       int status;
       int options = (term == Termination::dont_wait ? WNOHANG : 0);
-      if (::waitpid(_impl->pid, &status, options) < 0)
+      pid_t ret = ::waitpid(_impl->pid, &status, options);
+      if (ret < 0)
         throw elle::Exception{"Cannot waitpid"};
+
+      // No child exited and WNOHANG specified.
+      if (ret == 0 && term == Termination::dont_wait)
+        return 0;
+
+      // ret == _impl->pid is true
+
       if (WIFEXITED(status))
         {
           _impl->status = WEXITSTATUS(status);
