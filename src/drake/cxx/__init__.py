@@ -1042,6 +1042,11 @@ class LibraryConfiguration(drake.Configuration):
         token --  Which file to look for (typically, the main header).
         """
         include_dir = include_dir or 'include'
+        # Make prefix absolute wrt the source dir
+        if prefix is not None:
+            prefix = drake.Path(prefix)
+            if not prefix.absolute():
+                prefix = drake.path_src(prefix)
         # Compute the search path.
         if prefix is None:
             test = [Path('/usr') / include_dir,
