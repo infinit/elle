@@ -227,8 +227,7 @@ namespace etoile
       : _app(app)
       {
         if (_app->state != Application::StateAuthenticated)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the application has not been authenticated");
+          throw reactor::Exception("the application has not been authenticated");
         _app->processing = Application::ProcessingOn;
       }
 

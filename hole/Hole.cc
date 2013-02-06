@@ -27,8 +27,7 @@ namespace hole
     _state(State::offline)
   {
     if (!_passport.validate(this->authority()))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "unable to validate the passport");
+      throw reactor::Exception("unable to validate the passport");
   }
 
   Hole::~Hole()
@@ -103,8 +102,7 @@ namespace hole
         }
       default:
         {
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   elle::sprintf("unknown block family '%u'",
+          throw reactor::Exception(elle::sprintf("unknown block family '%u'",
                                                  address.family()));
         }
       }
@@ -127,8 +125,7 @@ namespace hole
       case nucleus::proton::Family::imprint_block:
         return this->_pull(address, revision);
       default:
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 elle::sprintf("unknown block family '%u'",
+        throw reactor::Exception(elle::sprintf("unknown block family '%u'",
                                                address.family()));
       }
   }

@@ -81,8 +81,7 @@ namespace hole
 
         // // does the block already exist.
         // if (this->_hole.storage().exist(address))
-        //   throw reactor::Exception(elle::concurrency::scheduler(),
-        //                            "this immutable block seems to already "
+        //   throw reactor::Exception("this immutable block seems to already "
         //                            "exist");
 
         // // store the block.
@@ -141,8 +140,7 @@ namespace hole
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("unknown component '%u'",
+              throw reactor::Exception(elle::sprintf("unknown component '%u'",
                                                      address.component()));
             }
           }
@@ -218,8 +216,7 @@ namespace hole
             }
           case nucleus::neutron::ComponentUnknown:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("unknown component '%u'",
+              throw reactor::Exception(elle::sprintf("unknown component '%u'",
                                                      address.component()));
             }
           }
@@ -253,7 +250,7 @@ namespace hole
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(), "unknown block family");
+              throw reactor::Exception("unknown block family");
             }
           }
       }
@@ -284,7 +281,7 @@ namespace hole
         // go though the customer.
         for (Customer* customer: this->_customers)
           if (customer->Dump(margin + 4) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(), "unable to dump the customer");
+            throw reactor::Exception("unable to dump the customer");
 
         return elle::Status::Ok;
       }

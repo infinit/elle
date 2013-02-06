@@ -26,18 +26,15 @@ namespace hole
 
     // initialize the Lune library.
     if (lune::Lune::Initialize() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to initialize Lune");
+      throw reactor::Exception("unable to initialize Lune");
 
     // initialize Infinit.
     if (Infinit::Initialize() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to initialize Infinit");
+      throw reactor::Exception("unable to initialize Infinit");
 
     // set up the program.
     if (elle::concurrency::Program::Setup("8hole") == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to set up the program");
+      throw reactor::Exception("unable to set up the program");
 
     // allocate a new parser.
     Infinit::Parser = new elle::utility::Parser(argc, argv);
@@ -48,8 +45,7 @@ namespace hole
                                      "Copyright (c) 2008, 2009, 2010, 2011, "
                                      "Julien Quintard, All rights "
                                      "reserved.\n") == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to set the description");
+      throw reactor::Exception("unable to set the description");
 
     // register the options.
     if (Infinit::Parser->Register(
@@ -58,8 +54,7 @@ namespace hole
           "help",
           "display the help",
           elle::utility::Parser::KindNone) == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to register the option");
+      throw reactor::Exception("unable to register the option");
 
     // register the option.
     if (Infinit::Parser->Register(
@@ -68,13 +63,11 @@ namespace hole
           "network",
           "specifies the name of the network",
           elle::utility::Parser::KindRequired) == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to register the option");
+      throw reactor::Exception("unable to register the option");
 
     // parse.
     if (Infinit::Parser->Parse() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to parse the command line");
+      throw reactor::Exception("unable to parse the command line");
 
     // test the option.
     if (Infinit::Parser->Test("Help") == true)
@@ -90,8 +83,7 @@ namespace hole
         // display the usage.
         Infinit::Parser->Usage();
 
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                        "unable to retrieve the network name");
+        throw reactor::Exception("unable to retrieve the network name");
       }
 
     // initialize the Hole library.
@@ -125,13 +117,11 @@ namespace hole
 
     // clean Infinit.
     if (Infinit::Clean() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to clean Infinit");
+      throw reactor::Exception("unable to clean Infinit");
 
     // clean Lune
     if (lune::Lune::Clean() == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                      "unable to clean Lune");
+      throw reactor::Exception("unable to clean Lune");
   }
 }
 

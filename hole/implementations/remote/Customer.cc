@@ -134,8 +134,7 @@ namespace hole
             }
           default:
             {
-              reactor::Exception(elle::concurrency::scheduler(),
-                                 "unknown block family");
+              reactor::Exception("unknown block family");
             }
           }
       }
@@ -169,8 +168,7 @@ namespace hole
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unknown block family");
+              throw reactor::Exception("unknown block family");
             }
           }
 
@@ -193,8 +191,7 @@ namespace hole
       Customer::_state_check_authenticated() const
       {
         if (_state != State::authenticated)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   elle::sprintf("%s has not been authenticated", *this));
+          throw reactor::Exception(elle::sprintf("%s has not been authenticated", *this));
       }
 
       /*---------.

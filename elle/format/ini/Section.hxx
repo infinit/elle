@@ -36,8 +36,7 @@ namespace elle { namespace format { namespace ini {
             std::stringstream ss(it->second);
             ss >> value;
             if (ss.fail())
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "Could not convert '" + it->second + "'");
+              throw reactor::Exception("Could not convert '" + it->second + "'");
             return value;
           }
         return default_value;
@@ -54,5 +53,3 @@ namespace elle { namespace format { namespace ini {
 }}}
 
 #endif
-
-

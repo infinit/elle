@@ -65,12 +65,12 @@ namespace etoile
         {
           // flush the riffle.
           if (Shrub::Riffles->Flush() == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(), "unable to flush the riffles");
+            throw reactor::Exception("unable to flush the riffles");
 
           // release the shrub slot.
           if (Shrub::Queue.Delete(Shrub::Riffles->timestamp,
                                   Shrub::Riffles) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(), "unable to remove the riffle");
+            throw reactor::Exception("unable to remove the riffle");
 
           // delete the root riffle.
           delete Shrub::Riffles;

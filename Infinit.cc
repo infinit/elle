@@ -41,8 +41,7 @@ _authority()
 
   assert(!Infinit::Key.empty());
   if (K.Restore(Infinit::Key) == elle::Status::Error)
-    throw reactor::Exception(elle::concurrency::scheduler(),
-                             "unable to restore the authority's public key");
+    throw reactor::Exception("unable to restore the authority's public key");
   return elle::Authority(K);
 }
 

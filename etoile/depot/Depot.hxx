@@ -23,11 +23,10 @@ namespace etoile
       // a block of type Group, the block's address must embed
       // a component 'group'.
       if (address.component() != T::Constants::component)
-        throw reactor::Exception{
-          elle::concurrency::scheduler(),
-            elle::sprintf("the address' component '%s' does not "
-                          "match the type's '%s'",
-                          address.component(), T::Constants::component)};
+        throw reactor::Exception
+          (elle::sprintf("the address' component '%s' does not "
+                         "match the type's '%s'",
+                         address.component(), T::Constants::component));
 
       std::unique_ptr<nucleus::proton::Block> block;
 
@@ -44,9 +43,8 @@ namespace etoile
       std::unique_ptr<T> _block(dynamic_cast<T*>(block.release()));
 
       if (_block.get() == nullptr)
-        throw reactor::Exception{
-          elle::concurrency::scheduler(),
-          "the retrieved block type does not match the requested one"};
+        throw reactor::Exception
+          ("the retrieved block type does not match the requested one");
 
       return (_block);
     }

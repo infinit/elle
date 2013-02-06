@@ -296,8 +296,7 @@ namespace horizon
                            nullptr,
                            &FUker::Setup,
                            nullptr) != 0)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "unable to create the FUSE-specific thread");
+        throw reactor::Exception("unable to create the FUSE-specific thread");
     }
 
     ///

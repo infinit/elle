@@ -92,7 +92,7 @@ namespace reactor
           if (error == boost::system::errc::operation_canceled)
             return;
           if (error)
-            _raise(new Exception(scheduler(), error.message()));
+            _raise(new Exception(error.message()));
           _socket = socket;
           _signal();
         }
@@ -187,8 +187,7 @@ namespace reactor
       std::vector<std::string> splitted;
       boost::split(splitted, answer, boost::is_any_of(" :\n"));
       if (splitted.size() != 4)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "loginus returned a bad formed endpoint: " +
+        throw reactor::Exception("loginus returned a bad formed endpoint: " +
                                  answer);
 
       ELLE_ASSERT(splitted[1] != "0.0.0.0");

@@ -14,8 +14,7 @@ namespace elle
   template <typename... Args>
   Exception::Exception(elle::String const& format,
                        Args&&... args):
-    reactor::Exception(elle::concurrency::scheduler(),
-                       elle::sprintf(format.c_str(),
+    reactor::Exception(elle::sprintf(format.c_str(),
                                      std::forward<Args>(args)...))
   {
   }

@@ -80,8 +80,7 @@ namespace satellite
     Progress::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Progress::rpcs->authenticate(phrase.pass))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "unable to authenticate to Etoile");
+      throw reactor::Exception("unable to authenticate to Etoile");
   }
 
   void

@@ -169,7 +169,7 @@ namespace reactor
       try
       {
         if (!connection.run(timeout))
-          throw TimeOut(scheduler());
+          throw TimeOut();
       }
       catch (...)
       {
@@ -192,7 +192,7 @@ namespace reactor
             if (error == boost::asio::error::not_connected)
               ; // It's ok to try to disconnect a non-connected socket.
             else
-              throw new Exception(scheduler(), error.message());
+              throw new Exception(error.message());
           }
         _socket->close();
         delete _socket;

@@ -140,8 +140,7 @@ namespace hole
                || this->_state == State::authenticating);
 
         if (!passport.validate(this->_machine.hole().authority()))
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to validate the passport");
+          throw reactor::Exception("unable to validate the passport");
         else
           _state = State::authenticated;
 
@@ -162,8 +161,7 @@ namespace hole
         ELLE_TRACE_SCOPE("%s: peer pushes block at address %s", *this, address);
 
         if (this->_state != State::authenticated)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to process a request from an unauthenticated host");
+          throw reactor::Exception("unable to process a request from an unauthenticated host");
 
         std::unique_ptr<nucleus::proton::Block> block = derivable.release();
         // Forward the request depending on the nature of the block
@@ -219,8 +217,7 @@ namespace hole
                           std::unique_ptr<nucleus::neutron::Access> access
                             (dynamic_cast<nucleus::neutron::Access*>(block.release()));
                           if (access == nullptr)
-                            throw reactor::Exception(elle::concurrency::scheduler(),
-                                                     "expected an access block");
+                            throw reactor::Exception("expected an access block");
 
                           ELLE_DEBUG("%s: retrieve the access block", *this);
 
@@ -247,8 +244,7 @@ namespace hole
                     }
                   case nucleus::neutron::ComponentUnknown:
                     {
-                      throw reactor::Exception(elle::concurrency::scheduler(),
-                                               elle::sprintf("unknown component '%u'",
+                      throw reactor::Exception(elle::sprintf("unknown component '%u'",
                                                              address.component()));
                     }
                   }
@@ -259,8 +255,7 @@ namespace hole
             }
           default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unknown block family");
+              throw reactor::Exception("unknown block family");
             }
           }
       }
@@ -277,8 +272,7 @@ namespace hole
         using nucleus::proton::MutableBlock;
 
         if (this->_state != State::authenticated)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to process a request from an unauthenticated host");
+          throw reactor::Exception("unable to process a request from an unauthenticated host");
 
         std::unique_ptr<Block> block;
 
@@ -336,8 +330,7 @@ namespace hole
                       dynamic_cast<nucleus::neutron::Access *> (addressBlock.get());
 
                     if (access == nullptr)
-                      throw reactor::Exception(elle::concurrency::scheduler(),
-                                               "expected an access block");
+                      throw reactor::Exception("expected an access block");
 
                     // validate the object, providing the
                     object->validate(address, access);
@@ -360,8 +353,7 @@ namespace hole
                 }
                 case nucleus::neutron::ComponentUnknown:
                 {
-                  throw reactor::Exception(elle::concurrency::scheduler(),
-                                           elle::sprintf("unknown component '%u'",
+                  throw reactor::Exception(elle::sprintf("unknown component '%u'",
                                                          address.component()));
                 }
               }
@@ -369,8 +361,7 @@ namespace hole
             }
             default:
             {
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       "unknown block family");
+              throw reactor::Exception("unknown block family");
             }
           }
 
@@ -384,8 +375,7 @@ namespace hole
 
         // check the host's state.
         if (this->_state != State::authenticated)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "unable to process a request from an unauthenticated host");
+          throw reactor::Exception("unable to process a request from an unauthenticated host");
 
         //
         // remove the block locally.
@@ -411,8 +401,7 @@ namespace hole
               }
             default:
               {
-                throw reactor::Exception(elle::concurrency::scheduler(),
-                                         "unknown block family");
+                throw reactor::Exception("unknown block family");
               }
             }
         }

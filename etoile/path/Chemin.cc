@@ -32,8 +32,7 @@ namespace etoile
                    Venue const& venue)
     {
       if (this->Create(route, venue) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "Cannot create the chemin");
+        throw reactor::Exception("Cannot create the chemin");
     }
 //
 // ---------- methods ---------------------------------------------------------

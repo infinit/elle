@@ -198,10 +198,9 @@ namespace infinit
                 bt.push_back(frame);
               }
             reactor::Exception* inner =
-              new reactor::Exception(elle::concurrency::scheduler(), error, bt);
-            reactor::Exception e(
-              elle::concurrency::scheduler(),
-              "remote procedure " + this->_name + " failed");
+              new reactor::Exception(error, bt);
+            reactor::Exception e
+              (elle::sprintf("remote procedure '%s' failed", this->_name));
             e.inner_exception(inner);
             throw e;
           }
@@ -369,18 +368,17 @@ namespace infinit
               uint32_t id;
               input >> id;
               auto procedure = _procedures.find(id);
-              reactor::Scheduler& sched = _channels.scheduler();
 
               Packet answer;
               OS output(answer);
               try
                 {
                   if (procedure == _procedures.end())
-                    throw Exception(sched, sprintf
+                    throw Exception(sprintf
                                     ("call to unknown procedure: %s", id));
                   else if (procedure->second.second == nullptr)
                     {
-                      throw Exception(sched, sprintf
+                      throw Exception(sprintf
                                       ("remote call to non-local procedure: %s",
                                        procedure->second.first));
                     }

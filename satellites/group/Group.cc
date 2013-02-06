@@ -63,8 +63,7 @@ namespace satellite
 
           // convert the public key into a human-kind-of-readable string.
           if (fellow.subject().user().Save(unique) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     "unable to save the public key's unique");
+            throw reactor::Exception("unable to save the public key's unique");
 
           std::cout << "User"
                     << " "
@@ -79,8 +78,7 @@ namespace satellite
 
           // convert the group's address into a human-kind-of-readable string.
           if (fellow.subject().group().Save(unique) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     "unable to save the address' unique");
+            throw reactor::Exception("unable to save the address' unique");
 
           std::cout << "Group"
                     << " "
@@ -91,8 +89,7 @@ namespace satellite
         }
       default:
         {
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   elle::sprintf("unknown subject type '%u'",
+          throw reactor::Exception(elle::sprintf("unknown subject type '%u'",
                                                  fellow.subject().type()));
         }
       }
@@ -119,8 +116,7 @@ namespace satellite
 
     // Authenticate.
     if (!Group::rpcs->authenticate(phrase.pass))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "authentication failed");
+      throw reactor::Exception("authentication failed");
   }
 
   void
@@ -143,8 +139,7 @@ namespace satellite
     Group::rpcs->groupstore(identifier);
     elle::io::Unique unique;
     if (identity.Save(unique) == elle::Status::Error)
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "unable to save the identity");
+      throw reactor::Exception("unable to save the identity");
     std::cout << unique << std::endl;
   }
 
@@ -805,8 +800,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
   try
     {
       if (satellite::Main(argc, argv) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "XXX");
+        throw reactor::Exception("XXX");
     }
   catch (reactor::Exception const& e)
     {

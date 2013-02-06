@@ -19,16 +19,16 @@ namespace reactor
   class Exception: public std::runtime_error
   {
   public:
-    Exception(Scheduler& scheduler, const std::string& message);
-    Exception(Scheduler& scheduler, const std::string& message,
+    Exception(const std::string& message);
+    Exception(const std::string& message,
               Backtrace const& bt);
     virtual ~Exception() throw ();
     INFINIT_REACTOR_EXCEPTION(Exception);
     Backtrace const& backtrace() const;
     Exception const* inner_exception() const;
     void inner_exception(Exception* e);
+    void raise();
   private:
-    Scheduler& _scheduler;
     Backtrace _backtrace;
     Exception* _inner;
   };
@@ -39,7 +39,7 @@ namespace reactor
   {
   public:
     typedef Exception Super;
-    Terminate(Scheduler& scheduler);
+    Terminate();
     INFINIT_REACTOR_EXCEPTION(Terminate);
   };
 }

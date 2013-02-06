@@ -134,9 +134,9 @@ namespace reactor
             return;
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 
@@ -155,7 +155,7 @@ namespace reactor
                        *this, buffer.size());
       UDPRead read(scheduler(), this, buffer);
       if (!read.run(timeout))
-        throw TimeOut(scheduler());
+        throw TimeOut();
       return read.read();
     }
 
@@ -210,9 +210,9 @@ namespace reactor
             return;
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 
@@ -234,7 +234,7 @@ namespace reactor
                        *this, buffer.size());
       UDPRecvFrom recvfrom(scheduler(), this, buffer, endpoint);
       if (!recvfrom.run(timeout))
-        throw TimeOut(scheduler());
+        throw TimeOut();
       return recvfrom.read();
     }
 
@@ -272,9 +272,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 
@@ -317,9 +317,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 

@@ -23,27 +23,23 @@ namespace etoile
 
       // Create a route from the way.
       if (route.Create(way) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "unable to create the route");
+        throw reactor::Exception("unable to create the route");
 
       // Resolve the route.
       if (path::Path::Resolve(route, venue) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "unable to resolve the route");
+        throw reactor::Exception("unable to resolve the route");
 
       // Create the chemin.
       path::Chemin chemin;
       if (chemin.Create(route, venue) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "unable to create the chemin");
+        throw reactor::Exception("unable to create the chemin");
       return chemin;
     }
 
     // XXX[to move somewhere else]
     NoSuchFileOrDirectory::NoSuchFileOrDirectory(reactor::Scheduler& sched,
                                                  path::Way const& path):
-      reactor::Exception(sched,
-                         elle::sprintf("no such file or directory: %s", path)),
+      reactor::Exception(elle::sprintf("no such file or directory: %s", path)),
       _path(path)
     {}
 

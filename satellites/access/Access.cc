@@ -71,8 +71,7 @@ namespace satellite
           elle::io::Unique unique;
           // Convert the public key into a human-kind-of-readable string.
           if (record.subject().user().Save(unique) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     "unable to save the public key's unique");
+            throw reactor::Exception("unable to save the public key's unique");
           std::cout << "User"
                     << " "
                     << unique
@@ -87,8 +86,7 @@ namespace satellite
           elle::io::Unique unique;
           // Convert the group's address into a human-kind-of-readable string.
           if (record.subject().group().Save(unique) == elle::Status::Error)
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     "unable to save the address' unique");
+            throw reactor::Exception("unable to save the address' unique");
 
           std::cout << "Group"
                     << " "
@@ -125,8 +123,7 @@ namespace satellite
     Access::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Access::rpcs->authenticate(phrase.pass))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "unable to authenticate to Etoile");
+      throw reactor::Exception("unable to authenticate to Etoile");
   }
 
   void
@@ -672,8 +669,7 @@ _main(elle::Natural32 argc, elle::Character* argv[])
   try
     {
       if (satellite::Main(argc, argv) == elle::Status::Error)
-        throw reactor::Exception(elle::concurrency::scheduler(),
-                                 "XXX");
+        throw reactor::Exception("XXX");
     }
   catch (std::exception const& e)
     {

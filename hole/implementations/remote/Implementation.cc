@@ -46,8 +46,7 @@ namespace hole
                             const nucleus::proton::ImmutableBlock& block)
       {
         if (Remote::Computer->role != Machine::RoleClient)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the hole is not acting as a remote client as it should");
+          throw reactor::Exception("the hole is not acting as a remote client as it should");
         Remote::Computer->client->put(address, block);
       }
 
@@ -56,8 +55,7 @@ namespace hole
                           const nucleus::proton::MutableBlock& block)
       {
         if (Remote::Computer->role != Machine::RoleClient)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the hole is not acting as a remote client as it should");
+          throw reactor::Exception("the hole is not acting as a remote client as it should");
         Remote::Computer->client->put(address, block);
       }
 
@@ -65,8 +63,7 @@ namespace hole
       Implementation::_pull(const nucleus::proton::Address& address)
       {
         if (Remote::Computer->role != Machine::RoleClient)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the hole is not acting as a remote client as it should");
+          throw reactor::Exception("the hole is not acting as a remote client as it should");
         return Remote::Computer->client->get(address);
       }
 
@@ -75,8 +72,7 @@ namespace hole
                           const nucleus::proton::Revision& revision)
       {
         if (Remote::Computer->role != Machine::RoleClient)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the hole is not acting as a remote client as it should");
+          throw reactor::Exception("the hole is not acting as a remote client as it should");
         return Remote::Computer->client->get(address, revision);
       }
 
@@ -84,8 +80,7 @@ namespace hole
       Implementation::_wipe(const nucleus::proton::Address& address)
       {
         if (Remote::Computer->role != Machine::RoleClient)
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   "the hole is not acting as a remote client as it should");
+          throw reactor::Exception("the hole is not acting as a remote client as it should");
         Remote::Computer->client->kill(address);
       }
 

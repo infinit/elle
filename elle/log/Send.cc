@@ -53,8 +53,8 @@ namespace elle
             else if (level == "DUMP")
               return Logger::Level::dump;
             else
-              throw reactor::Exception(elle::concurrency::scheduler(),
-                                       elle::sprintf("invalid log level: %s", level));
+              throw reactor::Exception
+                (elle::sprintf("invalid log level: %s", level));
           }
         else
           return Logger::Level::log;

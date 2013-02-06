@@ -110,8 +110,7 @@ namespace satellite
     Transfer::rpcs = new etoile::portal::RPC(*channels);
 
     if (!Transfer::rpcs->authenticate(phrase.pass))
-      throw reactor::Exception(elle::concurrency::scheduler(),
-                               "unable to authenticate to Etoile");
+      throw reactor::Exception("unable to authenticate to Etoile");
   }
 
   etoile::gear::Identifier

@@ -633,6 +633,13 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     horizon_slib = drake.cxx.StaticLib('lib/horizon', horizon_sources,
                                        cxx_toolkit, cxx_config)
 
+
+  ## ----- ##
+  ## Build ##
+  ## ----- ##
+
+  build = drake.Rule('build')
+
   ## -------- ##
   ## Programs ##
   ## -------- ##
@@ -665,6 +672,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   infinit_bin = drake.cxx.Executable('bin/8infinit',
                                      drake.nodes('_infinit.cc') + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
+  build << infinit_bin
 
   # 8hole
   hole_cxx_config = drake.cxx.Config(cxx_config)
@@ -672,6 +680,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   hole_bin = drake.cxx.Executable('bin/8hole',
                                   drake.nodes('hole/_hole.cc') + infinit_libs,
                                   cxx_toolkit, hole_cxx_config)
+  build << hole_bin
 
   # 8group
   group_sources = drake.nodes(
@@ -682,6 +691,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   group_bin = drake.cxx.Executable('bin/8group',
                                    group_sources + infinit_libs,
                                    cxx_toolkit, infinit_bin_config)
+  build << group_bin
 
   # 8access
   access_sources = drake.nodes(
@@ -692,6 +702,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   access_bin = drake.cxx.Executable('bin/8access',
                                    access_sources + infinit_libs,
                                    cxx_toolkit, infinit_bin_config)
+  build << access_bin
 
   # 8network
   network_sources = drake.nodes(
@@ -702,6 +713,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   network_bin = drake.cxx.Executable('bin/8network',
                                      network_sources + infinit_libs,
                                      cxx_toolkit, infinit_bin_config)
+  build << network_bin
 
   # 8transfer
   transfer_sources = drake.nodes(
@@ -711,6 +723,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   transfer_bin = drake.cxx.Executable('bin/8transfer',
                                    transfer_sources + infinit_libs,
                                    cxx_toolkit, infinit_bin_config)
+  build << transfer_bin
 
   # Trophonius
 
@@ -738,6 +751,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   gap_lib = drake.cxx.DynLib('lib/gap',
                              gap_sources,
                              cxx_toolkit, gap_cxx_config)
+  build << gap_lib
 
   # GAP python
 
@@ -755,6 +769,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                     # FIXME: sooooo many libs ...
                                     gap_python_sources + [gap_lib, tropho_lib] + infinit_libs,
                                     cxx_toolkit, gap_python_cxx_config)
+  build << gap_python_lib
 
   # Watchdog
   watchdog_sources = drake.nodes(
@@ -787,11 +802,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   watchdog_bin = drake.cxx.Executable('bin/8watchdog',
                                       watchdog_sources + [tropho_lib] + infinit_libs,
                                       cxx_toolkit, watchdog_cxx_config)
-
-  # Install
-  install = drake.Rule('install')
-  install << drake.copy(infinit_bin, prefix)
-  install << drake.copy(infinit_libs + [udt_lib, asio_udt_lib], prefix)
 
   # Install
   install = drake.Rule('install')

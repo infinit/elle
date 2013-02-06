@@ -91,8 +91,7 @@ namespace infinit
         default:
         {
           static boost::format fmt("unknown or not-yet-supported model '%u'");
-          throw reactor::Exception(elle::concurrency::scheduler(),
-                                   str(fmt % descriptor.meta().model().type));
+          throw reactor::Exception(str(fmt % descriptor.meta().model().type));
         }
       }
 
