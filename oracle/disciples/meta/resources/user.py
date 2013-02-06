@@ -160,12 +160,12 @@ class Invite(Page):
             else:
                 database.invitations().remove({'email': email})
         code = self._generate_code(email)
-        content = INVITATION_CONTENT % {
+        content = mail.INVITATION_CONTENT % {
             'activation_code': code,
             'space': ' ',
         }
         if send_email:
-            meta.mail.send(email, INVITATION_SUBJECT, content)
+            meta.mail.send(email, mail.INVITATION_SUBJECT, content)
         database.invitations().insert({
             'email': email,
             'status': 'pending',
