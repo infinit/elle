@@ -89,13 +89,23 @@ USER_INVITATION_SUBJECT = "%(inviter_mail)s wants to share a file through Infini
 USER_NEW_FILE_CONTENT = """
 Dear user,
 
-%(inviter_mail)s wants to share %(file_name)s.
+%(inviter_fullname)s wants to share %(file_name)s with you on Infinit.
 
---
+To accept the file, launch Infinit now and accept the file through your Finder
+or in the Infinit notifications panel! If you have any technical questions,
+don't hesitate to get in touch with us at community@infinit.io.
+
+All the best,
+
+--%(space)s
 The Infinit Team
 http://infinit.io
 """.strip()
+
+
+
 USER_INVITATION_CONTENT = """
+
 Dear user,
 
 %(inviter_fullname)s (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.

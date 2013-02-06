@@ -171,6 +171,7 @@ class Create(Page):
                 'inviter_fullname': self.user['fullname'],
                 'message': message,
                 'file_name': sent,
+                'space': ' ',
             }
 
             # XXX Remove invitation mail.
