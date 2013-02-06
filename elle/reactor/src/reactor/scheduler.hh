@@ -23,6 +23,16 @@ namespace reactor
     public:
       Scheduler();
 
+  /*------------------.
+  | Current scheduler |
+  `------------------*/
+  public:
+    static
+    Scheduler*
+    scheduler();
+  private:
+    static Scheduler* _scheduler;
+
   /*----.
   | Run |
   `----*/
