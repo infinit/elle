@@ -13,21 +13,25 @@ namespace elle
 {
   namespace log
   {
-
-    std::unique_ptr<Logger> _logger;
+    std::unique_ptr<Logger>&
+    _logger()
+    {
+      static std::unique_ptr<Logger> logger;
+      return logger;
+    };
 
     Logger&
     logger()
     {
-      if (!_logger)
-        _logger.reset(new elle::log::TextLogger(std::cerr));
-      return *_logger;
+      if (!_logger())
+        _logger().reset(new elle::log::TextLogger(std::cerr));
+      return *_logger();
     };
 
     void
     logger(std::unique_ptr<Logger> logger)
     {
-      _logger = std::move(logger);
+      _logger() = std::move(logger);
     };
 
     namespace detail

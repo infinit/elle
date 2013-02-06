@@ -30,9 +30,28 @@
 
 #include <elle/CrashReporter.hh>
 
+ELLE_LOG_COMPONENT("infinit");
+
+static
+std::ostream&
+log_destination()
+{
+  if (auto env = ::getenv("INFINIT_LOG_FILE"))
+    {
+      static std::ofstream res(env, std::fstream::app | std::fstream::out);
+      return res;
+    }
+  else
+    return std::cerr;
+}
+
 void
 Infinit(elle::Natural32 argc, elle::Character* argv[])
 {
+  elle::log::logger
+    (std::unique_ptr<elle::log::Logger>
+     (new elle::log::TextLogger(log_destination())));
+
   // set up the program.
   if (elle::concurrency::Program::Setup("Infinit") == elle::Status::Error)
     throw reactor::Exception(elle::concurrency::scheduler(),
