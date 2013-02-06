@@ -528,8 +528,10 @@ namespace surface
 
 
       if (exception != std::exception_ptr{})
+      {
+        this->delete_network(transaction.network_id, true);
         std::rethrow_exception(exception); // XXX SCOPE OF EXCEPTION PTR
-
+      }
       if (transaction.recipient_device_id == this->device_id())
         _download_files(transaction.transaction_id);
     }
@@ -742,7 +744,7 @@ namespace surface
     {
       ELLE_TRACE("New transaction");
 
-      if (!is_new)
+      if (!is_new) // XXX Why ?
         return;
 
       auto it = this->transactions().find(notif.transaction.transaction_id);
@@ -750,7 +752,7 @@ namespace surface
       if (it != this->transactions().end())
       {
         ELLE_WARN("you already have this transaction");
-        return;
+        return; // XXX really ?
       }
 
       // Normal case, this is a new transaction, store it to match server.

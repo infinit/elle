@@ -60,6 +60,9 @@ namespace surface
       void
       update_user(std::string const&);
 
+      /// XXX
+      void
+      flush();
     protected:
       // Do send to destination.
       virtual
@@ -101,6 +104,9 @@ namespace surface
       /*--------.
       | Methods |
       `--------*/
+    public:
+      void
+      flush();
     private:
       virtual
       void

@@ -33,7 +33,6 @@ namespace surface
     {
       // Flush cant be done here, call it calls send_data for this object
       // which is pure virtual;
-      // this->_flush();
     }
 
     // Push data directly to server, without enqueuing.
@@ -96,6 +95,15 @@ namespace surface
       this->_user_id = id;
     }
 
+    void
+    MetricReporter::flush()
+    {
+      if (this->_requests.empty() == true)
+        return;
+
+      this->_flush();
+    }
+
     MetricReporter::Metric&
     MetricReporter::_push(Metric const& metric)
     {
@@ -130,6 +138,16 @@ namespace surface
     }
 
     void
+    ServerReporter::flush()
+    {
+      if ((this->_fallback_storage.empty() == true) &&
+          (this->_requests.empty() == true))
+        return;
+
+      this->_flush();
+    }
+
+    void
     ServerReporter::_flush()
     {
       ELLE_TRACE("server flushing");
@@ -158,24 +176,30 @@ namespace surface
 
     ServerReporter::~ServerReporter()
     {
-      this->_flush();
+      this->flush();
     }
 
     void
     ServerReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
     {
+      static elle::String version =
+        elle::sprintf("%s.%s", INFINIT_VERSION_MAJOR, INFINIT_VERSION_MINOR);
+
       auto request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
+        .user_agent(elle::sprintf("Infinit/%s (%s)",
+                                  version,
 #ifdef INFINIT_LINUX
-        .user_agent("Infinit/1.0 (Linux x86_64)")
+                                  "Linux x86_64"))
 #elif INFINIT_MACOSX
-        .user_agent("Infinit/1.0 (MacOSX 10.7)")
+        // XXX[10.7: should adapt to any MacOS X version]
+                                  "Mac OS X 10.7"))
 #else
 # warning "machine not supported"
 #endif
         .post_field("dh", "infinit.io")      // Test.
-        .post_field("av", "1.0.0")           // Type of interraction.
+        .post_field("av", version)           // Type of interraction.
         .post_field("an", "Infinit")         // Application name.
         .post_field("t", "appview")          // Type of interraction.
         .post_field("cid", this->_user_id)   // Anonymous user.
@@ -187,9 +211,9 @@ namespace surface
                     {
                       std::string value=f.second;
                       size_t pos;
-                      // Replace "/" by a %20 (space)
+                      // Replace "/" by a :
                       while ((pos = value.find('/')) != std::string::npos)
-                        value.replace(pos, 1, "%20");
+                        value.replace(pos, 1, ":");
                       request.post_field(f.first, value); });
 
       _last_sent.Current();

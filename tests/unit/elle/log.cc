@@ -1,30 +1,157 @@
-
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("test_log");
+#include <memory>
+
+ELLE_LOG_COMPONENT("test.log");
+
+struct L
+{
+  L()
+  {
+    ELLE_LOG_COMPONENT("test.log.Lctor");
+
+    ELLE_TRACE(__PRETTY_FUNCTION__);
+    ELLE_ERR("BIET");
+    ELLE_LOG("BIET");
+    ELLE_TRACE("BIET");
+    ELLE_DEBUG("BIET");
+    ELLE_DUMP("BIET");
+
+    foo();
+  }
+
+  virtual
+  ~L()
+  {
+    ELLE_LOG_COMPONENT("test.log.Ldtor");
+
+    ELLE_TRACE(__PRETTY_FUNCTION__);
+    ELLE_ERR("BIET");
+    ELLE_LOG("BIET");
+    ELLE_TRACE("BIET");
+    ELLE_DEBUG("BIET");
+    ELLE_DUMP("BIET");
+
+    foo();
+  }
+
+public:
+  virtual void foo() const { ELLE_TRACE("foooo"); }
+  virtual void bar() const = 0;
+};
+
+void L::bar() const {}
+
+struct LL: public L
+{
+  LL()
+  {
+    ELLE_LOG_COMPONENT("test.log.LLctor");
+
+    ELLE_TRACE(__PRETTY_FUNCTION__);
+    ELLE_ERR("BIET");
+    ELLE_LOG("BIET");
+    ELLE_TRACE("BIET");
+    ELLE_DEBUG("BIET");
+    ELLE_DUMP("BIET");
+
+    foo();
+    bar();
+  }
+
+  ~LL()
+  {
+    ELLE_LOG_COMPONENT("test.log.LLdtor");
+
+    ELLE_TRACE(__PRETTY_FUNCTION__);
+    ELLE_ERR("BIET");
+    ELLE_LOG("BIET");
+    ELLE_TRACE("BIET");
+    ELLE_DEBUG("BIET");
+    ELLE_DUMP("BIET");
+
+    foo();
+    L::foo();
+    bar();
+  }
+
+  void foo() const override { ELLE_TRACE("sfoo"); }
+  void bar() const override { ELLE_TRACE("bar"); }
+};
+
+LL const&
+crasher()
+{
+  static LL ll{};
+
+  return ll;
+}
 
 void g()
 {
-  ELLE_TRACE("Me too!");
+  ELLE_WARN("g Me too!");
+  ELLE_TRACE("g Me too!");
 }
 
 void f()
 {
-  ELLE_TRACE("This is usefull!")
+  ELLE_WARN("f This is usefull, yellow first!");
+  ELLE_TRACE("f This is usefull!");
   {
-    ELLE_TRACE("This is usefull inner");
+    ELLE_ERR("f This is usefull inner, red first");
+    ELLE_TRACE("f This is usefull inner");
     g();
   }
 }
 
+void s()
+{
+  ELLE_TRACE("s This is usefull!");
+  ELLE_WARN("s This is usefull, yellow second!");
+  {
+    ELLE_TRACE("s This is usefull inner");
+    ELLE_ERR("s This is usefull inner, red second");
+    g();
+  }
+}
+
+static LL crahs0{};
+static std::unique_ptr<LL> crahs1{new LL{}};
+
 int main()
 {
-  ELLE_LOG_COMPONENT("test_log.biet");
-  ELLE_LOG("BIET");
-  ELLE_TRACE("BIET");
-  ELLE_DEBUG("BIET");
-  ELLE_DUMP("BIET");
+  crasher().foo();
+
+  crahs0.foo();
+  crahs1->foo();
+
+  ELLE_ERR("err BIET main");
+  ELLE_LOG("log BIET main");
+  ELLE_TRACE("trace BIET main");
+  ELLE_DEBUG("debug BIET main");
+  ELLE_DUMP("dump BIET main");
   f();
+  s();
+
+  {
+    LL* l = new LL{};
+    l->foo();
+
+    delete l;
+  }
+
+  ELLE_LOG_COMPONENT("test_log.biet");
+  ELLE_ERR("err BIET main");
+  ELLE_LOG("log BIET main");
+  ELLE_TRACE("trace BIET main");
+  ELLE_DEBUG("debug BIET main");
+  ELLE_DUMP("dump BIET main");
+
+  crasher().foo();
+
+  crahs0.foo();
+  crahs1->foo();
+
   elle::print("tests done.");
   return 0;
 }

@@ -146,6 +146,15 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       // XXX[to fix later though]
     }
 
+  static std::ofstream* out = new std::ofstream{
+    common::infinit::log_path(Infinit::User, Infinit::Network),
+    std::fstream::app | std::fstream::out
+  };
+  elle::log::logger(
+    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
+  );
+
+
   // initialize the Lune library.
   if (lune::Lune::Initialize() == elle::Status::Error)
     throw reactor::Exception("unable to initialize Lune");
@@ -179,14 +188,6 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
   //     ELLE_WARN("NAT punching error: %s", e.what());
   //   }
 
-  static std::ofstream* out = new std::ofstream{
-    common::infinit::log_path(Infinit::User, Infinit::Network),
-    std::fstream::app | std::fstream::out
-  };
-  elle::log::logger(
-    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
-  );
-
   nucleus::proton::Network network(Infinit::Network);
 
   hole::storage::Directory storage{
@@ -198,12 +199,16 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
     elle::serialize::from_file(common::infinit::passport_path(Infinit::User))
   };
 
+  ELLE_DEBUG("constructing hole");
   std::unique_ptr<hole::Hole> hole(
     infinit::hole_factory(storage, passport, Infinit::authority()));
   etoile::depot::hole(hole.get());
+  ELLE_DEBUG("hole constructed");
 #ifdef INFINIT_HORIZON
+  ELLE_DEBUG("INFINIT_HORIZON enable");
   horizon::hole(hole.get());
 #endif
+  ELLE_DEBUG("joining hole");
   hole->join();
 
   // // FIXME

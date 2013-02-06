@@ -22,7 +22,10 @@ namespace surface
     {
       ELLE_TRACE("Starting network process of %s", network_id);
       if (_instances.find(network_id) != _instances.end())
-        throw elle::Exception{"Network " + network_id + " already launched"};
+        {
+          if (_instances[network_id]->process->running())
+            throw elle::Exception{"Network " + network_id + " already launched"};
+        }
       auto process = elle::make_unique<elle::system::Process>(
         common::infinit::binary_path("8infinit"),
         std::list<std::string>{"-n", network_id, "-u", _user_id}
@@ -37,7 +40,7 @@ namespace surface
     void
     InfinitInstanceManager::stop_network(std::string const& network_id)
     {
-      ELLE_TRACE("stoping newtork");
+      ELLE_TRACE("stopping network");
 
       try
       {
@@ -48,16 +51,19 @@ namespace surface
       catch (elle::Exception const& e)
       {
         ELLE_DEBUG("no network found, no infinit to kill");
-        return;
       }
 
-      _instances.erase(network_id);
+      if (this->_instances.find(network_id) != this->_instances.end())
+        _instances.erase(network_id);
     }
 
     bool
     InfinitInstanceManager::has_network(std::string const& network_id) const
     {
-      return (_instances.find(network_id) != _instances.end());
+      return (
+           this->_instances.find(network_id) != this->_instances.end()
+        && this->network_instance(network_id).process->running()
+      );
     }
 
     InfinitInstance const&

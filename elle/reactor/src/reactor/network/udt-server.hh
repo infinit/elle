@@ -53,7 +53,7 @@ namespace reactor
       | NAT |
       `----*/
       private:
-        boost::asio::ip::udp::endpoint&
+        boost::asio::ip::udp::endpoint const&
         _longinus();
 
         bool

@@ -229,6 +229,7 @@ class MinimumSelf(Page):
     def GET(self):
         if not self.user:
             return self.error(error.NOT_LOGGED_IN)
+        self.requireLoggedIn() # scary
         return self.success({
             'email': self.user['email'],
             'identity': self.user['identity'],
@@ -257,8 +258,8 @@ class One(Page):
         return self.success({
             '_id': user['_id'],
             'email': user['_id'] in self.user["swaggers"].keys() and user['email'] or '',
-            'public_key': user['public_key'],
-            'fullname': user['fullname'],
+            'public_key': user.get('public_key', ''),
+            'fullname': user.get('fullname', ''),
             # XXX: user['connected']
             'status': 'connected' in user and user['connected'] or 0
         })

@@ -45,6 +45,7 @@ namespace elle
     `-------------*/
     public:
       Logger();
+      virtual
       ~Logger();
 
     /*----------.

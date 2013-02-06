@@ -220,9 +220,7 @@ namespace elle
     ip::tcp::resolver resolver(_impl->io_service);
     ip::tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
     ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    //XXX which way is better ?
-    //boost::asio::connect(socket, endpoint_iterator);
-    socket.connect(*endpoint_iterator);
+    boost::asio::connect(socket, endpoint_iterator);
 
     std::string body = request.body_string();
     {
@@ -243,6 +241,9 @@ namespace elle
                        << body;
       else
         request_stream << CRLF;
+
+      ELLE_DEBUG("sending the following request to server '%s': '%s'",
+                 uri, body);
 
       // Send the request.
       boost::asio::write(socket, request_buf);
