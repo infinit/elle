@@ -165,7 +165,8 @@ class Page(object):
         if self._data is None:
             try:
                 data = web.data()
-                data = urllib.unquote(data)
+                if web.ctx.env['CONTENT_TYPE'] != 'application/json':
+                    data = urllib.unquote(data)
                 self._data = json.loads(data)
             except:
                 traceback.print_exc()
