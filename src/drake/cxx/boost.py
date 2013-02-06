@@ -88,7 +88,7 @@ class Boost(drake.Configuration):
             libname = lib + suffix
             test = lib_path / cxx_toolkit.libname_dyn(self.cfg, libname)
             if test.exists():
-                return test
+                return libname
         raise Exception('Unable to find boost library %s in %s' % (lib, lib_path))
 
     def config(self):
