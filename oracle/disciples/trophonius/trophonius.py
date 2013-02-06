@@ -118,6 +118,8 @@ class Trophonius(basic.LineReceiver):
 
             res = cl.get('/self')
             # The authentication succeeded
+            if not res['success']:
+                raise Exception("Meta error: %s" % res.get('error', ''))
 
             self.id = res["_id"]
             self.token = js_req["token"]
