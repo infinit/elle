@@ -37,7 +37,8 @@ namespace network {
   }
 
   const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
-    return "uri_error";
+    static const char name[] = "uri_error";
+    return name;
   }
 
   std::string uri_category_impl::message(int ev) const {
@@ -258,7 +259,7 @@ namespace network {
     return *this;
   }
 
-  void uri::swap(uri &other) {
+  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
     std::swap(pimpl_, other.pimpl_);
   }
 
@@ -358,15 +359,15 @@ namespace network {
     return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
-  bool uri::empty() const {
+  bool uri::empty() const NETWORK_URI_NOEXCEPT {
     return pimpl_->uri_.empty();
   }
 
-  bool uri::absolute() const {
+  bool uri::absolute() const NETWORK_URI_NOEXCEPT {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::opaque() const {
+  bool uri::opaque() const NETWORK_URI_NOEXCEPT {
     return (absolute() && !authority());
   }
 

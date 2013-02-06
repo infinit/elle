@@ -124,7 +124,7 @@ namespace network {
 
     uri &operator = (uri &&other);
 
-    void swap(uri &other); // noexcept
+    void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
     const_iterator begin() const;
 
@@ -156,11 +156,11 @@ namespace network {
 
     std::u32string u32string() const;
 
-    bool empty() const; // noexcept
+    bool empty() const NETWORK_URI_NOEXCEPT;
 
-    bool absolute() const; // noexcept
+    bool absolute() const NETWORK_URI_NOEXCEPT;
 
-    bool opaque() const; // noexcept
+    bool opaque() const NETWORK_URI_NOEXCEPT;
 
     uri normalize(uri_comparison_level level) const;
 
