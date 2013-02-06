@@ -255,6 +255,7 @@ set(INFINIT_LIBRARIES_PREFIX
 	"${CMAKE_CURRENT_SOURCE_DIR}/dependencies/platforms/${INFINIT_PLATFORM}/work")
 
 message("-- External librairies directory prefix: ${INFINIT_LIBRARIES_PREFIX}")
+include_directories(BEFORE SYSTEM ${INFINIT_LIBRARIES_PREFIX}/include)
 
 set(INFINIT_OPENSSL_STATIC_LIBRARIES
   ${INFINIT_LIBRARIES_PREFIX}/lib/libssl${CMAKE_STATIC_LIBRARY_SUFFIX}

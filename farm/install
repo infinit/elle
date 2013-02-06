@@ -113,8 +113,6 @@ def to_add(lib):
     }
     if 'linux' in sys.platform.lower():
         patterns_exclude['contains'].extend([
-            'libssl',
-            'libcrypto',
             'libQt',
         ])
 
@@ -142,7 +140,7 @@ def to_add(lib):
             "libncurses",
             "libreadline",
             "libssl",
-            "libpython3",
+            "libpython",
             "Python",
             "libgap",
             "_gap.so",
@@ -254,7 +252,6 @@ infinit_files = [
     ("bin/8infinit", "bin"),
     ("bin/8access", "bin"),
     ("bin/8group", "bin"),
-    ("bin/8watchdog", "bin"),
     ("bin/8chmod", "bin"),
     ("bin/infinit-cli", "bin"),
     ("lib/libgap." + LIBRARY_EXT, "lib"),
