@@ -331,13 +331,18 @@ class GccToolkit(Toolkit):
 
         (obj.sub_libraries for obj in objs)
 
+        rpath_link = ''
+        if self.os == drake.os.linux:
+            rpath_link = concatenate(cfg.lib_paths, '-Wl,-rpath-link ')
+
+
         return '%s %s%s%s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
-                concatenate(cfg.lib_paths, '-Wl,-rpath-link '),
-                concatenate(lib_rpaths, '-Wl,-rpath='),
+                rpath_link,
+                concatenate(lib_rpaths, '-Wl,-rpath,'),
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'))
@@ -350,12 +355,17 @@ class GccToolkit(Toolkit):
                 path = drake.Path('$ORIGIN') / path
             lib_rpaths.append(path)
 
-        return '%s %s%s%s%s %s -shared -o %s %s' % \
+        undefined = ''
+        if self.os == drake.os.macos:
+            undefined = ' -undefined dynamic_lookup'
+
+        return '%s %s%s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
                 concatenate(lib_rpaths, '-Wl,-rpath='),
+                undefined,
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'),
