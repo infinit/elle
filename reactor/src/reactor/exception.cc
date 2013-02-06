@@ -5,25 +5,18 @@
 
 namespace reactor
 {
-  Exception::Exception(Scheduler& scheduler, const std::string& message)
-    : std::runtime_error(message)
-    , _scheduler(scheduler)
-    , _backtrace(Backtrace::current())
-    , _inner(0)
-  {
-    if (Thread* t = scheduler.current())
-      _backtrace.strip_base(t->_backtrace_root);
-  }
+  Exception::Exception(const std::string& message)
+    : Exception(message, Backtrace())
+  {}
 
-  Exception::Exception(Scheduler& scheduler, const std::string& message,
-                       Backtrace const& bt)
+  Exception::Exception(const std::string& message, Backtrace const& bt)
     : std::runtime_error(message)
-    , _scheduler(scheduler)
     , _backtrace(bt)
     , _inner(0)
   {
-    if (Thread* t = scheduler.current())
-      _backtrace.strip_base(t->_backtrace_root);
+    if (Scheduler* sched = reactor::Scheduler::scheduler())
+      if (Thread* t = sched->current())
+        _backtrace.strip_base(t->_backtrace_root);
   }
 
   Exception::~Exception() throw ()
@@ -57,7 +50,7 @@ namespace reactor
     return _backtrace;
   }
 
-  Terminate::Terminate(Scheduler& scheduler)
-    : Super(scheduler, "thread termination")
+  Terminate::Terminate()
+    : Super("thread termination")
   {}
 }

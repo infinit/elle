@@ -69,7 +69,7 @@ namespace reactor
           if (error == boost::system::errc::operation_canceled)
             return;
           if (error)
-            _raise(new Exception(scheduler(), error.message()));
+            _raise(new Exception(error.message()));
           _signal();
         }
 
@@ -104,8 +104,7 @@ namespace reactor
         }
       catch (boost::system::system_error& e)
         {
-          throw Exception(scheduler(),
-                          elle::sprintf("unable to listen on %s: %s",
+          throw Exception(elle::sprintf("unable to listen on %s: %s",
                                         end_point, e.what()));
         }
     }
@@ -120,9 +119,7 @@ namespace reactor
     TCPServer::local_endpoint() const
     {
       if (_acceptor == nullptr)
-        throw Exception(
-            const_cast<TCPServer*>(this)->scheduler(), //XXX
-            "The server is not listening.");
+        throw Exception("The server is not listening.");
       return _acceptor->local_endpoint();
     }
 

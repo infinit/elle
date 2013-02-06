@@ -110,9 +110,9 @@ namespace reactor
             ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 
@@ -152,7 +152,7 @@ namespace reactor
       if (!finished)
         {
           ELLE_TRACE("%s: read timed out", *this);
-          throw TimeOut(scheduler());
+          throw TimeOut();
         }
       ELLE_TRACE("%s: read completed: %s bytes", *this, read.read());
       return read.read();
@@ -192,9 +192,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise(new ConnectionClosed());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise(new Exception(error.message()));
           this->_signal();
         }
 

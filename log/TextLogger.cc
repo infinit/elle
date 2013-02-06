@@ -26,8 +26,7 @@ namespace elle
           else if (c == "1")
             return true;
           else
-            throw reactor::Exception(elle::concurrency::scheduler(),
-                                     elle::sprintf("invalid value for %s: %s",
+            throw reactor::Exception(elle::sprintf("invalid value for %s: %s",
                                                    color_env_name, c));
         }
       else

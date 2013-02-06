@@ -48,10 +48,8 @@ namespace elle
     code(0)
   {
     if (!elle::Authority::exists(path))
-      throw reactor::Exception(
-        elle::concurrency::scheduler(),
-        elle::sprintf("unable to locate the authority file %s",
-                      path));
+      throw reactor::Exception
+        (elle::sprintf("unable to locate the authority file %s", path));
     this->load(path);
   }
 

@@ -11,7 +11,7 @@ namespace reactor
     {
     public:
       typedef reactor::Exception Super;
-      Exception(Scheduler& scheduler, const std::string& message);
+      Exception(const std::string& message);
       INFINIT_REACTOR_EXCEPTION(Exception);
     };
 
@@ -19,7 +19,7 @@ namespace reactor
     {
     public:
       typedef Exception Super;
-      ConnectionClosed(Scheduler& scheduler);
+      ConnectionClosed();
       INFINIT_REACTOR_EXCEPTION(ConnectionClosed);
     };
 
@@ -27,7 +27,7 @@ namespace reactor
     {
     public:
       typedef Exception Super;
-      TimeOut(Scheduler& scheduler);
+      TimeOut();
       INFINIT_REACTOR_EXCEPTION(TimeOut);
     };
   }
