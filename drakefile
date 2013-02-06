@@ -357,9 +357,10 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     # 'plasma/watchdog/Connection.hh',
     # 'plasma/watchdog/NetworkManager.cc',
     # 'plasma/watchdog/ClientActions.cc',
-    'plasma/watchdog/ClientActions.hh',
     'plasma/meta/Client.cc',
     'plasma/meta/Client.hh',
+    'plasma/plasma.cc',
+    'plasma/watchdog/ClientActions.hh',
     )
   plasma_lib = drake.cxx.DynLib('lib/plasma', plasma_sources,
                                 cxx_toolkit, cxx_config)
