@@ -744,7 +744,7 @@ namespace surface
     {
       ELLE_TRACE("New transaction");
 
-      if (!is_new)
+      if (!is_new) // XXX Why ?
         return;
 
       auto it = this->transactions().find(notif.transaction.transaction_id);
@@ -752,7 +752,7 @@ namespace surface
       if (it != this->transactions().end())
       {
         ELLE_WARN("you already have this transaction");
-        return;
+        return; // XXX really ?
       }
 
       // Normal case, this is a new transaction, store it to match server.
