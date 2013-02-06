@@ -24,6 +24,18 @@ namespace reactor
     , _manager()
   {}
 
+  /*------------------.
+  | Current Scheduler |
+  `------------------*/
+
+  Scheduler* Scheduler::_scheduler(0);
+
+  Scheduler*
+  Scheduler::scheduler()
+  {
+    return _scheduler;
+  }
+
   /*----.
   | Run |
   `----*/
@@ -31,8 +43,11 @@ namespace reactor
   void
   Scheduler::run()
   {
+    assert(!_scheduler);
+    _scheduler = this;
     while (step())
       /* nothing */;
+    _scheduler = 0;
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
