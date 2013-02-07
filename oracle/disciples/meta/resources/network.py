@@ -131,7 +131,7 @@ class AddUser(_Page):
             }
             subject = mail.NETWORK_INVITATION_SUBJECT % infos
             content = mail.NETWORK_INVITATION_CONTENT % infos
-            mail.send(to_add_user['email'], subject, content)
+            #mail.send(to_add_user['email'], subject, content) #XXX
         network['users'].append(to_add_user_id)
         database.networks().save(network)
         to_add_user['networks'].append(network['_id'])
