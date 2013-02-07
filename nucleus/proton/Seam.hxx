@@ -6,6 +6,7 @@
 # include <nucleus/proton/Nest.hh>
 # include <nucleus/proton/Limits.hh>
 # include <nucleus/proton/Statistics.hh>
+# include <nucleus/proton/Contents.hh>
 
 # include <elle/serialize/footprint.hh>
 
