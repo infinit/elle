@@ -136,7 +136,7 @@ if (UNIX)
         -Wno-empty-body  # for ELLE_LOG_TRACE macro
         -Wno-non-template-friend
         -DQT_NO_KEYWORDS
-		-fPIC
+        -fPIC
     )
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -DDEBUG -UNDEBUG")
     set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
@@ -211,6 +211,11 @@ add_custom_command(
 )
 
 # - Dependencies --------------------------------------------------------------
+
+## Loading Basic systems dependencies
+
+### Threads
+find_package(Threads REQUIRED)
 
 ## Loading boost
 set(Boost_USE_STATIC_LIBS ${USE_STATIC_LIBS})
