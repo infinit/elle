@@ -70,11 +70,12 @@ more possibilities to share.
 Your access code is: %(activation_code)s
 
 Just remember that this is a private beta version of Infinit, so you may
-experience bugs, crashes or other impediments to the experience. If you do,
-please let us know by sending a quick email to support@infinit.io or
-idontgiveashit@infinit.io - both work ;). We’ll get back to you as soon as
-possible to better understand and solve your problem unless your name is Talal,
-in which case we can't help.
+experience bugs, crashes or other impediments to the experience. For the
+moment, you need to be either connected to Wifi or Ethernet, but not both. If
+you do experience problems, please let us know by sending a quick email to
+support@infinit.io. We’ll get back to you as soon as possible to better
+understand and solve your problem unless you've blown up your pet or your name
+is Talal, in which case we can't help.
 
 All the best,
 
@@ -93,7 +94,7 @@ Dear user,
 
 To accept the file, launch Infinit now and accept the file through your Finder
 or in the Infinit notifications panel! If you have any technical questions,
-don't hesitate to get in touch with us at community@infinit.io.
+don't hesitate to get in touch with us at support@infinit.io.
 
 All the best,
 
