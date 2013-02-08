@@ -146,15 +146,6 @@ Infinit(elle::Natural32 argc, elle::Character* argv[])
       // XXX[to fix later though]
     }
 
-  static std::ofstream* out = new std::ofstream{
-    common::infinit::log_path(Infinit::User, Infinit::Network),
-    std::fstream::app | std::fstream::out
-  };
-  elle::log::logger(
-    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
-  );
-
-
   // initialize the Lune library.
   if (lune::Lune::Initialize() == elle::Status::Error)
     throw reactor::Exception("unable to initialize Lune");
