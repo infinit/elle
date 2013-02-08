@@ -1,7 +1,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <elle/types.hh>
-#include <elle/concurrency/Scheduler.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
@@ -157,7 +156,8 @@ namespace elle
               ptime = boost::posix_time::second_clock::local_time();
           }
         boost::format fmt(model);
-        reactor::Thread* t = elle::concurrency::scheduler().current();
+        reactor::Scheduler* sched = reactor::Scheduler::scheduler();
+        reactor::Thread* t = sched ? sched->current() : 0;
         if (time)
           fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
         else
