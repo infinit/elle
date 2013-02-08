@@ -61,7 +61,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   # Cryptography
   cryptography = drake.include('cryptography', cxx_toolkit, reactor.config, elle.config, boost = boost)
-  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
+  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography/lib')
 
   # Qt
   qt = qt or drake.cxx.qt.Qt()
