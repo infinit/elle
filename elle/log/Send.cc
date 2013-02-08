@@ -79,7 +79,7 @@ namespace elle
       _indentation()
       {
         typedef ::reactor::LocalStorage<unsigned int> Storage;
-        static Storage indentation(elle::concurrency::scheduler());
+        static Storage indentation;
         return indentation.Get(0);
       }
 
