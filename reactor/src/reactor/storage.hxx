@@ -1,13 +1,14 @@
 #ifndef INFINIT_REACTOR_STORAGE_HXX
 # define INFINIT_REACTOR_STORAGE_HXX
 
+# include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
 
 namespace reactor
 {
   template <typename T>
-  LocalStorage<T>::LocalStorage(Scheduler& sched)
-  : _sched(sched)
+  LocalStorage<T>::LocalStorage()
+    : _content()
   {}
 
   template <typename T>
@@ -20,16 +21,17 @@ namespace reactor
   T&
   LocalStorage<T>::Get(T const& def)
   {
-    Thread* current = this->_sched.current();
+    Scheduler* sched = Scheduler::scheduler();
+    Thread* current = sched ? sched->current() : 0;
     typename Content::iterator it = this->_content.find(current);
     if (it == this->_content.end())
       {
-        this->_content[this->_sched.current()] = def;
+        this->_content[current] = def;
         if (current != nullptr)
           current->destructed().connect(
               boost::bind(&Self::_Clean, this, current)
           );
-        return this->_content[this->_sched.current()];
+        return this->_content[current];
       }
     else
       return it->second;

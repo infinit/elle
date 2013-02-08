@@ -3,7 +3,7 @@
 
 # include <boost/unordered_map.hpp>
 
-# include <reactor/scheduler.hh>
+# include <reactor/fwd.hh>
 
 namespace reactor
 {
@@ -12,13 +12,12 @@ namespace reactor
   {
   public:
     typedef LocalStorage<T> Self;
-    LocalStorage(Scheduler& sched);
+    LocalStorage();
     operator T&();
     T& Get(T const& def = T());
 
   private:
     void _Clean(Thread* t);
-    Scheduler& _sched;
     typedef boost::unordered_map<Thread*, T> Content;
     Content _content;
   };
