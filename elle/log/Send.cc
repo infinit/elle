@@ -112,7 +112,7 @@ namespace elle
           {
             static boost::format fmt("%s (at %s:%s in %s)");
             this->_send(level, type, component,
-                        str(fmt % file % line % msg % function));
+                        str(fmt % msg % file % line % function));
           }
         else
           this->_send(level, type, component, msg);
