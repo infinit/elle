@@ -35,8 +35,9 @@ namespace elle
       `-------------*/
     public:
       /// Initialize with signal list and handler.
-      ScopedGuard(std::vector<int> const& sig,
-                   Handler const& handler);
+      ScopedGuard(reactor::Scheduler& sched,
+                  std::vector<int> const& sig,
+                  Handler const& handler);
       /// Destroy current handlers.
       ~ScopedGuard();
 

@@ -1,7 +1,6 @@
 #include <common/common.hh>
 
 #include <elle/format/json.hh>
-#include <elle/concurrency/Scheduler.hh>
 #include <elle/os/path.hh>
 #include <elle/log.hh>
 #include <elle/HttpClient.hh>
@@ -24,9 +23,10 @@ namespace elle
 {
   namespace signal
   {
-    ScopedGuard::ScopedGuard(std::vector<int> const& sig,
-                               Handler const& handler):
-      _signals{elle::concurrency::scheduler().io_service()},
+    ScopedGuard::ScopedGuard(reactor::Scheduler& sched,
+                             std::vector<int> const& sig,
+                             Handler const& handler):
+      _signals{sched.io_service()},
       _handler{handler}
     {
       // Each guard manager a specific handler but any signals.
