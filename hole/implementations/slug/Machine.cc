@@ -271,11 +271,9 @@ namespace hole
             {
               ELLE_DEBUG("start listening on port %s", this->_port);
               _server->listen(this->_port);
-              ELLE_DEBUG("XXX %s", this->_port);
               // In case we asked for a random port to be picked up (by using 0)
               // or hole punching happened, retrieve the actual listening port.
               this->_port = _server->port();
-              ELLE_DEBUG("XXX %s", this->_port);
               ELLE_ASSERT(this->_port != 0);
               ELLE_TRACE("listening on port %s", this->_port);
               _acceptor.reset(new reactor::Thread(elle::concurrency::scheduler(),
