@@ -48,9 +48,12 @@ namespace elle
                                                    local_port));
   }
 
-  Hole::Hole(Hole&& other):
-    _handle{std::move(other._handle)}
-  {}
+  Hole::Hole(Hole&& other)
+      : _handle{other._handle}
+      , _public_endpoint{other._public_endpoint}
+      , _endpoint{other._endpoint}
+  {
+  }
 
   Hole::~Hole()
   {
@@ -169,7 +172,7 @@ namespace elle
     Hole h(sched, hostname, port, local_port);
 
     h.drill();
-    return h;
+    return std::move(h);
   }
 
 
