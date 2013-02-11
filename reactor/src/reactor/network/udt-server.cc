@@ -281,9 +281,10 @@ namespace reactor
                                         this->_udp_socket,
                                         longinus_2);
                 if (res.port() == this->_public_endpoint.port())
-                  ELLE_ERR("CHIE DU CHAMPAGNE CA MARCHE");
+                  ELLE_ERR("CHIE DU CHAMPAGNE CA MARCHE: %s", res.port());
                 else
-                  ELLE_ERR("OSTIE DE MAUDIT NIAISEUX DE FIREWALL");
+                  ELLE_ERR("OSTIE DE MAUDIT NIAISEUX DE FIREWALL: %s",
+                           res.port());
               }
           }
         catch (std::runtime_error const& e)
