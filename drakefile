@@ -725,6 +725,17 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                    cxx_toolkit, infinit_bin_config)
   build << transfer_bin
 
+  # 8progress
+  progress_sources = drake.nodes(
+    'satellites/progress/Progress.cc',
+    'satellites/progress/Progress.hh',
+    'satellites/progress/Progress.hxx',
+    )
+  progress_bin = drake.cxx.Executable('bin/8progress',
+                                   progress_sources + infinit_libs,
+                                   cxx_toolkit, infinit_bin_config)
+  build << progress_bin
+
   # Trophonius
 
   tropho_cxx_config = drake.cxx.Config(cxx_config)
