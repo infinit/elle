@@ -155,17 +155,7 @@ namespace reactor
       return longinus;
     }
 
-    bool
-    UDTServer::_punch(int port)
-    {
-      boost::asio::ip::udp::endpoint local_endpoint
-        (boost::asio::ip::udp::v4(), port);
-      std::unique_ptr<UDPSocket> socket(new UDPSocket(scheduler()));
-      socket->bind(local_endpoint);
-      return this->_punch(port, socket);
-    }
-
-    bool
+    boost::asio::ip::udp::endpoint
     UDTServer::_punch(int port, std::unique_ptr<UDPSocket>& socket)
     {
       ELLE_DEBUG_SCOPE("try punching port %s", port);
@@ -198,56 +188,26 @@ namespace reactor
       boost::asio::ip::udp::endpoint public_endpoint
         (boost::asio::ip::address::from_string(splitted[1]),
          boost::lexical_cast<int>(splitted[2]));
-      if (public_endpoint.port() == port)
+      return public_endpoint;
+    }
+
+    bool
+    UDTServer::_punch_heartbeat()
+    {
+      ELLE_TRACE("Heartbeating the NAT punching");
+      auto port = this->_public_endpoint.port();
+      auto endpoint = this->_punch(port, this->_udp_socket);
+      if (endpoint.port() != port)
         {
-          ELLE_DEBUG("punched right port %s", port);
-          if (!_udp_socket)
-            {
-              _public_endpoint = public_endpoint;
-              _udp_socket = std::move(socket);
-              _heartbeat.reset
-                (new reactor::Thread
-                 (this->scheduler(),
-                  elle::sprintf("%s punch heartbeat", *this),
-                  [this] ()
-                  {
-                    while (true)
-                      {
-                        this->scheduler().current()->sleep
-                          (boost::posix_time::seconds(15));
-                        this->_beat(this->port(),
-                                    std::ref(this->_udp_socket));
-                      }
-                  }));
-            }
-          return true;
+          ELLE_WARN("NAT punching was lost");
+          // FIXME: we lost the NAT, do something.
+          return false;
         }
       else
         {
-          ELLE_DEBUG("punched different port %s", public_endpoint.port());
-          if (_udp_socket)
-            ;  // FIXME: we lost the NAT, do something.
-          return false;
+          ELLE_DEBUG("NAT punching still up");
+          return true;
         }
-    }
-
-    void
-    UDTServer::_beat(int port, std::unique_ptr<UDPSocket>& socket)
-    {
-      ELLE_DEBUG_SCOPE("try punching port %s", port);
-
-      std::stringstream ss;
-      ss << "ping" << std::endl;
-      std::string question = ss.str();
-      ELLE_DUMP("longinus question: %s", escape(question));
-      socket->send_to(Buffer(question), this->_longinus());
-
-      std::string buffer_data(1024, ' ');
-      Buffer buffer(buffer_data);
-      auto size = socket->read_some(buffer);
-      std::string answer(buffer_data.c_str(), size);
-
-      ELLE_DUMP("longinus answer: %s", escape(answer));
     }
 
     void
@@ -265,18 +225,45 @@ namespace reactor
         try
           {
             int tries = 0;
+            std::unique_ptr<UDPSocket> socket;
+            boost::asio::ip::udp::endpoint public_endpoint;
             while (true)
               {
+                boost::asio::ip::udp::endpoint local_endpoint
+                  (boost::asio::ip::udp::v4(), port);
+                socket.reset(new UDPSocket(scheduler()));
+                socket->bind(local_endpoint);
+                public_endpoint = this->_punch(port, socket);
+                if (public_endpoint.port() == port && false)
+                  {
+                    ELLE_DEBUG("punched right port %s", port);
+                    break;
+                  }
+                else
+                  ELLE_DEBUG("punched different port %s",
+                             public_endpoint.port());
+                ++port;
                 if (tries++ == 10)
                   {
                     ELLE_WARN("too many tries, giving up");
                     break;
                   }
-                if (this->_punch(port))
-                  break;
-                ++port;
               }
-
+            this->_udp_socket = std::move(socket);
+            this->_public_endpoint = public_endpoint;
+            this->_heartbeat.reset
+              (new reactor::Thread
+               (this->scheduler(),
+                elle::sprintf("%s punch heartbeat", *this),
+                [this] ()
+                {
+                  while (true)
+                    {
+                      this->scheduler().current()->sleep
+                        (boost::posix_time::seconds(15));
+                      this->_punch_heartbeat();
+                    }
+                }));
           }
         catch (std::runtime_error const& e)
           {

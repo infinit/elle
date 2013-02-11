@@ -56,13 +56,11 @@ namespace reactor
         boost::asio::ip::udp::endpoint const&
         _longinus();
 
-        bool
-        _punch(int port);
-        bool
+        boost::asio::ip::udp::endpoint
         _punch(int port,
                std::unique_ptr<reactor::network::UDPSocket>& socket);
-        void
-        _beat(int port, std::unique_ptr<UDPSocket>& socket);
+        bool
+        _punch_heartbeat();
 
         std::unique_ptr<reactor::network::UDPSocket> _udp_socket;
         std::unique_ptr<reactor::Thread> _heartbeat;
