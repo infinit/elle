@@ -1,7 +1,6 @@
 #include <elle/system/platform.hh>
 
 #include <elle/concurrency/Program.hh>
-#include <elle/concurrency/Scheduler.hh>
 
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
@@ -60,7 +59,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("Launch");
 
-      concurrency::scheduler().current()->wait(_exit);
+      reactor::Scheduler::scheduler()->current()->wait(_exit);
     }
 
     ///
