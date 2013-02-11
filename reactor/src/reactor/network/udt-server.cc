@@ -158,8 +158,16 @@ namespace reactor
     boost::asio::ip::udp::endpoint
     UDTServer::_punch(int port, std::unique_ptr<UDPSocket>& socket)
     {
-      ELLE_DEBUG_SCOPE("try punching port %s", port);
       static auto longinus = _longinus();
+      return _punch(port, socket, longinus);
+    }
+
+    boost::asio::ip::udp::endpoint
+    UDTServer::_punch(int port,
+                      std::unique_ptr<UDPSocket>& socket,
+                      boost::asio::ip::udp::endpoint const& longinus)
+    {
+      ELLE_DEBUG_SCOPE("try punching port %s", port);
       ELLE_DEBUG("contact longinus on %s", longinus);
 
       std::stringstream ss;
@@ -234,7 +242,7 @@ namespace reactor
                 socket.reset(new UDPSocket(scheduler()));
                 socket->bind(local_endpoint);
                 public_endpoint = this->_punch(port, socket);
-                if (public_endpoint.port() == port && false)
+                if (public_endpoint.port() == port)
                   {
                     ELLE_DEBUG("punched right port %s", port);
                     break;
@@ -264,6 +272,19 @@ namespace reactor
                       this->_punch_heartbeat();
                     }
                 }));
+            ELLE_TRACE("checking NAT punching with second longinus")
+              {
+                static auto longinus_2 = resolve_udp(this->scheduler(),
+                                                     "development.infinit.io",
+                                                     "9999");
+                auto res = this->_punch(this->_public_endpoint.port(),
+                                        this->_udp_socket,
+                                        longinus_2);
+                if (res.port() == this->_public_endpoint.port())
+                  ELLE_ERR("CHIE DU CHAMPAGNE CA MARCHE");
+                else
+                  ELLE_ERR("OSTIE DE MAUDIT NIAISEUX DE FIREWALL");
+              }
           }
         catch (std::runtime_error const& e)
           {
