@@ -838,12 +838,14 @@ int                     main(int                                argc,
 {
   // Capture signal and send email without exiting.
   elle::signal::ScopedGuard guard{
+    elle::concurrency::scheduler(),
     {SIGINT, SIGABRT, SIGPIPE},
     elle::crash::Handler("8group", false, argc, argv)
   };
 
   // Capture signal and send email exiting.
   elle::signal::ScopedGuard exit_guard{
+    elle::concurrency::scheduler(),
     {SIGILL, SIGSEGV},
     elle::crash::Handler("8group", true, argc, argv)
   };
