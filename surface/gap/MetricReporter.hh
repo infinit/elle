@@ -8,7 +8,9 @@
 # include <queue>
 # include <list>
 # include <fstream>
-# include <mutex>
+# include <reactor/scheduler.hh>
+# include <memory>
+# include <thread>
 
 namespace surface
 {
@@ -29,10 +31,16 @@ namespace surface
       `-------------*/
       public:
       MetricReporter(std::string const& tag,
-                     std::string const& default_user);
+                     std::string const& default_user,
+                     std::string const& host,
+                     uint16_t port);
 
       virtual
       ~MetricReporter();
+
+      MetricReporter(MetricReporter const&) = delete;
+      MetricReporter(MetricReporter&&) = delete;
+
 
     public:
       // Push data directly, without enqueuing.
@@ -60,93 +68,22 @@ namespace surface
       void
       update_user(std::string const&);
 
-      /// XXX
-      void
-      flush();
     protected:
       // Do send to destination.
       virtual
       void
-      _send_data(TimeMetricPair const&) = 0;
-
-      // Enqueue a metric timestamped.
-      Metric&
-      _push(Metric const& metric);
-
-      virtual
-      void
-      _flush();
+      _send_data(TimeMetricPair const&);
 
     protected:
-      std::queue<TimeMetricPair> _requests;
       elle::utility::Time _last_sent;
       std::string _tag;
       std::string _user_id;
-      std::mutex _store_mutex;
-    };
-
-    class ServerReporter:
-      public MetricReporter,
-      private boost::noncopyable
-    {
-      /*-------------.
-      | Construction |
-      `-------------*/
-    public:
-      /// Default constructor.
-      ServerReporter(std::string const& tag,
-                     std::string const& default_user,
-                     std::string const& server,
-                     uint16_t port);
-
-      ~ServerReporter();
-
-      /*--------.
-      | Methods |
-      `--------*/
-    public:
-      void
-      flush();
-    private:
-      virtual
-      void
-      _send_data(TimeMetricPair const&) override;
-
-      void
-      _flush() override;
-
-      /*-----------.
-      | Attributes |
-      `-----------*/
-    private:
-      std::string _host;
-      uint16_t _port;
+      reactor::Scheduler _flusher_sched;
+      std::unique_ptr<boost::asio::io_service::work> _keep_alive;
+      std::unique_ptr<std::thread> _run_thread;
       std::unique_ptr<elle::HTTPClient> _server;
-      std::queue<TimeMetricPair> _fallback_storage;
     };
 
-    class NoConnectionReporter:
-      public MetricReporter,
-      private boost::noncopyable
-    {
-    public:
-      NoConnectionReporter(std::string const& tag,
-                           std::string const& default_user,
-                           std::string const& path);
-
-      ~NoConnectionReporter();
-
-    private:
-      void
-      _send_data(MetricReporter::TimeMetricPair const&) override;
-
-      /*-----------.
-      | Attributes |
-      `-----------*/
-    private:
-      // Flush here, cause it's offline.
-      std::ofstream _file_storage;
-    };
 
     namespace metrics
     {

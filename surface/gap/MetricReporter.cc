@@ -16,23 +16,34 @@
 #include <iostream>
 #include <string>
 #include <regex>
+#include <thread>
+#include <mutex>
 
-ELLE_LOG_COMPONENT("infinit.surface.gap.MetricReporter");
+// ELLE_LOG_COMPONENT("infinit.surface.gap.MetricReporter");
 
 namespace surface
 {
   namespace gap
   {
     MetricReporter::MetricReporter(std::string const& tag,
-                                   std::string const& user)
-      : _tag(tag)
-      , _user_id(user)
-    {}
+                                   std::string const& user,
+                                   std::string const& host,
+                                   uint16_t port)
+      : _tag{tag}
+      , _user_id{user}
+      , _flusher_sched{}
+      , _server{new elle::HTTPClient{host, port, "MetricReport", true}}
+    {
+      this->_keep_alive.reset(
+        new boost::asio::io_service::work(_flusher_sched.io_service()));
+      this->_run_thread.reset(new std::thread{[this] { this->_flusher_sched.run(); }});
+    }
 
     MetricReporter::~MetricReporter()
     {
-      // Flush cant be done here, call it calls send_data for this object
-      // which is pure virtual;
+      this->_keep_alive.reset();
+      if (this->_run_thread->joinable())
+        this->_run_thread->join();
     }
 
     // Push data directly to server, without enqueuing.
@@ -42,33 +53,24 @@ namespace surface
     {
       Metric m = metric;
       m.push_front(std::pair<std::string, std::string>{
-                     this->_tag,
-                     name});
+          this->_tag,
+            name});
 
-      this->_send_data(TimeMetricPair(elle::utility::Time::current(), m));
+      this->_flusher_sched.io_service().post(
+        [=] { this->_send_data(TimeMetricPair(elle::utility::Time::current(), m)); });
     }
-
 
     void
     MetricReporter::store(std::string const& caller, Metric const& metric)
     {
-      this->_store_mutex.lock();
-      ELLE_TRACE("Storing new metric %s", caller);
-
-      Metric& m = this->_push(metric);
+      // ELLE_TRACE("Storing new metric %s", caller);
 
       // Note that if we want the ability to use initializer list for metric,
-      // we can declare it as non const.
-      // So we need to push "cd":caller pair after insertion in the map.
-      m.push_front(std::pair<std::string, std::string>{
-                     this->_tag,
-                     caller});
+      // we can't declare it as non const..
+      Metric& m = const_cast<Metric &>(metric);
+      m.push_front(std::pair<std::string, std::string>{this->_tag, caller});
 
-      this->_store_mutex.unlock();
-
-      // Suxx
-      if (this->_requests.size() > 10)
-        this->_flush();
+      this->_flusher_sched.io_service().post([=] { this->_send_data(TimeMetricPair(elle::utility::Time::current(), m)); });
     }
 
     void
@@ -96,96 +98,17 @@ namespace surface
     }
 
     void
-    MetricReporter::flush()
+    MetricReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
     {
-      if (this->_requests.empty() == true)
-        return;
+      // ELLE_TRACE(__PRETTY_FUNCTION__);
+      static int fail_counter = 0;
 
-      this->_flush();
-    }
-
-    MetricReporter::Metric&
-    MetricReporter::_push(Metric const& metric)
-    {
-      this->_requests.push(std::make_pair(elle::utility::Time::current(),
-                                          metric));
-
-      return this->_requests.back().second;
-    }
-
-    void
-    MetricReporter::_flush()
-    {
-      ELLE_TRACE("Flushing the metrics to server");
-
-      while (this->_requests.size())
-        {
-          this->_send_data(this->_requests.front());
-          this->_requests.pop();
-        }
-    }
-
-    ServerReporter::ServerReporter(std::string const& tag,
-                                   std::string const& default_user,
-                                   std::string const& server,
-                                   uint16_t port):
-      MetricReporter{tag,  default_user},
-      _host(server),
-      _port(port),
-      _server{new elle::HTTPClient{server, port, "MetricReport", true}}
-    {
-      ELLE_TRACE("conctruct ServerReporter to '%s:%s'", server, port);
-    }
-
-    void
-    ServerReporter::flush()
-    {
-      if ((this->_fallback_storage.empty() == true) &&
-          (this->_requests.empty() == true))
-        return;
-
-      this->_flush();
-    }
-
-    void
-    ServerReporter::_flush()
-    {
-      ELLE_TRACE("server flushing");
-      this->_store_mutex.lock();
-      try
-      {
-        // We reenable the connection. So let push all stored metrics.
-        while (this->_fallback_storage.size())
-        {
-          this->_send_data(this->_fallback_storage.front());
-
-          // Pop if no throw.
-          this->_fallback_storage.pop();
-        }
-
-        MetricReporter::_flush();
-      }
-      catch(...) // Should be HTTP or Socket exception.
-      {
-        ELLE_WARN("httpserver didn't respond");
-        // Can't do anything in that case, just wait for the next flush to
-        // try to reconnect.
-      }
-      this->_store_mutex.unlock();
-    }
-
-    ServerReporter::~ServerReporter()
-    {
-      this->flush();
-    }
-
-    void
-    ServerReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
-    {
       static elle::String version =
         elle::sprintf("%s.%s", INFINIT_VERSION_MAJOR, INFINIT_VERSION_MINOR);
 
-      auto request = this->_server->request("POST", "/collect");
+      // XXX copy constructor with should great idea, cause request base here
+      // is always the same, so it could be static.
+      elle::Request request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
         .user_agent(elle::sprintf("Infinit/%s (%s)",
@@ -194,7 +117,7 @@ namespace surface
                                   "Linux x86_64"))
 #elif INFINIT_MACOSX
         // XXX[10.7: should adapt to any MacOS X version]
-                                  "Mac OS X 10.7"))
+        "Mac OS X 10.7"))
 #else
 # warning "machine not supported"
 #endif
@@ -207,70 +130,35 @@ namespace surface
         .post_field("v", "1");               // Api version.
 
       typedef MetricReporter::Metric::value_type Field;
-      std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
-                    {
-                      std::string value=f.second;
-                      size_t pos;
-                      // Replace "/" by a :
-                      while ((pos = value.find('/')) != std::string::npos)
-                        value.replace(pos, 1, ":");
-                      request.post_field(f.first, value); });
-
+      for (Field f: metric.second)
+      {
+        std::string value = f.second;
+        size_t pos;
+        // Replace "/" by a :
+        while ((pos = value.find('/')) != std::string::npos)
+          value.replace(pos, 1, ":");
+        request.post_field(f.first, value);
+      };
       _last_sent.Current();
       request.post_field("qt",
-                         std::to_string((_last_sent - metric.first).nanoseconds / 1000000));
+                     std::to_string((_last_sent - metric.first).nanoseconds / 1000000));
       try
-      {
-        request.fire();
-      }
-      catch (...) // Should be HTTP or Socket exception.
-      {
-        //XXX: missing some opti here.
+        {
+          request.fire();
+          fail_counter = 0;
+        }
+      catch (std::runtime_error const& e) // Should be HTTP or Socket exception.
+        {
+          ++fail_counter;
+          // ELLE_ERR("firing metric failed (%s)", e.what());
 
-        // This means that we tried to send the "stashed" metrics and it failed again...
-        if (metric == this->_fallback_storage.front())
-          throw;
-
-        ELLE_WARN("httpserver didn't respond. Start fallbacking");
-        this->_fallback_storage.push(metric);
-      }
-    }
-
-    NoConnectionReporter::NoConnectionReporter(std::string const& tag,
-                                               std::string const& default_user,
-                                               std::string const& path):
-      MetricReporter{tag, default_user},
-      _file_storage{}
-    {
-      this->_file_storage.open(path, std::fstream::app);
-
-      if (this->_file_storage.good())
-      {
-        _last_sent.Current();
-        this->_file_storage
-          << "==========" << std::endl
-          << default_user << std::endl
-          << _last_sent.nanoseconds << std::endl
-          << "==========" << std::endl;
-      }
-    }
-
-    NoConnectionReporter::~NoConnectionReporter()
-    {
-      this->_flush();
-    }
-
-    void
-    NoConnectionReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
-    {
-      if (this->_file_storage.good())
-      {
-        this->_file_storage << metric.first.nanoseconds << std::endl;
-
-        typedef MetricReporter::Metric::value_type Field;
-        std::for_each(metric.second.begin(), metric.second.end(), [&](Field const& f)
-                      { this->_file_storage << f.first << ":" << f.second << std::endl; });
-      }
+          //XXX: missing some opti here.
+        }
+      catch (...)
+        {
+          ++fail_counter;
+          // ELLE_ERR("firing metric failed");
+        }
     }
 
     namespace metrics
@@ -314,7 +202,7 @@ namespace surface
           std::string hashed_id =
             elle::format::hexadecimal::encode(digest.buffer());
 
-          ELLE_DEBUG("hashed id: %s", hashed_id);
+          // ELLE_DEBUG("hashed id: %s", hashed_id);
 
           // Google user id must have the following format:
           // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
@@ -330,7 +218,7 @@ namespace surface
             .insert(12, "-")
             .insert(8, "-");
 
-          ELLE_DEBUG("hashed id: %s", hashed_id);
+          // ELLE_DEBUG("hashed id: %s", hashed_id);
 
           std::string id_path = common::metrics::id_path();
           std::ofstream id_file(id_path);
@@ -352,18 +240,13 @@ namespace surface
         {
           static std::unique_ptr<surface::gap::MetricReporter> server;
           if (!server)
-            {
-              if (host.empty() ||
-                  tag.empty()  ||
-                  id.empty())
-                throw elle::Exception("google host not specified");
+          {
+            if (host.empty() || tag.empty()  || id.empty())
+              throw elle::Exception("google host not specified");
 
-              server.reset(new surface::gap::ServerReporter{
-                  tag,
-                    id,
-                    host,
-                    port});
-            }
+            server.reset(new surface::gap::MetricReporter{
+                tag, id, host, port});
+          }
 
           return *server;
         }
