@@ -1,7 +1,10 @@
 #ifndef INFINIT_REACTOR_SCHEDULER_HH
 # define INFINIT_REACTOR_SCHEDULER_HH
 
+# include <memory>
 # include <set>
+# include <thread>
+# include <unordered_map>
 
 # include <boost/thread.hpp>
 
@@ -31,7 +34,7 @@ namespace reactor
     Scheduler*
     scheduler();
   private:
-    static Scheduler* _scheduler;
+    static std::unordered_map<std::thread::id, Scheduler*> _schedulers;
 
   /*----.
   | Run |

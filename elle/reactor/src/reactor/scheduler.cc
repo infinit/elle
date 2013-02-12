@@ -28,12 +28,13 @@ namespace reactor
   | Current Scheduler |
   `------------------*/
 
-  Scheduler* Scheduler::_scheduler(0);
+  std::unordered_map<std::thread::id, Scheduler*>
+  Scheduler::_schedulers{};
 
   Scheduler*
   Scheduler::scheduler()
   {
-    return _scheduler;
+    return Scheduler::_schedulers[std::this_thread::get_id()];
   }
 
   /*----.
@@ -43,11 +44,11 @@ namespace reactor
   void
   Scheduler::run()
   {
-    assert(!_scheduler);
-    _scheduler = this;
+    assert(!scheduler());
+    _schedulers[std::this_thread::get_id()] = this;
     while (step())
       /* nothing */;
-    _scheduler = 0;
+    _schedulers[std::this_thread::get_id()] = nullptr;
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
