@@ -267,18 +267,29 @@ namespace elle
   {
     std::string uri = std::string("http://") + _impl->server
         + ":" + std::to_string(_impl->port) + request.url();
-
     namespace ip = boost::asio::ip;
 
     ip::tcp::socket socket(_impl->io_service);
-
     ip::tcp::resolver resolver(_impl->io_service);
     ip::tcp::resolver::query query(_impl->server, elle::sprint(_impl->port));
     ip::tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    boost::system::error_code connection_error = boost::asio::error::host_not_found;
+    boost::asio::ip::tcp::resolver::iterator end;
     boost::asio::connect(socket, endpoint_iterator);
+
+    while (connection_error && endpoint_iterator != end)
+    {
+      ELLE_LOG("endpoint %s", *endpoint_iterator);
+      socket.close();
+      socket.connect(*endpoint_iterator++, connection_error);
+    }
+
+    if (connection_error == boost::asio::error::host_not_found)
+      throw std::runtime_error("host not found.");
 
     std::string body = request.body_string();
     {
+      ELLE_DEBUG("building request");
       boost::asio::streambuf request_buf;
       std::ostream request_stream(&request_buf);
 
