@@ -305,7 +305,7 @@ namespace elle
           (static_cast<int32_t>(tab[3]) << 24)
         ;
 # endif
-      ELLE_TRACE("Loaded int32_t '%s'", val);
+      ELLE_DUMP("Loaded int32_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -317,7 +317,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(int64_t val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving int64_t '%s'", val);
+      ELLE_DUMP("Saving int64_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -364,7 +364,7 @@ namespace elle
           (static_cast<int64_t>(tab[7]) << 56)
         ;
 # endif
-      ELLE_TRACE("Loaded int64_t '%s'", val);
+      ELLE_DUMP("Loaded int64_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -376,7 +376,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(float val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving float '%s'", val);
+      ELLE_DUMP("Saving float '%s'", val);
 
       static_assert(sizeof(val) == 4, "float size is not standard");
       Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -394,7 +394,7 @@ namespace elle
 
       static_assert(sizeof(val) == 4, "float size is not standard");
       Access::LoadBinary(this->self(), &val, sizeof(val));
-      ELLE_TRACE("Loaded float '%s'", val);
+      ELLE_DUMP("Loaded float '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -406,7 +406,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(double val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving double '%s'", val);
+      ELLE_DUMP("Saving double '%s'", val);
 
       static_assert(sizeof(val) == 8, "double size is not standard");
       Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -424,7 +424,7 @@ namespace elle
 
       static_assert(sizeof(val) == 8, "double size is not standard");
       Access::LoadBinary(this->self(), &val, sizeof(val));
-      ELLE_TRACE("Loaded double '%s'", val);
+      ELLE_DUMP("Loaded double '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -436,7 +436,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(std::string const& val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving string '%s'", val);
+      ELLE_DUMP("Saving string '%s'", val);
 
       typedef typename Archive::StringSizeType SizeType;
       static_assert(std::is_unsigned<SizeType>::value, "A string size type have to be unsigned");
@@ -476,7 +476,7 @@ namespace elle
           Access::LoadBinary(this->self(), tab, size);
           val.replace(idx, size, tab, size);
         }
-      ELLE_TRACE("Loaded string '%s'", val);
+      ELLE_DUMP("Loaded string '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -488,7 +488,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(Format const& value)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving class version '%s'", value.version);
+      ELLE_DUMP("Saving class version '%s'", value.version);
       Access::Save(this->self(), value.version);
     }
 
@@ -502,7 +502,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       Access::Load(this->self(), value.version);
-      ELLE_TRACE("Loaded class version '%s'", value.version);
+      ELLE_DUMP("Loaded class version '%s'", value.version);
     }
 
 
