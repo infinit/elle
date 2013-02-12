@@ -88,6 +88,11 @@ message("--- building infinit-${INFINIT_VERSION} for ${INFINIT_PLATFORM}")
 # Handle cmake build type changes and set BUILD_TYPE_CHANGED when appropriate.
 #
 
+if (PRODUCTION_BUILD)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+        set(BUILD_TYPE Release)
+endif()
+
 if(NOT DISABLE_HORIZON)
    add_definitions(-DINFINIT_HORIZON)
 endif()
