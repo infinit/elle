@@ -17,29 +17,30 @@ Main(void)
 
     elle::nat::Hole h = a.punch("infinit.im", 9999, 54545);
     std::cout << h.public_endpoint().first << ":" << h.public_endpoint().second << std::endl;
-    {
-        std::string in;
-        std::vector<std::string> v;
-        auto handle = h.punched_handle();
+    // This stuff is usefull for debug. uncomment if you need it
+    //{
+    //    std::string in;
+    //    std::vector<std::string> v;
+    //    auto handle = h.punched_handle();
 
-        std::cin >> in;
-        boost::split(v, in, boost::is_any_of(":\n"));
-        std::string ip = v[0];
-        std::string port = v[1];
-        boost::asio::ip::udp::endpoint remote =
-            reactor::network::resolve_udp(elle::concurrency::scheduler(), ip, port);
-        std::string msg{"Chie du foutre"};
-        while (1)
-        {
-            std::string from_remote;
-            boost::asio::ip::udp::endpoint ignore;
+    //    std::cin >> in;
+    //    boost::split(v, in, boost::is_any_of(":\n"));
+    //    std::string ip = v[0];
+    //    std::string port = v[1];
+    //    boost::asio::ip::udp::endpoint remote =
+    //        reactor::network::resolve_udp(elle::concurrency::scheduler(), ip, port);
+    //    std::string msg{"Chie du foutre"};
+    //    while (1)
+    //    {
+    //        std::string from_remote;
+    //        boost::asio::ip::udp::endpoint ignore;
 
-            from_remote.reserve(512);
-            handle->send_to(reactor::network::Buffer(msg + "\n"), remote);
-            handle->receive_from(reactor::network::Buffer(from_remote), remote);
-            std::cout << from_remote;
-        }
-    }
+    //        from_remote.reserve(512);
+    //        handle->send_to(reactor::network::Buffer(msg + "\n"), remote);
+    //        handle->receive_from(reactor::network::Buffer(from_remote), remote);
+    //        std::cout << from_remote;
+    //    }
+    //}
     return 0;
 }
 
