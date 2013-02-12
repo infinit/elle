@@ -151,26 +151,18 @@ namespace elle
           common::meta::host(),
           common::meta::port(),
           "InfinitDesktop", // User agent
-          false}};
-
-      std::string destination = "/debug/report";
-
-      elle::format::json::Dictionary request{
-        std::map<std::string, std::string>{
-          {"module", module},
+          false
         }
       };
 
       elle::format::json::Array bt_arr{}, env_arr{};
-
       for (auto const& t: bt)
-      {
         bt_arr.push_back(static_cast<std::string>(t));
-      }
+
       for (char **env = environ; *env; ++env)
-      {
         env_arr.push_back(std::string(*env));
-      }
+
+      elle::format::json::Dictionary request;
 
       request["module"] = module;
       request["signal"] = signal;
@@ -178,14 +170,14 @@ namespace elle
       request["env"] = env_arr;
 
       try
-      {
-        server->put(destination, request);
-      }
-      catch(...)
-      {
-        ELLE_WARN("Unable to put on server.");
-        return false;
-      }
+        {
+          server->put("/debug/report", request);
+        }
+      catch (...)
+        {
+          ELLE_WARN("Unable to put on server: '%s'", request.repr());
+          return false;
+        }
 
       return true;
     }

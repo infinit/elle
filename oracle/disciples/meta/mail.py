@@ -37,47 +37,45 @@ def send(mail, subject, content,
 # Admin invitation:
 INVITATION_SUBJECT = "Invitation to test Infinit!"
 INVITATION_CONTENT = """
-Dear Alpha tester,
+Hi,
 
-Welcome to Infinit! You are one of the first individuals to get to try it out!
+We’re finally here! Welcome to the Infinit private beta.
 
-Remember that the version you will be using is still quite basic and only
-functions in a local network at the moment. It may still have bugs and the
-interface is still not in its public version. For now, file sharing is limited
-to 30 MB and only the network owner can edit the files. Don’t worry though!
-We’ll be updating all of this over the coming weeks.
+Infinit is a powerful file sharing tool (with better performance than you or
+your girlfriend), and you are one of the first people that will get to take it
+for a spin! Exciting, right?
 
-You can report bugs or simply tell us what you think by sending us an email at
-feedback@infinit.io or by visiting feedback.infinit.io. If you have any
-questions, you can reach us on Skype at infinitdotio.
+For the moment, we’ve restrained our community to a small number of users while
+we work on stabilizing the application. For this reason, you won’t be able to
+invite other people just yet. It takes time to organize an orgy!
 
-To get started, download Infinit here: http://infinit.io/download.
+Here is a list of other people on Infinit with whom you can begin sharing. All
+guys I'm afraid...
+
+- Cyrille Vincey
+- Valentin Lautier
+- Lionel Tressens
+- Talal Mazroui
+- Juan Diosdado
+- Clement Cazalot
+- Julien Quintard
+
+Another 30 people will be invited to Infinit next week in order to offer you
+more possibilities to share.
+
+*You can download Infinit by clicking this link:*
+
+    http://download.infinit.io/macosx/10.7/Infinit-ia64.dmg
 
 Your access code is: %(activation_code)s
 
-If there are other people with whom you would like to use Infinit, please let
-us know by sending an email to community@infinit.io.
-
-Instructions:
-
- * MacOSX (only Mountain Lion):
-    1) Install Infinit and create an account with your access code.
-    2) Create a network.
-    3) Drag and drop other users into your network.
-    4) Drag and drop files into your network giving everyone read-only access
-       to them.
-
- * Linux:
-    1) Register a new account and start the Infinit shell:
-        $ infinit register shell
-    2) Start Infinit instances (in the Infinit shell):
-        infinit-shell$ start
-    3) Create a new network:
-        infinit-shell$ create_network MyNetwork
-    4) You might need to refresh networks with:
-        infinit-shell$ refresh_networks
-    5) Invite a friend to a network:
-        infinit-shell$ invite my@friend.com MyNetwork
+Just remember that this is a private beta version of Infinit, so you may
+experience bugs, crashes or other impediments to the experience. For the
+moment, you need to be either connected to Wifi or Ethernet, but not both. If
+you do experience problems, please let us know by sending a quick email to
+support@infinit.io. We’ll get back to you as soon as possible to better
+understand and solve your problem unless you've blown up your pet or your name
+is Talal, in which case we can't help.
 
 All the best,
 
@@ -92,13 +90,23 @@ USER_INVITATION_SUBJECT = "%(inviter_mail)s wants to share a file through Infini
 USER_NEW_FILE_CONTENT = """
 Dear user,
 
-%(inviter_mail)s wants to share %(file_name)s.
+%(inviter_fullname)s wants to share %(file_name)s with you on Infinit.
 
---
+To accept the file, launch Infinit now and accept the file through your Finder
+or in the Infinit notifications panel! If you have any technical questions,
+don't hesitate to get in touch with us at support@infinit.io.
+
+All the best,
+
+--%(space)s
 The Infinit Team
 http://infinit.io
 """.strip()
+
+
+
 USER_INVITATION_CONTENT = """
+
 Dear user,
 
 %(inviter_fullname)s (%(inviter_mail)s) wants to share %(file_name)s and make you discover Infinit.
