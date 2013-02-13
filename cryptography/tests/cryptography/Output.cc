@@ -4,6 +4,31 @@
 #include <cryptography/Input.hh>
 #include <cryptography/random.hh>
 
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/extract.hh>
+#include <elle/serialize/Base64Archive.hh>
+
+/*----------.
+| Represent |
+`----------*/
+
+void
+test_represent()
+{
+  // These generate base64-based representations which can be used in
+  // other tests.
+
+  // 1)
+  {
+    infinit::cryptography::Output output(
+      infinit::cryptography::random::generate<elle::Buffer>(128));
+    elle::String archive;
+    elle::serialize::to_string<
+      elle::serialize::OutputBase64Archive>(archive) << output;
+    elle::printf("[representation 1] %s\n", archive);
+  }
+}
+
 /*----------.
 | Construct |
 `----------*/
@@ -14,7 +39,7 @@ test_construct()
   // By size.
   infinit::cryptography::Output output1(64);
 
-  BOOST_CHECK_EQUAL(output1.buffer().size() == 64);
+  BOOST_CHECK_EQUAL(output1.buffer().size(), 64);
 
   // By buffer.
   infinit::cryptography::Output output2(
@@ -47,7 +72,7 @@ test_construct()
 
   auto address6 = output6.buffer().contents();
 
-  BOOST_CHECK_EQUAL(address3 == address6);
+  BOOST_CHECK(address3 == address6);
 }
 
 /*----------.
@@ -63,39 +88,29 @@ test_serialize()
       infinit::cryptography::random::generate<elle::Buffer>(128));
 
     elle::String archive;
-
     elle::serialize::to_string(archive) << output1;
 
-    infinit::cryptography::Output output2; // XXX[load construct]
-    ELLE_ASSERT(false);
-
-    elle::serialize::from_string(archive) >> output2;
+    auto extractor = elle::serialize::from_string(archive);
+    infinit::cryptography::Output output2(extractor);
 
     BOOST_CHECK_EQUAL(output1, output2);
   }
 
-  // Deserialize from hard-coded string: useful for detecting
-  // changes in formats.
+  // Deserialize from the hard-coded string [representation 1]: useful
+  // for detecting changes in formats.
   {
-    /* The base64-based representation below can be generated
-       as follows:
-    infinit::cryptography::Output output1(
-      infinit::cryptography::random::generate<elle::Buffer>(128));
-    elle::String archive1;
+    elle::String archive1("AAAAAIAAAAAAAAAAYVS/sqT6qs+lo+MdcB1jaZY8gwFx6a10mr1+MjW8to4nvK1hjewkupo66RFvioIZ59hITeuy4CvfQNJSqvdVJ4xLEyWKED9oeuji8jxe1nGOt068HlVyFJ9RkZT4cN6WC8RJXekhokXjI4yr89ad0Vw8KaB5mw5U79CUKaxBVnU=");
+
+    auto extractor =
+      elle::serialize::from_string<
+        elle::serialize::InputBase64Archive>(archive1);
+    infinit::cryptography::Output output(extractor);
+
+    elle::String archive2;
     elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive1) << pair1;
-    elle::printf("%s\n", archive1);
-    */
+      elle::serialize::OutputBase64Archive>(archive2) << output;
 
-    elle::String archive2("XXX");
-
-    infinit::cryptography::Output output2; // XXX[load construct]
-    ELLE_ASSERT(false);
-
-    elle::serialize::from_string<
-      elle::serialize::InputBase64Archive>(archive2) >> output2;
-
-    // XXX re-serialize and compare
+    BOOST_CHECK_EQUAL(archive1, archive2);
   }
 }
 
@@ -120,13 +135,13 @@ test_compare()
 
   if (output1 < output2)
     {
-      BOOST_CEHCK(output1 <= output2);
+      BOOST_CHECK(output1 <= output2);
       BOOST_CHECK(!(output1 > output2));
       BOOST_CHECK(!(output1 >= output2));
     }
   else
     {
-      BOOST_CEHCK(output1 >= output2);
+      BOOST_CHECK(output1 >= output2);
       BOOST_CHECK(!(output1 < output2));
       BOOST_CHECK(!(output1 <= output2));
     }
@@ -139,13 +154,13 @@ test_compare()
 
   if (output1 < input2)
     {
-      BOOST_CEHCK(output1 <= input2);
+      BOOST_CHECK(output1 <= input2);
       BOOST_CHECK(!(output1 > input2));
       BOOST_CHECK(!(output1 >= input2));
     }
   else
     {
-      BOOST_CEHCK(output1 >= input2);
+      BOOST_CHECK(output1 >= input2);
       BOOST_CHECK(!(output1 < input2));
       BOOST_CHECK(!(output1 <= input2));
     }
@@ -159,6 +174,9 @@ bool
 test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("Output");
+
+  // To uncomment if one wants to update the representations.
+  //suite->add(BOOST_TEST_CASE(test_represent));
 
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_serialize));
