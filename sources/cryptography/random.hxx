@@ -7,6 +7,7 @@
 # include <elle/Exception.hh>
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
+# include <elle/finally.hh>
 
 # include <openssl/engine.h>
 # include <openssl/rand.h>
@@ -16,7 +17,7 @@
 | Macro-functions |
 `----------------*/
 
-#define INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(_type_)                   \
+# define INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(_type_)                  \
   template <>                                                           \
   struct Generator<_type_>                                              \
   {                                                                     \
@@ -25,7 +26,7 @@
     generate()                                                          \
     {                                                                   \
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_TRACE_FUNCTION("");                                          \
+      ELLE_DEBUG_FUNCTION("");                                          \
                                                                         \
       return (_generate<_type_>());                                     \
     }                                                                   \
@@ -36,7 +37,7 @@
              _type_ maximum)                                            \
     {                                                                   \
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_TRACE_FUNCTION(minimum, maximum);                            \
+      ELLE_DEBUG_FUNCTION(minimum, maximum);                            \
                                                                         \
       return (_rangify(_generate<_type_>(), minimum, maximum));         \
     }                                                                   \
@@ -75,6 +76,9 @@ namespace infinit
       T
       _generate()
       {
+        ELLE_LOG_COMPONENT("infinit.cryptography.random");
+        ELLE_DEBUG_FUNCTION("");
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -111,6 +115,9 @@ namespace infinit
         elle::Boolean
         generate()
         {
+          ELLE_LOG_COMPONENT("infinit.cryptography.random");
+          ELLE_DEBUG_FUNCTION("");
+
           elle::Integer32 value = _generate<elle::Boolean>();
 
           if (value > 0)
@@ -140,24 +147,32 @@ namespace infinit
         elle::String
         generate(elle::Natural32 const length)
         {
+          ELLE_LOG_COMPONENT("infinit.cryptography.random");
+          ELLE_DEBUG_FUNCTION(length);
+
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          static elle::String alphabet =
+          static elle::String const alphabet =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789@#$%^&*)_+=-\';:|.,<>?`~";
-          elle::Natural32 i;
+
           elle::String value;
 
-          // Allocate the string.
           value.resize(length);
 
-          // Generate the characters.
-          for (i = 0; i < length; i++)
+          for (elle::Natural32 i = 0; i < length; i++)
             {
-              elle::Character c = _generate<elle::Character>();
+              ELLE_DEBUG("XXX %s", i);
 
-              value[i] = alphabet[c % alphabet.length()];
+              elle::Natural32 n;
+
+              if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
+                               sizeof (n)) == 0)
+                throw Exception("unable to generate random bytes: %s",
+                                ::ERR_error_string(ERR_get_error(), nullptr));
+
+              value[i] = alphabet[n % alphabet.length()];
             }
 
           return (value);
@@ -171,6 +186,9 @@ namespace infinit
         elle::Buffer
         generate(elle::Natural32 const size)
         {
+          ELLE_LOG_COMPONENT("infinit.cryptography.random");
+          ELLE_DEBUG_FUNCTION(size);
+
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -196,6 +214,9 @@ namespace infinit
       T
       generate(A... arguments)
       {
+        ELLE_LOG_COMPONENT("infinit.cryptography.random");
+        ELLE_TRACE_FUNCTION("");
+
         return (Generator<T>::generate(arguments...));
       }
     }

@@ -29,6 +29,10 @@ namespace infinit
       }
       explicit
       Output(elle::Natural64 const size);
+      explicit
+      Output(elle::Buffer const& buffer);
+      explicit
+      Output(elle::Buffer&& buffer);
       Output(Output const& other);
       Output(Output&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
