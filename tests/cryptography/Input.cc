@@ -16,8 +16,8 @@ test_construction()
 
   infinit::cryptography::Input input(elle::WeakBuffer{buffer});
 
-  BOOST_CHECK_EQUAL(input.buffer().size() == 128);
-  BOOST_CHECK_EQUAL(input.buffer() == buffer);
+  BOOST_CHECK_EQUAL(input.buffer().size(), 128);
+  BOOST_CHECK_EQUAL(input.buffer(), buffer);
 }
 
 /*-----------.
@@ -42,13 +42,13 @@ test_comparison()
 
   if (input1 < input2)
     {
-      BOOST_CEHCK(input1 <= input2);
+      BOOST_CHECK(input1 <= input2);
       BOOST_CHECK(!(input1 > input2));
       BOOST_CHECK(!(input1 >= input2));
     }
   else
     {
-      BOOST_CEHCK(input1 >= input2);
+      BOOST_CHECK(input1 >= input2);
       BOOST_CHECK(!(input1 < input2));
       BOOST_CHECK(!(input1 <= input2));
     }
@@ -61,13 +61,13 @@ test_comparison()
 
   if (input1 < output2)
     {
-      BOOST_CEHCK(input1 <= output2);
+      BOOST_CHECK(input1 <= output2);
       BOOST_CHECK(!(input1 > output2));
       BOOST_CHECK(!(input1 >= output2));
     }
   else
     {
-      BOOST_CEHCK(input1 >= output2);
+      BOOST_CHECK(input1 >= output2);
       BOOST_CHECK(!(input1 < output2));
       BOOST_CHECK(!(input1 <= output2));
     }
