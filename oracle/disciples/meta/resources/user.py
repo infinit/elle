@@ -264,11 +264,18 @@ class One(Page):
             'status': 'connected' in user and user['connected'] or 0
         })
 
+import Image
+import StringIO
+
 class Icon(Page):
     """
         Get the icon of an user.
         GET
             -> RAW_DATA (png 256x256)
+
+        Update or create self image.
+        POST <Image file>
+            -> {"success": True}
     """
 
     __pattern__ = "/user/(.+)/icon"
@@ -276,6 +283,12 @@ class Icon(Page):
     def GET(self, _id):
         if not self.user or _id not in self.user.swaggers:
             raise web.forbidden()
+
+        user = database.users().find_one(database.ObjectId(_id))
+        image = user and user.get('avatar')
+        if image:
+            return str(image)
+
         with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
             while 1:
                 data = f.read(4096)
@@ -283,6 +296,18 @@ class Icon(Page):
                     yield data
                 else:
                     break
+
+
+    def POST(self, _id):
+        self.requireLoggedIn()
+        i = web.input(myfile={})
+        image = Image.open(i.file)
+        out = StringIO.StringIO()
+        image.resize((256, 256)).save(out, 'PNG')
+        out.seek(0)
+        self.user['avatar'] = database.Binary(out.read())
+        database.users.save(self.user)
+        return self.success()
 
 class Register(Page):
     """

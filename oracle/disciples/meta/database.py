@@ -1,10 +1,16 @@
 # -*- encoding: utf-8 -*-
 
 import pymongo
+
 try:
     from pymongo.objectid import ObjectId
 except ImportError:
     from bson.objectid import ObjectId
+
+try:
+    from pymongo.binary import Binary
+except ImportError:
+    from bson.binary import Binary
 
 from . import conf
 
