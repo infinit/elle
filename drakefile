@@ -33,13 +33,13 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   cxx_config += boost.config_thread()
 
   # OpenSSL
-  openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h')
-  cxx_config += openssl.config()
-  cxx_config.lib('crypto')
+  openssl = None
   if cxx_toolkit.os == drake.os.linux:
-    cxx_config.add_system_include_path('dependencies/platforms/linux64/work/include/')
+    openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h',
+                                             prefix = 'dependencies/platforms/linux64/work/')
   elif cxx_toolkit.os == drake.os.macos:
-    cxx_config.add_system_include_path('dependencies/platforms/macosx64/work/include/')
+    openssl = drake.cxx.LibraryConfiguration('openssl/opensslconf.h',
+                                             prefix = 'dependencies/platforms/macosx64/work/')
   else:
     raise Exception("unsupported os")
 
@@ -60,8 +60,8 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
   cxx_config += elle.config
 
   # Cryptography
-  cryptography = drake.include('cryptography', cxx_toolkit, reactor.config, elle.config, boost = boost)
-  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography/lib')
+  cryptography = drake.include('cryptography', cxx_toolkit, openssl.config(), reactor.config, elle.config, boost = boost)
+  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
 
   # Qt
   qt = qt or drake.cxx.qt.Qt()

@@ -5,16 +5,18 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, reactor_config, elle_config, cxx_config = None, boost = None):
+def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_config = None, boost = None):
 
   global config, lib_static, lib_dynamic
 
+  # Global Configuration
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
   config.add_local_include_path('sources')
   config.lib_path('lib')
+  config += openssl_config
 
-  # Configuration
+  # Local Configuration
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_0x
   cxx_config += config
@@ -22,6 +24,8 @@ def configure(cxx_toolkit, reactor_config, elle_config, cxx_config = None, boost
   cxx_config += boost.config_system()
   cxx_config += reactor_config
   cxx_config += elle_config
+  cxx_config.lib('crypto')
+  cxx_config.lib('ssl')
 
   # Sources
   sources = drake.nodes(
@@ -87,17 +91,20 @@ def configure(cxx_toolkit, reactor_config, elle_config, cxx_config = None, boost
   lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
   # Tests
-# XXX  test = drake.Rule('tests', tests)
+  tests = ['tests/cryptography/KeyPair.cc']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += boost.cfg
   tests_cxx_config += boost.config_test()
+  tests_cxx_config += openssl_config
   tests_cxx_config += reactor_config
   tests_cxx_config += elle_config
+  tests_cxx_config.lib('crypto')
+  tests_cxx_config.lib('ssl')
   tests_cxx_config.lib('reactor')
   tests_cxx_config.lib('elle')
-  tests = ['tests/cryptography/KeyPair.cc']
+
   for test in tests:
     bin_path = drake.Path(test)
     bin_path.extension = ''
