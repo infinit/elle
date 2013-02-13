@@ -22,6 +22,12 @@
     _variable_,                                                         \
     [] (decltype(_variable_) pointer) { delete pointer; });
 
+/// Make it simple to delete an array.
+# define ELLE_FINALLY_ACTION_DELETE_ARRAY(_variable_)                   \
+  ELLE_FINALLY_LAMBDA(                                                  \
+    _variable_,                                                         \
+    [] (decltype(_variable_) pointer) { delete [] pointer; });
+
 /// Make it extremely simple to call free on a pointer when leaving a scope.
 # define ELLE_FINALLY_ACTION_FREE(_variable_)                           \
   ELLE_FINALLY_LAMBDA(                                                  \
