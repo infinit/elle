@@ -7,8 +7,6 @@
 #include <elle/log.hh>
 #include <elle/utility/Factory.hh>
 
-#include <comet/Comet.hh>
-
 ELLE_LOG_COMPONENT("infinit.cryptography.PrivateKey");
 
 namespace infinit

@@ -8,11 +8,8 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/rsa/keypair.hh>
 
-#include <elle/types.hh>
-
-#include <comet/Comet.hh>
-
 #include <elle/log.hh>
+#include <elle/types.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.KeyPair");
 
