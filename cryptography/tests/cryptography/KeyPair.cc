@@ -9,6 +9,36 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
+/*----------.
+| Represent |
+`----------*/
+
+void
+test_represent_rsa()
+{
+  // 1)
+  {
+    infinit::cryptography::KeyPair pair =
+      infinit::cryptography::KeyPair::generate(
+        infinit::cryptography::Cryptosystem::rsa,
+        1024);
+    elle::String archive;
+    elle::serialize::to_string<
+      elle::serialize::OutputBase64Archive>(archive) << pair;
+    elle::printf("[representation 1] %s\n", archive);
+  }
+}
+
+void
+test_represent()
+{
+  // These generate base64-based representations which can be used in
+  // other tests.
+
+  // RSA.
+  test_represent_rsa();
+}
+
 /*---------.
 | Generate |
 `---------*/
@@ -94,12 +124,13 @@ test_operate_rsa()
 
   // Public/private encryption/decryption with plain.
   {
-    elle::String const input = "Ass! Tits! Cunt!";
+    elle::String input =
+      infinit::cryptography::random::generate<elle::String>(9128);
     infinit::cryptography::Code code =
       pair.K().encrypt(
         infinit::cryptography::Plain{
           elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                           input.length()}});
+                                                   input.length()}});
     infinit::cryptography::Clear clear = pair.k().decrypt(code);
     elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
                               clear.buffer().size());
@@ -109,7 +140,8 @@ test_operate_rsa()
 
   // Public/private encryption/decryption with complex type.
   {
-    Class const input(42, "chuck");
+    Class const input(
+      42, infinit::cryptography::random::generate<elle::String>(14920));
     infinit::cryptography::Code code = pair.K().encrypt(input);
     Class const output = pair.k().decrypt<Class>(code);
 
@@ -118,7 +150,8 @@ test_operate_rsa()
 
   // Private/public encryption/decryption with plain.
   {
-    elle::String const input = "Orgazmo";
+    elle::String const input =
+      infinit::cryptography::random::generate<elle::String>(5123);
     infinit::cryptography::Code code =
       pair.k().encrypt(
         infinit::cryptography::Plain{
@@ -133,14 +166,40 @@ test_operate_rsa()
 
   // Private/public encryption/decryption with complex type.
   {
-    Class const input(84, "norris");
+    Class const input(
+      84, infinit::cryptography::random::generate<elle::String>(28130));
     infinit::cryptography::Code code = pair.k().encrypt(input);
     Class const output = pair.K().decrypt<Class>(code);
 
     BOOST_CHECK_EQUAL(input, output);
   }
 
-  // XXX add all the operations: sign, verify etc.
+  // Sign a plain text.
+  {
+    elle::String input =
+      infinit::cryptography::random::generate<elle::String>(1493);
+    infinit::cryptography::Signature signature =
+      pair.k().sign(
+        infinit::cryptography::Plain{
+          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
+                                                   input.length()}});
+    auto result = pair.K().verify(signature,
+                                  infinit::cryptography::Plain{
+                                    elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
+                                                                             input.length()}});
+
+    BOOST_CHECK_EQUAL(result, true);
+  }
+
+  // Sign a complex type.
+  {
+    Class const input(
+      84, infinit::cryptography::random::generate<elle::String>(10329));
+    infinit::cryptography::Signature signature = pair.k().sign(input);
+    auto result = pair.K().verify(signature, input);
+
+    BOOST_CHECK_EQUAL(result, true);
+  }
 }
 
 void
@@ -159,46 +218,32 @@ test_serialize_rsa()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::KeyPair pair1 =
-      test_generate_rsa(512);
+    infinit::cryptography::KeyPair pair1 = test_generate_rsa(512);
 
     elle::String archive;
-
     elle::serialize::to_string(archive) << pair1;
 
     auto extractor = elle::serialize::from_string(archive);
-
     infinit::cryptography::KeyPair pair2(extractor);
 
-    BOOST_CHECK_EQUAL(pair1, pair2);
+    BOOST_CHECK(pair1 == pair2);
   }
 
-  // Deserialize from hard-coded string: useful for detecting
-  // changes in formats.
+  // Deserialize from the hard-coded string [representation 1]: useful
+  // for detecting changes in formats.
   {
-    /* The base64-based representation below can be generated
-       as follows:
-    infinit::cryptography::KeyPair pair1 =
-      test_generate_rsa(2048);
-    elle::String archive1;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive1) << pair1;
-    elle::printf("%s:%s %s\n", __PRETTY_FUNCTION__, __LINE__, archive1);
-    */
-
-    elle::String archive2("AAAAAAAAAAAAAAABAACxsL4HJA1rH/28C1Yf0/o0MCI2iLJMMy+V04PoKG8yhBIqN+wfoRvIPS/Y6zl51HRaa7nGZH+PeqK4Ja2R6g37/Bg7zLtkAS2Zy7YBXiOvq9vGYQW2fPKYQA+rhd2TZE9T9F2FJxpLBltkGQQhc18zWX2jFM/G2uRnCbnjTPUcldTRvlahCdWFDcjonMGU8BAMDZvO1BNu0eBfRRw9MnbP1cQuWEidbsqpV4QWRgb1+8ZlcYdFDOd5p3EKz3WSN2OYFD/fM9cc5JhcoNaG4oUS99P/otk0Xs8IGfbSwKB7a0eE28ELBN0mI2nSVZHA1XvevOfhxVeJfaCgO7hZxtKdAAADAAAAAQABAAAAAAAAAAAAAQAAsbC+ByQNax/9vAtWH9P6NDAiNoiyTDMvldOD6ChvMoQSKjfsH6EbyD0v2Os5edR0Wmu5xmR/j3qiuCWtkeoN+/wYO8y7ZAEtmcu2AV4jr6vbxmEFtnzymEAPq4Xdk2RPU/RdhScaSwZbZBkEIXNfM1l9oxTPxtrkZwm540z1HJXU0b5WoQnVhQ3I6JzBlPAQDA2bztQTbtHgX0UcPTJ2z9XELlhInW7KqVeEFkYG9fvGZXGHRQzneadxCs91kjdjmBQ/3zPXHOSYXKDWhuKFEvfT/6LZNF7PCBn20sCge2tHhNvBCwTdJiNp0lWRwNV73rzn4cVXiX2goDu4WcbSnQAAAwAAAAEAAQAAAAEAAEtCntoLbRuIa0HwU0Qb1oewM22BrHMV4vvEoMP+DEsLIV58XShwZoIDWHa5+pgdYkLCCed7vYOZ3727R67bwZyPA/ygFGahER1o6OffZaIMWoPFqFPIzD+sMnblthmtjOP0RoAVNc+9G4xkBBne8d2f89TVBcQmBkOWHQOnHtJB9zikoHaYL/95Xc1qf5YtjrwuYk15K6rZODKmIthPzxG8NJUQNmIP+KzquRI8/O55+6KCgj9FkpFw0puRAL3/T4cQtHd1EYxYy3n2I0BG742zJ8keIzil7HBR8OojCiGeEln5sDOC2UJOeiFfycLKkiGC4j2bocLzdaco1MP3fIEAAIAAAADX3gHvKTcA5ME0Os11y5waLC0iGRTti8PlSqVnH5Vwk0exmsbqbpeIK38yprFSsJ86myu52JFJGATNL3prKMipEEjHh8I/dUx9x8bfaVTW0ngOhWHJX7MyDF1ik/jr46p7+wk5SmNdh2uUPw7rBBLsZ2JrQW2MTKrqI48vzgkgjQAAgAAAANK5vvB8VixDGgw7qyJjqpID1aTH2KDvKjXr97t5oU8w9a0K7/pka7MJHH3OVT38vA3OKcu12/o/S8zIbfULDF14pjJgsGOIu3b8DjWMY3YZXtVIUunhwX9gbNRSqhSAXODJZwMQyKHJxX+C/Vu77UoOclay2Db4YWFgHc4+Hx5RAACAAAAAORXRpyBcFlVoLlq6iMMedeFm0hSV7ze9xz4VPY8hotKf6/zFS6uRUQZHrepdDEP+562vQ4dc7Fp4spYypnHzlpni1Tk2ijeH0d9p3RzqvaCM9TIaqPkw1zRj4bTF6AOdywmY59ifLFWqglqmpEnAg1nXsgtsX+TKcf6TWA4BZeUAAIAAAABOB9IYozIVudNPbFj2pwlmgF0AY7BoB6gNx484sNV2yZ5vsXkjs0PeTCVswJb4GTpZslnvwSvwArhC4IU3FBxEEIUaaotmkB869CMe2RmLheGEAQAS8zH/xOkHxoSMiuvZoTqv++sPXfPwP8UpzvETVz4ntJoz4M3OjRT8ZiyHwQAAgAAAANdjt/awau+zU4EEYCLgIJ5aBHEkQykDxMorjutnm+aGyu8N5rZqjS5zu3qn/JYYCrD81PPJPn1DgO/7UwWogqyjSNs/kAucqRqzixdNSg10z7AvJRwJfAsKowcvOkA7NqMW/eeZ5ryuVsBIROnCHU54/vdAflNrjXjFl0glCnYM");
+    elle::String archive1("AAAAAAAAAAAAAIAAAADTJND1LjjrbBkBAU0jaMPk4rrD5952vb4FKQYLiD2DrBnK/jnQQU97VV9UvSllSBfvL8wfDuy6o/eV4z6bIzEjR/a4whwu02xsHAyiW5vrNTLWXgKO8VaLjk1YAAgbQUleh4L3RyiDJiZDyWORZEzqIORT/u686fc8/sz7pxBj5wAAAwAAAAEAAQAAAAAAAAAAgAAAANMk0PUuOOtsGQEBTSNow+TiusPn3na9vgUpBguIPYOsGcr+OdBBT3tVX1S9KWVIF+8vzB8O7Lqj95XjPpsjMSNH9rjCHC7TbGwcDKJbm+s1MtZeAo7xVouOTVgACBtBSV6HgvdHKIMmJkPJY5FkTOog5FP+7rzp9zz+zPunEGPnAAADAAAAAQABAACAAAAAUL5Vgk1Iyw6tiSrcOtxHfXIPBffXpQTuc766ZxKUo5Pe0TfjF/bB1GJTcG5eNDMbpAZdQstMUBuABLvAJ0eP9EII9g55Ve8pmM7Hs+1oRNy7xZSiNuo2QG4othiE5poNNuoXEIY7Cq15Gr3fzXJahX83BcpvvtMphOmubtWsXCEAAEAAAADyhUC02fZZ3AaQps+V/HDwjBmPbY0rltI5QGc30FmUItaZRVrL95FuFvD97tkt9ZvDrizt3NPmh627Qfma8VtpAABAAAAA3uEdRQQ73G0oBydIKwMBrxojvwmU0YZU1gzV91vITmF1sb/nPUY46PMRRJNuiuDBlpecViqtmHwVAJ+Iwd5qzwAAQAAAAFvAIfzJwTO51BoBoeNif+/hcQIcNh5Zjurt/J7XCizLCVkvLeygmrqFn2LSbAPBOc7MJF9Q/jHm/skrap091pEAAEAAAACSs3fxkpzYNN0RAFEnRn5YRAtdVjAnTZUPozk+7KHGva2bRuYs1cjlxAAMtEIhlVi3B6n2qXbEFIA6fcelXAHPAABAAAAAfWLqKlb/jubacUHv8r9HD2lDFSH2z+UA8SpxilOm3F0sEMArPImHeaivWeKWThedAEUv6z0FiFryrx1Lzeg5vg==");
 
     auto extractor =
       elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive2);
+        elle::serialize::InputBase64Archive>(archive1);
+    infinit::cryptography::KeyPair pair(extractor);
 
-    infinit::cryptography::KeyPair pair2(extractor);
-
-    elle::String archive3;
+    elle::String archive2;
     elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive3) << pair2;
+      elle::serialize::OutputBase64Archive>(archive2) << pair;
 
-    BOOST_CHECK_EQUAL(archive2, archive3);
+    BOOST_CHECK_EQUAL(archive1, archive2);
   }
 }
 
@@ -217,6 +262,9 @@ bool
 test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("KeyPair");
+
+  // To uncomment if one wants to update the representations.
+  //suite->add(BOOST_TEST_CASE(test_represent));
 
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
