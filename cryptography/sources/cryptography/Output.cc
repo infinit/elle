@@ -13,6 +13,16 @@ namespace infinit
     {
     }
 
+    Output::Output(elle::Buffer const& buffer):
+      _buffer(buffer.contents(), buffer.size())
+    {
+    }
+
+    Output::Output(elle::Buffer&& buffer):
+      _buffer(std::move(buffer))
+    {
+    }
+
     Output::Output(Output const& other):
       _buffer(other._buffer.contents(), other._buffer.size())
     {
