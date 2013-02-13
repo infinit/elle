@@ -5,7 +5,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config):
+def configure(cxx_toolkit, cxx_config, curl = None):
 
   global config, lib_static, lib_dynamic
 
@@ -29,8 +29,12 @@ def configure(cxx_toolkit, cxx_config):
   if cxx_toolkit.os == drake.os.macos:
     config.define('HAVE_STATFS')
 
-  cxx_config = cxx_config + config
+  # Curl
+  curl = drake.cxx.find_library('curl/curl.h', curl)
+  cxx_config += curl
   cxx_config.lib('curl')
+
+  cxx_config = cxx_config + config
 
   sources = drake.nodes(
     'Buffer.cc',
