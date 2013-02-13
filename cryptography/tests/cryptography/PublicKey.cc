@@ -8,55 +8,6 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-/*---------.
-| Generate |
-`---------*/
-
-infinit::cryptography::PublicKey
-test_generate_rsa(elle::Natural32 const length = 1024)
-{
-  // By implementation.
-  std::pair<infinit::cryptography::rsa::PublicKey,
-            infinit::cryptography::rsa::PrivateKey> pair =
-    infinit::cryptography::rsa::keypair::generate(length);
-
-  std::unique_ptr<infinit::cryptography::publickey::Interface> interface(
-    new infinit::cryptography::rsa::PublicKey{std::move(pair.first)});
-
-  infinit::cryptography::PublicKey k(std::move(interface));
-
-  return (k);
-}
-
-void
-test_generate()
-{
-  // RSA.
-  test_generate_rsa();
-}
-
-/*----------.
-| Construct |
-`----------*/
-
-void
-test_construct()
-{
-  // RSA.
-  infinit::cryptography::PublicKey K1 =
-    test_generate_rsa(2048);
-
-  // PublicKey copy.
-  infinit::cryptography::PublicKey K2(K1);
-
-  BOOST_CHECK_EQUAL(K1, K2);
-
-  // PublicKey move.
-  infinit::cryptography::PublicKey K3(std::move(K1));
-
-  BOOST_CHECK_EQUAL(K2, K3);
-}
-
 /*----------.
 | Represent |
 `----------*/
@@ -130,7 +81,56 @@ test_represent()
 {
   // These generate base64-based representations which can be used in
   // other tests.
+
   test_represent_rsa();
+}
+
+/*---------.
+| Generate |
+`---------*/
+
+infinit::cryptography::PublicKey
+test_generate_rsa(elle::Natural32 const length = 1024)
+{
+  // By implementation.
+  std::pair<infinit::cryptography::rsa::PublicKey,
+            infinit::cryptography::rsa::PrivateKey> pair =
+    infinit::cryptography::rsa::keypair::generate(length);
+
+  std::unique_ptr<infinit::cryptography::publickey::Interface> interface(
+    new infinit::cryptography::rsa::PublicKey{std::move(pair.first)});
+
+  infinit::cryptography::PublicKey K(std::move(interface));
+
+  return (K);
+}
+
+void
+test_generate()
+{
+  // RSA.
+  test_generate_rsa();
+}
+
+/*----------.
+| Construct |
+`----------*/
+
+void
+test_construct()
+{
+  // RSA.
+  infinit::cryptography::PublicKey K1 = test_generate_rsa(2048);
+
+  // PublicKey copy.
+  infinit::cryptography::PublicKey K2(K1);
+
+  BOOST_CHECK_EQUAL(K1, K2);
+
+  // PublicKey move.
+  infinit::cryptography::PublicKey K3(std::move(K1));
+
+  BOOST_CHECK_EQUAL(K2, K3);
 }
 
 /*--------.
@@ -142,6 +142,7 @@ test_operate_rsa()
 {
   // Construct a public key from [representation 1]
   elle::String representation("AAAAAAAAAAAAAQAAwyqSEVWQVKNMVyKy+COV5huZNfdkU79dKbyV3Pt7rvVJ2FNcdx2AJOZc7iWRAcB9i+VdHBgJs9uJ/5wUoBvjiXBV45E+6wm0Zz6QRqdtph1vRP8UtXMfY7nZxh6h/NgcV5uGj/zwrg4PWZq1NR3DzA3r2n5buc4TLoX8sFUlSBF5wIUAWL/GLKD+ZR1tsoszXVgG+KR7RzTT0CqEzQ23KLtHoVQi3cXFE4hTFBsAxbhbO9WC1hLh13CcpmWPKBo8lCtbvcElmodQnuwouprZydICVDKoQjsRuj+AyOqjQgkhSN7eTHCpffaf0cjz+qMReboRSw9zhIp8uBqtCIAv+wAAAwAAAAEAAQ==");
+
   auto extractor =
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(representation);
@@ -158,6 +159,7 @@ test_operate_rsa()
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Code code(extractor);
+
     infinit::cryptography::Clear clear = K.decrypt(code);
     elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
                               clear.buffer().size());
@@ -173,6 +175,7 @@ test_operate_rsa()
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Code code(extractor);
+
     Class output = K.decrypt<Class>(code);
 
     BOOST_CHECK_EQUAL(_input2, output);
@@ -186,6 +189,7 @@ test_operate_rsa()
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Signature signature(extractor);
+
     auto result =
       K.verify(signature,
                infinit::cryptography::Plain(
@@ -203,7 +207,9 @@ test_operate_rsa()
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Signature signature(extractor);
+
     auto result = K.verify(signature, _input2);
+
     BOOST_CHECK_EQUAL(result, true);
   }
 }
@@ -222,28 +228,25 @@ test_operate()
 void
 test_compare_rsa()
 {
-  infinit::cryptography::PublicKey k1 =
-    test_generate_rsa(1024);
-
-  infinit::cryptography::PublicKey k2 =
-    test_generate_rsa(1024);
+  infinit::cryptography::PublicKey K1 = test_generate_rsa(1024);
+  infinit::cryptography::PublicKey K2 = test_generate_rsa(1024);
 
   // With high probabilituy, this should not be the case. Otherwise,
   // the random generator is probably broken.
-  BOOST_CHECK(k1 != k2);
-  BOOST_CHECK(!(k1 == k2));
+  BOOST_CHECK(K1 != K2);
+  BOOST_CHECK(!(K1 == K2));
 
-  if (k1 < k2)
+  if (K1 < K2)
     {
-      BOOST_CHECK(k1 <= k2);
-      BOOST_CHECK(!(k1 > k2));
-      BOOST_CHECK(!(k1 >= k2));
+      BOOST_CHECK(K1 <= K2);
+      BOOST_CHECK(!(K1 > K2));
+      BOOST_CHECK(!(K1 >= K2));
     }
   else
     {
-      BOOST_CHECK(k1 >= k2);
-      BOOST_CHECK(!(k1 < k2));
-      BOOST_CHECK(!(k1 <= k2));
+      BOOST_CHECK(K1 >= K2);
+      BOOST_CHECK(!(K1 < K2));
+      BOOST_CHECK(!(K1 <= K2));
     }
 }
 
@@ -266,17 +269,15 @@ test_serialize_rsa()
     infinit::cryptography::PublicKey K1 = test_generate_rsa(2048);
 
     elle::String archive;
-
     elle::serialize::to_string(archive) << K1;
 
     auto extractor = elle::serialize::from_string(archive);
-
     infinit::cryptography::PublicKey K2(extractor);
 
     BOOST_CHECK_EQUAL(K1, K2);
   }
 
-  // Deserialize from the hard-coded string [representation 3]: useful
+  // Deserialize from the hard-coded string [representation 1]: useful
   // for detecting changes in formats.
   {
     elle::String archive1("AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=");
@@ -284,11 +285,9 @@ test_serialize_rsa()
     auto extractor =
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive1);
-
     infinit::cryptography::PublicKey K1(extractor);
 
     elle::String archive2;
-
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << K1;
 
@@ -312,9 +311,11 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("PublicyKey");
 
+  // To uncomment if one wants to update the representations.
+  //suite->add(BOOST_TEST_CASE(test_represent));
+
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
-  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
   suite->add(BOOST_TEST_CASE(test_compare));
   suite->add(BOOST_TEST_CASE(test_serialize));
