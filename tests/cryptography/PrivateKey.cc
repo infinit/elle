@@ -8,54 +8,6 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-/*---------.
-| Generate |
-`---------*/
-
-infinit::cryptography::PrivateKey
-test_generate_rsa(elle::Natural32 const length = 1024)
-{
-  // By implementation.
-  std::pair<infinit::cryptography::rsa::PublicKey,
-            infinit::cryptography::rsa::PrivateKey> pair =
-    infinit::cryptography::rsa::keypair::generate(length);
-
-  std::unique_ptr<infinit::cryptography::privatekey::Interface> interface(
-    new infinit::cryptography::rsa::PrivateKey{std::move(pair.second)});
-
-  infinit::cryptography::PrivateKey k(std::move(interface));
-
-  return (k);
-}
-
-void
-test_generate()
-{
-  // RSA.
-  test_generate_rsa();
-}
-
-/*----------.
-| Construct |
-`----------*/
-
-void
-test_construct()
-{
-  // RSA.
-  infinit::cryptography::PrivateKey k1 = test_generate_rsa(2048);
-
-  // PrivateKey copy.
-  infinit::cryptography::PrivateKey k2(k1);
-
-  BOOST_CHECK_EQUAL(k1, k2);
-
-  // PrivateKey move.
-  infinit::cryptography::PrivateKey k3(std::move(k1));
-
-  BOOST_CHECK_EQUAL(k2, k3);
-}
-
 /*----------.
 | Represent |
 `----------*/
@@ -107,7 +59,56 @@ test_represent()
 {
   // These generate base64-based representations which can be used in
   // other tests.
+
   test_represent_rsa();
+}
+
+/*---------.
+| Generate |
+`---------*/
+
+infinit::cryptography::PrivateKey
+test_generate_rsa(elle::Natural32 const length = 1024)
+{
+  // By implementation.
+  std::pair<infinit::cryptography::rsa::PublicKey,
+            infinit::cryptography::rsa::PrivateKey> pair =
+    infinit::cryptography::rsa::keypair::generate(length);
+
+  std::unique_ptr<infinit::cryptography::privatekey::Interface> interface(
+    new infinit::cryptography::rsa::PrivateKey{std::move(pair.second)});
+
+  infinit::cryptography::PrivateKey k(std::move(interface));
+
+  return (k);
+}
+
+void
+test_generate()
+{
+  // RSA.
+  test_generate_rsa();
+}
+
+/*----------.
+| Construct |
+`----------*/
+
+void
+test_construct()
+{
+  // RSA.
+  infinit::cryptography::PrivateKey k1 = test_generate_rsa(2048);
+
+  // PrivateKey copy.
+  infinit::cryptography::PrivateKey k2(k1);
+
+  BOOST_CHECK_EQUAL(k1, k2);
+
+  // PrivateKey move.
+  infinit::cryptography::PrivateKey k3(std::move(k1));
+
+  BOOST_CHECK_EQUAL(k2, k3);
 }
 
 /*--------.
@@ -253,14 +254,14 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("PrivateyKey");
 
+  // To uncomment if one wants to update the representations.
+  //suite->add(BOOST_TEST_CASE(test_represent));
+
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));
   suite->add(BOOST_TEST_CASE(test_compare));
   suite->add(BOOST_TEST_CASE(test_serialize));
-
-  // To uncomment if one wants to update the representations.
-  //suite->add(BOOST_TEST_CASE(test_represent));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 
