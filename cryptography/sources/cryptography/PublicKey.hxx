@@ -46,7 +46,7 @@ namespace infinit
 
       // XXX[this is the way it should be] T value{code.buffer().reader()};
       T value;
-      code.buffer().reader() >> value;
+      clear.buffer().reader() >> value;
 
       return (value);
     }
