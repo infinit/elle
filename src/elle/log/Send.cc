@@ -4,9 +4,9 @@
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
-#include <elle/reactor/src/reactor/storage.hh>
 
 #include <reactor/exception.hh>
+#include <reactor/storage.hh>
 
 namespace elle
 {

@@ -18,8 +18,7 @@
 #include <elle/printf.hh>
 #include <elle/log.hh>
 #include <elle/nat/Nat.hh>
-
-#include <common/common.hh>
+#include <elle/os/getenv.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
@@ -143,11 +142,35 @@ namespace reactor
       return res + "\"";
     }
 
+    namespace longinus
+    {
+      std::string const&
+      host()
+      {
+        static std::string const host_string = elle::os::getenv(
+          "INFINIT_LONGINUS_HOST",
+          elle::sprint("production.infinit.io")
+          );
+
+        return host_string;
+      }
+
+      int
+      port()
+      {
+        static std::string const port_string = elle::os::getenv(
+          "INFINIT_LONGINUS_PORT",
+          "9999"
+          );
+        return std::stoi(port_string);
+      }
+    }
+
     boost::asio::ip::udp::endpoint const&
     UDTServer::_longinus()
     {
-      static auto lhost = common::longinus::host();
-      static auto lport = common::longinus::port();
+      static auto lhost = longinus::host();
+      static auto lport = longinus::port();
       static auto longinus =
         resolve_udp(this->scheduler(), lhost,
                     boost::lexical_cast<std::string>(lport));

@@ -5,7 +5,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config):
+def configure(cxx_toolkit, cxx_config, elle_config):
 
   global config, lib_static, lib_dynamic
 
@@ -14,7 +14,8 @@ def configure(cxx_toolkit, cxx_config):
   config.standard = drake.cxx.Config.cxx_0x
   config.lib_path('lib')
 
-  cxx_config = cxx_config + config
+  cxx_config += config
+  cxx_config += elle_config
 
   sources = drake.nodes(
     'src/reactor/signal.cc',

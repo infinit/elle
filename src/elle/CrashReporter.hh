@@ -1,7 +1,7 @@
 #ifndef ELLE_CRASHREPORTER_HH
 # define ELLE_CRASHREPORTER_HH
 
-# include <elle/reactor/src/reactor/backtrace.hh>
+# include <reactor/backtrace.hh>
 
 # include <cstring>
 
@@ -77,8 +77,8 @@ namespace elle
 
       virtual
       void
-      operator() (boost::system::error_code const& error,
-                  int sig);
+      operator() (std::string const& host, int port,
+                  boost::system::error_code const& error, int sig);
 
     private:
       std::string _name;
@@ -86,7 +86,9 @@ namespace elle
     };
 
     bool
-    report(std::string const& module,
+    report(std::string const& host,
+           int port,
+           std::string const& module,
            std::string const& signal = "",
            reactor::Backtrace const& b = reactor::Backtrace::current());
   }

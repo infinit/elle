@@ -1,9 +1,6 @@
-#include <hole/Label.hh>
-
 #include <elle/io/File.hh>
 #include <elle/serialize/TupleSerializer.hxx>
 #include <elle/Passport.hh>
-#include <lune/Lune.hh>
 #include <elle/Authority.hh>
 
 #include <cryptography/PrivateKey.hh>

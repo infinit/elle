@@ -1,5 +1,3 @@
-#include <common/common.hh>
-
 #include <elle/format/json.hh>
 #include <elle/os/path.hh>
 #include <elle/log.hh>
@@ -121,14 +119,16 @@ namespace elle
     {}
 
     void
-    Handler::operator() (boost::system::error_code const& error,
+    Handler::operator() (std::string const& host, int port,
+                         boost::system::error_code const& error,
                          int sig)
     {
       if (!error)
       {
         ELLE_DEBUG("signal caught: %s.", elle::signal::strsignal(sig));
 
-        elle::crash::report(this->_name, elle::signal::strsignal(sig));
+        elle::crash::report
+          (host, port, this->_name, elle::signal::strsignal(sig));
 
         if (this->_quit)
           exit(sig);
@@ -140,7 +140,9 @@ namespace elle
     }
 
     bool
-    report(std::string const& module,
+    report(std::string const& host,
+           int port,
+           std::string const& module,
            std::string const& signal,
            reactor::Backtrace const& bt)
     {
@@ -148,8 +150,8 @@ namespace elle
 
       std::unique_ptr<elle::HTTPClient> server{
         new elle::HTTPClient{
-          common::meta::host(),
-          common::meta::port(),
+          host,
+          port,
           "InfinitDesktop", // User agent
         }
       };

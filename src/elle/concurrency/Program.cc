@@ -17,20 +17,24 @@ namespace elle
   namespace concurrency
   {
 
-    std::string Program::_name{""};
+    std::string Program::_name("");
+    std::string Program::_host("");
+    int Program::_port(0);
 
 //
 // ---------- static methods --------------------------------------------------
 //
 
+
     ///
     /// this method sets up the program for startup.
     ///
-    Status              Program::Setup(std::string const& name)
+    Status
+    Program::Setup(std::string const& name, std::string const& host, int port)
     {
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       // set the signal handlers.
-      ::signal(SIGINT, &Program::Exception);
+      ::signal(SIGINT,  &Program::Exception);
       ::signal(SIGQUIT, &Program::Exception);
       ::signal(SIGABRT, &Program::Exception);
       ::signal(SIGTERM, &Program::Exception);
@@ -42,6 +46,8 @@ namespace elle
 #endif
 
       Program::_name = name;
+      Program::_host = host;
+      Program::_port = port;
 
       return Status::Ok;
     }
@@ -50,7 +56,6 @@ namespace elle
     Program::Exit()
     {
       ELLE_TRACE_SCOPE("Exit");
-
       _exit.signal();
     }
 
@@ -65,7 +70,8 @@ namespace elle
     ///
     /// this method is triggered whenever a POSIX signal is received.
     ///
-    Void                Program::Exception(int                  signal)
+    Void
+    Program::Exception(int signal)
     {
       ELLE_TRACE_SCOPE("Exception");
 
@@ -92,7 +98,9 @@ namespace elle
           {
             // XXX: Backtrace is fucked by signal.
             // Maybe this should be improved?
-            elle::crash::report(Program::_name, "SIGSEGV", reactor::Backtrace::current());
+            elle::crash::report(_host, _port,
+                                Program::_name, "SIGSEGV",
+                                reactor::Backtrace::current());
 
             ::exit(EXIT_FAILURE);
 
