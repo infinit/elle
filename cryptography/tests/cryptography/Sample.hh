@@ -1,8 +1,5 @@
-#ifndef TEST_HH
-# define TEST_HH
-
-# define BOOST_TEST_DYN_LINK
-# include <boost/test/unit_test.hpp>
+#ifndef SAMPLE_HH
+# define SAMPLE_HH
 
 # include <cryptography/random.hh>
 
@@ -14,9 +11,11 @@
 # include <iostream>
 
 /// A test class for encrypting a complex type.
-/// XXX[a mettre dans son propre fichier?]
 class Class
 {
+  /*-------------.
+  | Construction |
+  `-------------*/
 public:
   Class():
     _salt(0.0)
@@ -33,6 +32,10 @@ public:
 
   Class(Class const&) = default;
 
+  /*----------.
+  | Operators |
+  `----------*/
+public:
   elle::Boolean
   operator ==(Class const& other) const
   {
@@ -41,12 +44,24 @@ public:
   }
   ELLE_OPERATOR_NEQ(Class);
 
+  /*-----------.
+  | Interfaces |
+  `-----------*/
+public:
+  // serializable
   ELLE_SERIALIZE_FRIEND_FOR(Class);
 
+  /*-----------.
+  | Attributes |
+  `-----------*/
 private:
   ELLE_ATTRIBUTE_R(elle::Real, salt);
   ELLE_ATTRIBUTE_R(elle::String, string);
 };
+
+/*-------------.
+| Serializable |
+`-------------*/
 
 ELLE_SERIALIZE_SIMPLE(Class,
                       archive,
@@ -58,6 +73,10 @@ ELLE_SERIALIZE_SIMPLE(Class,
   archive & value._salt;
   archive & value._string;
 }
+
+/*----------.
+| Operators |
+`----------*/
 
 std::ostream&
 operator <<(std::ostream& stream,

@@ -1,4 +1,5 @@
-#include "test.hh"
+#include "cryptography.hh"
+#include "Sample.hh"
 
 #include <cryptography/KeyPair.hh>
 #include <cryptography/PublicKey.hh>
@@ -68,8 +69,7 @@ test_generate()
 infinit::cryptography::KeyPair
 test_construct_rsa()
 {
-  infinit::cryptography::KeyPair pair =
-    test_generate_rsa(1024);
+  infinit::cryptography::KeyPair pair = test_generate_rsa(1024);
 
   return (pair);
 }
@@ -78,8 +78,7 @@ void
 test_construct()
 {
   // RSA.
-  infinit::cryptography::KeyPair pair1 =
-    test_construct_rsa();
+  infinit::cryptography::KeyPair pair1 = test_construct_rsa();
 
   // KeyPair copy.
   infinit::cryptography::KeyPair pair2(pair1);
@@ -119,8 +118,7 @@ test_construct()
 void
 test_operate_rsa()
 {
-  infinit::cryptography::KeyPair pair =
-    test_generate_rsa(1024);
+  infinit::cryptography::KeyPair pair = test_generate_rsa(1024);
 
   // Public/private encryption/decryption with plain.
   {
@@ -140,10 +138,10 @@ test_operate_rsa()
 
   // Public/private encryption/decryption with complex type.
   {
-    Class const input(
+    Sample const input(
       42, infinit::cryptography::random::generate<elle::String>(14920));
     infinit::cryptography::Code code = pair.K().encrypt(input);
-    Class const output = pair.k().decrypt<Class>(code);
+    Sample const output = pair.k().decrypt<Sample>(code);
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -166,10 +164,10 @@ test_operate_rsa()
 
   // Private/public encryption/decryption with complex type.
   {
-    Class const input(
+    Sample const input(
       84, infinit::cryptography::random::generate<elle::String>(28130));
     infinit::cryptography::Code code = pair.k().encrypt(input);
-    Class const output = pair.K().decrypt<Class>(code);
+    Sample const output = pair.K().decrypt<Sample>(code);
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -193,7 +191,7 @@ test_operate_rsa()
 
   // Sign a complex type.
   {
-    Class const input(
+    Sample const input(
       84, infinit::cryptography::random::generate<elle::String>(10329));
     infinit::cryptography::Signature signature = pair.k().sign(input);
     auto result = pair.K().verify(signature, input);
