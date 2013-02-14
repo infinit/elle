@@ -1,4 +1,5 @@
-#include "test.hh"
+#include "cryptography.hh"
+#include "Sample.hh"
 
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
@@ -176,10 +177,10 @@ test_operate_idea()
 
   // Encrypt/decrypt with complex type.
   {
-    Class const input(
+    Sample const input(
       42, infinit::cryptography::random::generate<elle::String>(32893));
     infinit::cryptography::Code code = key.encrypt(input);
-    Class const output = key.decrypt<Class>(code);
+    Sample const output = key.decrypt<Sample>(code);
 
     BOOST_CHECK_EQUAL(input, output);
   }
