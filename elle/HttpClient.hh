@@ -137,7 +137,7 @@ namespace elle
     Request
     request(std::string const& method, std::string const& url);
 
-    /// Fire a prebuild request.
+    /// Fire a prebuilt request.
     void fire(Request& request);
 
   private:
