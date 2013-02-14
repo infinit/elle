@@ -91,7 +91,12 @@ def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_conf
   lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
   # Tests
-  tests = ['tests/cryptography/KeyPair.cc']
+  tests = ['tests/cryptography/Input.cc',
+           'tests/cryptography/KeyPair.cc',
+           'tests/cryptography/Output.cc',
+           'tests/cryptography/PrivateKey.cc',
+           'tests/cryptography/PublicKey.cc',
+           'tests/cryptography/SecretKey.cc']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
