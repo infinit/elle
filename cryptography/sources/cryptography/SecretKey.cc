@@ -136,8 +136,10 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      // Compare the internal buffers.
-      return (this->_password == other._password);
+      // Compare the internal buffer along with the algorithms.
+      return ((this->_cipher == other._cipher) &&
+              (this->_password == other._password) &&
+              (this->_oneway == other._oneway));
     }
 
     /*----------.
