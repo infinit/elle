@@ -36,20 +36,18 @@ namespace infinit
       SecretKey
       generate(cipher::Algorithm const cipher,
                elle::Natural32 const length,
-               oneway::Algorithm const oneway = oneway::Algorithm::sha1);
+               oneway::Algorithm const oneway = oneway::Algorithm::sha256);
 
       /*-------------.
       | Construction |
       `-------------*/
     public:
       SecretKey(); // XXX[to deserialize]
-      /// Construct a secret key based on a string-based password.
-      explicit
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
       SecretKey(cipher::Algorithm const cipher,
                 elle::String const& password,
-                oneway::Algorithm const oneway = oneway::Algorithm::sha1);
+                oneway::Algorithm const oneway = oneway::Algorithm::sha256);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
       /// Derialization constructor.
