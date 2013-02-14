@@ -163,8 +163,6 @@ namespace infinit
 
           for (elle::Natural32 i = 0; i < length; i++)
             {
-              ELLE_DEBUG("XXX %s", i);
-
               elle::Natural32 n;
 
               if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
