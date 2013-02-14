@@ -1,4 +1,5 @@
-#include "test.hh"
+#include "cryptography.hh"
+#include "Sample.hh"
 
 #include <cryptography/PublicKey.hh>
 #include <cryptography/PrivateKey.hh>
@@ -13,7 +14,7 @@
 `----------*/
 
 elle::String const _input1("my balls are ok!");
-Class const _input2(23293083121, "chodaboy");
+Sample const _input2(23293083121, "chodaboy");
 
 void
 test_represent_rsa()
@@ -176,7 +177,7 @@ test_operate_rsa()
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Code code(extractor);
 
-    Class output = K.decrypt<Class>(code);
+    Sample output = K.decrypt<Sample>(code);
 
     BOOST_CHECK_EQUAL(_input2, output);
   }
