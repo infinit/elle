@@ -1,7 +1,19 @@
 # -*- encoding: utf-8 -*-
 
+try:
+    import Image
+except ImportError:
+    print("Cannot import Image module, please install PIL")
+    import sys
+    sys.exit(1)
+
 import json
+import os
+import re
+import StringIO
+import unicodedata
 import web
+
 
 from meta.page import Page
 from meta import notifier
@@ -10,9 +22,6 @@ from meta import error
 from meta import regexp
 
 import meta.mail
-
-import os
-import re
 
 import metalib
 import pythia
@@ -53,6 +62,42 @@ class Search(Page):
         return self.success({
             'users': result,
         })
+
+class GenerateHandle(Page):
+    """ Generate handle from fullname
+        GET /user/handle-for/(.+)
+            -> fullname (plain/text)
+    """
+    __pattern__ = "/user/handle-for/(.+)"
+
+    # No database check occurs there.
+    def GET(self, fullname):
+        handle = ''
+        for c in unicodedata.normalize('NFKD', fullname).encode('ascii', 'ignore'):
+            if (c >= 'a'and c <= 'z') or (c >= 'A' and c <= 'Z') or c in ['.', '-']:
+                handle += c
+            elif c in [' ', '\t']:
+                handle += '.'
+
+        if len(handle) < 5:
+            handle += self._generate_dummy()
+        return handle
+
+    def _generate_dummy(self):
+        t1 = ['lo', 'ca', 'ki', 'po', 'pe', 'bi', 'MER']
+        t2 = ['ri', 'ze', 'te', 'SAL', 'ju', 'IL']
+        t3 = ['yo', 'gri','ARAB', 'troll', 'man', 'ET']
+        t4 = ['olo', 'ard', 'FOU', 'li']
+        h = ''
+        for t in [t1, t2, t3, t4]:
+            h += t[int(random.random() * len(t))]
+        return h
+
+    def gen_unique(self, fullname):
+        h = self.GET(fullname).lower()
+        while database.users().find_one({'handle': h}):
+            h += int(random.random() * 10)
+        return h
 
 class Message(Page):
     __pattern__ = "/debug"
@@ -264,12 +309,9 @@ class One(Page):
             'status': 'connected' in user and user['connected'] or 0
         })
 
-import Image
-import StringIO
-
-class Icon(Page):
+class Avatar(Page):
     """
-        Get the icon of an user.
+        Get the an user's avatar.
         GET
             -> RAW_DATA (png 256x256)
 
@@ -278,10 +320,12 @@ class Icon(Page):
             -> {"success": True}
     """
 
-    __pattern__ = "/user/(.+)/icon"
+    __pattern__ = "/user/(.+)/avatar"
 
     def GET(self, _id):
-        if not self.user or _id not in self.user.swaggers:
+        if not self.user:
+            raise web.forbidden()
+        if str(self.user["_id"]) != _id or _id not in self.user.swaggers:
             raise web.forbidden()
 
         user = database.users().find_one(database.ObjectId(_id))
@@ -306,7 +350,7 @@ class Icon(Page):
         image.resize((256, 256)).save(out, 'PNG')
         out.seek(0)
         self.user['avatar'] = database.Binary(out.read())
-        database.users.save(self.user)
+        database.users().save(self.user)
         return self.success()
 
 class Register(Page):
@@ -369,6 +413,11 @@ class Register(Page):
             conf.INFINIT_AUTHORITY_PASSWORD
         )
 
+        handle = GenerateHandle().gen_unique(user['fullname'])
+        assert len(handle) >= 5
+
+
+
         user_id = self.registerUser(
             _id = user["_id"],
             register_status = 'ok',
@@ -377,6 +426,7 @@ class Register(Page):
             password = self.hashPassword(user['password']),
             identity = identity,
             public_key = public_key,
+            handle = handle,
             swaggers = {},
             networks = [],
             devices = [],
