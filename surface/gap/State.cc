@@ -68,7 +68,10 @@ namespace surface
       , _networks_dirty{true}
       , _infinit_instance_manager{}
     {
-      // XXX degeu !
+      std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
+      if (log_file.size() > 0)
+        this->output_log_file(log_file);
+
       ELLE_LOG("Creating a new State");
 
       this->transaction_callback(
@@ -119,9 +122,7 @@ namespace surface
 
           this->_me = static_cast<User const&>(this->_meta->self());
         }
-        this->output_log_file("/tmp/state.log");
       }
-
       // Initialize server.
       metrics::google::server(common::metrics::google_server(),
                               common::metrics::google_port(),
@@ -133,12 +134,12 @@ namespace surface
     void
     State::output_log_file(std::string const& path)
     {
-      static std::ofstream* out = new std::ofstream{
+      static std::ofstream out{
           path,
           std::fstream::app | std::fstream::out
       };
       elle::log::logger(
-          std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(*out)}
+          std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger(out)}
       );
     }
 
