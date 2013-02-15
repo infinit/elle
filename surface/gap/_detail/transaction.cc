@@ -655,6 +655,7 @@ namespace surface
     State::transaction_sync(std::string const& id)
     {
       ELLE_TRACE("Synching transaction %s from meta", id);
+      this->transactions(); // ensure _transactions is not null;
       try
         {
           auto transaction = this->_meta->transaction(id);
