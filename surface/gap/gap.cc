@@ -1,17 +1,19 @@
-#include <cassert>
-#include <cstdlib>
+#include "gap.h"
+#include "State.hh"
+
+#include <common/common.hh>
+
+#include <lune/Lune.hh>
 
 #include <elle/log.hh>
 #include <elle/elle.hh>
 #include <elle/HttpClient.hh>
 
-#include <lune/Lune.hh>
 
-#include "gap.h"
-#include "State.hh"
-
-#include <unordered_set>
+#include <cassert>
+#include <cstdlib>
 #include <string.h>
+#include <unordered_set>
 
 ELLE_LOG_COMPONENT("infinit.surface.gap");
 
@@ -165,6 +167,14 @@ extern "C"
   gap_Status gap_meta_status(gap_State*)
   {
     return gap_ok;
+  }
+
+  char const*
+  gap_meta_url(gap_State*)
+  {
+    static std::string meta_url;
+    meta_url = common::meta::url(); // force retreival
+    return meta_url.c_str();
   }
 
   gap_Status
