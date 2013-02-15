@@ -200,7 +200,7 @@ test_operate()
 template <infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
 void
-test_serialize_x(elle::String R)
+test_serialize_x(elle::String const& R)
 {
   // Serialize/deserialize.
   {
