@@ -75,18 +75,12 @@ namespace
   uint16_t
   _meta_port()
   {
-    std::string port_string = elle::os::getenv(
+    return std::stoi(
+      elle::os::getenv(
         "INFINIT_META_PORT",
-        elle::sprint(COMMON_DEFAULT_META_PORT)
+        std::to_string(COMMON_DEFAULT_META_PORT)
+      )
     );
-    std::stringstream ss(port_string);
-    uint16_t port;
-    ss >> port;
-    if (ss.fail())
-      throw std::runtime_error{
-          "Couldn't retreive the port from '" + port_string + "'"
-      };
-    return port;
   }
 
   uint16_t
