@@ -97,7 +97,8 @@ def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_conf
            'tests/cryptography/PrivateKey.cc',
            'tests/cryptography/PublicKey.cc',
            'tests/cryptography/SecretKey.cc',
-           'tests/cryptography/bn.cc']
+           'tests/cryptography/bn.cc',
+           'tests/cryptography/oneway.cc']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
