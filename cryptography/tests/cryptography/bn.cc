@@ -74,7 +74,7 @@ test()
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("bn");
 
   // To uncomment if one wants to update the representations.
-  suite->add(BOOST_TEST_CASE(test_represent));
+  //suite->add(BOOST_TEST_CASE(test_represent));
 
   suite->add(BOOST_TEST_CASE(test_serialize));
 
