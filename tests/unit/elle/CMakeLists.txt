@@ -9,7 +9,6 @@ simple_test(NAME log PASS_REGEX "tests done." LIB ${ELLE_LIB})
 simple_test(NAME finally PASS_REGEX "tests done.\nlambda" LIB ${ELLE_LIB})
 
 add_subdirectory(nat)
-add_subdirectory(cryptography)
 add_subdirectory(format)
 add_subdirectory(network)
 add_subdirectory(io)
