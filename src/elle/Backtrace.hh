@@ -1,10 +1,10 @@
-#ifndef REACTOR_BACKTRACE_HH
-# define REACTOR_BACKTRACE_HH
+#ifndef ELLE_BACKTRACE_HH
+# define ELLE_BACKTRACE_HH
 
 # include <vector>
 # include <string>
 
-namespace reactor
+namespace elle
 {
   struct StackFrame
   {

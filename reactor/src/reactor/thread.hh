@@ -94,7 +94,7 @@ namespace reactor
     void _action_wrapper(const Thread::Action& action);
     boost::function<void ()> _injection;
     Exception* _exception;
-    Backtrace _backtrace_root;
+    elle::Backtrace _backtrace_root;
     friend class Exception;
 
     /*----------------.

@@ -6,10 +6,10 @@
 namespace reactor
 {
   Exception::Exception(const std::string& message)
-    : Exception(message, Backtrace())
+    : Exception(message, elle::Backtrace())
   {}
 
-  Exception::Exception(const std::string& message, Backtrace const& bt)
+  Exception::Exception(const std::string& message, elle::Backtrace const& bt)
     : std::runtime_error(message)
     , _backtrace(bt)
     , _inner(0)
@@ -44,7 +44,7 @@ namespace reactor
     return s;
   }
 
-  Backtrace const&
+  elle::Backtrace const&
   Exception::backtrace() const
   {
     return _backtrace;

@@ -3,7 +3,8 @@
 
 # include <stdexcept>
 
-# include <reactor/backtrace.hh>
+# include <elle/Backtrace.hh>
+
 # include <reactor/fwd.hh>
 
 #define INFINIT_REACTOR_EXCEPTION(Name)         \
@@ -21,15 +22,15 @@ namespace reactor
   public:
     Exception(const std::string& message);
     Exception(const std::string& message,
-              Backtrace const& bt);
+              elle::Backtrace const& bt);
     virtual ~Exception() throw ();
     INFINIT_REACTOR_EXCEPTION(Exception);
-    Backtrace const& backtrace() const;
+    elle::Backtrace const& backtrace() const;
     Exception const* inner_exception() const;
     void inner_exception(Exception* e);
     void raise();
   private:
-    Backtrace _backtrace;
+    elle::Backtrace _backtrace;
     Exception* _inner;
   };
 

@@ -26,7 +26,6 @@ def configure(cxx_toolkit, cxx_config, elle_config):
     'src/reactor/lockable.cc',
     'src/reactor/rw-mutex.cc',
     'src/reactor/thread.cc',
-    'src/reactor/backtrace.cc',
     'src/reactor/backend/pthread/pthread.cc',
     'src/reactor/backend/coro_io/thread.cc',
     'src/reactor/backend/coro_io/libcoroutine/asm.S',

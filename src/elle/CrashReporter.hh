@@ -1,13 +1,13 @@
 #ifndef ELLE_CRASHREPORTER_HH
 # define ELLE_CRASHREPORTER_HH
 
-# include <reactor/backtrace.hh>
-
 # include <cstring>
 
 # include <boost/system/error_code.hpp>
 # include <boost/asio/signal_set.hpp>
 # include <boost/signals.hpp>
+
+# include <elle/Backtrace.hh>
 
 namespace elle
 {
@@ -90,7 +90,7 @@ namespace elle
            int port,
            std::string const& module,
            std::string const& signal = "",
-           reactor::Backtrace const& b = reactor::Backtrace::current());
+           elle::Backtrace const& b = elle::Backtrace::current());
   }
 
 }

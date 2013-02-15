@@ -100,7 +100,7 @@ namespace elle
             // Maybe this should be improved?
             elle::crash::report(_host, _port,
                                 Program::_name, "SIGSEGV",
-                                reactor::Backtrace::current());
+                                elle::Backtrace::current());
 
             ::exit(EXIT_FAILURE);
 

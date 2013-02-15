@@ -37,6 +37,8 @@ def configure(cxx_toolkit, cxx_config, curl = None):
   cxx_config = cxx_config + config
 
   sources = drake.nodes(
+    'src/elle/Backtrace.cc',
+    'src/elle/Backtrace.hh',
     'src/elle/Buffer.cc',
     'src/elle/Buffer.hh',
     'src/elle/CrashReporter.cc',

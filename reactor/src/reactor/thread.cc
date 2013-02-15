@@ -94,7 +94,7 @@ namespace reactor
   {
     try
       {
-        _backtrace_root = Backtrace::current();
+        _backtrace_root = elle::Backtrace::current();
         assert(action);
         action();
       }

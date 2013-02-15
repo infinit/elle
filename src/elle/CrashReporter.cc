@@ -144,7 +144,7 @@ namespace elle
            int port,
            std::string const& module,
            std::string const& signal,
-           reactor::Backtrace const& bt)
+           elle::Backtrace const& bt)
     {
       ELLE_TRACE("Report crash");
 

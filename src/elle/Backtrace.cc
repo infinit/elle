@@ -11,9 +11,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-#include <reactor/backtrace.hh>
+#include <elle/Backtrace.hh>
 
-namespace reactor
+namespace elle
 {
   static bool
   extract(std::string& str, std::string& chunk, unsigned char until)
