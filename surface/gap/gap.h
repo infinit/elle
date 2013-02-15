@@ -56,6 +56,10 @@ extern "C" {
   /// Check if meta is alive.
   gap_Status gap_meta_status(gap_State* state);
 
+  /// The root url of meta server.
+  char const*
+  gap_meta_url(gap_State* state);
+
   /// Debug func: Pull notifications.
   gap_Status
   gap_pull_notifications(gap_State*,
