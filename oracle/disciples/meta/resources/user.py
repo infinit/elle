@@ -323,11 +323,6 @@ class Avatar(Page):
     __pattern__ = "/user/(.+)/avatar"
 
     def GET(self, _id):
-        if not self.user:
-            raise web.forbidden()
-        if str(self.user["_id"]) != _id or _id not in self.user.swaggers:
-            raise web.forbidden()
-
         user = database.users().find_one(database.ObjectId(_id))
         image = user and user.get('avatar')
         if image:
