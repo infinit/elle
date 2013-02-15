@@ -159,12 +159,6 @@ def configure(cxx_toolkit, cxx_config, curl = None):
     )
 
   sources += drake.nodes(
-    'src/elle/Authority.cc',
-    'src/elle/Authority.hh',
-    'src/elle/Authority.hxx',
-    'src/elle/Passport.cc',
-    'src/elle/Passport.hh',
-    'src/elle/Passport.hxx',
     'src/elle/Version.cc',
     'src/elle/serialize/ArchiveMode.cc',
     'src/elle/serialize/ArchiveMode.hh',
