@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 
 #include <elle/print.hh>
 
@@ -18,5 +19,7 @@ int main()
     }
   assert(s == ref);
   elle::print("tests", "done.");
+  std::string pif = elle::sprint(12345);
+  std::cout << elle::sprint(12345) << ' ' << pif << std::endl;
   return 0;
 }
