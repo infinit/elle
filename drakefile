@@ -704,6 +704,39 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
                                    cxx_toolkit, infinit_bin_config)
   build << access_bin
 
+  # 8authority
+  authority_sources = drake.nodes(
+    'satellites/authority/Authority.cc',
+    'satellites/authority/Authority.hh',
+    'satellites/authority/Authority.hxx',
+    )
+  authority_bin = drake.cxx.Executable('bin/8authority',
+                                       authority_sources + infinit_libs,
+                                       cxx_toolkit, infinit_bin_config)
+  build << authority_bin
+
+  # 8user
+  user_sources = drake.nodes(
+    'satellites/user/User.cc',
+    'satellites/user/User.hh',
+    'satellites/user/User.hxx',
+    )
+  user_bin = drake.cxx.Executable('bin/8user',
+                                  user_sources + infinit_libs,
+                                  cxx_toolkit, infinit_bin_config)
+  build << user_bin
+
+  # 8passport
+  passport_sources = drake.nodes(
+    'satellites/passport/Passport.cc',
+    'satellites/passport/Passport.hh',
+    'satellites/passport/Passport.hxx',
+    )
+  passport_bin = drake.cxx.Executable('bin/8passport',
+                                      passport_sources + infinit_libs,
+                                      cxx_toolkit, infinit_bin_config)
+  build << passport_bin
+
   # 8network
   network_sources = drake.nodes(
     'satellites/network/Network.cc',
