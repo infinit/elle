@@ -68,6 +68,7 @@ namespace lune
     this->name = user_name;
 
     delete this->_pair;
+    this->_pair = nullptr;
     this->_pair = new cryptography::KeyPair{pair};
 
     return elle::Status::Ok;
@@ -83,7 +84,8 @@ namespace lune
 
     ELLE_ASSERT(this->_pair != nullptr);
 
-    // allocate the code.
+    delete this->code;
+    this->code = nullptr;
     this->code = new cryptography::Code{
       key.encrypt(*this->_pair)};
 
@@ -103,6 +105,7 @@ namespace lune
 
     // decrypt the authority.
     delete this->_pair;
+    this->_pair = nullptr;
     this->_pair = new cryptography::KeyPair{
       key.decrypt<cryptography::KeyPair>(*this->code)};
 
@@ -120,7 +123,6 @@ namespace lune
     if (this->code != nullptr)
       {
         delete this->code;
-
         this->code = nullptr;
       }
 
