@@ -438,6 +438,14 @@ namespace common
     }
 
     std::string const&
+    fallback_path()
+    {
+      static std::string const fb_path = path::join(common::infinit::home(),
+                                                    "ga.fb");
+      return fb_path;
+    }
+
+    std::string const&
     google_server()
     {
       static std::string const analytics = "www.google-analytics.com";

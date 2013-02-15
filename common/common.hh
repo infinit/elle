@@ -195,12 +195,19 @@ namespace common
 
   namespace metrics
   {
+    /// Path to the file storing user id.
     std::string const&
     id_path();
 
+    /// Path to the file storing fallbacked metrics.
+    std::string const&
+    fallback_path();
+
+    /// Google host address.
     std::string const&
     google_server();
 
+    /// Google port.
     uint16_t
     google_port();
   }
