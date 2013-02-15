@@ -26,7 +26,7 @@ namespace infinit
            Algorithm algorithm)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
-        ELLE_DEBUG_FUNCTION(value);
+        ELLE_DEBUG_FUNCTION(value, algorithm);
 
         static_assert(!std::is_same<T, Plain>::value,
                       "this call should never have occured");
