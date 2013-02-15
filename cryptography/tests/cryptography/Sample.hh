@@ -1,8 +1,6 @@
 #ifndef SAMPLE_HH
 # define SAMPLE_HH
 
-# include <cryptography/random.hh>
-
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
@@ -11,45 +9,45 @@
 # include <iostream>
 
 /// A test class for encrypting a complex type.
-class Class
+class Sample
 {
   /*-------------.
   | Construction |
   `-------------*/
 public:
-  Class():
+  Sample():
     _salt(0.0)
   {
     // XXX[virer pour le load constructor]
   }
 
-  Class(elle::Real const& salt,
+  Sample(elle::Real const& salt,
         elle::String const& string):
     _salt(salt),
     _string(string)
   {
   }
 
-  Class(Class const&) = default;
+  Sample(Sample const&) = default;
 
   /*----------.
   | Operators |
   `----------*/
 public:
   elle::Boolean
-  operator ==(Class const& other) const
+  operator ==(Sample const& other) const
   {
     return ((this->_salt == other._salt) &&
             (this->_string == other._string));
   }
-  ELLE_OPERATOR_NEQ(Class);
+  ELLE_OPERATOR_NEQ(Sample);
 
   /*-----------.
   | Interfaces |
   `-----------*/
 public:
   // serializable
-  ELLE_SERIALIZE_FRIEND_FOR(Class);
+  ELLE_SERIALIZE_FRIEND_FOR(Sample);
 
   /*-----------.
   | Attributes |
@@ -63,7 +61,7 @@ private:
 | Serializable |
 `-------------*/
 
-ELLE_SERIALIZE_SIMPLE(Class,
+ELLE_SERIALIZE_SIMPLE(Sample,
                       archive,
                       value,
                       format)
@@ -80,7 +78,7 @@ ELLE_SERIALIZE_SIMPLE(Class,
 
 std::ostream&
 operator <<(std::ostream& stream,
-            Class const& x)
+            Sample const& x)
 {
   stream << "(" << x.salt() << ", " << x.string() << ")";
 
