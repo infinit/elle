@@ -16,7 +16,6 @@ namespace surface
 {
   namespace gap
   {
-
     class MetricReporter
     {
       /*------.
@@ -43,12 +42,6 @@ namespace surface
 
 
     public:
-      // Push data directly, without enqueuing.
-      virtual
-      void
-      publish(std::string const& name,
-              Metric const&);
-
       // Enqueue data.
       virtual
       void
@@ -64,6 +57,9 @@ namespace surface
             std::string const& key,
             std::string const& value);
 
+      void
+      store(MetricReporter::TimeMetricPair const& metric);
+
       // Defaultly, user is anonymous.
       void
       update_user(std::string const&);
@@ -74,6 +70,10 @@ namespace surface
       void
       _send_data(TimeMetricPair const&);
 
+      virtual
+      void
+      _fallback(MetricReporter::TimeMetricPair const& metric);
+
     protected:
       elle::utility::Time _last_sent;
       std::string _tag;
@@ -82,6 +82,7 @@ namespace surface
       std::unique_ptr<boost::asio::io_service::work> _keep_alive;
       std::unique_ptr<std::thread> _run_thread;
       std::unique_ptr<elle::HTTPClient> _server;
+      std::ofstream _fallback_stream;
     };
 
 
@@ -89,13 +90,6 @@ namespace surface
     {
       namespace google
       {
-
-        //XXX: create an enum and a map that list with a user friendly name the
-        // key of the field such as Key::session_control instead of "sc".
-        static const std::pair<std::string, std::string> Success{"cd1", "success"};
-        static const std::pair<std::string, std::string> Failure{"cd1", "failure"};
-        static const std::pair<std::string, std::string> Pending{"cd1", "pending"};
-
         std::string
         retrieve_id(std::string const& path);
 

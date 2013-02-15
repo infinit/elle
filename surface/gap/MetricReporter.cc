@@ -2,6 +2,13 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
+#include <elle/serialize/extract.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/BinaryArchive.hh>
+#include <elle/serialize/PairSerializer.hxx>
+#include <elle/serialize/ListSerializer.hxx>
+
+
 #include <elle/os/path.hh>
 #include <elle/utility/Time.hh>
 #include <elle/Buffer.hh>
@@ -11,6 +18,7 @@
 #include <cryptography/oneway.hh>
 
 #include "MetricReporter.hh"
+#include "MetricReporter.hxx"
 
 #include <fstream>
 #include <iostream>
@@ -19,12 +27,13 @@
 #include <thread>
 #include <mutex>
 
-// ELLE_LOG_COMPONENT("infinit.surface.gap.MetricReporter");
+ELLE_LOG_COMPONENT("infinit.surface.gap.MetricReporter");
 
 namespace surface
 {
   namespace gap
   {
+
     MetricReporter::MetricReporter(std::string const& tag,
                                    std::string const& user,
                                    std::string const& host,
@@ -33,6 +42,7 @@ namespace surface
       , _user_id{user}
       , _flusher_sched{}
       , _server{new elle::HTTPClient{host, port, "MetricReport", true}}
+      , _fallback_stream{common::metrics::fallback_path()}
     {
       this->_keep_alive.reset(
         new boost::asio::io_service::work(_flusher_sched.io_service()));
@@ -46,31 +56,17 @@ namespace surface
         this->_run_thread->join();
     }
 
-    // Push data directly to server, without enqueuing.
-    void
-    MetricReporter::publish(std::string const& name,
-                            Metric const& metric)
-    {
-      Metric m = metric;
-      m.push_front(std::pair<std::string, std::string>{
-          this->_tag,
-            name});
-
-      this->_flusher_sched.io_service().post(
-        [=] { this->_send_data(TimeMetricPair(elle::utility::Time::current(), m)); });
-    }
-
     void
     MetricReporter::store(std::string const& caller, Metric const& metric)
     {
-      // ELLE_TRACE("Storing new metric %s", caller);
+      ELLE_TRACE("Storing new metric %s", caller);
 
       // Note that if we want the ability to use initializer list for metric,
       // we can't declare it as non const..
       Metric& m = const_cast<Metric &>(metric);
       m.push_front(std::pair<std::string, std::string>{this->_tag, caller});
 
-      this->_flusher_sched.io_service().post([=] { this->_send_data(TimeMetricPair(elle::utility::Time::current(), m)); });
+      this->store(TimeMetricPair(elle::utility::Time::current(), m));
     }
 
     void
@@ -86,11 +82,27 @@ namespace surface
     {
       Metric metric;
       metric.push_back(std::make_pair(key, value));
-
       this->store(name, metric);
     }
 
-    // Defaultly.
+    void
+    MetricReporter::store(TimeMetricPair const& metric)
+    {
+      try
+      {
+        this->_send_data(metric);
+      }
+      catch (std::runtime_error const& e)
+      {
+        ELLE_ERR("something went wrong while storing metric: %s", e.what());
+        this->_fallback(metric);
+      }
+    }
+
+    void
+    MetricReporter::_fallback(TimeMetricPair const& metric)
+    {}
+
     void
     MetricReporter::update_user(std::string const& id)
     {
@@ -100,27 +112,25 @@ namespace surface
     void
     MetricReporter::_send_data(MetricReporter::TimeMetricPair const& metric)
     {
-      // ELLE_TRACE(__PRETTY_FUNCTION__);
-      static int fail_counter = 0;
-
-      static elle::String version =
+      ELLE_TRACE("sending metric");
+      static std::string version =
         elle::sprintf("%s.%s", INFINIT_VERSION_MAJOR, INFINIT_VERSION_MINOR);
-
+      static std::string user_agent = elle::sprintf("Infinit/%s (%s)",
+                                                    version,
+#ifdef INFINIT_LINUX
+                                                    "Linux x86_64");
+#elif INFINIT_MACOSX
+                                                    // XXX[10.7: should adapt to any MacOS X version]
+                                                    "Mac OS X 10.7");
+#else
+# warning "machine not supported"
+#endif
       // XXX copy constructor with should great idea, cause request base here
       // is always the same, so it could be static.
       elle::Request request = this->_server->request("POST", "/collect");
       request
         .content_type("application/x-www-form-urlencoded")
-        .user_agent(elle::sprintf("Infinit/%s (%s)",
-                                  version,
-#ifdef INFINIT_LINUX
-                                  "Linux x86_64"))
-#elif INFINIT_MACOSX
-        // XXX[10.7: should adapt to any MacOS X version]
-        "Mac OS X 10.7"))
-#else
-# warning "machine not supported"
-#endif
+        .user_agent(user_agent)
         .post_field("dh", "infinit.io")      // Test.
         .post_field("av", version)           // Type of interraction.
         .post_field("an", "Infinit")         // Application name.
@@ -132,33 +142,18 @@ namespace surface
       typedef MetricReporter::Metric::value_type Field;
       for (Field f: metric.second)
       {
-        std::string value = f.second;
-        size_t pos;
-        // Replace "/" by a :
-        while ((pos = value.find('/')) != std::string::npos)
-          value.replace(pos, 1, ":");
-        request.post_field(f.first, value);
+        // std::string value = f.second;
+        // size_t pos;
+        // // Replace "/" by a :
+        // while ((pos = value.find('/')) != std::string::npos)
+        //   value.replace(pos, 1, ":");
+        request.post_field(f.first, f.second);
       };
       _last_sent.Current();
       request.post_field("qt",
-                     std::to_string((_last_sent - metric.first).nanoseconds / 1000000));
-      try
-        {
-          request.fire();
-          fail_counter = 0;
-        }
-      catch (std::runtime_error const& e) // Should be HTTP or Socket exception.
-        {
-          ++fail_counter;
-          // ELLE_ERR("firing metric failed (%s)", e.what());
+                         std::to_string((_last_sent - metric.first).nanoseconds / 1000000));
 
-          //XXX: missing some opti here.
-        }
-      catch (...)
-        {
-          ++fail_counter;
-          // ELLE_ERR("firing metric failed");
-        }
+      request.fire();
     }
 
     namespace metrics
@@ -171,11 +166,9 @@ namespace surface
         {
           std::string id = "66666666-6666-6666-6666-66666666";
 
-          std::string id_path = common::metrics::id_path();
-
-          if (elle::os::path::exists(id_path))
+          if (elle::os::path::exists(common::metrics::id_path()))
           {
-            std::ifstream id_file(id_path);
+            std::ifstream id_file(common::metrics::id_path());
 
             if(!id_file.good())
               return id;
@@ -202,7 +195,7 @@ namespace surface
           std::string hashed_id =
             elle::format::hexadecimal::encode(digest.buffer());
 
-          // ELLE_DEBUG("hashed id: %s", hashed_id);
+          ELLE_DEBUG("hashed id: %s", hashed_id);
 
           // Google user id must have the following format:
           // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
@@ -218,10 +211,9 @@ namespace surface
             .insert(12, "-")
             .insert(8, "-");
 
-          // ELLE_DEBUG("hashed id: %s", hashed_id);
+          ELLE_DEBUG("hashed id: %s", hashed_id);
 
-          std::string id_path = common::metrics::id_path();
-          std::ofstream id_file(id_path);
+          std::ofstream id_file(common::metrics::id_path());
 
           if (id_file.good())
           {
