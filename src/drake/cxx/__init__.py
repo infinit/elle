@@ -335,14 +335,18 @@ class GccToolkit(Toolkit):
         if self.os == drake.os.linux:
             rpath_link = concatenate(cfg.lib_paths, '-Wl,-rpath-link ')
 
+        undefined = ''
+        if self.os == drake.os.macos:
+            undefined = ' -undefined dynamic_lookup'
 
-        return '%s %s%s%s%s%s %s -o %s %s' % \
+        return '%s %s%s%s%s%s%s %s -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
                 rpath_link,
                 concatenate(lib_rpaths, '-Wl,-rpath,'),
+                undefined,
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'))
