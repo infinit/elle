@@ -11,7 +11,7 @@
 
 #include <network/uri/config.hpp>
 #include <network/uri/detail/translate.hpp>
-#include <network/utility/string_ref.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <system_error>
@@ -130,21 +130,21 @@ namespace network {
 
     const_iterator end() const;
 
-    boost::optional<string_ref> scheme() const;
+    boost::optional<boost::string_ref> scheme() const;
 
-    boost::optional<string_ref> user_info() const;
+    boost::optional<boost::string_ref> user_info() const;
 
-    boost::optional<string_ref> host() const;
+    boost::optional<boost::string_ref> host() const;
 
-    boost::optional<string_ref> port() const;
+    boost::optional<boost::string_ref> port() const;
 
-    boost::optional<string_ref> path() const;
+    boost::optional<boost::string_ref> path() const;
 
-    boost::optional<string_ref> query() const;
+    boost::optional<boost::string_ref> query() const;
 
-    boost::optional<string_ref> fragment() const;
+    boost::optional<boost::string_ref> fragment() const;
 
-    boost::optional<string_ref> authority() const;
+    boost::optional<boost::string_ref> authority() const;
 
     string_type native() const;
 
