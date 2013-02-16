@@ -8,6 +8,7 @@ option(ENABLE_TEST_COMPILATION "Enable or not compilation of subdir tests" ON)
 option(DISABLE_HORIZON "Enable fuse system mount points" OFF)
 option(USE_STATIC_LIBS "Use static version of libraries" OFF)
 option(USE_STATIC_RUNTIME "Link statically with libgcc and libg++" OFF)
+option(PRODUCTION_BUILD "Make build production ready" OFF)
 
 # follow symlink when copying
 cmake_policy(SET CMP0009 NEW)
@@ -33,6 +34,13 @@ set(INFINIT_VERSION "${INFINIT_VERSION_MAJOR}.${INFINIT_VERSION_MINOR}")
 add_definitions(-DINFINIT_VERSION_MAJOR=${INFINIT_VERSION_MAJOR})
 add_definitions(-DINFINIT_VERSION_MINOR=${INFINIT_VERSION_MINOR})
 add_definitions(-DINFINIT_VERSION=${INFINIT_VERSION})
+
+if(PRODUCTION_BUILD)
+	add_definitions(-DINFINIT_PRODUCTION_BUILD=1)
+	message(STATUS "PRODUCTION build")
+else()
+	message(STATUS "DEVELOPMENT build")
+endif()
 
 # - Infinit platform ----------------------------------------------------------
 #

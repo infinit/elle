@@ -1,19 +1,57 @@
-#include <pwd.h>
-#include <stdexcept>
-#include <sys/types.h>
-#include <unistd.h>
-#include <unordered_map>
+#include "common.hh"
 
-#include <elle/os.hh>
+#include <elle/assert.hh>
+#include <elle/os/getenv.hh>
 #include <elle/os/path.hh>
 #include <elle/print.hh>
 #include <elle/system/platform.hh>
-#include <elle/io/Path.hh>
-#include <elle/io/Piece.hh>
 
-#include <elle/assert.hh>
+#include <boost/preprocessor/cat.hpp>
 
-#include <common/common.hh>
+#include <stdexcept>
+#include <unordered_map>
+
+#include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#ifdef INFINIT_PRODUCTION
+# define VAR_PREFIX COMMON_PRODUCTION
+#else
+# define VAR_PREFIX COMMON_DEFAULT
+#endif
+
+# define COMMON_INFINIT_HOME \
+  BOOST_PP_CAT(VAR_PREFIX, _INFINIT_HOME) \
+/**/
+# define COMMON_META_PROTOCOL \
+  BOOST_PP_CAT(VAR_PREFIX, _META_PROTOCOL) \
+/**/
+# define COMMON_META_HOST \
+  BOOST_PP_CAT(VAR_PREFIX, _META_HOST) \
+/**/
+# define COMMON_META_PORT \
+  BOOST_PP_CAT(VAR_PREFIX, _META_PORT) \
+/**/
+# define COMMON_TROPHONIUS_PROTOCOL \
+  BOOST_PP_CAT(VAR_PREFIX, _TROPHONIUS_PROTOCOL) \
+/**/
+# define COMMON_TROPHONIUS_HOST \
+  BOOST_PP_CAT(VAR_PREFIX, _TROPHONIUS_HOST) \
+/**/
+# define COMMON_TROPHONIUS_PORT \
+  BOOST_PP_CAT(VAR_PREFIX, _TROPHONIUS_PORT) \
+/**/
+# define COMMON_RESOURCES_ROOT_URL \
+  BOOST_PP_CAT(VAR_PREFIX, _RESOURCES_ROOT_URL) \
+/**/
+# define COMMON_LONGINUS_HOST \
+  BOOST_PP_CAT(VAR_PREFIX, _LONGINUS_HOST) \
+/**/
+# define COMMON_LONGINUS_PORT \
+  BOOST_PP_CAT(VAR_PREFIX, _LONGINUS_PORT) \
+/**/
+
 
 namespace path = elle::os::path;
 
@@ -51,7 +89,7 @@ namespace
   {
     return elle::os::getenv(
         "INFINIT_HOME",
-        common::system::home_directory() + "/" + COMMON_DEFAULT_INFINIT_HOME
+        common::system::home_directory() + "/" + COMMON_INFINIT_HOME
     );
   }
 
@@ -78,7 +116,7 @@ namespace
     return std::stoi(
       elle::os::getenv(
         "INFINIT_META_PORT",
-        std::to_string(COMMON_DEFAULT_META_PORT)
+        std::to_string(COMMON_META_PORT)
       )
     );
   }
@@ -88,7 +126,7 @@ namespace
   {
     std::string port_string = elle::os::getenv(
         "INFINIT_TROPHONIUS_PORT",
-        elle::sprint(COMMON_DEFAULT_TROPHONIUS_PORT)
+        elle::sprint(COMMON_TROPHONIUS_PORT)
     );
     std::stringstream ss(port_string);
     uint16_t port;
@@ -247,7 +285,7 @@ namespace common
     {
       static std::string const protocol = elle::os::getenv(
           "INFINIT_META_PROTOCOL"
-          COMMON_DEFAULT_META_PROTOCOL
+          COMMON_META_PROTOCOL
       );
       return protocol;
     }
@@ -264,7 +302,7 @@ namespace common
     {
       static std::string const host = elle::os::getenv(
           "INFINIT_META_HOST",
-          COMMON_DEFAULT_META_HOST
+          COMMON_META_HOST
       );
       return host;
     }
@@ -290,7 +328,7 @@ namespace common
     {
       static std::string const protocol = elle::os::getenv(
           "INFINIT_TROPHONIUS_PROTOCOL"
-          COMMON_DEFAULT_TROPHONIUS_PROTOCOL
+          COMMON_TROPHONIUS_PROTOCOL
       );
       return protocol;
     }
@@ -307,7 +345,7 @@ namespace common
     {
       static std::string const host = elle::os::getenv(
           "INFINIT_TROPHONIUS_HOST",
-          COMMON_DEFAULT_TROPHONIUS_HOST
+          COMMON_TROPHONIUS_HOST
       );
       return host;
     }
@@ -333,7 +371,7 @@ namespace common
     {
       static std::string const base_url = elle::os::getenv(
           "INFINIT_RESOURCES_ROOT_URL",
-          COMMON_DEFAULT_RESOURCES_ROOT_URL
+          COMMON_RESOURCES_ROOT_URL
       );
       std::string platform = (
           platform_ != nullptr ?
@@ -404,7 +442,7 @@ namespace common
     {
       static std::string const host_string = elle::os::getenv(
           "INFINIT_LONGINUS_HOST",
-          elle::sprint(COMMON_DEFAULT_LONGINUS_HOST)
+          elle::sprint(COMMON_LONGINUS_HOST)
       );
 
       return host_string;
@@ -415,7 +453,7 @@ namespace common
     {
       static std::string const port_string = elle::os::getenv(
           "INFINIT_LONGINUS_PORT",
-          elle::sprint(COMMON_DEFAULT_LONGINUS_PORT)
+          elle::sprint(COMMON_LONGINUS_PORT)
       );
       return std::stoi(port_string);
     }
