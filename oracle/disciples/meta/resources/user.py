@@ -9,6 +9,7 @@ except ImportError:
 
 import json
 import os
+import random
 import re
 import StringIO
 import unicodedata
