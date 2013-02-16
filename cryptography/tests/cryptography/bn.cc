@@ -62,6 +62,18 @@ test_serialize()
 
     BOOST_CHECK_EQUAL(archive1, archive2);
   }
+
+  // Deserialize an invalid representation.
+  {
+    elle::String archive("EWDqiqwd9032eajnoIAijfwofqaaaodQEJFAOW");
+
+    ::BIGNUM bn;
+    ::BN_init(&bn);
+
+    BOOST_CHECK_THROW(elle::serialize::from_string<
+                        elle::serialize::InputBase64Archive>(archive) >> bn,
+                      elle::serialize::Exception);
+  }
 }
 
 /*-----.
