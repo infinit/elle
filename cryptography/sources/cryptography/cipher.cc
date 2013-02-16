@@ -21,7 +21,7 @@ namespace infinit
         ELLE_TRACE_FUNCTION(name);
 
         switch (name)
-          {
+        {
           case Algorithm::des:
             return (::EVP_des_cbc());
           case Algorithm::des2:
@@ -47,7 +47,7 @@ namespace infinit
           default:
             throw Exception("unable to resolve the given cipher "
                             "function name '%s'", name);
-          }
+        }
 
         elle::unreachable();
       }
@@ -61,66 +61,66 @@ namespace infinit
                   Algorithm const algorithm)
       {
         switch (algorithm)
-          {
+        {
           case Algorithm::des:
-            {
-              stream << "des";
-              break;
-            }
+          {
+            stream << "des";
+            break;
+          }
           case Algorithm::des2:
-            {
-              stream << "des2";
-              break;
-            }
+          {
+            stream << "des2";
+            break;
+          }
           case Algorithm::des3:
-            {
-              stream << "des3";
-              break;
-            }
+          {
+            stream << "des3";
+            break;
+          }
           case Algorithm::desx:
-            {
-              stream << "desx";
-              break;
-            }
+          {
+            stream << "desx";
+            break;
+          }
           case Algorithm::idea:
-            {
-              stream << "idea";
-              break;
-            }
+          {
+            stream << "idea";
+            break;
+          }
           case Algorithm::rc2:
-            {
-              stream << "rc2";
-              break;
-            }
+          {
+            stream << "rc2";
+            break;
+          }
           case Algorithm::blowfish:
-            {
-              stream << "blowfish";
-              break;
-            }
+          {
+            stream << "blowfish";
+            break;
+          }
           case Algorithm::cast5:
-            {
-              stream << "cast5";
-              break;
-            }
+          {
+            stream << "cast5";
+            break;
+          }
           case Algorithm::aes128:
-            {
-              stream << "aes128";
-              break;
-            }
+          {
+            stream << "aes128";
+            break;
+          }
           case Algorithm::aes192:
-            {
-              stream << "aes192";
-              break;
-            }
+          {
+            stream << "aes192";
+            break;
+          }
           case Algorithm::aes256:
-            {
-              stream << "aes256";
-              break;
-            }
+          {
+            stream << "aes256";
+            break;
+          }
           default:
             throw Exception("unknown cipher algorithm '%s'",
                             static_cast<int>(algorithm));
-          }
+        }
 
         return (stream);
       }

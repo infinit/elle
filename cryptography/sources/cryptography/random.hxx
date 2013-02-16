@@ -178,16 +178,16 @@ namespace infinit
           value.resize(length);
 
           for (elle::Natural32 i = 0; i < length; i++)
-            {
-              elle::Natural32 n;
+          {
+            elle::Natural32 n;
 
-              if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
-                               sizeof (n)) == 0)
-                throw Exception("unable to generate random bytes: %s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
+            if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
+                             sizeof (n)) == 0)
+              throw Exception("unable to generate random bytes: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-              value[i] = alphabet[n % alphabet.length()];
-            }
+            value[i] = alphabet[n % alphabet.length()];
+          }
 
           return (value);
         }
