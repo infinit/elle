@@ -21,8 +21,6 @@ namespace infinit
       ///   generate<elle::Character>(elle::Character minimum,
       ///                             elle::Character maximum);
       ///   generate<elle::Real>();
-      ///   generate<elle::Real>(elle::Real minimum,
-      ///                        elle::Real maximum);
       ///   generate<elle::Integer8>();
       ///   generate<elle::Integer8>(elle::Integer8 minimum,
       ///                            elle::Integer8 maximum);
