@@ -1,7 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_BN_HH
 # define INFINIT_CRYPTOGRAPHY_BN_HH
 
-# include <iostream>
+# include <iosfwd>
 
 # include <openssl/bn.h>
 

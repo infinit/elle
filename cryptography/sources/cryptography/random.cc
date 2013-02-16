@@ -74,11 +74,11 @@ namespace infinit
             throw Exception("unable to acquire a cryptographic context");
 
           if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
-            {
-              ::CryptReleaseContext(h_provider, 0);
+          {
+            ::CryptReleaseContext(h_provider, 0);
 
-              throw Exception("unable to generate random bytes");
-            }
+            throw Exception("unable to generate random bytes");
+          }
 
           if (!::CryptReleaseContext(h_provider, 0))
             throw Exception("failed to release cryptographic context");
