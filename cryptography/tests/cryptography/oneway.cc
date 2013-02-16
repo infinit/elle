@@ -66,7 +66,7 @@ test_represent()
 template <infinit::cryptography::oneway::Algorithm A,
           elle::Natural32 S>
 void
-test_operate_x(elle::String const& R = "XXX")
+test_operate_x(elle::String const& R)
 {
   // Hash a plain.
   {
@@ -146,5 +146,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }
