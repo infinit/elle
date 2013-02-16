@@ -6,6 +6,8 @@
 
 #include <openssl/err.h>
 
+#include <iostream>
+
 /*----------.
 | Operators |
 `----------*/
@@ -28,20 +30,20 @@ operator <<(std::ostream& stream,
 
   // Display the string, depending on its length.
   if (::strlen(hexadecimal) < length)
-    {
-      // If the string is short enough, display it in its entirety.
-      stream << hexadecimal;
-    }
+  {
+    // If the string is short enough, display it in its entirety.
+    stream << hexadecimal;
+  }
   else
-    {
-      elle::String string(hexadecimal);
+  {
+    elle::String string(hexadecimal);
 
-      // Otherwise chop it and display the begining and the end only.
-      stream << string.substr(0, length / 2)
-             << "..." << std::dec << BN_num_bytes(&bignum)
-             << " bytes" << "..."
-             << string.substr(string.length() - (length / 2));
-    }
+    // Otherwise chop it and display the begining and the end only.
+    stream << string.substr(0, length / 2)
+           << "..." << std::dec << BN_num_bytes(&bignum)
+           << " bytes" << "..."
+           << string.substr(string.length() - (length / 2));
+  }
 
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(hexadecimal);
 

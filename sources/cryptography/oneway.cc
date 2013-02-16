@@ -26,7 +26,7 @@ namespace infinit
         ELLE_TRACE_FUNCTION(name);
 
         switch (name)
-          {
+        {
           case Algorithm::md5:
             return (::EVP_md5());
           case Algorithm::sha:
@@ -44,7 +44,7 @@ namespace infinit
           default:
             throw Exception("unable to resolve the given one-way "
                             "function name '%s'", name);
-          }
+        }
 
         elle::unreachable();
       }
@@ -69,46 +69,46 @@ namespace infinit
                   Algorithm const algorithm)
       {
         switch (algorithm)
-          {
+        {
           case Algorithm::md5:
-            {
-              stream << "md5";
-              break;
-            }
+          {
+            stream << "md5";
+            break;
+          }
           case Algorithm::sha:
-            {
-              stream << "sha";
-              break;
-            }
+          {
+            stream << "sha";
+            break;
+          }
           case Algorithm::sha1:
-            {
-              stream << "sha1";
-              break;
-            }
+          {
+            stream << "sha1";
+            break;
+          }
           case Algorithm::sha224:
-            {
-              stream << "sha224";
-              break;
-            }
+          {
+            stream << "sha224";
+            break;
+          }
           case Algorithm::sha256:
-            {
-              stream << "sha256";
-              break;
-            }
+          {
+            stream << "sha256";
+            break;
+          }
           case Algorithm::sha384:
-            {
-              stream << "sha384";
-              break;
-            }
+          {
+            stream << "sha384";
+            break;
+          }
           case Algorithm::sha512:
-            {
-              stream << "sha512";
-              break;
-            }
+          {
+            stream << "sha512";
+            break;
+          }
           default:
             throw Exception("unknown one-way algorithm '%s'",
                             static_cast<int>(algorithm));
-          }
+        }
 
         return (stream);
       }

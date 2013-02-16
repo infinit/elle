@@ -258,7 +258,7 @@ namespace infinit
                      digest.buffer().size());
 
           switch (result)
-            {
+          {
             case 1:
               return (true);
             case 0:
@@ -266,7 +266,7 @@ namespace infinit
             default:
               throw Exception("unable to verify the signature: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
-            }
+          }
 
           elle::unreachable();
         }
