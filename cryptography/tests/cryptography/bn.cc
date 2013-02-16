@@ -22,7 +22,6 @@ test_represent()
   // 1)
   {
     ::BIGNUM bn;
-
     ::BN_init(&bn);
 
     if (::BN_pseudo_rand(&bn, 1024, -1, 0) == 0)
@@ -99,5 +98,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

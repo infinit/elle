@@ -181,17 +181,17 @@ test_compare_rsa()
   BOOST_CHECK(!(k1 == k2));
 
   if (k1 < k2)
-    {
-      BOOST_CHECK(k1 <= k2);
-      BOOST_CHECK(!(k1 > k2));
-      BOOST_CHECK(!(k1 >= k2));
-    }
+  {
+    BOOST_CHECK(k1 <= k2);
+    BOOST_CHECK(!(k1 > k2));
+    BOOST_CHECK(!(k1 >= k2));
+  }
   else
-    {
-      BOOST_CHECK(k1 >= k2);
-      BOOST_CHECK(!(k1 < k2));
-      BOOST_CHECK(!(k1 <= k2));
-    }
+  {
+    BOOST_CHECK(k1 >= k2);
+    BOOST_CHECK(!(k1 < k2));
+    BOOST_CHECK(!(k1 <= k2));
+  }
 }
 
 void
@@ -273,5 +273,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

@@ -134,17 +134,17 @@ test_compare()
   BOOST_CHECK(!(output1 == output2));
 
   if (output1 < output2)
-    {
-      BOOST_CHECK(output1 <= output2);
-      BOOST_CHECK(!(output1 > output2));
-      BOOST_CHECK(!(output1 >= output2));
-    }
+  {
+    BOOST_CHECK(output1 <= output2);
+    BOOST_CHECK(!(output1 > output2));
+    BOOST_CHECK(!(output1 >= output2));
+  }
   else
-    {
-      BOOST_CHECK(output1 >= output2);
-      BOOST_CHECK(!(output1 < output2));
-      BOOST_CHECK(!(output1 <= output2));
-    }
+  {
+    BOOST_CHECK(output1 >= output2);
+    BOOST_CHECK(!(output1 < output2));
+    BOOST_CHECK(!(output1 <= output2));
+  }
 
   // Output/input.
   infinit::cryptography::Input input2(elle::WeakBuffer{output2.buffer()});
@@ -153,17 +153,17 @@ test_compare()
   BOOST_CHECK(!(output1 == input2));
 
   if (output1 < input2)
-    {
-      BOOST_CHECK(output1 <= input2);
-      BOOST_CHECK(!(output1 > input2));
-      BOOST_CHECK(!(output1 >= input2));
-    }
+  {
+    BOOST_CHECK(output1 <= input2);
+    BOOST_CHECK(!(output1 > input2));
+    BOOST_CHECK(!(output1 >= input2));
+  }
   else
-    {
-      BOOST_CHECK(output1 >= input2);
-      BOOST_CHECK(!(output1 < input2));
-      BOOST_CHECK(!(output1 <= input2));
-    }
+  {
+    BOOST_CHECK(output1 >= input2);
+    BOOST_CHECK(!(output1 < input2));
+    BOOST_CHECK(!(output1 <= input2));
+  }
 }
 
 /*-----.
@@ -191,5 +191,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

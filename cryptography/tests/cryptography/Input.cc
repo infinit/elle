@@ -41,17 +41,17 @@ test_comparison()
   BOOST_CHECK(!(input1 == input2));
 
   if (input1 < input2)
-    {
-      BOOST_CHECK(input1 <= input2);
-      BOOST_CHECK(!(input1 > input2));
-      BOOST_CHECK(!(input1 >= input2));
-    }
+  {
+    BOOST_CHECK(input1 <= input2);
+    BOOST_CHECK(!(input1 > input2));
+    BOOST_CHECK(!(input1 >= input2));
+  }
   else
-    {
-      BOOST_CHECK(input1 >= input2);
-      BOOST_CHECK(!(input1 < input2));
-      BOOST_CHECK(!(input1 <= input2));
-    }
+  {
+    BOOST_CHECK(input1 >= input2);
+    BOOST_CHECK(!(input1 < input2));
+    BOOST_CHECK(!(input1 <= input2));
+  }
 
   // Input/output.
   infinit::cryptography::Output output2(buffer2);
@@ -60,17 +60,17 @@ test_comparison()
   BOOST_CHECK(!(input1 == output2));
 
   if (input1 < output2)
-    {
-      BOOST_CHECK(input1 <= output2);
-      BOOST_CHECK(!(input1 > output2));
-      BOOST_CHECK(!(input1 >= output2));
-    }
+  {
+    BOOST_CHECK(input1 <= output2);
+    BOOST_CHECK(!(input1 > output2));
+    BOOST_CHECK(!(input1 >= output2));
+  }
   else
-    {
-      BOOST_CHECK(input1 >= output2);
-      BOOST_CHECK(!(input1 < output2));
-      BOOST_CHECK(!(input1 <= output2));
-    }
+  {
+    BOOST_CHECK(input1 >= output2);
+    BOOST_CHECK(!(input1 < output2));
+    BOOST_CHECK(!(input1 <= output2));
+  }
 }
 
 /*-----.
@@ -94,5 +94,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }
