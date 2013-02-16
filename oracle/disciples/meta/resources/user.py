@@ -326,7 +326,7 @@ class Avatar(Page):
         user = database.users().find_one(database.ObjectId(_id))
         image = user and user.get('avatar')
         if image:
-            return str(image)
+            yield str(image)
 
         with open(os.path.join(os.path.dirname(__file__), "pif.png"), 'rb') as f:
             while 1:
