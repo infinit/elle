@@ -339,8 +339,8 @@ class Avatar(Page):
 
     def POST(self, _id):
         self.requireLoggedIn()
-        i = web.input(myfile={})
-        image = Image.open(i.file)
+        raw_data = StringIO.StringIO(web.data())
+        image = Image.open(raw_data)
         out = StringIO.StringIO()
         image.resize((256, 256)).save(out, 'PNG')
         out.seek(0)
