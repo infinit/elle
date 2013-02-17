@@ -48,7 +48,7 @@ namespace infinit
       T value;
       clear.buffer().reader() >> value;
 
-      return (value);
+      return (std::move(value));
     }
   }
 }

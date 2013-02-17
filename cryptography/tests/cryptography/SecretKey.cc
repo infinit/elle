@@ -3,6 +3,7 @@
 
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
+#include <cryptography/random.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
