@@ -55,21 +55,24 @@ namespace infinit
 
       template <typename T>
       T
-      _rangify(T value,
-               T minimum,
-               T maximum)
+      _rangify(T const value,
+               T const minimum,
+               T const maximum)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.random");
         ELLE_DEBUG_FUNCTION(value, minimum, maximum);
 
-        ELLE_ASSERT(maximum >= minimum);
+        ELLE_ASSERT(minimum <= maximum);
 
         T ranged =
-          static_cast<elle::Real>(value) /
-          (std::numeric_limits<T>::max() - std::numeric_limits<T>::min()) *
-          (maximum - minimum);
+          static_cast<T>(
+            static_cast<elle::Real>(std::abs(value)) /
+            (static_cast<elle::Real>(std::numeric_limits<T>::max()) -
+             static_cast<elle::Real>(std::numeric_limits<T>::min())) *
+            (static_cast<elle::Real>(maximum) -
+             static_cast<elle::Real>(minimum)));
 
-        return (ranged + minimum);
+        return (minimum + ranged);
       }
 
       template <typename T>
@@ -129,8 +132,21 @@ namespace infinit
         }
       };
 
+      template <>
+      struct Generator<elle::Real>
+      {
+        static
+        elle::Real
+        generate()
+        {
+          ELLE_LOG_COMPONENT("infinit.cryptography.random");
+          ELLE_DEBUG_FUNCTION("");
+
+          return (_generate<elle::Real>());
+        }
+      };
+
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Character);
-      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Real);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Integer8);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Integer16);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Integer32);
@@ -162,18 +178,18 @@ namespace infinit
           value.resize(length);
 
           for (elle::Natural32 i = 0; i < length; i++)
-            {
-              elle::Natural32 n;
+          {
+            elle::Natural32 n;
 
-              if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
-                               sizeof (n)) == 0)
-                throw Exception("unable to generate random bytes: %s",
-                                ::ERR_error_string(ERR_get_error(), nullptr));
+            if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
+                             sizeof (n)) == 0)
+              throw Exception("unable to generate random bytes: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr));
 
-              value[i] = alphabet[n % alphabet.length()];
-            }
+            value[i] = alphabet[n % alphabet.length()];
+          }
 
-          return (value);
+          return (std::move(value));
         }
       };
 
@@ -199,7 +215,7 @@ namespace infinit
             throw Exception("unable to generate random bytes: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr));
 
-          return (value);
+          return (std::move(value));
         }
       };
 

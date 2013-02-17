@@ -115,7 +115,7 @@ namespace infinit
 
           code.buffer().writer() << key << data;
 
-          return (code);
+          return (std::move(code));
         }
 
         Clear
@@ -177,7 +177,7 @@ namespace infinit
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);
 
-          return (clear);
+          return (std::move(clear));
         }
 
         Signature
@@ -225,7 +225,7 @@ namespace infinit
           // Set the final signature size.
           signature.buffer().size(size);
 
-          return (signature);
+          return (std::move(signature));
         }
 
         elle::Boolean
@@ -258,7 +258,7 @@ namespace infinit
                      digest.buffer().size());
 
           switch (result)
-            {
+          {
             case 1:
               return (true);
             case 0:
@@ -266,7 +266,7 @@ namespace infinit
             default:
               throw Exception("unable to verify the signature: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr));
-            }
+          }
 
           elle::unreachable();
         }
@@ -404,7 +404,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (code);
+          return (std::move(code));
         }
 
         Clear
@@ -504,7 +504,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (clear);
+          return (std::move(clear));
         }
       }
     }
@@ -569,7 +569,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (digest);
+          return (std::move(digest));
         }
       }
     }

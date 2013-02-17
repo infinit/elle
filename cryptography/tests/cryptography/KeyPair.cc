@@ -181,10 +181,11 @@ test_operate_rsa()
         infinit::cryptography::Plain{
           elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
                                                    input.length()}});
-    auto result = pair.K().verify(signature,
-                                  infinit::cryptography::Plain{
-                                    elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                                             input.length()}});
+    auto result =
+      pair.K().verify(signature,
+                      infinit::cryptography::Plain{
+                        elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
+                                         input.length()}});
 
     BOOST_CHECK_EQUAL(result, true);
   }
@@ -279,5 +280,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

@@ -3,6 +3,7 @@
 
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
+#include <cryptography/random.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
@@ -285,5 +286,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

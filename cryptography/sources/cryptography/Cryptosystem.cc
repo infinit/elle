@@ -16,16 +16,16 @@ namespace infinit
                 Cryptosystem const cryptosystem)
     {
       switch (cryptosystem)
-        {
+      {
         case Cryptosystem::rsa:
-          {
-            stream << "rsa";
-            break;
-          }
+        {
+          stream << "rsa";
+          break;
+        }
         default:
           throw Exception("unknown asymmetric cryptosystem '%s'",
                           static_cast<int>(cryptosystem));
-        }
+      }
 
       return (stream);
     }

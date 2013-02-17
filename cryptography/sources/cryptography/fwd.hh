@@ -6,8 +6,8 @@ namespace infinit
   namespace cryptography
   {
     class Exception;
-    class KeyPair;
     class Input;
+    class KeyPair;
     class Output;
     class PrivateKey;
     namespace privatekey
@@ -31,5 +31,6 @@ namespace infinit
 # include <cryptography/Digest.hh>
 # include <cryptography/Plain.hh>
 # include <cryptography/Signature.hh>
+# include <cryptography/rsa/fwd.hh>
 
 #endif

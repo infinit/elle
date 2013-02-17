@@ -31,28 +31,26 @@ namespace infinit
       ELLE_TRACE_FUNCTION(cryptosystem, length);
 
       switch (cryptosystem)
-        {
+      {
         case Cryptosystem::rsa:
-          {
-            // Generate a RSA key pair.
-            std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
-              rsa::keypair::generate(length);
+        {
+          // Generate a RSA key pair.
+          std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
+            rsa::keypair::generate(length);
 
-            // Construct high-level public and private keys.
-            std::unique_ptr<publickey::Interface> K{
-              new rsa::PublicKey{std::move(pair.first)}};
-            std::unique_ptr<privatekey::Interface> k{
-              new rsa::PrivateKey{std::move(pair.second)}};
+          // Construct high-level public and private keys.
+          std::unique_ptr<publickey::Interface> K{
+            new rsa::PublicKey{std::move(pair.first)}};
+          std::unique_ptr<privatekey::Interface> k{
+            new rsa::PrivateKey{std::move(pair.second)}};
 
-            // Construct a key pair based on both public and private key.
-            KeyPair keypair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}};
-
-            return (keypair);
-          }
+          // Construct a key pair based on both public and private key.
+          return (KeyPair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}});
+        }
         default:
           throw Exception("unknown or non-supported asymmetric "
                           "cryptosystem '%s'", cryptosystem);
-        }
+      }
 
       elle::unreachable();
     }

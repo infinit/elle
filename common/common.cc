@@ -284,7 +284,7 @@ namespace common
     protocol()
     {
       static std::string const protocol = elle::os::getenv(
-          "INFINIT_META_PROTOCOL"
+          "INFINIT_META_PROTOCOL",
           COMMON_META_PROTOCOL
       );
       return protocol;
@@ -327,7 +327,7 @@ namespace common
     protocol()
     {
       static std::string const protocol = elle::os::getenv(
-          "INFINIT_TROPHONIUS_PROTOCOL"
+          "INFINIT_TROPHONIUS_PROTOCOL",
           COMMON_TROPHONIUS_PROTOCOL
       );
       return protocol;

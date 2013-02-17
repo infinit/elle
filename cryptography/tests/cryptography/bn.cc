@@ -22,7 +22,6 @@ test_represent()
   // 1)
   {
     ::BIGNUM bn;
-
     ::BN_init(&bn);
 
     if (::BN_pseudo_rand(&bn, 1024, -1, 0) == 0)
@@ -62,6 +61,18 @@ test_serialize()
 
     BOOST_CHECK_EQUAL(archive1, archive2);
   }
+
+  // Deserialize an invalid representation.
+  {
+    elle::String archive("EWDqiqwd9032eajnoIAijfwofqaaaodQEJFAOW");
+
+    ::BIGNUM bn;
+    ::BN_init(&bn);
+
+    BOOST_CHECK_THROW(elle::serialize::from_string<
+                        elle::serialize::InputBase64Archive>(archive) >> bn,
+                      elle::serialize::Exception);
+  }
 }
 
 /*-----.
@@ -87,5 +98,5 @@ int
 main(int argc,
      char** argv)
 {
-  return boost::unit_test::unit_test_main(test, argc, argv);
+  return (boost::unit_test::unit_test_main(test, argc, argv));
 }
