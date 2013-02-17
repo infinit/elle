@@ -45,9 +45,7 @@ namespace infinit
             new rsa::PrivateKey{std::move(pair.second)}};
 
           // Construct a key pair based on both public and private key.
-          KeyPair keypair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}};
-
-          return (keypair);
+          return (Keypair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}});
         }
         default:
           throw Exception("unknown or non-supported asymmetric "
