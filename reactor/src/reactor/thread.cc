@@ -2,6 +2,7 @@
 
 #include <elle/log.hh>
 
+#include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>
@@ -128,7 +129,7 @@ namespace reactor
           }
         if (_exception)
           {
-            Exception* e = _exception;
+            elle::Exception* e = _exception;
             _exception = 0;
             ELLE_TRACE("%s: re-raise exception", *this);
             e->raise_and_delete();
@@ -154,7 +155,7 @@ namespace reactor
   }
 
   void
-  Thread::raise(Exception* e)
+  Thread::raise(elle::Exception* e)
   {
     _exception = e;
   }

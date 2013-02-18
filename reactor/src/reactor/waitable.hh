@@ -6,6 +6,8 @@
 # include <boost/function.hpp>
 # include <boost/noncopyable.hpp>
 
+# include <elle/Exception.hh>
+
 # include <reactor/fwd.hh>
 
 namespace reactor
@@ -82,7 +84,7 @@ namespace reactor
        *
        * @param e The exception threads must throw.
        */
-      void _raise(Exception* e);
+      void _raise(elle::Exception* e);
 
     private:
       /// Let threads register/unregister themselves.
@@ -90,7 +92,7 @@ namespace reactor
       /// Waiting threads.
       Waiters _threads;
       /// Exception woken thread must throw.
-      Exception* _exception;
+      elle::Exception* _exception;
   };
 
   /// Add a Waitable into Waitables.

@@ -17,9 +17,6 @@ namespace reactor
     //     _backtrace.strip_base(t->_backtrace_root);
   }
 
-  Exception::~Exception() throw ()
-  {}
-
   Terminate::Terminate()
     : Super("thread termination")
   {}

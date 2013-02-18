@@ -1,11 +1,11 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <elle/types.hh>
+#include <elle/Exception.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
+#include <elle/types.hh>
 
-#include <reactor/exception.hh>
 #include <reactor/storage.hh>
 
 namespace elle
@@ -52,7 +52,7 @@ namespace elle
             else if (level == "DUMP")
               return Logger::Level::dump;
             else
-              throw reactor::Exception
+              throw elle::Exception
                 (elle::sprintf("invalid log level: %s", level));
           }
         else

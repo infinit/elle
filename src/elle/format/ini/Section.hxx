@@ -2,8 +2,8 @@
 # define ELLE_FORMAT_INI_SECTION_HXX
 
 # include <elle/concurrency/Scheduler.hh>
-
-# include <reactor/exception.hh>
+# include <elle/Exception.hh>
+# include <elle/printf.hh>
 
 # include <sstream>
 # include <stdexcept>
@@ -36,7 +36,8 @@ namespace elle { namespace format { namespace ini {
             std::stringstream ss(it->second);
             ss >> value;
             if (ss.fail())
-              throw reactor::Exception("Could not convert '" + it->second + "'");
+              throw elle::Exception(elle::sprintf("Could not convert '%s'",
+                                                  it->second));
             return value;
           }
         return default_value;

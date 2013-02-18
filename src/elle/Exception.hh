@@ -7,6 +7,14 @@
 # include <elle/Backtrace.hh>
 # include <elle/types.hh>
 
+#define ELLE_EXCEPTION(Name)                    \
+  virtual void raise_and_delete() const         \
+  {                                             \
+    Name actual(*this);                         \
+    delete this;                                \
+    throw actual;                               \
+  }
+
 namespace elle
 {
   /// Base class for exception, with backtrace.
@@ -18,6 +26,7 @@ namespace elle
   public:
     Exception(elle::String const& format);
     Exception(elle::Backtrace const& bt, elle::String const& format);
+    ELLE_EXCEPTION(Exception);
 
   private:
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);

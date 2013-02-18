@@ -106,7 +106,7 @@ namespace reactor
   }
 
   void
-  Waitable::_raise(Exception* e)
+  Waitable::_raise(elle::Exception* e)
   {
     _exception = e;
   }

@@ -5,14 +5,6 @@
 
 # include <reactor/fwd.hh>
 
-#define INFINIT_REACTOR_EXCEPTION(Name)         \
-  virtual void raise_and_delete() const         \
-  {                                             \
-    Name actual(*this);                         \
-    delete this;                                \
-    throw actual;                               \
-  }
-
 namespace reactor
 {
   class Exception: public elle::Exception
@@ -20,9 +12,7 @@ namespace reactor
   public:
     Exception(const std::string& message);
     Exception(elle::Backtrace const& bt, elle::String const& format);
-    virtual ~Exception() throw ();
-    INFINIT_REACTOR_EXCEPTION(Exception);
-    void raise();
+    ELLE_EXCEPTION(Exception);
   };
 
   class Terminate: public Exception
@@ -30,7 +20,7 @@ namespace reactor
   public:
     typedef Exception Super;
     Terminate();
-    INFINIT_REACTOR_EXCEPTION(Terminate);
+    ELLE_EXCEPTION(Terminate);
   };
 }
 

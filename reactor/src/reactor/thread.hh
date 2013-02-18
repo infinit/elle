@@ -7,9 +7,10 @@
 # endif
 # include <boost/system/error_code.hpp>
 
+# include <elle/Backtrace.hh>
+
 # include <reactor/backend/thread.hh>
 # include <reactor/duration.hh>
-# include <reactor/exception.hh>
 # include <reactor/fwd.hh>
 # include <reactor/waitable.hh>
 
@@ -89,11 +90,11 @@ namespace reactor
   public:
     typedef boost::function<void ()> Injection;
     void inject(const Injection& injection);
-    void raise(Exception* e);
+    void raise(elle::Exception* e);
   private:
     void _action_wrapper(const Thread::Action& action);
     boost::function<void ()> _injection;
-    Exception* _exception;
+    elle::Exception* _exception;
     elle::Backtrace _backtrace_root;
     friend class Exception;
 
