@@ -326,7 +326,10 @@ class GccToolkit(Toolkit):
         lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
         for path in cfg._Config__rpath:
             if not path.absolute():
-                path = drake.Path('$ORIGIN') / path
+                if self.os is drake.os.macos:
+                    path = drake.Path('@loader_path') / path
+                else:
+                    path = drake.Path('$ORIGIN') / path
             lib_rpaths.append(path)
 
         (obj.sub_libraries for obj in objs)
@@ -356,7 +359,10 @@ class GccToolkit(Toolkit):
         lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
         for path in cfg._Config__rpath:
             if not path.absolute():
-                path = drake.Path('$ORIGIN') / path
+                if self.os is drake.os.macos:
+                    path = drake.Path('@loader_path') / path
+                else:
+                    path = drake.Path('$ORIGIN') / path
             lib_rpaths.append(path)
 
         undefined = ''
