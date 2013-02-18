@@ -1,9 +1,10 @@
 #ifndef ELLE_UTILITY_PARSER_HXX
 # define ELLE_UTILITY_PARSER_HXX
 
-# include <elle/Exception.hh>
-
 # include <boost/lexical_cast.hpp>
+
+# include <elle/Exception.hh>
+# include <elle/printf.hh>
 
 namespace elle
 {
@@ -14,7 +15,7 @@ namespace elle
      */
     template <typename ...ARGS>
     ParserException::ParserException(elle::String const &fmt, ARGS && ... args)
-        : elle::Exception(fmt, args...)
+      : elle::Exception(sprintf(fmt.c_str(), args...))
     {
       /* Do nothing special */
     }
@@ -75,7 +76,7 @@ namespace elle
       Parser::Option*   option;
 
       if (this->Locate(name, option) == false)
-        throw ParserException("unable to locate the option '%s'", name.c_str());
+        throw ParserException("unable to locate the option '%s'", name);
 
       if (option->state == Parser::StateDeactivated)
         throw ParserException("the option '%s' has not been activated",

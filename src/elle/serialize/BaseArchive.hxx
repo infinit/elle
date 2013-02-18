@@ -101,7 +101,10 @@ namespace elle
           &val,
           ELLE_PRETTY_TYPE(T),
           format.version
-      ) Serializer::Serialize(this->self(), const_cast<T&>(val), format.version);
+        )
+        Serializer::Serialize(this->self(),
+                              const_cast<T&>(val),
+                              format.version);
     }
 
     //-------------------------------------------------------------------------

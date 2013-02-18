@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <elle/io/Path.hh>
 #include <elle/io/Pattern.hh>
 

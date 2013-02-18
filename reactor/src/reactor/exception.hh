@@ -1,9 +1,7 @@
 #ifndef INFINIT_REACTOR_EXCEPTION_HH
 # define INFINIT_REACTOR_EXCEPTION_HH
 
-# include <stdexcept>
-
-# include <elle/Backtrace.hh>
+# include <elle/Exception.hh>
 
 # include <reactor/fwd.hh>
 
@@ -17,24 +15,15 @@
 
 namespace reactor
 {
-  class Exception: public std::runtime_error
+  class Exception: public elle::Exception
   {
   public:
     Exception(const std::string& message);
-    Exception(const std::string& message,
-              elle::Backtrace const& bt);
+    Exception(elle::Backtrace const& bt, elle::String const& format);
     virtual ~Exception() throw ();
     INFINIT_REACTOR_EXCEPTION(Exception);
-    elle::Backtrace const& backtrace() const;
-    Exception const* inner_exception() const;
-    void inner_exception(Exception* e);
     void raise();
-  private:
-    elle::Backtrace _backtrace;
-    Exception* _inner;
   };
-
-  std::ostream& operator << (std::ostream& s, Exception const& e);
 
   class Terminate: public Exception
   {

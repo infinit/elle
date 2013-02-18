@@ -19,11 +19,9 @@ namespace elle
   namespace nat
   {
 
-  namespace {
-
-    namespace ec = elle::concurrency;
+  namespace
+  {
     namespace rnet = reactor::network;
-
   }
 
   // Class Hole {{{

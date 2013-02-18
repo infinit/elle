@@ -1,3 +1,5 @@
+#include <boost/asio.hpp>
+
 #include <elle/HttpClient.hh>
 
 #include <elle/log.hh>

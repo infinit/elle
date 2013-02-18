@@ -44,7 +44,7 @@ def configure(cxx_toolkit, cxx_config, curl = None):
     'src/elle/CrashReporter.cc',
     'src/elle/CrashReporter.hh',
     'src/elle/Exception.hh',
-    'src/elle/Exception.hxx',
+    'src/elle/Exception.cc',
     'src/elle/IOStream.cc',
     'src/elle/IOStream.hh',
     'src/elle/Printable.cc',

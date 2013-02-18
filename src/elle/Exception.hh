@@ -1,28 +1,30 @@
 #ifndef ELLE_EXCEPTION_HH
 # define ELLE_EXCEPTION_HH
 
-# include <reactor/exception.hh>
+# include <stdexcept>
 
+# include <elle/attribute.hh>
+# include <elle/Backtrace.hh>
 # include <elle/types.hh>
 
 namespace elle
 {
-
-  /// This class abstracts a reactor exception for the current scheduler.
-  class Exception:
-    public reactor::Exception
+  /// Base class for exception, with backtrace.
+  class Exception: public std::runtime_error
   {
-    /*-------------.
-    | Construction |
-    `-------------*/
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
-    template <typename... Args>
-    Exception(elle::String const& format,
-              Args&&... args);
+    Exception(elle::String const& format);
+    Exception(elle::Backtrace const& bt, elle::String const& format);
+
+  private:
+    ELLE_ATTRIBUTE_R(Backtrace, backtrace);
+    ELLE_ATTRIBUTE_RW(Exception*, inner_exception);
   };
 
+  std::ostream& operator << (std::ostream& s, Exception const& e);
 }
-
-# include <elle/Exception.hxx>
 
 #endif

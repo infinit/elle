@@ -39,19 +39,21 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-        throw Exception("the file '%s' does not seem to exist", path);
+        throw Exception(elle::sprintf
+                        ("the file '%s' does not seem to exist", path));
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
-        throw Exception("%s", ::strerror(errno));
+        throw Exception(::strerror(errno));
 
       // prepare the data.
       data.size(status.st_size);
 
       // open the file.
       if ((fd = ::open(path.string().c_str(), O_RDONLY)) == -1)
-        throw Exception("failed to open %s: %s",
-               path.string().c_str(), ::strerror(errno));
+        throw Exception(elle::sprintf("failed to open %s: %s",
+                                      path.string().c_str(),
+                                      ::strerror(errno)));
 
       // read the file's content.
       while (roffset < data.size())
@@ -71,7 +73,8 @@ namespace elle
 
               ::close(fd);
 
-              throw Exception("read error: %s", ::strerror(errno));
+              throw Exception(elle::sprintf("read error: %s",
+                                            ::strerror(errno)));
             }
 
           roffset += rbytes;
@@ -102,7 +105,7 @@ namespace elle
       if ((fd = ::open(path.string().c_str(),
                        O_CREAT | O_TRUNC | O_WRONLY,
                        0600)) == -1)
-        throw Exception("%s", ::strerror(errno));
+        throw Exception(::strerror(errno));
 
       // write the text to the file.
       while (woffset < data.size())
@@ -120,7 +123,7 @@ namespace elle
                 continue;
 
               ::close(fd);
-              throw Exception("%s", ::strerror(errno));
+              throw Exception(::strerror(errno));
             }
 
           if (wbytes == 0)
@@ -257,7 +260,8 @@ namespace elle
     {
       // does the file exist.
       if (File::Exist(path) == false)
-        throw Exception("the file '%s' does not seem to exist", path);
+        throw Exception(elle::sprintf("the file '%s' does not seem to exist",
+                                      path));
 
       // unlink the file.
       ::unlink(path.string().c_str());

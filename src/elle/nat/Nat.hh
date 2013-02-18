@@ -13,11 +13,9 @@
 namespace elle {
 namespace nat {
 
-namespace {
-
-namespace ec = elle::concurrency;
-namespace rnet = reactor::network;
-
+namespace
+{
+  namespace rnet = reactor::network;
 }
 
 template <class C>

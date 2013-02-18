@@ -4,6 +4,8 @@
 #include <elle/HttpClient.hh>
 #include <elle/system/platform.hh>
 
+#include <reactor/scheduler.hh>
+
 #include "CrashReporter.hh"
 
 #include <fstream>

@@ -2,9 +2,9 @@
 #include <elle/io/File.hh>
 #include <elle/io/Link.hh>
 #include <elle/io/Path.hh>
-
 #include <elle/system/platform.hh>
 #include <elle/system/system.hh>
+#include <elle/printf.hh>
 
 #include <sstream>
 #include <stdexcept>
@@ -123,7 +123,8 @@ namespace elle
         }
       catch (std::exception const & e)
         {
-          throw Exception("couldn't make path '%s': %s", path.string().c_str(), e.what());
+          throw Exception(elle::sprintf("couldn't make path '%s': %s",
+                                        path.string().c_str(), e.what()));
         }
 
       return Status::Ok;
@@ -201,7 +202,8 @@ namespace elle
         }
       catch (std::exception const & e)
         {
-          throw Exception("couldn't make path '%s': %s", directory.c_str(), e.what());
+          throw Exception(elle::sprintf("couldn't make path '%s': %s",
+                                        directory, e.what()));
         }
 
       return Status::Ok;

@@ -9,6 +9,8 @@
 
 # include <elle/Backtrace.hh>
 
+# include <reactor/fwd.hh>
+
 namespace elle
 {
   namespace signal

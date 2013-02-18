@@ -42,8 +42,9 @@ namespace elle
 
       // locate the ':' separator.
       if ((separator = string.find_first_of(':')) == string.npos)
-        throw Exception("unable to locate the host/port separator in '%s'",
-               string.c_str());
+        throw Exception(elle::sprintf
+                        ("unable to locate the host/port separator in '%s'",
+                         string));
 
       // create the host.
       if (this->host.Create(string.substr(0, separator)) == Status::Error)

@@ -29,7 +29,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            throw Exception("%s", err.what());
+            throw Exception(err.what());
           }
 
         out = ss.str();
@@ -53,7 +53,7 @@ namespace elle
           }
         catch (std::exception const& err)
           {
-            throw Exception("%s", err.what());
+            throw Exception(err.what());
           }
 
         return Status::Ok;

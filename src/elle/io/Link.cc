@@ -3,7 +3,7 @@
 #include <elle/io/Directory.hh>
 #include <elle/io/Path.hh>
 #include <elle/os/path.hh>
-
+#include <elle/printf.hh>
 #include <elle/system/system.hh>
 #include <elle/system/platform.hh>
 
@@ -45,8 +45,10 @@ namespace elle
       // create the link.
 #if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
       if (::symlink(target.string().c_str(), link.string().c_str()))
-        throw Exception("symlink failed: %s -> %s: %s", link.string().c_str(),
-               target.string().c_str(), ::strerror(errno));
+        throw Exception(sprintf("symlink failed: %s -> %s: %s",
+                                link.string(),
+                                target.string(),
+                                ::strerror(errno)));
 #elif defined(INFINIT_WINDOWS)
       elle::os::path::make_symlink(link.string(), target.string());
       if (elle::os::path::check_symlink(target.string()))

@@ -113,8 +113,8 @@ namespace elle
       // Retrieve the associated generator.
       if ((scoutor = this->_container.find(product)) ==
           this->_container.end())
-        throw Exception("unable to locate the generatoid for the "
-                        "given product '%s'", product);
+        throw Exception(elle::sprintf("unable to locate the generatoid for the "
+                                      "given product '%s'", product));
 
       // Allocate and return the instance.
       return (reinterpret_cast<T*>(scoutor->second->allocate(arguments...)));
