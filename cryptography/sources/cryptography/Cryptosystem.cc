@@ -1,7 +1,9 @@
+#include <ostream>
+
+#include <elle/printf.hh>
+
 #include <cryptography/Cryptosystem.hh>
 #include <cryptography/Exception.hh>
-
-#include <ostream>
 
 namespace infinit
 {
@@ -23,8 +25,8 @@ namespace infinit
           break;
         }
         default:
-          throw Exception("unknown asymmetric cryptosystem '%s'",
-                          static_cast<int>(cryptosystem));
+          throw Exception(elle::sprintf("unknown asymmetric cryptosystem '%s'",
+                                        static_cast<int>(cryptosystem)));
       }
 
       return (stream);

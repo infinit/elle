@@ -45,10 +45,9 @@ namespace infinit
           return (KeyPair(PublicKey(std::move(K)), PrivateKey(std::move(k))));
         }
         default:
-          throw Exception("unknown or non-supported asymmetric "
-                          "cryptosystem '%s'", cryptosystem);
+          throw Exception(elle::sprintf("unknown or non-supported asymmetric "
+                                        "cryptosystem '%s'", cryptosystem));
       }
-
       elle::unreachable();
     }
 

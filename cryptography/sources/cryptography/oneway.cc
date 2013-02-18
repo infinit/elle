@@ -42,10 +42,9 @@ namespace infinit
           case Algorithm::sha512:
             return (::EVP_sha512());
           default:
-            throw Exception("unable to resolve the given one-way "
-                            "function name '%s'", name);
+            throw Exception(elle::sprintf("unable to resolve the given one-way "
+                                          "function name '%s'", name));
         }
-
         elle::unreachable();
       }
 
@@ -106,8 +105,8 @@ namespace infinit
             break;
           }
           default:
-            throw Exception("unknown one-way algorithm '%s'",
-                            static_cast<int>(algorithm));
+            throw Exception(elle::sprintf("unknown one-way algorithm '%s'",
+                                          static_cast<int>(algorithm)));
         }
 
         return (stream);

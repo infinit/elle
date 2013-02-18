@@ -88,9 +88,10 @@ namespace infinit
                        &size,
                        buffer.contents(),
                        buffer.size()) <= 0)
-            throw Exception("unable to pre-compute the size of the encrypted "
-                            "output: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception(elle::sprintf("unable to pre-compute the size of "
+                                          "the encrypted output: %s",
+                                          ::ERR_error_string(ERR_get_error(),
+                                                             nullptr)));
 
           // Prepare the key code for receiving the encrypted secret.
           Code key(size);
@@ -103,8 +104,10 @@ namespace infinit
                        reinterpret_cast<const unsigned char*>(
                          buffer.contents()),
                        buffer.size()) <= 0)
-            throw Exception("unable to apply the encryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception(elle::sprintf("unable to apply the encryption "
+                                          "process: %s",
+                                          ::ERR_error_string(ERR_get_error(),
+                                                             nullptr)));
 
           // Set the final key size.
           key.buffer().size(size);
@@ -150,9 +153,10 @@ namespace infinit
                        reinterpret_cast<const unsigned char*>(
                          key.buffer().contents()),
                        key.buffer().size()) <= 0)
-            throw Exception("unable to pre-compute the size of the decrypted "
-                            "output: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to pre-compute the size of the decrypted "
+                             "output: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Prepare the buffer for receiving the decrypted key's archive.
           elle::Buffer buffer(size);
@@ -165,8 +169,9 @@ namespace infinit
                        reinterpret_cast<const unsigned char*>(
                          key.buffer().contents()),
                        key.buffer().size()) <= 0)
-            throw Exception("unable to apply the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception(elle::sprintf
+                            ("unable to apply the decryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Set the final buffer size.
           buffer.size(size);
@@ -204,9 +209,10 @@ namespace infinit
                        reinterpret_cast<const unsigned char*>(
                          digest.buffer().contents()),
                        digest.buffer().size()) <= 0)
-            throw Exception("unable to pre-compute the size of the signature "
-                            "output: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to pre-compute the size of "
+                             "the signature output: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Prepare the signature.
           Signature signature(size);
@@ -219,8 +225,9 @@ namespace infinit
                        reinterpret_cast<const unsigned char*>(
                          digest.buffer().contents()),
                        digest.buffer().size()) <= 0)
-            throw Exception("unable to apply the signature process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to apply the signature process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Set the final signature size.
           signature.buffer().size(size);
@@ -264,8 +271,9 @@ namespace infinit
             case 0:
               return (false);
             default:
-              throw Exception("unable to verify the signature: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr));
+              throw Exception
+                (elle::sprintf("unable to verify the signature: %s",
+                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
 
           elle::unreachable();
@@ -345,8 +353,9 @@ namespace infinit
                                    nullptr,
                                    key,
                                    iv) == 0)
-            throw Exception("unable to initialize the encryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to initialize the encryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
@@ -383,8 +392,9 @@ namespace infinit
                                   &size_update,
                                   plain.buffer().contents(),
                                   plain.buffer().size()) == 0)
-            throw Exception("unable to apply the encryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to apply the encryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Finialise the ciphering process.
           int size_finalize(0);
@@ -393,8 +403,9 @@ namespace infinit
                                     code.buffer().mutable_contents() +
                                     size_header + size_update,
                                     &size_finalize) == 0)
-            throw Exception("unable to finalize the encryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to finalize the encryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the code size with the actual size of the generated data.
           code.buffer().size(size_header + size_update + size_finalize);
@@ -462,8 +473,9 @@ namespace infinit
                                    nullptr,
                                    key,
                                    iv) == 0)
-            throw Exception("unable to initialize the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to initialize the decryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
@@ -483,8 +495,9 @@ namespace infinit
                                   sizeof (magic) - 1 + sizeof (salt),
                                   code.buffer().size() -
                                   (sizeof (magic) - 1 + sizeof (salt))) == 0)
-            throw Exception("unable to apply the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to apply the decryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Finalise the ciphering process.
           int size_final(0);
@@ -493,8 +506,9 @@ namespace infinit
                                     clear.buffer().mutable_contents() +
                                     size_update,
                                     &size_final) == 0)
-            throw Exception("unable to finalize the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to finalize the decryption process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the clear size with the actual size of the data decrypted.
           clear.buffer().size(size_update + size_final);
@@ -538,8 +552,9 @@ namespace infinit
 
           // Initialise the digest.
           if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
-            throw Exception("unable to initialize the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to initialize the digest process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           ELLE_ASSERT(plain.buffer().contents() != nullptr);
 
@@ -547,8 +562,9 @@ namespace infinit
           if (::EVP_DigestUpdate(&context,
                                  plain.buffer().contents(),
                                  plain.buffer().size()) <= 0)
-            throw Exception("unable to apply the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to apply the digest process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Finalise the digest.
           unsigned int size;
@@ -556,16 +572,18 @@ namespace infinit
           if (::EVP_DigestFinal_ex(&context,
                                    digest.buffer().mutable_contents(),
                                    &size) <=0)
-            throw Exception("unable to finalize the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to finalize the digest process: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the digest final size.
           digest.buffer().size(size);
 
           // Clean the context.
           if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Exception("unable to clean the digest context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception
+              (elle::sprintf("unable to clean the digest context: %s",
+                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
