@@ -35,6 +35,7 @@ def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_conf
     'sources/cryptography/Cryptosystem.hh',
     'sources/cryptography/Digest.hh',
     'sources/cryptography/Exception.hh',
+    'sources/cryptography/Exception.cc',
     'sources/cryptography/Input.cc',
     'sources/cryptography/Input.hh',
     'sources/cryptography/KeyPair.cc',

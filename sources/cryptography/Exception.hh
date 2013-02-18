@@ -16,13 +16,9 @@ namespace infinit
       | Construction |
        `-------------*/
     public:
-      template <typename... A>
-      Exception(elle::String const& format,
-                A&&... arguments);
+      Exception(elle::String const& message);
     };
   }
 }
-
-# include <cryptography/Exception.hxx>
 
 #endif

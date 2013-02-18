@@ -45,8 +45,8 @@ namespace infinit
           case Algorithm::aes256:
             return (::EVP_aes_256_cbc());
           default:
-            throw Exception("unable to resolve the given cipher "
-                            "function name '%s'", name);
+            throw Exception(elle::sprintf("unable to resolve the given cipher "
+                                          "function name '%s'", name));
         }
 
         elle::unreachable();
@@ -118,8 +118,8 @@ namespace infinit
             break;
           }
           default:
-            throw Exception("unknown cipher algorithm '%s'",
-                            static_cast<int>(algorithm));
+            throw Exception(elle::sprintf("unknown cipher algorithm '%s'",
+                                          static_cast<int>(algorithm)));
         }
 
         return (stream);

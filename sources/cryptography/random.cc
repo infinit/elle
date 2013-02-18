@@ -56,10 +56,11 @@ namespace infinit
           std::ifstream random_source_file(source);
 
           if (random_source_file.good() == false)
-            throw Exception("unable to open the random source file '%s': %s",
-                            source,
-                            std::error_code(errno,
-                                            std::system_category()).message());
+            throw Exception
+              (elle::sprintf("unable to open the random source file '%s': %s",
+                             source,
+                             std::error_code(errno,
+                                             std::system_category()).message()));
 
           // Read random data.
           random_source_file.read(reinterpret_cast<char *>(temporary),
