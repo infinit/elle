@@ -368,7 +368,7 @@ class GccToolkit(Toolkit):
                 concatenate(cfg.flags),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
-                concatenate(lib_rpaths, '-Wl,-rpath='),
+                concatenate(lib_rpaths, '-Wl,-rpath,'),
                 undefined,
                 concatenate(objs),
                 exe,
