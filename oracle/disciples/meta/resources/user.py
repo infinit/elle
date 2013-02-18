@@ -97,7 +97,7 @@ class GenerateHandle(Page):
     def gen_unique(self, fullname):
         h = self.GET(fullname).lower()
         while database.users().find_one({'handle': h}):
-            h += int(random.random() * 10)
+            h += str(int(random.random() * 10))
         return h
 
 class Message(Page):
