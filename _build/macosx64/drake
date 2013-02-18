@@ -4,8 +4,11 @@ import drake
 import drake.cxx
 import drake.cxx.boost
 import drake.cxx.qt
+import os
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler = '/opt/local/bin/g++-mp-4.7')
+cxx_compiler = os.getenv('CXX', 'g++')
+
+cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
 cxx_config = drake.cxx.Config()
 cxx_config.flag('-fPIC')
 cxx_config.flag('-Wall')
