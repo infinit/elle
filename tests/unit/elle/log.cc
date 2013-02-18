@@ -75,12 +75,12 @@ struct LL: public L
     bar();
   }
 
-  void foo() const override { ELLE_TRACE("sfoo"); }
+  void foo() const override { ELLE_TRACE("foo"); }
   void bar() const override { ELLE_TRACE("bar"); }
 };
 
 LL const&
-crasher()
+static_from_function()
 {
   static LL ll{};
 
@@ -115,15 +115,18 @@ void s()
   }
 }
 
-static LL crahs0{};
-static std::unique_ptr<LL> crahs1{new LL{}};
+static LL static_global{};
+static std::unique_ptr<LL> static_uptr{new LL{}};
+LL global{};
 
 int main()
 {
-  crasher().foo();
+  static LL static_local{};
+  static_from_function().foo();
 
-  crahs0.foo();
-  crahs1->foo();
+  static_local.foo();
+  static_global.foo();
+  static_uptr->foo();
 
   ELLE_ERR("err BIET main");
   ELLE_LOG("log BIET main");
@@ -134,10 +137,10 @@ int main()
   s();
 
   {
-    LL* l = new LL{};
-    l->foo();
+    LL* localptr = new LL{};
+    localptr->foo();
 
-    delete l;
+    delete localptr;
   }
 
   ELLE_LOG_COMPONENT("test_log.biet");
@@ -147,10 +150,13 @@ int main()
   ELLE_DEBUG("debug BIET main");
   ELLE_DUMP("dump BIET main");
 
-  crasher().foo();
+  static_from_function().foo();
 
-  crahs0.foo();
-  crahs1->foo();
+  static_local.foo();
+  static_global.foo();
+  static_uptr->foo();
+
+  global.foo();
 
   elle::print("tests done.");
   return 0;
