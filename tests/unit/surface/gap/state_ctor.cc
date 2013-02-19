@@ -127,7 +127,7 @@ main()
   unsigned int counter = 0;
   try
   {
-    for (counter = 0; counter < 50; ++counter)
+    for (counter = 0; counter < 10; ++counter)
     {
       auto process_id = s1.send_files(email2, {to_send});
 
