@@ -26,9 +26,9 @@ namespace infinit
       static_assert(!std::is_same<T, Clear>::value,
                     "this call should never have occured");
 
-      Clear clear{this->decrypt(code)};
+      Clear clear(this->decrypt(code));
 
-      // XXX[this is the way it should be] T value{clear.buffer().reader()};
+      // XXX[this is the way it should be] T value(clear.buffer().reader());
       T value;
       clear.buffer().reader() >> value;
 
@@ -48,7 +48,7 @@ namespace infinit
       elle::Buffer buffer;
       buffer.writer() << value;
 
-      return (this->sign(Plain{elle::WeakBuffer{buffer}}));
+      return (this->sign(Plain(elle::WeakBuffer(buffer))));
     }
 
     template <typename T>
@@ -64,7 +64,7 @@ namespace infinit
       elle::Buffer buffer;
       buffer.writer() << value;
 
-      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+      return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
     }
   }
 }

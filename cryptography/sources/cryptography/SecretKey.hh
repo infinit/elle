@@ -91,7 +91,7 @@ namespace infinit
         ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
         ELLE_TRACE_METHOD(code);
 
-        Clear clear{this->decrypt(code)};
+        Clear clear(this->decrypt(code));
 
         clear.buffer().reader() >> object;
       }

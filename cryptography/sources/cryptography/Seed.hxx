@@ -5,7 +5,6 @@
 | Serializable |
 `-------------*/
 
-/* XXX
 # include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(infinit::cryptography::Seed,
@@ -15,7 +14,7 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::Seed,
 {
   enforce(format == 0);
 
-  archive & value.region;
+  archive & value._buffer;
 }
-*/
+
 #endif

@@ -491,7 +491,13 @@ namespace infinit
       privatekey::Interface*
       PrivateKey::clone() const
       {
-        return (new PrivateKey{*this});
+        return (new PrivateKey(*this));
+      }
+
+      elle::Natural32
+      PrivateKey::length() const
+      {
+        return (static_cast<elle::Natural32>(::EVP_PKEY_bits(this->_key)));
       }
 
       Cryptosystem
