@@ -155,7 +155,7 @@ namespace infinit
 
         factory.record<rsa::PublicKey>(Cryptosystem::rsa);
 
-        return (std::move(factory));
+        return (factory);
       }
 
       /*----------.
