@@ -3,6 +3,12 @@
 
 """
 trophonius-server provide a message queue to infinit clients.
+
+Trophonius (the Latinate spelling) or Trophonios (the transliterated Greek
+spelling of Τροφώνιος) was a Greek hero or daimon or god—it was never certain
+which one—with a rich mythological tradition and an oracular cult at Lebadaea
+in Boeotia.
+
 """
 
 import sys
