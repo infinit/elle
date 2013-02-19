@@ -82,7 +82,7 @@ class Create(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         message = 'message' in self.data and self.data['message'] or ""
 
@@ -248,7 +248,7 @@ class Accept(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         transaction =  database.transactions().find_one(
             database.ObjectId(self.data['transaction_id'].strip()))
@@ -333,7 +333,7 @@ class Prepare(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         transaction =  database.transactions().find_one(
             database.ObjectId(self.data['transaction_id'].strip()))
@@ -397,7 +397,7 @@ class Start(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         transaction =  database.transactions().find_one(
             database.ObjectId(self.data['transaction_id'].strip()))
@@ -461,7 +461,7 @@ class Finish(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         transaction =  database.transactions().find_one(
             database.ObjectId(self.data['transaction_id'].strip()))
@@ -528,7 +528,7 @@ class Cancel(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         transaction =  database.transactions().find_one(
             database.ObjectId(self.data['transaction_id'].strip()))

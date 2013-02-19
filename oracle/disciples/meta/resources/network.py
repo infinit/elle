@@ -110,7 +110,7 @@ class AddUser(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         network = self.network(self.data['_id'])
         if network['owner'] != self.user['_id']:
@@ -318,7 +318,7 @@ class Update(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         _id = database.ObjectId(self.data['_id'])
         to_save = self.network(_id)
@@ -413,7 +413,7 @@ class AddDevice(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
@@ -470,7 +470,7 @@ class ConnectDevice(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         network_id = database.ObjectId(self.data["_id"])
         device_id = database.ObjectId(self.data["device_id"])
@@ -546,7 +546,7 @@ class Create(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         name = self.data.get('name', '').strip()
         try:
@@ -611,7 +611,7 @@ class Delete(_Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         network_id = self.data['network_id']
         _id = database.ObjectId(network_id)

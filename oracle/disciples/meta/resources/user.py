@@ -373,7 +373,7 @@ class Register(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         user = self.data
 
@@ -463,7 +463,7 @@ class Login(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         loggin_info = self.data
 

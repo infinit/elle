@@ -142,11 +142,11 @@ class Page(object):
                                   d)
 
     def error(self, err=error.UNKNOWN, msg=""):
-        assert isinstance(err, list)
+        assert isinstance(err, (list, tuple))
         assert isinstance(msg, str)
         if not msg:
             msg = err[1]
-
+        print("GOT ERROR", err[0], msg)
         return json.dumps({
             'success': False,
             'error_code': err[0],

@@ -74,7 +74,7 @@ class Create(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         device = self.data
 
@@ -134,7 +134,7 @@ class Update(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         device = self.data
 
@@ -175,7 +175,7 @@ class Delete(Page):
 
         status = self.validate()
         if status:
-            return self.error(*status)
+            return self.error(status)
 
         _id = database.ObjectId(self.data['_id'])
         try:
