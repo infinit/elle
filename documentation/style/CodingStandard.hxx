@@ -11,7 +11,6 @@ namespace package
 {
   namespace module
   {
-
     /*--------.
     | Methods |
     `--------*/
@@ -57,9 +56,8 @@ namespace package
       // do not need to be exposed to the developer using the class.
       //
       // Therefore, one can notice that this comment is not intended to
-      // be extracted by Doxygen.
+      // be extracted by Doxygen i.e only two slashes are used.
     }
-
   }
 }
 

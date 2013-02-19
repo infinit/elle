@@ -18,7 +18,6 @@
 #include <cryptography/oneway.hh>
 
 #include "MetricReporter.hh"
-#include "MetricReporter.hxx"
 
 #include <fstream>
 #include <iostream>

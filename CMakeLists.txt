@@ -151,8 +151,9 @@ if (UNIX)
         -DQT_NO_KEYWORDS
         -fPIC
     )
-    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -DDEBUG -UNDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "-g3 -UDEBUG -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb3 -DDEBUG -UNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -UDEBUG -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g -UDEBUG -DNDEBUG")
 
     #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
     #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc")
@@ -188,18 +189,21 @@ if (USE_STATIC_LIBS)
 	set(CMAKE_FIND_LIBRARY_SUFFIXES
 		"${CMAKE_STATIC_LIBRARY_SUFFIX};${CMAKE_SHARED_LIBRARY_SUFFIX}"
 	)
+        set(BUILD_SHARED_LIBS False)
+        set(LINK_METHOD STATIC)
+else()
+        set(LINK_METHOD SHARED)
+        set(BUILD_SHARED_LIBS True)
 endif()
 
 #if(${CMAKE_BUILD_TYPE} MATCHES "[rR]elease|RELEASE")
 #	set(USE_STATIC_LIBS ON)
-	set(LINK_METHOD STATIC)
 #else()
 #	set(USE_STATIC_LIBS OFF)# CACHE BOOL "use static libraries for linking")
-	set(LINK_METHOD STATIC)
+#       set(LINK_METHOD STATIC)
 #endif()
 
 # tell cmake to not build shared libraries by default
-set(BUILD_SHARED_LIBS OFF)
 
 # Workaround to remove '-rdynamic' flag
 # fix scheduled for 2.8.1

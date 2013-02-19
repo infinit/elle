@@ -1,59 +1,71 @@
 #ifndef INFINIT_CRYPTOGRAPHY_SEED_HH
 # define INFINIT_CRYPTOGRAPHY_SEED_HH
-/* XXX
-# include <elle/types.hh>
-# include <elle/standalone/Region.hh>
 
 # include <cryptography/fwd.hh>
+
+# include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Buffer.hh>
+# include <elle/Printable.hh>
+# include <elle/serialize/fwd.hh>
 
 namespace infinit
 {
   namespace cryptography
   {
-
-    ///
-    /// this class represents a seed which can especially be used for
-    /// rotating keys.
-    ///
-    class Seed
+    /// XXX
+    class Seed:
+      public elle::Printable
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
     public:
-      //
-      // constants
-      //
-      static const elle::Natural32            Length;
+      Seed(KeyPair const& pair); // XXX to deduce seed length
+      // XXX load constructor
 
-      //
-      // methods
-      //
-      elle::Status            Generate();
-      elle::Status            Generate(const elle::Natural32);
+      /*--------.
+      | Methods |
+      `--------*/
+    public:
+      /// Rotate the current seed with the given private key, leading to a
+      /// new seed.
+      Seed
+      rotate(PrivateKey const& k) const;
+      /// Return the base seed which has been rotated with the complementary
+      /// private key to the given public key.
+      Seed
+      derive(PublicKey const& K) const;
 
-      elle::Status            Rotate(const PrivateKey&,
-                               Seed&) const;
-      elle::Status            Derive(const PublicKey&,
-                               Seed&) const;
+      /*----------.
+      | Operators |
+      `----------*/
+    public:
+      elle::Boolean
+      operator ==(Seed const& other) const;
+      ELLE_OPERATOR_NEQ(Seed);
 
-      //
-      // interfaces
-      //
+      /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      virtual
+      void
+      print(std::ostream& stream) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Seed);
 
-      // object
-      elle::Boolean           operator ==(const Seed&) const;
-
-      // dumpable
-      elle::Status            Dump(const elle::Natural32 = 0) const;
-
-      //
-      // attributes
-      //
-      elle::standalone::Region            region;
+      /*-----------.
+      | Attributes |
+      `-----------*/
+    private:
+      ELLE_ATTRIBUTE(elle::Buffer, buffer);
     };
-
   }
 }
-*/
 
-#include <cryptography/Seed.hxx>
+# include <cryptography/Seed.hxx>
 
 #endif

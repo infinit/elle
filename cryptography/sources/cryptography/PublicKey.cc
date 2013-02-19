@@ -89,6 +89,16 @@ namespace infinit
       return (this->_implementation->decrypt(code));
     }
 
+    elle::Natural32
+    PublicKey::length() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_implementation != nullptr);
+
+      return (this->_implementation->length());
+    }
+
     /*----------.
     | Operators |
     `----------*/
@@ -155,7 +165,7 @@ namespace infinit
 
         factory.record<rsa::PublicKey>(Cryptosystem::rsa);
 
-        return (std::move(factory));
+        return (factory);
       }
 
       /*----------.

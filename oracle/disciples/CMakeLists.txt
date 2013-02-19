@@ -28,6 +28,7 @@ message(STATUS "copying meta-tests to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying admin-console to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying trophonius-server to ${LIBRARY_OUTPUT_PATH}/python/")
 message(STATUS "copying longinus-server to ${LIBRARY_OUTPUT_PATH}/python/")
+message(STATUS "copying erginus-server to ${LIBRARY_OUTPUT_PATH}/python/")
 file(
   COPY
 	creosus-server
@@ -36,5 +37,6 @@ file(
 	admin-console
         trophonius-server
         longinus-server.py
+        erginus-server
   DESTINATION ${LIBRARY_OUTPUT_PATH}/python/
 )

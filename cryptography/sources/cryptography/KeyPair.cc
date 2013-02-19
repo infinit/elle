@@ -39,13 +39,13 @@ namespace infinit
             rsa::keypair::generate(length);
 
           // Construct high-level public and private keys.
-          std::unique_ptr<publickey::Interface> K{
-            new rsa::PublicKey{std::move(pair.first)}};
-          std::unique_ptr<privatekey::Interface> k{
-            new rsa::PrivateKey{std::move(pair.second)}};
+          std::unique_ptr<publickey::Interface> K(
+            new rsa::PublicKey(std::move(pair.first)));
+          std::unique_ptr<privatekey::Interface> k(
+            new rsa::PrivateKey(std::move(pair.second)));
 
           // Construct a key pair based on both public and private key.
-          return (KeyPair{PublicKey{std::move(K)}, PrivateKey{std::move(k)}});
+          return (KeyPair(PublicKey(std::move(K)), PrivateKey(std::move(k))));
         }
         default:
           throw Exception("unknown or non-supported asymmetric "

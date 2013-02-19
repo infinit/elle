@@ -14,7 +14,8 @@
  *     i.e Doxygen. As such the class description, method descriptions,
  *     global variable descriptions etc. are considered documentation.
  *   o XXX must be included in comments in order to specify something which
- *     needs completing or re-working.
+ *     needs completing or re-working. Note that should the modification be
+ *     important, one would have to open a ticket instead.
  *
  * All comments used for explaining the coding standards are written in
  * C-style -- i.e including this comment -- so as to be distinguishable
@@ -25,6 +26,10 @@
  *   o Values (attributes, variables, enums etc.): lowercase
  */
 
+/*
+ * A single space must follow macros such as ifndef, define etc., no matter
+ * their position.
+ */
 #ifndef PACKAGE_MODULE_CODINGSTANDARD_HH
 # define PACKAGE_MODULE_CODINGSTANDARD_HH
 /*
@@ -68,9 +73,9 @@
  * following a two-space rule and terminated by an aligned backslash,
  * as shown below.
  */
-/*--------.
+/*-------.
 | Macros |
-`--------*/
+`-------*/
 # define PACKAGE_MODULE_STRINGIFY(_variable_)                           \
   #_variable_
 
@@ -83,7 +88,6 @@ namespace package
 {
   namespace module
   {
-
 /*
  * This long separator -- as opposed to the short separators which will be
  * introduced later on -- can be relied upon should several classes be defined
@@ -169,11 +173,17 @@ namespace package
       | Enumerations |
       `-------------*/
     public:
+      /*
+       * Note that opening and closing braces are always aligned on the previous
+       * keyword. Thus, the keywords if, for, while, enum etc. are followed by
+       * braces (on their own line) which are perfectly aligned. Then, the
+       * scoped content is aligned with two spaces.
+       */
       enum class State
-        {
-          inprogress,
-          done
-        };
+      {
+        inprogress,
+        done
+      };
 
       /*
        * Note that constants, since representing values, are named in
@@ -189,7 +199,11 @@ namespace package
       | Static Attributes |
       `------------------*/
     public:
-      /// This description line explains what is this static attribute.
+      /*
+       * Comments on methods and attributes tend to be straightforward,
+       * often starting with a verb rather than 'This method does that'.
+       */
+      /// Explain what is this static attribute.
       static Natural32 average_size;
 
       /*
@@ -231,7 +245,6 @@ namespace package
        */
       explicit
       CodingStandard(elle::Natural32 size);
-      ~CodingStandard();
 
       /*
        * The methods, as any other method, should be named in lowercase
@@ -254,15 +267,10 @@ namespace package
       /// Another description for a method which acts as an accessor i.e
       /// getter but the developer is not supposed to know that and thus
       /// cannot distinguish methods from accessors.
-      ///
-      /// Noteworthy is that accessors can be put in the .hxx header file
-      /// so as to force their inlining, especially when these accessors
-      /// do an extremely simple thing i.e returning an attribute or
-      /// updating it.
       Real
       something() const;
 
-      /// Another description for the method.
+      /// Compute something based on something and somethingelse.
       Natural32
       compute(another::place::SomeOtherClass const& something,
               Natural32 const somethingelse);
@@ -290,6 +298,14 @@ namespace package
                     Natural32 const right);
 
       /*-----------.
+      | Interfaces |
+      `-----------*/
+    public:
+      // printable
+      void
+      print(std::ostream& stream) const;
+
+      /*-----------.
       | Attributes |
       `-----------*/
     private:
@@ -302,17 +318,58 @@ namespace package
        * method arguments i.e compute(something, somethingelse) can
        * very easily distinguish 'something' from the private attribute
        * '_something'.
+       *
+       * However, macro functions are provided so as to generate
+       * both the private attribute along with some accessors, should
+       * they be required.
        */
       /// A description for the use of this attribute.
-      Real _something;
-
+      ELLE_ATTRIBUTE(Real, something);
       /*
        * Note however that this attribute may not need to be described
        * since its name may be self explanatory.
+       *
+       * This attribute has both a read and write accessor.
        */
-      Natural32 _size;
+      ELLE_ATTRIBUTE_RW(Natural32, size);
+      /*
+       * Pointer-based attributes within a class should make use of the
+       * unique_ptr construct in order to ensure safety.
+       *
+       * Indeed, should an error occur during the initialization of the
+       * object, the destructor is not called. Should one allocate
+       * something in _implementation, it would never be released. However,
+       * the compiler guarantees that every constructed attribute is destructed
+       * should an error occur in the initialization. Therefore, by relying
+       * on a unique_ptr, the allocated memory would be released.
+       *
+       * Now, given the following method in the current class:
+       *
+       *   void
+       *   setter(Implementation const& implementation)
+       *   {
+       *     delete this->_implementation;
+       *     this->_implementation = new Implementation{implementation};
+       *   }
+       *
+       * Using this method would be unsafe, as shown below:
+       *
+       *   CodingStandard cs;
+       *   Implementation implementation;
+       *
+       *   cs.setter(implementation);
+       *
+       * The method is invalid because, should the new Implementation throw,
+       * the CodingStandard instance _cs_ would be destructured. However, the
+       * _implementation pointer has already been deleted but already holds
+       * the pointer to the old memory. Therefore, in the destructor, it will
+       * try to delete the implementation once again, leading to an error.
+       *
+       * The right way would be to reset _implementation to nullptr after its
+       * manual deletion or even better, to rely on a unique_ptr.
+       */
+      ELLE_ATTRIBUTE(std::unique_ptr<Implementation>, implementation);
     };
-
   }
 }
 
@@ -325,4 +382,12 @@ namespace package
  */
 # include <package/module/CodingStandard.hxx>
 
+/*
+ * Note that one does not need to put an indicator of the opening macro:
+ *
+ *   #endif // PACKAGE_MODULE_CODINGSTANDARD_HH
+ *
+ * Unless of course the number of nested macro scopes is important, in which
+ * case it is tolerated.
+ */
 #endif

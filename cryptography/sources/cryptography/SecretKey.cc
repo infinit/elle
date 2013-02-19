@@ -28,10 +28,10 @@ namespace infinit
       elle::Natural32 size = length / 8;
 
       // Generate a buffer-based password.
-      elle::Buffer password{random::generate<elle::Buffer>(size)};
+      elle::Buffer password(random::generate<elle::Buffer>(size));
 
       // Return a new secret key.
-      return (SecretKey{cipher, std::move(password), oneway});
+      return (SecretKey(cipher, std::move(password), oneway));
     }
 
     /*-------------.

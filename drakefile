@@ -61,7 +61,7 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   # Cryptography
   cryptography = drake.include('cryptography', cxx_toolkit, openssl.config(), reactor.config, elle.config, boost = boost)
-  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography')
+  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib', 'cryptography/lib')
 
   # Qt
   qt = qt or drake.cxx.qt.Qt()
@@ -662,7 +662,6 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
     infinit_libs.append(horizon_slib)
   infinit_libs += [asio_udt_lib, udt_lib] # FIXME: no need to depend on UDT
 
-
   # 8infinit
   infinit_bin_config = drake.cxx.Config(cxx_config)
   infinit_bin_config += boost.config_thread()
@@ -784,16 +783,26 @@ def configure(cxx_toolkit, cxx_config, enable_horizon = True,
 
   gap_cxx_config = drake.cxx.Config(qt_cxx_config)
   gap_cxx_config.add_system_include_path('/usr/include/python3.2/')
+  gap_cxx_config.lib_path_runtime('.')
   gap_sources = drake.nodes(
     'surface/gap/State.cc',
     'surface/gap/State.hh',
     'surface/gap/gap.cc',
     'surface/gap/gap.h',
+    'surface/gap/_detail/InfinitInstanceManager.cc',
+    'surface/gap/_detail/device.cc',
+    'surface/gap/_detail/file.cc',
+    'surface/gap/_detail/network.cc',
+    'surface/gap/_detail/notification.cc',
+    'surface/gap/_detail/process.cc',
+    'surface/gap/_detail/swagger.cc',
+    'surface/gap/_detail/transaction.cc',
+    'surface/gap/_detail/user.cc',
     )
   gap_cxx_config += qt.config()
   gap_cxx_config += qt.cfg_network
   gap_lib = drake.cxx.DynLib('lib/gap',
-                             gap_sources,
+                             gap_sources + infinit_libs,
                              cxx_toolkit, gap_cxx_config)
   build << gap_lib
 

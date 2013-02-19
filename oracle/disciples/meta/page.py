@@ -95,7 +95,6 @@ class Page(object):
                 notifier.USER_STATUS,
                 {
                     'status': 1, #Connected.
-
                 }
             )
             return True
@@ -139,7 +138,8 @@ class Page(object):
         d.update(data)
         self.notifier.notify_some(notification_id,
                                   swgs,
-                                  d)
+                                  d,
+				  store = False)
 
     def error(self, err=error.UNKNOWN, msg=""):
         assert isinstance(err, (list, tuple))

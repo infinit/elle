@@ -1,0 +1,25 @@
+Such a README file should be provided for every module, describing
+the module, its purpose, its dependencies etc.
+
+Noteworthy is that every module should provide a sources/ directory
+and a tests/ directory. In other words, the following hierarchy should
+be found in every library name ${LIBRARY}:
+
+  ${LIBRARY}/
+    drakefile
+    README
+    LICENCE
+    sources/
+      ${LIBRARY}/
+        fwd.hh
+        all.hh
+        File1.hh
+        File1.cc
+        File2.hh
+        File2.cc
+        [...]
+    tests/
+      ${LIBRARY}/
+        File1.cc
+        File2.cc
+        [...]
