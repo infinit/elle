@@ -367,7 +367,7 @@ class GccToolkit(Toolkit):
 
         extra = ''
         if self.os == drake.os.macos:
-            extra = ' -undefined dynamic_lookup -Wl,-install_name,%s -Wl,-headerpad_max_install_names' % exe.path().basename()
+            extra = ' -undefined dynamic_lookup -Wl,-install_name,@rpath/%s -Wl,-headerpad_max_install_names' % exe.path().basename()
 
         return '%s %s%s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
