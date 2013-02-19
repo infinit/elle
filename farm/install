@@ -331,6 +331,7 @@ server_scripts = [
     "trophonius",
     "longinus-server.py",
     "longinus",
+    "erginus-server"
 ]
 
 if os.path.isdir(os.path.join(DIR_BUILD, "oracle")): # oracle is built
