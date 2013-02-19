@@ -34,7 +34,7 @@ namespace infinit
         elle::Buffer buffer;
         buffer.writer() << value;
 
-        return (hash(Plain{elle::WeakBuffer{buffer}}, algorithm));
+        return (hash(Plain(elle::WeakBuffer(buffer)), algorithm));
       }
     }
   }

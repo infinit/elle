@@ -325,7 +325,13 @@ namespace infinit
       publickey::Interface*
       PublicKey::clone() const
       {
-        return (new PublicKey{*this});
+        return (new PublicKey(*this));
+      }
+
+      elle::Natural32
+      PublicKey::length() const
+      {
+        return (static_cast<elle::Natural32>(::EVP_PKEY_bits(this->_key)));
       }
 
       Cryptosystem

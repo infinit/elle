@@ -1,145 +1,95 @@
-/* XXX
+#include <cryptography/Seed.hh>
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/PublicKey.hh>
+#include <cryptography/KeyPair.hh>
 #include <cryptography/random.hh>
-
-#include <cryptography/Seed.hh>
-
-#include <iostream>
 
 namespace infinit
 {
   namespace cryptography
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
 
-//
-// ---------- definitions -----------------------------------------------------
-//
-
-    ///
-    /// this defines the seed length in bits.
-    ///
-    const elle::Natural32             Seed::Length = 1024;
-
-//
-// ---------- methods ---------------------------------------------------------
-//
-
-    ///
-    /// this method generates a random seed.
-    ///
-    elle::Status              Seed::Generate()
+    Seed::Seed(KeyPair const& pair):
+      _buffer(random::generate<elle::Buffer>(pair.K().length() /
+                                             sizeof (elle::Byte)))
     {
-      return (this->Generate(Seed::Length));
     }
 
-    ///
-    /// this method generates a seed based on the given length.
-    ///
-    elle::Status              Seed::Generate(const elle::Natural32          length)
+    /*--------.
+    | Methods |
+    `--------*/
+
+    Seed
+    Seed::rotate(PrivateKey const& k) const
     {
-      elle::Natural32         size;
+//       Code              code;
 
-      // compute the size in bytes.
-      size = length / 8;
+//       // XXX si ca se trouve juste en passant Plain(this->region) ca simplifierait
+//       // XXX puisque ca eviterait de serializer le tout donc ca ne grossierait pas
+//       // XXX a cause de l'overhead de serialization.
 
-      // randomize the region.
-      // XXX[change the attribute to a buffer]
-      elle::Buffer buffer(random::generate<elle::Buffer>(size));
-      if (this->region.Duplicate(buffer.contents(), buffer.size()) == elle::Status::Error)
-        throw Exception("XXX");
+//       // encrypt the seed object with the given private key.
+//       if (k.Encrypt(*this, code) == elle::Status::Error)
+//         throw Exception("unable to 'encrypt' the seed");
 
-      return elle::Status::Ok;
+//       // detach the memory from the code.
+//       if (code.region.Detach() == elle::Status::Error)
+//         throw Exception("unable to detach the memory");
+
+//       // assign the code's region to the output seed.
+//       if (seed.region.Acquire(code.region.contents,
+//                               code.region.size) == elle::Status::Error)
+//         throw Exception("unable to acquire the region");
+
+//       return elle::Status::Ok;
     }
 
-    ///
-    /// this method rotates the seed.
-    ///
-    /// note that this operation should be performed by the seed initiator
-    /// only.
-    ///
-    elle::Status              Seed::Rotate(const PrivateKey&          k,
-                                     Seed&                      seed) const
+    Seed
+    Seed::derive(PublicKey const& K) const
     {
-      Code              code;
+//       Code              code;
+//       elle::standalone::Region chunk;
 
-      // encrypt the seed object with the given private key.
-      if (k.Encrypt(*this, code) == elle::Status::Error)
-        throw Exception("unable to 'encrypt' the seed");
+//       // wrap the seed's region.
+//       if (chunk.Wrap(this->region.contents,
+//                      this->region.size) == elle::Status::Error)
+//         throw Exception("unable to wrap the region");
 
-      // detach the memory from the code.
-      if (code.region.Detach() == elle::Status::Error)
-        throw Exception("unable to detach the memory");
+//       // create a code based on the chunk.
+//       if (code.Create(chunk) == elle::Status::Error)
+//         throw Exception("unable to create the code");
 
-      // assign the code's region to the output seed.
-      if (seed.region.Acquire(code.region.contents,
-                              code.region.size) == elle::Status::Error)
-        throw Exception("unable to acquire the region");
+//       // decrypt the code with the given public key.
+//       if (K.Decrypt(code, seed) == elle::Status::Error)
+//         throw Exception("unable to 'decrypt' the seed");
 
-      return elle::Status::Ok;
+//       return elle::Status::Ok;
     }
 
-    ///
-    /// this method derives the seed with the initiator's public key.
-    ///
-    elle::Status              Seed::Derive(const PublicKey&           K,
-                                     Seed&                      seed) const
+    /*----------.
+    | Operators |
+    `----------*/
+
+    elle::Boolean
+    Seed::operator ==(Seed const& other) const
     {
-      Code              code;
-      elle::standalone::Region chunk;
+      if (this == &other)
+        return (true);
 
-      // wrap the seed's region.
-      if (chunk.Wrap(this->region.contents,
-                     this->region.size) == elle::Status::Error)
-        throw Exception("unable to wrap the region");
-
-      // create a code based on the chunk.
-      if (code.Create(chunk) == elle::Status::Error)
-        throw Exception("unable to create the code");
-
-      // decrypt the code with the given public key.
-      if (K.Decrypt(code, seed) == elle::Status::Error)
-        throw Exception("unable to 'decrypt' the seed");
-
-      return elle::Status::Ok;
+      return (this->_buffer == other._buffer);
     }
 
-//
-// ---------- object ----------------------------------------------------------
-//
+    /*----------.
+    | Printable |
+    `----------*/
 
-    ///
-    /// this method check if two objects match.
-    ///
-    elle::Boolean             Seed::operator ==(const Seed&            element) const
+    void
+    Seed::print(std::ostream& stream) const
     {
-      // check the address as this may actually be the same object.
-      if (this == &element)
-        return true;
-
-      return (this->region == element.region);
+      stream << this->_buffer;
     }
-
-//
-// ---------- dumpable --------------------------------------------------------
-//
-
-    ///
-    /// this method dumps the seed internals.
-    ///
-    elle::Status              Seed::Dump(const elle::Natural32              margin) const
-    {
-      elle::String            alignment(margin, ' ');
-
-      std::cout << alignment << "[Seed]" << std::endl;
-
-      // dump the region.
-      if (this->region.Dump(margin + 2) == elle::Status::Error)
-        throw Exception("unable to dump the region");
-
-      return elle::Status::Ok;
-    }
-
   }
 }
-*/
