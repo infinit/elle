@@ -485,7 +485,7 @@ extern "C"
     gap_Status ret;
     try
       {
-        auto token = __TO_CPP(state)->get_token();
+        auto token = __TO_CPP(state)->token();
         return token.c_str();
       }
     CATCH_ALL(user_token);
@@ -501,7 +501,7 @@ extern "C"
     gap_Status ret;
     try
       {
-        auto email = __TO_CPP(state)->get_me().email;
+        auto email = __TO_CPP(state)->me().email;
         return email.c_str();
       }
     CATCH_ALL(user_email);
@@ -517,7 +517,7 @@ extern "C"
     gap_Status ret;
     try
       {
-        auto user_id = __TO_CPP(state)->get_me()._id;
+        auto user_id = __TO_CPP(state)->me()._id;
         return user_id.c_str();
       }
     CATCH_ALL(user_token);

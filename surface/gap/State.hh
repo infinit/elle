@@ -142,11 +142,11 @@ namespace surface
 
       /// Retrieve current user data.
       User const&
-      get_me();
+      me();
 
       /// Retrieve current user token.
       std::string const&
-      get_token();
+      token();
 
       /// Retrieve a user by its public key.
       User const&

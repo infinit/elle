@@ -278,7 +278,7 @@ namespace surface
     }
 
     std::string const&
-    State::get_token()
+    State::token()
     {
       return this->_meta->token();
     }
@@ -348,7 +348,7 @@ namespace surface
     }
 
     User const&
-    State::get_me()
+    State::me()
     {
       return this->_me;
     }
