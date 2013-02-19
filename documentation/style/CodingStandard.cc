@@ -92,14 +92,8 @@ namespace package
       CodingStandard* coding_standard = nullptr;
 
       /*
-       * Note that braces {} should be preferred for object construction because
-       * the standard is ambiguous in some cases with parentheses, as shown
-       * below. The following example does not compile because the compiler
-       * thinks a inner function named 'plain' is defined, returning a Plain
-       * and taking an argument whose name is named 'buffer' and of type
-       * WeakBuffer.
-       *
-       *   Plain plain(WeakBuffer(buffer));
+       * Note that braces {} could be preferred for object construction because
+       * the standard is ambiguous in some cases with parentheses.
        *
        * Using braces makes it easy for the compiler to distinguish object
        * construction (classes and structures) from function calls.
