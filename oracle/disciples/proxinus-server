@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+# -*- encoding: utf-8 -*-
+
+import argparse
+import select
+import select
+
+import os
+
+from socket import AF_INET, socket, SOCK_STREAM, IPPROTO_TCP
+import socket as so
+
+class Client:
+    def __init__(self, conn, addr):
+        self._conn = conn
+        self._addr = addr
+        self._file = conn.makefile()
+        self._data = str()
+
+    @property
+    def conn(self):
+        return self._conn
+
+    @property
+    def addr(self):
+        return self._addr
+
+    @property
+    def file(self):
+        return self._file
+
+class Proxy:
+    def __init__(self, endpoint):
+        self.server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+        self.server.setsockopt(so.SOL_SOCKET, so.SO_REUSEADDR, 1)
+        self.server.bind(("", 23456))
+        self.server.listen(5)
+        self.tropho = so.create_connection(endpoint)
+        self.running = False
+        self.clients = list()
+
+    def handle_accept(self, server):
+        (conn, addr) = server.accept()
+        self.clients.append(Client(conn, addr))
+
+
+    def handle_read(self, client):
+        data = client.conn.recv(2**12)
+        if data:
+            # We forward the data to trophonius
+            self.tropho.send(data)
+        else:
+            # client disconnected
+            print(client, "disconnected")
+            self.clients.remove(client)
+        pass
+
+    def handle_tropho(self, tropho):
+        data = tropho.recv(2**12)
+        if data:
+            for client in self.clients:
+                client.conn.send(data)
+        else:
+            print(tropho, "tropho disconnected")
+            raise Exception("Connection closed")
+
+    def run(self):
+        self.running = True
+        while self.running:
+            rlist = [self.server, self.tropho] + list(c.conn for c in self.clients)
+            wlist = []
+            xlist = []
+            (rready, wready, xready) = select.select(rlist, wlist, xlist)
+            if self.server in rready:
+                self.handle_accept(self.server)
+            if self.tropho in rready:
+                self.handle_tropho(self.tropho)
+            for so in list((set(rready) | set(c.conn for c in self.clients)) - set((self.server, self.tropho))):
+                for client in (c for c in self.clients if c.conn == so):
+                    self.handle_read(client)
+
+
+def main():
+    p = Proxy(("infinit.im", 23456))
+    p.run()
+    pass
+
+if __name__ == "__main__":
+    main()
