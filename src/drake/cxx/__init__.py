@@ -365,9 +365,9 @@ class GccToolkit(Toolkit):
                     path = drake.Path('$ORIGIN') / path
             lib_rpaths.append(path)
 
-        undefined = ''
+        extra = ''
         if self.os == drake.os.macos:
-            undefined = ' -undefined dynamic_lookup'
+            extra = ' -undefined dynamic_lookup -Wl,-install_name,%s -Wl,-headerpad_max_install_names' % exe.path().basename()
 
         return '%s %s%s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
@@ -375,7 +375,7 @@ class GccToolkit(Toolkit):
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg.lib_paths, '-L'),
                 concatenate(lib_rpaths, '-Wl,-rpath,'),
-                undefined,
+                extra,
                 concatenate(objs),
                 exe,
                 concatenate(cfg.libs, '-l'),
