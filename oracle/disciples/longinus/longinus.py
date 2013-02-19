@@ -1,3 +1,4 @@
+
 from __future__ import print_function
 
 import sys
@@ -9,8 +10,6 @@ from twisted.python import log
 from pprint import pprint
 
 class PunchHelper(DatagramProtocol):
-
-    clients = set()
 
     def __str__(self):
         attrs = []
@@ -41,7 +40,6 @@ class PunchHelper(DatagramProtocol):
     def handle_hello(self, (host, port), *args):
         me = "{}:{}".format(host, port)
         self.public_endpoint = me;
-        self.clients.add(self)
         print("send {} to {}".format(me, (host, port)))
         # for (what, who) in it.permutations(self.clients, 2):
         #     host, port = who.split(":")
@@ -54,13 +52,12 @@ class PunchHelper(DatagramProtocol):
         me = "{}:{}".format(host, port)
         self.public_endpoint = me;
         self.local_endpoint = endpoint.split()[0]
+        answ = "public {}\n".format(self.public_endpoint)
+        print(answ)
         self.transport.write(
-                "public {}\n".format(self.public_endpoint),
+                answ,
                 (host, port)
         )
-
-    def handle_quit(self, (host, port), *args):
-        self.clients.remove(self)
 
     def handle_ping(self, (host, port), *args):
         print("Keep Alive from {}:{}".format(host, port))
@@ -68,10 +65,8 @@ class PunchHelper(DatagramProtocol):
 
     def datagramReceived(self, data, (host, port)):
         print("received {} from {}:{}".format(data, host, port))
-        pprint(self.clients)
         cmd_line = data.split()
         cmd = cmd_line[0]
         hdl = getattr(self, "handle_{}".format(cmd), None)
         if hdl is not None:
             hdl((host, port), *cmd_line[1:])
-
