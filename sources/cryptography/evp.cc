@@ -115,7 +115,7 @@ namespace infinit
 
           code.buffer().writer() << key << data;
 
-          return (std::move(code));
+          return (code);
         }
 
         Clear
@@ -177,7 +177,7 @@ namespace infinit
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);
 
-          return (std::move(clear));
+          return (clear);
         }
 
         Signature
@@ -225,7 +225,7 @@ namespace infinit
           // Set the final signature size.
           signature.buffer().size(size);
 
-          return (std::move(signature));
+          return (signature);
         }
 
         elle::Boolean
@@ -404,7 +404,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (std::move(code));
+          return (code);
         }
 
         Clear
@@ -504,7 +504,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (std::move(clear));
+          return (clear);
         }
       }
     }
@@ -569,7 +569,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          return (std::move(digest));
+          return (digest);
         }
       }
     }
