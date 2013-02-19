@@ -91,6 +91,9 @@ namespace infinit
         publickey::Interface*
         clone() const;
         virtual
+        elle::Natural32
+        length() const;
+        virtual
         Cryptosystem
         cryptosystem() const;
         virtual

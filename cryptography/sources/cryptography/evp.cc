@@ -93,7 +93,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr));
 
           // Prepare the key code for receiving the encrypted secret.
-          Code key{size};
+          Code key(size);
 
           // Encrypt the secret key's archive.
           if (function(context,
@@ -133,8 +133,8 @@ namespace infinit
           //    is supposed to be an archive.
           auto extractor = code.buffer().reader();
 
-          Code key{extractor};
-          Code data{extractor};
+          Code key(extractor);
+          Code data(extractor);
 
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
@@ -172,7 +172,7 @@ namespace infinit
           buffer.size(size);
 
           // Finally extract the secret key since decrypted.
-          SecretKey secret{buffer.reader()};
+          SecretKey secret(buffer.reader());
 
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);
@@ -209,7 +209,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr));
 
           // Prepare the signature.
-          Signature signature{size};
+          Signature signature(size);
 
           // Perform the signing process.
           if (function(context,

@@ -27,7 +27,7 @@ namespace infinit
       buffer.writer() << value;
 
       // Encrypt the archive.
-      return (this->encrypt(Plain{elle::WeakBuffer{buffer}}));
+      return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
     }
 
     template <typename T>
@@ -41,10 +41,10 @@ namespace infinit
                     "this call should never have occured");
 
       // Decrypt the code leading to a clear containing an archive.
-      Clear clear{this->decrypt(code)};
+      Clear clear(this->decrypt(code));
 
       // Deserialize the object from the clear.
-      // XXX[this is should be used] T value{clear.buffer().reader()};
+      // XXX[this is should be used] T value(clear.buffer().reader());
       T value;
       clear.buffer().reader() >> value;
 

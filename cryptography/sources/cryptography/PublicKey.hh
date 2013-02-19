@@ -89,6 +89,9 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
+      /// Return the length, in bits, of the public key.
+      elle::Natural32
+      length() const;
 
       /*----------.
       | Operators |
@@ -187,6 +190,10 @@ namespace infinit
         virtual
         Interface*
         clone() const = 0;
+        /// Return the length, in bits, of the public key.
+        virtual
+        elle::Natural32
+        length() const = 0;
         /// Return the cryptosystem algorithm implemented by this public key.
         virtual
         Cryptosystem
