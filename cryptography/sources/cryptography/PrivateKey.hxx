@@ -32,7 +32,7 @@ namespace infinit
       T value;
       clear.buffer().reader() >> value;
 
-      return (std::move(value));
+      return (value);
     }
 
     template <typename T>
