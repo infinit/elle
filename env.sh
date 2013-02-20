@@ -1,7 +1,7 @@
 #!/bin/sh
 
 INFINIT_SOURCE_DIR=$(git rev-parse --show-toplevel)
-INFINIT_BUILD_DIR=${INFINIT_SOURCE_DIR}/build
+INFINIT_BUILD_DIR=$PWD
 
 ELLE_LOG_COMPONENTS="infinit.*"
 ELLE_LOG_COMPONENTS="${ELLE_LOG_COMPONENTS},reactor.network.*"
@@ -36,5 +36,5 @@ infinit_env_clean() {
 
 infinit_env_init
 
-. scripts/framework.sh
+. ${INFINIT_SOURCE_DIR}/scripts/framework.sh
 

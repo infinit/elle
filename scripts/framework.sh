@@ -12,7 +12,7 @@ i8error() {
     echo "[31m*[0m" "$*"
 }
 
-for file in scripts/infinit*
+for file in ${INFINIT_SOURCE_DIR}/scripts/infinit*
 do
 	. $file
 done
