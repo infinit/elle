@@ -59,8 +59,6 @@ def configure(cxx_toolkit, cxx_config, curl = None):
     'src/elle/concept/fwd.hh',
     'src/elle/concurrency/Program.cc',
     'src/elle/concurrency/Program.hh',
-    'src/elle/concurrency/Scheduler.cc',
-    'src/elle/concurrency/Scheduler.hh',
     'src/elle/concurrency/fwd.hh',
     'src/elle/container/fwd.hh',
     'src/elle/container/timeline/Bucket.hh',

@@ -2,9 +2,7 @@
 
 #include <iostream>
 
-#include <reactor/exception.hh>
-
-#include <elle/concurrency/Scheduler.hh>
+#include <elle/Exception.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
 

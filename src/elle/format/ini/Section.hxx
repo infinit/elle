@@ -1,12 +1,11 @@
 #ifndef ELLE_FORMAT_INI_SECTION_HXX
 # define ELLE_FORMAT_INI_SECTION_HXX
 
-# include <elle/concurrency/Scheduler.hh>
-# include <elle/Exception.hh>
-# include <elle/printf.hh>
-
 # include <sstream>
 # include <stdexcept>
+
+# include <elle/Exception.hh>
+# include <elle/printf.hh>
 
 namespace elle { namespace format { namespace ini {
 

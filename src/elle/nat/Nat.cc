@@ -1,16 +1,16 @@
 #include <string>
 #include <sstream>
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/asio/ip/udp.hpp>
+
 #include <elle/nat/Nat.hh>
-#include <elle/concurrency/Scheduler.hh>
 
 #include <reactor/network/buffer.hh>
-#include <reactor/sleep.hh>
 #include <reactor/network/resolve.hh>
-
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-
-#include <boost/asio/ip/udp.hpp>
+#include <reactor/sleep.hh>
+#include <reactor/thread.hh>
 
 ELLE_LOG_COMPONENT("Elle.NAT");
 
