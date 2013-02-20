@@ -127,7 +127,6 @@ def configure(cxx_toolkit, cxx_config, curl = None):
     'src/elle/log/Send.hxx',
     'src/elle/log/TextLogger.cc',
     'src/elle/log/TextLogger.hh',
-    'src/elle/nat/Nat.cc',
     'src/elle/network/Host.cc',
     'src/elle/network/Host.hh',
     'src/elle/network/Host.hxx',
