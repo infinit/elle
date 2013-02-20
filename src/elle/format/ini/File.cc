@@ -1,8 +1,6 @@
 #include <cassert>
 #include <stdexcept>
 
-#include <reactor/exception.hh>
-
 #include <elle/format/ini/File.hh>
 
 using namespace elle::format::ini;
