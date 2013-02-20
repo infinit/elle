@@ -65,12 +65,12 @@ class Create(Page):
 
     _validators = [
         ('recipient_id_or_email', regexp.NonEmptyValidator),
-        ('first_filename', regexp.FilenameValidator),
         ('network_id', regexp.NetworkValidator),
         ('device_id', regexp.DeviceIDValidator),
     ]
 
     _mendatory_fields = [
+        ('first_filename', basestring),
         ('files_count', int),
         ('total_size', int),
         ('is_directory', int),
@@ -90,6 +90,12 @@ class Create(Page):
         first_filename = self.data['first_filename'].strip()
         network_id = self.data['network_id'].strip()
         device_id = self.data['device_id'].strip()
+
+        if not database.networks().find_one(database.ObjectId(network_id)):
+            return self.error(error.NETWORK_NOT_FOUND)
+
+        if not database.devices().find_one(database.ObjectId(device_id)):
+            return self.error(error.DEVICE_NOT_FOUND)
 
         new_user = False
         is_ghost = False
@@ -180,7 +186,7 @@ class Create(Page):
                 mail.send(invitee_email, subject, content, reply_to=self.user['email'])
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER,
+            notifier.TRANSACTION,
             [database.ObjectId(recipient_id), database.ObjectId(_id)], # sender and recipient.
             {
                 'transaction': {
@@ -293,7 +299,7 @@ class Accept(Page):
             database.users().save(self.user)
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
+            notifier.TRANSACTION_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
                 'transaction_id': str(updated_transaction_id),
@@ -357,7 +363,7 @@ class Prepare(Page):
         updated_transaction_id = database.transactions().save(transaction)
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
+            notifier.TRANSACTION_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
                 'transaction_id': str(updated_transaction_id),
@@ -421,7 +427,7 @@ class Start(Page):
         updated_transaction_id = database.transactions().save(transaction)
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
+            notifier.TRANSACTION_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
                 'transaction_id': str(updated_transaction_id),
@@ -486,7 +492,7 @@ class Finish(Page):
         updated_transaction_id = database.transactions().save(transaction);
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
+            notifier.TRANSACTION_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
                 'transaction_id': str(transaction['_id']),
@@ -552,7 +558,7 @@ class Cancel(Page):
         updated_transaction_id = database.transactions().save(transaction)
 
         self.notifier.notify_some(
-            notifier.FILE_TRANSFER_STATUS,
+            notifier.TRANSACTION_STATUS,
             [transaction['sender_id'], transaction['recipient_id']],
             {
                 'transaction_id': str(transaction['_id']),

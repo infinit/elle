@@ -10,7 +10,24 @@ from meta import conf
 from twisted.python import log
 import time
 
+import re
 import os
+import sys
+
+_macro_matcher = re.compile(r'(.*\()(\S+)(,.*\))')
+
+def replacer(match):
+    field = match.group(2)
+    return match.group(1) + "'" + field + "'" + match.group(3)
+
+def NOTIFICATION_TYPE(name, value):
+    globals()[name.upper()] = value
+
+filepath = os.path.abspath(os.path.join(os.path.dirname(__file__), 'notification_type.hh.inc'))
+
+configfile = open(filepath, 'r')
+for line in configfile:
+    eval(_macro_matcher.sub(replacer, line))
 
 FILE_TRANSFER = 7
 FILE_TRANSFER_STATUS = 11
@@ -18,7 +35,6 @@ USER_STATUS = 8
 MESSAGE = 217
 LOGGED_IN = -666
 NETWORK_CHANGED = 128
-
 
 class Notifier(object):
     def open(self):

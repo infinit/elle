@@ -138,10 +138,10 @@ class AddUser(_Page):
         database.users().save(to_add_user)
 
         self.notifier.notify_some(
-            notifier.NETWORK_CHANGED,
+            notifier.NETWORK_UPDATE,
             network["users"],
             {"network_id": str(network['_id']), "what": NEW_USER},
-            store = False);
+            store=False)
 
         return self.success({
             'updated_network_id': str(network['_id']),
@@ -378,7 +378,7 @@ class Update(_Page):
         _id = database.networks().save(to_save)
 
         self.notifier.notify_some(
-            notifier.NETWORK_CHANGED,
+            notifier.NETWORK_UPDATE,
             to_save["users"],
             {"network_id": _id, "what": UPDATE},
             store = False);
@@ -433,7 +433,7 @@ class AddDevice(_Page):
             database.networks().save(network)
 
             self.notifier.notify_some(
-                notifier.NETWORK_CHANGED,
+                notifier.NETWORK_UPDATE,
                 network["users"],
                 {"network_id": str(network['_id']), "what": NEW_DEVICE},
                 store = False)
@@ -637,7 +637,7 @@ class Delete(_Page):
             database.users().find_and_modify({'_id': user_id}, {'$pull': {'networks': _id}})
 
         self.notifier.notify_some(
-            notifier.NETWORK_CHANGED,
+            notifier.NETWORK_UPDATE,
             users,
             {"network_id": network_id, "what": DELETED},
             store = False)
