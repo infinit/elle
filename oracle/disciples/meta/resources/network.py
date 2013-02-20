@@ -435,8 +435,8 @@ class AddDevice(_Page):
             self.notifier.notify_some(
                 notifier.NETWORK_CHANGED,
                 network["users"],
-                {"network_id": str(network['_id']), "what": NEW_DEVICE}
-                store = False);
+                {"network_id": str(network['_id']), "what": NEW_DEVICE},
+                store = False)
 
         return self.success({
             "updated_network_id": str(network['_id']),
