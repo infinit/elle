@@ -102,7 +102,7 @@ class AddUser(_Page):
     __pattern__ = "/network/add_user"
 
     _validators = [
-        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID)),
         ('user_id', regexp.Validator(regexp.ID, error.USER_ID_NOT_VALID)),
     ]
 
@@ -305,7 +305,7 @@ class Update(_Page):
     """
 
     _validators = [
-        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID)),
     ]
 
     __pattern__ = "/network/update"
@@ -403,7 +403,7 @@ class AddDevice(_Page):
     __pattern__ = '/network/add_device'
 
     _validators = [
-        ('_id', regexp.Validator(regexp.ID, error.NETWORK_ID_NOT_VALID)),
+        ('_id', regexp.Validator(regexp.NetworkID, error.NETWORK_ID_NOT_VALID)),
         ('device_id', regexp.Validator(regexp.DeviceID, error.DEVICE_ID_NOT_VALID)),
     ]
 
@@ -435,7 +435,8 @@ class AddDevice(_Page):
             self.notifier.notify_some(
                 notifier.NETWORK_CHANGED,
                 network["users"],
-                {"network_id": str(network['_id']), "what": NEW_DEVICE});
+                {"network_id": str(network['_id']), "what": NEW_DEVICE},
+                store = False)
 
         return self.success({
             "updated_network_id": str(network['_id']),
