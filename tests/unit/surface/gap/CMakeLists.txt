@@ -9,3 +9,7 @@ simple_test(NAME state_ctor
 simple_test(NAME Metrics
             PASS_REGEX "Test done."
             LIB common gap pthread ${Boost_LIBRARIES})
+
+simple_test(NAME state_connect
+            PASS_REGEX "Test done."
+            LIB common gap pthread ${Boost_LIBRARIES})

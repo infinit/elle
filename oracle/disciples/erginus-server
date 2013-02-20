@@ -57,10 +57,12 @@ class Client:
         return self._file
 
 class Proxy:
-    def __init__(self, endpoint):
+    def __init__(self, id, endpoint):
         self.server = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
         self.server.setsockopt(so.SOL_SOCKET, so.SO_REUSEADDR, 1)
-        self.server.bind(("", 23456))
+        self.server.bind(("", 0))
+        self.id = id
+        (self.server_addr, self.server_port) = self.server.getsockname()
         self.server.listen(5)
         self.tropho = so.create_connection(endpoint)
         self.running = False
@@ -69,9 +71,11 @@ class Proxy:
     def handle_accept(self, server):
         (conn, addr) = server.accept()
         self.clients.append(Client(conn, addr))
+        print("client connected on", conn)
 
 
     def handle_read(self, client):
+        print("handle read for", client)
         data = client.conn.recv(2**12)
         if data:
             # We forward the data to trophonius
@@ -80,9 +84,9 @@ class Proxy:
             # client disconnected
             print(client, "disconnected")
             self.clients.remove(client)
-        pass
 
     def handle_tropho(self, tropho):
+        print("handle read for tropho")
         data = tropho.recv(2**12)
         if data:
             for client in self.clients:
@@ -93,24 +97,38 @@ class Proxy:
 
     def run(self):
         self.running = True
+        home_dir = os.getenv("INFINIT_HOME_DIR", os.path.expanduser("~/.infinit/"))
+        ipcfile = open("/".join([home_dir, "users", self.id, "erginus.sock"]), "w")
+        print(str(self.server_port), file=ipcfile)
+        ipcfile.close()
         while self.running:
             rlist = [self.server, self.tropho] + list(c.conn for c in self.clients)
             wlist = []
             xlist = []
             (rready, wready, xready) = select.select(rlist, wlist, xlist)
+            print("rready", rready)
+            print("wready", wready)
+            print("xready", xready)
             if self.server in rready:
                 self.handle_accept(self.server)
             if self.tropho in rready:
                 self.handle_tropho(self.tropho)
-            for so in list((set(rready) | set(c.conn for c in self.clients)) - set((self.server, self.tropho))):
+            for so in list((set(rready) & set(c.conn for c in self.clients)) - set((self.server, self.tropho))):
                 for client in (c for c in self.clients if c.conn == so):
                     self.handle_read(client)
 
 
-def main():
-    p = Proxy(("infinit.im", 23456))
+def main(id, tropho_endpoint):
+    addr, port = tropho_endpoint.split(":")
+    port = int(port)
+    p = Proxy(id, (addr, port))
     p.run()
     pass
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--trophonius', '-t', help="longinus address",
+            default="infinit.im:23456")
+    parser.add_argument('user', help="user name")
+    args = parser.parse_args()
+    main(args.user, args.trophonius)

@@ -1,6 +1,8 @@
 #include "../State.hh"
 #include "../MetricReporter.hh"
 
+#include <elle/os/path.hh>
+
 #include <common/common.hh>
 
 #include <lune/Dictionary.hh>
@@ -20,12 +22,58 @@ namespace surface
   {
 
     namespace fs = boost::filesystem;
+    namespace path = elle::os::path;
 
+    // This method connect the state to trophonius.
+    //
+    // Trophonius is the notification system of Infinit Beam.
+    //
+    // The connection is made in two steps:
+    //  - We look for the file in ${USER_DIR}/erginus.sock for the port number
+    //    of the erginus server (if launched).
+    //    - if it's not: we start it TODO
+    //  - We use common::trophonius::{port, host} if the file is not there
     void
     State::connect()
     {
       if (this->_trophonius)
         throw Exception{gap_error, "trophonius is already connected"};
+
+      try
+      {
+        uint16_t port;
+        std::string port_file_path = path::join(
+            common::infinit::user_directory(_me._id),
+            "erginus.sock"
+        );
+
+        if (fs::exists(port_file_path))
+        {
+          // we can read it and get the port number;
+          std::ifstream file(port_file_path);
+          ELLE_DEBUG("erginus port file is at %s", port_file_path);
+
+          if (file.good())
+          {
+            file >> port;
+            ELLE_DEBUG("erginus port is %s", port);
+          }
+          this->_trophonius.reset(
+            new plasma::trophonius::Client{
+              "localhost",
+              port,
+              true
+            }
+          );
+          ELLE_DEBUG("successfully connected to erginus");
+          return ;
+        }
+        ELLE_DEBUG("erginus port file not found");
+      }
+      catch (std::runtime_error const& err)
+      {
+        ELLE_DEBUG("couldn't connect to erginus");
+      }
 
       try
         {
