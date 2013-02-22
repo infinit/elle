@@ -107,7 +107,8 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--download_dir", help="the download dir")
     args = parser.parse_args()
 
-    os.putenv("INFINIT_DOWNLOAD_DIR", args.download_dir)
+    if args.download_dir:
+        os.putenv("INFINIT_DOWNLOAD_DIR", args.download_dir)
 
     import gap
     state = gap.State()
