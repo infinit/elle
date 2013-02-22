@@ -151,7 +151,6 @@ namespace elle
           common::meta::host(),
           common::meta::port(),
           "InfinitDesktop", // User agent
-          false
         }
       };
 
@@ -171,15 +170,13 @@ namespace elle
 
       try
         {
-          server->put("/debug/report", request);
+          return server->put("/debug/report", request);
         }
       catch (...)
         {
           ELLE_WARN("Unable to put on server: '%s'", request.repr());
           return false;
         }
-
-      return true;
     }
   } // End of crash.
 } // End of elle.

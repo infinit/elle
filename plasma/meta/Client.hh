@@ -44,13 +44,24 @@ namespace plasma
     struct Response
     {
       bool _success;
-      int response_code; // should be a plasma::meta::Error
-      string response_details;
+      Error error_code;
+      std::string error_details;
 
       bool success() const
       {
         return _success;
       }
+    };
+
+    struct Exception
+      : public std::runtime_error
+    {
+      Error const err;
+      Exception(Error const& error, std::string const& message = "");
+
+    public:
+      bool operator ==(Exception const& e) const;
+      bool operator ==(Error const& error) const;
     };
 
     /////////////////////////
@@ -220,6 +231,7 @@ namespace plasma
     {
     private:
       elle::HTTPClient  _client;
+      bool              _check_errors;
       string            _identity;
       string            _email;
 
@@ -228,6 +240,18 @@ namespace plasma
              uint16_t port,
              bool check_errors = true);
       ~Client();
+
+      template <typename T>
+      T
+      _post(std::string const& url, elle::format::json::Object const& req);
+
+      template <typename T>
+      T
+      _get(std::string const& url);
+
+      template <typename T>
+      T
+      _deserialize_answer(std::istream& res);
 
     public:
       DebugResponse

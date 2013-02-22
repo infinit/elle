@@ -40,7 +40,7 @@ namespace surface
       : _tag{tag}
       , _user_id{user}
       , _flusher_sched{}
-      , _server{new elle::HTTPClient{host, port, "MetricReport", true}}
+      , _server{new elle::HTTPClient{host, port, "MetricReport"}}
       , _fallback_stream{common::metrics::fallback_path()}
     {
       this->_keep_alive.reset(

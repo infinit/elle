@@ -9,6 +9,11 @@
 
 ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
 
+#define XXX_UGLY_SERIALIZATION_FOR_NOTIFICATION_TYPE()      \
+  int* n = (int*) &value;                                   \
+  ar & named("notification_type", *n)                       \
+  /**/
+
 // - API responses serializers ------------------------------------------------
 #define SERIALIZE_RESPONSE(type, archive, value)                              \
   ELLE_SERIALIZE_NO_FORMAT(type);                                             \
@@ -16,18 +21,19 @@ ELLE_LOG_COMPONENT("infinit.plasma.meta.Client");
   {                                                                           \
     enforce(version == 0);                                                    \
     archive & named("success", value._success);                               \
-   if (!value.success())                                                      \
-      {                                                                       \
-        archive & named("error_code", value.response_code);                   \
-        archive & named("error_details", value.response_details);             \
-        return;                                                               \
-      }                                                                       \
-    ResponseSerializer<type>::serialize(archive, value);                      \
-  }                                                                           \
-  template<> template<typename Archive, typename Value>                       \
+    if (!value.success())                                                     \
+    {                                                                   \
+      int* n = (int*) &value.error_code;                                \
+      archive & named("error_code", *n);                                \
+      archive & named("error_details", value.error_details);            \
+      return;                                                           \
+    }                                                                   \
+    ResponseSerializer<type>::serialize(archive, value);                \
+  }                                                                     \
+  template<> template<typename Archive, typename Value>                 \
   void elle::serialize::ResponseSerializer<type>::serialize(Archive& archive, \
-                                                            Value& value)     \
-/**/
+                                                            Value& value) \
+  /**/
 
 namespace elle
 {
@@ -240,13 +246,32 @@ namespace plasma
 {
   namespace meta
   {
+
+    Exception::Exception(Error const& error, std::string const& message)
+      : std::runtime_error(message)
+      , err{error}
+    {}
+
+    bool
+    Exception::operator ==(Exception const& e) const
+    {
+      return (this->err == e.err);
+    }
+
+    bool
+    Exception::operator ==(Error const& error) const
+    {
+      return (this->err == error);
+    }
+
     namespace json = elle::format::json;
 
      // - Ctor & dtor ----------------------------------------------------------
     Client::Client(string const& server,
                    uint16_t port,
                    bool check_errors)
-      : _client{server, port, "MetaClient", check_errors}
+      : _client{server, port, "MetaClient"}
+      , _check_errors{check_errors}
       , _identity{}
       , _email{}
     {
@@ -257,6 +282,8 @@ namespace plasma
     {
     }
 
+
+
     // - API calls ------------------------------------------------------------
     // XXX add login with token method.
     LoginResponse Client::login(string const& email,
@@ -266,7 +293,7 @@ namespace plasma
         {"email", email},
         {"password", password},
       }};
-      auto res = this->_client.post<LoginResponse>("/user/login", request);
+      auto res = this->_post<LoginResponse>("/user/login", request);
       if (res.success())
         {
           this->token(res.token);
@@ -279,7 +306,7 @@ namespace plasma
     LogoutResponse
     Client::logout()
     {
-      auto res = this->_client.get<LogoutResponse>("/user/logout");
+      auto res = this->_get<LogoutResponse>("/user/logout");
       if (res.success())
         {
           this->token("");
@@ -305,7 +332,7 @@ namespace plasma
         {"picture_name", picture_name},
         {"picture_data", picture_data},
       }};
-      return this->_client.post<RegisterResponse>("/user/register", request);
+      return this->_post<RegisterResponse>("/user/register", request);
     }
 
     UserResponse
@@ -313,7 +340,7 @@ namespace plasma
     {
       if (id.size() == 0)
         throw std::runtime_error("Wrong id");
-      return this->_client.get<UserResponse>("/user/" + id + "/view");
+      return this->_get<UserResponse>("/user/" + id + "/view");
     }
 
     UserIcon
@@ -325,7 +352,7 @@ namespace plasma
     SelfResponse
     Client::self()
     {
-      return this->_client.get<SelfResponse>("/self");
+      return this->_get<SelfResponse>("/self");
     }
 
     UserResponse
@@ -335,7 +362,7 @@ namespace plasma
         throw std::runtime_error("empty public key!");
       json::Dictionary request;
       request["public_key"] = public_key;
-      return this->_client.post<UserResponse>("/user/from_public_key", request);
+      return this->_post<UserResponse>("/user/from_public_key", request);
     }
 
     UsersResponse
@@ -345,19 +372,19 @@ namespace plasma
       request["text"] = text;
       request["count"] = count;
       request["offset"] = offset;
-      return this->_client.post<UsersResponse>("/user/search", request);
+      return this->_post<UsersResponse>("/user/search", request);
     }
 
     SwaggersResponse
     Client::get_swaggers()
     {
-      return this->_client.get<SwaggersResponse>("/user/swaggers");
+      return this->_get<SwaggersResponse>("/user/swaggers");
     }
 
     // SwaggerResponse
     // Client::get_swagger(string const& id)
     // {
-    //   return this->_client.get<SwaggerResponse>("/user/" + id + "/view");
+    //   return this->_get<SwaggerResponse>("/user/" + id + "/view");
     // }
 
 
@@ -369,7 +396,7 @@ namespace plasma
       json::Dictionary request{map<string, string>{
           {"name", name},
       }};
-      return this->_client.post<CreateDeviceResponse>("/device/create", request);
+      return this->_post<CreateDeviceResponse>("/device/create", request);
     }
 
     UpdateDeviceResponse
@@ -381,7 +408,7 @@ namespace plasma
             {"name", name},
       }};
 
-      return this->_client.post<UpdateDeviceResponse>("/device/update", request);
+      return this->_post<UpdateDeviceResponse>("/device/update", request);
 
     }
 
@@ -393,7 +420,7 @@ namespace plasma
           {"email", email}
         }};
 
-      auto res = this->_client.post<InviteUserResponse>("/user/invite", request);
+      auto res = this->_post<InviteUserResponse>("/user/invite", request);
 
       return res;
     }
@@ -417,7 +444,7 @@ namespace plasma
       request["is_directory"] = is_dir;
       request["files_count"] = count;
 
-      auto res = this->_client.post<CreateTransactionResponse>("/transaction/create", request);
+      auto res = this->_post<CreateTransactionResponse>("/transaction/create", request);
 
       return res;
     }
@@ -449,19 +476,19 @@ namespace plasma
       switch(status)
       {
         case plasma::TransactionStatus::accepted:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/accept", request);
+          res = this->_post<UpdateTransactionResponse>("/transaction/accept", request);
           break;
         case plasma::TransactionStatus::started:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/start", request);
+          res = this->_post<UpdateTransactionResponse>("/transaction/start", request);
           break;
         case plasma::TransactionStatus::canceled:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/cancel", request);
+          res = this->_post<UpdateTransactionResponse>("/transaction/cancel", request);
           break;
         case plasma::TransactionStatus::finished:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/finish", request);
+          res = this->_post<UpdateTransactionResponse>("/transaction/finish", request);
           break;
         case plasma::TransactionStatus::prepared:
-          res = this->_client.post<UpdateTransactionResponse>("/transaction/prepare", request);
+          res = this->_post<UpdateTransactionResponse>("/transaction/prepare", request);
           break;
         default:
           ELLE_WARN("You are not able to change transaction status to '%s'.",
@@ -474,13 +501,13 @@ namespace plasma
     TransactionResponse
     Client::transaction(string const& _id)
     {
-      return this->_client.get<TransactionResponse>("/transaction/" + _id + "/view");
+      return this->_get<TransactionResponse>("/transaction/" + _id + "/view");
     }
 
     TransactionsResponse
     Client::transactions()
     {
-      return this->_client.get<TransactionsResponse>("/transactions");
+      return this->_get<TransactionsResponse>("/transactions");
     }
 
     MessageResponse
@@ -500,7 +527,7 @@ namespace plasma
       request["notification_id"] = 217;
 
       // FIXME: /user/message
-      auto res = this->_client.post<MessageResponse>("/debug", request);
+      auto res = this->_post<MessageResponse>("/debug", request);
 
       return res;
     }
@@ -508,7 +535,7 @@ namespace plasma
     DebugResponse
     Client::debug()
     {
-      return this->_client.get<DebugResponse>("/scratchit");
+      return this->_get<DebugResponse>("/scratchit");
     }
 
     PullNotificationResponse
@@ -521,7 +548,7 @@ namespace plasma
       request["count"] = count;
       request["offset"] = offset;
 
-      auto res = this->_client.post<PullNotificationResponse>("/notification/get",
+      auto res = this->_post<PullNotificationResponse>("/notification/get",
                                                               request);
 
       return res;
@@ -530,7 +557,7 @@ namespace plasma
     ReadNotificationResponse
     Client::notification_read()
     {
-      return this->_client.get<ReadNotificationResponse>("/notification/read");
+      return this->_get<ReadNotificationResponse>("/notification/read");
     }
 
     //- Networks --------------------------------------------------------------
@@ -538,19 +565,19 @@ namespace plasma
     NetworksResponse
     Client::networks()
     {
-      return this->_client.get<NetworksResponse>("/networks");
+      return this->_get<NetworksResponse>("/networks");
     }
 
     NetworkResponse
     Client::network(string const& _id)
     {
-      return this->_client.get<NetworkResponse>("/network/" + _id + "/view");
+      return this->_get<NetworkResponse>("/network/" + _id + "/view");
     }
 
     NetworkNodesResponse
     Client::network_nodes(string const& _id)
     {
-      return this->_client.get<NetworkNodesResponse>("/network/" + _id + "/nodes");
+      return this->_get<NetworkNodesResponse>("/network/" + _id + "/nodes");
     }
 
     CreateNetworkResponse
@@ -559,7 +586,7 @@ namespace plasma
       json::Dictionary request{map<string, string>{
           {"name", network_id},
       }};
-      return this->_client.post<CreateNetworkResponse>("/network/create", request);
+      return this->_post<CreateNetworkResponse>("/network/create", request);
     }
 
     DeleteNetworkResponse
@@ -570,7 +597,7 @@ namespace plasma
           {"network_id", network_id},
       }};
       request["force"] = force;
-      return this->_client.post<DeleteNetworkResponse>("/network/delete", request);
+      return this->_post<DeleteNetworkResponse>("/network/delete", request);
     }
 
     UpdateNetworkResponse
@@ -610,7 +637,7 @@ namespace plasma
          group_block != nullptr)
       ) && "root and group block are tied together.");
 
-      return this->_client.post<UpdateNetworkResponse>("/network/update", request);
+      return this->_post<UpdateNetworkResponse>("/network/update", request);
     }
 
     NetworkAddUserResponse
@@ -621,7 +648,7 @@ namespace plasma
           {"_id", network_id},
           {"user_id", user_id},
       }};
-      return this->_client.post<NetworkAddUserResponse>("/network/add_user", request);
+      return this->_post<NetworkAddUserResponse>("/network/add_user", request);
     }
     NetworkAddDeviceResponse
     Client::network_add_device(string const& network_id,
@@ -631,7 +658,7 @@ namespace plasma
           {"_id", network_id},
           {"device_id", device_id},
       }};
-      return this->_client.post<NetworkAddDeviceResponse>("/network/add_device", request);
+      return this->_post<NetworkAddDeviceResponse>("/network/add_device", request);
     }
 
     NetworkConnectDeviceResponse
@@ -691,7 +718,7 @@ namespace plasma
 
         request["externals"] = public_addrs;
 
-        return this->_client.post<NetworkConnectDeviceResponse>(
+        return this->_post<NetworkConnectDeviceResponse>(
             "/network/connect_device",
             request
         );
@@ -709,7 +736,7 @@ namespace plasma
           }
         };
 
-        return this->_client.post<EndpointNodeResponse>(
+        return this->_post<EndpointNodeResponse>(
             "/network/" + network_id + "/endpoints",
             request
         );

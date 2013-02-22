@@ -37,7 +37,8 @@ namespace elle
     ResponseCode const code;
 
   public:
-    HTTPException(ResponseCode code, std::string const& message);
+    HTTPException(ResponseCode code, std::string const& message = "");
+    bool operator ==(HTTPException const& e);
   }; // ! HTTPException
 
   class HTTPClient;
@@ -60,9 +61,18 @@ namespace elle
 
   public:
     std::string const& method() const;
+
     std::string const& url() const;
+
+    bool has_body() const;
+    std::unique_ptr<std::istream> body() const;
+    Request& body(std::unique_ptr<std::istream>&& input);
+
     std::string body_string() const;
+    Request& body_string(std::string const& str);
+
     std::string headers_string() const;
+
     std::string const& content_type() const;
 
   public:
@@ -85,7 +95,7 @@ namespace elle
     Request&
     content_type(std::string const& str);
 
-    void fire();
+    Request& fire();
 
     std::stringstream&
     response();
@@ -105,24 +115,21 @@ namespace elle
     /// Initialize the client to server:port.
     HTTPClient(std::string const& server,
                uint16_t port,
-               std::string const& user_agent,
-               bool check_errors);
+               std::string const& user_agent);
+
     /// Destroy client.
     ~HTTPClient();
-    /// Wrapper to impl::check_error
-    bool
-    _check_errors();
 
   public:
-    /// Use a get method to server.
-    /// T must be serializable by elle::serialize::InputJSONArchive
-    template<typename T>
-    T get(std::string const& url);
+    // /// Use a get method to server.
+    // /// T must be serializable by elle::serialize::InputJSONArchive
+    // template<typename T>
+    // T get(std::string const& url);
 
-    /// Use a post method to server.
-    /// T must be serializable by elle::serialize::InputJSONArchive
-    template<typename T>
-    T post(std::string const& url, elle::format::json::Object const& req);
+    // /// Use a post method to server.
+    // /// T must be serializable by elle::serialize::InputJSONArchive
+    // template<typename T>
+    // T post(std::string const& url, elle::format::json::Object const& req);
 
     /// Use a put method to server.
     bool
@@ -141,12 +148,12 @@ namespace elle
     void fire(Request& request);
 
   private:
-    ///XXX Remove this
-    void
-    _request(std::string const& url,
-             std::string const& method,
-             std::string const& body,
-             std::stringstream& response);
+    // ///XXX Remove this
+    // void
+    // _request(std::string const& url,
+    //          std::string const& method,
+    //          std::string const& body,
+    //          std::stringstream& response);
 
     /*-----------.
     | Attributes |
