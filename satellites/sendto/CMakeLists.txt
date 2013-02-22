@@ -1,9 +1,9 @@
 project(sendto)
 
-message(STATUS "copying 8sendto to ${EXECUTABLE_OUTPUT_PATH}")
-
-file(
-  COPY
-        8sendto.py
-        DESTINATION ${EXECUTABLE_OUTPUT_PATH}/
-)
+add_custom_target(8sendto
+    COMMAND cp 8sendto.py ${EXECUTABLE_OUTPUT_PATH}/8sendto
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "copying 8sendto to ${EXECUTABLE_OUTPUT_PATH}"
+    SOURCES 8sendto.py
+    DEPENDS _gap
+    )
