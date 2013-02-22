@@ -8,6 +8,61 @@ namespace elle
 {
   namespace log
   {
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Logger::Logger()
+      : _component_patterns()
+      , _component_enabled()
+      , _component_max_size(0)
+    {
+      static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
+      if (components_str == nullptr)
+        this->_component_patterns.push_back("*");
+      else
+        {
+          boost::algorithm::split(this->_component_patterns, components_str,
+                                  boost::algorithm::is_any_of(","),
+                                  boost::algorithm::token_compress_on);
+          for (auto& pattern: this->_component_patterns)
+            boost::algorithm::trim(pattern);
+        }
+    }
+
+    Logger::~Logger()
+    {}
+
+    /*------------.
+    | Indentation |
+    `------------*/
+
+    unsigned int
+    Logger::indentation()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      return this->_indentation.Get(0);
+    }
+
+    void
+    Logger::indent()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      this->_indentation.Get(0) += 1;
+    }
+
+    void
+    Logger::unindent()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      assert(_indentation >= 1);
+      this->_indentation.Get(0) -= 1;
+    }
+
+    /*----------.
+    | Messaging |
+    `----------*/
+
     void
     Logger::message(Level level,
                     elle::log::Logger::Type type,
@@ -31,26 +86,9 @@ namespace elle
     ELLE_LOG_LEVEL_MESSAGE(dump);
 #undef ELLE_LOG_LEVEL_MESSAGE
 
-    Logger::Logger()
-      : _component_patterns()
-      , _component_enabled()
-      , _component_max_size(0)
-    {
-      static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
-      if (components_str == nullptr)
-        this->_component_patterns.push_back("*");
-      else
-        {
-          boost::algorithm::split(this->_component_patterns, components_str,
-                                  boost::algorithm::is_any_of(","),
-                                  boost::algorithm::token_compress_on);
-          for (auto& pattern: this->_component_patterns)
-            boost::algorithm::trim(pattern);
-        }
-    }
-
-    Logger::~Logger()
-    {}
+    /*--------.
+    | Enabled |
+    `--------*/
 
     bool
     Logger::component_enabled(std::string const& name)

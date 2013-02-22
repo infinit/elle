@@ -10,6 +10,8 @@
 
 # include <elle/attribute.hh>
 
+# include <reactor/storage.hh>
+
 namespace elle
 {
   namespace log
@@ -47,6 +49,20 @@ namespace elle
       Logger();
       virtual
       ~Logger();
+
+    /*------------.
+    | Indentation |
+    `------------*/
+    public:
+      unsigned int
+      indentation();
+      void
+      indent();
+      void
+      unindent();
+    private:
+      ::reactor::LocalStorage<unsigned int> _indentation;
+      boost::mutex _indentation_mutex;
 
     /*----------.
     | Messaging |

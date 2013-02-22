@@ -6,8 +6,6 @@
 #include <elle/printf.hh>
 #include <elle/types.hh>
 
-#include <reactor/storage.hh>
-
 namespace elle
 {
   namespace log
@@ -66,27 +64,11 @@ namespace elle
         return level;
       }
 
-      static
-      boost::mutex&
-      _indentation_mutex()
-      {
-        static boost::mutex mutex;
-        return mutex;
-      }
-
-      static unsigned int&
-      _indentation()
-      {
-        typedef ::reactor::LocalStorage<unsigned int> Storage;
-        static Storage indentation;
-        return indentation.Get(0);
-      }
-
       Send::~Send()
       {
         if (!_proceed)
           return;
-        _unindent();
+        logger().unindent();
       }
 
       bool
@@ -108,6 +90,7 @@ namespace elle
                           const std::string& msg)
       {
         static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
+        logger().indent();
         if (location)
           {
             static boost::format fmt("%s (at %s:%s in %s)");
@@ -124,11 +107,7 @@ namespace elle
                           std::string const& component,
                           std::string const& msg)
       {
-        int indent;
-        {
-          boost::lock_guard<boost::mutex> lock(_indentation_mutex());
-          indent = _indentation();
-        }
+        int indent = logger().indentation();
         assert(indent >= 1);
         std::string align = std::string((indent - 1) * 2, ' ');
         unsigned int size = component.size();
@@ -164,22 +143,6 @@ namespace elle
           fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
         std::string pid = "[" + std::to_string(getpid()) + "]";
         logger().message(level, type, pid + str(fmt));
-      }
-
-      void
-      Send::_indent()
-      {
-        boost::lock_guard<boost::mutex> lock(_indentation_mutex());
-        _indentation() += 1;
-      }
-
-      void
-      Send::_unindent()
-      {
-        boost::lock_guard<boost::mutex> lock(_indentation_mutex());
-        auto& indentation = _indentation();
-        assert(indentation >= 1);
-        indentation -= 1;
       }
     }
   }

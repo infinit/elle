@@ -23,7 +23,6 @@ namespace elle
       {
         if (!_proceed)
           return;
-        this->_indent();
         this->_send(level, type, component, file, line, function,
                     elle::sprintf(fmt, args...));
       }
