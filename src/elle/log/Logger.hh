@@ -7,10 +7,9 @@
 # include <vector>
 
 # include <boost/noncopyable.hpp>
+# include <boost/thread/mutex.hpp>
 
 # include <elle/attribute.hh>
-
-# include <reactor/storage.hh>
 
 namespace elle
 {

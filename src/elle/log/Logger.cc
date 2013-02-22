@@ -52,50 +52,6 @@ namespace elle
       return res;
     }
 
-    class ReactorIndentation: public Indentation
-    {
-    public:
-      ReactorIndentation(std::function<std::unique_ptr<Indentation> ()> const& factory)
-        : _factory(factory)
-        , _indentations()
-      {}
-
-      virtual
-      unsigned int
-      indentation()
-      {
-        return this->_indentation()->indentation();
-      }
-
-      virtual
-      void
-      indent()
-      {
-        return this->_indentation()->indent();
-      }
-
-      virtual
-      void
-      unindent()
-      {
-        return this->_indentation()->unindent();
-      }
-
-    private:
-      std::unique_ptr<Indentation>&
-      _indentation()
-      {
-        std::unique_ptr<Indentation>& idt = _indentations.Get();
-        if (!idt)
-          idt = std::move(this->_factory());
-        return idt;
-      }
-      std::function<std::unique_ptr<Indentation> ()> _factory;
-      ::reactor::LocalStorage<std::unique_ptr<Indentation>> _indentations;
-    };
-
-    RegisterIndenter<ReactorIndentation> reg;
-
     unsigned int
     Logger::indentation()
     {

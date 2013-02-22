@@ -6,6 +6,8 @@
 #include <elle/printf.hh>
 #include <elle/types.hh>
 
+#include <reactor/scheduler.hh>
+
 namespace elle
 {
   namespace log

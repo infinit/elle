@@ -18,6 +18,7 @@ def configure(cxx_toolkit, cxx_config, elle_config):
   cxx_config += elle_config
 
   sources = drake.nodes(
+    'src/reactor/logger.cc',
     'src/reactor/signal.cc',
     'src/reactor/storage.cc',
     'src/reactor/sleep.cc',
