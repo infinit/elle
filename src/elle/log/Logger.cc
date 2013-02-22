@@ -38,25 +38,43 @@ namespace elle
     `------------*/
 
     unsigned int
-    Logger::indentation()
+    Indentation::indentation()
     {
       boost::lock_guard<boost::mutex> lock(_indentation_mutex);
       return this->_indentation.Get(0);
     }
 
     void
-    Logger::indent()
+    Indentation::indent()
     {
       boost::lock_guard<boost::mutex> lock(_indentation_mutex);
       this->_indentation.Get(0) += 1;
     }
 
     void
-    Logger::unindent()
+    Indentation::unindent()
     {
       boost::lock_guard<boost::mutex> lock(_indentation_mutex);
       assert(_indentation >= 1);
       this->_indentation.Get(0) -= 1;
+    }
+
+    unsigned int
+    Logger::indentation()
+    {
+      return this->_indentation.indentation();
+    }
+
+    void
+    Logger::indent()
+    {
+      this->_indentation.indent();
+    }
+
+    void
+    Logger::unindent()
+    {
+      this->_indentation.unindent();
     }
 
     /*----------.

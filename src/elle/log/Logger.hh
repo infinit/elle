@@ -16,6 +16,20 @@ namespace elle
 {
   namespace log
   {
+    class Indentation
+    {
+    public:
+      unsigned int
+      indentation();
+      void
+      indent();
+      void
+      unindent();
+    private:
+      boost::mutex _indentation_mutex;
+      ::reactor::LocalStorage<unsigned int> _indentation;
+    };
+
     class Logger
       : private boost::noncopyable
     {
@@ -61,8 +75,7 @@ namespace elle
       void
       unindent();
     private:
-      ::reactor::LocalStorage<unsigned int> _indentation;
-      boost::mutex _indentation_mutex;
+      Indentation _indentation;
 
     /*----------.
     | Messaging |
