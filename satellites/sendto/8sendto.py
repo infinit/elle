@@ -8,8 +8,17 @@ import sys
 import os
 
 from functools import partial
-
 from getpass import getpass
+
+"""
+
+This script let you send files through infinit.
+
+You have to specify your user name in the INFINIT_USER env variable.
+
+This script blocks until the end of the transfer.
+
+"""
 
 class Worker(threading.Thread):
     def __init__(self, state):

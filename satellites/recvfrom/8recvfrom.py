@@ -10,6 +10,14 @@ import os
 
 from getpass import getpass
 
+"""
+
+This script let you recv file from infinit.
+
+You have to specify your user name in the INFINIT_USER env variable.
+
+"""
+
 running = True
 
 def auto_accept(state, transaction, new):
@@ -21,40 +29,90 @@ def on_finished(state, transaction, new):
         globals()["running"] = False
 
 def login(state, email = None):
-    sender_id = os.getenv("INFINIT_USER", None)
+    receiver_id = os.getenv("INFINIT_USER", None)
+    if receiver_id == None:
+        raise Exception("you must provide INFINIT_USER")
     password = getpass("password: ")
-    state.login(sender_id, password)
+    state.login(receiver_id, password)
     state.connect()
+    return receiver_id
 
-def main(state, user):
-    login(state)
+def select_transactions(state, l_transactions, sender):
+
+    if sender is not None:
+        l_sender_id= state.search_users(sender)
+        if not l_sender_id:
+            raise Exception("no such user")
+        if len(l_sender_id) > 1:
+            raise Exception("ambiguous sender name")
+        sender_id = l_sender_id[0]
+
+    enumeration = list(enumerate(
+            l for l in l_transactions
+            if state.transaction_status(l) == state.TransactionStatus.pending
+            and (sender is None or state.transaction_sender_id(l) == sender_id)
+    ))
+
+    if len(enumeration) == 1:
+        # if there is only one match, then return the id now
+        return (enumeration[0][1],)
+
+    # ask for user input
+    for index, t in enumeration:
+        first_filename  = state.transaction_first_filename(t)
+        fullname        = state.transaction_sender_fullname(t)
+        file_number     = state.transaction_files_count(t)
+        if file_number > 1:
+            print("[{}] {} files from {}".format(index, file_number, fullname))
+        else:
+            print("[{}] {} from {}".format(index, first_filename, fullname))
+    l_selected = input("transaction numbers [all]> ")
+    if l_selected:
+        return (enumeration[int(i)][1] for i in l_selected)
+    else:
+        return l_transactions
+    return []
+
+
+def main(state, sender):
+    id = login(state)
 
     state.transaction_callback(partial(auto_accept, state));
     state.transaction_status_callback(partial(on_finished, state))
 
     global running
 
-    state.set_device_name("bibibiasdfadf")
+    state.set_device_name(id + "device")
 
     transactions = state.transactions()
 
-    for t_ids in transactions:
+    if len(transactions) > 1:
+        to_handle = select_transactions(state, transactions, sender)
+    else:
+        to_handle = transactions
+
+    if not to_handle:
+        raise Exception("you must select a transaction to accept")
+
+    for t_ids in to_handle:
         state.update_transaction(t_ids, state.TransactionStatus.accepted)
 
     while running:
-        print(running)
         time.sleep(0.5)
         state.poll()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("user", help="the user from whom you want to recv the file")
-    parser.add_argument("download_dir", help="the download dir")
+    parser.add_argument("-s", "--sender", help="the user from whom you want to recv the file")
+    parser.add_argument("-d", "--download_dir", help="the download dir")
     args = parser.parse_args()
+
+    os.putenv("INFINIT_DOWNLOAD_DIR", args.download_dir)
 
     import gap
     state = gap.State()
 
-    main(state, args.user)
+
+    main(state, args.sender)
 
     del state
