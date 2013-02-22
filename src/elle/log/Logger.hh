@@ -19,15 +19,22 @@ namespace elle
     class Indentation
     {
     public:
+      virtual
       unsigned int
-      indentation();
+      indentation() = 0;
+      virtual
       void
-      indent();
+      indent() = 0;
+      virtual
       void
-      unindent();
-    private:
-      boost::mutex _indentation_mutex;
-      ::reactor::LocalStorage<unsigned int> _indentation;
+      unindent() = 0;
+    };
+
+    template <typename I>
+    class RegisterIndenter
+    {
+    public:
+      RegisterIndenter();
     };
 
     class Logger
@@ -75,7 +82,11 @@ namespace elle
       void
       unindent();
     private:
-      Indentation _indentation;
+      boost::mutex _indentation_mutex;
+      std::unique_ptr<Indentation> _indentation;
+      template <typename I>
+      friend class RegisterIndenter;
+      static std::function<std::unique_ptr<Indentation> ()>& _factory();
 
     /*----------.
     | Messaging |
@@ -106,5 +117,7 @@ namespace elle
     };
   }
 }
+
+# include <elle/log/Logger.hxx>
 
 #endif

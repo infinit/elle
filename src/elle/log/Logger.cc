@@ -8,12 +8,122 @@ namespace elle
 {
   namespace log
   {
+    /*------------.
+    | Indentation |
+    `------------*/
+
+    class PlainIndentation: public Indentation
+    {
+    public:
+      PlainIndentation()
+        : _indentation(0)
+      {}
+
+      virtual
+      unsigned int
+      indentation()
+      {
+        return this->_indentation;
+      }
+
+      virtual
+      void
+      indent()
+      {
+        this->_indentation += 1;
+      }
+
+      virtual
+      void
+      unindent()
+      {
+        assert(_indentation >= 1);
+        this->_indentation -= 1;
+      }
+
+    private:
+      unsigned int _indentation;
+    };
+    std::function<std::unique_ptr<Indentation> ()>&
+    Logger::_factory()
+    {
+      static std::function<std::unique_ptr<Indentation> ()> res =
+        [] () { return std::unique_ptr<Indentation>(new PlainIndentation()); };
+      return res;
+    }
+
+    class ReactorIndentation: public Indentation
+    {
+    public:
+      ReactorIndentation(std::function<std::unique_ptr<Indentation> ()> const& factory)
+        : _factory(factory)
+        , _indentations()
+      {}
+
+      virtual
+      unsigned int
+      indentation()
+      {
+        return this->_indentation()->indentation();
+      }
+
+      virtual
+      void
+      indent()
+      {
+        return this->_indentation()->indent();
+      }
+
+      virtual
+      void
+      unindent()
+      {
+        return this->_indentation()->unindent();
+      }
+
+    private:
+      std::unique_ptr<Indentation>&
+      _indentation()
+      {
+        std::unique_ptr<Indentation>& idt = _indentations.Get();
+        if (!idt)
+          idt = std::move(this->_factory());
+        return idt;
+      }
+      std::function<std::unique_ptr<Indentation> ()> _factory;
+      ::reactor::LocalStorage<std::unique_ptr<Indentation>> _indentations;
+    };
+
+    RegisterIndenter<ReactorIndentation> reg;
+
+    unsigned int
+    Logger::indentation()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      return this->_indentation->indentation();
+    }
+
+    void
+    Logger::indent()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      this->_indentation->indent();
+    }
+
+    void
+    Logger::unindent()
+    {
+      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      this->_indentation->unindent();
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
 
     Logger::Logger()
-      : _component_patterns()
+      : _indentation(this->_factory()())
+      , _component_patterns()
       , _component_enabled()
       , _component_max_size(0)
     {
@@ -32,50 +142,6 @@ namespace elle
 
     Logger::~Logger()
     {}
-
-    /*------------.
-    | Indentation |
-    `------------*/
-
-    unsigned int
-    Indentation::indentation()
-    {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
-      return this->_indentation.Get(0);
-    }
-
-    void
-    Indentation::indent()
-    {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
-      this->_indentation.Get(0) += 1;
-    }
-
-    void
-    Indentation::unindent()
-    {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
-      assert(_indentation >= 1);
-      this->_indentation.Get(0) -= 1;
-    }
-
-    unsigned int
-    Logger::indentation()
-    {
-      return this->_indentation.indentation();
-    }
-
-    void
-    Logger::indent()
-    {
-      this->_indentation.indent();
-    }
-
-    void
-    Logger::unindent()
-    {
-      this->_indentation.unindent();
-    }
 
     /*----------.
     | Messaging |

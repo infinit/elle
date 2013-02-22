@@ -19,6 +19,25 @@ namespace reactor
 
   template <typename T>
   T&
+  LocalStorage<T>::Get()
+  {
+    Scheduler* sched = Scheduler::scheduler();
+    Thread* current = sched ? sched->current() : 0;
+    typename Content::iterator it = this->_content.find(current);
+    if (it == this->_content.end())
+      {
+        if (current != nullptr)
+          current->destructed().connect(
+              boost::bind(&Self::_Clean, this, current)
+          );
+        return this->_content[current];
+      }
+    else
+      return it->second;
+  }
+
+  template <typename T>
+  T&
   LocalStorage<T>::Get(T const& def)
   {
     Scheduler* sched = Scheduler::scheduler();
