@@ -11,7 +11,7 @@
 
 #include <network/uri/config.hpp>
 #include <network/uri/detail/translate.hpp>
-#include <network/utility/string_ref.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <system_error>
@@ -124,27 +124,27 @@ namespace network {
 
     uri &operator = (uri &&other);
 
-    void swap(uri &other); // noexcept
+    void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
     const_iterator begin() const;
 
     const_iterator end() const;
 
-    boost::optional<string_ref> scheme() const;
+    boost::optional<boost::string_ref> scheme() const;
 
-    boost::optional<string_ref> user_info() const;
+    boost::optional<boost::string_ref> user_info() const;
 
-    boost::optional<string_ref> host() const;
+    boost::optional<boost::string_ref> host() const;
 
-    boost::optional<string_ref> port() const;
+    boost::optional<boost::string_ref> port() const;
 
-    boost::optional<string_ref> path() const;
+    boost::optional<boost::string_ref> path() const;
 
-    boost::optional<string_ref> query() const;
+    boost::optional<boost::string_ref> query() const;
 
-    boost::optional<string_ref> fragment() const;
+    boost::optional<boost::string_ref> fragment() const;
 
-    boost::optional<string_ref> authority() const;
+    boost::optional<boost::string_ref> authority() const;
 
     string_type native() const;
 
@@ -156,11 +156,11 @@ namespace network {
 
     std::u32string u32string() const;
 
-    bool empty() const; // noexcept
+    bool empty() const NETWORK_URI_NOEXCEPT;
 
-    bool absolute() const; // noexcept
+    bool absolute() const NETWORK_URI_NOEXCEPT;
 
-    bool opaque() const; // noexcept
+    bool opaque() const NETWORK_URI_NOEXCEPT;
 
     uri normalize(uri_comparison_level level) const;
 

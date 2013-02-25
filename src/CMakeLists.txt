@@ -5,3 +5,13 @@
 
 set(Uri_SRCS uri.cpp uri_io.cpp uri_builder.cpp detail/uri_parse.cpp)
 add_library(cppnetlib-uri ${Uri_SRCS})
+
+install(
+  TARGETS
+  cppnetlib-uri
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+  )
+
+install(DIRECTORY network
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+  )

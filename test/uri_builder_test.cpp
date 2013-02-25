@@ -7,7 +7,7 @@
 
 #include <gtest/gtest.h>
 #include <network/uri.hpp>
-
+#include "string_utility.hpp"
 
 TEST(builder_test, empty_uri_doesnt_throw) {
   network::uri_builder builder;

@@ -6,7 +6,6 @@
 
 
 #include <network/uri/uri.hpp>
-#include <network/utility/string_ref_io.hpp>
 #include "detail/uri_parse.hpp"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -37,7 +36,8 @@ namespace network {
   }
 
   const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
-    return "uri_error";
+    static const char name[] = "uri_error";
+    return name;
   }
 
   std::string uri_category_impl::message(int ev) const {
@@ -258,7 +258,7 @@ namespace network {
     return *this;
   }
 
-  void uri::swap(uri &other) {
+  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
     std::swap(pimpl_, other.pimpl_);
   }
 
@@ -270,58 +270,62 @@ namespace network {
     return pimpl_->uri_.end();
   }
 
-  boost::optional<string_ref> uri::scheme() const {
+  namespace {
+    inline
+    boost::string_ref to_string_ref(const uri::string_type &uri,
+			     boost::iterator_range<uri::iterator> uri_part) {
+      const char *c_str = uri.c_str();
+      std::advance(c_str, std::distance(std::begin(uri), std::begin(uri_part)));
+      return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
+    }
+  } // namespace
+
+  boost::optional<boost::string_ref> uri::scheme() const {
     return pimpl_->uri_parts_.scheme?
-      string_ref(std::begin(pimpl_->uri_parts_.scheme.get()), std::end(pimpl_->uri_parts_.scheme.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.scheme)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::user_info() const {
+  boost::optional<boost::string_ref> uri::user_info() const {
     return pimpl_->uri_parts_.hier_part.user_info?
-      string_ref(std::begin(pimpl_->uri_parts_.hier_part.user_info.get()),
-		 std::end(pimpl_->uri_parts_.hier_part.user_info.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.user_info)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::host() const {
+  boost::optional<boost::string_ref> uri::host() const {
     return pimpl_->uri_parts_.hier_part.host?
-      string_ref(std::begin(pimpl_->uri_parts_.hier_part.host.get()),
-		 std::end(pimpl_->uri_parts_.hier_part.host.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.host)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::port() const {
+  boost::optional<boost::string_ref> uri::port() const {
     return pimpl_->uri_parts_.hier_part.port?
-      string_ref(std::begin(pimpl_->uri_parts_.hier_part.port.get()),
-		 std::end(pimpl_->uri_parts_.hier_part.port.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.port)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::path() const {
+  boost::optional<boost::string_ref> uri::path() const {
     return pimpl_->uri_parts_.hier_part.path?
-      string_ref(std::begin(pimpl_->uri_parts_.hier_part.path.get()),
-		 std::end(pimpl_->uri_parts_.hier_part.path.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.path)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::query() const {
+  boost::optional<boost::string_ref> uri::query() const {
     return pimpl_->uri_parts_.query ?
-      string_ref(std::begin(pimpl_->uri_parts_.query.get()),
-		 std::end(pimpl_->uri_parts_.query.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.query)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::fragment() const {
+  boost::optional<boost::string_ref> uri::fragment() const {
     return pimpl_->uri_parts_.fragment?
-      string_ref(std::begin(pimpl_->uri_parts_.fragment.get()),
-		 std::end(pimpl_->uri_parts_.fragment.get()))
-      : boost::optional<string_ref>();
+      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.fragment)
+      : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<string_ref> uri::authority() const {
+  boost::optional<boost::string_ref> uri::authority() const {
     auto host = this->host();
     if (!host) {
-      return boost::optional<string_ref>();
+      return boost::optional<boost::string_ref>();
     }
 
     auto first = std::begin(*host), last = std::end(*host);
@@ -335,7 +339,7 @@ namespace network {
       last = std::end(*port);
     }
 
-    return string_ref(first, last);
+    return to_string_ref(pimpl_->uri_, boost::iterator_range<uri::iterator>(first, last));
   }
 
   uri::string_type uri::native() const {
@@ -358,15 +362,15 @@ namespace network {
     return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
-  bool uri::empty() const {
+  bool uri::empty() const NETWORK_URI_NOEXCEPT {
     return pimpl_->uri_.empty();
   }
 
-  bool uri::absolute() const {
+  bool uri::absolute() const NETWORK_URI_NOEXCEPT {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::opaque() const {
+  bool uri::opaque() const NETWORK_URI_NOEXCEPT {
     return (absolute() && !authority());
   }
 
