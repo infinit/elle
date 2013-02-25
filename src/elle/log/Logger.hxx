@@ -16,6 +16,12 @@ namespace elle
           return std::unique_ptr<Indentation>(new I(factory));
         };
     };
+
+    template <typename I>
+    RegisterTag<I>::RegisterTag()
+    {
+      Logger::_tags().push_back(std::unique_ptr<Tag>(new I()));
+    };
   }
 }
 

@@ -48,6 +48,7 @@ namespace elle
     private:
       unsigned int _indentation;
     };
+
     std::function<std::unique_ptr<Indentation> ()>&
     Logger::_factory()
     {
@@ -75,6 +76,17 @@ namespace elle
     {
       boost::lock_guard<boost::mutex> lock(_indentation_mutex);
       this->_indentation->unindent();
+    }
+
+    /*----.
+    | Tag |
+    `----*/
+
+    std::vector<std::unique_ptr<Tag>>&
+    Logger::_tags()
+    {
+      static std::vector<std::unique_ptr<Tag>> res;
+      return res;
     }
 
     /*-------------.
@@ -137,14 +149,6 @@ namespace elle
           ptime = boost::posix_time::second_clock::local_time();
       }
 
-      // Thread
-      std::string thread = " ";
-      {
-        if (reactor::Scheduler* sched = reactor::Scheduler::scheduler())
-          if (reactor::Thread* t = sched->current())
-            thread = t->name();
-      }
-
       // PID
       std::string pid;
       {
@@ -161,16 +165,19 @@ namespace elle
       // Format
       static const bool enable_time = ::getenv("ELLE_LOG_TIME") != nullptr;
       static const bool enable_pid = ::getenv("ELLE_LOG_PID") != nullptr;
-      static boost::format model(std::string(enable_time ? "%s: " : "") +
-                                 std::string(enable_pid ? "[%s] " : "") +
-                                 "[%s] [%s] %s");
-      boost::format fmt(model);
+      std::string prefix;
       if (enable_time)
-        fmt % ptime;
+        prefix += elle::sprintf("%s: ", ptime);
       if (enable_pid)
-        fmt % pid;
-      fmt % comp % thread % message;
-      this->_message(level, type, str(fmt));
+        prefix += elle::sprintf("[%s] ", pid);
+      prefix += elle::sprintf("[%s] ", comp);
+      for (auto& tag: this->_tags())
+        {
+          std::string content(tag->content());
+          if (!content.empty())
+            prefix += elle::sprintf("[%s] ", content);
+        }
+      this->_message(level, type, prefix + message);
     }
 
     /*--------.

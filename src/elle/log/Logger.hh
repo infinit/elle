@@ -36,6 +36,21 @@ namespace elle
       RegisterIndenter();
     };
 
+    class Tag
+    {
+    public:
+      virtual
+      std::string
+      content() = 0;
+    };
+
+    template <typename I>
+    class RegisterTag
+    {
+    public:
+      RegisterTag();
+    };
+
     class Logger
       : private boost::noncopyable
     {
@@ -85,7 +100,14 @@ namespace elle
       std::unique_ptr<Indentation> _indentation;
       template <typename I>
       friend class RegisterIndenter;
-      static std::function<std::unique_ptr<Indentation> ()>& _factory();
+      static
+      std::function<std::unique_ptr<Indentation> ()>&
+      _factory();
+      template <typename I>
+      friend class RegisterTag;
+      static
+      std::vector<std::unique_ptr<Tag>>&
+      _tags();
 
     /*----------.
     | Messaging |
