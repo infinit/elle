@@ -1,12 +1,8 @@
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include <elle/Exception.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/printf.hh>
 #include <elle/types.hh>
-
-#include <reactor/scheduler.hh>
 
 namespace elle
 {
@@ -109,42 +105,7 @@ namespace elle
                           std::string const& component,
                           std::string const& msg)
       {
-        int indent = logger().indentation();
-        assert(indent >= 1);
-        std::string align = std::string((indent - 1) * 2, ' ');
-        unsigned int size = component.size();
-        assert(size <= logger().component_max_size());
-        unsigned int pad = logger().component_max_size() - size;
-        std::string s = (
-          std::string(pad / 2, ' ') +
-          component +
-          std::string(pad / 2 + pad % 2, ' ')
-        );
-
-        boost::posix_time::ptime ptime;
-        static const bool time =
-          ::getenv("ELLE_LOG_TIME") != nullptr;
-        static boost::format model(time ?
-                                   "%s: [%s] [%s] %s%s" :
-                                   "[%s] [%s] %s%s");
-        if (time)
-          {
-            static const bool universal =
-              ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
-            if (universal)
-              ptime = boost::posix_time::second_clock::universal_time();
-            else
-              ptime = boost::posix_time::second_clock::local_time();
-          }
-        boost::format fmt(model);
-        reactor::Scheduler* sched = reactor::Scheduler::scheduler();
-        reactor::Thread* t = sched ? sched->current() : 0;
-        if (time)
-          fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
-        else
-          fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
-        std::string pid = "[" + std::to_string(getpid()) + "]";
-        logger().message(level, type, pid + str(fmt));
+        logger().message(level, type, component, msg);
       }
     }
   }

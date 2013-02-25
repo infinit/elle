@@ -1,8 +1,12 @@
 #include <fnmatch.h>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <elle/log/Logger.hh>
+#include <elle/printf.hh>
+
+#include <reactor/scheduler.hh>
 
 namespace elle
 {
@@ -106,25 +110,46 @@ namespace elle
     void
     Logger::message(Level level,
                     elle::log::Logger::Type type,
+                    std::string const& component,
                     std::string const& msg)
     {
-      this->_message(level, type, msg);
+      int indent = this->indentation();
+      assert(indent >= 1);
+      std::string align = std::string((indent - 1) * 2, ' ');
+      unsigned int size = component.size();
+      assert(size <= this->component_max_size());
+      unsigned int pad = this->component_max_size() - size;
+      std::string s = (
+        std::string(pad / 2, ' ') +
+        component +
+        std::string(pad / 2 + pad % 2, ' ')
+        );
+
+      boost::posix_time::ptime ptime;
+      static const bool time =
+        ::getenv("ELLE_LOG_TIME") != nullptr;
+      static boost::format model(time ?
+                                 "%s: [%s] [%s] %s%s" :
+                                 "[%s] [%s] %s%s");
+      if (time)
+        {
+          static const bool universal =
+            ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
+          if (universal)
+            ptime = boost::posix_time::second_clock::universal_time();
+          else
+            ptime = boost::posix_time::second_clock::local_time();
+        }
+      boost::format fmt(model);
+      reactor::Scheduler* sched = reactor::Scheduler::scheduler();
+      reactor::Thread* t = sched ? sched->current() : 0;
+      if (time)
+        fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
+      else
+        fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
+      std::string pid = "[" + std::to_string(getpid()) + "]";
+      this->_message(level, type, pid + str(fmt));
     }
-
-#define ELLE_LOG_LEVEL_MESSAGE(Lvl)                     \
-    void                                                \
-    Logger::Lvl(std::string const& msg)                 \
-    {                                                   \
-    return this->message(Logger::Level::Lvl,            \
-                         Logger::Type::info,            \
-                         msg);                          \
-    }                                                   \
-
-    ELLE_LOG_LEVEL_MESSAGE(log);
-    ELLE_LOG_LEVEL_MESSAGE(trace);
-    ELLE_LOG_LEVEL_MESSAGE(debug);
-    ELLE_LOG_LEVEL_MESSAGE(dump);
-#undef ELLE_LOG_LEVEL_MESSAGE
 
     /*--------.
     | Enabled |

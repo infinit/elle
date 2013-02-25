@@ -91,11 +91,10 @@ namespace elle
     | Messaging |
     `----------*/
     public:
-      void message(Level level, elle::log::Logger::Type type, std::string const& values);
-      void log(std::string const& msg);
-      void trace(std::string const& msg);
-      void debug(std::string const& msg);
-      void dump(std::string const& msg);
+      void message(Level level,
+                   elle::log::Logger::Type type,
+                   std::string const& component,
+                   std::string const& values);
     protected:
       virtual
       void
