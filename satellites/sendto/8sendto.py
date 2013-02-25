@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 
-import threading
 import argparse
 import time
 import sys
@@ -20,21 +19,6 @@ This script blocks until the end of the transfer.
 
 """
 
-class Worker(threading.Thread):
-    def __init__(self, state):
-        super(Worker, self).__init__()
-        self.state = state
-        self.running = True
-
-    def run (self):
-        while self.running:
-            time.sleep(0.5)
-            state.poll()
-
-    def stop(self):
-        self.running = False
-
-
 def login(state, email = None):
     sender_id = os.getenv("INFINIT_USER", None)
     if sender_id == None:
@@ -44,34 +28,40 @@ def login(state, email = None):
     state.login(sender_id, password)
     state.connect()
 
-def on_finished(worker, state, transaction, new):
+def on_canceled(state, transaction, new):
+    if state.transaction_status(transaction) == state.TransactionStatus.canceled:
+        print("Transaction canceled, check your log")
+        state.running = False
+
+def on_finished(state, transaction, new):
     if state.transaction_status(transaction) == state.TransactionStatus.finished:
-        print("Stop the worker")
-        worker.stop()
+        print("Transaction succeeded")
+        state.running = False
 
 def main(state, user, filepath):
     login(state)
-    worker = Worker(state)
-
-    worker.start()
 
     id = state.send_files(user, [filepath,])
-    state.transaction_status_callback(partial(on_finished, worker, state))
+    state.transaction_status_callback(partial(on_finished, state))
+    state.transaction_status_callback(partial(on_canceled, state))
+    state.running = True
 
     while True:
         time.sleep(0.5)
         status = state.process_status(id)
         if status == state.ProcessStatus.running:
-            print(".", end="")
+            print(".", end="", file=sys.stdout)
+            sys.stdout.flush()
         if status == state.ProcessStatus.success:
-            print("Sucess")
-            print("The transfert will now begin")
+            print("Preparation finished, waiting for receiver")
             break
         if status == state.ProcessStatus.failure:
-            print("Failure D:")
+            print("Failure to prepare the transfer.")
             break
 
-    worker.join()
+    while state.running:
+        time.sleep(0.5)
+        state.poll()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

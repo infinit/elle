@@ -18,15 +18,26 @@ You have to specify your user name in the INFINIT_USER env variable.
 
 """
 
-running = True
-
 def auto_accept(state, transaction, new):
     state.update_transaction(transaction._id, state.TransactionStatus.accepted)
 
+def on_canceled(state, transaction, new):
+    if state.transaction_status(transaction) == state.TransactionStatus.canceled:
+        print("Transaction canceled, check your log")
+        state.running = False
+
 def on_finished(state, transaction, new):
     if state.transaction_status(transaction) == state.TransactionStatus.finished:
-        print("Stop the worker")
-        globals()["running"] = False
+        print("Transaction succeeded")
+        cnt = state.transaction_files_count(transaction)
+        if cnt == 1:
+            filename = state.transaction_first_filename(transaction)
+            print("File received at '{}'".format(
+                os.path.join(state.get_output_dir(), filename)))
+        else:
+            print("{} files received in '{}'".format(
+                cnt, state.get_output_dir()))
+        state.running = False
 
 def login(state, email = None):
     receiver_id = os.getenv("INFINIT_USER", None)
@@ -38,15 +49,15 @@ def login(state, email = None):
     return receiver_id
 
 def select_transactions(state, l_transactions, sender):
-
     if sender is not None:
-        l_sender_id= state.search_users(sender)
+        l_sender_id = state.search_users(sender)
         if not l_sender_id:
             raise Exception("no such user")
         if len(l_sender_id) > 1:
             raise Exception("ambiguous sender name")
         sender_id = l_sender_id[0]
 
+    # select pending transactions matching the sender id (if not None)
     enumeration = list(enumerate(
             l for l in l_transactions
             if state.transaction_status(l) == state.TransactionStatus.pending
@@ -66,7 +77,22 @@ def select_transactions(state, l_transactions, sender):
             print("[{}] {} files from {}".format(index, file_number, fullname))
         else:
             print("[{}] {} from {}".format(index, first_filename, fullname))
-    l_selected = input("transaction numbers [all]> ")
+
+    selected = input("transaction numbers [all]> ")
+    if selected:
+        if isinstance(selected, (list, tuple)):
+            l_selected = selected
+        elif isinstance(selected, (str, bytes)):
+            try:
+                l_selected = (int(selected),)
+            except ValueError as e:
+                print(e)
+                return []
+        elif isinstance(selected, int):
+            l_selected = (selected,)
+    else:
+        l_selected = []
+
     if l_selected:
         return (enumeration[int(i)][1] for i in l_selected)
     else:
@@ -79,9 +105,9 @@ def main(state, sender):
 
     state.transaction_callback(partial(auto_accept, state));
     state.transaction_status_callback(partial(on_finished, state))
+    state.transaction_status_callback(partial(on_canceled, state))
 
-    global running
-
+    state.running = True
     state.set_device_name(id + "device")
 
     transactions = state.transactions()
@@ -91,13 +117,15 @@ def main(state, sender):
     else:
         to_handle = transactions
 
+    print(to_handle)
+
     if not to_handle:
         raise Exception("you must select a transaction to accept")
 
     for t_ids in to_handle:
         state.update_transaction(t_ids, state.TransactionStatus.accepted)
 
-    while running:
+    while state.running:
         time.sleep(0.5)
         state.poll()
 
