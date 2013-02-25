@@ -115,40 +115,62 @@ namespace elle
     {
       int indent = this->indentation();
       assert(indent >= 1);
-      std::string align = std::string((indent - 1) * 2, ' ');
-      unsigned int size = component.size();
-      assert(size <= this->component_max_size());
-      unsigned int pad = this->component_max_size() - size;
-      std::string s = (
-        std::string(pad / 2, ' ') +
-        component +
-        std::string(pad / 2 + pad % 2, ' ')
-        );
 
+      // Component
+      std::string comp;
+      {
+        unsigned int size = component.size();
+        assert(size <= this->component_max_size());
+        unsigned int pad = this->component_max_size() - size;
+        comp = std::string(pad / 2, ' ')
+          + component + std::string(pad / 2 + pad % 2, ' ');
+      }
+
+      // Time
       boost::posix_time::ptime ptime;
-      static const bool time =
-        ::getenv("ELLE_LOG_TIME") != nullptr;
-      static boost::format model(time ?
-                                 "%s: [%s] [%s] %s%s" :
-                                 "[%s] [%s] %s%s");
-      if (time)
-        {
-          static const bool universal =
-            ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
-          if (universal)
-            ptime = boost::posix_time::second_clock::universal_time();
-          else
-            ptime = boost::posix_time::second_clock::local_time();
-        }
+      {
+        static const bool universal =
+          ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
+        if (universal)
+          ptime = boost::posix_time::second_clock::universal_time();
+        else
+          ptime = boost::posix_time::second_clock::local_time();
+      }
+
+      // Thread
+      std::string thread = " ";
+      {
+        if (reactor::Scheduler* sched = reactor::Scheduler::scheduler())
+          if (reactor::Thread* t = sched->current())
+            thread = t->name();
+      }
+
+      // PID
+      std::string pid;
+      {
+        pid = boost::lexical_cast<std::string>(getpid());
+      }
+
+      // Message
+      std::string message;
+      {
+        std::string align = std::string((indent - 1) * 2, ' ');
+        message = align + msg;
+      }
+
+      // Format
+      static const bool enable_time = ::getenv("ELLE_LOG_TIME") != nullptr;
+      static const bool enable_pid = ::getenv("ELLE_LOG_PID") != nullptr;
+      static boost::format model(std::string(enable_time ? "%s: " : "") +
+                                 std::string(enable_pid ? "[%s] " : "") +
+                                 "[%s] [%s] %s");
       boost::format fmt(model);
-      reactor::Scheduler* sched = reactor::Scheduler::scheduler();
-      reactor::Thread* t = sched ? sched->current() : 0;
-      if (time)
-        fmt % ptime % s % (t ? t->name() : std::string(" ")) % align % msg;
-      else
-        fmt % s % (t ? t->name() : std::string(" ")) % align % msg;
-      std::string pid = "[" + std::to_string(getpid()) + "]";
-      this->_message(level, type, pid + str(fmt));
+      if (enable_time)
+        fmt % ptime;
+      if (enable_pid)
+        fmt % pid;
+      fmt % comp % thread % message;
+      this->_message(level, type, str(fmt));
     }
 
     /*--------.
