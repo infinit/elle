@@ -1,0 +1,9 @@
+#ifndef INFINIT_REACTOR_BACKEND_CORO_IO_COUROUTINE_HH
+# define INFINIT_REACTOR_BACKEND_CORO_IO_COUROUTINE_HH
+
+extern "C"
+{
+# include "Coro.h"
+}
+
+#endif
