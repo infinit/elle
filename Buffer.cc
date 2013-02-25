@@ -41,7 +41,7 @@ namespace elle
   Buffer::Buffer(size_t size)
     : _contents(nullptr)
     , _size(size)
-    , _buffer_size(Buffer::_next_size(size))
+    , _buffer_size(size)
   {
     if ((this->_contents =
          static_cast<Byte*>(::malloc(this->_buffer_size))) == nullptr)
