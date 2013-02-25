@@ -44,12 +44,16 @@ def configure(cxx_toolkit = None, cxx_config = None, curl = None):
     'src/elle/Backtrace.hh',
     'src/elle/Buffer.cc',
     'src/elle/Buffer.hh',
-    'src/elle/Exception.hh',
     'src/elle/Exception.cc',
+    'src/elle/Exception.hh',
+    'src/elle/HttpClient.cc',
+    'src/elle/HttpClient.hh',
+    'src/elle/HttpClient.hxx',
     'src/elle/IOStream.cc',
     'src/elle/IOStream.hh',
     'src/elle/Printable.cc',
     'src/elle/Printable.hh',
+    'src/elle/Version.cc',
     'src/elle/assert.cc',
     'src/elle/assert.hh',
     'src/elle/compiler.hh',
@@ -152,12 +156,11 @@ def configure(cxx_toolkit = None, cxx_config = None, curl = None):
     'src/elle/print.hxx',
     'src/elle/printf.hh',
     'src/elle/printf.hxx',
-    'src/elle/serialize/Serializable.hh',
-    'src/elle/serialize/Serializable.hxx',
+    'src/elle/system/system.hh',
+    'src/elle/types.hh',
     )
 
   sources += drake.nodes(
-    'src/elle/Version.cc',
     'src/elle/serialize/ArchiveMode.cc',
     'src/elle/serialize/ArchiveMode.hh',
     'src/elle/serialize/ArraySerializer.hxx',
@@ -180,6 +183,8 @@ def configure(cxx_toolkit = None, cxx_config = None, curl = None):
     'src/elle/serialize/Pointer.hh',
     'src/elle/serialize/Pointer.hxx',
     'src/elle/serialize/Serializable.hh',
+    'src/elle/serialize/Serializable.hh',
+    'src/elle/serialize/Serializable.hxx',
     'src/elle/serialize/Serializable.hxx',
     'src/elle/serialize/Serializer.hh',
     'src/elle/serialize/SetSerializer.hxx',
@@ -194,13 +199,14 @@ def configure(cxx_toolkit = None, cxx_config = None, curl = None):
     'src/elle/serialize/extract.hxx',
     'src/elle/serialize/footprint.hh',
     'src/elle/serialize/footprint.hxx',
+    'src/elle/serialize/fwd.hh',
     'src/elle/serialize/insert.cc',
     'src/elle/serialize/insert.hh',
     'src/elle/serialize/insert.hxx',
-    'src/elle/serialize/fwd.hh',
     'src/elle/system/platform.hh',
-    'src/elle/system/system.hh',
-    'src/elle/types.hh',
+    )
+
+  sources += drake.nodes(
     'src/elle/utility/Duration.cc',
     'src/elle/utility/Duration.hh',
     'src/elle/utility/Duration.hxx',
@@ -220,9 +226,6 @@ def configure(cxx_toolkit = None, cxx_config = None, curl = None):
     'src/elle/utility/Unicode.hh',
     'src/elle/utility/Utility.hh',
     'src/elle/utility/fwd.hh',
-    'src/elle/HttpClient.cc',
-    'src/elle/HttpClient.hh',
-    'src/elle/HttpClient.hxx',
    )
 
   lib_static = drake.cxx.StaticLib('lib/elle', sources, cxx_toolkit, cxx_config)
