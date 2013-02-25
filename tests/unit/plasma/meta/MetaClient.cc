@@ -130,7 +130,7 @@ test_register(Users const& users)
 
     if (!res.success())
       PRETTY_THROW(elle::sprintf("register failed. %s",
-                                 res.response_details));
+                                 res.error_details));
   }
 }
 
@@ -148,7 +148,7 @@ test_login(Users& users)
 
       if (res.success() != true)
         PRETTY_THROW(elle::sprintf("login failed. %s",
-                                   res.response_details));
+                                   res.error_details));
 
       if (res.token.empty())
         PRETTY_THROW("token is empty");
@@ -168,7 +168,7 @@ test_login(Users& users)
 
       if (res.success() != true)
         PRETTY_THROW(elle::sprintf("self failed. %s",
-                                   res.response_details));
+                                   res.error_details));
 
       if (res._id.empty())
         PRETTY_THROW("_id is empty");
@@ -188,7 +188,7 @@ test_login(Users& users)
 
       if (res.success() != true)
         PRETTY_THROW(elle::sprintf("search from pkey failed. %s",
-                                   res.response_details));
+                                   res.error_details));
 
       if (res._id != u.user._id)
         PRETTY_THROW("_ids don't match");
@@ -214,7 +214,7 @@ test_device(Users& users)
 
       if (res.success() != true)
         PRETTY_THROW(elle::sprintf("create device failed. %s",
-                                   res.response_details));
+                                   res.error_details));
 
       if (res.created_device_id.empty())
         PRETTY_THROW("device id is empty");
@@ -232,7 +232,7 @@ test_device(Users& users)
 
       if (res.success() != true)
         PRETTY_THROW(elle::sprintf("update device failed. %s",
-                                   res.response_details));
+                                   res.error_details));
 
       if (res.updated_device_id.empty())
         PRETTY_THROW("device id is empty");
@@ -254,7 +254,7 @@ test_logout(Users const& users)
 
     if (res.success() != true)
       PRETTY_THROW(elle::sprintf("lougout failed. %s",
-                                 res.response_details));
+                                 res.error_details));
 
     if (!u.client->email().empty())
       PRETTY_THROW("lougout didn't clear email");
@@ -278,7 +278,7 @@ test_search(Users const& users)
 
     if (res.success() != true)
       PRETTY_THROW(elle::sprintf("search failed. %s",
-                                 res.response_details));
+                                 res.error_details));
 
     if (res.users.size() < USER_COUNT)
       PRETTY_THROW("too few results");
@@ -304,7 +304,7 @@ _create_network(UniqueUser& u)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("create network failed, %s",
-                               res.response_details));
+                               res.error_details));
 
   if (res.created_network_id.length() == 0)
     PRETTY_THROW("network creation data corrupted");
@@ -320,11 +320,11 @@ _delete_network(UniqueUser const& u, bool force)
   if (res.success() != true)
     PRETTY_THROW(
       elle::sprintf("delete network failed with%s force. %s",
-                    (force ? "" : "out"), res.response_details));
+                    (force ? "" : "out"), res.error_details));
 
   if (!force && res.deleted_network_id != u.network_id)
     PRETTY_THROW(elle::sprintf("netorks id don't match",
-                               res.response_details));
+                               res.error_details));
 }
 
 int
@@ -334,7 +334,7 @@ _count_networks(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting networks failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   return res.networks.size();
 }
@@ -346,7 +346,7 @@ _check_network_data(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting network failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   if (res.owner != u.user._id)
     PRETTY_THROW("owner don't match");
@@ -363,7 +363,7 @@ _check_nodes(UniqueUser const& u)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("getting nodes failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   //XXX
 }
@@ -375,7 +375,7 @@ _is_network_in_list(UniqueUser const& u)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("getting networks failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   auto found = std::find_if(res.networks.begin(),
                             res.networks.end(),
@@ -395,7 +395,7 @@ _count_users_in_network(UniqueUser const& u)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("getting network failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   return res.users.size();
 }
@@ -410,7 +410,7 @@ _network_add_user(UniqueUser& u, UniqueUser const& guest)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("add user to network failed",
-                               res.response_details));
+                               res.error_details));
 
   if (res.updated_network_id != u.network_id)
     PRETTY_THROW("add user to network data corrupted");
@@ -426,7 +426,7 @@ _network_add_device(UniqueUser& u, UniqueUser const& guest)
 
   if (res.success() != true)
     PRETTY_THROW(elle::sprintf("add device to network failed",
-                               res.response_details));
+                               res.error_details));
 
   if (res.updated_network_id != u.network_id)
     PRETTY_THROW("add device to network data corrupted");
@@ -444,7 +444,7 @@ _network_connect_device(UniqueUser const& u, UniqueUser const& guest)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("connecting device failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   if (res.updated_network_id != u.network_id)
     PRETTY_THROW("network_ids don't match");
@@ -460,7 +460,7 @@ _is_device_connect(UniqueUser const& u, UniqueUser const& peer)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting device endpoints failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   if (res.externals.empty() && peer.user._id != u.user._id)
     return false;
@@ -565,7 +565,7 @@ _create_transaction(UniqueUser& u, UniqueUser const& recipient)
   if (!res.success())
     PRETTY_THROW(
       elle::sprintf("creating transaction failed. %s",
-                    res.response_details));
+                    res.error_details));
 
   if (res.created_transaction_id.empty())
     PRETTY_THROW("transaction_id is empty");
@@ -626,7 +626,7 @@ _count_transactions(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting transactions failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   return res.transactions.size();
 
@@ -646,7 +646,7 @@ _accept_transactions(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting transactions failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   for (std::string const& transaction_id: res.transactions)
   {
@@ -654,7 +654,7 @@ _accept_transactions(UniqueUser const& u)
 
     if (!transaction_res.success())
       PRETTY_THROW(elle::sprintf("getting transaction failed. %s",
-                                 transaction_res.response_details));
+                                 transaction_res.error_details));
 
     // Only recipient can accept.
     if (transaction_res.recipient_id != u.user._id)
@@ -682,7 +682,7 @@ _prepare_transactions(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting transactions failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   for (std::string const& transaction_id: res.transactions)
   {
@@ -690,7 +690,7 @@ _prepare_transactions(UniqueUser const& u)
 
     if (!transaction_res.success())
       PRETTY_THROW(elle::sprintf("getting transaction failed. %s",
-                                 transaction_res.response_details));
+                                 transaction_res.error_details));
 
     // Only recipient can accept.
     if (transaction_res.sender_id != u.user._id)
@@ -716,7 +716,7 @@ _start_transactions(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting transactions failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   for (std::string const& transaction_id: res.transactions)
   {
@@ -724,7 +724,7 @@ _start_transactions(UniqueUser const& u)
 
     if (!transaction_res.success())
       PRETTY_THROW(elle::sprintf("getting transaction failed. %s",
-                                 transaction_res.response_details));
+                                 transaction_res.error_details));
 
     // Only recipient can prepare.
     if (transaction_res.recipient_id != u.user._id)
@@ -743,7 +743,7 @@ _finish_transactions(UniqueUser const& u)
 
   if (!res.success())
     PRETTY_THROW(elle::sprintf("getting transactions failed. %s",
-                               res.response_details));
+                               res.error_details));
 
   for (std::string const& transaction_id: res.transactions)
   {
@@ -751,7 +751,7 @@ _finish_transactions(UniqueUser const& u)
 
     if (!transaction_res.success())
       PRETTY_THROW(elle::sprintf("getting transaction failed. %s",
-                                 transaction_res.response_details));
+                                 transaction_res.error_details));
 
     // Only recipient can finish.
     if (transaction_res.recipient_id != u.user._id)
