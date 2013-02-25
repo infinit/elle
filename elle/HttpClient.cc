@@ -263,7 +263,8 @@ namespace elle
   void
   HTTPClient::fire(Request& request)
   {
-    std::string uri = _impl->server + request.url();
+    std::string uri = std::string("http://") + _impl->server
+        + ":" + std::to_string(_impl->port) + request.url();
 
     namespace ip = boost::asio::ip;
 
@@ -297,8 +298,7 @@ namespace elle
       else
         request_stream << CRLF;
 
-      ELLE_DEBUG("sending the following request to server '%s': '%s'",
-                 uri, body);
+      ELLE_DEBUG("%s '%s': '%s'", request.method(), uri, body);
 
       // Send the request.
       boost::asio::write(socket, request_buf);
