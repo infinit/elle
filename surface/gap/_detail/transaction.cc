@@ -4,6 +4,7 @@
 #include <common/common.hh>
 
 #include <elle/utility/Time.hh>
+#include <elle/os/path.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -222,8 +223,18 @@ namespace surface
         if (p.exitCode())
           throw Exception(gap_internal_error, "8transfer binary exited with errors");
 
-        ELLE_WARN("Download complete. Your file is at '%s'.",
-                  this->_output_dir.c_str());
+        if (trans.files_count == 1)
+        {
+          ELLE_WARN("Download complete. Your file is at '%s'.",
+              elle::os::path::join
+                (this->_output_dir.c_str(), trans.first_filename)
+          );
+        }
+        else
+        {
+          ELLE_WARN("Download complete. Your %d files are in '%s'.",
+              trans.files_count, this->_output_dir.c_str());
+        }
 
         update_transaction(transaction_id,
                          gap_TransactionStatus::gap_transaction_status_finished);
