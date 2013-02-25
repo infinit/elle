@@ -5,9 +5,12 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config, curl = None):
+def configure(cxx_toolkit = None, cxx_config = None, curl = None):
 
   global config, lib_static, lib_dynamic
+
+  cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+  cxx_config = cxx_config or drake.cxx.Config()
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_0x
