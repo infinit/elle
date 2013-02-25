@@ -141,7 +141,7 @@ namespace elle
         {
             ssize_t size = read((char *)_ibuf, this->_bufsize);
             ELLE_TRACE("got %s bytes", size);
-            return WeakBuffer{this->_ibuf, size};
+            return WeakBuffer{this->_ibuf, static_cast<size_t>(size)};
         }
   }
 
