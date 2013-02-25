@@ -9,6 +9,7 @@
 #include <elle/elle.hh>
 #include <elle/HttpClient.hh>
 
+#include <plasma/meta/Client.hh>
 
 #include <cassert>
 #include <cstdlib>
@@ -36,10 +37,20 @@ extern "C"
       else                                                                     \
         ret = gap_internal_error;                                              \
     }                                                                          \
+  catch (plasma::meta::Exception const& err)                                   \
+    {                                                                          \
+      ELLE_ERR(#_func_ " error: %s", err.what());                              \
+      ret = (gap_Status) err.err;                                              \
+    }                                                                          \
   catch (surface::gap::Exception const& err)                                   \
     {                                                                          \
       ELLE_ERR(#_func_ " error: %s", err.what());                              \
       ret = err.code;                                                          \
+    }                                                                          \
+  catch (elle::Exception const& err)                                           \
+    {                                                                          \
+      ELLE_ERR(#_func_ " error: %s", err.what());                              \
+      ret = gap_internal_error;                                                \
     }                                                                          \
   catch (std::exception const& err)                                            \
     {                                                                          \
