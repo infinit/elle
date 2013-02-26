@@ -51,6 +51,7 @@ struct UniqueUser
 {
   std::unique_ptr<plasma::meta::Client> client;
   plasma::meta::User user;
+  std::string email;
   std::string network_id;
   std::string device_id;
   std::string device_name;
@@ -63,7 +64,8 @@ struct UniqueUser
   UniqueUser(std::string const& name)
     : client{new plasma::meta::Client{
       common::meta::host(), common::meta::port(), true}}
-    , user{"", name, name + "@infinit.io", "", 0}
+    , user{"", name, "", 0}
+    , email{name + "@infinit.io"}
     , network_id{"99510fbd8ae7798906b80000"}
     , device_id{"aa510fbd8ae7798906b80000"}
     , device_name{device_id + "device"}
@@ -123,7 +125,7 @@ test_register(Users const& users)
 
   for(UniqueUser const& u: users)
   {
-    auto res = u.client->register_(u.user.email,
+    auto res = u.client->register_(u.email,
                                    u.user.fullname,
                                    password,
                                    activation_code);
@@ -143,7 +145,7 @@ test_login(Users& users)
   {
     // Login.
     {
-      auto res = u.client->login(u.user.email,
+      auto res = u.client->login(u.email,
                                  password);
 
       if (res.success() != true)
@@ -174,7 +176,7 @@ test_login(Users& users)
         PRETTY_THROW("_id is empty");
       if (res.fullname != u.user.fullname)
         PRETTY_THROW("fullnames don't match");
-      if (res.email != u.user.email)
+      if (res.email != u.email)
         PRETTY_THROW("emails don't match");
       if (res.public_key.empty())
         PRETTY_THROW("public_keys is empty");
@@ -194,8 +196,6 @@ test_login(Users& users)
         PRETTY_THROW("_ids don't match");
       if (res.fullname != u.user.fullname)
         PRETTY_THROW("fullnames don't match");
-      if (res.email != u.user.email)
-        PRETTY_THROW("emails don't match");
       if (res.public_key != u.user.public_key)
         PRETTY_THROW("public_keys don't match");
     }
