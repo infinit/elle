@@ -133,7 +133,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--sender", help="the user from whom you want to recv the file")
     parser.add_argument("-d", "--download_dir", help="the download dir")
+    parser.add_argument("-l", "--logfile", help="path to the log file")
     args = parser.parse_args()
+
+    if args.logfile:
+        os.environ["INFINIT_LOG_FILE"] = args.logfile
 
     if args.download_dir:
         os.putenv("INFINIT_DOWNLOAD_DIR", args.download_dir)

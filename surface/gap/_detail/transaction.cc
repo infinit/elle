@@ -5,6 +5,7 @@
 
 #include <elle/utility/Time.hh>
 #include <elle/os/path.hh>
+#include <elle/os/getenv.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -99,8 +100,21 @@ namespace surface
                            transfer_binary,
                            arguments.join(" ").toStdString());
 
-                QProcess p;
-                p.start(transfer_binary.c_str(), arguments);
+                QProcess p; // set the environment and start the transfer
+                {
+                  QProcessEnvironment pe;
+                  std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
+
+                  log_file += ".out.transfer.log";
+                  if (log_file.empty() == false)
+                  {
+                    pe.insert(QProcessEnvironment::systemEnvironment());
+                    pe.insert(QString("ELLE_LOG_FILE"),
+                              QString(log_file.c_str()));
+                  }
+                  p.setProcessEnvironment(pe);
+                  p.start(transfer_binary.c_str(), arguments);
+                }
                 if (!p.waitForFinished(-1))
                   throw Exception(gap_internal_error, "8transfer binary failed");
                 if (p.exitCode())
@@ -163,7 +177,20 @@ namespace surface
                  arguments.join(" ").toStdString());
 
       QProcess p;
-      p.start(progress_binary.c_str(), arguments);
+      {
+        QProcessEnvironment pe;
+        std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
+
+        log_file += ".progress.log";
+        if (log_file.empty() == false)
+        {
+          pe.insert(QProcessEnvironment::systemEnvironment());
+          pe.insert(QString("ELLE_LOG_FILE"),
+              QString(log_file.c_str()));
+        }
+        p.setProcessEnvironment(pe);
+        p.start(progress_binary.c_str(), arguments);
+      }
       if (!p.waitForFinished())
         throw Exception{
             gap_internal_error, "8progress binary failed"
@@ -217,6 +244,20 @@ namespace surface
       try
       {
         QProcess p;
+        {
+          QProcessEnvironment pe;
+          std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
+
+          log_file += ".in.transfer.log";
+          if (log_file.empty() == false)
+          {
+            pe.insert(QProcessEnvironment::systemEnvironment());
+            pe.insert(QString("ELLE_LOG_FILE"),
+                      QString(log_file.c_str()));
+          }
+          p.setProcessEnvironment(pe);
+          p.start(transfer_binary.c_str(), arguments);
+        }
         p.start(transfer_binary.c_str(), arguments);
         if (!p.waitForFinished(-1))
           throw Exception(gap_internal_error, "8transfer binary failed");

@@ -57,7 +57,7 @@ def main(state, user, filepath):
             break
         if status == state.ProcessStatus.failure:
             print("Failure to prepare the transfer.")
-            break
+            return
 
     while state.running:
         time.sleep(0.5)
@@ -67,7 +67,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("user", help="to user to who you want to send a file")
     parser.add_argument("file", help="path to the file")
+    parser.add_argument("-l", "--logfile", help="path to the log file")
     args = parser.parse_args()
+
+    if args.logfile:
+        os.environ["INFINIT_LOG_FILE"] = args.logfile
 
     import gap
     state = gap.State()
