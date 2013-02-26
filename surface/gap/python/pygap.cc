@@ -292,7 +292,7 @@ BOOST_PYTHON_MODULE(_gap)
   //- Users -------------------------------------------------------------------
 
   py::def("user_fullname", &gap_user_fullname, by_value());
-  py::def("user_email", &gap_user_email, by_value());
+  py::def("user_handle", &gap_user_handle, by_value());
   py::def("_id", &gap_self_id, by_value());
   py::def("email", &gap_self_email, by_value());
   py::def("search_users", &_search_users);

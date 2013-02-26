@@ -120,7 +120,7 @@ namespace surface
           this->_meta->identity(ident);
           this->_meta->email(mail);
 
-          this->_me = static_cast<User const&>(this->_meta->self());
+          this->_me = this->_meta->self();
         }
       }
       // Initialize server.
@@ -152,7 +152,7 @@ namespace surface
       this->_meta->identity(res.identity);
       this->_meta->email(res.email);
       //XXX factorize that shit
-      this->_me = static_cast<User const&>(res);
+      this->_me = res;
     }
 
 

@@ -295,7 +295,7 @@ namespace surface
       std::unique_ptr<User> user{new User{
           response._id,
           response.fullname,
-          response.email,
+          response.handle,
           response.public_key,
           response.status,
       }};
@@ -331,7 +331,7 @@ namespace surface
       std::unique_ptr<User> user{new User{
           response._id,
           response.fullname,
-          response.email,
+          response.handle,
           response.public_key,
           response.status}};
 
@@ -347,7 +347,7 @@ namespace surface
       return this->_meta->user_icon(id);
     }
 
-    User const&
+    Self const&
     State::me()
     {
       return this->_me;

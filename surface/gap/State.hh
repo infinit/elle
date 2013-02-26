@@ -57,7 +57,7 @@ namespace surface
     using Nodes = ::plasma::meta::NetworkNodesResponse;
     using Network = ::plasma::meta::NetworkResponse;
     using Endpoint = ::plasma::meta::EndpointNodeResponse;
-
+    using Self = ::plasma::meta::SelfResponse;
 
     class Exception
       : public std::runtime_error
@@ -98,8 +98,8 @@ namespace surface
 
     //- Login & register ------------------------------------------------------
     private:
-      std::map<std::string, User*> _users;
-      User _me;
+      std::map<std::string, User*>  _users;
+      Self                          _me;
     public:
       /// Login to meta.
       void
@@ -141,8 +141,7 @@ namespace surface
 
 
       /// Retrieve current user data.
-      User const&
-      me();
+      Self const& me();
 
       /// Retrieve current user token.
       std::string const&

@@ -234,6 +234,7 @@ class Self(Page):
             -> {
                 'fullname': "My Name",
                 'email': "My email",
+                'handle': handle,
                 'devices': [device_id1, ...],
                 'networks': [network_id1, ...]
                 'identity': 'identity string',
@@ -252,6 +253,7 @@ class Self(Page):
         return self.success({
             '_id': self.user['_id'],
             'fullname': self.user['fullname'],
+            'handle': self.user['handle'],
             'email': self.user['email'],
             'devices': self.user.get('devices', []),
             'networks': self.user.get('networks', []),
@@ -302,9 +304,9 @@ class One(Page):
             return self.error(error.UNKNOWN_USER, "Couldn't find user for id '%s'" % str(id_or_email))
         return self.success({
             '_id': user['_id'],
-            'email': user['_id'] in self.user["swaggers"].keys() and user['email'] or '',
             'public_key': user.get('public_key', ''),
             'fullname': user.get('fullname', ''),
+            'handle': user.get('handle', ''),
             # XXX: user['connected']
             'status': 'connected' in user and user['connected'] or 0
         })
@@ -448,6 +450,8 @@ class Login(Page):
                      'token': "generated session token",
                      'fullname': 'full name',
                      'identity': 'Full base64 identity',
+                     'handle': ...,
+                     'email': ...,
                 }
     """
     __pattern__ = "/user/login"
@@ -473,6 +477,7 @@ class Login(Page):
                 'token': self.session.session_id,
                 'fullname': self.user['fullname'],
                 'email': self.user['email'],
+                'handle': self.user['handle'],
                 'identity': self.user['identity'],
             })
         return self.error(error.EMAIL_PASSWORD_DONT_MATCH)

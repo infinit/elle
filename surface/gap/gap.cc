@@ -544,7 +544,7 @@ extern "C"
     return nullptr;
   }
 
-  char const* gap_user_email(gap_State* state, char const* id)
+  char const* gap_user_handle(gap_State* state, char const* id)
   {
     assert(state != nullptr);
     assert(id != nullptr);
@@ -552,7 +552,7 @@ extern "C"
     try
       {
         auto const& user = __TO_CPP(state)->user(id);
-        return user.email.c_str();
+        return user.handle.c_str();
       }
     CATCH_ALL(user_email);
 

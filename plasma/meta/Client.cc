@@ -82,7 +82,7 @@ SERIALIZE_RESPONSE(plasma::meta::UserResponse, ar, res)
 {
   ar & named("_id", res._id);
   ar & named("fullname", res.fullname);
-  ar & named("email", res.email);
+  ar & named("handle", res.handle);
   ar & named("public_key", res.public_key);
 }
 
@@ -98,6 +98,7 @@ SERIALIZE_RESPONSE(plasma::meta::SelfResponse, ar, res)
 {
   ar & named("_id", res._id);
   ar & named("fullname", res.fullname);
+  ar & named("handle", res.handle);
   ar & named("email", res.email);
   ar & named("public_key", res.public_key);
   ar & named("identity", res.identity);

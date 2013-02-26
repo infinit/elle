@@ -21,7 +21,7 @@ namespace surface
                   this->_swaggers[swagger_id] = new User{
                       response._id,
                       response.fullname,
-                      response.email,
+                      response.handle,
                       response.public_key,
                       response.status,
                   };

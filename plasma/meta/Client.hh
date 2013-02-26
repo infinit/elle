@@ -71,11 +71,12 @@ namespace plasma
 
     struct LoginResponse : Response
     {
-      string  token;
-      string  fullname;
-      string  email;
-      string  identity;
-      string  _id;
+      string token;
+      string fullname;
+      string handle;
+      string email;
+      string identity;
+      string _id;
     };
 
     struct LogoutResponse : Response
@@ -100,7 +101,7 @@ namespace plasma
     {
       string _id;
       string fullname;
-      string email;
+      string handle;
       string public_key;
       int    status;
     };
@@ -114,6 +115,7 @@ namespace plasma
     struct SelfResponse : UserResponse
     {
       string identity;
+      string email;
     };
 
     struct InviteUserResponse : Response

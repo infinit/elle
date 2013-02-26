@@ -319,8 +319,8 @@ extern "C" {
   /// Retrieve user fullname.
   char const* gap_user_fullname(gap_State* state, char const* id);
 
-  /// Retrieve user email address.
-  char const* gap_user_email(gap_State* state, char const* id);
+  /// Retrieve user handle.
+  char const* gap_user_handle(gap_State* state, char const* id);
 
   /// Retrieve user status.
   gap_UserStatus
