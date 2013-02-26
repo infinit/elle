@@ -64,7 +64,7 @@ struct UniqueUser
   UniqueUser(std::string const& name)
     : client{new plasma::meta::Client{
       common::meta::host(), common::meta::port(), true}}
-    , user{"", name, "", 0}
+    , user{"", name, "", "", 0}
     , email{name + "@infinit.io"}
     , network_id{"99510fbd8ae7798906b80000"}
     , device_id{"aa510fbd8ae7798906b80000"}
