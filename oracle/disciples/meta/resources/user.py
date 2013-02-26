@@ -75,9 +75,9 @@ class GenerateHandle(Page):
     def GET(self, fullname):
         handle = ''
         for c in unicodedata.normalize('NFKD', fullname).encode('ascii', 'ignore'):
-            if (c >= 'a'and c <= 'z') or (c >= 'A' and c <= 'Z') or c in ['.', '-']:
+            if (c >= 'a'and c <= 'z') or (c >= 'A' and c <= 'Z') or c in '-_.':
                 handle += c
-            elif c in [' ', '\t']:
+            elif c in ' \t\r\n':
                 handle += '.'
 
         if len(handle) < 5:
@@ -85,17 +85,17 @@ class GenerateHandle(Page):
         return handle
 
     def _generate_dummy(self):
-        t1 = ['lo', 'ca', 'ki', 'po', 'pe', 'bi', 'MER']
-        t2 = ['ri', 'ze', 'te', 'SAL', 'ju', 'IL']
-        t3 = ['yo', 'gri','ARAB', 'troll', 'man', 'ET']
-        t4 = ['olo', 'ard', 'FOU', 'li']
+        t1 = ['lo', 'ca', 'ki', 'po', 'pe', 'bi', 'mer']
+        t2 = ['ri', 'ze', 'te', 'sal', 'ju', 'il']
+        t3 = ['yo', 'gri', 'ka', 'troll', 'man', 'et']
+        t4 = ['olo', 'ard', 'fou', 'li']
         h = ''
         for t in [t1, t2, t3, t4]:
             h += t[int(random.random() * len(t))]
         return h
 
     def gen_unique(self, fullname):
-        h = self.GET(fullname).lower()
+        h = self.GET(fullname)
         while database.users().find_one({'handle': h}):
             h += str(int(random.random() * 10))
         return h
