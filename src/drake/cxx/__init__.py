@@ -1050,6 +1050,14 @@ def dot_spread(nodes):
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
 
+def find_library(token, prefix = None, include_dir = None):
+    if prefix is None or isinstance(prefix, str):
+        conf = LibraryConfiguration(token = token,
+                                    prefix = prefix,
+                                    include_dir = include_dir)
+        return conf.config()
+    else:
+        return prefix
 
 class LibraryConfiguration(drake.Configuration):
 
