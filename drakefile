@@ -234,16 +234,10 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None):
 
   # Tests
 
-  boost = boost or drake.cxx.boost.Boost()
-
-  cxx_config_tests = cxx_config + config
-  cxx_config_tests += boost.config_filesystem()
-  cxx_config_tests += boost.config_system()
-  cxx_config_tests += boost.config_test()
-  cxx_config_tests.lib_path_runtime('../lib')
-  test = drake.cxx.Executable('tests/printf', drake.nodes('tests/printf.cc') + [lib_dynamic],
-                              cxx_toolkit, cxx_config_tests)
-
+  tests = [
+    'printf',
+    'IOStream',
+    ]
 
   class TestRunner(drake.Builder):
 
@@ -267,4 +261,15 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None):
         print(status, file = rv)
       return status == 0
 
-  TestRunner(test)
+  boost = boost or drake.cxx.boost.Boost()
+
+  cxx_config_tests = cxx_config + config
+  cxx_config_tests += boost.config_filesystem()
+  cxx_config_tests += boost.config_system()
+  cxx_config_tests += boost.config_test()
+  cxx_config_tests.lib_path_runtime('../lib')
+  for test in tests:
+    test = drake.cxx.Executable('tests/%s' % test,
+                                drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
+                                cxx_toolkit, cxx_config_tests)
+    TestRunner(test)
