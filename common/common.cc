@@ -15,7 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef INFINIT_PRODUCTION
+#ifdef INFINIT_PRODUCTION_BUILD
 # define VAR_PREFIX COMMON_PRODUCTION
 #else
 # define VAR_PREFIX COMMON_DEFAULT
