@@ -80,7 +80,7 @@ functionality. Let’s get into it:
 
 - Pop-ups now display the correct corresponding transfers accurately
 
-Download Infinit here: http://download.infinit.io/macosx/10.7/Infinit-ia64.dmg
+Download Infinit here: http://download.infinit.io/macosx/10.8/Infinit-ia64.dmg
 
 Your access code is: %(activation_code)s
 
