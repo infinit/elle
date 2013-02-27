@@ -102,17 +102,13 @@ namespace surface
 
                 QProcess p; // set the environment and start the transfer
                 {
-                  QProcessEnvironment pe;
                   std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
 
-                  log_file += ".out.transfer.log";
-                  if (log_file.empty() == false)
+                  if (!log_file.empty())
                   {
-                    pe.insert(QProcessEnvironment::systemEnvironment());
-                    pe.insert(QString("ELLE_LOG_FILE"),
-                              QString(log_file.c_str()));
+                    log_file += ".out.transfer.log";
+                    ::setenv("ELLE_LOG_FILE", log_file.c_str(), 1);
                   }
-                  p.setProcessEnvironment(pe);
                   p.start(transfer_binary.c_str(), arguments);
                 }
                 if (!p.waitForFinished(-1))
@@ -178,17 +174,13 @@ namespace surface
 
       QProcess p;
       {
-        QProcessEnvironment pe;
         std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
 
-        log_file += ".progress.log";
-        if (log_file.empty() == false)
-        {
-          pe.insert(QProcessEnvironment::systemEnvironment());
-          pe.insert(QString("ELLE_LOG_FILE"),
-              QString(log_file.c_str()));
-        }
-        p.setProcessEnvironment(pe);
+        if (!log_file.empty())
+          {
+            log_file += ".progress.log";
+            ::setenv("ELLE_LOG_FILE", log_file.c_str(), 1);
+          }
         p.start(progress_binary.c_str(), arguments);
       }
       if (!p.waitForFinished())
@@ -245,20 +237,15 @@ namespace surface
       {
         QProcess p;
         {
-          QProcessEnvironment pe;
           std::string log_file = elle::os::getenv("INFINIT_LOG_FILE", "");
 
-          log_file += ".in.transfer.log";
-          if (log_file.empty() == false)
-          {
-            pe.insert(QProcessEnvironment::systemEnvironment());
-            pe.insert(QString("ELLE_LOG_FILE"),
-                      QString(log_file.c_str()));
-          }
-          p.setProcessEnvironment(pe);
+          if (!log_file.empty())
+            {
+              log_file += ".in.transfer.log";
+              ::setenv("ELLE_LOG_FILE", log_file.c_str(), 1);
+            }
           p.start(transfer_binary.c_str(), arguments);
         }
-        p.start(transfer_binary.c_str(), arguments);
         if (!p.waitForFinished(-1))
           throw Exception(gap_internal_error, "8transfer binary failed");
         if (p.exitCode())
