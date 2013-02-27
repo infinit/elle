@@ -3,6 +3,16 @@
 
 #include <elle/IOStream.hh>
 
+static
+std::string content ("Three Rings for the Elven-kings under the sky, "
+                     "Seven for the Dwarf-lords in their halls of stone, "
+                     "Nine for Mortal Men doomed to die, "
+                     "One for the Dark Lord on his dark throne "
+                     "In the Land of Mordor where the Shadows lie. "
+                     "One Ring to rule them all, One Ring to find them, "
+                     "One Ring to bring them all and in the darkness bind them "
+                     "In the Land of Mordor where the Shadows lie.");
+
 class ReadStreamBuffer: public elle::StreamBuffer
 {
   public:
@@ -41,18 +51,8 @@ class ReadStreamBuffer: public elle::StreamBuffer
 
 static
 void
-test_stream_buffer(int read_size)
+test_stream_buffer_read(int read_size)
 {
-  std::string content
-    ("Three Rings for the Elven-kings under the sky,"
-     "Seven for the Dwarf-lords in their halls of stone,"
-     "Nine for Mortal Men doomed to die,"
-     "One for the Dark Lord on his dark throne"
-     "In the Land of Mordor where the Shadows lie."
-     "One Ring to rule them all, One Ring to find them,"
-     "One Ring to bring them all and in the darkness bind them"
-     "In the Land of Mordor where the Shadows lie.");
-
   auto buffer = new ReadStreamBuffer(content, read_size);
   elle::IOStream stream(buffer);
 
@@ -70,20 +70,94 @@ test_stream_buffer(int read_size)
   BOOST_CHECK(ref.eof());
 }
 
+class WriteStreamBuffer: public elle::StreamBuffer
+{
+  public:
+    WriteStreamBuffer(std::string& data, int write_size)
+      : _write_buffer(new char[write_size])
+      , _write_data(data)
+      , _write_size(write_size)
+    {}
+
+    ~WriteStreamBuffer()
+    {
+      delete [] _write_buffer;
+    }
+
+    virtual
+    elle::WeakBuffer
+    write_buffer()
+    {
+      return elle::WeakBuffer(_write_buffer, _write_size);
+    }
+    char* _write_buffer;
+    std::string& _write_data;
+    int _write_size;
+
+    virtual
+    void
+    flush(StreamBuffer::Size size)
+    {
+      _write_data += std::string(_write_buffer, size);
+    }
+
+    virtual
+    elle::WeakBuffer
+    read_buffer()
+    {
+      return elle::WeakBuffer(nullptr, 0);
+    }
+};
+
+static
+void
+test_stream_buffer_write(int write_size)
+{
+  std::string res;
+  auto buffer = new WriteStreamBuffer(res, write_size);
+  elle::IOStream stream(buffer);
+
+  {
+    std::stringstream ref(content);
+
+    bool first = true;
+    while (!ref.eof())
+    {
+      if (!first)
+        stream << " ";
+      else
+        first = false;
+      std::string word;
+      ref >> word;
+      stream << word;
+    }
+    stream.flush();
+  }
+  BOOST_CHECK_EQUAL(res, content);
+}
+
 static
 bool
 test_suite()
 {
   boost::unit_test::test_suite* stream_buffer = BOOST_TEST_SUITE("StreamBuffer");
   boost::unit_test::framework::master_test_suite().add(stream_buffer);
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 1)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 2)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 3)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 4)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 5)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 6)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 7)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer, 8)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 1)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 2)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 3)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 4)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 5)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 6)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 7)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 8)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 1)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 2)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 3)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 4)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 5)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 6)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
+  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
 
   return true;
 }
