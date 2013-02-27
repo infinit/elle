@@ -264,6 +264,7 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None):
   boost = boost or drake.cxx.boost.Boost()
 
   cxx_config_tests = cxx_config + config
+  cxx_config_tests += boost.config()
   cxx_config_tests += boost.config_filesystem()
   cxx_config_tests += boost.config_system()
   cxx_config_tests += boost.config_test()
