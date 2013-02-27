@@ -34,6 +34,7 @@ namespace elle
     std::string                                   content_type;
     std::unordered_map<std::string, std::string>  headers;
     std::unordered_map<std::string, std::string>  post_fields;
+    std::unordered_map<std::string, std::string>  parameters;
     std::stringstream                             response;
     // Reading body flushes it.
     mutable std::unique_ptr<std::istream>         body;
@@ -83,8 +84,10 @@ namespace elle
         if (!first)
           body += "&";
         else
+        {
+          body += "?";
           first = false;
-
+        }
         body += pair.first + "=" + pair.second; //XXX must be encoded.
       }
 
@@ -101,7 +104,6 @@ namespace elle
   {
     return (!_this->post_fields.empty() or _this->body != nullptr);
   }
-
 
   std::string
   Request::body_string() const
@@ -125,8 +127,26 @@ namespace elle
   std::string const&
   Request::method() const { return _this->method; }
 
-  std::string const&
-  Request::url() const { return _this->url; }
+  std::string
+  Request::url() const
+  {
+    std::string url = _this->url;
+
+    bool first = true;
+    for (auto const& pair: _this->parameters)
+    {
+      if (!first)
+        url += "&";
+      else
+      {
+        url += "?";
+        first = false;
+      }
+      url += pair.first + "=" + pair.second; //XXX must be encoded.
+    }
+
+    return url;
+  }
 
   std::string const&
   Request::content_type() const { return _this->content_type; }
@@ -184,6 +204,14 @@ namespace elle
                       std::string const& value)
   {
     _this->post_fields[key] = value;
+    return *this;
+  }
+
+  Request&
+  Request::parameter(std::string const& key,
+                     std::string const& value)
+  {
+    _this->parameters[key] = value;
     return *this;
   }
 

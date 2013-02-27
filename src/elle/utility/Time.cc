@@ -272,12 +272,28 @@ namespace elle
             break;
           }
         case Duration::UnitUnknown:
-          goto _return;
+          break;
         }
 
-    _return:
-
       return (result);
+    }
+
+    Natural64
+    Time::microseconds()
+    {
+
+    }
+
+    Natural64
+    Time::milliseconds()
+    {
+
+    }
+
+    Natural64
+    Time::seconds()
+    {
+
     }
 
 //

@@ -82,6 +82,13 @@ namespace elle
       // attributes
       //
       Natural64         nanoseconds;
+
+      //
+      // helpers.
+      //
+      Natural64         microseconds();
+      Natural64         milliseconds();
+      Natural64         seconds();
     };
 
   }

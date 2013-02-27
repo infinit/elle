@@ -62,7 +62,7 @@ namespace elle
   public:
     std::string const& method() const;
 
-    std::string const& url() const;
+    std::string url() const;
 
     bool has_body() const;
     std::unique_ptr<std::istream> body() const;
@@ -91,6 +91,10 @@ namespace elle
     Request&
     post_field(std::string const& key,
                std::string const& value);
+
+    Request&
+    parameter(std::string const& key,
+              std::string const& value);
 
     Request&
     content_type(std::string const& str);
