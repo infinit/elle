@@ -132,8 +132,7 @@ class AddSwagger(Page):
     ]
 
     def POST(self):
-        import pymongo
-
+        self.requireLoggedIn()
         try:
             if "email" in self.data:
                 error_code = _validators['email'](self.data['email'])
@@ -163,10 +162,9 @@ class RemoveSwagger(Page):
     __pattern__ = "/user/remove_swagger"
 
     def POST(self):
-        import pymongo
-
+        self.requireLoggedIn()
         swagez = database.users().find_and_modify(
-            {"_id": pymongo.objectid.ObjectId(self.user["_id"])},
+            {"_id": database.ObjectId(self.user["_id"])},
             {"$pull": {"swaggers": self.data["_id"]}},
             True #upsert
         )
@@ -184,7 +182,7 @@ class FromPublicKey(Page):
             return self.error(error.UNKNOWN, "No user could be found for this public key!")
         return self.success({
             '_id': user['_id'],
-            'email': user['email'],
+            'handle': user['handle'],
             'public_key': user['public_key'],
             'fullname': user['fullname'],
         })
@@ -275,8 +273,6 @@ class MinimumSelf(Page):
     __pattern__ = "/minimumself"
 
     def GET(self):
-        if not self.user:
-            return self.error(error.NOT_LOGGED_IN)
         self.requireLoggedIn() # scary
         return self.success({
             'email': self.user['email'],
@@ -424,6 +420,7 @@ class Register(Page):
             identity = identity,
             public_key = public_key,
             handle = handle,
+            lw_handle = handle.lower(),
             swaggers = {},
             networks = [],
             devices = [],
