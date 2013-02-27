@@ -28,9 +28,9 @@ def send(mail, subject, content,
         smtp_server.quit()
 
 
-#################################################################################
+###############################################################################
 # Mail subjects and body
-#################################################################################
+###############################################################################
 
 # XXX: use mailchimp templates
 
@@ -39,43 +39,63 @@ INVITATION_SUBJECT = "Invitation to test Infinit!"
 INVITATION_CONTENT = """
 Hi,
 
-We’re finally here! Welcome to the Infinit private beta.
+Infinit is back and we’ve got some fantastic news to share with you! But,
+before we do, we should thank you for all the feedback and insights you’ve
+given us on our first release. We know there were a lot of problems and yes, it
+was hard to use, but as they say, ‘practice makes perfect.’ And we are striving
+for perfection.
 
-Infinit is a powerful file sharing tool (with better performance than you or
-your girlfriend), and you are one of the first people that will get to take it
-for a spin! Exciting, right?
+First things, first. You need to download Infinit again to get started. I know…
+sad face. But it’s ok. From now on, Infinit will auto-update. When you download
+Infinit you’ll need to re-register as well (double sad face) and you’ll need
+access code below (triple sad face).
 
-For the moment, we’ve restrained our community to a small number of users while
-we work on stabilizing the application. For this reason, you won’t be able to
-invite other people just yet. It takes time to organize an orgy!
+The updated version of Infinit has some major improvements in design and
+functionality. Let’s get into it:
 
-Here is a list of other people on Infinit with whom you can begin sharing. All
-guys I'm afraid...
+- Auto-updates are enabled
 
-- Cyrille Vincey
-- Valentin Lautier
-- Lionel Tressens
-- Talal Mazroui
-- Juan Diosdado
-- Clement Cazalot
-- Julien Quintard
+- Signing up now auto-generates a unique handle for you (you’ll be able to
+  change it in a future - version)
 
-Another 30 people will be invited to Infinit next week in order to offer you
-more possibilities to share.
+- Login and password are now auto-filled
 
-*You can download Infinit by clicking this link:*
+- General design is cleaned up
 
-    http://download.infinit.io/macosx/10.7/Infinit-ia64.dmg
+- Infinit picks up your Mac avatar as your default photo (you’ll be able to
+  change it in a future version)
+
+- Transfers and transfer history are shown in the notifications panel (however,
+  there still may be small issues)
+
+- Searching for users is improved and cleaner
+
+- Arrow keys and the enter key can be used as shortcuts while searching
+
+- Google Connect button is integrated, but not functional
+
+- Resizing the Finder no longer impacts the interface view in most cases
+
+- Pending notifications are represented by numbers on the notification icon
+
+- Pop-ups now display the correct corresponding transfers accurately
+
+Download Infinit here: http://download.infinit.io/macosx/10.7/Infinit-ia64.dmg
 
 Your access code is: %(activation_code)s
 
-Just remember that this is a private beta version of Infinit, so you may
-experience bugs, crashes or other impediments to the experience. For the
-moment, you need to be either connected to Wifi or Ethernet, but not both. If
-you do experience problems, please let us know by sending a quick email to
-support@infinit.io. We’ll get back to you as soon as possible to better
-understand and solve your problem unless you've blown up your pet or your name
-is Talal, in which case we can't help.
+As a reminder, here’s a list of the people that have Infinit at the moment:
+
+    - Cyrille Vincey
+    - Valentin Lautier
+    - Lionel Tressens
+    - Talal Mazroui
+    - Juan Diosdado
+    - Clement Cazalot
+    - Julien Quintard
+
+Let us know if you have any questions, or if you have feedback for us, don’t
+hesitate to email us at support@infinit.io.
 
 All the best,
 
