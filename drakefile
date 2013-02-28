@@ -204,7 +204,13 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
     'src/elle/serialize/insert.cc',
     'src/elle/serialize/insert.hh',
     'src/elle/serialize/insert.hxx',
+    )
+
+  sources += drake.nodes(
     'src/elle/system/platform.hh',
+    'src/elle/system/Process.cc',
+    'src/elle/system/Process.hh',
+    'src/elle/system/system.hh',
     )
 
   sources += drake.nodes(
