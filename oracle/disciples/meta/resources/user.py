@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 try:
-    import Image
+    from PIL import Image
 except ImportError:
     print("Cannot import Image module, please install PIL")
     import sys
