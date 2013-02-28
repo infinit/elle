@@ -5,7 +5,8 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_config = None, boost = None):
+def configure(cxx_toolkit, openssl_config, reactor_config, elle_config,
+        cxx_config = None, boost = None, enable_tests = True):
 
   global config, lib_static, lib_dynamic
 
@@ -115,9 +116,10 @@ def configure(cxx_toolkit, openssl_config, reactor_config, elle_config, cxx_conf
   tests_cxx_config.lib('reactor')
   tests_cxx_config.lib('elle')
 
-  for test in tests:
-    bin_path = drake.Path(test)
-    bin_path.extension = ''
-    bin = drake.cxx.Executable(bin_path,
-                               drake.nodes(test) + [ lib_dynamic ],
-                               cxx_toolkit, tests_cxx_config)
+  if enable_tests:
+      for test in tests:
+        bin_path = drake.Path(test)
+        bin_path.extension = ''
+        bin = drake.cxx.Executable(bin_path,
+                                   drake.nodes(test) + [ lib_dynamic ],
+                                   cxx_toolkit, tests_cxx_config)
