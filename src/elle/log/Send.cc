@@ -4,6 +4,10 @@
 #include <elle/printf.hh>
 #include <elle/types.hh>
 
+#include <fstream>
+
+#include <elle/os/getenv.hh>
+
 namespace elle
 {
   namespace log
@@ -19,7 +23,20 @@ namespace elle
     logger()
     {
       if (!_logger())
-        _logger().reset(new elle::log::TextLogger(std::cerr));
+      {
+        std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
+
+        if (path.empty() == false)
+        {
+          static std::ofstream out{
+              path,
+              std::fstream::app | std::fstream::out
+          };
+          _logger().reset(new elle::log::TextLogger(out));
+        }
+        else
+          _logger().reset(new elle::log::TextLogger(std::cerr));
+      }
       return *_logger();
     };
 
