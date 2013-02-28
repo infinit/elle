@@ -35,7 +35,7 @@ namespace elle
   /// @see WeakBuffer for a buffer that doesn't own the data
   class Buffer
   {
-    friend class serialize::Serializer<Buffer>;
+    friend struct serialize::Serializer<Buffer>;
   public:
     typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
     typedef std::pair<ContentPtr, size_t>                ContentPair;

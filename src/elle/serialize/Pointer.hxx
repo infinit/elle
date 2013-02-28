@@ -17,7 +17,7 @@ namespace elle
     template<typename T>
     class Pointer
     {
-      friend class Serializer<Pointer<T>>;
+      friend struct Serializer<Pointer<T>>;
     public:
       typedef T pointer_type;
       static_assert(
@@ -43,7 +43,7 @@ namespace elle
     template<typename T>
     class AlivePointer
     {
-      friend class Serializer<AlivePointer<T>>;
+      friend struct Serializer<AlivePointer<T>>;
     public:
       typedef T pointer_type;
       static_assert(
