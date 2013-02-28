@@ -59,10 +59,10 @@ extern "C"
     }                                                                          \
   catch (...)                                                                  \
     {                                                                          \
-      auto const &e = std::current_exception();                                \
+      /*auto const &e = std::current_exception();*/                                \
       ELLE_ERR(#_func_ " unknown error type");                                 \
       ret = gap_internal_error;                                                \
-      std::rethrow_exception(e);                                               \
+      /*std::rethrow_exception(e);*/                                               \
     }                                                                          \
   /**/
 
