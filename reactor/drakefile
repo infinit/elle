@@ -5,7 +5,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config, elle_config):
+def configure(cxx_toolkit, cxx_config, elle_config, enable_tests = True):
 
   global config, lib_static, lib_dynamic
 
