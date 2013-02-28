@@ -11,57 +11,80 @@ namespace elle
   namespace system
   {
 
+    /// Shortcuts for common process configurations.
+    enum class ProcessKind
+    {
+      normal,
+      daemon,
+    };
+
+    /// Flags for process actions.
+    enum class ProcessTermination
+    {
+      wait,
+      dont_wait,
+    };
+
+    /// Customize a process launch.
     class ProcessConfig
     {
-    public:
-      enum Stream
-      {
-        stream_stdout,
-        stream_stderr,
-        stream_pipe,
-      };
-
     private:
       struct Impl;
       std::unique_ptr<Impl> _impl;
 
     public:
       ProcessConfig();
+      ProcessConfig(ProcessConfig&& other);
       ~ProcessConfig();
 
       bool daemon() const;
       ProcessConfig& daemon(bool mode);
+
+      ProcessConfig& pipe_stdin();
+      ProcessConfig& pipe_stderr();
+      ProcessConfig& pipe_stdout();
+
+      ProcessConfig& merge_stderr();
+    private:
+      friend class Process;
     };
 
     class Process
     {
     public:
-      enum class Kind
-      {
-        normal,
-        daemon,
-      };
-
-      enum class Termination
-      {
-        wait,
-        dont_wait,
-      };
+      typedef int StatusCode;
 
     private:
       struct Impl;
       std::unique_ptr<Impl> _impl;
+      ProcessConfig _config;
 
     public:
-      /// Construct a process and launch it.
-      Process(Kind const kind,
+      ProcessConfig const& config() const { return _config; }
+
+      /// @brief Construct a process (and launch it).
+      ///
+      /// @param binary     Path to the binary name.
+      /// @param arguments  Argument list.
+      /// @param kind       shortcut for common configurations.
+      /// @param config     Custom configuration.
+    public:
+      Process(ProcessConfig&& config,
               std::string const& binary,
               std::list<std::string> const& arguments);
 
-      /// Construct a process (with Kind::normal)
+      Process(ProcessKind const kind,
+              std::string const& binary,
+              std::list<std::string> const& arguments);
+
       Process(std::string const& binary,
               std::list<std::string> const& arguments);
 
+      Process(std::string const& binary);
+
+
+
+    public:
       Process(Process&& other);
 
       /// Kill and wait for the process to terminate unless it is a daemon.
@@ -71,27 +94,30 @@ namespace elle
       /// signal, eventually waiting for its termination.
       /// If term equals `Termination::dont_wait` and the program is still
       /// running, returns 0.
-      int status(Termination const term = Termination::dont_wait);
+      StatusCode
+      status(ProcessTermination const term = ProcessTermination::dont_wait);
 
       /// Returns true if the program is running.
       bool running();
 
       /// Alias for status(Termination::wait)
-      int wait_status();
+      StatusCode wait_status();
 
       /// Wait until the process finish and throw in case of error.
       void wait();
 
       /// Kill the program immediatly and returns its exit status.
-      void kill(Termination const term = Termination::wait);
+      void kill(ProcessTermination const term = ProcessTermination::wait);
 
       /// Ask the program to terminate.
-      void terminate(Termination const term = Termination::wait);
+      void terminate(ProcessTermination const term = ProcessTermination::wait);
+
+      std::string read(size_t const max = 4096);
     };
 
     /// Retrieve a default process config of any kind.
-    ProcessConfig const&
-    process_config(Process::Kind const kind);
+    ProcessConfig
+    process_config(ProcessKind const kind);
 
   }
 }

@@ -1,7 +1,8 @@
 #include "Process.hh"
 
-#include <elle/log.hh>
+#include <elle/Buffer.hh>
 #include <elle/Exception.hh>
+#include <elle/log.hh>
 
 #include <signal.h>     // kill
 #include <stdlib.h>     // exit, malloc
@@ -15,15 +16,17 @@ namespace elle
 {
   namespace system
   {
-
     //- ProcessConfig ---------------------------------------------------------
 
     struct ProcessConfig::Impl
     {
-      bool  daemon;
-      int   in_pipe[2];
-      int   out_pipe[2];
-      int   err_pipe[2];
+#define READ_ENDPOINT   0
+#define WRITE_ENDPOINT  1
+
+      bool        daemon;
+      int         in_pipe[2];
+      int         out_pipe[2];
+      int         err_pipe[2];
 
       Impl()
         : daemon{false}
@@ -33,8 +36,12 @@ namespace elle
       {}
     };
 
-    ProcessConfig::ProcessConfig():
-      _impl{new Impl}
+    ProcessConfig::ProcessConfig()
+      : _impl{new Impl{}}
+    {}
+
+    ProcessConfig::ProcessConfig(ProcessConfig&& other)
+      : _impl{std::move(other._impl)}
     {}
 
     ProcessConfig::~ProcessConfig()
@@ -51,29 +58,63 @@ namespace elle
       return *this;
     }
 
-    ProcessConfig const&
-    process_config(Process::Kind const kind)
+    ProcessConfig& ProcessConfig::pipe_stdin()
     {
-      static std::unique_ptr<ProcessConfig> normal_config;
-      static std::unique_ptr<ProcessConfig> daemon_config;
-      throw std::runtime_error{"Not implemented"};
+      if (_impl->in_pipe[0] != -1)
+        throw elle::Exception{"stdin already piped"};
+      if (::pipe(_impl->in_pipe) < 0)
+        throw elle::Exception{"cannot pipe stdin"};
+      return *this;
+    }
+
+    ProcessConfig& ProcessConfig::pipe_stderr()
+    {
+      if (_impl->err_pipe[0] != -1)
+        throw elle::Exception{"stderr already piped"};
+      if (::pipe(_impl->err_pipe) < 0)
+        throw elle::Exception{"cannot pipe stderr"};
+      return *this;
+    }
+
+    ProcessConfig& ProcessConfig::pipe_stdout()
+    {
+      if (_impl->out_pipe[0] != -1)
+        throw elle::Exception{"stdout already piped"};
+      if (::pipe(_impl->out_pipe) < 0)
+        throw elle::Exception{"cannot pipe stdout"};
+      return *this;
+    }
+
+    ProcessConfig& ProcessConfig::merge_stderr()
+    {
+      throw elle::Exception{"Not implemented"};
+      return *this;
+    }
+
+    ProcessConfig
+    process_config(ProcessKind const kind)
+    {
+      ProcessConfig config;
+      if (kind == ProcessKind::daemon)
+        config.daemon(true);
+      return config;
     }
 
     //- Process ---------------------------------------------------------------
 
     struct Process::Impl
     {
-      Kind const              kind;
+      ProcessConfig           config;
       std::string             binary;
       std::list<std::string>  arguments;
       pid_t                   pid;
       int                     status;
     };
 
-    Process::Process(Kind const kind,
+    Process::Process(ProcessConfig&& config_,
                      std::string const& binary,
-                     std::list<std::string> const& arguments):
-      _impl{new Impl{kind, binary, arguments, 0, 0}}
+                     std::list<std::string> const& arguments)
+      : _impl{new Impl{std::move(config_), binary, arguments, 0, 0}}
     {
       ELLE_TRACE("Launching %s %s", binary, arguments);
       pid_t binary_pid = ::fork();
@@ -90,6 +131,27 @@ namespace elle
             exec_args[i++] = arg.c_str();
           exec_args[i] = nullptr;
 
+          if (_impl->config._impl->in_pipe[0] != -1) // is initialized
+            {
+              if (::dup2(_impl->config._impl->in_pipe[READ_ENDPOINT], STDIN_FILENO) < 0)
+                throw elle::Exception{"Cannot duplicate stdin"};
+              ::close(_impl->config._impl->in_pipe[WRITE_ENDPOINT]);
+            }
+
+          if (_impl->config._impl->err_pipe[0] != -1) // is initialized
+            {
+              if (::dup2(_impl->config._impl->err_pipe[WRITE_ENDPOINT], STDERR_FILENO) < 0)
+                throw elle::Exception{"Cannot duplicate stderr"};
+              ::close(_impl->config._impl->err_pipe[READ_ENDPOINT]);
+            }
+
+          if (_impl->config._impl->out_pipe[0] != -1) // is initialized
+            {
+              if (::dup2(_impl->config._impl->out_pipe[WRITE_ENDPOINT], STDOUT_FILENO) < 0)
+                throw elle::Exception{"Cannot duplicate stdout"};
+              ::close(_impl->config._impl->out_pipe[READ_ENDPOINT]);
+            }
+
           //close(STDERR_FILENO);
           if (::execvp(binary.c_str(), (char**) exec_args) != 0)
             {
@@ -101,12 +163,30 @@ namespace elle
         {
           ELLE_DEBUG("Binary %s %s has pid %d", binary, arguments, binary_pid);
           _impl->pid = binary_pid;
+          if (_impl->config._impl->in_pipe[0] != -1) // is initialized
+            ::close(_impl->config._impl->in_pipe[READ_ENDPOINT]);
+
+          if (_impl->config._impl->err_pipe[0] != -1) // is initialized
+            ::close(_impl->config._impl->err_pipe[WRITE_ENDPOINT]);
+
+          if (_impl->config._impl->out_pipe[0] != -1) // is initialized
+            ::close(_impl->config._impl->out_pipe[WRITE_ENDPOINT]);
         }
     }
 
+    Process::Process(ProcessKind const kind,
+                     std::string const& binary,
+                     std::list<std::string> const& arguments)
+      : Process{process_config(kind), binary, arguments}
+    {}
+
     Process::Process(std::string const& binary,
-                     std::list<std::string> const& arguments):
-      Process(Kind::normal, binary, arguments)
+                     std::list<std::string> const& arguments)
+      : Process{ProcessKind::normal, binary, arguments}
+    {}
+
+    Process::Process(std::string const& binary)
+      : Process{binary, {}}
     {}
 
     Process::Process(Process&& other):
@@ -118,7 +198,7 @@ namespace elle
       if (!_impl)
         return;
 
-      if (_impl->pid == 0 || _impl->kind == Kind::daemon)
+      if (_impl->pid == 0 || _impl->config.daemon())
         return;
 
       try
@@ -127,7 +207,7 @@ namespace elle
             {
               ELLE_WARN("Killing a running process %s(%d)",
                         _impl->binary, _impl->pid);
-              this->kill(Termination::wait);
+              this->kill(ProcessTermination::wait);
             }
         }
       catch (std::runtime_error const& err)
@@ -142,21 +222,21 @@ namespace elle
         }
     }
 
-    int
-    Process::status(Termination const term)
+    Process::StatusCode
+    Process::status(ProcessTermination const term)
     {
       ELLE_TRACE("Waiting for binary %s %s", _impl->binary, _impl->arguments);
       if (_impl->pid == 0)
         return _impl->status;
 
       int status;
-      int options = (term == Termination::dont_wait ? WNOHANG : 0);
+      int options = (term == ProcessTermination::dont_wait ? WNOHANG : 0);
       pid_t ret = ::waitpid(_impl->pid, &status, options);
       if (ret < 0)
         throw elle::Exception{"Cannot waitpid"};
 
       // No child exited and WNOHANG specified.
-      if (ret == 0 && term == Termination::dont_wait)
+      if (ret == 0 && term == ProcessTermination::dont_wait)
         return 0;
 
       // ret == _impl->pid is true
@@ -188,7 +268,7 @@ namespace elle
             }
           _impl->pid = 0;
         }
-      else if (term == Termination::wait)
+      else if (term == ProcessTermination::wait)
         {
           throw elle::Exception{"Unexpected program termination"};
         }
@@ -203,10 +283,10 @@ namespace elle
       return (this->status() == 0 && _impl->pid != 0);
     }
 
-    int
+    Process::StatusCode
     Process::wait_status()
     {
-      return this->status(Termination::wait);
+      return this->status(ProcessTermination::wait);
     }
 
     void Process::wait()
@@ -218,26 +298,38 @@ namespace elle
         };
     }
 
-    void Process::kill(Termination const term)
+    void Process::kill(ProcessTermination const term)
     {
       if (_impl->pid == 0)
         return;
 
       ::kill(_impl->pid, SIGKILL);
-      if (term == Termination::wait)
+      if (term == ProcessTermination::wait)
         this->wait_status();
     }
 
-    void Process::terminate(Termination const term)
+    void Process::terminate(ProcessTermination const term)
     {
       if (_impl->pid == 0)
         return;
 
       ::kill(_impl->pid, SIGTERM);
-      if (term == Termination::wait)
+      if (term == ProcessTermination::wait)
         this->wait_status();
     }
 
+      std::string
+      Process::read(size_t const max)
+      {
+        int fd = _impl->config._impl->out_pipe[READ_ENDPOINT];
+        if (fd == -1)
+          throw elle::Exception{"stdout not piped"};
+        elle::Buffer buf(max);
+        ssize_t read_bytes = ::read(fd, buf.mutable_contents(), max);
+        if (read_bytes < 0)
+          throw elle::Exception{"cannot read from stdout pipe"};
+        return std::string((char const*) buf.contents(), read_bytes);
+      }
   }
 }
 
