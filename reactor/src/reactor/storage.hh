@@ -1,7 +1,7 @@
 #ifndef INFINIT_REACTOR_STORAGE_HH
 # define INFINIT_REACTOR_STORAGE_HH
 
-# include <boost/unordered_map.hpp>
+# include <unordered_map>
 
 # include <reactor/fwd.hh>
 
@@ -19,7 +19,7 @@ namespace reactor
 
   private:
     void _Clean(Thread* t);
-    typedef boost::unordered_map<Thread*, T> Content;
+    typedef std::unordered_map<Thread*, T> Content;
     Content _content;
   };
 }

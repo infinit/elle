@@ -1,7 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_UDP_SERVER_HH
 # define INFINIT_REACTOR_NETWORK_UDP_SERVER_HH
 
-# include <boost/unordered_map.hpp>
+# include <unordered_map>
 
 # include <reactor/network/server.hh>
 # include <reactor/network/udp-socket.hh>
@@ -49,7 +49,7 @@ namespace reactor
                              std::size_t bytes_transferred);
         char _buffer[512];
         EndPoint _peer;
-        typedef boost::unordered_map<EndPoint, UDPServerSocket*,
+        typedef std::unordered_map<EndPoint, UDPServerSocket*,
                                      HashEndpoint> Clients;
         Clients _clients;
         Signal _accept;
