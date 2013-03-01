@@ -220,12 +220,14 @@ ELLE_SERIALIZE_SPLIT_T1(std::unique_ptr);
 ELLE_SERIALIZE_SPLIT_T1_LOAD(std::unique_ptr, archive, value, version)
 {
   typename std::remove_cv<T1>::type* v = nullptr;
+  (void)version;
   archive >> pointer(v);
   value.reset(v);
 }
 
 ELLE_SERIALIZE_SPLIT_T1_SAVE(std::unique_ptr, archive, value, version)
 {
+  (void)version;
   T1* p(value.get());
   archive << pointer(p);
 }
