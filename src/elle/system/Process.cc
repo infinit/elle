@@ -4,11 +4,18 @@
 #include <elle/Exception.hh>
 #include <elle/log.hh>
 
+#include <boost/algorithm/string.hpp>
+
+#include <unordered_map>
+
 #include <signal.h>     // kill
 #include <stdlib.h>     // exit, malloc
 #include <sys/types.h>
 #include <sys/wait.h>   // waitpid
-#include <unistd.h>     // fork, close, execvp
+#include <unistd.h>     // fork, close, execvp, environ
+#ifdef __apple__
+# include <environ.h>
+#endif
 
 ELLE_LOG_COMPONENT("elle.system.Process");
 
@@ -16,17 +23,24 @@ namespace elle
 {
   namespace system
   {
+
+    enum
+    {
+      READ_ENDPOINT = 0,
+      WRITE_ENDPOINT = 1,
+    };
+
     //- ProcessConfig ---------------------------------------------------------
 
     struct ProcessConfig::Impl
     {
-#define READ_ENDPOINT   0
-#define WRITE_ENDPOINT  1
-
       bool        daemon;
       int         in_pipe[2];
       int         out_pipe[2];
       int         err_pipe[2];
+
+      typedef std::unordered_map<std::string, std::string> EnvMap;
+      EnvMap      env;
 
       Impl()
         : daemon{false}
@@ -55,6 +69,38 @@ namespace elle
     ProcessConfig::daemon(bool mode)
     {
       _impl->daemon = mode;
+      return *this;
+    }
+
+    std::string const&
+    ProcessConfig::getenv(std::string const& name) const
+    {
+      return _impl->env[name];
+    }
+
+    ProcessConfig&
+    ProcessConfig::setenv(std::string const& name,
+                          std::string const& value)
+    {
+      _impl->env[name] = value;
+      return *this;
+    }
+
+    ProcessConfig&
+    ProcessConfig::inherit_current_environment()
+    {
+      char** envp = environ;
+      for (; *envp != nullptr; envp++)
+        {
+          std::vector<std::string> values;
+          boost::split(values, *envp, boost::is_any_of("="));
+          if (values.size() < 2)
+            continue;
+          std::string val = values[1];
+          for (unsigned int i = 2; i < values.size(); ++i)
+            val += "=" + values[i];
+          _impl->env[values[0]] = val;
+        }
       return *this;
     }
 
@@ -95,8 +141,12 @@ namespace elle
     process_config(ProcessKind const kind)
     {
       ProcessConfig config;
-      if (kind == ProcessKind::daemon)
+      if (kind & daemon_config)
         config.daemon(true);
+      if (kind & normal_config)
+        config.inherit_current_environment();
+      if (kind & check_output_config)
+        config.pipe_stdout();
       return config;
     }
 
@@ -104,7 +154,6 @@ namespace elle
 
     struct Process::Impl
     {
-      ProcessConfig           config;
       std::string             binary;
       std::list<std::string>  arguments;
       pid_t                   pid;
@@ -114,8 +163,11 @@ namespace elle
     Process::Process(ProcessConfig&& config_,
                      std::string const& binary,
                      std::list<std::string> const& arguments)
-      : _impl{new Impl{std::move(config_), binary, arguments, 0, 0}}
+      : _impl{new Impl{binary, arguments, 0, 0}}
+      , _config{std::move(config_)}
+      , _config_impl{_config._impl.get()}
     {
+      ELLE_ASSERT(_config_impl != nullptr);
       ELLE_TRACE("Launching %s %s", binary, arguments);
       pid_t binary_pid = ::fork();
 
@@ -131,29 +183,41 @@ namespace elle
             exec_args[i++] = arg.c_str();
           exec_args[i] = nullptr;
 
-          if (_impl->config._impl->in_pipe[0] != -1) // is initialized
+
+          char** envp = new char*[_config_impl->env.size() + 1];
+          i = 0;
+          for (auto const& pair: _config_impl->env)
             {
-              if (::dup2(_impl->config._impl->in_pipe[READ_ENDPOINT], STDIN_FILENO) < 0)
+              std::string s = pair.first + "=" + pair.second;
+              envp[i] = strdup(s.c_str());
+            }
+          envp[i] = nullptr;
+
+
+
+          if (_config_impl->in_pipe[0] != -1) // is initialized
+            {
+              if (::dup2(_config_impl->in_pipe[READ_ENDPOINT], STDIN_FILENO) < 0)
                 throw elle::Exception{"Cannot duplicate stdin"};
-              ::close(_impl->config._impl->in_pipe[WRITE_ENDPOINT]);
+              ::close(_config_impl->in_pipe[WRITE_ENDPOINT]);
             }
 
-          if (_impl->config._impl->err_pipe[0] != -1) // is initialized
+          if (_config_impl->err_pipe[0] != -1) // is initialized
             {
-              if (::dup2(_impl->config._impl->err_pipe[WRITE_ENDPOINT], STDERR_FILENO) < 0)
+              if (::dup2(_config_impl->err_pipe[WRITE_ENDPOINT], STDERR_FILENO) < 0)
                 throw elle::Exception{"Cannot duplicate stderr"};
-              ::close(_impl->config._impl->err_pipe[READ_ENDPOINT]);
+              ::close(_config_impl->err_pipe[READ_ENDPOINT]);
             }
 
-          if (_impl->config._impl->out_pipe[0] != -1) // is initialized
+          if (_config_impl->out_pipe[0] != -1) // is initialized
             {
-              if (::dup2(_impl->config._impl->out_pipe[WRITE_ENDPOINT], STDOUT_FILENO) < 0)
+              if (::dup2(_config_impl->out_pipe[WRITE_ENDPOINT], STDOUT_FILENO) < 0)
                 throw elle::Exception{"Cannot duplicate stdout"};
-              ::close(_impl->config._impl->out_pipe[READ_ENDPOINT]);
+              ::close(_config_impl->out_pipe[READ_ENDPOINT]);
             }
 
           //close(STDERR_FILENO);
-          if (::execvp(binary.c_str(), (char**) exec_args) != 0)
+          if (::execvpe(binary.c_str(), (char**) exec_args, envp) != 0)
             {
               ELLE_ERR("Cannot execvp %s", binary.c_str());
             }
@@ -163,14 +227,14 @@ namespace elle
         {
           ELLE_DEBUG("Binary %s %s has pid %d", binary, arguments, binary_pid);
           _impl->pid = binary_pid;
-          if (_impl->config._impl->in_pipe[0] != -1) // is initialized
-            ::close(_impl->config._impl->in_pipe[READ_ENDPOINT]);
+          if (_config_impl->in_pipe[0] != -1) // is initialized
+            ::close(_config_impl->in_pipe[READ_ENDPOINT]);
 
-          if (_impl->config._impl->err_pipe[0] != -1) // is initialized
-            ::close(_impl->config._impl->err_pipe[WRITE_ENDPOINT]);
+          if (_config_impl->err_pipe[0] != -1) // is initialized
+            ::close(_config_impl->err_pipe[WRITE_ENDPOINT]);
 
-          if (_impl->config._impl->out_pipe[0] != -1) // is initialized
-            ::close(_impl->config._impl->out_pipe[WRITE_ENDPOINT]);
+          if (_config_impl->out_pipe[0] != -1) // is initialized
+            ::close(_config_impl->out_pipe[WRITE_ENDPOINT]);
         }
     }
 
@@ -182,7 +246,7 @@ namespace elle
 
     Process::Process(std::string const& binary,
                      std::list<std::string> const& arguments)
-      : Process{ProcessKind::normal, binary, arguments}
+      : Process{normal_config, binary, arguments}
     {}
 
     Process::Process(std::string const& binary)
@@ -198,7 +262,7 @@ namespace elle
       if (!_impl)
         return;
 
-      if (_impl->pid == 0 || _impl->config.daemon())
+      if (_impl->pid == 0 || _config.daemon())
         return;
 
       try
@@ -321,7 +385,7 @@ namespace elle
       std::string
       Process::read(size_t const max)
       {
-        int fd = _impl->config._impl->out_pipe[READ_ENDPOINT];
+        int fd = _config_impl->out_pipe[READ_ENDPOINT];
         if (fd == -1)
           throw elle::Exception{"stdout not piped"};
         elle::Buffer buf(max);

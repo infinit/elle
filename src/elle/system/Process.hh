@@ -12,11 +12,21 @@ namespace elle
   {
 
     /// Shortcuts for common process configurations.
-    enum class ProcessKind
+    enum ProcessKind
     {
-      normal,
-      daemon,
+      /// Environment is empty.
+      empty_config = 0,
+
+      /// All environment variables inherited.
+      normal_config = 1 << 1,
+
+      /// Environment inherited + stdout piped.
+      check_output_config = normal_config | 1 << 2,
+
+      /// Detach from parent.
+      daemon_config = 1 << 2,
     };
+
 
     /// Flags for process actions.
     enum class ProcessTermination
@@ -40,6 +50,16 @@ namespace elle
       bool daemon() const;
       ProcessConfig& daemon(bool mode);
 
+      std::string const&
+      getenv(std::string const& name) const;
+
+      ProcessConfig&
+      setenv(std::string const& name,
+             std::string const& value);
+
+      ProcessConfig&
+      inherit_current_environment();
+
       ProcessConfig& pipe_stdin();
       ProcessConfig& pipe_stderr();
       ProcessConfig& pipe_stdout();
@@ -57,7 +77,8 @@ namespace elle
     private:
       struct Impl;
       std::unique_ptr<Impl> _impl;
-      ProcessConfig _config;
+      ProcessConfig         _config;
+      ProcessConfig::Impl*  _config_impl;
 
     public:
       ProcessConfig const& config() const { return _config; }
