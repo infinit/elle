@@ -30,7 +30,7 @@ namespace elle
         {
           static std::ofstream out{
               path,
-              std::fstream::app | std::fstream::out
+              std::fstream::trunc | std::fstream::out
           };
           _logger().reset(new elle::log::TextLogger(out));
         }
