@@ -158,6 +158,7 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
     'src/elle/printf.hh',
     'src/elle/printf.hxx',
     'src/elle/system/system.hh',
+    'src/elle/system/platform.hh',
     'src/elle/types.hh',
     )
 
