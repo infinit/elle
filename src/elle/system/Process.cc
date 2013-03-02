@@ -30,23 +30,88 @@ namespace elle
       WRITE_ENDPOINT = 1,
     };
 
+    struct Channel
+    {
+    public:
+      union
+      {
+        struct { int read_fd; int write_fd; };
+        int pipe[2];
+      };
+
+      Channel()
+        : pipe{-1, -1}
+      {}
+
+      ~Channel()
+      {
+        if (this->read_fd != -1)
+          (void) ::close(this->read_fd);
+
+        if (this->write_fd != -1)
+          (void) ::close(this->write_fd);
+      }
+
+      operator bool() const
+      {
+        return this->read_fd != -1 && this->write_fd != -1;
+      }
+
+      Channel& dup2_read(int fd)
+      {
+        if (this->read_fd == -1)
+          throw Exception{"Cannot pipe read endpoint (not initialized)"};
+        if (::dup2(this->read_fd, fd) < 0)
+          throw Exception{"Cannot dup2 read endpoint"};
+        return *this;
+      }
+
+      Channel& dup2_write(int fd)
+      {
+        if (this->read_fd == -1)
+          throw Exception{"Cannot pipe read endpoint (not initialized)"};
+        if (::dup2(this->write_fd, fd) < 0)
+          throw Exception{"Cannot dup2 read endpoint"};
+        return *this;
+      }
+
+      Channel& close_read()
+      {
+        if (this->read_fd != -1)
+        {
+          (void) ::close(this->read_fd);
+          this->read_fd = -1;
+        }
+        return *this;
+      }
+
+      Channel& close_write()
+      {
+        if (this->write_fd != -1)
+        {
+          (void) ::close(this->write_fd);
+          this->write_fd = -1;
+        }
+        return *this;
+      }
+    };
+
     //- ProcessConfig ---------------------------------------------------------
 
     struct ProcessConfig::Impl
     {
       bool        daemon;
-      int         in_pipe[2];
-      int         out_pipe[2];
-      int         err_pipe[2];
+      Channel     channels[3];
 
       typedef std::unordered_map<std::string, std::string> EnvMap;
       EnvMap      env;
 
       Impl()
         : daemon{false}
-        , in_pipe{-1, -1}
-        , out_pipe{-1, -1}
-        , err_pipe{-1, -1}
+        , channels{}
+      {}
+
+      ~Impl()
       {}
     };
 
@@ -59,7 +124,8 @@ namespace elle
     {}
 
     ProcessConfig::~ProcessConfig()
-    {}
+    {
+    }
 
     bool
     ProcessConfig::daemon() const
@@ -95,7 +161,9 @@ namespace elle
           std::vector<std::string> values;
           boost::split(values, *envp, boost::is_any_of("="));
           if (values.size() < 2)
+          {
             continue;
+          }
           std::string val = values[1];
           for (unsigned int i = 2; i < values.size(); ++i)
             val += "=" + values[i];
@@ -104,31 +172,27 @@ namespace elle
       return *this;
     }
 
-    ProcessConfig& ProcessConfig::pipe_stdin()
+    bool
+    ProcessConfig::has_pipe(ProcessChannel const channel)
     {
-      if (_impl->in_pipe[0] != -1)
-        throw elle::Exception{"stdin already piped"};
-      if (::pipe(_impl->in_pipe) < 0)
+      return this->channel(channel); // bool cast
+    }
+
+    ProcessConfig&
+    ProcessConfig::create_pipe(ProcessChannel const channel_)
+    {
+      Channel& channel = this->channel(channel_);
+      if (channel)
+        throw elle::Exception{"channel already piped"};
+      if (::pipe(channel.pipe) < 0)
         throw elle::Exception{"cannot pipe stdin"};
       return *this;
     }
 
-    ProcessConfig& ProcessConfig::pipe_stderr()
+    Channel&
+    ProcessConfig::channel(ProcessChannel const channel)
     {
-      if (_impl->err_pipe[0] != -1)
-        throw elle::Exception{"stderr already piped"};
-      if (::pipe(_impl->err_pipe) < 0)
-        throw elle::Exception{"cannot pipe stderr"};
-      return *this;
-    }
-
-    ProcessConfig& ProcessConfig::pipe_stdout()
-    {
-      if (_impl->out_pipe[0] != -1)
-        throw elle::Exception{"stdout already piped"};
-      if (::pipe(_impl->out_pipe) < 0)
-        throw elle::Exception{"cannot pipe stdout"};
-      return *this;
+      return _impl->channels[static_cast<int>(channel)];
     }
 
     ProcessConfig& ProcessConfig::merge_stderr()
@@ -146,7 +210,7 @@ namespace elle
       if (kind & normal_config)
         config.inherit_current_environment();
       if (kind & check_output_config)
-        config.pipe_stdout();
+        config.create_pipe(ProcessChannel::out);
       return config;
     }
 
@@ -165,9 +229,7 @@ namespace elle
                      std::list<std::string> const& arguments)
       : _impl{new Impl{binary, arguments, 0, 0}}
       , _config{std::move(config_)}
-      , _config_impl{_config._impl.get()}
     {
-      ELLE_ASSERT(_config_impl != nullptr);
       ELLE_TRACE("Launching %s %s", binary, arguments);
       pid_t binary_pid = ::fork();
 
@@ -176,7 +238,7 @@ namespace elle
 
       if (binary_pid == 0) // child process
         {
-          char const** exec_args = new char const*[arguments.size() + 1];
+          char const** exec_args = new char const*[arguments.size() + 2];
           unsigned int i = 0;
           exec_args[i++] = binary.c_str();
           for (auto const& arg : arguments)
@@ -184,39 +246,31 @@ namespace elle
           exec_args[i] = nullptr;
 
 
-          char** envp = new char*[_config_impl->env.size() + 1];
+          char** envp = new char*[_config._impl->env.size() + 1];
           i = 0;
-          for (auto const& pair: _config_impl->env)
+          for (auto const& pair: _config._impl->env)
             {
               std::string s = pair.first + "=" + pair.second;
-              envp[i] = strdup(s.c_str());
+              envp[i++] = strdup(s.c_str());
             }
           envp[i] = nullptr;
 
 
+          if (_config.has_pipe(ProcessChannel::in))
+            _config.channel(ProcessChannel::in)
+              .dup2_read(STDIN_FILENO)
+              .close_write();
 
-          if (_config_impl->in_pipe[0] != -1) // is initialized
-            {
-              if (::dup2(_config_impl->in_pipe[READ_ENDPOINT], STDIN_FILENO) < 0)
-                throw elle::Exception{"Cannot duplicate stdin"};
-              ::close(_config_impl->in_pipe[WRITE_ENDPOINT]);
-            }
+          if (_config.has_pipe(ProcessChannel::out))
+            _config.channel(ProcessChannel::out)
+              .dup2_write(STDOUT_FILENO)
+              .close_read();
 
-          if (_config_impl->err_pipe[0] != -1) // is initialized
-            {
-              if (::dup2(_config_impl->err_pipe[WRITE_ENDPOINT], STDERR_FILENO) < 0)
-                throw elle::Exception{"Cannot duplicate stderr"};
-              ::close(_config_impl->err_pipe[READ_ENDPOINT]);
-            }
+          if (_config.has_pipe(ProcessChannel::err))
+            _config.channel(ProcessChannel::err)
+              .dup2_write(STDERR_FILENO)
+              .close_read();
 
-          if (_config_impl->out_pipe[0] != -1) // is initialized
-            {
-              if (::dup2(_config_impl->out_pipe[WRITE_ENDPOINT], STDOUT_FILENO) < 0)
-                throw elle::Exception{"Cannot duplicate stdout"};
-              ::close(_config_impl->out_pipe[READ_ENDPOINT]);
-            }
-
-          //close(STDERR_FILENO);
           if (::execvpe(binary.c_str(), (char**) exec_args, envp) != 0)
             {
               ELLE_ERR("Cannot execvp %s", binary.c_str());
@@ -227,14 +281,9 @@ namespace elle
         {
           ELLE_DEBUG("Binary %s %s has pid %d", binary, arguments, binary_pid);
           _impl->pid = binary_pid;
-          if (_config_impl->in_pipe[0] != -1) // is initialized
-            ::close(_config_impl->in_pipe[READ_ENDPOINT]);
-
-          if (_config_impl->err_pipe[0] != -1) // is initialized
-            ::close(_config_impl->err_pipe[WRITE_ENDPOINT]);
-
-          if (_config_impl->out_pipe[0] != -1) // is initialized
-            ::close(_config_impl->out_pipe[WRITE_ENDPOINT]);
+          _config.channel(ProcessChannel::in).close_read();
+          _config.channel(ProcessChannel::out).close_write();
+          _config.channel(ProcessChannel::err).close_write();
         }
     }
 
@@ -385,7 +434,7 @@ namespace elle
       std::string
       Process::read(size_t const max)
       {
-        int fd = _config_impl->out_pipe[READ_ENDPOINT];
+        int fd = _config.channel(ProcessChannel::out).read_fd;
         if (fd == -1)
           throw elle::Exception{"stdout not piped"};
         elle::Buffer buf(max);

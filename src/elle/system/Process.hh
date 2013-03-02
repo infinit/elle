@@ -29,11 +29,12 @@ namespace elle
 
 
     /// Flags for process actions.
-    enum class ProcessTermination
-    {
-      wait,
-      dont_wait,
-    };
+    enum class ProcessTermination { wait, dont_wait, };
+
+    /// Input and output streams for a process.
+    enum class ProcessChannel { in, out, err };
+
+    struct Channel;
 
     /// Customize a process launch.
     class ProcessConfig
@@ -60,13 +61,17 @@ namespace elle
       ProcessConfig&
       inherit_current_environment();
 
-      ProcessConfig& pipe_stdin();
-      ProcessConfig& pipe_stderr();
-      ProcessConfig& pipe_stdout();
+      ProcessConfig&
+      create_pipe(ProcessChannel const channel);
+
+      bool has_pipe(ProcessChannel const channel);
 
       ProcessConfig& merge_stderr();
-    private:
+    protected:
+      Channel& channel(ProcessChannel const channel);
+
       friend class Process;
+
     };
 
     class Process
@@ -78,7 +83,6 @@ namespace elle
       struct Impl;
       std::unique_ptr<Impl> _impl;
       ProcessConfig         _config;
-      ProcessConfig::Impl*  _config_impl;
 
     public:
       ProcessConfig const& config() const { return _config; }
@@ -101,6 +105,7 @@ namespace elle
       Process(std::string const& binary,
               std::list<std::string> const& arguments);
 
+      explicit
       Process(std::string const& binary);
 
 
@@ -140,7 +145,21 @@ namespace elle
     ProcessConfig
     process_config(ProcessKind const kind);
 
+    /// @brief shortcut to create a process.
+    ///
+    /// Accepts the same arguments as the Process constructor, but can also
+    /// accept process arguments as a strings instead of a separate list.
+    ///
+    template <typename... Args>
+    Process execute(Args&&... args);
+
+    /// @brief Execute a process and returns its output.
+    template <typename... Args>
+    std::string check_output(Args&&... args);
+
   }
 }
+
+# include "Process.hxx"
 
 #endif
