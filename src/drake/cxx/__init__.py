@@ -1070,7 +1070,9 @@ class LibraryConfiguration(drake.Configuration):
         token --  Which file to look for (typically, the main header).
         """
         include_dir = include_dir or 'include'
-        include_dir = drake.Path(include_dir)
+        if not isinstance(include_dir, list):
+            include_dir = [include_dir]
+        include_dir = [drake.Path(p) for p in include_dir]
         # Make prefix absolute wrt the source dir
         if prefix is not None:
             prefix = drake.Path(prefix)
@@ -1084,7 +1086,9 @@ class LibraryConfiguration(drake.Configuration):
         # for i in range(len(test)):
         #     if not test[i].absolute:
         #         test[i] = srctree() / test[i]
-        self.__prefix = self._search_all(include_dir / token, test)[0]
+        self.__prefix, include_dir = self._search_many_all([p / token for p in include_dir],
+                                                           test)[0]
+        include_dir.strip_suffix(token)
         self.__config = drake.cxx.Config()
         self.__config.add_system_include_path(self.__prefix / include_dir)
         self.__config.lib_path(self.__prefix / 'lib')

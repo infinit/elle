@@ -493,6 +493,34 @@ class Path(object):
             self.__path = ['.']
         self.__absolute = self.__path[0] == ''
 
+    def strip_suffix(self, rhs):
+        """Remove rhs suffix from self.
+
+        rhs -- the suffix to strip, as a Path or a string.
+
+        >>> p = Path('foo/bar/baz/quux')
+        >>> p
+        Path("foo/bar/baz/quux")
+        >>> p.strip_suffix("baz/quux")
+        >>> p
+        Path("foo/bar")
+
+        Throws if rhs is not a prefix of self.
+
+        >>> p.strip_suffix("quux")
+        Traceback (most recent call last):
+            ...
+        drake.Exception: quux is not a suffix of foo/bar
+        """
+        if (not isinstance(rhs, Path)):
+            rhs = Path(rhs)
+        if self.__path[-len(rhs.__path):] != rhs.__path:
+            raise Exception("%s is not a suffix of %s" % (rhs, self))
+        self.__path = self.__path[0:-len(rhs.__path):]
+        if not self.__path:
+            self.__path = ['.']
+        self.__absolute = self.__path[0] == ''
+
     @classmethod
     def cwd(self):
         return Path(_OS.getcwd())
@@ -2175,8 +2203,22 @@ class Configuration:
       return res
     raise Exception('Unable to find %s in %s.' % (what, self._format_search(where)))
 
+  def _search_many_all(self, whats, where):
+      res = []
+      for what in whats:
+          try:
+              res += [(res, what) for res in self._search_all(what, where)]
+          except:
+              pass
+      if len(res) == 0:
+          raise Exception('Unable to find %s in %s.' % (self._format_search(whats),
+                                                        self._format_search(where)))
+      return res
+
   def _format_search(self, where):
-    if len(where) <= 1:
+    if not isinstance(where, list):
+      return str(where)
+    elif len(where) <= 1:
       return str(where[0])
     else:
       return 'any of %s and %s' % (', '.join(map(str, where[:-1])), where[-1])
