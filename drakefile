@@ -283,11 +283,13 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
   cxx_config_tests += boost.config_filesystem()
   cxx_config_tests += boost.config_system()
   cxx_config_tests += boost.config_test()
-  cxx_config_tests.lib_path_runtime('../lib')
+
   if enable_tests:
       for test in tests:
+        config = drake.cxx.Config(cxx_config_tests)
+        config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
         test = drake.cxx.Executable('tests/%s' % test,
                                     drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
-                                    cxx_toolkit, cxx_config_tests)
+                                    cxx_toolkit, config)
         runner = TestRunner(test)
         check << runner.status
