@@ -3,18 +3,52 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
+#include <elle/os/getenv.hh>
+#include <elle/os/path.hh>
 
 #include <boost/algorithm/string.hpp>
 
 #include <unordered_map>
+#include <vector>
 
+#include <errno.h>
 #include <signal.h>     // kill
 #include <stdlib.h>     // exit, malloc
 #include <sys/types.h>
 #include <sys/wait.h>   // waitpid
 #include <unistd.h>     // fork, close, execvp, environ
-#ifdef __apple__
-# include <environ.h>
+
+#ifdef __APPLE__
+extern char** environ;
+#endif
+
+#ifndef _GNU_SOURCE // execvpe is a gnu extension
+static
+int execvpe(char const* binary,
+            char* const argv[],
+            char* const env[])
+{
+  std::vector<std::string> paths;
+  {
+    std::string path = elle::os::getenv("PATH", "/bin:/usr/bin");
+    boost::algorithm::split(paths, path, boost::is_any_of(":"));
+  }
+  std::string binpath;
+  for (auto const& path: paths)
+  {
+    binpath = elle::os::path::join(path, binary);
+    if (elle::os::path::exists(binpath))
+      {
+        (void) ::execve(binpath.c_str(), argv, env);
+        if (errno == E2BIG ||
+            errno == ENOEXEC ||
+            errno == ENOMEM ||
+            errno == ETXTBSY)
+          return -1;
+      }
+  }
+  return -1;
+}
 #endif
 
 ELLE_LOG_COMPONENT("elle.system.Process");
