@@ -241,6 +241,8 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
 
   # Tests
 
+  check = drake.Rule('check')
+
   tests = [
     'IOStream',
     'Printable',
@@ -256,6 +258,10 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
       self.__err = drake.node('%s.err' % test.name())
       self.__status = drake.node('%s.status' % test.name())
       drake.Builder.__init__(self, [test], [self.__out, self.__err, self.__status])
+
+    @property
+    def status(self):
+      return self.__status
 
     def execute(self):
       import subprocess
@@ -283,4 +289,5 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
         test = drake.cxx.Executable('tests/%s' % test,
                                     drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
                                     cxx_toolkit, cxx_config_tests)
-        TestRunner(test)
+        runner = TestRunner(test)
+        check << runner.status
