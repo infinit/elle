@@ -210,8 +210,11 @@ namespace reactor
       std::vector<std::string> splitted;
       boost::split(splitted, answer, boost::is_any_of(" :\n"));
       if (splitted.size() != 4)
+      {
+        // The heartbeat failed, this is a serious bug, but we can't fix it now.
         throw reactor::Exception("loginus returned a bad formed endpoint: " +
                                  answer);
+      }
 
       ELLE_ASSERT(splitted[1] != "0.0.0.0");
 
@@ -225,19 +228,27 @@ namespace reactor
     UDTServer::_punch_heartbeat()
     {
       ELLE_TRACE("Heartbeating the NAT punching");
-      auto port = this->_public_endpoint.port();
-      auto endpoint = this->_punch(port, this->_udp_socket);
-      if (endpoint.port() != port)
-        {
-          ELLE_WARN("NAT punching was lost");
-          // FIXME: we lost the NAT, do something.
+      try
+      {
+          auto port = this->_public_endpoint.port();
+          auto endpoint = this->_punch(port, this->_udp_socket);
+          if (endpoint.port() != port)
+          {
+              ELLE_WARN("NAT punching was lost");
+              // FIXME: we lost the NAT, do something.
+              return false;
+          }
+          else
+          {
+              ELLE_DEBUG("NAT punching still up");
+              return true;
+          }
+      }
+      catch (...)
+      {
+          ELLE_WARN("XXX heartbeat failed");
           return false;
-        }
-      else
-        {
-          ELLE_DEBUG("NAT punching still up");
-          return true;
-        }
+      }
     }
 
     void
