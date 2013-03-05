@@ -9,6 +9,7 @@
 #include <asio-udt/acceptor.hh>
 
 #include <reactor/exception.hh>
+#include <reactor/network/exception.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/udt-server.hh>
@@ -21,6 +22,58 @@
 #include <elle/os/getenv.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDTServer");
+
+namespace /*annon*/ {
+
+class PunchException : public elle::Exception
+{
+ public:
+  PunchException(elle::String const& message)
+      : Exception(elle::sprintf("punch failed: %s", message))
+  {}
+  PunchException(elle::Exception const& e)
+      : PunchException(e.what())
+  {}
+};
+
+
+class HeartbeatFailed : public elle::Exception
+{
+ public:
+  HeartbeatFailed(elle::String const& message)
+      : Exception(elle::sprintf("heartbeat failed: %s", message))
+  {}
+  HeartbeatFailed(elle::Exception const &e)
+    : HeartbeatFailed(e.what())
+  {
+  }
+};
+
+class PunchTimeout : public PunchException
+{
+ public:
+  PunchTimeout(elle::String const& message)
+      : PunchException(elle::sprintf("timed out: %s", message))
+  {}
+  PunchTimeout(elle::Exception const &e)
+    : PunchTimeout(e.what())
+  {
+  }
+};
+
+class PunchFormat : public PunchException
+{
+ public:
+  PunchFormat(elle::String const& message)
+      : PunchException(elle::sprintf("format error: %s", message))
+  {}
+  PunchFormat(elle::Exception const &e)
+    : PunchFormat(e.what())
+  {
+  }
+};
+
+} /*annon*/
 
 namespace reactor
 {
@@ -134,8 +187,22 @@ namespace reactor
       std::for_each(str.begin(), str.end(),
                      [&res](char c)
                      {
-                       if (c == '\n')
-                         res += "\\n";
+                       if (isspace(c))
+                       {
+                         res += '\\';
+                         switch (c)
+                         {
+                           case '\f': res += 'f';  break;
+                           case '\n': res += 'n';  break;
+                           case '\r': res += 'r';  break;
+                           case '\t': res += 't';  break;
+                           case '\v': res += 'v';  break;
+                         }
+                       }
+                       else if (!isgraph(c))
+                       {
+                         res += elle::sprintf("\\x%02x", static_cast<int>(c));
+                       }
                        else
                          res += c;
                      });
@@ -202,7 +269,16 @@ namespace reactor
       std::string buffer_data(1024, ' ');
       Buffer buffer(buffer_data);
       // FIXME: make timeout parametrizable
-      auto size = socket->read_some(buffer, boost::posix_time::seconds(15));
+      int size;
+      try
+      {
+        size = socket->read_some(buffer, boost::posix_time::seconds(15));
+      }
+      catch (reactor::network::TimeOut const& e)
+      {
+        // transform this into a PunchTimeout
+        throw PunchTimeout("read_some");
+      }
       std::string answer(buffer_data.c_str(), size);
       ELLE_DUMP("longinus answer: %s", escape(answer));
 
@@ -212,8 +288,7 @@ namespace reactor
       if (splitted.size() != 4)
       {
         // The heartbeat failed, this is a serious bug, but we can't fix it now.
-        throw reactor::Exception("loginus returned a bad formed endpoint: " +
-                                 answer);
+        throw PunchFormat("loginus endpoint: " + escape(answer));
       }
 
       ELLE_ASSERT(splitted[1] != "0.0.0.0");
@@ -244,11 +319,12 @@ namespace reactor
               return true;
           }
       }
-      catch (...)
+      catch (PunchException const &e)
       {
-          ELLE_WARN("XXX heartbeat failed");
-          return false;
+        // Throw a Heartbeat Failed here
+        throw HeartbeatFailed(e);
       }
+      return false;
     }
 
     void
@@ -310,7 +386,12 @@ namespace reactor
                     {
                       this->scheduler().current()->sleep
                         (boost::posix_time::seconds(15));
-                      this->_punch_heartbeat();
+                      try {
+                        this->_punch_heartbeat();
+                      } catch (HeartbeatFailed const &e)
+                      {
+                        ELLE_WARN("XXX %s", e.what());
+                      }
                     }
                 }));
             ELLE_TRACE("checking NAT punching with second longinus")
