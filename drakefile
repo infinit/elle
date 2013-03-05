@@ -250,8 +250,9 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
   tests = [
     'IOStream',
     'Printable',
-    'printf',
     'Version',
+    'finally',
+    'printf',
     'system/Process',
     ]
 
