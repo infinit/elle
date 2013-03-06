@@ -6,7 +6,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, enable_tests = True):
+def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, enable_tests = True, prefix = '/usr'):
 
   global config, lib_static, lib_dynamic
 
@@ -239,6 +239,10 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
   lib_static = drake.cxx.StaticLib('lib/elle', sources, cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/elle', sources, cxx_toolkit, cxx_config)
 
+  build = drake.Rule('build')
+  build << lib_static
+  build << lib_dynamic
+
   # Tests
 
   check = drake.Rule('check')
@@ -293,3 +297,11 @@ def configure(cxx_toolkit = None, cxx_config = None, boost = None, curl = None, 
                                     cxx_toolkit, config)
         runner = TestRunner(test)
         check << runner.status
+
+  # Install
+
+  install = drake.Rule('install')
+  prefix = drake.Path(prefix)
+  install << drake.copy(lib_dynamic, prefix)
+  install << drake.copy(lib_static, prefix)
+  install << drake.copy(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'src')

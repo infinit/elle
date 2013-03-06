@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import sys
+
+arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
+
+with open('%s/drake' % os.environ['DIR_BUILD'], 'w') as drake:
+  print('''\
+import drake
+
+drake.run('../%s')
+''' % os.environ['DIR_SOURCE'],
+        file = drake)

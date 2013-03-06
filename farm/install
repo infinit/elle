@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import sys
+
+arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
+os.chdir(os.environ['DIR_BUILD'])
+if subprocess.call(['python3', 'drake', '//install', '--prefix=../%s' % os.environ['DIR_INSTALL']]) != 0:
+  exit(1)
