@@ -45,6 +45,12 @@ namespace elle
           return fs::absolute(path).string();
       }
 
+      bool
+      is_absolute(std::string const& path)
+      {
+        return fs::path(path).is_absolute();
+      }
+
       bool is_directory(std::string const& path)
       {
         return fs::is_directory(path);

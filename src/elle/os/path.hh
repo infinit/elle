@@ -30,6 +30,10 @@ namespace elle
       absolute(std::string const& path,
                bool canonical = false);
 
+      /// Check whether or not a path is absolute.
+      bool
+      is_absolute(std::string const& path);
+
       /// Check whether or not a path point to a directory.
       bool
       is_directory(std::string const& path);
