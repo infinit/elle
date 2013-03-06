@@ -22,12 +22,28 @@
 extern char** environ;
 #endif
 
+ELLE_LOG_COMPONENT("elle.system.Process");
+
 #ifndef _GNU_SOURCE // execvpe is a gnu extension
 static
 int execvpe(char const* binary,
             char* const argv[],
             char* const env[])
 {
+  if (binary == nullptr or binary[0] == '\0')
+  {
+    ELLE_WARN("Wrong binary path");
+    return -1;
+  }
+
+  // absolute or relative path
+  if (binary[0] == '.' or binary[0] == '/')
+  {
+    (void) ::execve(binary, argv, env);
+    return -1;
+  }
+
+  // search IN PATH lol
   std::vector<std::string> paths;
   {
     std::string path = elle::os::getenv("PATH", "/bin:/usr/bin");
@@ -50,8 +66,6 @@ int execvpe(char const* binary,
   return -1;
 }
 #endif
-
-ELLE_LOG_COMPONENT("elle.system.Process");
 
 namespace elle
 {
