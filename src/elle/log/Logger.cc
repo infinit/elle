@@ -58,21 +58,21 @@ namespace elle
     unsigned int
     Logger::indentation()
     {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
       return this->_indentation->indentation();
     }
 
     void
     Logger::indent()
     {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
       this->_indentation->indent();
     }
 
     void
     Logger::unindent()
     {
-      boost::lock_guard<boost::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
       this->_indentation->unindent();
     }
 

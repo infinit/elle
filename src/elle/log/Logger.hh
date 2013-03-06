@@ -2,12 +2,12 @@
 # define ELLE_LOG_LOGGER_HH
 
 # include <memory>
+# include <mutex>
 # include <string>
 # include <unordered_map>
 # include <vector>
 
 # include <boost/noncopyable.hpp>
-# include <boost/thread/mutex.hpp>
 
 # include <elle/attribute.hh>
 
@@ -96,7 +96,7 @@ namespace elle
       void
       unindent();
     private:
-      boost::mutex _indentation_mutex;
+      std::mutex _indentation_mutex;
       std::unique_ptr<Indentation> _indentation;
       template <typename I>
       friend class RegisterIndenter;
