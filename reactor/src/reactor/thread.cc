@@ -101,6 +101,10 @@ namespace reactor
       }
     catch (const Terminate&)
       {}
+    catch (...)
+      {
+        _scheduler._thread_exception(std::current_exception());
+      }
   }
 
   void

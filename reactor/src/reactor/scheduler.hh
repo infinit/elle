@@ -74,6 +74,13 @@ namespace reactor
       void dump(std::ostream&);
       void debug();
 
+  /*-------------------------.
+  | Thread Exception Handler |
+  `-------------------------*/
+  private:
+    void _thread_exception(const std::exception_ptr& eptr);
+    std::exception_ptr _eptr;
+
   /*----------------.
   | Multithread API |
   `----------------*/

@@ -23,7 +23,9 @@ namespace reactor
     , _io_service()
     , _io_service_work(new boost::asio::io_service::work(_io_service))
     , _manager()
-  {}
+  {
+    _eptr = nullptr;
+  }
 
   /*------------------.
   | Current Scheduler |
@@ -59,6 +61,10 @@ namespace reactor
     _io_service.run();
     ELLE_TRACE("Scheduler: done");
     assert(_frozen.empty());
+    if (_eptr != nullptr)
+    {
+      std::rethrow_exception(_eptr);
+    }
   }
 
   bool
@@ -115,6 +121,10 @@ namespace reactor
     try
       {
         thread->_step();
+        if (_eptr != nullptr)
+        {
+          this->terminate();
+        }
       }
     catch (const std::runtime_error& err)
       {
@@ -320,6 +330,16 @@ namespace reactor
   Scheduler::io_service()
   {
     return _io_service;
+  }
+
+  /*-------------------------.
+  | Thread Exception Handler |
+  `-------------------------*/
+
+  void
+  Scheduler::_thread_exception(const std::exception_ptr& eptr)
+  {
+    _eptr = eptr;
   }
 
   /*----------------.
