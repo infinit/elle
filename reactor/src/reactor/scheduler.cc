@@ -24,7 +24,7 @@ namespace reactor
     , _io_service_work(new boost::asio::io_service::work(_io_service))
     , _manager()
   {
-    _eptr = nullptr;
+    this->_eptr = nullptr;
   }
 
   /*------------------.
