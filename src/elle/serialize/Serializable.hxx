@@ -31,7 +31,7 @@ namespace elle
       void
       serialize(OutputArchive&& archive) const
       {
-        // XXX this->serialize(archive);
+        this->serialize(archive);
       }
 
       virtual
@@ -42,7 +42,7 @@ namespace elle
       void
       deserialize(InputArchive&& archive)
       {
-        // XXX this->deserialize(archive);
+        this->deserialize(archive);
       }
 
       virtual
