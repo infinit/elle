@@ -30,9 +30,9 @@ class Config:
             self.__optimization = 1
             self._system_includes = {}
             self.lib_paths = {}
-            self.libs = []
-            self.flags = []
-            self.ldflags = []
+            self.libs = set()
+            self.flags = set()
+            self.ldflags = set()
             self._framework = {}
             self._defines = {}
             self.__standard = None
@@ -74,11 +74,11 @@ class Config:
 
     def flag(self, f):
 
-        self.flags.append(f)
+        self.flags.add(f)
 
     def ldflag(self, f):
 
-        self.ldflags.append(f)
+        self.ldflags.add(f)
 
     def framework_add(self, name):
 
@@ -141,7 +141,7 @@ class Config:
 
     def lib(self, lib):
 
-        self.libs.append(lib)
+        self.libs.add(lib)
 
 
     def __add__(self, rhs):
@@ -153,9 +153,9 @@ class Config:
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
         res.lib_paths.update(rhs.lib_paths)
-        res.libs += rhs.libs
-        res.flags += rhs.flags
-        res.ldflags += rhs.ldflags
+        res.libs |= rhs.libs
+        res.flags |= rhs.flags
+        res.ldflags |= rhs.ldflags
         std_s = self.__standard
         std_o = rhs.__standard
         if std_s is not None and std_o is not None:
@@ -322,7 +322,7 @@ class GccToolkit(Toolkit):
         extraflags = []
         if pic:
             extraflags.append('-fPIC')
-        return ' '.join([c and self.c or self.cxx] + cfg.flags +
+        return ' '.join([c and self.c or self.cxx] + list(set(cfg.flags)) +
                         self.cppflags(cfg) + self.cflags(cfg) +
                         extraflags + ['-c', str(src), '-o', str(obj)])
 
@@ -664,11 +664,8 @@ class Compiler(Builder):
 
     def hash(self):
         flags = self.config.flags
-        flags.sort()
         cppflags = self.toolkit.cppflags(self.config)
-        cppflags.sort()
         cflags = self.toolkit.cflags(self.config)
-        cflags.sort()
         include_local = list(map(str, self.config.local_include_path()))
         include_system = list(map(str, self.config.system_include_path()))
         res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
@@ -701,7 +698,6 @@ class Linker(Builder):
     def hash(self):
         h = {}
         flags = self.config.flags
-        flags.sort()
         h['flags'] = flags
         frameworks = list(self.config.frameworks())
         frameworks.sort()
@@ -713,7 +709,6 @@ class Linker(Builder):
         rpath.sort()
         h['rpath'] = rpath
         libs = self.config.libs
-        libs.sort()
         h['libs'] = libs
         dynlibs = ' '.join(map(lambda lib: lib.lib_name, self.exe.dynamic_libraries))
         h['dynlibs'] = dynlibs
