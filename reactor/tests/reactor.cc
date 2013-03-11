@@ -1,6 +1,4 @@
 #include "reactor.hh"
-#include "backend.hh"
-#include "network.hh"
 
 #include <reactor/semaphore.hh>
 #include <reactor/mutex.hh>
