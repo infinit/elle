@@ -7,6 +7,18 @@ ELLE_LOG_COMPONENT("reactor.RWMutex");
 
 namespace reactor
 {
+
+  /*-------.
+  | Signal |
+  `-------*/
+  Thread*
+  RWMutex::WriteMutex::_signal_one()
+  {
+    Thread* thread = Waitable::_signal_one();
+    this->_locked = thread;
+    return thread;
+  }
+
   /*-----------.
   | WriteMutex |
   `-----------*/
@@ -58,16 +70,11 @@ namespace reactor
       if (reading)
         ELLE_TRACE("%s: already locked for reading, waiting.", *this);
       else
+      {
         ELLE_TRACE("%s: already locked for writing, waiting.", *this);
-      // FIXME: we might be woken up to lock the mutex, but another
-      // thread locks it before we can actually procced. Hence the
-      // while. Not exactly sure this is exact and the best way to
-      // proceed, though.
-      bool res;
-      assert(_locked);
-      while (_locked)
-        res = Waitable::_wait(thread);
-      _locked = thread;
+        assert(_locked);
+      }
+      bool res = Waitable::_wait(thread);
       return res;
     }
     else

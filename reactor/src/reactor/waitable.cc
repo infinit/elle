@@ -73,19 +73,19 @@ namespace reactor
     return res;
   }
 
-  bool
+  Thread*
   Waitable::_signal_one()
   {
     if (_threads.empty())
     {
       _exception = 0;
-      return false;
+      return nullptr;
     }
     Thread* thread = *_threads.begin();
     thread->_wake(this);
     _threads.erase(thread);
     _exception = 0;
-    return true;
+    return thread;
   }
 
   bool

@@ -18,6 +18,7 @@ namespace reactor
           virtual bool release();
         protected:
           virtual bool _wait(Thread* thread);
+          virtual Thread* _signal_one();
         private:
           RWMutex& _owner;
           reactor::Thread* _locked;

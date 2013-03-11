@@ -79,7 +79,7 @@ namespace reactor
       virtual void _unwait(Thread* thread);
       /// Wake waiting threads.
       int  _signal();
-      bool _signal_one();
+      virtual Thread* _signal_one();
       /** Register an exception waiting thread should throw when woken.
        *
        * @param e The exception threads must throw.
