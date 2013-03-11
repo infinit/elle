@@ -426,7 +426,7 @@ void test_vthread()
   Fixture f;
 
   reactor::VThread<int> t(*sched, "return value", answer);
-  BOOST_CHECK_THROW(t.result(), reactor::Exception);
+  BOOST_CHECK_THROW(t.result(), elle::Exception);
   sched->run();
   BOOST_CHECK_EQUAL(t.result(), 42);
 }
@@ -593,7 +593,7 @@ void mutex_count(int& i, reactor::Mutex& mutex, int yields)
   while (count < mutex_yields)
   {
     {
-      reactor::Lock lock(sched, mutex);
+      reactor::Lock lock(*sched, mutex);
       // For now, mutex do guarantee fairness between lockers.
       //BOOST_CHECK_NE(i, prev);
       (void)prev;
@@ -634,7 +634,7 @@ void test_mutex()
 
 void rw_mutex_read(reactor::RWMutex& mutex, int& step)
 {
-  reactor::Lock lock(sched, mutex);
+  reactor::Lock lock(*sched, mutex);
   ++step;
   yield();
   BOOST_CHECK_EQUAL(step, 3);
@@ -659,7 +659,7 @@ void test_rw_mutex_multi_read()
 
 void rw_mutex_write(reactor::RWMutex& mutex, int& step)
 {
-  reactor::Lock lock(sched, mutex.write());
+  reactor::Lock lock(*sched, mutex.write());
   ++step;
   int prev = step;
   yield();
@@ -685,7 +685,7 @@ void test_rw_mutex_multi_write()
 
 void rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
 {
-  reactor::Lock lock(sched, mutex);
+  reactor::Lock lock(*sched, mutex);
   int v = step;
   BOOST_CHECK_EQUAL(v % 2, 0);
   BOOST_CHECK_EQUAL(step, v);
@@ -697,7 +697,7 @@ void rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
 
 void rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
 {
-  reactor::Lock lock(sched, mutex.write());
+  reactor::Lock lock(*sched, mutex.write());
   ++step;
   yield();
   yield();
@@ -771,7 +771,7 @@ void storage(reactor::LocalStorage<int>& val, int start)
 void test_storage()
 {
   Fixture f;
-  reactor::LocalStorage<int> val(*sched);
+  reactor::LocalStorage<int> val;
 
   reactor::Thread t1(*sched, "1", boost::bind(storage, boost::ref(val), 0));
   reactor::Thread t2(*sched, "2", boost::bind(storage, boost::ref(val), 1));
@@ -799,9 +799,6 @@ void terminate_starting()
 
 bool test_suite()
 {
-  boost::unit_test::framework::master_test_suite().add
-    (reactor::backend::test_suite());
-
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);
   basics->add(BOOST_TEST_CASE(test_basics_one));
@@ -858,9 +855,6 @@ bool test_suite()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage));
-
-  boost::unit_test::framework::master_test_suite().add
-    (reactor::network::test_suite());
 
   return true;
 }

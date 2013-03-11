@@ -1,11 +1,12 @@
 import drake
 import drake.cxx
+import drake.cxx.boost
 
 config = None
 lib_static = None
 lib_dynamic = None
 
-def configure(cxx_toolkit, cxx_config, elle_config, enable_tests = True):
+def configure(cxx_toolkit, cxx_config, elle_config, boost = None, enable_tests = True):
 
   global config, lib_static, lib_dynamic
 
@@ -58,3 +59,57 @@ def configure(cxx_toolkit, cxx_config, elle_config, enable_tests = True):
     'tests/reactor/backend/test.cc',
     'tests/reactor/network/test.cc',
     )
+
+  # Tests
+
+  check = drake.Rule('check')
+
+  tests = [
+    'test',
+    ]
+
+  class TestRunner(drake.Builder):
+
+    def __init__(self, test):
+      self.__test = test
+      self.__out = drake.node('%s.out' % test.name())
+      self.__err = drake.node('%s.err' % test.name())
+      self.__status = drake.node('%s.status' % test.name())
+      drake.Builder.__init__(self, [test], [self.__out, self.__err, self.__status])
+
+    @property
+    def status(self):
+      return self.__status
+
+    def execute(self):
+      import subprocess
+      path = str(self.__test.path())
+      with open(str(self.__out.path()), 'w') as out, \
+           open(str(self.__err.path()), 'w') as err, \
+           open(str(self.__status.path()), 'w') as rv:
+        self.output(path, 'Test %s' % self.__test)
+        p = subprocess.Popen(path, stdout = out, stderr = err)
+        p.wait()
+        status = p.returncode
+        print(status, file = rv)
+      return status == 0
+
+  boost = boost or drake.cxx.boost.Boost()
+
+  cxx_config_tests = cxx_config + config
+  cxx_config_tests += boost.config()
+  cxx_config_tests += boost.config_filesystem()
+  cxx_config_tests += boost.config_system()
+  cxx_config_tests += boost.config_test()
+  cxx_config_tests.lib('elle')
+  cxx_config_tests.lib_path_runtime('../../lib')
+
+  if enable_tests:
+      for test in tests:
+        config = drake.cxx.Config(cxx_config_tests)
+        config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
+        test = drake.cxx.Executable('tests/%s' % test,
+                                    drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
+                                    cxx_toolkit, config)
+        runner = TestRunner(test)
+        check << runner.status
