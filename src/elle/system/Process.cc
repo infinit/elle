@@ -5,6 +5,7 @@
 #include <elle/log.hh>
 #include <elle/os/getenv.hh>
 #include <elle/os/path.hh>
+#include <elle/os/environ.hh>
 
 #include <boost/algorithm/string.hpp>
 
@@ -17,10 +18,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>   // waitpid
 #include <unistd.h>     // fork, close, execvp, environ
-
-#ifdef __APPLE__
-extern char** environ;
-#endif
 
 ELLE_LOG_COMPONENT("elle.system.Process");
 
@@ -293,20 +290,8 @@ namespace elle
     ProcessConfig&
     ProcessConfig::inherit_current_environment()
     {
-      char** envp = environ;
-      for (; *envp != nullptr; envp++)
-        {
-          std::vector<std::string> values;
-          boost::split(values, *envp, boost::is_any_of("="));
-          if (values.size() < 2)
-          {
-            continue;
-          }
-          std::string val = values[1];
-          for (unsigned int i = 2; i < values.size(); ++i)
-            val += "=" + values[i];
-          _impl->env[values[0]] = val;
-        }
+      for (auto const& pair: elle::os::environ())
+        _impl->env.insert(pair);
       return *this;
     }
 

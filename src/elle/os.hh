@@ -6,10 +6,10 @@
 /// python module `os'.
 ///
 
-#include <elle/os/getenv.hh>
-#include <elle/os/path.hh>
-#include <elle/os/setenv.hh>
-#include <elle/os/unsetenv.hh>
+# include <elle/os/environ.hh>
+# include <elle/os/getenv.hh>
+# include <elle/os/path.hh>
+# include <elle/os/setenv.hh>
+# include <elle/os/unsetenv.hh>
 
 #endif
-
