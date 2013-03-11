@@ -873,6 +873,37 @@ terminate_starting()
   starting.terminate_now();
 }
 
+/*----------.
+| Terminate |
+`----------*/
+
+void
+except_gen()
+{
+  throw std::runtime_error("boom!");
+}
+
+void
+thread_exception_test()
+{
+  Fixture f;
+  reactor::Thread thread(*sched, "Exception Tester", &except_gen);
+  bool exception_thrown = false;
+
+  try
+  {
+    sched->run();
+  }
+  catch (const std::runtime_error& e)
+  {
+    BOOST_CHECK_EQUAL(e.what(), "boom!");
+    exception_thrown = true;
+  }
+
+  BOOST_CHECK(exception_thrown);
+  BOOST_CHECK_EQUAL(thread.state(), reactor::Thread::state::done);
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -936,6 +967,10 @@ test_suite()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage));
+
+  boost::unit_test::test_suite* thread_exception = BOOST_TEST_SUITE("Thread Exception");
+  boost::unit_test::framework::master_test_suite().add(thread_exception);
+  storage->add(BOOST_TEST_CASE(thread_exception_test));
 
   return true;
 }
