@@ -124,7 +124,8 @@ test_basics_interleave()
 `--------*/
 
 void
-waiter(int& step, reactor::Waitables& waitables)
+waiter(int& step,
+       reactor::Waitables& waitables)
 {
   BOOST_CHECK_EQUAL(step, 0);
   sched->current()->wait(waitables);
@@ -132,7 +133,8 @@ waiter(int& step, reactor::Waitables& waitables)
 }
 
 void
-sender_one(int& step, reactor::Signal& s, int expect)
+sender_one(int& step,
+           reactor::Signal& s, int expect)
 {
   BOOST_CHECK_EQUAL(step, 0);
   yield();
@@ -147,7 +149,9 @@ sender_one(int& step, reactor::Signal& s, int expect)
 }
 
 void
-sender_two(int& step, reactor::Signal& s1, reactor::Signal& s2)
+sender_two(int& step,
+           reactor::Signal& s1,
+           reactor::Signal& s2)
 {
   BOOST_CHECK_EQUAL(step, 0);
   yield();
@@ -329,7 +333,8 @@ joined(int& count)
 }
 
 void
-join_waiter(reactor::Thread& thread, int& count)
+join_waiter(reactor::Thread& thread,
+            int& count)
 {
   wait(thread);
   BOOST_CHECK_EQUAL(count, 2);
@@ -352,7 +357,8 @@ test_join()
 }
 
 void
-join_waiter_multiple(reactor::Thread& thread, int& count)
+join_waiter_multiple(reactor::Thread& thread,
+                     int& count)
 {
   yield();
   BOOST_CHECK(thread.state() == reactor::Thread::state::done);
@@ -408,7 +414,8 @@ test_join_timeout()
 `--------*/
 
 void
-timeout(reactor::Signal& s, bool expect)
+timeout(reactor::Signal& s,
+        bool expect)
 {
   bool finished = wait(s, boost::posix_time::milliseconds(500));
   BOOST_CHECK(finished == expect);
@@ -508,7 +515,8 @@ spawned(reactor::Signal& s)
 }
 
 void
-spawn(reactor::Signal& s, int& res)
+spawn(reactor::Signal& s,
+      int& res)
 {
   res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
 }
@@ -589,14 +597,16 @@ test_semaphore_block()
 }
 
 void
-semaphore_multi_wait(reactor::Semaphore& s, int& step)
+semaphore_multi_wait(reactor::Semaphore& s,
+                     int& step)
 {
   wait(s);
   ++step;
 }
 
 void
-semaphore_multi_post(reactor::Semaphore& s, int& step)
+semaphore_multi_post(reactor::Semaphore& s,
+                     int& step)
 {
   yield();
   yield();
@@ -638,7 +648,9 @@ test_semaphore_multi()
 static const int mutex_yields = 32;
 
 void
-mutex_count(int& i, reactor::Mutex& mutex, int yields)
+mutex_count(int& i,
+            reactor::Mutex& mutex,
+            int yields)
 {
   int count = 0;
   int prev = -1;
@@ -686,7 +698,8 @@ test_mutex()
 `--------*/
 
 void
-rw_mutex_read(reactor::RWMutex& mutex, int& step)
+rw_mutex_read(reactor::RWMutex& mutex,
+              int& step)
 {
   reactor::Lock lock(*sched, mutex);
   ++step;
@@ -713,7 +726,8 @@ test_rw_mutex_multi_read()
 }
 
 void
-rw_mutex_write(reactor::RWMutex& mutex, int& step)
+rw_mutex_write(reactor::RWMutex& mutex,
+               int& step)
 {
   reactor::Lock lock(*sched, mutex.write());
   ++step;
@@ -741,7 +755,8 @@ test_rw_mutex_multi_write()
 }
 
 void
-rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
+rw_mutex_both_read(reactor::RWMutex& mutex,
+                   int& step)
 {
   reactor::Lock lock(*sched, mutex);
   int v = step;
@@ -754,7 +769,8 @@ rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
 }
 
 void
-rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
+rw_mutex_both_write(reactor::RWMutex& mutex,
+                    int& step)
 {
   reactor::Lock lock(*sched, mutex.write());
   ++step;
@@ -819,7 +835,8 @@ test_rw_mutex_both()
 `--------*/
 
 void
-storage(reactor::LocalStorage<int>& val, int start)
+storage(reactor::LocalStorage<int>& val,
+        int start)
 {
   val.Get() = start;
   yield();
@@ -924,7 +941,8 @@ test_suite()
 }
 
 int
-main(int argc, char** argv)
+main(int argc, 
+     char** argv)
 {
   return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
