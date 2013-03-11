@@ -1,13 +1,16 @@
+#define BOOST_TEST_DYN_LINK
+
 #include <boost/bind.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <reactor/backend/thread.hh>
-
-#include "../test.hh"
 
 using reactor::backend::Manager;
 using reactor::backend::Thread;
 
 Manager* m = 0;
+
+void empty() {}
 
 static void one_yield()
 {
@@ -84,14 +87,21 @@ namespace reactor
 {
   namespace backend
   {
-    boost::unit_test::test_suite* test_suite()
+    bool test_suite()
     {
       boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
+      boost::unit_test::framework::master_test_suite().add(backend);
       backend->add(BOOST_TEST_CASE(test_die));
       backend->add(BOOST_TEST_CASE(test_deadlock_creation));
       backend->add(BOOST_TEST_CASE(test_deadlock_switch));
       backend->add(BOOST_TEST_CASE(test_status));
-      return backend;
+      return true;
     }
   }
+}
+
+int
+main(int argc, char** argv)
+{
+  return ::boost::unit_test::unit_test_main(reactor::backend::test_suite, argc, argv);
 }

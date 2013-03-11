@@ -1,16 +1,16 @@
+#define BOOST_TEST_DYN_LINK
+
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
-#include <reactor/network/udp-server.hh>
-#include <reactor/network/udp-server-socket.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
 
-#include "test.hh"
+#include "reactor.hh"
 
 using reactor::network::Byte;
 using reactor::network::Buffer;
@@ -18,9 +18,20 @@ using reactor::Signal;
 using reactor::network::Size;
 using reactor::network::TCPSocket;
 using reactor::network::TCPServer;
-using reactor::network::UDPSocket;
-using reactor::network::UDPServer;
 using reactor::Thread;
+
+reactor::Scheduler* sched = 0;
+
+Fixture::Fixture()
+{
+  sched = new reactor::Scheduler;
+}
+
+Fixture::~Fixture()
+{
+  delete sched;
+  sched = 0;
+}
 
 /*---------------.
 | Destroy socket |
@@ -223,9 +234,10 @@ namespace reactor
 {
   namespace network
   {
-    boost::unit_test::test_suite* test_suite()
+    bool test_suite()
     {
       boost::unit_test::test_suite* network = BOOST_TEST_SUITE("Network");
+      boost::unit_test::framework::master_test_suite().add(network);
       network->add(BOOST_TEST_CASE(test_destroy_socket));
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \
       network->add(BOOST_TEST_CASE((test_timeout_read                   \
@@ -234,9 +246,14 @@ namespace reactor
                                     <Proto##Server, Proto##Socket>)));  \
 
       INFINIT_REACTOR_NETWORK_TEST(TCP);
-      INFINIT_REACTOR_NETWORK_TEST(UDP);
 #undef INFINIT_REACTOR_NETWORK_TEST
-      return network;
+      return true;
     }
   }
+}
+
+int
+main(int argc, char** argv)
+{
+  return ::boost::unit_test::unit_test_main(reactor::network::test_suite, argc, argv);
 }
