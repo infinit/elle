@@ -24,23 +24,27 @@ Fixture::~Fixture()
   sched = 0;
 }
 
-void yield()
+void
+yield()
 {
   sched->current()->yield();
 }
 
-bool wait(reactor::Waitable& s,
+bool
+wait(reactor::Waitable& s,
           reactor::DurationOpt timeout = reactor::DurationOpt())
 {
   return sched->current()->wait(s, timeout);
 }
 
-void wait(reactor::Waitables& s)
+void
+wait(reactor::Waitables& s)
 {
   sched->current()->wait(s);
 }
 
-void sleep(reactor::Duration d)
+void
+sleep(reactor::Duration d)
 {
   sched->current()->sleep(d);
 }
@@ -49,14 +53,16 @@ void sleep(reactor::Duration d)
 | Helpers |
 `--------*/
 
-void empty()
+void
+empty()
 {}
 
 /*-------.
 | Basics |
 `-------*/
 
-void coro(int& step)
+void
+coro(int& step)
 {
   BOOST_CHECK_EQUAL(step, 0);
   ++step;
@@ -65,7 +71,8 @@ void coro(int& step)
   ++step;
 }
 
-void test_basics_one()
+void
+test_basics_one()
 {
   Fixture f;
 
@@ -75,7 +82,8 @@ void test_basics_one()
   BOOST_CHECK_EQUAL(step, 2);
 }
 
-void coro1(int& step)
+void
+coro1(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
@@ -89,7 +97,8 @@ void coro1(int& step)
   BOOST_CHECK(step == 5);
 }
 
-void coro2(int& step)
+void
+coro2(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
@@ -98,7 +107,8 @@ void coro2(int& step)
   ++step;
 }
 
-void test_basics_interleave()
+void
+test_basics_interleave()
 {
   Fixture f;
 
@@ -113,14 +123,16 @@ void test_basics_interleave()
 | Signals |
 `--------*/
 
-void waiter(int& step, reactor::Waitables& waitables)
+void
+waiter(int& step, reactor::Waitables& waitables)
 {
   BOOST_CHECK_EQUAL(step, 0);
   sched->current()->wait(waitables);
   ++step;
 }
 
-void sender_one(int& step, reactor::Signal& s, int expect)
+void
+sender_one(int& step, reactor::Signal& s, int expect)
 {
   BOOST_CHECK_EQUAL(step, 0);
   yield();
@@ -134,7 +146,8 @@ void sender_one(int& step, reactor::Signal& s, int expect)
   BOOST_CHECK_EQUAL(step, expect);
 }
 
-void sender_two(int& step, reactor::Signal& s1, reactor::Signal& s2)
+void
+sender_two(int& step, reactor::Signal& s1, reactor::Signal& s2)
 {
   BOOST_CHECK_EQUAL(step, 0);
   yield();
@@ -154,7 +167,8 @@ void sender_two(int& step, reactor::Signal& s1, reactor::Signal& s2)
   BOOST_CHECK_EQUAL(step, 1);
 }
 
-void test_signals_one_on_one()
+void
+test_signals_one_on_one()
 {
   Fixture f;
 
@@ -171,7 +185,8 @@ void test_signals_one_on_one()
   BOOST_CHECK_EQUAL(step, 1);
 }
 
-void test_signals_one_on_two()
+void
+test_signals_one_on_two()
 {
   Fixture f;
 
@@ -189,7 +204,8 @@ void test_signals_one_on_two()
   BOOST_CHECK_EQUAL(step, 1);
 }
 
-void test_signals_two_on_one()
+void
+test_signals_two_on_one()
 {
   Fixture f;
 
@@ -208,7 +224,8 @@ void test_signals_two_on_one()
   BOOST_CHECK_EQUAL(step, 2);
 }
 
-void waiter_timeout()
+void
+waiter_timeout()
 {
   reactor::Signal s;
   bool finished = wait(s, boost::posix_time::milliseconds(10));
@@ -216,7 +233,8 @@ void waiter_timeout()
   s.signal();
 }
 
-void test_signals_timeout()
+void
+test_signals_timeout()
 {
   Fixture f;
 
@@ -228,7 +246,8 @@ void test_signals_timeout()
 | Sleep |
 `------*/
 
-void sleeper1(int& step)
+void
+sleeper1(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
@@ -237,7 +256,8 @@ void sleeper1(int& step)
   ++step;
 }
 
-void sleeper2(int& step)
+void
+sleeper2(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
@@ -246,7 +266,8 @@ void sleeper2(int& step)
   ++step;
 }
 
-void test_sleep_interleave()
+void
+test_sleep_interleave()
 {
   Fixture f;
 
@@ -258,12 +279,15 @@ void test_sleep_interleave()
   sched->run();
 }
 
-static boost::posix_time::ptime now()
+static
+boost::posix_time::ptime
+now()
 {
   return boost::posix_time::microsec_clock::local_time();
 }
 
-void sleep_timer(int& iterations)
+void
+sleep_timer(int& iterations)
 {
   reactor::Duration delay(boost::posix_time::milliseconds(100));
 
@@ -277,7 +301,8 @@ void sleep_timer(int& iterations)
   }
 }
 
-void test_sleep_timing()
+void
+test_sleep_timing()
 {
   Fixture f;
 
@@ -292,7 +317,8 @@ void test_sleep_timing()
 | Join |
 `-----*/
 
-void joined(int& count)
+void
+joined(int& count)
 {
   BOOST_CHECK_EQUAL(count, 0);
   yield();
@@ -302,14 +328,16 @@ void joined(int& count)
   ++count;
 }
 
-void join_waiter(reactor::Thread& thread, int& count)
+void
+join_waiter(reactor::Thread& thread, int& count)
 {
   wait(thread);
   BOOST_CHECK_EQUAL(count, 2);
   ++count;
 }
 
-void test_join()
+void
+test_join()
 {
   Fixture f;
 
@@ -323,7 +351,8 @@ void test_join()
   BOOST_CHECK_EQUAL(count, 3);
 }
 
-void join_waiter_multiple(reactor::Thread& thread, int& count)
+void
+join_waiter_multiple(reactor::Thread& thread, int& count)
 {
   yield();
   BOOST_CHECK(thread.state() == reactor::Thread::state::done);
@@ -332,7 +361,8 @@ void join_waiter_multiple(reactor::Thread& thread, int& count)
   ++count;
 }
 
-void test_join_multiple()
+void
+test_join_multiple()
 {
   Fixture f;
 
@@ -345,12 +375,14 @@ void test_join_multiple()
   BOOST_CHECK_EQUAL(count, 1);
 }
 
-void sleeping_beauty()
+void
+sleeping_beauty()
 {
   sleep(boost::posix_time::milliseconds(100));
 }
 
-void prince_charming(reactor::Thread& sleeping_beauty)
+void
+prince_charming(reactor::Thread& sleeping_beauty)
 {
   bool finished = wait(sleeping_beauty, boost::posix_time::milliseconds(50));
   BOOST_CHECK(!finished);
@@ -360,7 +392,8 @@ void prince_charming(reactor::Thread& sleeping_beauty)
   BOOST_CHECK(sleeping_beauty.done());
 }
 
-void test_join_timeout()
+void
+test_join_timeout()
 {
   Fixture f;
 
@@ -374,21 +407,24 @@ void test_join_timeout()
 | Timeout |
 `--------*/
 
-void timeout(reactor::Signal& s, bool expect)
+void
+timeout(reactor::Signal& s, bool expect)
 {
   bool finished = wait(s, boost::posix_time::milliseconds(500));
   BOOST_CHECK(finished == expect);
   BOOST_CHECK(s.waiters().empty());
 }
 
-void timeout_send(reactor::Signal& s)
+void
+timeout_send(reactor::Signal& s)
 {
   yield();
   BOOST_CHECK_EQUAL(s.waiters().size(), 1);
   s.signal();
 }
 
-void test_timeout_do()
+void
+test_timeout_do()
 {
   Fixture f;
 
@@ -398,7 +434,8 @@ void test_timeout_do()
   sched->run();
 }
 
-void test_timeout_dont()
+void
+test_timeout_dont()
 {
   Fixture f;
 
@@ -414,12 +451,14 @@ void test_timeout_dont()
 | VThread |
 `--------*/
 
-int answer()
+int
+answer()
 {
   return 42;
 }
 
-void test_vthread()
+void
+test_vthread()
 {
   Fixture f;
 
@@ -433,7 +472,8 @@ void test_vthread()
 | Multithread |
 `------------*/
 
-void waker(reactor::Signal& s)
+void
+waker(reactor::Signal& s)
 {
   // FIXME: sleeps suck
 
@@ -445,7 +485,8 @@ void waker(reactor::Signal& s)
   sleep(1);
 }
 
-void test_multithread_spawn_wake()
+void
+test_multithread_spawn_wake()
 {
   Fixture f;
   reactor::Signal sig;
@@ -459,18 +500,21 @@ void test_multithread_spawn_wake()
   s.join();
 }
 
-int spawned(reactor::Signal& s)
+int
+spawned(reactor::Signal& s)
 {
   s.signal();
   return 42;
 }
 
-void spawn(reactor::Signal& s, int& res)
+void
+spawn(reactor::Signal& s, int& res)
 {
   res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
 }
 
-void spawner()
+void
+spawner()
 {
   reactor::Signal s;
   int res = 0;
@@ -480,7 +524,8 @@ void spawner()
   BOOST_CHECK_EQUAL(res, 42);
 }
 
-void test_multithread_run()
+void
+test_multithread_run()
 {
   Fixture f;
 
@@ -492,7 +537,8 @@ void test_multithread_run()
 | Semaphore |
 `----------*/
 
-void semaphore_noblock_wait(reactor::Semaphore& s)
+void
+semaphore_noblock_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 2);
   wait(s);
@@ -501,7 +547,8 @@ void semaphore_noblock_wait(reactor::Semaphore& s)
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
-void test_semaphore_noblock()
+void
+test_semaphore_noblock()
 {
   Fixture f;
   reactor::Semaphore s(2);
@@ -510,14 +557,16 @@ void test_semaphore_noblock()
   sched->run();
 }
 
-void semaphore_block_wait(reactor::Semaphore& s)
+void
+semaphore_block_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 0);
   wait(s);
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
-void semaphore_block_post(reactor::Semaphore& s)
+void
+semaphore_block_post(reactor::Semaphore& s)
 {
   yield();
   yield();
@@ -527,7 +576,8 @@ void semaphore_block_post(reactor::Semaphore& s)
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
-void test_semaphore_block()
+void
+test_semaphore_block()
 {
   Fixture f;
   reactor::Semaphore s;
@@ -538,13 +588,15 @@ void test_semaphore_block()
   sched->run();
 }
 
-void semaphore_multi_wait(reactor::Semaphore& s, int& step)
+void
+semaphore_multi_wait(reactor::Semaphore& s, int& step)
 {
   wait(s);
   ++step;
 }
 
-void semaphore_multi_post(reactor::Semaphore& s, int& step)
+void
+semaphore_multi_post(reactor::Semaphore& s, int& step)
 {
   yield();
   yield();
@@ -561,7 +613,8 @@ void semaphore_multi_post(reactor::Semaphore& s, int& step)
   BOOST_CHECK_EQUAL(step, 2);
 }
 
-void test_semaphore_multi()
+void
+test_semaphore_multi()
 {
   Fixture f;
   reactor::Semaphore s;
@@ -584,7 +637,8 @@ void test_semaphore_multi()
 
 static const int mutex_yields = 32;
 
-void mutex_count(int& i, reactor::Mutex& mutex, int yields)
+void
+mutex_count(int& i, reactor::Mutex& mutex, int yields)
 {
   int count = 0;
   int prev = -1;
@@ -609,7 +663,8 @@ void mutex_count(int& i, reactor::Mutex& mutex, int yields)
   }
 }
 
-void test_mutex()
+void
+test_mutex()
 {
   Fixture f;
   reactor::Mutex mutex;
@@ -630,7 +685,8 @@ void test_mutex()
 | RWMutex |
 `--------*/
 
-void rw_mutex_read(reactor::RWMutex& mutex, int& step)
+void
+rw_mutex_read(reactor::RWMutex& mutex, int& step)
 {
   reactor::Lock lock(*sched, mutex);
   ++step;
@@ -638,7 +694,8 @@ void rw_mutex_read(reactor::RWMutex& mutex, int& step)
   BOOST_CHECK_EQUAL(step, 3);
 }
 
-void test_rw_mutex_multi_read()
+void
+test_rw_mutex_multi_read()
 {
   Fixture f;
   reactor::RWMutex mutex;
@@ -655,7 +712,8 @@ void test_rw_mutex_multi_read()
   sched->run();
 }
 
-void rw_mutex_write(reactor::RWMutex& mutex, int& step)
+void
+rw_mutex_write(reactor::RWMutex& mutex, int& step)
 {
   reactor::Lock lock(*sched, mutex.write());
   ++step;
@@ -664,7 +722,8 @@ void rw_mutex_write(reactor::RWMutex& mutex, int& step)
   BOOST_CHECK_EQUAL(step, prev);
 }
 
-void test_rw_mutex_multi_write()
+void
+test_rw_mutex_multi_write()
 {
   Fixture f;
   reactor::RWMutex mutex;
@@ -681,7 +740,8 @@ void test_rw_mutex_multi_write()
   sched->run();
 }
 
-void rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
+void
+rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
 {
   reactor::Lock lock(*sched, mutex);
   int v = step;
@@ -693,7 +753,8 @@ void rw_mutex_both_read(reactor::RWMutex& mutex, int& step)
   BOOST_CHECK_EQUAL(step, v);
 }
 
-void rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
+void
+rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
 {
   reactor::Lock lock(*sched, mutex.write());
   ++step;
@@ -703,7 +764,8 @@ void rw_mutex_both_write(reactor::RWMutex& mutex, int& step)
   BOOST_CHECK_EQUAL(step % 2, 0);
 }
 
-void test_rw_mutex_both()
+void
+test_rw_mutex_both()
 {
   Fixture f;
   reactor::RWMutex mutex;
@@ -756,7 +818,8 @@ void test_rw_mutex_both()
 | Storage |
 `--------*/
 
-void storage(reactor::LocalStorage<int>& val, int start)
+void
+storage(reactor::LocalStorage<int>& val, int start)
 {
   val.Get() = start;
   yield();
@@ -766,7 +829,8 @@ void storage(reactor::LocalStorage<int>& val, int start)
   BOOST_CHECK_EQUAL(val.Get(), start + 1);
 }
 
-void test_storage()
+void
+test_storage()
 {
   Fixture f;
   reactor::LocalStorage<int> val;
@@ -783,7 +847,8 @@ void test_storage()
 | Terminate |
 `----------*/
 
-void terminate_starting()
+void
+terminate_starting()
 {
   Fixture f;
 
@@ -795,7 +860,8 @@ void terminate_starting()
 | Main |
 `-----*/
 
-bool test_suite()
+bool
+test_suite()
 {
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);

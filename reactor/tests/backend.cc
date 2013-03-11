@@ -10,19 +10,27 @@ using reactor::backend::Thread;
 
 Manager* m = 0;
 
-void empty() {}
+void
+empty()
+{}
 
-static void one_yield()
+static
+void
+one_yield()
 {
   m->current()->yield();
 }
 
-static void inc(int* i)
+static
+void
+inc(int* i)
 {
   ++*i;
 }
 
-static void test_die()
+static
+void
+test_die()
 {
   m = new Manager;
   int i = 0;
@@ -41,7 +49,9 @@ static void test_die()
   delete m;
 }
 
-static void test_deadlock_creation()
+static
+void
+test_deadlock_creation()
 {
   m = new Manager;
 
@@ -51,7 +61,9 @@ static void test_deadlock_creation()
   delete m;
 }
 
-static void test_deadlock_switch()
+static
+void
+test_deadlock_switch()
 {
   m = new Manager;
   Thread t(*m, "test_deadlock_switch", one_yield);
@@ -63,14 +75,18 @@ static void test_deadlock_switch()
 
 using namespace reactor::backend::status;
 
-static void status_coro()
+static
+void
+status_coro()
 {
   BOOST_CHECK(m->current()->status() == running);
   m->current()->yield();
   BOOST_CHECK(m->current()->status() == running);
 }
 
-static void test_status()
+static
+void
+test_status()
 {
   m = new Manager;
   Thread t(*m, "status", status_coro);
@@ -83,25 +99,20 @@ static void test_status()
   delete m;
 }
 
-namespace reactor
+bool
+test_suite()
 {
-  namespace backend
-  {
-    bool test_suite()
-    {
-      boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
-      boost::unit_test::framework::master_test_suite().add(backend);
-      backend->add(BOOST_TEST_CASE(test_die));
-      backend->add(BOOST_TEST_CASE(test_deadlock_creation));
-      backend->add(BOOST_TEST_CASE(test_deadlock_switch));
-      backend->add(BOOST_TEST_CASE(test_status));
-      return true;
-    }
-  }
+  boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
+  boost::unit_test::framework::master_test_suite().add(backend);
+  backend->add(BOOST_TEST_CASE(test_die));
+  backend->add(BOOST_TEST_CASE(test_deadlock_creation));
+  backend->add(BOOST_TEST_CASE(test_deadlock_switch));
+  backend->add(BOOST_TEST_CASE(test_status));
+  return true;
 }
 
 int
 main(int argc, char** argv)
 {
-  return ::boost::unit_test::unit_test_main(reactor::backend::test_suite, argc, argv);
+  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

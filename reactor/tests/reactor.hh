@@ -17,6 +17,7 @@ class Fixture
     ~Fixture();
 };
 
-void empty();
+void
+empty();
 
 #endif

@@ -37,7 +37,8 @@ Fixture::~Fixture()
 | Destroy socket |
 `---------------*/
 
-void test_destroy_socket_non_connected()
+void
+test_destroy_socket_non_connected()
 {
   // Used to fail because shuting down a socket whose connection
   // failed used to raise.
@@ -53,7 +54,8 @@ void test_destroy_socket_non_connected()
   BOOST_FAIL("Socket shouldn't have connected");
 }
 
-void test_destroy_socket()
+void
+test_destroy_socket()
 {
   sched = new reactor::Scheduler;
   Thread t(*sched, "thread", &test_destroy_socket_non_connected);
@@ -66,7 +68,8 @@ void test_destroy_socket()
 `---------*/
 
 template <typename Server, typename Socket>
-void silent_server()
+void
+silent_server()
 {
   Server server(*sched);
   server.listen(4242);
@@ -77,7 +80,8 @@ void silent_server()
 }
 
 template <typename Server, typename Socket>
-void timeout_read()
+void
+timeout_read()
 {
   Socket socket(*sched, "127.0.0.1", 4242);
   // Poke the server to establish the pseudo connection in the UDP case.
@@ -114,13 +118,19 @@ test_timeout_read()
 `------------*/
 
 template <typename Server, typename Socket>
-void server();
-void serve(reactor::network::Socket* socket);
-template <typename Server, typename Socket>
-void client(std::vector<std::string> messages);
+void
+server();
+
+void
+serve(reactor::network::Socket* socket);
 
 template <typename Server, typename Socket>
-void server()
+void
+client(std::vector<std::string> messages);
+
+template <typename Server, typename Socket>
+void
+server()
 {
   Server server(*sched);
   server.listen(4242);
@@ -137,7 +147,8 @@ void server()
     delete thread;
 }
 
-void serve(reactor::network::Socket* socket)
+void
+serve(reactor::network::Socket* socket)
 {
   std::string received;
   Byte buffer[512];
@@ -171,7 +182,8 @@ void serve(reactor::network::Socket* socket)
 }
 
 template <typename Server, typename Socket>
-void client(std::vector<std::string> messages, unsigned& check)
+void
+client(std::vector<std::string> messages, unsigned& check)
 {
   Socket s(*sched, "127.0.0.1", 4242);
   BOOST_FOREACH (const std::string& message, messages)
@@ -187,7 +199,8 @@ void client(std::vector<std::string> messages, unsigned& check)
 }
 
 template <typename Server, typename Socket>
-void test_echo_server()
+void
+test_echo_server()
 {
   sched = new reactor::Scheduler;
   reactor::Thread s(*sched, "server", server<Server, Socket>);
@@ -230,30 +243,26 @@ void test_echo_server()
   delete sched;
 }
 
-namespace reactor
+bool
+test_suite()
 {
-  namespace network
-  {
-    bool test_suite()
-    {
-      boost::unit_test::test_suite* network = BOOST_TEST_SUITE("Network");
-      boost::unit_test::framework::master_test_suite().add(network);
-      network->add(BOOST_TEST_CASE(test_destroy_socket));
+  boost::unit_test::test_suite* network = BOOST_TEST_SUITE("Network");
+  boost::unit_test::framework::master_test_suite().add(network);
+  network->add(BOOST_TEST_CASE(test_destroy_socket));
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \
-      network->add(BOOST_TEST_CASE((test_timeout_read                   \
-                                    <Proto##Server, Proto##Socket>)));  \
-      network->add(BOOST_TEST_CASE((test_echo_server                    \
-                                    <Proto##Server, Proto##Socket>)));  \
+  network->add(BOOST_TEST_CASE((test_timeout_read                   \
+                                <Proto##Server, Proto##Socket>)));  \
+  network->add(BOOST_TEST_CASE((test_echo_server                    \
+                                <Proto##Server, Proto##Socket>)));  \
 
-      INFINIT_REACTOR_NETWORK_TEST(TCP);
+  INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
-      return true;
-    }
-  }
+  return true;
 }
+
 
 int
 main(int argc, char** argv)
 {
-  return ::boost::unit_test::unit_test_main(reactor::network::test_suite, argc, argv);
+  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
