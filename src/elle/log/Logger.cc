@@ -4,6 +4,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <elle/log/Logger.hh>
+#include <elle/os/getenv.hh>
 #include <elle/printf.hh>
 
 namespace elle
@@ -92,13 +93,16 @@ namespace elle
     `-------------*/
 
     Logger::Logger()
-      : _indentation(this->_factory()())
+      : _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
+      , _enable_time(elle::os::getenv("ELLE_LOG_TIME", "") == "1")
+      , _universal_time(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "1")
+      , _indentation(this->_factory()())
       , _component_patterns()
       , _component_enabled()
       , _component_max_size(0)
     {
-      static char const* components_str = ::getenv("ELLE_LOG_COMPONENTS");
-      if (components_str == nullptr)
+      std::string components_str = elle::os::getenv("ELLE_LOG_COMPONENTS", "");
+      if (components_str == "")
         this->_component_patterns.push_back("*");
       else
         {
@@ -139,9 +143,7 @@ namespace elle
       // Time
       boost::posix_time::ptime ptime;
       {
-        static const bool universal =
-          ::getenv("ELLE_LOG_TIME_UNIVERSAL") != nullptr;
-        if (universal)
+        if (_universal_time)
           ptime = boost::posix_time::second_clock::universal_time();
         else
           ptime = boost::posix_time::second_clock::local_time();
@@ -161,12 +163,10 @@ namespace elle
       }
 
       // Format
-      static const bool enable_time = ::getenv("ELLE_LOG_TIME") != nullptr;
-      static const bool enable_pid = ::getenv("ELLE_LOG_PID") != nullptr;
       std::string prefix;
-      if (enable_time)
+      if (_enable_time)
         prefix += elle::sprintf("%s: ", ptime);
-      if (enable_pid)
+      if (_enable_pid)
         prefix += elle::sprintf("[%s] ", pid);
       prefix += elle::sprintf("[%s] ", comp);
       for (auto& tag: this->_tags())
