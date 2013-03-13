@@ -3,7 +3,7 @@
 #ifdef INFINIT_MACOSX
 # include <crt_externs.h>
 #else
-# include <environ.h>
+# include <unistd.h>
 #endif
 
 namespace elle
@@ -15,13 +15,15 @@ namespace elle
     environ()
     {
 #ifdef INFINIT_MACOSX
-      char** environ = *(_NSGetEnviron());
+      char** _environ = *(_NSGetEnviron());
+#else
+      char** _environ = ::environ;
 #endif
       std::unordered_map<std::string, std::string> env;
-      if (environ == nullptr)
+      if (_environ == nullptr)
         return env;
 
-      for (char** envp = environ; *envp != nullptr; ++envp)
+      for (char** envp = _environ; *envp != nullptr; ++envp)
         {
           char* str = *envp;
           if (*str == '\0')
@@ -39,4 +41,3 @@ namespace elle
 
   }
 }
-
