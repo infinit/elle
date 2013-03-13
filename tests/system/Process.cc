@@ -11,6 +11,41 @@ using namespace elle::system;
 int main()
 {
   {
+    Process p{"echo", {"toto"}};
+    ELLE_ASSERT(p.wait_status() == 0);
+  }
+
+  {
+    Process p{"sh", {"-c", "sleep 1 && exit 1"}};
+    ELLE_ASSERT(p.wait_status() == 1);
+  }
+
+  {
+    Process p{"sh", {"-c", "sleep 10"}};
+    ELLE_ASSERT(p.status() == 0);
+    p.kill();
+    ELLE_ASSERT(p.status() != 0);
+  }
+
+  {
+    try
+    {
+      Process p{"TestUnknownProgram"};
+      p.wait();
+      ELLE_ASSERT(false && "should have thrown");
+    }
+    catch (std::runtime_error const& err)
+    {
+      std::cerr << "Expected error: " << err.what() << std::endl;
+    }
+  }
+
+  {
+    Process p{"TestUnknownProgram"};
+    ELLE_ASSERT(p.wait_status() != 0);
+  }
+
+  {
     Process p{check_output_config, "echo", {"toto"}};
     ELLE_ASSERT(p.read() == "toto\n");
     p.wait();
@@ -49,6 +84,8 @@ int main()
     std::cout << str;
     ELLE_ASSERT(str == "HELLO GUYS$\n");
     p3.wait();
+    p2.wait();
+    p.wait();
   }
 
   {

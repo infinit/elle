@@ -6,6 +6,7 @@
 #include <elle/os/getenv.hh>
 #include <elle/os/path.hh>
 #include <elle/os/environ.hh>
+#include <elle/print.hh>
 
 #include <boost/algorithm/string.hpp>
 
@@ -412,20 +413,24 @@ namespace elle
             }
           }
 
+          ELLE_DEBUG("About to execvpe %s", binary);
           if (::execvpe(binary.c_str(), (char**) exec_args, envp) != 0)
             {
+              std::cerr << "Couldn't execvp: " << binary << std::endl;
               ELLE_ERR("Cannot execvp %s", binary.c_str());
             }
           ::exit(EXIT_FAILURE);
         }
       else // parent process
         {
-          ELLE_DEBUG("Binary %s %s has pid %d", binary, arguments, binary_pid);
           _impl->pid = binary_pid;
           _config.channel(ProcessChannelStream::in).close_read();
           _config.channel(ProcessChannelStream::out).close_write();
           _config.channel(ProcessChannelStream::err).close_write();
         }
+      auto status = this->status(); // This ensure at least on waitpid is done
+      ELLE_DEBUG("Binary %s %s has pid %d and status %d",
+                 binary, arguments, binary_pid, status);
     }
 
     Process::Process(ProcessConfigModel const model,
@@ -458,6 +463,8 @@ namespace elle
 
       try
         {
+          ELLE_WARN("Destroying a running process %s (%s)",
+                    _impl->binary, _impl->pid);
           if (this->running())
             {
               ELLE_WARN("Killing a running process %s(%d)",
@@ -480,25 +487,52 @@ namespace elle
     Process::StatusCode
     Process::status(ProcessTermination const term)
     {
-      ELLE_TRACE("Waiting for binary %s %s", _impl->binary, _impl->arguments);
+      ELLE_TRACE("%s for binary (%s) %s %s",
+                  (term == ProcessTermination::dont_wait ? "Checking" : "Waiting"),
+                 _impl->pid, _impl->binary, _impl->arguments);
       if (_impl->pid == 0)
         return _impl->status;
 
-      int status;
+      int status_ = 0;
       int options = (term == ProcessTermination::dont_wait ? WNOHANG : 0);
-      pid_t ret = ::waitpid(_impl->pid, &status, options);
-      if (ret < 0)
-        throw elle::Exception{"Cannot waitpid"};
+      pid_t ret = 0;
+      do
+      {
+        ret = ::waitpid(_impl->pid, &status_, options);
+      } while (ret < 0 && errno == EINTR);
 
+      if (ret < 0)
+        {
+          if (errno == ECHILD)
+            {
+              ELLE_WARN(
+                "The pid %d is no longer valid, exit status set to 1 (failure)",
+                _impl->pid
+              );
+              _impl->pid = 0;
+              _impl->status = EXIT_FAILURE;
+              return _impl->status;
+            }
+          std::string reason;
+          if (errno == EFAULT)
+            reason = "status argument points to an illegal address";
+          else if (errno == EINVAL)
+            reason = "invalid or undefined flags are passed in the options argument";
+          else
+            reason = elle::sprint("unknown errno value:", errno);
+          throw elle::Exception{"Cannot waitpid: " + reason};
+        }
+
+      ELLE_DEBUG("Binary %s successfully waited", _impl->binary);
       // No child exited and WNOHANG specified.
       if (ret == 0 && term == ProcessTermination::dont_wait)
         return 0;
 
       // ret == _impl->pid is true
 
-      if (WIFEXITED(status))
+      if (WIFEXITED(status_))
         {
-          _impl->status = WEXITSTATUS(status);
+          _impl->status = WEXITSTATUS(status_);
           ELLE_DEBUG("Binary %s %s exited with status %d",
                      _impl->binary, _impl->arguments, _impl->status);
           if (_impl->status < 0) // ensure positive value.
@@ -509,9 +543,9 @@ namespace elle
             }
           _impl->pid = 0;
         }
-      else if (WIFSIGNALED(status))
+      else if (WIFSIGNALED(status_))
         {
-          _impl->status = -WTERMSIG(status);
+          _impl->status = -WTERMSIG(status_);
           ELLE_DEBUG("Binary %s %s signaled with status %d",
                      _impl->binary, _impl->arguments, -_impl->status);
           if (_impl->status > 0) // ensure negative value.
@@ -541,6 +575,7 @@ namespace elle
     Process::StatusCode
     Process::wait_status()
     {
+      ELLE_DEBUG("Waiting status of %s", _impl->binary);
       return this->status(ProcessTermination::wait);
     }
 
