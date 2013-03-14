@@ -54,21 +54,15 @@ def configure(cxx_toolkit, cxx_config, elle_config, boost = None, enable_tests =
   lib_static = drake.cxx.StaticLib('lib/reactor', sources, cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/reactor', sources, cxx_toolkit, cxx_config)
 
-  tests = drake.nodes(
-    'tests/backend.cc',
-    'tests/network.cc',
-    'tests/reactor.cc',
-    )
-
   # Tests
 
   check = drake.Rule('check')
 
   tests = [
-    'backend',
-    'logger',
-    'network',
-    'reactor',
+    'reactor/backend',
+    'reactor/logger',
+    'reactor/network',
+    'reactor/reactor',
     ]
 
   class TestRunner(drake.Builder):
@@ -108,9 +102,8 @@ def configure(cxx_toolkit, cxx_config, elle_config, boost = None, enable_tests =
   if enable_tests:
       for test in tests:
         config = drake.cxx.Config(cxx_config_tests)
-        config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
-        cxx_config_tests.lib('elle')
-        cxx_config_tests.lib_path_runtime('../../lib')
+        config.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
+        config.lib('elle')
         test = drake.cxx.Executable('tests/%s' % test,
                                     drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
                                     cxx_toolkit, config)
