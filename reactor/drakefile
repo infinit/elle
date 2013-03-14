@@ -66,6 +66,7 @@ def configure(cxx_toolkit, cxx_config, elle_config, boost = None, enable_tests =
 
   tests = [
     'backend',
+    'logger',
     'network',
     'reactor',
     ]
