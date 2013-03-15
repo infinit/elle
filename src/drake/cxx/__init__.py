@@ -1112,3 +1112,7 @@ class LibraryConfiguration(drake.Configuration):
 
     def __repr__(self):
         return '%s(prefix = %s)' % (self.__class__, repr(self.__prefix))
+
+    @property
+    def prefix(self):
+        return self.__prefix
