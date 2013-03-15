@@ -14,7 +14,6 @@ def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl = None,
               boost = None,
-              enable_tests = True,
               elle = None,
               prefix = '/usr'):
 
@@ -141,17 +140,16 @@ def configure(cxx_toolkit = None,
 
   tests_rule = drake.Rule('tests')
   rule_check = drake.Rule('check')
-  if enable_tests:
-      for test in tests:
-        config = drake.cxx.Config(tests_cxx_config)
-        config.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
-        # FIXME: this is the path to libelle, but it's kinda hardcoded
-        config.lib_path_runtime('%s../../../elle/lib' % ('../' * test.count('/')))
-        path = drake.Path('tests/cryptography/%s.cc' % test)
-        bin_path = drake.Path('tests/cryptography/%s' % test)
-        bin = drake.cxx.Executable(bin_path,
-                                   drake.nodes(path) +
-                                   [lib_dynamic, elle.lib_dynamic],
-                                   cxx_toolkit, config)
-        tests_rule << bin
-        rule_check << TestRunner(bin).status
+  for test in tests:
+    config = drake.cxx.Config(tests_cxx_config)
+    config.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
+    # FIXME: this is the path to libelle, but it's kinda hardcoded
+    config.lib_path_runtime('%s../../../elle/lib' % ('../' * test.count('/')))
+    path = drake.Path('tests/cryptography/%s.cc' % test)
+    bin_path = drake.Path('tests/cryptography/%s' % test)
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(path) +
+                               [lib_dynamic, elle.lib_dynamic],
+                               cxx_toolkit, config)
+    tests_rule << bin
+    rule_check << TestRunner(bin).status
