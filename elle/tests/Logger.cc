@@ -271,5 +271,6 @@ test_suite()
 int
 main(int argc, char** argv)
 {
+  elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
   return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
