@@ -37,6 +37,7 @@ class Config:
             self._defines = {}
             self.__standard = None
             self.__rpath = []
+            self.__warnings = True
         else:
             self.__debug = model.__debug
             self._includes = deepcopy(model._includes)
@@ -51,6 +52,7 @@ class Config:
             self._defines = deepcopy(model._defines)
             self.__standard = model.__standard
             self.__rpath = deepcopy(model.__rpath)
+            self.__warnings = model.__warnings
 
     def enable_debug_symbols(self, val = True):
         self.__debug = val
@@ -182,6 +184,13 @@ class Config:
         assert value is None or isinstance(value, Config.Standard)
         self.__standard = value
 
+    @property
+    def warnings(self):
+        return self.__warnings
+
+    def enable_warnings(self, value):
+        self.__warnings = value
+
 # FIXME: Factor node and builder for executable and staticlib
 
 class _ToolkitType(type):
@@ -296,6 +305,8 @@ class GccToolkit(Toolkit):
             res.append('-O2')
         if cfg._Config__debug:
             res.append('-g')
+        if cfg._Config__warnings is True:
+            res.append('-Wall')
         std = cfg._Config__standard
         if std is None:
             pass
