@@ -1,0 +1,157 @@
+import drake
+import drake.cxx
+import drake.cxx.boost
+
+config = None
+lib_static = None
+lib_dynamic = None
+
+rule_build = None
+rule_check = None
+rule_install = None
+
+def configure(cxx_toolkit = None,
+              cxx_config = None,
+              openssl = None,
+              boost = None,
+              enable_tests = True,
+              elle = None,
+              prefix = '/usr'):
+
+  with open(str(drake.path_src('../drake/test.py')), 'r') as f:
+    exec(f.read(), globals())
+
+  global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
+
+  # Toolkit
+  cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+
+  # Libraries
+  boost = boost or drake.cxx.boost.Boost()
+  elle = elle or drake.include('../elle')
+  #elle = drake.cxx.find_library('elle/elle.hh', elle)
+  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
+
+  # Global Configuration
+  config = drake.cxx.Config()
+  config.standard = drake.cxx.Config.cxx_0x
+  config.add_local_include_path('sources')
+  config.lib_path('lib')
+  config += openssl
+
+  # Local Configuration
+  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config.standard = drake.cxx.Config.cxx_0x
+  cxx_config += config
+  cxx_config += boost.cfg
+  cxx_config += boost.config_system()
+  cxx_config += elle.config
+  cxx_config.lib('crypto')
+  cxx_config.lib('ssl')
+
+  # Sources
+  sources = drake.nodes(
+    'sources/cryptography/Clear.hh',
+    'sources/cryptography/Code.hh',
+    'sources/cryptography/Cryptosystem.cc',
+    'sources/cryptography/Cryptosystem.hh',
+    'sources/cryptography/Digest.hh',
+    'sources/cryptography/Exception.hh',
+    'sources/cryptography/Exception.cc',
+    'sources/cryptography/Input.cc',
+    'sources/cryptography/Input.hh',
+    'sources/cryptography/KeyPair.cc',
+    'sources/cryptography/KeyPair.hh',
+    'sources/cryptography/KeyPair.hxx',
+    'sources/cryptography/Output.cc',
+    'sources/cryptography/Output.hh',
+    'sources/cryptography/Output.hxx',
+    'sources/cryptography/Plain.hh',
+    'sources/cryptography/PrivateKey.cc',
+    'sources/cryptography/PrivateKey.hh',
+    'sources/cryptography/PrivateKey.hxx',
+    'sources/cryptography/PublicKey.cc',
+    'sources/cryptography/PublicKey.hh',
+    'sources/cryptography/PublicKey.hxx',
+    'sources/cryptography/SecretKey.cc',
+    'sources/cryptography/SecretKey.hh',
+    'sources/cryptography/SecretKey.hxx',
+    'sources/cryptography/Seed.cc',
+    'sources/cryptography/Seed.hh',
+    'sources/cryptography/Seed.hxx',
+    'sources/cryptography/Signature.hh',
+    'sources/cryptography/all.hh',
+    'sources/cryptography/bn.cc',
+    'sources/cryptography/bn.hh',
+    'sources/cryptography/bn.hxx',
+    'sources/cryptography/cipher.cc',
+    'sources/cryptography/cipher.hh',
+    'sources/cryptography/cryptography.cc',
+    'sources/cryptography/cryptography.hh',
+    'sources/cryptography/evp.cc',
+    'sources/cryptography/evp.hh',
+    'sources/cryptography/finally.hh',
+    'sources/cryptography/fwd.hh',
+    'sources/cryptography/oneway.cc',
+    'sources/cryptography/oneway.hh',
+    'sources/cryptography/oneway.hxx',
+    'sources/cryptography/random.cc',
+    'sources/cryptography/random.hh',
+    'sources/cryptography/random.hxx',
+    'sources/cryptography/rsa/PrivateKey.cc',
+    'sources/cryptography/rsa/PrivateKey.hh',
+    'sources/cryptography/rsa/PrivateKey.hxx',
+    'sources/cryptography/rsa/PublicKey.cc',
+    'sources/cryptography/rsa/PublicKey.hh',
+    'sources/cryptography/rsa/PublicKey.hxx',
+    'sources/cryptography/rsa/all.hh',
+    'sources/cryptography/rsa/fwd.hh',
+    'sources/cryptography/rsa/keypair.cc',
+    'sources/cryptography/rsa/keypair.hh',
+    )
+
+  lib_static = drake.cxx.StaticLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
+
+  # Build
+  rule_build = drake.Rule('build')
+  rule_build << lib_static
+  rule_build << lib_dynamic
+
+  # Tests
+  tests = ['Input',
+           'KeyPair',
+           'Output',
+           'PrivateKey',
+           'PublicKey',
+           'SecretKey',
+           'Seed',
+           'bn',
+           'oneway',
+           'random']
+
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += config
+  tests_cxx_config += boost.cfg
+  tests_cxx_config += boost.config_test()
+  tests_cxx_config += openssl
+  tests_cxx_config += elle.config
+  tests_cxx_config.lib('crypto')
+  tests_cxx_config.lib('ssl')
+
+  tests_rule = drake.Rule('tests')
+  rule_check = drake.Rule('check')
+  if enable_tests:
+      for test in tests:
+        config = drake.cxx.Config(tests_cxx_config)
+        config.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
+        # FIXME: this is the path to libelle, but it's kinda hardcoded
+        config.lib_path_runtime('%s../../../elle/lib' % ('../' * test.count('/')))
+        path = drake.Path('tests/cryptography/%s.cc' % test)
+        bin_path = drake.Path('tests/cryptography/%s' % test)
+        bin = drake.cxx.Executable(bin_path,
+                                   drake.nodes(path) +
+                                   [lib_dynamic, elle.lib_dynamic],
+                                   cxx_toolkit, config)
+        tests_rule << bin
+        rule_check << TestRunner(bin).status
