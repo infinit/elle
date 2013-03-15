@@ -731,8 +731,7 @@ class Linker(Builder):
         self.toolkit = tk
         self.config = drake.cxx.Config(cfg)
         for lib in exe.dynamic_libraries:
-            path = drake.Path(lib.path())
-            path.strip_prefix(drake.prefix())
+            path = drake.Path(lib.name())
             self.config.lib_path(path.dirname())
             self.config.lib(lib.lib_name)
         Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
