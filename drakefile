@@ -1,11 +1,21 @@
 import drake
 
+config = None
+elle_dynamic = None
+elle_static = None
+cryptography_dynamic = None
+cryptography_static = None
+
 def configure(cxx_toolkit = None,
               cxx_config = None,
               boost = None,
               curl = None,
               openssl = None,
               prefix = '/usr'):
+
+  global config
+  global elle_dynamic, elle_static
+  global cryptography_dynamic, cryptography_static
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
@@ -17,22 +27,31 @@ def configure(cxx_toolkit = None,
                        boost = boost,
                        curl = curl,
                        prefix = prefix)
-  crypto = drake.include('cryptography',
-                         cxx_toolkit = cxx_toolkit,
-                         cxx_config = cxx_config,
-                         openssl = openssl,
-                         boost = boost,
-                         elle = elle,
-                         prefix = prefix)
+  cryptography = drake.include('cryptography',
+                               cxx_toolkit = cxx_toolkit,
+                               cxx_config = cxx_config,
+                               openssl = openssl,
+                               boost = boost,
+                               elle = elle,
+                               prefix = prefix)
+
+  config = drake.cxx.Config()
+  config += elle.config
+  config += cryptography.config
+
+  elle_dynamic = elle.lib_dynamic
+  elle_static = elle.lib_static
+  cryptography_dynamic = cryptography.lib_dynamic
+  cryptography_static = cryptography.lib_static
 
   build = drake.Rule('build')
   build << elle.rule_build
-  build << crypto.rule_build
+  build << cryptography.rule_build
 
   build = drake.Rule('check')
   build << elle.rule_check
-  build << crypto.rule_check
+  build << cryptography.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
-  install << crypto.rule_install
+  install << cryptography.rule_install
