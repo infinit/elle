@@ -477,21 +477,25 @@ class Path(object):
         >>> p.absolute()
         False
 
-        Throws if rhs is not a prefix of self.
+        Rewinds if rhs is not a prefix of self.
 
         >>> p.strip_prefix("quux")
-        Traceback (most recent call last):
-            ...
-        drake.Exception: quux is not a prefix of bar/baz
+        >>> p
+        Path("../bar/baz")
         """
         if (not isinstance(rhs, Path)):
             rhs = Path(rhs)
         if self.__path[0:len(rhs.__path)] != rhs.__path:
-            raise Exception("%s is not a prefix of %s" % (rhs, self))
-        self.__path = self.__path[len(rhs.__path):]
-        if not self.__path:
-            self.__path = ['.']
-        self.__absolute = self.__path[0] == ''
+            # FIXME: naive if rhs contains some '..'
+            self.__path = ['..'] * len(rhs) + self.__path
+        else:
+            self.__path = self.__path[len(rhs.__path):]
+            if not self.__path:
+                self.__path = ['.']
+            self.__absolute = self.__path[0] == ''
+
+    def __len__(self):
+        return len(self.__path)
 
     def strip_suffix(self, rhs):
         """Remove rhs suffix from self.
