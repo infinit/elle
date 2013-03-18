@@ -7,6 +7,10 @@ def configure(cxx_toolkit = None,
               openssl = None,
               prefix = '/usr'):
 
+  prefix = drake.Path(prefix)
+  if not prefix.absolute():
+    prefix = drake.Path('..') / prefix
+
   elle = drake.include('elle',
                        cxx_toolkit = cxx_toolkit,
                        cxx_config = cxx_config,
