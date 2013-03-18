@@ -153,3 +153,10 @@ def configure(cxx_toolkit = None,
                                cxx_toolkit, config)
     tests_rule << bin
     rule_check << TestRunner(bin).status
+
+  # Install
+  rule_install = drake.Rule('install')
+  prefix = drake.Path(prefix)
+  rule_install << drake.copy(lib_dynamic, prefix)
+  rule_install << drake.copy(lib_static, prefix)
+  rule_install << drake.copy(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'sources')
