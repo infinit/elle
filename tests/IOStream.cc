@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <elle/IOStream.hh>
+#include <elle/assert.hh>
 
 static
 std::string content ("Three Rings for the Elven-kings under the sky, "
@@ -25,7 +26,9 @@ class ReadStreamBuffer: public elle::StreamBuffer
     virtual
     elle::WeakBuffer
     write_buffer()
-    {}
+    {
+      elle::unreachable();
+    }
 
     virtual
     void
