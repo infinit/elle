@@ -140,3 +140,15 @@ assert beacon_main_1
 assert beacon_main_2
 assert beacon_sub_1
 assert beacon_sub_2
+
+# Terminate
+# At some point, terminate would erroneously run one step of the coroutine.
+
+beacon = False
+def sub():
+  global beacon
+  beacon = True
+
+c = drake.sched.Coroutine(sub, "sub", SCHED, parent = drake.sched.Coroutine.current)
+c.terminate()
+assert not beacon

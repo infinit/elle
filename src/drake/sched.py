@@ -352,7 +352,6 @@ class Coroutine(Waitable):
       raise Terminate()
     else:
       self.throw(Terminate())
-      self.step()
 
 class ThreadedOperation(Signal):
 
