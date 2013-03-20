@@ -28,7 +28,7 @@ namespace elle
                                                 color_env_name, c));
         }
       else
-        return isatty(2);
+        return true;
     }
 
     TextLogger::TextLogger(std::ostream& out)
