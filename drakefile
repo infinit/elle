@@ -5,6 +5,10 @@ elle_dynamic = None
 elle_static = None
 cryptography_dynamic = None
 cryptography_static = None
+reactor = None
+reactor_dynamic = None
+reactor_static = None
+asio_udt = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
@@ -16,6 +20,7 @@ def configure(cxx_toolkit = None,
   global config
   global elle_dynamic, elle_static
   global cryptography_dynamic, cryptography_static
+  global reactor, reactor_dynamic, reactor_static
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():

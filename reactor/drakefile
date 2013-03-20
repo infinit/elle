@@ -10,12 +10,15 @@ rule_build = None
 rule_check = None
 rule_install = None
 
+asio_udt = None
+
 def configure(cxx_toolkit = None,
               cxx_config = None,
               boost = None,
               elle = None,
               prefix = '/usr'):
 
+  global asio_udt
   global config, lib_static, lib_dynamic
   global rule_build, rule_check, rule_install
 
