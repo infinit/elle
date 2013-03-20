@@ -23,6 +23,50 @@ namespace elle
     namespace json
     {
 
+      namespace
+      {
+
+        template <typename CharType>
+        static inline
+        std::basic_string<CharType>
+        code_point_to_utf8(unsigned int cp)
+        {
+           std::basic_string<CharType> result;
+
+           // based on description from http://en.wikipedia.org/wiki/UTF-8
+
+           if (cp <= 0x7f)
+           {
+              result.resize(1);
+              result[0] = static_cast<char>(cp);
+           }
+           else if (cp <= 0x7FF)
+           {
+              result.resize(2);
+              result[1] = static_cast<char>(0x80 | (0x3f & cp));
+              result[0] = static_cast<char>(0xC0 | (0x1f & (cp >> 6)));
+           }
+           else if (cp <= 0xFFFF)
+           {
+              result.resize(3);
+              result[2] = static_cast<char>(0x80 | (0x3f & cp));
+              result[1] = 0x80 | static_cast<char>((0x3f & (cp >> 6)));
+              result[0] = 0xE0 | static_cast<char>((0xf & (cp >> 12)));
+           }
+           else if (cp <= 0x10FFFF)
+           {
+              result.resize(4);
+              result[3] = static_cast<char>(0x80 | (0x3f & cp));
+              result[2] = static_cast<char>(0x80 | (0x3f & (cp >> 6)));
+              result[1] = static_cast<char>(0x80 | (0x3f & (cp >> 12)));
+              result[0] = static_cast<char>(0xF0 | (0x7 & (cp >> 18)));
+           }
+
+           return result;
+        }
+
+      } // !anonymous
+
       template class Parser<std::string>;
       template<> std::string const Parser<std::string>::_whitespaces = " \r\n\t";
       template<> std::string const Parser<std::string>::_nullString  = "null";
@@ -212,7 +256,16 @@ namespace elle
                 case 'n':   res.push_back('\n');  break;
                 case 't':   res.push_back('\t');  break;
                 case 'r':   res.push_back('\r');  break;
-                default:    res.push_back(c);     break;
+                case 'b':   res.push_back('\b');  break;
+                case 'f':   res.push_back('\f');  break;
+                case '\\':   res.push_back('\\');  break;
+                case '/':   res.push_back('/');  break;
+                case '"':   res.push_back('"');  break;
+                case 'u':
+                    res += code_point_to_utf8<CharType>(_read_unicode_code_point(in));
+                    break;
+                default:
+                  throw Error(in, "Bad escape sequence");
                 }
               }
             else if (c == '"')
@@ -226,6 +279,49 @@ namespace elle
         in.seekg(pos);
 
         return false;
+      }
+
+      // http://jsoncpp.sourceforge.net/json__reader_8cpp_source.html
+      template <typename T>
+      unsigned int
+      Parser<T>::_read_unicode_code_point(StreamType& in)
+      {
+        unsigned int code_point = _escape_unicode_sequence(in);
+        if (code_point >= 0xD800 && code_point <= 0xDBFF)
+          {
+            // surrogate pairs
+            if (not _ReadChar(in, '\\') || not _ReadChar(in, 'u'))
+              throw Error{in, "Expected surrogate pair"};
+            unsigned int surrogate_pair = _escape_unicode_sequence(in);
+            code_point = 0x10000 + ((code_point & 0x3FF) << 10) + (surrogate_pair & 0x3FF);
+          }
+        return code_point;
+      }
+
+      template <typename T>
+      unsigned int
+      Parser<T>::_escape_unicode_sequence(StreamType& in)
+      {
+        unsigned int res = 0;
+        for (int i = 0; i < 4; ++i)
+        {
+          CharType c = in.get();
+          if (!in.good())
+            throw Error(in, "Couldn't read unicode code point");
+          res *= 16;
+          if (c >= '0'  &&  c <= '9')
+             res += c - '0';
+          else if (c >= 'a'  &&  c <= 'f')
+             res += c - 'a' + 10;
+          else if (c >= 'A'  &&  c <= 'F')
+             res += c - 'A' + 10;
+          else
+            throw Error{
+              in,
+              "Expected hexadecimal digit while reading code point",
+            };
+        }
+        return res;
       }
 
       template<typename T>

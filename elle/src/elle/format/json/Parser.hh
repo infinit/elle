@@ -86,6 +86,13 @@ namespace elle
                          StringType const& val);
         void _Skip(StreamType& in,
                    StringType const& chars = _whitespaces);
+
+        unsigned int
+        _read_unicode_code_point(StreamType& in);
+
+        unsigned int
+        _escape_unicode_sequence(StreamType& in);
+
       };
 
     }
