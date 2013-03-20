@@ -34,24 +34,36 @@ def configure(cxx_toolkit = None,
                                boost = boost,
                                elle = elle,
                                prefix = prefix)
+  reactor = drake.include('reactor',
+                          cxx_toolkit = cxx_toolkit,
+                          cxx_config = cxx_config,
+                          boost = boost,
+                          elle = elle,
+                          prefix = prefix)
 
   config = drake.cxx.Config()
   config += elle.config
   config += cryptography.config
+  config += reactor.config
 
   elle_dynamic = elle.lib_dynamic
   elle_static = elle.lib_static
   cryptography_dynamic = cryptography.lib_dynamic
   cryptography_static = cryptography.lib_static
+  reactor_dynamic = reactor.lib_dynamic
+  reactor_static = reactor.lib_static
 
   build = drake.Rule('build')
   build << elle.rule_build
   build << cryptography.rule_build
+  build << reactor.rule_build
 
   build = drake.Rule('check')
   build << elle.rule_check
   build << cryptography.rule_check
+  build << reactor.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
   install << cryptography.rule_install
+  install << reactor.rule_install

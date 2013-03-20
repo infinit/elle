@@ -1,0 +1,3 @@
+[submodule "reactor/asio-udt"]
+	path = reactor/asio-udt
+	url = git@development.infinit.io:asio-udt
