@@ -184,9 +184,9 @@ namespace infinit
 
             if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
                              sizeof (n)) == 0)
-              throw Exception
-                (elle::sprintf("unable to generate random bytes: %s",
-                               ::ERR_error_string(ERR_get_error(), nullptr)));
+              throw Exception(
+                elle::sprintf("unable to generate random bytes: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
 
             value[i] = alphabet[n % alphabet.length()];
           }
