@@ -23,60 +23,55 @@
 
 ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
-namespace /*annon*/ {
-
-class PunchException:
-    public elle::Exception
+namespace /*annon*/
 {
- public:
-  PunchException(elle::String const& message):
+  class PunchException:
+    public elle::Exception
+  {
+  public:
+    PunchException(elle::String const& message):
       Exception(elle::sprintf("punch failed: %s", message))
-  {}
-  PunchException(elle::Exception const& e):
+    {}
+    PunchException(elle::Exception const& e):
       PunchException(e.what())
-  {}
-};
+    {}
+  };
 
-
-class HeartbeatFailed:
+  class HeartbeatFailed:
     public elle::Exception
-{
- public:
-  HeartbeatFailed(elle::String const& message):
+  {
+  public:
+    HeartbeatFailed(elle::String const& message):
       Exception(elle::sprintf("heartbeat failed: %s", message))
-  {}
-  HeartbeatFailed(elle::Exception const &e):
+    {}
+    HeartbeatFailed(elle::Exception const &e):
       HeartbeatFailed(e.what())
-  {
-  }
-};
+    {}
+  };
 
-class PunchTimeout:
+  class PunchTimeout:
     public PunchException
-{
- public:
-  PunchTimeout(elle::String const& message):
+  {
+  public:
+    PunchTimeout(elle::String const& message):
       PunchException(elle::sprintf("timed out: %s", message))
-  {}
-  PunchTimeout(elle::Exception const &e):
+    {}
+    PunchTimeout(elle::Exception const &e):
       PunchTimeout(e.what())
-  {
-  }
-};
+    {}
+  };
 
-class PunchFormat:
+  class PunchFormat:
     public PunchException
-{
- public:
-  PunchFormat(elle::String const& message):
-      PunchException(elle::sprintf("format error: %s", message))
-  {}
-  PunchFormat(elle::Exception const &e):
-      PunchFormat(e.what())
   {
-  }
-};
-
+  public:
+    PunchFormat(elle::String const& message):
+      PunchException(elle::sprintf("format error: %s", message))
+    {}
+    PunchFormat(elle::Exception const &e):
+      PunchFormat(e.what())
+    {}
+  };
 } /*annon*/
 
 namespace reactor
@@ -89,10 +84,10 @@ namespace reactor
     `-------------*/
 
     UDTServer::UDTServer(Scheduler& sched):
-        Super(sched),
-        _accepted(),
-        _sockets(),
-        _udp_socket(nullptr)
+      Super(sched),
+      _accepted(),
+      _sockets(),
+      _udp_socket(nullptr)
     {}
 
     UDTServer::~UDTServer()
@@ -110,9 +105,9 @@ namespace reactor
       public:
         UDTAccept(Scheduler& scheduler,
                   boost::asio::ip::udt::acceptor& acceptor):
-            Operation(scheduler),
-            _acceptor(acceptor),
-            _socket(0)
+          Operation(scheduler),
+          _acceptor(acceptor),
+          _socket(0)
         {}
 
         virtual const char* type_name() const
@@ -189,28 +184,28 @@ namespace reactor
     static std::string escape(std::string const& str)
     {
       std::string res("\"");
-      std::for_each(str.begin(), str.end(),
-                     [&res](char c)
-                     {
-                       if (isspace(c))
-                       {
-                         res += '\\';
-                         switch (c)
-                         {
-                           case '\f': res += 'f';  break;
-                           case '\n': res += 'n';  break;
-                           case '\r': res += 'r';  break;
-                           case '\t': res += 't';  break;
-                           case '\v': res += 'v';  break;
-                         }
-                       }
-                       else if (!isgraph(c))
-                       {
-                         res += elle::sprintf("\\x%02x", static_cast<int>(c));
-                       }
-                       else
-                         res += c;
-                     });
+      auto edit = [&] (char c)
+      {
+        if (isspace(c))
+        {
+          res += '\\';
+          switch (c)
+          {
+            case '\f': res += 'f'; break;
+            case '\n': res += 'n'; break;
+            case '\r': res += 'r'; break;
+            case '\t': res += 't'; break;
+            case '\v': res += 'v'; break;
+          }
+        }
+        else if (!isgraph(c))
+        {
+          res += elle::sprintf("\\x%02x", static_cast<int>(c));
+        }
+        else
+          res += c;
+      };
+      std::for_each(str.begin(), str.end(), edit);
       return res + "\"";
     }
 
