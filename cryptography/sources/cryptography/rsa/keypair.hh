@@ -26,6 +26,9 @@ namespace infinit
         /// Note that the length is in bits.
         std::pair<PublicKey, PrivateKey>
         generate(elle::Natural32 const length);
+        /// XXX
+        std::pair<PublicKey, PrivateKey>
+        deduce(Seed const& seed);
       }
     }
   }

@@ -1,4 +1,5 @@
 #include <cryptography/rsa/keypair.hh>
+#include <cryptography/Exception.hh>
 #include <cryptography/finally.hh>
 
 #include <elle/attribute.hh>
@@ -33,13 +34,11 @@ namespace infinit
             // Create the context for the RSA algorithm.
             if ((this->_context =
                  ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
-              throw elle::Exception(::ERR_error_string(ERR_get_error(),
-                                                       nullptr));
+              throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
 
             // Initialise the context for key generation.
             if (::EVP_PKEY_keygen_init(this->_context) <= 0)
-              throw elle::Exception(::ERR_error_string(ERR_get_error(),
-                                                       nullptr));
+              throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
           }
 
           ~Initializer()
@@ -85,13 +84,13 @@ namespace infinit
 
           // Set the key length in the keypair generation context.
           if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) <= 0)
-            throw elle::Exception(::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
 
           ::EVP_PKEY* key = nullptr;
 
           // Generate the EVP key.
           if (::EVP_PKEY_keygen(context, &key) <= 0)
-            throw elle::Exception(::ERR_error_string(ERR_get_error(), nullptr));
+            throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 

@@ -18,25 +18,23 @@ namespace infinit
     class Seed:
       public elle::Printable
     {
+      /*---------------.
+      | Static Methods |
+      `---------------*/
+    public:
+      /// Return a randomly generated seed suitable for the given key pair.
+      static
+      Seed
+      generate(KeyPair const& pair);
+
       /*-------------.
       | Construction |
       `-------------*/
     public:
-      Seed(KeyPair const& pair); // XXX to deduce seed length
-      // XXX load constructor
-
-      /*--------.
-      | Methods |
-      `--------*/
-    public:
-      /// Rotate the current seed with the given private key, leading to a
-      /// new seed.
-      Seed
-      rotate(PrivateKey const& k) const;
-      /// Return the base seed which has been rotated with the complementary
-      /// private key to the given public key.
-      Seed
-      derive(PublicKey const& K) const;
+      explicit
+      Seed(elle::Buffer&& buffer);
+      Seed(Seed&& other);
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
 
       /*----------.
       | Operators |
@@ -61,7 +59,7 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(elle::Buffer, buffer);
+      ELLE_ATTRIBUTE_R(elle::Buffer, buffer);
     };
   }
 }

@@ -85,6 +85,26 @@ namespace infinit
       return (this->_implementation->encrypt(plain));
     }
 
+    Seed
+    PrivateKey::rotate(Seed const& seed) const
+    {
+      ELLE_TRACE_METHOD(seed);
+
+      ELLE_ASSERT(this->_implementation != nullptr);
+
+      return (this->_implementation->rotate(seed));
+    }
+
+    elle::Natural32
+    PrivateKey::size() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_implementation != nullptr);
+
+      return (this->_implementation->size());
+    }
+
     elle::Natural32
     PrivateKey::length() const
     {

@@ -105,6 +105,9 @@ namespace infinit
         clone() const;
         virtual
         elle::Natural32
+        size() const;
+        virtual
+        elle::Natural32
         length() const;
         virtual
         Cryptosystem
@@ -118,6 +121,9 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const;
+        virtual
+        Seed
+        rotate(Seed const& seed) const;
         // printable
         void
         print(std::ostream& stream) const;
@@ -131,7 +137,8 @@ namespace infinit
         ELLE_ATTRIBUTE(::EVP_PKEY*, key);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_sign);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt;)
+        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
+        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_rotate);
       };
     }
   }

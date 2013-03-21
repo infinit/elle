@@ -1,8 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_KEYPAIR_HH
 # define INFINIT_CRYPTOGRAPHY_KEYPAIR_HH
 
-# include <cryptography/PublicKey.hh>
-# include <cryptography/PrivateKey.hh>
+# include <cryptography/fwd.hh>
 # include <cryptography/Cryptosystem.hh>
 
 # include <elle/types.hh>
@@ -11,6 +10,7 @@
 # include <elle/concept/Uniquable.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/serialize/DynamicFormat.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -27,6 +27,7 @@ namespace infinit
     /// Note that the public key is always written as a capital 'K'
     /// while a private key is noted with a lower-case 'k'.
     class KeyPair:
+      public elle::serialize::DynamicFormat<KeyPair>,
       public elle::concept::MakeUniquable<KeyPair>,
       public elle::Printable
     {
@@ -52,6 +53,9 @@ namespace infinit
               PrivateKey const& k);
       KeyPair(PublicKey&& K,
               PrivateKey&& k);
+      explicit
+      KeyPair(Cryptosystem const cryptosystem,
+              Seed const& seed);
       KeyPair(KeyPair const& other);
       KeyPair(KeyPair&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
@@ -60,7 +64,18 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-      /// XXX[rotate]
+      /// Return the public key.
+      PublicKey const&
+      K() const;
+      /// Return the private key.
+      PrivateKey const&
+      k() const;
+      /// Return the key pair's size in bytes.
+      elle::Natural32
+      size() const;
+      /// Return the key pair's length in bits.
+      elle::Natural32
+      length() const;
 
       /*----------.
       | Operators |
@@ -86,9 +101,9 @@ namespace infinit
       `-----------*/
     private:
       /// The public key.
-      ELLE_ATTRIBUTE_R(PublicKey, K);
+      ELLE_ATTRIBUTE(std::unique_ptr<PublicKey>, K);
       /// The private key.
-      ELLE_ATTRIBUTE_R(PrivateKey, k);
+      ELLE_ATTRIBUTE(std::unique_ptr<PrivateKey>, k);
     };
   }
 }

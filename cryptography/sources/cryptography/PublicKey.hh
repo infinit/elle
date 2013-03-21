@@ -89,7 +89,10 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
-      /// Return the length, in bits, of the public key.
+      /// Return the public key's size in bytes.
+      elle::Natural32
+      size() const;
+      /// Return the public key's length in bits.
       elle::Natural32
       length() const;
 
@@ -190,7 +193,11 @@ namespace infinit
         virtual
         Interface*
         clone() const = 0;
-        /// Return the length, in bits, of the public key.
+        /// Return the public key's size in bytes.
+        virtual
+        elle::Natural32
+        size() const = 0;
+        /// Return the public key's length in bits.
         virtual
         elle::Natural32
         length() const = 0;
