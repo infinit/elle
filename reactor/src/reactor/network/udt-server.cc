@@ -25,50 +25,54 @@ ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
 namespace /*annon*/ {
 
-class PunchException : public elle::Exception
+class PunchException:
+    public elle::Exception
 {
  public:
-  PunchException(elle::String const& message)
-      : Exception(elle::sprintf("punch failed: %s", message))
+  PunchException(elle::String const& message):
+      Exception(elle::sprintf("punch failed: %s", message))
   {}
-  PunchException(elle::Exception const& e)
-      : PunchException(e.what())
+  PunchException(elle::Exception const& e):
+      PunchException(e.what())
   {}
 };
 
 
-class HeartbeatFailed : public elle::Exception
+class HeartbeatFailed:
+    public elle::Exception
 {
  public:
-  HeartbeatFailed(elle::String const& message)
-      : Exception(elle::sprintf("heartbeat failed: %s", message))
+  HeartbeatFailed(elle::String const& message):
+      Exception(elle::sprintf("heartbeat failed: %s", message))
   {}
-  HeartbeatFailed(elle::Exception const &e)
-    : HeartbeatFailed(e.what())
+  HeartbeatFailed(elle::Exception const &e):
+      HeartbeatFailed(e.what())
   {
   }
 };
 
-class PunchTimeout : public PunchException
+class PunchTimeout:
+    public PunchException
 {
  public:
-  PunchTimeout(elle::String const& message)
-      : PunchException(elle::sprintf("timed out: %s", message))
+  PunchTimeout(elle::String const& message):
+      PunchException(elle::sprintf("timed out: %s", message))
   {}
-  PunchTimeout(elle::Exception const &e)
-    : PunchTimeout(e.what())
+  PunchTimeout(elle::Exception const &e):
+      PunchTimeout(e.what())
   {
   }
 };
 
-class PunchFormat : public PunchException
+class PunchFormat:
+    public PunchException
 {
  public:
-  PunchFormat(elle::String const& message)
-      : PunchException(elle::sprintf("format error: %s", message))
+  PunchFormat(elle::String const& message):
+      PunchException(elle::sprintf("format error: %s", message))
   {}
-  PunchFormat(elle::Exception const &e)
-    : PunchFormat(e.what())
+  PunchFormat(elle::Exception const &e):
+      PunchFormat(e.what())
   {
   }
 };
@@ -84,11 +88,11 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    UDTServer::UDTServer(Scheduler& sched)
-      : Super(sched)
-      , _accepted()
-      , _sockets()
-      , _udp_socket(nullptr)
+    UDTServer::UDTServer(Scheduler& sched):
+        Super(sched),
+        _accepted(),
+        _sockets(),
+        _udp_socket(nullptr)
     {}
 
     UDTServer::~UDTServer()
@@ -104,10 +108,11 @@ namespace reactor
     class UDTAccept: public Operation
     {
       public:
-        UDTAccept(Scheduler& scheduler, boost::asio::ip::udt::acceptor& acceptor)
-          : Operation(scheduler)
-          , _acceptor(acceptor)
-          , _socket(0)
+        UDTAccept(Scheduler& scheduler,
+                  boost::asio::ip::udt::acceptor& acceptor):
+            Operation(scheduler),
+            _acceptor(acceptor),
+            _socket(0)
         {}
 
         virtual const char* type_name() const
@@ -268,7 +273,7 @@ namespace reactor
 
       std::string buffer_data(1024, ' ');
       Buffer buffer(buffer_data);
-      // FIXME: make timeout parametrizable
+      //XXX: make timeout parametrizable
       int size;
       try
       {
@@ -310,7 +315,7 @@ namespace reactor
           if (endpoint.port() != port)
           {
               ELLE_WARN("NAT punching was lost");
-              // FIXME: we lost the NAT, do something.
+              // XXX: we lost the NAT, do something.
               return false;
           }
           else
