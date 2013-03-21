@@ -5,17 +5,72 @@
 | Serializable |
 `-------------*/
 
+# include <cryptography/PublicKey.hh>
+# include <cryptography/PrivateKey.hh>
+
 # include <elle/serialize/Serializer.hh>
+# include <elle/serialize/StaticFormat.hh>
 
-ELLE_SERIALIZE_SIMPLE(infinit::cryptography::KeyPair,
-                      archive,
-                      value,
-                      format)
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::KeyPair, 1);
+
+ELLE_SERIALIZE_SPLIT(infinit::cryptography::KeyPair);
+
+ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::KeyPair,
+                          archive,
+                          value,
+                          format)
 {
-  enforce(format == 0);
+  switch (format)
+  {
+    case 0:
+    {
+      archive << *value._K;
+      archive << *value._k;
 
-  archive & value._K;
-  archive & value._k;
+      break;
+    }
+    case 1:
+    {
+      archive << value._K;
+      archive << value._k;
+
+      break;
+    }
+    default:
+      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+  }
+
+  ELLE_ASSERT(value._K != nullptr);
+  ELLE_ASSERT(value._k != nullptr);
+}
+
+ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::KeyPair,
+                          archive,
+                          value,
+                          format)
+{
+  switch (format)
+  {
+    case 0:
+    {
+      value._K.reset(new infinit::cryptography::PublicKey(archive));
+      value._k.reset(new infinit::cryptography::PrivateKey(archive));
+
+      break;
+    }
+    case 1:
+    {
+      archive >> value._K;
+      archive >> value._k;
+
+      break;
+    }
+    default:
+      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+  }
+
+  ELLE_ASSERT(value._K != nullptr);
+  ELLE_ASSERT(value._k != nullptr);
 }
 
 #endif

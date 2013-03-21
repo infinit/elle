@@ -63,8 +63,8 @@ namespace infinit
 
     KeyPair::KeyPair(PublicKey const& K,
                      PrivateKey const& k):
-      _K(K),
-      _k(k)
+      _K(new PublicKey(K)),
+      _k(new PrivateKey(k))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -72,16 +72,16 @@ namespace infinit
 
     KeyPair::KeyPair(PublicKey&& K,
                      PrivateKey&& k):
-      _K(std::move(K)),
-      _k(std::move(k))
+      _K(new PublicKey(std::move(K))),
+      _k(new PrivateKey(std::move(k)))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
     KeyPair::KeyPair(KeyPair const& other):
-      _K(other._K),
-      _k(other._k)
+      _K(new PublicKey(*other._K)),
+      _k(new PrivateKey(*other._k))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -95,50 +95,37 @@ namespace infinit
       cryptography::require();
     }
 
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair,
-                                    _K, _k)
+    KeyPair::KeyPair(Cryptosystem const cryptosystem,
+                     Seed const& seed)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
-    }
 
-    /*--------.
-    | Methods |
-    `--------*/
+      // XXX
+      /*
+//       struct Scope
+//       {
+//         ::EVP_PKEY*  key;
+//         ::RSA*       rsa;
 
-    /* XXX
-    ///
-    /// this method rotates a key pair based on a given seed.
-    ///
-    /// this seed will then be used---by people having access to it,
-    /// and to the key modulus---in order to retrieve the public key.
-    /// for more information, please refer to PrivateKey::Derive().
-    ///
-    elle::Status              KeyPair::Rotate(const Seed&             seed,
-                                        KeyPair&                pair) const
-    {
-      ELLE_TRACE_METHOD(seed, pair);
+//         Scope() : key(nullptr), rsa(nullptr) {}
+//         ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
+//       } scope;
 
-      struct Scope
-      {
-        ::EVP_PKEY*  key;
-        ::RSA*       rsa;
+      ::EVP_PKEY* key = nullptr;
 
-        Scope() : key(nullptr), rsa(nullptr) {}
-        ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
-      } scope;
+      // Allocate an EVP key.
+      if ((key = ::EVP_PKEY_new()) == nullptr)
+        throw Exception("unable to allocate the EVP_PKEY: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr));
 
-      // create an EVP key.
-      if ((scope.key = ::EVP_PKEY_new()) == nullptr)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // create a new RSA key.
+      // Create a new RSA key.
       if ((scope.rsa = ::RSA_new()) == nullptr)
         throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
-                            ::BN_num_bits(this->_K.key()->pkey.rsa->n),
+                            ::BN_num_bits(this->_K->key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
         throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
@@ -151,16 +138,56 @@ namespace infinit
       scope.rsa = nullptr;
 
       // create the rotated public key according to the EVP structure.
-      if (pair._K.Create(scope.key) == elle::Status::Error)
+      if (pair._K->Create(scope.key) == elle::Status::Error)
         throw Exception("unable to create the public key");
 
       // create the rotated private key according to the EVP structure.
       if (pair.k.Create(scope.key) == elle::Status::Error)
         throw Exception("unable to create the private key");
-
-      return elle::Status::Ok;
+      */
     }
-    */
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    /*--------.
+    | Methods |
+    `--------*/
+
+    PublicKey const&
+    KeyPair::K() const
+    {
+      ELLE_ASSERT(this->_K != nullptr);
+
+      return (*this->_K);
+    }
+
+    PrivateKey const&
+    KeyPair::k() const
+    {
+      ELLE_ASSERT(this->_k != nullptr);
+
+      return (*this->_k);
+    }
+
+    elle::Natural32
+    KeyPair::size() const
+    {
+      ELLE_ASSERT(this->_K != nullptr);
+
+      return (this->_K->size());
+    }
+
+    elle::Natural32
+    KeyPair::length() const
+    {
+      ELLE_ASSERT(this->_K != nullptr);
+
+      return (this->_K->length());
+    }
 
     /*----------.
     | Operators |
@@ -172,7 +199,10 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      return ((this->_K == other._K) && (this->_k == other._k));
+      ELLE_ASSERT(this->_K != nullptr);
+      ELLE_ASSERT(this->_k != nullptr);
+
+      return ((*this->_K == *other._K) && (*this->_k == *other._k));
     }
 
     /*----------.
@@ -182,7 +212,10 @@ namespace infinit
     void
     KeyPair::print(std::ostream& stream) const
     {
-      stream << "(" << this->_K << ", " << this->_k << ")";
+      ELLE_ASSERT(this->_K != nullptr);
+      ELLE_ASSERT(this->_k != nullptr);
+
+      stream << "(" << *this->_K << ", " << *this->_k << ")";
     }
   }
 }

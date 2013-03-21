@@ -90,6 +90,16 @@ namespace infinit
     }
 
     elle::Natural32
+    PublicKey::size() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT(this->_implementation != nullptr);
+
+      return (this->_implementation->size());
+    }
+
+    elle::Natural32
     PublicKey::length() const
     {
       ELLE_TRACE_METHOD("");

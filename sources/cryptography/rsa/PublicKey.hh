@@ -92,6 +92,9 @@ namespace infinit
         clone() const;
         virtual
         elle::Natural32
+        size() const;
+        virtual
+        elle::Natural32
         length() const;
         virtual
         Cryptosystem

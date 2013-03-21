@@ -2,6 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HH
 
 # include <cryptography/fwd.hh>
+# include <cryptography/Seed.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
 # include <cryptography/fwd.hh>
@@ -88,7 +89,13 @@ namespace infinit
       template <typename T>
       Code
       encrypt(T const& value) const;
-      /// Return the length, in bits, of the private key.
+      /// Return the given seed once rotated by the private key.
+      Seed
+      rotate(Seed const& seed) const;
+      /// Return the private key's size in bytes.
+      elle::Natural32
+      size() const;
+      /// Return the private key's length in bits.
       elle::Natural32
       length() const;
 
@@ -188,7 +195,11 @@ namespace infinit
         virtual
         Interface*
         clone() const = 0;
-        /// Return the length, in bits, of the private key.
+        /// Return the private key's size in bytes.
+        virtual
+        elle::Natural32
+        size() const = 0;
+        /// Return the private key's length in bits.
         virtual
         elle::Natural32
         length() const = 0;
@@ -216,6 +227,10 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const = 0;
+        /// Rotate the given seed with the private key and return the new seed.
+        virtual
+        Seed
+        rotate(Seed const& seed) const = 0;
       };
     }
   }
