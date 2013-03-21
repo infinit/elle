@@ -88,6 +88,7 @@ namespace elle
       int input_fd;
       int output_fd;
 
+      explicit
       ProcessChannel()
         : pipe{-1, -1}
         , borrowed{false}
@@ -120,7 +121,8 @@ namespace elle
         return this->read_fd != -1 && this->write_fd != -1;
       }
 
-      ProcessChannel& create()
+      ProcessChannel&
+      create()
       {
         if (!*this)
           {
@@ -131,7 +133,8 @@ namespace elle
         return *this;
       }
 
-      ProcessChannel& dup2_read(int fd)
+      ProcessChannel&
+      dup2_read(int fd)
       {
         if (this->read_fd == -1)
           throw Exception{"Cannot pipe read endpoint (not initialized)"};
@@ -140,7 +143,8 @@ namespace elle
         return *this;
       }
 
-      ProcessChannel& dup2_write(int fd)
+      ProcessChannel&
+      dup2_write(int fd)
       {
         if (this->read_fd == -1)
           throw Exception{"Cannot pipe read endpoint (not initialized)"};
@@ -149,14 +153,16 @@ namespace elle
         return *this;
       }
 
-      ProcessChannel& close()
+      ProcessChannel&
+      close()
       {
         this->close_read();
         this->close_write();
         return *this;
       }
 
-      ProcessChannel& close_read()
+      ProcessChannel&
+      close_read()
       {
         if (this->read_fd != -1)
         {
@@ -167,7 +173,8 @@ namespace elle
         return *this;
       }
 
-      ProcessChannel& close_write()
+      ProcessChannel&
+      close_write()
       {
         if (this->write_fd != -1)
         {
@@ -250,8 +257,7 @@ namespace elle
     }
 
     ProcessConfig::~ProcessConfig()
-    {
-    }
+    {}
 
     ProcessConfig&
     ProcessConfig::update(ProcessConfig&& other)
@@ -324,7 +330,8 @@ namespace elle
       return _impl->channels[static_cast<int>(channel)];
     }
 
-    ProcessConfig& ProcessConfig::merge_stderr()
+    ProcessConfig&
+    ProcessConfig::merge_stderr()
     {
       throw elle::Exception{"Not implemented"};
       return *this;
@@ -579,7 +586,8 @@ namespace elle
       return this->status(ProcessTermination::wait);
     }
 
-    void Process::wait()
+    void
+    Process::wait()
     {
       if (this->wait_status() != 0)
         throw elle::Exception{
@@ -588,7 +596,8 @@ namespace elle
         };
     }
 
-    void Process::kill(ProcessTermination const term)
+    void
+    Process::kill(ProcessTermination const term)
     {
       if (_impl->pid == 0)
         return;
@@ -598,7 +607,8 @@ namespace elle
         this->wait_status();
     }
 
-    void Process::terminate(ProcessTermination const term)
+    void
+    Process::terminate(ProcessTermination const term)
     {
       if (_impl->pid == 0)
         return;
@@ -624,6 +634,7 @@ namespace elle
     template <typename Implem>
     ProcessCommandConcept<Implem>::ProcessCommandConcept()
     {}
+
     template <typename Implem>
     ProcessCommandConcept<Implem>::~ProcessCommandConcept()
     {}
@@ -634,7 +645,8 @@ namespace elle
     namespace detail
     {
 
-      Process& Command::process()
+      Process&
+      Command::process()
       {
         if (_process == nullptr)
           throw elle::Exception{
@@ -643,7 +655,8 @@ namespace elle
         return *_process;
       }
 
-      Command& Command::wait()
+      Command&
+      Command::wait()
       {
         if (_process == nullptr)
           throw elle::Exception{"cannot wait a command not executed"};
@@ -668,12 +681,15 @@ namespace elle
         return status;
       }
 
-      Command& Command::execute()
+      Command&
+      Command::execute()
       {
         if (_process != nullptr)
           throw elle::Exception{"already executed"};
         if (this->_binary.empty())
-          throw elle::Exception{"Cannot execute a process without any binary name"};
+          throw elle::Exception{
+            "Cannot execute a process without any binary name"
+          };
         _process.reset(new Process{
           std::move(this->_config),
           this->_binary,

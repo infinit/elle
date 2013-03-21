@@ -76,7 +76,8 @@ namespace elle
       update(ProcessConfig&& other);
 
       /// Check if the process will be daemonized.
-      bool daemon() const;
+      bool
+      daemon() const;
 
       /// Enable/disable daemon mode.
       ProcessConfig& daemon(bool mode);
@@ -103,7 +104,8 @@ namespace elle
       connect_stdout(ProcessConfig& other);
 
       /// Check if a channel is enabled.
-      bool has_pipe(ProcessChannelStream const channel);
+      bool
+      has_pipe(ProcessChannelStream const channel);
 
       /// Redirect stderr into stdout.
       ProcessConfig& merge_stderr();
@@ -164,7 +166,7 @@ namespace elle
 
       /// Kill and wait for the process to terminate unless it is a daemon.
       /// @warning You loose the ability to known whether the child process
-      ///          failed or not. Moreover, you process will be violently
+      ///          failed or not. Moreover, your process will be violently
       ///          killed. You should always wait() your processes.
       ~Process();
 
@@ -176,21 +178,25 @@ namespace elle
       status(ProcessTermination const term = ProcessTermination::dont_wait);
 
       /// Returns true if the program is running.
-      bool running();
+      bool
+      running();
 
       /// Alias for status(Termination::wait)
       StatusCode wait_status();
 
       /// Wait until the process finish and throw in case of error.
-      void wait();
+      void
+      wait();
 
       /// Kill the program immediatly and returns its exit status.
-      void kill(ProcessTermination const term = ProcessTermination::wait);
+      void
+      kill(ProcessTermination const term = ProcessTermination::wait);
 
       /// Ask the program to terminate.
-      void terminate(ProcessTermination const term = ProcessTermination::wait);
+      void
+      terminate(ProcessTermination const term = ProcessTermination::wait);
 
-      /// @brief Read a string from a process standard output.
+      /// @brief Read a string from a process' standard output.
       ///
       /// @warning Only valid when the process has its output piped to stdout.
       std::string read(size_t const max = 4096);
@@ -223,19 +229,23 @@ namespace elle
     public:
       /// Connect stdout to another command input.
       virtual
-      Implem& connect_stdout(Implem&& other) = 0;
+      Implem&
+      connect_stdout(Implem&& other) = 0;
 
       /// alias for connect_stdout()
       virtual
-      Implem&& operator |(Implem&& other) = 0;
+      Implem&&
+      operator |(Implem&& other) = 0;
 
       /// Execute all program (but not waited).
       virtual
-      Implem& execute() = 0;
+      Implem&
+      execute() = 0;
 
       /// Wait for all programs to be finished.
       virtual
-      Implem& wait() = 0;
+      Implem&
+      wait() = 0;
 
       /// Wait for all programs to be finished and returns 0 on success or the
       /// status code of the last child process that failed.
@@ -269,7 +279,8 @@ namespace elle
     /// command(command("echo", "1"), command("echo", "2))
     template<typename... Args>
     inline
-    detail::Command command(Args&&... args);
+    detail::Command
+    command(Args&&... args);
 
     /// @brief Execute a command and wait its termination.
     ///
