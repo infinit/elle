@@ -31,13 +31,13 @@ namespace reactor
                                                     this, action))
     , _scheduler(scheduler)
   {
-    assert(action);
+    ELLE_ASSERT(action);
     _scheduler._thread_register(*this);
   }
 
   Thread::~Thread()
   {
-    assert(state() == state::done);
+    ELLE_ASSERT_EQ(state(), state::done);
     _destructed();
   }
 
@@ -96,7 +96,7 @@ namespace reactor
     try
       {
         _backtrace_root = elle::Backtrace::current();
-        assert(action);
+        ELLE_ASSERT(action);
         action();
       }
     catch (const Terminate&)
@@ -180,8 +180,8 @@ namespace reactor
   Thread::wait(Waitables&                       waitables,
                boost::optional<Duration>        timeout)
   {
-    assert(_state == state::running);
-    assert(_waited.empty());
+    ELLE_ASSERT_EQ(_state, state::running);
+    ELLE_ASSERT(_waited.empty());
     bool freeze = false;
     BOOST_FOREACH (Waitable* s, waitables)
       if (s->_wait(this))
@@ -257,7 +257,7 @@ namespace reactor
   Thread::_wait_abort()
   {
     ELLE_TRACE("%s: abort wait", *this);
-    assert(state() == state::frozen);
+    ELLE_ASSERT_EQ(state(), state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
     _waited.clear();
