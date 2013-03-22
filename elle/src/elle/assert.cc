@@ -8,6 +8,15 @@ ELLE_LOG_COMPONENT("elle.assert.AssertError");
 
 namespace elle
 {
+  void
+  _assert(bool predicate,
+          std::string const& message,
+          char const* file,
+          int line)
+  {
+    if (!predicate)
+      throw elle::AssertError(message.c_str(), file, line);
+  }
 
   void
   unreachable()

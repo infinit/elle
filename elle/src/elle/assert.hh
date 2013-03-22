@@ -25,23 +25,29 @@ namespace elle
     what() const throw();
   };
 
+  void _assert(bool condition,
+               std::string const& message,
+               char const* file,
+               int line);
 }
 
 # if defined(DEBUG) || !defined(NDEBUG)
 
 /// Throw if the condition is unmet.
-# define ELLE_ASSERT(_condition_)                                             \
-  do                                                                          \
-    {                                                                         \
-      if (!(_condition_))                                                     \
-        throw elle::AssertError(#_condition_, __FILE__, __LINE__);            \
-    } while (0)                                                               \
-/**/
+# define ELLE_ASSERT(_condition_)                                       \
+  ::elle::_assert(_condition_, #_condition_, __FILE__, __LINE__)        \
 
+# define ELLE_ASSERT_EQ(A, B)                                           \
+  ::elle::_assert(A == B,                                               \
+                    ::elle::sprintf(#A " == " #B " (%s != %s)", A, B),  \
+                    __FILE__, __LINE__)                                 \
 
 # else
 #  define ELLE_ASSERT(_condition_) ((void) 0)
+#  define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT()
 # endif
+
+
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
 # if defined(DEBUG) || !defined(NDEBUG)
