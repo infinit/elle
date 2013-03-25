@@ -258,6 +258,21 @@ namespace elle
     return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
+  /// Shrink the capacity to fit the size if needed.
+  void
+  Buffer::shrink_to_fit()
+  {
+    if (this->_size < this->_buffer_size)
+    {
+      void* tmp = ::realloc(_contents, _size);
+      if (tmp == nullptr)
+        throw std::bad_alloc();
+      this->_contents = static_cast<Byte*>(tmp);
+      this->_buffer_size = this->_size;
+    }
+  }
+
+
   std::ostream&
   operator <<(std::ostream& stream,
               Buffer const& buffer)

@@ -127,6 +127,10 @@ namespace elle
     ELLE_OPERATOR_GTE(WeakBuffer);
     ELLE_OPERATOR_NEQ(WeakBuffer);
 
+    /// Shrink the capacity to fit the size if needed.
+    void
+    shrink_to_fit();
+
   private:
     static size_t _next_size(size_t);
   };
