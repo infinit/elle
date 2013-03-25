@@ -1091,7 +1091,9 @@ class LibraryConfiguration(drake.Configuration):
             include_dir = [include_dir]
         include_dir = [drake.Path(p) for p in include_dir]
         # Make prefix absolute wrt the source dir
+        prefix_symbolic = None
         if prefix is not None:
+            prefix_symbolic = drake.Path(prefix)
             prefix = drake.Path(prefix)
             if not prefix.absolute():
                 prefix = drake.path_src(prefix)
@@ -1108,6 +1110,8 @@ class LibraryConfiguration(drake.Configuration):
         include_dir.strip_suffix(token)
         self.__config = drake.cxx.Config()
         self.__config.add_system_include_path(self.__prefix / include_dir)
+        self.__prefix_symbolic = prefix_symbolic or self.__prefix
+        self.__libraries_path = self.__prefix_symbolic / 'lib'
         self.__config.lib_path(self.__prefix / 'lib')
         for lib in libs:
             self.__config.lib(lib)
@@ -1121,4 +1125,8 @@ class LibraryConfiguration(drake.Configuration):
 
     @property
     def prefix(self):
-        return self.__prefix
+        return self.__prefix_symbolic
+
+    @property
+    def libraries_path(self):
+        return self.__libraries_path
