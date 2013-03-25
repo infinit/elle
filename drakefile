@@ -47,6 +47,7 @@ def configure(cxx_toolkit = None,
   cxx_config += elle.config
   cxx_config.lib('crypto')
   cxx_config.lib('ssl')
+  cxx_config.lib_path_runtime('.')
 
   # Sources
   sources = drake.nodes(
