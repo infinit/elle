@@ -903,8 +903,9 @@ class Binary(Node):
         self.sources = []
         self.__dynamic_libraries = []
 
-        for source in sources:
-            self.src_add(source, self.tk, self.cfg)
+        if sources is not None:
+            for source in sources:
+                self.src_add(source, self.tk, self.cfg)
 
 
     def clone(self, path):
@@ -954,13 +955,14 @@ class Binary(Node):
 
 class DynLib(Binary):
 
-    def __init__(self, path, sources, tk, cfg, preserve_filename = False):
+    def __init__(self, path, sources = None, tk = None, cfg = None, preserve_filename = False):
         path = Path(path)
         self.__lib_name = str(path.basename())
-        if not preserve_filename:
+        if not preserve_filename and tk is not None:
             path = tk.libname_dyn(cfg, path)
         Binary.__init__(self, path, sources, tk, cfg)
-        DynLibLinker(self, self.tk, self.cfg)
+        if tk is not None and cfg is not None:
+            DynLibLinker(self, self.tk, self.cfg)
 
     def clone(self, path):
         path = Path(path)
@@ -971,6 +973,9 @@ class DynLib(Binary):
     @property
     def lib_name(self):
         return self.__lib_name
+
+Node.extensions['so'] = DynLib
+Node.extensions['dylib'] = DynLib
 
 class Module(Binary):
 
