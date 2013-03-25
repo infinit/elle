@@ -134,6 +134,8 @@ class Path(object):
             else:
                 self.__path = path.split('/')
                 self.__absolute = self.__path[0] == ''
+        if len(self.__path) > 1 and self.__path[-1] == '':
+            self.__path = self.__path[:-1]
 
     def absolute(self):
         """Whether this path is absolute.
