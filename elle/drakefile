@@ -47,9 +47,9 @@ def configure(cxx_toolkit = None,
     config.define('HAVE_STATFS')
 
   # Curl
-  curl = drake.cxx.find_library('curl/curl.h', curl)
-  cxx_config += curl
-  cxx_config.lib('curl')
+  # curl = drake.cxx.find_library('curl/curl.h', curl)
+  # cxx_config += curl
+  # cxx_config.lib('curl')
 
   cxx_config = cxx_config + config
 
