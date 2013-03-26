@@ -127,6 +127,9 @@ namespace elle
       /// any other means that something failed.
       typedef int StatusCode;
 
+      /// A unique identifier of a running process.
+      typedef int Id;
+
     private:
       struct Impl;
       std::unique_ptr<Impl> _impl;
@@ -181,8 +184,13 @@ namespace elle
       bool
       running();
 
+      /// The process Unique identifier.
+      Id
+      id() const;
+
       /// Alias for status(Termination::wait)
-      StatusCode wait_status();
+      StatusCode
+      wait_status();
 
       /// Wait until the process finish and throw in case of error.
       void
@@ -237,7 +245,7 @@ namespace elle
       Implem&&
       operator |(Implem&& other) = 0;
 
-      /// Execute all program (but not waited).
+      /// Execute all programs (but not waited).
       virtual
       Implem&
       execute() = 0;

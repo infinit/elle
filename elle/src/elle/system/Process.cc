@@ -596,6 +596,12 @@ namespace elle
         };
     }
 
+    Process::Id
+    Process::id() const
+    {
+      return _impl->pid;
+    }
+
     void
     Process::kill(ProcessTermination const term)
     {
