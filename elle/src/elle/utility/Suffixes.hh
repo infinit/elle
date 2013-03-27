@@ -6,9 +6,10 @@
 
 namespace elle {
   namespace suffix {
-      template<char... Bits>
-      constexpr std::bitset<sizeof...(Bits)>
-      operator"" _bits() noexcept;
+    template<char... Bits>
+    constexpr
+    std::bitset<sizeof...(Bits)>
+    operator"" _bits() noexcept;
   } /* suffix */
 } /* elle */
 
