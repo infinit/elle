@@ -792,10 +792,8 @@ class DynLibLinker(Builder):
 
         h = {}
         dynlibs = list(map(lambda l: l.lib_name, self.lib.dynamic_libraries))
-        dynlibs.sort()
         h['dynamic_libraries'] = dynlibs
         rpath = list(self.config._Config__rpath)
-        rpath.sort()
         h['rpath'] = rpath
         return repr(h)
 
