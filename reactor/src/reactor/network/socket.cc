@@ -40,7 +40,6 @@ namespace reactor
           _socket->write(network::Buffer(buffer, size));
         }
 
-
       private:
         Socket* _socket;
       };
@@ -56,7 +55,11 @@ namespace reactor
     {}
 
     Socket::~Socket()
-    {}
+    {
+      // Flush the socket, otherwise the parent ~IOStream will flush the buffer
+      // which will in turn write to the (deleted) socket.
+      this->flush();
+    }
 
     std::unique_ptr<Socket>
     Socket::create(Protocol protocol,
