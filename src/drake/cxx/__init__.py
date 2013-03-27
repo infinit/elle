@@ -795,6 +795,8 @@ class DynLibLinker(Builder):
         h['dynamic_libraries'] = dynlibs
         rpath = list(self.config._Config__rpath)
         h['rpath'] = rpath
+        libraries_path = list(self.config.lib_paths)
+        h['libraries_path'] = libraries_path
         return repr(h)
 
 
