@@ -579,42 +579,46 @@ def mkdeps(res, n, lvl, config, marks,
 
 
     n.build()
-    for line in open(str(path), 'rb'):
+    matches = []
+    with open(str(path), 'rb') as include_file:
+        for line in include_file:
+            line = line.strip()
+            match = include_re.match(line.decode('utf-8'))
+            if match:
+                matches.append(match)
 
-        line = line.strip()
-        match = include_re.match(line.decode('utf-8'))
-        if match:
-            include = match.group(2)
-            search = set(config.local_include_path())
-            if match.group(1) == '"':
-                search.add(n.name().dirname())
-            found = None
-            via = None
-            for include_path in search:
+    for match in matches:
+        include = match.group(2)
+        search = set(config.local_include_path())
+        if match.group(1) == '"':
+            search.add(n.name().dirname())
+        found = None
+        via = None
+        for include_path in search:
 
-                name = include_path / include
-                test = name
+            name = include_path / include
+            test = name
 
-                if str(test) in Node.nodes:
-                    # Check this is not an old cached dependency from cxx.inclusions.
-                    # Not sure of myself though.
-                    if test.is_file() or node(str(test)).builder is not None:
-                        found, via = unique(include, via, found, test, node(test))
-                        # debug.debug('%sfound node: %s' % (idt, test))
+            if str(test) in Node.nodes:
+                # Check this is not an old cached dependency from cxx.inclusions.
+                # Not sure of myself though.
+                if test.is_file() or node(str(test)).builder is not None:
+                    found, via = unique(include, via, found, test, node(test))
+                    # debug.debug('%sfound node: %s' % (idt, test))
 
-                if not found or srctree() != Path('.'):
-                    test = srctree() / test
-                    if test.is_file():
-                        # debug.debug('%sfound file: %s' % (idt, test))
-                        found, via = unique(include, via, found, test, node(name, Header))
+            if not found or srctree() != Path('.'):
+                test = srctree() / test
+                if test.is_file():
+                    # debug.debug('%sfound file: %s' % (idt, test))
+                    found, via = unique(include, via, found, test, node(name, Header))
 
-            if found is not None:
-                rec = []
-                mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
-                f_add(res, found, rec)
-            else:
-                debug.debug('%sinclusion not found: %s (search path: %s)'\
-                                % (idt, include, ', '.join(map(str, search))))
+        if found is not None:
+            rec = []
+            mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
+            f_add(res, found, rec)
+        else:
+            debug.debug('%sinclusion not found: %s (search path: %s)'\
+                            % (idt, include, ', '.join(map(str, search))))
 
 class Compiler(Builder):
 
