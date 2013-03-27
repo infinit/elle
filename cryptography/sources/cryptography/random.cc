@@ -91,6 +91,15 @@ namespace infinit
         // Seed the random generator.
         ::RAND_seed(temporary, sizeof (temporary));
       }
+
+
+      void random_bytes(unsigned char *buf, int num)
+      {
+        if (!::RAND_bytes(buf, num))
+          throw Exception(elle::sprintf("unable to generate random bytes: %s",
+                                        ::ERR_error_string(ERR_get_error(),
+                                                           nullptr)));
+      }
     }
   }
 }
