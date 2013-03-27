@@ -35,7 +35,7 @@ namespace elle {
       static_assert(__checkbits<Bits...>::valid,
                     "invalid digit in binary string");
       return std::bitset<sizeof...(Bits)>{
-          static_cast<char const []>({Bits..., '\0'})
+        (char const []){Bits..., '\0'}
       };
     }
 
