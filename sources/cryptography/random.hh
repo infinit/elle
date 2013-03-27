@@ -51,6 +51,10 @@ namespace infinit
                 typename... A>
       T
       generate(A... arguments);
+
+      /// Fill a buffer with random bytes. See RAND_bytes.
+      void random_bytes(unsigned char *buf, int num);
+
       /// Set up the random generator by adding entropy.
       ///
       /// !WARNING! Do not use unless you know exactly what you're doing.

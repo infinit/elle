@@ -87,11 +87,7 @@ namespace infinit
 
         T value;
 
-        if (::RAND_bytes(reinterpret_cast<unsigned char*>(&value),
-                         sizeof (value)) == 0)
-          throw Exception(elle::sprintf("unable to generate random bytes: %s",
-                                        ::ERR_error_string(ERR_get_error(),
-                                                           nullptr)));
+        random_bytes(reinterpret_cast<unsigned char*>(&value), sizeof (value));
 
         return (value);
       }
@@ -182,11 +178,7 @@ namespace infinit
           {
             elle::Natural32 n;
 
-            if (::RAND_bytes(reinterpret_cast<unsigned char*>(&n),
-                             sizeof (n)) == 0)
-              throw Exception(
-                elle::sprintf("unable to generate random bytes: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
+            random_bytes(reinterpret_cast<unsigned char*>(&n), sizeof (n));
 
             value[i] = alphabet[n % alphabet.length()];
           }
@@ -211,12 +203,9 @@ namespace infinit
           elle::Buffer value(size);
 
           // generate a random integer.
-          if (::RAND_bytes(
-                reinterpret_cast<unsigned char*>(value.mutable_contents()),
-                value.size()) == 0)
-            throw Exception(elle::sprintf("unable to generate random bytes: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
+          random_bytes(
+            reinterpret_cast<unsigned char*>(value.mutable_contents()),
+            value.size());
 
           return (value);
         }
