@@ -178,6 +178,8 @@ def configure(cxx_toolkit = None,
     'src/elle/printf.hxx',
     'src/elle/system/system.hh',
     'src/elle/system/platform.hh',
+    'src/elle/system/signal.hh',
+    'src/elle/system/signal.cc',
     'src/elle/types.hh',
     )
 
