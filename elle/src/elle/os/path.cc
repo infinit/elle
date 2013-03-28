@@ -1,10 +1,12 @@
 #include "path.hh"
 
 #include <elle/Exception.hh>
-
+#include <elle/log.hh>
 #include <boost/filesystem.hpp>
 
 #include <cassert>
+
+ELLE_LOG_COMPONENT("elle.os.Path");
 
 namespace elle
 {
@@ -34,6 +36,8 @@ namespace elle
 
       bool exists(std::string const& path)
       {
+        ELLE_DEBUG("'%s' %s", path,
+                   fs::exists(path) ? "exists" : "doesn't exist");
         return fs::exists(path);
       }
 
@@ -48,22 +52,27 @@ namespace elle
       bool
       is_absolute(std::string const& path)
       {
+        ELLE_DEBUG("'%s' is%s absolute", path,
+                   fs::path(path).is_absolute() ? "" : "n't");
         return fs::path(path).is_absolute();
       }
 
       bool is_directory(std::string const& path)
       {
+        ELLE_DEBUG("%s is%s directory", path,
+                   fs::is_directory(path) ? "" : "n't");
         return fs::is_directory(path);
       }
 
-
       void make_directory(std::string const& path)
       {
+        ELLE_DEBUG("create directory at '%s'", path);
         fs::create_directory(path);
       }
 
       void remove_directory(std::string const& path)
       {
+        ELLE_DEBUG("try removing '%s' directory", path);
         if (!is_directory(path))
           throw elle::Exception(path + " is not a directory");
 
@@ -72,6 +81,7 @@ namespace elle
 
       void make_path(std::string const& path)
       {
+        ELLE_DEBUG("create directories at '%s'", path);
         fs::create_directories(path);
       }
 
@@ -79,12 +89,16 @@ namespace elle
       make_symlink(std::string const& oldname,
                    std::string const& newname)
       {
+        ELLE_DEBUG("make symlink from '%s' to '%s'", oldname, newname);
         fs::create_symlink(oldname, newname);
       }
 
       bool
       check_symlink(std::string const& path)
       {
+        ELLE_DEBUG("%s is%s a symlink", path,
+                   fs::symlink_status(path).type() != fs::status_error ? ""
+                                                                       : "n't");
         return (fs::symlink_status(path).type() != fs::status_error);
       }
     }
