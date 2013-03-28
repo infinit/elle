@@ -14,7 +14,7 @@ namespace infinit
     {
       /*-------------.
       | Construction |
-       `-------------*/
+      `-------------*/
     public:
       Exception(elle::String const& message);
     };
