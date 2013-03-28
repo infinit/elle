@@ -12,6 +12,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <algorithm>
 
 #include <errno.h>
 #include <signal.h>     // kill
@@ -434,6 +435,30 @@ namespace elle
           _config.channel(ProcessChannelStream::in).close_read();
           _config.channel(ProcessChannelStream::out).close_write();
           _config.channel(ProcessChannelStream::err).close_write();
+
+          std::vector<std::string> procs;
+
+          std::string env = elle::os::getenv("ELLE_PROCESS_DEBUG", "");
+          if (!env.empty())
+          {
+            boost::algorithm::split(procs, env, boost::is_any_of(","));
+            auto it = std::find_if(
+                        begin(procs),
+                        end(procs),
+                        [&] (std::string const& s) {
+                          return boost::algorithm::ends_with(binary, s);
+                        });
+            if (it != end(procs))
+            {
+              std::string cmd =
+                elle::os::getenv("ELLE_PROCESS_DEBUG_CMD", "");
+              if (!cmd.empty())
+              {
+                // XXX: FIXME: we need to make this extensible
+                ::system(elle::sprintf(cmd.c_str(), this->id()).c_str());
+              }
+            }
+          }
         }
       auto status = this->status(); // This ensure at least on waitpid is done
       ELLE_DEBUG("Binary %s %s has pid %d and status %d",
