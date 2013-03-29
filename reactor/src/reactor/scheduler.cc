@@ -90,8 +90,16 @@ namespace reactor
         _io_service.reset();
         _io_service.poll();
       }
+      catch (std::exception const& e)
+      {
+        ELLE_WARN("%s: asynchronous jobs threw an exception: %s",
+                  *this, e.what());
+        this->_thread_exception(std::current_exception());
+        this->terminate();
+      }
       catch (...)
       {
+        ELLE_WARN("%s: asynchronous jobs threw an unknown exception", *this);
         this->_thread_exception(std::current_exception());
         this->terminate();
       }
