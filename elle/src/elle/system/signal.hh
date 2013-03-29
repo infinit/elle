@@ -4,8 +4,10 @@
 
 #include <string>
 
-namespace elle {
-  namespace system {
+namespace elle
+{
+  namespace system
+  {
     std::string
     strsignal(int signum);
   } /* system */

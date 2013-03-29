@@ -4,8 +4,10 @@
 
 #include <map>
 
-namespace elle {
-  namespace system {
+namespace elle
+{
+  namespace system
+  {
     // We don't use strsignal from libc because it's not portable.
     std::string
     strsignal(int signum)

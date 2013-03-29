@@ -16,8 +16,8 @@ namespace elle {
       template <char High, char... Bits>
       struct __checkbits<High, Bits...>
       {
-        static const bool valid = (High == '0' || High == '1')
-                                  && __checkbits<Bits...>::valid;
+        static const bool valid = (High == '0' || High == '1') &&
+                                   __checkbits<Bits...>::valid;
       };
 
       template <char High>
