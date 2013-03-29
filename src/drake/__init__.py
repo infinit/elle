@@ -1904,93 +1904,83 @@ _CONFIG = None
 _DEFAULTS = []
 
 def add_default_node(node):
-    _DEFAULTS.append(node)
+  _DEFAULTS.append(node)
 
 def run(root, *cfg, **kwcfg):
-    """Run a drakefile.
+  try:
+    drake(root, *cfg, **kwcfg)
+  except Exception as e:
+    print('%s: %s' % (sys.argv[0], e))
+    if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+      import traceback
+      traceback.print_exc()
+    exit(1)
+  except KeyboardInterrupt:
+    print('%s: interrupted.' % sys.argv[0])
+    exit(1)
+  print('%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd()))
 
-    root       -- The directory where the drakefile is located.
-    cfg, kwcfg -- Arguments for the drakeile's configure.
+def drake(root, *cfg, **kwcfg):
+  """Run a drakefile.
 
-    Load the drakefile located in root, configure it with the given
-    arguments and run all action specified on the command line
-    (sys.argv).
-    """
-    global _CONFIG, _srctree
-    try:
-        _srctree = Path(root)
+  root       -- The directory where the drakefile is located.
+  cfg, kwcfg -- Arguments for the drakeile's configure.
 
-        args = sys.argv[1:]
-
-        # Load the root drakefile
-        g = {}
-        path = str(srctree() / 'drakefile')
-        # execfile(path, g)
-        exec(compile(open(path).read(), path, 'exec'), g)
-        root = _Module(g)
-        _CONFIG = root.configure
-
-        # Fetch configuration from the command line.
-        i = 0
-        while i < len(args):
-            match = _ARG_CONF_RE.match(args[i])
-            if match:
-                kwcfg[match.group(1)] = match.group(2)
-                del args[i]
-                continue
-            elif args[i] in _OPTIONS:
-                opt = args[i]
-                del args[i]
-                opt_args = []
-                for a in inspect.getargspec(_OPTIONS[opt]).args:
-                    opt_args.append(args[i])
-                    del args[i]
-                _OPTIONS[opt](*opt_args)
-                continue
-            i += 1
-
-        print('%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd()))
-        root.configure(*cfg, **kwcfg)
-
-        mode = _MODES['build']
-        i = 0
-
-        while True:
-
-            if i < len(args):
-                arg = args[i]
-
-                if arg[0:2] == '--':
-
-                    arg = arg[2:]
-
-                    if arg in _MODES:
-                        mode = _MODES[arg]
-                    else:
-                        raise Exception('Unknown option: %s.' % arg)
-                    i += 1
-
-            nodes = []
-            while i < len(args) and args[i][0:2] != '--':
-                nodes.append(node(args[i]))
-                i += 1
-            if not nodes:
-                nodes = _DEFAULTS
-            mode(nodes)
-
-            if i == len(args):
-                break
-
-    except Exception as e:
-        print('%s: %s' % (sys.argv[0], e))
-        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-            import traceback
-            traceback.print_exc()
-        exit(1)
-    except KeyboardInterrupt:
-        print('%s: interrupted.' % sys.argv[0])
-        exit(1)
-    print('%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd()))
+  Load the drakefile located in root, configure it with the given
+  arguments and run all action specified on the command line
+  (sys.argv).
+  """
+  global _CONFIG, _srctree
+  _srctree = Path(root)
+  args = sys.argv[1:]
+  # Load the root drakefile
+  g = {}
+  path = str(srctree() / 'drakefile')
+  # execfile(path, g)
+  exec(compile(open(path).read(), path, 'exec'), g)
+  root = _Module(g)
+  _CONFIG = root.configure
+  # Fetch configuration from the command line.
+  i = 0
+  while i < len(args):
+    match = _ARG_CONF_RE.match(args[i])
+    if match:
+      kwcfg[match.group(1)] = match.group(2)
+      del args[i]
+      continue
+    elif args[i] in _OPTIONS:
+      opt = args[i]
+      del args[i]
+      opt_args = []
+      for a in inspect.getargspec(_OPTIONS[opt]).args:
+        opt_args.append(args[i])
+        del args[i]
+      _OPTIONS[opt](*opt_args)
+      continue
+    i += 1
+  print('%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd()))
+  root.configure(*cfg, **kwcfg)
+  mode = _MODES['build']
+  i = 0
+  while True:
+    if i < len(args):
+      arg = args[i]
+      if arg[0:2] == '--':
+        arg = arg[2:]
+        if arg in _MODES:
+          mode = _MODES[arg]
+        else:
+          raise Exception('Unknown option: %s.' % arg)
+        i += 1
+    nodes = []
+    while i < len(args) and args[i][0:2] != '--':
+      nodes.append(node(args[i]))
+      i += 1
+    if not nodes:
+      nodes = _DEFAULTS
+    mode(nodes)
+    if i == len(args):
+      break
 
 
 class Copy(Builder):
