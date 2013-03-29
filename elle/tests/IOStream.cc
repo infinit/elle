@@ -25,7 +25,9 @@ class ReadStreamBuffer: public elle::StreamBuffer
     virtual
     elle::WeakBuffer
     write_buffer()
-    {}
+    {
+      return elle::WeakBuffer(nullptr, 0);
+    }
 
     virtual
     void
@@ -45,7 +47,7 @@ class ReadStreamBuffer: public elle::StreamBuffer
                               size);
     }
     std::string _read_data;
-    int _read_pos;
+    unsigned int _read_pos;
     int _read_size;
 };
 
