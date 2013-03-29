@@ -1901,6 +1901,11 @@ _OPTIONS = {
 _ARG_CONF_RE = re.compile('--(\\w+)=(.*)')
 _CONFIG = None
 
+_DEFAULTS = []
+
+def add_default_node(node):
+    _DEFAULTS.append(node)
+
 def run(root, *cfg, **kwcfg):
     """Run a drakefile.
 
@@ -1969,6 +1974,8 @@ def run(root, *cfg, **kwcfg):
             while i < len(args) and args[i][0:2] != '--':
                 nodes.append(node(args[i]))
                 i += 1
+            if not nodes:
+                nodes = _DEFAULTS
             mode(nodes)
 
             if i == len(args):
