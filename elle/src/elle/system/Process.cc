@@ -431,6 +431,7 @@ namespace elle
         }
       else // parent process
         {
+          ELLE_DEBUG("parent process pid: %s", binary_pid);
           _impl->pid = binary_pid;
           _config.channel(ProcessChannelStream::in).close_read();
           _config.channel(ProcessChannelStream::out).close_write();
@@ -523,7 +524,12 @@ namespace elle
                   (term == ProcessTermination::dont_wait ? "Checking" : "Waiting"),
                  _impl->pid, _impl->binary, _impl->arguments);
       if (_impl->pid == 0)
+      {
+        ELLE_DEBUG("%s (pid = 0): status %s",
+                   this->_impl->binary,
+                   this->_impl->status);
         return _impl->status;
+      }
 
       int status_ = 0;
       int options = (term == ProcessTermination::dont_wait ? WNOHANG : 0);
@@ -734,4 +740,3 @@ namespace elle
 
   }
 }
-
