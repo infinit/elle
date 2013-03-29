@@ -53,7 +53,11 @@ namespace reactor
     {}
 
     UDPSocket::~UDPSocket()
-    {}
+    {
+      // XXX: Flush the socket, otherwise the parent ~IOStream will flush the
+      // buffer which will in turn write to the (deleted) socket.
+      this->flush();
+    }
 
     /*--------------.
     | Configuration |

@@ -42,7 +42,11 @@ namespace reactor
     {}
 
     TCPSocket::~TCPSocket()
-    {}
+    {
+      // XXX: Flush the socket, otherwise the parent ~IOStream will flush the
+      // buffer which will in turn write to the (deleted) socket.
+      this->flush();
+    }
 
     TCPSocket::TCPSocket(Scheduler& sched, AsioSocket* socket)
       : Super(sched, socket)

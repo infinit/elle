@@ -56,9 +56,6 @@ namespace reactor
 
     Socket::~Socket()
     {
-      // Flush the socket, otherwise the parent ~IOStream will flush the buffer
-      // which will in turn write to the (deleted) socket.
-      this->flush();
     }
 
     std::unique_ptr<Socket>
