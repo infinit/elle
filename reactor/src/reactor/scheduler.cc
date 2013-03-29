@@ -1,3 +1,4 @@
+#include <elle/finally.hh>
 #include <elle/log.hh>
 
 #include <reactor/exception.hh>
@@ -52,10 +53,8 @@ namespace reactor
   Scheduler::run()
   {
     assert(!scheduler());
-    _schedulers()[std::this_thread::get_id()] = this;
     while (step())
       /* nothing */;
-    _schedulers()[std::this_thread::get_id()] = nullptr;
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
@@ -70,6 +69,9 @@ namespace reactor
   bool
   Scheduler::step()
   {
+    _schedulers()[std::this_thread::get_id()] = this;
+    ELLE_FINALLY(pop, _schedulers()[std::this_thread::get_id()] = nullptr);
+
     // Could avoid locking if no jobs are pending with a boolean.
     {
       boost::unique_lock<boost::mutex> lock(_starting_mtx);
