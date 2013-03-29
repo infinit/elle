@@ -877,10 +877,18 @@ terminate_starting()
 | Terminate |
 `----------*/
 
+class BeaconException: public elle::Exception
+{
+public:
+  BeaconException()
+    : elle::Exception("beacon")
+  {}
+};
+
 void
 except_gen()
 {
-  throw std::runtime_error("boom!");
+  throw BeaconException();
 }
 
 void
@@ -894,14 +902,37 @@ thread_exception_test()
   {
     sched->run();
   }
-  catch (const std::runtime_error& e)
+  catch (const BeaconException& e)
   {
-    BOOST_CHECK_EQUAL(e.what(), "boom!");
+    BOOST_CHECK_EQUAL(e.what(), "beacon");
     exception_thrown = true;
   }
 
   BOOST_CHECK(exception_thrown);
   BOOST_CHECK_EQUAL(thread.state(), reactor::Thread::state::done);
+}
+
+/*-----------------.
+| IO service throw |
+`-----------------*/
+
+void
+poster(bool& beacon)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  sched.io_service().post(&except_gen);
+  sched.current()->yield();
+  beacon = true;
+}
+
+void
+test_io_service_throw()
+{
+  bool beacon = false;
+  reactor::Scheduler sched;
+  reactor::Thread thread(sched, "Poster", std::bind(&poster, std::ref(beacon)));
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+  BOOST_CHECK(!beacon);
 }
 
 /*-----.
@@ -972,11 +1003,15 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(thread_exception);
   storage->add(BOOST_TEST_CASE(thread_exception_test));
 
+  boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("IO service");
+  boost::unit_test::framework::master_test_suite().add(io_service);
+  io_service->add(BOOST_TEST_CASE(test_io_service_throw));
+
   return true;
 }
 
 int
-main(int argc, 
+main(int argc,
      char** argv)
 {
   return ::boost::unit_test::unit_test_main(test_suite, argc, argv);

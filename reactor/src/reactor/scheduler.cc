@@ -83,33 +83,48 @@ namespace reactor
       ELLE_TRACE("Scheduler: schedule %s", *t);
       _step(t);
     }
-    ELLE_TRACE("Scheduler: run asio callbacks");
-    _io_service.reset();
-    _io_service.poll();
-    if (_running.empty() && _starting.empty())
+    ELLE_TRACE("%s: run asynchronous jobs", *this)
+    {
+      try
       {
-        if (_frozen.empty())
-          return false;
-        else
-          while (_running.empty() && _starting.empty())
-            {
-              ELLE_TRACE("Scheduler: nothing to do, "
-                                    "polling asio in a blocking fashion");
-              _io_service.reset();
-              boost::system::error_code err;
-              std::size_t run = _io_service.run_one(err);
-              if (err)
-                {
-                  std::cerr << "fatal ASIO error: " << err << std::endl;
-                  std::abort();
-                }
-              else if (run == 0)
-                {
-                  std::cerr << "ASIO service is dead." << std::endl;
-                  std::abort();
-                }
-            }
+        _io_service.reset();
+        _io_service.poll();
       }
+      catch (...)
+      {
+        this->_thread_exception(std::current_exception());
+        this->terminate();
+      }
+    }
+    if (_running.empty() && _starting.empty())
+    {
+      if (_frozen.empty())
+      {
+        ELLE_TRACE_SCOPE("%s: no threads left, we're done", *this);
+        return false;
+      }
+      else
+        while (_running.empty() && _starting.empty())
+        {
+          ELLE_TRACE("%s: nothing to do, "
+                     "polling asio in a blocking fashion", *this);
+          _io_service.reset();
+          boost::system::error_code err;
+          std::size_t run = _io_service.run_one(err);
+          if (err)
+          {
+            std::cerr << "fatal ASIO error: " << err << std::endl;
+            std::abort();
+          }
+          else if (run == 0)
+          {
+            std::cerr << "ASIO service is dead." << std::endl;
+            std::abort();
+          }
+        }
+    }
+    else
+      ELLE_TRACE("%s: round end with active threads", *this);
     return true;
   }
 
@@ -196,6 +211,7 @@ namespace reactor
   void
   Scheduler::terminate()
   {
+    ELLE_TRACE_SCOPE("%s: terminate", *this);
     BOOST_FOREACH(Thread* t, _starting)
       {
         t->_state = Thread::state::done;
@@ -234,6 +250,7 @@ namespace reactor
         case Thread::state::frozen:
           thread->raise(new Terminate());
           thread->_wait_abort();
+          assert(thread->state() == Thread::state::running);
           break;
         case Thread::state::done:
           break;
