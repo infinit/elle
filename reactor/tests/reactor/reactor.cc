@@ -27,7 +27,7 @@ Fixture::~Fixture()
 void
 yield()
 {
-  sched->current()->yield();
+  reactor::Scheduler::scheduler()->current()->yield();
 }
 
 bool
@@ -730,7 +730,7 @@ void
 rw_mutex_read(reactor::RWMutex& mutex,
               int& step)
 {
-  reactor::Lock lock(*sched, mutex);
+  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex);
   ++step;
   yield();
   BOOST_CHECK_EQUAL(step, 3);
@@ -739,26 +739,26 @@ rw_mutex_read(reactor::RWMutex& mutex,
 void
 test_rw_mutex_multi_read()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::RWMutex mutex;
   int step = 0;
-  reactor::Thread r1(*sched, "reader1",
+  reactor::Thread r1(sched, "reader1",
                      boost::bind(rw_mutex_read,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r2(*sched, "reader2",
+  reactor::Thread r2(sched, "reader2",
                      boost::bind(rw_mutex_read,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r3(*sched, "reader3",
+  reactor::Thread r3(sched, "reader3",
                      boost::bind(rw_mutex_read,
                                  boost::ref(mutex), boost::ref(step)));
-  sched->run();
+  sched.run();
 }
 
 void
 rw_mutex_write(reactor::RWMutex& mutex,
                int& step)
 {
-  reactor::Lock lock(*sched, mutex.write());
+  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex.write());
   ++step;
   int prev = step;
   yield();
@@ -768,26 +768,26 @@ rw_mutex_write(reactor::RWMutex& mutex,
 void
 test_rw_mutex_multi_write()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::RWMutex mutex;
   int step = 0;
-  reactor::Thread r1(*sched, "writer1",
+  reactor::Thread r1(sched, "writer1",
                      boost::bind(rw_mutex_write,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r2(*sched, "writer2",
+  reactor::Thread r2(sched, "writer2",
                      boost::bind(rw_mutex_write,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r3(*sched, "writer3",
+  reactor::Thread r3(sched, "writer3",
                      boost::bind(rw_mutex_write,
                                  boost::ref(mutex), boost::ref(step)));
-  sched->run();
+  sched.run();
 }
 
 void
 rw_mutex_both_read(reactor::RWMutex& mutex,
                    int& step)
 {
-  reactor::Lock lock(*sched, mutex);
+  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex);
   int v = step;
   BOOST_CHECK_EQUAL(v % 2, 0);
   BOOST_CHECK_EQUAL(step, v);
@@ -801,7 +801,7 @@ void
 rw_mutex_both_write(reactor::RWMutex& mutex,
                     int& step)
 {
-  reactor::Lock lock(*sched, mutex.write());
+  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex.write());
   ++step;
   yield();
   yield();
@@ -812,51 +812,51 @@ rw_mutex_both_write(reactor::RWMutex& mutex,
 void
 test_rw_mutex_both()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::RWMutex mutex;
   int step = 0;
-  reactor::Thread r1(*sched, "reader1",
+  reactor::Thread r1(sched, "reader1",
                      boost::bind(rw_mutex_both_read,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r2(*sched, "reader2",
+  reactor::Thread r2(sched, "reader2",
                      boost::bind(rw_mutex_both_read,
                                  boost::ref(mutex), boost::ref(step)));
-  sched->step();
+  sched.step();
 
 
-  reactor::Thread w1(*sched, "writer1",
+  reactor::Thread w1(sched, "writer1",
                      boost::bind(rw_mutex_both_write,
                                  boost::ref(mutex), boost::ref(step)));
 
-  reactor::Thread w2(*sched, "writer2",
+  reactor::Thread w2(sched, "writer2",
                      boost::bind(rw_mutex_both_write,
                                  boost::ref(mutex), boost::ref(step)));
   while (!r1.done())
-    sched->step();
+    sched.step();
   BOOST_CHECK(r2.done());
-  sched->step();
+  sched.step();
 
-  reactor::Thread r3(*sched, "reader3",
+  reactor::Thread r3(sched, "reader3",
                      boost::bind(rw_mutex_both_read,
                                  boost::ref(mutex), boost::ref(step)));
-  reactor::Thread r4(*sched, "reader4",
+  reactor::Thread r4(sched, "reader4",
                      boost::bind(rw_mutex_both_read,
                                  boost::ref(mutex), boost::ref(step)));
   while (!w1.done() || !w2.done())
-    sched->step();
+    sched.step();
 
-  sched->step();
+  sched.step();
 
 
-  reactor::Thread w3(*sched, "writer2",
+  reactor::Thread w3(sched, "writer2",
                      boost::bind(rw_mutex_both_write,
                                  boost::ref(mutex), boost::ref(step)));
 
-  reactor::Thread w4(*sched, "writer4",
+  reactor::Thread w4(sched, "writer4",
                      boost::bind(rw_mutex_both_write,
                                  boost::ref(mutex), boost::ref(step)));
 
-  sched->run();
+  sched.run();
 }
 
 /*--------.
