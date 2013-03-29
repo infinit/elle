@@ -10,6 +10,13 @@
 
 /// Provide a lambda-based skeleton for creating Finally instances based
 /// on the name of a variable.
+# define ELLE_FINALLY(_variable_, _exp_)                                \
+  auto BOOST_PP_CAT(_elle_finally_lambda_, __LINE__) = [&](){_exp_;};   \
+  elle::Finally BOOST_PP_CAT(_elle_finally_variable_, _variable_)(      \
+    BOOST_PP_CAT(_elle_finally_lambda_, __LINE__));
+
+/// Provide a lambda-based skeleton for creating Finally instances based
+/// on the name of a variable.
 # define ELLE_FINALLY_LAMBDA(_variable_, _lambda_)                      \
   auto BOOST_PP_CAT(_elle_finally_lambda_, __LINE__) = _lambda_;        \
   elle::Finally BOOST_PP_CAT(_elle_finally_variable_, _variable_)(      \
