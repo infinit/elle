@@ -241,7 +241,7 @@ namespace reactor
   void
   Scheduler::_terminate(Thread* thread)
   {
-    ELLE_TRACE("%s: terminate", *thread);
+    ELLE_TRACE_SCOPE("%s: terminate", *thread);
     if (current() == thread)
       throw Terminate();
     // If the underlying coroutine was never run, nothing to do.

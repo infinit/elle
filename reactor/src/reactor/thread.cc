@@ -180,6 +180,7 @@ namespace reactor
   Thread::wait(Waitables&                       waitables,
                boost::optional<Duration>        timeout)
   {
+    ELLE_TRACE_SCOPE("%s: wait %s", *this, waitables);
     ELLE_ASSERT_EQ(_state, state::running);
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
@@ -191,7 +192,6 @@ namespace reactor
       }
     if (freeze)
     {
-      ELLE_TRACE("%s: freeze", *this);
       if (timeout)
       {
         boost::asio::deadline_timer _timer(_scheduler.io_service(),
@@ -269,6 +269,7 @@ namespace reactor
   void
   Thread::_freeze()
   {
+    ELLE_TRACE_SCOPE("%s: freeze", *this);
     _scheduler._freeze(*this);
     _state = Thread::state::frozen;
     yield();
