@@ -27,6 +27,7 @@ namespace reactor
     , _backtrace_root()
     , _waited()
     , _timeout(false)
+    , _timeout_timer(scheduler.io_service())
     , _thread(scheduler._manager, name, boost::bind(&Thread::_action_wrapper,
                                                     this, action))
     , _scheduler(scheduler)
@@ -194,24 +195,16 @@ namespace reactor
     {
       if (timeout)
       {
-        boost::asio::deadline_timer _timer(_scheduler.io_service(),
-                                           timeout.get());
-        _timeout = false;
-        _timer.async_wait(boost::bind(&Thread::_wait_timeout, this, _1));
-        try
-          {
-            _freeze();
-          }
-        catch (const Terminate&)
-          {
-            _timer.cancel();
-            throw;
-          }
+        this->_timeout_timer.expires_from_now(timeout.get());
+        this->_timeout = false;
+        this->_timeout_timer.async_wait(
+          boost::bind(&Thread::_wait_timeout, this, _1));
+        _freeze();
         if (_timeout)
           return false;
         else
         {
-          _timer.cancel();
+          this->_timeout_timer.cancel();
           return true;
         }
       }
@@ -250,7 +243,8 @@ namespace reactor
     if (e == boost::system::errc::operation_canceled)
       return;
     ELLE_TRACE("%s: timed out", *this);
-    _wait_abort();
+    this->_timeout = true;
+    this->_wait_abort();
   }
 
   void
@@ -260,10 +254,10 @@ namespace reactor
     ELLE_ASSERT_EQ(state(), state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
-    _waited.clear();
-    _timeout = true;
-    _scheduler._unfreeze(*this);
-    _state = Thread::state::running;
+    this->_waited.clear();
+    this->_timeout_timer.cancel();
+    this->_scheduler._unfreeze(*this);
+    this->_state = Thread::state::running;
   }
 
   void

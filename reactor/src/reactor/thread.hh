@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_THREAD_HH
 # define INFINIT_REACTOR_THREAD_HH
 
+# include <boost/asio.hpp>
 # include <boost/optional.hpp>
 # ifndef Q_MOC_RUN
 #  include <boost/signal.hpp>
@@ -136,6 +137,7 @@ namespace reactor
       void _wake(Waitable* waitable);
       std::set<Waitable*> _waited;
       bool _timeout;
+    boost::asio::deadline_timer _timeout_timer;
 
     /*--------.
     | Backend |

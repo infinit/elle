@@ -454,6 +454,35 @@ test_timeout_dont()
   sched->run();
 }
 
+/*----------------.
+| Timeout aborted |
+`----------------*/
+
+// Check abort + timeout is not an issue.
+
+void connor()
+{
+  reactor::Semaphore s(0);
+  reactor::Scheduler::scheduler()->current()->wait(
+    s, boost::posix_time::milliseconds(1));
+}
+
+void schwarzy()
+{
+  reactor::Scheduler::scheduler()->terminate();
+  ::usleep(10);
+}
+
+void test_timeout_aborted()
+{
+  reactor::Scheduler sched;
+
+  boost::asio::deadline_timer(sched.io_service());
+  reactor::Thread t1(sched, "John", &connor);
+  reactor::Thread t2(sched, "Terminator", &schwarzy);
+  sched.run();
+}
+
 /*--------.
 | VThread |
 `--------*/
@@ -969,6 +998,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(timeout);
   timeout->add(BOOST_TEST_CASE(test_timeout_do));
   timeout->add(BOOST_TEST_CASE(test_timeout_dont));
+  timeout->add(BOOST_TEST_CASE(test_timeout_aborted));
 
   boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
   boost::unit_test::framework::master_test_suite().add(vthread);
