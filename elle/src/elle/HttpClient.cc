@@ -307,7 +307,7 @@ namespace elle
 
     while (connection_error && endpoint_iterator != end)
     {
-      ELLE_LOG("endpoint %s", *endpoint_iterator);
+      ELLE_DEBUG("endpoint %s", *endpoint_iterator);
       socket.close();
       socket.connect(*endpoint_iterator++, connection_error);
     }
