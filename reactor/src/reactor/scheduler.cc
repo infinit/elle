@@ -148,6 +148,7 @@ namespace reactor
         thread->_step();
         if (_eptr != nullptr)
         {
+          ELLE_TRACE_SCOPE("%s: exception escaped, terminating", *this);
           this->terminate();
         }
       }

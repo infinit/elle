@@ -95,17 +95,23 @@ namespace reactor
   Thread::_action_wrapper(const Thread::Action& action)
   {
     try
-      {
-        _backtrace_root = elle::Backtrace::current();
-        ELLE_ASSERT(action);
-        action();
-      }
+    {
+      _backtrace_root = elle::Backtrace::current();
+      ELLE_ASSERT(action);
+      action();
+    }
     catch (const Terminate&)
-      {}
+    {}
+    catch (std::exception const& e)
+    {
+      ELLE_WARN("%s: exception escaped: %s", *this, e.what());
+      _scheduler._thread_exception(std::current_exception());
+    }
     catch (...)
-      {
-        _scheduler._thread_exception(std::current_exception());
-      }
+    {
+      ELLE_WARN("%s: unknown exception escaped", *this);
+      _scheduler._thread_exception(std::current_exception());
+    }
   }
 
   void
