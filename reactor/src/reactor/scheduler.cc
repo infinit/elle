@@ -310,6 +310,16 @@ namespace reactor
   }
 
   /*----------.
+  | Printable |
+  `----------*/
+
+  void
+  Scheduler::print(std::ostream& s) const
+  {
+    s << "Scheduler " << this;
+  }
+
+  /*----------.
   | Shortcuts |
   `----------*/
 

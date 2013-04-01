@@ -8,6 +8,8 @@
 
 # include <boost/thread.hpp>
 
+# include <elle/Printable.hh>
+
 # include <reactor/asio.hh>
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
@@ -18,7 +20,8 @@ namespace reactor
   /** Scheduler
    *
    */
-  class Scheduler
+  class Scheduler:
+    public elle::Printable
   {
     /*-------------.
     | Construction |
@@ -93,6 +96,12 @@ namespace reactor
     void
     _mt_run_void(const std::string& name,
                  const boost::function<void ()>& action);
+
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    void print(std::ostream& s) const;
 
   /*----------.
   | Shortcuts |
