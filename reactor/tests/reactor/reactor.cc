@@ -893,19 +893,6 @@ test_storage()
 | Terminate |
 `----------*/
 
-void
-terminate_starting()
-{
-  Fixture f;
-
-  reactor::Thread starting(*sched, "starting", &empty);
-  starting.terminate_now();
-}
-
-/*----------.
-| Terminate |
-`----------*/
-
 class BeaconException: public elle::Exception
 {
 public:
@@ -939,6 +926,68 @@ thread_exception_test()
 
   BOOST_CHECK(exception_thrown);
   BOOST_CHECK_EQUAL(thread.state(), reactor::Thread::state::done);
+}
+
+/*----------------.
+| Terminate yield |
+`----------------*/
+
+static
+void
+terminate_scheduler()
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+
+  sched.terminate();
+}
+
+static
+void
+terminate_yield_thread(bool& beacon)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  auto& self = *sched.current();
+
+  try
+  {
+    self.yield();
+  }
+  catch (...)
+  {
+    self.yield();
+    beacon = true;
+    throw;
+  }
+  BOOST_CHECK(false);
+}
+
+static
+void
+test_terminate_yield()
+{
+  reactor::Scheduler sched;
+
+  bool beacon = false;
+  reactor::Thread t(sched, "Thread", std::bind(&terminate_yield_thread,
+                                               std::ref(beacon)));
+  reactor::Thread term(sched, "Terminate", &terminate_scheduler);
+
+  sched.run();
+  BOOST_CHECK(beacon);
+}
+
+/*-----------------------.
+| Terminate now starting |
+`-----------------------*/
+
+static
+void
+test_terminate_now_starting()
+{
+  Fixture f;
+
+  reactor::Thread starting(*sched, "starting", &empty);
+  starting.terminate_now();
 }
 
 /*-----------------.
@@ -993,6 +1042,11 @@ test_suite()
   join->add(BOOST_TEST_CASE(test_join));
   join->add(BOOST_TEST_CASE(test_join_multiple));
   join->add(BOOST_TEST_CASE(test_join_timeout));
+
+  boost::unit_test::test_suite* terminate = BOOST_TEST_SUITE("Terminate");
+  boost::unit_test::framework::master_test_suite().add(terminate);
+  terminate->add(BOOST_TEST_CASE(test_terminate_yield));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);
