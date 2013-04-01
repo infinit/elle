@@ -976,6 +976,57 @@ test_terminate_yield()
   BOOST_CHECK(beacon);
 }
 
+
+/*--------------.
+| Terminate now |
+`--------------*/
+
+static
+void
+terminated(bool& terminated)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  auto& self = *sched.current();
+
+  terminated = false;
+  try
+  {
+    while (true)
+    {
+      self.yield();
+    }
+  }
+  catch (...)
+  {
+    terminated = true;
+    self.sleep(boost::posix_time::milliseconds(10));
+    throw;
+  }
+}
+
+
+static
+void
+terminate_now(reactor::Thread& t, bool& terminated)
+{
+  t.terminate_now();
+  BOOST_CHECK(terminated);
+}
+
+static
+void
+test_terminate_now()
+{
+  reactor::Scheduler sched;
+  bool beacon = false;
+  reactor::Thread t(sched, "terminated", std::bind(&terminated,
+                                                   std::ref(beacon)));
+  reactor::Thread terminate(sched, "terminate", std::bind(&terminate_now,
+                                                          std::ref(t),
+                                                          std::ref(beacon)));
+  sched.run();
+}
+
 /*-----------------------.
 | Terminate now starting |
 `-----------------------*/
@@ -1046,6 +1097,7 @@ test_suite()
   boost::unit_test::test_suite* terminate = BOOST_TEST_SUITE("Terminate");
   boost::unit_test::framework::master_test_suite().add(terminate);
   terminate->add(BOOST_TEST_CASE(test_terminate_yield));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
