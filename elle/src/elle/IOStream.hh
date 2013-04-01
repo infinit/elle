@@ -9,6 +9,17 @@ namespace elle
 {
   class StreamBuffer;
 
+  /// RAII helper to call clear on std streams.
+  class IOStreamClear
+  {
+  public:
+    IOStreamClear (std::ios& s);
+    ~IOStreamClear();
+
+  private:
+    std::ios& _stream;
+  };
+
   class IOStream: public std::iostream
   {
   public:

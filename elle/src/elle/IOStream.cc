@@ -8,6 +8,19 @@ ELLE_LOG_COMPONENT("Elle.IOStream");
 
 namespace elle
 {
+  /*--------------.
+  | IOStreamClear |
+  `--------------*/
+
+  IOStreamClear::IOStreamClear(std::ios& s):
+      _stream(s)
+  {}
+
+  IOStreamClear::~IOStreamClear()
+  {
+    _stream.clear();
+  }
+
   /*---------.
   | IOStream |
   `---------*/
@@ -40,6 +53,7 @@ namespace elle
   int
   StreamBuffer::underflow()
   {
+    ELLE_TRACE_SCOPE("%s: underflow", *this);
     WeakBuffer b = read_buffer();
     if (b.size() == 0)
       {
@@ -55,6 +69,7 @@ namespace elle
   int
   StreamBuffer::overflow(int c)
   {
+    ELLE_TRACE_SCOPE("%s: overflow", *this);
     sync();
     WeakBuffer b = write_buffer();
     setp(reinterpret_cast<char*>(b.mutable_contents()),
@@ -68,6 +83,7 @@ namespace elle
   int
   StreamBuffer::sync()
   {
+    ELLE_TRACE_SCOPE("%s: sync", *this);
     unsigned int size = pptr() - pbase();
     if (size > 0)
       flush(size);
@@ -130,8 +146,8 @@ namespace elle
 
   DynamicStreamBuffer::~DynamicStreamBuffer()
   {
-      delete this->_ibuf;
-      delete this->_obuf;
+      delete [] this->_ibuf;
+      delete [] this->_obuf;
   }
 
   WeakBuffer
