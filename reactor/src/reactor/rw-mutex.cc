@@ -30,6 +30,12 @@ namespace reactor
   {}
 
   bool
+  RWMutex::WriteMutex::locked() const
+  {
+    return (this->_locked != nullptr);
+  }
+
+  bool
   RWMutex::WriteMutex::release()
   {
     if (_locked_recursive)
@@ -118,6 +124,12 @@ namespace reactor
                      *this, _readers);
       return false;
     }
+  }
+
+  bool
+  RWMutex::locked() const
+  {
+    return (this->_readers != 0);
   }
 
   bool

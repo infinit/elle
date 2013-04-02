@@ -3,18 +3,24 @@
 
 # include <reactor/mutex.hh>
 
+# include <elle/attribute.hh>
+
 namespace reactor
 {
   class RWMutex: public Lockable
   {
     public:
       RWMutex();
+    bool
+    locked() const;
       virtual bool release();
 
       class WriteMutex: public Lockable
       {
         public:
           WriteMutex(RWMutex& owner);
+        bool
+        locked() const;
           virtual bool release();
         protected:
           virtual bool _wait(Thread* thread);
@@ -31,7 +37,7 @@ namespace reactor
       virtual bool _wait(Thread* thread);
     private:
       WriteMutex _write;
-      int _readers;
+    ELLE_ATTRIBUTE_R(int, readers);
   };
 }
 
