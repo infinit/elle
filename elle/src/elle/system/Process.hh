@@ -58,7 +58,7 @@ namespace elle
     {
     private:
       struct Impl;
-      std::unique_ptr<Impl> _impl;
+      std::unique_ptr<Impl> _this;
 
     public:
       /// Default constructible.
@@ -132,7 +132,7 @@ namespace elle
 
     private:
       struct Impl;
-      std::unique_ptr<Impl> _impl;
+      std::unique_ptr<Impl> _this;
       ProcessConfig         _config;
 
     public:

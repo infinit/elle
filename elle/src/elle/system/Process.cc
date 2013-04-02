@@ -242,18 +242,18 @@ namespace elle
     };
 
     ProcessConfig::ProcessConfig()
-      : _impl{new Impl{}}
+      : _this{new Impl{}}
     {}
 
     ProcessConfig::ProcessConfig(ProcessConfig&& other)
-      : _impl{std::move(other._impl)}
+      : _this{std::move(other._this)}
     {}
 
     ProcessConfig&
     ProcessConfig::operator =(ProcessConfig&& other)
     {
       if (this != &other)
-          _impl = std::move(other._impl);
+          _this = std::move(other._this);
       return *this;
     }
 
@@ -265,33 +265,33 @@ namespace elle
     {
       if (this == &other)
         return *this;
-      this->_impl->update(*other._impl);
+      _this->update(*other._this);
       return *this;
     }
 
 
     bool
     ProcessConfig::daemon() const
-    { return _impl->daemon; }
+    { return _this->daemon; }
 
     ProcessConfig&
     ProcessConfig::daemon(bool mode)
     {
-      _impl->daemon = mode;
+      _this->daemon = mode;
       return *this;
     }
 
     std::string const&
     ProcessConfig::getenv(std::string const& name) const
     {
-      return _impl->env[name];
+      return _this->env[name];
     }
 
     ProcessConfig&
     ProcessConfig::setenv(std::string const& name,
                           std::string const& value)
     {
-      _impl->env[name] = value;
+      _this->env[name] = value;
       return *this;
     }
 
@@ -299,7 +299,7 @@ namespace elle
     ProcessConfig::inherit_current_environment()
     {
       for (auto const& pair: elle::os::environ())
-        _impl->env.insert(pair);
+        _this->env.insert(pair);
       return *this;
     }
 
@@ -328,7 +328,7 @@ namespace elle
     ProcessChannel&
     ProcessConfig::channel(ProcessChannelStream const channel)
     {
-      return _impl->channels[static_cast<int>(channel)];
+      return _this->channels[static_cast<int>(channel)];
     }
 
     ProcessConfig&
@@ -368,7 +368,7 @@ namespace elle
     Process::Process(ProcessConfig&& config_,
                      std::string const& binary,
                      std::list<std::string> const& arguments)
-      : _impl{new Impl{binary, arguments, 0, 0}}
+      : _this{new Impl{binary, arguments, 0, 0}}
       , _config{std::move(config_)}
     {
       ELLE_TRACE("Launching %s %s", binary, arguments);
@@ -387,9 +387,9 @@ namespace elle
           exec_args[i] = nullptr;
 
 
-          char** envp = new char*[_config._impl->env.size() + 1];
+          char** envp = new char*[_config._this->env.size() + 1];
           i = 0;
-          for (auto const& pair: _config._impl->env)
+          for (auto const& pair: _config._this->env)
             {
               std::string s = pair.first + "=" + pair.second;
               envp[i++] = strdup(s.c_str());
@@ -432,7 +432,7 @@ namespace elle
       else // parent process
         {
           ELLE_DEBUG("parent process pid: %s", binary_pid);
-          _impl->pid = binary_pid;
+          _this->pid = binary_pid;
           _config.channel(ProcessChannelStream::in).close_read();
           _config.channel(ProcessChannelStream::out).close_write();
           _config.channel(ProcessChannelStream::err).close_write();
@@ -482,38 +482,38 @@ namespace elle
     {}
 
     Process::Process(Process&& other)
-      : _impl{std::move(other._impl)}
+      : _this{std::move(other._this)}
       , _config{std::move(other._config)}
     {}
 
     Process::~Process()
     {
-      if (!_impl)
+      if (!_this)
         return;
 
-      if (_impl->pid == 0 || _config.daemon())
+      if (_this->pid == 0 || _config.daemon())
         return;
 
       try
         {
           ELLE_WARN("Destroying a running process %s (%s)",
-                    _impl->binary, _impl->pid);
+                    _this->binary, _this->pid);
           if (this->running())
             {
               ELLE_WARN("Killing a running process %s(%d)",
-                        _impl->binary, _impl->pid);
+                        _this->binary, _this->pid);
               this->kill(ProcessTermination::wait);
             }
         }
       catch (std::runtime_error const& err)
         {
           ELLE_WARN("Got an exception while killing %s(%d): %s",
-                    _impl->binary, _impl->pid, err.what());
+                    _this->binary, _this->pid, err.what());
         }
       catch (...)
         {
           ELLE_WARN("Got a unknown error while killing %s(%d)",
-                    _impl->binary, _impl->pid);
+                    _this->binary, _this->pid);
         }
     }
 
@@ -521,14 +521,13 @@ namespace elle
     Process::status(ProcessTermination const term)
     {
       ELLE_TRACE("%s for binary (%s) %s %s",
-                  (term == ProcessTermination::dont_wait ? "Checking" : "Waiting"),
-                 _impl->pid, _impl->binary, _impl->arguments);
-      if (_impl->pid == 0)
+                  (term == ProcessTermination::dont_wait ? "Checking"
+                                                         : "Waiting"),
+                 _this->pid, _this->binary, _this->arguments);
+      if (_this->pid == 0)
       {
-        ELLE_DEBUG("%s (pid = 0): status %s",
-                   this->_impl->binary,
-                   this->_impl->status);
-        return _impl->status;
+        ELLE_DEBUG("%s (pid = 0): status %s", _this->binary, _this->status);
+        return _this->status;
       }
 
       int status_ = 0;
@@ -536,7 +535,7 @@ namespace elle
       pid_t ret = 0;
       do
       {
-        ret = ::waitpid(_impl->pid, &status_, options);
+        ret = ::waitpid(_this->pid, &status_, options);
       } while (ret < 0 && errno == EINTR);
 
       if (ret < 0)
@@ -545,11 +544,11 @@ namespace elle
             {
               ELLE_WARN(
                 "The pid %d is no longer valid, exit status set to 1 (failure)",
-                _impl->pid
+                _this->pid
               );
-              _impl->pid = 0;
-              _impl->status = EXIT_FAILURE;
-              return _impl->status;
+              _this->pid = 0;
+              _this->status = EXIT_FAILURE;
+              return _this->status;
             }
           std::string reason;
           if (errno == EFAULT)
@@ -561,45 +560,45 @@ namespace elle
           throw elle::Exception{"Cannot waitpid: " + reason};
         }
 
-      ELLE_DEBUG("Binary %s successfully waited", _impl->binary);
+      ELLE_DEBUG("Binary %s successfully waited", _this->binary);
       // No child exited and WNOHANG specified.
       if (ret == 0 && term == ProcessTermination::dont_wait)
         return 0;
 
-      // ret == _impl->pid is true
+      // ret == _this->pid is true
 
       if (WIFEXITED(status_))
         {
-          _impl->status = WEXITSTATUS(status_);
+          _this->status = WEXITSTATUS(status_);
           ELLE_DEBUG("Binary %s %s exited with status %d",
-                     _impl->binary, _impl->arguments, _impl->status);
-          if (_impl->status < 0) // ensure positive value.
+                     _this->binary, _this->arguments, _this->status);
+          if (_this->status < 0) // ensure positive value.
             {
               ELLE_WARN("The process %s exited with a negative value: %d",
-                        _impl->binary, _impl->status);
-              _impl->status = -_impl->status;
+                        _this->binary, _this->status);
+              _this->status = -_this->status;
             }
-          _impl->pid = 0;
+          _this->pid = 0;
         }
       else if (WIFSIGNALED(status_))
         {
-          _impl->status = -WTERMSIG(status_);
+          _this->status = -WTERMSIG(status_);
           ELLE_DEBUG("Binary %s %s signaled with status %d",
-                     _impl->binary, _impl->arguments, -_impl->status);
-          if (_impl->status > 0) // ensure negative value.
+                     _this->binary, _this->arguments, -_this->status);
+          if (_this->status > 0) // ensure negative value.
             {
 
               ELLE_WARN("The process %s signaled with a negative value: %d",
-                        _impl->binary, -_impl->status);
-              _impl->status = -_impl->status;
+                        _this->binary, -_this->status);
+              _this->status = -_this->status;
             }
-          _impl->pid = 0;
+          _this->pid = 0;
         }
       else if (term == ProcessTermination::wait)
         {
           throw elle::Exception{"Unexpected program termination"};
         }
-      return _impl->status;
+      return _this->status;
     }
 
     bool
@@ -607,13 +606,13 @@ namespace elle
     {
       // The order is important: status() has the opportunity to set the pid to
       // 0 if the program has exited.
-      return (this->status() == 0 && _impl->pid != 0);
+      return (this->status() == 0 && _this->pid != 0);
     }
 
     Process::StatusCode
     Process::wait_status()
     {
-      ELLE_DEBUG("Waiting status of %s", _impl->binary);
+      ELLE_DEBUG("Waiting status of %s", _this->binary);
       return this->status(ProcessTermination::wait);
     }
 
@@ -622,8 +621,8 @@ namespace elle
     {
       if (this->wait_status() != 0)
         throw elle::Exception{
-          "The program '" + _impl->binary +
-          "' failed exited with error code: " + std::to_string(_impl->status)
+          "The program '" + _this->binary +
+          "' failed exited with error code: " + std::to_string(_this->status)
         };
     }
 
@@ -636,10 +635,10 @@ namespace elle
     void
     Process::kill(ProcessTermination const term)
     {
-      if (_impl->pid == 0)
+      if (_this->pid == 0)
         return;
 
-      ::kill(_impl->pid, SIGKILL);
+      ::kill(_this->pid, SIGKILL);
       if (term == ProcessTermination::wait)
         this->wait_status();
     }
@@ -647,10 +646,10 @@ namespace elle
     void
     Process::terminate(ProcessTermination const term)
     {
-      if (_impl->pid == 0)
+      if (_this->pid == 0)
         return;
 
-      ::kill(_impl->pid, SIGTERM);
+      ::kill(_this->pid, SIGTERM);
       if (term == ProcessTermination::wait)
         this->wait_status();
     }
