@@ -629,7 +629,7 @@ namespace elle
     Process::Id
     Process::id() const
     {
-      return _impl->pid;
+      return _this->pid;
     }
 
     void
