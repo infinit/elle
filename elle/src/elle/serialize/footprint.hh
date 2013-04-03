@@ -8,7 +8,7 @@ namespace elle
   namespace serialize
   {
     /// The size of the footprint.
-    typedef elle::Natural32 FootprintSize;
+    typedef elle::Natural64 FootprintSize;
 
     /// Compute the size of an object T serialized with a Archive.
     template <typename Archive = OutputBinaryArchive, typename T>
