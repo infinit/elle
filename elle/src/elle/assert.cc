@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sstream>
 
-ELLE_LOG_COMPONENT("elle.assert.AssertError");
+ELLE_LOG_COMPONENT("elle.assert");
 
 namespace elle
 {
@@ -43,6 +43,7 @@ namespace elle
         ss << "assertion '" << condition << "' failed at "
            << file << ':' << line;
         this->_what = ss.str();
+        ELLE_ERR("%s", this->_what);
       }
     catch (...)
       {
