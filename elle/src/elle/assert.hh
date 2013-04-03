@@ -9,7 +9,6 @@
 
 namespace elle
 {
-
   class AssertError:
     public std::exception
   {
@@ -32,22 +31,42 @@ namespace elle
 }
 
 # if defined(DEBUG) || !defined(NDEBUG)
-
 /// Throw if the condition is unmet.
-# define ELLE_ASSERT(_condition_)                                       \
-  ::elle::_assert(_condition_, #_condition_, __FILE__, __LINE__)        \
-
-# define ELLE_ASSERT_EQ(A, B)                                           \
+#  define ELLE_ASSERT(_condition_)                                      \
+  ::elle::_assert(_condition_, #_condition_, __FILE__, __LINE__)
+#  define ELLE_ASSERT_EQ(A, B)                                          \
   ::elle::_assert(A == B,                                               \
-                    ::elle::sprintf(#A " == " #B " (%s != %s)", A, B),  \
-                    __FILE__, __LINE__)                                 \
-
+                  ::elle::sprintf(#A " == " #B " (%s != %s)", A, B),    \
+                  __FILE__, __LINE__)
+#  define ELLE_ASSERT_NEQ(A, B)                                         \
+  ::elle::_assert(A != B,                                               \
+                  ::elle::sprintf(#A " != " #B " (%s == %s)", A, B),    \
+                  __FILE__, __LINE__)
+#  define ELLE_ASSERT_GT(A, B)                                          \
+  ::elle::_assert(A > B,                                                \
+                  ::elle::sprintf(#A " > " #B " (%s <= %s)", A, B),     \
+                  __FILE__, __LINE__)
+#  define ELLE_ASSERT_GTE(A, B)                                         \
+  ::elle::_assert(A >= B,                                               \
+                  ::elle::sprintf(#A " >= " #B " (%s < %s)", A, B),     \
+                  __FILE__, __LINE__)
+#  define ELLE_ASSERT_LT(A, B)                                          \
+  ::elle::_assert(A < B,                                                \
+                  ::elle::sprintf(#A " < " #B " (%s >= %s)", A, B),     \
+                  __FILE__, __LINE__)
+#  define ELLE_ASSERT_LTE(A, B)                                         \
+  ::elle::_assert(A <= B,                                               \
+                  ::elle::sprintf(#A " <= " #B " (%s > %s)", A, B),     \
+                  __FILE__, __LINE__)
 # else
 #  define ELLE_ASSERT(_condition_) ((void) 0)
 #  define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT()
+#  define ELLE_ASSERT_NEQ(A, B) ELLE_ASSERT()
+#  define ELLE_ASSERT_GT(A, B) ELLE_ASSERT()
+#  define ELLE_ASSERT_GTE(A, B) ELLE_ASSERT()
+#  define ELLE_ASSERT_LT(A, B) ELLE_ASSERT()
+#  define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT()
 # endif
-
-
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
 # if defined(DEBUG) || !defined(NDEBUG)
@@ -59,7 +78,6 @@ namespace elle
 
 namespace elle
 {
-
   /// Print the message and abort program execution.
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
