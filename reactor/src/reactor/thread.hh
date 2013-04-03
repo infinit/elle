@@ -116,7 +116,7 @@ namespace reactor
        * @param timeout Maximum delay before aborting the operation.
        * @return Whether the operation finished and didn't timeout.
        */
-      bool wait(Waitables& waitables,
+      bool wait(Waitables const& waitables,
                 DurationOpt timeout = DurationOpt());
       /// Shortcut to wait for a single waitable to be done.
       bool wait(Waitable& s,

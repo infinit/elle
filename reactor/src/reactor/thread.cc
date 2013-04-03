@@ -176,16 +176,16 @@ namespace reactor
   `----------------*/
 
   bool
-  Thread::wait(Waitable&                        s,
-               boost::optional<Duration>        timeout)
+  Thread::wait(Waitable& s,
+               boost::optional<Duration> timeout)
   {
     Waitables waitables(1, &s);
     return wait(waitables, timeout);
   }
 
   bool
-  Thread::wait(Waitables&                       waitables,
-               boost::optional<Duration>        timeout)
+  Thread::wait(Waitables const& waitables,
+               boost::optional<Duration> timeout)
   {
     ELLE_TRACE_SCOPE("%s: wait %s", *this, waitables);
     ELLE_ASSERT_EQ(_state, state::running);
