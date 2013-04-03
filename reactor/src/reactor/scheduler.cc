@@ -82,6 +82,10 @@ namespace reactor
     ELLE_TRACE("Scheduler: new round with %s jobs", running.size());
     BOOST_FOREACH (Thread* t, running)
     {
+      // If the thread was stopped during this round, skip. Can be caused by
+      // terminate_now, for instance.
+      if (_running.find(t) == _running.end())
+        continue;
       ELLE_TRACE("Scheduler: schedule %s", *t);
       _step(t);
     }
@@ -141,6 +145,7 @@ namespace reactor
   void
   Scheduler::_step(Thread* thread)
   {
+    ELLE_ASSERT(thread->state() == Thread::State::running);
     Thread* previous = _current;
     _current = thread;
     try

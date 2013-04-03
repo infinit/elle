@@ -32,7 +32,7 @@ yield()
 
 bool
 wait(reactor::Waitable& s,
-          reactor::DurationOpt timeout = reactor::DurationOpt())
+     reactor::DurationOpt timeout = reactor::DurationOpt())
 {
   return sched->current()->wait(s, timeout);
 }
@@ -1041,6 +1041,42 @@ test_terminate_now_starting()
   starting.terminate_now();
 }
 
+/*------------------------.
+| Terminate now scheduled |
+`------------------------*/
+
+static
+void
+victim()
+{
+
+}
+
+static
+void
+killer(reactor::Thread& v)
+{
+  v.terminate_now();
+}
+
+static
+void
+test_terminate_now_scheduled()
+{
+  reactor::Scheduler sched;
+
+  // Make sure v is run after k in the first round, to check if terminating it
+  // removes it from the running thread for this round.
+  reactor::Thread* g = nullptr;
+  reactor::Thread k(sched, "Killer", [&]() { killer(*g); });
+  reactor::Thread v(sched, "Victim", &victim);
+  g = &v;
+
+  sched.run();
+}
+
+
+
 /*-----------------.
 | IO service throw |
 `-----------------*/
@@ -1099,6 +1135,7 @@ test_suite()
   terminate->add(BOOST_TEST_CASE(test_terminate_yield));
   terminate->add(BOOST_TEST_CASE(test_terminate_now));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled));
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);
