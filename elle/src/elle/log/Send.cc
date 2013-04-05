@@ -5,6 +5,7 @@
 #include <elle/types.hh>
 
 #include <fstream>
+#include <mutex>
 
 #include <elle/os/getenv.hh>
 
@@ -24,18 +25,24 @@ namespace elle
     {
       if (!_logger())
       {
-        std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
+        static std::mutex log_mutex;
 
-        if (path.empty() == false)
+        std::unique_lock<std::mutex> ulock{log_mutex};
+        if (!_logger())
         {
-          static std::ofstream out{
+          std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
+
+          if (path.empty() == false)
+          {
+            static std::ofstream out{
               path,
-              std::fstream::trunc | std::fstream::out
-          };
-          _logger().reset(new elle::log::TextLogger(out));
+                std::fstream::trunc | std::fstream::out
+            };
+            _logger().reset(new elle::log::TextLogger(out));
+          }
+          else
+            _logger().reset(new elle::log::TextLogger(std::cerr));
         }
-        else
-          _logger().reset(new elle::log::TextLogger(std::cerr));
       }
       return *_logger();
     };
