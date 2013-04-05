@@ -32,17 +32,35 @@ namespace reactor
   | Current Scheduler |
   `------------------*/
 
+  static
   std::unordered_map<std::thread::id, Scheduler*>&
-  Scheduler::_schedulers()
+  _schedulers()
   {
     static std::unordered_map<std::thread::id, Scheduler*> map;
     return map;
   }
 
+  static
+  std::mutex&
+  _schedulers_mutex()
+  {
+    static std::mutex mutex;
+    return mutex;
+  }
+
   Scheduler*
   Scheduler::scheduler()
   {
-    return Scheduler::_schedulers()[std::this_thread::get_id()];
+    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
+    return _schedulers()[std::this_thread::get_id()];
+  }
+
+  static
+  void
+  scheduler(Scheduler* v)
+  {
+    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
+    _schedulers()[std::this_thread::get_id()] = v;
   }
 
   /*----.
@@ -69,8 +87,8 @@ namespace reactor
   bool
   Scheduler::step()
   {
-    _schedulers()[std::this_thread::get_id()] = this;
-    ELLE_FINALLY(pop, _schedulers()[std::this_thread::get_id()] = nullptr);
+    reactor::scheduler(this);
+    ELLE_FINALLY(pop, reactor::scheduler(nullptr));
 
     // Could avoid locking if no jobs are pending with a boolean.
     {

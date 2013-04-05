@@ -889,6 +889,36 @@ test_storage()
   sched->run();
 }
 
+/*------------.
+| Multithread |
+`------------*/
+
+void
+test_multithread()
+{
+  reactor::Scheduler sched1;
+  reactor::Scheduler sched2;
+  reactor::Scheduler sched3;
+
+  auto action = [&]()
+  {
+    for (int i = 0; i < 64; ++i)
+      reactor::Scheduler::scheduler()->current()->yield();
+  };
+
+  reactor::Thread thread1(sched1, "Thread 1", action);
+  reactor::Thread thread2(sched2, "Thread 2", action);
+  reactor::Thread thread3(sched3, "Thread 3", action);
+
+  std::thread t1([&](){sched1.run();});
+  std::thread t2([&](){sched2.run();});
+  std::thread t3([&](){sched2.run();});
+
+  t1.join();
+  t2.join();
+  t3.join();
+}
+
 /*----------.
 | Terminate |
 `----------*/
@@ -1112,6 +1142,9 @@ test_suite()
   basics->add(BOOST_TEST_CASE(test_basics_one));
   basics->add(BOOST_TEST_CASE(test_basics_interleave));
 
+  boost::unit_test::test_suite* multithread = BOOST_TEST_SUITE("Multithread");
+  multithread->add(BOOST_TEST_CASE(test_multithread));
+
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
   boost::unit_test::framework::master_test_suite().add(signals);
   signals->add(BOOST_TEST_CASE(test_signals_one_on_one));
@@ -1156,7 +1189,6 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(sem);
   sem->add(BOOST_TEST_CASE(test_semaphore_noblock));
   sem->add(BOOST_TEST_CASE(test_semaphore_block));
-  sem->add(BOOST_TEST_CASE(test_semaphore_multi));
 
   boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
   boost::unit_test::framework::master_test_suite().add(mtx);

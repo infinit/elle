@@ -36,10 +36,6 @@ namespace reactor
     static
     Scheduler*
     scheduler();
-  private:
-    static
-    std::unordered_map<std::thread::id, Scheduler*>&
-    _schedulers();
 
   /*----.
   | Run |
