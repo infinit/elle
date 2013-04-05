@@ -27,7 +27,7 @@ def configure(cxx_toolkit = None,
 
   config = drake.cxx.Config()
   config.add_local_include_path('src')
-  config.standard = drake.cxx.Config.cxx_0x
+  config.standard = drake.cxx.Config.cxx_11
   config.lib_path('lib')
   cxx_config += config
 

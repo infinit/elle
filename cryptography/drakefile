@@ -33,14 +33,14 @@ def configure(cxx_toolkit = None,
 
   # Global Configuration
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_0x
+  config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('sources')
   config.lib_path('lib')
   config += openssl
 
   # Local Configuration
   cxx_config = cxx_config or drake.cxx.Config()
-  cxx_config.standard = drake.cxx.Config.cxx_0x
+  cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
   cxx_config += boost.cfg
   cxx_config += boost.config_system()
