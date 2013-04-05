@@ -54,6 +54,8 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config + config
 
   sources = drake.nodes(
+    'src/elle/finally.cc',
+    'src/elle/finally.hh',
     'src/elle/Backtrace.cc',
     'src/elle/Backtrace.hh',
     'src/elle/Buffer.cc',

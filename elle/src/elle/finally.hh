@@ -46,6 +46,10 @@
 # define ELLE_FINALLY_ABORT(_variable_)                                 \
   BOOST_PP_CAT(_elle_finally_variable_, _variable_).abort();
 
+# define ELLE_SCOPE_EXIT(_lambda_)                                             \
+  auto BOOST_PP_CAT(__on_scope_exit_, __LINE__) = ::elle::Finally{_lambda_}    \
+/**/
+
 namespace elle
 {
   /// Provide a way for a final action to be performed i.e when leaving the
@@ -59,25 +63,15 @@ namespace elle
     | Construction |
     `-------------*/
   public:
-    Finally(std::function<void()> const& action):
-      _action(action)
-    {}
-
-    ~Finally()
-    {
-      if (this->_action)
-        this->_action();
-    }
+    Finally(std::function<void()> const& action);
+    ~Finally();
 
     /*--------.
     | Methods |
     `--------*/
   public:
     void
-    abort()
-    {
-      this->_action = std::function<void()>();
-    }
+    abort();
 
     /*-----------.
     | Attributes |
@@ -85,6 +79,7 @@ namespace elle
   private:
     ELLE_ATTRIBUTE(std::function<void()>, action);
   };
+
 }
 
 #endif
