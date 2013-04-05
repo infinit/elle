@@ -252,6 +252,49 @@ environment_format_test()
 }
 
 static
+void
+parallel_write()
+{
+  std::stringstream output;
+  elle::log::TextLogger logger(output);
+  logger.component_enabled("in");
+  logger.component_enabled("out");
+
+  auto action = [&logger](int& counter)
+    {
+      using namespace boost::posix_time;
+      ptime deadline = microsec_clock::local_time() + seconds(1);
+      while (microsec_clock::local_time() < deadline)
+      {
+        logger.indent();
+        logger.message(elle::log::Logger::Level::log,
+                       elle::log::Logger::Type::info,
+                       "out",
+                       "out");
+        logger.indent();
+        logger.message(elle::log::Logger::Level::log,
+                       elle::log::Logger::Type::error,
+                       "in",
+                       "in");
+        logger.unindent();
+        logger.unindent();
+        ++counter;
+      }
+    };
+
+  int c1 = 0;;
+  std::thread t1([&](){ action(c1); });
+  int c2 = 0;
+  std::thread t2([&](){ action(c2); });
+
+  t1.join();
+  t2.join();
+
+  BOOST_CHECK_GT(c1, 64);
+  BOOST_CHECK_GT(c2, 64);
+}
+
+static
 bool
 test_suite()
 {
@@ -264,6 +307,10 @@ test_suite()
   logger->add(BOOST_TEST_CASE(std::bind(logger_indent_test)));
   logger->add(BOOST_TEST_CASE(std::bind(message_test)));
   logger->add(BOOST_TEST_CASE(std::bind(environment_format_test)));
+
+  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("Concurrency");
+  boost::unit_test::framework::master_test_suite().add(concurrency);
+  concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
 
   return true;
 }

@@ -130,6 +130,8 @@ namespace elle
       int indent = this->indentation();
       assert(indent >= 1);
 
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
+
       // Component
       std::string comp;
       {
@@ -185,6 +187,7 @@ namespace elle
     bool
     Logger::component_enabled(std::string const& name)
     {
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
       auto elt = this->_component_enabled.find(name);
       if (elt == this->_component_enabled.end())
         {

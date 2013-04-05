@@ -18,40 +18,45 @@ namespace elle
     {
       static std::unique_ptr<Logger> logger;
       return logger;
-    };
+    }
+
+    static
+    std::mutex&
+    log_mutex()
+    {
+      static std::mutex mutex;
+      return mutex;
+    }
 
     Logger&
     logger()
     {
+      std::unique_lock<std::mutex> ulock{log_mutex()};
+
       if (!_logger())
       {
-        static std::mutex log_mutex;
+        std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
 
-        std::unique_lock<std::mutex> ulock{log_mutex};
-        if (!_logger())
+        if (path.empty() == false)
         {
-          std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
-
-          if (path.empty() == false)
-          {
-            static std::ofstream out{
-              path,
-                std::fstream::trunc | std::fstream::out
-            };
-            _logger().reset(new elle::log::TextLogger(out));
-          }
-          else
-            _logger().reset(new elle::log::TextLogger(std::cerr));
+          static std::ofstream out{
+            path,
+              std::fstream::trunc | std::fstream::out
+              };
+          _logger().reset(new elle::log::TextLogger(out));
         }
+        else
+          _logger().reset(new elle::log::TextLogger(std::cerr));
       }
       return *_logger();
-    };
+    }
 
     void
     logger(std::unique_ptr<Logger> logger)
     {
+      std::unique_lock<std::mutex> ulock{log_mutex()};
       _logger() = std::move(logger);
-    };
+    }
 
     namespace detail
     {
