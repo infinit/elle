@@ -3,9 +3,6 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-set(Uri_SRCS uri.cpp uri_io.cpp uri_builder.cpp detail/uri_parse.cpp)
-add_library(cppnetlib-uri ${Uri_SRCS})
-
 set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/uri.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_io.cpp
