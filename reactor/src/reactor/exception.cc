@@ -3,6 +3,8 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
+#include <elle/printf.hh>
+
 namespace reactor
 {
   Exception::Exception(const std::string& message)
@@ -17,7 +19,7 @@ namespace reactor
     //     _backtrace.strip_base(t->_backtrace_root);
   }
 
-  Terminate::Terminate()
-    : Super("thread termination")
+  Terminate::Terminate(const std::string& message)
+    : Super(elle::sprintf("thread termination: %s", message))
   {}
 }

@@ -19,7 +19,7 @@ namespace reactor
   {
   public:
     typedef Exception Super;
-    Terminate();
+    Terminate(const std::string& message);
     ELLE_EXCEPTION(Terminate);
   };
 }
