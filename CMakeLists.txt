@@ -54,3 +54,6 @@ if (CMAKE_PROJECT_NAME STREQUAL "Uri" OR CPP-NETLIB_BUILD_TESTS)
   endif()
   add_subdirectory(test)
 endif()
+
+#propagate sources to parent scope for one-lib-build
+set(Uri_SRCS ${Uri_SRCS} PARENT_SCOPE)
