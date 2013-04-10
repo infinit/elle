@@ -1,4 +1,5 @@
 #include <elle/assert.hh>
+#include <elle/Backtrace.hh>
 #include <elle/log.hh>
 
 #include <iostream>
@@ -43,7 +44,12 @@ namespace elle
         ss << "assertion '" << condition << "' failed at "
            << file << ':' << line;
         this->_what = ss.str();
-        ELLE_ERR("%s", this->_what);
+        ELLE_ERR("%s", this->_what)
+        {
+          for (auto& sf: Backtrace::current())
+            ELLE_ERR("%s", sf);
+        }
+
       }
     catch (...)
       {
