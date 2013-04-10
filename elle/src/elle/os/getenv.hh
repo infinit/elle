@@ -21,6 +21,9 @@ namespace elle
     std::string
     getenv(std::string const& key,
            std::string const& default_);
+
+    bool
+    in_env(std::string const& key);
   }
 }
 

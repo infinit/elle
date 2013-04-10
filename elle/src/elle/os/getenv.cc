@@ -36,5 +36,11 @@ namespace elle
         return default_;
     }
 
+    bool
+    in_env(std::string const& key)
+    {
+      char const* val = ::getenv(key.c_str());
+        return (val != nullptr);
+    }
   }
 }
