@@ -200,6 +200,16 @@ namespace elle
       void
       kill(ProcessTermination const term = ProcessTermination::wait);
 
+    private:
+      /// Send a signal to the program.
+      void
+      _signal(int signal, ProcessTermination const term);
+
+    public:
+      /// Ask the program to interrupt.
+      void
+      interrupt(ProcessTermination const term = ProcessTermination::wait);
+
       /// Ask the program to terminate.
       void
       terminate(ProcessTermination const term = ProcessTermination::wait);

@@ -644,14 +644,26 @@ namespace elle
     }
 
     void
-    Process::terminate(ProcessTermination const term)
+    Process::_signal(int signal, ProcessTermination const term)
     {
       if (_this->pid == 0)
         return;
 
-      ::kill(_this->pid, SIGTERM);
+      ::kill(_this->pid, signal);
       if (term == ProcessTermination::wait)
         this->wait_status();
+    }
+
+    void
+    Process::interrupt(ProcessTermination const term)
+    {
+      this->_signal(SIGINT, term);
+    }
+
+    void
+    Process::terminate(ProcessTermination const term)
+    {
+      this->_signal(SIGTERM, term);
     }
 
     std::string
