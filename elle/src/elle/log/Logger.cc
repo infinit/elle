@@ -136,7 +136,7 @@ namespace elle
       std::string comp;
       {
         unsigned int size = component.size();
-        assert(size <= this->component_max_size());
+        ELLE_ASSERT_LTE(size, this->component_max_size());
         unsigned int pad = this->component_max_size() - size;
         comp = std::string(pad / 2, ' ')
           + component + std::string(pad / 2 + pad % 2, ' ');
