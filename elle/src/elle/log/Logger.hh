@@ -144,6 +144,9 @@ namespace elle
       std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
     };
+
+    std::ostream&
+    operator << (std::ostream& stream, Logger::Level l);
   }
 }
 

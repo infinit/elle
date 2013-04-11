@@ -242,5 +242,33 @@ namespace elle
         res = elt->second;
       return res;
     }
+
+    /*------.
+    | Level |
+    `------*/
+
+    std::ostream&
+    operator << (std::ostream& stream, Logger::Level l)
+    {
+      switch (l)
+      {
+        case Logger::Level::none:
+          stream << "none";
+          break;
+        case Logger::Level::log:
+          stream << "log";
+          break;
+        case Logger::Level::trace:
+          stream << "trace";
+          break;
+        case Logger::Level::debug:
+          stream << "debug";
+          break;
+        case Logger::Level::dump:
+          stream << "dump";
+          break;
+      }
+      return stream;
+    }
   }
 }
