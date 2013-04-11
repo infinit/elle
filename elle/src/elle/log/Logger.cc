@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <elle/Exception.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/getenv.hh>
 #include <elle/printf.hh>
@@ -92,26 +93,62 @@ namespace elle
     | Construction |
     `-------------*/
 
+    static
+    Logger::Level
+    parse_level(std::string const& level)
+    {
+      if (level == "NONE")
+        return Logger::Level::none;
+      else if (level == "LOG")
+        return Logger::Level::log;
+      else if (level == "TRACE")
+        return Logger::Level::trace;
+      else if (level == "DEBUG")
+        return Logger::Level::debug;
+      else if (level == "DUMP")
+        return Logger::Level::dump;
+      else
+        throw elle::Exception(
+          elle::sprintf("invalid log level: %s", level));
+  }
+
     Logger::Logger()
       : _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
       , _enable_time(elle::os::getenv("ELLE_LOG_TIME", "") == "1")
       , _universal_time(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "1")
       , _indentation(this->_factory()())
       , _component_patterns()
-      , _component_enabled()
+      , _component_levels()
       , _component_max_size(0)
     {
-      std::string components_str = elle::os::getenv("ELLE_LOG_COMPONENTS", "");
-      if (components_str == "")
-        this->_component_patterns.push_back("*");
-      else
+      std::string levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
+      if (!levels_str.empty())
+      {
+        std::vector<std::string> levels;
+        boost::algorithm::split(levels, levels_str,
+                                boost::algorithm::is_any_of(","),
+                                boost::algorithm::token_compress_on);
+        for (auto& pattern: levels)
         {
-          boost::algorithm::split(this->_component_patterns, components_str,
-                                  boost::algorithm::is_any_of(","),
-                                  boost::algorithm::token_compress_on);
-          for (auto& pattern: this->_component_patterns)
+          auto colon = pattern.find(":");
+          Level level = Level::log;
+          if (colon != std::string::npos)
+          {
+            std::string level_str = pattern.substr(colon + 1);
+            boost::algorithm::trim(level_str);
+            level = parse_level(level_str);
+            pattern = pattern.substr(0, colon);
             boost::algorithm::trim(pattern);
+          }
+          else
+          {
+            boost::algorithm::trim(pattern);
+            level = parse_level(pattern);
+            pattern = "*";
+          }
+          _component_patterns.push_back(std::make_pair(pattern, level));
         }
+      }
     }
 
     Logger::~Logger()
@@ -184,30 +221,26 @@ namespace elle
     | Enabled |
     `--------*/
 
-    bool
+    Logger::Level
     Logger::component_enabled(std::string const& name)
     {
       std::lock_guard<std::mutex> lock(_indentation_mutex);
-      auto elt = this->_component_enabled.find(name);
-      if (elt == this->_component_enabled.end())
-        {
-          bool res = false;
-          for (auto const& pattern: this->_component_patterns)
-            {
-              if (fnmatch(pattern.c_str(), name.c_str(), 0) == 0)
-                {
-                  this->_component_max_size =
-                    std::max(this->_component_max_size,
-                             static_cast<unsigned int>(name.size()));
-                  res = true;
-                  break;
-                }
-            }
-          this->_component_enabled[name] = res;
-          return res;
-        }
+      auto elt = this->_component_levels.find(name);
+      Level res = Level::log;
+      if (elt == this->_component_levels.end())
+      {
+        for (auto const& pattern: this->_component_patterns)
+          if (fnmatch(pattern.first.c_str(), name.c_str(), 0) == 0)
+            res = pattern.second;
+        if (res > Level::none)
+          this->_component_max_size =
+            std::max(this->_component_max_size,
+                     static_cast<unsigned int>(name.size()));
+        this->_component_levels[name] = res;
+      }
       else
-        return elt->second;
+        res = elt->second;
+      return res;
     }
   }
 }

@@ -60,37 +60,6 @@ namespace elle
 
     namespace detail
     {
-      static
-      Logger::Level
-      _default_log_level()
-      {
-        static const char* env = ::getenv("ELLE_LOG_LEVEL");
-        if (env)
-          {
-            const std::string level(env);
-            if (level == "LOG")
-              return Logger::Level::log;
-            else if (level == "TRACE")
-              return Logger::Level::trace;
-            else if (level == "DEBUG")
-              return Logger::Level::debug;
-            else if (level == "DUMP")
-              return Logger::Level::dump;
-            else
-              throw elle::Exception
-                (elle::sprintf("invalid log level: %s", level));
-          }
-        else
-          return Logger::Level::log;
-      }
-
-      Logger::Level
-      default_log_level()
-      {
-        static Logger::Level level = _default_log_level();
-        return level;
-      }
-
       Send::~Send()
       {
         if (!_proceed)
@@ -103,8 +72,7 @@ namespace elle
                      elle::log::Logger::Level level,
                      elle::String const& component)
       {
-        return logger().component_enabled(component) &&
-          level <= default_log_level();
+        return level <= logger().component_enabled(component);
       }
 
       void

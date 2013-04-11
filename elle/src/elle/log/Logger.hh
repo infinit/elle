@@ -60,7 +60,8 @@ namespace elle
     public:
       enum class Level
       {
-        log = 0,
+        none,
+        log,
         trace,
         debug,
         dump,
@@ -136,11 +137,11 @@ namespace elle
     | Components |
     `-----------*/
     public:
-      bool
+      Level
       component_enabled(std::string const& name);
     private:
-      std::vector<std::string> _component_patterns;
-      std::unordered_map<std::string, bool> _component_enabled;
+      std::vector<std::pair<std::string, Level>> _component_patterns;
+      std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
     };
   }
