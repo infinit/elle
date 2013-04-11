@@ -2,6 +2,7 @@
 # define REACTOR_SCOPE_HH
 
 # include <reactor/fwd.hh>
+# include <reactor/thread.hh>
 
 namespace reactor
 {
@@ -12,7 +13,7 @@ namespace reactor
     ~Scope();
     void
     run_background(std::string const& name,
-                   reactor::Thread::Action const& a);
+                   Thread::Action const& a);
 
   private:
     std::vector<Thread*> _threads;

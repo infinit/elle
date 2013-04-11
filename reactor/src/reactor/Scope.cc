@@ -26,5 +26,17 @@ namespace reactor
   {
     auto& sched = *Scheduler::scheduler();
     this->_threads.push_back(new Thread(sched, name, a));
+
+    auto it = begin(this->_threads);
+    for (; it != end(this->_threads); ++it)
+    {
+      auto* t = *it;
+
+      if (t->state() == Thread::State::done)
+      {
+        delete t;
+        it = this->_threads.erase(it);
+      }
+    }
   }
 }
