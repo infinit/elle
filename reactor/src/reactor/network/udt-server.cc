@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <random>
 #include <chrono>
+#include <typeinfo>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
@@ -293,10 +294,17 @@ namespace reactor
 
       ELLE_ASSERT(splitted[1] != "0.0.0.0");
 
-      boost::asio::ip::udp::endpoint public_endpoint
-        (boost::asio::ip::address::from_string(splitted[1]),
-         boost::lexical_cast<int>(splitted[2]));
-      return public_endpoint;
+      try
+      {
+        boost::asio::ip::udp::endpoint public_endpoint
+          (boost::asio::ip::address::from_string(splitted[1]),
+           boost::lexical_cast<int>(splitted[2]));
+        return public_endpoint;
+      }
+      catch (std::bad_cast const& e)
+      {
+        throw PunchException{elle::sprintf("bad cast: %s", e.what())};
+      }
     }
 
     bool
