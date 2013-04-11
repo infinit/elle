@@ -281,19 +281,19 @@ namespace elle
     Natural64
     Time::microseconds()
     {
-
+      elle::unreachable();
     }
 
     Natural64
     Time::milliseconds()
     {
-
+      elle::unreachable();
     }
 
     Natural64
     Time::seconds()
     {
-
+      elle::unreachable();
     }
 
 //
