@@ -557,6 +557,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::LoadBinary(void* data,
                                                      std::streamsize size)
     {
+      this->stream().exceptions(std::ios::failbit | std::ios::badbit);
       this->stream().read(static_cast<char*>(data), size);
     }
 
