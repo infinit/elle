@@ -171,8 +171,8 @@ namespace reactor
         thread->_step();
         if (_eptr != nullptr)
         {
-          ELLE_TRACE_SCOPE("%s: exception escaped, terminating", *this);
-          this->terminate();
+          ELLE_ERR("%s: exception escaped, terminating", *this)
+            this->terminate();
         }
       }
     catch (const std::runtime_error& err)
