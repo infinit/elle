@@ -64,10 +64,13 @@ static
 void
 message_test()
 {
+  typedef elle::log::Logger::Level Level;
+
   std::stringstream ss;
   elle::log::TextLogger* logger = new elle::log::TextLogger(ss);
 
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
 
   logger->indent();
   logger->message(elle::log::Logger::Level::log,
@@ -86,7 +89,8 @@ message_test()
 
   logger->unindent();
   ss.str("");
-  BOOST_CHECK_EQUAL(logger->component_enabled("Another"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Another"),
+                    Level::log);
   logger->message(elle::log::Logger::Level::log,
                   elle::log::Logger::Type::info,
                   "Another",
@@ -144,6 +148,8 @@ static
 void
 environment_format_test()
 {
+  typedef elle::log::Logger::Level Level;
+
   std::stringstream ss, res;
   elle::log::TextLogger* logger;
 
@@ -155,7 +161,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
   logger = new elle::log::TextLogger(ss);
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
   logger->indent();
   logger->message(elle::log::Logger::Level::debug,
                   elle::log::Logger::Type::info,
@@ -175,7 +182,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
   logger = new elle::log::TextLogger(ss);
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
   logger->indent();
   logger->message(elle::log::Logger::Level::debug,
                   elle::log::Logger::Type::info,
@@ -194,7 +202,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
   logger = new elle::log::TextLogger(ss);
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
   logger->indent();
   logger->message(elle::log::Logger::Level::debug,
                   elle::log::Logger::Type::info,
@@ -215,7 +224,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
   logger = new elle::log::TextLogger(ss);
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
   logger->indent();
   logger->message(elle::log::Logger::Level::debug,
                   elle::log::Logger::Type::info,
@@ -236,7 +246,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
   BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
   logger = new elle::log::TextLogger(ss);
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), true);
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+                    Level::log);
   logger->indent();
   logger->message(elle::log::Logger::Level::dump,
                   elle::log::Logger::Type::warning,
