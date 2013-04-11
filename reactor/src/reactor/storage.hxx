@@ -17,12 +17,15 @@ namespace reactor
     return this->Get();
   }
 
+  // XXX: factor with Get(T const& def)
   template <typename T>
   T&
   LocalStorage<T>::Get()
   {
     Scheduler* sched = Scheduler::scheduler();
     Thread* current = sched ? sched->current() : 0;
+
+    std::lock_guard<std::mutex> lock(_mutex);
     typename Content::iterator it = this->_content.find(current);
     if (it == this->_content.end())
       {
@@ -36,12 +39,14 @@ namespace reactor
       return it->second;
   }
 
+
   template <typename T>
   T&
   LocalStorage<T>::Get(T const& def)
   {
     Scheduler* sched = Scheduler::scheduler();
     Thread* current = sched ? sched->current() : 0;
+    std::lock_guard<std::mutex> lock(_mutex);
     typename Content::iterator it = this->_content.find(current);
     if (it == this->_content.end())
       {
@@ -60,6 +65,7 @@ namespace reactor
   void
   LocalStorage<T>::_Clean(Thread* current)
   {
+    std::lock_guard<std::mutex> lock(_mutex);
     typename Content::iterator it = this->_content.find(current);
     assert(it != this->_content.end());
     this->_content.erase(it);

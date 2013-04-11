@@ -875,18 +875,48 @@ storage(reactor::LocalStorage<int>& val,
   BOOST_CHECK_EQUAL(val.Get(), start + 1);
 }
 
+static
 void
 test_storage()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::LocalStorage<int> val;
 
-  reactor::Thread t1(*sched, "1", boost::bind(storage, boost::ref(val), 0));
-  reactor::Thread t2(*sched, "2", boost::bind(storage, boost::ref(val), 1));
-  reactor::Thread t3(*sched, "3", boost::bind(storage, boost::ref(val), 2));
-  reactor::Thread t4(*sched, "4", boost::bind(storage, boost::ref(val), 3));
+  reactor::Thread t1(sched, "1", boost::bind(storage, boost::ref(val), 0));
+  reactor::Thread t2(sched, "2", boost::bind(storage, boost::ref(val), 1));
+  reactor::Thread t3(sched, "3", boost::bind(storage, boost::ref(val), 2));
+  reactor::Thread t4(sched, "4", boost::bind(storage, boost::ref(val), 3));
 
-  sched->run();
+  sched.run();
+}
+
+static
+void
+test_storage_multithread()
+{
+  reactor::LocalStorage<int> val;
+
+  auto coro_action = [&]()
+    {
+      val.Get() = 0;
+    };
+
+  auto action = [&]()
+    {
+      using namespace boost::posix_time;
+      ptime deadline = microsec_clock::local_time() + milliseconds(500);
+      reactor::Scheduler sched;
+      while (microsec_clock::local_time() < deadline)
+      {
+        reactor::Thread t(sched, "1", coro_action);
+        sched.run();
+      }
+    };
+  std::vector<std::thread> threads;
+  for (int i = 0; i < 128; ++i)
+    threads.push_back(std::thread(action));
+  for (auto& thread: threads)
+    thread.join();
 }
 
 /*------------.
@@ -1203,6 +1233,7 @@ test_suite()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage));
+  storage->add(BOOST_TEST_CASE(test_storage_multithread));
 
   boost::unit_test::test_suite* thread_exception = BOOST_TEST_SUITE("Thread Exception");
   boost::unit_test::framework::master_test_suite().add(thread_exception);

@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_STORAGE_HH
 # define INFINIT_REACTOR_STORAGE_HH
 
+# include <mutex>
 # include <unordered_map>
 
 # include <reactor/fwd.hh>
@@ -21,6 +22,7 @@ namespace reactor
     void _Clean(Thread* t);
     typedef std::unordered_map<Thread*, T> Content;
     Content _content;
+    std::mutex _mutex;
   };
 }
 
