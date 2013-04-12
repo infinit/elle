@@ -164,8 +164,7 @@ namespace elle
   WeakBuffer
   DynamicStreamBuffer::write_buffer()
   {
-      ELLE_TRACE("return WeakBuffer{%p, %d}", this->_obuf, _bufsize);
-      return WeakBuffer{this->_obuf, _bufsize};
+    return WeakBuffer{this->_obuf, _bufsize};
   }
 
   void
