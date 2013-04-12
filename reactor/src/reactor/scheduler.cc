@@ -167,34 +167,36 @@ namespace reactor
     Thread* previous = _current;
     _current = thread;
     try
+    {
+      thread->_step();
+      _current = previous;
+      if (_eptr != nullptr)
       {
-        thread->_step();
-        if (_eptr != nullptr)
-        {
-          ELLE_ERR("%s: exception escaped, terminating", *this)
-            this->terminate();
-        }
+        ELLE_ERR("%s: exception escaped, terminating", *this)
+          this->terminate();
       }
+    }
     catch (const std::runtime_error& err)
-      {
-        std::cerr << "thread " << thread->name() << ": "
-                  << err.what() << std::endl;
-        std::abort();
-      }
+    {
+      _current = previous;
+      std::cerr << "thread " << thread->name() << ": "
+                << err.what() << std::endl;
+      std::abort();
+    }
     catch (...)
-      {
-        std::cerr << "thread " << thread->name() << ": "
-                  << "unknown error" << std::endl;
-        std::abort();
-      }
-    _current = previous;
+    {
+      _current = previous;
+      std::cerr << "thread " << thread->name() << ": "
+                << "unknown error" << std::endl;
+      std::abort();
+    }
     if (thread->state() == Thread::state::done)
-      {
-        ELLE_TRACE("Scheduler: cleanup %s", *thread);
-        _running.erase(thread);
-        if (thread->_dispose)
-          delete thread;
-      }
+    {
+      ELLE_TRACE("Scheduler: cleanup %s", *thread);
+      _running.erase(thread);
+      if (thread->_dispose)
+        delete thread;
+    }
   }
 
   /*-------------------.
