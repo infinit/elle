@@ -138,27 +138,26 @@ namespace elle
   `-------------------*/
 
   DynamicStreamBuffer::DynamicStreamBuffer(Size size)
-      : _bufsize{size}
-      , _ibuf(new Byte[size])
-      , _obuf(new Byte[size])
-  {
-  }
+    : _bufsize{size}
+    , _ibuf(new Byte[size])
+    , _obuf(new Byte[size])
+  {}
 
   DynamicStreamBuffer::~DynamicStreamBuffer()
   {
-      delete [] this->_ibuf;
-      delete [] this->_obuf;
+    delete [] this->_ibuf;
+    delete [] this->_obuf;
   }
 
   WeakBuffer
   DynamicStreamBuffer::read_buffer()
   {
-      ELLE_TRACE("read at most %s bytes", this->_bufsize)
-        {
-            ssize_t size = read((char *)_ibuf, this->_bufsize);
-            ELLE_TRACE("got %s bytes", size);
-            return WeakBuffer{this->_ibuf, static_cast<size_t>(size)};
-        }
+    ELLE_TRACE("read at most %s bytes", this->_bufsize)
+    {
+      ssize_t size = read((char *)_ibuf, this->_bufsize);
+      ELLE_TRACE("got %s bytes", size);
+      return WeakBuffer{this->_ibuf, static_cast<size_t>(size)};
+    }
   }
 
   WeakBuffer
