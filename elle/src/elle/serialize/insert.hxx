@@ -16,22 +16,22 @@ namespace elle
     class Insertor
     {
     protected:
+      std::unique_ptr<std::ostream> _stream;
       std::unique_ptr<Archive>      _archive;
-      std::unique_ptr<std::ostream> _stream; // stream destroyed after archive
 
     public:
       explicit
       Insertor(std::unique_ptr<std::ostream>&& stream):
-        _archive{new Archive{*stream}},
-        _stream(std::move(stream))
+        _stream{std::move(stream)},
+        _archive{new Archive{*this->_stream}}
       {
         if (!this->_stream->good())
           throw Exception("stream integrity is bad");
       }
 
       Insertor(Insertor&& other):
-        _archive{std::move(other._archive)},
-        _stream{std::move(other._stream)}
+        _stream{std::move(other._stream)},
+        _archive{std::move(other._archive)}
       {}
 
       template <typename T>
@@ -66,21 +66,21 @@ namespace elle
     class StringInsertor
     {
     private:
+      std::unique_ptr<std::ostream> _stream;
       std::unique_ptr<Archive>      _archive;
-      std::unique_ptr<std::ostream> _stream; // stream destroyed after archive
       std::string&                  _str;
 
     public:
       StringInsertor(std::unique_ptr<std::ostream>&& stream,
                      std::string& str):
-        _archive{new Archive{*stream}},
         _stream{std::move(stream)},
+        _archive{new Archive{*this->_stream}},
         _str(str)
       {}
 
       StringInsertor(StringInsertor&& other):
-        _archive{std::move(other._archive)},
         _stream{std::move(other._stream)},
+        _archive{std::move(other._archive)},
         _str(other._str)
       {}
 
@@ -141,4 +141,3 @@ namespace elle
 }
 
 #endif
-
