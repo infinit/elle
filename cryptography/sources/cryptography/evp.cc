@@ -194,6 +194,8 @@ namespace infinit
                              const unsigned char*,
                              size_t))
         {
+          ELLE_TRACE_FUNCTION(plain, context, function);
+
           // Compute the plain's digest.
           Digest digest = oneway::hash(plain, oneway_algorithm);
 
@@ -541,6 +543,8 @@ namespace infinit
         hash(Plain const& plain,
              ::EVP_MD const* function)
         {
+          ELLE_TRACE_FUNCTION(plain, function);
+
           Digest digest(EVP_MD_size(function));
 
           // Initialise the context.
