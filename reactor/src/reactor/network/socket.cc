@@ -115,8 +115,23 @@ namespace reactor
                                          AsioSocket* socket)
       : Super(sched)
       , _socket(socket)
-      , _peer(socket->remote_endpoint())
-    {}
+      , _peer()
+    {
+      try
+      {
+        _peer = socket->remote_endpoint();
+      }
+      catch (boost::system::system_error const& e)
+      {
+        if (e.code() == boost::system::errc::bad_file_descriptor)
+        {
+          // The socket might not have a remote endpoint if it's a listening
+          // socket for instance.
+        }
+        else
+          throw;
+      }
+    }
 
     template <typename AsioSocket>
     PlainSocket<AsioSocket>::~PlainSocket()
