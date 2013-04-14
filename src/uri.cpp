@@ -673,16 +673,15 @@ namespace network {
     return normalize(level).native().compare(other.normalize(level).native());
   }
 
-  void uri::initialize(const string_type &uri, std::error_code &ec) {
+  bool uri::initialize(const string_type &uri) {
     pimpl_ = new impl;
 
     pimpl_->uri_ = boost::trim_copy(uri);
     if (!pimpl_->uri_.empty()) {
       auto first = std::begin(pimpl_->uri_), last = std::end(pimpl_->uri_);
       bool is_valid = detail::parse(first, last, pimpl_->uri_parts_);
-      if (!is_valid) {
-	ec = make_error_code(uri_error::invalid_syntax);
-      }
+      return is_valid;
     }
+    return true;
   }
 } // namespace network

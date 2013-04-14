@@ -55,6 +55,21 @@ namespace network {
 
   NETWORK_URI_DECL std::error_code make_error_code(uri_error e);
 
+  class NETWORK_URI_DECL uri_syntax_error : public std::system_error {
+
+  public:
+
+    uri_syntax_error()
+      : std::system_error(make_error_code(uri_error::invalid_syntax)) {
+
+    }
+
+    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT {
+
+    }
+
+  };
+
   enum class uri_comparison_level {
     string_comparison,
     case_normalization,
@@ -90,25 +105,23 @@ namespace network {
 
     template <class InputIter>
     uri(const InputIter &first, const InputIter &last) {
-      std::error_code ec;
-      initialize(string_type(first, last), ec);
-      if (ec) {
-	throw std::system_error(ec);
+      if (!initialize(string_type(first, last))) {
+	throw uri_syntax_error();
       }
     }
 
     template <class Source>
     explicit uri(const Source &uri) {
-      std::error_code ec;
-      initialize(detail::translate(uri), ec);
-      if (ec) {
-	throw std::system_error(ec);
+      if (!initialize(detail::translate(uri))) {
+	throw uri_syntax_error();
       }
     }
 
     template <class Source>
     explicit uri(const Source &uri, std::error_code &ec) {
-      initialize(detail::translate(uri), ec);
+      if (!initialize(detail::translate(uri))) {
+	ec = make_error_code(uri_error::invalid_syntax);
+      }
     }
 
     uri(const uri &other);
@@ -185,7 +198,7 @@ namespace network {
 
   private:
 
-    void initialize(const string_type &uri, std::error_code &ec);
+    bool initialize(const string_type &uri);
 
     struct impl;
     impl *pimpl_;

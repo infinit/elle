@@ -16,7 +16,7 @@
 #include "string_utility.hpp"
 
 TEST(uri_test, construct_invalid_uri) {
-  ASSERT_THROW(network::uri("I am not a valid URI."), std::system_error);
+  ASSERT_THROW(network::uri("I am not a valid URI."), network::uri_syntax_error);
 }
 
 TEST(uri_test, make_invalid_uri) {
