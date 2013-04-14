@@ -248,13 +248,8 @@ namespace network {
     delete pimpl_;
   }
 
-  uri &uri::operator = (const uri &other) {
-    uri(other).swap(*this);
-    return *this;
-  }
-
-  uri &uri::operator = (uri &&other) {
-    uri(other).swap(*this);
+  uri &uri::operator = (uri other) {
+    other.swap(*this);
     return *this;
   }
 

@@ -117,9 +117,7 @@ namespace network {
 
     ~uri();
 
-    uri &operator = (const uri &other);
-
-    uri &operator = (uri &&other);
+    uri &operator = (uri other);
 
     void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
