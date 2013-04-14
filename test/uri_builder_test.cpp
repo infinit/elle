@@ -425,7 +425,7 @@ TEST(builder_test, no_scheme_only) {
   builder
     .scheme("http")
     ;
-  ASSERT_THROW(builder.uri(), std::system_error);
+  ASSERT_THROW(builder.uri(), network::uri_builder_error);
 }
 
 TEST(builder_test, relative_uri) {

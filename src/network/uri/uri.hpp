@@ -51,11 +51,18 @@ namespace network {
 
   };
 
-  NETWORK_URI_DECL const std::error_category &uri_category();
+  inline
+  const std::error_category &uri_category() {
+    static uri_category_impl uri_category;
+    return uri_category;
+  }
 
-  NETWORK_URI_DECL std::error_code make_error_code(uri_error e);
+  inline
+  std::error_code make_error_code(uri_error e) {
+    return std::error_code(static_cast<int>(e), uri_category());
+  }
 
-  class NETWORK_URI_DECL uri_syntax_error : public std::system_error {
+  class uri_syntax_error : public std::system_error {
 
   public:
 
@@ -65,6 +72,21 @@ namespace network {
     }
 
     virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT {
+
+    }
+
+  };
+
+  class uri_builder_error : public std::system_error {
+
+  public:
+
+    uri_builder_error()
+      : std::system_error(make_error_code(uri_error::invalid_uri)) {
+
+    }
+
+    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT {
 
     }
 

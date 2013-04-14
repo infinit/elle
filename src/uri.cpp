@@ -50,15 +50,6 @@ namespace network {
     return std::string("Unknown URI error.");
   }
 
-  const std::error_category &uri_category() {
-    static uri_category_impl uri_category;
-    return uri_category;
-  }
-
-  std::error_code make_error_code(uri_error e) {
-    return std::error_code(static_cast<int>(e), uri_category());
-  }
-
   namespace {
     inline
     boost::iterator_range<uri::string_type::iterator>
@@ -156,8 +147,7 @@ namespace network {
 	pimpl_->uri_.append(*host);
       }
       else {
-	auto ec = make_error_code(uri_error::invalid_uri);
-	throw std::system_error(ec);
+	throw uri_builder_error();
       }
 
       if (port) {
@@ -171,8 +161,7 @@ namespace network {
 	  pimpl_->uri_.append(":");
 	}
 	else {
-	  auto ec = make_error_code(uri_error::invalid_uri);
-	  throw std::system_error(ec);
+	  throw uri_builder_error();
 	}
       }
     }
@@ -483,7 +472,7 @@ namespace network {
 			  if (s == "..") {
 			    // in a valid path, the minimum number of segments is 1
 			    if (normalized_segments.size() <= 1) {
-			      throw std::system_error(uri_error::invalid_path);
+			      throw uri_builder_error();
 			    }
 
 			    normalized_segments.pop_back();
