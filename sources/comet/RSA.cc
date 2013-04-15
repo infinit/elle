@@ -1,6 +1,6 @@
 #include <comet/RSA.hh>
 #include <comet/RAND.hh>
-#include <comet/BN.hh>
+#include <comet/bn.hh>
 
 #include <openssl/rsa.h>
 #include <openssl/err.h>

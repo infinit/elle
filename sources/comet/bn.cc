@@ -1,4 +1,4 @@
-#include <comet/BN.hh>
+#include <comet/bn.hh>
 
 #include <openssl/rand.h>
 #include <openssl/err.h>
@@ -11,7 +11,6 @@
 
 namespace comet
 {
-
 #ifndef EIGHT_BIT
 #define NUMPRIMES 2048
 typedef unsigned short prime_t;
@@ -286,7 +285,8 @@ static const prime_t primes[NUMPRIMES]=
   {
     unsigned char *buf=NULL;
     int ret=0,bit,bytes,mask;
-    ///time_t tim;
+    // comet[needless for determinism]
+    // time_t tim;
 
     if (bits == 0)
       {
@@ -306,7 +306,7 @@ static const prime_t primes[NUMPRIMES]=
       }
 
     /* make a random number and set the top and bottom bits */
-    /// we do not want more entropy here.
+    // comet[we do not want more entropy]
     //time(&tim);
     //RAND_add(&tim,sizeof(tim),0.0);
 
@@ -395,7 +395,7 @@ static const prime_t primes[NUMPRIMES]=
   /* random number r:  0 <= r < range */
   static int bn_rand_range(int pseudo, BIGNUM *r, const BIGNUM *range)
   {
-    /// use our deterministic BN random generator.
+    // comet[use our deterministic BN random generator]
     int (*bn_rand)(BIGNUM *, int, int, int) = pseudo ?
       comet::BN_pseudo_rand : comet::BN_rand;
     int n;
@@ -576,7 +576,7 @@ static const prime_t primes[NUMPRIMES]=
 
     for (i = 0; i < checks; i++)
       {
-        /// here we use our BN_pseudo_rand_range()
+        // comet[use our BN_pseudo_rand_range()]
         if (!comet::BN_pseudo_rand_range(check, A1))
           goto err;
         if (!BN_add_word(check, 1))
@@ -616,7 +616,7 @@ static const prime_t primes[NUMPRIMES]=
     BN_CTX_start(ctx);
     if ((t1 = BN_CTX_get(ctx)) == NULL) goto err;
 
-    /// we use our random generator here.
+    // comet[use our random generator here]
     if (!comet::BN_rand(rnd,bits,0,1)) goto err;
 
     /* we need ((rnd-rem) % add) == 0 */
@@ -661,7 +661,7 @@ static const prime_t primes[NUMPRIMES]=
 
     if (!BN_rshift1(qadd,padd)) goto err;
 
-    /// we use our random generator here.
+    // comet[use our random generator here]
     if (!comet::BN_rand(q,bits,0,1)) goto err;
 
     /* we need ((rnd-rem) % add) == 0 */
@@ -706,7 +706,7 @@ static const prime_t primes[NUMPRIMES]=
     BN_ULONG delta,maxdelta;
 
   again:
-    /// we use our random generator here.
+    // comet[we use our random generator]
     if (!comet::BN_rand(rnd,bits,1,1)) return(0);
 
     /* we now have a random number 'rand' to test. */
@@ -772,7 +772,7 @@ static const prime_t primes[NUMPRIMES]=
 
     if (!safe)
       {
-        /// here we use our BN_is_prime_fasttest_ex()
+        // comet[use our BN_is_prime_fasttest_ex()]
         i=comet::BN_is_prime_fasttest_ex(ret,checks,ctx,0,cb);
         if (i == -1) goto err;
         if (i == 0) goto loop;
@@ -787,12 +787,12 @@ static const prime_t primes[NUMPRIMES]=
 
         for (i=0; i<checks; i++)
           {
-            /// here we use our BN_is_prime_fasttest_ex()
+            // comet[use our BN_is_prime_fasttest_ex()]
             j=comet::BN_is_prime_fasttest_ex(ret,1,ctx,0,cb);
             if (j == -1) goto err;
             if (j == 0) goto loop;
 
-            /// here we use our BN_is_prime_fasttest_ex()
+            // comet[use our BN_is_prime_fasttest_ex()]
             j=comet::BN_is_prime_fasttest_ex(t,1,ctx,0,cb);
             if (j == -1) goto err;
             if (j == 0) goto loop;
@@ -814,5 +814,4 @@ static const prime_t primes[NUMPRIMES]=
     bn_check_top(ret);
     return found;
   }
-
 }
