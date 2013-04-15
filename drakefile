@@ -39,8 +39,6 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_0x
   cxx_config += config
-  cxx_config += boost.cfg
-  cxx_config += boost.config_system()
   cxx_config.lib('crypto')
   cxx_config.lib('ssl')
   cxx_config.lib_path_runtime('.')
