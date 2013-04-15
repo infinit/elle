@@ -5,6 +5,10 @@ The comet library extends the OpenSSL cryptographic library by providing
 deterministic random generation functionalities which can be used for
 rotating and deriving cryptographic keys.
 
+Indeed, the OpenSSL random generator introduces entropy in many places,
+making it unusable in a deterministic way. Thus, some functions have been
+cloned and adapted in order to guarantee determinism whenever necessary.
+
 Dependencies
 ============
 
