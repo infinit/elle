@@ -1,104 +1,116 @@
 #include "comet.hh"
 
+#include <comet/bn.hh>
 #include <comet/rand.hh>
 
-/*--------.
-| Operate |
-`--------*/
+#include <openssl/bn.h>
+#include <openssl/rand.h>
+
+/*-----.
+| Seed |
+`-----*/
 
 void
-test_operate_rsa()
+test_seed()
 {
-  /* XXX
-  infinit::cryptography::KeyPair pair = test_generate_rsa(1024);
+  const char* seed =
+    "God exists since mathematics is consistent, "
+    "and the Devil exists since we cannot prove it.";
 
-  // Public/private encryption/decryption with plain.
-  {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(9128);
-    infinit::cryptography::Code code =
-      pair.K().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    infinit::cryptography::Clear clear = pair.k().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+  RAND_cleanup();
+  RAND_set_rand_method(&comet::RAND_method);
+  comet::RAND_display();
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
+  RAND_cleanup();
+  RAND_set_rand_method(&comet::RAND_method);
+  RAND_seed(seed, ::strlen(seed));
+  comet::RAND_display();
 
-  // Public/private encryption/decryption with complex type.
-  {
-    Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(14920));
-    infinit::cryptography::Code code = pair.K().encrypt(input);
-    Sample const output = pair.k().decrypt<Sample>(code);
+  RAND_cleanup();
+  RAND_set_rand_method(&comet::RAND_method);
+  comet::RAND_seed(seed, ::strlen(seed));
+  comet::RAND_display();
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Private/public encryption/decryption with plain.
-  {
-    elle::String const input =
-      infinit::cryptography::random::generate<elle::String>(5123);
-    infinit::cryptography::Code code =
-      pair.k().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    infinit::cryptography::Clear clear = pair.K().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Private/public encryption/decryption with complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(28130));
-    infinit::cryptography::Code code = pair.k().encrypt(input);
-    Sample const output = pair.K().decrypt<Sample>(code);
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Sign a plain text.
-  {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(1493);
-    infinit::cryptography::Signature signature =
-      pair.k().sign(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    auto result =
-      pair.K().verify(signature,
-                      infinit::cryptography::Plain{
-                        elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                         input.length()}});
-
-    BOOST_CHECK_EQUAL(result, true);
-  }
-
-  // Sign a complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(10329));
-    infinit::cryptography::Signature signature = pair.k().sign(input);
-    auto result = pair.K().verify(signature, input);
-
-    BOOST_CHECK_EQUAL(result, true);
-  }
-  */
+  exit(0); // XXX
 }
 
+/*---------------.
+| Generate Prime |
+`---------------*/
+
 void
-test_operate()
+test_generate_prime()
 {
-  // RSA.
-  test_operate_rsa();
+  // Undeterministically randomly generate numbers should should therefore
+  // all be different, with high probability.
+  {
+    ::BIGNUM* n1 = BN_new();
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n1, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    ::BIGNUM* n2 = BN_new();
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n2, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    ::BIGNUM* n3 = BN_new();
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n3, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    BOOST_CHECK(::BN_cmp(n1, n2) != 0);
+    BOOST_CHECK(::BN_cmp(n1, n3) != 0);
+    BOOST_CHECK(::BN_cmp(n2, n3) != 0);
+  }
+
+  // Generate numbers in a deterministic (but probabilist) way, by resetting the
+  // seed for every random generation.
+  //
+  // Since based on the same seed, all the generated numbers should be equal.
+  {
+    const char* seed =
+      "God exists since mathematics is consistent, "
+      "and the Devil exists since we cannot prove it.";
+
+    ::BIGNUM* n1 = BN_new();
+    RAND_set_rand_method(&comet::RAND_method);
+    comet::RAND_cleanup();
+    RAND_set_rand_method(&comet::RAND_method);
+    comet::RAND_seed(seed, ::strlen(seed));
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n1, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    ::BIGNUM* n2 = BN_new();
+    //RAND_set_rand_method(&comet::RAND_method);
+    //comet::RAND_cleanup();
+    //RAND_set_rand_method(&comet::RAND_method);
+    comet::RAND_seed(seed, ::strlen(seed));
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n2, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    ::BIGNUM* n3 = BN_new();
+    //RAND_set_rand_method(&comet::RAND_method);
+    //comet::RAND_cleanup();
+    //RAND_set_rand_method(&comet::RAND_method);
+    comet::RAND_seed(seed, ::strlen(seed));
+    BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n3, 1024, 0,
+                                                  NULL, NULL, NULL),
+                      1);
+
+    // XXX
+    comet::BN_display(n1);
+    comet::BN_display(n2);
+    comet::BN_display(n3);
+
+    BOOST_CHECK(::BN_cmp(n1, n2) == 0);
+    BOOST_CHECK(::BN_cmp(n1, n3) == 0);
+    BOOST_CHECK(::BN_cmp(n2, n3) == 0);
+  }
+
+  // XXX test with safe
 }
 
 /*-----.
@@ -110,7 +122,8 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rand");
 
-  suite->add(BOOST_TEST_CASE(test_operate));
+  suite->add(BOOST_TEST_CASE(test_seed));
+  suite->add(BOOST_TEST_CASE(test_generate_prime));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 
