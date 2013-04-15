@@ -1,5 +1,5 @@
-#include <comet/RSA.hh>
-#include <comet/RAND.hh>
+#include <comet/rsa.hh>
+#include <comet/rand.hh>
 #include <comet/bn.hh>
 
 #include <openssl/rsa.h>
@@ -12,20 +12,9 @@
 
 namespace comet
 {
-
-  RAND_METHOD specific =
-    {
-      RAND_seed,
-      RAND_bytes,
-      RAND_cleanup,
-      RAND_add,
-      RAND_pseudorand,
-      RAND_status
-    };
-
   int RSA_rotate(RSA *rsa, int bits, const unsigned char *seed, size_t length)
   {
-    const RAND_METHOD *generic;
+    const RAND_METHOD *method;
     BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
     BIGNUM local_r0,local_d,local_p;
     BIGNUM *pr0,*d,*p;
@@ -55,26 +44,26 @@ namespace comet
     if(!rsa->dmq1 && ((rsa->dmq1=BN_new()) == NULL)) goto err;
     if(!rsa->iqmp && ((rsa->iqmp=BN_new()) == NULL)) goto err;
 
-    /// switch to our random generator in order to ensure
-    /// determinism: (i) save the current random generator
-    /// (ii) switch to ours (iii) clean it in order to
-    /// ensure it is reset (iv) seed it with the given buffer.
-    generic = RAND_get_rand_method();
+    // comet[switch to our random generator in order to ensure
+    //       determinism: (i) save the current random generator
+    //       (ii) switch to ours (iii) clean it in order to
+    //       ensure it is reset (iv) seed it with the given buffer]
+    method = RAND_get_rand_method();
 
-    RAND_set_rand_method(&specific);
+    RAND_set_rand_method(&comet::RAND_method);
     RAND_cleanup();
-    RAND_set_rand_method(&specific);
+    RAND_set_rand_method(&comet::RAND_method);
 
     RAND_seed(seed, length);
 
     /* generate e */
-    /// here we use our prime generator which uses our deterministic
-    /// random generator.
+    // comet[use our prime generator which uses our deterministic
+    //       random generator]
     if(!comet::BN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
       goto err;
 
-    /// switch back to the OpenSSL random generator.
-    RAND_set_rand_method(generic);
+    // comet[switch back to the OpenSSL random generator]
+    RAND_set_rand_method(method);
 
     /* generate p and q */
     for (;;)
@@ -173,7 +162,7 @@ namespace comet
 
   int RSA_derive(RSA *rsa, BIGNUM* N, const unsigned char *seed, size_t length)
   {
-    const RAND_METHOD *generic;
+    const RAND_METHOD *method;
     int bits,bitse,ok= -1;
 
     bits=BN_num_bits(N);
@@ -192,26 +181,26 @@ namespace comet
     rsa->dmq1 = NULL;
     rsa->iqmp = NULL;
 
-    /// switch to our random generator in order to ensure
-    /// determinism: (i) save the current random generator
-    /// (ii) switch to ours (iii) clean it in order to
-    /// ensure it is reset (iv) seed it with the given buffer.
-    generic = RAND_get_rand_method();
+    // comet[switch to our random generator in order to ensure
+    //       determinism: (i) save the current random generator
+    //       (ii) switch to ours (iii) clean it in order to
+    //       ensure it is reset (iv) seed it with the given buffer]
+    method = RAND_get_rand_method();
 
-    RAND_set_rand_method(&specific);
+    RAND_set_rand_method(&comet::RAND_method);
     RAND_cleanup();
-    RAND_set_rand_method(&specific);
+    RAND_set_rand_method(&comet::RAND_method);
 
     RAND_seed(seed, length);
 
     /* generate e */
-    /// here we use our prime generator which uses our deterministic
-    /// random generator.
+    // comet[here we use our prime generator which uses our deterministic
+    //       random generator]
     if(!comet::BN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
       goto err;
 
-    /// switch back to the OpenSSL random generator.
-    RAND_set_rand_method(generic);
+    // comet[switch back to the OpenSSL random generator]
+    RAND_set_rand_method(method);
 
     /* assign n */
     BN_copy(rsa->n, N);
@@ -226,5 +215,4 @@ namespace comet
 
     return ok;
   }
-
 }

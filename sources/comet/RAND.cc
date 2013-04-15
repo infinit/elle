@@ -1,8 +1,7 @@
-#include <comet/RAND.hh>
+#include <comet/rand.hh>
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>
-#include <openssl/rand.h>
 #include <openssl/err.h>
 
 #include <cassert>
@@ -10,6 +9,15 @@
 
 namespace comet
 {
+  RAND_METHOD RAND_method =
+  {
+    comet::RAND_seed,
+    comet::RAND_bytes,
+    comet::RAND_cleanup,
+    comet::RAND_add,
+    comet::RAND_pseudorand,
+    comet::RAND_status
+  };
 
 #define MD_DIGEST_LENGTH        SHA_DIGEST_LENGTH
 
@@ -46,8 +54,8 @@ namespace comet
     entropy=0;
     initialized=0;
 
-    /// this section has been taken from ssleay_rand_bytes() in
-    /// order to have enough 'md' to perform the operations
+    // comet[this section has been taken from ssleay_rand_bytes() in
+    //       order to have enough 'md' to perform the operations]
     {
       /* In the output function only half of 'md' remains secret,
        * so we better make sure that the required entropy gets
@@ -65,7 +73,7 @@ namespace comet
 #define DUMMY_SEED "...................." /* at least MD_DIGEST_LENGTH */
           /* Note that the seed does not matter, it's just that
            * ssleay_rand_add expects to have something to hash. */
-          /// the following line is a fix replacing ssleay_rand_add()
+          // comet[the following line is a fix replacing ssleay_rand_add()]
           RAND_add(DUMMY_SEED, MD_DIGEST_LENGTH, 0.0);
           n -= MD_DIGEST_LENGTH;
         }
@@ -210,7 +218,7 @@ namespace comet
 
   void RAND_seed(const void *buf, int num)
   {
-    /// this line is a fix of ssleay_rand_add().
+    // comet[this line is a fix of ssleay_rand_add()]
     RAND_add(buf, num, (double)num);
   }
 
@@ -258,8 +266,8 @@ namespace comet
 
     if (!initialized)
       {
-        /// the call to RAND_poll() has been removed here because
-        /// injecting unwanted entropy.
+        // comet[the call to RAND_poll() has been removed here because
+        //       injecting unwanted entropy]
         initialized = 1;
       }
 
@@ -283,7 +291,7 @@ namespace comet
           entropy = 0;
       }
 
-    /// here the section filling the 'md' has been moved to RAND_cleanup().
+    // comet[here the section filling the 'md' has been moved to RAND_cleanup()]
 
     st_idx=state_index;
     st_num=state_num;
@@ -320,8 +328,8 @@ namespace comet
          * of such a small source of entropy has negligible impact on
          * security.
          */
-        /// the following line adds undeterministic entropy and has therefore
-        /// been removed
+        // comet[the following line adds undeterminism and has therefore
+        //       been removed]
         // MD_Update(&m,buf,j);
 
         k=(st_idx+MD_DIGEST_LENGTH/2)-st_num;
@@ -412,8 +420,8 @@ namespace comet
 
     if (!initialized)
       {
-        /// the call to RAND_poll() has been removed here because
-        /// injecting additional entropy.
+        // comet[the call to RAND_poll() has been removed here because
+        //       injecting additional entropy]
         initialized = 1;
       }
 
@@ -430,4 +438,29 @@ namespace comet
     return ret;
   }
 
+  static void RAND_hexprint(unsigned char* buffer, size_t len)
+  {
+    for (size_t i = 0; i < len; i++)
+      printf("%x", (int)buffer[i]);
+
+    printf("\n");
+  }
+
+  int RAND_display(void)
+  {
+    printf("state num: %d\n", state_num);
+    printf("state index: %d\n", state_index);
+
+    printf("state:\n");
+    RAND_hexprint(state, sizeof (state));
+
+    printf("md:\n");
+    RAND_hexprint(md, sizeof (md));
+
+    printf("md_count: %ld %ld\n", md_count[0], md_count[1]);
+    printf("entropy: %f\n", entropy);
+    printf("initialized: %d\n", initialized);
+
+    return 0;
+  }
 }

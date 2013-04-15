@@ -5,9 +5,9 @@
 
 namespace comet
 {
-  int
-  BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
-                       const BIGNUM *add, const BIGNUM *rem, BN_GENCB *cb);
+  int BN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
+                           const BIGNUM *add, const BIGNUM *rem, BN_GENCB *cb);
+  int BN_display(BIGNUM* bignum);
 }
 
 #endif
