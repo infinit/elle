@@ -646,12 +646,18 @@ namespace elle
     void
     Process::_signal(int signal, ProcessTermination const term)
     {
+      ELLE_DEBUG_SCOPE("About to signal pid %s with %s", _this->pid, signal);
+
       if (_this->pid == 0)
         return;
 
       ::kill(_this->pid, signal);
+
       if (term == ProcessTermination::wait)
+      {
+        ELLE_DEBUG("Waiting pid %s", _this->pid);
         this->wait_status();
+      }
     }
 
     void
