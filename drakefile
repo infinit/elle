@@ -1,5 +1,6 @@
 import drake
 import drake.cxx
+import drake.cxx.boost
 
 config = None
 lib_static = None
@@ -12,6 +13,7 @@ rule_install = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl = None,
+              boost = None,
               prefix = '/usr'):
 
   with open(str(drake.path_src('drake/test.py')), 'r') as f:
@@ -23,6 +25,7 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
+  boost = boost or drake.cxx.boost.Boost()
   openssl = openssl or drake.cxx.find_library('openssl/opensslconf.h', openssl)
 
   # Global Configuration
@@ -36,6 +39,8 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_0x
   cxx_config += config
+  cxx_config += boost.cfg
+  cxx_config += boost.config_system()
   cxx_config.lib('crypto')
   cxx_config.lib('ssl')
   cxx_config.lib_path_runtime('.')
@@ -60,20 +65,15 @@ def configure(cxx_toolkit = None,
   rule_build << lib_dynamic
 
   # Tests
-  tests = ['Input',
-           'KeyPair',
-           'Output',
-           'PrivateKey',
-           'PublicKey',
-           'SecretKey',
-           'Seed',
-           'bn',
-           'oneway',
-           'random']
+  tests = ['bn',
+           'rand',
+           'rsa']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += openssl
+  tests_cxx_config += boost.cfg
+  tests_cxx_config += boost.config_test()
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
 
