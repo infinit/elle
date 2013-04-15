@@ -30,14 +30,14 @@ def configure(cxx_toolkit = None,
 
   # Global Configuration
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_0x
+  config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('sources')
   config.lib_path('lib')
   config += openssl
 
   # Local Configuration
   cxx_config = cxx_config or drake.cxx.Config()
-  cxx_config.standard = drake.cxx.Config.cxx_0x
+  cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
   cxx_config.lib('crypto')
   cxx_config.lib('ssl')
@@ -45,13 +45,13 @@ def configure(cxx_toolkit = None,
 
   # Sources
   sources = drake.nodes(
-    'sources/comet/BN.cc',
-    'sources/comet/BN.hh',
-    'sources/comet/Comet.hh',
-    'sources/comet/RAND.cc',
-    'sources/comet/RAND.hh',
-    'sources/comet/RSA.cc',
-    'sources/comet/RSA.hh',
+    'sources/comet/all.hh',
+    'sources/comet/bn.cc',
+    'sources/comet/bn.hh',
+    'sources/comet/rand.cc',
+    'sources/comet/rand.hh',
+    'sources/comet/rsa.cc',
+    'sources/comet/rsa.hh',
     )
 
   lib_static = drake.cxx.StaticLib('lib/comet', sources, cxx_toolkit, cxx_config)
@@ -63,8 +63,7 @@ def configure(cxx_toolkit = None,
   rule_build << lib_dynamic
 
   # Tests
-  tests = ['bn',
-           'rand',
+  tests = ['rand',
            'rsa']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
