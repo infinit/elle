@@ -50,9 +50,10 @@ namespace comet
     //       ensure it is reset (iv) seed it with the given buffer]
     method = RAND_get_rand_method();
 
-    RAND_set_rand_method(&comet::RAND_method);
+    // XXX[utiliser reset()]
+    RAND_set_rand_method(&dRAND_method);
     RAND_cleanup();
-    RAND_set_rand_method(&comet::RAND_method);
+    RAND_set_rand_method(&dRAND_method);
 
     RAND_seed(seed, length);
 
@@ -187,9 +188,10 @@ namespace comet
     //       ensure it is reset (iv) seed it with the given buffer]
     method = RAND_get_rand_method();
 
-    RAND_set_rand_method(&comet::RAND_method);
+    // XXX[utiliser reset()]
+    RAND_set_rand_method(&dRAND_method);
     RAND_cleanup();
-    RAND_set_rand_method(&comet::RAND_method);
+    RAND_set_rand_method(&dRAND_method);
 
     RAND_seed(seed, length);
 
