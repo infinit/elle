@@ -814,21 +814,4 @@ static const prime_t primes[NUMPRIMES]=
     bn_check_top(ret);
     return found;
   }
-
-  int BN_display(BIGNUM* bignum)
-  {
-    static unsigned int const length = 50;
-    char* hexadecimal;
-
-    if ((hexadecimal = BN_bn2hex(bignum)) == NULL)
-      return -1;
-
-    // Display the string.
-    printf("%s\n", hexadecimal);
-
-    // Manually release the hexadecimal's memory.
-    ::OPENSSL_free(hexadecimal);
-
-    return 0;
-  }
 }
