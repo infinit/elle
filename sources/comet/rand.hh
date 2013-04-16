@@ -12,6 +12,8 @@ int dRAND_bytes(unsigned char *buf, int num);
 int dRAND_pseudorand(unsigned char *buf, int num);
 int dRAND_status(void);
 
+void dRAND_start(void);
+void dRAND_stop(void);
 void dRAND_reset(void);
 char* dRAND_fingerprint(void);
 

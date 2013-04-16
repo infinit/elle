@@ -443,10 +443,28 @@ int dRAND_status(void)
   return ret;
 }
 
+// comet[start the dRAND environment ensuring that using the RAND_*
+//       functions will be deterministic according to the current seed's state]
+void dRAND_start(void)
+{
+  assert(RAND_get_rand_method() != &dRAND_method);
+  RAND_set_rand_method(&dRAND_method);
+  assert(RAND_get_rand_method()->cleanup == dRAND_cleanup);
+  RAND_cleanup();
+  RAND_set_rand_method(&dRAND_method);
+}
+
+// comet[stop the dRAND environment by reinstating the original SSLeay context]
+void dRAND_stop(void)
+{
+  assert(RAND_get_rand_method() == &dRAND_method);
+  RAND_set_rand_method(RAND_SSLeay());
+}
+
 // comet[reset the random implementation by cleaning it up]
 void dRAND_reset(void)
 {
-  RAND_set_rand_method(&dRAND_method);
+  assert(RAND_get_rand_method() == &dRAND_method);
   assert(RAND_get_rand_method()->cleanup == dRAND_cleanup);
   RAND_cleanup();
   RAND_set_rand_method(&dRAND_method);

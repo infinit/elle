@@ -17,6 +17,8 @@ test_seed()
     "Sir, an equation has no meaning for me "
     "unless it expresses a thought of GOD.";
 
+  dRAND_start();
+
   // Reset the random implementation and seed the random generator.
   dRAND_reset();
   RAND_seed(seed, ::strlen(seed));
@@ -32,6 +34,8 @@ test_seed()
 
   ::free(fingerprint1);
   ::free(fingerprint2);
+
+  dRAND_stop();
 }
 
 /*---------------.
@@ -73,6 +77,7 @@ test_generate_prime()
       "God exists since mathematics is consistent, "
       "and the Devil exists since we cannot prove it.";
 
+    dRAND_start();
 
     ::BIGNUM* n1 = BN_new();
     dRAND_reset();
@@ -103,6 +108,8 @@ test_generate_prime()
     BOOST_CHECK(::BN_cmp(n1, n2) == 0);
     BOOST_CHECK(::BN_cmp(n1, n3) == 0);
     BOOST_CHECK(::BN_cmp(n2, n3) == 0);
+
+    dRAND_stop();
   }
 
   // XXX test with safe
