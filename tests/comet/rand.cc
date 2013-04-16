@@ -14,24 +14,24 @@ void
 test_seed()
 {
   const char* seed =
-    "God exists since mathematics is consistent, "
-    "and the Devil exists since we cannot prove it.";
+    "Sir, an equation has no meaning for me "
+    "unless it expresses a thought of GOD.";
 
-  RAND_cleanup();
-  RAND_set_rand_method(&comet::RAND_method);
-  comet::RAND_display();
-
-  RAND_cleanup();
-  RAND_set_rand_method(&comet::RAND_method);
+  // Reset the random implementation and seed the random generator.
+  dRAND_reset();
   RAND_seed(seed, ::strlen(seed));
-  comet::RAND_display();
+  char* fingerprint1 = dRAND_fingerprint();
 
-  RAND_cleanup();
-  RAND_set_rand_method(&comet::RAND_method);
-  comet::RAND_seed(seed, ::strlen(seed));
-  comet::RAND_display();
+  // Re-reset the random implementation and finally re-seed it:
+  // the result should be the same as the first seeding.
+  dRAND_reset();
+  RAND_seed(seed, ::strlen(seed));
+  char* fingerprint2 = dRAND_fingerprint();
 
-  exit(0); // XXX
+  BOOST_CHECK(::strcmp(fingerprint1, fingerprint2) == 0);
+
+  ::free(fingerprint1);
+  ::free(fingerprint2);
 }
 
 /*---------------.
@@ -73,37 +73,32 @@ test_generate_prime()
       "God exists since mathematics is consistent, "
       "and the Devil exists since we cannot prove it.";
 
+
     ::BIGNUM* n1 = BN_new();
-    RAND_set_rand_method(&comet::RAND_method);
-    comet::RAND_cleanup();
-    RAND_set_rand_method(&comet::RAND_method);
-    comet::RAND_seed(seed, ::strlen(seed));
+    dRAND_reset();
+    RAND_seed(seed, ::strlen(seed));
     BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n1, 1024, 0,
                                                   NULL, NULL, NULL),
                       1);
 
     ::BIGNUM* n2 = BN_new();
-    //RAND_set_rand_method(&comet::RAND_method);
-    //comet::RAND_cleanup();
-    //RAND_set_rand_method(&comet::RAND_method);
-    comet::RAND_seed(seed, ::strlen(seed));
+    dRAND_reset();
+    RAND_seed(seed, ::strlen(seed));
     BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n2, 1024, 0,
                                                   NULL, NULL, NULL),
                       1);
 
     ::BIGNUM* n3 = BN_new();
-    //RAND_set_rand_method(&comet::RAND_method);
-    //comet::RAND_cleanup();
-    //RAND_set_rand_method(&comet::RAND_method);
-    comet::RAND_seed(seed, ::strlen(seed));
+    dRAND_reset();
+    RAND_seed(seed, ::strlen(seed));
     BOOST_CHECK_EQUAL(comet::BN_generate_prime_ex(n3, 1024, 0,
                                                   NULL, NULL, NULL),
                       1);
 
     // XXX
-    comet::BN_display(n1);
-    comet::BN_display(n2);
-    comet::BN_display(n3);
+    //comet::BN_display(n1);
+    //comet::BN_display(n2);
+    //comet::BN_display(n3);
 
     BOOST_CHECK(::BN_cmp(n1, n2) == 0);
     BOOST_CHECK(::BN_cmp(n1, n3) == 0);
