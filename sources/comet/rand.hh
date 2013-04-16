@@ -3,17 +3,16 @@
 
 # include <openssl/rand.h>
 
-namespace comet
-{
-  extern RAND_METHOD RAND_method;
+extern RAND_METHOD dRAND_method;
 
-  void RAND_cleanup(void);
-  void RAND_add(const void *buf, int num, double add);
-  void RAND_seed(const void *buf, int num);
-  int RAND_bytes(unsigned char *buf, int num);
-  int RAND_pseudorand(unsigned char *buf, int num);
-  int RAND_status(void);
-  int RAND_display(void);
-}
+void dRAND_cleanup(void);
+void dRAND_add(const void *buf, int num, double add);
+void dRAND_seed(const void *buf, int num);
+int dRAND_bytes(unsigned char *buf, int num);
+int dRAND_pseudorand(unsigned char *buf, int num);
+int dRAND_status(void);
+
+void dRAND_reset(void);
+char* dRAND_fingerprint(void);
 
 #endif
