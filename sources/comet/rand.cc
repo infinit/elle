@@ -54,6 +54,10 @@ namespace comet
     entropy=0;
     initialized=0;
 
+    // comet[so as to be deterministic, also reset the state and md variables]
+    memset(state, 0x0, sizeof (state));
+    memset(md, 0x0, sizeof (md));
+
     // comet[this section has been taken from ssleay_rand_bytes() in
     //       order to have enough 'md' to perform the operations]
     {
