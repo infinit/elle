@@ -16,6 +16,15 @@ The library relies upon several other libraries:
 
   o OpenSSL which provides the fundamental cryptographic operations.
 
+Internals
+=========
+
+The library is composed of a random implementation which is deterministic.
+Then comes the big number set of functions which make sure the prime generation
+mechanism does not introduce entropy. Finally a set of rotate/derive functions
+is provided for every asymmetric cryptosystem, such as RSA, enabling one to
+retrieve a key pair based on a PRNG seed.
+
 Maintainers
 ===========
 
