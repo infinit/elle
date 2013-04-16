@@ -5,8 +5,8 @@
 # include "Serializer.hh"
 # include "StoreFormat.hh"
 # include "StaticFormat.hh"
+# include "detail/stream.hh"
 
-# include <iostream> // XXX
 # include <boost/detail/endian.hpp>
 # include <boost/call_traits.hpp>
 
@@ -544,7 +544,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::SaveBinary(void const* data,
                                                      std::streamsize size)
     {
-      this->stream().write(static_cast<char const*>(data), size);
+      detail::stream_write(this->stream(), data, size);
     }
 
     //-------------------------------------------------------------------------
@@ -557,8 +557,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::LoadBinary(void* data,
                                                      std::streamsize size)
     {
-      this->stream().exceptions(std::ios::failbit | std::ios::badbit);
-      this->stream().read(static_cast<char*>(data), size);
+      detail::stream_read(this->stream(), data, size);
     }
 
 
