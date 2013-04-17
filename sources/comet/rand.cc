@@ -3,9 +3,14 @@
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 #include <openssl/err.h>
+#include <openssl/engine.h>
 
-#include <assert.h>
 #include <string.h>
+#include <assert.h>
+
+//
+// ---------- original openssl-based functionalities --------------------------
+//
 
 RAND_METHOD dRAND_method =
 {
@@ -76,7 +81,7 @@ void dRAND_cleanup(void)
       /* Note that the seed does not matter, it's just that
        * ssleay_rand_add expects to have something to hash. */
       // comet[the following line is a fix replacing ssleay_rand_add()]
-      assert(RAND_get_rand_method()->add == dRAND_add);
+      assert(RAND_get_rand_method() == &dRAND_method);
       RAND_add(DUMMY_SEED, MD_DIGEST_LENGTH, 0.0);
       n -= MD_DIGEST_LENGTH;
     }
@@ -222,7 +227,7 @@ void dRAND_add(const void *buf, int num, double add)
 void dRAND_seed(const void *buf, int num)
 {
   // comet[this line is a fix of ssleay_rand_add()]
-  assert(RAND_get_rand_method()->add == dRAND_add);
+  assert(RAND_get_rand_method() == &dRAND_method);
   RAND_add(buf, num, (double)num);
 }
 
@@ -381,7 +386,7 @@ int dRAND_pseudorand(unsigned char *buf, int num)
   int ret;
   unsigned long err;
 
-  assert(RAND_get_rand_method()->bytes == dRAND_bytes);
+  assert(RAND_get_rand_method() == &dRAND_method);
   ret = RAND_bytes(buf, num);
   if (ret == 0)
   {
@@ -431,7 +436,6 @@ int dRAND_status(void)
   }
 
   ret = entropy >= ENTROPY_NEEDED;
-
   if (!do_not_lock)
   {
     /* before unlocking, we must clear 'crypto_lock_rand' */
@@ -443,31 +447,109 @@ int dRAND_status(void)
   return ret;
 }
 
+//
+// ---------- additional functionalities --------------------------------------
+//
+
+static ENGINE* _engine = NULL;
+
+// XXX
+int dRAND_init()
+{
+  if (_engine != NULL)
+    return 0;
+
+  ENGINE_load_openssl();
+  ENGINE_load_dynamic();
+  ENGINE_load_builtin_engines();
+  ENGINE_register_all_RAND();
+
+  if ((_engine = ENGINE_new()) == NULL)
+    return 0;
+  if (ENGINE_set_id(_engine, "dRAND") == 0)
+    return 0;
+  if (ENGINE_set_name(_engine,
+                      "deterministic random implementation") == 0)
+    return 0;
+  if (ENGINE_init(_engine) == 0)
+    return 0;
+  if (ENGINE_set_RAND(_engine, &dRAND_method) == 0)
+    return 0;
+  if (ENGINE_add(_engine) == 0)
+    return 0;
+
+  assert(_engine == ENGINE_by_id("dRAND"));
+
+  return 1;
+}
+
+// XXX
+int dRAND_clean()
+{
+  if (_engine == NULL)
+    return 0;
+
+  assert(RAND_get_rand_method() != &dRAND_method);
+
+  ENGINE_remove(_engine);
+  if (ENGINE_finish(_engine) == 0)
+    return 0;
+  if (ENGINE_free(_engine) == 0)
+    return 0;
+
+  assert(ENGINE_get_default_RAND() != _engine);
+
+  return 1;
+}
+
 // comet[start the dRAND environment ensuring that using the RAND_*
 //       functions will be deterministic according to the current seed's state]
-void dRAND_start(void)
+int dRAND_start(void)
 {
+  assert(ENGINE_get_default_RAND() != _engine);
   assert(RAND_get_rand_method() != &dRAND_method);
-  RAND_set_rand_method(&dRAND_method);
-  assert(RAND_get_rand_method()->cleanup == dRAND_cleanup);
-  RAND_cleanup();
-  RAND_set_rand_method(&dRAND_method);
+
+  if (ENGINE_register_RAND(_engine) == 0)
+    return 0;
+  if (ENGINE_set_default_RAND(_engine) == 0)
+    return 0;
+  // Force the RAND to reinitialize.
+  if (RAND_set_rand_engine(NULL) == 0)
+    return 0;
+
+  assert(ENGINE_get_default_RAND() == _engine);
+  assert(RAND_get_rand_method() == &dRAND_method);
+
+  return 1;
 }
 
 // comet[stop the dRAND environment by reinstating the original SSLeay context]
-void dRAND_stop(void)
+int dRAND_stop(void)
 {
+  assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
-  RAND_set_rand_method(RAND_SSLeay());
+
+  ENGINE_unregister_RAND(_engine);
+  // Force the RAND to reinitialize.
+  if (RAND_set_rand_engine(NULL) == 0)
+    return 0;
+
+  assert(ENGINE_get_default_RAND() != _engine);
+  assert(RAND_get_rand_method() != &dRAND_method);
+
+  return 1;
 }
 
 // comet[reset the random implementation by cleaning it up]
-void dRAND_reset(void)
+int dRAND_reset(void)
 {
+  assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
-  assert(RAND_get_rand_method()->cleanup == dRAND_cleanup);
+
   RAND_cleanup();
-  RAND_set_rand_method(&dRAND_method);
+
+  assert(ENGINE_get_default_RAND() == _engine);
+  assert(RAND_get_rand_method() == &dRAND_method);
 }
 
 // comet[return a string-based representationn of the random

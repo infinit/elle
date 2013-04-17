@@ -60,7 +60,7 @@ namespace comet
     /* generate e */
     // comet[use our prime generator which uses our deterministic
     //       random generator]
-    if(!comet::BN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
+    if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
       goto err;
 
     // comet[switch back to the OpenSSL random generator]
@@ -198,7 +198,7 @@ namespace comet
     /* generate e */
     // comet[here we use our prime generator which uses our deterministic
     //       random generator]
-    if(!comet::BN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
+    if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
       goto err;
 
     // comet[switch back to the OpenSSL random generator]
