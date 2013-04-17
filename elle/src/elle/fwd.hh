@@ -2,7 +2,6 @@
 # define ELLE_FWD_HH
 
 # include <elle/concept/fwd.hh>
-# include <elle/concurrency/fwd.hh>
 # include <elle/container/fwd.hh>
 # include <elle/format/fwd.hh>
 # include <elle/io/fwd.hh>
