@@ -25,6 +25,10 @@ mechanism does not introduce entropy. Finally a set of rotate/derive functions
 is provided for every asymmetric cryptosystem, such as RSA, enabling one to
 retrieve a key pair based on a PRNG seed.
 
+In other words, some of the OpenSSL library's functions have been slightly
+modified so as to remove the operations destined at adding entropy based on
+uninitialized variables.
+
 Maintainers
 ===========
 
