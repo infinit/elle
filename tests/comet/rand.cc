@@ -6,23 +6,6 @@
 #include <openssl/bn.h>
 #include <openssl/rand.h>
 
-// XXX
-int BN_display(BIGNUM* bignum)
-{
-  char* hexadecimal;
-
-  if ((hexadecimal = BN_bn2hex(bignum)) == NULL)
-    return -1;
-
-  // Display the string.
-  printf("%s\n", hexadecimal);
-
-  // Manually release the hexadecimal's memory.
-  ::OPENSSL_free(hexadecimal);
-
-  return 0;
-}
-
 void test_basic()
 {
   BOOST_CHECK(dRAND_init() == 1);
