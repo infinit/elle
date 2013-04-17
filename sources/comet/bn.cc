@@ -11,6 +11,10 @@
 #include <string.h>
 #include <assert.h>
 
+//
+// ---------- original openssl-based functionalities --------------------------
+//
+
 #ifndef EIGHT_BIT
 #define NUMPRIMES 2048
 typedef unsigned short prime_t;
