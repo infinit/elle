@@ -123,6 +123,7 @@ test_generate_prime()
       ::BIGNUM* n1 = BN_new();
       dRAND_reset();
       RAND_seed(seed, ::strlen(seed));
+      char* fingerprint1 = dRAND_fingerprint();
       BOOST_CHECK(RAND_status() == 1);
       BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n1, 1024, 0,
                                               NULL, NULL, NULL), 1);
@@ -130,21 +131,22 @@ test_generate_prime()
       ::BIGNUM* n2 = BN_new();
       dRAND_reset();
       RAND_seed(seed, ::strlen(seed));
+      char* fingerprint2 = dRAND_fingerprint();
       BOOST_CHECK(RAND_status() == 1);
-      BOOST_CHECK_EQUAL(BN_generate_prime_ex(n2, 1024, 0,
-                                             NULL, NULL, NULL), 1);
+      BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n2, 1024, 0,
+                                              NULL, NULL, NULL), 1);
 
       ::BIGNUM* n3 = BN_new();
       dRAND_reset();
       RAND_seed(seed, ::strlen(seed));
+      char* fingerprint3 = dRAND_fingerprint();
       BOOST_CHECK(RAND_status() == 1);
-      BOOST_CHECK_EQUAL(BN_generate_prime_ex(n3, 1024, 0,
-                                             NULL, NULL, NULL), 1);
+      BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n3, 1024, 0,
+                                              NULL, NULL, NULL), 1);
 
-      // XXX
-      BN_display(n1);
-      BN_display(n2);
-      BN_display(n3);
+      BOOST_CHECK(::strcmp(fingerprint1, fingerprint2) == 0);
+      BOOST_CHECK(::strcmp(fingerprint1, fingerprint3) == 0);
+      BOOST_CHECK(::strcmp(fingerprint2, fingerprint3) == 0);
 
       BOOST_CHECK(::BN_cmp(n1, n2) == 0);
       BOOST_CHECK(::BN_cmp(n1, n3) == 0);
