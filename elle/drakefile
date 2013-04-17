@@ -272,6 +272,7 @@ def configure(cxx_toolkit = None,
   rule_check = drake.Rule('check')
 
   tests = [
+    'Buffer',
     'IOStream',
     'Printable',
     'Version',
