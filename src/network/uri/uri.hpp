@@ -169,6 +169,8 @@ namespace network {
     boost::optional<string_view> authority() const;
 
     string_type native() const;
+    template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >
+    std::basic_string<CharT, CharTraits> string(const Alloc &alloc = Alloc()) const;
     std::string string() const;
     std::wstring wstring() const;
     std::u16string u16string() const;
@@ -179,9 +181,10 @@ namespace network {
     bool opaque() const NETWORK_URI_NOEXCEPT;
 
     uri normalize(uri_comparison_level level) const;
-    int compare(const uri &other, uri_comparison_level level) const;
     uri relativize(const uri &other, uri_comparison_level level) const;
     uri resolve(const uri &other, uri_comparison_level level) const;
+
+    int compare(const uri &other, uri_comparison_level level) const;
 
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
