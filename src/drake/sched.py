@@ -29,9 +29,13 @@ class Terminate(Exception):
 
 class OrderedSet:
 
-  def __init__(self):
-    self.__set = set()
-    self.__list = []
+  def __init__(self, model = None):
+    if model is None:
+      self.__set = set()
+      self.__list = []
+    else:
+      self.__set = set(model.__set)
+      self.__list = list(model.__list)
 
   def add(self, v):
     self.__set.add(v)
@@ -55,6 +59,13 @@ class OrderedSet:
 
   def __bool__(self):
     return bool(self.__set)
+
+  def update(self, rhs):
+    self.__set.update(rhs.__set)
+    self.__list.extend(rhs.__list)
+
+  def __repr__(self):
+    return 'OrderedSet(%r)' % self.__list
 
 class Scheduler:
 

@@ -17,7 +17,7 @@ _OS = __import__('os')
 from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
 from copy import deepcopy
-
+from .. import sched
 
 class Config:
 
@@ -29,7 +29,7 @@ class Config:
             self._local_includes = {}
             self.__optimization = 1
             self._system_includes = {}
-            self.lib_paths = {}
+            self.__lib_paths = sched.OrderedSet()
             self.libs = set()
             self.flags = set()
             self.ldflags = set()
@@ -44,7 +44,7 @@ class Config:
             self._local_includes = deepcopy(model._local_includes)
             self.__optimization = model.__optimization
             self._system_includes = deepcopy(model._system_includes)
-            self.lib_paths = deepcopy(model.lib_paths)
+            self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.libs = deepcopy(model.libs)
             self.flags = deepcopy(model.flags)
             self.ldflags = deepcopy(model.ldflags)
@@ -122,7 +122,7 @@ class Config:
         return list(self._system_includes)
 
 
-    def lib_path(self, path, runtime = False):
+    def lib_path(self, path):
 
         if path == Path('/lib') or path == Path('/usr/lib'):
             return
@@ -131,7 +131,7 @@ class Config:
         #     p = srctree() / prefix() / p
         if not p.absolute():
             p = prefix() / p
-        self.lib_paths[p] = runtime
+        self.__lib_paths.add(p)
 
 
     def lib_path_runtime(self, path):
@@ -152,7 +152,7 @@ class Config:
         res._system_includes.update(rhs._system_includes)
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
-        res.lib_paths.update(rhs.lib_paths)
+        res.__lib_paths.update(rhs.__lib_paths)
         res.libs |= rhs.libs
         res.flags |= rhs.flags
         res.ldflags |= rhs.ldflags
@@ -337,7 +337,7 @@ class GccToolkit(Toolkit):
 
     def link(self, cfg, objs, exe):
 
-        lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
+        lib_rpaths = []
         for path in cfg._Config__rpath:
             if not path.absolute():
                 if self.os is drake.os.macos:
@@ -350,7 +350,7 @@ class GccToolkit(Toolkit):
 
         rpath_link = ''
         if self.os == drake.os.linux:
-            rpath_link = concatenate(cfg.lib_paths, '-Wl,-rpath-link ')
+            rpath_link = concatenate(cfg._Config__lib_paths, '-Wl,-rpath-link ')
 
         undefined = ''
         if self.os == drake.os.macos:
@@ -360,7 +360,7 @@ class GccToolkit(Toolkit):
                (self.cxx,
                 concatenate(cfg.ldflags),
                 concatenate(cfg.frameworks(), '-framework '),
-                concatenate(cfg.lib_paths, '-L'),
+                concatenate(cfg._Config__lib_paths, '-L'),
                 rpath_link,
                 concatenate(lib_rpaths, '-Wl,-rpath,'),
                 undefined,
@@ -370,7 +370,7 @@ class GccToolkit(Toolkit):
 
     def dynlink(self, cfg, objs, exe):
 
-        lib_rpaths = list(path for path in cfg.lib_paths if cfg.lib_paths[path])
+        lib_rpaths = []
         for path in cfg._Config__rpath:
             if not path.absolute():
                 if self.os is drake.os.macos:
@@ -387,7 +387,7 @@ class GccToolkit(Toolkit):
                (self.cxx,
                 concatenate(cfg.flags),
                 concatenate(cfg.frameworks(), '-framework '),
-                concatenate(cfg.lib_paths, '-L'),
+                concatenate(cfg._Config__lib_paths, '-L'),
                 concatenate(lib_rpaths, '-Wl,-rpath,'),
                 extra,
                 concatenate(objs),
@@ -516,7 +516,7 @@ class VisualToolkit(Toolkit):
                (' '.join(cfg.flags),
                 ' '.join(map(str, objs)),
                 exe,
-                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
+                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
                 ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
 
     def dynlink(self, cfg, objs, exe):
@@ -524,7 +524,7 @@ class VisualToolkit(Toolkit):
         return 'link.exe /nologo %s /OUT:%s /dll %s %s' % \
                (' '.join(map(str, objs)),
                 exe,
-                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.lib_paths)),
+                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
                 ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
 
     def libname_static(self, cfg, path):
@@ -709,8 +709,7 @@ class Linker(Builder):
         frameworks = list(self.config.frameworks())
         frameworks.sort()
         h['frameworks'] = frameworks
-        lib_paths = list(((path, self.config.lib_paths[path]) for path in self.config.lib_paths))
-        lib_paths.sort()
+        lib_paths = self.config._Config__lib_paths
         h['lib_paths'] = lib_paths
         rpath = self.config._Config__rpath
         rpath.sort()
@@ -795,7 +794,7 @@ class DynLibLinker(Builder):
         h['dynamic_libraries'] = dynlibs
         rpath = list(self.config._Config__rpath)
         h['rpath'] = rpath
-        libraries_path = list(self.config.lib_paths)
+        libraries_path = list(self.config._Config__lib_paths)
         h['libraries_path'] = libraries_path
         return repr(h)
 
