@@ -76,11 +76,9 @@ namespace elle
     , _size(other._size)
     , _buffer_size(other._buffer_size)
   {
-    other._contents = nullptr;
-#ifdef DEBUG
+    other._contents = static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE));
     other._size = 0;
-    other._buffer_size = 0;
-#endif
+    other._buffer_size = ELLE_BUFFER_INITIAL_SIZE;
   }
 
   ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
