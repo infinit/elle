@@ -6,6 +6,10 @@
 #include <openssl/bn.h>
 #include <openssl/rand.h>
 
+/*------.
+| Basic |
+`------*/
+
 void test_basic()
 {
   BOOST_CHECK(dRAND_init() == 1);
@@ -138,7 +142,49 @@ test_generate_prime()
     dRAND_stop();
   }
 
-  // XXX test with safe
+  // Likewise, generate numbers in a deterministic but safe way.
+  {
+    const char* seed =
+      "A mathematician, like a painter or poet, is a maker of patterns. "
+      "If his patterns are more permanent than theirs, it is because they "
+      "are made with ideas.";
+
+    dRAND_start();
+    {
+      ::BIGNUM* n1 = BN_new();
+      dRAND_reset();
+      RAND_seed(seed, ::strlen(seed));
+      char* fingerprint1 = dRAND_fingerprint();
+      BOOST_CHECK(RAND_status() == 1);
+      BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n1, 512, 1,
+                                              NULL, NULL, NULL), 1);
+
+      ::BIGNUM* n2 = BN_new();
+      dRAND_reset();
+      RAND_seed(seed, ::strlen(seed));
+      char* fingerprint2 = dRAND_fingerprint();
+      BOOST_CHECK(RAND_status() == 1);
+      BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n2, 2048, 1,
+                                              NULL, NULL, NULL), 1);
+
+      ::BIGNUM* n3 = BN_new();
+      dRAND_reset();
+      RAND_seed(seed, ::strlen(seed));
+      char* fingerprint3 = dRAND_fingerprint();
+      BOOST_CHECK(RAND_status() == 1);
+      BOOST_CHECK_EQUAL(dBN_generate_prime_ex(n3, 512, 1,
+                                              NULL, NULL, NULL), 1);
+
+      BOOST_CHECK(::strcmp(fingerprint1, fingerprint2) == 0);
+      BOOST_CHECK(::strcmp(fingerprint1, fingerprint3) == 0);
+      BOOST_CHECK(::strcmp(fingerprint2, fingerprint3) == 0);
+
+      BOOST_CHECK(::BN_cmp(n1, n2) != 0);
+      BOOST_CHECK(::BN_cmp(n1, n3) == 0);
+      BOOST_CHECK(::BN_cmp(n2, n3) != 0);
+    }
+    dRAND_stop();
+  }
 
   dRAND_clean();
 }
