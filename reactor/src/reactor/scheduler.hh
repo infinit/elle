@@ -77,7 +77,6 @@ namespace reactor
   | Thread Exception Handler |
   `-------------------------*/
   private:
-    void _thread_exception(const std::exception_ptr& eptr);
     std::exception_ptr _eptr;
 
   /*----------------.

@@ -118,13 +118,13 @@ namespace reactor
       {
         ELLE_WARN("%s: asynchronous jobs threw an exception: %s",
                   *this, e.what());
-        this->_thread_exception(std::current_exception());
+        this->_eptr = std::current_exception();
         this->terminate();
       }
       catch (...)
       {
         ELLE_WARN("%s: asynchronous jobs threw an unknown exception", *this);
-        this->_thread_exception(std::current_exception());
+        this->_eptr = std::current_exception();
         this->terminate();
       }
     }
@@ -170,25 +170,13 @@ namespace reactor
     {
       thread->_step();
       _current = previous;
-      if (_eptr != nullptr)
-      {
-        ELLE_ERR("%s: exception escaped, terminating", *this)
-          this->terminate();
-      }
-    }
-    catch (const std::runtime_error& err)
-    {
-      _current = previous;
-      std::cerr << "thread " << thread->name() << ": "
-                << err.what() << std::endl;
-      std::abort();
     }
     catch (...)
     {
       _current = previous;
-      std::cerr << "thread " << thread->name() << ": "
-                << "unknown error" << std::endl;
-      std::abort();
+      ELLE_ERR("%s: exception escaped, terminating", *this)
+        this->terminate();
+      this->_eptr = std::current_exception();
     }
     if (thread->state() == Thread::state::done)
     {
@@ -394,16 +382,6 @@ namespace reactor
   Scheduler::io_service()
   {
     return _io_service;
-  }
-
-  /*-------------------------.
-  | Thread Exception Handler |
-  `-------------------------*/
-
-  void
-  Scheduler::_thread_exception(const std::exception_ptr& eptr)
-  {
-    _eptr = eptr;
   }
 
   /*----------------.

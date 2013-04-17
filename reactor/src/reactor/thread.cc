@@ -90,7 +90,6 @@ namespace reactor
   | Run |
   `----*/
 
-
   void
   Thread::_action_wrapper(const Thread::Action& action)
   {
@@ -105,12 +104,12 @@ namespace reactor
     catch (std::exception const& e)
     {
       ELLE_WARN("%s: exception escaped: %s", *this, e.what());
-      _scheduler._thread_exception(std::current_exception());
+      _exception_thrown = std::current_exception();
     }
     catch (...)
     {
       ELLE_WARN("%s: unknown exception escaped", *this);
-      _scheduler._thread_exception(std::current_exception());
+      _exception_thrown = std::current_exception();
     }
   }
 
@@ -123,6 +122,8 @@ namespace reactor
       _state = Thread::state::done;
       _signal();
     }
+    if (this->_exception_thrown)
+      std::rethrow_exception(this->_exception_thrown);
   }
 
   void

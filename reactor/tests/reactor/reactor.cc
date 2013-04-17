@@ -1135,6 +1135,60 @@ test_terminate_now_scheduled()
   sched.run();
 }
 
+/*-----------------.
+| Exception escape |
+`-----------------*/
+
+static
+void
+test_exception_escape()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread t(sched, "thrower", except_gen);
+
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+}
+
+
+/*----------------------------.
+| Exception escape collateral |
+`----------------------------*/
+
+static
+void
+exception_escape_collateral(int& beacon)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  auto& current = *sched.current();
+
+  ++beacon;
+  try
+  {
+    current.yield();
+  }
+  catch (...)
+  {
+    ++beacon;
+    current.yield();
+    ++beacon;
+  }
+}
+
+static
+void
+test_exception_escape_collateral()
+{
+  reactor::Scheduler sched;
+  int beacon = 0;
+
+  reactor::Thread t1(sched, "collateral",
+                     std::bind(exception_escape_collateral, std::ref(beacon)));
+  reactor::Thread t2(sched, "thrower", except_gen);
+
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+  BOOST_CHECK_EQUAL(beacon, 3);
+}
 
 
 /*-----------------.
@@ -1199,6 +1253,8 @@ test_suite()
   terminate->add(BOOST_TEST_CASE(test_terminate_now));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled));
+  terminate->add(BOOST_TEST_CASE(test_exception_escape));
+  terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral));
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);

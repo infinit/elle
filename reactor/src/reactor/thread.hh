@@ -98,6 +98,8 @@ namespace reactor
     elle::Exception* _exception;
     elle::Backtrace _backtrace_root;
     friend class Exception;
+    /// Thrown exception.
+    std::exception_ptr _exception_thrown;
 
     /*----------------.
     | Synchronization |
