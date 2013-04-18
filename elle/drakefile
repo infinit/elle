@@ -307,7 +307,6 @@ def configure(cxx_toolkit = None,
     "serialize/Serializable.cc",
     "serialize/version_change.cc",
     "system/Process.cc",
-    "utility/Buffer.cc",
     "utility/Suffixes.cc",
     ]
 
