@@ -8,12 +8,65 @@
 #include <openssl/rand.h>
 
 #include <stdio.h>
-#include <time.h>
+#include <assert.h>
 
-int dRSA_rotate(RSA *rsa, int bits,
-                const unsigned char *seed, size_t seed_length)
+/*
+ * ---------- additional functionalities --------------------------------------
+ */
+
+int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
+                          const unsigned char *seed, size_t seed_length)
 {
-  const RAND_METHOD *method;
+  int bits,bitse,ok= -1;
+
+  bits=BN_num_bits(N);
+  bitse=(bits/2)+1;
+
+  /* We need the RSA components non-NULL */
+  if(!rsa->n && ((rsa->n=BN_new()) == NULL)) goto err;
+  if(!rsa->e && ((rsa->e=BN_new()) == NULL)) goto err;
+
+  /* initialize the 'private' component as unknown. */
+  rsa->d = NULL;
+  rsa->p = NULL;
+  rsa->q = NULL;
+  rsa->dmp1 = NULL;
+  rsa->dmq1 = NULL;
+  rsa->iqmp = NULL;
+
+  /* PATCHED[switch to our random generator in order to ensure
+             determinism. note that the dRAND module must have been
+             initialized] */
+  dRAND_start();
+  {
+    dRAND_reset();
+    RAND_seed(seed, seed_length);
+
+    /* generate e */
+    /* PATCHED[here we use our prime generator which uses our deterministic
+               random generator] */
+    if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
+      goto err;
+  }
+  dRAND_stop();
+
+  /* assign n */
+  BN_copy(rsa->n, N);
+
+  ok=1;
+  err:
+  if (ok == -1)
+  {
+    RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,ERR_LIB_BN);
+    ok=0;
+  }
+
+  return ok;
+}
+
+int dRSA_deduce_privatekey(RSA *rsa, int bits,
+                           const unsigned char *seed, size_t seed_length)
+{
   BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
   BIGNUM local_r0,local_d,local_p;
   BIGNUM *pr0,*d,*p;
@@ -43,54 +96,54 @@ int dRSA_rotate(RSA *rsa, int bits,
   if(!rsa->dmq1 && ((rsa->dmq1=BN_new()) == NULL)) goto err;
   if(!rsa->iqmp && ((rsa->iqmp=BN_new()) == NULL)) goto err;
 
-  // comet[switch to our random generator in order to ensure
-  //       determinism. note that the dRAND module must have been
-  //       initialized]
+  /* PATCHED[switch to our random generator in order to ensure
+             determinism. note that the dRAND module must have been
+             initialized] */
   dRAND_start();
   {
     dRAND_reset();
-
     RAND_seed(seed, seed_length);
 
     /* generate e */
-    // comet[use our prime generator which uses our deterministic
-    //       random generator]
+    /* PATCHED[use our prime generator which uses our deterministic
+               random generator] */
     if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
       goto err;
+
+    /* generate p and q */
+    for (;;)
+    {
+      if(!::dBN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, NULL))
+        goto err;
+      if (!BN_sub(r2,rsa->p,BN_value_one())) goto err;
+      if (!BN_gcd(r1,r2,rsa->e,ctx)) goto err;
+      if (BN_is_one(r1)) break;
+    }
+    for (;;)
+    {
+      /* When generating ridiculously small keys, we can get stuck
+       * continually regenerating the same prime values. Check for
+       * this and bail if it happens 3 times. */
+      unsigned int degenerate = 0;
+      do
+      {
+        if(!::dBN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, NULL))
+          goto err;
+      } while((BN_cmp(rsa->p, rsa->q) == 0) && (++degenerate < 3));
+      if(degenerate == 3)
+      {
+        ok = 0; /* we set our own err */
+        RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,RSA_R_KEY_SIZE_TOO_SMALL);
+        goto err;
+      }
+      if (!BN_sub(r2,rsa->q,BN_value_one())) goto err;
+      if (!BN_gcd(r1,r2,rsa->e,ctx)) goto err;
+      if (BN_is_one(r1))
+        break;
+    }
   }
   dRAND_stop();
 
-  /* generate p and q */
-  for (;;)
-  {
-    if(!::BN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, NULL))
-      goto err;
-    if (!BN_sub(r2,rsa->p,BN_value_one())) goto err;
-    if (!BN_gcd(r1,r2,rsa->e,ctx)) goto err;
-    if (BN_is_one(r1)) break;
-  }
-  for (;;)
-  {
-    /* When generating ridiculously small keys, we can get stuck
-     * continually regenerating the same prime values. Check for
-     * this and bail if it happens 3 times. */
-    unsigned int degenerate = 0;
-    do
-    {
-      if(!::BN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, NULL))
-        goto err;
-    } while((BN_cmp(rsa->p, rsa->q) == 0) && (++degenerate < 3));
-    if(degenerate == 3)
-    {
-      ok = 0; /* we set our own err */
-      RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,RSA_R_KEY_SIZE_TOO_SMALL);
-      goto err;
-    }
-    if (!BN_sub(r2,rsa->q,BN_value_one())) goto err;
-    if (!BN_gcd(r1,r2,rsa->e,ctx)) goto err;
-    if (BN_is_one(r1))
-      break;
-  }
   if (BN_cmp(rsa->p,rsa->q) < 0)
   {
     tmp=rsa->p;
@@ -155,60 +208,112 @@ int dRSA_rotate(RSA *rsa, int bits,
   return ok;
 }
 
-int RSA_derive(RSA *rsa, BIGNUM* N,
-               const unsigned char *seed, size_t seed_length)
+int dRSA_cmp_publickey(RSA *a, RSA *b)
 {
-  const RAND_METHOD *method;
-  int bits,bitse,ok= -1;
+  int x;
 
-  bits=BN_num_bits(N);
-  bitse=(bits/2)+1;
+  assert(a->n != NULL);
+  assert(a->e != NULL);
+  assert(b->n != NULL);
+  assert(b->e != NULL);
 
-  /* We need the RSA components non-NULL */
-  if(!rsa->n && ((rsa->n=BN_new()) == NULL)) goto err;
-  if(!rsa->e && ((rsa->e=BN_new()) == NULL)) goto err;
+  if ((x = BN_cmp(a->n, b->n)) != 0)
+    return x;
+  if ((x = BN_cmp(a->e, b->e)) != 0)
+    return x;
 
-  /* initialize the 'private' component as unknown. */
-  rsa->d = NULL;
-  rsa->d = NULL;
-  rsa->p = NULL;
-  rsa->q = NULL;
-  rsa->dmp1 = NULL;
-  rsa->dmq1 = NULL;
-  rsa->iqmp = NULL;
+  return 0;
+}
 
-  // comet[switch to our random generator in order to ensure
-  //       determinism: (i) save the current random generator
-  //       (ii) switch to ours (iii) clean it in order to
-  //       ensure it is reset (iv) seed it with the given buffer]
-  method = RAND_get_rand_method();
+int dRSA_cmp_privatekey(RSA *a, RSA *b)
+{
+  int x;
 
-  // XXX[utiliser reset()]
-  RAND_set_rand_method(&dRAND_method);
-  RAND_cleanup();
-  RAND_set_rand_method(&dRAND_method);
+  assert(a->n != NULL);
+  assert(a->e != NULL);
+  assert(a->d != NULL);
+  assert(a->p != NULL);
+  assert(a->q != NULL);
+  assert(a->dmp1 != NULL);
+  assert(a->dmq1 != NULL);
+  assert(a->iqmp != NULL);
+  assert(b->n != NULL);
+  assert(b->e != NULL);
+  assert(b->d != NULL);
+  assert(b->p != NULL);
+  assert(b->q != NULL);
+  assert(b->dmp1 != NULL);
+  assert(b->dmq1 != NULL);
+  assert(b->iqmp != NULL);
 
-  RAND_seed(seed, seed_length);
+  if ((x = BN_cmp(a->n, b->n)) != 0)
+    return x;
+  if ((x = BN_cmp(a->e, b->e)) != 0)
+    return x;
+  if ((x = BN_cmp(a->d, b->d)) != 0)
+    return x;
+  if ((x = BN_cmp(a->p, b->p)) != 0)
+    return x;
+  if ((x = BN_cmp(a->q, b->q)) != 0)
+    return x;
+  if ((x = BN_cmp(a->dmp1, b->dmp1)) != 0)
+    return x;
+  if ((x = BN_cmp(a->dmq1, b->dmq1)) != 0)
+    return x;
+  if ((x = BN_cmp(a->iqmp, b->iqmp)) != 0)
+    return x;
 
-  /* generate e */
-  // comet[here we use our prime generator which uses our deterministic
-  //       random generator]
-  if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
-    goto err;
+  return 0;
+}
 
-  // comet[switch back to the OpenSSL random generator]
-  RAND_set_rand_method(method);
+int dRSA_print(RSA *rsa)
+{
+  char *n = NULL;
+  char *e = NULL;
+  char *d = NULL;
+  char *p = NULL;
+  char *q = NULL;
+  char *dmp1 = NULL;
+  char *dmq1 = NULL;
+  char *iqmp = NULL;
 
-  /* assign n */
-  BN_copy(rsa->n, N);
+  assert(rsa->n != NULL);
+  assert(rsa->e != NULL);
 
-  ok=1;
-  err:
-  if (ok == -1)
-  {
-    RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,ERR_LIB_BN);
-    ok=0;
-  }
+  if ((n = BN_bn2hex(rsa->n)) == NULL)
+    return 0;
+  if ((e = BN_bn2hex(rsa->e)) == NULL)
+    return 0;
+  if (rsa->d != NULL)
+    if ((d = BN_bn2hex(rsa->d)) == NULL)
+      return 0;
+  if (rsa->p != NULL)
+    if ((p = BN_bn2hex(rsa->p)) == NULL)
+      return 0;
+  if (rsa->q != NULL)
+    if ((q = BN_bn2hex(rsa->q)) == NULL)
+      return 0;
+  if (rsa->dmp1 != NULL)
+    if ((dmp1 = BN_bn2hex(rsa->dmp1)) == NULL)
+      return 0;
+  if (rsa->dmq1 != NULL)
+    if ((dmq1 = BN_bn2hex(rsa->dmq1)) == NULL)
+      return 0;
+  if (rsa->iqmp != NULL)
+    if ((iqmp = BN_bn2hex(rsa->iqmp)) == NULL)
+      return 0;
 
-  return ok;
+  printf("n=%s e=%s d=%s p=%s q=%s dmp1=%s dmq1=%s iqmp=%s\n",
+         n, e, d, p, q, dmp1, dmq1, iqmp);
+
+  OPENSSL_free(iqmp);
+  OPENSSL_free(dmq1);
+  OPENSSL_free(dmp1);
+  OPENSSL_free(q);
+  OPENSSL_free(p);
+  OPENSSL_free(d);
+  OPENSSL_free(n);
+  OPENSSL_free(e);
+
+  return 1;
 }
