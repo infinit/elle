@@ -119,16 +119,21 @@ def configure(cxx_toolkit = None,
   rule_build << lib_dynamic
 
   # Tests
-  tests = ['Input',
-           'KeyPair',
-           'Output',
-           'PrivateKey',
-           'PublicKey',
-           'SecretKey',
-           'Seed',
-           'bn',
-           'oneway',
-           'random']
+  tests = [
+    "Input.cc",
+    "KeyPair.cc",
+    "Output.cc",
+    "PrivateKey.cc",
+    "PublicKey.cc",
+    "SecretKey.cc",
+    "bn.cc",
+    "oneway.cc",
+    "random.cc",
+    "Seed.cc",
+    "extract.cc",
+    "insert.cc",
+    "footprint.cc",
+     ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
@@ -142,12 +147,13 @@ def configure(cxx_toolkit = None,
   tests_rule = drake.Rule('tests')
   rule_check = drake.Rule('check')
   for test in tests:
+    import os
     config_test = drake.cxx.Config(tests_cxx_config)
     config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
     # FIXME: this is the path to libelle, but it's kinda hardcoded
     config_test.lib_path_runtime('%s../../../elle/lib' % ('../' * test.count('/')))
-    path = drake.Path('tests/cryptography/%s.cc' % test)
-    bin_path = drake.Path('tests/cryptography/%s' % test)
+    path = drake.Path('tests/cryptography/%s' % test)
+    bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(path) +
                                [lib_dynamic, elle.lib_dynamic],
