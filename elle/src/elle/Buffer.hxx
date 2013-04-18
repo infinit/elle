@@ -10,6 +10,26 @@
 
 namespace elle
 {
+  inline
+  size_t
+  Buffer::size() const
+  {
+    return this->_size;
+  }
+
+  inline
+  Byte const*
+  Buffer::contents() const
+  {
+    return this->_contents;
+  }
+
+  inline
+  Byte*
+  Buffer::mutable_contents() const
+  {
+    return this->_contents;
+  }
 
   class InputBufferArchive:
     public elle::serialize::InputBinaryArchive

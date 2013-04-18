@@ -122,6 +122,12 @@ namespace elle
     this->_size = size;
   }
 
+  void
+  Buffer::reset()
+  {
+    this->size(0);
+  }
+
   Buffer::ContentPair
   Buffer::release()
   {

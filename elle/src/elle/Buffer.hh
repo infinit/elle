@@ -84,14 +84,18 @@ namespace elle
            size_t size);
 
     /// Properties for the size and the buffer contents
-    void          size(size_t size);
-    size_t        size() const { return this->_size; }
-    Byte const*   contents() const { return this->_contents; }
-    Byte*         mutable_contents() const { return this->_contents; }
+    void
+    size(size_t size);
+    size_t
+    size() const;
+    Byte const*
+    contents() const;
+    Byte*
+    mutable_contents() const;
 
     /// Reset the size to zero.
     void
-    reset() { this->size(0); }
+    reset();
 
     /// Release internal memory.
     ContentPair
