@@ -272,16 +272,45 @@ def configure(cxx_toolkit = None,
   rule_check = drake.Rule('check')
 
   tests = [
-    'Buffer',
-    'IOStream',
-    'Printable',
-    'Version',
-    'assert',
-    'finally',
-    'Logger',
-    'printf',
-    'system/Process',
+    "Buffer.cc",
+    "assert.cc",
+    "finally.cc",
+    "IOStream.cc",
+    "log.cc",
+    "Logger.cc",
+    "operator.cc",
+    "Printable.cc",
+    "print.cc",
+    "printf.cc",
+    #"signal_handler.cc",
+    "Version.cc",
+    "format/ini/Section.cc",
+    "format/json/Array.cc",
+    "format/json/Bool.cc",
+    "format/json/Dictionary.cc",
+    "format/json/Float.cc",
+    "format/json/Integer.cc",
+    "format/json/Null.cc",
+    "format/json/String.cc",
+    "io/Path.cc",
+    #"nat/nat_hole_ctor.cc",
+    #"nat/nat_hole_punch.cc",
+    "network/interface_autoip.cc",
+    "network/interface.cc",
+    "network/Locus.cc",
+    "serialize/all_archives.cc",
+    "serialize/Base64Archive.cc",
+    "serialize/BinaryArchive.cc",
+    "serialize/construct.cc",
+    "serialize/JSONArchive.cc",
+    "serialize/Pointer.cc",
+    "serialize/Serializable.cc",
+    "serialize/version_change.cc",
+    "system/Process.cc",
+    "utility/Buffer.cc",
+    "utility/Suffixes.cc",
     ]
+
 
   boost = boost or drake.cxx.boost.Boost()
 
@@ -292,11 +321,12 @@ def configure(cxx_toolkit = None,
   cxx_config_tests += boost.config_test()
 
   if enable_tests:
+      import os
       for test in tests:
         config = drake.cxx.Config(cxx_config_tests)
         config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
-        test = drake.cxx.Executable('tests/%s' % test,
-                                    drake.nodes('tests/%s.cc' % test) + [lib_dynamic],
+        test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
+                                    drake.nodes('tests/%s' % test) + [lib_dynamic],
                                     cxx_toolkit, config)
         runner = TestRunner(test)
         rule_check << runner.status
