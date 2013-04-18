@@ -76,6 +76,60 @@ test_ctor_move(size_t size)
 }
 
 static
+elle::Buffer
+mkbuf(size_t size)
+{
+  elle::Buffer buffer(size);
+
+  for (int i = 0; i < 16; ++i)
+    buffer.mutable_contents()[i] = i;
+
+  return buffer;
+}
+
+static
+void
+test_cmp()
+{
+  {
+    elle::Buffer b1(mkbuf(16));
+    elle::Buffer b2(mkbuf(16));
+
+    BOOST_CHECK_EQUAL(b1, b2);
+    BOOST_CHECK_GE(b1, b2);
+    BOOST_CHECK_LE(b1, b2);
+
+    b1.mutable_contents()[7] = 8;
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_GT(b1, b2);
+    BOOST_CHECK_GE(b1, b2);
+
+    b1.mutable_contents()[7] = 6;
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_LT(b1, b2);
+    BOOST_CHECK_LE(b1, b2);
+  }
+
+  {
+    elle::Buffer b1(mkbuf(4));
+    elle::Buffer b2(mkbuf(8));
+
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_LT(b1, b2);
+    BOOST_CHECK_LE(b1, b2);
+  }
+
+  {
+    elle::Buffer b1(mkbuf(8));
+    elle::Buffer b2(mkbuf(4));
+
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_GT(b1, b2);
+    BOOST_CHECK_GE(b1, b2);
+  }
+}
+
+static
 bool
 test_suite()
 {
@@ -96,6 +150,10 @@ test_suite()
   SIZE(test_ctor_content_pair);
   SIZE(test_ctor_move);
 #undef SIZE
+
+  boost::unit_test::test_suite* cmp = BOOST_TEST_SUITE("Comparisons");
+  boost::unit_test::framework::master_test_suite().add(cmp);
+  cmp->add(BOOST_TEST_CASE(test_cmp));
 
   return true;
 }
