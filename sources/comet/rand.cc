@@ -453,7 +453,7 @@ int dRAND_status(void)
 
 static ENGINE* _engine = NULL;
 
-// XXX
+// comet[initializes the deterministic random engine]
 int dRAND_init()
 {
   if (_engine != NULL)
@@ -483,7 +483,8 @@ int dRAND_init()
   return 1;
 }
 
-// XXX
+// comet[clean the deterministic random engine and reinstate the next-in-line
+//       default engine]
 int dRAND_clean()
 {
   if (_engine == NULL)
@@ -496,6 +497,8 @@ int dRAND_clean()
     return 0;
   if (ENGINE_free(_engine) == 0)
     return 0;
+
+  _engine = NULL;
 
   assert(ENGINE_get_default_RAND() != _engine);
 
