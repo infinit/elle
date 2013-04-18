@@ -24,96 +24,101 @@ namespace elle
   class OutputBufferArchive;
   class WeakBuffer;
 
-//
-// ---------- Buffer ----------------------------------------------------------
-//
+  /*-------.
+  | Buffer |
+  `-------*/
 
-  /// @brief Manage a memory zone.
+  /// @brief A memory zone.
   ///
-  /// Note that this class owns the pointed memory at every moment.
+  /// The Buffer owns the pointed memory at every moment.
   ///
-  /// @see WeakBuffer for a buffer that doesn't own the data
+  /// @see WeakBuffer for a buffer that doesn't own the memory.
   class Buffer
   {
-    friend struct serialize::Serializer<Buffer>;
-  public:
-    typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
-    typedef std::pair<ContentPtr, size_t>                ContentPair;
 
+  /*------.
+  | Types |
+  `------*/
+  public:
+    /// Data owned by a Buffer:
+    typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
+    /// Content owned by a Buffer: data and size.
+    typedef std::pair<ContentPtr, size_t> ContentPair;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    /// An empty buffer.
+    Buffer();
+    /// A buffer of a specify size.
+    explicit
+    Buffer(size_t size);
+    /// A bufferSteal a pointer as internal buffer
+    explicit
+    Buffer(ContentPair&& pair);
+    /// A buffer containing a copy of the given data.
+    Buffer(Byte const* data,
+           size_t size);
+    /// A buffer with the content of the moved buffer.
+    Buffer(Buffer&& other);
+    Buffer&
+    operator =(Buffer&& other);
+    /// Free owned memory.
+    ~Buffer();
+    /// Buffer is not copyable
+    Buffer(Buffer const&) = delete;
+    /// Buffer is not assignable
+    Buffer&
+    operator =(Buffer const&) = delete;
+
+
+  /*------------------.
+  | Memory management |
+  `------------------*/
+  public:
+    /// Current size of the buffer.
+    size_t
+    size() const;
+    /// Current underlying allocated memory.
+    size_t
+    capacity() const;
+    /// Buffer constant data.
+    Byte const*
+    contents() const;
+    Byte*
+    /// Buffer mutable data.
+    mutable_contents() const;
+    void
+    size(size_t size);
+    /// Reset the size to zero.
+    void
+    reset();
+    /// Release internal memory.
+    ContentPair
+    release();
+    /// Shrink the capacity to fit the size if needed.
+    void
+    shrink_to_fit();
   private:
     Byte*       _contents;
     size_t      _size;
     size_t      _buffer_size;
+    static size_t _next_size(size_t);
 
-  public:
-    /// Empty buffer
-    Buffer();
-
-    /// A buffer of a specify size.
-    explicit
-    Buffer(size_t size);
-
-    /// Steal a pointer as internal buffer
-    explicit
-    Buffer(ContentPair&& pair);
-
-    /// Copy a buffer
-    Buffer(Byte const* data,
-           size_t size);
-
-    /// Buffer class is moveable
-    Buffer(Buffer&& other);
-    Buffer&
-    operator =(Buffer&& other);
-
-    /// Load constructor.
-    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Buffer);
-
-    /// Buffer class is not virtual
-    ~Buffer();
-
-    // Buffer is not copyable
-    Buffer(Buffer const&) = delete;
-    Buffer&
-    operator =(Buffer const&) = delete;
-
+  /*-----------.
+  | Operations |
+  `-----------*/
   public:
     /// Append a copy of the data to the end of the buffer.
     void
     append(void const* data,
            size_t size);
 
-    /// Properties for the size and the buffer contents
-    void
-    size(size_t size);
-    size_t
-    size() const;
-    size_t
-    capacity() const;
-    Byte const*
-    contents() const;
-    Byte*
-    mutable_contents() const;
-
-    /// Reset the size to zero.
-    void
-    reset();
-
-    /// Release internal memory.
-    ContentPair
-    release();
-
-    /// Binary serialization shorcut.
-    OutputBufferArchive
-    writer();
-
-    InputBufferArchive
-    reader() const;
-
-    // XXX[to remove in the future, if we use DumpArchives]
-    void
-    dump(const Natural32 shift = 0) const;
-
+  /*----------------------.
+  | Comparable, Orderable |
+  `----------------------*/
+  public:
     bool
     operator <(Buffer const& other) const;
     bool
@@ -133,12 +138,27 @@ namespace elle
     ELLE_OPERATOR_GTE(WeakBuffer);
     ELLE_OPERATOR_NEQ(WeakBuffer);
 
-    /// Shrink the capacity to fit the size if needed.
-    void
-    shrink_to_fit();
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    friend struct serialize::Serializer<Buffer>;
+    /// Load constructor.
+    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Buffer);
+    /// Binary serialization write shorcut.
+    OutputBufferArchive
+    writer();
+    /// Binary serialization read shorcut.
+    InputBufferArchive
+    reader() const;
 
-  private:
-    static size_t _next_size(size_t);
+  /*---------.
+  | Dumpable |
+  `---------*/
+  public:
+    // XXX[to remove in the future, if we use DumpArchives]
+    void
+    dump(const Natural32 shift = 0) const;
   };
 
   std::ostream&
