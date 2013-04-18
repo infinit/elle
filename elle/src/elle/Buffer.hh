@@ -88,6 +88,8 @@ namespace elle
     size(size_t size);
     size_t
     size() const;
+    size_t
+    capacity() const;
     Byte const*
     contents() const;
     Byte*

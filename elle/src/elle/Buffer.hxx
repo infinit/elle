@@ -18,6 +18,13 @@ namespace elle
   }
 
   inline
+  size_t
+  Buffer::capacity() const
+  {
+    return this->_buffer_size;
+  }
+
+  inline
   Byte const*
   Buffer::contents() const
   {
