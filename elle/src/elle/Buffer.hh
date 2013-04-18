@@ -115,16 +115,13 @@ namespace elle
     append(void const* data,
            size_t size);
 
-  /*----------------------.
-  | Comparable, Orderable |
-  `----------------------*/
+  /*----------.
+  | Orderable |
+  `----------*/
   private:
     friend class Orderable<elle::Buffer>;
     Orderable<elle::Buffer>::Order
     _order(Buffer const& other) const;
-    friend class Orderable<elle::WeakBuffer>;
-    Orderable<elle::WeakBuffer>::Order
-    _order(WeakBuffer const& other) const;
 
   /*--------------.
   | Serialization |
@@ -164,7 +161,8 @@ namespace elle
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
   ///
-  class WeakBuffer
+  class WeakBuffer:
+    public elle::Orderable<WeakBuffer>
   {
   private:
     Byte*     _contents;
@@ -200,31 +198,23 @@ namespace elle
     Byte const*   contents() const          { return this->_contents; }
     Byte*         mutable_contents() const  { return this->_contents; }
 
+
+  /*----------.
+  | Orderable |
+  `----------*/
+  private:
+    friend class elle::Buffer;
+    friend class Orderable<elle::WeakBuffer>;
+    Orderable<elle::WeakBuffer>::Order
+    _order(WeakBuffer const& other) const;
+
+  public:
     InputBufferArchive
     reader() const;
 
     // XXX[to remove in the future, if we use DumpArchives]
     void
     dump(const Natural32 shift = 0) const;
-
-    bool
-    operator <(WeakBuffer const& other) const;
-    bool
-    operator <=(WeakBuffer const& other) const;
-    bool
-    operator ==(WeakBuffer const& other) const;
-    ELLE_OPERATOR_GT(WeakBuffer);
-    ELLE_OPERATOR_GTE(WeakBuffer);
-    ELLE_OPERATOR_NEQ(WeakBuffer);
-    bool
-    operator <(Buffer const& other) const;
-    bool
-    operator <=(Buffer const& other) const;
-    bool
-    operator ==(Buffer const& other) const;
-    ELLE_OPERATOR_GT(Buffer);
-    ELLE_OPERATOR_GTE(Buffer);
-    ELLE_OPERATOR_NEQ(Buffer);
   };
 
   /*----------.

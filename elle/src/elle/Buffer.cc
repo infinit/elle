@@ -214,29 +214,12 @@ namespace elle
     return (size + size  / 2);
   }
 
-  // Orderable<elle::Buffer>::Order
-  // Buffer::_order(Buffer const& other) const
-  // {
-  //   return this->_order(WeakBuffer(*this));
-  // }
-
   Orderable<elle::Buffer>::Order
   Buffer::_order(Buffer const& other) const
   {
-    if (this->_size < other.size())
-      return Orderable<elle::Buffer>::Order::less;
-    else if (this->_size > other.size())
-      return Orderable<elle::Buffer>::Order::more;
-    else
-    {
-      auto cmp = ::memcmp(this->_contents, other.contents(), this->_size);
-      if (cmp < 0)
-        return Orderable<elle::Buffer>::Order::less;
-      else if (cmp == 0)
-        return Orderable<elle::Buffer>::Order::equal;
-      else
-        return Orderable<elle::Buffer>::Order::more;
-    }
+    auto res = WeakBuffer(_contents, _size)._order(
+      WeakBuffer(other._contents, other._size));
+    return Orderable<elle::Buffer>::Order(res);
   }
 
   void
@@ -339,52 +322,23 @@ namespace elle
       }
   }
 
-  bool
-  WeakBuffer::operator <(WeakBuffer const& other) const
+  Orderable<elle::WeakBuffer>::Order
+  WeakBuffer::_order(WeakBuffer const& other) const
   {
-    if (this->_size != other._size)
-      return this->_size < other._size;
-    return ::memcmp(this->_contents, other._contents, this->_size) < 0;
-  }
-
-  bool
-  WeakBuffer::operator <=(WeakBuffer const& other) const
-  {
-    if (this->_size != other._size)
-      return this->_size < other._size;
-    return ::memcmp(this->_contents, other._contents, this->_size) <= 0;
-  }
-
-  bool
-  WeakBuffer::operator ==(WeakBuffer const& other) const
-  {
-    if (this->_size != other._size)
-      return false;
-    return ::memcmp(this->_contents, other._contents, this->_size) == 0;
-  }
-
-  bool
-  WeakBuffer::operator <(Buffer const& other) const
-  {
-    if (this->_size != other.size())
-      return this->_size < other.size();
-    return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
-  }
-
-  bool
-  WeakBuffer::operator <=(Buffer const& other) const
-  {
-    if (this->_size != other.size())
-      return this->_size < other.size();
-    return ::memcmp(this->_contents, other.contents(), this->_size) <= 0;
-  }
-
-  bool
-  WeakBuffer::operator ==(Buffer const& other) const
-  {
-    if (this->_size != other.size())
-      return false;
-    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
+    if (this->_size < other.size())
+      return Orderable<elle::WeakBuffer>::Order::less;
+    else if (this->_size > other.size())
+      return Orderable<elle::WeakBuffer>::Order::more;
+    else
+    {
+      auto cmp = ::memcmp(this->_contents, other.contents(), this->_size);
+      if (cmp < 0)
+        return Orderable<elle::WeakBuffer>::Order::less;
+      else if (cmp == 0)
+        return Orderable<elle::WeakBuffer>::Order::equal;
+      else
+        return Orderable<elle::WeakBuffer>::Order::more;
+    }
   }
 
   /*----------.

@@ -75,8 +75,9 @@ test_ctor_move(size_t size)
   BOOST_CHECK(source.contents());
 }
 
+template <typename Buffer>
 static
-elle::Buffer
+Buffer
 mkbuf(size_t size)
 {
   elle::Buffer buffer(size);
@@ -87,13 +88,39 @@ mkbuf(size_t size)
   return buffer;
 }
 
+template <>
+elle::Buffer
+mkbuf<elle::Buffer>(size_t size)
+{
+  elle::Buffer buffer(size);
+
+  for (int i = 0; i < 16; ++i)
+    buffer.mutable_contents()[i] = i;
+
+  return buffer;
+}
+
+template <>
+elle::WeakBuffer
+mkbuf<elle::WeakBuffer>(size_t size)
+{
+  elle::Byte* raw = new elle::Byte[size];
+  elle::WeakBuffer buffer(raw, size);
+
+  for (int i = 0; i < 16; ++i)
+    buffer.mutable_contents()[i] = i;
+
+  return buffer;
+}
+
+template <typename Buffer>
 static
 void
 test_cmp()
 {
   {
-    elle::Buffer b1(mkbuf(16));
-    elle::Buffer b2(mkbuf(16));
+    Buffer b1(mkbuf<Buffer>(16));
+    Buffer b2(mkbuf<Buffer>(16));
 
     BOOST_CHECK_EQUAL(b1, b2);
     BOOST_CHECK_GE(b1, b2);
@@ -111,8 +138,8 @@ test_cmp()
   }
 
   {
-    elle::Buffer b1(mkbuf(4));
-    elle::Buffer b2(mkbuf(8));
+    Buffer b1(mkbuf<Buffer>(4));
+    Buffer b2(mkbuf<Buffer>(8));
 
     BOOST_CHECK_NE(b1, b2);
     BOOST_CHECK_LT(b1, b2);
@@ -120,8 +147,8 @@ test_cmp()
   }
 
   {
-    elle::Buffer b1(mkbuf(8));
-    elle::Buffer b2(mkbuf(4));
+    Buffer b1(mkbuf<Buffer>(8));
+    Buffer b2(mkbuf<Buffer>(4));
 
     BOOST_CHECK_NE(b1, b2);
     BOOST_CHECK_GT(b1, b2);
@@ -162,8 +189,12 @@ static
 bool
 test_suite()
 {
+  // Buffer
+  boost::unit_test::test_suite* buffer = BOOST_TEST_SUITE("Buffer");
+  boost::unit_test::framework::master_test_suite().add(buffer);
+
   boost::unit_test::test_suite* ctor = BOOST_TEST_SUITE("Construction");
-  boost::unit_test::framework::master_test_suite().add(ctor);
+  buffer->add(ctor);
 
   ctor->add(BOOST_TEST_CASE(test_ctor_empty));
 
@@ -181,13 +212,22 @@ test_suite()
 #undef SIZE
 
   boost::unit_test::test_suite* cmp = BOOST_TEST_SUITE("Comparisons");
-  boost::unit_test::framework::master_test_suite().add(cmp);
-  cmp->add(BOOST_TEST_CASE(test_cmp));
+  buffer->add(cmp);
+  cmp->add(BOOST_TEST_CASE(test_cmp<elle::Buffer>));
 
   boost::unit_test::test_suite* memory = BOOST_TEST_SUITE("Memory");
-  boost::unit_test::framework::master_test_suite().add(memory);
+  buffer->add(memory);
   memory->add(BOOST_TEST_CASE(test_capacity));
   memory->add(BOOST_TEST_CASE(test_release));
+
+
+  // WeakBuffer
+  boost::unit_test::test_suite* weakbuffer = BOOST_TEST_SUITE("WeakBuffer");
+  boost::unit_test::framework::master_test_suite().add(weakbuffer);
+
+  boost::unit_test::test_suite* cmp_weak = BOOST_TEST_SUITE("Comparisons");
+  weakbuffer->add(cmp_weak);
+  cmp_weak->add(BOOST_TEST_CASE(test_cmp<elle::WeakBuffer>));
 
   return true;
 }
