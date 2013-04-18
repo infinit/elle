@@ -75,6 +75,47 @@ test_ctor_move(size_t size)
   BOOST_CHECK(source.contents());
 }
 
+static
+void
+test_ctor_weak_raw()
+{
+  elle::Byte ptr[42];
+  elle::WeakBuffer b(ptr, 42);
+  BOOST_CHECK_EQUAL(b.contents(), ptr);
+  BOOST_CHECK_EQUAL(b.mutable_contents(), ptr);
+  BOOST_CHECK_EQUAL(b.size(), 42);
+}
+
+static
+void
+test_ctor_weak_buffer()
+{
+  elle::Buffer b(7);
+  elle::WeakBuffer wb(b);
+  BOOST_CHECK_EQUAL(wb.contents(), b.contents());
+  BOOST_CHECK_EQUAL(wb.mutable_contents(), b.contents());
+  BOOST_CHECK_EQUAL(wb.size(), 7);
+}
+
+static
+void
+test_ctor_weak_copy_move()
+{
+  elle::Byte* raw = new elle::Byte[7];
+  elle::WeakBuffer wb1(raw, 7);;
+  elle::WeakBuffer wb2(wb1);
+  BOOST_CHECK_EQUAL(wb2.contents(), wb1.contents());
+  BOOST_CHECK_EQUAL(wb2.size(), wb1.size());
+
+  elle::WeakBuffer wb3(std::move(wb2));
+  BOOST_CHECK_EQUAL(wb3.contents(), raw);
+  BOOST_CHECK_EQUAL(wb3.size(), 7);
+  BOOST_CHECK_EQUAL(wb2.contents(), (elle::Byte*)(nullptr));
+  BOOST_CHECK_EQUAL(wb2.size(), 0);
+
+  delete[] raw;
+}
+
 template <typename Buffer>
 static
 Buffer
@@ -224,6 +265,12 @@ test_suite()
   // WeakBuffer
   boost::unit_test::test_suite* weakbuffer = BOOST_TEST_SUITE("WeakBuffer");
   boost::unit_test::framework::master_test_suite().add(weakbuffer);
+
+  boost::unit_test::test_suite* ctor_weak = BOOST_TEST_SUITE("Construction");
+  weakbuffer->add(ctor_weak);
+  ctor->add(BOOST_TEST_CASE(test_ctor_weak_raw));
+  ctor->add(BOOST_TEST_CASE(test_ctor_weak_buffer));
+  ctor->add(BOOST_TEST_CASE(test_ctor_weak_copy_move));
 
   boost::unit_test::test_suite* cmp_weak = BOOST_TEST_SUITE("Comparisons");
   weakbuffer->add(cmp_weak);
