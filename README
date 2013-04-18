@@ -19,15 +19,21 @@ The library relies upon several other libraries:
 Internals
 =========
 
-The library is composed of a random implementation which is deterministic.
-Then comes the big number set of functions which make sure the prime generation
-mechanism does not introduce entropy. Finally a set of rotate/derive functions
-is provided for every asymmetric cryptosystem, such as RSA, enabling one to
-retrieve a key pair based on a PRNG seed.
+The library is composed of a three components, all required for ensuring the
+determinism of the cryptography key generation mechanism.
+
+First, a deterministic random implementation is provided, referred to as dRAND.
+
+Although this implementation is deterministic, determinism must also be assured
+at the BIGNUM level because some of the functions introduce entroy, the ones
+related to BN_generate_prime_ex() for instance.
+
+Finally a set of functions for deducing a private/public key from a PRNG seed in
+a deterministic way is provided for every asymmetric cryptosystem, such as RSA.
 
 In other words, some of the OpenSSL library's functions have been slightly
-modified so as to remove the operations destined at adding entropy based on
-uninitialized variables.
+modified so as to remove the operations destined at adding entropy, especially the
+ones based on uninitialized variables.
 
 Maintainers
 ===========
