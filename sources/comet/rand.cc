@@ -8,9 +8,9 @@
 #include <string.h>
 #include <assert.h>
 
-//
-// ---------- original openssl-based functionalities --------------------------
-//
+/*
+ * ---------- original openssl-based functionalities --------------------------
+ */
 
 RAND_METHOD dRAND_method =
 {
@@ -57,12 +57,13 @@ void dRAND_cleanup(void)
   entropy=0;
   initialized=0;
 
-  // comet[so as to be deterministic, also reset the state and md variables]
+  /* PATCHED[so as to be deterministic, also reset the state and md
+             variables] */
   memset(state, 0x0, sizeof (state));
   memset(md, 0x0, sizeof (md));
 
-  // comet[this section has been taken from ssleay_rand_bytes() in
-  //       order to have enough 'md' to perform the operations]
+  /* PATCHED[this section has been taken from ssleay_rand_bytes() in
+             order to have enough 'md' to perform the operations] */
   {
     /* In the output function only half of 'md' remains secret,
      * so we better make sure that the required entropy gets
@@ -80,7 +81,7 @@ void dRAND_cleanup(void)
 #define DUMMY_SEED "...................." /* at least MD_DIGEST_LENGTH */
       /* Note that the seed does not matter, it's just that
        * ssleay_rand_add expects to have something to hash. */
-      // comet[the following line is a fix replacing ssleay_rand_add()]
+      /* PATCHED[the following line is a fix replacing ssleay_rand_add()] */
       assert(RAND_get_rand_method() == &dRAND_method);
       RAND_add(DUMMY_SEED, MD_DIGEST_LENGTH, 0.0);
       n -= MD_DIGEST_LENGTH;
@@ -226,7 +227,7 @@ void dRAND_add(const void *buf, int num, double add)
 
 void dRAND_seed(const void *buf, int num)
 {
-  // comet[this line is a fix of ssleay_rand_add()]
+  /* PATCHED[this line is a fix of ssleay_rand_add()] */
   assert(RAND_get_rand_method() == &dRAND_method);
   RAND_add(buf, num, (double)num);
 }
@@ -275,8 +276,8 @@ int dRAND_bytes(unsigned char *buf, int num)
 
   if (!initialized)
   {
-    // comet[the call to RAND_poll() has been removed here because
-    //       injecting unwanted entropy]
+    /* PATCHED[the call to RAND_poll() has been removed here because
+               injecting unwanted entropy] */
     initialized = 1;
   }
 
@@ -300,7 +301,8 @@ int dRAND_bytes(unsigned char *buf, int num)
       entropy = 0;
   }
 
-  // comet[here the section filling the 'md' has been moved to RAND_cleanup()]
+  /* PATCHED[here the section filling the 'md' has been moved to
+             RAND_cleanup()] */
 
   st_idx=state_index;
   st_num=state_num;
@@ -337,9 +339,9 @@ int dRAND_bytes(unsigned char *buf, int num)
      * of such a small source of entropy has negligible impact on
      * security.
      */
-    // comet[the following line adds undeterminism and has therefore
-    //       been removed]
-    // MD_Update(&m,buf,j);
+    /* PATCHED[the following line adds undeterminism and has therefore
+               been removed]
+       MD_Update(&m,buf,j); */
 
     k=(st_idx+MD_DIGEST_LENGTH/2)-st_num;
     if (k > 0)
@@ -430,8 +432,8 @@ int dRAND_status(void)
 
   if (!initialized)
   {
-    // comet[the call to RAND_poll() has been removed here because
-    //       injecting additional entropy]
+    /* PATCHED[the call to RAND_poll() has been removed here because
+               injecting additional entropy] */
     initialized = 1;
   }
 
@@ -447,13 +449,12 @@ int dRAND_status(void)
   return ret;
 }
 
-//
-// ---------- additional functionalities --------------------------------------
-//
+/*
+ * ---------- additional functionalities --------------------------------------
+ */
 
 static ENGINE* _engine = NULL;
 
-// comet[initializes the deterministic random engine]
 int dRAND_init()
 {
   if (_engine != NULL)
@@ -487,8 +488,6 @@ int dRAND_init()
   return 1;
 }
 
-// comet[clean the deterministic random engine and reinstate the next-in-line
-//       default engine]
 int dRAND_clean()
 {
   if (_engine == NULL)
@@ -511,8 +510,6 @@ int dRAND_clean()
   return 1;
 }
 
-// comet[start the dRAND environment ensuring that using the RAND_*
-//       functions will be deterministic according to the current seed's state]
 int dRAND_start(void)
 {
   if (_engine == NULL)
@@ -526,7 +523,7 @@ int dRAND_start(void)
     return 0;
   if (ENGINE_set_default_RAND(_engine) == 0)
     return 0;
-  // Force the RAND to reinitialize.
+  /* Force the RAND to reinitialize. */
   if (RAND_set_rand_engine(NULL) == 0)
     return 0;
 
@@ -537,7 +534,6 @@ int dRAND_start(void)
   return 1;
 }
 
-// comet[stop the dRAND environment by reinstating the original SSLeay context]
 int dRAND_stop(void)
 {
   if (_engine == NULL)
@@ -548,7 +544,7 @@ int dRAND_stop(void)
   assert(RAND_get_rand_method() == &dRAND_method);
 
   ENGINE_unregister_RAND(_engine);
-  // Force the RAND to reinitialize.
+  /* Force the RAND to reinitialize. */
   if (RAND_set_rand_engine(NULL) == 0)
     return 0;
 
@@ -559,7 +555,6 @@ int dRAND_stop(void)
   return 1;
 }
 
-// comet[reset the random implementation by cleaning it up]
 int dRAND_reset(void)
 {
   if (_engine == NULL)
@@ -574,16 +569,16 @@ int dRAND_reset(void)
   assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
+
+  return 1;
 }
 
-// comet[return a string-based representationn of the random
-//       implementation's state]
-char* dRAND_fingerprint(void)
+char *dRAND_fingerprint(void)
 {
   if (_engine == NULL)
     return 0;
 
-  char* fingerprint = (char*)malloc(MD_DIGEST_LENGTH + 1);
+  char *fingerprint = (char*)malloc(MD_DIGEST_LENGTH + 1);
 
   memset(fingerprint, 0x0, MD_DIGEST_LENGTH + 1);
 
