@@ -11,9 +11,9 @@
 #include <string.h>
 #include <assert.h>
 
-//
-// ---------- original openssl-based functionalities --------------------------
-//
+/*
+ * ---------- original openssl-based functionalities --------------------------
+ */
 
 #ifndef EIGHT_BIT
 #define NUMPRIMES 2048
@@ -289,8 +289,8 @@ static int dbnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 {
   unsigned char *buf=NULL;
   int ret=0,bit,bytes,mask;
-  // comet[needless for determinism]
-  // time_t tim;
+  /* PATCHED[needless for determinism]
+     time_t tim; */
 
   if (bits == 0)
   {
@@ -310,9 +310,9 @@ static int dbnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
   }
 
   /* make a random number and set the top and bottom bits */
-  // comet[we do not want more entropy]
-  //time(&tim);
-  //RAND_add(&tim,sizeof(tim),0.0);
+  /* PATCHED[we do not want more entropy]
+     time(&tim);
+     RAND_add(&tim,sizeof(tim),0.0); */
 
   if (pseudorand)
   {
@@ -386,20 +386,20 @@ static int dbnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 
 int dBN_rand(BIGNUM *rnd, int bits, int top, int bottom)
 {
-  // comet[rely on the deterministic version]
+  /* PATCHED[rely on the deterministic version] */
   return dbnrand(0, rnd, bits, top, bottom);
 }
 
 int dBN_pseudo_rand(BIGNUM *rnd, int bits, int top, int bottom)
 {
-  // comet[rely on the deterministic version]
+  /* PATCHED[rely on the deterministic version] */
   return dbnrand(1, rnd, bits, top, bottom);
 }
 
 /* random number r:  0 <= r < range */
 static int dbn_rand_range(int pseudo, BIGNUM *r, const BIGNUM *range)
 {
-  // comet[use our deterministic BN random generator]
+  /* PATCHED[use our deterministic BN random generator] */
   int (*bn_rand)(BIGNUM *, int, int, int) = pseudo ? dBN_pseudo_rand : dBN_rand;
   int n;
   int count = 100;
@@ -466,7 +466,7 @@ static int dbn_rand_range(int pseudo, BIGNUM *r, const BIGNUM *range)
 
 int dBN_pseudo_rand_range(BIGNUM *r, const BIGNUM *range)
 {
-  // comet[rely on the deterministic version]
+  /* PATCHED[rely on the deterministic version] */
   return dbn_rand_range(1, r, range);
 }
 
@@ -574,7 +574,7 @@ int dBN_is_prime_fasttest_ex(const BIGNUM *a, int checks, BN_CTX *ctx_passed,
 
   for (i = 0; i < checks; i++)
   {
-    // comet[use our dBN_pseudo_rand_range()]
+    /* PATCHED[use our dBN_pseudo_rand_range()] */
     if (!dBN_pseudo_rand_range(check, A1))
       goto err;
     if (!BN_add_word(check, 1))
@@ -614,7 +614,7 @@ static int dprobable_prime_dh(BIGNUM *rnd, int bits,
   BN_CTX_start(ctx);
   if ((t1 = BN_CTX_get(ctx)) == NULL) goto err;
 
-  // comet[use our random generator here]
+  /* PATCHED[use our random generator here] */
   if (!dBN_rand(rnd,bits,0,1)) goto err;
 
   /* we need ((rnd-rem) % add) == 0 */
@@ -659,7 +659,7 @@ static int dprobable_prime_dh_safe(BIGNUM *p, int bits, const BIGNUM *padd,
 
   if (!BN_rshift1(qadd,padd)) goto err;
 
-  // comet[use our random generator here]
+  /* PATCHED[use our random generator here] */
   if (!dBN_rand(q,bits,0,1)) goto err;
 
   /* we need ((rnd-rem) % add) == 0 */
@@ -704,7 +704,7 @@ static int dprobable_prime(BIGNUM *rnd, int bits)
   BN_ULONG delta,maxdelta;
 
   again:
-  // comet[we use our random generator]
+  /* PATCHED[we use our random generator] */
   if (!dBN_rand(rnd,bits,1,1)) return(0);
 
   /* we now have a random number 'rand' to test. */
@@ -747,20 +747,20 @@ int dBN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
 
   if (add == NULL)
   {
-    // comet[use the deterministic version]
+    /* PATCHED[use the deterministic version] */
     if (!dprobable_prime(ret,bits)) goto err;
   }
   else
   {
     if (safe)
     {
-      // comet[use the deterministic version]
+      /* PATCHED[use the deterministic version] */
       if (!dprobable_prime_dh_safe(ret,bits,add,rem,ctx))
         goto err;
     }
     else
     {
-      // comet[use the deterministic version]
+      /* PATCHED[use the deterministic version] */
       if (!dprobable_prime_dh(ret,bits,add,rem,ctx))
         goto err;
     }
@@ -773,7 +773,7 @@ int dBN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
 
   if (!safe)
   {
-    // comet[use our dBN_is_prime_fasttest_ex()]
+    /* PATCHED[use our dBN_is_prime_fasttest_ex()] */
     i=dBN_is_prime_fasttest_ex(ret,checks,ctx,0,cb);
     if (i == -1) goto err;
     if (i == 0) goto loop;
@@ -788,12 +788,12 @@ int dBN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
 
     for (i=0; i<checks; i++)
     {
-      // comet[use our dBN_is_prime_fasttest_ex()]
+      /* PATCHED[use our dBN_is_prime_fasttest_ex()] */
       j=dBN_is_prime_fasttest_ex(ret,1,ctx,0,cb);
       if (j == -1) goto err;
       if (j == 0) goto loop;
 
-      // comet[use our dBN_is_prime_fasttest_ex()]
+      /* PATCHED[use our dBN_is_prime_fasttest_ex()] */
       j=dBN_is_prime_fasttest_ex(t,1,ctx,0,cb);
       if (j == -1) goto err;
       if (j == 0) goto loop;
@@ -814,4 +814,22 @@ int dBN_generate_prime_ex(BIGNUM *ret, int bits, int safe,
   }
   bn_check_top(ret);
   return found;
+}
+
+/*
+ * ---------- additional functionalities --------------------------------------
+ */
+
+int dBN_print(BIGNUM *n)
+{
+  char *hexadecimal;
+
+  if ((hexadecimal = BN_bn2hex(n)) == NULL)
+    return 0;
+
+  printf("%s\n", hexadecimal);
+
+  OPENSSL_free(hexadecimal);
+
+  return 1;
 }
