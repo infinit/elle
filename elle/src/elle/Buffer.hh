@@ -1,7 +1,7 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
-# include <elle/Comparable.hh>
+# include <elle/Orderable.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/fwd.hh>
@@ -34,10 +34,8 @@ namespace elle
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
   class Buffer:
-    public elle::Comparable<Buffer>,
-    public elle::Comparable<WeakBuffer>
+    public elle::Orderable<Buffer>
   {
-
   /*------.
   | Types |
   `------*/
@@ -120,23 +118,13 @@ namespace elle
   /*----------------------.
   | Comparable, Orderable |
   `----------------------*/
-  public:
-    bool
-    operator <(Buffer const& other) const;
-    bool
-    operator <=(Buffer const& other) const;
-    bool
-    operator ==(Buffer const& other) const;
-    ELLE_OPERATOR_GT(Buffer);
-    ELLE_OPERATOR_GTE(Buffer);
-    bool
-    operator <(WeakBuffer const& other) const;
-    bool
-    operator <=(WeakBuffer const& other) const;
-    bool
-    operator ==(WeakBuffer const& other) const;
-    ELLE_OPERATOR_GT(WeakBuffer);
-    ELLE_OPERATOR_GTE(WeakBuffer);
+  private:
+    friend class Orderable<elle::Buffer>;
+    Orderable<elle::Buffer>::Order
+    _order(Buffer const& other) const;
+    friend class Orderable<elle::WeakBuffer>;
+    Orderable<elle::WeakBuffer>::Order
+    _order(WeakBuffer const& other) const;
 
   /*--------------.
   | Serialization |

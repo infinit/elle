@@ -214,52 +214,29 @@ namespace elle
     return (size + size  / 2);
   }
 
-  bool
-  Buffer::operator <(Buffer const& other) const
-  {
-    if (this->_size != other._size)
-      return this->_size < other._size;
-    return ::memcmp(this->_contents, other._contents, this->_size) < 0;
-  }
+  // Orderable<elle::Buffer>::Order
+  // Buffer::_order(Buffer const& other) const
+  // {
+  //   return this->_order(WeakBuffer(*this));
+  // }
 
-  bool
-  Buffer::operator <=(Buffer const& other) const
+  Orderable<elle::Buffer>::Order
+  Buffer::_order(Buffer const& other) const
   {
-    if (this->_size != other._size)
-      return this->_size < other._size;
-    return ::memcmp(this->_contents, other._contents, this->_size) <= 0;
-  }
-
-  bool
-  Buffer::operator ==(Buffer const& other) const
-  {
-    if (this->_size != other._size)
-      return false;
-    return ::memcmp(this->_contents, other._contents, this->_size) == 0;
-  }
-
-  bool
-  Buffer::operator <(WeakBuffer const& other) const
-  {
-    if (this->_size != other.size())
-      return this->_size < other.size();
-    return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
-  }
-
-  bool
-  Buffer::operator <=(WeakBuffer const& other) const
-  {
-    if (this->_size != other.size())
-      return this->_size < other.size();
-    return ::memcmp(this->_contents, other.contents(), this->_size) <= 0;
-  }
-
-  bool
-  Buffer::operator ==(WeakBuffer const& other) const
-  {
-    if (this->_size != other.size())
-      return false;
-    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
+    if (this->_size < other.size())
+      return Orderable<elle::Buffer>::Order::less;
+    else if (this->_size > other.size())
+      return Orderable<elle::Buffer>::Order::more;
+    else
+    {
+      auto cmp = ::memcmp(this->_contents, other.contents(), this->_size);
+      if (cmp < 0)
+        return Orderable<elle::Buffer>::Order::less;
+      else if (cmp == 0)
+        return Orderable<elle::Buffer>::Order::equal;
+      else
+        return Orderable<elle::Buffer>::Order::more;
+    }
   }
 
   void
