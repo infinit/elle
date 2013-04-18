@@ -129,6 +129,35 @@ test_cmp()
   }
 }
 
+void
+test_capacity()
+{
+  elle::Buffer b(64);
+  BOOST_CHECK_GE(b.capacity(), 64);
+  b.size(128);
+  BOOST_CHECK_GE(b.capacity(), 128);
+
+  char more[128];
+  b.append(more, 128);
+  BOOST_CHECK_GE(b.capacity(), 256);
+
+  auto prev = b.capacity();
+  b.size(8);
+  BOOST_CHECK_EQUAL(b.capacity(), prev);
+  b.shrink_to_fit();
+  BOOST_CHECK_EQUAL(b.capacity(), 8);
+}
+
+void
+test_release()
+{
+  elle::Buffer b(256);
+  BOOST_CHECK_GE(b.capacity(), 256);
+  b.release();
+  BOOST_CHECK_LT(b.capacity(), 256);
+  BOOST_CHECK_EQUAL(b.size(), 0);
+}
+
 static
 bool
 test_suite()
@@ -154,6 +183,11 @@ test_suite()
   boost::unit_test::test_suite* cmp = BOOST_TEST_SUITE("Comparisons");
   boost::unit_test::framework::master_test_suite().add(cmp);
   cmp->add(BOOST_TEST_CASE(test_cmp));
+
+  boost::unit_test::test_suite* memory = BOOST_TEST_SUITE("Memory");
+  boost::unit_test::framework::master_test_suite().add(memory);
+  memory->add(BOOST_TEST_CASE(test_capacity));
+  memory->add(BOOST_TEST_CASE(test_release));
 
   return true;
 }
