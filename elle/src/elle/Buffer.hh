@@ -1,11 +1,11 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
-# include <elle/types.hh>
+# include <elle/Comparable.hh>
 # include <elle/operator.hh>
-
-# include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/types.hh>
 
 # include <iosfwd>
 # include <memory>
@@ -33,7 +33,9 @@ namespace elle
   /// The Buffer owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
-  class Buffer
+  class Buffer:
+    public elle::Comparable<Buffer>,
+    public elle::Comparable<WeakBuffer>
   {
 
   /*------.
@@ -127,7 +129,6 @@ namespace elle
     operator ==(Buffer const& other) const;
     ELLE_OPERATOR_GT(Buffer);
     ELLE_OPERATOR_GTE(Buffer);
-    ELLE_OPERATOR_NEQ(Buffer);
     bool
     operator <(WeakBuffer const& other) const;
     bool
@@ -136,7 +137,6 @@ namespace elle
     operator ==(WeakBuffer const& other) const;
     ELLE_OPERATOR_GT(WeakBuffer);
     ELLE_OPERATOR_GTE(WeakBuffer);
-    ELLE_OPERATOR_NEQ(WeakBuffer);
 
   /*--------------.
   | Serialization |
