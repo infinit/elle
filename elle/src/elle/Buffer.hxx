@@ -38,6 +38,54 @@ namespace elle
     return this->_contents;
   }
 
+  inline
+  WeakBuffer::WeakBuffer(void* data, size_t size)
+    : _contents(static_cast<Byte*>(data))
+    , _size(size)
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(Buffer const& buffer)
+    : _contents(buffer.mutable_contents())
+    , _size(buffer.size())
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(WeakBuffer const& other)
+    : _contents(other._contents)
+    , _size(other._size)
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(WeakBuffer&& other)
+    : _contents(other._contents)
+    , _size(other._size)
+  {
+    other._contents = nullptr;
+    other._size = 0;
+  }
+
+  inline
+  size_t
+  WeakBuffer::size() const
+  {
+    return this->_size;
+  }
+
+  inline
+  Byte const*
+  WeakBuffer::contents() const
+  {
+    return this->_contents;
+  }
+
+  inline
+  Byte*
+  WeakBuffer::mutable_contents() const
+  {
+    return this->_contents;
+  }
+
   class InputBufferArchive:
     public elle::serialize::InputBinaryArchive
   {
