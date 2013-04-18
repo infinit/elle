@@ -35,6 +35,9 @@ In other words, some of the OpenSSL library's functions have been slightly
 modified so as to remove the operations destined at adding entropy, especially the
 ones based on uninitialized variables.
 
+The reader interested in looking at these slight modifications can look around for
+"PATCHED".
+
 Maintainers
 ===========
 
