@@ -29,63 +29,63 @@ namespace elle
 
   // Note that an empty buffer has a valid pointer to a memory region with
   // a size of zero.
-  Buffer::Buffer()
-    : _contents{static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE))}
-    , _size{0}
-    , _buffer_size{ELLE_BUFFER_INITIAL_SIZE}
+  Buffer::Buffer():
+    _size(0),
+    _capacity(ELLE_BUFFER_INITIAL_SIZE),
+    _contents(static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE)))
   {
     if (this->_contents == nullptr)
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(size_t size)
-    : _contents(nullptr)
-    , _size(size)
-    , _buffer_size(size)
+  Buffer::Buffer(size_t size):
+    _size(size),
+    _capacity(size),
+    _contents(nullptr)
   {
     if ((this->_contents =
-         static_cast<Byte*>(::malloc(this->_buffer_size))) == nullptr)
+         static_cast<Byte*>(::malloc(this->_capacity))) == nullptr)
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(ContentPair&& pair)
-    : _contents(pair.first.release())
-    , _size(pair.second)
-    , _buffer_size(pair.second)
+  Buffer::Buffer(ContentPair&& pair):
+    _size(pair.second),
+    _capacity(pair.second),
+    _contents(pair.first.release())
   {}
 
   Buffer::Buffer(Byte const* data,
-                 size_t size)
-    : _contents(nullptr)
-    , _size(0)
-    , _buffer_size(0)
+                 size_t size):
+    _size(0),
+    _capacity(0),
+    _contents(nullptr)
   {
     if (size == 0)
       {
-        this->_buffer_size = ELLE_BUFFER_INITIAL_SIZE;
+        this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
         if ((this->_contents =
-             static_cast<Byte*>(::malloc(_buffer_size))) == nullptr)
+             static_cast<Byte*>(::malloc(_capacity))) == nullptr)
           throw std::bad_alloc();
       }
     else
       this->append(data, size);
   }
 
-  Buffer::Buffer(Buffer&& other)
-    : _contents(other._contents)
-    , _size(other._size)
-    , _buffer_size(other._buffer_size)
+  Buffer::Buffer(Buffer&& other):
+    _size(other._size),
+    _capacity(other._capacity),
+    _contents(other._contents)
   {
     other._contents = static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE));
     other._size = 0;
-    other._buffer_size = ELLE_BUFFER_INITIAL_SIZE;
+    other._capacity = ELLE_BUFFER_INITIAL_SIZE;
   }
 
   ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
   {
     this->_contents = nullptr;
     this->_size = 0;
-    this->_buffer_size = 0;
+    this->_capacity = 0;
   }
 
   Buffer::~Buffer()
@@ -110,14 +110,14 @@ namespace elle
   void
   Buffer::size(size_t size)
   {
-    if (this->_buffer_size < size)
+    if (this->_capacity < size)
       {
         size_t next_size = Buffer::_next_size(size);
         void* tmp = ::realloc(_contents, next_size);
         if (tmp == nullptr)
           throw std::bad_alloc();
         this->_contents = static_cast<Byte*>(tmp);
-        this->_buffer_size = next_size;
+        this->_capacity = next_size;
       }
     this->_size = size;
   }
@@ -139,7 +139,7 @@ namespace elle
 
     this->_contents = new_contents;
     this->_size = 0;
-    this->_buffer_size = ELLE_BUFFER_INITIAL_SIZE;
+    this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
     return res;
   }
 
@@ -167,7 +167,7 @@ namespace elle
               << "[Buffer] "
               << "address(" << static_cast<Void*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ") "
-              << "capacity(" << std::dec << this->_buffer_size << ")"
+              << "capacity(" << std::dec << this->_capacity << ")"
               << std::endl;
 
     // since a byte is represented by two characters.
@@ -225,13 +225,13 @@ namespace elle
   void
   Buffer::shrink_to_fit()
   {
-    if (this->_size < this->_buffer_size)
+    if (this->_size < this->_capacity)
     {
       void* tmp = ::realloc(_contents, this->_size);
       if (tmp == nullptr)
         throw std::bad_alloc();
       this->_contents = static_cast<Byte*>(tmp);
-      this->_buffer_size = this->_size;
+      this->_capacity = this->_size;
     }
   }
 

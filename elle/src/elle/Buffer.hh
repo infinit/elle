@@ -1,6 +1,7 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
+# include <elle/attribute.hh>
 # include <elle/Orderable.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/construct.hh>
@@ -78,19 +79,14 @@ namespace elle
   `------------------*/
   public:
     /// Size of the buffer.
-    size_t
-    size() const;
+    ELLE_ATTRIBUTE_Rw(size_t, size);
     /// Size of the underlying allocated memory.
-    size_t
-    capacity() const;
-    /// Buffer constant data.
-    Byte const*
-    contents() const;
-    Byte*
+    ELLE_ATTRIBUTE_R(size_t, capacity);
+    /// Buffer data.
+    ELLE_ATTRIBUTE_R(Byte*, contents);
     /// Buffer mutable data.
+    Byte*
     mutable_contents() const;
-    void
-    size(size_t size);
     /// Reset the size to zero.
     void
     reset();
@@ -101,9 +97,6 @@ namespace elle
     void
     shrink_to_fit();
   private:
-    Byte*       _contents;
-    size_t      _size;
-    size_t      _buffer_size;
     static size_t _next_size(size_t);
 
   /*-----------.
@@ -150,9 +143,10 @@ namespace elle
   operator <<(std::ostream& stream,
               Buffer const& buffer);
 
-//
-// ---------- WeakBuffer ------------------------------------------------------
-//
+
+  /*-----------.
+  | WeakBuffer |
+  `-----------*/
 
   /// @brief A C array pointer and its size.
   ///
@@ -183,17 +177,12 @@ namespace elle
   `--------*/
   public:
     /// Size of the buffer.
-    size_t
-    size() const;
+    ELLE_ATTRIBUTE_R(size_t, size);
     /// Buffer constant data.
-    Byte const*
-    contents() const;
+    ELLE_ATTRIBUTE_R(Byte*, contents);
     /// Buffer mutable data.
     Byte*
     mutable_contents() const;
-  private:
-    Byte*     _contents;
-    size_t    _size;
 
   /*----------.
   | Orderable |

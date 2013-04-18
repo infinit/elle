@@ -11,27 +11,6 @@
 namespace elle
 {
   inline
-  size_t
-  Buffer::size() const
-  {
-    return this->_size;
-  }
-
-  inline
-  size_t
-  Buffer::capacity() const
-  {
-    return this->_buffer_size;
-  }
-
-  inline
-  Byte const*
-  Buffer::contents() const
-  {
-    return this->_contents;
-  }
-
-  inline
   Byte*
   Buffer::mutable_contents() const
   {
@@ -39,44 +18,30 @@ namespace elle
   }
 
   inline
-  WeakBuffer::WeakBuffer(void* data, size_t size)
-    : _contents(static_cast<Byte*>(data))
-    , _size(size)
+  WeakBuffer::WeakBuffer(void* data, size_t size):
+    _size(size),
+    _contents(static_cast<Byte*>(data))
   {}
 
   inline
-  WeakBuffer::WeakBuffer(Buffer const& buffer)
-    : _contents(buffer.mutable_contents())
-    , _size(buffer.size())
+  WeakBuffer::WeakBuffer(Buffer const& buffer):
+    _size(buffer.size()),
+    _contents(buffer.mutable_contents())
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer const& other)
-    : _contents(other._contents)
-    , _size(other._size)
+  WeakBuffer::WeakBuffer(WeakBuffer const& other):
+    _size(other._size),
+    _contents(other._contents)
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer&& other)
-    : _contents(other._contents)
-    , _size(other._size)
+  WeakBuffer::WeakBuffer(WeakBuffer&& other):
+    _size(other._size),
+    _contents(other._contents)
   {
     other._contents = nullptr;
     other._size = 0;
-  }
-
-  inline
-  size_t
-  WeakBuffer::size() const
-  {
-    return this->_size;
-  }
-
-  inline
-  Byte const*
-  WeakBuffer::contents() const
-  {
-    return this->_contents;
   }
 
   inline
