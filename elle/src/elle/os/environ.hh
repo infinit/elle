@@ -9,7 +9,7 @@ namespace elle
   namespace os
   {
 
-    /// Retreive a fresh copy of environ.
+    /// Retrieve a fresh copy of environ.
     std::unordered_map<std::string, std::string>
     environ();
 

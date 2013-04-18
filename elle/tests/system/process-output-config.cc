@@ -10,8 +10,8 @@ main()
   Process p{check_output_config, "echo", {"toto"}};
   if (p.read() == "toto\n")
   {
-      p.wait();
-      return 0;
+    p.wait();
+    return 0;
   }
   p.wait();
   return 1;

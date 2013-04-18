@@ -12,8 +12,8 @@ main()
   Process p{std::move(config), "echo", {"toto"}};
   if (p.read() == "toto\n")
   {
-      p.wait();
-      return 0;
+    p.wait();
+    return 0;
   }
   p.wait();
   return 1;
