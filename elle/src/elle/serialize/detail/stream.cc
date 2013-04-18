@@ -18,7 +18,7 @@ namespace elle
       {
         out.write(static_cast<char const*>(data), size);
         if (out.fail() or out.bad())
-          throw elle::Exception{"Couldn't write to the stream"};
+          throw elle::Exception{"couldn't write to the stream"};
       }
 
       void
@@ -28,7 +28,7 @@ namespace elle
       {
         in.read(static_cast<char*>(data), size);
         if (in.fail() or in.bad())
-          throw elle::Exception{"Couldn't read from the stream"};
+          throw elle::Exception{"couldn't read from the stream"};
       }
 
     }
