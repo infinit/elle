@@ -459,6 +459,8 @@ int dRAND_init()
   if (_engine != NULL)
     return 0;
 
+  assert(ENGINE_by_id("dRAND") == NULL);
+
   ENGINE_load_openssl();
   ENGINE_load_dynamic();
   ENGINE_load_builtin_engines();
@@ -478,7 +480,9 @@ int dRAND_init()
   if (ENGINE_add(_engine) == 0)
     return 0;
 
-  assert(_engine == ENGINE_by_id("dRAND"));
+  assert(ENGINE_by_id("dRAND") == _engine);
+  assert(ENGINE_get_default_RAND() != _engine);
+  assert(RAND_get_rand_method() != &dRAND_method);
 
   return 1;
 }
@@ -490,6 +494,8 @@ int dRAND_clean()
   if (_engine == NULL)
     return 0;
 
+  assert(ENGINE_by_id("dRAND") == _engine);
+  assert(ENGINE_get_default_RAND() != _engine);
   assert(RAND_get_rand_method() != &dRAND_method);
 
   ENGINE_remove(_engine);
@@ -500,7 +506,7 @@ int dRAND_clean()
 
   _engine = NULL;
 
-  assert(ENGINE_get_default_RAND() != _engine);
+  assert(ENGINE_by_id("dRAND") == NULL);
 
   return 1;
 }
@@ -509,6 +515,10 @@ int dRAND_clean()
 //       functions will be deterministic according to the current seed's state]
 int dRAND_start(void)
 {
+  if (_engine == NULL)
+    return 0;
+
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() != _engine);
   assert(RAND_get_rand_method() != &dRAND_method);
 
@@ -520,6 +530,7 @@ int dRAND_start(void)
   if (RAND_set_rand_engine(NULL) == 0)
     return 0;
 
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
 
@@ -529,6 +540,10 @@ int dRAND_start(void)
 // comet[stop the dRAND environment by reinstating the original SSLeay context]
 int dRAND_stop(void)
 {
+  if (_engine == NULL)
+    return 0;
+
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
 
@@ -537,6 +552,7 @@ int dRAND_stop(void)
   if (RAND_set_rand_engine(NULL) == 0)
     return 0;
 
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() != _engine);
   assert(RAND_get_rand_method() != &dRAND_method);
 
@@ -546,11 +562,16 @@ int dRAND_stop(void)
 // comet[reset the random implementation by cleaning it up]
 int dRAND_reset(void)
 {
+  if (_engine == NULL)
+    return 0;
+
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
 
   RAND_cleanup();
 
+  assert(ENGINE_by_id("dRAND") == _engine);
   assert(ENGINE_get_default_RAND() == _engine);
   assert(RAND_get_rand_method() == &dRAND_method);
 }
@@ -559,6 +580,9 @@ int dRAND_reset(void)
 //       implementation's state]
 char* dRAND_fingerprint(void)
 {
+  if (_engine == NULL)
+    return 0;
+
   char* fingerprint = (char*)malloc(MD_DIGEST_LENGTH + 1);
 
   memset(fingerprint, 0x0, MD_DIGEST_LENGTH + 1);
