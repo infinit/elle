@@ -1,116 +1,80 @@
 #include "comet.hh"
 
+#include <comet/rand.hh>
 #include <comet/rsa.hh>
 
-/*--------.
-| Operate |
-`--------*/
+#include <openssl/evp.h>
 
-void
-test_operate_rsa()
+/*-------------------.
+| RSA Key Generation |
+`-------------------*/
+
+static
+::RSA*
+test_generate(unsigned int const length)
 {
-  /* XXX
-  infinit::cryptography::KeyPair pair = test_generate_rsa(1024);
+  ::EVP_PKEY_CTX* context = ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr);
+  BOOST_CHECK(context != nullptr);
 
-  // Public/private encryption/decryption with plain.
-  {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(9128);
-    infinit::cryptography::Code code =
-      pair.K().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    infinit::cryptography::Clear clear = pair.k().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+  BOOST_CHECK(::EVP_PKEY_keygen_init(context) > 0);
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
+  BOOST_CHECK(::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) > 0);
 
-  // Public/private encryption/decryption with complex type.
-  {
-    Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(14920));
-    infinit::cryptography::Code code = pair.K().encrypt(input);
-    Sample const output = pair.k().decrypt<Sample>(code);
+  ::EVP_PKEY* key = nullptr;
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
+  BOOST_CHECK(::EVP_PKEY_keygen(context, &key) > 0);
 
-  // Private/public encryption/decryption with plain.
-  {
-    elle::String const input =
-      infinit::cryptography::random::generate<elle::String>(5123);
-    infinit::cryptography::Code code =
-      pair.k().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    infinit::cryptography::Clear clear = pair.K().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+  ::RSA* rsa = key->pkey.rsa;
+  key->pkey.rsa = nullptr;
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
+  ::EVP_PKEY_free(key);
+  ::EVP_PKEY_CTX_free(context);
 
-  // Private/public encryption/decryption with complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(28130));
-    infinit::cryptography::Code code = pair.k().encrypt(input);
-    Sample const output = pair.K().decrypt<Sample>(code);
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Sign a plain text.
-  {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(1493);
-    infinit::cryptography::Signature signature =
-      pair.k().sign(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
-    auto result =
-      pair.K().verify(signature,
-                      infinit::cryptography::Plain{
-                        elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                         input.length()}});
-
-    BOOST_CHECK_EQUAL(result, true);
-  }
-
-  // Sign a complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(10329));
-    infinit::cryptography::Signature signature = pair.k().sign(input);
-    auto result = pair.K().verify(signature, input);
-
-    BOOST_CHECK_EQUAL(result, true);
-  }
-  */
+  return (rsa);
 }
 
+/*-------.
+| Rotate |
+`-------*/
+
+static
 void
-test_operate()
+test_rotate()
 {
-  // RSA.
-  test_operate_rsa();
+  const char* seed =
+    "Sir, an equation has no meaning for me "
+    "unless it expresses a thought of GOD.";
+  ::RSA* original = test_generate(1024);
+  BOOST_CHECK(original != nullptr);
+
+  ::RSA* rotated = ::RSA_new();
+  BOOST_CHECK(rotated != nullptr);
+
+  BOOST_CHECK(dRAND_init() == 1);
+
+  BOOST_CHECK(dRSA_rotate(rotated,
+                          ::BN_num_bits(original->n),
+                          (const unsigned char*)seed,
+                          ::strlen(seed)) > 0);
+
+  ::RSA_free(rotated);
+
+  BOOST_CHECK(dRAND_clean() == 1);
+
+  ::RSA_free(original);
 }
 
 /*-----.
 | Main |
 `-----*/
 
+static
 bool
 test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa");
 
-  suite->add(BOOST_TEST_CASE(test_operate));
+  suite->add(BOOST_TEST_CASE(test_rotate));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 

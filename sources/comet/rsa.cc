@@ -10,7 +10,8 @@
 #include <stdio.h>
 #include <time.h>
 
-int dRSA_rotate(RSA *rsa, int bits, const unsigned char *seed, size_t length)
+int dRSA_rotate(RSA *rsa, int bits,
+                const unsigned char *seed, size_t seed_length)
 {
   const RAND_METHOD *method;
   BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
@@ -43,26 +44,21 @@ int dRSA_rotate(RSA *rsa, int bits, const unsigned char *seed, size_t length)
   if(!rsa->iqmp && ((rsa->iqmp=BN_new()) == NULL)) goto err;
 
   // comet[switch to our random generator in order to ensure
-  //       determinism: (i) save the current random generator
-  //       (ii) switch to ours (iii) clean it in order to
-  //       ensure it is reset (iv) seed it with the given buffer]
-  method = RAND_get_rand_method();
+  //       determinism. note that the dRAND module must have been
+  //       initialized]
+  dRAND_start();
+  {
+    dRAND_reset();
 
-  // XXX[utiliser reset()]
-  RAND_set_rand_method(&dRAND_method);
-  RAND_cleanup();
-  RAND_set_rand_method(&dRAND_method);
+    RAND_seed(seed, seed_length);
 
-  RAND_seed(seed, length);
-
-  /* generate e */
-  // comet[use our prime generator which uses our deterministic
-  //       random generator]
-  if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
-    goto err;
-
-  // comet[switch back to the OpenSSL random generator]
-  RAND_set_rand_method(method);
+    /* generate e */
+    // comet[use our prime generator which uses our deterministic
+    //       random generator]
+    if(!dBN_generate_prime_ex(rsa->e, bitse, 0, NULL, NULL, NULL))
+      goto err;
+  }
+  dRAND_stop();
 
   /* generate p and q */
   for (;;)
@@ -159,7 +155,8 @@ int dRSA_rotate(RSA *rsa, int bits, const unsigned char *seed, size_t length)
   return ok;
 }
 
-int RSA_derive(RSA *rsa, BIGNUM* N, const unsigned char *seed, size_t length)
+int RSA_derive(RSA *rsa, BIGNUM* N,
+               const unsigned char *seed, size_t seed_length)
 {
   const RAND_METHOD *method;
   int bits,bitse,ok= -1;
@@ -191,7 +188,7 @@ int RSA_derive(RSA *rsa, BIGNUM* N, const unsigned char *seed, size_t length)
   RAND_cleanup();
   RAND_set_rand_method(&dRAND_method);
 
-  RAND_seed(seed, length);
+  RAND_seed(seed, seed_length);
 
   /* generate e */
   // comet[here we use our prime generator which uses our deterministic
