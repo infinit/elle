@@ -18,6 +18,8 @@ test_basic()
 
   BOOST_CHECK(::dRAND_start() == 1);
   {
+    assert(RAND_get_rand_method() == &dRAND_method);
+
     ::RAND_status();
     ::RAND_status();
 
@@ -48,6 +50,8 @@ test_seed()
 
   BOOST_CHECK(::dRAND_start() == 1);
   {
+    assert(RAND_get_rand_method() == &dRAND_method);
+
     // Reset the random implementation and seed the random generator.
     ::dRAND_reset();
     ::RAND_seed(seed, ::strlen(seed));
@@ -114,6 +118,8 @@ test_generate_prime()
 
     BOOST_CHECK(::dRAND_start() == 1);
     {
+      assert(RAND_get_rand_method() == &dRAND_method);
+
       ::BIGNUM* n1 = ::BN_new();
       ::dRAND_reset();
       ::RAND_seed(seed, ::strlen(seed));
@@ -122,8 +128,6 @@ test_generate_prime()
       BOOST_CHECK(::RAND_status() == 1);
       BOOST_CHECK_EQUAL(::dBN_generate_prime_ex(n1, 1024, 0,
                                                 NULL, NULL, NULL), 1);
-
-      exit(0); // XXX
 
       ::BIGNUM* n2 = ::BN_new();
       ::dRAND_reset();
@@ -163,6 +167,8 @@ test_generate_prime()
 
     BOOST_CHECK(::dRAND_start() == 1);
     {
+      assert(RAND_get_rand_method() == &dRAND_method);
+
       ::BIGNUM* n1 = ::BN_new();
       ::dRAND_reset();
       ::RAND_seed(seed, ::strlen(seed));
