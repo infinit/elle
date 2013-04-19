@@ -18,10 +18,13 @@
  *   crypto/rsa/rsa_gen.c
  */
 
-int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
-                          const unsigned char *seed, size_t seed_length)
+RSA *dRSA_deduce_publickey(BIGNUM *N,
+                           const unsigned char *seed, size_t seed_length)
 {
   int bits,bitse,ok= -1;
+
+  /* PATCHED[allocate an RSA key] */
+  RSA *rsa = ::RSA_new();
 
   bits=BN_num_bits(N);
   bitse=(bits/2)+1;
@@ -30,7 +33,7 @@ int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
   if(!rsa->n && ((rsa->n=BN_new()) == NULL)) goto err;
   if(!rsa->e && ((rsa->e=BN_new()) == NULL)) goto err;
 
-  /* initialize the 'private' component as unknown. */
+  /* Initialize the 'private' component as unknown. */
   rsa->d = NULL;
   rsa->p = NULL;
   rsa->q = NULL;
@@ -63,21 +66,28 @@ int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
   err:
   if (ok == -1)
   {
+    /* PATCHED[release the RSA structure and reinitialize the
+       pointer to NULL] */
+    if (rsa != NULL) RSA_free(rsa);
+    rsa = NULL;
+
     RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,ERR_LIB_BN);
-    ok=0;
   }
 
-  return ok;
+  return rsa;
 }
 
-int dRSA_deduce_privatekey(RSA *rsa, int bits,
-                           const unsigned char *seed, size_t seed_length)
+RSA *dRSA_deduce_privatekey(int bits,
+                            const unsigned char *seed, size_t seed_length)
 {
   BIGNUM *r0=NULL,*r1=NULL,*r2=NULL,*r3=NULL,*tmp;
   BIGNUM local_r0,local_d,local_p;
   BIGNUM *pr0,*d,*p;
   int bitse,bitsp,bitsq,ok= -1;
   BN_CTX *ctx=NULL;
+
+  /* PATCHED[allocate an RSA key] */
+  RSA *rsa = ::RSA_new();
 
   ctx=BN_CTX_new();
   if (ctx == NULL) goto err;
@@ -204,8 +214,12 @@ int dRSA_deduce_privatekey(RSA *rsa, int bits,
   err:
   if (ok == -1)
   {
+    /* PATCHED[release the RSA structure and reinitialize the
+       pointer to NULL] */
+    if (rsa != NULL) RSA_free(rsa);
+    rsa = NULL;
+
     RSAerr(RSA_F_RSA_BUILTIN_KEYGEN,ERR_LIB_BN);
-    ok=0;
   }
   if (ctx != NULL)
   {
@@ -213,7 +227,7 @@ int dRSA_deduce_privatekey(RSA *rsa, int bits,
     BN_CTX_free(ctx);
   }
 
-  return ok;
+  return rsa;
 }
 
 int dRSA_cmp_publickey(RSA *a, RSA *b)

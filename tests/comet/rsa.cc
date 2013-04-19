@@ -58,42 +58,34 @@ test_rotate()
 
   // Private Deducing 1.
   {
-    rotated1 = ::RSA_new();
+    rotated1 = ::dRSA_deduce_privatekey(::BN_num_bits(original->n),
+                                        (const unsigned char*)seed,
+                                        ::strlen(seed));
     BOOST_CHECK(rotated1 != nullptr);
-    BOOST_CHECK(::dRSA_deduce_privatekey(rotated1,
-                                         ::BN_num_bits(original->n),
-                                         (const unsigned char*)seed,
-                                         ::strlen(seed)) > 0);
   }
 
   // PrivateKey Deducing 2.
   {
-    rotated2 = ::RSA_new();
+    rotated2 = ::dRSA_deduce_privatekey(::BN_num_bits(original->n),
+                                        (const unsigned char*)seed,
+                                        ::strlen(seed));
     BOOST_CHECK(rotated2 != nullptr);
-    BOOST_CHECK(::dRSA_deduce_privatekey(rotated2,
-                                         ::BN_num_bits(original->n),
-                                         (const unsigned char*)seed,
-                                         ::strlen(seed)) > 0);
   }
 
   // PublicKey Deducing 3.
   {
-    rotated3 = ::RSA_new();
+    rotated3 = ::dRSA_deduce_publickey(rotated1->n,
+                                       (const unsigned char*)seed,
+                                       ::strlen(seed));
     BOOST_CHECK(rotated3 != nullptr);
-    BOOST_CHECK(::dRSA_deduce_publickey(rotated3,
-                                        rotated1->n,
-                                        (const unsigned char*)seed,
-                                        ::strlen(seed)) > 0);
   }
 
   // PublicKey Deducing 4.
   {
-    rotated4 = ::RSA_new();
+    rotated4 = ::dRSA_deduce_publickey(rotated1->n,
+                                       (const unsigned char*)seed,
+                                       ::strlen(seed));
     BOOST_CHECK(rotated4 != nullptr);
-    BOOST_CHECK(::dRSA_deduce_publickey(rotated4,
-                                        rotated1->n,
-                                        (const unsigned char*)seed,
-                                        ::strlen(seed)) > 0);
   }
 
   BOOST_CHECK(::dRSA_cmp_privatekey(rotated1, rotated2) == 0);
