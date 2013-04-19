@@ -9,6 +9,7 @@ lib_dynamic = None
 rule_build = None
 rule_check = None
 rule_install = None
+rule_tests = None
 
 asio_udt = None
 
@@ -20,7 +21,7 @@ def configure(cxx_toolkit = None,
 
   global asio_udt
   global config, lib_static, lib_dynamic
-  global rule_build, rule_check, rule_install
+  global rule_build, rule_install
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
@@ -119,7 +120,9 @@ def configure(cxx_toolkit = None,
   rule_build << lib_dynamic
 
   # Tests
+  global rule_check, rule_tests
   rule_check = drake.Rule('check')
+  rule_tests = drake.Rule('tests')
 
   tests = [
     'reactor/backend',
@@ -169,6 +172,7 @@ def configure(cxx_toolkit = None,
     test = drake.cxx.Executable('tests/%s' % test,
                                 drake.nodes('tests/%s.cc' % test) + [lib_dynamic, elle_lib],
                                 cxx_toolkit, config)
+    rule_tests << test
     runner = TestRunner(test)
     rule_check << runner.status
 

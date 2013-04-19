@@ -10,6 +10,7 @@ reactor_dynamic = None
 reactor_static = None
 asio_udt = None
 rule_check = None
+rule_tests = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
@@ -63,6 +64,12 @@ def configure(cxx_toolkit = None,
   build << elle.rule_build
   build << cryptography.rule_build
   build << reactor.rule_build
+
+  global rule_tests
+  rule_tests = drake.Rule('tests')
+  rule_tests << elle.rule_tests
+  rule_tests << cryptography.rule_tests
+  rule_tests << reactor.rule_tests
 
   global rule_check
   rule_check = drake.Rule('check')
