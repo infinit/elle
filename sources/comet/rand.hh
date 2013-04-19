@@ -3,18 +3,11 @@
 
 # include <openssl/rand.h>
 
-/* The functions below represent the deterministic
+/* This structure defines the functions representing the deterministic
    implementation of a PNRG.
    In practice, these functions make sure not to directly
    add entropy neither to call functions which may do. */
-
 extern RAND_METHOD dRAND_method;
-void dRAND_cleanup(void);
-void dRAND_add(const void *buf, int num, double add);
-void dRAND_seed(const void *buf, int num);
-int dRAND_bytes(unsigned char *buf, int num);
-int dRAND_pseudorand(unsigned char *buf, int num);
-int dRAND_status(void);
 
 /* Initialize the deterministic PNRG by setting up a new cryptographic
    ENGINE. */

@@ -12,16 +12,6 @@
  * ---------- original openssl-based functionalities --------------------------
  */
 
-RAND_METHOD dRAND_method =
-{
-  dRAND_seed,
-  dRAND_bytes,
-  dRAND_cleanup,
-  dRAND_add,
-  dRAND_pseudorand,
-  dRAND_status
-};
-
 #define MD_DIGEST_LENGTH        SHA_DIGEST_LENGTH
 
 #define MD_Update(a,b,c)        EVP_DigestUpdate(a,b,c)
@@ -46,7 +36,7 @@ static long md_count[2]={0,0};
 static double entropy=0;
 static int initialized=0;
 
-void dRAND_cleanup(void)
+static void dRAND_cleanup(void)
 {
   OPENSSL_cleanse(state,sizeof(state));
   state_num=0;
@@ -89,7 +79,7 @@ void dRAND_cleanup(void)
   }
 }
 
-void dRAND_add(const void *buf, int num, double add)
+static void dRAND_add(const void *buf, int num, double add)
 {
   int i,j,k,st_idx;
   long md_c[2];
@@ -225,14 +215,14 @@ void dRAND_add(const void *buf, int num, double add)
 #endif
 }
 
-void dRAND_seed(const void *buf, int num)
+static void dRAND_seed(const void *buf, int num)
 {
   /* PATCHED[this line is a fix of ssleay_rand_add()] */
   assert(RAND_get_rand_method() == &dRAND_method);
   RAND_add(buf, num, (double)num);
 }
 
-int dRAND_bytes(unsigned char *buf, int num)
+static int dRAND_bytes(unsigned char *buf, int num)
 {
   int i,j,k,st_num,st_idx;
   int num_ceil;
@@ -383,7 +373,7 @@ int dRAND_bytes(unsigned char *buf, int num)
   }
 }
 
-int dRAND_pseudorand(unsigned char *buf, int num)
+static int dRAND_pseudorand(unsigned char *buf, int num)
 {
   int ret;
   unsigned long err;
@@ -401,7 +391,7 @@ int dRAND_pseudorand(unsigned char *buf, int num)
   return (ret);
 }
 
-int dRAND_status(void)
+static int dRAND_status(void)
 {
   CRYPTO_THREADID cur;
   int ret;
@@ -448,6 +438,16 @@ int dRAND_status(void)
 
   return ret;
 }
+
+RAND_METHOD dRAND_method =
+{
+  dRAND_seed,
+  dRAND_bytes,
+  dRAND_cleanup,
+  dRAND_add,
+  dRAND_pseudorand,
+  dRAND_status
+};
 
 /*
  * ---------- additional functionalities --------------------------------------
