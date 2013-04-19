@@ -39,6 +39,8 @@ int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
              initialized] */
   dRAND_start();
   {
+    assert(RAND_get_rand_method() == &dRAND_method);
+
     dRAND_reset();
     RAND_seed(seed, seed_length);
 
@@ -101,6 +103,8 @@ int dRSA_deduce_privatekey(RSA *rsa, int bits,
              initialized] */
   dRAND_start();
   {
+    assert(RAND_get_rand_method() == &dRAND_method);
+
     dRAND_reset();
     RAND_seed(seed, seed_length);
 
