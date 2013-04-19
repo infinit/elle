@@ -83,12 +83,12 @@ namespace elle
   {}
 
   Backtrace
-  Backtrace::_current(void** callstack, size_t frames)
+  Backtrace::_current(void** callstack, size_t frames, unsigned skip)
   {
     Backtrace bt;
 
     char** strs = backtrace_symbols(callstack, frames);
-    for (unsigned i = 0; i < frames; ++i)
+    for (unsigned i = skip; i < frames; ++i)
     {
       StackFrame frame;
       std::string sym(strs[i]);

@@ -28,13 +28,13 @@ namespace elle
     typedef StackFrame Frame;
     static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
     Backtrace
-    current();
+    current(unsigned skip = 0);
     void
     strip_base(const Backtrace& base);
   private:
     static
     Backtrace
-    _current(void** callstack, size_t frames);
+    _current(void** callstack, size_t frames, unsigned skip);
   };
 
   std::ostream& operator<< (std::ostream& output, const StackFrame& frame);
