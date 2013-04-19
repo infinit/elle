@@ -8,7 +8,7 @@ namespace elle
   `-------------*/
 
   Exception::Exception(elle::String const& message):
-    Exception(Backtrace::current(), message)
+    Exception(Backtrace::current(1), message)
   {}
 
   Exception::Exception(elle::Backtrace const& bt, elle::String const& message):
