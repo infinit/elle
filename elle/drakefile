@@ -321,7 +321,6 @@ def configure(cxx_toolkit = None,
     "system/process-checkoutput.cc",
     "system/process-pipe2.cc",
     "system/process-shortcuts.cc",
-    "utility/Buffer.cc",
     "utility/Suffixes.cc",
     ]
 
