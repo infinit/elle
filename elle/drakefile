@@ -27,6 +27,14 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
 
+  boost = boost or drake.cxx.boost.Boost()
+
+  cxx_config += boost.config()
+  cxx_config += boost.config_filesystem()
+  cxx_config += boost.config_system()
+  cxx_config += boost.config_thread()
+  #cxx_config += boost.config_chrono()
+
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('src')
@@ -333,13 +341,7 @@ def configure(cxx_toolkit = None,
     "utility/Suffixes.cc",
     ]
 
-
-  boost = boost or drake.cxx.boost.Boost()
-
   cxx_config_tests = cxx_config + config
-  cxx_config_tests += boost.config()
-  cxx_config_tests += boost.config_filesystem()
-  cxx_config_tests += boost.config_system()
   cxx_config_tests += boost.config_test()
 
   if enable_tests:
