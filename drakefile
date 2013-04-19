@@ -63,7 +63,8 @@ def configure(cxx_toolkit = None,
   rule_build << lib_dynamic
 
   # Tests
-  tests = ['rand',
+  tests = ['bn',
+           'rand',
            'rsa']
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
