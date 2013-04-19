@@ -1,4 +1,5 @@
 import drake
+import drake.cxx
 
 config = None
 elle_dynamic = None
