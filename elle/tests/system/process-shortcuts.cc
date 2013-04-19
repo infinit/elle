@@ -1,5 +1,9 @@
-#define DEBUG
-#undef NDEBUG
+#ifndef DEBUG
+# define DEBUG
+#endif
+#ifdef NDEBUG
+# undef NDEBUG
+#endif
 
 #include <elle/system/Process.hh>
 #include <unistd.h>
