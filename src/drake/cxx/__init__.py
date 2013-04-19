@@ -176,7 +176,7 @@ class Config:
     cxx_98 = Standard('98')
 
     @property
-    def standard(self, ):
+    def standard(self):
         return self.__standard
 
     @standard.setter
