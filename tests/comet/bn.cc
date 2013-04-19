@@ -47,7 +47,7 @@ test_generate_prime()
 
     BOOST_CHECK(::dRAND_start() == 1);
     {
-      assert(RAND_get_rand_method() == &dRAND_method);
+      assert(::RAND_get_rand_method() == &::dRAND_method);
 
       ::dRAND_reset();
       ::RAND_seed(seed, ::strlen(seed));
@@ -109,7 +109,7 @@ test_generate_prime()
 
     BOOST_CHECK(::dRAND_start() == 1);
     {
-      assert(RAND_get_rand_method() == &dRAND_method);
+      assert(::RAND_get_rand_method() == &::dRAND_method);
 
       ::BIGNUM* n1 = ::BN_new();
       ::dRAND_reset();

@@ -18,14 +18,14 @@ test_basic()
 
   BOOST_CHECK(::dRAND_start() == 1);
   {
-    assert(RAND_get_rand_method() == &dRAND_method);
+    assert(::RAND_get_rand_method() == &::dRAND_method);
 
-    ::RAND_status();
-    ::RAND_status();
+    BOOST_CHECK(::RAND_status() == 1);
+    BOOST_CHECK(::RAND_status() == 1);
 
     ::dRAND_reset();
 
-    ::RAND_status();
+    BOOST_CHECK(::RAND_status() == 1);
   }
   BOOST_CHECK(::dRAND_stop() == 1);
 
@@ -50,7 +50,7 @@ test_seed()
 
   BOOST_CHECK(::dRAND_start() == 1);
   {
-    assert(RAND_get_rand_method() == &dRAND_method);
+    assert(::RAND_get_rand_method() == &::dRAND_method);
 
     // Reset the random implementation and seed the random generator.
     ::dRAND_reset();
