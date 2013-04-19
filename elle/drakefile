@@ -274,6 +274,7 @@ def configure(cxx_toolkit = None,
   rule_check = drake.Rule('check')
 
   tests = [
+    "Backtrace.cc",
     "Buffer.cc",
     "assert.cc",
     "finally.cc",
