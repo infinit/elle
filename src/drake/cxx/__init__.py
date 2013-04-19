@@ -141,7 +141,21 @@ class Config:
 
     def __add__(self, rhs):
 
+        def merge_bool(attr):
+            mine = getattr(self, attr)
+            hers = getattr(rhs, attr)
+            if mine is None:
+                return hers
+            elif hers is None:
+                return mine
+            else:
+                if mine is hers:
+                    return hers
+                else:
+                    raise Exception('incompatible C++ configuration for attribute %s' % attr)
+
         res = Config(self)
+        res.__export_dynamic = merge_bool('export_dynamic')
         res._defines.update(rhs._defines)
         res._local_includes.update(rhs._local_includes)
         res._system_includes.update(rhs._system_includes)
