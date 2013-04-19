@@ -39,6 +39,19 @@ test_always_inline()
   always_inline();
 }
 
+ELLE_COMPILER_ATTRIBUTE_NO_INLINE inline
+void
+no_inline()
+{
+  // I have no decent idea to check if this is actually not inlined. Even
+  // ::backtrace is subject to offsets and won't work.
+}
+
+void
+test_no_inline()
+{
+  no_inline();
+}
 
 void
 test_pretty_function()
@@ -55,6 +68,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(exn);
   exn->add(BOOST_TEST_CASE(test_noreturn));
   exn->add(BOOST_TEST_CASE(test_always_inline));
+  exn->add(BOOST_TEST_CASE(test_no_inline));
   exn->add(BOOST_TEST_CASE(test_pretty_function));
 
   return true;
