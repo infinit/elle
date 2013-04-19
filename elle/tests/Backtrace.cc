@@ -13,24 +13,28 @@ test_backtrace_empty()
   BOOST_CHECK(empty.empty());
 }
 
+ELLE_COMPILER_ATTRIBUTE_NO_INLINE
 Backtrace
 quux()
 {
   return Backtrace::current();
 }
 
+ELLE_COMPILER_ATTRIBUTE_NO_INLINE
 Backtrace
 baz()
 {
   return quux();
 }
 
+ELLE_COMPILER_ATTRIBUTE_NO_INLINE
 Backtrace
 bar()
 {
   return baz();
 }
 
+ELLE_COMPILER_ATTRIBUTE_NO_INLINE
 Backtrace
 foo()
 {
