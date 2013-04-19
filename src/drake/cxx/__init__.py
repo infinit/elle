@@ -339,7 +339,7 @@ class GccToolkit(Toolkit):
 
     def ldflags(self, cfg):
         res = []
-        if cfg.export_dynamic:
+        if cfg.export_dynamic and self.os is not drake.os.macos:
             res.append('-rdynamic')
         return res
 
