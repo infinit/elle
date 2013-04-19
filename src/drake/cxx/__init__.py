@@ -24,6 +24,7 @@ class Config:
     def __init__(self, model = None):
         if model is None:
             self.__debug = False
+            self.__export_dynamic = None
             self._includes = {}
             self._local_includes = {}
             self.__optimization = 1
@@ -39,6 +40,7 @@ class Config:
             self.__warnings = True
         else:
             self.__debug = model.__debug
+            self.__export_dynamic = model.__export_dynamic
             self._includes = deepcopy(model._includes)
             self._local_includes = deepcopy(model._local_includes)
             self.__optimization = model.__optimization
@@ -191,6 +193,14 @@ class Config:
     def enable_warnings(self, value):
         self.__warnings = value
 
+    @property
+    def export_dynamic(self):
+        return self.__export_dynamic
+
+    @export_dynamic.setter
+    def export_dynamic(self, val):
+        self.__export_dynamic = bool(val)
+
 # FIXME: Factor node and builder for executable and staticlib
 
 class _ToolkitType(type):
@@ -320,6 +330,12 @@ class GccToolkit(Toolkit):
             raise Exception('Unknown C++ standard: %s' % std)
         return res
 
+    def ldflags(self, cfg):
+        res = set(cfg.ldflags)
+        if cfg.export_dynamic:
+            res.add('-rdynamic')
+        return res
+
     def compile(self, cfg, src, obj, c = False, pic = False):
         extraflags = []
         if pic:
@@ -357,7 +373,7 @@ class GccToolkit(Toolkit):
 
         return '%s %s%s%s%s%s%s %s -o %s %s' % \
                (self.cxx,
-                concatenate(cfg.ldflags),
+                concatenate(self.ldflags(cfg)),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg._Config__lib_paths, '-L'),
                 rpath_link,
@@ -382,9 +398,10 @@ class GccToolkit(Toolkit):
         if self.os == drake.os.macos:
             extra = ' -undefined dynamic_lookup -Wl,-install_name,@rpath/%s -Wl,-headerpad_max_install_names' % exe.path().basename()
 
-        return '%s %s%s%s%s%s %s -shared -o %s %s' % \
+        return '%s %s%s%s%s%s%s %s -shared -o %s %s' % \
                (self.cxx,
                 concatenate(cfg.flags),
+                concatenate(self.ldflags(cfg)),
                 concatenate(cfg.frameworks(), '-framework '),
                 concatenate(cfg._Config__lib_paths, '-L'),
                 concatenate(lib_rpaths, '-Wl,-rpath,'),
@@ -703,6 +720,8 @@ class Linker(Builder):
 
     def hash(self):
         h = {}
+        # Flags
+        h['export_dynamic'] = self.config.export_dynamic
         flags = self.config.flags
         h['flags'] = flags
         frameworks = list(self.config.frameworks())
@@ -789,6 +808,8 @@ class DynLibLinker(Builder):
     def hash(self):
 
         h = {}
+        # Flags
+        h['export_dynamic'] = self.config.export_dynamic
         dynlibs = list(map(lambda l: l.lib_name, self.lib.dynamic_libraries))
         h['dynamic_libraries'] = dynlibs
         rpath = list(self.config._Config__rpath)
