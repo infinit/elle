@@ -120,9 +120,9 @@ namespace elle
       {}
 
       template<typename T>
-      BaseArchive(StreamType& stream, T& value) :
+      BaseArchive(StreamType& stream, T&& value) :
         _stream(stream)
-      { *this & value; }
+      { *this & std::forward<T>(value); }
 
     protected:
       /// return the most derived type
@@ -262,4 +262,3 @@ namespace elle
 # include "BaseArchive.hxx"
 
 #endif
-

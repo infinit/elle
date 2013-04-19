@@ -50,8 +50,8 @@ namespace elle
           : BaseClass(stream)
         {}
 
-        template<typename T> BaseBinaryArchive(StreamType& stream, T& value)
-          : BaseClass(stream, value)
+        template<typename T> BaseBinaryArchive(StreamType& stream, T&& value)
+          : BaseClass(stream, std::forward<T>(value))
         {}
       public:
         using BaseClass::SaveBinary;
@@ -74,8 +74,9 @@ namespace elle
         : BaseClass(stream)
       {}
 
-      template<typename T> BinaryArchive(StreamType& stream, T& value)
-        : BaseClass(stream, value)
+      template<typename T>
+      BinaryArchive(StreamType& stream, T&& value):
+        BaseClass(stream, std::forward<T>(value))
       {}
     };
 
