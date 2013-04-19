@@ -52,7 +52,6 @@ _test_encrypt(::EVP_PKEY* key,
                                   EVP_PKEY_RSA,
                                   -1,
                                   EVP_PKEY_CTRL_RSA_PADDING,
-                                  // XXX RSA_PKCS1_PADDING,
                                   RSA_NO_PADDING,
                                   nullptr) > 0);
 
@@ -105,7 +104,6 @@ _test_decrypt(::EVP_PKEY* key,
                                   EVP_PKEY_RSA,
                                   -1,
                                   EVP_PKEY_CTRL_RSA_PADDING,
-                                  // XXX RSA_PKCS1_PADDING,
                                   RSA_NO_PADDING,
                                   nullptr) > 0);
 
