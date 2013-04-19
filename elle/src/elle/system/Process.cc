@@ -9,10 +9,11 @@
 #include <elle/print.hh>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/thread/thread.hpp>
 
+#include <algorithm>
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
 
 #include <errno.h>
 #include <signal.h>     // kill
@@ -512,7 +513,7 @@ namespace elle
         }
       catch (...)
         {
-          ELLE_WARN("got a unknown error while killing %s(%d)",
+          ELLE_WARN("got an unknown error while killing %s(%d)",
                     _this->binary, _this->pid);
         }
     }
@@ -610,16 +611,26 @@ namespace elle
     }
 
     Process::StatusCode
-    Process::wait_status()
+    Process::wait_status(Milliseconds timeout)
     {
       ELLE_DEBUG("waiting status of %s", _this->binary);
-      return this->status(ProcessTermination::wait);
+      if (timeout == Milliseconds(0))
+        return this->status(ProcessTermination::wait);
+
+      StatusCode res = this->status();
+      while (timeout > Milliseconds(0) && _this->pid != 0)
+      {
+        boost::this_thread::sleep_for(boost::chrono::nanoseconds(1000));
+        timeout -= Milliseconds(1);
+        res = this->status();
+      }
+      return res;
     }
 
     void
-    Process::wait()
+    Process::wait(Milliseconds timeout)
     {
-      if (this->wait_status() != 0)
+      if (this->wait_status(timeout) != 0)
         throw elle::Exception{
           "the program '" + _this->binary +
           "' failed exited with error code: " + std::to_string(_this->status)

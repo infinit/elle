@@ -5,6 +5,7 @@
 # include <list>
 # include <memory>
 # include <string>
+# include <chrono>
 
 namespace elle
 {
@@ -130,6 +131,8 @@ namespace elle
       /// A unique identifier of a running process.
       typedef int Id;
 
+      typedef std::chrono::milliseconds Milliseconds;
+
     private:
       struct Impl;
       std::unique_ptr<Impl> _this;
@@ -188,24 +191,20 @@ namespace elle
       Id
       id() const;
 
-      /// Alias for status(Termination::wait)
+      /// @brief Wait for @a timeout milliseconds for the process to terminate.
+      ///
+      /// If @a timeout equals 0, it will wait indefinitely. If the timeout
+      /// is exceeded, it will return 0.
       StatusCode
-      wait_status();
+      wait_status(Milliseconds timeout = Milliseconds(0));
 
-      /// Wait until the process finish and throw in case of error.
+      /// @brief Wait for @a timeout milliseconds for the process to terminate.
+      ///
+      /// If @a timeout equals 0, it will wait indefinitely. Throws if the
+      /// program terminate with error.
       void
-      wait();
+      wait(Milliseconds timeout = Milliseconds(0));
 
-      /// Kill the program immediatly and returns its exit status.
-      void
-      kill(ProcessTermination const term = ProcessTermination::wait);
-
-    private:
-      /// Send a signal to the program.
-      void
-      _signal(int signal, ProcessTermination const term);
-
-    public:
       /// Ask the program to interrupt.
       void
       interrupt(ProcessTermination const term = ProcessTermination::wait);
@@ -214,10 +213,19 @@ namespace elle
       void
       terminate(ProcessTermination const term = ProcessTermination::wait);
 
+      /// Kill the program immediatly and returns its exit status.
+      void
+      kill(ProcessTermination const term = ProcessTermination::wait);
+
       /// @brief Read a string from a process' standard output.
       ///
       /// @warning Only valid when the process has its output piped to stdout.
       std::string read(size_t const max = 4096);
+
+    private:
+      /// Send a signal to the program.
+      void
+      _signal(int signal, ProcessTermination const term);
     };
 
     /// Retrieve a default process config of any model.
