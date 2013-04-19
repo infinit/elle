@@ -72,6 +72,9 @@ class Boost(drake.Configuration):
             self.cfg_regex.lib(self.__find_lib('boost_regex', lib_path, cxx_toolkit))
             self.cfg_program_options = Config()
             self.cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
+            self.cfg_chrono = Config()
+            self.cfg_chrono.lib(self.__find_lib('boost_chrono', lib_path, cxx_toolkit))
+
             self.cfg_python = Config()
             # FIXME: do something smart here
             try:
@@ -127,8 +130,10 @@ class Boost(drake.Configuration):
 
         return self.cfg_regex
 
-    def config_python(self):
+    def config_chrono(self):
+        return self.cfg_chrono
 
+    def config_python(self):
         return self.cfg_python
 
     def __repr__(self):
