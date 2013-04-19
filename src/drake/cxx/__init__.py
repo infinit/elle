@@ -23,7 +23,6 @@ class Config:
 
     def __init__(self, model = None):
         if model is None:
-            self.__optimize = False
             self.__debug = False
             self._includes = {}
             self._local_includes = {}
