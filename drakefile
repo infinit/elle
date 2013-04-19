@@ -28,6 +28,9 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
+  cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config.export_dynamic = True
+
   elle = drake.include('elle',
                        cxx_toolkit = cxx_toolkit,
                        cxx_config = cxx_config,
