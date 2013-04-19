@@ -12,10 +12,10 @@
   _type_ BOOST_PP_CAT(_, _name_);
 
 /// Define an accessor returning a const reference on the attribute.
-# define ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)                      \
-  public:                                                               \
-  typename boost::call_traits<_type_>::param_type                       \
-  _name_() const                                                        \
+# define ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)                                  \
+  public:                                                                           \
+  typename std::remove_const<typename boost::call_traits<_type_>::param_type>::type \
+  _name_() const                                                                    \
 
 /// Define and implement an accessor returning a const reference on the attribute.
 # define ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                      \
