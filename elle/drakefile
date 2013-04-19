@@ -31,6 +31,7 @@ def configure(cxx_toolkit = None,
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('src')
   config.lib_path('lib')
+  config.define('BOOST_PP_VARIADICS')
 
   # OS
   if cxx_toolkit.os == drake.os.linux:
