@@ -2,6 +2,12 @@
 #include <iostream>
 #include <sstream>
 
+#define BOOST_TEST_MODULE AllArchive
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+
+#include <elle/Exception.hh>
+
 #include <elle/serialize/Base64Archive.hh>
 #include <elle/serialize/BinaryArchive.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
@@ -167,7 +173,7 @@ void testJSON()
 
 #include <elle/format/hexadecimal.hh>
 
-int main()
+BOOST_AUTO_TEST_CASE(all_archive)
 {
   /* XXX
   testLinear<BinaryArchive>();
@@ -186,20 +192,18 @@ int main()
     std::stringstream ssoutput;
     BinaryArchive<ArchiveMode::Output> aroutput(ssoutput);
 
-    elle::Buffer soutput((elle::Byte const*)"sucemoncul", 10);
+    elle::Buffer soutput((elle::Byte const*)"sucemoncul", 11);
     aroutput << soutput;
     elle::String string = ssoutput.str().substr(0, 15);
+
+    std::cout << string << std::endl;
 
     std::stringstream ssinput(string);
     BinaryArchive<ArchiveMode::Input> arinput(ssinput);
     elle::Buffer sinput;
-    // XXX[use BOOST_CHECK_THROW()]
-    arinput >> sinput;
+    BOOST_CHECK_THROW(arinput >> sinput, elle::Exception);
   }
   // XXX
-
-  std::cout << "tests done.\n";
-  return 0;
 }
 
 

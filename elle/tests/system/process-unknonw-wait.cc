@@ -1,4 +1,5 @@
 #include <elle/system/Process.hh>
+#include <elle/Exception.hh>
 #include <unistd.h>
 #include <iostream>
 
@@ -7,6 +8,15 @@ main()
 {
   using namespace elle::system;
 
-  Process p{"TestUnknownProgram"};
-  return (p.wait_status() != 0);
+  try
+  {
+    Process p{"TestUnknownProgram"};
+
+    return (!(p.wait_status() != 0));
+  }
+  catch (elle::Exception const& e)
+  {
+    return 1;
+  }
+  return 1;
 }
