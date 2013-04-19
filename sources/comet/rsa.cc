@@ -11,7 +11,11 @@
 #include <assert.h>
 
 /*
- * ---------- additional functionalities --------------------------------------
+ * ---------- Additional Functionalities --------------------------------------
+ *
+ * Based on the following OpenSSL files:
+ *
+ *   crypto/rsa/rsa_gen.c
  */
 
 int dRSA_deduce_publickey(RSA *rsa, BIGNUM *N,
@@ -117,7 +121,7 @@ int dRSA_deduce_privatekey(RSA *rsa, int bits,
     /* generate p and q */
     for (;;)
     {
-      if(!::dBN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, NULL))
+      if(!dBN_generate_prime_ex(rsa->p, bitsp, 0, NULL, NULL, NULL))
         goto err;
       if (!BN_sub(r2,rsa->p,BN_value_one())) goto err;
       if (!BN_gcd(r1,r2,rsa->e,ctx)) goto err;
@@ -131,7 +135,7 @@ int dRSA_deduce_privatekey(RSA *rsa, int bits,
       unsigned int degenerate = 0;
       do
       {
-        if(!::dBN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, NULL))
+        if(!dBN_generate_prime_ex(rsa->q, bitsq, 0, NULL, NULL, NULL))
           goto err;
       } while((BN_cmp(rsa->p, rsa->q) == 0) && (++degenerate < 3));
       if(degenerate == 3)

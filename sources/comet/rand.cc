@@ -9,7 +9,11 @@
 #include <assert.h>
 
 /*
- * ---------- original openssl-based functionalities --------------------------
+ * ---------- Original Functionalities ----------------------------------------
+ *
+ * Based on the following OpenSSL files:
+ *
+ *   crypto/rand/md_rand.c
  */
 
 #define MD_DIGEST_LENGTH        SHA_DIGEST_LENGTH
@@ -450,7 +454,7 @@ RAND_METHOD dRAND_method =
 };
 
 /*
- * ---------- additional functionalities --------------------------------------
+ * ---------- Additional Functionalities --------------------------------------
  */
 
 static ENGINE* _engine = NULL;

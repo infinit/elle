@@ -12,7 +12,13 @@
 #include <assert.h>
 
 /*
- * ---------- original openssl-based functionalities --------------------------
+ * ---------- Original Functionalities ----------------------------------------
+ *
+ * Based on the following OpenSSL files:
+ *
+ *   crypto/bn/bn_prime.h
+ *   crypto/bn/bn_prime.c
+ *   crypto/bn/bn_rand.c
  */
 
 #ifndef EIGHT_BIT
