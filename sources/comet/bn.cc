@@ -316,13 +316,13 @@ static int dbnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 
   if (pseudorand)
   {
-    assert(RAND_get_rand_method()->pseudorand == dRAND_pseudorand);
+    assert(RAND_get_rand_method() == &dRAND_method);
     if (RAND_pseudo_bytes(buf, bytes) == -1)
       goto err;
   }
   else
   {
-    assert(RAND_get_rand_method()->bytes == dRAND_bytes);
+    assert(RAND_get_rand_method() == &dRAND_method);
     if (RAND_bytes(buf, bytes) <= 0)
       goto err;
   }
@@ -337,7 +337,7 @@ static int dbnrand(int pseudorand, BIGNUM *rnd, int bits, int top, int bottom)
 
     for (i = 0; i < bytes; i++)
     {
-      assert(RAND_get_rand_method()->pseudorand == dRAND_pseudorand);
+    assert(RAND_get_rand_method() == &dRAND_method);
       RAND_pseudo_bytes(&c, 1);
       if (c >= 128 && i > 0)
         buf[i] = buf[i-1];
