@@ -9,6 +9,7 @@ lib_dynamic = None
 rule_build = None
 rule_check = None
 rule_install = None
+rule_tests = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
@@ -20,7 +21,7 @@ def configure(cxx_toolkit = None,
   with open(str(drake.path_src('../drake/test.py')), 'r') as f:
     exec(f.read(), globals())
 
-  global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
+  global config, lib_static, lib_dynamic, rule_build, rule_install
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -144,8 +145,9 @@ def configure(cxx_toolkit = None,
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
 
-  tests_rule = drake.Rule('tests')
+  global rule_check, rule_tests
   rule_check = drake.Rule('check')
+  rule_tests = drake.Rule('tests')
   for test in tests:
     import os
     config_test = drake.cxx.Config(tests_cxx_config)
@@ -158,7 +160,7 @@ def configure(cxx_toolkit = None,
                                drake.nodes(path) +
                                [lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
-    tests_rule << bin
+    rule_tests << bin
     rule_check << TestRunner(bin).status
 
   # Install
