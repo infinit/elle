@@ -33,7 +33,7 @@ def configure(cxx_toolkit = None,
   cxx_config += boost.config_filesystem()
   cxx_config += boost.config_system()
   cxx_config += boost.config_thread()
-  #cxx_config += boost.config_chrono()
+  cxx_config += boost.config_chrono()
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
