@@ -32,7 +32,6 @@ class Config:
             self.__lib_paths = sched.OrderedSet()
             self.libs = set()
             self.flags = set()
-            self.ldflags = set()
             self._framework = {}
             self._defines = {}
             self.__standard = None
@@ -48,7 +47,6 @@ class Config:
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.libs = deepcopy(model.libs)
             self.flags = deepcopy(model.flags)
-            self.ldflags = deepcopy(model.ldflags)
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
             self.__standard = model.__standard
@@ -76,10 +74,6 @@ class Config:
     def flag(self, f):
 
         self.flags.add(f)
-
-    def ldflag(self, f):
-
-        self.ldflags.add(f)
 
     def framework_add(self, name):
 
@@ -156,7 +150,6 @@ class Config:
         res.__lib_paths.update(rhs.__lib_paths)
         res.libs |= rhs.libs
         res.flags |= rhs.flags
-        res.ldflags |= rhs.ldflags
         std_s = self.__standard
         std_o = rhs.__standard
         if std_s is not None and std_o is not None:
@@ -331,9 +324,9 @@ class GccToolkit(Toolkit):
         return res
 
     def ldflags(self, cfg):
-        res = set(cfg.ldflags)
+        res = []
         if cfg.export_dynamic:
-            res.add('-rdynamic')
+            res.append('-rdynamic')
         return res
 
     def compile(self, cfg, src, obj, c = False, pic = False):
