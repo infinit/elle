@@ -1,5 +1,4 @@
 #include <cxxabi.h>
-#include <execinfo.h>
 #include <iomanip>
 #include <iostream>
 
@@ -84,15 +83,11 @@ namespace elle
   {}
 
   Backtrace
-  Backtrace::current()
+  Backtrace::_current(void** callstack, size_t frames)
   {
     Backtrace bt;
 
-    static const size_t size = 128;
-    void* callstack[size];
-    size_t frames = ::backtrace(callstack, size);
     char** strs = backtrace_symbols(callstack, frames);
-
     for (unsigned i = 0; i < frames; ++i)
     {
       StackFrame frame;

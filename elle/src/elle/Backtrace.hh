@@ -4,6 +4,8 @@
 # include <vector>
 # include <string>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   struct StackFrame
@@ -22,14 +24,23 @@ namespace elle
   {
   public:
     Backtrace();
-    void strip_base(const Backtrace& base);
     typedef std::vector<StackFrame> SuperType;
     typedef StackFrame Frame;
-    static Backtrace current();
+    static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
+    Backtrace
+    current();
+    void
+    strip_base(const Backtrace& base);
+  private:
+    static
+    Backtrace
+    _current(void** callstack, size_t frames);
   };
 
   std::ostream& operator<< (std::ostream& output, const StackFrame& frame);
   std::ostream& operator<< (std::ostream& output, const Backtrace& bt);
 }
+
+# include <elle/Backtrace.hxx>
 
 #endif
