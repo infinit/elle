@@ -537,3 +537,41 @@ TEST(uri_test, unnormalized_invalid_path_value) {
   network::uri instance("http://www.example.com/..");
   ASSERT_EQ("/..", *instance.path());
 }
+
+
+TEST(uri_test, construct_uri_reference_from_char_array) {
+  ASSERT_NO_THROW(network::uri("relative/path/to/resource.txt"));
+}
+
+TEST(uri_test, uri_reference_scheme_test) {
+  network::uri instance("relative/path/to/resource.txt");
+  ASSERT_FALSE(instance.scheme()) << *instance.scheme();  
+}
+
+TEST(uri_test, uri_reference_host_test) {
+  network::uri instance("relative/path/to/resource.txt");
+  ASSERT_FALSE(instance.host()) << *instance.host();  
+}
+
+TEST(uri_test, uri_reference_authority_test) {
+  network::uri instance("relative/path/to/resource.txt");
+  ASSERT_FALSE(instance.authority()) << *instance.authority();  
+}
+
+TEST(uri_test, uri_reference_path_test) {
+  network::uri instance("relative/path/to/resource.txt");
+  ASSERT_TRUE(instance.path());
+  ASSERT_EQ("relative/path/to/resource.txt", *instance.path());
+}
+
+TEST(uri_test, uri_reference_query_test) {
+  network::uri instance("relative/path/to/resource?query#fragment");
+  ASSERT_TRUE(instance.query());
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, uri_reference_fragment_test) {
+  network::uri instance("relative/path/to/resource?query#fragment");
+  ASSERT_TRUE(instance.fragment());
+  ASSERT_EQ("fragment", *instance.fragment());
+}
