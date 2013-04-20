@@ -10,7 +10,6 @@ namespace elle
   {
     namespace detail
     {
-
       void
       stream_write(std::ostream& out,
                    void const* data,
@@ -30,7 +29,6 @@ namespace elle
         if (in.fail() or in.bad())
           throw elle::Exception{"couldn't read from the stream"};
       }
-
     }
   }
 }

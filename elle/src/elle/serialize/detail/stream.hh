@@ -9,7 +9,6 @@ namespace elle
   {
     namespace detail
     {
-
       void
       stream_write(std::ostream& out,
                    void const* data,
@@ -19,7 +18,6 @@ namespace elle
       stream_read(std::istream& in,
                   void* data,
                   std::streamsize const size);
-
     }
   }
 }
