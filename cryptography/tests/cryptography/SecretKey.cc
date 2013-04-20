@@ -12,6 +12,7 @@
 | Represent |
 `----------*/
 
+static
 template <elle::Natural32 N,
           infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
@@ -30,6 +31,7 @@ test_represent_n()
   }
 }
 
+static
 void
 test_represent()
 {
@@ -64,6 +66,7 @@ test_represent()
 | Generate |
 `---------*/
 
+static
 template <infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
 infinit::cryptography::SecretKey
@@ -75,6 +78,7 @@ test_generate_x()
   return (key);
 }
 
+static
 void
 test_generate()
 {
@@ -106,6 +110,7 @@ test_generate()
 | Construct |
 `----------*/
 
+static
 infinit::cryptography::SecretKey
 test_construct_aes128()
 {
@@ -134,6 +139,7 @@ test_construct_aes128()
   return (key4);
 }
 
+static
 void
 test_construct()
 {
@@ -155,6 +161,7 @@ test_construct()
 | Operate |
 `--------*/
 
+static
 void
 test_operate_idea()
 {
@@ -187,6 +194,7 @@ test_operate_idea()
   }
 }
 
+static
 void
 test_operate()
 {
@@ -198,6 +206,7 @@ test_operate()
 | Serialize |
 `----------*/
 
+static
 template <infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
 void
@@ -233,6 +242,7 @@ test_serialize_x(elle::String const& R)
   }
 }
 
+static
 void
 test_serialize()
 {
@@ -264,6 +274,7 @@ test_serialize()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {

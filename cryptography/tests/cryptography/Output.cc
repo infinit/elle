@@ -12,6 +12,7 @@
 | Represent |
 `----------*/
 
+static
 void
 test_represent()
 {
@@ -33,6 +34,7 @@ test_represent()
 | Construct |
 `----------*/
 
+static
 void
 test_construct()
 {
@@ -79,6 +81,7 @@ test_construct()
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize()
 {
@@ -118,6 +121,7 @@ test_serialize()
 | Compare |
 `--------*/
 
+static
 void
 test_compare()
 {
@@ -170,6 +174,7 @@ test_compare()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {

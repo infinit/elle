@@ -1,13 +1,13 @@
 #include "cryptography.hh"
 
 #include <cryptography/Input.hh>
-#include <cryptography/Input.hh>
 #include <cryptography/random.hh>
 
 /*-------------.
 | Construction |
 `-------------*/
 
+static
 void
 test_construction()
 {
@@ -24,6 +24,7 @@ test_construction()
 | Comparison |
 `-----------*/
 
+static
 void
 test_comparison()
 {
@@ -77,6 +78,7 @@ test_comparison()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {
