@@ -1,10 +1,10 @@
 #ifndef INFINIT_CRYPTOGRAPHY_ONEWAY_HH
 # define INFINIT_CRYPTOGRAPHY_ONEWAY_HH
 
-# include <elle/types.hh>
-
 # include <cryptography/fwd.hh>
 # include <cryptography/Digest.hh>
+
+# include <elle/types.hh>
 
 # include <openssl/evp.h>
 
