@@ -16,20 +16,23 @@ test_basic()
 {
   BOOST_CHECK(::dRAND_init() == 1);
 
+  // Note that the result of the RAND_status is not checked because
+  // the PNRG has not been seeded, hence does not have enough entropy.
+
   BOOST_CHECK(::dRAND_start() == 1);
   {
     assert(::RAND_get_rand_method() == &::dRAND_method);
 
-    BOOST_CHECK(::RAND_status() == 1);
-    BOOST_CHECK(::RAND_status() == 1);
+    ::RAND_status();
+    ::RAND_status();
 
     ::dRAND_reset();
 
-    BOOST_CHECK(::RAND_status() == 1);
+    ::RAND_status();
   }
   BOOST_CHECK(::dRAND_stop() == 1);
 
-  BOOST_CHECK(::RAND_status() == 1);
+  ::RAND_status();
 
   BOOST_CHECK(::dRAND_clean() == 1);
 }
