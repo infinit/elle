@@ -1,5 +1,3 @@
-#include <cstring>
-
 #include <cryptography/bn.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
@@ -9,6 +7,7 @@
 #include <openssl/err.h>
 
 #include <iostream>
+#include <cstring>
 
 /*----------.
 | Operators |

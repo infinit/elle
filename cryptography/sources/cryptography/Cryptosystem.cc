@@ -1,9 +1,9 @@
-#include <ostream>
+#include <cryptography/Cryptosystem.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/printf.hh>
 
-#include <cryptography/Cryptosystem.hh>
-#include <cryptography/Exception.hh>
+#include <ostream>
 
 namespace infinit
 {
