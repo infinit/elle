@@ -43,8 +43,8 @@ TEST(uri_relativize_test, simple_test_is_hierarchical) {
 TEST(uri_relativize_test, simple_test_with_query) {
   network::uri uri_1("http://www.example.com/");
   network::uri uri_2("http://www.example.com/path/?key=value");
-  ASSERT_EQ("/path/?key=value",
-	    uri_1.relativize(uri_2, network::uri_comparison_level::string_comparison).string());
+  auto result = uri_1.relativize(uri_2, network::uri_comparison_level::string_comparison);
+  ASSERT_EQ("/path/?key=value", result.string());
 }
 
 TEST(uri_relativize_test, simple_test_with_fragment) {

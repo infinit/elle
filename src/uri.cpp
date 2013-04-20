@@ -622,6 +622,21 @@ namespace network {
     return uri(normalized);
   }
 
+    namespace 
+  {
+    inline uri::string_type to_string_type(boost::string_ref ref)
+    {
+        return uri::string_type(std::begin(ref), std::end(ref));
+    }
+
+    inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref)
+    {
+        return to_string_type(ref.get());
+    }
+
+
+  } // namespace
+
   uri uri::relativize(const uri &other, uri_comparison_level level) const {
     if (opaque() || other.opaque()) {
       return other;
@@ -643,16 +658,16 @@ namespace network {
       return other;
     }
 
-    auto path = normalize_path(string_type(this->path().get().data()), level),
-      other_path = normalize_path(string_type(other.path().get().data()), level);
+    auto path = normalize_path(to_string_type(this->path()), level),
+      other_path = normalize_path(to_string_type(other.path()), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query.reset(string_type(other.query().get().data()));
+      query.reset(to_string_type(other.query()));
     }
 
     if (other.fragment()) {
-      fragment.reset(string_type(other.fragment().get().data()));
+      fragment.reset(to_string_type(other.fragment()));
     }
 
     return network::uri(boost::optional<string_type>(),

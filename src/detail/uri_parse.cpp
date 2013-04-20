@@ -210,7 +210,7 @@ namespace network {
       |
       (
         qi::attr(boost::optional<boost::iterator_range<iterator> >())
-          >> hier_part >> -('?' >> query) >> -('#' >> fragment)
+           >> hier_part >> -('?' >> query) >> -('#' >> fragment)
       )
 
 
