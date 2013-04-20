@@ -7,6 +7,7 @@ namespace infinit
     /*-------------.
     | Construction |
     `-------------*/
+
     Exception::Exception(elle::String const& message):
       elle::Exception(message)
     {}
