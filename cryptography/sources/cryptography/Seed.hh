@@ -17,6 +17,7 @@ namespace infinit
     /// XXX
     class Seed:
       public elle::Printable
+    // XXX[no copy?]
     {
       /*---------------.
       | Static Methods |
@@ -43,6 +44,7 @@ namespace infinit
       elle::Boolean
       operator ==(Seed const& other) const;
       ELLE_OPERATOR_NEQ(Seed);
+      // XXX NO ASSIGNMENT
 
       /*-----------.
       | Interfaces |
