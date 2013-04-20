@@ -13,9 +13,10 @@
 | Represent |
 `----------*/
 
-elle::String const _input1("chiche, donne nous tout!");
-Sample const _input2(3240913, "Dave");
+static elle::String const _input1("chiche, donne nous tout!");
+static Sample const _input2(3240913, "Dave");
 
+static
 void
 test_represent_rsa()
 {
@@ -55,6 +56,7 @@ test_represent_rsa()
   }
 }
 
+static
 void
 test_represent()
 {
@@ -68,6 +70,7 @@ test_represent()
 | Generate |
 `---------*/
 
+static
 infinit::cryptography::PrivateKey
 test_generate_rsa(elle::Natural32 const length = 1024)
 {
@@ -84,6 +87,7 @@ test_generate_rsa(elle::Natural32 const length = 1024)
   return (k);
 }
 
+static
 void
 test_generate()
 {
@@ -95,6 +99,7 @@ test_generate()
 | Construct |
 `----------*/
 
+static
 void
 test_construct()
 {
@@ -116,6 +121,7 @@ test_construct()
 | Operate |
 `--------*/
 
+static
 void
 test_operate_rsa()
 {
@@ -158,6 +164,7 @@ test_operate_rsa()
   }
 }
 
+static
 void
 test_operate()
 {
@@ -169,6 +176,7 @@ test_operate()
 | Compare |
 `--------*/
 
+static
 void
 test_compare_rsa()
 {
@@ -194,6 +202,7 @@ test_compare_rsa()
   }
 }
 
+static
 void
 test_compare()
 {
@@ -205,6 +214,7 @@ test_compare()
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize_rsa()
 {
@@ -239,6 +249,7 @@ test_serialize_rsa()
   }
 }
 
+static
 void
 test_serialize()
 {
@@ -250,6 +261,7 @@ test_serialize()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {

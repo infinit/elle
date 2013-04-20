@@ -15,6 +15,7 @@
 | Represent |
 `----------*/
 
+static
 void
 test_represent_rsa()
 {
@@ -31,6 +32,7 @@ test_represent_rsa()
   }
 }
 
+static
 void
 test_represent()
 {
@@ -45,6 +47,7 @@ test_represent()
 | Generate |
 `---------*/
 
+static
 infinit::cryptography::KeyPair
 test_generate_rsa(elle::Natural32 const length = 2048)
 {
@@ -56,6 +59,7 @@ test_generate_rsa(elle::Natural32 const length = 2048)
   return (pair);
 }
 
+static
 void
 test_generate()
 {
@@ -67,6 +71,7 @@ test_generate()
 | Construct |
 `----------*/
 
+static
 infinit::cryptography::KeyPair
 test_construct_rsa()
 {
@@ -75,6 +80,7 @@ test_construct_rsa()
   return (pair);
 }
 
+static
 void
 test_construct()
 {
@@ -116,6 +122,7 @@ test_construct()
 | Operate |
 `--------*/
 
+static
 void
 test_operate_rsa()
 {
@@ -202,6 +209,7 @@ test_operate_rsa()
   }
 }
 
+static
 void
 test_operate()
 {
@@ -213,6 +221,7 @@ test_operate()
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize_rsa()
 {
@@ -247,6 +256,7 @@ test_serialize_rsa()
   }
 }
 
+static
 void
 test_serialize()
 {
@@ -258,6 +268,7 @@ test_serialize()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {
@@ -270,7 +281,6 @@ test()
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));
   suite->add(BOOST_TEST_CASE(test_serialize));
-  // XXX[rotate/derive]
 
   boost::unit_test::framework::master_test_suite().add(suite);
 

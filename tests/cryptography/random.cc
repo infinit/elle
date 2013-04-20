@@ -8,12 +8,14 @@
 | Operate |
 `--------*/
 
+static
 void
 test_operate_boolean()
 {
   infinit::cryptography::random::generate<elle::Boolean>();
 }
 
+static
 void
 test_operate_real()
 {
@@ -26,6 +28,7 @@ test_operate_real()
   BOOST_CHECK(value1 != value2);
 }
 
+static
 template <typename T>
 void
 test_operate_x(T minimum,
@@ -39,6 +42,7 @@ test_operate_x(T minimum,
   BOOST_CHECK(value <= maximum);
 }
 
+static
 void
 test_operate_string()
 {
@@ -51,6 +55,7 @@ test_operate_string()
   BOOST_CHECK(value1 != value2);
 }
 
+static
 void
 test_operate_buffer()
 {
@@ -63,6 +68,7 @@ test_operate_buffer()
   BOOST_CHECK(value1 != value2);
 }
 
+static
 void
 test_operate()
 {
@@ -85,6 +91,7 @@ test_operate()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {

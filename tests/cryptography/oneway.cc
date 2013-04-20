@@ -14,10 +14,11 @@
 | Represent |
 `----------*/
 
-elle::String const _input(
+static elle::String const _input(
   "- Do you think she's expecting something big?"
   "- You mean, like anal?");
 
+static
 template <elle::Natural32 N,
           infinit::cryptography::oneway::Algorithm A>
 void
@@ -37,6 +38,7 @@ test_represent_n()
   }
 }
 
+static
 void
 test_represent()
 {
@@ -63,6 +65,7 @@ test_represent()
 | Operate |
 `--------*/
 
+static
 template <infinit::cryptography::oneway::Algorithm A,
           elle::Natural32 S>
 void
@@ -104,6 +107,7 @@ test_operate_x(elle::String const& R)
   }
 }
 
+static
 void
 test_operate()
 {
@@ -127,6 +131,7 @@ test_operate()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {

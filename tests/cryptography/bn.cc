@@ -13,6 +13,7 @@
 | Represent |
 `----------*/
 
+static
 void
 test_represent()
 {
@@ -40,6 +41,7 @@ test_represent()
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize()
 {
@@ -78,6 +80,7 @@ test_serialize()
 | Main |
 `-----*/
 
+static
 bool
 test()
 {
