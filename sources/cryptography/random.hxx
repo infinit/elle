@@ -87,7 +87,7 @@ namespace infinit
 
         T value;
 
-        random_bytes(reinterpret_cast<unsigned char*>(&value), sizeof (value));
+        fill(reinterpret_cast<unsigned char*>(&value), sizeof (value));
 
         return (value);
       }
@@ -178,7 +178,7 @@ namespace infinit
           {
             elle::Natural32 n;
 
-            random_bytes(reinterpret_cast<unsigned char*>(&n), sizeof (n));
+            fill(reinterpret_cast<unsigned char*>(&n), sizeof (n));
 
             value[i] = alphabet[n % alphabet.length()];
           }
@@ -202,8 +202,7 @@ namespace infinit
 
           elle::Buffer value(size);
 
-          // generate a random integer.
-          random_bytes(
+          fill(
             reinterpret_cast<unsigned char*>(value.mutable_contents()),
             value.size());
 

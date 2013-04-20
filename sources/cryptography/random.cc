@@ -92,10 +92,11 @@ namespace infinit
         ::RAND_seed(temporary, sizeof (temporary));
       }
 
-
-      void random_bytes(unsigned char *buf, int num)
+      void
+      fill(unsigned char *buffer,
+           size_t const size)
       {
-        if (!::RAND_bytes(buf, num))
+        if (::RAND_bytes(buffer, size) <= 0)
           throw Exception(elle::sprintf("unable to generate random bytes: %s",
                                         ::ERR_error_string(ERR_get_error(),
                                                            nullptr)));

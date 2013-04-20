@@ -121,18 +121,18 @@ namespace infinit
 
       // Create a new RSA key.
       if ((scope.rsa = ::RSA_new()) == nullptr)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // rotate the RSA key.
       if (comet::RSA_rotate(scope.rsa,
                             ::BN_num_bits(this->_K->key()->pkey.rsa->n),
                             seed.region.contents,
                             seed.region.size) <= 0)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // assign the RSA key to the EVP's.
       if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
+        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
 
       // stop tracking.
       scope.rsa = nullptr;

@@ -152,13 +152,17 @@ namespace infinit
 
         // Initialise the public key structure.
         if ((this->_key = ::EVP_PKEY_new()) == nullptr)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         ::RSA* rsa;
 
         // Create the RSA structure.
         if ((rsa = ::RSA_new()) == nullptr)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to allocate the RSA structure: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
@@ -171,7 +175,10 @@ namespace infinit
 
         // Set the rsa structure into the public key.
         if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
+                          "structure: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -184,10 +191,14 @@ namespace infinit
         // Prepare the encrypt context.
         if ((this->_context_encrypt =
              ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_encrypt_init(this->_context_encrypt) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt,
                                 EVP_PKEY_RSA,
@@ -195,15 +206,21 @@ namespace infinit
                                 EVP_PKEY_CTRL_RSA_PADDING,
                                 RSA_PKCS1_OAEP_PADDING,
                                 nullptr) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to control the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the verify context.
         if ((this->_context_verify =
              ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_verify_init(this->_context_verify) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_verify,
                                 EVP_PKEY_RSA,
@@ -211,15 +228,21 @@ namespace infinit
                                 EVP_PKEY_CTRL_RSA_PADDING,
                                 RSA_PKCS1_PADDING,
                                 nullptr) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to control the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the decrypt context.
         if ((this->_context_decrypt =
              ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_verify_recover_init(this->_context_decrypt) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt,
                                 EVP_PKEY_RSA,
@@ -227,7 +250,9 @@ namespace infinit
                                 EVP_PKEY_CTRL_RSA_PADDING,
                                 RSA_PKCS1_PADDING,
                                 nullptr) <= 0)
-          throw Exception(::ERR_error_string(ERR_get_error(), nullptr));
+          throw Exception(
+            elle::sprintf("unable to control the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
       }
 
       /*----------.
