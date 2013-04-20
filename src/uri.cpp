@@ -622,8 +622,7 @@ namespace network {
     return uri(normalized);
   }
 
-    namespace 
-  {
+  namespace {
     inline uri::string_type to_string_type(boost::string_ref ref)
     {
         return uri::string_type(std::begin(ref), std::end(ref));
@@ -631,9 +630,16 @@ namespace network {
 
     inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref)
     {
-        return to_string_type(ref.get());
+      return ref.is_initialized() ? to_string_type(ref.get()) : uri::string_type();
     }
 
+    inline boost::optional<uri::string_type>
+      to_optional_string_type(boost::optional<boost::string_ref> ref)
+    {
+      if (ref)
+        return boost::make_optional(to_string_type(ref.get()));
+      return boost::optional<uri::string_type>();
+    }
 
   } // namespace
 
@@ -677,11 +683,60 @@ namespace network {
 			other_path, query, fragment);
   }
 
+
+  namespace {
+    uri::string_type remove_dot_segments(boost::string_ref path) {
+      return to_string_type(path);
+    }
+
+    uri::string_type remove_dot_segments(boost::optional<boost::string_ref> path) {
+      return path ? to_string_type(*path) : uri::string_type();
+    }
+
+
+    template<typename T>
+    inline boost::optional<uri::string_type> 
+      make_arg(T&& arg) {
+      return boost::optional<uri::string_type>(std::forward<T>(arg));
+    }
+
+    inline boost::optional<uri::string_type> 
+      make_arg(boost::optional<boost::string_ref> ref) {
+      return to_optional_string_type(ref);
+    }
+
+    inline bool empty_path(const uri& uri){
+      return !uri.path() || uri.path().get().empty();
+    }
+
+  }  // namespace
+
+
   uri uri::resolve(const uri &other, uri_comparison_level level) const {
     // http://tools.ietf.org/html/rfc3986#section-5.2
-    if (!other.absolute() && !other.opaque()) {
+    
+
+    if (other.absolute() && !other.opaque()) {
       return other;
     }
+
+    if (empty_path(other))
+    {
+      if (other.query())
+      {
+        return uri(
+          make_arg(scheme()), 
+          make_arg(user_info()), 
+          make_arg(host()), 
+          make_arg(port()),
+          make_arg(remove_dot_segments(path())),
+          make_arg(other.query()), 
+          make_arg(other.fragment()));
+      }
+      return *this;
+    }
+
+
     return other;
   }
 
