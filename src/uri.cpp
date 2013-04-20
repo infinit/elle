@@ -270,14 +270,24 @@ namespace network {
     return pimpl_->uri_.end();
   }
 
-  namespace {
-    inline
-    boost::string_ref to_string_ref(const uri::string_type &uri,
-			     boost::iterator_range<uri::iterator> uri_part) {
+  namespace 
+  {
+    inline boost::string_ref to_string_ref(
+        const uri::string_type &uri,
+		boost::iterator_range<uri::iterator> uri_part) 
+    {
       const char *c_str = uri.c_str();
       std::advance(c_str, std::distance(std::begin(uri), std::begin(uri_part)));
       return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
     }
+
+    inline boost::string_ref to_string_ref(
+        boost::string_ref::iterator uri_part_begin,
+        boost::string_ref::iterator uri_part_end) 
+    {
+      return boost::string_ref(uri_part_begin, std::distance(uri_part_begin, uri_part_end));
+    }
+
   } // namespace
 
   boost::optional<boost::string_ref> uri::scheme() const {
@@ -339,7 +349,7 @@ namespace network {
       last = std::end(*port);
     }
 
-    return to_string_ref(pimpl_->uri_, boost::iterator_range<uri::iterator>(first, last));
+    return to_string_ref(first, last);
   }
 
   uri::string_type uri::native() const {
@@ -633,16 +643,16 @@ namespace network {
       return other;
     }
 
-    auto path = normalize_path(string_type(*this->path()), level),
-      other_path = normalize_path(string_type(*other.path()), level);
+    auto path = normalize_path(string_type(this->path().get().data()), level),
+      other_path = normalize_path(string_type(other.path().get().data()), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query.reset(string_type(*other.query()));
+      query.reset(string_type(other.query().get().data()));
     }
 
     if (other.fragment()) {
-      fragment.reset(string_type(*other.fragment()));
+      fragment.reset(string_type(other.fragment().get().data()));
     }
 
     return network::uri(boost::optional<string_type>(),
