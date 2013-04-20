@@ -51,8 +51,10 @@ def configure(cxx_toolkit = None,
   else:
     raise Exception('unsupported os')
 
+  # XXX[for fuse only]
   config.define('HAVE_SETXATTR')
 
+  # XXX[for fuse only]
   if cxx_toolkit.os == drake.os.macos:
     config.define('HAVE_STATFS')
 
