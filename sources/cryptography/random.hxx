@@ -39,7 +39,8 @@
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
       ELLE_DEBUG_FUNCTION(minimum, maximum);                            \
                                                                         \
-      return (_rangify(_generate<_type_>(), minimum, maximum));         \
+      return (::infinit::cryptography::random::_rangify(                \
+                _generate<_type_>(), minimum, maximum));                \
     }                                                                   \
   };
 
