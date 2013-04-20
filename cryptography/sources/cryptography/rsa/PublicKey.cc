@@ -178,7 +178,7 @@ namespace infinit
           throw Exception(
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -220,7 +220,7 @@ namespace infinit
         if (::EVP_PKEY_verify_init(this->_context_verify) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_verify,
                                 EVP_PKEY_RSA,
