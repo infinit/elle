@@ -295,7 +295,7 @@ namespace infinit
         if (::EVP_PKEY_sign_init(this->_context_sign) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_sign,
                                 EVP_PKEY_RSA,
@@ -305,7 +305,7 @@ namespace infinit
                                 nullptr) <= 0)
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the encrypt context.
         if ((this->_context_encrypt =
@@ -317,7 +317,7 @@ namespace infinit
         if (::EVP_PKEY_sign_init(this->_context_encrypt) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt,
                                 EVP_PKEY_RSA,
@@ -327,7 +327,7 @@ namespace infinit
                                 nullptr) <= 0)
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the rotate context.
         if ((this->_context_rotate =
@@ -339,7 +339,7 @@ namespace infinit
         if (::EVP_PKEY_encrypt_init(this->_context_rotate) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
         if (::EVP_PKEY_CTX_ctrl(this->_context_rotate,
                                 EVP_PKEY_RSA,
@@ -349,7 +349,7 @@ namespace infinit
                                 nullptr) <= 0)
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr));
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
       }
 
       /*----------.
