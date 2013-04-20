@@ -28,7 +28,6 @@ test_operate_real()
   BOOST_CHECK(value1 != value2);
 }
 
-static
 template <typename T>
 void
 test_operate_x(T minimum,

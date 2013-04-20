@@ -60,6 +60,9 @@ static
 void
 test_represent()
 {
+  // WARNING: To uncomment only if one wants to update the representations.
+  return;
+
   // These generate base64-based representations which can be used in
   // other tests.
 
@@ -267,9 +270,7 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("PrivateyKey");
 
-  // To uncomment if one wants to update the representations.
-  //suite->add(BOOST_TEST_CASE(test_represent));
-
+  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));

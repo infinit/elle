@@ -12,7 +12,6 @@
 | Represent |
 `----------*/
 
-static
 template <elle::Natural32 N,
           infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
@@ -35,6 +34,9 @@ static
 void
 test_represent()
 {
+  // WARNING: To uncomment only if one wants to update the representations.
+  return;
+
   // These generate base64-based representations which can be used in
   // other tests.
 
@@ -66,7 +68,6 @@ test_represent()
 | Generate |
 `---------*/
 
-static
 template <infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
 infinit::cryptography::SecretKey
@@ -206,7 +207,6 @@ test_operate()
 | Serialize |
 `----------*/
 
-static
 template <infinit::cryptography::cipher::Algorithm A,
           elle::Natural32 L>
 void
@@ -280,9 +280,7 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("SecretKey");
 
-  // To uncomment if one wants to update the representations.
-  //suite->add(BOOST_TEST_CASE(test_represent));
-
+  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));
