@@ -18,7 +18,6 @@ static elle::String const _input(
   "- Do you think she's expecting something big?"
   "- You mean, like anal?");
 
-static
 template <elle::Natural32 N,
           infinit::cryptography::oneway::Algorithm A>
 void
@@ -42,6 +41,9 @@ static
 void
 test_represent()
 {
+  // WARNING: To uncomment only if one wants to update the representations.
+  return;
+
   // These generate hexadecimal-based representations which can be used in
   // other tests.
 
@@ -65,7 +67,6 @@ test_represent()
 | Operate |
 `--------*/
 
-static
 template <infinit::cryptography::oneway::Algorithm A,
           elle::Natural32 S>
 void
@@ -137,9 +138,7 @@ test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("SecretKey");
 
-  // To uncomment if one wants to update the representations.
-  //suite->add(BOOST_TEST_CASE(test_represent));
-
+  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
 
   boost::unit_test::framework::master_test_suite().add(suite);
