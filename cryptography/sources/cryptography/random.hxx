@@ -62,7 +62,7 @@ namespace infinit
         ELLE_LOG_COMPONENT("infinit.cryptography.random");
         ELLE_DEBUG_FUNCTION(value, minimum, maximum);
 
-        ELLE_ASSERT(minimum <= maximum);
+        ELLE_ASSERT_LTE(minimum, maximum);
 
         T ranged =
           static_cast<T>(
