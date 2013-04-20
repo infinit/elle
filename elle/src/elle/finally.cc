@@ -1,5 +1,4 @@
-#include "finally.hh"
-
+#include <elle/finally.hh>
 #include <elle/log.hh>
 
 #include <stdexcept>
@@ -22,11 +21,11 @@ namespace elle
     }
     catch (std::exception const& err)
     {
-      ELLE_ERR("Cleaning scope failed: %s", err.what());
+      ELLE_ERR("cleaning scope failed: %s", err.what());
     }
     catch (...)
     {
-      ELLE_ERR("Cleaning scope failed: Unknown error type");
+      ELLE_ERR("cleaning scope failed: unknown error type");
     }
   }
 
@@ -35,5 +34,4 @@ namespace elle
   {
     this->_action = std::function<void()>();
   }
-
 }

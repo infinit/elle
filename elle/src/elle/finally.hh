@@ -79,7 +79,6 @@ namespace elle
   private:
     ELLE_ATTRIBUTE(std::function<void()>, action);
   };
-
 }
 
 #endif
