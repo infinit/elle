@@ -52,7 +52,7 @@ _test_encrypt(::EVP_PKEY* key,
                                   EVP_PKEY_RSA,
                                   -1,
                                   EVP_PKEY_CTRL_RSA_PADDING,
-                                  RSA_NO_PADDING,
+                                  RSA_NO_PADDING, // insecure by design
                                   nullptr) > 0);
 
   // Encrypt with the private key.
@@ -104,7 +104,7 @@ _test_decrypt(::EVP_PKEY* key,
                                   EVP_PKEY_RSA,
                                   -1,
                                   EVP_PKEY_CTRL_RSA_PADDING,
-                                  RSA_NO_PADDING,
+                                  RSA_NO_PADDING, // insecure by design
                                   nullptr) > 0);
 
   // Decrypt with the public key.
