@@ -29,7 +29,7 @@ def configure(cxx_toolkit = None,
   # Libraries
   boost = boost or drake.cxx.boost.Boost()
   elle = elle or drake.include('../elle')
-  #elle = drake.cxx.find_library('elle/elle.hh', elle)
+  # XXX elle = drake.cxx.find_library('elle/elle.hh', elle)
   openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
 
   # Global Configuration
@@ -131,9 +131,6 @@ def configure(cxx_toolkit = None,
     "oneway.cc",
     "random.cc",
     "Seed.cc",
-    "extract.cc",
-    "insert.cc",
-    "footprint.cc",
      ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
