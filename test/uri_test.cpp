@@ -477,7 +477,7 @@ TEST(uri_test, empty_uri_has_no_fragment) {
 
 TEST(uri_test, http_is_absolute) {
   network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.absolute());
+  ASSERT_TRUE(instance.is_absolute());
 }
 
 TEST(uri_test, mailto_has_no_user_info) {
@@ -502,17 +502,17 @@ TEST(uri_test, mailto_has_no_authority) {
 
 TEST(uri_test, http_is_hierarchical) {
   network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(!instance.opaque());
+  ASSERT_TRUE(!instance.is_opaque());
 }
 
 TEST(uri_test, mailto_is_absolute) {
   network::uri instance("mailto:john.doe@example.com");
-  ASSERT_TRUE(instance.absolute());
+  ASSERT_TRUE(instance.is_absolute());
 }
 
 TEST(uri_test, mailto_is_opaque) {
   network::uri instance("mailto:john.doe@example.com");
-  ASSERT_TRUE(instance.opaque());
+  ASSERT_TRUE(instance.is_opaque());
 }
 
 TEST(uri_test, whitespace_no_throw) {
