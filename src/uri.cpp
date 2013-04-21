@@ -685,12 +685,41 @@ namespace network {
 
 
   namespace {
-    uri::string_type remove_dot_segments(boost::string_ref path) {
+
+    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
+    template<typename Iter>
+    uri::string_type remove_dot_segments(Iter first, Iter last) {
+      return uri_string_type(first, last);
+    }
+    
+    template<typename Range>
+    uri::string_type remove_dot_segments(const Range& path) {
       return to_string_type(path);
     }
 
-    uri::string_type remove_dot_segments(boost::optional<boost::string_ref> path) {
+    inline uri::string_type remove_dot_segments(
+      const boost::optional<boost::string_ref>& path) {
       return path ? to_string_type(*path) : uri::string_type();
+    }
+
+    inline bool empty_path(const uri& uri){
+      return !uri.path() || uri.path().get().empty();
+    }
+
+    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
+    inline uri::string_type merge_paths(const uri& base, const uri& reference)
+    {
+      using std::begin;
+      uri::string_type path;
+      if (empty_path(base))
+        path = "/";
+      else {
+        const auto& base_path = base.path().get();
+        auto last_slash = boost::find_last(base_path, "/");
+        path.append(begin(base_path), last_slash.end());
+      }
+      path.append(to_string_type(reference.path()));
+      return remove_dot_segments(path);
     }
 
 
@@ -705,39 +734,62 @@ namespace network {
       return to_optional_string_type(ref);
     }
 
-    inline bool empty_path(const uri& uri){
-      return !uri.path() || uri.path().get().empty();
-    }
+
 
   }  // namespace
 
 
-  uri uri::resolve(const uri &other, uri_comparison_level level) const {
+  uri uri::resolve(const uri &reference, uri_comparison_level level) const {
     // http://tools.ietf.org/html/rfc3986#section-5.2
-    
 
-    if (other.absolute() && !other.opaque()) {
-      return other;
+    using std::move;
+
+    if (reference.absolute() && !reference.opaque()) {
+      return reference;
     }
 
-    if (empty_path(other))
-    {
-      if (other.query())
-      {
-        return uri(
-          make_arg(scheme()), 
-          make_arg(user_info()), 
-          make_arg(host()), 
-          make_arg(port()),
-          make_arg(remove_dot_segments(path())),
-          make_arg(other.query()), 
-          make_arg(other.fragment()));
+    boost::optional<uri::string_type> 
+      user_info,
+      host,
+      port,
+      path,
+      query;
+    const uri& base = *this;
+
+    if (reference.authority()) {
+      // //g -> http://g
+      user_info = make_arg(reference.user_info()); 
+      host = make_arg(reference.host());
+      port = make_arg(reference.port());
+      path = remove_dot_segments(reference.path());
+      query = make_arg(reference.query()); 
+    }
+    else {
+      if (empty_path(reference)) {
+        path = make_arg(base.path());
+        if (reference.query()) 
+          query = make_arg(reference.query());
+        else
+          query = make_arg(base.query());
       }
-      return *this;
+      else {
+        if (reference.path().get().front() == '/')
+          path = remove_dot_segments(reference.path());
+        else {
+          path = merge_paths(base, reference);
+        }
+        query = make_arg(reference.query());
+      }
+      user_info = make_arg(base.user_info()); 
+      host = make_arg(base.host());
+      port = make_arg(base.port());
     }
 
-
-    return other;
+    return uri(
+      make_arg(base.scheme()), 
+      move(user_info), move(host), move(port),
+      move(path), move(query), 
+      make_arg(reference.fragment()));
   }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {

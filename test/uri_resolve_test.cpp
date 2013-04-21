@@ -32,40 +32,64 @@ struct uri_resolve_test : public ::testing::Test {
     return resolved(base_uri, std::forward<String>(reference));
   }
 
-
-
   network::uri base_uri;
 };
 
-// trivial cases
+// additional cases
 
 TEST_F(uri_resolve_test, is_absolute_uri__returns_other)
 {
-    ASSERT_EQ(resolved("https://www.example.com/"), "https://www.example.com/");
+  ASSERT_EQ("https://www.example.com/", resolved("https://www.example.com/"));
 }
 
-TEST_F(uri_resolve_test, path_is_empty__returns_base)
+TEST_F(uri_resolve_test, base_has_empty_path__path_is_ref_path)
 {
-    ASSERT_EQ(resolved(""), base_uri.string());
+  ASSERT_EQ("http://a/g", resolved("http://a/", "g"));
+  ASSERT_EQ("http://a/g/x/y?q#s", resolved("http://a/", "g/x/y?q#s"));
 }
+
+
 
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1
 //      "./g"           =  "http://a/b/c/g"
-//      "g/"            =  "http://a/b/c/g/"
-//      "/g"            =  "http://a/g"
-//      "//g"           =  "http://g"
 
+//      "g/"            =  "http://a/b/c/g/"
+TEST_F(uri_resolve_test, base_has_path__path_is_merged)
+{
+  ASSERT_EQ("http://a/b/c/g/", resolved("g/"));
+  ASSERT_EQ("http://a/b/c/g", resolved("g"));
+
+}
+
+
+//      "/g"            =  "http://a/g"
+TEST_F(uri_resolve_test, path_starts_with_slash__path_is_ref_path)
+{
+  ASSERT_EQ("http://a/g", resolved("/g"));
+}
+
+//      "/g/x?y#s"            =  "http://a/g/x?y#s"
+TEST_F(uri_resolve_test, path_starts_with_slash_with_query_fragment__path_is_ref_path)
+{
+  ASSERT_EQ("http://a/g/x?y#s", resolved("/g/x?y#s"));
+}
+
+//      "//g"           =  "http://g"
+TEST_F(uri_resolve_test, has_authority__base_scheme_with_ref_authority)
+{
+  ASSERT_EQ("http://g", resolved("//g"));
+}
 
 //      "?y"            =  "http://a/b/c/d;p?y"
 TEST_F(uri_resolve_test, path_is_empty_but_has_query__returns_base_with_ref_query)
 {
-    ASSERT_EQ(resolved("?y"), "http://a/b/c/d;p?y");
+    ASSERT_EQ("http://a/b/c/d;p?y", resolved("?y"));
 }
 
 TEST_F(uri_resolve_test, path_is_empty_but_has_query_base_no_query__returns_base_with_ref_query)
 {
-    ASSERT_EQ(resolved("http://a/b/c/d", "?y"), "http://a/b/c/d?y");
+    ASSERT_EQ( "http://a/b/c/d?y", resolved("http://a/b/c/d", "?y"));
 }
 
 //      "g?y"           =  "http://a/b/c/g?y"
@@ -75,7 +99,14 @@ TEST_F(uri_resolve_test, path_is_empty_but_has_query_base_no_query__returns_base
 //      ";x"            =  "http://a/b/c/;x"
 //      "g;x"           =  "http://a/b/c/g;x"
 //      "g;x?y#s"       =  "http://a/b/c/g;x?y#s"
+
+
 //      ""              =  "http://a/b/c/d;p?q"
+TEST_F(uri_resolve_test, path_is_empty__returns_base)
+{
+    ASSERT_EQ("http://a/b/c/d;p?q", resolved(""));
+}
+
 //      "."             =  "http://a/b/c/"
 //      "./"            =  "http://a/b/c/"
 //      ".."            =  "http://a/b/"
