@@ -77,6 +77,21 @@ namespace network {
 
   };
 
+  class uri_builder_error : public std::system_error {
+
+  public:
+
+    uri_builder_error()
+      : std::system_error(make_error_code(uri_error::invalid_uri)) {
+
+    }
+
+    virtual ~uri_builder_error() noexcept {
+
+    }
+
+  };
+
   enum class uri_comparison_level {
     string_comparison,
     case_normalization,

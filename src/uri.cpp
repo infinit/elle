@@ -25,12 +25,6 @@
 #include <vector>
 
 namespace network {
-#if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
-  uri_category_impl::uri_category_impl() {
-
-  }
-#endif // defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
-
   uri_category_impl::~uri_category_impl() noexcept {
 
   }

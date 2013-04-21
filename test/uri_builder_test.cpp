@@ -534,29 +534,54 @@ TEST(builder_test, build_uri_with_hash_in_path) {
   ASSERT_EQ("http://www.example.com/%23/", network::uri(builder));
 }
 
-//TEST(builder_test, simple_port) {
+TEST(builder_test, simple_port) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .port(8000)
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com:8000/", network::uri(builder));
+}
+
+// This seems to work, but I don't want to add the Boost.System
+// dependency just for this.
+
+//TEST(builder_test, build_uri_with_ipv4_address) {
+//  using namespace boost::asio::ip;
 //  network::uri_builder builder;
 //  builder
 //    .scheme("http")
-//    .host("www.example.com")
-//    .port(8000)
+//    .host(address_v4::loopback())
 //    .path("/")
 //    ;
-//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
+//  ASSERT_EQ("http://127.0.0.1/", network::uri(builder));
 //}
 
-//TEST(builder_test, simple_port_us) {
+//TEST(builder_test, build_uri_with_ipv6_address) {
+//  using namespace boost::asio::ip;
 //  network::uri_builder builder;
 //  builder
 //    .scheme("http")
-//    .host("www.example.com")
-//    .port(unsigned short(8000))
+//    .host(address_v6::loopback())
 //    .path("/")
 //    ;
-//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
+//  ASSERT_EQ("http://[::1]/", network::uri(builder));
 //}
-//
-//
+
+TEST(builder_test, build_uri_with_multiple_query) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "1")
+    .query("b", "2")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
+}
+
 //BOOST_AUTO_TEST_CASE(query_test) {
 //  network::uri instance;
 //  network::builder builder(instance);
@@ -595,30 +620,4 @@ TEST(builder_test, build_uri_with_hash_in_path) {
 //    ;
 //  BOOST_REQUIRE(network::valid(instance));
 //  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(ipv4_address) {
-//  using namespace boost::asio::ip;
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host(address_v4::loopback())
-//    .path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://127.0.0.1/", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(ipv6_address) {
-//  using namespace boost::asio::ip;
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host(address_v6::loopback())
-//    .path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://[::1]/", instance.string());
 //}
