@@ -8,6 +8,8 @@
 #include <network/uri/uri.hpp>
 #include "detail/uri_parse.hpp"
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
@@ -687,20 +689,50 @@ namespace network {
   namespace {
 
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
-    template<typename Iter>
-    uri::string_type remove_dot_segments(Iter first, Iter last) {
-      return uri_string_type(first, last);
-    }
-    
     template<typename Range>
     uri::string_type remove_dot_segments(const Range& path) {
-      return to_string_type(path);
+      using namespace boost::algorithm;
+      using std::begin;
+
+      uri::string_type input(to_string_type(path)), output;
+      while(!input.empty()) {
+        if (starts_with(input, "../"))
+          erase_head(input, 3);
+        else if (starts_with(input, "./"))
+          erase_head(input, 2);
+        else if (starts_with(input, "/./"))
+          erase_head(input, 2);
+        else if(starts_with(input, "/../")) {
+          erase_head(input, 3);
+          while (!output.empty()) {
+            if (output.back() == '/') {
+              output.pop_back();
+              break;
+            }
+            output.pop_back();
+          }
+        }
+        else if (starts_with(input, "/.."))
+          replace_head(input, 3, "/");
+        else if (starts_with(input, "/."))
+          replace_head(input, 2, "/");
+        else if(all(input, is_any_of(".")))
+          input.clear();
+
+        else {
+          int n = input.front() == '/' ? 1 : 0;
+          auto slash = find_nth(input, "/", n);
+          output.append(begin(input), begin(slash));
+          input.erase(begin(input), begin(slash));
+        }
+      }
+      return output;
     }
 
-    inline uri::string_type remove_dot_segments(
-      const boost::optional<boost::string_ref>& path) {
-      return path ? to_string_type(*path) : uri::string_type();
-    }
+    //inline uri::string_type remove_dot_segments(
+    //  const boost::optional<boost::string_ref>& path) {
+    //  return path ? to_string_type(*path) : uri::string_type();
+    //}
 
     inline bool empty_path(const uri& uri){
       return !uri.path() || uri.path().get().empty();

@@ -50,8 +50,11 @@ TEST_F(uri_resolve_test, base_has_empty_path__path_is_ref_path)
 
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1
-//      "./g"           =  "http://a/b/c/g"
 
+TEST_F(uri_resolve_test, remove_dot_segments1)
+{
+  ASSERT_EQ("http://a/b/c/g", resolved("./g"));
+}
 
 TEST_F(uri_resolve_test, base_has_path__path_is_merged)
 {
@@ -116,12 +119,37 @@ TEST_F(uri_resolve_test, path_is_empty__returns_base)
     ASSERT_EQ("http://a/b/c/d;p?q", resolved(""));
 }
 
-//      "."             =  "http://a/b/c/"
-//      "./"            =  "http://a/b/c/"
-//      ".."            =  "http://a/b/"
-//      "../"           =  "http://a/b/"
-//      "../g"          =  "http://a/b/g"
+TEST_F(uri_resolve_test, remove_dot_segments2)
+{
+  ASSERT_EQ("http://a/b/c/", resolved("."));
+}
+
+TEST_F(uri_resolve_test, remove_dot_segments3)
+{
+  ASSERT_EQ("http://a/b/c/", resolved("./"));
+}
+
+TEST_F(uri_resolve_test, DISABLED_remove_dot_segments4)
+{
+  ASSERT_EQ("http://a/b/", resolved(".."));
+}
+
+TEST_F(uri_resolve_test, remove_dot_segments5)
+{
+  ASSERT_EQ("http://a/b/", resolved("../"));
+}
+
+TEST_F(uri_resolve_test, remove_dot_segments6)
+{
+  ASSERT_EQ("http://a/b/g", resolved("../g"));
+}
+
 //      "../.."         =  "http://a/"
+TEST_F(uri_resolve_test, DISABLED_remove_dot_segments7)
+{
+  ASSERT_EQ("http://a/", resolved("../.."));
+}
+
 //      "../../"        =  "http://a/"
 //      "../../g"       =  "http://a/g"
 
