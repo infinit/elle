@@ -12,3 +12,37 @@ TEST(uri_stream_test, ostream) {
   oss << network::uri("http://www.example.com/");
   ASSERT_EQ("http://www.example.com/", oss.str());
 }
+
+TEST(uri_stream_test, wostream) {
+  std::wostringstream oss;
+  oss << network::uri("http://www.example.com/");
+  ASSERT_EQ(L"http://www.example.com/", oss.str());
+}
+
+TEST(uri_stream_test, istream) {
+  std::istringstream iss("http://www.example.com/");
+  network::uri instance;
+  iss >> instance;
+  ASSERT_EQ("http://www.example.com/", instance);
+}
+
+TEST(uri_stream_test, wistream) {
+  std::wistringstream iss(L"http://www.example.com/");
+  network::uri instance;
+  iss >> instance;
+  ASSERT_EQ("http://www.example.com/", instance);
+}
+
+TEST(uri_stream_test, istream_invalid_uri) {
+  std::istringstream iss("I am not a valid URI.");
+  network::uri instance;
+  ASSERT_THROW((iss >> instance), network::uri_syntax_error);
+}
+
+TEST(uri_stream_test, wistream_invalid_uri) {
+  std::wistringstream iss(L"I am not a valid URI.");
+  network::uri instance;
+  ASSERT_THROW((iss >> instance), network::uri_syntax_error);
+}
+
+// This is not the full story with istream and exceptions...
