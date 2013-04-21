@@ -474,9 +474,14 @@ TEST(builder_test, relative_uri_path_value) {
   ASSERT_EQ("/", *network::uri(builder).path());
 }
 
-TEST(builder_test, base_uri) {
-  network::uri_builder builder(network::uri("http://www.example.com/"));
-  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+TEST(builder_test, build_uri_with_unencoded_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/A path with spaces")
+    ;
+  ASSERT_EQ("http://www.example.com/A%20path%20with%20spaces", network::uri(builder));
 }
 
 //TEST(builder_test, uri_with_path_syntax) {

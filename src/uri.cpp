@@ -121,8 +121,7 @@ namespace network {
     return other.release();
   }
 
-  uri::uri(boost::optional<uri> base_uri,
-	   boost::optional<string_type> scheme,
+  uri::uri(boost::optional<string_type> scheme,
 	   boost::optional<string_type> user_info,
 	   boost::optional<string_type> host,
 	   boost::optional<string_type> port,
@@ -130,10 +129,6 @@ namespace network {
 	   boost::optional<string_type> query,
 	   boost::optional<string_type> fragment)
     : pimpl_(new impl) {
-    if (base_uri) {
-      pimpl_->uri_.assign(std::begin(*base_uri), std::end(*base_uri));
-    }
-
     if (scheme) {
       pimpl_->uri_.append(*scheme);
     }
@@ -234,14 +229,15 @@ namespace network {
   }
 
   uri::uri(const uri_builder &builder)
-    : uri(builder.base_uri_,
-	  builder.scheme_,
+    : uri(builder.scheme_,
 	  builder.user_info_,
 	  builder.host_,
 	  builder.port_,
 	  builder.path_,
 	  builder.query_,
 	  builder.fragment_) {
+
+    // throw if the URI is opaque and the scheme is null
 
   }
 
@@ -646,8 +642,7 @@ namespace network {
       fragment.reset(string_type(*other.fragment()));
     }
 
-    return network::uri(boost::optional<network::uri>(),
-			boost::optional<string_type>(),
+    return network::uri(boost::optional<string_type>(),
 			boost::optional<string_type>(),
 			boost::optional<string_type>(),
 			boost::optional<string_type>(),

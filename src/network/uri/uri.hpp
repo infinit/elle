@@ -100,8 +100,7 @@ namespace network {
 
   private:
 
-    uri(boost::optional<uri> base_uri,
-	boost::optional<string_type> scheme,
+    uri(boost::optional<string_type> scheme,
 	boost::optional<string_type> user_info,
 	boost::optional<string_type> host,
 	boost::optional<string_type> port,

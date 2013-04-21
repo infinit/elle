@@ -60,7 +60,7 @@ TEST(uri_encoding_test, encode_path_iterator) {
   std::string instance;
   network::uri::encode_path(std::begin(unencoded), std::end(unencoded),
 			    std::back_inserter(instance));
-  ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C/%3A%3B%3D%3F%40%5B%5D");
+  ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C/%3A%3B%3D%3F@%5B%5D");
 }
 
 //TEST(uri_encoding_test, encode_path) {

@@ -113,7 +113,7 @@ namespace network {
 			       OutputIterator out) {
       auto it = first;
       while (it != last) {
-	detail::encode_char(*it, out, "/");
+	detail::encode_char(*it, out, "/.@");
 	++it;
       }
       return out;

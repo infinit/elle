@@ -38,7 +38,7 @@ namespace network {
     typedef network::uri::string_type string_type;
 
     uri_builder();
-    uri_builder(const network::uri &base_uri);
+    //uri_builder(const network::uri &base_uri);
     ~uri_builder();
 
     template <typename Source>
@@ -104,7 +104,7 @@ namespace network {
     void set_query(const string_type &query);
     void set_fragment(const string_type &fragment);
 
-    boost::optional<network::uri> base_uri_;
+    //boost::optional<network::uri> base_uri_;
     boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
