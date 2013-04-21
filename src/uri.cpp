@@ -688,6 +688,17 @@ namespace network {
 
   namespace {
 
+    template<typename Range>
+    void remove_last_segment(Range& path) {
+      while (!path.empty()) {
+        if (path.back() == '/') {
+          path.pop_back();
+          break;
+        }
+        path.pop_back();
+      }
+    }
+
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
     template<typename Range>
     uri::string_type remove_dot_segments(const Range& path) {
@@ -704,16 +715,12 @@ namespace network {
           erase_head(input, 2);
         else if(starts_with(input, "/../")) {
           erase_head(input, 3);
-          while (!output.empty()) {
-            if (output.back() == '/') {
-              output.pop_back();
-              break;
-            }
-            output.pop_back();
-          }
+          remove_last_segment(output);
         }
-        else if (starts_with(input, "/.."))
+        else if (starts_with(input, "/..")) {
           replace_head(input, 3, "/");
+          remove_last_segment(output);
+        }
         else if (starts_with(input, "/."))
           replace_head(input, 2, "/");
         else if(all(input, is_any_of(".")))

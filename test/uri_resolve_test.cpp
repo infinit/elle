@@ -129,7 +129,7 @@ TEST_F(uri_resolve_test, remove_dot_segments3)
   ASSERT_EQ("http://a/b/c/", resolved("./"));
 }
 
-TEST_F(uri_resolve_test, DISABLED_remove_dot_segments4)
+TEST_F(uri_resolve_test, remove_dot_segments4)
 {
   ASSERT_EQ("http://a/b/", resolved(".."));
 }
@@ -144,25 +144,57 @@ TEST_F(uri_resolve_test, remove_dot_segments6)
   ASSERT_EQ("http://a/b/g", resolved("../g"));
 }
 
-//      "../.."         =  "http://a/"
-TEST_F(uri_resolve_test, DISABLED_remove_dot_segments7)
+TEST_F(uri_resolve_test, remove_dot_segments7)
 {
   ASSERT_EQ("http://a/", resolved("../.."));
 }
 
-//      "../../"        =  "http://a/"
-//      "../../g"       =  "http://a/g"
+TEST_F(uri_resolve_test, remove_dot_segments8)
+{
+  ASSERT_EQ("http://a/", resolved("../../"));
+}
+
+TEST_F(uri_resolve_test, remove_dot_segments9)
+{
+  ASSERT_EQ("http://a/g", resolved("../../g"));
+}
 
 
 // abnormal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.2
 
-//      "../../../g"    =  "http://a/g"
-//      "../../../../g" =  "http://a/g"
-//      "/./g"          =  "http://a/g"
-//      "/../g"         =  "http://a/g"
-//      "g."            =  "http://a/b/c/g."
-//      ".g"            =  "http://a/b/c/.g"
+TEST_F(uri_resolve_test, abnormal_example_1)
+{
+  ASSERT_EQ("http://a/g", resolved("../../../g"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_2)
+{
+  ASSERT_EQ("http://a/g", resolved("../../../../g"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_3)
+{
+  ASSERT_EQ("http://a/g", resolved("/./g"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_4)
+{
+  ASSERT_EQ("http://a/g", resolved("/../g"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_5)
+{
+  ASSERT_EQ("http://a/b/c/g.", resolved("g."));
+}
+
+TEST_F(uri_resolve_test, DISABLED_abnormal_example_6)
+{
+  ASSERT_EQ("http://a/b/c/.g", resolved(".g"));
+}
+
+
+
 //      "g.."           =  "http://a/b/c/g.."
 //      "..g"           =  "http://a/b/c/..g"
 //      "./../g"        =  "http://a/b/g"
