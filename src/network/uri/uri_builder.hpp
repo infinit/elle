@@ -12,8 +12,8 @@
 namespace network {
   class NETWORK_URI_DECL uri_builder {
 
-    uri_builder(const uri_builder &); // = delete;
-    uri_builder &operator = (const uri_builder &); // = delete;
+    uri_builder(const uri_builder &) = delete;
+    uri_builder &operator = (const uri_builder &) = delete;
 
   public:
 

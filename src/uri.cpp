@@ -31,11 +31,11 @@ namespace network {
   }
 #endif // defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
 
-  uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {
+  uri_category_impl::~uri_category_impl() noexcept {
 
   }
 
-  const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
+  const char *uri_category_impl::name() const noexcept {
     static const char name[] = "uri_error";
     return name;
   }
@@ -242,7 +242,7 @@ namespace network {
     return *this;
   }
 
-  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
+  void uri::swap(uri &other) noexcept {
     std::swap(pimpl_, other.pimpl_);
   }
 
@@ -346,16 +346,16 @@ namespace network {
     return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
-  bool uri::empty() const NETWORK_URI_NOEXCEPT {
+  bool uri::empty() const noexcept {
     return pimpl_->uri_.empty();
   }
 
-  bool uri::absolute() const NETWORK_URI_NOEXCEPT {
+  bool uri::is_absolute() const noexcept {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::opaque() const NETWORK_URI_NOEXCEPT {
-    return (absolute() && !authority());
+  bool uri::is_opaque() const noexcept {
+    return (is_absolute() && !authority());
   }
 
   namespace {

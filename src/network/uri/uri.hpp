@@ -41,11 +41,11 @@ namespace network {
 
   public:
 
-    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
+    uri_category_impl() = default;
 
-    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
+    virtual ~uri_category_impl() noexcept;
 
-    virtual const char *name() const NETWORK_URI_NOEXCEPT;
+    virtual const char *name() const noexcept;
 
     virtual std::string message(int ev) const;
 
@@ -71,7 +71,7 @@ namespace network {
 
     }
 
-    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT {
+    virtual ~uri_syntax_error() noexcept {
 
     }
 
@@ -86,7 +86,7 @@ namespace network {
 
     }
 
-    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT {
+    virtual ~uri_builder_error() noexcept {
 
     }
 
@@ -154,7 +154,7 @@ namespace network {
 
     uri &operator = (uri other);
 
-    void swap(uri &other) NETWORK_URI_NOEXCEPT;
+    void swap(uri &other) noexcept;
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -176,9 +176,11 @@ namespace network {
     std::u16string u16string() const;
     std::u32string u32string() const;
 
-    bool empty() const NETWORK_URI_NOEXCEPT;
-    bool absolute() const NETWORK_URI_NOEXCEPT;
-    bool opaque() const NETWORK_URI_NOEXCEPT;
+    bool empty() const noexcept;
+    bool is_absolute() const noexcept;
+    bool is_opaque() const noexcept;
+    bool absolute() const noexcept { return is_absolute(); }
+    bool opaque() const noexcept { return is_opaque(); }
 
     uri normalize(uri_comparison_level level) const;
     uri relativize(const uri &other, uri_comparison_level level) const;
@@ -232,7 +234,7 @@ namespace network {
 
   template <class Source>
   inline
-  uri make_uri(const Source &source, std::error_code &ec) NETWORK_URI_NOEXCEPT {
+  uri make_uri(const Source &source, std::error_code &ec) noexcept {
     return uri(source, ec);
   }
 
