@@ -1,8 +1,8 @@
 // Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
 
 #include <gtest/gtest.h>
@@ -474,6 +474,18 @@ TEST(builder_test, relative_uri_path_value) {
   ASSERT_EQ("/", *network::uri(builder).path());
 }
 
+TEST(builder_test, build_relative_uri_with_path_query_and_fragment) {
+  network::uri_builder builder;
+  builder
+    .path("/path/")
+    .query("key", "value")
+    .fragment("fragment")
+    ;
+  ASSERT_EQ("/path/", *network::uri(builder).path());
+  ASSERT_EQ("key=value", *network::uri(builder).query());
+  ASSERT_EQ("fragment", *network::uri(builder).fragment());
+}
+
 TEST(builder_test, build_uri_with_capital_scheme) {
   network::uri_builder builder;
   builder
@@ -534,6 +546,44 @@ TEST(builder_test, build_uri_with_hash_in_path) {
   ASSERT_EQ("http://www.example.com/%23/", network::uri(builder));
 }
 
+TEST(builder_test, DISABLED_build_uri_from_filesystem_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("file")
+    .path(boost::filesystem::path("/path/to/a/file.html"))
+    ;
+  ASSERT_EQ("file:///path/to/a/file.html", network::uri(builder));
+}
+
+TEST(builder_test, build_http_uri_from_filesystem_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path(boost::filesystem::path("/path/to/a/file.html"))
+    ;
+  ASSERT_EQ("http://www.example.com/path/to/a/file.html", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_build_uri_from_filesystem_path_with_encoded_chars) {
+  network::uri_builder builder;
+  builder
+    .scheme("file")
+    .path(boost::filesystem::path("/path/to/a/file with spaces.html"))
+    ;
+  ASSERT_EQ("file:///path/to/a/file%20with%20spaces.html", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_build_uri_with_encoded_unreserved_characters) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/%7Eglynos/")
+    ;
+  ASSERT_EQ("http://www.example.com/~glynos/", network::uri(builder));
+}
+
 TEST(builder_test, simple_port) {
   network::uri_builder builder;
   builder
@@ -548,29 +598,40 @@ TEST(builder_test, simple_port) {
 // This seems to work, but I don't want to add the Boost.System
 // dependency just for this.
 
-//TEST(builder_test, build_uri_with_ipv4_address) {
-//  using namespace boost::asio::ip;
-//  network::uri_builder builder;
-//  builder
-//    .scheme("http")
-//    .host(address_v4::loopback())
-//    .path("/")
-//    ;
-//  ASSERT_EQ("http://127.0.0.1/", network::uri(builder));
-//}
+TEST(builder_test, build_uri_with_ipv4_address) {
+  using namespace boost::asio::ip;
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host(address_v4::loopback())
+    .path("/")
+    ;
+  ASSERT_EQ("http://127.0.0.1/", network::uri(builder));
+}
 
-//TEST(builder_test, build_uri_with_ipv6_address) {
-//  using namespace boost::asio::ip;
-//  network::uri_builder builder;
-//  builder
-//    .scheme("http")
-//    .host(address_v6::loopback())
-//    .path("/")
-//    ;
-//  ASSERT_EQ("http://[::1]/", network::uri(builder));
-//}
+TEST(builder_test, build_uri_with_ipv6_address) {
+  using namespace boost::asio::ip;
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host(address_v6::loopback())
+    .path("/")
+    ;
+  ASSERT_EQ("http://[::1]/", network::uri(builder));
+}
 
-TEST(builder_test, build_uri_with_multiple_query) {
+TEST(builder_test, build_uri_with_query_item) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "1")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/?a=1", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_multiple_query_items) {
   network::uri_builder builder;
   builder
     .scheme("http")
@@ -582,42 +643,14 @@ TEST(builder_test, build_uri_with_multiple_query) {
   ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
 }
 
-//BOOST_AUTO_TEST_CASE(query_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
+//TEST(builder_test, build_uri_with_multiple_query_items_with_int_values) {
+//  network::uri_builder builder;
 //  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .query("key", "value")
+//    .scheme("http")
+//    .host("www.example.com")
+//    .query("a", 1)
+//    .query("b", 2)
+//    .path("/")
 //    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/?key=value", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(query_2_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .query("key1", "value1")
-//     .query("key2", "value2")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/?key1=value1&key2=value2", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(fragment_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .fragment("fragment")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
+//  ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
 //}

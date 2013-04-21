@@ -9,6 +9,7 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse.cpp)
 if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
   add_library(cppnetlib-uri ${Uri_SRCS})
+  target_link_libraries(cppnetlib-uri ${Boost_LIBRARIES})
   install(
     TARGETS
     cppnetlib-uri

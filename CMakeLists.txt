@@ -1,4 +1,4 @@
-# Copyright (c) Glyn Matthews 2012.
+# Copyright (c) Glyn Matthews 2012, 2013.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -10,7 +10,7 @@ project(Uri)
 find_package(Threads REQUIRED)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.53 REQUIRED)
+find_package(Boost 1.53 REQUIRED system filesystem)
 
 include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 

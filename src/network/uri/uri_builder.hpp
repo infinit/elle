@@ -12,7 +12,10 @@
 #include <cstdint>
 #include <utility>
 #include <type_traits>
-//#include <boost/asio/ip/address.hpp>
+#include <boost/asio/ip/address.hpp>
+#include <boost/filesystem/path.hpp>
+//#include <map>
+//#include <unordered_map>
 
 namespace network {
 
@@ -27,14 +30,27 @@ namespace network {
 
     };
 
-    //template <class T>
-    //struct host_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::asio::ip::address_v4>::value>::type> {
-    //
-    //  uri::string_type operator () (const T &host) const {
-    //	return host.to_string();
-    //  }
-    //
-    //};
+    template <class T>
+    struct host_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::asio::ip::address_v4>::value>::type> {
+
+      uri::string_type operator () (const T &host) const {
+    	return host.to_string();
+      }
+
+    };
+
+    template <class T>
+    struct host_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::asio::ip::address_v6>::value>::type> {
+
+      uri::string_type operator () (const T &host) const {
+	uri::string_type host_str;
+	host_str.append("[");
+	host_str.append(host.to_string());
+	host_str.append("]");
+	return host_str;
+      }
+
+    };
 
     template <class T, class Enable = void>
     struct port_converter {
@@ -53,6 +69,25 @@ namespace network {
       }
 
     };
+
+    template <class T, class Enable = void>
+    struct path_converter {
+
+      uri::string_type operator () (const T &path) const {
+	return detail::translate(path);
+      }
+
+    };
+
+    template <class T>
+    struct path_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::filesystem::path>::value>::type> {
+
+      uri::string_type operator () (const T &path) const {
+	return path.string();
+      }
+
+    };
+
   } // namespace detail
 
   class NETWORK_URI_DECL uri_builder {
@@ -104,7 +139,8 @@ namespace network {
 
     template <typename Source>
     uri_builder &path(const Source &path) {
-      set_path(detail::translate(path));
+      detail::path_converter<Source> convert;
+      set_path(convert(path));
       return *this;
     }
 

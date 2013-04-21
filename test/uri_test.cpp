@@ -505,6 +505,11 @@ TEST(uri_test, http_is_hierarchical) {
   ASSERT_TRUE(!instance.is_opaque());
 }
 
+TEST(uri_test, file_is_hierarchical) {
+  network::uri instance("file:///bin/bash");
+  ASSERT_TRUE(!instance.is_opaque());
+}
+
 TEST(uri_test, mailto_is_absolute) {
   network::uri instance("mailto:john.doe@example.com");
   ASSERT_TRUE(instance.is_absolute());
@@ -536,4 +541,11 @@ TEST(uri_test, unnormalized_invalid_path_is_valid) {
 TEST(uri_test, unnormalized_invalid_path_value) {
   network::uri instance("http://www.example.com/..");
   ASSERT_EQ("/..", *instance.path());
+}
+
+TEST(uri_test, git) {
+  network::uri instance("git://github.com/cpp-netlib/cpp-netlib.git");
+  ASSERT_EQ("git", *instance.scheme());
+  ASSERT_EQ("github.com", *instance.host());
+  ASSERT_EQ("/cpp-netlib/cpp-netlib.git", *instance.path());
 }

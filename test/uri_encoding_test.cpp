@@ -18,26 +18,23 @@ TEST(uri_encoding_test, encode_user_info_iterator) {
   ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C%2F:%3B%3D%3F%40%5B%5D");
 }
 
-//TEST(uri_encoding_test, encode_user_info) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::uri::encode_user_info(unencoded),
-//	    "%21%23%24%26%27%28%29%2A%2B%2C%2F:%3B%3D%3F%40%5B%5D");
-//}
-
 TEST(uri_encoding_test, encode_host_iterator) {
   const std::string unencoded("!#$&\'()*+,/:;=?@[]");
 
   std::string instance;
   network::uri::encode_host(std::begin(unencoded), std::end(unencoded),
 			    std::back_inserter(instance));
-  ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
+  ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C%2F:%3B%3D%3F%40[]");
 }
 
-//TEST(uri_encoding_test, encode_host) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::uri::encode_host(unencoded),
-//	    "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
-//}
+TEST(uri_encoding_test, encode_ipv6_host) {
+  const std::string unencoded("[::1]");
+
+  std::string instance;
+  network::uri::encode_host(std::begin(unencoded), std::end(unencoded),
+			    std::back_inserter(instance));
+  ASSERT_EQ(instance, "[::1]");
+}
 
 TEST(uri_encoding_test, encode_port_iterator) {
   const std::string unencoded("!#$&\'()*+,/:;=?@[]");
@@ -48,12 +45,6 @@ TEST(uri_encoding_test, encode_port_iterator) {
   ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
 }
 
-//TEST(uri_encoding_test, encode_port) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::encode_port(unencoded),
-//	    "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
-//}
-
 TEST(uri_encoding_test, encode_path_iterator) {
   const std::string unencoded("!#$&\'()*+,/:;=?@[]");
 
@@ -63,26 +54,14 @@ TEST(uri_encoding_test, encode_path_iterator) {
   ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C/%3A%3B%3D%3F@%5B%5D");
 }
 
-//TEST(uri_encoding_test, encode_path) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::encode_path(unencoded),
-//	    "%21%23%24%26%27%28%29%2A%2B%2C/%3A%3B%3D%3F%40%5B%5D");
-//}
-
 TEST(uri_encoding_test, encode_query_iterator) {
   const std::string unencoded("!#$&\'()*+,/:;=?@[]");
 
   std::string instance;
   network::uri::encode_query(std::begin(unencoded), std::end(unencoded),
 			     std::back_inserter(instance));
-  ASSERT_EQ(instance, "%21%23%24&%27%28%29%2A%2B%2C%2F%3A;=%3F%40%5B%5D");
+  ASSERT_EQ(instance, "%21%23%24&%27%28%29%2A%2B%2C/%3A;=%3F@%5B%5D");
 }
-
-//TEST(uri_encoding_test, encode_query) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::encode_query(unencoded),
-//	    "%21%23%24&%27%28%29%2A%2B%2C%2F%3A;=%3F%40%5B%5D");
-//}
 
 TEST(uri_encoding_test, encode_fragment_iterator) {
   const std::string unencoded("!#$&\'()*+,/:;=?@[]");
@@ -90,14 +69,8 @@ TEST(uri_encoding_test, encode_fragment_iterator) {
   std::string instance;
   network::uri::encode_fragment(std::begin(unencoded), std::end(unencoded),
 				std::back_inserter(instance));
-  ASSERT_EQ(instance, "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
+  ASSERT_EQ(instance, "%21%23%24&%27%28%29%2A%2B%2C/%3A;=%3F@%5B%5D");
 }
-
-//TEST(uri_encoding_test, encode_fragment) {
-//  const std::string unencoded("!#$&\'()*+,/:;=?@[]");
-//  ASSERT_EQ(network::encode_fragment(unencoded),
-//	    "%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
-//}
 
 TEST(uri_encoding_test, decode_iterator) {
   const std::string encoded("%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
@@ -107,8 +80,3 @@ TEST(uri_encoding_test, decode_iterator) {
 		       std::back_inserter(instance));
   ASSERT_EQ(instance, "!#$&\'()*+,/:;=?@[]");
 }
-
-//TEST(uri_encoding_test, decode) {
-//  const std::string encoded("%21%23%24%26%27%28%29%2A%2B%2C%2F%3A%3B%3D%3F%40%5B%5D");
-//  ASSERT_EQ(network::decode(encoded), "!#$&\'()*+,/:;=?@[]");
-//}
