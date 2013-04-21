@@ -10,8 +10,8 @@
 #define NETWORK_URI_INC
 
 #include <network/uri/config.hpp>
-#include <network/uri/encode.hpp>
-#include <network/uri/decode.hpp>
+#include <network/uri/detail/encode.hpp>
+#include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <boost/optional.hpp>

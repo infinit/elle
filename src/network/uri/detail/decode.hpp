@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2011, 2012.
+// Copyright (c) Glyn Matthews 2011, 2012, 2013.
 // Copyright 2012 Dean Michael Berris <dberris@google.com>
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
@@ -28,6 +28,7 @@ namespace network {
       if ((in >= 'A') && (in <= 'F')) {
 	return in + 10 - 'A';
       }
+      // throw
       return CharT();
     }
 
