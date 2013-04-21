@@ -17,7 +17,7 @@ TEST(uri_resolve_test, DISABLED_normal_example_1) {
   network::uri_builder builder;
   builder.path("g");
   ASSERT_EQ(network::uri("http://a/b/c/g"),
-	    base_uri.resolve(builder.uri(), network::uri_comparison_level::string_comparison));
+	    base_uri.resolve(network::uri(builder), network::uri_comparison_level::string_comparison));
 }
 
 //      "./g"           =  "http://a/b/c/g"

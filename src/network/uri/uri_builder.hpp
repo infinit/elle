@@ -28,6 +28,8 @@ namespace network {
 
   class NETWORK_URI_DECL uri_builder {
 
+    friend class uri;
+
     uri_builder(const uri_builder &) = delete;
     uri_builder &operator = (const uri_builder &) = delete;
 
@@ -38,8 +40,6 @@ namespace network {
     uri_builder();
     uri_builder(const network::uri &base_uri);
     ~uri_builder();
-
-    uri_builder &base_uri(const network::uri &base_uri);
 
     template <typename Source>
     uri_builder &scheme(const Source &scheme) {
@@ -94,8 +94,6 @@ namespace network {
       return *this;
     }
 
-    network::uri uri() const;
-
   private:
 
     void set_scheme(const string_type &scheme);
@@ -106,8 +104,8 @@ namespace network {
     void set_query(const string_type &query);
     void set_fragment(const string_type &fragment);
 
-    struct impl;
-    impl *pimpl_;
+    boost::optional<network::uri> base_uri_;
+    boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
 } // namespace network

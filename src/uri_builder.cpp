@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -39,68 +39,45 @@ namespace network {
     return out;
   }
 
-  struct uri_builder::impl {
-
-    boost::optional<network::uri> base_uri_;
-    boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
-
-  };
-
-  uri_builder::uri_builder()
-    : pimpl_(new impl) {
+  uri_builder::uri_builder() {
 
   }
 
   uri_builder::uri_builder(const network::uri &base_uri)
-    : pimpl_(new impl) {
-    pimpl_->base_uri_.reset(base_uri);
+    : base_uri_(base_uri) {
+
   }
 
   uri_builder::~uri_builder() {
-    delete pimpl_;
-  }
 
-  uri_builder &uri_builder::base_uri(const network::uri &base_uri) {
-    pimpl_->base_uri_.reset(base_uri);
-    return *this;
   }
 
   void uri_builder::set_scheme(const string_type &scheme) {
     // validate scheme is valid and normalize
-    pimpl_->scheme_.reset(boost::to_lower_copy(scheme));
+    scheme_.reset(boost::to_lower_copy(scheme));
   }
 
   void uri_builder::set_user_info(const string_type &user_info) {
-    pimpl_->user_info_.reset(user_info);
+    user_info_.reset(user_info);
   }
 
   void uri_builder::set_host(const string_type &host) {
-    pimpl_->host_.reset(host);
+    host_.reset(host);
   }
 
   void uri_builder::set_port(const string_type &port) {
-    pimpl_->port_.reset(port);
+    port_.reset(port);
   }
 
   void uri_builder::set_path(const string_type &path) {
-    pimpl_->path_.reset(path);
+    path_.reset(path);
   }
 
   void uri_builder::set_query(const string_type &query) {
-    pimpl_->query_.reset(query);
+    query_.reset(query);
   }
 
   void uri_builder::set_fragment(const string_type &fragment) {
-    pimpl_->fragment_.reset(fragment);
-  }
-
-  network::uri uri_builder::uri() const {
-    return network::uri(pimpl_->scheme_,
-			pimpl_->user_info_,
-			pimpl_->host_,
-			pimpl_->port_,
-			pimpl_->path_,
-			pimpl_->query_,
-			pimpl_->fragment_);
+    fragment_.reset(fragment);
   }
 } // namespace network

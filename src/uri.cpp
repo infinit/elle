@@ -47,7 +47,7 @@ namespace network {
     default:
       break;
     }
-    return std::string("Unknown URI error.");
+    return "Unknown URI error.";
   }
 
   namespace {
@@ -121,7 +121,8 @@ namespace network {
     return other.release();
   }
 
-  uri::uri(boost::optional<string_type> scheme,
+  uri::uri(boost::optional<uri> base_uri,
+	   boost::optional<string_type> scheme,
 	   boost::optional<string_type> user_info,
 	   boost::optional<string_type> host,
 	   boost::optional<string_type> port,
@@ -129,6 +130,10 @@ namespace network {
 	   boost::optional<string_type> query,
 	   boost::optional<string_type> fragment)
     : pimpl_(new impl) {
+    if (base_uri) {
+      pimpl_->uri_.assign(std::begin(*base_uri), std::end(*base_uri));
+    }
+
     if (scheme) {
       pimpl_->uri_.append(*scheme);
     }
@@ -229,7 +234,14 @@ namespace network {
   }
 
   uri::uri(const uri_builder &builder)
-    : uri(builder.uri()) {
+    : uri(builder.base_uri_,
+	  builder.scheme_,
+	  builder.user_info_,
+	  builder.host_,
+	  builder.port_,
+	  builder.path_,
+	  builder.query_,
+	  builder.fragment_) {
 
   }
 
@@ -262,7 +274,7 @@ namespace network {
   namespace {
     inline
     boost::string_ref to_string_ref(const uri::string_type &uri,
-			     boost::iterator_range<uri::iterator> uri_part) {
+				    boost::iterator_range<uri::iterator> uri_part) {
       const char *c_str = uri.c_str();
       std::advance(c_str, std::distance(std::begin(uri), std::begin(uri_part)));
       return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
@@ -634,7 +646,8 @@ namespace network {
       fragment.reset(string_type(*other.fragment()));
     }
 
-    return network::uri(boost::optional<string_type>(),
+    return network::uri(boost::optional<network::uri>(),
+			boost::optional<string_type>(),
 			boost::optional<string_type>(),
 			boost::optional<string_type>(),
 			boost::optional<string_type>(),
