@@ -51,6 +51,11 @@ namespace network {
 
   }
 
+  uri_builder::uri_builder(const network::uri &base_uri)
+    : pimpl_(new impl) {
+    pimpl_->base_uri_.reset(base_uri);
+  }
+
   uri_builder::~uri_builder() {
     delete pimpl_;
   }

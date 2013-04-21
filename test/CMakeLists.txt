@@ -15,6 +15,7 @@ set(
   uri_relativize_test
   uri_resolve_test
   uri_builder_test
+  #uri_stream_test
   )
 if(CPP-NETLIB_BUILD_SINGLE_LIB)
   set(link_cppnetlib_lib cppnetlib)

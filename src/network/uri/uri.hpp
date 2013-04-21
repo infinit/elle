@@ -77,27 +77,14 @@ namespace network {
 
   };
 
-  class uri_builder_error : public std::system_error {
-
-  public:
-
-    uri_builder_error()
-      : std::system_error(make_error_code(uri_error::invalid_uri)) {
-
-    }
-
-    virtual ~uri_builder_error() noexcept {
-
-    }
-
-  };
-
   enum class uri_comparison_level {
     string_comparison,
     case_normalization,
     percent_encoding_normalization,
     path_segment_normalization,
   };
+
+  class uri_builder;
 
   class NETWORK_URI_DECL uri {
 
@@ -145,6 +132,8 @@ namespace network {
 	ec = make_error_code(uri_error::invalid_syntax);
       }
     }
+
+    explicit uri(const uri_builder &builder);
 
     uri(const uri &other);
 

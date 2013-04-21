@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Dean Michael Berris <dberris@google.com>
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
@@ -10,6 +10,22 @@
 #define NETWORK_URI_BUILDER_INC
 
 namespace network {
+
+  class uri_builder_error : public std::system_error {
+
+  public:
+
+    uri_builder_error()
+      : std::system_error(make_error_code(uri_error::invalid_uri)) {
+
+    }
+
+    virtual ~uri_builder_error() noexcept {
+
+    }
+
+  };
+
   class NETWORK_URI_DECL uri_builder {
 
     uri_builder(const uri_builder &) = delete;
@@ -19,8 +35,9 @@ namespace network {
 
     typedef network::uri::string_type string_type;
 
-    uri_builder(); // = default;
-    ~uri_builder(); // = default;
+    uri_builder();
+    uri_builder(const network::uri &base_uri);
+    ~uri_builder();
 
     uri_builder &base_uri(const network::uri &base_uri);
 
@@ -58,6 +75,11 @@ namespace network {
     uri_builder &path(const Source &path) {
       set_path(detail::translate(path));
       return *this;
+    }
+
+    template <typename Source>
+    uri_builder &operator / (const Source &path) {
+      return this->path(path);
     }
 
     template <typename Source>

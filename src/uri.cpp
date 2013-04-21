@@ -228,6 +228,11 @@ namespace network {
 
   }
 
+  uri::uri(const uri_builder &builder)
+    : uri(builder.uri()) {
+
+  }
+
   uri::uri(uri &&other)
     : pimpl_(other.pimpl_) {
     other.pimpl_ = new impl;

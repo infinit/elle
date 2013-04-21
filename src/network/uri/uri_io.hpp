@@ -12,10 +12,6 @@
 #include <iosfwd>
 
 namespace network {
-  std::ostream &operator << (std::ostream &os, const uri &uri_);
-
-  std::wostream &operator << (std::wostream &os, const uri &uri_);
-
   template <typename CharT, class CharTraits = std::char_traits<CharT> >
   std::basic_ostream<CharT, CharTraits> &operator << (std::basic_ostream<CharT, CharTraits> &os,
 						      const uri &uri_) {

@@ -40,6 +40,16 @@ TEST(builder_test, simple_uri) {
   ASSERT_EQ("http://www.example.com/", builder.uri().string());
 }
 
+TEST(builder_test, simple_uri_explicit_operator) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", static_cast<network::uri>(builder).string());
+}
+
 TEST(builder_test, simple_uri_has_scheme) {
   network::uri_builder builder;
   builder
@@ -463,6 +473,15 @@ TEST(builder_test, relative_uri_host_value) {
     ;
   ASSERT_EQ("www.example.com", *builder.uri().host());
 }
+
+//TEST(builder_test, uri_with_path_syntax) {
+//  network::uri_builder builder("http://www.example.com");
+//  builder
+//    .host("www.example.com")
+//    .path("/")
+//    ;
+//  ASSERT_EQ("www.example.com", *builder.uri().host());
+//}
 
 TEST(builder_test, relative_uri_has_path) {
   network::uri_builder builder;
