@@ -1,5 +1,5 @@
 // Copyright 2010 Jeroen Habraken.
-// Copyright 2009-2012 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2013 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt of copy at
@@ -390,8 +390,8 @@ TEST(uri_test, swap_test) {
   network::uri instance("http://www.example.com/");
   network::uri copy("http://www.example.org/");
   network::swap(instance, copy);
-  ASSERT_EQ("http://www.example.org/", instance.string());
-  ASSERT_EQ("http://www.example.com/", copy.string());
+  ASSERT_EQ("http://www.example.org/", instance);
+  ASSERT_EQ("http://www.example.com/", copy);
 }
 
 TEST(uri_test, authority_test) {
@@ -521,7 +521,7 @@ TEST(uri_test, whitespace_no_throw) {
 
 TEST(uri_test, whitespace_is_trimmed) {
   network::uri instance(" http://www.example.com/ ");
-  ASSERT_EQ("http://www.example.com/", instance.string());
+  ASSERT_EQ("http://www.example.com/", instance);
 }
 
 TEST(uri_test, unnormalized_invalid_path_doesnt_throw) {

@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -37,7 +37,7 @@ TEST(builder_test, simple_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("http://www.example.com/", builder.uri().string());
+  ASSERT_EQ("http://www.example.com/", builder.uri());
 }
 
 TEST(builder_test, simple_uri_explicit_operator) {
@@ -47,7 +47,7 @@ TEST(builder_test, simple_uri_explicit_operator) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("http://www.example.com/", static_cast<network::uri>(builder).string());
+  ASSERT_EQ("http://www.example.com/", static_cast<network::uri>(builder));
 }
 
 TEST(builder_test, simple_uri_has_scheme) {
@@ -165,7 +165,7 @@ TEST(builder_test, simple_opaque_uri) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("mailto:john.doe@example.com", builder.uri().string());
+  ASSERT_EQ("mailto:john.doe@example.com", builder.uri());
 }
 
 TEST(builder_test, simple_opaque_uri_has_scheme) {
@@ -201,7 +201,7 @@ TEST(builder_test, relative_hierarchical_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com/", builder.uri().string());
+  ASSERT_EQ("www.example.com/", builder.uri());
 }
 
 TEST(builder_test, relative_opaque_uri_doesnt_throw) {
@@ -217,7 +217,7 @@ TEST(builder_test, relative_opaque_uri) {
   builder
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("john.doe@example.com", builder.uri().string());
+  ASSERT_EQ("john.doe@example.com", builder.uri());
 }
 
 TEST(builder_test, full_uri_doesnt_throw) {
@@ -245,7 +245,7 @@ TEST(builder_test, full_uri) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", builder.uri().string());
+  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", builder.uri());
 }
 
 TEST(builder_test, full_uri_has_scheme) {
@@ -444,7 +444,7 @@ TEST(builder_test, relative_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com/", builder.uri().string());
+  ASSERT_EQ("www.example.com/", builder.uri());
 }
 
 TEST(builder_test, relative_uri_scheme) {

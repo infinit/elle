@@ -601,7 +601,7 @@ namespace network {
     return uri(normalized);
   }
 
-  uri uri::relativize(const uri &other, uri_comparison_level level) const {
+  uri uri::make_reference(const uri &other, uri_comparison_level level) const {
     if (opaque() || other.opaque()) {
       return other;
     }

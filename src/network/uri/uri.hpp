@@ -159,7 +159,9 @@ namespace network {
 
     string_type native() const;
     template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits> string(const Alloc &alloc = Alloc()) const;
+    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
+      return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
+    }
     std::string string() const;
     std::wstring wstring() const;
     std::u16string u16string() const;
@@ -172,7 +174,7 @@ namespace network {
     bool opaque() const noexcept { return is_opaque(); }
 
     uri normalize(uri_comparison_level level) const;
-    uri relativize(const uri &other, uri_comparison_level level) const;
+    uri make_reference(const uri &other, uri_comparison_level level) const;
     uri resolve(const uri &other, uri_comparison_level level) const;
 
     int compare(const uri &other, uri_comparison_level level) const;
@@ -235,6 +237,19 @@ namespace network {
   inline
   bool operator == (const uri &lhs, const uri &rhs) {
     return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) == 0;
+  }
+
+  inline
+  bool operator == (const uri &lhs, const char *rhs) {
+    if (std::strlen(rhs) != std::distance(std::begin(lhs), std::end(lhs))) {
+      return false;
+    }
+    return std::equal(std::begin(lhs), std::end(lhs), rhs);
+  }
+
+  inline
+  bool operator == (const char *lhs, const uri &rhs) {
+    return rhs == lhs;
   }
 
   inline
