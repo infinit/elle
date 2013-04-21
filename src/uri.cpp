@@ -431,11 +431,6 @@ namespace network {
       }
     }
 
-    template <class Source>
-    void percent_encoding_to_upper(Source &source) {
-      percent_encoding_to_upper(std::begin(source), std::end(source));
-    }
-
     template <class Iter>
     Iter decode_encoded_chars(Iter first, Iter last) {
       auto it = first, it2 = first;
@@ -455,12 +450,6 @@ namespace network {
 	++it; ++it2;
       }
       return it2;
-    }
-
-    template <class Source>
-    void decode_encoded_chars(Source &source) {
-      auto first = std::begin(source), last = std::end(source);
-      source.erase(decode_encoded_chars(first, last), last);
     }
 
     template <class Source>
@@ -519,12 +508,12 @@ namespace network {
       if ((uri_comparison_level::case_normalization == level) ||
 	  (uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	percent_encoding_to_upper(path);
+	percent_encoding_to_upper(std::begin(path), std::end(path));
       }
 
       if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	decode_encoded_chars(path);
+	path.erase(decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
       }
 
       if (uri_comparison_level::path_segment_normalization == level) {
@@ -559,13 +548,14 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      percent_encoding_to_upper(normalized);
+      percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
     }
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
-      decode_encoded_chars(normalized);
+      normalized.erase(decode_encoded_chars(std::begin(normalized), std::end(normalized)),
+		       std::end(normalized));
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {

@@ -13,32 +13,6 @@
 #include <boost/algorithm/string/classification.hpp>
 
 namespace network {
-  // alpha range %41-%5A, %61-%7A
-
-  // digit %30-%39
-
-  // hyphen %2D
-
-  // period %2E
-
-  // underscore %5F
-
-  // tilde %7E
-
-  template <typename Iter>
-  Iter replace_encoded_chars(Iter first, Iter last, Iter out) {
-    auto it = first;
-    while (it != last) {
-      if (*it == '%') {
-
-      }
-      else {
-	++it;
-      }
-    }
-    return out;
-  }
-
   uri_builder::uri_builder() {
 
   }
@@ -65,8 +39,10 @@ namespace network {
 
   void uri_builder::set_host(const string_type &host) {
     host_.reset(string_type());
-    network::uri::encode_host(std::begin(host), std::end(host),
-			      std::back_inserter(*host_));
+    auto end = network::uri::encode_host(std::begin(host), std::end(host),
+					 std::back_inserter(*host_));
+    std::transform(std::begin(*host_), std::end(*host_), std::begin(*host_),
+		   [] (string_type::value_type c) { return std::tolower(c); });
   }
 
   void uri_builder::set_port(const string_type &port) {

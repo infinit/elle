@@ -474,6 +474,26 @@ TEST(builder_test, relative_uri_path_value) {
   ASSERT_EQ("/", *network::uri(builder).path());
 }
 
+TEST(builder_test, build_uri_with_capital_scheme) {
+  network::uri_builder builder;
+  builder
+    .scheme("HTTP")
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_capital_host) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("WWW.EXAMPLE.COM")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+}
+
 TEST(builder_test, build_uri_with_unencoded_path) {
   network::uri_builder builder;
   builder
@@ -484,14 +504,35 @@ TEST(builder_test, build_uri_with_unencoded_path) {
   ASSERT_EQ("http://www.example.com/A%20path%20with%20spaces", network::uri(builder));
 }
 
-//TEST(builder_test, uri_with_path_syntax) {
-//  network::uri_builder builder;
-//  builder
-//    .scheme("http")
-//    .host("www.example.com")
-//    ;
-//  ASSERT_EQ("http://www.example.com/path", (builder / "path").uri().string());
-//}
+TEST(builder_test, DISABLED_builder_uri_and_remove_dot_segments_from_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/A/./path/")
+    ;
+  ASSERT_EQ("http://www.example.com/A/path/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_qmark_in_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/?/")
+    ;
+  ASSERT_EQ("http://www.example.com/%3F/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_hash_in_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/#/")
+    ;
+  ASSERT_EQ("http://www.example.com/%23/", network::uri(builder));
+}
 
 //TEST(builder_test, simple_port) {
 //  network::uri_builder builder;
@@ -515,18 +556,6 @@ TEST(builder_test, build_uri_with_unencoded_path) {
 //  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
 //}
 //
-//BOOST_AUTO_TEST_CASE(encoded_path_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host("www.example.com")
-//    .port(8000)
-//    .encoded_path("/Path With (Some) Encoded Characters!")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com:8000/Path%20With%20%28Some%29%20Encoded%20Characters%21", instance.string());
-//}
 //
 //BOOST_AUTO_TEST_CASE(query_test) {
 //  network::uri instance;
@@ -566,42 +595,6 @@ TEST(builder_test, build_uri_with_unencoded_path) {
 //    ;
 //  BOOST_REQUIRE(network::valid(instance));
 //  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(from_base_test) {
-//  network::uri instance("http://www.example.com");
-//  network::builder builder(instance);
-//  builder
-//    .path("/")
-//    .fragment("fragment")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(encoded_null_char_test) {
-//  // there is a potential bug in the way we process ranges if the
-//  // strings are null terminated.
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .encoded_path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(mailto_builder_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("mailto")
-//     .path("cpp-netlib@example.com")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("mailto:cpp-netlib@example.com", instance.string());
 //}
 //
 //BOOST_AUTO_TEST_CASE(ipv4_address) {

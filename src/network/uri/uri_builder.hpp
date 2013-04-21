@@ -78,11 +78,6 @@ namespace network {
     }
 
     template <typename Source>
-    uri_builder &operator / (const Source &path) {
-      return this->path(path);
-    }
-
-    template <typename Source>
     uri_builder &query(const Source &query) {
       set_query(detail::translate(query));
       return *this;
