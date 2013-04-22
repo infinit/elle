@@ -55,32 +55,32 @@ class Boost(drake.Configuration):
                 continue
             # Fill configuration
             self.__prefix = path
-            self.cfg = cfg
-            self.cfg_test = Config()
-            self.cfg_test.lib(self.__find_lib('boost_unit_test_framework', lib_path, cxx_toolkit))
-            self.cfg_thread = Config()
-            self.cfg_thread.lib(self.__find_lib('boost_thread', lib_path, cxx_toolkit))
-            self.cfg_system = Config()
-            self.cfg_system.lib(self.__find_lib('boost_system', lib_path, cxx_toolkit))
-            self.cfg_filesystem = Config()
-            self.cfg_filesystem.lib(self.__find_lib('boost_filesystem', lib_path, cxx_toolkit))
-            self.cfg_signals = Config()
-            self.cfg_signals.lib(self.__find_lib('boost_signals', lib_path, cxx_toolkit))
-            self.cfg_date = Config()
-            self.cfg_date.lib(self.__find_lib('boost_date_time', lib_path, cxx_toolkit))
-            self.cfg_regex = Config()
-            self.cfg_regex.lib(self.__find_lib('boost_regex', lib_path, cxx_toolkit))
-            self.cfg_program_options = Config()
-            self.cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
-            self.cfg_chrono = Config()
-            self.cfg_chrono.lib(self.__find_lib('boost_chrono', lib_path, cxx_toolkit))
+            self.__cfg = cfg
+            self.__cfg_test = Config()
+            self.__cfg_test.lib(self.__find_lib('boost_unit_test_framework', lib_path, cxx_toolkit))
+            self.__cfg_thread = Config()
+            self.__cfg_thread.lib(self.__find_lib('boost_thread', lib_path, cxx_toolkit))
+            self.__cfg_system = Config()
+            self.__cfg_system.lib(self.__find_lib('boost_system', lib_path, cxx_toolkit))
+            self.__cfg_filesystem = Config()
+            self.__cfg_filesystem.lib(self.__find_lib('boost_filesystem', lib_path, cxx_toolkit))
+            self.__cfg_signals = Config()
+            self.__cfg_signals.lib(self.__find_lib('boost_signals', lib_path, cxx_toolkit))
+            self.__cfg_date = Config()
+            self.__cfg_date.lib(self.__find_lib('boost_date_time', lib_path, cxx_toolkit))
+            self.__cfg_regex = Config()
+            self.__cfg_regex.lib(self.__find_lib('boost_regex', lib_path, cxx_toolkit))
+            self.__cfg_program_options = Config()
+            self.__cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
+            self.__cfg_chrono = Config()
+            self.__cfg_chrono.lib(self.__find_lib('boost_chrono', lib_path, cxx_toolkit))
 
-            self.cfg_python = Config()
+            self.__cfg_python = Config()
             # FIXME: do something smart here
             try:
-                self.cfg_python.lib(self.__find_lib('boost_python-3.2', lib_path, cxx_toolkit))
+                self.__cfg_python.lib(self.__find_lib('boost_python-3.2', lib_path, cxx_toolkit))
             except:
-                self.cfg_python.lib(self.__find_lib('boost_python3', lib_path, cxx_toolkit))
+                self.__cfg_python.lib(self.__find_lib('boost_python3', lib_path, cxx_toolkit))
             return
 
         raise Exception('no matching boost for the requested version (%s) in %s. Found versions: %s.' % \
@@ -89,52 +89,52 @@ class Boost(drake.Configuration):
     def __find_lib(self, lib, lib_path, cxx_toolkit):
         for suffix in ['-mt', '']:
             libname = lib + suffix
-            test = lib_path / cxx_toolkit.libname_dyn(self.cfg, libname)
+            test = lib_path / cxx_toolkit.libname_dyn(self.__cfg, libname)
             if test.exists():
                 return libname
         raise Exception('Unable to find boost library %s in %s' % (lib, lib_path))
 
     def config(self):
 
-        return self.cfg
+        return self.__cfg
 
     def config_test(self):
 
-        return self.cfg_test
+        return self.__cfg_test
 
     def config_thread(self):
 
-        return self.cfg_thread
+        return self.__cfg_thread
 
     def config_system(self):
 
-        return self.cfg_system
+        return self.__cfg_system
 
     def config_filesystem(self):
 
-        return self.cfg_filesystem
+        return self.__cfg_filesystem
 
     def config_signals(self):
 
-        return self.cfg_signals
+        return self.__cfg_signals
 
     def config_date(self):
 
-        return self.cfg_date
+        return self.__cfg_date
 
     def config_program_options(self):
 
-        return self.cfg_program_options
+        return self.__cfg_program_options
 
     def config_regex(self):
 
-        return self.cfg_regex
+        return self.__cfg_regex
 
     def config_chrono(self):
-        return self.cfg_chrono
+        return self.__cfg_chrono
 
     def config_python(self):
-        return self.cfg_python
+        return self.__cfg_python
 
     def __repr__(self):
         return 'Boost(prefix = %s)' % repr(self.__prefix)
