@@ -17,6 +17,19 @@ class Boost(drake.Configuration):
 
     """Configuration for the Boost C++ library collection"""
 
+
+    __libraries = {
+        'test': 'boost_unit_test_framework',
+        'thread': 'boost_thread',
+        'system': 'boost_system',
+        'filesystem': 'boost_filesystem',
+        'signals': 'boost_signals',
+        'date': 'boost_date_time',
+        'regex': 'boost_regex',
+        'program': 'boost_program_options',
+        'chrono': 'boost_chrono',
+        }
+
     def __init__(self, cxx_toolkit = None, prefix = None, version = Version()):
         """Find and create a configuration for Boost.
 
@@ -56,24 +69,11 @@ class Boost(drake.Configuration):
             # Fill configuration
             self.__prefix = path
             self.__cfg = cfg
-            self.__cfg_test = Config()
-            self.__cfg_test.lib(self.__find_lib('boost_unit_test_framework', lib_path, cxx_toolkit))
-            self.__cfg_thread = Config()
-            self.__cfg_thread.lib(self.__find_lib('boost_thread', lib_path, cxx_toolkit))
-            self.__cfg_system = Config()
-            self.__cfg_system.lib(self.__find_lib('boost_system', lib_path, cxx_toolkit))
-            self.__cfg_filesystem = Config()
-            self.__cfg_filesystem.lib(self.__find_lib('boost_filesystem', lib_path, cxx_toolkit))
-            self.__cfg_signals = Config()
-            self.__cfg_signals.lib(self.__find_lib('boost_signals', lib_path, cxx_toolkit))
-            self.__cfg_date = Config()
-            self.__cfg_date.lib(self.__find_lib('boost_date_time', lib_path, cxx_toolkit))
-            self.__cfg_regex = Config()
-            self.__cfg_regex.lib(self.__find_lib('boost_regex', lib_path, cxx_toolkit))
-            self.__cfg_program_options = Config()
-            self.__cfg_program_options.lib(self.__find_lib('boost_program_options', lib_path, cxx_toolkit))
-            self.__cfg_chrono = Config()
-            self.__cfg_chrono.lib(self.__find_lib('boost_chrono', lib_path, cxx_toolkit))
+
+            for prop, library in self.__libraries.items():
+                c = Config()
+                c.lib(self.__find_lib(library, lib_path, cxx_toolkit))
+                setattr(self, '_Boost__cfg_%s' % prop, c)
 
             self.__cfg_python = Config()
             # FIXME: do something smart here
@@ -98,43 +98,13 @@ class Boost(drake.Configuration):
 
         return self.__cfg
 
-    def config_test(self):
-
-        return self.__cfg_test
-
-    def config_thread(self):
-
-        return self.__cfg_thread
-
-    def config_system(self):
-
-        return self.__cfg_system
-
-    def config_filesystem(self):
-
-        return self.__cfg_filesystem
-
-    def config_signals(self):
-
-        return self.__cfg_signals
-
-    def config_date(self):
-
-        return self.__cfg_date
-
-    def config_program_options(self):
-
-        return self.__cfg_program_options
-
-    def config_regex(self):
-
-        return self.__cfg_regex
-
-    def config_chrono(self):
-        return self.__cfg_chrono
-
     def config_python(self):
         return self.__cfg_python
 
     def __repr__(self):
         return 'Boost(prefix = %s)' % repr(self.__prefix)
+
+for prop in Boost._Boost__libraries:
+    def unclosure(prop):
+        setattr(Boost, 'config_%s' % prop, lambda self: getattr(self, '_Boost__cfg_%s' % prop))
+    unclosure(prop)
