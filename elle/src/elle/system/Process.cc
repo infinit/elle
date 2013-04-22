@@ -207,6 +207,7 @@ namespace elle
     public:
       bool            daemon;
       ProcessChannel  channels[3];
+      FILE*           files[3];
 
     public:
       typedef std::unordered_map<std::string, std::string> EnvMap;
@@ -216,6 +217,7 @@ namespace elle
       Impl()
         : daemon{false}
         , channels()
+        , files{nullptr, nullptr, nullptr}
       {
         this->channels[(int) ProcessChannelStream::in].input_fd = STDIN_FILENO;
         this->channels[(int) ProcessChannelStream::out].output_fd = STDOUT_FILENO;
@@ -223,7 +225,16 @@ namespace elle
       }
 
       ~Impl()
-      {}
+      {
+        for (unsigned int i = 0; i < 3; ++i)
+        {
+          if (this->files[i] != nullptr)
+          {
+            ::fclose(this->files[i]);
+            this->files[i] = nullptr;
+          }
+        }
+      }
 
     public:
       // Merge config implementation.
@@ -323,6 +334,35 @@ namespace elle
       this->channel(ProcessChannelStream::out).pipe_with(
           other.channel(ProcessChannelStream::in)
       );
+      return *this;
+    }
+
+    ProcessConfig&
+    ProcessConfig::pipe_file(ProcessChannelStream const channel,
+                             std::string const& path,
+                             std::string const& mode)
+    {
+      auto& chan = this->channel(channel);
+      auto& file = _this->files[(int) channel];
+      if (file != nullptr)
+        throw elle::Exception{"Already piped"};
+      file = ::fopen(path.c_str(), mode.c_str());
+      if (file == nullptr)
+        throw elle::Exception{"Cannot open file at '" + path + "'"};
+      try
+      {
+        if (channel == ProcessChannelStream::in)
+          chan.create().read_fd = ::fileno(file);
+        else
+          chan.create().write_fd = ::fileno(file);
+        ELLE_ASSERT(this->has_pipe(channel));
+      }
+      catch (...)
+      {
+        ::fclose(file);
+        file = nullptr;
+        throw;
+      }
       return *this;
     }
 

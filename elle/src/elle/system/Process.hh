@@ -104,6 +104,12 @@ namespace elle
       ProcessConfig&
       connect_stdout(ProcessConfig& other);
 
+      /// Pipe a channel from/to a file
+      ProcessConfig&
+      pipe_file(ProcessChannelStream const channel,
+                std::string const& path,
+                std::string const& mode = "w");
+
       /// Check if a channel is enabled.
       bool
       has_pipe(ProcessChannelStream const channel);
