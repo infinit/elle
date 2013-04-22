@@ -8,6 +8,15 @@ arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
 
 with open('%s/drake' % os.environ['DIR_BUILD'], 'w') as drake:
   print('''\
+import os, sys
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '../source/drake/src')
+    )
+)
+
+
 import drake
 
 drake.run('../%s')

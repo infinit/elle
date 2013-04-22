@@ -43,7 +43,7 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
-  cxx_config += boost.cfg
+  cxx_config += boost.config()
   cxx_config += boost.config_system()
   cxx_config += elle.config
   cxx_config.lib('crypto')
@@ -135,7 +135,7 @@ def configure(cxx_toolkit = None,
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
-  tests_cxx_config += boost.cfg
+  tests_cxx_config += boost.config()
   tests_cxx_config += boost.config_test()
   tests_cxx_config += openssl
   tests_cxx_config += elle.config

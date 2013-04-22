@@ -1,3 +1,6 @@
 [submodule "reactor/asio-udt"]
 	path = reactor/asio-udt
 	url = git@development.infinit.io:asio-udt
+[submodule "drake"]
+	path = drake
+	url = git@development.infinit.io:drake
