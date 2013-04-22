@@ -91,29 +91,42 @@ namespace elle
     for (unsigned i = skip; i < frames; ++i)
     {
       StackFrame frame;
-      std::string sym(strs[i]);
-      discard(sym, '(');
-      if (extract(sym, frame.symbol_mangled, '+'))
+      std::string symbol_mangled;
+      std::string addr;
+      std::string offset;
+      {
+        std::string line(strs[i]);
+#ifdef INFINIT_MACOSX
+        std::string file;
+        std::string discard;
+        std::stringstream stream(line);
+        stream >> discard >> file >> addr >> symbol_mangled >> discard >> offset;
+#else
+        discard(line, '(');
+        if (extract(line, symbol_mangled, '+'))
+          extract(line, offset, ')');
+        discard(line, '[');
+        extract(line, addr, ']');
+#endif
+      }
+      frame.symbol_mangled = symbol_mangled;
+      if (!symbol_mangled.empty())
       {
         std::string error;
-        if (!demangle(frame.symbol_mangled, frame.symbol, error))
-          frame.symbol = frame.symbol_mangled;
-
-        std::string offset;
-        extract(sym, offset, ')');
-        {
-          std::stringstream stream(offset);
-          stream >> std::hex >> frame.offset;
-        }
+        if (!demangle(symbol_mangled, frame.symbol, error))
+          frame.symbol = symbol_mangled;
       }
-      discard(sym, '[');
-      std::string addr;
-      extract(sym, addr, ']');
-
-
+      {
+        std::stringstream stream(offset);
+        stream >> std::hex >> frame.offset;
+      }
       {
         std::stringstream stream(addr);
+#ifdef INFINIT_MACOSX
+        stream >> frame.address;
+#else
         stream >> std::hex >> frame.address;
+#endif
       }
       bt.push_back(frame);
     }
