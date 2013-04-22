@@ -343,6 +343,7 @@ def configure(cxx_toolkit = None,
     "system/process-checkoutput.cc",
     "system/process-pipe2.cc",
     "system/process-shortcuts.cc",
+    "system/process-pipe-to-file.cc",
     "utility/Suffixes.cc",
     ]
 
