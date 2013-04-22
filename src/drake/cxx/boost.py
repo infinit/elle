@@ -71,9 +71,13 @@ class Boost(drake.Configuration):
             self.__cfg = cfg
 
             for prop, library in self.__libraries.items():
+                name = self.__find_lib(library, lib_path, cxx_toolkit)
                 c = Config()
-                c.lib(self.__find_lib(library, lib_path, cxx_toolkit))
+                c.lib(name)
                 setattr(self, '_Boost__cfg_%s' % prop, c)
+                c = Config()
+                c.lib(name, True)
+                setattr(self, '_Boost__cfg_%s_static' % prop, c)
 
             self.__cfg_python = Config()
             # FIXME: do something smart here
@@ -106,5 +110,7 @@ class Boost(drake.Configuration):
 
 for prop in Boost._Boost__libraries:
     def unclosure(prop):
-        setattr(Boost, 'config_%s' % prop, lambda self: getattr(self, '_Boost__cfg_%s' % prop))
+        def m(self, static = False):
+            return getattr(self, '_Boost__cfg_%s%s' % (prop, static and '_static' or ''))
+        setattr(Boost, 'config_%s' % prop, m)
     unclosure(prop)
