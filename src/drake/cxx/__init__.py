@@ -30,7 +30,7 @@ class Config:
             self.__optimization = 1
             self._system_includes = {}
             self.__lib_paths = sched.OrderedSet()
-            self.__libs = set()
+            self.__libs = {}
             self.flags = set()
             self._framework = {}
             self._defines = {}
@@ -134,9 +134,13 @@ class Config:
         self.__rpath.append(drake.Path(path))
 
 
-    def lib(self, lib):
+    def lib(self, lib, static = False):
 
-        self.__libs.add(lib)
+        if lib in self.__libs:
+            if self.__libs[lib] != static:
+                raise Exception('library %s dynamic versus static linkage conflict')
+        else:
+            self.__libs[lib] = static
 
 
     def __add__(self, rhs):
@@ -162,7 +166,7 @@ class Config:
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
         res.__lib_paths.update(rhs.__lib_paths)
-        res.__libs |= rhs.__libs
+        res.__libs.update(rhs.__libs)
         res.flags |= rhs.flags
         std_s = self.__standard
         std_o = rhs.__standard
@@ -210,7 +214,18 @@ class Config:
 
     @property
     def libs(self):
-        return self.__libs
+        return list(self.__libs.keys())
+
+    @property
+    def libs_dynamic(self):
+        return self.__libs_filter(False)
+
+    @property
+    def libs_static(self):
+        return self.__libs_filter(True)
+
+    def __libs_filter(self, f):
+        return list(key for key, value in self.__libs.items() if value is f)
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -382,7 +397,12 @@ class GccToolkit(Toolkit):
         if self.os == drake.os.macos:
             undefined = ' -undefined dynamic_lookup'
 
-        return '%s %s%s%s%s%s%s %s -o %s %s' % \
+        libs_dyn = concatenate(cfg.libs_dynamic, '-l')
+        libs_static = ''
+        if cfg.libs_static:
+            libs_static = ' -Wl,-static%s -Wl,-Bdynamic' % concatenate(cfg.libs_static, '-l')
+
+        return '%s %s%s%s%s%s%s %s -o %s %s%s' % \
                (self.cxx,
                 concatenate(self.ldflags(cfg)),
                 concatenate(cfg.frameworks(), '-framework '),
@@ -392,7 +412,8 @@ class GccToolkit(Toolkit):
                 undefined,
                 concatenate(objs),
                 exe,
-                concatenate(cfg._Config__libs, '-l'))
+                libs_dyn,
+                libs_static)
 
     def dynlink(self, cfg, objs, exe):
 
