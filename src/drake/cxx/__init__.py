@@ -30,7 +30,7 @@ class Config:
             self.__optimization = 1
             self._system_includes = {}
             self.__lib_paths = sched.OrderedSet()
-            self.libs = set()
+            self.__libs = set()
             self.flags = set()
             self._framework = {}
             self._defines = {}
@@ -45,7 +45,7 @@ class Config:
             self.__optimization = model.__optimization
             self._system_includes = deepcopy(model._system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
-            self.libs = deepcopy(model.libs)
+            self.__libs = deepcopy(model.__libs)
             self.flags = deepcopy(model.flags)
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
@@ -136,7 +136,7 @@ class Config:
 
     def lib(self, lib):
 
-        self.libs.add(lib)
+        self.__libs.add(lib)
 
 
     def __add__(self, rhs):
@@ -162,7 +162,7 @@ class Config:
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
         res.__lib_paths.update(rhs.__lib_paths)
-        res.libs |= rhs.libs
+        res.__libs |= rhs.__libs
         res.flags |= rhs.flags
         std_s = self.__standard
         std_o = rhs.__standard
@@ -207,6 +207,10 @@ class Config:
     @export_dynamic.setter
     def export_dynamic(self, val):
         self.__export_dynamic = bool(val)
+
+    @property
+    def libs(self):
+        return self.__libs
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -388,7 +392,7 @@ class GccToolkit(Toolkit):
                 undefined,
                 concatenate(objs),
                 exe,
-                concatenate(cfg.libs, '-l'))
+                concatenate(cfg._Config__libs, '-l'))
 
     def dynlink(self, cfg, objs, exe):
 
@@ -415,7 +419,7 @@ class GccToolkit(Toolkit):
                 extra,
                 concatenate(objs),
                 exe,
-                concatenate(cfg.libs, '-l'),
+                concatenate(cfg._Config__libs, '-l'),
                )
 
 
@@ -540,7 +544,7 @@ class VisualToolkit(Toolkit):
                 ' '.join(map(str, objs)),
                 exe,
                 ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
-                ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
+                ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
 
     def dynlink(self, cfg, objs, exe):
 
@@ -548,7 +552,7 @@ class VisualToolkit(Toolkit):
                (' '.join(map(str, objs)),
                 exe,
                 ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
-                ''.join(map(lambda d: ' %s.lib' % d, cfg.libs)))
+                ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
 
     def libname_static(self, cfg, path):
 
