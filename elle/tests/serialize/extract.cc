@@ -1,29 +1,57 @@
+#define BOOST_TEST_MODULE extract
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+
+#include <elle/concept/Uniquable.hh>
 #include <elle/serialize/extract.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/serialize/construct.hh>
+#include <elle/serialize/BinaryArchive.hh>
 
-#include <cryptography/KeyPair.hh>
-// XXX[temporary: for cryptography]
-using namespace infinit;
+#include <elle/Exception.hh>
 
-int main()
+using elle::serialize::to_string;
+using elle::serialize::from_string;
+using elle::serialize::InputBase64Archive;
+using elle::serialize::OutputBase64Archive;
+
+struct A
 {
-  using elle::serialize::from_string;
-  using elle::serialize::InputBase64Archive;
-  using elle::serialize::OutputBase64Archive;
+  std::string data;
+  A(std::string const& data = ""):
+    data(data)
+  {}
+  ELLE_SERIALIZE_CONSTRUCT(A) {};
+  ELLE_SERIALIZE_FRIEND_FOR(A);
+};
 
-  // This string has been generated as follows:
-  //
-//       elle::io::Unique unique;
-//       cryptography::KeyPair kp =
-//         cryptography::KeyPair::generate(cryptography::Cryptosystem::rsa, 1024);
-//       if (kp.Save(unique) == elle::Status::Error)
-//         throw elle::Exception("unable XXX");
-//       std::cout << unique << std::endl;
 
-      std::string string("AAAAAAAAAAAAAIAAAADRQ7aOm3A+Kf9wR7M1CkRSyeDk3OjCxZomg3d1vXT2xO9Fgyi/N/M6Vg7xBEMY2Xx/4g0D/8FOfjnSbU3yMpVLmY02st+loVy1XWHOGDaBbW6cblhe7S2Dtw0P/7ddf91KHs6G9Jzq/O0twp29+RiexcoV1KkgM+wilRQjSEYfewAAAwAAAAEAAQAAAAAAAAAAgAAAANFDto6bcD4p/3BHszUKRFLJ4OTc6MLFmiaDd3W9dPbE70WDKL838zpWDvEEQxjZfH/iDQP/wU5+OdJtTfIylUuZjTay36WhXLVdYc4YNoFtbpxuWF7tLYO3DQ//t11/3Uoezob0nOr87S3Cnb35GJ7FyhXUqSAz7CKVFCNIRh97AAADAAAAAQABAACAAAAAsW33SJzUo3Cai4nPkaY93fAbhhEkLZi7pfIMBMF5fY3mzgpyLwdybEDxdDtH5Lbqj8eLf5uHPFVcE2XoE/X9jE4GyyF/d8/iwbfd+ef+RDZPVBltQKO8k49/wo3hdTzPUJBp4f+t7MThWGWoBjddmUYPpOwCCH3Ub5/vPVPWcikAAEAAAADzqXqA6/POIal/SbYCKvPmCo3PRdQzgvtWVH5N5p/uJ2aDFIDKSaoEXxmy0qxn7iRoBDL3JO+xRXQVr8jxYQ21AABAAAAA29xZbFfyfh856FUXrR04ThOe5/faWoQGj1tO73sQCL60jGyxXYhuUH0/XjLdtoCYOxPiNnN6OB0sQlqTVTk2bwAAQAAAAIr+rdQnRS/cQf1LhhkceX9Lm/OWKOOtn0Ry9I3ptme7cB3sLz+139eYjGdXCGRNE9WGN7CGEHl2Xi8U1LLlI1UAAEAAAAA03vhiJYQa8Edsp4naB3zSycUc422O9tDdCIgi7uUcNUAVxM2iQHzGvlfOv0yx5pq1GkL79Ske9WT/T+i+RdPhAABAAAAAoQXn4nF0gcuecC4jGsS9dlK1wyp5IQ3QhWjMd82zjchBbhG3UODpyDgjRcNl/ly5zcEzuKzcItkqpX7YE29k4w==");
+ELLE_SERIALIZE_SIMPLE(A, archive, value, format)
+{
+  (void)format;
+  archive & value.data;
+}
 
-  auto extractor = from_string<InputBase64Archive>(string);
-  cryptography::KeyPair pair{extractor};
+BOOST_AUTO_TEST_CASE(extract)
+{
+  // Generated this way
+  std::string uniq;
+  A a {"bite"};
 
-  std::cout << "tests done." << std::endl;
-  return 0;
+  to_string<OutputBase64Archive>(uniq) << a;
+
+  A b{from_string<InputBase64Archive>(uniq)};
+
+  BOOST_CHECK_EQUAL(a.data, b.data);
+}
+
+
+BOOST_AUTO_TEST_CASE(extract_error)
+{
+  // Generated this way
+  std::string uniq = "toto==";
+
+  A a;
+  BOOST_CHECK_THROW(a = A{from_string<InputBase64Archive>(uniq)},
+                    elle::Exception);
 }
