@@ -70,7 +70,7 @@ def configure(cxx_toolkit = None,
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += openssl
-  tests_cxx_config += boost.cfg
+  tests_cxx_config += boost.config()
   tests_cxx_config += boost.config_test()
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
