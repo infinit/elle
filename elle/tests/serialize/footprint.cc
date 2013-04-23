@@ -18,35 +18,26 @@ struct A
   short       short_;
 
   bool operator ==(A const& o) const
-    {
-      return (
-              a == o.a
-          &&  b == o.b
-          &&  c == o.c
-          &&  float_ == o.float_
-          &&  int_ == o.int_
-          &&  short_ == o.short_
-
-      );
-    }
+  {
+    return a == o.a &&
+           b == o.b &&
+           c == o.c &&
+           float_ == o.float_ &&
+           int_ == o.int_ &&
+           short_ == o.short_;
+  }
 };
 
-namespace elle { namespace serialize {
-  template<> struct Serializer<A>
-  {
-    template<typename Archive>
-    static void Serialize(Archive& ar, A& a, unsigned int)
-      {
-        ar & named("a", a.a);
-        ar & named("b", a.b);
-        ar & named("c", a.c);
-        ar & named("a float", a.float_);
-        ar & named("an int", a.int_);
-        ar & named("a short", a.short_);
-      }
-  };
-}}
-
+ELLE_SERIALIZE_SIMPLE(A, archive, value, version)
+{
+  (void)version;
+  archive & named("a", value.a);
+  archive & named("b", value.b);
+  archive & named("c", value.c);
+  archive & named("a float", value.float_);
+  archive & named("an int", value.int_);
+  archive & named("a short", value.short_);
+}
 
 BOOST_AUTO_TEST_CASE(footprint_diff)
 {
