@@ -14,6 +14,7 @@
 
 namespace elle
 {
+#if !defined(INFINIT_MACOSX)
   static bool
   extract(std::string& str, std::string& chunk, unsigned char until)
   {
@@ -34,6 +35,7 @@ namespace elle
     std::string ignored;
     return extract(str, ignored, until);
   }
+#endif
 
   bool
   demangle(const std::string& sym, std::string& res, std::string& error)
