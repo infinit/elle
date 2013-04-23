@@ -104,6 +104,9 @@
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
   ELLE_ATTRIBUTE_RWX_ACCESSORS(_type_, _name_)
 
+# define ELLE_ATTRIBUTE_P(_type_, _name_, _property_)                   \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)
+
 # define ELLE_ATTRIBUTE_RP(_type_, _name_, _property_)                  \
   ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)
