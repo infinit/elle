@@ -18,9 +18,6 @@ def configure(cxx_toolkit = None,
               elle = None,
               prefix = '/usr'):
 
-  with open(str(drake.path_src('../drake-additions/test.py')), 'r') as f:
-    exec(f.read(), globals())
-
   global config, lib_static, lib_dynamic, rule_build, rule_install
 
   # Toolkit
@@ -158,7 +155,7 @@ def configure(cxx_toolkit = None,
                                [lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
     rule_tests << bin
-    rule_check << TestRunner(bin).status
+    rule_check << drake.Runner(bin).status
 
   # Install
   rule_install = drake.Rule('install')
