@@ -1,5 +1,5 @@
-#ifndef COMET_RAND_HH
-# define COMET_RAND_HH
+#ifndef COMET_RAND_H
+# define COMET_RAND_H
 
 # include <openssl/rand.h>
 

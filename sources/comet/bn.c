@@ -1,5 +1,5 @@
-#include <comet/bn.hh>
-#include <comet/rand.hh>
+#include <comet/bn.h>
+#include <comet/rand.h>
 
 #include <openssl/rand.h>
 #include <openssl/err.h>

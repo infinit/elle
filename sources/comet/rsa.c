@@ -1,6 +1,6 @@
-#include <comet/rsa.hh>
-#include <comet/rand.hh>
-#include <comet/bn.hh>
+#include <comet/rsa.h>
+#include <comet/rand.h>
+#include <comet/bn.h>
 
 #include <openssl/rsa.h>
 #include <openssl/err.h>
@@ -24,7 +24,7 @@ RSA *dRSA_deduce_publickey(BIGNUM *N,
   int bits,bitse,ok= -1;
 
   /* PATCHED[allocate an RSA key] */
-  RSA *rsa = ::RSA_new();
+  RSA *rsa = RSA_new();
 
   bits=BN_num_bits(N);
   bitse=(bits/2)+1;
@@ -87,7 +87,7 @@ RSA *dRSA_deduce_privatekey(int bits,
   BN_CTX *ctx=NULL;
 
   /* PATCHED[allocate an RSA key] */
-  RSA *rsa = ::RSA_new();
+  RSA *rsa = RSA_new();
 
   ctx=BN_CTX_new();
   if (ctx == NULL) goto err;

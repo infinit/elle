@@ -1,5 +1,5 @@
-#ifndef COMET_BN_HH
-# define COMET_BN_HH
+#ifndef COMET_BN_H
+# define COMET_BN_H
 
 # include <openssl/bn.h>
 

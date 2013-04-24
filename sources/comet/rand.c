@@ -1,4 +1,4 @@
-#include <comet/rand.hh>
+#include <comet/rand.h>
 
 #include <openssl/evp.h>
 #include <openssl/sha.h>

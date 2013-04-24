@@ -5,7 +5,7 @@ import drake
 import drake.cxx
 import drake.cxx.boost
 
-cxx_compiler = os.getenv('CXX', 'g++')
+cxx_compiler = os.getenv('CC', 'gcc')
 
 cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
 cxx_config = drake.cxx.Config()

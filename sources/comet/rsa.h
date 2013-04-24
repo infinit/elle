@@ -1,5 +1,5 @@
-#ifndef COMET_RSA_HH
-# define COMET_RSA_HH
+#ifndef COMET_RSA_H
+# define COMET_RSA_H
 
 # include <openssl/rsa.h>
 
