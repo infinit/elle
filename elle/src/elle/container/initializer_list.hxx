@@ -5,7 +5,7 @@ namespace std
 {
   template <class T>
   std::ostream&
-  operator<<(ostream& out, initializer_list<T> const &l)
+  operator<<(ostream& out, initializer_list<T> const& l)
   {
     return out << "{" << elle::join(begin(l), end(l), ", ") << "}";
   }
