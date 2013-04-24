@@ -3,7 +3,6 @@
 import os
 import drake
 import drake.cxx
-import drake.cxx.boost
 
 cxx_compiler = os.getenv('CC', 'gcc')
 
@@ -20,12 +19,9 @@ openssl = drake.cxx.LibraryConfiguration(
   prefix = '/opt/local',
 )
 
-boost = drake.cxx.boost.Boost(prefix = '/opt/local')
-
 drake.run(
     '../..',
     cxx_toolkit,
     cxx_config,
     openssl = openssl.config(),
-    boost = boost,
 )
