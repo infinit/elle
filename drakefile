@@ -57,6 +57,7 @@ def configure(prefix = '.'):
     'base/deps-dyn',
     'cxx/dependency-directory-clash',
     'cxx/headers-deps',
+    'cxx/find_library',
     'sched/exceptions',
     'sched/thread-concurrency',
     ]

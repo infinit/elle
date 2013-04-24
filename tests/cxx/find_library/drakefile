@@ -1,0 +1,11 @@
+import drake
+import drake.cxx
+
+def configure():
+
+  cfg = drake.cxx.LibraryConfiguration(
+    'somelib/somelib.hh',
+    prefix = 'deps',
+    )
+
+  assert '../deps/include' in cfg.config().system_include_path
