@@ -107,12 +107,12 @@ class Config:
 
         return list(self._includes)
 
-
+    @property
     def local_include_path(self):
 
         return list(self.__local_includes)
 
-
+    @property
     def system_include_path(self):
 
         return list(self.__system_includes)
@@ -326,10 +326,10 @@ class GccToolkit(Toolkit):
                 res.append('-D%s' % name)
             else:
                 res.append('-D%s=%s' % (name, utils.shell_escape(v)))
-        for include in cfg.system_include_path():
+        for include in cfg.system_include_path:
             res.append('-isystem')
             res.append(utils.shell_escape(include))
-        for include in cfg.local_include_path():
+        for include in cfg.local_include_path:
             res.append('-I')
             res.append(utils.shell_escape(srctree() / include))
             res.append('-I')
@@ -546,8 +546,8 @@ class VisualToolkit(Toolkit):
                 return '/D%s=%s' % (name, utils.shell_escape(v))
 
         defines = list(map(print_define, cfg.defines().items()))
-        system_includes = list(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path()))
-        local_includes  = list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path()))
+        system_includes = list(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path))
+        local_includes  = list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path))
         return system_includes + local_includes + defines
 
     def compile(self, cfg, src, obj, c = False):
@@ -638,7 +638,7 @@ def mkdeps(res, n, lvl, config, marks,
 
     for match in matches:
         include = match.group(2)
-        search = set(config.local_include_path())
+        search = set(config.local_include_path)
         if match.group(1) == '"':
             search.add(n.name().dirname())
         found = None
@@ -722,8 +722,8 @@ class Compiler(Builder):
         flags = self.config.flags
         cppflags = self.toolkit.cppflags(self.config)
         cflags = self.toolkit.cflags(self.config)
-        include_local = list(map(str, self.config.local_include_path()))
-        include_system = list(map(str, self.config.system_include_path()))
+        include_local = list(map(str, self.config.local_include_path))
+        include_system = list(map(str, self.config.system_include_path))
         res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
             (cppflags, cflags, flags, include_local, include_system, self.pic)
         return res
