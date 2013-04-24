@@ -2449,3 +2449,6 @@ class Runner(Builder):
       status = p.returncode
       print(status, file = rv)
     return status == 0
+
+  def __str__(self):
+    return str(self.__exe)
