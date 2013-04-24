@@ -913,7 +913,11 @@ test_storage_multithread()
       }
     };
   std::vector<std::thread> threads;
+#ifdef INFINIT_MACOSX
+  for (int i = 0; i < 64; ++i)
+#else
   for (int i = 0; i < 128; ++i)
+#endif
     threads.push_back(std::thread(action));
   for (auto& thread: threads)
     thread.join();
