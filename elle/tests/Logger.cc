@@ -26,42 +26,6 @@ plain_indent_test()
 
 static
 void
-logger_indent_test()
-{
-  std::stringstream ss;
-  elle::log::TextLogger* logger = new elle::log::TextLogger(ss);
-
-  for (int i=0; i<5; i++)
-    logger->indent();
-
-  std::thread t1(std::bind(&elle::log::TextLogger::indent, logger));
-  std::thread t2(std::bind(&elle::log::TextLogger::indent, logger));
-  std::thread t3(std::bind(&elle::log::TextLogger::unindent, logger));
-  std::thread t4(std::bind(&elle::log::TextLogger::unindent, logger));
-  std::thread t5(std::bind(&elle::log::TextLogger::indent, logger));
-  std::thread t6(std::bind(&elle::log::TextLogger::unindent, logger));
-  std::thread t7(std::bind(&elle::log::TextLogger::indent, logger));
-  std::thread t8(std::bind(&elle::log::TextLogger::unindent, logger));
-  std::thread t9(std::bind(&elle::log::TextLogger::indent, logger));
-  std::thread t10(std::bind(&elle::log::TextLogger::unindent, logger));
-
-  t1.join();
-  t2.join();
-  t3.join();
-  t4.join();
-  t5.join();
-  t6.join();
-  t7.join();
-  t8.join();
-  t9.join();
-  t10.join();
-
-  BOOST_CHECK_EQUAL(logger->indentation(), 5);
-  delete logger;
-}
-
-static
-void
 message_test()
 {
   typedef elle::log::Logger::Level Level;
@@ -315,7 +279,6 @@ test_suite()
 
   boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
   boost::unit_test::framework::master_test_suite().add(logger);
-  logger->add(BOOST_TEST_CASE(std::bind(logger_indent_test)));
   logger->add(BOOST_TEST_CASE(std::bind(message_test)));
   logger->add(BOOST_TEST_CASE(std::bind(environment_format_test)));
 
