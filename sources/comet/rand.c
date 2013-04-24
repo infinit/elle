@@ -443,7 +443,7 @@ static int dRAND_status(void)
   return ret;
 }
 
-RAND_METHOD dRAND_method =
+RAND_METHOD const dRAND_method =
 {
   dRAND_seed,
   dRAND_bytes,

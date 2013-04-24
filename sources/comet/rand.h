@@ -7,7 +7,7 @@
    implementation of a PNRG.
    In practice, these functions make sure not to directly
    add entropy neither to call functions which may do. */
-extern RAND_METHOD dRAND_method;
+extern RAND_METHOD const dRAND_method;
 
 /* Initialize the deterministic PNRG by setting up a new cryptographic
    ENGINE. */
@@ -24,7 +24,9 @@ int dRAND_stop(void);
    This function is particularly useful before seeding the PNRG assuming the
    caller expects the PNRG's state to be deterministic. */
 int dRAND_reset(void);
-/* Return a string-based representation of the PNRG's state. */
+/* Return a string-based representation of the PNRG's state.
+   Note that it is the responsibility of the caller to release the resources
+   associated wit the returned string, via free(). */
 char *dRAND_fingerprint(void);
 
 #endif
