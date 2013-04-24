@@ -2423,3 +2423,29 @@ class Version:
 
 def reset():
     BaseNode.nodes = {}
+
+class Runner(Builder):
+
+  def __init__(self, exe):
+    self.__exe = exe
+    self.__out = node('%s.out' % exe.name())
+    self.__err = node('%s.err' % exe.name())
+    self.__status = node('%s.status' % exe.name())
+    Builder.__init__(self, [exe], [self.__out, self.__err, self.__status])
+
+  @property
+  def status(self):
+    return self.__status
+
+  def execute(self):
+    import subprocess
+    path = str(self.__exe.path())
+    with open(str(self.__out.path()), 'w') as out, \
+         open(str(self.__err.path()), 'w') as err, \
+         open(str(self.__status.path()), 'w') as rv:
+      self.output(path, 'Run %s' % self.__exe)
+      p = subprocess.Popen(path, stdout = out, stderr = err)
+      p.wait()
+      status = p.returncode
+      print(status, file = rv)
+    return status == 0
