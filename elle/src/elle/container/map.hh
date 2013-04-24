@@ -1,8 +1,8 @@
 #ifndef ELLE_CONTAINER_MAP_HH
-#define ELLE_CONTAINER_MAP_HH
+# define ELLE_CONTAINER_MAP_HH
 
-#include <iosfwd>
-#include <map>
+# include <iosfwd>
+# include <map>
 
 namespace std
 {
@@ -15,6 +15,6 @@ namespace std
   operator<<(ostream& out, map<K, V, OTHER...> const& m);
 }
 
-#include <elle/container/map.hxx>
+# include <elle/container/map.hxx>
 
 #endif /* end of include guard: ELLE_CONTAINER_MAP_HH */
