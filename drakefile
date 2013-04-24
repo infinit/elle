@@ -1,6 +1,5 @@
 import drake
 import drake.cxx
-import drake.cxx.boost
 
 config = None
 lib_static = None
@@ -13,7 +12,6 @@ rule_install = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl = None,
-              boost = None,
               prefix = '/usr'):
 
   with open(str(drake.path_src('drake/test.py')), 'r') as f:
@@ -25,7 +23,6 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
-  boost = boost or drake.cxx.boost.Boost()
   openssl = openssl or drake.cxx.find_library('openssl/opensslconf.h', openssl)
 
   # Global Configuration
@@ -68,8 +65,6 @@ def configure(cxx_toolkit = None,
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += openssl
-  tests_cxx_config += boost.config()
-  tests_cxx_config += boost.config_test()
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
 
@@ -78,7 +73,7 @@ def configure(cxx_toolkit = None,
   for test in tests:
     config_test = drake.cxx.Config(tests_cxx_config)
     config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
-    path = drake.Path('tests/comet/%s.cc' % test)
+    path = drake.Path('tests/comet/%s.c' % test)
     bin_path = drake.Path('tests/comet/%s' % test)
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(path) +
