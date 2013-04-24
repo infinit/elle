@@ -161,10 +161,10 @@ namespace elle
                     std::string const& component,
                     std::string const& msg)
     {
+      std::lock_guard<std::mutex> lock(_indentation_mutex);
+
       int indent = this->indentation();
       assert(indent >= 1);
-
-      std::lock_guard<std::mutex> lock(_indentation_mutex);
 
       // Component
       std::string comp;
