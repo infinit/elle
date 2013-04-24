@@ -8,7 +8,7 @@ namespace std
 {
   template <class T>
   std::ostream&
-  operator<<(ostream& out, initializer_list<T> const& m);
+  operator <<(ostream& out, initializer_list<T> const& m);
 }
 
 # include <elle/container/initializer_list.hxx>

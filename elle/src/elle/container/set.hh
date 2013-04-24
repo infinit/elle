@@ -8,7 +8,7 @@ namespace std
 {
   template <typename T, typename ...OTHER>
   std::ostream&
-  operator<<(ostream& out, set<T, OTHER...> const& v);
+  operator <<(ostream& out, set<T, OTHER...> const& v);
 }
 
 # include <elle/container/set.hxx>
