@@ -26,9 +26,9 @@ class Config:
             self.__debug = False
             self.__export_dynamic = None
             self._includes = {}
-            self._local_includes = {}
+            self.__local_includes = {}
             self.__optimization = 1
-            self._system_includes = {}
+            self.__system_includes = {}
             self.__lib_paths = sched.OrderedSet()
             self.__libs = {}
             self.flags = set()
@@ -41,9 +41,9 @@ class Config:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
             self._includes = deepcopy(model._includes)
-            self._local_includes = deepcopy(model._local_includes)
+            self.__local_includes = deepcopy(model.__local_includes)
             self.__optimization = model.__optimization
-            self._system_includes = deepcopy(model._system_includes)
+            self.__system_includes = deepcopy(model.__system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.__libs = deepcopy(model.__libs)
             self.flags = deepcopy(model.flags)
@@ -86,7 +86,7 @@ class Config:
     def add_local_include_path(self, path):
 
         path = prefix() / Path(path)
-        self._local_includes[path] = None
+        self.__local_includes[path] = None
         self._includes[path] = None
 
 
@@ -98,8 +98,9 @@ class Config:
             return
         if not path.absolute():
             path = srctree() / prefix() / path
-        self._system_includes[path] = None
+        self.__system_includes[path] = None
         self._includes[path] = None
+
 
 
     def include_path(self):
@@ -109,12 +110,12 @@ class Config:
 
     def local_include_path(self):
 
-        return list(self._local_includes)
+        return list(self.__local_includes)
 
 
     def system_include_path(self):
 
-        return list(self._system_includes)
+        return list(self.__system_includes)
 
 
     def lib_path(self, path):
@@ -161,8 +162,8 @@ class Config:
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
         res._defines.update(rhs._defines)
-        res._local_includes.update(rhs._local_includes)
-        res._system_includes.update(rhs._system_includes)
+        res.__local_includes.update(rhs.__local_includes)
+        res.__system_includes.update(rhs.__system_includes)
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
         res.__lib_paths.update(rhs.__lib_paths)
