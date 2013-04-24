@@ -131,32 +131,6 @@ def configure(cxx_toolkit = None,
     'reactor/reactor',
     ]
 
-  class TestRunner(drake.Builder):
-
-    def __init__(self, test):
-      self.__test = test
-      self.__out = drake.node('%s.out' % test.name())
-      self.__err = drake.node('%s.err' % test.name())
-      self.__status = drake.node('%s.status' % test.name())
-      drake.Builder.__init__(self, [test], [self.__out, self.__err, self.__status])
-
-    @property
-    def status(self):
-      return self.__status
-
-    def execute(self):
-      import subprocess
-      path = str(self.__test.path())
-      with open(str(self.__out.path()), 'w') as out, \
-           open(str(self.__err.path()), 'w') as err, \
-           open(str(self.__status.path()), 'w') as rv:
-        self.output(path, 'Test %s' % self.__test)
-        p = subprocess.Popen(path, stdout = out, stderr = err)
-        p.wait()
-        status = p.returncode
-        print(status, file = rv)
-      return status == 0
-
   boost = boost or drake.cxx.boost.Boost()
 
   cxx_config_tests = cxx_config + config
@@ -173,7 +147,7 @@ def configure(cxx_toolkit = None,
                                 drake.nodes('tests/%s.cc' % test) + [lib_dynamic, elle_lib],
                                 cxx_toolkit, config)
     rule_tests << test
-    runner = TestRunner(test)
+    runner = drake.Runner(test)
     rule_check << runner.status
 
   # Install
