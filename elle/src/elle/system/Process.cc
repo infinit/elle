@@ -31,10 +31,7 @@ int execvpe(char const* binary,
             char* const env[])
 {
   if (binary == nullptr or binary[0] == '\0')
-  {
-    ELLE_WARN("wrong binary path");
     return -1;
-  }
 
   // absolute or relative path
   if (binary[0] == '.' or binary[0] == '/')
@@ -43,7 +40,6 @@ int execvpe(char const* binary,
     return -1;
   }
 
-  // search IN PATH lol
   std::vector<std::string> paths;
   {
     std::string path = elle::os::getenv("PATH", "/bin:/usr/bin");
@@ -413,7 +409,9 @@ namespace elle
       , _config{std::move(config_)}
     {
       ELLE_TRACE("launching %s %s", binary, arguments);
+
       pid_t binary_pid = ::fork();
+      // XXX Do not log from the child process (see /tests/system/fork-log-fail)
 
       if (binary_pid < 0)
         throw elle::Exception{"cannot fork"};
@@ -427,7 +425,6 @@ namespace elle
             exec_args[i++] = arg.c_str();
           exec_args[i] = nullptr;
 
-
           char** envp = new char*[_config._this->env.size() + 1];
           i = 0;
           for (auto const& pair: _config._this->env)
@@ -436,7 +433,6 @@ namespace elle
               envp[i++] = strdup(s.c_str());
             }
           envp[i] = nullptr;
-
 
           static ProcessChannelStream const streams[] = {
             ProcessChannelStream::in,
@@ -461,18 +457,16 @@ namespace elle
               }
             }
           }
-
-          ELLE_DEBUG("about to execvpe %s", binary);
           if (::execvpe(binary.c_str(), (char**) exec_args, envp) != 0)
             {
               std::cerr << "couldn't execvp: " << binary << std::endl;
-              ELLE_ERR("cannot execvp %s", binary.c_str());
             }
           ::exit(EXIT_FAILURE);
         }
       else // parent process
         {
-          ELLE_DEBUG("parent process pid: %s", binary_pid);
+          ELLE_DEBUG("child process pid: %s", binary_pid);
+          ELLE_ASSERT_NEQ(binary_pid, ::getpid());
           _this->pid = binary_pid;
           _config.channel(ProcessChannelStream::in).close_read();
           _config.channel(ProcessChannelStream::out).close_write();
@@ -502,7 +496,7 @@ namespace elle
             }
           }
         }
-      auto status = this->status(); // This ensure at least on waitpid is done
+      auto status = this->status(); // This ensure at least one waitpid is done
       ELLE_DEBUG("binary %s %s has pid %d and status %d",
                  binary, arguments, binary_pid, status);
     }
