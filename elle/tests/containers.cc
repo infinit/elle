@@ -58,3 +58,24 @@ BOOST_AUTO_TEST_CASE(printable_vector)
   ELLE_LOG("vector: %s", v);
   BOOST_CHECK_EQUAL(elle::sprint(v), "[0, 1, 2]");
 }
+
+BOOST_AUTO_TEST_CASE(printable_vectorpair)
+{
+  std::vector<std::pair<std::string, int>> v{
+    {"toto", 1},
+    {"tata", 2},
+  };
+  ELLE_LOG("vector: %s", v);
+  BOOST_CHECK_EQUAL(elle::sprint(v), "[toto: 1, tata: 2]");
+}
+
+BOOST_AUTO_TEST_CASE(printable_vectorvectorpair)
+{
+  std::vector<std::vector<std::pair<std::string, int>>> v{
+    { {"toto", 1}, {"tata", 2},},
+    { {"titi", 3}, {"tutu", 4},},
+  };
+  ELLE_LOG("vector: %s", v);
+
+  BOOST_CHECK_EQUAL(elle::sprint(v), "[[toto: 1, tata: 2], [titi: 3, tutu: 4]]");
+}
