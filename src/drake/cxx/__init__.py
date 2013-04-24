@@ -1167,7 +1167,10 @@ class LibraryConfiguration(drake.Configuration):
                                                            test)[0]
         include_dir.strip_suffix(token)
         self.__config = drake.cxx.Config()
-        self.__config.add_system_include_path(self.__prefix / include_dir)
+        include_path = self.__prefix / include_dir
+        if not include_path.absolute():
+            include_path.strip_prefix(srctree())
+        self.__config.add_system_include_path(include_path)
         self.__prefix_symbolic = prefix_symbolic or self.__prefix
         self.__libraries_path = self.__prefix_symbolic / 'lib'
         self.__config.lib_path(self.__prefix / 'lib')
