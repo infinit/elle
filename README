@@ -1,0 +1,44 @@
+Presentation
+============
+
+The dOpenSSL library extends the OpenSSL cryptographic library by providing
+deterministic random generation functionalities which can be used for
+rotating and deriving cryptographic keys.
+
+Indeed, the OpenSSL random generator introduces entropy in many places,
+making it unusable in a deterministic way. Thus, some functions have been
+cloned and adapted in order to guarantee determinism whenever necessary.
+
+Dependencies
+============
+
+The library relies upon several other libraries:
+
+  o OpenSSL which provides the fundamental cryptographic operations.
+
+Internals
+=========
+
+The library is composed of a three components, all required for ensuring the
+determinism of the cryptography key generation mechanism.
+
+First, a deterministic random implementation is provided, referred to as dRAND.
+
+Although this implementation is deterministic, determinism must also be assured
+at the BIGNUM level because some of the functions introduce entroy, the ones
+related to BN_generate_prime_ex() for instance.
+
+Finally a set of functions for deducing a private/public key from a PRNG seed in
+a deterministic way is provided for every asymmetric cryptosystem, such as RSA.
+
+In other words, some of the OpenSSL library's functions have been slightly
+modified so as to remove the operations destined at adding entropy, especially the
+ones based on uninitialized variables.
+
+The reader interested in looking at these slight modifications can look around for
+"PATCHED".
+
+Maintainers
+===========
+
+opensource@infinit.io

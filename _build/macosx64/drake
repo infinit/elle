@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import os
+import drake
+import drake.cxx
+
+cxx_compiler = os.getenv('CC', 'gcc')
+
+cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
+cxx_config = drake.cxx.Config()
+cxx_config.flag('-fPIC')
+cxx_config.flag('-Wall')
+cxx_config.enable_debug_symbols(False)
+cxx_config.enable_optimization(True)
+cxx_config.add_system_include_path('.')
+
+openssl = drake.cxx.LibraryConfiguration(
+  'openssl/opensslconf.h',
+  prefix = '/opt/local',
+)
+
+drake.run(
+    '../..',
+    cxx_toolkit,
+    cxx_config,
+    openssl = openssl.config(),
+)
