@@ -2,6 +2,7 @@
 # define ELLE_ASSERT_HH
 
 # include <elle/compiler.hh>
+# include <elle/printf.hh>
 # include <elle/types.hh>
 
 # include <string>
