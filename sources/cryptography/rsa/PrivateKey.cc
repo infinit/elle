@@ -46,16 +46,16 @@ namespace infinit
         _context_encrypt(nullptr),
         _context_rotate(nullptr)
       {
-        ELLE_ASSERT(key != nullptr);
-        ELLE_ASSERT(key->pkey.rsa != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->d != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->p != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->q != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->dmp1 != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->dmq1 != nullptr);
-        ELLE_ASSERT(key->pkey.rsa->iqmp != nullptr);
+        ELLE_ASSERT_NEQ(key, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.rsa->iqmp, nullptr);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -63,16 +63,16 @@ namespace infinit
         // Prepare the cryptographic contexts.
         this->_prepare();
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PrivateKey::PrivateKey(::BIGNUM* n,
@@ -100,16 +100,16 @@ namespace infinit
         // Prepare the cryptographic contexts.
         this->_prepare();
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PrivateKey::PrivateKey(PrivateKey const& other):
@@ -125,16 +125,16 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PrivateKey::PrivateKey(PrivateKey&& other):
@@ -146,16 +146,16 @@ namespace infinit
         // Reset the pointer for the given key.
         other._key = nullptr;
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->p != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->q != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmp1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->dmq1 != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->iqmp != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
@@ -362,8 +362,8 @@ namespace infinit
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(other._key != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(other._key, nullptr);
 
         // Compare the internal numbers.
         return ((::BN_cmp(this->_key->pkey.rsa->n,
@@ -382,8 +382,8 @@ namespace infinit
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(other._key != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(other._key, nullptr);
 
         // Compare the internal numbers.
         int cmp_n = ::BN_cmp(this->_key->pkey.rsa->n,
@@ -548,8 +548,8 @@ namespace infinit
         // XXX
         ::size_t size;
 
-        ELLE_ASSERT(this->_context_rotate != nullptr);
-        ELLE_ASSERT(seed.buffer().contents() != nullptr);
+        ELLE_ASSERT_NEQ(this->_context_rotate, nullptr);
+        ELLE_ASSERT_NEQ(seed.buffer().contents(), nullptr);
 
         auto function = ::EVP_PKEY_encrypt;
 
@@ -593,11 +593,11 @@ namespace infinit
       void
       PrivateKey::print(std::ostream& stream) const
       {
-        ELLE_ASSERT(this->_key != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->n != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->e != nullptr);
-        ELLE_ASSERT(this->_key->pkey.rsa->d != nullptr);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
 
         stream << "("
                << *this->_key->pkey.rsa->n

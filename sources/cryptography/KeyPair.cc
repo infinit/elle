@@ -160,7 +160,7 @@ namespace infinit
     PublicKey const&
     KeyPair::K() const
     {
-      ELLE_ASSERT(this->_K != nullptr);
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
 
       return (*this->_K);
     }
@@ -168,7 +168,7 @@ namespace infinit
     PrivateKey const&
     KeyPair::k() const
     {
-      ELLE_ASSERT(this->_k != nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
 
       return (*this->_k);
     }
@@ -176,7 +176,7 @@ namespace infinit
     elle::Natural32
     KeyPair::size() const
     {
-      ELLE_ASSERT(this->_K != nullptr);
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
 
       return (this->_K->size());
     }
@@ -184,7 +184,7 @@ namespace infinit
     elle::Natural32
     KeyPair::length() const
     {
-      ELLE_ASSERT(this->_K != nullptr);
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
 
       return (this->_K->length());
     }
@@ -199,8 +199,8 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      ELLE_ASSERT(this->_K != nullptr);
-      ELLE_ASSERT(this->_k != nullptr);
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
 
       return ((*this->_K == *other._K) && (*this->_k == *other._k));
     }
@@ -212,8 +212,8 @@ namespace infinit
     void
     KeyPair::print(std::ostream& stream) const
     {
-      ELLE_ASSERT(this->_K != nullptr);
-      ELLE_ASSERT(this->_k != nullptr);
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
 
       stream << "(" << *this->_K << ", " << *this->_k << ")";
     }

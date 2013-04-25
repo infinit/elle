@@ -20,8 +20,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::KeyPair,
                           value,
                           format)
 {
-  ELLE_ASSERT(value._K != nullptr);
-  ELLE_ASSERT(value._k != nullptr);
+  ELLE_ASSERT_NEQ(value._K, nullptr);
+  ELLE_ASSERT_NEQ(value._k, nullptr);
 
   switch (format)
   {
@@ -69,8 +69,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::KeyPair,
       throw elle::Exception(elle::sprintf("unknown format '%s'", format));
   }
 
-  ELLE_ASSERT(value._K != nullptr);
-  ELLE_ASSERT(value._k != nullptr);
+  ELLE_ASSERT_NEQ(value._K, nullptr);
+  ELLE_ASSERT_NEQ(value._k, nullptr);
 }
 
 #endif
