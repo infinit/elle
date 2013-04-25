@@ -89,7 +89,7 @@ namespace infinit
       template <typename T>
       Code
       encrypt(T const& value) const;
-      /// Return the given seed once rotated by the private key.
+      /// Return the seed once rotated by the private key.
       Seed
       rotate(Seed const& seed) const;
       /// Return the private key's size in bytes.
@@ -227,7 +227,7 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const = 0;
-        /// Rotate the given seed with the private key and return the new seed.
+        /// Rotate the seed once rotated with the private key.
         virtual
         Seed
         rotate(Seed const& seed) const = 0;
