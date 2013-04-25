@@ -227,7 +227,7 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const = 0;
-        /// Rotate the seed once rotated with the private key.
+        /// Return the seed once rotated with the private key.
         virtual
         Seed
         rotate(Seed const& seed) const = 0;
