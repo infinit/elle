@@ -109,6 +109,9 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const;
+        virtual
+        Seed
+        derive(Seed const& seed) const;
         // printable
         virtual
         void
@@ -124,6 +127,7 @@ namespace infinit
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_verify);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
+        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_derive);
       };
     }
   }

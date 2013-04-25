@@ -89,6 +89,9 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
+      /// Return the seed once derived by the public key.
+      Seed
+      derive(Seed const& seed) const;
       /// Return the public key's size in bytes.
       elle::Natural32
       size() const;
@@ -218,6 +221,10 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const = 0;
+        /// Return the seed once derived with the public key.
+        virtual
+        Seed
+        derive(Seed const& seed) const = 0;
       };
     }
   }

@@ -30,7 +30,8 @@ namespace infinit
         _key(nullptr),
         _context_encrypt(nullptr),
         _context_verify(nullptr),
-        _context_decrypt(nullptr)
+        _context_decrypt(nullptr),
+        _context_derive(nullptr)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -40,7 +41,8 @@ namespace infinit
         _key(key),
         _context_encrypt(nullptr),
         _context_verify(nullptr),
-        _context_decrypt(nullptr)
+        _context_decrypt(nullptr),
+        _context_derive(nullptr)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa, nullptr);
@@ -64,7 +66,8 @@ namespace infinit
         _key(nullptr),
         _context_encrypt(nullptr),
         _context_verify(nullptr),
-        _context_decrypt(nullptr)
+        _context_decrypt(nullptr),
+        _context_derive(nullptr)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -117,6 +120,7 @@ namespace infinit
         this->_context_encrypt = nullptr;
         this->_context_verify = nullptr;
         this->_context_decrypt = nullptr;
+        this->_context_derive = nullptr;
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -135,6 +139,9 @@ namespace infinit
 
         if (this->_context_decrypt != nullptr)
           ::EVP_PKEY_CTX_free(this->_context_decrypt);
+
+        if (this->_context_derive != nullptr)
+          ::EVP_PKEY_CTX_free(this->_context_derive);
       }
 
       /*--------.
@@ -249,6 +256,33 @@ namespace infinit
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
                                 RSA_PKCS1_PADDING,
+                                nullptr) <= 0)
+          throw Exception(
+            elle::sprintf("unable to control the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Prepare the derive context.
+        //
+        // As for the rotation, this context does not use paddings. Not that
+        // relying on textbook RSA is considered foolish. In this case however,
+        // restricting the rotation/derivation to content of the size of the
+        // RSA key's modulus makes it secure.
+        if ((this->_context_derive =
+             ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        if (::EVP_PKEY_verify_recover_init(this->_context_derive) <= 0)
+          throw Exception(
+            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        if (::EVP_PKEY_CTX_ctrl(this->_context_derive,
+                                EVP_PKEY_RSA,
+                                -1,
+                                EVP_PKEY_CTRL_RSA_PADDING,
+                                RSA_NO_PADDING,
                                 nullptr) <= 0)
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
@@ -389,6 +423,29 @@ namespace infinit
         return (evp::asymmetric::decrypt(code,
                                          this->_context_decrypt,
                                          ::EVP_PKEY_verify_recover));
+      }
+
+      Seed
+      PublicKey::derive(Seed const& seed) const
+      {
+        ELLE_TRACE_METHOD(seed);
+
+        // As for the rotation mechanism, ensure the size of the seed
+        // equals the modulus.
+        if (seed.buffer().size() !=
+            static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key)))
+          throw Exception("unable to derive a seed whose size does not match "
+                          "the RSA key's modulus");
+
+        Seed _seed(std::move(
+                     evp::asymmetric::apply(elle::WeakBuffer{seed.buffer()},
+                                            this->_context_derive,
+                                            ::EVP_PKEY_verify_recover)));
+
+        // Make sure the derived seed has the same size as the original.
+        ELLE_ASSERT_EQ(seed.buffer().size(), _seed.buffer().size());
+
+        return (_seed);
       }
 
       /*----------.
