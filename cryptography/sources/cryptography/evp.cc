@@ -58,7 +58,7 @@ namespace infinit
                               const unsigned char*,
                               size_t))
         {
-          ELLE_DEBUG_FUNCTION(input, context, function);
+          ELLE_TRACE_FUNCTION(input, context, function);
 
           // Compute the size of the encrypted buffer.
           ::size_t size;
