@@ -14,10 +14,13 @@ namespace infinit
 {
   namespace cryptography
   {
-    /// XXX
+    /// Represent some information from which cryptographic objects can be
+    /// generated in a deterministic way.
+    ///
+    /// For instance, given the seed 'abcdefgh', one is guaranteed to always
+    /// generate the same KeyPair.
     class Seed:
       public elle::Printable
-    // XXX[no copy?]
     {
       /*---------------.
       | Static Methods |
@@ -34,6 +37,7 @@ namespace infinit
     public:
       explicit
       Seed(elle::Buffer&& buffer);
+      Seed(Seed const& seed) = delete;
       Seed(Seed&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
 
@@ -44,7 +48,7 @@ namespace infinit
       elle::Boolean
       operator ==(Seed const& other) const;
       ELLE_OPERATOR_NEQ(Seed);
-      // XXX NO ASSIGNMENT
+      ELLE_OPERATOR_NO_ASSIGNMENT(Seed);
 
       /*-----------.
       | Interfaces |
