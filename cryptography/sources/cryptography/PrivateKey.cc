@@ -60,7 +60,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD(code);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->decrypt(code));
     }
@@ -70,7 +70,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD(plain);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->sign(plain));
     }
@@ -80,7 +80,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD(plain);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->encrypt(plain));
     }
@@ -90,7 +90,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD(seed);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->rotate(seed));
     }
@@ -100,7 +100,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD("");
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->size());
     }
@@ -110,7 +110,7 @@ namespace infinit
     {
       ELLE_TRACE_METHOD("");
 
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->length());
     }
@@ -125,8 +125,8 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
-      ELLE_ASSERT(other._implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+      ELLE_ASSERT_NEQ(other._implementation, nullptr);
 
       return (*this->_implementation == *other._implementation);
     }
@@ -137,8 +137,8 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      ELLE_ASSERT(this->_implementation != nullptr);
-      ELLE_ASSERT(other._implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+      ELLE_ASSERT_NEQ(other._implementation, nullptr);
 
       return (*this->_implementation < *other._implementation);
     }
@@ -150,7 +150,7 @@ namespace infinit
     void
     PrivateKey::print(std::ostream& stream) const
     {
-      ELLE_ASSERT(this->_implementation != nullptr);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       this->_implementation->print(stream);
     }

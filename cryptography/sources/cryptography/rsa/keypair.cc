@@ -68,7 +68,7 @@ namespace infinit
         {
           static Initializer initialized;
 
-          ELLE_ASSERT(initialized.context() != nullptr);
+          ELLE_ASSERT_NEQ(initialized.context(), nullptr);
 
           return (initialized.context());
         }
@@ -105,7 +105,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
-          ELLE_ASSERT(key != nullptr);
+          ELLE_ASSERT_NEQ(key, nullptr);
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.

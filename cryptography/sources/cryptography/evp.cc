@@ -75,13 +75,13 @@ namespace infinit
 
           buffer.writer() << secret;
 
-          ELLE_ASSERT(buffer.size() > 0);
+          ELLE_ASSERT_GT(buffer.size(), 0);
 
           // Compute the size of the archived symmetric key.
           ::size_t size;
 
-          ELLE_ASSERT(context != nullptr);
-          ELLE_ASSERT(buffer.contents() != nullptr);
+          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT_NEQ(buffer.contents(), nullptr);
 
           if (function(context,
                        nullptr,
@@ -144,8 +144,8 @@ namespace infinit
           // Compute the size of the decrypted portion to come.
           ::size_t size;
 
-          ELLE_ASSERT(context != nullptr);
-          ELLE_ASSERT(key.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT_NEQ(key.buffer().contents(), nullptr);
 
           if (function(context,
                        nullptr,
@@ -202,8 +202,8 @@ namespace infinit
           // Retrieve information on the size of the output signature.
           ::size_t size;
 
-          ELLE_ASSERT(context != nullptr);
-          ELLE_ASSERT(digest.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT_NEQ(digest.buffer().contents(), nullptr);
 
           if (function(context,
                        nullptr,
@@ -252,9 +252,9 @@ namespace infinit
           // Compute the plain's digest.
           Digest digest = oneway::hash(plain, oneway_algorithm);
 
-          ELLE_ASSERT(context != nullptr);
-          ELLE_ASSERT(signature.buffer().contents() != nullptr);
-          ELLE_ASSERT(digest.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT_NEQ(signature.buffer().contents(), nullptr);
+          ELLE_ASSERT_NEQ(digest.buffer().contents(), nullptr);
 
           // Verify the signature.
           int result =
@@ -326,7 +326,7 @@ namespace infinit
           // Check that the secret key's buffer has a non-null address.
           //
           // Otherwise, EVP_BytesToKey() is non-deterministic :(
-          ELLE_ASSERT(secret.contents() != nullptr);
+          ELLE_ASSERT_NEQ(secret.contents(), nullptr);
 
           // Generate a key/IV tuple based on the salt.
           unsigned char key[EVP_MAX_KEY_LENGTH];
@@ -386,7 +386,7 @@ namespace infinit
           // Cipher the plain text.
           int size_update(0);
 
-          ELLE_ASSERT(plain.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
 
           if (::EVP_EncryptUpdate(&context,
                                   code.buffer().mutable_contents() +
@@ -429,7 +429,7 @@ namespace infinit
           ELLE_TRACE_FUNCTION(code, secret, function_cipher, function_oneway);
 
           // Check whether the code was produced with a salt.
-          ELLE_ASSERT(code.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(code.buffer().contents(), nullptr);
 
           if (::memcmp(magic,
                        code.buffer().contents(),
@@ -446,7 +446,7 @@ namespace infinit
           // Check that the secret key's buffer has a non-null address.
           //
           // Otherwise, EVP_BytesToKey() is non-deterministic :(
-          ELLE_ASSERT(secret.contents() != nullptr);
+          ELLE_ASSERT_NEQ(secret.contents(), nullptr);
 
           // Generate the key/IV tuple based on the salt.
           unsigned char key[EVP_MAX_KEY_LENGTH];
@@ -560,7 +560,7 @@ namespace infinit
               elle::sprintf("unable to initialize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT(plain.buffer().contents() != nullptr);
+          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
 
           // Update the digest with the given plain's data.
           if (::EVP_DigestUpdate(&context,

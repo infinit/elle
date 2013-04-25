@@ -105,7 +105,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::PublicKey,
   infinit::cryptography::Cryptosystem cryptosystem;
   archive >> cryptosystem;
 
-  ELLE_ASSERT(value._implementation == nullptr);
+  ELLE_ASSERT_EQ(value._implementation, nullptr);
   value._implementation.reset(
     infinit::cryptography::publickey::factory().allocate<
       infinit::cryptography::publickey::Interface>(cryptosystem));
