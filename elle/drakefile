@@ -354,6 +354,7 @@ def configure(cxx_toolkit = None,
     "system/process-pipe2.cc",
     "system/process-shortcuts.cc",
     "system/process-pipe-to-file.cc",
+    "threading/monitor.cc",
     "utility/Suffixes.cc",
     ]
 
