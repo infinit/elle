@@ -4,6 +4,8 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Code.hh>
 
+# include <elle/fwd.hh>
+
 # include <openssl/evp.h>
 
 //
@@ -22,6 +24,16 @@ namespace infinit
         /*----------.
         | Functions |
         `----------*/
+
+        /// Apply the given cryptographic function/context on the buffer.
+        elle::Buffer
+        apply(elle::WeakBuffer const& input,
+              ::EVP_PKEY_CTX* context,
+              int (*function)(EVP_PKEY_CTX*,
+                              unsigned char*,
+                              size_t*,
+                              const unsigned char*,
+                              size_t));
 
         /// Encrypt the given plain with the provided encryption context and
         /// function.

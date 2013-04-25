@@ -49,6 +49,56 @@ namespace infinit
         | Functions |
         `----------*/
 
+        elle::Buffer
+        apply(elle::WeakBuffer const& input,
+              ::EVP_PKEY_CTX* context,
+              int (*function)(EVP_PKEY_CTX*,
+                              unsigned char*,
+                              size_t*,
+                              const unsigned char*,
+                              size_t))
+        {
+          ELLE_DEBUG_FUNCTION(input, context, function);
+
+          // Compute the size of the encrypted buffer.
+          ::size_t size;
+
+          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT_NEQ(input.contents(), nullptr);
+
+          if (function(context,
+                       nullptr,
+                       &size,
+                       input.contents(),
+                       input.size()) <= 0)
+            throw Exception(elle::sprintf("unable to pre-compute the size of "
+                                          "the encrypted output: %s",
+                                          ::ERR_error_string(ERR_get_error(),
+                                                             nullptr)));
+
+          // Prepare the output buffer for receiving the encrypted content.
+          elle::Buffer output(size);
+
+          // Encrypt the input buffer.
+          if (function(context,
+                       reinterpret_cast<unsigned char*>(
+                         output.mutable_contents()),
+                       &size,
+                       reinterpret_cast<const unsigned char*>(
+                         input.contents()),
+                       input.size()) <= 0)
+            throw Exception(elle::sprintf("unable to apply the cryptographic "
+                                          "function: %s",
+                                          ::ERR_error_string(ERR_get_error(),
+                                                             nullptr)));
+
+          // Set the final output buffer size.
+          output.size(size);
+          output.shrink_to_fit();
+
+          return (output);
+        }
+
         Code
         encrypt(Plain const& plain,
                 ::EVP_PKEY_CTX* context,
@@ -77,40 +127,11 @@ namespace infinit
 
           ELLE_ASSERT_GT(buffer.size(), 0);
 
-          // Compute the size of the archived symmetric key.
-          ::size_t size;
-
-          ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(buffer.contents(), nullptr);
-
-          if (function(context,
-                       nullptr,
-                       &size,
-                       buffer.contents(),
-                       buffer.size()) <= 0)
-            throw Exception(elle::sprintf("unable to pre-compute the size of "
-                                          "the encrypted output: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
-
-          // Prepare the key code for receiving the encrypted secret.
-          Code key(size);
-
           // Encrypt the secret key's archive.
-          if (function(context,
-                       reinterpret_cast<unsigned char*>(
-                         key.buffer().mutable_contents()),
-                       &size,
-                       reinterpret_cast<const unsigned char*>(
-                         buffer.contents()),
-                       buffer.size()) <= 0)
-            throw Exception(elle::sprintf("unable to apply the encryption "
-                                          "process: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
-
-          // Set the final key size.
-          key.buffer().size(size);
+          Code key(
+            std::move(apply(elle::WeakBuffer{buffer},
+                            context,
+                            function)));
 
           // 4) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
@@ -141,40 +162,10 @@ namespace infinit
 
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
-          // Compute the size of the decrypted portion to come.
-          ::size_t size;
-
-          ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(key.buffer().contents(), nullptr);
-
-          if (function(context,
-                       nullptr,
-                       &size,
-                       reinterpret_cast<const unsigned char*>(
-                         key.buffer().contents()),
-                       key.buffer().size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to pre-compute the size of the decrypted "
-                            "output: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Prepare the buffer for receiving the decrypted key's archive.
-          elle::Buffer buffer(size);
-
-          // Perform the decrypt operation.
-          if (function(context,
-                       reinterpret_cast<unsigned char*>(
-                         buffer.mutable_contents()),
-                       &size,
-                       reinterpret_cast<const unsigned char*>(
-                         key.buffer().contents()),
-                       key.buffer().size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to apply the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Set the final buffer size.
-          buffer.size(size);
+          // Decrypt the key.
+          elle::Buffer buffer = apply(elle::WeakBuffer{key.buffer()},
+                                      context,
+                                      function);
 
           // Finally extract the secret key since decrypted.
           SecretKey secret(buffer.reader());
@@ -196,43 +187,14 @@ namespace infinit
         {
           ELLE_TRACE_FUNCTION(plain, context, function);
 
-          // Compute the plain's digest.
+          // 1) Compute the plain's digest.
           Digest digest = oneway::hash(plain, oneway_algorithm);
 
-          // Retrieve information on the size of the output signature.
-          ::size_t size;
-
-          ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(digest.buffer().contents(), nullptr);
-
-          if (function(context,
-                       nullptr,
-                       &size,
-                       reinterpret_cast<const unsigned char*>(
-                         digest.buffer().contents()),
-                       digest.buffer().size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to pre-compute the size of "
-                            "the signature output: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Prepare the signature.
-          Signature signature(size);
-
-          // Perform the signing process.
-          if (function(context,
-                       reinterpret_cast<unsigned char*>(
-                         signature.buffer().mutable_contents()),
-                       &size,
-                       reinterpret_cast<const unsigned char*>(
-                         digest.buffer().contents()),
-                       digest.buffer().size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to apply the signature process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Set the final signature size.
-          signature.buffer().size(size);
+          // 2) Sign the digest.
+          Signature signature(
+            std::move(apply(elle::WeakBuffer{digest.buffer()},
+                            context,
+                            function)));
 
           return (signature);
         }
