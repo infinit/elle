@@ -1,6 +1,8 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RANDOM_HXX
 # define INFINIT_CRYPTOGRAPHY_RANDOM_HXX
 
+# include <cstdlib>
+
 # include <cryptography/cryptography.hh>
 # include <cryptography/Exception.hh>
 
@@ -55,6 +57,22 @@ namespace infinit
       `----------*/
 
       template <typename T>
+      typename std::enable_if<std::is_signed<T>::value, T>::type
+      _abs(T const val)
+      {
+        using std::abs;
+        using ::abs;
+        return abs(val);
+      }
+
+      template <typename T>
+      typename std::enable_if<std::is_unsigned<T>::value, T>::type
+      _abs(T const val)
+      {
+        return val;
+      }
+
+      template <typename T>
       T
       _rangify(T const value,
                T const minimum,
@@ -67,7 +85,7 @@ namespace infinit
 
         T ranged =
           static_cast<T>(
-            static_cast<elle::Real>(std::abs(value)) /
+            static_cast<elle::Real>(_abs(value)) /
             (static_cast<elle::Real>(std::numeric_limits<T>::max()) -
              static_cast<elle::Real>(std::numeric_limits<T>::min())) *
             (static_cast<elle::Real>(maximum) -
