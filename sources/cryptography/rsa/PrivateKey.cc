@@ -9,8 +9,6 @@
 
 #include <elle/log.hh>
 
-// XXX #include <comet/Comet.hh>
-
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
@@ -330,13 +328,18 @@ namespace infinit
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the rotate context.
+        //
+        // Note that in this case, using no RSA padding is not dangerous because
+        // (1) the content being rotated is always random i.e cannot be guessed
+        // because produced by a human being (2) the content is always the size
+        // of the RSA key's modulus.
         if ((this->_context_rotate =
              ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate a EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_encrypt_init(this->_context_rotate) <= 0)
+        if (::EVP_PKEY_sign_init(this->_context_rotate) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -545,45 +548,30 @@ namespace infinit
       Seed
       PrivateKey::rotate(Seed const& seed) const
       {
-        // XXX
-        ::size_t size;
+        ELLE_TRACE_METHOD(seed);
 
-        ELLE_ASSERT_NEQ(this->_context_rotate, nullptr);
-        ELLE_ASSERT_NEQ(seed.buffer().contents(), nullptr);
+        // Ensure the size of the seed equals the modulus.
+        //
+        // If the seed is too large, the algorithm would need to encrypt
+        // it with a symmetric keg etc. (as the encrypt() method does) which
+        // would result in a seed larger than the original.
+        //
+        // If it is too small, an attack could be performed against textbook
+        // RSA which is the algorithm used in this case.
+        if (seed.buffer().size() !=
+            static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key)))
+          throw Exception("unable to rotate a seed whose size does not match "
+                          "the RSA key's modulus");
 
-        auto function = ::EVP_PKEY_encrypt;
+        Seed _seed(std::move(
+                     evp::asymmetric::apply(elle::WeakBuffer{seed.buffer()},
+                                            this->_context_rotate,
+                                            ::EVP_PKEY_sign)));
 
-        if (function(this->_context_rotate,
-                     nullptr,
-                     &size,
-                     seed.buffer().contents(),
-                     seed.buffer().size()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to pre-compute the size of the encrypted "
-                          "output: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        // Make sure the seed does not grow over time.
+        ELLE_ASSERT_EQ(seed.buffer().size(), _seed.buffer().size());
 
-        elle::printf("SIZE: %s\n", size);
-
-        // XXX
-        elle::Buffer buffer(size);
-
-        // XXX
-        if (function(this->_context_rotate,
-                     reinterpret_cast<unsigned char*>(
-                       buffer.mutable_contents()),
-                     &size,
-                     reinterpret_cast<const unsigned char*>(
-                       seed.buffer().contents()),
-                     seed.buffer().size()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to apply the encryption process: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        // Set the final key size.
-        buffer.size(size);
-
-        return (Seed(std::move(buffer)));
+        return (_seed);
       }
 
       /*----------.
