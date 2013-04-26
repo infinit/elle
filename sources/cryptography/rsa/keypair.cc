@@ -2,7 +2,10 @@
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/Seed.hh>
+#include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
+#include <cryptography/deleter.hh>
+#include <cryptography/types.hh>
 
 #include <elle/attribute.hh>
 #include <elle/assert.hh>
@@ -34,33 +37,28 @@ namespace infinit
         class Initializer
         {
         public:
-          Initializer():
-            _context(nullptr)
+          Initializer()
           {
             // Create the context for the RSA algorithm.
-            if ((this->_context =
-                 ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr)) == nullptr)
+            this->_context.reset(
+              ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr));
+
+            if (this->_context == nullptr)
               throw Exception(
                 elle::sprintf("unable to allocate a keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             // Initialise the context for key generation.
-            if (::EVP_PKEY_keygen_init(this->_context) <= 0)
+            if (::EVP_PKEY_keygen_init(this->_context.get()) <= 0)
               throw Exception(
                 elle::sprintf("unable to initialize the keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
 
-          ~Initializer()
-          {
-            // Release the generation context.
-            ::EVP_PKEY_CTX_free(this->_context);
-          }
-
         private:
-          ELLE_ATTRIBUTE_R(::EVP_PKEY_CTX*, context);
+          ELLE_ATTRIBUTE_R(types::EVP_PKEY_CTX, context);
         };
 
         /*-----------------.
@@ -76,7 +74,7 @@ namespace infinit
 
           ELLE_ASSERT_NEQ(initialized.context(), nullptr);
 
-          return (initialized.context());
+          return (initialized.context().get());
         }
 
         /*----------.

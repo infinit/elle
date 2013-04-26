@@ -2,7 +2,6 @@
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
-#include <cryptography/cryptography.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 
 #include <elle/log.hh>
@@ -20,24 +19,17 @@ namespace infinit
 
     PrivateKey::PrivateKey()
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     PrivateKey::PrivateKey(std::unique_ptr<privatekey::Interface>&&
                              implementation):
       _implementation(std::move(implementation))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
     PrivateKey::PrivateKey(Seed const& seed)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-
       switch (seed.cryptosystem())
       {
         case Cryptosystem::rsa:
@@ -58,21 +50,15 @@ namespace infinit
     PrivateKey::PrivateKey(PrivateKey const& other):
       _implementation(other._implementation->clone())
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     PrivateKey::PrivateKey(PrivateKey&& other):
       _implementation(std::move(other._implementation))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     /*--------.

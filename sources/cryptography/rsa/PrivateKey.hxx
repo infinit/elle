@@ -80,6 +80,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
           >> *dmq1
           >> *iqmp;
 
+  value._construct(n, e, d, p, q, dmp1, dmq1, iqmp);
+
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(d);
@@ -89,7 +91,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
 
-  value._construct(n, e, d, p, q, dmp1, dmq1, iqmp);
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);

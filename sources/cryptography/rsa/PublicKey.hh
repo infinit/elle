@@ -2,6 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 
 # include <cryptography/fwd.hh>
+# include <cryptography/types.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/PublicKey.hh>
@@ -55,7 +56,6 @@ namespace infinit
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
-        ~PublicKey();
 
         /*--------.
         | Methods |
@@ -138,11 +138,11 @@ namespace infinit
         | Attributes |
         `-----------*/
       private:
-        ELLE_ATTRIBUTE_R(::EVP_PKEY*, key);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_verify);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_derive);
+        ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
       };
     }
   }

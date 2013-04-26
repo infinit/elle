@@ -8,6 +8,8 @@
 
 # include <openssl/evp.h>
 
+# include <memory>
+
 //
 // ---------- Asymmetric ------------------------------------------------------
 //

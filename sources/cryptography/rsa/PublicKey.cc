@@ -35,23 +35,14 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PublicKey::PublicKey():
-        _key(nullptr),
-        _context_encrypt(nullptr),
-        _context_verify(nullptr),
-        _context_decrypt(nullptr),
-        _context_derive(nullptr)
+      PublicKey::PublicKey()
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
       }
 
       PublicKey::PublicKey(::EVP_PKEY* key):
-        _key(key),
-        _context_encrypt(nullptr),
-        _context_verify(nullptr),
-        _context_decrypt(nullptr),
-        _context_derive(nullptr)
+        _key(key)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -81,12 +72,7 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      PublicKey::PublicKey(::RSA* rsa):
-        _key(nullptr),
-        _context_encrypt(nullptr),
-        _context_verify(nullptr),
-        _context_decrypt(nullptr),
-        _context_derive(nullptr)
+      PublicKey::PublicKey(::RSA* rsa)
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -120,12 +106,7 @@ namespace infinit
       }
 
       PublicKey::PublicKey(::BIGNUM* n,
-                           ::BIGNUM* e):
-        _key(nullptr),
-        _context_encrypt(nullptr),
-        _context_verify(nullptr),
-        _context_decrypt(nullptr),
-        _context_derive(nullptr)
+                           ::BIGNUM* e)
       {
         ELLE_ASSERT_NEQ(n, nullptr);
         ELLE_ASSERT_NEQ(e, nullptr);
@@ -159,68 +140,29 @@ namespace infinit
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PublicKey::PublicKey(PublicKey&& other):
-        PublicKey(other._key)
+        _key(std::move(other._key)),
+        _context_encrypt(std::move(other._context_encrypt)),
+        _context_verify(std::move(other._context_verify)),
+        _context_decrypt(std::move(other._context_decrypt)),
+        _context_derive(std::move(other._context_derive))
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Reset the pointer for the given key.
-        other._key = nullptr;
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
+        ELLE_ASSERT_EQ(other._key, nullptr);
+        ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
+        ELLE_ASSERT_EQ(other._context_verify, nullptr);
+        ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
+        ELLE_ASSERT_EQ(other._context_derive, nullptr);
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
       {
-        this->_key = nullptr;
-        this->_context_encrypt = nullptr;
-        this->_context_verify = nullptr;
-        this->_context_decrypt = nullptr;
-        this->_context_derive = nullptr;
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
-      }
-
-      PublicKey::~PublicKey()
-      {
-        if (this->_key != nullptr)
-          ::EVP_PKEY_free(this->_key);
-
-        if (this->_context_encrypt != nullptr)
-          ::EVP_PKEY_CTX_free(this->_context_encrypt);
-
-        if (this->_context_verify != nullptr)
-          ::EVP_PKEY_CTX_free(this->_context_verify);
-
-        if (this->_context_decrypt != nullptr)
-          ::EVP_PKEY_CTX_free(this->_context_decrypt);
-
-        if (this->_context_derive != nullptr)
-          ::EVP_PKEY_CTX_free(this->_context_derive);
       }
 
       /*--------.
@@ -235,13 +177,16 @@ namespace infinit
         ELLE_ASSERT_NEQ(rsa, nullptr);
 
         // Initialise the public key structure.
-        if ((this->_key = ::EVP_PKEY_new()) == nullptr)
+        ELLE_ASSERT_EQ(this->_key, nullptr);
+        this->_key.reset(::EVP_PKEY_new());
+
+        if (this->_key == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Set the rsa structure into the public key.
-        if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
+        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa) <= 0)
           throw Exception(
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
@@ -285,19 +230,24 @@ namespace infinit
       {
         ELLE_DEBUG_FUNCTION("");
 
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+
         // Prepare the encrypt context.
-        if ((this->_context_encrypt =
-             ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
+        ELLE_ASSERT_EQ(this->_context_encrypt, nullptr);
+        this->_context_encrypt.reset(
+          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
+
+        if (this->_context_encrypt == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate a EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_encrypt_init(this->_context_encrypt) <= 0)
+        if (::EVP_PKEY_encrypt_init(this->_context_encrypt.get()) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt,
+        if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt.get(),
                                 EVP_PKEY_RSA,
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
@@ -308,18 +258,21 @@ namespace infinit
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the verify context.
-        if ((this->_context_verify =
-             ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
+        ELLE_ASSERT_EQ(this->_context_verify, nullptr);
+        this->_context_verify.reset(
+          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
+
+        if (this->_context_verify == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate a EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_verify_init(this->_context_verify) <= 0)
+        if (::EVP_PKEY_verify_init(this->_context_verify.get()) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_verify,
+        if (::EVP_PKEY_CTX_ctrl(this->_context_verify.get(),
                                 EVP_PKEY_RSA,
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
@@ -330,18 +283,21 @@ namespace infinit
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Prepare the decrypt context.
-        if ((this->_context_decrypt =
-             ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
+        ELLE_ASSERT_EQ(this->_context_decrypt, nullptr);
+        this->_context_decrypt.reset(
+          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
+
+        if (this->_context_decrypt == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate a EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_verify_recover_init(this->_context_decrypt) <= 0)
+        if (::EVP_PKEY_verify_recover_init(this->_context_decrypt.get()) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt,
+        if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt.get(),
                                 EVP_PKEY_RSA,
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
@@ -357,18 +313,21 @@ namespace infinit
         // relying on textbook RSA is considered foolish. In this case however,
         // restricting the rotation/derivation to content of the size of the
         // RSA key's modulus makes it secure.
-        if ((this->_context_derive =
-             ::EVP_PKEY_CTX_new(this->_key, nullptr)) == nullptr)
+        ELLE_ASSERT_EQ(this->_context_derive, nullptr);
+        this->_context_derive.reset(
+          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
+
+        if (this->_context_derive == nullptr)
           throw Exception(
             elle::sprintf("unable to allocate a EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_verify_recover_init(this->_context_derive) <= 0)
+        if (::EVP_PKEY_verify_recover_init(this->_context_derive.get()) <= 0)
           throw Exception(
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_derive,
+        if (::EVP_PKEY_CTX_ctrl(this->_context_derive.get(),
                                 EVP_PKEY_RSA,
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
@@ -470,13 +429,15 @@ namespace infinit
       elle::Natural32
       PublicKey::size() const
       {
-        return (static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key)));
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_size(this->_key.get())));
       }
 
       elle::Natural32
       PublicKey::length() const
       {
-        return (static_cast<elle::Natural32>(::EVP_PKEY_bits(this->_key)));
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_bits(this->_key.get())));
       }
 
       Cryptosystem
@@ -491,7 +452,7 @@ namespace infinit
         ELLE_TRACE_METHOD(plain);
 
         return (evp::asymmetric::encrypt(plain,
-                                         this->_context_encrypt,
+                                         this->_context_encrypt.get(),
                                          ::EVP_PKEY_encrypt));
       }
 
@@ -503,7 +464,7 @@ namespace infinit
 
         return (evp::asymmetric::verify(signature,
                                         plain,
-                                        this->_context_verify,
+                                        this->_context_verify.get(),
                                         ::EVP_PKEY_verify));
       }
 
@@ -513,7 +474,7 @@ namespace infinit
         ELLE_TRACE_METHOD(code);
 
         return (evp::asymmetric::decrypt(code,
-                                         this->_context_decrypt,
+                                         this->_context_decrypt.get(),
                                          ::EVP_PKEY_verify_recover));
       }
 
@@ -533,13 +494,13 @@ namespace infinit
         // As for the rotation mechanism, ensure the size of the seed
         // equals the modulus.
         if (_seed.buffer().size() !=
-            static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key)))
+            static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key.get())))
           throw Exception("unable to derive a seed whose size does not match "
                           "the RSA key's modulus");
 
         elle::Buffer buffer =
           evp::asymmetric::apply(elle::WeakBuffer{_seed.buffer()},
-                                 this->_context_derive,
+                                 this->_context_derive.get(),
                                  ::EVP_PKEY_verify_recover);
 
         // Make sure the derived seed has the same size as the original.

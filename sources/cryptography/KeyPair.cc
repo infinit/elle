@@ -3,7 +3,6 @@
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Seed.hh>
-#include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/rsa/keypair.hh>
@@ -58,8 +57,6 @@ namespace infinit
 
     KeyPair::KeyPair()
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     KeyPair::KeyPair(PublicKey const& K,
@@ -67,8 +64,6 @@ namespace infinit
       _K(new PublicKey(K)),
       _k(new PrivateKey(k))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     KeyPair::KeyPair(PublicKey&& K,
@@ -76,16 +71,11 @@ namespace infinit
       _K(new PublicKey(std::move(K))),
       _k(new PrivateKey(std::move(k)))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
     KeyPair::KeyPair(Seed const& seed)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-
       switch (seed.cryptosystem())
       {
         case Cryptosystem::rsa:
@@ -116,22 +106,16 @@ namespace infinit
       _K(new PublicKey(*other._K)),
       _k(new PrivateKey(*other._k))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     KeyPair::KeyPair(KeyPair&& other):
       _K(std::move(other._K)),
       _k(std::move(other._k))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     /*--------.

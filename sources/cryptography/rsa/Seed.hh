@@ -4,6 +4,7 @@
 #  define INFINIT_CRYPTOGRAPHY_RSA_SEED_HH
 
 #  include <cryptography/fwd.hh>
+#  include <cryptography/types.hh>
 #  include <cryptography/Seed.hh>
 
 #  include <elle/types.hh>
@@ -26,7 +27,7 @@ namespace infinit
     {
       /// Represent an RSA seed which can be used to deterministically generate
       /// RSA key pairs, private or public keys given a buffer of random data
-      /// and the modulus of the key to generate.
+      /// and the modulus N of the key to generate.
       class Seed:
         public cryptography::seed::Interface,
         public elle::serialize::SerializableMixin<Seed>
@@ -52,7 +53,6 @@ namespace infinit
         Seed(Seed const& seed);
         Seed(Seed&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
-        ~Seed();
 
         /*----------.
         | Operators |
@@ -89,7 +89,7 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(elle::Buffer, buffer);
-        ELLE_ATTRIBUTE_R(BIGNUM*, n);
+        ELLE_ATTRIBUTE_R(types::BIGNUM, n);
       };
     }
   }

@@ -58,18 +58,16 @@ namespace infinit
 
       template <typename T>
       typename std::enable_if<std::is_signed<T>::value, T>::type
-      _abs(T const val)
+      _abs(T const value)
       {
-        using std::abs;
-        using ::abs;
-        return abs(val);
+        return std::abs(value);
       }
 
       template <typename T>
       typename std::enable_if<std::is_unsigned<T>::value, T>::type
-      _abs(T const val)
+      _abs(T const value)
       {
-        return val;
+        return value;
       }
 
       template <typename T>
