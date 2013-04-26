@@ -14,6 +14,8 @@ rule_tests = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl = None,
+              enable_rotation = False,
+              dopenssl = None,
               boost = None,
               elle = None,
               prefix = '/usr'):
@@ -24,10 +26,13 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
+  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
+  if enable_rotation:
+    cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
+    dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
   boost = boost or drake.cxx.boost.Boost()
   elle = elle or drake.include('../elle')
   # XXX elle = drake.cxx.find_library('elle/elle.hh', elle)
-  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
 
   # Global Configuration
   config = drake.cxx.Config()
@@ -35,6 +40,8 @@ def configure(cxx_toolkit = None,
   config.add_local_include_path('sources')
   config.lib_path('lib')
   config += openssl
+  if enable_rotation:
+    config += dopenssl
 
   # Local Configuration
   cxx_config = cxx_config or drake.cxx.Config()
@@ -45,6 +52,8 @@ def configure(cxx_toolkit = None,
   cxx_config += elle.config
   cxx_config.lib('crypto')
   cxx_config.lib('ssl')
+  if enable_rotation:
+    cxx_config.lib('dopenssl')
   cxx_config.lib_path_runtime('.')
 
   # Sources
@@ -74,9 +83,6 @@ def configure(cxx_toolkit = None,
     'sources/cryptography/SecretKey.cc',
     'sources/cryptography/SecretKey.hh',
     'sources/cryptography/SecretKey.hxx',
-    'sources/cryptography/Seed.cc',
-    'sources/cryptography/Seed.hh',
-    'sources/cryptography/Seed.hxx',
     'sources/cryptography/Signature.hh',
     'sources/cryptography/all.hh',
     'sources/cryptography/bn.cc',
@@ -108,6 +114,16 @@ def configure(cxx_toolkit = None,
     'sources/cryptography/rsa/keypair.hh',
     )
 
+  if enable_rotation:
+    sources += drake.nodes(
+      'sources/cryptography/Seed.cc',
+      'sources/cryptography/Seed.hh',
+      'sources/cryptography/Seed.hxx',
+      'sources/cryptography/rsa/Seed.cc',
+      'sources/cryptography/rsa/Seed.hh',
+      'sources/cryptography/rsa/Seed.hxx',
+      )
+
   lib_static = drake.cxx.StaticLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
@@ -127,17 +143,22 @@ def configure(cxx_toolkit = None,
     "bn.cc",
     "oneway.cc",
     "random.cc",
-    "Seed.cc",
      ]
+  if enable_rotation:
+    tests += [ "Seed.cc" ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += boost.config()
   tests_cxx_config += boost.config_test()
   tests_cxx_config += openssl
+  if enable_rotation:
+    tests_cxx_config += dopenssl
   tests_cxx_config += elle.config
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
+  if enable_rotation:
+    tests_cxx_config.lib('dopenssl')
 
   global rule_check, rule_tests
   rule_check = drake.Rule('check')
