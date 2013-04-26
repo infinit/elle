@@ -37,8 +37,8 @@ test_operate_x(T minimum,
 
   T value = infinit::cryptography::random::generate<T>(minimum, maximum);
 
-  BOOST_CHECK_GTE(value, minimum);
-  BOOST_CHECK_LTE(value, maximum);
+  BOOST_CHECK_GE(value, minimum);
+  BOOST_CHECK_LE(value, maximum);
 }
 
 static
