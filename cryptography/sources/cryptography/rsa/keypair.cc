@@ -121,7 +121,7 @@ namespace infinit
           // constructed by transferring the ownership of the EVP_PKEY.
           PublicKey K(::BN_dup(key->pkey.rsa->n),
                       ::BN_dup(key->pkey.rsa->e));
-          PrivateKey k(key->pkey.rsa);
+          PrivateKey k(key);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
