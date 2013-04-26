@@ -26,4 +26,10 @@ cxx_config.add_system_include_path('.')
 
 boost = drake.cxx.boost.Boost(prefix = '/opt/local')
 
-drake.run('../..', cxx_toolkit, cxx_config, boost = boost)
+drake.run(
+    '../..',
+    cxx_toolkit,
+    cxx_config,
+    openssl = '/opt/local',
+    boost = boost,
+)

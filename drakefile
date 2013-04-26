@@ -18,6 +18,8 @@ def configure(cxx_toolkit = None,
               boost = None,
               curl = None,
               openssl = None,
+              enable_rotation = False,
+              dopenssl = None,
               prefix = '/usr'):
 
   global config
@@ -42,6 +44,8 @@ def configure(cxx_toolkit = None,
                                cxx_toolkit = cxx_toolkit,
                                cxx_config = cxx_config,
                                openssl = openssl,
+                               enable_rotation = enable_rotation,
+                               dopenssl = dopenssl,
                                boost = boost,
                                elle = elle,
                                prefix = prefix)
