@@ -18,6 +18,7 @@ namespace reactor
       public:
         typedef Server Super;
         UDTServer(Scheduler& sched);
+        UDTServer(Scheduler& sched, std::unique_ptr<UDPSocket> sock);
         virtual ~UDTServer();
 
       /*----------.
@@ -32,8 +33,6 @@ namespace reactor
         virtual int port() const;
         /// The locally bound endpoint.
         EndPoint local_endpoint() const;
-        /// The public bound endpoint.
-        ELLE_ATTRIBUTE_R(EndPoint, public_endpoint)
 
       /*----------.
       | Accepting |
