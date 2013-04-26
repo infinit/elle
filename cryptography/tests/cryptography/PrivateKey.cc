@@ -248,7 +248,7 @@ test_serialize_rsa()
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << k1;
 
-    BOOST_CHECK(archive1 == archive2);
+    BOOST_CHECK_EQUAL(archive1, archive2);
   }
 }
 

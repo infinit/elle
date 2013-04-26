@@ -238,7 +238,7 @@ test_serialize_rsa()
     auto extractor = elle::serialize::from_string(archive);
     infinit::cryptography::KeyPair pair2(extractor);
 
-    BOOST_CHECK(pair1 == pair2);
+    BOOST_CHECK_EQUAL(pair1, pair2);
   }
 
   // Deserialize from the hard-coded string [representation 1]: useful
