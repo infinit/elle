@@ -38,9 +38,9 @@ test_generate_prime()
     DOPENSSL_CHECK(BN_cmp(n1, n3) != 0);
     DOPENSSL_CHECK(BN_cmp(n2, n3) != 0);
 
-    BN_free(n3);
-    BN_free(n2);
-    BN_free(n1);
+    BN_clear_free(n3);
+    BN_clear_free(n2);
+    BN_clear_free(n1);
   }
 
   // Generate numbers in a deterministic (but probabilist) way, by resetting the
@@ -112,10 +112,10 @@ test_generate_prime()
       free(fingerprint2);
       free(fingerprint1);
 
-      BN_free(n4);
-      BN_free(n3);
-      BN_free(n2);
-      BN_free(n1);
+      BN_clear_free(n4);
+      BN_clear_free(n3);
+      BN_clear_free(n2);
+      BN_clear_free(n1);
     }
     DOPENSSL_CHECK(dRAND_stop() == 1);
   }
@@ -170,9 +170,9 @@ test_generate_prime()
       free(fingerprint2);
       free(fingerprint1);
 
-      BN_free(n3);
-      BN_free(n2);
-      BN_free(n1);
+      BN_clear_free(n3);
+      BN_clear_free(n2);
+      BN_clear_free(n1);
     }
     DOPENSSL_CHECK(dRAND_stop() == 1);
   }

@@ -382,7 +382,7 @@ test_rotate_and_derive()
   RSA_free(rotated1_rsa);
   OPENSSL_free(rotated1_seed);
 
-  BN_free(N);
+  BN_clear_free(N);
 
   EVP_PKEY_free(key);
 
