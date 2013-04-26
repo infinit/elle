@@ -25,7 +25,7 @@ test_operate_real()
     infinit::cryptography::random::generate<elle::Real>();
 
   // With very high probability.
-  BOOST_CHECK(value1 != value2);
+  BOOST_CHECK_NE(value1, value2);
 }
 
 template <typename T>
@@ -37,8 +37,8 @@ test_operate_x(T minimum,
 
   T value = infinit::cryptography::random::generate<T>(minimum, maximum);
 
-  BOOST_CHECK(value >= minimum);
-  BOOST_CHECK(value <= maximum);
+  BOOST_CHECK_GTE(value, minimum);
+  BOOST_CHECK_LTE(value, maximum);
 }
 
 static
@@ -51,7 +51,7 @@ test_operate_string()
     infinit::cryptography::random::generate<elle::String>(262);
 
   // With very high probability.
-  BOOST_CHECK(value1 != value2);
+  BOOST_CHECK_NE(value1, value2);
 }
 
 static
@@ -64,7 +64,7 @@ test_operate_buffer()
     infinit::cryptography::random::generate<elle::Buffer>(262);
 
   // With very high probability.
-  BOOST_CHECK(value1 != value2);
+  BOOST_CHECK_NE(value1, value2);
 }
 
 static

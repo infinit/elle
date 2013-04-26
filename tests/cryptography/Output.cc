@@ -77,7 +77,7 @@ test_construct()
 
   auto address6 = output6.buffer().contents();
 
-  BOOST_CHECK(address3 == address6);
+  BOOST_CHECK_EQUAL(address3, address6);
 }
 
 /*----------.
