@@ -68,7 +68,7 @@ namespace infinit
       Seed::~Seed()
       {
         if (this->_n != nullptr)
-          ::BN_free(this->_n);
+          ::BN_clear_free(this->_n);
       }
 
       /*----------.
