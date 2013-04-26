@@ -1,5 +1,6 @@
 #include <cryptography/PublicKey.hh>
 #include <cryptography/Code.hh>
+#include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/rsa/PublicKey.hh>
 
@@ -33,6 +34,29 @@ namespace infinit
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+    PublicKey::PublicKey(Seed const& seed)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      switch (seed.cryptosystem())
+      {
+        case Cryptosystem::rsa:
+        {
+          // Generate a RSA public key implementation based on the seed.
+          this->_implementation.reset(
+            new rsa::PublicKey(
+              rsa::publickey::generate(seed.implementation())));
+        }
+        default:
+          throw Exception(
+            elle::sprintf("unknown or non-supported asymmetric "
+                          "cryptosystem '%s'", seed.cryptosystem()));
+      }
+    }
+#endif
 
     PublicKey::PublicKey(PublicKey const& other):
       _implementation(other._implementation->clone())
@@ -89,6 +113,7 @@ namespace infinit
       return (this->_implementation->decrypt(code));
     }
 
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
     Seed
     PublicKey::derive(Seed const& seed) const
     {
@@ -97,6 +122,17 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->derive(seed));
+    }
+#endif
+
+    Cryptosystem
+    PublicKey::cryptosystem() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->cryptosystem());
     }
 
     elle::Natural32
@@ -117,6 +153,16 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->length());
+    }
+
+    publickey::Interface const&
+    PublicKey::implementation() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (*this->_implementation);
     }
 
     /*----------.

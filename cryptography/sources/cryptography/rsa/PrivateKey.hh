@@ -19,6 +19,10 @@
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -27,7 +31,7 @@ namespace infinit
     {
       /// Represent a private key in the RSA asymmetric cryptosystem.
       class PrivateKey:
-        public privatekey::Interface,
+        public cryptography::privatekey::Interface,
         public elle::serialize::SerializableMixin<PrivateKey>,
         public elle::concept::MakeUniquable<PrivateKey>
       {
@@ -37,11 +41,15 @@ namespace infinit
       public:
         PrivateKey(); // XXX[deserialize]
         /// Construct a private key based on the given EVP_PKEY key whose
-        /// ownership is transferred to the private key.
+        /// ownership is transferred.
         explicit
         PrivateKey(::EVP_PKEY* key);
+        /// Construct a private key based on the given RSA key whose
+        /// ownership is transferred to the private key.
+        explicit
+        PrivateKey(::RSA* rsa);
         /// Construct a private key by transferring ownership of some big
-        /// numbers so as to build an EVP_PKEY.
+        /// numbers.
         PrivateKey(::BIGNUM* n,
                    ::BIGNUM* e,
                    ::BIGNUM* d,
@@ -59,6 +67,10 @@ namespace infinit
         | Methods |
         `--------*/
       public:
+        /// Construct the object based on the given RSA structure whose
+        /// ownership is transferred to the callee.
+        void
+        _construct(::RSA* rsa);
         /// Construct the object based on big numbers.
         ///
         /// Note that when called, the number are already allocated for the
@@ -96,12 +108,12 @@ namespace infinit
         // privatekey
         virtual
         elle::Boolean
-        operator ==(privatekey::Interface const& other) const;
+        operator ==(cryptography::privatekey::Interface const& other) const;
         virtual
         elle::Boolean
-        operator <(privatekey::Interface const& other) const;
+        operator <(cryptography::privatekey::Interface const& other) const;
         virtual
-        privatekey::Interface*
+        cryptography::privatekey::Interface*
         clone() const;
         virtual
         elle::Natural32
@@ -121,9 +133,11 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         virtual
-        Seed
-        rotate(Seed const& seed) const;
+        cryptography::Seed
+        rotate(cryptography::Seed const& seed) const;
+# endif
         // printable
         void
         print(std::ostream& stream) const;
@@ -134,12 +148,39 @@ namespace infinit
         | Attributes |
         `-----------*/
       private:
-        ELLE_ATTRIBUTE(::EVP_PKEY*, key);
+        ELLE_ATTRIBUTE_R(::EVP_PKEY*, key);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_sign);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_rotate);
       };
+    }
+  }
+}
+
+//
+// ---------- Generator -------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace privatekey
+      {
+        /*----------.
+        | Functions |
+        `----------*/
+
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        /// Generate a private key in a deterministic way based on the
+        /// given seed.
+        PrivateKey
+        generate(cryptography::seed::Interface const& seed);
+# endif
+      }
     }
   }
 }

@@ -1,7 +1,8 @@
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/Seed.hh>
-#include <cryptography/cryptography.hh>
 #include <cryptography/Code.hh>
+#include <cryptography/Exception.hh>
+#include <cryptography/cryptography.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 
 #include <elle/log.hh>
@@ -30,6 +31,29 @@ namespace infinit
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+    PrivateKey::PrivateKey(Seed const& seed)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      switch (seed.cryptosystem())
+      {
+        case Cryptosystem::rsa:
+        {
+          // Generate a RSA private key implementation based on the seed.
+          this->_implementation.reset(
+            new rsa::PrivateKey(
+              rsa::privatekey::generate(seed.implementation())));
+        }
+        default:
+          throw Exception(
+            elle::sprintf("unknown or non-supported asymmetric "
+                          "cryptosystem '%s'", seed.cryptosystem()));
+      }
+    }
+#endif
 
     PrivateKey::PrivateKey(PrivateKey const& other):
       _implementation(other._implementation->clone())
@@ -85,6 +109,7 @@ namespace infinit
       return (this->_implementation->encrypt(plain));
     }
 
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
     Seed
     PrivateKey::rotate(Seed const& seed) const
     {
@@ -93,6 +118,17 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->rotate(seed));
+    }
+#endif
+
+    Cryptosystem
+    PrivateKey::cryptosystem() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->cryptosystem());
     }
 
     elle::Natural32
@@ -113,6 +149,16 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->length());
+    }
+
+    privatekey::Interface const&
+    PrivateKey::implementation() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (*this->_implementation);
     }
 
     /*----------.

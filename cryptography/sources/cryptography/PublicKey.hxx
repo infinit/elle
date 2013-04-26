@@ -77,7 +77,6 @@ namespace infinit
 # include <elle/serialize/Serializer.hh>
 # include <elle/utility/Factory.hh>
 
-# include <cryptography/KeyPair.hh>
 # include <cryptography/Cryptosystem.hh>
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::PublicKey);

@@ -1,5 +1,7 @@
 #include <cryptography/rsa/keypair.hh>
+#include <cryptography/rsa/Seed.hh>
 #include <cryptography/Exception.hh>
+#include <cryptography/Seed.hh>
 #include <cryptography/finally.hh>
 
 #include <elle/attribute.hh>
@@ -9,6 +11,10 @@
 #include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# include <dopenssl/rsa.h>
+#endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.keypair");
 
@@ -115,12 +121,60 @@ namespace infinit
           // constructed by transferring the ownership of the EVP_PKEY.
           PublicKey K(::BN_dup(key->pkey.rsa->n),
                       ::BN_dup(key->pkey.rsa->e));
-          PrivateKey k(key);
+          PrivateKey k(key->pkey.rsa);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
           return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
         }
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        std::pair<PublicKey, PrivateKey>
+        generate(cryptography::seed::Interface const& seed)
+        {
+          ELLE_TRACE_FUNCTION(seed);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
+
+          // Cast the interface into an actual RSA seed.
+          ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
+          Seed const& _seed = static_cast<Seed const&>(seed);
+
+          ELLE_ASSERT_EQ(_seed.buffer().size(),
+                         static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
+
+          // Deduce the RSA key from the given seed.
+          ::RSA* rsa = nullptr;
+
+          if ((rsa = ::dRSA_deduce_privatekey(
+                 ::BN_num_bits(_seed.n()),
+                 static_cast<unsigned char const*>(_seed.buffer().contents()),
+                 _seed.buffer().size())) == nullptr)
+            throw Exception(
+              elle::sprintf("unable to deduce the RSA key from the given "
+                            "seed: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+          // Instanciate both a RSA public and private key based on the RSA
+          // structure.
+          //
+          // Note that some internal numbers need to be duplicated for the
+          // instanciation of the public key while the private key is
+          // constructed by transferring the ownership of the RSA.
+          PublicKey K(::BN_dup(rsa->n),
+                      ::BN_dup(rsa->e));
+          PrivateKey k(rsa);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+          return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
+        }
+#endif
       }
     }
   }

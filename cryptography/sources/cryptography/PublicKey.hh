@@ -39,12 +39,6 @@ namespace infinit
       public elle::concept::MakeUniquable<PublicKey>,
       public elle::Printable
     {
-      /*--------.
-      | Friends |
-      `--------*/
-    public:
-      friend class KeyPair;
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -53,6 +47,12 @@ namespace infinit
       /// Construct a public key by providing its implementation.
       explicit
       PublicKey(std::unique_ptr<publickey::Interface>&& implementation);
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+      /// Construct a public key based on a given seed i.e in a deterministic
+      /// way.
+      explicit
+      PublicKey(Seed const& seed);
+# endif
       PublicKey(PublicKey const& other);
       PublicKey(PublicKey&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
@@ -89,15 +89,23 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       /// Return the seed once derived by the public key.
       Seed
       derive(Seed const& seed) const;
+# endif
+      /// Return the cryptosystem provided by this key.
+      Cryptosystem
+      cryptosystem() const;
       /// Return the public key's size in bytes.
       elle::Natural32
       size() const;
       /// Return the public key's length in bits.
       elle::Natural32
       length() const;
+      /// Return the implementation.
+      publickey::Interface const&
+      implementation() const;
 
       /*----------.
       | Operators |
@@ -221,10 +229,12 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const = 0;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once derived with the public key.
         virtual
         Seed
         derive(Seed const& seed) const = 0;
+# endif
       };
     }
   }

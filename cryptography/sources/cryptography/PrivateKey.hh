@@ -37,12 +37,6 @@ namespace infinit
       public elle::concept::MakeUniquable<PrivateKey>,
       public elle::Printable
     {
-      /*--------.
-      | Friends |
-      `--------*/
-    public:
-      friend class KeyPair;
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -51,6 +45,12 @@ namespace infinit
       /// Construct a private key by providing its implementation.
       explicit
       PrivateKey(std::unique_ptr<privatekey::Interface>&& implementation);
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+      /// Construct a private key based on a given seed i.e in a deterministic
+      /// way.
+      explicit
+      PrivateKey(Seed const& seed);
+# endif
       PrivateKey(PrivateKey const& other);
       PrivateKey(PrivateKey&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
@@ -89,15 +89,23 @@ namespace infinit
       template <typename T>
       Code
       encrypt(T const& value) const;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       /// Return the seed once rotated by the private key.
       Seed
       rotate(Seed const& seed) const;
+# endif
+      /// Return the cryptosystem provided by this key.
+      Cryptosystem
+      cryptosystem() const;
       /// Return the private key's size in bytes.
       elle::Natural32
       size() const;
       /// Return the private key's length in bits.
       elle::Natural32
       length() const;
+      /// Return the implementation.
+      privatekey::Interface const&
+      implementation() const;
 
       /*----------.
       | Operators |
@@ -227,10 +235,12 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const = 0;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once rotated with the private key.
         virtual
         Seed
         rotate(Seed const& seed) const = 0;
+# endif
       };
     }
   }

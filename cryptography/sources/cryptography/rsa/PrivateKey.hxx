@@ -1,6 +1,10 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
 # define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 /*-------------.
 | Serializable |
 `-------------*/

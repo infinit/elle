@@ -48,6 +48,7 @@ namespace infinit
           throw Exception(elle::sprintf("unknown or non-supported asymmetric "
                                         "cryptosystem '%s'", cryptosystem));
       }
+
       elle::unreachable();
     }
 
@@ -79,6 +80,38 @@ namespace infinit
       cryptography::require();
     }
 
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+    KeyPair::KeyPair(Seed const& seed)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+
+      switch (seed.cryptosystem())
+      {
+        case Cryptosystem::rsa:
+        {
+          // Generate a RSA key pair.
+          std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
+            rsa::keypair::generate(seed.implementation());
+
+          // Construct high-level public and private keys.
+          std::unique_ptr<publickey::Interface> K(
+            new rsa::PublicKey(std::move(pair.first)));
+          std::unique_ptr<privatekey::Interface> k(
+            new rsa::PrivateKey(std::move(pair.second)));
+
+          // Set both public and private keys.
+          this->_K.reset(new PublicKey(std::move(K)));
+          this->_k.reset(new PrivateKey(std::move(k)));
+        }
+        default:
+          throw Exception(
+            elle::sprintf("unknown or non-supported asymmetric "
+                          "cryptosystem '%s'", seed.cryptosystem()));
+      }
+    }
+#endif
+
     KeyPair::KeyPair(KeyPair const& other):
       _K(new PublicKey(*other._K)),
       _k(new PrivateKey(*other._k))
@@ -93,58 +126,6 @@ namespace infinit
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
-    }
-
-    KeyPair::KeyPair(Cryptosystem const cryptosystem,
-                     Seed const& seed)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-
-      // XXX
-      /*
-//       struct Scope
-//       {
-//         ::EVP_PKEY*  key;
-//         ::RSA*       rsa;
-
-//         Scope() : key(nullptr), rsa(nullptr) {}
-//         ~Scope() { ::EVP_PKEY_free(this->key); ::RSA_free(this->rsa); }
-//       } scope;
-
-      ::EVP_PKEY* key = nullptr;
-
-      // Allocate an EVP key.
-      if ((key = ::EVP_PKEY_new()) == nullptr)
-        throw Exception("unable to allocate the EVP_PKEY: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // Create a new RSA key.
-      if ((scope.rsa = ::RSA_new()) == nullptr)
-        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // rotate the RSA key.
-      if (comet::RSA_rotate(scope.rsa,
-                            ::BN_num_bits(this->_K->key()->pkey.rsa->n),
-                            seed.region.contents,
-                            seed.region.size) <= 0)
-        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // assign the RSA key to the EVP's.
-      if (::EVP_PKEY_assign_RSA(scope.key, scope.rsa) <= 0)
-        throw Exception("XXX: %s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      // stop tracking.
-      scope.rsa = nullptr;
-
-      // create the rotated public key according to the EVP structure.
-      if (pair._K->Create(scope.key) == elle::Status::Error)
-        throw Exception("unable to create the public key");
-
-      // create the rotated private key according to the EVP structure.
-      if (pair.k.Create(scope.key) == elle::Status::Error)
-        throw Exception("unable to create the private key");
-      */
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
@@ -173,10 +154,22 @@ namespace infinit
       return (*this->_k);
     }
 
+    Cryptosystem
+    KeyPair::cryptosystem() const
+    {
+      ELLE_ASSERT_NEQ(this->_K, nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
+      ELLE_ASSERT_EQ(this->_K->cryptosystem(), this->_k->cryptosystem());
+
+      return (this->_K->cryptosystem());
+    }
+
     elle::Natural32
     KeyPair::size() const
     {
       ELLE_ASSERT_NEQ(this->_K, nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
+      ELLE_ASSERT_EQ(this->_K->size(), this->_k->size());
 
       return (this->_K->size());
     }
@@ -185,6 +178,8 @@ namespace infinit
     KeyPair::length() const
     {
       ELLE_ASSERT_NEQ(this->_K, nullptr);
+      ELLE_ASSERT_NEQ(this->_k, nullptr);
+      ELLE_ASSERT_EQ(this->_K->length(), this->_k->length());
 
       return (this->_K->length());
     }

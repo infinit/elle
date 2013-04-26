@@ -1,6 +1,10 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
 # define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 /*-------------.
 | Serializable |
 `-------------*/

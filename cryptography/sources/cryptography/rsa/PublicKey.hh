@@ -5,6 +5,7 @@
 # include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/PublicKey.hh>
+# include <cryptography/Seed.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -18,6 +19,10 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <openssl/evp.h>
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -26,7 +31,7 @@ namespace infinit
     {
       /// Represent a public key in the RSA asymmetric cryptosystem.
       class PublicKey:
-        public publickey::Interface,
+        public cryptography::publickey::Interface,
         public elle::serialize::SerializableMixin<PublicKey>,
         public elle::concept::MakeUniquable<PublicKey>
       {
@@ -36,11 +41,15 @@ namespace infinit
       public:
         PublicKey(); // XXX[to deserialize]
         /// Construct a public key based on the given EVP_PKEY key whose
-        /// ownership is transferred to the public key.
+        /// ownership is transferred.
         explicit
         PublicKey(::EVP_PKEY* key);
-        /// Construct a private key by transferring ownership of some big
-        /// numbers so as to build an EVP_PKEY.
+        /// Construct a public key based on the given RSA key whose
+        /// ownership is transferred to the public key.
+        explicit
+        PublicKey(::RSA* rsa);
+        /// Construct a public key by transferring ownership of some big
+        /// numbers.
         PublicKey(::BIGNUM* n,
                   ::BIGNUM* e);
         PublicKey(PublicKey const& other);
@@ -52,6 +61,10 @@ namespace infinit
         | Methods |
         `--------*/
       private:
+        /// Construct the object based on the given RSA structure whose
+        /// ownership is transferred to the callee.
+        void
+        _construct(::RSA* rsa);
         /// Construct the object based on big numbers.
         ///
         /// Note that when called, the number are already allocated for the
@@ -83,12 +96,12 @@ namespace infinit
         // publickey
         virtual
         elle::Boolean
-        operator ==(publickey::Interface const& other) const;
+        operator ==(cryptography::publickey::Interface const& other) const;
         virtual
         elle::Boolean
-        operator <(publickey::Interface const& other) const;
+        operator <(cryptography::publickey::Interface const& other) const;
         virtual
-        publickey::Interface*
+        cryptography::publickey::Interface*
         clone() const;
         virtual
         elle::Natural32
@@ -109,9 +122,11 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const;
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         virtual
-        Seed
-        derive(Seed const& seed) const;
+        cryptography::Seed
+        derive(cryptography::Seed const& seed) const;
+# endif
         // printable
         virtual
         void
@@ -123,12 +138,39 @@ namespace infinit
         | Attributes |
         `-----------*/
       private:
-        ELLE_ATTRIBUTE(::EVP_PKEY*, key);
+        ELLE_ATTRIBUTE_R(::EVP_PKEY*, key);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_verify);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
         ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_derive);
       };
+    }
+  }
+}
+
+//
+// ---------- Generator -------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace publickey
+      {
+        /*----------.
+        | Functions |
+        `----------*/
+
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        /// Generate a public key in a deterministic way based on the
+        /// given seed.
+        PublicKey
+        generate(cryptography::seed::Interface const& seed);
+# endif
+      }
     }
   }
 }
