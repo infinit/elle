@@ -62,6 +62,8 @@ def configure(cxx_toolkit = None,
     'sources/cryptography/Code.hh',
     'sources/cryptography/Cryptosystem.cc',
     'sources/cryptography/Cryptosystem.hh',
+    'sources/cryptography/deleter.cc',
+    'sources/cryptography/deleter.hh',
     'sources/cryptography/Digest.hh',
     'sources/cryptography/Exception.hh',
     'sources/cryptography/Exception.cc',
@@ -112,6 +114,7 @@ def configure(cxx_toolkit = None,
     'sources/cryptography/rsa/fwd.hh',
     'sources/cryptography/rsa/keypair.cc',
     'sources/cryptography/rsa/keypair.hh',
+    'sources/cryptography/types.hh',
     )
 
   if enable_rotation:

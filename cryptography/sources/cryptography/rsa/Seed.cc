@@ -27,8 +27,7 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      Seed::Seed():
-        _n(nullptr)
+      Seed::Seed()
       {
       }
 
@@ -54,21 +53,13 @@ namespace infinit
 
       Seed::Seed(Seed&& other):
         _buffer(std::move(other._buffer)),
-        _n(other._n)
+        _n(std::move(other._n))
       {
-        // Reset the pointer for the given modulus.
-        other._n = nullptr;
+        ELLE_ASSERT_EQ(other._n, nullptr);
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(Seed)
       {
-        this->_n = nullptr;
-      }
-
-      Seed::~Seed()
-      {
-        if (this->_n != nullptr)
-          ::BN_clear_free(this->_n);
       }
 
       /*----------.
@@ -86,8 +77,8 @@ namespace infinit
 
         // Compare the buffer and modulus.
         if ((this->_buffer != other._buffer) ||
-            (::BN_cmp(this->_n,
-                      other._n) != 0))
+            (::BN_cmp(this->_n.get(),
+                      other._n.get()) != 0))
           return (false);
 
         return (true);

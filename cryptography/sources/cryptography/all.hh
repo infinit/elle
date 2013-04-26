@@ -23,5 +23,6 @@
 # include <cryptography/oneway.hh>
 # include <cryptography/random.hh>
 # include <cryptography/rsa/all.hh>
+# include <cryptography/types.hh>
 
 #endif

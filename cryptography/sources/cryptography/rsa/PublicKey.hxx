@@ -50,10 +50,11 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
   archive >> *n
           >> *e;
 
+  value._construct(n, e);
+
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
 
-  value._construct(n, e);
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);

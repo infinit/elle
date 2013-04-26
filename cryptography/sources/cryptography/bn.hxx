@@ -8,7 +8,6 @@
 # include <elle/types.hh>
 # include <elle/serialize/Serializer.hh>
 
-# include <cryptography/cryptography.hh>
 # include <cryptography/finally.hh>
 
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
@@ -19,9 +18,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
                           format)
 {
   enforce(format == 0);
-
-  // Make sure the cryptographic system is set up.
-  infinit::cryptography::require();
 
   // Retrieve the size of the big number.
   int size = BN_num_bytes(&value);
@@ -50,9 +46,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
                           format)
 {
   enforce(format == 0);
-
-  // Make sure the cryptographic system is set up.
-  infinit::cryptography::require();
 
   // Extract the big number size.
   int size;

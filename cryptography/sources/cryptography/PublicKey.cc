@@ -1,7 +1,6 @@
 #include <cryptography/PublicKey.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
-#include <cryptography/cryptography.hh>
 #include <cryptography/rsa/PublicKey.hh>
 
 #include <elle/log.hh>
@@ -23,24 +22,17 @@ namespace infinit
 
     PublicKey::PublicKey()
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     PublicKey::PublicKey(std::unique_ptr<publickey::Interface>&&
                            implementation):
       _implementation(std::move(implementation))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
     PublicKey::PublicKey(Seed const& seed)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-
       switch (seed.cryptosystem())
       {
         case Cryptosystem::rsa:
@@ -61,21 +53,15 @@ namespace infinit
     PublicKey::PublicKey(PublicKey const& other):
       _implementation(other._implementation->clone())
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     PublicKey::PublicKey(PublicKey&& other):
       _implementation(std::move(other._implementation))
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
     {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
     }
 
     /*--------.

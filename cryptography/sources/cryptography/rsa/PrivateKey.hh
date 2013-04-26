@@ -2,6 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 
 # include <cryptography/fwd.hh>
+# include <cryptography/types.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
@@ -61,7 +62,6 @@ namespace infinit
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
-        ~PrivateKey();
 
         /*--------.
         | Methods |
@@ -148,11 +148,11 @@ namespace infinit
         | Attributes |
         `-----------*/
       private:
-        ELLE_ATTRIBUTE_R(::EVP_PKEY*, key);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_decrypt);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_sign);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_encrypt);
-        ELLE_ATTRIBUTE(::EVP_PKEY_CTX*, context_rotate);
+        ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_sign);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
       };
     }
   }

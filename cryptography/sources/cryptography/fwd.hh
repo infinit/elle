@@ -34,9 +34,11 @@ namespace infinit
 # include <cryptography/cipher.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/Cryptosystem.hh>
+# include <cryptography/deleter.hh>
 # include <cryptography/Digest.hh>
 # include <cryptography/Plain.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/rsa/fwd.hh>
+# include <cryptography/types.hh>
 
 #endif
