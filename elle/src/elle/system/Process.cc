@@ -555,15 +555,15 @@ namespace elle
     Process::StatusCode
     Process::status(ProcessTermination const term)
     {
-      ELLE_TRACE("%s for binary (%s) %s %s",
-                  (term == ProcessTermination::dont_wait ? "checking"
-                                                         : "waiting"),
-                 _this->pid, _this->binary, _this->arguments);
       if (_this->pid == 0)
       {
         ELLE_DEBUG("%s (pid = 0): status %s", _this->binary, _this->status);
         return _this->status;
       }
+      ELLE_DEBUG("%s for binary (%s) %s %s",
+                  (term == ProcessTermination::dont_wait ? "checking"
+                                                         : "waiting"),
+                 _this->pid, _this->binary, _this->arguments);
 
       int status_ = 0;
       int options = (term == ProcessTermination::dont_wait ? WNOHANG : 0);
