@@ -1,179 +1,211 @@
 #include "cryptography.hh"
-#include "Sample.hh"
 
 #include <cryptography/Seed.hh>
 #include <cryptography/KeyPair.hh>
 #include <cryptography/Exception.hh>
+#include <cryptography/random.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-//#include <comet/Comet.hh> // XXX
+/*--------.
+| Helpers |
+`--------*/
+
+static
+infinit::cryptography::KeyPair
+_test_generate_rsa(elle::Natural32 const length)
+{
+  infinit::cryptography::KeyPair pair =
+    infinit::cryptography::KeyPair::generate(
+      infinit::cryptography::Cryptosystem::rsa,
+      length);
+
+  return (pair);
+}
 
 /*----------.
 | Represent |
 `----------*/
 
+static
+void
+test_represent_rsa()
+{
+  // 1)
+  {
+    infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+    infinit::cryptography::Seed seed =
+      infinit::cryptography::Seed::generate(pair);
+    elle::String archive;
+    elle::serialize::to_string<
+      elle::serialize::OutputBase64Archive>(archive) << pair;
+    elle::printf("[representation 1] %s\n", archive);
+  }
+}
+
+static
 void
 test_represent()
 {
+  // WARNING: To uncomment only if one wants to update the representations.
+  return;
+
   // These generate base64-based representations which can be used in
   // other tests.
 
-  // XXX
+  // RSA.
+  test_represent_rsa();
 }
 
 /*---------.
 | Generate |
 `---------*/
 
+static
+infinit::cryptography::Seed
+test_generate_rsa()
+{
+  infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+
+  infinit::cryptography::Seed seed =
+    infinit::cryptography::Seed::generate(pair);
+
+  return (seed);
+}
+
+static
 void
 test_generate()
 {
-  // XXX
+  // RSA.
+  test_generate_rsa();
 }
 
 /*----------.
 | Construct |
 `----------*/
 
+static
 void
 test_construct()
 {
-  // XXX
+  // RSA
+  infinit::cryptography::Seed seed1 = test_generate_rsa();
+
+  // Seed copy.
+  infinit::cryptography::Seed seed2(seed1);
+
+  BOOST_CHECK_EQUAL(seed1, seed2);
+
+  // Seed move.
+  infinit::cryptography::Seed seed3(std::move(seed1));
+
+  BOOST_CHECK_EQUAL(seed2, seed3);
 }
 
 /*--------.
 | Operate |
 `--------*/
 
+static
 void
 test_operate()
 {
-  // XXX
+  // RSA.
+  infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+
+  // Perform a sequence of rotation/derivation.
+  {
+    infinit::cryptography::Seed seed0 =
+      infinit::cryptography::Seed::generate(pair);
+
+    infinit::cryptography::Seed seed1 = pair.k().rotate(seed0);
+
+    // XXX
+    elle::printf("seed1: %s\n", seed1);
+
+    infinit::cryptography::KeyPair pair1(seed1);
+    infinit::cryptography::PublicKey K1(seed1);
+    infinit::cryptography::PrivateKey k1(seed1);
+
+    infinit::cryptography::Seed seed2 = pair.k().rotate(seed1);
+
+    // XXX
+    elle::printf("seed2: %s\n", seed2);
+
+    infinit::cryptography::KeyPair pair2(seed2);
+    infinit::cryptography::PublicKey K2(seed2);
+    infinit::cryptography::PrivateKey k2(seed2);
+
+    infinit::cryptography::Seed seed3 = pair.k().rotate(seed2);
+
+    // XXX
+    elle::printf("seed3: %s\n", seed3);
+
+    infinit::cryptography::Seed _seed2 = pair.K().derive(seed3);
+
+    // XXX
+    elle::printf("_seed2: %s\n", _seed2);
+
+    infinit::cryptography::KeyPair _pair2(_seed2);
+    infinit::cryptography::PublicKey _K2(_seed2);
+    infinit::cryptography::PrivateKey _k2(_seed2);
+
+    infinit::cryptography::Seed _seed1 = pair.K().derive(_seed2);
+
+    // XXX
+    elle::printf("_seed1: %s\n", _seed1);
+
+    infinit::cryptography::KeyPair _pair1(_seed1);
+    infinit::cryptography::PublicKey _K1(_seed1);
+    infinit::cryptography::PrivateKey _k1(_seed1);
+
+    infinit::cryptography::Seed _seed0 = pair.K().derive(_seed0);
+
+    // XXX
+    elle::printf("_seed0: %s\n", _seed0);
+
+    BOOST_CHECK_EQUAL(seed2, _seed2);
+    BOOST_CHECK_EQUAL(pair2, _pair2);
+    BOOST_CHECK_EQUAL(_pair2.K(), _K2);
+    BOOST_CHECK_EQUAL(_pair2.k(), _k2);
+
+    BOOST_CHECK_EQUAL(seed1, _seed1);
+    BOOST_CHECK_EQUAL(pair1, _pair1);
+    BOOST_CHECK_EQUAL(_pair1.K(), _K1);
+    BOOST_CHECK_EQUAL(_pair1.k(), _k1);
+
+    BOOST_CHECK_EQUAL(seed0, _seed0);
+
+    // XXX check que la taille est la meme entre toutes les seed (castees en RSA)
+  }
+
+  // XXX deirvation with wrong seed size -> throw
 }
 
 /*----------.
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize()
 {
-  // XXX
+  // XXX + represent()
 }
 
 /*-----.
 | Main |
 `-----*/
 
+static
 bool
 test()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("Seed");
 
-  // To uncomment if one wants to update the representations.
-  //suite->add(BOOST_TEST_CASE(test_represent));
-
-  // XXX
-  {
-    infinit::cryptography::KeyPair pair =
-      infinit::cryptography::KeyPair::generate(
-        infinit::cryptography::Cryptosystem::rsa, 1024);
-
-    infinit::cryptography::Seed seed0 =
-      infinit::cryptography::Seed::generate(pair);
-
-    elle::printf("pair: %s\n", pair);
-    elle::printf("seed0: %s\n", seed0);
-
-    // XXX
-    /* XXX
-    {
-      ::EVP_PKEY* key = nullptr;
-
-      if ((key = ::EVP_PKEY_new()) == nullptr)
-        throw Exception("unable to allocate the EVP_PKEY: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr));
-
-      ::RSA* rsa;
-
-      if ((rsa = ::RSA_new()) == nullptr)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-
-      comet::RSA_rotate(rsa,
-                        1024,
-                        seed.buffer().contents(), seed.buffer().size());
-
-      if (::EVP_PKEY_assign_RSA(key, rsa) <= 0)
-        throw Exception("%s", ::ERR_error_string(ERR_get_error(), nullptr));
-    }
-    */
-
-    /* XXX
-    infinit::cryptography::Seed seed1 = pair.k().rotate(seed0);
-    elle::printf("seed1: %s\n", seed1);
-
-    infinit::cryptography::Seed seed2 = pair.k().rotate(seed1);
-    elle::printf("seed2: %s\n", seed2);
-
-    // XXX infinit::cryptography::KeyPair pair2(seed2);
-
-    infinit::cryptography::Seed seed3 = pair.k().rotate(seed2);
-    elle::printf("seed3: %s\n", seed3);
-    */
-
-    //infinit::cryptography::Seed _seed2 = pair.K().derive(seed3);
-    //elle::printf("_seed2: %s\n", _seed2);
-
-    // XXX verifier que lorsque l'on derive, l'exposant est toujours different et pas un truc genre 5 ou 17 sinon la derivation n'est pas privee.
-
-    /* XXX
-       Rotate from owner:
-       - il recupere le seed_x courant en le dechiffrant du bloc Group.
-       - on rotate le seed avec la clef privee du owner:
-         k.rotate(seed_x) -> seed_x+1
-       - on cree une nouvelle keypair avec le nouveau seed:
-         KeyPair kp_x+1(seed_x+1) -> (Kpass_x+1, kpass_x+1)
-         cet appel va utiliser comet::RSA_rotate(bits, seed) -> rsa
-       - on chiffre le seed_x+1 pour que le owner puisse y acceder et
-         on le met dans le nouveau Groupe
-       - on inclue egalement kpass_x+1 qui est la partie "publique" du pass.
-       - on chiffre et distribue Kpass_x+1 a tous les membres
-       NOTE: puisque le owner devrait egalement avoir acces a Kpass_x+1 et
-             puisque stocker seed prend de la place dans les metadata du
-             Group, il serait plus judicieux de creer un record pour le owner
-             directement dans Members. notamment avec Porcupine ca ne signifie
-             pas que les donnees seront dans un autre bloc.
-
-       Derive from member:
-       - il dechiffre Kpass_x ainsi que seed_x
-       - il derive seed_x: K.derive(seed_x) -> seed_x-1
-         seed_x-1 contient N_x-1
-       NOTE: pour ce dernier point, Seed doit etre une representation generique
-             avec rsa::Seed la vraie seed. On devrait par ailleurs effectuer des
-             verifications sur le fait que les clefs/seed sont compatibles.
-       - ensuite on construit Kpass_x-1 a partir du seed:
-         PublicKey Kpass_x-1(seed_x-1)
-    */
-
-    /* XXX
-    infinit::cryptography::PublicKey _K2(_seed2);
-    infinit::cryptography::KeyPair _pair2(_seed2); // XXX + k2
-
-    BOOST_CHECK_EQUAL(pair2, _pair2);
-
-    infinit::cryptography::Seed _seed1 = pair.K().derive(_seed2);
-    _seed1.buffer().dump();
-
-    infinit::cryptography::Seed _seed0 = pair.K().derive(_seed0);
-    _seed0.buffer().dump();
-
-    BOOST_CHECK_EQUAL(seed0, _seed0);
-    */
-  }
-  // XXX
-
+  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));
