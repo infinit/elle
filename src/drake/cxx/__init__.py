@@ -118,6 +118,12 @@ class Config:
         return list(self.__system_includes)
 
 
+    @property
+    def library_path(self):
+
+        return iter(self.__lib_paths)
+
+
     def lib_path(self, path):
 
         if path == Path('/lib') or path == Path('/usr/lib'):
@@ -1126,55 +1132,119 @@ def dot_spread(nodes):
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
 
-def find_library(token, prefix = None, include_dir = None):
+def find_library(token = None, name = None, prefix = None, include_dir = None):
     if prefix is None or isinstance(prefix, str):
         conf = LibraryConfiguration(token = token,
+                                    name = None,
                                     prefix = prefix,
                                     include_dir = include_dir)
         return conf.config()
     else:
         return prefix
 
+class PkgConfig():
+
+    try:
+        drake.cmd_output(['which', 'pkg-config'])
+        available = True
+    except:
+        available = False
+
+    def __init__(self, package):
+        self.__package = package
+        self.__include_path = None
+        self.__library_path = None
+        self.__exists = None
+
+    @property
+    def exists(self):
+        if self.__exists is None:
+            try:
+                self.__pkg_config([])
+                self.__exists = True
+            except:
+                self.__exists = False
+        return self.__exists
+
+    def __pkg_config(self, cmd):
+        output = drake.cmd_output(['pkg-config', self.__package] + cmd)
+        return output.decode('utf-8').strip().split()
+
+    def __flags(self, cmd, expected):
+        res = []
+        for flag in self.__pkg_config(cmd):
+            if not flag.startswith(expected):
+                raise Exception('pkg-config %s gave a strange flag: %s' % (' '.join(cmd), flag))
+            res.append(flag[len(expected):])
+        return res
+
+    @property
+    def include_path(self):
+        if self.__include_path is None:
+            self.__include_path = []
+            for path in self.__flags(['--cflags-only-I'], '-I'):
+                self.__include_path.append(drake.Path(path))
+        return self.__include_path
+
+    @property
+    def library_path(self):
+        if self.__library_path is None:
+            self.__library_path = []
+            for path in self.__flags(['--libs-only-L'], '-L'):
+                self.__library_path.append(drake.Path(path))
+        return self.__library_path
+
 class LibraryConfiguration(drake.Configuration):
 
     """Configuration for a classical C/C++ library."""
 
-    def __init__(self, token, prefix = None, include_dir = None, libs = []):
+    def __init__(self, token = None, name = None, prefix = None, include_dir = None, libs = []):
         """Find and create a configuration for the library.
 
         prefix -- Where to find the library.
         token --  Which file to look for (typically, the main header).
         """
-        include_dir = include_dir or 'include'
-        if not isinstance(include_dir, list):
-            include_dir = [include_dir]
-        include_dir = [drake.Path(p) for p in include_dir]
-        # Make prefix absolute wrt the source dir
-        prefix_symbolic = None
-        if prefix is not None:
-            prefix_symbolic = drake.Path(prefix)
-            prefix = drake.Path(prefix)
-            if not prefix.absolute():
-                prefix = drake.path_src(prefix)
-        # Compute the search path.
-        if prefix is None:
-            test = [Path('/usr'), Path('/usr/local')]
-        else:
-            test = [Path(prefix)]
-        # for i in range(len(test)):
-        #     if not test[i].absolute:
-        #         test[i] = srctree() / test[i]
-        self.__prefix, include_dir = self._search_many_all([p / token for p in include_dir],
-                                                           test)[0]
-        include_dir.strip_suffix(token)
         self.__config = drake.cxx.Config()
-        include_path = self.__prefix / include_dir
-        if not include_path.absolute():
-            include_path.strip_prefix(srctree())
-        self.__config.add_system_include_path(include_path)
-        self.__prefix_symbolic = prefix_symbolic or self.__prefix
-        self.__libraries_path = self.__prefix_symbolic / 'lib'
-        self.__config.lib_path(self.__prefix / 'lib')
+        # Search the library with pkg-config
+        if PkgConfig.available and name is not None:
+            pkg_config = PkgConfig(name)
+            if pkg_config.exists:
+                for include_path in pkg_config.include_path:
+                    self.__config.add_system_include_path(include_path)
+                    self.__prefix_symbolic = include_path / '..'
+                    self.__prefix = self.__prefix_symbolic
+                for library_path in pkg_config.library_path:
+                    self.__config.lib_path(library_path)
+                    self.__libraries_path = library_path
+        # Search the library manually.
+        if token is not None:
+            include_dir = include_dir or 'include'
+            if not isinstance(include_dir, list):
+                include_dir = [include_dir]
+            include_dir = [drake.Path(p) for p in include_dir]
+            # Make prefix absolute wrt the source dir
+            prefix_symbolic = None
+            if prefix is not None:
+                prefix_symbolic = drake.Path(prefix)
+                prefix = drake.Path(prefix)
+                if not prefix.absolute():
+                    prefix = drake.path_src(prefix)
+            # Compute the search path.
+            if prefix is None:
+                test = [Path('/usr'), Path('/usr/local')]
+            else:
+                test = [Path(prefix)]
+            prefix, include_dir = self._search_many_all([p / token for p in include_dir],
+                                                        test)[0]
+            include_dir.strip_suffix(token)
+            include_path = prefix / include_dir
+            if not include_path.absolute():
+                include_path.strip_prefix(srctree())
+            self.__prefix = prefix
+            self.__config.add_system_include_path(include_path)
+            self.__prefix_symbolic = prefix_symbolic or self.__prefix
+            self.__libraries_path = self.__prefix_symbolic / 'lib'
+            self.__config.lib_path(self.__prefix / 'lib')
         for lib in libs:
             self.__config.lib(lib)
 

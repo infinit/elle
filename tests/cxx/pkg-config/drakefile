@@ -1,0 +1,11 @@
+import drake
+import drake.cxx
+import os
+
+os.environ['PKG_CONFIG_PATH'] = os.getcwd()
+
+def configure():
+
+  cfg = drake.cxx.LibraryConfiguration(name = 'somelib')
+  assert '/beacon/include' in cfg.config().system_include_path
+  assert '/beacon/lib' in cfg.config().library_path

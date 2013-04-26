@@ -52,12 +52,13 @@ def configure(prefix = '.'):
   install = drake.Rule('install', python)
 
   tests = [
+    'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',
-    'base/deps-dyn',
     'cxx/dependency-directory-clash',
-    'cxx/headers-deps',
     'cxx/find_library',
+    'cxx/headers-deps',
+    'cxx/pkg-config',
     'sched/exceptions',
     'sched/thread-concurrency',
     ]
