@@ -1,6 +1,8 @@
 #ifndef  ELLE_THREADING_MONITOR_HXX
 # define ELLE_THREADING_MONITOR_HXX
 
+# include <elle/assert.hh>
+
 # include <boost/thread/tss.hpp>
 
 namespace elle
