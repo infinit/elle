@@ -22,17 +22,10 @@ openssl = drake.cxx.LibraryConfiguration(
 
 boost = drake.cxx.boost.Boost(prefix = '/opt/local')
 
-elle = drake.include('../../../elle',
-                     cxx_toolkit = cxx_toolkit,
-                     cxx_config = cxx_config,
-                     boost = boost,
-                     curl = None)
-
 drake.run(
     '../..',
     cxx_toolkit,
     cxx_config,
     openssl = openssl.config(),
     boost = boost,
-    elle = elle,
 )
