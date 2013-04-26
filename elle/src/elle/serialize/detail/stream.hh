@@ -1,7 +1,7 @@
 #ifndef  ELLE_SERIALIZE_DETAIL_STREAM_HH
 # define ELLE_SERIALIZE_DETAIL_STREAM_HH
 
-# include <iosfwd>
+# include <ios>
 
 namespace elle
 {
