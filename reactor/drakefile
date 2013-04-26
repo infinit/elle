@@ -132,6 +132,8 @@ def configure(cxx_toolkit = None,
     'reactor/logger',
     'reactor/network',
     'reactor/reactor',
+    'reactor/udt-socket',
+    'reactor/nat',
     ]
 
   boost = boost or drake.cxx.boost.Boost()
