@@ -1,9 +1,20 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/random.hh>
+# include <cryptography/Exception.hh>
+
+#include <elle/log.hh>
 
 #include <openssl/engine.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# include <dopenssl/rand.h>
+#endif
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
+#endif
 
 namespace infinit
 {
@@ -29,10 +40,29 @@ namespace infinit
         // required.
         if (::RAND_status() == 0)
           random::setup();
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        // Initialize the deterministic PNRG engine.
+        if (::dRAND_init() == 1)
+          throw Exception(
+            elle::sprintf("unable to initialize the deterministic PNRG "
+                          "engine: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+#endif
       }
 
       ~Initializer()
       {
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        // Clean the deterministic PNRG engine.
+        if (::dRAND_clean() == 1)
+        {
+          ELLE_ERR("unable to clean the deterministic PNRG "
+                   "engine: %s",
+                   ::ERR_error_string(ERR_get_error(), nullptr));
+        }
+#endif
+
         // Free the current threads error queue.
         ::ERR_remove_state(0);
 

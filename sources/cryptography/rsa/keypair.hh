@@ -1,6 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 
+# include <cryptography/fwd.hh>
 # include <cryptography/rsa/PublicKey.hh>
 # include <cryptography/rsa/PrivateKey.hh>
 
@@ -26,9 +27,12 @@ namespace infinit
         /// Note that the length is in bits.
         std::pair<PublicKey, PrivateKey>
         generate(elle::Natural32 const length);
-        /// XXX
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        /// Generate a key pair in a deterministic way based on the
+        /// given seed.
         std::pair<PublicKey, PrivateKey>
-        deduce(Seed const& seed);
+        generate(cryptography::seed::Interface const& seed);
+# endif
       }
     }
   }

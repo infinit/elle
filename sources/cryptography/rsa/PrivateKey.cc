@@ -1,4 +1,5 @@
 #include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/rsa/Seed.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -13,6 +14,10 @@
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# include <dopenssl/rsa.h>
+#endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
 
@@ -45,7 +50,6 @@ namespace infinit
         _context_rotate(nullptr)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->e, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->d, nullptr);
@@ -57,6 +61,44 @@ namespace infinit
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
+
+        // Prepare the cryptographic contexts.
+        this->_prepare();
+
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
+      }
+
+      PrivateKey::PrivateKey(::RSA* rsa):
+        _key(nullptr),
+        _context_decrypt(nullptr),
+        _context_sign(nullptr),
+        _context_encrypt(nullptr),
+        _context_rotate(nullptr)
+      {
+        ELLE_ASSERT_NEQ(rsa, nullptr);
+        ELLE_ASSERT_NEQ(rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(rsa->e, nullptr);
+        ELLE_ASSERT_NEQ(rsa->d, nullptr);
+        ELLE_ASSERT_NEQ(rsa->p, nullptr);
+        ELLE_ASSERT_NEQ(rsa->q, nullptr);
+        ELLE_ASSERT_NEQ(rsa->dmp1, nullptr);
+        ELLE_ASSERT_NEQ(rsa->dmq1, nullptr);
+        ELLE_ASSERT_NEQ(rsa->iqmp, nullptr);
+
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Construct the private key based on the given RSA structure.
+        this->_construct(rsa);
 
         // Prepare the cryptographic contexts.
         this->_prepare();
@@ -87,6 +129,15 @@ namespace infinit
         _context_encrypt(nullptr),
         _context_rotate(nullptr)
       {
+        ELLE_ASSERT_NEQ(n, nullptr);
+        ELLE_ASSERT_NEQ(e, nullptr);
+        ELLE_ASSERT_NEQ(d, nullptr);
+        ELLE_ASSERT_NEQ(p, nullptr);
+        ELLE_ASSERT_NEQ(q, nullptr);
+        ELLE_ASSERT_NEQ(dmp1, nullptr);
+        ELLE_ASSERT_NEQ(dmq1, nullptr);
+        ELLE_ASSERT_NEQ(iqmp, nullptr);
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -191,6 +242,27 @@ namespace infinit
       `--------*/
 
       void
+      PrivateKey::_construct(::RSA* rsa)
+      {
+        ELLE_DEBUG_FUNCTION(rsa);
+
+        ELLE_ASSERT_NEQ(rsa, nullptr);
+
+        // Initialise the private key structure.
+        if ((this->_key = ::EVP_PKEY_new()) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Set the rsa structure into the private key.
+        if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
+          throw Exception(
+            elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
+                          "structure: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+      }
+
+      void
       PrivateKey::_construct(::BIGNUM* n,
                              ::BIGNUM* e,
                              ::BIGNUM* d,
@@ -211,13 +283,7 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
 
-        // Initialise the private key structure.
-        if ((this->_key = ::EVP_PKEY_new()) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        ::RSA* rsa;
+        ::RSA* rsa = nullptr;
 
         // Create the RSA structure.
         if ((rsa = ::RSA_new()) == nullptr)
@@ -246,12 +312,8 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
 
-        // Set the rsa structure into the private key.
-        if (::EVP_PKEY_assign_RSA(this->_key, rsa) <= 0)
-          throw Exception(
-            elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
-                          "structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        // Construct the private key based on an RSA key.
+        this->_construct(rsa);
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -461,7 +523,8 @@ namespace infinit
       `------------*/
 
       elle::Boolean
-      PrivateKey::operator ==(privatekey::Interface const& other) const
+      PrivateKey::operator ==(
+        cryptography::privatekey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -473,7 +536,8 @@ namespace infinit
       }
 
       elle::Boolean
-      PrivateKey::operator <(privatekey::Interface const& other) const
+      PrivateKey::operator <(
+        cryptography::privatekey::Interface const& other) const
       {
         if (this == &other)
           return (true);
@@ -484,7 +548,7 @@ namespace infinit
         return (*this < static_cast<PrivateKey const&>(other));
       }
 
-      privatekey::Interface*
+      cryptography::privatekey::Interface*
       PrivateKey::clone() const
       {
         return (new PrivateKey(*this));
@@ -545,10 +609,18 @@ namespace infinit
                                          ::EVP_PKEY_sign));
       }
 
-      Seed
-      PrivateKey::rotate(Seed const& seed) const
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+      cryptography::Seed
+      PrivateKey::rotate(cryptography::Seed const& seed) const
       {
         ELLE_TRACE_METHOD(seed);
+
+        ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
+
+        // Cast the seed into an actual RSA seed.
+        ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed.implementation()),
+                        nullptr);
+        Seed const& _seed = static_cast<Seed const&>(seed.implementation());
 
         // Ensure the size of the seed equals the modulus.
         //
@@ -558,21 +630,26 @@ namespace infinit
         //
         // If it is too small, an attack could be performed against textbook
         // RSA which is the algorithm used in this case.
-        if (seed.buffer().size() !=
+        if (_seed.buffer().size() !=
             static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key)))
           throw Exception("unable to rotate a seed whose size does not match "
                           "the RSA key's modulus");
 
-        Seed _seed(std::move(
-                     evp::asymmetric::apply(elle::WeakBuffer{seed.buffer()},
-                                            this->_context_rotate,
-                                            ::EVP_PKEY_sign)));
+        elle::Buffer buffer =
+          evp::asymmetric::apply(elle::WeakBuffer{_seed.buffer()},
+                                 this->_context_rotate,
+                                 ::EVP_PKEY_sign);
 
         // Make sure the seed does not grow over time.
-        ELLE_ASSERT_EQ(seed.buffer().size(), _seed.buffer().size());
+        ELLE_ASSERT_EQ(_seed.buffer().size(), buffer.size());
 
-        return (_seed);
+        // Create an implementation of an RSA seed.
+        std::unique_ptr<cryptography::seed::Interface> implementation(
+          new Seed(std::move(buffer), ::BN_dup(_seed.n())));
+
+        return (cryptography::Seed(std::move(implementation)));
       }
+#endif
 
       /*----------.
       | Printable |
@@ -594,6 +671,64 @@ namespace infinit
                << ", "
                << *this->_key->pkey.rsa->d
                << ")";
+      }
+    }
+  }
+}
+
+//
+// ---------- Generator -------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace privatekey
+      {
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        PrivateKey
+        generate(cryptography::seed::Interface const& seed)
+        {
+          ELLE_TRACE_FUNCTION(seed);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
+
+          // Cast the interface into an actual RSA seed.
+          ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
+          Seed const& _seed = static_cast<Seed const&>(seed);
+
+          ELLE_ASSERT_EQ(_seed.buffer().size(),
+                         static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
+
+          // Deduce the RSA key from the given seed.
+          ::RSA* rsa = nullptr;
+
+          if ((rsa = ::dRSA_deduce_privatekey(
+                 ::BN_num_bits(_seed.n()),
+                 static_cast<unsigned char const*>(_seed.buffer().contents()),
+                 _seed.buffer().size())) == nullptr)
+            throw Exception(
+              elle::sprintf("unable to deduce the RSA key from the given "
+                            "seed: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+          // Instanciate an RSA private key by transferring the ownership
+          // of the RSA structure.
+          PrivateKey k(rsa);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+          return (PrivateKey(std::move(k)));
+        }
+#endif
       }
     }
   }

@@ -54,8 +54,9 @@ namespace infinit
       KeyPair(PublicKey&& K,
               PrivateKey&& k);
       explicit
-      KeyPair(Cryptosystem const cryptosystem,
-              Seed const& seed);
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+      KeyPair(Seed const& seed);
+# endif
       KeyPair(KeyPair const& other);
       KeyPair(KeyPair&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
@@ -70,6 +71,9 @@ namespace infinit
       /// Return the private key.
       PrivateKey const&
       k() const;
+      /// Return the cryptosystem provided by this key pair.
+      Cryptosystem
+      cryptosystem() const;
       /// Return the key pair's size in bytes.
       elle::Natural32
       size() const;
