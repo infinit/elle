@@ -7,7 +7,7 @@
 
 static
 int
-_test_main(int ac, char** av)
+_test_main(int, char** av)
 {
   if (av[0] == std::string{"stdout"})
     std::cout << av[1] << "\n";
@@ -28,7 +28,7 @@ main(int argc, char** argv)
 
   // Redirect stdout to a file
   {
-    ProcessConfig cfg;
+    auto cfg = elle::system::process_config(elle::system::normal_config);
     cfg.pipe_file(ProcessChannelStream::out, "/tmp/bite");
     Process(std::move(cfg), argv[0], {"--", "stdout", "bite"}).wait();
     std::ifstream f{"/tmp/bite"};
@@ -40,7 +40,7 @@ main(int argc, char** argv)
 
   // Redirect stderr to a file
   {
-    ProcessConfig cfg;
+    auto cfg = elle::system::process_config(elle::system::normal_config);
     cfg.pipe_file(ProcessChannelStream::err, "/tmp/bite2");
     Process(std::move(cfg), argv[0], {"--", "stderr", "BIET"}).wait();
     std::ifstream f{"/tmp/bite2"};
