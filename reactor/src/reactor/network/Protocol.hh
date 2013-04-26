@@ -1,6 +1,8 @@
 #ifndef PROTOCOLS_HH
 # define PROTOCOLS_HH
 
+#include <iosfwd>
+
 namespace reactor
 {
   namespace network
@@ -10,6 +12,9 @@ namespace reactor
       tcp,
       udt,
     };
+
+    std::ostream&
+    operator <<(std::ostream& out, Protocol p);
   }
 }
 
