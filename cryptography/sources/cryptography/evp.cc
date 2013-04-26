@@ -128,10 +128,9 @@ namespace infinit
           ELLE_ASSERT_GT(buffer.size(), 0);
 
           // Encrypt the secret key's archive.
-          Code key(
-            std::move(apply(elle::WeakBuffer{buffer},
-                            context,
-                            function)));
+          Code key(apply(elle::WeakBuffer{buffer},
+                         context,
+                         function));
 
           // 4) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
@@ -191,10 +190,9 @@ namespace infinit
           Digest digest = oneway::hash(plain, oneway_algorithm);
 
           // 2) Sign the digest.
-          Signature signature(
-            std::move(apply(elle::WeakBuffer{digest.buffer()},
-                            context,
-                            function)));
+          Signature signature(apply(elle::WeakBuffer{digest.buffer()},
+                                    context,
+                                    function));
 
           return (signature);
         }
@@ -373,6 +371,7 @@ namespace infinit
 
           // Update the code size with the actual size of the generated data.
           code.buffer().size(size_header + size_update + size_finalize);
+          code.buffer().shrink_to_fit();
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
@@ -476,6 +475,7 @@ namespace infinit
 
           // Update the clear size with the actual size of the data decrypted.
           clear.buffer().size(size_update + size_final);
+          clear.buffer().shrink_to_fit();
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
@@ -544,6 +544,7 @@ namespace infinit
 
           // Update the digest final size.
           digest.buffer().size(size);
+          digest.buffer().shrink_to_fit();
 
           // Clean the context.
           if (::EVP_MD_CTX_cleanup(&context) <= 0)
