@@ -9,8 +9,6 @@
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
 
-# include <boost/noncopyable.hpp>
-
 namespace infinit
 {
   namespace cryptography
@@ -19,8 +17,7 @@ namespace infinit
     /// can be constructed from a weak buffer which is basically a wrapper
     /// around a memory address and size.
     class Input:
-      public elle::Printable,
-      private boost::noncopyable
+      public elle::Printable
     {
       /*-------------.
       | Construction |
@@ -28,6 +25,8 @@ namespace infinit
     public:
       explicit
       Input(elle::WeakBuffer const& buffer);
+      Input(Input const&) = delete;
+      Input(Input&) = delete;
 
       /*----------.
       | Operators |
