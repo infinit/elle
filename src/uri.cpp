@@ -27,17 +27,11 @@
 #include <vector>
 
 namespace network {
-#if defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
-  uri_category_impl::uri_category_impl() {
-
-  }
-#endif // defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
-
-  uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {
+  uri_category_impl::~uri_category_impl() noexcept {
 
   }
 
-  const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
+  const char *uri_category_impl::name() const noexcept {
     static const char name[] = "uri_error";
     return name;
   }
@@ -49,16 +43,7 @@ namespace network {
     default:
       break;
     }
-    return std::string("Unknown URI error.");
-  }
-
-  const std::error_category &uri_category() {
-    static uri_category_impl uri_category;
-    return uri_category;
-  }
-
-  std::error_code make_error_code(uri_error e) {
-    return std::error_code(static_cast<int>(e), uri_category());
+    return "Unknown URI error.";
   }
 
   namespace {
@@ -158,8 +143,7 @@ namespace network {
 	pimpl_->uri_.append(*host);
       }
       else {
-	auto ec = make_error_code(uri_error::invalid_uri);
-	throw std::system_error(ec);
+	throw uri_builder_error();
       }
 
       if (port) {
@@ -173,8 +157,7 @@ namespace network {
 	  pimpl_->uri_.append(":");
 	}
 	else {
-	  auto ec = make_error_code(uri_error::invalid_uri);
-	  throw std::system_error(ec);
+	  throw uri_builder_error();
 	}
       }
     }
@@ -241,6 +224,19 @@ namespace network {
 
   }
 
+  uri::uri(const uri_builder &builder)
+    : uri(builder.scheme_,
+	  builder.user_info_,
+	  builder.host_,
+	  builder.port_,
+	  builder.path_,
+	  builder.query_,
+	  builder.fragment_) {
+
+    // throw if the URI is opaque and the scheme is null
+
+  }
+
   uri::uri(uri &&other)
     : pimpl_(other.pimpl_) {
     other.pimpl_ = new impl;
@@ -250,17 +246,12 @@ namespace network {
     delete pimpl_;
   }
 
-  uri &uri::operator = (const uri &other) {
-    uri(other).swap(*this);
+  uri &uri::operator = (uri other) {
+    other.swap(*this);
     return *this;
   }
 
-  uri &uri::operator = (uri &&other) {
-    uri(other).swap(*this);
-    return *this;
-  }
-
-  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
+  void uri::swap(uri &other) noexcept {
     std::swap(pimpl_, other.pimpl_);
   }
 
@@ -374,16 +365,16 @@ namespace network {
     return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
-  bool uri::empty() const NETWORK_URI_NOEXCEPT {
+  bool uri::empty() const noexcept {
     return pimpl_->uri_.empty();
   }
 
-  bool uri::absolute() const NETWORK_URI_NOEXCEPT {
+  bool uri::is_absolute() const noexcept {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::opaque() const NETWORK_URI_NOEXCEPT {
-    return (absolute() && !authority());
+  bool uri::is_opaque() const noexcept {
+    return (is_absolute() && !authority());
   }
 
   namespace {
@@ -446,11 +437,6 @@ namespace network {
       }
     }
 
-    template <class Source>
-    void percent_encoding_to_upper(Source &source) {
-      percent_encoding_to_upper(std::begin(source), std::end(source));
-    }
-
     template <class Iter>
     Iter decode_encoded_chars(Iter first, Iter last) {
       auto it = first, it2 = first;
@@ -470,12 +456,6 @@ namespace network {
 	++it; ++it2;
       }
       return it2;
-    }
-
-    template <class Source>
-    void decode_encoded_chars(Source &source) {
-      auto first = std::begin(source), last = std::end(source);
-      source.erase(decode_encoded_chars(first, last), last);
     }
 
     template <class Source>
@@ -500,7 +480,7 @@ namespace network {
 			  if (s == "..") {
 			    // in a valid path, the minimum number of segments is 1
 			    if (normalized_segments.size() <= 1) {
-			      throw std::system_error(uri_error::invalid_path);
+			      throw uri_builder_error();
 			    }
 
 			    normalized_segments.pop_back();
@@ -534,12 +514,12 @@ namespace network {
       if ((uri_comparison_level::case_normalization == level) ||
 	  (uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	percent_encoding_to_upper(path);
+	percent_encoding_to_upper(std::begin(path), std::end(path));
       }
 
       if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	decode_encoded_chars(path);
+	path.erase(decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
       }
 
       if (uri_comparison_level::path_segment_normalization == level) {
@@ -574,13 +554,14 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      percent_encoding_to_upper(normalized);
+      percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
     }
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
-      decode_encoded_chars(normalized);
+      normalized.erase(decode_encoded_chars(std::begin(normalized), std::end(normalized)),
+		       std::end(normalized));
     }
 
     if (uri_comparison_level::path_segment_normalization == level) {
@@ -645,7 +626,7 @@ namespace network {
 
   } // namespace
 
-  uri uri::relativize(const uri &other, uri_comparison_level level) const {
+  uri uri::make_reference(const uri &other, uri_comparison_level level) const {
     if (opaque() || other.opaque()) {
       return other;
     }
@@ -849,16 +830,15 @@ namespace network {
     return normalize(level).native().compare(other.normalize(level).native());
   }
 
-  void uri::initialize(const string_type &uri, std::error_code &ec) {
+  bool uri::initialize(const string_type &uri) {
     pimpl_ = new impl;
 
     pimpl_->uri_ = boost::trim_copy(uri);
     if (!pimpl_->uri_.empty()) {
       auto first = std::begin(pimpl_->uri_), last = std::end(pimpl_->uri_);
       bool is_valid = detail::parse(first, last, pimpl_->uri_parts_);
-      if (!is_valid) {
-	ec = make_error_code(uri_error::invalid_syntax);
-      }
+      return is_valid;
     }
+    return true;
   }
 } // namespace network

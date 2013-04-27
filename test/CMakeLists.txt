@@ -1,4 +1,4 @@
-# Copyright (c) Glyn Matthews 2012.
+# Copyright (c) Glyn Matthews 2012, 2013.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -12,9 +12,10 @@ set(
   uri_encoding_test
   uri_normalization_test
   uri_comparison_test
-  uri_relativize_test
+  uri_reference_test
   uri_resolve_test
   uri_builder_test
+  uri_stream_test
   )
 if(CPP-NETLIB_BUILD_SINGLE_LIB)
   set(link_cppnetlib_lib cppnetlib)

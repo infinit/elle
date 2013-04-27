@@ -1,8 +1,8 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
 
 #include <gtest/gtest.h>
@@ -11,12 +11,12 @@
 
 TEST(builder_test, empty_uri_doesnt_throw) {
   network::uri_builder builder;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, empty_uri) {
   network::uri_builder builder;
-  network::uri instance(builder.uri());
+  network::uri instance(builder);
   ASSERT_TRUE(instance.empty());
 }
 
@@ -27,7 +27,7 @@ TEST(builder_test, simple_uri_doesnt_throw) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, simple_uri) {
@@ -37,7 +37,7 @@ TEST(builder_test, simple_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("http://www.example.com/", builder.uri().string());
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
 }
 
 TEST(builder_test, simple_uri_has_scheme) {
@@ -47,7 +47,7 @@ TEST(builder_test, simple_uri_has_scheme) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(builder.uri().scheme());
+  ASSERT_TRUE(network::uri(builder).scheme());
 }
 
 TEST(builder_test, simple_uri_scheme_value) {
@@ -57,7 +57,7 @@ TEST(builder_test, simple_uri_scheme_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("http", *builder.uri().scheme());
+  ASSERT_EQ("http", *network::uri(builder).scheme());
 }
 
 TEST(builder_test, simple_uri_has_no_user_info) {
@@ -67,7 +67,7 @@ TEST(builder_test, simple_uri_has_no_user_info) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().user_info());
+  ASSERT_FALSE(network::uri(builder).user_info());
 }
 
 TEST(builder_test, simple_uri_has_host) {
@@ -77,7 +77,7 @@ TEST(builder_test, simple_uri_has_host) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(builder.uri().host());
+  ASSERT_TRUE(network::uri(builder).host());
 }
 
 TEST(builder_test, simple_uri_host_value) {
@@ -87,7 +87,7 @@ TEST(builder_test, simple_uri_host_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", *network::uri(builder).host());
 }
 
 TEST(builder_test, simple_uri_has_no_port) {
@@ -97,7 +97,7 @@ TEST(builder_test, simple_uri_has_no_port) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().port());
+  ASSERT_FALSE(network::uri(builder).port());
 }
 
 TEST(builder_test, simple_uri_has_path) {
@@ -107,7 +107,7 @@ TEST(builder_test, simple_uri_has_path) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(builder.uri().path());
+  ASSERT_TRUE(network::uri(builder).path());
 }
 
 TEST(builder_test, simple_uri_path_value) {
@@ -117,7 +117,7 @@ TEST(builder_test, simple_uri_path_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("/", *builder.uri().path());
+  ASSERT_EQ("/", *network::uri(builder).path());
 }
 
 TEST(builder_test, simple_uri_has_no_query) {
@@ -127,7 +127,7 @@ TEST(builder_test, simple_uri_has_no_query) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().query());
+  ASSERT_FALSE(network::uri(builder).query());
 }
 
 TEST(builder_test, simple_uri_has_no_fragment) {
@@ -137,7 +137,7 @@ TEST(builder_test, simple_uri_has_no_fragment) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().fragment());
+  ASSERT_FALSE(network::uri(builder).fragment());
 }
 
 TEST(builder_test, simple_opaque_uri_doesnt_throw) {
@@ -146,7 +146,7 @@ TEST(builder_test, simple_opaque_uri_doesnt_throw) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, simple_opaque_uri) {
@@ -155,7 +155,7 @@ TEST(builder_test, simple_opaque_uri) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("mailto:john.doe@example.com", builder.uri().string());
+  ASSERT_EQ("mailto:john.doe@example.com", network::uri(builder));
 }
 
 TEST(builder_test, simple_opaque_uri_has_scheme) {
@@ -164,7 +164,7 @@ TEST(builder_test, simple_opaque_uri_has_scheme) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_TRUE(builder.uri().scheme());
+  ASSERT_TRUE(network::uri(builder).scheme());
 }
 
 TEST(builder_test, simple_opaque_uri_scheme_value) {
@@ -173,7 +173,7 @@ TEST(builder_test, simple_opaque_uri_scheme_value) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("mailto", *builder.uri().scheme());
+  ASSERT_EQ("mailto", *network::uri(builder).scheme());
 }
 
 TEST(builder_test, relative_hierarchical_uri_doesnt_throw) {
@@ -182,7 +182,7 @@ TEST(builder_test, relative_hierarchical_uri_doesnt_throw) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, relative_hierarchical_uri) {
@@ -191,7 +191,7 @@ TEST(builder_test, relative_hierarchical_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com/", builder.uri().string());
+  ASSERT_EQ("www.example.com/", network::uri(builder));
 }
 
 TEST(builder_test, relative_opaque_uri_doesnt_throw) {
@@ -199,7 +199,7 @@ TEST(builder_test, relative_opaque_uri_doesnt_throw) {
   builder
     .path("john.doe@example.com")
     ;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, relative_opaque_uri) {
@@ -207,7 +207,7 @@ TEST(builder_test, relative_opaque_uri) {
   builder
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("john.doe@example.com", builder.uri().string());
+  ASSERT_EQ("john.doe@example.com", network::uri(builder));
 }
 
 TEST(builder_test, full_uri_doesnt_throw) {
@@ -221,7 +221,7 @@ TEST(builder_test, full_uri_doesnt_throw) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_NO_THROW(builder.uri());
+  ASSERT_NO_THROW(network::uri(builder));
 }
 
 TEST(builder_test, full_uri) {
@@ -235,7 +235,7 @@ TEST(builder_test, full_uri) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", builder.uri().string());
+  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", network::uri(builder));
 }
 
 TEST(builder_test, full_uri_has_scheme) {
@@ -249,7 +249,7 @@ TEST(builder_test, full_uri_has_scheme) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().scheme());
+  ASSERT_TRUE(network::uri(builder).scheme());
 }
 
 TEST(builder_test, full_uri_scheme_value) {
@@ -263,7 +263,7 @@ TEST(builder_test, full_uri_scheme_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("http", *builder.uri().scheme());
+  ASSERT_EQ("http", *network::uri(builder).scheme());
 }
 
 TEST(builder_test, full_uri_has_user_info) {
@@ -277,7 +277,7 @@ TEST(builder_test, full_uri_has_user_info) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().user_info());
+  ASSERT_TRUE(network::uri(builder).user_info());
 }
 
 TEST(builder_test, full_uri_user_info_value) {
@@ -291,7 +291,7 @@ TEST(builder_test, full_uri_user_info_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("user:password", *builder.uri().user_info());
+  ASSERT_EQ("user:password", *network::uri(builder).user_info());
 }
 
 TEST(builder_test, full_uri_has_host) {
@@ -305,7 +305,7 @@ TEST(builder_test, full_uri_has_host) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().host());
+  ASSERT_TRUE(network::uri(builder).host());
 }
 
 TEST(builder_test, full_uri_host_value) {
@@ -319,7 +319,7 @@ TEST(builder_test, full_uri_host_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", *network::uri(builder).host());
 }
 
 TEST(builder_test, full_uri_has_port) {
@@ -333,7 +333,7 @@ TEST(builder_test, full_uri_has_port) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().port());
+  ASSERT_TRUE(network::uri(builder).port());
 }
 
 TEST(builder_test, full_uri_has_path) {
@@ -347,7 +347,7 @@ TEST(builder_test, full_uri_has_path) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().path());
+  ASSERT_TRUE(network::uri(builder).path());
 }
 
 TEST(builder_test, full_uri_path_value) {
@@ -361,7 +361,7 @@ TEST(builder_test, full_uri_path_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("/path", *builder.uri().path());
+  ASSERT_EQ("/path", *network::uri(builder).path());
 }
 
 TEST(builder_test, full_uri_has_query) {
@@ -375,7 +375,7 @@ TEST(builder_test, full_uri_has_query) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().query());
+  ASSERT_TRUE(network::uri(builder).query());
 }
 
 TEST(builder_test, full_uri_query_value) {
@@ -389,7 +389,7 @@ TEST(builder_test, full_uri_query_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("query", *builder.uri().query());
+  ASSERT_EQ("query", *network::uri(builder).query());
 }
 
 TEST(builder_test, full_uri_has_fragment) {
@@ -403,7 +403,7 @@ TEST(builder_test, full_uri_has_fragment) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(builder.uri().fragment());
+  ASSERT_TRUE(network::uri(builder).fragment());
 }
 
 TEST(builder_test, full_uri_fragment_value) {
@@ -417,15 +417,7 @@ TEST(builder_test, full_uri_fragment_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("fragment", *builder.uri().fragment());
-}
-
-TEST(builder_test, no_scheme_only) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    ;
-  ASSERT_THROW(builder.uri(), std::system_error);
+  ASSERT_EQ("fragment", *network::uri(builder).fragment());
 }
 
 TEST(builder_test, relative_uri) {
@@ -434,7 +426,7 @@ TEST(builder_test, relative_uri) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com/", builder.uri().string());
+  ASSERT_EQ("www.example.com/", network::uri(builder));
 }
 
 TEST(builder_test, relative_uri_scheme) {
@@ -443,7 +435,7 @@ TEST(builder_test, relative_uri_scheme) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().scheme());
+  ASSERT_FALSE(network::uri(builder).scheme());
 }
 
 TEST(builder_test, relative_uri_has_host) {
@@ -452,7 +444,7 @@ TEST(builder_test, relative_uri_has_host) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(builder.uri().host());
+  ASSERT_TRUE(network::uri(builder).host());
 }
 
 TEST(builder_test, relative_uri_host_value) {
@@ -461,7 +453,7 @@ TEST(builder_test, relative_uri_host_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", *network::uri(builder).host());
 }
 
 TEST(builder_test, relative_uri_has_path) {
@@ -470,7 +462,7 @@ TEST(builder_test, relative_uri_has_path) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(builder.uri().path());
+  ASSERT_TRUE(network::uri(builder).path());
 }
 
 TEST(builder_test, relative_uri_path_value) {
@@ -479,142 +471,186 @@ TEST(builder_test, relative_uri_path_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("/", *builder.uri().path());
+  ASSERT_EQ("/", *network::uri(builder).path());
 }
 
-//TEST(builder_test, simple_port) {
-//  network::uri_builder builder;
-//  builder
-//    .scheme("http")
-//    .host("www.example.com")
-//    .port(8000)
-//    .path("/")
-//    ;
-//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
-//}
+TEST(builder_test, build_relative_uri_with_path_query_and_fragment) {
+  network::uri_builder builder;
+  builder
+    .path("/path/")
+    .query("key", "value")
+    .fragment("fragment")
+    ;
+  ASSERT_EQ("/path/", *network::uri(builder).path());
+  ASSERT_EQ("key=value", *network::uri(builder).query());
+  ASSERT_EQ("fragment", *network::uri(builder).fragment());
+}
 
-//TEST(builder_test, simple_port_us) {
+TEST(builder_test, build_uri_with_capital_scheme) {
+  network::uri_builder builder;
+  builder
+    .scheme("HTTP")
+    .host("www.example.com")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_capital_host) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("WWW.EXAMPLE.COM")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_unencoded_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/A path with spaces")
+    ;
+  ASSERT_EQ("http://www.example.com/A%20path%20with%20spaces", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_builder_uri_and_remove_dot_segments_from_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/A/./path/")
+    ;
+  ASSERT_EQ("http://www.example.com/A/path/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_qmark_in_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/?/")
+    ;
+  ASSERT_EQ("http://www.example.com/%3F/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_hash_in_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/#/")
+    ;
+  ASSERT_EQ("http://www.example.com/%23/", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_build_uri_from_filesystem_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("file")
+    .path(boost::filesystem::path("/path/to/a/file.html"))
+    ;
+  ASSERT_EQ("file:///path/to/a/file.html", network::uri(builder));
+}
+
+TEST(builder_test, build_http_uri_from_filesystem_path) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path(boost::filesystem::path("/path/to/a/file.html"))
+    ;
+  ASSERT_EQ("http://www.example.com/path/to/a/file.html", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_build_uri_from_filesystem_path_with_encoded_chars) {
+  network::uri_builder builder;
+  builder
+    .scheme("file")
+    .path(boost::filesystem::path("/path/to/a/file with spaces.html"))
+    ;
+  ASSERT_EQ("file:///path/to/a/file%20with%20spaces.html", network::uri(builder));
+}
+
+TEST(builder_test, DISABLED_build_uri_with_encoded_unreserved_characters) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .path("/%7Eglynos/")
+    ;
+  ASSERT_EQ("http://www.example.com/~glynos/", network::uri(builder));
+}
+
+TEST(builder_test, simple_port) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .port(8000)
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com:8000/", network::uri(builder));
+}
+
+// This seems to work, but I don't want to add the Boost.System
+// dependency just for this.
+
+TEST(builder_test, build_uri_with_ipv4_address) {
+  using namespace boost::asio::ip;
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host(address_v4::loopback())
+    .path("/")
+    ;
+  ASSERT_EQ("http://127.0.0.1/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_ipv6_address) {
+  using namespace boost::asio::ip;
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host(address_v6::loopback())
+    .path("/")
+    ;
+  ASSERT_EQ("http://[::1]/", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_query_item) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "1")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/?a=1", network::uri(builder));
+}
+
+TEST(builder_test, build_uri_with_multiple_query_items) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "1")
+    .query("b", "2")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
+}
+
+//TEST(builder_test, build_uri_with_multiple_query_items_with_int_values) {
 //  network::uri_builder builder;
 //  builder
 //    .scheme("http")
 //    .host("www.example.com")
-//    .port(unsigned short(8000))
+//    .query("a", 1)
+//    .query("b", 2)
 //    .path("/")
 //    ;
-//  ASSERT_EQ("http://www.example.com:8000/", builder.uri().string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(encoded_path_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host("www.example.com")
-//    .port(8000)
-//    .encoded_path("/Path With (Some) Encoded Characters!")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com:8000/Path%20With%20%28Some%29%20Encoded%20Characters%21", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(query_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .query("key", "value")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/?key=value", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(query_2_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .query("key1", "value1")
-//     .query("key2", "value2")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/?key1=value1&key2=value2", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(fragment_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .path("/")
-//     .fragment("fragment")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(from_base_test) {
-//  network::uri instance("http://www.example.com");
-//  network::builder builder(instance);
-//  builder
-//    .path("/")
-//    .fragment("fragment")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/#fragment", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(encoded_null_char_test) {
-//  // there is a potential bug in the way we process ranges if the
-//  // strings are null terminated.
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("http")
-//     .host("www.example.com")
-//     .encoded_path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://www.example.com/", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(mailto_builder_test) {
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//     .scheme("mailto")
-//     .path("cpp-netlib@example.com")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("mailto:cpp-netlib@example.com", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(ipv4_address) {
-//  using namespace boost::asio::ip;
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host(address_v4::loopback())
-//    .path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://127.0.0.1/", instance.string());
-//}
-//
-//BOOST_AUTO_TEST_CASE(ipv6_address) {
-//  using namespace boost::asio::ip;
-//  network::uri instance;
-//  network::builder builder(instance);
-//  builder
-//    .scheme("http")
-//    .host(address_v6::loopback())
-//    .path("/")
-//    ;
-//  BOOST_REQUIRE(network::valid(instance));
-//  BOOST_CHECK_EQUAL("http://[::1]/", instance.string());
+//  ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
 //}
