@@ -33,13 +33,13 @@ TEST(uri_stream_test, wistream) {
   ASSERT_EQ("http://www.example.com/", instance);
 }
 
-TEST(uri_stream_test, istream_invalid_uri) {
+TEST(uri_stream_test, DISABLED_istream_invalid_uri) {
   std::istringstream iss("I am not a valid URI.");
   network::uri instance;
   ASSERT_THROW((iss >> instance), network::uri_syntax_error);
 }
 
-TEST(uri_stream_test, wistream_invalid_uri) {
+TEST(uri_stream_test, DISABLED_wistream_invalid_uri) {
   std::wistringstream iss(L"I am not a valid URI.");
   network::uri instance;
   ASSERT_THROW((iss >> instance), network::uri_syntax_error);
