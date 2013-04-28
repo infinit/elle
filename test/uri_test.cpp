@@ -573,7 +573,7 @@ TEST(uri_test, uri_reference_query_test) {
   network::uri instance("relative/path/to/resource?query#fragment");
   ASSERT_TRUE(instance.query());
   ASSERT_EQ("query", *instance.query());
-
+}
 
 TEST(uri_test, uri_reference_fragment_test) {
   network::uri instance("relative/path/to/resource?query#fragment");
