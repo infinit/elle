@@ -681,12 +681,11 @@ namespace network {
     }
 
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
-    template<typename Range>
-    uri::string_type remove_dot_segments(const Range& path) {
+    uri::string_type remove_dot_segments(uri::string_type input) {
       using namespace boost::algorithm;
       using std::begin;
 
-      uri::string_type input(to_string_type(path)), output;
+      uri::string_type output;
       while(!input.empty()) {
         if (starts_with(input, "../"))
           erase_head(input, 3);
@@ -717,21 +716,22 @@ namespace network {
       return output;
     }
 
-    //inline uri::string_type remove_dot_segments(
-    //  const boost::optional<boost::string_ref>& path) {
-    //  return path ? to_string_type(*path) : uri::string_type();
-    //}
+    template<typename Range>
+    uri::string_type remove_dot_segments(const Range& path) {
+      uri::string_type input(to_string_type(path));
+      return remove_dot_segments(move(input));
+    }
 
-    inline bool empty_path(const uri& uri){
+    inline bool has_empty_path(const uri& uri) {
       return !uri.path() || uri.path().get().empty();
     }
 
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
-    inline uri::string_type merge_paths(const uri& base, const uri& reference)
-    {
+    inline uri::string_type merge_paths(const uri& base, const uri& reference) {
       using std::begin;
+
       uri::string_type path;
-      if (empty_path(base))
+      if (has_empty_path(base))
         path = "/";
       else {
         const auto& base_path = base.path().get();
@@ -739,7 +739,7 @@ namespace network {
         path.append(begin(base_path), last_slash.end());
       }
       path.append(to_string_type(reference.path()));
-      return remove_dot_segments(path);
+      return remove_dot_segments(move(path));
     }
 
 
@@ -785,7 +785,7 @@ namespace network {
       query = make_arg(reference.query()); 
     }
     else {
-      if (empty_path(reference)) {
+      if (has_empty_path(reference)) {
         path = make_arg(base.path());
         if (reference.query()) 
           query = make_arg(reference.query());
