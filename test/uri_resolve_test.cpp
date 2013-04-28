@@ -14,15 +14,13 @@ struct uri_resolve_test : public ::testing::Test {
   {
   }
 
-  uri::string_type resolved(const network::uri& base, uri::string_type reference)
-  {
+  uri::string_type resolved(const network::uri& base, uri::string_type reference) {
     uri reference_uri(reference);
     return base.resolve(reference_uri, 
       network::uri_comparison_level::string_comparison).string();
   }
 
-  uri::string_type resolved(uri::string_type base, uri::string_type reference)
-  {
+  uri::string_type resolved(uri::string_type base, uri::string_type reference) {
     return resolved(uri(base), reference);
   }
 
@@ -35,7 +33,6 @@ struct uri_resolve_test : public ::testing::Test {
   network::uri base_uri;
 };
 
-// additional cases
 
 TEST_F(uri_resolve_test, is_absolute_uri__returns_other)
 {
@@ -51,111 +48,90 @@ TEST_F(uri_resolve_test, base_has_empty_path__path_is_ref_path)
 // normal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.1
 
-TEST_F(uri_resolve_test, remove_dot_segments1)
-{
+TEST_F(uri_resolve_test, remove_dot_segments1) {
   ASSERT_EQ("http://a/b/c/g", resolved("./g"));
 }
 
-TEST_F(uri_resolve_test, base_has_path__path_is_merged)
-{
+TEST_F(uri_resolve_test, base_has_path__path_is_merged) {
   ASSERT_EQ("http://a/b/c/g/", resolved("g/"));
   ASSERT_EQ("http://a/b/c/g", resolved("g"));
 }
 
-TEST_F(uri_resolve_test, path_starts_with_slash__path_is_ref_path)
-{
+TEST_F(uri_resolve_test, path_starts_with_slash__path_is_ref_path) {
   ASSERT_EQ("http://a/g", resolved("/g"));
 }
 
-TEST_F(uri_resolve_test, path_starts_with_slash_with_query_fragment__path_is_ref_path)
-{
+TEST_F(uri_resolve_test, path_starts_with_slash_with_query_fragment__path_is_ref_path) {
   ASSERT_EQ("http://a/g/x?y#s", resolved("/g/x?y#s"));
 }
 
-TEST_F(uri_resolve_test, has_authority__base_scheme_with_ref_authority)
-{
+TEST_F(uri_resolve_test, has_authority__base_scheme_with_ref_authority) {
   ASSERT_EQ("http://g", resolved("//g"));
 }
 
-TEST_F(uri_resolve_test, path_is_empty_but_has_query__returns_base_with_ref_query)
-{
+TEST_F(uri_resolve_test, path_is_empty_but_has_query__returns_base_with_ref_query) {
     ASSERT_EQ("http://a/b/c/d;p?y", resolved("?y"));
 }
 
-TEST_F(uri_resolve_test, path_is_empty_but_has_query_base_no_query__returns_base_with_ref_query)
-{
+TEST_F(uri_resolve_test, path_is_empty_but_has_query_base_no_query__returns_base_with_ref_query) {
     ASSERT_EQ( "http://a/b/c/d?y", resolved("http://a/b/c/d", "?y"));
 }
 
-TEST_F(uri_resolve_test, merge_path_with_query)
-{
+TEST_F(uri_resolve_test, merge_path_with_query) {
   ASSERT_EQ("http://a/b/c/g?y", resolved("g?y"));
 }
 
-TEST_F(uri_resolve_test, append_fragment)
-{
+TEST_F(uri_resolve_test, append_fragment) {
   ASSERT_EQ("http://a/b/c/d;p?q#s", resolved("#s"));
 }
 
-TEST_F(uri_resolve_test, merge_paths_with_fragment)
-{
+TEST_F(uri_resolve_test, merge_paths_with_fragment) {
   ASSERT_EQ("http://a/b/c/g#s", resolved("g#s"));
 }
 
-TEST_F(uri_resolve_test, merge_paths_with_query_and_fragment)
-{
+TEST_F(uri_resolve_test, merge_paths_with_query_and_fragment) {
   ASSERT_EQ("http://a/b/c/g?y#s", resolved("g?y#s"));
 }
 
-TEST_F(uri_resolve_test, merge_paths_with_semicolon)
-{
+TEST_F(uri_resolve_test, merge_paths_with_semicolon) {
   ASSERT_EQ("http://a/b/c/;x", resolved(";x"));
   ASSERT_EQ("http://a/b/c/g;x", resolved("g;x"));
   ASSERT_EQ("http://a/b/c/g;x?y#s", resolved("g;x?y#s"));
 }
 
-TEST_F(uri_resolve_test, path_is_empty__returns_base)
-{
+TEST_F(uri_resolve_test, path_is_empty__returns_base) {
     ASSERT_EQ("http://a/b/c/d;p?q", resolved(""));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments2)
-{
+TEST_F(uri_resolve_test, remove_dot_segments2) {
   ASSERT_EQ("http://a/b/c/", resolved("."));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments3)
-{
+TEST_F(uri_resolve_test, remove_dot_segments3) {
   ASSERT_EQ("http://a/b/c/", resolved("./"));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments4)
-{
+TEST_F(uri_resolve_test, remove_dot_segments4) {
   ASSERT_EQ("http://a/b/", resolved(".."));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments5)
-{
+TEST_F(uri_resolve_test, remove_dot_segments5) {
   ASSERT_EQ("http://a/b/", resolved("../"));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments6)
-{
+TEST_F(uri_resolve_test, remove_dot_segments6) {
   ASSERT_EQ("http://a/b/g", resolved("../g"));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments7)
-{
+TEST_F(uri_resolve_test, remove_dot_segments7) {
   ASSERT_EQ("http://a/", resolved("../.."));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments8)
-{
+TEST_F(uri_resolve_test, remove_dot_segments8) {
   ASSERT_EQ("http://a/", resolved("../../"));
 }
 
-TEST_F(uri_resolve_test, remove_dot_segments9)
-{
+TEST_F(uri_resolve_test, remove_dot_segments9) {
   ASSERT_EQ("http://a/g", resolved("../../g"));
 }
 
@@ -163,33 +139,27 @@ TEST_F(uri_resolve_test, remove_dot_segments9)
 // abnormal examples
 // http://tools.ietf.org/html/rfc3986#section-5.4.2
 
-TEST_F(uri_resolve_test, abnormal_example_1)
-{
+TEST_F(uri_resolve_test, abnormal_example_1) {
   ASSERT_EQ("http://a/g", resolved("../../../g"));
 }
 
-TEST_F(uri_resolve_test, abnormal_example_2)
-{
+TEST_F(uri_resolve_test, abnormal_example_2) {
   ASSERT_EQ("http://a/g", resolved("../../../../g"));
 }
 
-TEST_F(uri_resolve_test, abnormal_example_3)
-{
+TEST_F(uri_resolve_test, abnormal_example_3) {
   ASSERT_EQ("http://a/g", resolved("/./g"));
 }
 
-TEST_F(uri_resolve_test, abnormal_example_4)
-{
+TEST_F(uri_resolve_test, abnormal_example_4) {
   ASSERT_EQ("http://a/g", resolved("/../g"));
 }
 
-TEST_F(uri_resolve_test, abnormal_example_5)
-{
+TEST_F(uri_resolve_test, abnormal_example_5) {
   ASSERT_EQ("http://a/b/c/g.", resolved("g."));
 }
 
-TEST_F(uri_resolve_test, DISABLED_abnormal_example_6)
-{
+TEST_F(uri_resolve_test, abnormal_example_6) {
   ASSERT_EQ("http://a/b/c/.g", resolved(".g"));
 }
 

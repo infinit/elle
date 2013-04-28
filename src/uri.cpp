@@ -606,19 +606,16 @@ namespace network {
   }
 
   namespace {
-    inline uri::string_type to_string_type(boost::string_ref ref)
-    {
-        return uri::string_type(std::begin(ref), std::end(ref));
+    inline uri::string_type to_string_type(boost::string_ref ref) {
+      return uri::string_type(std::begin(ref), std::end(ref));
     }
 
-    inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref)
-    {
+    inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref) {
       return ref.is_initialized() ? to_string_type(ref.get()) : uri::string_type();
     }
 
     inline boost::optional<uri::string_type>
-      to_optional_string_type(boost::optional<boost::string_ref> ref)
-    {
+      to_optional_string_type(boost::optional<boost::string_ref> ref) {
       if (ref)
         return boost::make_optional(to_string_type(ref.get()));
       return boost::optional<uri::string_type>();
