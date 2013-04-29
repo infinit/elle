@@ -299,7 +299,7 @@ namespace infinit
                                secret.size(),
                                1,
                                key,
-                               iv) > static_cast<int>(sizeof(key)))
+                               iv) > static_cast<int>(sizeof (key)))
             throw Exception("the generated key size is too large");
 
           // Initialize the cipher context.
@@ -420,7 +420,7 @@ namespace infinit
                                secret.size(),
                                1,
                                key,
-                               iv) > static_cast<int>(sizeof(key)))
+                               iv) > static_cast<int>(sizeof (key)))
             throw Exception("the generated key size is too large");
 
           // Initialize the cipher context.
