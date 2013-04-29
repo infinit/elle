@@ -64,7 +64,7 @@ namespace infinit
 
           // Read random data.
           random_source_file.read(reinterpret_cast<char *>(temporary),
-                                  sizeof(temporary));
+                                  sizeof (temporary));
         }
 #elif defined(INFINIT_WINDOWS)
         {
