@@ -13,6 +13,7 @@
 # include <elle/operator.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/serialize/DynamicFormat.hh>
 # include <elle/concept/Uniquable.hh>
 
 # include <utility>
@@ -34,6 +35,7 @@ namespace infinit
       class PublicKey:
         public cryptography::publickey::Interface,
         public elle::serialize::SerializableMixin<PublicKey>,
+        public elle::serialize::DynamicFormat<PublicKey>,
         public elle::concept::MakeUniquable<PublicKey>
       {
         /*-------------.
