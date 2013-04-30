@@ -8,6 +8,8 @@
 #include <elle/os/getenv.hh>
 #include <elle/printf.hh>
 
+#include <thread>
+
 namespace elle
 {
   namespace log
@@ -111,6 +113,7 @@ namespace elle
 
     Logger::Logger()
       : _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
+      , _enable_tid(elle::os::getenv("ELLE_LOG_TID", "") == "1")
       , _enable_time(elle::os::getenv("ELLE_LOG_TIME", "") == "1")
       , _universal_time(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "1")
       , _indentation(this->_factory()())
@@ -195,6 +198,10 @@ namespace elle
         prefix += elle::sprintf(
           "[%s] ",
           boost::lexical_cast<std::string>(getpid()));
+      if (this->_enable_tid)
+        prefix += elle::sprintf(
+          "[%s] ",
+          boost::lexical_cast<std::string>(std::this_thread::get_id()));
       prefix += elle::sprintf("[%s] ", comp);
       for (auto& tag: this->_tags())
         {

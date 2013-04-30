@@ -91,6 +91,7 @@ namespace elle
     `----------------------*/
     private:
       bool const _enable_pid,
+                 _enable_tid,
                  _enable_time,
                  _universal_time;
 
