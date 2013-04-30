@@ -176,21 +176,6 @@ namespace elle
           + component + std::string(pad / 2 + pad % 2, ' ');
       }
 
-      // Time
-      boost::posix_time::ptime ptime;
-      {
-        if (_universal_time)
-          ptime = boost::posix_time::second_clock::universal_time();
-        else
-          ptime = boost::posix_time::second_clock::local_time();
-      }
-
-      // PID
-      std::string pid;
-      {
-        pid = boost::lexical_cast<std::string>(getpid());
-      }
-
       // Message
       std::string message;
       {
@@ -200,10 +185,16 @@ namespace elle
 
       // Format
       std::string prefix;
-      if (_enable_time)
-        prefix += elle::sprintf("%s: ", ptime);
-      if (_enable_pid)
-        prefix += elle::sprintf("[%s] ", pid);
+      if (this->_enable_time)
+        prefix += elle::sprintf(
+          "%s: ",
+          this->_universal_time ?
+          boost::posix_time::second_clock::universal_time() :
+          boost::posix_time::second_clock::local_time());
+      if (this->_enable_pid)
+        prefix += elle::sprintf(
+          "[%s] ",
+          boost::lexical_cast<std::string>(getpid()));
       prefix += elle::sprintf("[%s] ", comp);
       for (auto& tag: this->_tags())
         {
