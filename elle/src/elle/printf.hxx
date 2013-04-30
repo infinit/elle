@@ -62,7 +62,7 @@ namespace elle
       feed_it(boost::format& fmt, T&& value, int)
       {
         std::stringstream ss;
-        ss << '<'<< typeid(T).name() << "instance at 0x"
+        ss << '<'<< typeid(T).name() << " instance at "
            << std::hex << static_cast<void const*>(&value) << '>';
         fmt % ss.str();
       }
