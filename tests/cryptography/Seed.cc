@@ -1,12 +1,14 @@
-#include "cryptography.hh"
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 
-#include <cryptography/Seed.hh>
-#include <cryptography/KeyPair.hh>
-#include <cryptography/Exception.hh>
-#include <cryptography/random.hh>
+# include "cryptography.hh"
 
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
+# include <cryptography/Seed.hh>
+# include <cryptography/KeyPair.hh>
+# include <cryptography/Exception.hh>
+# include <cryptography/random.hh>
+
+# include <elle/serialize/insert.hh>
+# include <elle/serialize/extract.hh>
 
 /*--------.
 | Helpers |
@@ -222,3 +224,5 @@ main(int argc,
 {
   return (boost::unit_test::unit_test_main(test, argc, argv));
 }
+
+#endif
