@@ -15,7 +15,7 @@ main()
   }
   catch (std::runtime_error const& err)
   {
-    std::cerr << "Expected error: " << err.what() << std::endl;
+    std::cerr << "got expected error: " << err.what() << std::endl;
   }
   return 0;
 }

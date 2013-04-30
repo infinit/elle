@@ -26,7 +26,7 @@ main()
   Process p3{std::move(tr), "tr", {"a-z", "A-Z"}};
   std::string str = p3.read();
   std::cout << str;
-  ELLE_ASSERT_EQ(str, "HELLO GUYS$\n");
+  ELLE_ENFORCE_EQ(str, "HELLO GUYS$\n");
   p3.wait();
   p2.wait();
   p.wait();
