@@ -291,21 +291,18 @@ test_serialize_rsa()
     BOOST_CHECK_EQUAL(K1, K2);
   }
 
-  // Deserialize from the hard-coded string [representation 1]: useful
-  // for detecting changes in formats.
+  // For every hard-coded strings [representation 1] in every format,
+  // deserialize the public keys, re-serialize them, make sure they can
+  // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    elle::String archive1("AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=");
+    std::vector<elle::String> const archives{
+      // format 0
+      "AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=",
+      // format 1
+      "AAAAAAEAAAAAAQAAzJcO4BIlHIdoQUYGiMvjSG+U4434tyZOhRnfRJUxd9tK/zxezIwPQOBShjU5zin4rhXholbVKJxOLrMN29AoF+wJi3c8+GCFQFBH5sJAQwf66M6kIOdtY2rtIIUd8H4SxWNe9j7MpYQxaYWpMlJE578oZ2/X4aYOO/5Ki4jA4X+afRjaN3yJnikG7OkkwndRLzQzR2BTmG6zT5hGrOZQ13G1SmeMxI5REK6rjrAsrbNPi9yojrjGK5UyityKy2yjiJSf7br7f34sG1xIhKcUW1MWUxi0gaFR4X/6TbTeIxXuuRIgyY3OLWZx3O8Vlx7jwcWcPG/kY5RPbdfU29x9lwAAAwAAAAEAAQ=="};
 
-    auto extractor =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive1);
-    infinit::cryptography::PublicKey K1(extractor);
-
-    elle::String archive2;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive2) << K1;
-
-    BOOST_CHECK_EQUAL(archive1, archive2);
+    infinit::cryptography::test::formats<infinit::cryptography::PublicKey>(
+      archives);
   }
 }
 

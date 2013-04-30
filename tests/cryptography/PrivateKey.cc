@@ -234,21 +234,18 @@ test_serialize_rsa()
     BOOST_CHECK_EQUAL(k1, k2);
   }
 
-  // Deserialize from the hard-coded string [representation 1]: useful
-  // for detecting changes in formats.
+  // For every hard-coded strings [representation 1] in every format,
+  // deserialize the public keys, re-serialize them, make sure they can
+  // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    elle::String archive1("AAAAAAAAAACAAAAAwoyaKV59NC3T9YrWmkzkNrZPYaSuMbYc0VWFfKyJj243biEXp2Ka4pGz7T81U9Pb5vPofT+unLfcAZcmQfJ3SjocTSAJ1zdQKwNl37RWNjxSCyffABZhULTyucCKptoCz23Ntxhfrmrz8bA6g5FDrYrPuxXncc7BGa7ZVZCjOjMAAAMAAAABAAEAAIAAAAAzvd1KX10BQab7yP8mbojLnFUkbP3/LqYfbpVgAStcwD1xxs9ZrznuRD4MPSFbuB7mH7yXgxZXi/axXZfJNklPN8J9ztBoSCLdW07nYy1arISgtPZ3MNBkWmgBghMKXB6ulCBYTN07vtbSqguw7Qujdlj5jf8Db1Hr2pMaeuSqcQAAQAAAAOTKKTUE8r+KjCoi8sLS9FdqEIBwnCuzKYhqVah7TWRI+JmAxb+nSGp0y0shembi4N3NRFn+ZuXVxGQT8j07ah8AAEAAAADZr/CcWcTh07LKoQgdH4hdpW10xaj8sW0D33zxmbodYY7hAZctk2glLWDWcwaC0R7lSPbhnngAmszPabG6DZVtAABAAAAAaAkJjeNvIuw0amCz9SWKGEnRsSYDzddNdour4c4X1hdcfCjTQyAlTMtJOiPCDhDy4ckaYLXPQonfIQb06yUeTwAAQAAAAEOCEHgsTqZJ5JR6Q+3kLYH9H2irM7DJxSkCUdkK93DNJGYa/CsiH5YH8JQQr+A5wf8RFZ76afSmDQX1nSw5sjEAAEAAAABKe9dCMtKqXn7s8naFyPMgbT5Ss/g0nRA5CJ/s5ktCgl5zhi3Xd6w+SRIA+iWFL+Vto7p180YuReY0DCVBsHGu");
+    std::vector<elle::String> const archives{
+      // format 0
+      "AAAAAAAAAACAAAAAwoyaKV59NC3T9YrWmkzkNrZPYaSuMbYc0VWFfKyJj243biEXp2Ka4pGz7T81U9Pb5vPofT+unLfcAZcmQfJ3SjocTSAJ1zdQKwNl37RWNjxSCyffABZhULTyucCKptoCz23Ntxhfrmrz8bA6g5FDrYrPuxXncc7BGa7ZVZCjOjMAAAMAAAABAAEAAIAAAAAzvd1KX10BQab7yP8mbojLnFUkbP3/LqYfbpVgAStcwD1xxs9ZrznuRD4MPSFbuB7mH7yXgxZXi/axXZfJNklPN8J9ztBoSCLdW07nYy1arISgtPZ3MNBkWmgBghMKXB6ulCBYTN07vtbSqguw7Qujdlj5jf8Db1Hr2pMaeuSqcQAAQAAAAOTKKTUE8r+KjCoi8sLS9FdqEIBwnCuzKYhqVah7TWRI+JmAxb+nSGp0y0shembi4N3NRFn+ZuXVxGQT8j07ah8AAEAAAADZr/CcWcTh07LKoQgdH4hdpW10xaj8sW0D33zxmbodYY7hAZctk2glLWDWcwaC0R7lSPbhnngAmszPabG6DZVtAABAAAAAaAkJjeNvIuw0amCz9SWKGEnRsSYDzddNdour4c4X1hdcfCjTQyAlTMtJOiPCDhDy4ckaYLXPQonfIQb06yUeTwAAQAAAAEOCEHgsTqZJ5JR6Q+3kLYH9H2irM7DJxSkCUdkK93DNJGYa/CsiH5YH8JQQr+A5wf8RFZ76afSmDQX1nSw5sjEAAEAAAABKe9dCMtKqXn7s8naFyPMgbT5Ss/g0nRA5CJ/s5ktCgl5zhi3Xd6w+SRIA+iWFL+Vto7p180YuReY0DCVBsHGu",
+      // format 1
+      "AAAAAAEAAACAAAAA296T6bIMwVQNuAmjVcllzjXp+sW2hBjFXcEKvyf6kNF12h+Kl8dpbA9c8fSl73pubtKX97q3hf80yjuQCRedd+BX96uGE8N8SI478kgXRs95jP7X3M+iD0ljYaijbZuEErblE3rkWF+Nknws0tQQHDH91wEqIzeZLm8DFpFIXxcAAAMAAAABAAEAAIAAAADNE+ZS68gJ6ySArDy1H4zdslvzk8aRn6k3sX8cnWWQ/k42jYTv3QfvysSeydqcbE3lAHjOkFHtogTTPIs0b9pm4s3T1YYRvNQ0oTPrb7GifxgnsYXijJDyHAF/Mul82VcsKK6eD7WYUM8mc2cHrc3MiOAU3lVjMK2i3mQqpAZYAQAAQAAAAPgD/A4AFgaVSCAnsK03+uGQ26Rg9ve2NK9g5Lwtu86g/yYQXvozLqYdMcqQRlpvQCGb8yue4y/3aAZEr6lLl5cAAEAAAADi8qCjrhkQiR5tLBdgHpNSearYv8jJIbMUjOCcjRS5Z5fWijttnP5pO+GBAi9zAVb+Z7qhq88hl/ont7JsFmSBAABAAAAAqphbDOpEPDz8wplqboud9v/kBNppphPfg27bhxDSKRwWxQDnw6PnB333XMUGj3gMndGeXzfIP5snI4Clb4a+ewAAQAAAAE49m4gSg22h+C1nH//xSpUKgQ4MwGonBhg1oVIXiWeKAVzjdy2JDGS3Uj0pxbX+ZkF6/WqzUsugG4wJ1qdQ6QEAAEAAAAB4DdvaKhxRfqFZuim3vgjbDjcnliPXdKa5sy4MUIYFWkqlBTBZL2ihl1eBpJx+/hjt47qai9vmnjcpMGJT9/PC"};
 
-    auto extractor =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive1);
-    infinit::cryptography::PrivateKey k1(extractor);
-
-    elle::String archive2;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive2) << k1;
-
-    BOOST_CHECK_EQUAL(archive1, archive2);
+    infinit::cryptography::test::formats<infinit::cryptography::PrivateKey>(
+      archives);
   }
 }
 
