@@ -1,4 +1,4 @@
-#ifndef  ELLE_THREADING_MONITOR_HH
+#ifndef ELLE_THREADING_MONITOR_HH
 # define ELLE_THREADING_MONITOR_HH
 
 # include <mutex>

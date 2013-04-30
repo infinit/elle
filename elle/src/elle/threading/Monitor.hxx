@@ -1,4 +1,4 @@
-#ifndef  ELLE_THREADING_MONITOR_HXX
+#ifndef ELLE_THREADING_MONITOR_HXX
 # define ELLE_THREADING_MONITOR_HXX
 
 # include <boost/thread/tss.hpp>
@@ -11,10 +11,10 @@ namespace elle
     struct Monitor
     {
     public:
-      typedef T             value_type;
-      typedef MutexType     mutex_type;
+      typedef T value_type;
+      typedef MutexType mutex_type;
     private:
-      typedef unsigned int  counter_type;
+      typedef unsigned int counter_type;
 
     private:
       template <typename U>
@@ -32,7 +32,9 @@ namespace elle
           return &this->_value;
         }
 
-        Proxy(U& value, mutex_type& mutex, counter_type& counter)
+        Proxy(U& value,
+              mutex_type& mutex,
+              counter_type& counter)
           : _value(value)
           , _mutex(mutex)
           , _counter(counter)
