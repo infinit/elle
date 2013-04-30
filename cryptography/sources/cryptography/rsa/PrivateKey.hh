@@ -13,6 +13,7 @@
 # include <elle/operator.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/serialize/DynamicFormat.hh>
 # include <elle/concept/Uniquable.hh>
 
 # include <openssl/evp.h>
@@ -34,6 +35,7 @@ namespace infinit
       class PrivateKey:
         public cryptography::privatekey::Interface,
         public elle::serialize::SerializableMixin<PrivateKey>,
+        public elle::serialize::DynamicFormat<PrivateKey>,
         public elle::concept::MakeUniquable<PrivateKey>
       {
         /*-------------.

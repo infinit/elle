@@ -232,6 +232,28 @@ namespace infinit
 
         ELLE_ASSERT_NEQ(this->_key, nullptr);
 
+        // Depending on the format from which the public key has been
+        // serialized or created, set the padding for the encryption
+        // context.
+        int padding_encrypt;
+
+        switch (this->version())
+        {
+          case 0:
+          {
+            padding_encrypt = RSA_PKCS1_OAEP_PADDING;
+            break;
+          }
+          case 1:
+          {
+            padding_encrypt = RSA_PKCS1_PADDING;
+            break;
+          }
+          default:
+            throw elle::Exception(
+              elle::sprintf("unknown format '%s'", this->version()));
+        }
+
         // Prepare the encrypt context.
         ELLE_ASSERT_EQ(this->_context_encrypt, nullptr);
         this->_context_encrypt.reset(
@@ -251,7 +273,7 @@ namespace infinit
                                 EVP_PKEY_RSA,
                                 -1,
                                 EVP_PKEY_CTRL_RSA_PADDING,
-                                RSA_PKCS1_OAEP_PADDING,
+                                padding_encrypt,
                                 nullptr) <= 0)
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
