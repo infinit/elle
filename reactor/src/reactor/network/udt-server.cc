@@ -54,7 +54,6 @@ namespace reactor
 
     UDTServer::~UDTServer()
     {
-      ELLE_TRACE_METHOD();
       if (_heartbeat)
         _heartbeat->terminate_now();
     }
