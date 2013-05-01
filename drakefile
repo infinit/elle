@@ -14,16 +14,13 @@ def configure(cxx_toolkit = None,
               openssl = None,
               prefix = '/usr'):
 
-  with open(str(drake.path_src('drake/test.py')), 'r') as f:
-    exec(f.read(), globals())
-
   global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
-  openssl = openssl or drake.cxx.find_library('openssl/opensslconf.h', openssl)
+  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
 
   # Global Configuration
   config = drake.cxx.Config()
@@ -80,7 +77,8 @@ def configure(cxx_toolkit = None,
                                [lib_dynamic],
                                cxx_toolkit, config_test)
     tests_rule << bin
-    rule_check << TestRunner(bin).status
+    runner = drake.Runner(bin)
+    rule_check << runner.status
 
   # Install
   rule_install = drake.Rule('install')
