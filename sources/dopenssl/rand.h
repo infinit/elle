@@ -35,6 +35,8 @@ int dRAND_stop(void);
    This function is particularly useful before seeding the PNRG assuming the
    caller expects the PNRG's state to be deterministic. */
 int dRAND_reset(void);
+/* Display on the standard output the state of the PNRG. */
+void dRAND_state(void);
 /* Return a string-based representation of the PNRG's state.
    Note that it is the responsibility of the caller to release the resources
    associated wit the returned string, via free(). */

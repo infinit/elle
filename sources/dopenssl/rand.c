@@ -588,11 +588,28 @@ int dRAND_reset(void)
   return 1;
 }
 
+void dRAND_state(void)
+{
+  unsigned int i;
+
+  printf("dRAND state:\n");
+  printf("  state_num = %d\n", state_num);
+  printf("  state_index = %d\n", state_index);
+  printf("  state = ");
+  for (i = 0; i < sizeof (state); ++i)
+    printf("%02x", state[i]);
+  printf("\n");
+  printf("  md = ");
+  for (i = 0; i < sizeof (md); ++i)
+    printf("%02x", md[i]);
+  printf("\n");
+  printf("  md_count = (%ld %ld)\n", md_count[0], md_count[1]);
+  printf("  entropy = %f\n", entropy);
+  printf("  initialized = %d\n", initialized);
+}
+
 char *dRAND_fingerprint(void)
 {
-  if (_engine == NULL)
-    return 0;
-
   char *fingerprint = (char*)malloc(MD_DIGEST_LENGTH + 1);
 
   memset(fingerprint, 0x0, MD_DIGEST_LENGTH + 1);
