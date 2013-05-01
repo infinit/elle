@@ -41,6 +41,8 @@ namespace elle
     typedef std::basic_string<Character>  String;
 
     typedef Natural64 Size;
+    typedef Natural64 Index;
+    typedef Natural64 Offset;
 
     ///
     /// this enumeration represents a return status.
