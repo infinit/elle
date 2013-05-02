@@ -4,7 +4,9 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <elle/log.hh>
 #include <elle/log/TextLogger.hh>
+#include <elle/os/setenv.hh>
 
 #include <reactor/thread.hh>
 
@@ -14,64 +16,28 @@ std::stringstream ss, res;
 
 Fixture::Fixture()
 {
+  elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP", 1);
   sched = new reactor::Scheduler;
   logger = new elle::log::TextLogger(ss);
-  logger->component_enabled("Test");
+  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
 }
 
 Fixture::~Fixture()
 {
+  elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
   delete sched;
-  delete logger;
   sched = 0;
 }
 
 void
-gen_message(const std::string& thread_name,
-            const int& indent_level)
+gen_message(const std::string& thread_name)
 {
-  std::string msg;
-  for (int i=0; i<indent_level; i++)
-    logger->indent();
-
-  msg = "Test message from ";
-  msg += thread_name;
-  logger->message(elle::log::Logger::Level::log,
-                  elle::log::Logger::Type::info,
-                  "Test",
-                  msg);
-  if (thread_name == "Thread 1")
-    BOOST_CHECK_EQUAL(logger->indentation(), 2);
-  if (thread_name == "Thread 2")
-    BOOST_CHECK_EQUAL(logger->indentation(), 4);
-
+  ELLE_LOG_COMPONENT("Test");
+  ELLE_LOG_SCOPE("Test message from %s", thread_name);
   sched->current()->yield();
-
-  msg = "Another message from ";
-  msg += thread_name;
-  logger->message(elle::log::Logger::Level::log,
-                  elle::log::Logger::Type::info,
-                  "Test",
-                  msg);
-  if (thread_name == "Thread 1")
-    BOOST_CHECK_EQUAL(logger->indentation(), 2);
-  if (thread_name == "Thread 2")
-    BOOST_CHECK_EQUAL(logger->indentation(), 4);
-
+  ELLE_LOG("Another message from %s", thread_name);
   sched->current()->yield();
-
-  if (thread_name == "Thread 2")
-    logger->unindent();
-  msg = "A third message from ";
-  msg += thread_name;
-  logger->message(elle::log::Logger::Level::debug,
-                  elle::log::Logger::Type::warning,
-                  "Test",
-                  msg);
-  if (thread_name == "Thread 1")
-    BOOST_CHECK_EQUAL(logger->indentation(), 2);
-  if (thread_name == "Thread 2")
-    BOOST_CHECK_EQUAL(logger->indentation(), 3);
+  ELLE_WARN("A third message from %s", thread_name);
 }
 
 static
@@ -80,17 +46,19 @@ scheduler_log_test()
 {
   Fixture f;
 
-  reactor::Thread t1(*sched, "Thread1", std::bind(gen_message, std::ref("Thread 1"), 2));
-  reactor::Thread t2(*sched, "Thread2", std::bind(gen_message, std::ref("Thread 2"), 4));
+  reactor::Thread t1(*sched, "Thread1",
+                     std::bind(gen_message, std::ref("Thread 1")));
+  reactor::Thread t2(*sched, "Thread2",
+                     std::bind(gen_message, std::ref("Thread 2")));
 
   sched->run();
 
-  res << "[Test] [Thread1]   Test message from Thread 1\n"
-      << "[Test] [Thread2]       Test message from Thread 2\n"
+  res << "[Test] [Thread1] Test message from Thread 1\n"
+      << "[Test] [Thread2] Test message from Thread 2\n"
       << "[Test] [Thread1]   Another message from Thread 1\n"
-      << "[Test] [Thread2]       Another message from Thread 2\n"
+      << "[Test] [Thread2]   Another message from Thread 2\n"
       << "[33;01;33m[Test] [Thread1]   A third message from Thread 1\n[0m"
-      << "[33;01;33m[Test] [Thread2]     A third message from Thread 2\n[0m";
+      << "[33;01;33m[Test] [Thread2]   A third message from Thread 2\n[0m";
 
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 }
@@ -113,18 +81,12 @@ parallel_write()
           ptime deadline = microsec_clock::local_time() + seconds(3);
           while (microsec_clock::local_time() < deadline)
           {
-            logger.indent();
-            logger.message(elle::log::Logger::Level::log,
-                           elle::log::Logger::Type::info,
-                           "out",
-                           "out");
-            logger.indent();
-            logger.message(elle::log::Logger::Level::log,
-                           elle::log::Logger::Type::error,
-                           "in",
-                           "in");
-            logger.unindent();
-            logger.unindent();
+            ELLE_LOG_COMPONENT("out");
+            ELLE_LOG("out")
+            {
+              ELLE_LOG_COMPONENT("in");
+              ELLE_LOG("in");
+            }
             ++counter;
           }
         });

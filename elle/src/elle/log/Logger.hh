@@ -1,4 +1,4 @@
-#ifndef  ELLE_LOG_LOGGER_HH
+#ifndef ELLE_LOG_LOGGER_HH
 # define ELLE_LOG_LOGGER_HH
 
 # include <memory>
@@ -15,6 +15,11 @@ namespace elle
 {
   namespace log
   {
+    namespace detail
+    {
+      class Send;
+    }
+
     class Indentation
     {
     public:
@@ -98,14 +103,14 @@ namespace elle
     /*------------.
     | Indentation |
     `------------*/
-    public:
+    private:
+      friend class detail::Send;
       unsigned int
       indentation();
       void
       indent();
       void
       unindent();
-    private:
       std::mutex _indentation_mutex;
       std::unique_ptr<Indentation> _indentation;
       template <typename I>
