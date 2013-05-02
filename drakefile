@@ -34,6 +34,11 @@ def configure(cxx_toolkit = None,
   elle = elle or drake.include('../elle')
   # XXX elle = drake.cxx.find_library('elle/elle.hh', elle)
 
+  # dOpenSSL
+  # XXX
+  #dopenssl = drake.include('dopenssl', cxx_toolkit, cxx_config, openssl = openssl.config())
+  #dopenssl_lib = drake.copy(dopenssl.lib_dynamic, 'lib', dopenssl.lib_dynamic.path().dirname())
+
   # Global Configuration
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
