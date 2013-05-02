@@ -17,7 +17,7 @@
 
 # include <openssl/rsa.h>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PrivateKey, 1);
+// XXX ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PrivateKey, 1);
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PrivateKey)
 
