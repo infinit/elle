@@ -247,7 +247,7 @@ test_serialize_rsa()
 
     BOOST_CHECK_EQUAL(pair1, pair2);
 
-    _test_operate_rsa(pair1);
+    _test_operate_rsa(pair2);
   }
 
   // For every hard-coded strings [representation 1] in every format,
