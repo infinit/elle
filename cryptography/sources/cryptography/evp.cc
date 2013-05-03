@@ -33,11 +33,6 @@ namespace infinit
         | Constants |
         `----------*/
 
-        /// The length the the one-time secret key generated whenever
-        /// the encryption is requested.
-        ///
-        /// Note that the length is in bits.
-        static elle::Natural32 const secret_length = 256;
         /// The cipher algorithm used for encrypting the data.
         static cipher::Algorithm const cipher_algorithm =
           cipher::Algorithm::aes256;
@@ -110,14 +105,34 @@ namespace infinit
         {
           ELLE_TRACE_FUNCTION(plain, context, function);
 
-          // 1) Generate a temporary secret key.
-          SecretKey secret = SecretKey::generate(cipher_algorithm,
-                                                 secret_length);
+          // 1) Compute the size of the secret key to generate so as
+          //    to symmetrically encrypt the plain text.
+          //
+          //    OpenSSL does not seem to provide an easy way to retrieve
+          //    the size of the padding which thus makes it difficult to
+          //    calculate the optimized size for a temporary secret key.
+          //
+          //    Considering the OAEP padding takes exactly 41 bytes while
+          //    PKCS1 padding takes 11 bytes, the following assumes a
+          //    padding size of 64 bytes or 512 bits to make sure because
+          //    the secret key, once serialized, has a larger footprint.
+          //
+          //    Note that the lengh is computed in bits.
+          elle::Natural32 const padding = 512;
+          ELLE_ASSERT(static_cast<elle::Natural32>(
+                        ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))) >
+                      padding);
+          elle::Natural32 const length =
+            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) - padding;
 
-          // 2) Cipher the plain text with the secret key.
+          // 2) Generate a temporary secret key.
+          SecretKey secret = SecretKey::generate(cipher_algorithm,
+                                                 length);
+
+          // 3) Cipher the plain text with the secret key.
           Code data = secret.encrypt(plain);
 
-          // 3) Asymmetrically encrypt the secret with the given function
+          // 4) Asymmetrically encrypt the secret with the given function
           //    and encryption context.
 
           // Serialize the secret.
@@ -132,7 +147,7 @@ namespace infinit
                          context,
                          function));
 
-          // 4) Serialize the asymmetrically encrypted key and the symmetrically
+          // 5) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
           Code code;
 
