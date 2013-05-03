@@ -86,6 +86,9 @@ test_seed()
 
     DOPENSSL_CHECK(strcmp(fingerprint1, fingerprint2) == 0);
 
+    DOPENSSL_CHECK(strcmp(fingerprint1,
+                          "a15e5e1860c9297f7055edb960067254822123ab") == 0);
+
     free(fingerprint2);
     free(fingerprint1);
   }
