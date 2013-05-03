@@ -47,7 +47,7 @@ static CRYPTO_THREADID locking_threadid; /* valid iff crypto_lock_rand is set */
 static int state_num=0,state_index=0;
 static unsigned char state[STATE_SIZE+MD_DIGEST_LENGTH];
 static unsigned char md[MD_DIGEST_LENGTH];
-static long md_count[2]={0,0};
+static int md_count[2]={0,0};
 static double entropy=0;
 static int initialized=0;
 
@@ -97,7 +97,7 @@ static void dRAND_cleanup(void)
 static void dRAND_add(const void *buf, int num, double add)
 {
   int i,j,k,st_idx;
-  long md_c[2];
+  int md_c[2];
   unsigned char local_md[MD_DIGEST_LENGTH];
   EVP_MD_CTX m;
   int do_not_lock;
@@ -170,7 +170,9 @@ static void dRAND_add(const void *buf, int num, double add)
     j=(j > MD_DIGEST_LENGTH)?MD_DIGEST_LENGTH:j;
 
     MD_Init(&m);
+
     MD_Update(&m,local_md,MD_DIGEST_LENGTH);
+
     k=(st_idx+j)-STATE_SIZE;
     if (k > 0)
     {
@@ -242,7 +244,7 @@ static int dRAND_bytes(unsigned char *buf, int num)
   int i,j,k,st_num,st_idx;
   int num_ceil;
   int ok;
-  long md_c[2];
+  int md_c[2];
   unsigned char local_md[MD_DIGEST_LENGTH];
   EVP_MD_CTX m;
 
@@ -603,7 +605,7 @@ void dRAND_state(void)
   for (i = 0; i < sizeof (md); ++i)
     printf("%02x", md[i]);
   printf("\n");
-  printf("  md_count = (%ld %ld)\n", md_count[0], md_count[1]);
+  printf("  md_count = (%d %d)\n", md_count[0], md_count[1]);
   printf("  entropy = %f\n", entropy);
   printf("  initialized = %d\n", initialized);
 }
