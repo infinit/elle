@@ -32,10 +32,10 @@ main(int argc, char** argv)
     cfg.pipe_file(ProcessChannelStream::out, "/tmp/bite");
     Process(std::move(cfg), argv[0], {"--", "stdout", "bite"}).wait();
     std::ifstream f{"/tmp/bite"};
-    ELLE_ASSERT(f.good());
+    ELLE_ENFORCE(f.good());
     std::string str;
     f >> str;
-    ELLE_ASSERT(str == "bite");
+    ELLE_ENFORCE(str == "bite");
   }
 
   // Redirect stderr to a file
@@ -44,10 +44,10 @@ main(int argc, char** argv)
     cfg.pipe_file(ProcessChannelStream::err, "/tmp/bite2");
     Process(std::move(cfg), argv[0], {"--", "stderr", "BIET"}).wait();
     std::ifstream f{"/tmp/bite2"};
-    ELLE_ASSERT(f.good());
+    ELLE_ENFORCE(f.good());
     std::string str;
     f >> str;
-    ELLE_ASSERT(str == "BIET");
+    ELLE_ENFORCE(str == "BIET");
   }
   return 0;
 }

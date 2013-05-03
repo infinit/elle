@@ -1,11 +1,6 @@
-#ifndef DEBUG
-# define DEBUG
-#endif
-#ifdef NDEBUG
-# undef NDEBUG
-#endif
-
+#include <elle/assert.hh>
 #include <elle/system/Process.hh>
+
 #include <unistd.h>
 #include <iostream>
 
@@ -14,14 +9,14 @@ main()
 {
   using namespace elle::system;
 
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     check_output("echo", "bite") == "bite\n"
   );
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     check_output(command("echo", "bite2")) == "bite2\n"
   );
 
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     check_output(
         command("echo", "bite")
       | command("tr", "beit", "BTIE", pipe_stdout_config)
@@ -29,7 +24,7 @@ main()
   );
 
 
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     check_output(
         command("echo", "TROLLpifpifpifpifipfipf")
       | command("tr", "pif", "lol")
@@ -37,7 +32,7 @@ main()
     ) == "TROLLLOLLOLLOLLOLOLLOLL\n"
   );
 
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     check_output(
         command("echo", "bite2")
       | command("tr", "beit", "BTIE")
@@ -45,7 +40,7 @@ main()
     ) == "dbca2\n"
   );
 
-  ELLE_ASSERT(
+  ELLE_ENFORCE(
     execute(
       command("echo", "1"),
       command("echo", "2"),
