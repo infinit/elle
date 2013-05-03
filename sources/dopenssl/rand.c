@@ -612,9 +612,8 @@ void dRAND_state(void)
 
 char *dRAND_fingerprint(void)
 {
-  char *fingerprint = (char*)malloc(MD_DIGEST_LENGTH + 1);
-
-  memset(fingerprint, 0x0, MD_DIGEST_LENGTH + 1);
+  char *data = (char*)malloc(MD_DIGEST_LENGTH + 1);
+  memset(data, 0x0, MD_DIGEST_LENGTH + 1);
 
   EVP_MD_CTX ctx;
 
@@ -630,9 +629,23 @@ char *dRAND_fingerprint(void)
   MD_Update(&ctx, &entropy, sizeof (entropy));
   MD_Update(&ctx, &initialized, sizeof (initialized));
 
-  MD_Final(&ctx, (unsigned char*)fingerprint);
+  MD_Final(&ctx, (unsigned char*)data);
 
   EVP_MD_CTX_cleanup(&ctx);
+
+  static char const* alphabet = "0123456789abcdef";
+  unsigned int i;
+
+  char *fingerprint = (char*)malloc(MD_DIGEST_LENGTH * 2 + 1);
+  memset(fingerprint, 0x0, MD_DIGEST_LENGTH * 2 + 1);
+
+  for (i = 0; i < MD_DIGEST_LENGTH; ++i)
+  {
+    fingerprint[i * 2] = alphabet[(data[i] >> 4) & 0xf];
+    fingerprint[(i * 2) + 1] = alphabet[data[i] & 0xf];
+  }
+
+  free(data);
 
   return (fingerprint);
 }

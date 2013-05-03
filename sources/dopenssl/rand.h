@@ -37,7 +37,7 @@ int dRAND_stop(void);
 int dRAND_reset(void);
 /* Display on the standard output the state of the PNRG. */
 void dRAND_state(void);
-/* Return a string-based representation of the PNRG's state.
+/* Return a string-based hexadecimal representation of the PNRG's state.
    Note that it is the responsibility of the caller to release the resources
    associated wit the returned string, via free(). */
 char *dRAND_fingerprint(void);
