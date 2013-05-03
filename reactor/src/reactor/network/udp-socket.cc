@@ -48,6 +48,15 @@ namespace reactor
                                  boost::lexical_cast<std::string>(port)));
     }
 
+    UDPSocket::UDPSocket(Scheduler& sched, int native_handle)
+      : Super(sched, new boost::asio::ip::udp::socket{
+                           sched.io_service(),
+                           boost::asio::ip::udp::v4(),
+                           native_handle})
+
+    {
+    }
+
     UDPSocket::UDPSocket(Scheduler& sched)
       : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
     {}
