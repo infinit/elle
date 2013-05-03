@@ -54,8 +54,6 @@ namespace reactor
 
     UDTServer::~UDTServer()
     {
-      if (_heartbeat)
-        _heartbeat->terminate_now();
     }
 
     /*----------.
