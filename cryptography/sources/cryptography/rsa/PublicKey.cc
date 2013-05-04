@@ -241,9 +241,11 @@ namespace infinit
         {
           case 0:
           {
+            elle::Natural32 const oaep_key_length = 1024;
+
             // Check that the size of the key is large enough to support
             // such a padding.
-            if (this->length() < 1024)
+            if (this->length() < oaep_key_length)
               throw Exception(
                 elle::sprintf("unable to construct a public key with an OAEP "
                               "padding given the small modulus '%s'",
