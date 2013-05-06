@@ -104,7 +104,7 @@ namespace elle
       // this const_cast is safe since the archive is in output mode
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       ELLE_TRACE(
-        "Save %p with its concrete type %s (%s format = %d)",
+        "save %p with its concrete type %s (%s format = %d)",
         &val,
         ELLE_PRETTY_TYPE(T),
         (AccessDynamicFormat::has_dynamic_format(val) ? "dynamic" : "static"),
@@ -134,7 +134,16 @@ namespace elle
         }
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-      Serializer::Serialize(this->self(), val, format.version);
+      ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
+      ELLE_TRACE(
+        "load %p with its concrete type %s (%s format = %d)",
+        &val,
+        ELLE_PRETTY_TYPE(T),
+        (AccessDynamicFormat::has_dynamic_format(val) ? "dynamic" : "static"),
+        format.version)
+      {
+        Serializer::Serialize(this->self(), val, format.version);
+      }
     }
 
     //-------------------------------------------------------------------------
