@@ -1000,6 +1000,18 @@ def cmd(cmd, cwd = None, stdout = None):
     p.wait()
     return p.returncode == 0
 
+def command(cmd, cwd = None, stdout = None):
+    """Run the shell command.
+
+    cmd -- the shell command.
+    cwd -- the dir to chdir to before.
+    """
+    if cwd is not None:
+        cwd = str(cwd)
+    p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout)
+    p.wait()
+    return p.returncode == 0
+
 
 def cmd_output(cmd, cwd = None):
     """Run the given command and return its standard output.
@@ -1077,25 +1089,24 @@ class Builder:
         """The list of target nodes."""
         return self.__targets
 
-    def cmd(self, pretty, c, *args, **kwargs):
+    def cmd(self, pretty, c, cwd = None):
         """Run a shell command.
 
         pretty -- A pretty version for output.
         c      -- The command.
-        args   -- Argument to expand in r
 
         The expansion handles shell escaping. The pretty version is
         printed, except if drake is in raw mode, in which case the
         actual command is printed.
         """
-        c = _cmd_escape(c, *args)
-        cwd = None
-        if "cwd" in kwargs:
-            cwd = kwargs["cwd"]
+        if not isinstance(c, tuple):
+            c = (c,)
         with open(str(self.cachedir() / 'stdout'), 'w') as f:
             def fun():
-                self.output(c, pretty)
-                return cmd(c, cwd = cwd, stdout = f)
+                for cmd in c:
+                    cmd = list(map(str, cmd))
+                    self.output(' '.join(cmd), pretty)
+                    return command(cmd, cwd = cwd, stdout = f)
             if _JOBS_LOCK is not None:
                 with _JOBS_LOCK:
                     return sched.background(fun)
@@ -1415,7 +1426,7 @@ class ShellCommand(Builder):
 
     >>> path = Path("/tmp/.drake.foo")
     >>> n = node("/tmp/.drake.foo")
-    >>> b = ShellCommand([], [n], "touch /tmp/.drake.foo")
+    >>> b = ShellCommand([], [n], ['touch', '/tmp/.drake.foo'])
     >>> path.remove()
     >>> n.build()
     touch /tmp/.drake.foo

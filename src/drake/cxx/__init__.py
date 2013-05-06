@@ -373,83 +373,72 @@ class GccToolkit(Toolkit):
         extraflags = []
         if pic:
             extraflags.append('-fPIC')
-        return ' '.join([c and self.c or self.cxx] + list(set(cfg.flags)) +
-                        self.cppflags(cfg) + self.cflags(cfg) +
-                        extraflags + ['-c', str(src), '-o', str(obj)])
-
+        return [c and self.c or self.cxx] + list(set(cfg.flags)) + \
+            self.cppflags(cfg) + self.cflags(cfg) + \
+            extraflags + ['-c', str(src), '-o', str(obj)]
 
     def archive(self, cfg, objs, lib):
-
-        return 'ar crs %s %s; ranlib %s' % (lib, ' '.join(map(str, objs)), lib)
+        # FIXME: ;
+        return (['ar', 'crs', str(lib.path())] + \
+                    list(map(lambda n: str(n.path()), objs)),
+                ['ranlib', str(lib.path())])
 
 
     def link(self, cfg, objs, exe):
 
-        lib_rpaths = []
+        cmd = [self.cxx] + self.ldflags(cfg)
+        for framework in cfg.frameworks():
+            cmd += ['-framework', framework]
+        for path in cfg.library_path:
+            cmd += ['-L', path]
+            if self.os == drake.os.linux:
+                cmd.append('-Wl,-rpath-link,%s' % path)
         for path in cfg._Config__rpath:
             if not path.absolute():
                 if self.os is drake.os.macos:
                     path = drake.Path('@loader_path') / path
                 else:
                     path = drake.Path('$ORIGIN') / path
-            lib_rpaths.append(path)
-
-        (obj.sub_libraries for obj in objs)
-
-        rpath_link = ''
-        if self.os == drake.os.linux:
-            rpath_link = concatenate(cfg._Config__lib_paths, '-Wl,-rpath-link ')
-
-        undefined = ''
+            cmd.append('-Wl,-rpath,%s' % path)
         if self.os == drake.os.macos:
-            undefined = ' -undefined dynamic_lookup'
-
-        libs_dyn = concatenate(cfg.libs_dynamic, '-l')
-        libs_static = ''
+            cmd.append('-undefined dynamic_lookup')
+        for obj in objs:
+            cmd.append(obj.path())
+        cmd += ['-o', exe.path()]
+        for lib in cfg.libs_dynamic:
+            cmd.append('-l%s' % lib)
         if cfg.libs_static:
-            libs_static = ' -Wl,-static%s -Wl,-Bdynamic' % concatenate(cfg.libs_static, '-l')
-
-        return '%s %s%s%s%s%s%s %s -o %s %s%s' % \
-               (self.cxx,
-                concatenate(self.ldflags(cfg)),
-                concatenate(cfg.frameworks(), '-framework '),
-                concatenate(cfg._Config__lib_paths, '-L'),
-                rpath_link,
-                concatenate(lib_rpaths, '-Wl,-rpath,'),
-                undefined,
-                concatenate(objs),
-                exe,
-                libs_dyn,
-                libs_static)
+            cmd.append('-Wl,-static')
+            for lib in cfg.libs_static:
+                cmd.append('-l%s' % lib)
+            cmd.append('-Wl,-Bdynamic')
+        return cmd
 
     def dynlink(self, cfg, objs, exe):
 
-        lib_rpaths = []
+
+        cmd = [self.cxx] + list(cfg.flags) + self.ldflags(cfg)
+        for framework in cfg.frameworks():
+            cmd += ['-framework', framework]
+        for path in cfg.library_path:
+            cmd += ['-L', path]
         for path in cfg._Config__rpath:
             if not path.absolute():
                 if self.os is drake.os.macos:
                     path = drake.Path('@loader_path') / path
                 else:
                     path = drake.Path('$ORIGIN') / path
-            lib_rpaths.append(path)
-
-        extra = ''
+            cmd.append('-Wl,-rpath,%s' % path)
         if self.os == drake.os.macos:
-            extra = ' -undefined dynamic_lookup -Wl,-install_name,@rpath/%s -Wl,-headerpad_max_install_names' % exe.path().basename()
-
-        return '%s %s%s%s%s%s%s %s -shared -o %s %s' % \
-               (self.cxx,
-                concatenate(cfg.flags),
-                concatenate(self.ldflags(cfg)),
-                concatenate(cfg.frameworks(), '-framework '),
-                concatenate(cfg._Config__lib_paths, '-L'),
-                concatenate(lib_rpaths, '-Wl,-rpath,'),
-                extra,
-                concatenate(objs),
-                exe,
-                concatenate(cfg._Config__libs, '-l'),
-               )
-
+            cmd += ['-undefined dynamic_lookup',
+                    '-Wl,-install_name,@rpath/%s' % exe.path().basename(),
+                    '-Wl,-headerpad_max_install_names']
+        for obj in objs:
+            cmd.append(obj.path())
+        cmd += ['-shared', '-o', exe.path()]
+        for lib in cfg.libs_dynamic:
+            cmd.append('-l%s' % lib)
+        return cmd
 
     def libname_static(self, cfg, path):
 
@@ -708,13 +697,15 @@ class Compiler(Builder):
 
 
     def execute(self):
+        return self.cmd('Compile %s' % self.obj, self.command)
 
-        return self.cmd('Compile %s' % self.obj,
-                        self.toolkit.compile(self.config,
-                                             self.src.path(),
-                                             self.obj.path(),
-                                             c = self.__c,
-                                             pic = self.pic))
+    @property
+    def command(self):
+        return self.toolkit.compile(self.config,
+                                    self.src.path(),
+                                    self.obj.path(),
+                                    c = self.__c,
+                                    pic = self.pic)
 
     @property
     def pic(self):
@@ -796,10 +787,13 @@ class Linker(Builder):
 
     def execute(self):
 
-        return self.cmd('Link %s' % self.exe,
-                        self.toolkit.link(self.config,
-                                          self.exe.sources + list(self.sources_dynamic()),
-                                          self.exe))
+        return self.cmd('Link %s' % self.exe, self.command)
+
+    @property
+    def command(self):
+        return self.toolkit.link(self.config,
+                                 self.exe.sources + list(self.sources_dynamic()),
+                                 self.exe)
 
     def __repr__(self):
 
@@ -834,11 +828,13 @@ class DynLibLinker(Builder):
         Builder.__init__(self, self.__objects + lib.dynamic_libraries, [lib])
 
     def execute(self):
+        return self.cmd('Link %s' % self.lib, self.command)
 
-        return self.cmd('Link %s' % self.lib,
-                        self.toolkit.dynlink(self.config,
-                                             self.__objects + list(self.sources_dynamic()),
-                                             self.lib))
+    @property
+    def command(self):
+        return self.toolkit.dynlink(self.config,
+                                    self.__objects + list(self.sources_dynamic()),
+                                    self.lib)
 
     def __repr__(self):
 
@@ -876,11 +872,13 @@ class StaticLibLinker(ShellCommand):
         Builder.__init__(self, objs, [lib])
 
     def execute(self):
+        return self.cmd('Link %s' % self.lib, self.command)
 
-        return self.cmd('Link %s' % self.lib,
-                        self.toolkit.archive(self.config,
-                                             self.objs + list(self.sources_dynamic()),
-                                             self.lib))
+    @property
+    def command(self):
+        return self.toolkit.archive(self.config,
+                                    self.objs + list(self.sources_dynamic()),
+                                    self.lib)
 
     def hash(self):
         res = ' '.join(sorted(map(str, self.objs)))

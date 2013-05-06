@@ -87,7 +87,7 @@ def configure(prefix = '.'):
       res = self.cmd('Test %s' % self.__name,
                      # Use an absolute path, because we chdir, and
                      # "./test" isn't very helpful in backtraces.
-                     str(drake.Path(os.getcwd()) / self.__exe.path()),
+                     [str(drake.Path(os.getcwd()) / self.__exe.path())],
                      cwd = to)
       if res:
         self.__target.path().touch()

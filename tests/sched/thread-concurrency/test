@@ -26,7 +26,7 @@ class TimedBuilder(drake.Builder):
       assert not self.__built
       self.__built = True
     time.sleep(1)
-    return self.cmd('Touch %s' % self.targets()[0], 'touch %s' % self.targets()[0].path())
+    return self.cmd('Touch %s' % self.targets()[0], ['touch', self.targets()[0].path()])
 
 node = drake.node('node')
 TimedBuilder(node)
