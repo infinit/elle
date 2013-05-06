@@ -103,12 +103,14 @@ namespace infinit
 #endif
 
     KeyPair::KeyPair(KeyPair const& other):
+      elle::serialize::DynamicFormat<KeyPair>(other),
       _K(new PublicKey(*other._K)),
       _k(new PrivateKey(*other._k))
     {
     }
 
     KeyPair::KeyPair(KeyPair&& other):
+      elle::serialize::DynamicFormat<KeyPair>(std::move(other)),
       _K(std::move(other._K)),
       _k(std::move(other._k))
     {
