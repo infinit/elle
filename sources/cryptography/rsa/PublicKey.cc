@@ -1,6 +1,7 @@
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/Seed.hh>
+#include <cryptography/rsa/padding.hh>
 #include <cryptography/Digest.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -135,14 +136,37 @@ namespace infinit
       }
 
       PublicKey::PublicKey(PublicKey const& other):
-        PublicKey(::BN_dup(other._key->pkey.rsa->n),
-                  ::BN_dup(other._key->pkey.rsa->e))
+        elle::serialize::DynamicFormat<PublicKey>(other)
       {
+        ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
+
+        // Call a private method for constructing the object so as
+        // to also be callable from the serialization mechanism, especially
+        // the deserialization.
+        this->_construct(::BN_dup(other._key->pkey.rsa->n),
+                         ::BN_dup(other._key->pkey.rsa->e));
+
+        // Prepare the cryptographic contexts.
+        this->_prepare();
+
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PublicKey::PublicKey(PublicKey&& other):
+        elle::serialize::DynamicFormat<PublicKey>(std::move(other)),
         _key(std::move(other._key)),
         _context_encrypt(std::move(other._context_encrypt)),
         _context_verify(std::move(other._context_verify)),
@@ -565,6 +589,16 @@ namespace infinit
                << ", "
                << *this->_key->pkey.rsa->e
                << ")";
+
+        stream << "[";
+        padding::print(stream, this->_context_encrypt.get());
+        stream << ", ";
+        padding::print(stream, this->_context_verify.get());
+        stream << ", ";
+        padding::print(stream, this->_context_decrypt.get());
+        stream << ", ";
+        padding::print(stream, this->_context_derive.get());
+        stream << "]";
       }
     }
   }
