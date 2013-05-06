@@ -808,6 +808,44 @@ class BaseNode(object, metaclass = _BaseNodeType):
         """
         return False
 
+    def makefile(self, marks = None):
+        """Print a Makefile for this node."""
+        from pipes import quote
+        def name(node):
+            if isinstance(node, Node):
+                return str(node.path())
+            else:
+                res = Path(node.name())
+                res.virtual = False
+                return str(res)
+        if self.builder is None:
+            return
+        if marks is None:
+            marks = set()
+        if str(self.name()) in marks:
+            return
+        else:
+            marks.add(str(self.name()))
+        print('%s: %s' % (name(self), ' '.join(map(name, self.dependencies))))
+        cmd = self.builder.command
+        if cmd is not None:
+            if isinstance(self, Node):
+                print('\t@mkdir -p %s' % self.path().dirname())
+
+            if not isinstance(cmd, tuple):
+                cmd = (cmd,)
+            for c in cmd:
+                print('\t%s' % ' '.join(map(lambda a: quote(str(a)).replace('$', '$$'), c)))
+        print('')
+        for dependency in self.dependencies:
+            dependency.makefile(marks)
+
+    @property
+    def dependencies(self):
+        """All first-level dependencies"""
+        return itertools.chain(self.builder.sources().values(),
+                               self.builder._Builder__dynsrc.values())
+
 class VirtualNode(BaseNode):
 
     """BaseNode that does not represent a file.
@@ -1450,6 +1488,9 @@ class ShellCommand(Builder):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty, self.__command)
 
+    @property
+    def command(self):
+        return self.__command
 
 class Dictionary(VirtualNode):
 
@@ -1842,6 +1883,14 @@ def _register_commands():
             sys.stdout = stdout
     command_add('dot-show', dot_show_cmd)
 
+    def makefile(nodes):
+        if not len(nodes):
+            nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
+        marks = set()
+        for node in nodes:
+            node.makefile(marks)
+    command_add('makefile', makefile)
+
 _register_commands()
 
 
@@ -2046,6 +2095,9 @@ class Copy(Builder):
         _OS.chmod(dst, _OS.stat(dst).st_mode & ~stat.S_IWRITE)
         return True
 
+    @property
+    def command(self):
+        return ['cp', self.__source.path(), self.__target.path()]
 
 def copy(sources, to, strip_prefix = None):
     """Convenience function to create Copy builders.
@@ -2118,6 +2170,9 @@ class Rule(VirtualNode):
         class RuleBuilder(Builder):
             def execute(self):
                 return True
+            @property
+            def command(self):
+                return None
         RuleBuilder(nodes, [self])
 
     def hash(self):
@@ -2460,6 +2515,10 @@ class Runner(Builder):
       status = p.returncode
       print(status, file = rv)
     return status == 0
+
+  @property
+  def command(self):
+      return [self.__exe.path()]
 
   def __str__(self):
     return str(self.__exe)
