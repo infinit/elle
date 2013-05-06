@@ -1843,6 +1843,12 @@ def command_add(name, action):
 
 def _register_commands():
 
+    class CWDPrinter:
+        def __enter__(self):
+            print('%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd()))
+        def __exit__(self, *args):
+            print('%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd()))
+
     def all_if_none(nodes):
         # Copy it, since it will change during iteration. This shouldn't
         # be a problem, all newly inserted will be dependencies of the
@@ -1853,17 +1859,19 @@ def _register_commands():
             return list(Node.nodes.values())
 
     def build(nodes):
-        if not len(nodes):
-            nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
-        coroutines = []
-        for node in nodes:
-            coroutines.append(Coroutine(node.build, str(node), _scheduler()))
-        _scheduler().run()
+        with CWDPrinter():
+            if not len(nodes):
+                nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
+            coroutines = []
+            for node in nodes:
+                coroutines.append(Coroutine(node.build, str(node), _scheduler()))
+            _scheduler().run()
     command_add('build', build)
 
     def clean(nodes):
-        for node in all_if_none(nodes):
-            node.clean()
+        with CWDPrinter():
+            for node in all_if_none(nodes):
+                node.clean()
     command_add('clean', clean)
 
     def dot_cmd(nodes):
@@ -1978,7 +1986,6 @@ def run(root, *cfg, **kwcfg):
   except KeyboardInterrupt:
     print('%s: interrupted.' % sys.argv[0])
     exit(1)
-  print('%s: Leaving directory `%s\'' % (sys.argv[0], _OS.getcwd()))
 
 def drake(root, *cfg, **kwcfg):
   """Run a drakefile.
@@ -2018,7 +2025,6 @@ def drake(root, *cfg, **kwcfg):
       _OPTIONS[opt](*opt_args)
       continue
     i += 1
-  print('%s: Entering directory `%s\'' % (sys.argv[0], _OS.getcwd()))
   root.configure(*cfg, **kwcfg)
   mode = _MODES['build']
   i = 0
