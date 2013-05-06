@@ -119,6 +119,8 @@ def configure(cxx_toolkit = None,
     'sources/cryptography/rsa/fwd.hh',
     'sources/cryptography/rsa/keypair.cc',
     'sources/cryptography/rsa/keypair.hh',
+    'sources/cryptography/rsa/padding.cc',
+    'sources/cryptography/rsa/padding.hh',
     'sources/cryptography/types.hh',
     )
 
