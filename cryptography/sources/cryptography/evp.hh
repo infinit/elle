@@ -36,7 +36,6 @@ namespace infinit
                               size_t*,
                               const unsigned char*,
                               size_t));
-
         /// Encrypt the given plain with the provided encryption context and
         /// function.
         Code
