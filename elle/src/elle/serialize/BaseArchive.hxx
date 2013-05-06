@@ -78,6 +78,13 @@ namespace elle
       set(T&, uint16_t)
       {/* Do nothing */}
 
+      template <typename T>
+      static constexpr
+      bool
+      has_dynamic_format(T const&)
+      {
+        return _HasDynamicFormat<T>::value;
+      }
     };
 
     /// Generic save method. Uses an explicit specialization of
@@ -97,14 +104,16 @@ namespace elle
       // this const_cast is safe since the archive is in output mode
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
       ELLE_TRACE(
-          "Save %p with its concrete type %s (format = %d)",
-          &val,
-          ELLE_PRETTY_TYPE(T),
-          format.version
-        )
+        "Save %p with its concrete type %s (%s format = %d)",
+        &val,
+        ELLE_PRETTY_TYPE(T),
+        (AccessDynamicFormat::has_dynamic_format(val) ? "dynamic" : "static"),
+        format.version)
+      {
         Serializer::Serialize(this->self(),
                               const_cast<T&>(val),
                               format.version);
+      }
     }
 
     //-------------------------------------------------------------------------
