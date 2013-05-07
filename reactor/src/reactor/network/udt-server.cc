@@ -146,14 +146,20 @@ namespace reactor
     void
     UDTServer::listen(int desired_port)
     {
-      auto endpoint = _udp_socket->local_endpoint();
-      if (endpoint.port() == 0)
+      // FIXME: this code grew this way, but it sucks: we test whether
+      // local_endpoint throws, which means the socket is unbound, to bind it
+      // for listening. This sucks. Also we should not ignore this call if the
+      // socket is bound.
+      try
+      {
+        auto endpoint = _udp_socket->local_endpoint();
+      }
+      catch (...)
       {
         boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
                                              desired_port);
         _udp_socket->bind(local);
       }
-
     }
 
     UDTServer::EndPoint
