@@ -4,6 +4,7 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Code.hh>
 
+# include <elle/types.hh>
 # include <elle/fwd.hh>
 
 # include <openssl/evp.h>
@@ -38,6 +39,9 @@ namespace infinit
                               size_t));
         /// Encrypt the given plain with the provided encryption context and
         /// function.
+        ///
+        /// Note that a padding size is provided, in bits, representing the
+        /// number of bits taken by the padding in the output code.
         Code
         encrypt(Plain const& plain,
                 ::EVP_PKEY_CTX* context,
@@ -45,7 +49,8 @@ namespace infinit
                                 unsigned char*,
                                 size_t*,
                                 const unsigned char*,
-                                size_t));
+                                size_t),
+                elle::Natural32 const padding_size);
         /// Decrypt the code with the provided context and function.
         Clear
         decrypt(Code const& code,
