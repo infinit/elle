@@ -2,8 +2,6 @@
 #define BOOST_TEST_MODULE monitor
 #include <boost/test/unit_test.hpp>
 
-#define MAX_THREADS 64
-
 #include <elle/threading/Monitor.hh>
 #include <elle/print.hh>
 
@@ -12,6 +10,7 @@
 #include <thread>
 #include <vector>
 
+static const int max_threads = 32;
 
 BOOST_AUTO_TEST_CASE(monitor_ctor)
 {
@@ -37,10 +36,10 @@ void
 do_concurrently(Callable callable)
 {
   std::vector<std::thread> actors;
-  for (int i = 0; i < MAX_THREADS; i++)
+  for (int i = 0; i < max_threads; i++)
     actors.push_back(std::thread{callable});
 
-  for (int i = 0; i < MAX_THREADS; i++)
+  for (int i = 0; i < max_threads; i++)
     actors[i].join();
 }
 
@@ -58,7 +57,7 @@ BOOST_AUTO_TEST_CASE(monitor_operator_arrow)
   vector->clear();
 
   auto lambda = [&] {
-    for (int i = 0; i < MAX_THREADS; ++i)
+    for (int i = 0; i < max_threads; ++i)
     {
       vector->push_back(i);
       vector->pop_back();
@@ -98,7 +97,7 @@ BOOST_AUTO_TEST_CASE(monitor_operator_call_retval)
     v->push_back(42.0f);
   });
 
-  for (int i = 0; i < MAX_THREADS; ++i)
+  for (int i = 0; i < max_threads; ++i)
     BOOST_CHECK_EQUAL(
         v([i] (std::vector<float>& v) { return v[i]; }),
         42.0f
@@ -148,4 +147,3 @@ BOOST_AUTO_TEST_CASE(monitor_param_scope)
   thread1.join();
   thread2.join();
 }
-
