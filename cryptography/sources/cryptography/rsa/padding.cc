@@ -22,8 +22,8 @@ namespace infinit
         {
           int padding;
 
-          if (::EVP_PKEY_CTX_get_rsa_padding(context,
-                                             static_cast<void*>(&padding)) <= 0)
+          if (EVP_PKEY_CTX_get_rsa_padding(context,
+                                           static_cast<void*>(&padding)) <= 0)
             throw Exception(
               elle::sprintf("unable to retrieve the RSA padding from EVP_PKEY "
                             "context: %s",
@@ -73,8 +73,8 @@ namespace infinit
         {
           int padding;
 
-          if (::EVP_PKEY_CTX_get_rsa_padding(context,
-                                             static_cast<void*>(&padding)) <= 0)
+          if (EVP_PKEY_CTX_get_rsa_padding(context,
+                                           static_cast<void*>(&padding)) <= 0)
             throw Exception(
               elle::sprintf("unable to retrieve the RSA padding from EVP_PKEY "
                             "context: %s",
