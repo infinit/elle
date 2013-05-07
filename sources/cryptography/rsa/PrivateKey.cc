@@ -191,6 +191,7 @@ namespace infinit
         _context_decrypt(std::move(other._context_decrypt)),
         _context_sign(std::move(other._context_sign)),
         _context_encrypt(std::move(other._context_encrypt)),
+        _context_encrypt_padding_size(other._context_encrypt_padding_size),
         _context_rotate(std::move(other._context_rotate))
       {
         // Make sure the cryptographic system is set up.
@@ -396,6 +397,9 @@ namespace infinit
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        this->_context_encrypt_padding_size =
+          padding::footprint(this->_context_encrypt.get());
 
         // Prepare the rotate context.
         //
@@ -619,7 +623,8 @@ namespace infinit
 
         return (evp::asymmetric::encrypt(plain,
                                          this->_context_encrypt.get(),
-                                         ::EVP_PKEY_sign));
+                                         ::EVP_PKEY_sign,
+                                         this->_context_encrypt_padding_size));
       }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
