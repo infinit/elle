@@ -1099,10 +1099,14 @@ static
 void
 test_terminate_now_starting()
 {
-  Fixture f;
+  bool beacon = true;
+  reactor::Scheduler sched;
 
-  reactor::Thread starting(*sched, "starting", &empty);
-  starting.terminate_now();
+  reactor::Thread starting(sched, "starting", &empty);
+  reactor::Thread terminate(sched, "terminate", std::bind(&terminate_now,
+                                                          std::ref(starting),
+                                                          std::ref(beacon)));
+  sched.run();
 }
 
 /*------------------------.
