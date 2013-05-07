@@ -1092,6 +1092,26 @@ test_terminate_now()
 }
 
 /*-----------------------.
+| Terminate now disposed |
+`-----------------------*/
+
+static
+void
+test_terminate_now_disposed()
+{
+  reactor::Scheduler sched;
+  bool beacon = false;
+  auto* t = new reactor::Thread(sched, "terminated",
+                                std::bind(&terminated, std::ref(beacon)), true);
+  reactor::Thread terminate(sched, "terminate", std::bind(&terminate_now,
+                                                          std::ref(*t),
+                                                          std::ref(beacon)));
+
+
+  sched.run();
+}
+
+/*-----------------------.
 | Terminate now starting |
 `-----------------------*/
 
@@ -1259,6 +1279,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(terminate);
   terminate->add(BOOST_TEST_CASE(test_terminate_yield));
   terminate->add(BOOST_TEST_CASE(test_terminate_now));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled));
   terminate->add(BOOST_TEST_CASE(test_exception_escape));

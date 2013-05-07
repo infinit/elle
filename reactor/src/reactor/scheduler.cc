@@ -285,12 +285,7 @@ namespace reactor
   Scheduler::_terminate_now(Thread* thread)
   {
     _terminate(thread);
-    while (thread->state() != Thread::state::done)
-      {
-        _step(thread);
-        if (thread->state() != Thread::state::done)
-          this->current()->wait(*thread);
-      }
+    this->current()->wait(*thread);
   }
 
   /*-------.
