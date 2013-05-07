@@ -169,6 +169,7 @@ namespace infinit
         elle::serialize::DynamicFormat<PublicKey>(std::move(other)),
         _key(std::move(other._key)),
         _context_encrypt(std::move(other._context_encrypt)),
+        _context_encrypt_padding_size(other._context_encrypt_padding_size),
         _context_verify(std::move(other._context_verify)),
         _context_decrypt(std::move(other._context_decrypt)),
         _context_derive(std::move(other._context_derive))
@@ -265,24 +266,12 @@ namespace infinit
         {
           case 0:
           {
-            elle::Natural32 const oaep_key_length = 1024;
-
-            // Check that the size of the key is large enough to support
-            // such a padding.
-            if (this->length() < oaep_key_length)
-              throw Exception(
-                elle::sprintf("unable to construct a public key with an OAEP "
-                              "padding given the small modulus '%s'",
-                              this->length()));
-
             padding_encrypt = RSA_PKCS1_OAEP_PADDING;
-
             break;
           }
           case 1:
           {
             padding_encrypt = RSA_PKCS1_PADDING;
-
             break;
           }
           default:
@@ -314,6 +303,9 @@ namespace infinit
           throw Exception(
             elle::sprintf("unable to control the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        this->_context_encrypt_padding_size =
+          padding::footprint(this->_context_encrypt.get());
 
         // Prepare the verify context.
         ELLE_ASSERT_EQ(this->_context_verify, nullptr);
@@ -511,7 +503,8 @@ namespace infinit
 
         return (evp::asymmetric::encrypt(plain,
                                          this->_context_encrypt.get(),
-                                         ::EVP_PKEY_encrypt));
+                                         ::EVP_PKEY_encrypt,
+                                         this->_context_encrypt_padding_size));
       }
 
       elle::Boolean

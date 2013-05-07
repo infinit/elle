@@ -154,6 +154,7 @@ namespace infinit
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_sign);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
+        ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
       };
     }
