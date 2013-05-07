@@ -44,6 +44,33 @@ namespace infinit
         | Functions |
         `----------*/
 
+        // Return the difference between a secret key in its serialized form
+        // and the originally requested length for this key.
+        //
+        // This overhead therefore represents the additional bits implied by
+        // the serialization mechanism.
+        static
+        elle::Natural32
+        _overhead()
+        {
+          // Generate a secret key of some length and serialize it.
+          elle::Natural32 length_original = 256;
+
+          SecretKey secret = SecretKey::generate(cipher_algorithm,
+                                                 length_original);
+
+          elle::Buffer buffer;
+          buffer.writer() << secret;
+
+          elle::Natural32 length_final = buffer.size() * 8;
+
+          ELLE_ASSERT_GTE(length_final, length_original);
+
+          // Return the difference between the requested secret length and
+          // the actual one.
+          return (length_final - length_original);
+        }
+
         elle::Buffer
         apply(elle::WeakBuffer const& input,
               ::EVP_PKEY_CTX* context,
@@ -101,33 +128,38 @@ namespace infinit
                                 unsigned char*,
                                 size_t*,
                                 const unsigned char*,
-                                size_t))
+                                size_t),
+                elle::Natural32 const padding_size)
         {
-          ELLE_TRACE_FUNCTION(plain, context, function);
+          ELLE_TRACE_FUNCTION(plain, context, function, padding_size);
 
-          // 1) Compute the size of the secret key to generate so as
-          //    to symmetrically encrypt the plain text.
+          // The overhead represents the difference between a bare secret
+          // key length and the same key in its serialized form.
           //
-          //    OpenSSL does not seem to provide an easy way to retrieve
-          //    the size of the padding which thus makes it difficult to
-          //    calculate the optimized size for a temporary secret key.
+          // Without computing this difference, one may think the following
+          // is going to encrypt the temporary secret key with the given
+          // context, ending up with an output code key looking as below:
           //
-          //    Considering the OAEP padding takes exactly 41 bytes while
-          //    PKCS1 padding takes 11 bytes, the following assumes a
-          //    padding size of 64 bytes or 512 bits to make sure because
-          //    the secret key, once serialized, has a larger footprint.
+          //   [symmetrically encrypted secret][padding]
           //
-          //    Note that the lengh is computed in bits.
-          elle::Natural32 const padding = 512;
-          ELLE_ASSERT(static_cast<elle::Natural32>(
-                        ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))) >
-                      padding);
+          // Unfortunately, before asymmetrically encrypting the secret key,
+          // one must serialize it. Since the serialization mechanism adds
+          // a few bytes itself, the final layout ressembles more the following:
+          //
+          //   [symmetrically encrypted [serialized overhead/secret]][padding]
+          static elle::Natural32 overhead = _overhead();
+
+          // 1) Compute the size of the secret key to generate by taking
+          //    into account the padding size, if any.
+          ELLE_ASSERT_GT(static_cast<elle::Natural32>(
+                           ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
+                         (padding_size + overhead));
           elle::Natural32 const length =
-            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) - padding;
+            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
+            (padding_size + overhead);
 
           // 2) Generate a temporary secret key.
-          SecretKey secret = SecretKey::generate(cipher_algorithm,
-                                                 length);
+          SecretKey secret = SecretKey::generate(cipher_algorithm, length);
 
           // 3) Cipher the plain text with the secret key.
           Code data = secret.encrypt(plain);
