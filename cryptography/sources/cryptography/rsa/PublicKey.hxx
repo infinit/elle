@@ -12,6 +12,7 @@
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/StaticFormat.hh>
 
+# include <cryptography/Exception.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/bn.hh>
 
@@ -39,7 +40,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+      // XXX ::elle::cryptography::Exception
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
   }
 }
 
@@ -73,7 +76,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+      // XXX ::elle::cryptography::Exception
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
   }
 
   value._prepare();
