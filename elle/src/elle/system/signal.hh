@@ -1,8 +1,7 @@
-#pragma once
-#ifndef SIGNAL_90V2GN6V
-#define SIGNAL_90V2GN6V
+#ifndef ELLE_SYSTEM_SIGNAL_HH
+# define ELLE_SYSTEM_SIGNAL_HH
 
-#include <string>
+# include <string>
 
 namespace elle
 {
@@ -13,4 +12,4 @@ namespace elle
   } /* system */
 } /* elle */
 
-#endif /* end of include guard: SIGNAL_90V2GN6V */
+#endif /* end of include guard: ELLE_SYSTEM_SIGNAL_HH*/
