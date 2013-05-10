@@ -21,6 +21,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>   // waitpid
 #include <unistd.h>     // fork, close, execvp, environ
+#include <stdio.h>
 
 ELLE_LOG_COMPONENT("elle.system.Process");
 
@@ -459,7 +460,9 @@ namespace elle
           }
           if (::execvpe(binary.c_str(), (char**) exec_args, envp) != 0)
             {
-              std::cerr << "couldn't execvp: " << binary << std::endl;
+              std::cerr << "could not launch the binary '" << binary << "' "
+                        << "from '" << os::path::current() << "': "
+                        << ::strerror(errno) << std::endl;
             }
           ::exit(EXIT_FAILURE);
         }
