@@ -1,5 +1,5 @@
 #ifndef ELLE_UTILITY_SUFFIXES_HXX
-#define ELLE_UTILITY_SUFFIXES_HXX
+# define ELLE_UTILITY_SUFFIXES_HXX
 
 namespace elle
 {
