@@ -957,7 +957,8 @@ test_multithread()
 | Terminate |
 `----------*/
 
-class BeaconException: public elle::Exception
+class BeaconException:
+  public elle::Exception
 {
 public:
   BeaconException()

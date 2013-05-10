@@ -13,7 +13,7 @@ namespace elle
   `--------------*/
 
   IOStreamClear::IOStreamClear(std::ios& s):
-      _stream(s)
+    _stream(s)
   {}
 
   IOStreamClear::~IOStreamClear()
@@ -25,8 +25,8 @@ namespace elle
   | IOStream |
   `---------*/
 
-  IOStream::IOStream(StreamBuffer* buffer)
-    : std::iostream(_buffer = buffer)
+  IOStream::IOStream(StreamBuffer* buffer):
+    std::iostream(_buffer = buffer)
   {
     exceptions(std::iostream::badbit);
   }
@@ -100,9 +100,9 @@ namespace elle
   | PlainStreamBuffer |
   `------------------*/
 
-  PlainStreamBuffer::PlainStreamBuffer()
-    : _ibuf()
-    , _obuf()
+  PlainStreamBuffer::PlainStreamBuffer():
+    _ibuf(),
+    _obuf()
   {}
 
   PlainStreamBuffer::~PlainStreamBuffer()
@@ -113,11 +113,11 @@ namespace elle
   {
     static const int max_size = _bufsize;
     ELLE_TRACE("read at most %s bytes", max_size)
-      {
-        ssize_t size = read(_ibuf, max_size);
-        ELLE_TRACE("got %s bytes", size);
-        return WeakBuffer(_ibuf, size);
-      }
+    {
+      ssize_t size = read(_ibuf, max_size);
+      ELLE_TRACE("got %s bytes", size);
+      return WeakBuffer(_ibuf, size);
+    }
   }
 
   WeakBuffer
@@ -137,10 +137,10 @@ namespace elle
   | DynamicStreamBuffer |
   `-------------------*/
 
-  DynamicStreamBuffer::DynamicStreamBuffer(Size size)
-    : _bufsize{size}
-    , _ibuf(new Byte[size])
-    , _obuf(new Byte[size])
+  DynamicStreamBuffer::DynamicStreamBuffer(Size size):
+    _bufsize(size),
+    _ibuf(new Byte[size]),
+    _obuf(new Byte[size])
   {}
 
   DynamicStreamBuffer::~DynamicStreamBuffer()

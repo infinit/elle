@@ -13,9 +13,9 @@ public:
     copy(0)
   {}
 
-  Attr(Attr const& other)
-    : i(other.i)
-    , copy(0)
+  Attr(Attr const& other):
+    i(other.i),
+    copy(0)
   {
     ++other.copy;
   }
