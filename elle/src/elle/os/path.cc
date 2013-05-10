@@ -2,9 +2,11 @@
 
 #include <elle/Exception.hh>
 #include <elle/log.hh>
+#include <elle/assert.hh>
 #include <boost/filesystem.hpp>
 
 #include <cassert>
+#include <unistd.h>
 
 ELLE_LOG_COMPONENT("elle.os.path");
 
@@ -33,6 +35,20 @@ namespace elle
         }
 
       } //!detail
+
+      std::string
+      current()
+      {
+        // XXX[macosx does not seem to provide this constant though written in
+        //     the manpage of getcwd(). do it like this for now :(]
+        unsigned int MAXPATHLEN = 1024;
+
+        char path[MAXPATHLEN];
+
+        ELLE_ASSERT_NEQ(::getwd(path), nullptr);
+
+        return (std::string{path});
+      }
 
       bool exists(std::string const& path)
       {

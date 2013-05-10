@@ -18,8 +18,9 @@ namespace elle
       template<typename... T>
       std::string
       join(T const&... parts);
-
-
+      /// Return the path to the current directory.
+      std::string
+      current();
       /// Returns true if the path refers to an existing file.
       bool
       exists(std::string const& path);
