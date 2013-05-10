@@ -5,9 +5,10 @@
 | Serializer |
 `-----------*/
 
-# include <elle/Buffer.hh>
-# include <elle/serialize/Serializer.hh>
 # include <elle/types.hh>
+# include <elle/serialize/Serializer.hh>
+
+# include <cryptography/finally.hh>
 
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
@@ -18,13 +19,23 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
 {
   enforce(format == 0);
 
+  // Retrieve the size of the big number.
   int size = BN_num_bytes(&value);
-  enforce(size > 0, "Invalid BIGNUM buffer size");
 
-  elle::Buffer buffer{static_cast<size_t>(size)};
-  ::BN_bn2bin(&value, buffer.mutable_contents());
+  unsigned char* buffer = new unsigned char[size];
 
-  archive << buffer;
+  ELLE_FINALLY_ACTION_DELETE(buffer);
+
+  // Copy the binary data into the buffer.
+  ::BN_bn2bin(&value, buffer);
+
+  // Serialize both the size and the binary data.
+  archive << size;
+  archive.SaveBinary(buffer, size);
+
+  ELLE_FINALLY_ABORT(buffer);
+
+  delete [] buffer;
 }
 
 // Note that the big number (i.e _value_) must have been initialized either
@@ -36,11 +47,25 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
 {
   enforce(format == 0);
 
-  elle::Buffer buffer;
-  archive >> buffer;
+  // Extract the big number size.
+  int size;
 
-  enforce(buffer.size() > 0, "Invalid BIGNUM buffer size");
-  ::BN_bin2bn(buffer.contents(), buffer.size(), &value);
+  archive >> size;
+
+  // Allocate a buffer.
+  unsigned char* buffer = new unsigned char[size];
+
+  ELLE_FINALLY_ACTION_DELETE(buffer);
+
+  // Extract the buffer.
+  archive.LoadBinary(buffer, size);
+
+  // Load the data binary and convert it into a big number.
+  ::BN_bin2bn(buffer, size, &value);
+
+  ELLE_FINALLY_ABORT(buffer);
+
+  delete [] buffer;
 }
 
 #endif
