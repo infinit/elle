@@ -7,6 +7,7 @@
 
 # include <cryptography/PublicKey.hh>
 # include <cryptography/PrivateKey.hh>
+# include <cryptography/Exception.hh>
 
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/StaticFormat.hh>
@@ -40,7 +41,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::KeyPair,
       break;
     }
     default:
-      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+      // XXX ::elle::cryptography::Exception
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
   }
 }
 
@@ -66,7 +69,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::KeyPair,
       break;
     }
     default:
-      throw elle::Exception(elle::sprintf("unknown format '%s'", format));
+      // XXX ::elle::cryptography::Exception
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
   }
 
   ELLE_ASSERT_NEQ(value._K, nullptr);
