@@ -1,11 +1,12 @@
-#pragma once
-#ifndef SUFFIXES_491WIJQ0
-#define SUFFIXES_491WIJQ0
+#ifndef ELLE_UTILITY_SUFFIXES_HH
+# define ELLE_UTILITY_SUFFIXES_HH
 
-#include <bitset>
+# include <bitset>
 
-namespace elle {
-  namespace suffix {
+namespace elle
+{
+  namespace suffix
+  {
     template<char... Bits>
     constexpr
     std::bitset<sizeof...(Bits)>
@@ -13,6 +14,6 @@ namespace elle {
   } /* suffix */
 } /* elle */
 
-#include <elle/utility/Suffixes.hxx>
+# include <elle/utility/Suffixes.hxx>
 
-#endif /* end of include guard: SUFFIXES_491WIJQ0 */
+#endif /* end of include guard: ELLE_UTILITY_SUFFIXES_HH */

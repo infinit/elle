@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(nattest)
   {
     reactor::nat::NAT n{sched};
 
-    auto hole = n.punch("infinit.im", 9999, 8345);
+    auto hole = n.punch("development.infinit.io", 9999, 8345);
     BOOST_CHECK_NE(hole.public_endpoint().port(), 0);
   };
   Thread t(sched, "test", test_fn);

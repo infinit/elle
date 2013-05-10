@@ -1,11 +1,12 @@
-#pragma once
-#ifndef SUFFIXES_OVHW4ZWV
-#define SUFFIXES_OVHW4ZWV
+#ifndef ELLE_UTILITY_SUFFIXES_HXX
+#define ELLE_UTILITY_SUFFIXES_HXX
 
-namespace elle {
-  namespace suffix {
-
-    namespace {
+namespace elle
+{
+  namespace suffix
+  {
+    namespace
+    {
       template <char... Bits>
       struct __checkbits
       {
@@ -34,12 +35,10 @@ namespace elle {
     {
       static_assert(__checkbits<Bits...>::valid,
                     "invalid digit in binary string");
-      return std::bitset<sizeof...(Bits)>{
-        (char const []){Bits..., '\0'}
-      };
+      return std::bitset<sizeof...(Bits)>{(char const []){Bits..., '\0'}};
     }
-
   } /* suffix */
 } /* elle */
 
-#endif /* end of include guard: SUFFIXES_OVHW4ZWV */
+#endif /* end of include guard: ELLE_UTILITY_SUFFIXES_HXX */
+
