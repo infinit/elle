@@ -20,7 +20,7 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
-  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
+  openssl = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl)
 
   # Global Configuration
   config = drake.cxx.Config()
