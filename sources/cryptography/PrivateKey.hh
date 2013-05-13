@@ -71,6 +71,9 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
+      /// Return a signature of the given digest.
+      Signature
+      sign(Digest const& digest) const;
       /// Return a signature of the given plain text.
       Signature
       sign(Plain const& plain) const;
@@ -223,6 +226,10 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const = 0;
+        /// Return a signature of the given digest.
+        virtual
+        Signature
+        sign(Digest const& digest) const = 0;
         /// Return a signature of the given plain text.
         virtual
         Signature

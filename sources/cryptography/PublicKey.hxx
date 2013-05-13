@@ -23,7 +23,7 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
       ELLE_DEBUG_FUNCTION(value);
 
-      static_assert(!std::is_same<T, Plain>::value,
+      static_assert(std::is_same<T, Plain>::value == false,
                     "this call should never have occured");
 
       elle::Buffer buffer;
@@ -39,7 +39,7 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
       ELLE_DEBUG_FUNCTION(code);
 
-      static_assert(!std::is_same<T, Clear>::value,
+      static_assert(std::is_same<T, Clear>::value == false,
                     "this call should never have occured");
 
       Clear clear = this->decrypt(code);
@@ -59,7 +59,9 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
       ELLE_DEBUG_FUNCTION(signature, value);
 
-      static_assert(!std::is_same<T, Plain>::value,
+      static_assert(std::is_same<T, Digest>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, Plain>::value == false,
                     "this call should never have occured");
 
       elle::Buffer buffer;

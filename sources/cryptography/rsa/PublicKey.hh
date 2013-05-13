@@ -120,6 +120,10 @@ namespace infinit
         virtual
         elle::Boolean
         verify(Signature const& signature,
+               Digest const& digest) const;
+        virtual
+        elle::Boolean
+        verify(Signature const& signature,
                Plain const& plain) const;
         virtual
         Clear

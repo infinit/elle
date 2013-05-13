@@ -80,6 +80,17 @@ namespace infinit
 
     elle::Boolean
     PublicKey::verify(Signature const& signature,
+                      Digest const& digest) const
+    {
+      ELLE_TRACE_METHOD(signature, digest);
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->verify(signature, digest));
+    }
+
+    elle::Boolean
+    PublicKey::verify(Signature const& signature,
                       Plain const& plain) const
     {
       ELLE_TRACE_METHOD(signature, plain);
