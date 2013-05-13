@@ -319,7 +319,7 @@ namespace infinit
             break;
           }
           default:
-            throw elle::Exception(
+            throw Exception(
               elle::sprintf("unknown format '%s'", this->version()));
         }
 
