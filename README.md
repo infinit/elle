@@ -1,9 +1,8 @@
-Presentation
-============
+# Presentation
 
-The dOpenSSL library extends the OpenSSL Project cryptographic library by
-providing deterministic random generation functionalities which can be
-used for rotating and deriving cryptographic keys.
+The [**dOpenSSL**](http://open.infinit.io) library extends the OpenSSL
+Project cryptographic library by providing deterministic random generation
+functionalities which can be used for rotating and deriving cryptographic keys.
 
 Indeed, the OpenSSL random generator introduces entropy in many places,
 making it unusable in a deterministic way. Thus, some functions have been
@@ -12,15 +11,13 @@ cloned and adapted in order to guarantee determinism whenever necessary.
 This product includes software developed by the OpenSSL Project for use
 in the OpenSSL Toolkit. (http://www.openssl.org/)
 
-Dependencies
-============
+# Dependencies
 
 The library relies upon several other libraries:
 
-  o OpenSSL which provides the fundamental cryptographic operations.
+ * OpenSSL which provides the fundamental cryptographic operations.
 
-Internals
-=========
+# Internals
 
 The library is composed of a three components, all required for ensuring the
 determinism of the cryptography key generation mechanism.
@@ -42,7 +39,7 @@ the ones based on uninitialized variables.
 The reader interested in looking at these slight modifications can look around
 for "PATCHED".
 
-Maintainers
-===========
+# Maintainers
 
+http://open.infinit.io
 contact@open.infinit.io
