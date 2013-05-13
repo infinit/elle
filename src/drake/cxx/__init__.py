@@ -401,7 +401,7 @@ class GccToolkit(Toolkit):
                     path = drake.Path('$ORIGIN') / path
             cmd.append('-Wl,-rpath,%s' % path)
         if self.os == drake.os.macos:
-            cmd.append('-undefined dynamic_lookup')
+            cmd += ['-undefined', 'dynamic_lookup']
         for obj in objs:
             cmd.append(obj.path())
         cmd += ['-o', exe.path()]
@@ -430,7 +430,7 @@ class GccToolkit(Toolkit):
                     path = drake.Path('$ORIGIN') / path
             cmd.append('-Wl,-rpath,%s' % path)
         if self.os == drake.os.macos:
-            cmd += ['-undefined dynamic_lookup',
+            cmd += ['-undefined', 'dynamic_lookup',
                     '-Wl,-install_name,@rpath/%s' % exe.path().basename(),
                     '-Wl,-headerpad_max_install_names']
         for obj in objs:
