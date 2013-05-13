@@ -30,7 +30,7 @@ architecture. All the build directories are located in _build/.
 For the purpose of this tutorial, we will assume your machine runs a Linux
 64-bit operating system.
 
-    $> cd _build/linux64
+    $> cd _build/linux64/
 
 There are two ways for building dOpenSSL. The first relies on the
 [Drake](http://open.infinit.io/drake) build system with which dOpenSSL has
@@ -67,7 +67,7 @@ XXX
 Making sure the dOpenSSL library has been properly built and behaves as expected
 on your system is important.
 
-The following assumes your are still in the _build/linux64 directory.
+The following assumes your are still in the _build/linux64/ directory.
 
 ### Drake
 
@@ -125,7 +125,7 @@ Although this implementation is deterministic, determinism must also be assured
 at the BIGNUM level because some of the functions introduce entroy, the ones
 related to BN_generate_prime_ex() for instance.
 
-Finally a set of functions for deducing a private/public key from a PRNG seed
+Finally a set of functions for deducing a private/public key from a PRNG state
 in a deterministic way is provided for every asymmetric cryptosystem, such as
 RSA.
 
