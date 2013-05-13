@@ -1,0 +1,62 @@
+import drake
+import drake.cxx
+import drake.cxx.boost
+
+config = None
+lib_static = None
+lib_dynamic = None
+
+rule_build = None
+rule_check = None
+rule_install = None
+rule_tests = None
+
+def configure(cxx_toolkit = None,
+              cxx_config = None,
+              elle = None,
+              curl = None,
+              prefix = '/usr'):
+
+  global config, lib_static, lib_dynamic, rule_build, rule_install
+
+  # Toolkit
+  cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+
+  # Libraries
+  curl = drake.cxx.find_library('curl/curl.h', curl)
+  elle = elle or drake.include('../elle')
+
+  # Global Configuration
+  config = drake.cxx.Config()
+  config.standard = drake.cxx.Config.cxx_11
+  config.add_local_include_path('.')
+  config.lib_path('lib')
+  config += curl
+  config.lib('curl')
+
+  # Local Configuration
+  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config.standard = drake.cxx.Config.cxx_11
+  cxx_config += config
+  cxx_config += elle.config
+
+  # Sources
+  sources = drake.nodes(
+    'curly.cc',
+    'curly.hh',
+    )
+
+  lib_static = drake.cxx.StaticLib('lib/curly', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/curly', sources, cxx_toolkit, cxx_config)
+
+  # Build
+  rule_build = drake.Rule('build')
+  rule_build << lib_static
+  rule_build << lib_dynamic
+
+  # Install
+  rule_install = drake.Rule('install')
+  prefix = drake.Path(prefix)
+  rule_install << drake.copy(lib_dynamic, prefix)
+  rule_install << drake.copy(lib_static, prefix)
+  rule_install << drake.copy(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'sources')

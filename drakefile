@@ -9,6 +9,9 @@ cryptography_static = None
 reactor = None
 reactor_dynamic = None
 reactor_static = None
+curly = None
+curly_dynamic = None
+curly_static = None
 asio_udt = None
 rule_check = None
 rule_tests = None
@@ -26,6 +29,7 @@ def configure(cxx_toolkit = None,
   global elle_dynamic, elle_static
   global cryptography_dynamic, cryptography_static
   global reactor, reactor_dynamic, reactor_static
+  global curly, curly_dynamic, curly_static
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
@@ -56,22 +60,36 @@ def configure(cxx_toolkit = None,
                           elle = elle,
                           prefix = prefix)
 
+  curly = drake.include('curly',
+                        cxx_toolkit = cxx_toolkit,
+                        cxx_config = cxx_config,
+                        elle = elle,
+                        curl = curl,
+                        prefix = prefix)
+
   config = drake.cxx.Config()
   config += elle.config
   config += cryptography.config
   config += reactor.config
+  config += curly.config
 
   elle_dynamic = elle.lib_dynamic
   elle_static = elle.lib_static
+
   cryptography_dynamic = cryptography.lib_dynamic
   cryptography_static = cryptography.lib_static
+
   reactor_dynamic = reactor.lib_dynamic
   reactor_static = reactor.lib_static
+
+  curly_dynamic = curly.lib_dynamic
+  curly_static = curly.lib_static
 
   build = drake.Rule('build')
   build << elle.rule_build
   build << cryptography.rule_build
   build << reactor.rule_build
+  build << curly.rule_build
 
   global rule_tests
   rule_tests = drake.Rule('tests')
@@ -89,3 +107,4 @@ def configure(cxx_toolkit = None,
   install << elle.rule_install
   install << cryptography.rule_install
   install << reactor.rule_install
+  install << curly.rule_install
