@@ -131,6 +131,9 @@ namespace infinit
         decrypt(Code const& code) const;
         virtual
         Signature
+        sign(Digest const& digest) const;
+        virtual
+        Signature
         sign(Plain const& plain) const;
         virtual
         Code

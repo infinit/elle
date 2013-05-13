@@ -68,6 +68,10 @@ namespace infinit
       template <typename T>
       Code
       encrypt(T const& value) const;
+      /// Return true if the given signature matches with the digest.
+      elle::Boolean
+      verify(Signature const& signature,
+             Digest const& digest) const;
       /// Return true if the given signature matches with the plain text.
       elle::Boolean
       verify(Signature const& signature,
@@ -220,6 +224,11 @@ namespace infinit
         virtual
         Code
         encrypt(Plain const& plain) const = 0;
+        /// Return true if the given signature matches with the digest.
+        virtual
+        elle::Boolean
+        verify(Signature const& signature,
+               Digest const& digest) const = 0;
         /// Return true if the given signature matches with the plain text.
         virtual
         elle::Boolean

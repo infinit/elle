@@ -509,6 +509,18 @@ namespace infinit
 
       elle::Boolean
       PublicKey::verify(Signature const& signature,
+                        Digest const& digest) const
+      {
+        ELLE_TRACE_METHOD(signature, digest);
+
+        return (evp::asymmetric::verify(signature,
+                                        digest,
+                                        this->_context_verify.get(),
+                                        ::EVP_PKEY_verify));
+      }
+
+      elle::Boolean
+      PublicKey::verify(Signature const& signature,
                         Plain const& plain) const
       {
         ELLE_TRACE_METHOD(signature, plain);

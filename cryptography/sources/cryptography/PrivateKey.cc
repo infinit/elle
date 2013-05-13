@@ -76,6 +76,16 @@ namespace infinit
     }
 
     Signature
+    PrivateKey::sign(Digest const& digest) const
+    {
+      ELLE_TRACE_METHOD(digest);
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->sign(digest));
+    }
+
+    Signature
     PrivateKey::sign(Plain const& plain) const
     {
       ELLE_TRACE_METHOD(plain);

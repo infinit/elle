@@ -60,6 +60,34 @@ namespace infinit
                                 size_t*,
                                 const unsigned char*,
                                 size_t));
+        /// Sign the given digest.
+        Signature
+        sign(Digest const& digest,
+             ::EVP_PKEY_CTX* context,
+             int (*function)(EVP_PKEY_CTX*,
+                             unsigned char*,
+                             size_t*,
+                             const unsigned char*,
+                             size_t));
+        /// Sign the given plain text.
+        Signature
+        sign(Plain const& plain,
+             ::EVP_PKEY_CTX* context,
+             int (*function)(EVP_PKEY_CTX*,
+                             unsigned char*,
+                             size_t*,
+                             const unsigned char*,
+                             size_t));
+        /// Return true if the signature is valid according to the given digest.
+        elle::Boolean
+        verify(Signature const& signature,
+               Digest const& digest,
+               ::EVP_PKEY_CTX* context,
+               int (*function)(EVP_PKEY_CTX*,
+                               const unsigned char*,
+                               size_t,
+                               const unsigned char*,
+                               size_t));
         /// Return true if the signature is valid according to the given plain.
         elle::Boolean
         verify(Signature const& signature,
@@ -70,15 +98,6 @@ namespace infinit
                                size_t,
                                const unsigned char*,
                                size_t));
-        /// Sign the given plain text.
-        Signature
-        sign(Plain const& plain,
-             ::EVP_PKEY_CTX* context,
-             int (*function)(EVP_PKEY_CTX*,
-                             unsigned char*,
-                             size_t*,
-                             const unsigned char*,
-                             size_t));
       }
     }
   }

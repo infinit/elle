@@ -223,6 +223,24 @@ namespace infinit
         }
 
         Signature
+        sign(Digest const& digest,
+             ::EVP_PKEY_CTX* context,
+             int (*function)(EVP_PKEY_CTX*,
+                             unsigned char*,
+                             size_t*,
+                             const unsigned char*,
+                             size_t))
+        {
+          ELLE_TRACE_FUNCTION(digest, context, function);
+
+          Signature signature(apply(elle::WeakBuffer{digest.buffer()},
+                                    context,
+                                    function));
+
+          return (signature);
+        }
+
+        Signature
         sign(Plain const& plain,
              ::EVP_PKEY_CTX* context,
              int (*function)(EVP_PKEY_CTX*,
@@ -237,16 +255,12 @@ namespace infinit
           Digest digest = oneway::hash(plain, oneway_algorithm);
 
           // 2) Sign the digest.
-          Signature signature(apply(elle::WeakBuffer{digest.buffer()},
-                                    context,
-                                    function));
-
-          return (signature);
+          return (sign(digest, context, function));
         }
 
         elle::Boolean
         verify(Signature const& signature,
-               Plain const& plain,
+               Digest const& digest,
                ::EVP_PKEY_CTX* context,
                int (*function)(EVP_PKEY_CTX*,
                                const unsigned char*,
@@ -254,10 +268,7 @@ namespace infinit
                                const unsigned char*,
                                size_t))
         {
-          ELLE_TRACE_FUNCTION(signature, plain, context, function);
-
-          // Compute the plain's digest.
-          Digest digest = oneway::hash(plain, oneway_algorithm);
+          ELLE_TRACE_FUNCTION(signature, digest, context, function);
 
           ELLE_ASSERT_NEQ(context, nullptr);
           ELLE_ASSERT_NEQ(signature.buffer().contents(), nullptr);
@@ -286,6 +297,25 @@ namespace infinit
           }
 
           elle::unreachable();
+        }
+
+        elle::Boolean
+        verify(Signature const& signature,
+               Plain const& plain,
+               ::EVP_PKEY_CTX* context,
+               int (*function)(EVP_PKEY_CTX*,
+                               const unsigned char*,
+                               size_t,
+                               const unsigned char*,
+                               size_t))
+        {
+          ELLE_TRACE_FUNCTION(signature, plain, context, function);
+
+          // 1) Compute the plain's digest.
+          Digest digest = oneway::hash(plain, oneway_algorithm);
+
+          // 2) Verify the signature based on the given digest.
+          return (verify(signature, digest, context, function));
         }
       }
     }

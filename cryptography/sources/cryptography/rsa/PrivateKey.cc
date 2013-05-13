@@ -600,6 +600,16 @@ namespace infinit
       }
 
       Signature
+      PrivateKey::sign(Digest const& digest) const
+      {
+        ELLE_TRACE_METHOD(digest);
+
+        return (evp::asymmetric::sign(digest,
+                                      this->_context_sign.get(),
+                                      ::EVP_PKEY_sign));
+      }
+
+      Signature
       PrivateKey::sign(Plain const& plain) const
       {
         ELLE_TRACE_METHOD(plain);
