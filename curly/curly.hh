@@ -56,7 +56,7 @@ namespace curly
   public:
     request_configuration();
     request_configuration(request_configuration&&) = default;
-    request_configuration(request_configuration&) = default;
+    request_configuration(request_configuration const&) = default;
     ~request_configuration() = default;
 
     void
