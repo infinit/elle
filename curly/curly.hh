@@ -36,7 +36,8 @@ namespace curly
   class request_configuration
   {
   private:
-    // These requests class will fire the request: gives access to _easy_handle.
+    // These requests class will fire the request:
+    // so we need to give them access to the CURL handle.
     friend class request;
     friend class asio_request;
     friend class curl_service;
@@ -44,6 +45,7 @@ namespace curly
     std::shared_ptr<CURL> _easy_handle;
     std::shared_ptr<struct curl_slist> _header_list = nullptr;
 
+    // I/O of the body.
     std::ostream* _output = nullptr;
     std::istream* _input = nullptr;
 
@@ -58,27 +60,23 @@ namespace curly
     request_configuration(request_configuration const&) = default;
     ~request_configuration() = default;
 
+    // Configuration helpers.
     void
     url(std::string const&);
-
     void
     output(std::ostream& out);
-
     void
     input(std::istream& out);
-
     void
-    headers(std::map<std::string, std::string> const &m);
-
+    headers(std::map<std::string, std::string> const& m);
     void
     user_agent(std::string const& ua);
-
     void
     cookie(std::string const& ua);
-
     void
     referer(std::string const& ua);
 
+    // Set the given CURLOption. Forward to curl_easy_setopt.
     template <typename T>
     int
     option(CURLoption opt,
@@ -93,63 +91,65 @@ namespace curly
 
     static
     size_t
-    write_helper(char *ptr,
+    write_helper(char* ptr,
                  size_t size,
                  size_t nmemb,
-                 void *userptr);
-    
+                 void* userptr);
     static
     size_t
-    read_helper(char *ptr,
+    read_helper(char* ptr,
                 size_t size,
                 size_t nmemb,
-                void *userptr);
+                void* userptr);
   public:
     request(request_configuration c);
+    ~request() = default;
 
+    // Retrieve info about the request. Forward to curl_easy_getinfo.
     template <typename T>
     int
     info(CURLINFO info, T&& param);
 
-    // return the http code
+    // Return the protocol response code, if any.
     int
     code() const;
 
-    // return the last effective url.
+    // Return the last effective url.
     std::string
     url();
 
-    std::chrono::duration<double> // seconds
+    // Return the duration of the request in seconds.
+    std::chrono::duration<double>
     time();
   };
 
   // Shortcut to do quick requests.
-  // returns the body.
+  // Return the body.
   std::string
   get(std::string const& url);
 
-  // Writes the body into out.
+  // Write the body into out.
   void
   get(std::string const& url,
       std::ostream& out);
 
-  // Reads the body from in.
+  // Read the body from in.
   std::string
   post(std::string const& url,
        std::istream& in);
 
-  // Reads the body from in, and write the body to out.
+  // Read the body from in, and write the body to out.
   void
   post(std::string const& url,
        std::istream& in,
        std::ostream& out);
 
-  // Reads the body from in.
+  // Read the body from in.
   std::string
   put(std::string const& url,
       std::istream& in);
 
-  // Reads the body from in, and write the body to out.
+  // Read the body from in, and write the body to out.
   void
   put(std::string const& url,
       std::istream& in,
@@ -157,13 +157,11 @@ namespace curly
 
   // Shortcuts to build request_configurations:
 
-  // Theses shortcut can be use several times.
+  // Theses shortcut construct basic configuration with default options.
   request_configuration
   make_get();
-
   request_configuration
   make_post();
-
   request_configuration
   make_put();
 
