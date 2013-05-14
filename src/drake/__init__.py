@@ -808,16 +808,17 @@ class BaseNode(object, metaclass = _BaseNodeType):
         """
         return False
 
+    def makefile_name(self):
+        if isinstance(self, Node):
+            return str(self.path())
+        else:
+            res = Path(self.name())
+            res.virtual = False
+            return str(res)
+
     def makefile(self, marks = None):
         """Print a Makefile for this node."""
         from pipes import quote
-        def name(node):
-            if isinstance(node, Node):
-                return str(node.path())
-            else:
-                res = Path(node.name())
-                res.virtual = False
-                return str(res)
         if self.builder is None:
             return
         if marks is None:
@@ -826,7 +827,9 @@ class BaseNode(object, metaclass = _BaseNodeType):
             return
         else:
             marks.add(str(self.name()))
-        print('%s: %s' % (name(self), ' '.join(map(name, self.dependencies))))
+        print('%s: %s' % (self.makefile_name(),
+                          ' '.join(map(lambda n: n.makefile_name(),
+                                       self.dependencies))))
         cmd = self.builder.command
         if cmd is not None:
             if isinstance(self, Node):
@@ -1892,8 +1895,10 @@ def _register_commands():
     command_add('dot-show', dot_show_cmd)
 
     def makefile(nodes):
+        root_nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
         if not len(nodes):
-            nodes = [node for node in Node.nodes.values() if not len(node.consumers)]
+            nodes = root_nodes
+        print('all: %s\n' % ' '.join(map(lambda n: n.makefile_name(), root_nodes)))
         marks = set()
         for node in nodes:
             node.makefile(marks)
