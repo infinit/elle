@@ -55,6 +55,7 @@ def configure(prefix = '.'):
     'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',
+    'base/runner',
     'cxx/dependency-directory-clash',
     'cxx/find_library',
     'cxx/headers-deps',

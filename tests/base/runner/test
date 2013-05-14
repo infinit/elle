@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import drake
+import drake.cxx
+import subprocess
+import sys
+
+with open('lib.cc', 'w') as f:
+  print('''\
+int answer()
+{
+  return 42;
+}
+''', file = f)
+
+drake.run('.')
+drake.reset()
+
+assert subprocess.check_output(['./main']).strip() == b'out 42'
+
+with open('lib.cc', 'w') as f:
+  print('''\
+int answer()
+{
+  return 51;
+}
+''', file = f)
+
+drake.run('.')
+
+assert subprocess.check_output(['./main']).strip() == b'out 51'

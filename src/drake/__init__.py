@@ -2503,7 +2503,10 @@ class Runner(Builder):
     self.__out = node('%s.out' % exe.name())
     self.__err = node('%s.err' % exe.name())
     self.__status = node('%s.status' % exe.name())
-    Builder.__init__(self, [exe], [self.__out, self.__err, self.__status])
+    self.__sources = [exe] + exe.dynamic_libraries
+    Builder.__init__(self,
+                     self.__sources,
+                     [self.__out, self.__err, self.__status])
 
   @property
   def status(self):
@@ -2512,6 +2515,8 @@ class Runner(Builder):
   def execute(self):
     import subprocess
     path = str(self.__exe.path())
+    if not self.__exe.path().absolute():
+        path = './%s' % path
     with open(str(self.__out.path()), 'w') as out, \
          open(str(self.__err.path()), 'w') as err, \
          open(str(self.__status.path()), 'w') as rv:
