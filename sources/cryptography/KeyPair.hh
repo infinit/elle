@@ -3,6 +3,7 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Cryptosystem.hh>
+# include <cryptography/oneway.hh>
 
 # include <elle/types.hh>
 # include <elle/Printable.hh>
@@ -31,6 +32,14 @@ namespace infinit
       public elle::concept::MakeUniquable<KeyPair>,
       public elle::Printable
     {
+      /*----------.
+      | Constants |
+      `----------*/
+    public:
+      /// The algorithm used for hashing the content to sign/verify.
+      static oneway::Algorithm const oneway_algorithm =
+        oneway::Algorithm::sha256;
+
       /*---------------.
       | Static Methods |
       `---------------*/

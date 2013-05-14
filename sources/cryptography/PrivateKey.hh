@@ -230,10 +230,6 @@ namespace infinit
         virtual
         Signature
         sign(Digest const& digest) const = 0;
-        /// Return a signature of the given plain text.
-        virtual
-        Signature
-        sign(Plain const& plain) const = 0;
         /// Encrypt the given plain text with the private key.
         ///
         /// Although unusual, the private key can very well be used for

@@ -229,11 +229,6 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const = 0;
-        /// Return true if the given signature matches with the plain text.
-        virtual
-        elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain) const = 0;
         /// Decrypt the given code.
         virtual
         Clear
