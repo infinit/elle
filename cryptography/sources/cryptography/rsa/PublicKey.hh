@@ -122,10 +122,6 @@ namespace infinit
         verify(Signature const& signature,
                Digest const& digest) const;
         virtual
-        elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain) const;
-        virtual
         Clear
         decrypt(Code const& code) const;
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)

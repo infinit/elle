@@ -1,7 +1,9 @@
 #include <cryptography/PrivateKey.hh>
+#include <cryptography/KeyPair.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
+#include <cryptography/oneway.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 
 #include <elle/log.hh>
@@ -90,9 +92,9 @@ namespace infinit
     {
       ELLE_TRACE_METHOD(plain);
 
-      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+      Digest digest = oneway::hash(plain, KeyPair::oneway_algorithm);
 
-      return (this->_implementation->sign(plain));
+      return (this->sign(digest));
     }
 
     Code

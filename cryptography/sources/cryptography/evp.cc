@@ -36,9 +36,6 @@ namespace infinit
         /// The cipher algorithm used for encrypting the data.
         static cipher::Algorithm const cipher_algorithm =
           cipher::Algorithm::aes256;
-        /// The algorithm used for hashing the content to sign/verify.
-        static oneway::Algorithm const oneway_algorithm =
-          oneway::Algorithm::sha256;
 
         /*----------.
         | Functions |
@@ -240,24 +237,6 @@ namespace infinit
           return (signature);
         }
 
-        Signature
-        sign(Plain const& plain,
-             ::EVP_PKEY_CTX* context,
-             int (*function)(EVP_PKEY_CTX*,
-                             unsigned char*,
-                             size_t*,
-                             const unsigned char*,
-                             size_t))
-        {
-          ELLE_TRACE_FUNCTION(plain, context, function);
-
-          // 1) Compute the plain's digest.
-          Digest digest = oneway::hash(plain, oneway_algorithm);
-
-          // 2) Sign the digest.
-          return (sign(digest, context, function));
-        }
-
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest,
@@ -297,25 +276,6 @@ namespace infinit
           }
 
           elle::unreachable();
-        }
-
-        elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain,
-               ::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               const unsigned char*,
-                               size_t,
-                               const unsigned char*,
-                               size_t))
-        {
-          ELLE_TRACE_FUNCTION(signature, plain, context, function);
-
-          // 1) Compute the plain's digest.
-          Digest digest = oneway::hash(plain, oneway_algorithm);
-
-          // 2) Verify the signature based on the given digest.
-          return (verify(signature, digest, context, function));
         }
       }
     }

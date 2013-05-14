@@ -133,9 +133,6 @@ namespace infinit
         Signature
         sign(Digest const& digest) const;
         virtual
-        Signature
-        sign(Plain const& plain) const;
-        virtual
         Code
         encrypt(Plain const& plain) const;
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)

@@ -519,18 +519,6 @@ namespace infinit
                                         ::EVP_PKEY_verify));
       }
 
-      elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD(signature, plain);
-
-        return (evp::asymmetric::verify(signature,
-                                        plain,
-                                        this->_context_verify.get(),
-                                        ::EVP_PKEY_verify));
-      }
-
       Clear
       PublicKey::decrypt(Code const& code) const
       {

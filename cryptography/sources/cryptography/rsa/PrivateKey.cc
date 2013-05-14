@@ -609,16 +609,6 @@ namespace infinit
                                       ::EVP_PKEY_sign));
       }
 
-      Signature
-      PrivateKey::sign(Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD(plain);
-
-        return (evp::asymmetric::sign(plain,
-                                      this->_context_sign.get(),
-                                      ::EVP_PKEY_sign));
-      }
-
       // Since the private key size limits the size of the data that can be
       // encrypted and raising large data to large exponent is very slow;
       // the algorithm below consists in (1) generating a secret key (2)
