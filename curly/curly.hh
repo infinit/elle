@@ -5,6 +5,7 @@
 # include <iosfwd>
 # include <map>
 # include <memory>
+# include <string>
 
 # include <curl/curl.h>
 
