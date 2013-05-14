@@ -34,12 +34,19 @@ int execvpe(char const* binary,
   if (binary == nullptr or binary[0] == '\0')
     return -1;
 
+  bool is_path = false;
+  for (char const* ptr = binary; *ptr != '\0'; ++ptr)
+    if (*ptr == '/')
+    {
+      is_path = true;
+      break;
+    }
+    else if (*ptr == '\\')
+      ++ptr;
+
   // absolute or relative path
-  if (binary[0] == '.' or binary[0] == '/')
-  {
-    (void) ::execve(binary, argv, env);
-    return -1;
-  }
+  if (is_path)
+    return ::execve(binary, argv, env);
 
   std::vector<std::string> paths;
   {
