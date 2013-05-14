@@ -44,6 +44,7 @@ def configure(cxx_toolkit = None,
   sources = drake.nodes(
     'curly.cc',
     'curly.hh',
+    'curly.hxx',
     )
 
   lib_static = drake.cxx.StaticLib('lib/curly', sources, cxx_toolkit, cxx_config)
