@@ -1,4 +1,4 @@
-#include "curly.hh"
+#include <curly.hh>
 
 #include <elle/Exception.hh>
 

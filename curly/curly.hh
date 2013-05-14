@@ -1,5 +1,5 @@
-#ifndef CURLY_HH_
-# define CURLY_HH_
+#ifndef ELLE_CURLY_HH
+# define ELLE_CURLY_HH
 
 # include <chrono>
 # include <iosfwd>
@@ -82,7 +82,8 @@ namespace curly
 
     template <typename T>
     int
-    option(CURLoption opt, T&& param);
+    option(CURLoption opt,
+           T&& param);
   };
 
   class request
@@ -128,27 +129,34 @@ namespace curly
   std::string
   get(std::string const& url);
 
-  // writes the body into out
+  // Writes the body into out.
   void
-  get(std::string const& url, std::ostream& out);
+  get(std::string const& url,
+      std::ostream& out);
 
-  // reads the body from in
+  // Reads the body from in.
   std::string
-  post(std::string const& url, std::istream& in);
+  post(std::string const& url,
+       std::istream& in);
 
-  // reads the body from in, and write the body to out
+  // Reads the body from in, and write the body to out.
   void
-  post(std::string const& url, std::istream& in, std::ostream& out);
+  post(std::string const& url,
+       std::istream& in,
+       std::ostream& out);
 
-  // reads the body from in
+  // Reads the body from in.
   std::string
-  put(std::string const& url, std::istream& in);
+  put(std::string const& url,
+      std::istream& in);
 
-  // reads the body from in, and write the body to out
+  // Reads the body from in, and write the body to out.
   void
-  put(std::string const& url, std::istream& in, std::ostream& out);
+  put(std::string const& url,
+      std::istream& in,
+      std::ostream& out);
 
-  // Shortcuts to build request_configurations
+  // Shortcuts to build request_configurations:
 
   // Theses shortcut can be use several times.
   request_configuration
@@ -164,4 +172,4 @@ namespace curly
 
 # include <curly.hxx>
 
-#endif /* end of include guard: CURLY_HH_ */
+#endif /* end of include guard: ELLE_CURLY_HH_ */

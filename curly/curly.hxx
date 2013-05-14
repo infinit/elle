@@ -1,5 +1,5 @@
-#ifndef CURLY_HXX
-# define CURLY_HXX
+#ifndef ELLE_CURLY_HXX
+# define ELLE_CURLY_HXX
 
 # include <sstream>
 
@@ -95,4 +95,4 @@ namespace curly
   }
 } /* curly */
 
-#endif /* end of include guard: CURLY_HXX */
+#endif /* end of include guard: ELLE_CURLY_HXX */
