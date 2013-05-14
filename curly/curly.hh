@@ -8,15 +8,14 @@
 
 # include <curl/curl.h>
 
-#define throw_if_ecode(code) \
-  _throw_if_ecode(__PRETTY_FUNCTION__, __LINE__, (code))
+#define throw_if_ecode(easy, code) _throw_if_ecode((easy), (code))
 
 namespace curly
 {
   void
-  _throw_if_ecode(std::string const& where,
-                  int line,
-                  CURLcode code);
+  _throw_if_ecode(CURL* easy,
+                  CURLcode code,
+                  std::string const& error_message = "");
 
   class curl_easy_deleter
   {

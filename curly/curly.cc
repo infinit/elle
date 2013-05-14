@@ -10,18 +10,23 @@
 namespace curly
 {
   void
-  _throw_if_ecode(std::string const& where,
-                  int line,
-                  CURLcode code)
+  _throw_if_ecode(CURL* easy,
+                  CURLcode code,
+                  std::string const& error_message)
   {
     if (code != CURLE_OK)
     {
+      char *url_ptr;
+      curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &url_ptr);
+
+      std::string url{url_ptr};
       std::stringstream ss;
       std::string msg{curl_easy_strerror(code)};
       ss
         << "error code: " << code 
-        << " in " << where << ":" << line
-        << ": " << msg;
+        << ": " << msg
+        << ": " << url
+        << ": " << error_message;
       throw elle::Exception{ss.str()};
     }
   }
@@ -139,6 +144,7 @@ namespace curly
     char error[CURL_ERROR_SIZE] = {};
 
     _config.option(CURLOPT_ERRORBUFFER, error);
+    _config.option(CURLOPT_FAILONERROR, 1);
     if (this->_config._output)
     {
       _config.option(CURLOPT_WRITEFUNCTION, &request::write_helper);
@@ -151,7 +157,7 @@ namespace curly
     }
     auto ec = curl_easy_perform(_config.native_handle());
     this->info(CURLINFO_RESPONSE_CODE, &this->_response_code);
-    throw_if_ecode(ec);
+    _throw_if_ecode(this->_config.native_handle(), ec, std::string{error});
     // XXX don't ignore the error message !
   }
 
