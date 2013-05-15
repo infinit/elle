@@ -18,4 +18,5 @@ drake.run(
     '../..',
     cxx_toolkit,
     cxx_config,
+    enable_debug = False
 )

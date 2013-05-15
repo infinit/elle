@@ -21,4 +21,5 @@ drake.run(
     cxx_toolkit,
     cxx_config,
     openssl = openssl,
+    enable_debug = False,
 )

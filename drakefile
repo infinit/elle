@@ -12,12 +12,18 @@ rule_install = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl = None,
-              prefix = '/usr'):
+              prefix = '/usr',
+              enable_debug = True):
 
   global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+
+  if enable_debug:
+    cxx_config.define("DEBUG")
+  else:
+    cxx_config.define("NDEBUG")
 
   # Libraries
   openssl = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl)
