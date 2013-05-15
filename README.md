@@ -201,7 +201,7 @@ to look for libraries, again assuming dOpenSSL has been installed in $HOME/local
 
 Finally, just launch the sample program by providing a passphrase:
 
-    $> ./test "chiche, donne nous tout"
+    $> ./test "chiche donne nous tout"
     Private-Key: (2048 bit)
     modulus:
         00:c2:06:28:58:c4:ee:e8:d0:65:e5:2f:fd:d4:1c:
