@@ -20,11 +20,6 @@ def configure(cxx_toolkit = None,
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
-  if enable_debug:
-    cxx_config.define("DEBUG")
-  else:
-    cxx_config.define("NDEBUG")
-
   # Libraries
   openssl = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl)
 
@@ -41,25 +36,6 @@ def configure(cxx_toolkit = None,
   cxx_config.lib('ssl')
   cxx_config.lib_path_runtime('.')
 
-  # Sources
-  sources = drake.nodes(
-    'sources/dopenssl/all.h',
-    'sources/dopenssl/bn.c',
-    'sources/dopenssl/bn.h',
-    'sources/dopenssl/rand.c',
-    'sources/dopenssl/rand.h',
-    'sources/dopenssl/rsa.c',
-    'sources/dopenssl/rsa.h',
-    )
-
-  lib_static = drake.cxx.StaticLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
-
-  # Build
-  rule_build = drake.Rule('build')
-  rule_build << lib_static
-  rule_build << lib_dynamic
-
   # Tests
   tests = ['bn',
            'rand',
@@ -71,6 +47,31 @@ def configure(cxx_toolkit = None,
   tests_cxx_config.lib('crypto')
   tests_cxx_config.lib('ssl')
 
+  # Sources
+  sources = drake.nodes(
+    'sources/dopenssl/all.h',
+    'sources/dopenssl/bn.c',
+    'sources/dopenssl/bn.h',
+    'sources/dopenssl/rand.c',
+    'sources/dopenssl/rand.h',
+    'sources/dopenssl/rsa.c',
+    'sources/dopenssl/rsa.h',
+    )
+
+  if enable_debug:
+    cxx_config.define("DEBUG")
+  else:
+    cxx_config.define("NDEBUG")
+
+  lib_static = drake.cxx.StaticLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
+
+  # Build
+  rule_build = drake.Rule('build')
+  rule_build << lib_static
+  rule_build << lib_dynamic
+
+  # Check
   tests_rule = drake.Rule('tests')
   rule_check = drake.Rule('check')
   for test in tests:
