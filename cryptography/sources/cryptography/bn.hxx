@@ -6,9 +6,8 @@
 `-----------*/
 
 # include <elle/types.hh>
+# include <elle/finally.hh>
 # include <elle/serialize/Serializer.hh>
-
-# include <cryptography/finally.hh>
 
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
@@ -21,10 +20,11 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
 
   // Retrieve the size of the big number.
   int size = BN_num_bytes(&value);
+  enforce(size > 0);
 
   unsigned char* buffer = new unsigned char[size];
 
-  ELLE_FINALLY_ACTION_DELETE(buffer);
+  ELLE_FINALLY_ACTION_DELETE_ARRAY(buffer);
 
   // Copy the binary data into the buffer.
   ::BN_bn2bin(&value, buffer);
@@ -51,11 +51,12 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   int size;
 
   archive >> size;
+  enforce(size > 0);
 
   // Allocate a buffer.
   unsigned char* buffer = new unsigned char[size];
 
-  ELLE_FINALLY_ACTION_DELETE(buffer);
+  ELLE_FINALLY_ACTION_DELETE_ARRAY(buffer);
 
   // Extract the buffer.
   archive.LoadBinary(buffer, size);
