@@ -18,15 +18,15 @@ lib/libdopenssl.dylib: sources/dopenssl/rand.o sources/dopenssl/bn.o sources/dop
 
 sources/dopenssl/rand.o: ../../sources/dopenssl/rand.c
 	@mkdir -p sources/dopenssl
-	gcc -Wall -fPIC -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/rand.c -o sources/dopenssl/rand.o
+	gcc -Wall -fPIC -DNDEBUG -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/rand.c -o sources/dopenssl/rand.o
 
 sources/dopenssl/bn.o: ../../sources/dopenssl/bn.c
 	@mkdir -p sources/dopenssl
-	gcc -Wall -fPIC -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/bn.c -o sources/dopenssl/bn.o
+	gcc -Wall -fPIC -DNDEBUG -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/bn.c -o sources/dopenssl/bn.o
 
 sources/dopenssl/rsa.o: ../../sources/dopenssl/rsa.c
 	@mkdir -p sources/dopenssl
-	gcc -Wall -fPIC -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/rsa.c -o sources/dopenssl/rsa.o
+	gcc -Wall -fPIC -DNDEBUG -isystem /opt/local/include -isystem . -I ../../sources -I sources -O2 -Wall -fPIC -c ../../sources/dopenssl/rsa.c -o sources/dopenssl/rsa.o
 
 tests/dopenssl/bn.err: tests/dopenssl/bn lib/libdopenssl.dylib
 	@mkdir -p tests/dopenssl
