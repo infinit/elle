@@ -37,6 +37,8 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config.export_dynamic = True
+  cxx_config.warnings.parentheses = False
+  cxx_config.warnings.empty_body = False
 
   elle = drake.include('elle',
                        cxx_toolkit = cxx_toolkit,
