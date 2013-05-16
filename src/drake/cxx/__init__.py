@@ -36,7 +36,7 @@ class Config:
             self._defines = {}
             self.__standard = None
             self.__rpath = []
-            self.__warnings = True
+            self.__warnings = Config.Warnings()
         else:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
@@ -52,6 +52,40 @@ class Config:
             self.__standard = model.__standard
             self.__rpath = deepcopy(model.__rpath)
             self.__warnings = model.__warnings
+
+    class Warnings:
+
+        def __init__(self):
+            self.__default = True
+            self.__warnings = {}
+
+        def __name(self, name):
+            if name not in ['empty_body', 'parentheses']:
+                raise Exception('unkown warning: %s' % name)
+            return name.replace('_', '-')
+
+        def __setattr__(self, name, value):
+            try:
+                self.__warnings[self.__name(name)] = bool(value)
+            except:
+                return super(Config.Warnings, self).__setattr__(name, value)
+
+        def __getattr__(self, name):
+            sup = super(Config.Warnings, self)
+            wname = sup.__getattr__('_Config__name')(name)
+            try:
+                return sup.__getattr__('_Warnings__warnings')[wname]
+            except KeyError:
+                return None
+            except:
+                return (self, name)
+
+        def __bool__(self):
+            return self.__default
+
+        def __iter__(self):
+            for warning, enable in self.__warnings.items():
+                yield (warning, enable)
 
     def enable_debug_symbols(self, val = True):
         self.__debug = val
@@ -209,7 +243,7 @@ class Config:
         return self.__warnings
 
     def enable_warnings(self, value):
-        self.__warnings = value
+        self.__warnings.default = value
 
     @property
     def export_dynamic(self):
@@ -348,8 +382,6 @@ class GccToolkit(Toolkit):
             res.append('-O2')
         if cfg._Config__debug:
             res.append('-g')
-        if cfg._Config__warnings is True:
-            res.append('-Wall')
         std = cfg._Config__standard
         if std is None:
             pass
@@ -361,6 +393,10 @@ class GccToolkit(Toolkit):
             res.append('-std=c++11')
         else:
             raise Exception('Unknown C++ standard: %s' % std)
+        if cfg.warnings:
+            res.append('-Wall')
+        for warning, enable in cfg.warnings:
+            res.append('-W%s%s' % (enable and '' or 'no-', warning))
         return res
 
     def ldflags(self, cfg):
