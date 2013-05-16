@@ -53,6 +53,10 @@ namespace reactor
     typedef std::set<Thread*> Threads;
     Thread* current() const;
     void terminate();
+    void terminate_later();
+  private:
+    bool _shallstop = false;
+
   private:
     void _freeze(Thread& thread);
     void _thread_register(Thread& thread);

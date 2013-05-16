@@ -153,10 +153,14 @@ namespace reactor
             std::cerr << "ASIO service is dead." << std::endl;
             std::abort();
           }
+          if (this->_shallstop)
+            break;
         }
     }
     else
       ELLE_TRACE("%s: round end with active threads", *this);
+    if (this->_shallstop)
+      this->terminate();
     return true;
   }
 
@@ -230,6 +234,13 @@ namespace reactor
     _running.insert(&thread);
     if (_running.size() == 1)
       _io_service.post(nothing);
+  }
+
+  void
+  Scheduler::terminate_later()
+  {
+    this->_shallstop = true;
+    this->io_service().post([&] {});
   }
 
   void
