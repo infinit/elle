@@ -443,11 +443,14 @@ class GccToolkit(Toolkit):
         cmd += ['-o', exe.path()]
         for lib in cfg.libs_dynamic:
             cmd.append('-l%s' % lib)
+        # XXX Should refer to libraries with path on MacOS.
         if cfg.libs_static:
-            cmd.append('-Wl,-static')
+            if self.os is not drake.os.macos:
+                cmd.append('-Wl,-Bstatic')
             for lib in cfg.libs_static:
                 cmd.append('-l%s' % lib)
-            cmd.append('-Wl,-Bdynamic')
+            if self.os is not drake.os.macos:
+                cmd.append('-Wl,-Bdynamic')
         return cmd
 
     def dynlink(self, cfg, objs, exe):
@@ -474,11 +477,14 @@ class GccToolkit(Toolkit):
         cmd += ['-shared', '-o', exe.path()]
         for lib in cfg.libs_dynamic:
             cmd.append('-l%s' % lib)
+        # XXX Should refer to libraries with path on MacOS.
         if cfg.libs_static:
-            cmd.append('-Wl,-static')
+            if self.os is not drake.os.macos:
+                cmd.append('-Wl,-Bstatic')
             for lib in cfg.libs_static:
                 cmd.append('-l%s' % lib)
-            cmd.append('-Wl,-Bdynamic')
+            if self.os is not drake.os.macos:
+                cmd.append('-Wl,-Bdynamic')
         return cmd
 
     def libname_static(self, cfg, path):
