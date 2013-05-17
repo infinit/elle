@@ -75,13 +75,6 @@ namespace elle
 {
   namespace system
   {
-
-    enum
-    {
-      READ_ENDPOINT = 0,
-      WRITE_ENDPOINT = 1,
-    };
-
     struct ProcessChannel
     {
     public:
@@ -153,9 +146,9 @@ namespace elle
       dup2_write(int fd)
       {
         if (this->read_fd == -1)
-          throw Exception{"cannot pipe read endpoint (not initialized)"};
+          throw Exception{"cannot pipe write endpoint (not initialized)"};
         if (::dup2(this->write_fd, fd) < 0)
-          throw Exception{"cannot dup2 read endpoint"};
+          throw Exception{"cannot dup2 write endpoint"};
         return *this;
       }
 
@@ -172,7 +165,7 @@ namespace elle
       {
         if (this->read_fd != -1)
         {
-          if (!borrowed)
+          if (!this->borrowed)
             (void) ::close(this->read_fd);
           this->read_fd = -1;
         }
@@ -194,6 +187,8 @@ namespace elle
       ProcessChannel&
       pipe_with(ProcessChannel& other)
       {
+        if (&other == this)
+          throw elle::Exception{"cannot pipe to itself"};
         other.close();
         this->create();
         other.read_fd = this->read_fd;
@@ -322,7 +317,7 @@ namespace elle
     bool
     ProcessConfig::has_pipe(ProcessChannelStream const channel)
     {
-      return this->channel(channel); // bool cast
+      return static_cast<bool>(this->channel(channel));
     }
 
     ProcessConfig&
@@ -336,8 +331,7 @@ namespace elle
     ProcessConfig::connect_stdout(ProcessConfig& other)
     {
       this->channel(ProcessChannelStream::out).pipe_with(
-          other.channel(ProcessChannelStream::in)
-      );
+        other.channel(ProcessChannelStream::in));
       return *this;
     }
 
