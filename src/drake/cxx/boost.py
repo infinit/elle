@@ -79,6 +79,8 @@ class Boost(drake.Configuration):
                 c.lib(name, True)
                 setattr(self, '_Boost__cfg_%s_static' % prop, c)
 
+            self.__cfg_filesystem.define('BOOST_FILESYSTEM_DYN_LINK', '1')
+            self.__cfg_filesystem_static.define('BOOST_FILESYSTEM_DYN_LINK', '0')
             self.__cfg_python = Config()
             # FIXME: do something smart here
             try:
