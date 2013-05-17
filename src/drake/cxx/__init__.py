@@ -474,6 +474,11 @@ class GccToolkit(Toolkit):
         cmd += ['-shared', '-o', exe.path()]
         for lib in cfg.libs_dynamic:
             cmd.append('-l%s' % lib)
+        if cfg.libs_static:
+            cmd.append('-Wl,-static')
+            for lib in cfg.libs_static:
+                cmd.append('-l%s' % lib)
+            cmd.append('-Wl,-Bdynamic')
         return cmd
 
     def libname_static(self, cfg, path):
