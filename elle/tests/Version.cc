@@ -6,6 +6,15 @@
 
 static
 void
+test_default()
+{
+  elle::Version def;
+  elle::Version expected(0, 0);
+  BOOST_CHECK_EQUAL(def, expected);
+}
+
+static
+void
 test_equal(int maj1, int min1, int maj2, int min2, bool result)
 {
 	elle::Version first(maj1, min1);
@@ -66,6 +75,9 @@ test_suite()
 {
 	boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
 	boost::unit_test::framework::master_test_suite().add(basics);
+
+        // Default value
+	basics->add(BOOST_TEST_CASE(std::bind(test_default)));
 
 	// == tests
 	basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 1, 2, true)));
