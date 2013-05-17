@@ -201,7 +201,13 @@ class Config:
 
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
-        res._defines.update(rhs._defines)
+        for key, value in rhs._defines.items():
+            if key not in self._defines:
+                self._defines[key] = value
+            else:
+                old = self._defines[key]
+                if old != value:
+                    raise Exception('redefinition of %s from %s to %s' % (key, old, value))
         res.__local_includes.update(rhs.__local_includes)
         res.__system_includes.update(rhs.__system_includes)
         res._includes.update(rhs._includes)
