@@ -882,17 +882,7 @@ class DynLibLinker(Builder):
         return 'Linker for %s' % self.lib
 
     def hash(self):
-
-        h = {}
-        # Flags
-        h['export_dynamic'] = self.config.export_dynamic
-        dynlibs = list(map(lambda l: l.lib_name, self.lib.dynamic_libraries))
-        h['dynamic_libraries'] = dynlibs
-        rpath = list(self.config._Config__rpath)
-        h['rpath'] = rpath
-        libraries_path = list(self.config._Config__lib_paths)
-        h['libraries_path'] = libraries_path
-        return repr(h)
+        return repr(self.command)
 
 
 class StaticLibLinker(ShellCommand):
