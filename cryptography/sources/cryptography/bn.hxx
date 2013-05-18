@@ -20,7 +20,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
 
   // Retrieve the size of the big number.
   int size = BN_num_bytes(&value);
-  enforce(size > 0);
+  enforce(size > 0, "cannot save empty BIGNUM");
 
   unsigned char* buffer = new unsigned char[size];
 
@@ -51,7 +51,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   int size;
 
   archive >> size;
-  enforce(size > 0);
+  enforce(size > 0, "cannot load empty BIGNUM");
 
   // Allocate a buffer.
   unsigned char* buffer = new unsigned char[size];
