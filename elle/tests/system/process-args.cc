@@ -5,7 +5,6 @@
 
 #include <iostream>
 
-
 int
 main()
 {
