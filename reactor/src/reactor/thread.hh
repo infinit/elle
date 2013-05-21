@@ -92,7 +92,7 @@ namespace reactor
     typedef boost::function<void ()> Injection;
     void inject(const Injection& injection);
     template <typename Exception, typename... Args>
-    void raise(Args &&... args);
+    void raise(Args&&... args);
   private:
     void _action_wrapper(const Thread::Action& action);
     boost::function<void ()> _injection;

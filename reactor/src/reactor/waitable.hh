@@ -85,7 +85,7 @@ namespace reactor
        * @param e The exception threads must throw.
        */
       template <typename Exception, typename... Args>
-      void _raise(Args &&... args);
+      void _raise(Args&&... args);
 
     private:
       /// Let threads register/unregister themselves.
