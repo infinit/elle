@@ -185,7 +185,35 @@ class Config:
 
 
     def __add__(self, rhs):
+        """Combine two C++ configurations.
 
+        Defines are merged:
+
+        >>> cfg1 = drake.cxx.Config()
+        >>> cfg1.define('A', 0)
+        >>> cfg2 = drake.cxx.Config()
+        >>> cfg2.define('B', 1)
+        >>> sum = cfg1 + cfg2
+        >>> sum.defines()['A']
+        0
+        >>> sum.defines()['B']
+        1
+
+        Defining twice to the same value is okay:
+
+        >>> cfg2.define('A', 0)
+        >>> sum = cfg1 + cfg2
+        >>> sum.defines()['A']
+        0
+
+        A different value is not:
+
+        >>> cfg1.define('B', 0)
+        >>> cfg1 + cfg2
+        Traceback (most recent call last):
+            ...
+        drake.Exception: redefinition of B from 0 to 1
+        """
         def merge_bool(attr):
             mine = getattr(self, attr)
             hers = getattr(rhs, attr)
@@ -201,13 +229,15 @@ class Config:
 
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
+
         for key, value in rhs._defines.items():
-            if key not in self._defines:
-                self._defines[key] = value
-            else:
-                old = self._defines[key]
+            if key in res._defines:
+                old = res._defines[key]
                 if old != value:
                     raise Exception('redefinition of %s from %s to %s' % (key, old, value))
+            else:
+                res._defines[key] = value
+
         res.__local_includes.update(rhs.__local_includes)
         res.__system_includes.update(rhs.__system_includes)
         res._includes.update(rhs._includes)

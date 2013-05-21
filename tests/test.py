@@ -28,6 +28,7 @@ assert os.system('./drake //check') == 0
 
 assert(doctest.testmod(sched)[0] == 0)
 assert(doctest.testmod(drake)[0] == 0)
+assert(doctest.testmod(drake.cxx)[0] == 0)
 assert(doctest.testmod(drake.cxx.boost)[0] == 0)
 assert(doctest.testmod(drake.git)[0] == 0)
 assert(doctest.testmod(drake.python)[0] == 0)
