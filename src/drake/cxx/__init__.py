@@ -455,9 +455,32 @@ class GccToolkit(Toolkit):
                     list(map(lambda n: str(n.path()), objs)),
                 ['ranlib', str(lib.path())])
 
+    def __libraries_flags(self, cfg, cmd):
+        for lib in cfg.libs_dynamic:
+            cmd.append('-l%s' % lib)
+        # XXX Should refer to libraries with path on MacOS.
+        if cfg.libs_static:
+            if self.os is not drake.os.macos:
+                cmd.append('-Wl,-Bstatic')
+                for lib in cfg.libs_static:
+                  cmd.append('-l%s' % lib)
+                cmd.append('-Wl,-Bdynamic')
+            else:
+                # This is some kind of joke from Apple, -Bstatic is a
+                # no-op on Lion.
+                for lib in cfg.libs_static:
+                  found = False
+                  for path in cfg.library_path:
+                    libpath = path / ('lib%s.a' % lib)
+                    if libpath.exists():
+                      cmd.append(libpath)
+                      found = True
+                      break
+                  if not found:
+                      raise Exception('can\t find static version of %s' % lib)
+
 
     def link(self, cfg, objs, exe):
-
         cmd = [self.cxx] + self.ldflags(cfg)
         for framework in cfg.frameworks():
             cmd += ['-framework', framework]
@@ -477,21 +500,10 @@ class GccToolkit(Toolkit):
         for obj in objs:
             cmd.append(obj.path())
         cmd += ['-o', exe.path()]
-        for lib in cfg.libs_dynamic:
-            cmd.append('-l%s' % lib)
-        # XXX Should refer to libraries with path on MacOS.
-        if cfg.libs_static:
-            if self.os is not drake.os.macos:
-                cmd.append('-Wl,-Bstatic')
-            for lib in cfg.libs_static:
-                cmd.append('-l%s' % lib)
-            if self.os is not drake.os.macos:
-                cmd.append('-Wl,-Bdynamic')
+        self.__libraries_flags(cfg, cmd)
         return cmd
 
     def dynlink(self, cfg, objs, exe):
-
-
         cmd = [self.cxx] + list(cfg.flags) + self.ldflags(cfg)
         for framework in cfg.frameworks():
             cmd += ['-framework', framework]
@@ -511,16 +523,7 @@ class GccToolkit(Toolkit):
         for obj in objs:
             cmd.append(obj.path())
         cmd += ['-shared', '-o', exe.path()]
-        for lib in cfg.libs_dynamic:
-            cmd.append('-l%s' % lib)
-        # XXX Should refer to libraries with path on MacOS.
-        if cfg.libs_static:
-            if self.os is not drake.os.macos:
-                cmd.append('-Wl,-Bstatic')
-            for lib in cfg.libs_static:
-                cmd.append('-l%s' % lib)
-            if self.os is not drake.os.macos:
-                cmd.append('-Wl,-Bdynamic')
+        self.__libraries_flags(cfg, cmd)
         return cmd
 
     def libname_static(self, cfg, path):
