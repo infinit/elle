@@ -175,7 +175,14 @@ namespace reactor
     void
     UDTServer::print(std::ostream& s) const
     {
-      s << "UDTServer " << this->local_endpoint();
+      try
+      {
+        s << "UDTServer " << this->local_endpoint();
+      }
+      catch (std::exception const& e) // XXX: Don't remove that !!
+      {
+        s << "UDTServer [unboud: " << e.what() << "]";
+      }
     }
 
   }
