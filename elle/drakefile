@@ -366,11 +366,11 @@ def configure(cxx_toolkit = None,
   if enable_tests:
       import os
       for test in tests:
-        config = drake.cxx.Config(cxx_config_tests)
-        config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
+        config_test = drake.cxx.Config(cxx_config_tests)
+        config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
         test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
                                     drake.nodes('tests/%s' % test) + [lib_dynamic],
-                                    cxx_toolkit, config)
+                                    cxx_toolkit, config_test)
         rule_tests << test
         runner = drake.Runner(test)
         rule_check << runner.status
