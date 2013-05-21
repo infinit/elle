@@ -26,6 +26,9 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
 
+  boost = boost or drake.cxx.boost.Boost()
+  cxx_config += boost.config()
+
   config = drake.cxx.Config()
   config.add_local_include_path('src')
   config.standard = drake.cxx.Config.cxx_11
@@ -135,8 +138,6 @@ def configure(cxx_toolkit = None,
     'reactor/udt-socket',
     'reactor/nat',
     ]
-
-  boost = boost or drake.cxx.boost.Boost()
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests += boost.config()
