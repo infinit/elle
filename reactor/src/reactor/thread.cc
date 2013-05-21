@@ -23,7 +23,7 @@ namespace reactor
     : _dispose(dispose)
     , _state(state::running)
     , _injection()
-    , _exception(0)
+    , _exception()
     , _backtrace_root()
     , _waited()
     , _timeout(false)
@@ -141,10 +141,7 @@ namespace reactor
           }
         if (_exception)
           {
-            elle::Exception* e = _exception;
-            _exception = 0;
-            ELLE_TRACE("%s: re-raise exception", *this);
-            e->raise_and_delete();
+            std::rethrow_exception(this->_exception);
           }
       }
   }
@@ -164,12 +161,6 @@ namespace reactor
   {
     Sleep sleep(_scheduler, d);
     sleep.run();
-  }
-
-  void
-  Thread::raise(elle::Exception* e)
-  {
-    _exception = e;
   }
 
   /*----------------.

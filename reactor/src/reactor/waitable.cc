@@ -16,7 +16,7 @@ namespace reactor
   Waitable::Waitable(const std::string& name)
     : _name(name)
     , _threads()
-    , _exception(0)
+    , _exception()
   {}
 
   Waitable::Waitable(Waitable&& source)
@@ -62,14 +62,14 @@ namespace reactor
   {
     if (_threads.empty())
     {
-      _exception = 0;
+      _exception = std::exception_ptr{}; // An empty one.
       return false;
     }
     BOOST_FOREACH (Thread* thread, _threads)
       thread->_wake(this);
     int res = _threads.size();
     _threads.clear();
-    _exception = 0;
+    _exception = std::exception_ptr{}; // An empty one.
     return res;
   }
 
@@ -78,13 +78,13 @@ namespace reactor
   {
     if (_threads.empty())
     {
-      _exception = 0;
+      _exception = std::exception_ptr{}; // An empty one.
       return nullptr;
     }
     Thread* thread = *_threads.begin();
     thread->_wake(this);
     _threads.erase(thread);
-    _exception = 0;
+    _exception = std::exception_ptr{}; // An empty one.
     return thread;
   }
 
@@ -103,12 +103,6 @@ namespace reactor
     ELLE_TRACE("%s: unwait %s", *t, *this);
     assert(_threads.find(t) != _threads.end());
     _threads.erase(t);
-  }
-
-  void
-  Waitable::_raise(elle::Exception* e)
-  {
-    _exception = e;
   }
 
   /*----------.

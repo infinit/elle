@@ -10,6 +10,14 @@ namespace reactor
     result = action();
   }
 
+  template <typename Exception, typename... Args>
+  void
+  Thread::raise(Args &&... args)
+  {
+    auto e = Exception{std::forward<Args>(args)...};
+    this->_exception = std::make_exception_ptr(std::move(e));
+  }
+
   template <typename R>
   VThread<R>::VThread(Scheduler& scheduler,
                       const std::string& name,

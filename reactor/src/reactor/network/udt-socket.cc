@@ -141,9 +141,9 @@ namespace reactor
             ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise<ConnectionClosed>();
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise<Exception>(error.message());
           this->_signal();
         }
 
@@ -223,9 +223,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed());
+            this->_raise<ConnectionClosed>();
           else if (error)
-            this->_raise(new Exception(error.message()));
+            this->_raise<Exception>(error.message());
           this->_signal();
         }
 
