@@ -65,6 +65,7 @@ def configure(cxx_toolkit = None,
   curly = drake.include('curly',
                         cxx_toolkit = cxx_toolkit,
                         cxx_config = cxx_config,
+                        boost = boost,
                         elle = elle,
                         curl = curl,
                         prefix = prefix)

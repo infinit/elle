@@ -13,6 +13,7 @@ rule_tests = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
+              boost = None,
               elle = None,
               curl = None,
               prefix = '/usr'):
@@ -23,6 +24,7 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
+  boost = boost or drake.cxx.boost.Boost()
   curl = drake.cxx.find_library('curl/curl.h', curl)
   elle = elle or drake.include('../elle')
 
@@ -38,6 +40,7 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
+  cxx_config += boost.config()
   cxx_config += elle.config
 
   # Sources
