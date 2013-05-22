@@ -84,7 +84,8 @@ namespace reactor
        *
        * @param e The exception threads must throw.
        */
-      void _raise(elle::Exception* e);
+      template <typename Exception, typename... Args>
+      void _raise(Args&&... args);
 
     private:
       /// Let threads register/unregister themselves.
@@ -92,7 +93,7 @@ namespace reactor
       /// Waiting threads.
       Waiters _threads;
       /// Exception woken thread must throw.
-      elle::Exception* _exception;
+      std::exception_ptr _exception;
   };
 
   /// Add a Waitable into Waitables.
@@ -102,5 +103,7 @@ namespace reactor
   /// Pretty print.
   std::ostream& operator << (std::ostream& s, const Waitable& t);
 }
+
+# include <reactor/waitable.hxx>
 
 #endif

@@ -104,7 +104,7 @@ namespace reactor
           if (error == boost::system::errc::operation_canceled)
             return;
           if (error)
-            _raise(new Exception(error.message()));
+            _raise<Exception>(error.message());
           _socket = socket;
           _signal();
         }
@@ -150,7 +150,7 @@ namespace reactor
       // socket is bound.
       try
       {
-        auto endpoint = _udp_socket->local_endpoint();
+        (void)_udp_socket->local_endpoint();
       }
       catch (...)
       {
@@ -175,7 +175,14 @@ namespace reactor
     void
     UDTServer::print(std::ostream& s) const
     {
-      s << "UDTServer " << this->local_endpoint();
+      try
+      {
+        s << "UDTServer " << this->local_endpoint();
+      }
+      catch (std::exception const& e) // XXX: Don't remove that !!
+      {
+        s << "UDTServer [unboud: " << e.what() << "]";
+      }
     }
 
   }

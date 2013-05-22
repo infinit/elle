@@ -91,11 +91,12 @@ namespace reactor
   public:
     typedef boost::function<void ()> Injection;
     void inject(const Injection& injection);
-    void raise(elle::Exception* e);
+    template <typename Exception, typename... Args>
+    void raise(Args&&... args);
   private:
     void _action_wrapper(const Thread::Action& action);
     boost::function<void ()> _injection;
-    elle::Exception* _exception;
+    std::exception_ptr _exception;
     elle::Backtrace _backtrace_root;
     friend class Exception;
     /// Thrown exception.

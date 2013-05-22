@@ -239,6 +239,7 @@ namespace reactor
   void
   Scheduler::terminate_later()
   {
+    ELLE_TRACE_METHOD("");
     this->_shallstop = true;
     this->io_service().post([&] {});
   }
@@ -280,10 +281,10 @@ namespace reactor
     switch (thread->state())
       {
         case Thread::state::running:
-          thread->raise(new Terminate(thread->name()));
+          thread->raise<Terminate>(thread->name());
           break;
         case Thread::state::frozen:
-          thread->raise(new Terminate(thread->name()));
+          thread->raise<Terminate>(thread->name());
           thread->_wait_abort();
           assert(thread->state() == Thread::state::running);
           break;

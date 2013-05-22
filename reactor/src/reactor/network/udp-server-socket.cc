@@ -101,9 +101,9 @@ namespace reactor
         {
           _written = written;
           if (error == boost::asio::error::eof)
-            this->_raise(new ConnectionClosed(scheduler()));
+            this->_raise<ConnectionClosed>(scheduler());
           else if (error)
-            this->_raise(new Exception(scheduler(), error.message()));
+            this->_raise<Exception>(scheduler(), error.message());
           this->_signal();
         }
 

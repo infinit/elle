@@ -12,15 +12,16 @@ namespace reactor
   public:
     Exception(const std::string& message);
     Exception(elle::Backtrace const& bt, elle::String const& format);
-    ELLE_EXCEPTION(Exception);
   };
 
-  class Terminate: public Exception
+  class Terminate: public std::exception
   {
+  private:
+    std::string _message;
   public:
-    typedef Exception Super;
+    typedef std::exception Super;
     Terminate(const std::string& message);
-    ELLE_EXCEPTION(Terminate);
+    virtual char const* what() const noexcept;
   };
 }
 

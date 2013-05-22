@@ -19,7 +19,14 @@ namespace reactor
     //     _backtrace.strip_base(t->_backtrace_root);
   }
 
-  Terminate::Terminate(const std::string& message)
-    : Super(elle::sprintf("thread termination: %s", message))
+  Terminate::Terminate(const std::string& message):
+    Super(),
+    _message{elle::sprintf("thread termination: %s", message)}
   {}
+
+  char const*
+  Terminate::what() const noexcept
+  {
+    return this->_message.c_str();
+  }
 }

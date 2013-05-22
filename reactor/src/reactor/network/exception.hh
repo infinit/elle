@@ -12,7 +12,6 @@ namespace reactor
     public:
       typedef reactor::Exception Super;
       Exception(const std::string& message);
-      ELLE_EXCEPTION(Exception);
     };
 
     class ConnectionClosed: public Exception
@@ -20,7 +19,6 @@ namespace reactor
     public:
       typedef Exception Super;
       ConnectionClosed();
-      ELLE_EXCEPTION(ConnectionClosed);
     };
 
     class TimeOut: public Exception
@@ -28,7 +26,6 @@ namespace reactor
     public:
       typedef Exception Super;
       TimeOut();
-      ELLE_EXCEPTION(TimeOut);
     };
   }
 }
