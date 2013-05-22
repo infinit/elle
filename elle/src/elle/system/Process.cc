@@ -682,17 +682,6 @@ namespace elle
     }
 
     void
-    Process::kill(ProcessTermination const term)
-    {
-      if (_this->pid == 0)
-        return;
-
-      ::kill(_this->pid, SIGKILL);
-      if (term == ProcessTermination::wait)
-        this->wait_status();
-    }
-
-    void
     Process::_signal(int signal, ProcessTermination const term)
     {
       ELLE_DEBUG_SCOPE("about to signal pid %s with %s", _this->pid, signal);
@@ -709,16 +698,30 @@ namespace elle
       }
     }
 
-    void
+    Process&
     Process::interrupt(ProcessTermination const term)
     {
       this->_signal(SIGINT, term);
+      return *this;
     }
 
-    void
+    Process&
     Process::terminate(ProcessTermination const term)
     {
       this->_signal(SIGTERM, term);
+      return *this;
+    }
+
+    Process&
+    Process::kill(ProcessTermination const term)
+    {
+      if (_this->pid != 0)
+      {
+        ::kill(_this->pid, SIGKILL);
+        if (term == ProcessTermination::wait)
+          this->wait_status();
+      }
+      return *this;
     }
 
     std::string

@@ -212,15 +212,15 @@ namespace elle
       wait(Milliseconds timeout = Milliseconds(0));
 
       /// Ask the program to interrupt.
-      void
+      Process&
       interrupt(ProcessTermination const term = ProcessTermination::wait);
 
       /// Ask the program to terminate.
-      void
+      Process&
       terminate(ProcessTermination const term = ProcessTermination::wait);
 
       /// Kill the program immediatly and returns its exit status.
-      void
+      Process&
       kill(ProcessTermination const term = ProcessTermination::wait);
 
       /// @brief Read a string from a process' standard output.
