@@ -150,7 +150,7 @@ namespace reactor
       // socket is bound.
       try
       {
-        auto endpoint = _udp_socket->local_endpoint();
+        (void)_udp_socket->local_endpoint();
       }
       catch (...)
       {
