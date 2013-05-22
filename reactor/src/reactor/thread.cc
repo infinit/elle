@@ -123,7 +123,10 @@ namespace reactor
       _signal();
     }
     if (this->_exception_thrown)
+    {
+      ELLE_TRACE("%s: re-raise exception", *this);
       std::rethrow_exception(this->_exception_thrown);
+    }
   }
 
   void
@@ -141,7 +144,10 @@ namespace reactor
           }
         if (_exception)
           {
-            std::rethrow_exception(this->_exception);
+            ELLE_TRACE("%s: re-raise exception", *this);
+            std::exception_ptr tmp = this->_exception;
+            this->_exception = std::exception_ptr{};
+            std::rethrow_exception(tmp);
           }
       }
   }
