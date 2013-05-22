@@ -25,6 +25,11 @@ namespace elle
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);
+
+  // Try to return the most exhaustive string representing the given
+  // exception (or the current one if none is given).
+  std::string
+  exception_string(std::exception_ptr err = std::exception_ptr{});
 }
 
 #endif
