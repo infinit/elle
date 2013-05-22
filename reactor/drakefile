@@ -141,7 +141,7 @@ def configure(cxx_toolkit = None,
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests += boost.config()
-  cxx_config_tests += boost.config_filesystem()
+  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos))
   cxx_config_tests += boost.config_signals()
   cxx_config_tests += boost.config_system()
   cxx_config_tests += boost.config_test()
