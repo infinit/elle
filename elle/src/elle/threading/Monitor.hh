@@ -43,6 +43,8 @@ namespace elle
     /// @fn Ret Monitor::operator ()(Callable<Ret(T const&)>) const
     /// Access to the wrapped value in a callable.
 
+    /// @fn Ret Monitor::operator ()(Callable<Ret()>) const
+    /// Lock the monitor while executing the callable
   }
 }
 

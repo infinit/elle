@@ -114,11 +114,19 @@ namespace elle
       }
 
       template <typename Callable>
-      decltype(std::declval<Callable>()(std::declval<T&>()))
+      decltype(std::declval<Callable>()(std::declval<T const&>()))
       operator ()(Callable&& callable) const
       {
         std::lock_guard<MutexType> lock{this->_mutex};
         return std::forward<Callable>(callable)(this->_value);
+      }
+
+      template <typename Callable>
+      decltype(std::declval<Callable>()())
+      operator ()(Callable&& callable) const
+      {
+        std::lock_guard<MutexType> lock{this->_mutex};
+        return std::forward<Callable>(callable)();
       }
     };
   }
