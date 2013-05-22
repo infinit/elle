@@ -169,7 +169,7 @@ namespace infinit
 
           buffer.writer() << secret;
 
-          ELLE_ASSERT_GT(buffer.size(), 0);
+          ELLE_ASSERT_GT(buffer.size(), 0u);
 
           // Encrypt the secret key's archive.
           Code key(apply(elle::WeakBuffer{buffer},
