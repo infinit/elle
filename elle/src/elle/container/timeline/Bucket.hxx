@@ -1,6 +1,8 @@
 #ifndef ELLE_CONTAINER_TIMELINE_BUCKET_HXX
 # define ELLE_CONTAINER_TIMELINE_BUCKET_HXX
 
+# include <iostream>
+
 # include <elle/types.hh>
 
 namespace elle
