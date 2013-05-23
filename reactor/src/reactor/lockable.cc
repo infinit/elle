@@ -1,13 +1,19 @@
+#include <elle/assert.hh>
+
 #include <reactor/lockable.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 namespace reactor
 {
-  Lock::Lock(Scheduler& sched, Lockable& lockable)
+  Lock::Lock(Lockable& lockable)
     : _lockable(lockable)
   {
-    sched.current()->wait(_lockable);
+    auto sched = reactor::Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto current = sched->current();
+    ELLE_ASSERT(current);
+    current->wait(_lockable);
   }
 
   Lock::~Lock()

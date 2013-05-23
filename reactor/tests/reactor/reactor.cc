@@ -686,7 +686,7 @@ mutex_count(int& i,
   while (count < mutex_yields)
   {
     {
-      reactor::Lock lock(*sched, mutex);
+      reactor::Lock lock(mutex);
       // For now, mutex do guarantee fairness between lockers.
       //BOOST_CHECK_NE(i, prev);
       (void)prev;
@@ -730,7 +730,7 @@ void
 rw_mutex_read(reactor::RWMutex& mutex,
               int& step)
 {
-  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex);
+  reactor::Lock lock(mutex);
   ++step;
   yield();
   BOOST_CHECK_EQUAL(step, 3);
@@ -758,7 +758,7 @@ void
 rw_mutex_write(reactor::RWMutex& mutex,
                int& step)
 {
-  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex.write());
+  reactor::Lock lock(mutex.write());
   ++step;
   int prev = step;
   yield();
@@ -787,7 +787,7 @@ void
 rw_mutex_both_read(reactor::RWMutex& mutex,
                    int& step)
 {
-  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex);
+  reactor::Lock lock(mutex);
   int v = step;
   BOOST_CHECK_EQUAL(v % 2, 0);
   BOOST_CHECK_EQUAL(step, v);
@@ -801,7 +801,7 @@ void
 rw_mutex_both_write(reactor::RWMutex& mutex,
                     int& step)
 {
-  reactor::Lock lock(*reactor::Scheduler::scheduler(), mutex.write());
+  reactor::Lock lock(mutex.write());
   ++step;
   yield();
   yield();
