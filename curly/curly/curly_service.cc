@@ -1,5 +1,5 @@
-#include <curly_service.hh>
-#include <asio_request.hh>
+#include <curly/curly_service.hh>
+#include <curly/asio_request.hh>
 
 namespace asio = boost::asio;
 

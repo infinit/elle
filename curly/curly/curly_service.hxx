@@ -1,7 +1,7 @@
 #ifndef CURLY_SERVICE_HXX
 # define CURLY_SERVICE_HXX
 
-#include <curly_service.hh> // never included useful for static analysis
+#include <curly/curly_service.hh> // never included useful for static analysis
 
 namespace curly
 {

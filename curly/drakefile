@@ -46,14 +46,14 @@ def configure(cxx_toolkit = None,
 
   # Sources
   sources = drake.nodes(
-      'asio_request.cc',
-      'asio_request.hh',
-      'curly.cc',
-      'curly.hh',
-      'curly.hxx',
-      'curly_service.cc',
-      'curly_service.hh',
-      'curly_service.hxx'
+      'curly/asio_request.cc',
+      'curly/asio_request.hh',
+      'curly/curly.cc',
+      'curly/curly.hh',
+      'curly/curly.hxx',
+      'curly/curly_service.cc',
+      'curly/curly_service.hh',
+      'curly/curly_service.hxx'
     )
 
   lib_static = drake.cxx.StaticLib('lib/curly', sources, cxx_toolkit, cxx_config)

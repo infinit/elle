@@ -5,8 +5,8 @@
 
 # include <boost/asio/ip/tcp.hpp>
 
-# include <curly.hh>
-# include <curly_service.hh>
+# include <curly/curly.hh>
+# include <curly/curly_service.hh>
 
 namespace curly
 {

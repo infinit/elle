@@ -3,7 +3,7 @@
 
 # include <sstream>
 
-# include <curly.hh> // will never include, useful for static analysis
+# include <curly/curly.hh> // will never include, useful for static analysis
 
 namespace curly
 {

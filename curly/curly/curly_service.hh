@@ -1,7 +1,7 @@
 #ifndef CURL_SERVICE_HH
 # define CURL_SERVICE_HH
 
-# include <curly.hh>
+# include <curly/curly.hh>
 # include <boost/asio.hpp>
 # include <set>
 
@@ -63,6 +63,6 @@ namespace curly
 
 }
 
-#include <curly_service.hxx>
+#include <curly/curly_service.hxx>
 
 #endif /* end of include guard: CURL_SERVICE_HH */

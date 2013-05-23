@@ -168,6 +168,6 @@ namespace curly
 
 } /* curly */
 
-# include <curly.hxx>
+# include <curly/curly.hxx>
 
 #endif /* end of include guard: ELLE_CURLY_HH_ */
