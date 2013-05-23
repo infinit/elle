@@ -96,10 +96,11 @@ namespace reactor
   private:
     void _action_wrapper(const Thread::Action& action);
     boost::function<void ()> _injection;
+    /// Exception to be thrown by the thread upon wake-up.
     std::exception_ptr _exception;
     elle::Backtrace _backtrace_root;
     friend class Exception;
-    /// Thrown exception.
+    /// Exception thrown by the thread execution.
     std::exception_ptr _exception_thrown;
 
     /*----------------.
