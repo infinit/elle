@@ -24,7 +24,7 @@ namespace elle
 
         std::string join(std::vector<std::string> const& strings)
         {
-          assert(strings.size() > 0);
+          ELLE_ASSERT_GT(strings.size(), 0u);
           auto it = strings.begin(), end = strings.end();
           fs::path path{*it};
           for (; ++it != end;)
