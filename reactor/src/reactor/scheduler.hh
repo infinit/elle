@@ -109,7 +109,7 @@ namespace reactor
     void CallLater(const boost::function<void ()>&      f,
                    const std::string&                   name,
                    Duration                             delay);
-    void
+    Thread*
     every(const boost::function<void ()>& f,
           const std::string& name,
           Duration delay);
