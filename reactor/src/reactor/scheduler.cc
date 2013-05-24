@@ -361,24 +361,25 @@ namespace reactor
                boost::bind(&CallLaterHelper, this, f, delay), true);
   }
 
-  static void EveryHelper(Scheduler* sched,
-                              const boost::function<void ()>& f,
-                              Duration delay)
+  static void
+  every_helper(Scheduler* sched,
+               const boost::function<void ()>& f,
+               Duration delay)
   {
     while (true)
-      {
-        sched->current()->sleep(delay);
-        f();
-      }
+    {
+      sched->current()->sleep(delay);
+      f();
+    }
   }
 
   void
-  Scheduler::Every(const boost::function<void ()>&  f,
-                   const std::string&               name,
-                   Duration                         delay)
+  Scheduler::every(const boost::function<void ()>& f,
+                   const std::string& name,
+                   Duration delay)
   {
     new Thread(*this, name,
-               boost::bind(&EveryHelper, this, f, delay), true);
+               boost::bind(&every_helper, this, f, delay), true);
   }
 
   /*-----.
