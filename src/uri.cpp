@@ -52,7 +52,7 @@ namespace network {
 	       uri::string_type::iterator &it) {
       auto part_first = it;
       std::advance(it, std::distance(first, last));
-      return boost::iterator_range<uri::string_type::iterator>(part_first, it);
+      return boost::make_iterator_range(part_first, it);
     }
 
     void advance(uri::string_type::iterator first,
@@ -262,11 +262,13 @@ namespace network {
   }
 
   namespace {
+    template <typename Iter>
     inline
     boost::string_ref to_string_ref(const uri::string_type &uri,
-				    boost::iterator_range<uri::iterator> uri_part) {
+				    boost::iterator_range<Iter> uri_part) {
       const char *c_str = uri.c_str();
-      std::advance(c_str, std::distance(std::begin(uri), std::begin(uri_part)));
+      const char *uri_part_begin = &(*(std::begin(uri_part)));
+      std::advance(c_str, std::distance(c_str, uri_part_begin));
       return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
     }
   } // namespace
@@ -330,7 +332,7 @@ namespace network {
       last = std::end(*port);
     }
 
-    return to_string_ref(pimpl_->uri_, boost::iterator_range<uri::iterator>(first, last));
+    return to_string_ref(pimpl_->uri_, boost::make_iterator_range(first, last));
   }
 
   uri::string_type uri::native() const {
