@@ -9,6 +9,10 @@
 # include <elle/finally.hh>
 # include <elle/serialize/Serializer.hh>
 
+# include <cryptography/Exception.hh>
+
+#include <openssl/err.h>
+
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
 ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
@@ -30,7 +34,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
   ::BN_bn2bin(&value, buffer);
 
   // Serialize both the size and the binary data.
-  archive << size;
+  archive << static_cast<elle::Natural32>(size);
   archive.SaveBinary(buffer, size);
 
   ELLE_FINALLY_ABORT(buffer);
@@ -48,7 +52,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   enforce(format == 0);
 
   // Extract the big number size.
-  int size;
+  elle::Natural32 size;
 
   archive >> size;
   enforce(size > 0, "cannot load empty BIGNUM");
@@ -62,7 +66,10 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   archive.LoadBinary(buffer, size);
 
   // Load the data binary and convert it into a big number.
-  ::BN_bin2bn(buffer, size, &value);
+  if (::BN_bin2bn(buffer, static_cast<int>(size), &value) == nullptr)
+    throw infinit::cryptography::Exception(
+      elle::sprintf("unable to convert the binary data into a big number: %s",
+                    ::ERR_error_string(ERR_get_error(), nullptr)));
 
   ELLE_FINALLY_ABORT(buffer);
 
