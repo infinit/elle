@@ -225,39 +225,38 @@ namespace reactor
 
     void DumpResults(StunClientLogicConfig& config, StunClientResults& results)
     {
-      char szBuffer[100];
-      const int buffersize = 100;
-      std::string strResult;
+      char buff[100];
+      std::string result;
 
       if (results.fBindingTestSuccess)
       {
-        results.addrLocal.ToStringBuffer(szBuffer, buffersize);
-        ELLE_DEBUG("Local address: %s", szBuffer);
+        results.addrLocal.ToStringBuffer(buff, sizeof(buff));
+        ELLE_DEBUG("Local address: %s", buff);
 
-        results.addrMapped.ToStringBuffer(szBuffer, buffersize);
-        ELLE_DEBUG("Mapped address: %s", szBuffer);
+        results.addrMapped.ToStringBuffer(buff, sizeof(buff));
+        ELLE_DEBUG("Mapped address: %s", buff);
       }
 
       if (config.fBehaviorTest)
       {
 
         ELLE_DEBUG("Behavior test: %s",
-                     results.fBehaviorTestSuccess ? "success" : "fail");
+                   results.fBehaviorTestSuccess ? "success" : "fail");
         if (results.fBehaviorTestSuccess)
         {
-          strResult = NatBehaviorToString(results.behavior);
-          ELLE_DEBUG("Nat behavior: %s", strResult.c_str());
+          result = NatBehaviorToString(results.behavior);
+          ELLE_DEBUG("Nat behavior: %s", result.c_str());
         }
       }
 
       if (config.fFilteringTest)
       {
         ELLE_DEBUG("Filtering test: %s",
-                     results.fBehaviorTestSuccess ? "success" : "fail");
+                   results.fBehaviorTestSuccess ? "success" : "fail");
         if (results.fBehaviorTestSuccess)
         {
-          strResult = NatFilteringToString(results.filtering);
-          ELLE_DEBUG("Nat filtering: %s", strResult.c_str());
+          result = NatFilteringToString(results.filtering);
+          ELLE_DEBUG("Nat filtering: %s", result.c_str());
         }
       }
     }
@@ -392,15 +391,14 @@ namespace reactor
     }
 
     Breach::Breach(Breach&& rhs):
-      _handle{nullptr},
+      _handle{std::move(rhs._handle)},
       _stunserver{std::move(rhs._stunserver)},
       _mapped_endpoint{std::move(rhs._mapped_endpoint)}
     {
-      std::swap(this->_handle, rhs._handle);
     }
 
     std::unique_ptr<network::UDPSocket>
-    Breach::handle()
+    Breach::take_handle()
     {
       return std::move(this->_handle);
     }

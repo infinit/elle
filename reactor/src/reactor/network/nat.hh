@@ -23,7 +23,7 @@ namespace reactor
     {
       return boost::posix_time::seconds{std::stoi(str)};
     }
- 
+
     class Hole
     {
     private:
@@ -54,33 +54,45 @@ namespace reactor
     class Breach
     {
     private:
-      std::unique_ptr<reactor::network::UDPSocket>      _handle;
-      boost::asio::ip::udp::endpoint                    _stunserver;
+      std::unique_ptr<reactor::network::UDPSocket> _handle;
+      boost::asio::ip::udp::endpoint _stunserver;
 
+    public:
       enum class NatBehavior
       {
+        /// Unknown Behavior, is there a bug somewhere ?
         UnknownBehavior,
-        DirectMapping, // IP address and port are the same between client and server view (NO NAT)
-        EndpointIndependentMapping, // same mapping regardless of IP:port original packet sent to (the kind of NAT we like)
-        AddressDependentMapping, // mapping changes for local socket based on remote IP address only, but remote port can change (partially symmetric, not great)
-        AddressAndPortDependentMapping // different port mapping if the ip address or port change (symmetric NAT, difficult to predict port mappings)
+        /// IP address and port are the same between client and server view (NO
+        /// NAT)
+        DirectMapping,
+        /// same mapping regardless of IP:port original packet sent to (the kind
+        /// of NAT we like)
+        EndpointIndependentMapping,
+        /// mapping changes for local socket based on remote IP address only,
+        /// but remote port can change (partially symmetric, not great)
+        AddressDependentMapping,
+        /// different port mapping if the ip address or port change (symmetric
+        /// NAT, difficult to predict port mappings)
+        AddressAndPortDependentMapping
       };
 
+    private:
       ELLE_ATTRIBUTE_R(boost::asio::ip::udp::endpoint, mapped_endpoint);
       ELLE_ATTRIBUTE_R(boost::asio::ip::udp::endpoint, local_endpoint);
       ELLE_ATTRIBUTE_R(NatBehavior, nat_behavior);
 
     public:
       std::unique_ptr<reactor::network::UDPSocket>
-      handle();
+      take_handle();
 
     public:
       Breach() = delete;
       Breach(Breach const&) = delete;
       Breach& operator =(Breach const&) = delete;
       Breach& operator =(Breach &&) = delete;
-      Breach(Breach&& breach);
       ~Breach() = default;
+
+      Breach(Breach&& breach);
 
       Breach(reactor::Scheduler& sched,
              boost::asio::ip::udp::endpoint const& stunserver,
