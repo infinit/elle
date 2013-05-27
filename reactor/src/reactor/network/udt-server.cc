@@ -38,9 +38,7 @@ namespace reactor
       _accepted(),
       _sockets(),
       _udp_socket(new UDPSocket{sched})
-    {
-      ELLE_TRACE_METHOD(sched);
-    }
+    {}
 
     UDTServer::UDTServer(Scheduler& sched,
                          std::unique_ptr<UDPSocket> sock):
@@ -48,13 +46,10 @@ namespace reactor
       _accepted(),
       _sockets(),
       _udp_socket(std::move(sock))
-    {
-      ELLE_TRACE_METHOD(sched, sock);
-    }
+    {}
 
     UDTServer::~UDTServer()
-    {
-    }
+    {}
 
     /*----------.
     | Accepting |
@@ -157,6 +152,8 @@ namespace reactor
         boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
                                              desired_port);
         _udp_socket->bind(local);
+        ELLE_TRACE("%s: listening on port %s",
+                   *this, _udp_socket->local_endpoint());
       }
     }
 
@@ -181,7 +178,7 @@ namespace reactor
       }
       catch (std::exception const& e) // XXX: Don't remove that !!
       {
-        s << "UDTServer [unboud: " << e.what() << "]";
+        s << "UDTServer [unbound: " << e.what() << "]";
       }
     }
 
