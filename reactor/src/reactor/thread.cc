@@ -101,6 +101,11 @@ namespace reactor
     }
     catch (const Terminate&)
     {}
+    catch (elle::Exception const& e)
+    {
+      ELLE_WARN("%s: exception escaped: %s", *this, e);
+      _exception_thrown = std::current_exception();
+    }
     catch (std::exception const& e)
     {
       ELLE_WARN("%s: exception escaped: %s", *this, e.what());
@@ -124,7 +129,8 @@ namespace reactor
     }
     if (this->_exception_thrown)
     {
-      ELLE_TRACE("%s: re-raise exception", *this);
+      ELLE_TRACE("%s: re-raise exception: %s",
+                 *this, elle::exception_string(this->_exception_thrown));
       std::rethrow_exception(this->_exception_thrown);
     }
   }
@@ -133,23 +139,25 @@ namespace reactor
   Thread::yield()
   {
     ELLE_TRACE("%s: yield", *this)
+    {
+      _thread.yield();
+      ELLE_TRACE_SCOPE("%s: back from yield", *this);
+      if (_injection)
       {
-        _thread.yield();
-        ELLE_TRACE("%s: back from yield", *this);
-        if (_injection)
-          {
-            Injection i(_injection);
-            _injection = Injection();
-            i();
-          }
-        if (_exception)
-          {
-            ELLE_TRACE("%s: re-raise exception", *this);
-            std::exception_ptr tmp = this->_exception;
-            this->_exception = std::exception_ptr{};
-            std::rethrow_exception(tmp);
-          }
+        ELLE_TRACE("%s: inject code", *this);
+        Injection i(_injection);
+        _injection = Injection();
+        i();
       }
+      if (_exception)
+      {
+        ELLE_TRACE("%s: re-raise exception: %s",
+                   *this, elle::exception_string(this->_exception));
+        std::exception_ptr tmp = this->_exception;
+        this->_exception = std::exception_ptr{};
+        std::rethrow_exception(tmp);
+      }
+    }
   }
 
   /*-----------.
