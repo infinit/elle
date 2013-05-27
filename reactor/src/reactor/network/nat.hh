@@ -43,12 +43,48 @@ namespace reactor
       Hole(Hole&& hole);
       ~Hole() = default;
 
-      Hole(reactor::Scheduler &sched,
+      Hole(reactor::Scheduler& sched,
            boost::asio::ip::udp::endpoint const& longinus,
            int local_port = 0);
     private:
       boost::asio::ip::udp::endpoint
       _punch(unsigned short port, boost::posix_time::seconds timeout = 10_sec);
+    };
+
+    class Breach
+    {
+    private:
+      std::unique_ptr<reactor::network::UDPSocket>      _handle;
+      boost::asio::ip::udp::endpoint                    _stunserver;
+
+      enum class NatBehavior
+      {
+        UnknownBehavior,
+        DirectMapping, // IP address and port are the same between client and server view (NO NAT)
+        EndpointIndependentMapping, // same mapping regardless of IP:port original packet sent to (the kind of NAT we like)
+        AddressDependentMapping, // mapping changes for local socket based on remote IP address only, but remote port can change (partially symmetric, not great)
+        AddressAndPortDependentMapping // different port mapping if the ip address or port change (symmetric NAT, difficult to predict port mappings)
+      };
+
+      ELLE_ATTRIBUTE_R(boost::asio::ip::udp::endpoint, mapped_endpoint);
+      ELLE_ATTRIBUTE_R(boost::asio::ip::udp::endpoint, local_endpoint);
+      ELLE_ATTRIBUTE_R(NatBehavior, nat_behavior);
+
+    public:
+      std::unique_ptr<reactor::network::UDPSocket>
+      handle();
+
+    public:
+      Breach() = delete;
+      Breach(Breach const&) = delete;
+      Breach& operator =(Breach const&) = delete;
+      Breach& operator =(Breach &&) = delete;
+      Breach(Breach&& breach);
+      ~Breach() = default;
+
+      Breach(reactor::Scheduler& sched,
+             boost::asio::ip::udp::endpoint const& stunserver,
+             unsigned short local_port = 0);
     };
 
     class NAT
@@ -61,9 +97,13 @@ namespace reactor
 
     public:
       Hole
-      punch(std::string const &hostname,
+      punch(std::string const& hostname,
             int port,
             int local_port = 0);
+
+      Breach
+      map(boost::asio::ip::udp::endpoint const& endpoint,
+          unsigned short local_port = 0);
 
     private:
       reactor::Scheduler&         sched;
