@@ -21,8 +21,14 @@ namespace std
 
   template <class K, class V, class ...OTHER>
   std::ostream&
-  operator <<(std::ostream& out,
-              multimap<K, V, OTHER...> const& m)
+  operator <<(ostream& out, unordered_map<K, V, OTHER...> const& m)
+  {
+    return out << "{" << elle::join(begin(m), end(m), ", ") << "}";
+  }
+
+  template <class K, class V, class ...OTHER>
+  std::ostream&
+  operator <<(std::ostream& out, multimap<K, V, OTHER...> const& m)
   {
     int n = 0;
 
