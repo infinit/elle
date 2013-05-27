@@ -1,5 +1,9 @@
 #include <curly/asio_request.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("elle.curly.asio");
+
 namespace asio = boost::asio;
 
 namespace curly
@@ -36,6 +40,7 @@ namespace curly
     if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
     {
       sockfd = self._socket.native_handle();
+      ELLE_DEBUG("opening socket %s", sockfd);
     }
     return sockfd;
   }

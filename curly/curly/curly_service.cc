@@ -1,6 +1,10 @@
 #include <curly/curly_service.hh>
 #include <curly/asio_request.hh>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("elle.curly.service");
+
 namespace asio = boost::asio;
 
 static void
@@ -25,7 +29,7 @@ _throw_if_mcode(std::string const& where,
       default:                       msg = "CURLM_unknown";             break;
     }
     ss
-      << "error code: " << code 
+      << "error code: " << code
       << " in " << where << ":" << line
       << ": " << msg;
     throw std::runtime_error{ss.str()};
@@ -50,7 +54,7 @@ namespace curly
   {
     this->option(CURLMOPT_TIMERFUNCTION, &curl_service::timeout_helper);
     this->option(CURLMOPT_TIMERDATA, this);
-  
+
     this->option(CURLMOPT_SOCKETFUNCTION, &curl_service::poll_helper);
     this->option(CURLMOPT_SOCKETDATA, this);
   }
@@ -61,10 +65,10 @@ namespace curly
                                void *userptr)
   {
     auto* _this = reinterpret_cast<curl_service*>(userptr);
-  
+
     /* cancel running timer */
     _this->_timer.cancel();
-  
+
     auto timeout_fn = [multi, userptr, _this]
       (boost::system::error_code const& error)
     {
@@ -88,7 +92,7 @@ namespace curly
       boost::system::error_code error; /*success*/
       timeout_fn(error);
     }
-  
+
     return 0;
   }
 
@@ -108,8 +112,11 @@ namespace curly
     // This function is the very first place where it's correct to do that.
     if (req == nullptr)
     {
+      ELLE_DEBUG("looking for socket: %s", sockfd);
       for (auto* request: _this->_requests)
       {
+        ELLE_DEBUG("(%s) request's socket is: %d", request,
+                   request->_socket.native_handle());
         if (request->_socket.native_handle() == sockfd)
         {
           auto mc = curl_multi_assign(_this->_multi.get(), sockfd, request);
@@ -117,6 +124,11 @@ namespace curly
           req = request;
           break;
         }
+      }
+      if (req == nullptr)
+      {
+        ELLE_DEBUG("socket not found: %d", sockfd);
+        return 0;
       }
     }
 
@@ -171,20 +183,21 @@ namespace curly
         res = msg->data.result;
         curl_easy_getinfo(easy, CURLINFO_PRIVATE, &req);
         req->_callback(res);
+        assert(this->_requests.erase(req) == 1);
       }
     }
   }
 
-
   void
   curl_service::add(asio_request* ptr)
   {
+    ELLE_DEBUG("register request(%s) with fd: %d", ptr, ptr->_socket.native_handle());
     auto mc = curl_multi_add_handle(this->_multi.get(),
                                     ptr->_config.native_handle());
     throw_if_mcode(mc);
     this->_requests.insert(ptr);
   }
-  
+
   void
   curl_service::shutdown_service()
   {
