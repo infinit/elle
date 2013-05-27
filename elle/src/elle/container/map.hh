@@ -3,6 +3,7 @@
 
 # include <iosfwd>
 # include <map>
+# include <unordered_map>
 
 namespace std
 {
@@ -18,8 +19,11 @@ namespace std
 
   template <class K, class V, class ...OTHER>
   std::ostream&
-  operator <<(ostream& out,
-              multimap<K, V, OTHER...> const& m);
+  operator <<(ostream& out, unordered_map<K, V, OTHER...> const& m);
+
+  template <class K, class V, class ...OTHER>
+  std::ostream&
+  operator <<(ostream& out, multimap<K, V, OTHER...> const& m);
 }
 
 # include <elle/container/map.hxx>
