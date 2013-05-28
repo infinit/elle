@@ -56,6 +56,7 @@ def configure(prefix = '.'):
     'base/no-builder-to-make',
     'base/path',
     'base/runner',
+    'cxx/boost',
     'cxx/dependency-directory-clash',
     'cxx/find_library',
     'cxx/headers-deps',
