@@ -365,18 +365,17 @@ def concatenate(chunks, prefix = ''):
 
 class GccToolkit(Toolkit):
 
-  arch = arch.x86
-  os = None
-  if sys.platform.startswith('linux'):
-    os = drake.os.linux
-  elif sys.platform.startswith('darwin'):
-    os = drake.os.macos
-  else:
-    raise Exception('unrecognized platform for a GCC toolkit: %s' % \
-                          sys.platform)
-
   def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
     Toolkit.__init__(self)
+    self.arch = arch.x86
+    self.os = None
+    if sys.platform.startswith('linux'):
+      self.os = drake.os.linux
+    elif sys.platform.startswith('darwin'):
+      self.os = drake.os.macos
+    else:
+      raise Exception('unrecognized platform for a GCC toolkit: %s' % \
+                            sys.platform)
     try:
       version = drake.cmd_output([compiler, '--version'])
     except:
