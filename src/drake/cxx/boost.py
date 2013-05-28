@@ -46,7 +46,10 @@ class Boost(drake.Configuration):
     cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
     # Compute the search path.
     if prefix is None:
-      test = [Path('/usr'), Path('/usr/local')]
+      if cxx_toolkit.os == drake.os.windows:
+        test = [Path('C:\\Boost')]
+      else:
+        test = [Path('/usr'), Path('/usr/local')]
     else:
       test = [Path(prefix)]
     for i in range(len(test)):
