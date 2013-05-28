@@ -38,11 +38,34 @@ BOOST_AUTO_TEST_CASE(printable_map)
   BOOST_CHECK_EQUAL(elle::sprint(m), "{tata: 2, toto: 1}");
 }
 
+BOOST_AUTO_TEST_CASE(printable_unordered_map)
+{
+  std::unordered_map<std::string, int> m{
+    {"toto", 1},
+    {"tata", 2},
+  };
+  ELLE_LOG("unordered_map: %s", m);
+  // unordered_map representation is unpredictable. While it's not test with
+  // regex, the best way is to compare representation size to the expected one.
+  size_t size = std::string("{tata: 2, toto: 1}").length();
+  BOOST_CHECK_EQUAL(elle::sprint(m).length(), size);
+}
+
 BOOST_AUTO_TEST_CASE(printable_set)
 {
   std::set<int> s{0, 1, 2};
   ELLE_LOG("set: %s", s);
   BOOST_CHECK_EQUAL(elle::sprint(s), "{0, 1, 2}");
+}
+
+BOOST_AUTO_TEST_CASE(printable_unordered_set)
+{
+  std::unordered_set<int> s{2, 1, 0};
+  ELLE_LOG("unordered_set: %s", s);
+  // unordered_set representation is unpredictable. While it's not test with
+  // regex, the best way is to compare representation size to the expected one.
+  size_t size = std::string("{0, 1, 2}").length();
+  BOOST_CHECK_EQUAL(elle::sprint(s).length(), size);
 }
 
 BOOST_AUTO_TEST_CASE(printable_list)
