@@ -37,6 +37,7 @@ namespace elle
       class _DictStream;
 
     public:
+      JSONArchive(StreamType& stream);
       JSONArchive(StreamType& stream, json::Object&& obj);
       JSONArchive(StreamType& stream, json::Object const& obj);
 
@@ -75,9 +76,6 @@ namespace elle
       friend class json::Null;
       friend class json::Array;
       friend class json::Dictionary;
-
-    protected:
-      using BaseClass::operator <<;
     };
 
 
