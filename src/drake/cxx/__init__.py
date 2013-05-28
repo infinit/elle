@@ -627,27 +627,29 @@ class VisualToolkit(Toolkit):
       return 'obj'
 
   def cppflags(self, cfg):
-    def print_define(arg):
-      (name, v) = arg
+    flags = []
+    for name, v in cfg.defines().items():
       if v is None:
-        return '/D%s' % name
+        flags.append('/D%s' % name)
       else:
-        return '/D%s=%s' % (name, utils.shell_escape(v))
-
-    defines = list(map(print_define, cfg.defines().items()))
-    system_includes = \
-      list(map(lambda i: '/I%s' % utils.shell_escape(i),
-               cfg.system_include_path))
-    local_includes  = \
-      list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i),
-                                        utils.shell_escape(i)),
-               cfg.local_include_path))
-    return system_includes + local_includes + defines
+        flags.append('/D%s=%s' % (name, utils.shell_escape(v)))
+    for path in cfg.system_include_path:
+      flags.append('/I%s' % utils.shell_escape(path))
+    for path in cfg.local_include_path:
+      flags.append('/I%s' % utils.shell_escape(srctree() / path))
+      flags.append('/I%s' % utils.shell_escape(path))
+    return flags
 
   def compile(self, cfg, src, obj, c = False, pic = False):
-      cppflags = ' '.join(self.cppflags(cfg))
-      return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % \
-          (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
+      cmd = ['cl.exe', '/MT', '/TP', '/nologo', '/DWIN32']
+      cmd += self.flags
+      cmd += cfg.flags
+      cmd.append('/EHsc')
+      cmd += self.cppflags(cfg)
+      cmd.append('/Fo%s' % obj)
+      cmd.append('/c')
+      cmd.append(str(src))
+      return cmd
 
   def archive(self, cfg, objs, lib):
       return 'lib /nologo /MT %s /OUT:%s' % \
