@@ -15,7 +15,7 @@ Main(void)
 {
     elle::nat::NAT a(elle::concurrency::scheduler());
 
-    elle::nat::Hole h = a.punch("infinit.im", 9999, 54545);
+    elle::nat::Hole h = a.punch("development.infinit.io", 9999, 54545);
     std::cout << h.public_endpoint().first << ":" << h.public_endpoint().second << std::endl;
     // This stuff is usefull for debug. uncomment if you need it
     //{
