@@ -99,8 +99,8 @@ namespace elle
                int line);
 
   // Generate a specialized assert function for operators.
-# define _ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                                  \
-  template<typename A, typename B>                                            \
+# define ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                                   \
+  template <typename A, typename B>                                           \
   inline                                                                      \
   void _assert_ ## _abbr_(A&& a,                                              \
                           B&& b,                                              \
@@ -119,12 +119,13 @@ namespace elle
 /**/
 
   // Dump assert functions for each operator.
-  _ELLE_ASSERT_OP_CHECK(==, eq);
-  _ELLE_ASSERT_OP_CHECK(!=, neq);
-  _ELLE_ASSERT_OP_CHECK(>, gt);
-  _ELLE_ASSERT_OP_CHECK(>=, gte);
-  _ELLE_ASSERT_OP_CHECK(<, lt);
-  _ELLE_ASSERT_OP_CHECK(<=, lte);
+  ELLE_ASSERT_OP_CHECK(==, eq);
+  ELLE_ASSERT_OP_CHECK(!=, neq);
+  ELLE_ASSERT_OP_CHECK(>, gt);
+  ELLE_ASSERT_OP_CHECK(>=, gte);
+  ELLE_ASSERT_OP_CHECK(<, lt);
+  ELLE_ASSERT_OP_CHECK(<=, lte);
+#undef ELLE_ASSERT_OP_CHECK
 }
 
 #endif

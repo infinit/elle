@@ -2,6 +2,7 @@
 # define ELLE_THREADING_MONITOR_HXX
 
 # include <elle/assert.hh>
+# include <elle/attributes.hh>
 
 # include <boost/thread/tss.hpp>
 
@@ -23,9 +24,9 @@ namespace elle
       struct Proxy
       {
       private:
-        U& _value;
-        mutex_type& _mutex;
-        counter_type& _counter;
+        ELLE_ATTRIBUTE(U&, value);
+        ELLE_ATTRIBUTE(mutex_type&, mutex);
+        ELLE_ATTRIBUTE(counter_type&, counter);
 
       public:
         U*
@@ -36,10 +37,10 @@ namespace elle
 
         Proxy(U& value,
               mutex_type& mutex,
-              counter_type& counter)
-          : _value(value)
-          , _mutex(mutex)
-          , _counter(counter)
+              counter_type& counter):
+          _value(value),
+          _mutex(mutex),
+          _counter(counter)
         {
           if (++this->_counter == 1)
             this->_mutex.lock();
@@ -53,27 +54,28 @@ namespace elle
       };
 
     private:
-      T _value;
-      MutexType mutable _mutex;
-      boost::thread_specific_ptr<counter_type> mutable _counter;
+      ELLE_ATTRIBUTE(T, value);
+      ELLE_ATTRIBUTE(MutexType mutable, mutex);
+      ELLE_ATTRIBUTE(boost::thread_specific_ptr<counter_type> mutable,
+                     counter);
 
     public:
-      Monitor()
-        : _value{}
-        , _mutex{}
-        , _counter{}
+      Monitor():
+        _value{},
+        _mutex{},
+        _counter{}
       {}
 
-      Monitor(value_type const& value)
-        : _value{value}
-        , _mutex{}
-        , _counter{}
+      Monitor(value_type const& value):
+        _value{value},
+        _mutex{},
+        _counter{}
       {}
 
-      Monitor(value_type&& value)
-        : _value{std::move(value)}
-        , _mutex{}
-        , _counter{}
+      Monitor(value_type&& value):
+        _value{std::move(value)},
+        _mutex{},
+        _counter{}
       {}
 
       ~Monitor()
