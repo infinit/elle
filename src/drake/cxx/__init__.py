@@ -644,7 +644,7 @@ class VisualToolkit(Toolkit):
                cfg.local_include_path))
     return system_includes + local_includes + defines
 
-  def compile(self, cfg, src, obj, c = False):
+  def compile(self, cfg, src, obj, c = False, pic = False):
       cppflags = ' '.join(self.cppflags(cfg))
       return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % \
           (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
