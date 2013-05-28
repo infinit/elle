@@ -22,6 +22,10 @@ namespace elle
     ArchiveMode const JSONArchive<ArchiveMode::output>::_DictStream::mode = ArchiveMode::Output;
     ArchiveMode const JSONArchive<ArchiveMode::input>::_DictStream::mode = ArchiveMode::Input;
 
+    JSONArchive<ArchiveMode::output>::JSONArchive(StreamType& stream)
+      : BaseClass(stream)
+    {}
+
     JSONArchive<ArchiveMode::output>::JSONArchive(StreamType& stream, json::Object&& obj)
       : BaseClass(stream)
     {
