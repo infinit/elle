@@ -798,15 +798,7 @@ class Compiler(Builder):
     return False
 
   def hash(self):
-    flags = self.config.flags
-    cppflags = self.toolkit.cppflags(self.config)
-    cflags = self.toolkit.cflags(self.config)
-    include_local = list(map(str, self.config.local_include_path))
-    include_system = list(map(str, self.config.system_include_path))
-    res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
-          (cppflags, cflags, flags,
-           include_local, include_system, self.pic)
-    return res
+    return str(self.command)
 
   def mkdeps(self):
     def add(res, node, sub):
