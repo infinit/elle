@@ -141,11 +141,17 @@ class Path(object):
             if not path:
                 self.__path = []
             elif platform.system() == 'Windows':
+                if path[:2] == '//' or path[:2] == '\\\\':
+                    path = path[2:]
+                    self.virtual = True
                 self.__path = re.split(r'/|\\', path)
                 slash = self.__path[0] == ''
                 volume = re.compile('^[A-Z]:').match(self.__path[0])
                 self.__absolute = bool(slash or volume)
             else:
+                if path[:2] == '//':
+                    path = path[2:]
+                    self.virtual = True
                 self.__path = path.split('/')
                 self.__absolute = self.__path[0] == ''
         if len(self.__path) > 1 and self.__path[-1] == '':
