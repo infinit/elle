@@ -44,6 +44,7 @@ class Boost(drake.Configuration):
     """
     # Fix arguments
     cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+    self.__cxx_toolkit = cxx_toolkit
     # Compute the search path.
     if prefix is None:
       if cxx_toolkit.os == drake.os.windows:
@@ -62,8 +63,8 @@ class Boost(drake.Configuration):
       # Create basic configuration for version checking.
       cfg = Config()
       cfg.add_system_include_path('%s/include' % path)
-      lib_path = path / 'lib'
-      cfg.lib_path(lib_path)
+      self.__lib_path = path / 'lib'
+      cfg.lib_path(self.__lib_path)
       # Check the version.
       version_eff = cxx_toolkit.preprocess(
           '#include <boost/version.hpp>\nBOOST_VERSION',
@@ -78,27 +79,9 @@ class Boost(drake.Configuration):
       # Fill configuration
       self.__prefix = path
       self.__cfg = cfg
-
-      for prop, library in self.__libraries.items():
-        name = self.__find_lib(library, lib_path, cxx_toolkit)
-        c = Config()
-        c.lib(name)
-        setattr(self, '_Boost__cfg_%s' % prop, c)
-        c = Config()
-        c.lib(name, True)
-        setattr(self, '_Boost__cfg_%s_static' % prop, c)
-      self.__cfg_filesystem.define('BOOST_FILESYSTEM_DYN_LINK',
-                                   '1')
-      self.__cfg_filesystem_static.define('BOOST_FILESYSTEM_DYN_LINK',
-                                          '0')
-      self.__cfg_python = Config()
-      # FIXME: do something smart here
-      try:
-        self.__cfg_python.lib(self.__find_lib('boost_python-3.2',
-                                              lib_path, cxx_toolkit))
-      except:
-        self.__cfg_python.lib(self.__find_lib('boost_python3',
-                                              lib_path, cxx_toolkit))
+      for prop in self.__libraries:
+        setattr(self, '_Boost__cfg_%s' % prop, None)
+      self.__cfg_python = None
       return
 
     raise Exception('no matching boost for the requested version '
@@ -117,19 +100,45 @@ class Boost(drake.Configuration):
                       'in %s' % (lib, lib_path))
 
   def config(self):
-
       return self.__cfg
 
   def config_python(self):
-      return self.__cfg_python
+    if self.__cfg_python is None:
+      self.__cfg_python = Config()
+      # FIXME: do something smart here
+      try:
+        self.__cfg_python.lib(self.__find_lib('boost_python-3.2',
+                                              self.__lib_path,
+                                              self.__cxx_toolkit))
+      except:
+        self.__cfg_python.lib(self.__find_lib('boost_python3',
+                                              self.__lib_path,
+                                              self.__cxx_toolkit))
+    return self.__cfg_python
 
   def __repr__(self):
-      return 'Boost(prefix = %s)' % repr(self.__prefix)
+    return 'Boost(prefix = %s)' % repr(self.__prefix)
 
-for prop in Boost._Boost__libraries:
-  def unclosure(prop):
+
+for prop, library in Boost._Boost__libraries.items():
+  def unclosure(prop, library):
     def m(self, static = False):
-      return getattr(self, '_Boost__cfg_%s%s' % \
-                     (prop, static and '_static' or ''))
+      pname = '_Boost__cfg_%s%s' % (prop, static and '_static' or '')
+
+      if getattr(self, pname) is None:
+        name = self._Boost__find_lib(library,
+                                     self._Boost__lib_path,
+                                     self._Boost__cxx_toolkit)
+        c = Config()
+        c.lib(name)
+        if library == 'filesystem':
+          c.define('BOOST_FILESYSTEM_DYN_LINK', '1')
+        setattr(self, '_Boost__cfg_%s' % prop, c)
+        c = Config()
+        c.lib(name, True)
+        if library == 'filesystem':
+          c.define('BOOST_FILESYSTEM_DYN_LINK', '0')
+        setattr(self, '_Boost__cfg_%s_static' % prop, c)
+      return getattr(self, pname)
     setattr(Boost, 'config_%s' % prop, m)
-  unclosure(prop)
+  unclosure(prop, library)
