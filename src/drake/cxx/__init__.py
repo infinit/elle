@@ -55,37 +55,37 @@ class Config:
 
     class Warnings:
 
-        def __init__(self):
-            self.__default = True
-            self.__warnings = {}
+      def __init__(self):
+        self.__default = True
+        self.__warnings = {}
 
-        def __name(self, name):
-            if name not in ['empty_body', 'parentheses']:
-                raise Exception('unkown warning: %s' % name)
-            return name.replace('_', '-')
+      def __name(self, name):
+        if name not in ['empty_body', 'parentheses']:
+          raise Exception('unkown warning: %s' % name)
+        return name.replace('_', '-')
 
-        def __setattr__(self, name, value):
-            try:
-                self.__warnings[self.__name(name)] = bool(value)
-            except:
-                return super(Config.Warnings, self).__setattr__(name, value)
+      def __setattr__(self, name, value):
+        try:
+          self.__warnings[self.__name(name)] = bool(value)
+        except:
+          return super(Config.Warnings, self).__setattr__(name, value)
 
-        def __getattr__(self, name):
-            sup = super(Config.Warnings, self)
-            wname = sup.__getattr__('_Config__name')(name)
-            try:
-                return sup.__getattr__('_Warnings__warnings')[wname]
-            except KeyError:
-                return None
-            except:
-                return (self, name)
+      def __getattr__(self, name):
+        sup = super(Config.Warnings, self)
+        wname = sup.__getattr__('_Config__name')(name)
+        try:
+          return sup.__getattr__('_Warnings__warnings')[wname]
+        except KeyError:
+          return None
+        except:
+          return (self, name)
 
-        def __bool__(self):
-            return self.__default
+      def __bool__(self):
+        return self.__default
 
-        def __iter__(self):
-            for warning, enable in self.__warnings.items():
-                yield (warning, enable)
+      def __iter__(self):
+        for warning, enable in self.__warnings.items():
+          yield (warning, enable)
 
     def enable_debug_symbols(self, val = True):
         self.__debug = val
@@ -177,11 +177,12 @@ class Config:
 
     def lib(self, lib, static = False):
 
-        if lib in self.__libs:
-            if self.__libs[lib] != static:
-                raise Exception('library %s dynamic versus static linkage conflict')
-        else:
-            self.__libs[lib] = static
+      if lib in self.__libs:
+        if self.__libs[lib] != static:
+          raise Exception('library %s dynamic versus static '
+                          'linkage conflict' % lib)
+      else:
+        self.__libs[lib] = static
 
 
     def __add__(self, rhs):
@@ -215,28 +216,30 @@ class Config:
         drake.Exception: redefinition of B from 0 to 1
         """
         def merge_bool(attr):
-            mine = getattr(self, attr)
-            hers = getattr(rhs, attr)
-            if mine is None:
-                return hers
-            elif hers is None:
-                return mine
+          mine = getattr(self, attr)
+          hers = getattr(rhs, attr)
+          if mine is None:
+            return hers
+          elif hers is None:
+            return mine
+          else:
+            if mine is hers:
+              return hers
             else:
-                if mine is hers:
-                    return hers
-                else:
-                    raise Exception('incompatible C++ configuration for attribute %s' % attr)
+              raise Exception('incompatible C++ configuration '
+                              'for attribute %s' % attr)
 
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
 
         for key, value in rhs._defines.items():
-            if key in res._defines:
-                old = res._defines[key]
-                if old != value:
-                    raise Exception('redefinition of %s from %s to %s' % (key, old, value))
-            else:
-                res._defines[key] = value
+          if key in res._defines:
+            old = res._defines[key]
+            if old != value:
+              raise Exception('redefinition of %s from %s to %s' % \
+                              (key, old, value))
+          else:
+            res._defines[key] = value
 
         res.__local_includes.update(rhs.__local_includes)
         res.__system_includes.update(rhs.__system_includes)
@@ -302,7 +305,8 @@ class Config:
         return self.__libs_filter(True)
 
     def __libs_filter(self, f):
-        return list(key for key, value in self.__libs.items() if value is f)
+      return list(key for key, value in self.__libs.items()
+                  if value is f)
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -352,582 +356,563 @@ class Toolkit(metaclass = _ToolkitType):
         return self._hook_bin_src
 
 def concatenate(chunks, prefix = ''):
-
-    return ''.join(map(lambda v: ' %s%s' % (prefix, utils.shell_escape(v)), chunks))
+  return ''.join(map(lambda v: ' %s%s' % (prefix,
+                                          utils.shell_escape(v)),
+                     chunks))
 
 class GccToolkit(Toolkit):
 
-    arch = arch.x86
-    os = None
-    if sys.platform.startswith('linux'):
-        os = drake.os.linux
-    elif sys.platform.startswith('darwin'):
-        os = drake.os.macos
-    else:
-        raise Exception('unrecognized platform for a GCC toolkit: %s' % \
-                            sys.platform)
+  arch = arch.x86
+  os = None
+  if sys.platform.startswith('linux'):
+    os = drake.os.linux
+  elif sys.platform.startswith('darwin'):
+    os = drake.os.macos
+  else:
+    raise Exception('unrecognized platform for a GCC toolkit: %s' % \
+                          sys.platform)
 
-    def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
+  def __init__(self, compiler = 'g++', compiler_c = 'gcc'):
+    Toolkit.__init__(self)
+    try:
+      version = drake.cmd_output([compiler, '--version'])
+    except:
+      raise drake.Exception('Unable to find compiler: %s' % compiler)
+    self.cxx = compiler
+    self.c = compiler_c
 
-        Toolkit.__init__(self)
-        try:
-            version = drake.cmd_output([compiler, '--version'])
-        except:
-            raise drake.Exception('Unable to find compiler: %s' % compiler)
-        self.cxx = compiler
-        self.c = compiler_c
+  def preprocess(self, code, config = Config()):
+    cmd = [self.cxx]
+    cmd += self.cppflags(config)
+    cmd +=['-x',  'c++', '-E', '-']
+    p = subprocess.Popen(cmd,
+                         stdin = subprocess.PIPE,
+                         stdout = subprocess.PIPE,
+                         stderr = subprocess.PIPE)
+    stdout, stderr = p.communicate(code.encode('utf-8'))
+    if p.returncode != 0:
+        raise Exception(
+            'Preprocessing failed with return code %s.'
+            '\nInput:\n%s\nStderr:\n%s\n' % \
+            (p.returncode, code, stderr))
+    return stdout.decode("utf-8")
 
-    def preprocess(self, code, config = Config()):
+  def object_extension(self):
 
-        cmd = [self.cxx] + self.cppflags(config) + ['-x',  'c++', '-E', '-']
-        p = subprocess.Popen(cmd,
-                             stdin = subprocess.PIPE,
-                             stdout = subprocess.PIPE,
-                             stderr = subprocess.PIPE)
-        stdout, stderr = p.communicate(code.encode('utf-8'))
-        if p.returncode != 0:
-            raise Exception(
-                'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
-                    % (p.returncode, code, stderr))
-        return stdout.decode("utf-8")
+      return 'o'
 
-    def object_extension(self):
+  def cppflags(self, cfg):
+      res = []
+      for name, v in cfg.defines().items():
+          if v is None:
+              res.append('-D%s' % name)
+          else:
+              res.append('-D%s=%s' % (name, utils.shell_escape(v)))
+      for include in cfg.system_include_path:
+          res.append('-isystem')
+          res.append(utils.shell_escape(include))
+      for include in cfg.local_include_path:
+          res.append('-I')
+          res.append(utils.shell_escape(srctree() / include))
+          res.append('-I')
+          res.append(utils.shell_escape(include))
+      return res
 
-        return 'o'
+  def cflags(self, cfg):
+      res = []
+      if cfg._Config__optimization:
+          res.append('-O2')
+      if cfg._Config__debug:
+          res.append('-g')
+      std = cfg._Config__standard
+      if std is None:
+          pass
+      elif std is Config.cxx_98:
+          res.append('-std=c++98')
+      elif std is Config.cxx_0x:
+          res.append('-std=c++0x')
+      elif std is Config.cxx_11:
+          res.append('-std=c++11')
+      else:
+          raise Exception('Unknown C++ standard: %s' % std)
+      if cfg.warnings:
+          res.append('-Wall')
+      for warning, enable in cfg.warnings:
+          res.append('-W%s%s' % (enable and '' or 'no-', warning))
+      return res
 
-    def cppflags(self, cfg):
-        res = []
-        for name, v in cfg.defines().items():
-            if v is None:
-                res.append('-D%s' % name)
-            else:
-                res.append('-D%s=%s' % (name, utils.shell_escape(v)))
-        for include in cfg.system_include_path:
-            res.append('-isystem')
-            res.append(utils.shell_escape(include))
-        for include in cfg.local_include_path:
-            res.append('-I')
-            res.append(utils.shell_escape(srctree() / include))
-            res.append('-I')
-            res.append(utils.shell_escape(include))
-        return res
+  def ldflags(self, cfg):
+      res = []
+      if cfg.export_dynamic and self.os is not drake.os.macos:
+          res.append('-rdynamic')
+      return res
 
-    def cflags(self, cfg):
-        res = []
-        if cfg._Config__optimization:
-            res.append('-O2')
-        if cfg._Config__debug:
-            res.append('-g')
-        std = cfg._Config__standard
-        if std is None:
-            pass
-        elif std is Config.cxx_98:
-            res.append('-std=c++98')
-        elif std is Config.cxx_0x:
-            res.append('-std=c++0x')
-        elif std is Config.cxx_11:
-            res.append('-std=c++11')
-        else:
-            raise Exception('Unknown C++ standard: %s' % std)
-        if cfg.warnings:
-            res.append('-Wall')
-        for warning, enable in cfg.warnings:
-            res.append('-W%s%s' % (enable and '' or 'no-', warning))
-        return res
+  def compile(self, cfg, src, obj, c = False, pic = False):
+      extraflags = []
+      if pic:
+          extraflags.append('-fPIC')
+      return [c and self.c or self.cxx] + list(set(cfg.flags)) + \
+          self.cppflags(cfg) + self.cflags(cfg) + \
+          extraflags + ['-c', str(src), '-o', str(obj)]
 
-    def ldflags(self, cfg):
-        res = []
-        if cfg.export_dynamic and self.os is not drake.os.macos:
-            res.append('-rdynamic')
-        return res
+  def archive(self, cfg, objs, lib):
+      # FIXME: ;
+      return (['ar', 'crs', str(lib.path())] + \
+                  list(map(lambda n: str(n.path()), objs)),
+              ['ranlib', str(lib.path())])
 
-    def compile(self, cfg, src, obj, c = False, pic = False):
-        extraflags = []
-        if pic:
-            extraflags.append('-fPIC')
-        return [c and self.c or self.cxx] + list(set(cfg.flags)) + \
-            self.cppflags(cfg) + self.cflags(cfg) + \
-            extraflags + ['-c', str(src), '-o', str(obj)]
-
-    def archive(self, cfg, objs, lib):
-        # FIXME: ;
-        return (['ar', 'crs', str(lib.path())] + \
-                    list(map(lambda n: str(n.path()), objs)),
-                ['ranlib', str(lib.path())])
-
-    def __libraries_flags(self, cfg, cmd):
-        for lib in cfg.libs_dynamic:
-            cmd.append('-l%s' % lib)
-        # XXX Should refer to libraries with path on MacOS.
-        if cfg.libs_static:
-            if self.os is not drake.os.macos:
-                cmd.append('-Wl,-Bstatic')
-                for lib in cfg.libs_static:
-                  cmd.append('-l%s' % lib)
-                cmd.append('-Wl,-Bdynamic')
-            else:
-                # This is some kind of joke from Apple, -Bstatic is a
-                # no-op on Lion.
-                for lib in cfg.libs_static:
-                  found = False
-                  for path in cfg.library_path:
-                    libpath = path / ('lib%s.a' % lib)
-                    if libpath.exists():
-                      cmd.append(libpath)
-                      found = True
-                      break
-                  if not found:
-                      raise Exception('can\t find static version of %s' % lib)
+  def __libraries_flags(self, cfg, cmd):
+    for lib in cfg.libs_dynamic:
+      cmd.append('-l%s' % lib)
+    # XXX Should refer to libraries with path on MacOS.
+    if cfg.libs_static:
+      if self.os is not drake.os.macos:
+        cmd.append('-Wl,-Bstatic')
+        for lib in cfg.libs_static:
+          cmd.append('-l%s' % lib)
+        cmd.append('-Wl,-Bdynamic')
+      else:
+        # This is some kind of joke from Apple, -Bstatic is a
+        # no-op on Lion.
+        for lib in cfg.libs_static:
+          found = False
+          for path in cfg.library_path:
+            libpath = path / ('lib%s.a' % lib)
+            if libpath.exists():
+              cmd.append(libpath)
+              found = True
+              break
+          if not found:
+            raise Exception('can\t find static version of %s' % lib)
 
 
-    def link(self, cfg, objs, exe):
-        cmd = [self.cxx] + self.ldflags(cfg)
-        for framework in cfg.frameworks():
-            cmd += ['-framework', framework]
-        for path in cfg.library_path:
-            cmd += ['-L', path]
-            if self.os == drake.os.linux:
-                cmd.append('-Wl,-rpath-link,%s' % path)
-        for path in cfg._Config__rpath:
-            if not path.absolute():
-                if self.os is drake.os.macos:
-                    path = drake.Path('@loader_path') / path
-                else:
-                    path = drake.Path('$ORIGIN') / path
-            cmd.append('-Wl,-rpath,%s' % path)
-        if self.os == drake.os.macos:
-            cmd += ['-undefined', 'dynamic_lookup']
-        for obj in objs:
-            cmd.append(obj.path())
-        cmd += ['-o', exe.path()]
-        self.__libraries_flags(cfg, cmd)
-        return cmd
+  def link(self, cfg, objs, exe):
+      cmd = [self.cxx] + self.ldflags(cfg)
+      for framework in cfg.frameworks():
+          cmd += ['-framework', framework]
+      for path in cfg.library_path:
+          cmd += ['-L', path]
+          if self.os == drake.os.linux:
+              cmd.append('-Wl,-rpath-link,%s' % path)
+      for path in cfg._Config__rpath:
+          if not path.absolute():
+              if self.os is drake.os.macos:
+                  path = drake.Path('@loader_path') / path
+              else:
+                  path = drake.Path('$ORIGIN') / path
+          cmd.append('-Wl,-rpath,%s' % path)
+      if self.os == drake.os.macos:
+          cmd += ['-undefined', 'dynamic_lookup']
+      for obj in objs:
+          cmd.append(obj.path())
+      cmd += ['-o', exe.path()]
+      self.__libraries_flags(cfg, cmd)
+      return cmd
 
-    def dynlink(self, cfg, objs, exe):
-        cmd = [self.cxx] + list(cfg.flags) + self.ldflags(cfg)
-        for framework in cfg.frameworks():
-            cmd += ['-framework', framework]
-        for path in cfg.library_path:
-            cmd += ['-L', path]
-        for path in cfg._Config__rpath:
-            if not path.absolute():
-                if self.os is drake.os.macos:
-                    path = drake.Path('@loader_path') / path
-                else:
-                    path = drake.Path('$ORIGIN') / path
-            cmd.append('-Wl,-rpath,%s' % path)
-        if self.os == drake.os.macos:
-            cmd += ['-undefined', 'dynamic_lookup',
-                    '-Wl,-install_name,@rpath/%s' % exe.path().basename(),
-                    '-Wl,-headerpad_max_install_names']
-        for obj in objs:
-            cmd.append(obj.path())
-        cmd += ['-shared', '-o', exe.path()]
-        self.__libraries_flags(cfg, cmd)
-        return cmd
+  def dynlink(self, cfg, objs, exe):
+      cmd = [self.cxx] + list(cfg.flags) + self.ldflags(cfg)
+      for framework in cfg.frameworks():
+          cmd += ['-framework', framework]
+      for path in cfg.library_path:
+          cmd += ['-L', path]
+      for path in cfg._Config__rpath:
+          if not path.absolute():
+              if self.os is drake.os.macos:
+                  path = drake.Path('@loader_path') / path
+              else:
+                  path = drake.Path('$ORIGIN') / path
+          cmd.append('-Wl,-rpath,%s' % path)
+      if self.os == drake.os.macos:
+        cmd += ['-undefined', 'dynamic_lookup',
+                '-Wl,-install_name,@rpath/%s' % exe.path().basename(),
+                '-Wl,-headerpad_max_install_names']
+      for obj in objs:
+          cmd.append(obj.path())
+      cmd += ['-shared', '-o', exe.path()]
+      self.__libraries_flags(cfg, cmd)
+      return cmd
 
-    def libname_static(self, cfg, path):
+  def libname_static(self, cfg, path):
 
-        path = Path(path)
-        return path.dirname() / ('lib%s.a' % str(path.basename()))
+      path = Path(path)
+      return path.dirname() / ('lib%s.a' % str(path.basename()))
 
-    def libname_dyn(self, cfg, path):
+  def libname_dyn(self, cfg, path):
 
-        path = Path(path)
-        if self.os == drake.os.linux:
-            ext = 'so'
-        elif self.os == drake.os.macos:
-            ext = 'dylib'
-        else:
-            assert False
-        return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
+      path = Path(path)
+      if self.os == drake.os.linux:
+          ext = 'so'
+      elif self.os == drake.os.macos:
+          ext = 'dylib'
+      else:
+          assert False
+      return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
 
-    def libname_module(self, cfg, path):
+  def libname_module(self, cfg, path):
 
-        path = Path(path)
-        return path.dirname() / ('%s.so' % str(path.basename()))
+      path = Path(path)
+      return path.dirname() / ('%s.so' % str(path.basename()))
 
-    def exename(self, cfg, path):
+  def exename(self, cfg, path):
 
-        return Path(path)
+      return Path(path)
 
 
 class VisualToolkit(Toolkit):
 
-    arch = arch.x86
-    os = os.windows
+  arch = arch.x86
+  os = os.windows
 
-    def __init__(self):
+  def __init__(self):
+    Toolkit.__init__(self)
+    def output(cmd):
+      p = subprocess.Popen(cmd, shell = True,
+                           stdout = subprocess.PIPE)
+      return p.stdout.read().strip().decode('utf-8')
+    # Des barres de rire cet OS j'vous dit.
+    cfg = output("echo %VS90COMNTOOLS%")
+    if not cfg:
+        raise Exception('VS90COMNTOOLS is not defined, '
+                        'check your Visual Studio installation.')
+    cfg = Path(cfg)
+    if not cfg.exists():
+      raise Exception('Visual Studio configuration file '
+                      'does not exist: %s' % cfg)
+    cfg = cfg / 'vsvars32.bat'
+    tmp = Path(tempfile.mkdtemp())
+    cp = tmp / 'fuck.bat'
+    shutil.copy(str(cfg), str(cp))
+    f = open(str(cp), 'a')
+    print('@echo %PATH%', file = f) # Des putain de barres.
+    print('@echo %LIB%', file = f)
+    print('@echo %INCLUDE%', file = f)
+    f.close()
+    res = output('"%s"' % cp).split('\r\n')
+    path = res[-3]
+    lib = res[-2]
+    include = res[-1]
+    _OS.environ['PATH'] = path
+    _OS.environ['LIB'] = lib
+    _OS.environ['INCLUDE'] = include
+    shutil.rmtree(str(tmp))
+    self.flags = []
 
-        Toolkit.__init__(self)
+  def preprocess(self, code, config = Config()):
 
-        def output(cmd):
+    fd, path = tempfile.mkstemp()
+    try:
+      with _OS.fdopen(fd, 'w') as f:
+        print(code, file = f)
+      cmd = ['cl.exe', '/E', path] + self.cppflags(config)
+      p = subprocess.Popen(cmd,
+                           stdin = subprocess.PIPE,
+                           stdout = subprocess.PIPE,
+                           stderr = subprocess.PIPE)
+      stdout, stderr = p.communicate()
+      if p.returncode != 0:
+        raise Exception(
+          'Preprocessing failed with return code %s.\n'
+          'Input:\n%s\nStderr:\n%s\n' % \
+          (p.returncode, code, stderr))
+      return stdout.decode("utf-8")
+    finally:
+      _OS.remove(path)
 
-            return subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE).stdout.read().strip().decode('utf-8')
+  def warning_disable(self, n):
+      self.flags.append('/wd%s' % n)
 
-        # Des barres de rire cet OS j'vous dit.
-        cfg = output("echo %VS90COMNTOOLS%")
-        if not cfg:
-            raise Exception("VS90COMNTOOLS is not defined, check your Visual Studio installation.")
-        cfg = Path(cfg)
-        if not cfg.exists():
-            raise Exception("Visual Studio configuration file does not exist: %s" % cfg)
-        cfg = cfg / 'vsvars32.bat'
-        tmp = Path(tempfile.mkdtemp())
-        cp = tmp / 'fuck.bat'
-        shutil.copy(str(cfg), str(cp))
-        f = open(str(cp), 'a')
-        print('@echo %PATH%', file = f) # Des putain de barres.
-        print('@echo %LIB%', file = f)
-        print('@echo %INCLUDE%', file = f)
-        f.close()
-        res = output('"%s"' % cp).split('\r\n')
-        path = res[-3]
-        lib = res[-2]
-        include = res[-1]
-        _OS.environ['PATH'] = path
-        _OS.environ['LIB'] = lib
-        _OS.environ['INCLUDE'] = include
-        shutil.rmtree(str(tmp))
-        self.flags = []
+  def object_extension(self):
+      return 'obj'
 
-    def preprocess(self, code, config = Config()):
+  def cppflags(self, cfg):
+    def print_define(arg):
+      (name, v) = arg
+      if v is None:
+        return '/D%s' % name
+      else:
+        return '/D%s=%s' % (name, utils.shell_escape(v))
 
-        fd, path = tempfile.mkstemp()
-        try:
-            with _OS.fdopen(fd, 'w') as f:
-                print(code, file = f)
-            cmd = ['cl.exe', '/E', path] + self.cppflags(config)
-            p = subprocess.Popen(cmd,
-                                 stdin = subprocess.PIPE,
-                                 stdout = subprocess.PIPE,
-                                 stderr = subprocess.PIPE)
-            stdout, stderr = p.communicate()
-            if p.returncode != 0:
-                raise Exception(
-                    'Preprocessing failed with return code %s.\nInput:\n%s\nStderr:\n%s\n' \
-                        % (p.returncode, code, stderr))
-            return stdout.decode("utf-8")
-        finally:
-            _OS.remove(path)
+    defines = list(map(print_define, cfg.defines().items()))
+    system_includes = \
+      list(map(lambda i: '/I%s' % utils.shell_escape(i),
+               cfg.system_include_path))
+    local_includes  = \
+      list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i),
+                                        utils.shell_escape(i)),
+               cfg.local_include_path))
+    return system_includes + local_includes + defines
 
-    def warning_disable(self, n):
-        self.flags.append('/wd%s' % n)
+  def compile(self, cfg, src, obj, c = False):
+      cppflags = ' '.join(self.cppflags(cfg))
+      return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % \
+          (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
 
-    def object_extension(self):
-        return 'obj'
+  def archive(self, cfg, objs, lib):
+      return 'lib /nologo /MT %s /OUT:%s' % \
+          (' '.join(map(str, objs)), lib)
 
-    def cppflags(self, cfg):
+  def link(self, cfg, objs, exe):
+    # /ENTRY:main
+    # /SUBSYSTEM:CONSOLE
+    return 'cl.exe /nologo /MT %s %s /link /OUT:%s /SUBSYSTEM:CONSOLE %s %s opengl32.lib' % \
+           (' '.join(cfg.flags),
+            ' '.join(map(str, objs)),
+            exe,
+            ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
+            ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
 
-        def print_define(arg):
-            (name, v) = arg
-            if v is None:
-                return '/D%s' % name
-            else:
-                return '/D%s=%s' % (name, utils.shell_escape(v))
+  def dynlink(self, cfg, objs, exe):
+    return 'link.exe /nologo %s /OUT:%s /dll %s %s' % \
+           (' '.join(map(str, objs)),
+            exe,
+            ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
+            ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
 
-        defines = list(map(print_define, cfg.defines().items()))
-        system_includes = list(map(lambda i: '/I%s' % utils.shell_escape(i), cfg.system_include_path))
-        local_includes  = list(map(lambda i: '/I%s /I%s' % (utils.shell_escape(srctree() / i), utils.shell_escape(i)), cfg.local_include_path))
-        return system_includes + local_includes + defines
+  def libname_static(self, cfg, path):
+      path = Path(path)
+      return path.dirname() / ('%s.lib' % str(path.basename()))
 
-    def compile(self, cfg, src, obj, c = False):
-        cppflags = ' '.join(self.cppflags(cfg))
-        return 'cl.exe /MT /TP /nologo /DWIN32 %s %s /EHsc %s /Fo%s /c %s' % (' '.join(self.flags), concatenate(cfg.flags), cppflags, obj, src)
+  def libname_dyn(self, cfg, path):
+      path = Path(path)
+      return path.dirname() / ('%s.dll' % str(path.basename()))
 
-    def archive(self, cfg, objs, lib):
-        return 'lib /nologo /MT %s /OUT:%s' % (' '.join(map(str, objs)), lib)
+  def libname_module(self, cfg, path):
+      path = Path(path)
+      return path.dirname() / ('%s.dll' % str(path.basename()))
 
-    def link(self, cfg, objs, exe):
-
-        # /ENTRY:main
-        # /SUBSYSTEM:CONSOLE
-        return 'cl.exe /nologo /MT %s %s /link /OUT:%s /SUBSYSTEM:CONSOLE %s %s opengl32.lib' % \
-               (' '.join(cfg.flags),
-                ' '.join(map(str, objs)),
-                exe,
-                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
-                ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
-
-    def dynlink(self, cfg, objs, exe):
-
-        return 'link.exe /nologo %s /OUT:%s /dll %s %s' % \
-               (' '.join(map(str, objs)),
-                exe,
-                ''.join(map(lambda i : ' /LIBPATH:"%s"' %i, cfg.__lib_paths)),
-                ''.join(map(lambda d: ' %s.lib' % d, cfg.__libs)))
-
-    def libname_static(self, cfg, path):
-
-        path = Path(path)
-        return path.dirname() / ('%s.lib' % str(path.basename()))
-
-    def libname_dyn(self, cfg, path):
-
-        path = Path(path)
-        return path.dirname() / ('%s.dll' % str(path.basename()))
-
-    def libname_module(self, cfg, path):
-
-        path = Path(path)
-        return path.dirname() / ('%s.dll' % str(path.basename()))
-
-    def exename(self, cfg, path):
-
-        res = Path(path)
-        res.extension = 'exe'
-        return res
+  def exename(self, cfg, path):
+      res = Path(path)
+      res.extension = 'exe'
+      return res
 
 def deps_handler(builder, path, t, data):
-
     return node(path, t)
 
 
 def mkdeps(res, n, lvl, config, marks,
-           f_submarks, f_init, f_add):
+         f_submarks, f_init, f_add):
+  include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
+  path = n.path()
+  idt = ' ' * lvl * 2
+  if str(path) in marks:
+    return
+  marks[str(path)] = True
+  # debug.debug('%smkdeps: %s' % (idt, path))
 
-    include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
+  f_init(res, n)
 
-    path = n.path()
-    idt = ' ' * lvl * 2
+  def unique(include, prev_via, prev, new_via, new):
+    if prev is not None:
+      raise Exception('two nodes match inclusion %s: '\
+                          '%s via %s and %s via %s' % \
+                          (include, prev, prev_via, new, new_via))
+    return new, new_via
 
-    if str(path) in marks:
-        return
-    marks[str(path)] = True
+  n.build()
+  matches = []
+  with open(str(path), 'rb') as include_file:
+    for line in include_file:
+      line = line.strip()
+      match = include_re.match(line.decode('utf-8'))
+      if match:
+        matches.append(match)
 
-    # debug.debug('%smkdeps: %s' % (idt, path))
-
-    f_init(res, n)
-
-    def unique(include, prev_via, prev, new_via, new):
-
-        if prev is not None:
-            raise Exception('two nodes match inclusion %s: '\
-                                '%s via %s and %s via %s' % \
-                                (include, prev, prev_via, new, new_via))
-        return new, new_via
-
-
-    n.build()
-    matches = []
-    with open(str(path), 'rb') as include_file:
-        for line in include_file:
-            line = line.strip()
-            match = include_re.match(line.decode('utf-8'))
-            if match:
-                matches.append(match)
-
-    for match in matches:
-        include = match.group(2)
-        search = set(config.local_include_path)
-        if match.group(1) == '"':
-            search.add(n.name().dirname())
-        found = None
-        via = None
-        for include_path in search:
-
-            name = include_path / include
-            test = name
-
-            if str(test) in Node.nodes:
-                # Check this is not an old cached dependency from cxx.inclusions.
-                # Not sure of myself though.
-                if test.is_file() or node(str(test)).builder is not None:
-                    found, via = unique(include, via, found, test, node(test))
-                    # debug.debug('%sfound node: %s' % (idt, test))
-
-            if not found or srctree() != Path('.'):
-                test = srctree() / test
-                if test.is_file():
-                    # debug.debug('%sfound file: %s' % (idt, test))
-                    found, via = unique(include, via, found, test, node(name, Header))
-
-        if found is not None:
-            rec = []
-            mkdeps(rec, found, lvl + 1, config, f_submarks(marks), f_submarks, f_init, f_add)
-            f_add(res, found, rec)
-        else:
-            debug.debug('%sinclusion not found: %s (search path: %s)'\
-                            % (idt, include, ', '.join(map(str, search))))
+  for match in matches:
+    include = match.group(2)
+    search = set(config.local_include_path)
+    if match.group(1) == '"':
+      search.add(n.name().dirname())
+    found = None
+    via = None
+    for include_path in search:
+      name = include_path / include
+      test = name
+      if str(test) in Node.nodes:
+        # Check this is not an old cached dependency from
+        # cxx.inclusions. Not sure of myself though.
+        if test.is_file() or node(str(test)).builder is not None:
+          found, via = unique(include, via, found, test, node(test))
+          # debug.debug('%sfound node: %s' % (idt, test))
+      if not found or srctree() != Path('.'):
+        test = srctree() / test
+        if test.is_file():
+          # debug.debug('%sfound file: %s' % (idt, test))
+          found, via = unique(include, via, found, test,
+                              node(name, Header))
+    if found is not None:
+      rec = []
+      mkdeps(rec, found, lvl + 1, config,
+             f_submarks(marks), f_submarks, f_init, f_add)
+      f_add(res, found, rec)
+    else:
+      debug.debug('%sinclusion not found: %s (search path: %s)'\
+                  % (idt, include, ', '.join(map(str, search))))
 
 class Compiler(Builder):
 
-    name = 'C++ compilation'
-    deps = 'drake.cxx.inclusions'
+  name = 'C++ compilation'
+  deps = 'drake.cxx.inclusions'
 
-    Builder.register_deps_handler(deps, deps_handler)
+  Builder.register_deps_handler(deps, deps_handler)
 
-    def __init__(self, src, obj, tk, cfg, c = False):
-
-        self.src = src
-        self.obj = obj
-        self.config = cfg
-        self.toolkit = tk
-        self.__c = c
-        Builder.__init__(self, [src], [obj])
-
-
-    def dependencies(self):
-
-        deps = []
-        mkdeps(deps, self.src, 0, self.config, {},
-               f_init = lambda res, n: res.append(n),
-               f_submarks = lambda d: d,
-               f_add = lambda res, node, sub: res.extend(sub))
-
-        for dep in deps:
-            if dep != self.src:
-                self.add_dynsrc(self.deps, dep)
-        for hook in self.toolkit.hook_object_deps():
-            hook(self)
+  def __init__(self, src, obj, tk, cfg, c = False):
+    self.src = src
+    self.obj = obj
+    self.config = cfg
+    self.toolkit = tk
+    self.__c = c
+    Builder.__init__(self, [src], [obj])
 
 
-    def execute(self):
-        return self.cmd('Compile %s' % self.obj, self.command)
+  def dependencies(self):
+    deps = []
+    mkdeps(deps, self.src, 0, self.config, {},
+           f_init = lambda res, n: res.append(n),
+           f_submarks = lambda d: d,
+           f_add = lambda res, node, sub: res.extend(sub))
 
-    @property
-    def command(self):
-        return self.toolkit.compile(self.config,
-                                    self.src.path(),
-                                    self.obj.path(),
-                                    c = self.__c,
-                                    pic = self.pic)
+    for dep in deps:
+      if dep != self.src:
+        self.add_dynsrc(self.deps, dep)
+    for hook in self.toolkit.hook_object_deps():
+      hook(self)
 
-    @property
-    def pic(self):
-        for consumer in self.obj.consumers:
-            if isinstance(consumer, DynLibLinker):
-                return True
-        return False
+  def execute(self):
+    return self.cmd('Compile %s' % self.obj, self.command)
 
+  @property
+  def command(self):
+    return self.toolkit.compile(self.config,
+                                self.src.path(),
+                                self.obj.path(),
+                                c = self.__c,
+                                pic = self.pic)
 
-    def hash(self):
-        flags = self.config.flags
-        cppflags = self.toolkit.cppflags(self.config)
-        cflags = self.toolkit.cflags(self.config)
-        include_local = list(map(str, self.config.local_include_path))
-        include_system = list(map(str, self.config.system_include_path))
-        res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
-            (cppflags, cflags, flags, include_local, include_system, self.pic)
-        return res
+  @property
+  def pic(self):
+    for consumer in self.obj.consumers:
+      if isinstance(consumer, DynLibLinker):
+        return True
+    return False
 
-    def mkdeps(self):
+  def hash(self):
+    flags = self.config.flags
+    cppflags = self.toolkit.cppflags(self.config)
+    cflags = self.toolkit.cflags(self.config)
+    include_local = list(map(str, self.config.local_include_path))
+    include_system = list(map(str, self.config.system_include_path))
+    res = '%s\n%s\n%s\n%s\n%s\nPIC: %s' % \
+          (cppflags, cflags, flags,
+           include_local, include_system, self.pic)
+    return res
 
-        def add(res, node, sub):
-            res[node] = sub
+  def mkdeps(self):
+    def add(res, node, sub):
+      res[node] = sub
+    return {self.src: mkdeps(self.src, 0, self.config, {},
+                             f_init = lambda n: {},
+                             f_submarks = lambda d: dict(d),
+                             f_add = add)}
 
-        return {self.src: mkdeps(self.src, 0, self.config, {},
-                                 f_init = lambda n: {},
-                                 f_submarks = lambda d: dict(d),
-                                 f_add = add)}
+  def __str__(self):
+    return 'Compiler(%s)' % self.obj
 
-    def __str__(self):
-
-        return 'Compiler(%s)' % self.obj
-
-    def __repr__(self):
-
-        return 'Compiler(%s)' % self.obj
+  def __repr__(self):
+    return 'Compiler(%s)' % self.obj
 
 class Linker(Builder):
 
+  name = 'executable linkage'
 
-    name = 'executable linkage'
+  def hash(self):
+    h = {}
+    # Flags
+    h['export_dynamic'] = self.config.export_dynamic
+    flags = self.config.flags
+    h['flags'] = flags
+    frameworks = list(self.config.frameworks())
+    frameworks.sort()
+    h['frameworks'] = frameworks
+    lib_paths = self.config._Config__lib_paths
+    h['lib_paths'] = lib_paths
+    rpath = self.config._Config__rpath
+    rpath.sort()
+    h['rpath'] = rpath
+    libs = self.config.libs
+    h['libs'] = libs
+    dynlibs = ' '.join(map(lambda lib: lib.lib_name,
+                           self.exe.dynamic_libraries))
+    h['dynlibs'] = dynlibs
+    return repr(h)
 
-    def hash(self):
-        h = {}
-        # Flags
-        h['export_dynamic'] = self.config.export_dynamic
-        flags = self.config.flags
-        h['flags'] = flags
-        frameworks = list(self.config.frameworks())
-        frameworks.sort()
-        h['frameworks'] = frameworks
-        lib_paths = self.config._Config__lib_paths
-        h['lib_paths'] = lib_paths
-        rpath = self.config._Config__rpath
-        rpath.sort()
-        h['rpath'] = rpath
-        libs = self.config.libs
-        h['libs'] = libs
-        dynlibs = ' '.join(map(lambda lib: lib.lib_name, self.exe.dynamic_libraries))
-        h['dynlibs'] = dynlibs
-        return repr(h)
+  def dependencies(self):
+    for hook in self.toolkit.hook_bin_deps():
+      hook(self)
 
-    def dependencies(self):
+  def __init__(self, exe, tk, cfg):
+    # FIXME: factor with DynLibLinker
+    self.exe = exe
+    self.toolkit = tk
+    self.config = drake.cxx.Config(cfg)
+    for lib in exe.dynamic_libraries:
+      path = drake.Path(lib.name())
+      self.config.lib_path(path.dirname())
+      self.config.lib(lib.lib_name)
+    Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
 
-        for hook in self.toolkit.hook_bin_deps():
-            hook(self)
+  def execute(self):
+    return self.cmd('Link %s' % self.exe, self.command)
 
-    def __init__(self, exe, tk, cfg):
+  @property
+  def command(self):
+    return self.toolkit.link(self.config,
+                             self.exe.sources + list(self.sources_dynamic()),
+                             self.exe)
 
-        # FIXME: factor with DynLibLinker
-        self.exe = exe
-        self.toolkit = tk
-        self.config = drake.cxx.Config(cfg)
-        for lib in exe.dynamic_libraries:
-            path = drake.Path(lib.name())
-            self.config.lib_path(path.dirname())
-            self.config.lib(lib.lib_name)
-        Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
+  def __repr__(self):
+    return 'Linker(%s)' % self.exe
 
-    def execute(self):
-
-        return self.cmd('Link %s' % self.exe, self.command)
-
-    @property
-    def command(self):
-        return self.toolkit.link(self.config,
-                                 self.exe.sources + list(self.sources_dynamic()),
-                                 self.exe)
-
-    def __repr__(self):
-
-        return 'Linker(%s)' % self.exe
-
-    def __str__(self):
-
-        return 'Linker(%s)' % self.exe
+  def __str__(self):
+    return 'Linker(%s)' % self.exe
 
 
 class DynLibLinker(Builder):
 
+  name = 'dynamic library linkage'
 
-    name = 'dynamic library linkage'
+  def dependencies(self):
+    for hook in self.toolkit.hook_bin_deps():
+      hook(self)
 
-    def dependencies(self):
+  def __init__(self, lib, tk, cfg):
+    self.lib = lib
+    self.toolkit = tk
+    self.config = Config(cfg)
+    self.__library = lib
+    for sublib in self.lib.dynamic_libraries:
+      self.config.lib_path(sublib.path().dirname())
+      self.config.lib(sublib.lib_name)
+    # This duplicates self.__sources, but preserves the order.
+    self.__objects = lib.sources
+    Builder.__init__(self,
+                     self.__objects + lib.dynamic_libraries,
+                     [lib])
 
-        for hook in self.toolkit.hook_bin_deps():
-            hook(self)
+  def execute(self):
+    return self.cmd('Link %s' % self.lib, self.command)
 
-    def __init__(self, lib, tk, cfg):
+  @property
+  def command(self):
+    return self.toolkit.dynlink(
+        self.config,
+        self.__objects + list(self.sources_dynamic()),
+        self.lib)
 
-        self.lib = lib
-        self.toolkit = tk
-        self.config = Config(cfg)
-        self.__library = lib
-        for sublib in self.lib.dynamic_libraries:
-            self.config.lib_path(sublib.path().dirname())
-            self.config.lib(sublib.lib_name)
-        # This duplicates self.__sources, but preserves the order.
-        self.__objects = lib.sources
-        Builder.__init__(self, self.__objects + lib.dynamic_libraries, [lib])
+  def __repr__(self):
+    return 'Linker for %s' % self.lib
 
-    def execute(self):
-        return self.cmd('Link %s' % self.lib, self.command)
-
-    @property
-    def command(self):
-        return self.toolkit.dynlink(self.config,
-                                    self.__objects + list(self.sources_dynamic()),
-                                    self.lib)
-
-    def __repr__(self):
-
-        return 'Linker for %s' % self.lib
-
-    def hash(self):
-        return repr(self.command)
+  def hash(self):
+    return repr(self.command)
 
 
 class StaticLibLinker(ShellCommand):
@@ -952,9 +937,10 @@ class StaticLibLinker(ShellCommand):
 
     @property
     def command(self):
-        return self.toolkit.archive(self.config,
-                                    self.objs + list(self.sources_dynamic()),
-                                    self.lib)
+        return self.toolkit.archive(
+            self.config,
+            self.objs + list(self.sources_dynamic()),
+            self.lib)
 
     def hash(self):
         res = ' '.join(sorted(map(str, self.objs)))
@@ -1089,73 +1075,77 @@ class Binary(Node):
             raise Exception('invalid source for a library: %s' % source)
             # self.src_add(obj, tk, cfg)
 
+
 class DynLib(Binary):
 
-    def __init__(self, path, sources = None, tk = None, cfg = None, preserve_filename = False):
-        path = Path(path)
-        self.__lib_name = str(path.basename())
-        if not preserve_filename and tk is not None:
-            path = tk.libname_dyn(cfg, path)
-        Binary.__init__(self, path, sources, tk, cfg)
-        if tk is not None and cfg is not None:
-            DynLibLinker(self, self.tk, self.cfg)
+  def __init__(self, path, sources = None, tk = None, cfg = None,
+               preserve_filename = False):
+    path = Path(path)
+    self.__lib_name = str(path.basename())
+    if not preserve_filename and tk is not None:
+      path = tk.libname_dyn(cfg, path)
+    Binary.__init__(self, path, sources, tk, cfg)
+    if tk is not None and cfg is not None:
+      DynLibLinker(self, self.tk, self.cfg)
 
-    def clone(self, path):
-        path = Path(path)
-        res = DynLib(path, self.sources, self.tk, self.cfg, preserve_filename = True)
-        res.__lib_name = self.__lib_name
-        return res
+  def clone(self, path):
+    path = Path(path)
+    res = DynLib(path, self.sources, self.tk, self.cfg,
+                 preserve_filename = True)
+    res.__lib_name = self.__lib_name
+    return res
 
-    @property
-    def lib_name(self):
-        return self.__lib_name
+  @property
+  def lib_name(self):
+    return self.__lib_name
 
 Node.extensions['so'] = DynLib
 Node.extensions['dylib'] = DynLib
 
+
 class Module(Binary):
 
-    def __init__(self, path, sources, tk, cfg):
+  def __init__(self, path, sources, tk, cfg):
+    Binary.__init__(self, tk.libname_module(cfg, path),
+                    sources, tk, cfg)
+    DynLibLinker(self, self.tk, self.cfg)
 
-        Binary.__init__(self, tk.libname_module(cfg, path), sources, tk, cfg)
-        DynLibLinker(self, self.tk, self.cfg)
 
 class StaticLib(Binary):
 
-    def __init__(self, path, sources, tk, cfg):
+  def __init__(self, path, sources, tk, cfg):
+    Binary.__init__(self, tk.libname_static(cfg, path),
+                    sources, tk, cfg)
+    StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
-        Binary.__init__(self, tk.libname_static(cfg, path), sources, tk, cfg)
-        StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
 class Executable(Binary):
 
-    def __init__(self, path, sources, tk, cfg):
+  def __init__(self, path, sources, tk, cfg):
+    path = tk.exename(cfg, path)
+    Binary.__init__(self, path, sources, tk, cfg)
+    Linker(self, self.tk, self.cfg)
 
-        path = tk.exename(cfg, path)
-        Binary.__init__(self, path, sources, tk, cfg)
-        Linker(self, self.tk, self.cfg)
 
 def deps_merge(nodes):
+  def merge(d, into):
+    for k in d:
+      if k not in into:
+        into[k] = d[k]
+      else:
+        merge(d[k], into[k])
+  res = {}
+  for node in nodes:
+    merge(node.mkdeps(), res)
+  return res
 
-    def merge(d, into):
-        for k in d:
-            if k not in into:
-                into[k] = d[k]
-            else:
-                merge(d[k], into[k])
-
-    res = {}
-    for node in nodes:
-        merge(node.mkdeps(), res)
-
-    return res
 
 def all_objects_if_none(nodes):
-
-    if len(nodes):
-        return nodes
-    else:
-        return [node for node in Node.nodes.values() if node.__class__ == Object]
+  if len(nodes):
+    return nodes
+  else:
+    return [node for node in Node.nodes.values()
+            if node.__class__ == Object]
 
 def dot_merge(nodes):
 
@@ -1206,7 +1196,8 @@ def dot_spread(nodes):
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
 
-def find_library(token = None, name = None, prefix = None, include_dir = None):
+def find_library(token = None, name = None, prefix = None,
+                 include_dir = None):
     if prefix is None or isinstance(prefix, str):
         conf = LibraryConfiguration(token = token,
                                     name = None,
@@ -1241,16 +1232,17 @@ class PkgConfig():
         return self.__exists
 
     def __pkg_config(self, cmd):
-        output = drake.cmd_output(['pkg-config', self.__package] + cmd)
-        return output.decode('utf-8').strip().split()
+      output = drake.cmd_output(['pkg-config', self.__package] + cmd)
+      return output.decode('utf-8').strip().split()
 
     def __flags(self, cmd, expected):
-        res = []
-        for flag in self.__pkg_config(cmd):
-            if not flag.startswith(expected):
-                raise Exception('pkg-config %s gave a strange flag: %s' % (' '.join(cmd), flag))
-            res.append(flag[len(expected):])
-        return res
+      res = []
+      for flag in self.__pkg_config(cmd):
+        if not flag.startswith(expected):
+          raise Exception('pkg-config %s gave a strange flag: %s' % \
+                          (' '.join(cmd), flag))
+        res.append(flag[len(expected):])
+      return res
 
     @property
     def include_path(self):
@@ -1270,69 +1262,69 @@ class PkgConfig():
 
 class LibraryConfiguration(drake.Configuration):
 
-    """Configuration for a classical C/C++ library."""
+  """Configuration for a classical C/C++ library."""
 
-    def __init__(self, token = None, name = None, prefix = None, include_dir = None, libs = []):
-        """Find and create a configuration for the library.
+  def __init__(self, token = None, name = None, prefix = None,
+               include_dir = None, libs = []):
+    """Find and create a configuration for the library.
 
-        prefix -- Where to find the library.
-        token --  Which file to look for (typically, the main header).
-        """
-        self.__config = drake.cxx.Config()
-        # Search the library with pkg-config
-        if PkgConfig.available and name is not None:
-            pkg_config = PkgConfig(name)
-            if pkg_config.exists:
-                for include_path in pkg_config.include_path:
-                    self.__config.add_system_include_path(include_path)
-                    self.__prefix_symbolic = include_path / '..'
-                    self.__prefix = self.__prefix_symbolic
-                for library_path in pkg_config.library_path:
-                    self.__config.lib_path(library_path)
-                    self.__libraries_path = library_path
-        # Search the library manually.
-        if token is not None:
-            include_dir = include_dir or 'include'
-            if not isinstance(include_dir, list):
-                include_dir = [include_dir]
-            include_dir = [drake.Path(p) for p in include_dir]
-            # Make prefix absolute wrt the source dir
-            prefix_symbolic = None
-            if prefix is not None:
-                prefix_symbolic = drake.Path(prefix)
-                prefix = drake.Path(prefix)
-                if not prefix.absolute():
-                    prefix = drake.path_src(prefix)
-            # Compute the search path.
-            if prefix is None:
-                test = [Path('/usr'), Path('/usr/local')]
-            else:
-                test = [Path(prefix)]
-            prefix, include_dir = self._search_many_all([p / token for p in include_dir],
-                                                        test)[0]
-            include_dir.strip_suffix(token)
-            include_path = prefix / include_dir
-            if not include_path.absolute():
-                include_path.strip_prefix(srctree())
-            self.__prefix = prefix
-            self.__config.add_system_include_path(include_path)
-            self.__prefix_symbolic = prefix_symbolic or self.__prefix
-            self.__libraries_path = self.__prefix_symbolic / 'lib'
-            self.__config.lib_path(self.__prefix / 'lib')
-        for lib in libs:
-            self.__config.lib(lib)
+    prefix -- Where to find the library.
+    token --  Which file to look for (typically, the main header).
+    """
+    self.__config = drake.cxx.Config()
+    # Search the library with pkg-config
+    if PkgConfig.available and name is not None:
+      pkg_config = PkgConfig(name)
+      if pkg_config.exists:
+        for include_path in pkg_config.include_path:
+          self.__config.add_system_include_path(include_path)
+          self.__prefix_symbolic = include_path / '..'
+          self.__prefix = self.__prefix_symbolic
+        for library_path in pkg_config.library_path:
+          self.__config.lib_path(library_path)
+          self.__libraries_path = library_path
+    # Search the library manually.
+    if token is not None:
+      include_dir = include_dir or 'include'
+      if not isinstance(include_dir, list):
+        include_dir = [include_dir]
+      include_dir = [drake.Path(p) for p in include_dir]
+      # Make prefix absolute wrt the source dir
+      prefix_symbolic = None
+      if prefix is not None:
+        prefix_symbolic = drake.Path(prefix)
+        prefix = drake.Path(prefix)
+        if not prefix.absolute():
+          prefix = drake.path_src(prefix)
+      # Compute the search path.
+      if prefix is None:
+        test = [Path('/usr'), Path('/usr/local')]
+      else:
+        test = [Path(prefix)]
+      prefix, include_dir = self._search_many_all(
+          [p / token for p in include_dir], test)[0]
+      include_dir.strip_suffix(token)
+      include_path = prefix / include_dir
+      if not include_path.absolute():
+        include_path.strip_prefix(srctree())
+      self.__prefix = prefix
+      self.__config.add_system_include_path(include_path)
+      self.__prefix_symbolic = prefix_symbolic or self.__prefix
+      self.__libraries_path = self.__prefix_symbolic / 'lib'
+      self.__config.lib_path(self.__prefix / 'lib')
+    for lib in libs:
+      self.__config.lib(lib)
 
-    def config(self):
+  def config(self):
+    return self.__config
 
-        return self.__config
+  def __repr__(self):
+    return '%s(prefix = %s)' % (self.__class__, repr(self.__prefix))
 
-    def __repr__(self):
-        return '%s(prefix = %s)' % (self.__class__, repr(self.__prefix))
+  @property
+  def prefix(self):
+    return self.__prefix_symbolic
 
-    @property
-    def prefix(self):
-        return self.__prefix_symbolic
-
-    @property
-    def libraries_path(self):
-        return self.__libraries_path
+  @property
+  def libraries_path(self):
+    return self.__libraries_path
