@@ -311,11 +311,14 @@ class Config:
 # FIXME: Factor node and builder for executable and staticlib
 
 class _ToolkitType(type):
-
-    def __call__(c, *args, **kwargs):
-        if c is Toolkit:
-            return GccToolkit()
-        return type.__call__(c, *args, **kwargs)
+  def __call__(c, *args, **kwargs):
+    if c is Toolkit:
+      import platform
+      if platform.system() == 'Windows':
+        return VisualToolkit()
+      else:
+        return GccToolkit()
+    return type.__call__(c, *args, **kwargs)
 
 
 class Toolkit(metaclass = _ToolkitType):
