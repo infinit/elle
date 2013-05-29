@@ -92,6 +92,7 @@ class Boost(drake.Configuration):
       self.__cfg = cfg
       for prop in self.__libraries:
         setattr(self, '_Boost__cfg_%s' % prop, None)
+        setattr(self, '_Boost__cfg_%s_static' % prop, None)
       self.__cfg_python = None
       self.__version = version_eff
       return
@@ -154,13 +155,8 @@ for prop, library in Boost._Boost__libraries.items():
         c = Config()
         c.lib(name)
         if library == 'filesystem':
-          c.define('BOOST_FILESYSTEM_DYN_LINK', '1')
-        setattr(self, '_Boost__cfg_%s' % prop, c)
-        c = Config()
-        c.lib(name, True)
-        if library == 'filesystem':
-          c.define('BOOST_FILESYSTEM_DYN_LINK', '0')
-        setattr(self, '_Boost__cfg_%s_static' % prop, c)
+          c.define('BOOST_FILESYSTEM_DYN_LINK', static and '0' or '1')
+        setattr(self, pname, c)
       return getattr(self, pname)
     setattr(Boost, 'config_%s' % prop, m)
   unclosure(prop, library)
