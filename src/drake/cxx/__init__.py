@@ -570,6 +570,7 @@ class VisualToolkit(Toolkit):
                override_path = None,
                override_include = None):
     Toolkit.__init__(self)
+    self.__version = version
     def output(cmd):
       p = subprocess.Popen(cmd, shell = True,
                            stdout = subprocess.PIPE)
@@ -696,6 +697,10 @@ class VisualToolkit(Toolkit):
       res = Path(path)
       res.extension = 'exe'
       return res
+
+  @property
+  def version(self):
+    return self.__version
 
 def deps_handler(builder, path, t, data):
     return node(path, t)
