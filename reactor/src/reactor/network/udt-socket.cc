@@ -42,6 +42,7 @@ namespace reactor
       ELLE_DEBUG("%s: rebind FD %s", *this, fd)
         this->socket()->_bind_fd(fd);
       ELLE_DEBUG("%s: connect to %s:%s", *this, hostname, port)
+      this->socket()->set_option(boost::asio::ip::udt::rendezvous{true});
       _connect(this->_peer, timeout);
     }
 
