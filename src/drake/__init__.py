@@ -1165,7 +1165,7 @@ class Builder:
         """The list of target nodes."""
         return self.__targets
 
-    def cmd(self, pretty, c, cwd = None):
+    def cmd(self, pretty, c, cwd = None, leave_stdout = False):
         """Run a shell command.
 
         pretty -- A pretty version for output.
@@ -1182,7 +1182,10 @@ class Builder:
                 for cmd in c:
                     cmd = list(map(str, cmd))
                     self.output(' '.join(cmd), pretty)
-                    return command(cmd, cwd = cwd, stdout = f)
+                    stdout = None
+                    if not leave_stdout:
+                        stdout = f
+                    return command(cmd, cwd = cwd, stdout = stdout)
             if _JOBS_LOCK is not None:
                 with _JOBS_LOCK:
                     return sched.background(fun)

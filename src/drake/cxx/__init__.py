@@ -790,7 +790,10 @@ class Compiler(Builder):
       hook(self)
 
   def execute(self):
-    return self.cmd('Compile %s' % self.obj, self.command)
+    # FIXME: handle this in the toolkit itself.
+    leave_stdout = isinstance(self.toolkit, VisualToolkit)
+    return self.cmd('Compile %s' % self.obj, self.command,
+                    leave_stdout = leave_stdout)
 
   @property
   def command(self):
