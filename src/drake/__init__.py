@@ -2539,6 +2539,18 @@ class Version:
         self.__minor = minor and Range(minor)
         self.__subminor = subminor and Range(subminor)
 
+    @property
+    def major(self):
+        return self.__major
+
+    @property
+    def minor(self):
+        return self.__minor
+
+    @property
+    def subminor(self):
+        return self.__subminor
+
     def __str__(self):
         if self.__major is not None:
             if self.__minor is not None:
