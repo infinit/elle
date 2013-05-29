@@ -172,11 +172,12 @@ namespace reactor
     void
     UDTRendezVousServer::print(std::ostream& s) const
     {
+      // Catch std::exception because boost throw some of thoses.
       try
       {
         s << "UDTRendezVousServer " << this->local_endpoint();
       }
-      catch (std::exception const& e) // XXX: Don't remove that !!
+      catch (std::exception const& e)
       {
         s << "UDTRendezVousServer [unboud: " << e.what() << "]";
       }
