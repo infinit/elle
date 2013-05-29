@@ -565,17 +565,21 @@ class VisualToolkit(Toolkit):
   arch = arch.x86
   os = os.windows
 
-  def __init__(self):
+  def __init__(self,
+               version = 11,
+               override_path = None,
+               override_include = None):
     Toolkit.__init__(self)
     def output(cmd):
       p = subprocess.Popen(cmd, shell = True,
                            stdout = subprocess.PIPE)
       return p.stdout.read().strip().decode('utf-8')
     # Des barres de rire cet OS j'vous dit.
-    cfg = output("echo %VS90COMNTOOLS%")
-    if not cfg:
-        raise Exception('VS90COMNTOOLS is not defined, '
-                        'check your Visual Studio installation.')
+    var = '%%VS%s0COMNTOOLS%%' % version
+    cfg = output('echo %s' % var)
+    if cfg == var:
+        raise Exception('%s is not defined, check your Visual Studio '
+                        'installation.' % var)
     cfg = Path(cfg)
     if not cfg.exists():
       raise Exception('Visual Studio configuration file '
@@ -590,12 +594,16 @@ class VisualToolkit(Toolkit):
     print('@echo %INCLUDE%', file = f)
     f.close()
     res = output('"%s"' % cp).split('\r\n')
-    path = res[-3]
+    path = res[-3].split(';')
     lib = res[-2]
-    include = res[-1]
-    _OS.environ['PATH'] = path
+    include = [res[-1]]
+    if override_path is not None:
+      path = [override_path] + path
+    _OS.environ['PATH'] = ';'.join(path)
     _OS.environ['LIB'] = lib
-    _OS.environ['INCLUDE'] = include
+    if override_include is not None:
+      include = [override_include] + include
+    _OS.environ['INCLUDE'] = ';'.join(include)
     shutil.rmtree(str(tmp))
     self.flags = []
 
