@@ -18,19 +18,11 @@ namespace elle
         //     Check if everything is still working as expected.
         //     see: SelectJSONType
 
-        static_assert(
-            !std::is_base_of<Object, T>::value,
-            "Cannot load into a json object"
-        );
+        // static_assert(
+        //     !std::is_base_of<Object, T>::value,
+        //     "Cannot load into a json object"
+        // );
         typedef typename detail::SelectJSONType<T>::type SelfType;
-        if (std::is_same<SelfType, Float>::value)
-        {
-          if (auto ptr = dynamic_cast<Integer const*>(this))
-          {
-            out = ptr->value();
-            return;
-          }
-        }
         out = dynamic_cast<SelfType const&>(*this);
       }
 
