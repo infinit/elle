@@ -60,6 +60,8 @@ class Boost(drake.Configuration):
     include_subdirs = {drake.Path('include')}
     for prefix in test:
       for subdir in include_subdirs:
+        if not (prefix / subdir).exists():
+          continue
         include_subdirs = include_subdirs.union(
           (subdir / p for p in (prefix / subdir).list()
            if p.startswith('boost-')))
