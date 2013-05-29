@@ -56,13 +56,17 @@ class Boost(drake.Configuration):
     for i in range(len(test)):
       if not test[i].absolute():
         test[i] = srctree() / test[i]
-    test = self._search_all('include/boost/version.hpp', test)
+    token = drake.Path('boost/version.hpp')
+    include_subdirs = [drake.Path('include')]
+    tokens = map(lambda p: p / token, include_subdirs)
+    prefixes = self._search_many_all(list(tokens), test)
     miss = []
     # Try every search path
-    for path in test:
+    for path, include_subdir in prefixes:
+      include_subdir.strip_suffix(token)
       # Create basic configuration for version checking.
       cfg = Config()
-      cfg.add_system_include_path('%s/include' % path)
+      cfg.add_system_include_path(path / include_subdir)
       self.__lib_path = path / 'lib'
       cfg.lib_path(self.__lib_path)
       # Check the version.
@@ -87,7 +91,7 @@ class Boost(drake.Configuration):
 
     raise Exception('no matching boost for the requested version '
                     '(%s) in %s. Found versions: %s.' % \
-                    (version, self._format_search(test),
+                    (version, self._format_search(prefixes),
                      ', '.join(map(str, miss))))
 
   def __find_lib(self, lib, lib_path, cxx_toolkit):
