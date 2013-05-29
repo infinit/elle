@@ -25,7 +25,8 @@ def configure(cxx_toolkit = None,
 
   # Libraries
   boost = boost or drake.cxx.boost.Boost()
-  curl = drake.cxx.find_library('curl/curl.h', curl)
+  curl = drake.cxx.find_library(token = 'curl/curl.h',
+                                prefix = curl)
   elle = elle or drake.include('../elle')
 
   # Global Configuration
