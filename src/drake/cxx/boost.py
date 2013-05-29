@@ -82,6 +82,7 @@ class Boost(drake.Configuration):
       for prop in self.__libraries:
         setattr(self, '_Boost__cfg_%s' % prop, None)
       self.__cfg_python = None
+      self.__version = version_eff
       return
 
     raise Exception('no matching boost for the requested version '
@@ -90,14 +91,20 @@ class Boost(drake.Configuration):
                      ', '.join(map(str, miss))))
 
   def __find_lib(self, lib, lib_path, cxx_toolkit):
-      for suffix in ['-mt', '']:
-          libname = lib + suffix
-          test = lib_path / cxx_toolkit.libname_dyn(self.__cfg,
+    suffixes = ['-mt', '']
+    if isinstance(cxx_toolkit, drake.cxx.VisualToolkit):
+      suffix = '-vc%s0-mt-%s_%s' % (cxx_toolkit.version,
+                                    self.version.major,
+                                    self.version.minor)
+      suffixes = [suffix] + suffixes
+    for suffix in suffixes:
+      libname = lib + suffix
+      test = lib_path / cxx_toolkit.libname_dyn(self.__cfg,
                                                     libname)
-          if test.exists():
-              return libname
-      raise Exception('Unable to find boost library %s '
-                      'in %s' % (lib, lib_path))
+      if test.exists():
+        return libname
+    raise Exception('Unable to find boost library %s '
+                    'in %s' % (lib, lib_path))
 
   def config(self):
       return self.__cfg
@@ -118,6 +125,10 @@ class Boost(drake.Configuration):
 
   def __repr__(self):
     return 'Boost(prefix = %s)' % repr(self.__prefix)
+
+  @property
+  def version(self):
+    return self.__version
 
 
 for prop, library in Boost._Boost__libraries.items():
