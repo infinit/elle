@@ -26,7 +26,8 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Libraries
-  openssl = drake.cxx.find_library('openssl/opensslconf.h', openssl)
+  openssl = drake.cxx.find_library(token = 'openssl/opensslconf.h',
+                                   prefix = openssl)
   if enable_rotation:
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
