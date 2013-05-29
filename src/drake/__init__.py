@@ -552,6 +552,9 @@ class Path(object):
     def cwd(self):
         return Path(_OS.getcwd())
 
+    def list(self):
+        return _OS.listdir(str(self))
+
 _CACHEDIR = Path('.drake')
 
 _DEPFILE_BUILDER = Path('drake.Builder')
