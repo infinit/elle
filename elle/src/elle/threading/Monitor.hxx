@@ -2,7 +2,7 @@
 # define ELLE_THREADING_MONITOR_HXX
 
 # include <elle/assert.hh>
-# include <elle/attributes.hh>
+# include <elle/attribute.hh>
 
 # include <boost/thread/tss.hpp>
 
