@@ -57,7 +57,12 @@ class Boost(drake.Configuration):
       if not test[i].absolute():
         test[i] = srctree() / test[i]
     token = drake.Path('boost/version.hpp')
-    include_subdirs = [drake.Path('include')]
+    include_subdirs = {drake.Path('include')}
+    for prefix in test:
+      for subdir in include_subdirs:
+        include_subdirs = include_subdirs.union(
+          (subdir / p for p in (prefix / subdir).list()
+           if p.startswith('boost-')))
     tokens = map(lambda p: p / token, include_subdirs)
     prefixes = self._search_many_all(list(tokens), test)
     miss = []
