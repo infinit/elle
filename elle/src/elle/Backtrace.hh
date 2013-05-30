@@ -32,9 +32,11 @@ namespace elle
     void
     strip_base(const Backtrace& base);
   private:
+# ifndef _MSC_VER
     static
     Backtrace
     _current(void** callstack, size_t frames, unsigned skip);
+# endif
   };
 
   std::ostream& operator<< (std::ostream& output, const StackFrame& frame);

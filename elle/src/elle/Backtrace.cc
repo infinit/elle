@@ -84,6 +84,7 @@ namespace elle
     : SuperType()
   {}
 
+#ifndef _MSC_VER
   Backtrace
   Backtrace::_current(void** callstack, size_t frames, unsigned skip)
   {
@@ -136,6 +137,7 @@ namespace elle
 
     return bt;
   }
+#endif
 
   void
   Backtrace::strip_base(const Backtrace& base)
