@@ -160,17 +160,15 @@ namespace elle
     public:
       Process(ProcessConfig&& config,
               std::string const& binary,
-              std::list<std::string> const& arguments);
+              std::list<std::string> const& arguments = {});
 
       Process(ProcessConfigModel const model,
               std::string const& binary,
-              std::list<std::string> const& arguments);
-
-      Process(std::string const& binary,
-              std::list<std::string> const& arguments);
+              std::list<std::string> const& arguments = {});
 
       explicit
-      Process(std::string const& binary);
+      Process(std::string const& binary,
+              std::list<std::string> const& arguments = {});
 
     public:
       /// A process is movable.
