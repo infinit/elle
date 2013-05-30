@@ -25,8 +25,9 @@ namespace infinit
     public:
       explicit
       Input(elle::WeakBuffer const& buffer);
-      Input(Input const&) = delete;
-      Input(Input&) = delete;
+    private:
+      Input(Input const&);
+      Input(Input&);
 
       /*----------.
       | Operators |
