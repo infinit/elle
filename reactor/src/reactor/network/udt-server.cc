@@ -32,56 +32,65 @@ namespace reactor
     | Accepting |
     `----------*/
 
-    class UDTAccept: public Operation
+    class UDTAccept:
+      public Operation
     {
-      public:
-        UDTAccept(Scheduler& scheduler,
-                  boost::asio::ip::udt::acceptor& acceptor):
-          Operation(scheduler),
-          _acceptor(acceptor),
-          _socket(nullptr)
-        {}
+    public:
+      UDTAccept(Scheduler& scheduler,
+                boost::asio::ip::udt::acceptor& acceptor):
+        Operation(scheduler),
+        _acceptor(acceptor),
+        _socket(nullptr)
+      {}
 
-        virtual const char* type_name() const
-        {
-          static const char* name = "server accept";
-          return name;
-        }
+      virtual
+      const char*
+      type_name() const
+      {
+        static const char* name = "server accept";
+        return name;
+      }
 
-        UDTSocket::AsioSocket* socket()
-        {
-          return _socket;
-        }
+      UDTSocket::AsioSocket*
+      socket()
+      {
+        return _socket;
+      }
 
-      protected:
-        virtual void _abort()
-        {
-          _acceptor.cancel();
-          _signal();
-        }
+    protected:
+      virtual
+      void
+      _abort()
+      {
+        _acceptor.cancel();
+        _signal();
+      }
 
-        virtual void _start()
-        {
-          _acceptor.async_accept(boost::bind(&UDTAccept::_wakeup,
-                                             this, _1, _2));
-        }
+      virtual
+      void
+      _start()
+      {
+        _acceptor.async_accept(boost::bind(&UDTAccept::_wakeup,
+                                           this, _1, _2));
+      }
 
-      private:
+    private:
 
-      void _wakeup(boost::system::error_code const& error,
-                   boost::asio::ip::udt::socket* socket)
+      void
+      _wakeup(boost::system::error_code const& error,
+            boost::asio::ip::udt::socket* socket)
 
-        {
-          if (error == boost::system::errc::operation_canceled)
-            return;
-          if (error)
-            _raise<Exception>(error.message());
-          _socket = socket;
-          _signal();
-        }
+      {
+        if (error == boost::system::errc::operation_canceled)
+          return;
+        if (error)
+          _raise<Exception>(error.message());
+        _socket = socket;
+        _signal();
+      }
 
-        boost::asio::ip::udt::acceptor& _acceptor;
-        UDTSocket::AsioSocket* _socket;
+      ELLE_ATTRIBUTE(boost::asio::ip::udt::acceptor&, acceptor);
+      ELLE_ATTRIBUTE(UDTSocket::AsioSocket*, socket);
     };
 
     /*-------------.

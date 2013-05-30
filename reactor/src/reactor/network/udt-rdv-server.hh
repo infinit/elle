@@ -18,52 +18,62 @@ namespace reactor
       public ProtoServer<UDTSocket>,
       public elle::Printable
     {
-      public:
-        typedef Server Super;
-        UDTRendezVousServer(Scheduler& sched);
-        UDTRendezVousServer(Scheduler& sched, std::unique_ptr<UDPSocket> sock);
-        virtual ~UDTRendezVousServer();
+    public:
+      typedef Server Super;
+      UDTRendezVousServer(Scheduler& sched);
+      UDTRendezVousServer(Scheduler& sched,
+                          std::unique_ptr<UDPSocket> sock);
+      virtual ~UDTRendezVousServer();
 
       /*----------.
       | Listening |
       `----------*/
-      public:
-        void listen(int port = 0);
-        void listen_fd(int port, int fd);
+    public:
+      void
+      listen(int port = 0);
+      void
+      listen_fd(int port,
+                int fd);
 
-      public:
-        /// The locally bound port.
-        virtual int port() const;
-        /// The locally bound endpoint.
-        EndPoint local_endpoint() const;
+    public:
+      /// The locally bound port.
+      virtual
+      int
+      port() const;
+      /// The locally bound endpoint.
+      EndPoint
+      local_endpoint() const;
 
       /*----------.
       | Accepting |
       `----------*/
-      public:
-        virtual
-        UDTSocket*
-        accept();
-        virtual
-        void
-        accept(std::string const& addr, int port);
-      private:
-        reactor::Signal _accepted;
-        std::vector<std::unique_ptr<UDTSocket>> _sockets;
+    public:
+      virtual
+      UDTSocket*
+      accept();
+
+      virtual
+      void
+      accept(std::string const& addr,
+             int port);
+
+    private:
+      ELLE_ATTRIBUTE(reactor::Signal, accepted);
+      ELLE_ATTRIBUTE(std::vector<std::unique_ptr<UDTSocket>>, sockets);
 
       /*----.
       | NAT |
       `----*/
-      private:
-        ELLE_ATTRIBUTE_X(std::unique_ptr<reactor::network::UDPSocket>, udp_socket);
+    private:
+      ELLE_ATTRIBUTE_X(std::unique_ptr<reactor::network::UDPSocket>, udp_socket);
 
       /*----------.
       | Printable |
       `----------*/
-      public:
-        virtual
-        void
-        print(std::ostream&) const;
+    public:
+      virtual
+      void
+      print(std::ostream&) const;
     };
   }
 }

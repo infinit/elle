@@ -18,41 +18,47 @@ namespace reactor
       public ProtoServer<UDTSocket>,
       public elle::Printable
     {
-      public:
-        typedef Server Super;
-        UDTServer(Scheduler& sched);
-        virtual ~UDTServer();
+    public:
+      typedef Server Super;
+      UDTServer(Scheduler& sched);
+      virtual
+      ~UDTServer();
 
       /*----------.
       | Listening |
       `----------*/
-      public:
-        void listen(int port = 0);
+    public:
+      void
+      listen(int port = 0);
 
-      public:
-        /// The locally bound port.
-        virtual int port() const;
-        /// The locally bound endpoint.
-        EndPoint local_endpoint() const;
+    public:
+      /// The locally bound port.
+      virtual
+      int
+      port() const;
 
-      private:
-        std::unique_ptr<boost::asio::ip::udt::acceptor> _acceptor;
+      /// The locally bound endpoint.
+      EndPoint
+      local_endpoint() const;
+
+    private:
+      ELLE_ATTRIBUTE(std::unique_ptr<boost::asio::ip::udt::acceptor>, acceptor);
 
       /*----------.
       | Accepting |
       `----------*/
-      public:
-        virtual
-        UDTSocket*
-        accept();
+    public:
+      virtual
+      UDTSocket*
+      accept();
 
       /*----------.
       | Printable |
       `----------*/
-      public:
-        virtual
-        void
-        print(std::ostream&) const;
+    public:
+      virtual
+      void
+      print(std::ostream&) const;
     };
   }
 }

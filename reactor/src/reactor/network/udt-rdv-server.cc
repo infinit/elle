@@ -28,7 +28,6 @@ namespace reactor
 {
   namespace network
   {
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -49,64 +48,11 @@ namespace reactor
     {}
 
     UDTRendezVousServer::~UDTRendezVousServer()
-    {
-    }
+    {}
 
     /*----------.
     | Accepting |
     `----------*/
-
-    class UDTAccept: public Operation
-    {
-      public:
-        UDTAccept(Scheduler& scheduler,
-                  boost::asio::ip::udt::acceptor& acceptor):
-          Operation(scheduler),
-          _acceptor(acceptor),
-          _socket(nullptr)
-        {}
-
-        virtual const char* type_name() const
-        {
-          static const char* name = "server accept";
-          return name;
-        }
-
-        UDTSocket::AsioSocket* socket()
-        {
-          return _socket;
-        }
-
-      protected:
-        virtual void _abort()
-        {
-          _acceptor.cancel();
-          _signal();
-        }
-
-        virtual void _start()
-        {
-          _acceptor.async_accept(boost::bind(&UDTAccept::_wakeup,
-                                             this, _1, _2));
-        }
-
-      private:
-
-      void _wakeup(boost::system::error_code const& error,
-                   boost::asio::ip::udt::socket* socket)
-
-        {
-          if (error == boost::system::errc::operation_canceled)
-            return;
-          if (error)
-            _raise<Exception>(error.message());
-          _socket = socket;
-          _signal();
-        }
-
-        boost::asio::ip::udt::acceptor& _acceptor;
-        UDTSocket::AsioSocket* _socket;
-    };
 
     UDTSocket*
     UDTRendezVousServer::accept()
@@ -122,12 +68,11 @@ namespace reactor
     UDTRendezVousServer::accept(std::string const& addr, int port)
     {
       ELLE_TRACE("%s: rendezvous connection with %s:%s", this, addr, port);
-      this->_sockets.push_back
-        (std::unique_ptr<UDTSocket>
-         (new UDTSocket(this->scheduler(),
+      this->_sockets.push_back(
+        std::unique_ptr<UDTSocket>(
+          new UDTSocket(this->scheduler(),
                         this->_udp_socket->socket()->native_handle(),
-                        addr,
-                        boost::lexical_cast<std::string>(port))));
+                        addr, boost::lexical_cast<std::string>(port))));
       ELLE_DEBUG("%s: rendezvous attended", this);
       this->_accepted.signal_one();
     }
