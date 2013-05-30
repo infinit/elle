@@ -39,7 +39,6 @@ namespace elle
       //
     public:
       Time();
-      Time(Time const&) = default;
 
       //
       // methods

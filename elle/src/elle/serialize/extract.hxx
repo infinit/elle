@@ -30,9 +30,10 @@ namespace elle
         Extractor(std::move(other._stream))
       {}
 
-      Extractor(Extractor const&) = delete;
-      Extractor& operator =(Extractor const&) = delete;
-      Extractor& operator =(Extractor&&) = delete;
+    private:
+      Extractor(Extractor const&);
+      Extractor& operator =(Extractor const&);
+      Extractor& operator =(Extractor&&);
     };
 
     namespace detail

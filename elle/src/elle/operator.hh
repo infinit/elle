@@ -37,7 +37,13 @@
 
 /// Produce a deleted operator =() so as to make sure one cannot
 /// assign such a type.
-# define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                            \
+# ifdef _MSC_VER
+#  define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                           \
+  private:                                                              \
+  _type_&                                                               \
+  operator =(_type_ const&);
+# else
+#  define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                            \
   public:                                                               \
   _type_&                                                               \
   operator =(_type_ const&) = delete;
@@ -46,6 +52,7 @@
   _type_&                                                               \
   operator =(_type_&&) = delete;
 */
+# endif
 
 /// Generate the operator ==() method. Note that this method relies on
 /// the operator !=().

@@ -65,9 +65,10 @@ namespace elle
     InputBufferArchive(InputBufferArchive&& other);
     ~InputBufferArchive();
 
-    InputBufferArchive(InputBufferArchive const& other) = delete;
+  private:
+    InputBufferArchive(InputBufferArchive const& other);
     InputBufferArchive&
-    operator =(InputBufferArchive const& other) = delete;
+    operator =(InputBufferArchive const& other);
   };
 
   class OutputBufferArchive:
@@ -82,9 +83,10 @@ namespace elle
     OutputBufferArchive(OutputBufferArchive&& other);
     ~OutputBufferArchive();
 
-    OutputBufferArchive(OutputBufferArchive const& other) = delete;
+  private:
+    OutputBufferArchive(OutputBufferArchive const& other);
     OutputBufferArchive&
-    operator =(OutputBufferArchive const& other) = delete;
+    operator =(OutputBufferArchive const& other);
   };
 
 }

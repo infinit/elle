@@ -67,12 +67,12 @@ namespace elle
     operator =(Buffer&& other);
     /// Free owned memory.
     ~Buffer();
+  private:
     /// Buffer is not copyable
-    Buffer(Buffer const&) = delete;
+    Buffer(Buffer const&);
     /// Buffer is not assignable
     Buffer&
-    operator =(Buffer const&) = delete;
-
+    operator =(Buffer const&);
 
   /*------------------.
   | Memory management |
@@ -169,8 +169,9 @@ namespace elle
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
     WeakBuffer(WeakBuffer&& other);
+  private:
     /// WeakBuffer cannot take ownership of memory.
-    WeakBuffer(Buffer&&) = delete;
+    WeakBuffer(Buffer&&);
 
   /*--------.
   | Content |

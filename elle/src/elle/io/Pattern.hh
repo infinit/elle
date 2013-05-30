@@ -24,7 +24,6 @@ namespace elle
       //
       Pattern();
       Pattern(elle::String const& string);
-      Pattern(Pattern const& other) = default;
 
       //
       // methods

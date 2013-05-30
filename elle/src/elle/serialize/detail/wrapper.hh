@@ -15,10 +15,6 @@ namespace elle                                                                \
       T& value;                                                               \
                                                                               \
       explicit __name(T& value): value(value) {}                              \
-      __name(__name&&) = default;                                             \
-      __name(__name const&) = default;                                        \
-      __name& operator =(__name const&) = default;                            \
-      __name& operator =(__name&&) = default;                                 \
                                                                               \
       ELLE_SERIALIZE_FRIEND_FOR(__name<T>);                                   \
     };                                                                        \

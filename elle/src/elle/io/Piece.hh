@@ -21,7 +21,6 @@ namespace elle
       Piece();
       Piece(const String&,
             const String&);
-      Piece(Piece const& other) = default;
 
       //
       // interfaces

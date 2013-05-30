@@ -25,8 +25,6 @@ namespace elle
       DynamicFormat():
         _version(StaticFormat<T>::version)
       {}
-      DynamicFormat(DynamicFormat const&) = default;
-      DynamicFormat(DynamicFormat&&) = default;
 
       uint16_t
       version() const

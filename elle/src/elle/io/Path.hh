@@ -34,7 +34,6 @@ namespace elle
       Path(Pattern const& pattern,
            T const& piece,
            TT const&... pieces);
-      Path(Path const& other) = default;
 
       //
       // methods
