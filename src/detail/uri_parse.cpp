@@ -170,9 +170,8 @@ namespace network {
 	  qi::raw[ip_literal | ipv4address | reg_name]
 	  ;
 
-	// port %= qi::ushort_;
 	port %=
-	  qi::raw[*qi::digit]
+	  qi::raw[qi::ushort_]
 	  ;
 
 	// query = *( pchar / "/" / "?" )

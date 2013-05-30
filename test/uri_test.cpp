@@ -549,3 +549,7 @@ TEST(uri_test, git) {
   ASSERT_EQ("github.com", *instance.host());
   ASSERT_EQ("/cpp-netlib/cpp-netlib.git", *instance.path());
 }
+
+TEST(uri_test, invalid_port_test) {
+  ASSERT_THROW(network::uri("http://123.34.23.56:6662626/"), network::uri_syntax_error);
+}
