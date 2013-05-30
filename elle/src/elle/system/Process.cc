@@ -516,10 +516,6 @@ namespace elle
       : Process{normal_config, binary, arguments}
     {}
 
-    Process::Process(std::string const& binary)
-      : Process{binary, {}}
-    {}
-
     Process::Process(Process&& other)
       : _this{std::move(other._this)}
       , _config{std::move(other._config)}
