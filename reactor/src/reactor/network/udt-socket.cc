@@ -7,6 +7,7 @@
 #include <reactor/network/resolve.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/network/udt-socket.hh>
+#include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
@@ -28,7 +29,23 @@ namespace reactor
               resolve_udp(sched, hostname, port),
               timeout)
       , _write_mutex()
-    {}
+    {
+    }
+
+    UDTSocket::UDTSocket(Scheduler& sched,
+                         UDPSocket& socket,
+                         std::string const& hostname,
+                         std::string const& port,
+                         DurationOpt timeout):
+      Super(sched, new boost::asio::ip::udt::socket(sched.io_service())),
+      _write_mutex()
+    {
+      this->_peer = resolve_udp(sched, hostname, port);
+      ELLE_DEBUG("%s: rebind %s", *this, socket)
+        this->socket()->_bind_fd(socket.socket()->native_handle());
+      ELLE_DEBUG("%s: connect to %s:%s", *this, hostname, port)
+      _connect(this->_peer, timeout);
+    }
 
     UDTSocket::UDTSocket(Scheduler& sched,
                          int fd,
