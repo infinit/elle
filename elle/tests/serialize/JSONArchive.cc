@@ -15,6 +15,7 @@
 #include <algorithm>
 
 using namespace elle::serialize;
+// XXX: What about pointers?
 
 // - Basic case ----------------------------------------------------------------
 // XXX: float and double with a null fractional part are not serialized well.
@@ -24,30 +25,30 @@ struct A
   std::string str;
   char c;
   float f;
-  // double d;
+  double d;
 
   bool
   operator ==(A const& a) const
   {
-    return (   this->i == a.i
-            && this->str == a.str
-            && this->c == a.c
-            && this->f == a.f
-            // && this->d == a.d
+    return (this->i == a.i &&
+            this->str == a.str &&
+            this->c == a.c &&
+            this->f == a.f &&
+            this->d == a.d
       );
   }
 };
 
 std::ostream&
-operator <<(std::ostream& out, A const& a)
+operator <<(std::ostream& out,
+            A const& a)
 {
   out << "{"
       << a.i << ", "
       << a.str << ", "
       << a.c << ", "
       << a.f << ", "
-      // << a.d << "}";
-    ;
+      << a.d << "}";
   return out;
 }
 
@@ -57,12 +58,15 @@ ELLE_SERIALIZE_SIMPLE(A, ar, value, version)
   ar & named("str", value.str);
   ar & named("c", value.c);
   ar & named("f", value.f);
-  // ar & named("d", value.d);
+  ar & named("d", value.d);
 }
 
 BOOST_AUTO_TEST_CASE(SimpleClassSerialization)
 {
-  A a_from{1, "deux", '3', 4.5f, }; // 6.0f};
+  // XXX: If d has a null fractional part, deserialization failed.
+  // XXX: Also failed with double d = 6.7f;
+  double d = 6.7;
+  A a_from{1, "deux", '3', 4.5f, d};
   A a_to{};
   std::string serialized{};
   std::string reserialized{};
@@ -103,13 +107,15 @@ struct E
 };
 
 std::ostream&
-operator <<(std::ostream& out, D const& d)
+operator <<(std::ostream& out,
+            D const& d)
 {
   return out << d.i;
 }
 
 std::ostream&
-operator <<(std::ostream& out, E const& e)
+operator <<(std::ostream& out,
+            E const& e)
 {
   return out << e.d;
 }
@@ -170,7 +176,8 @@ struct C:
 };
 
 std::ostream&
-operator <<(std::ostream& out, C const& c)
+operator <<(std::ostream& out,
+            C const& c)
 {
   return out << "{" << c.i << ", " << c.j << "}";
 }
@@ -227,7 +234,8 @@ struct Obj
 };
 
 std::ostream&
-operator <<(std::ostream& out, Obj const& obj)
+operator <<(std::ostream& out,
+            Obj const& obj)
 {
   return out << obj.i;
 }
@@ -237,6 +245,7 @@ ELLE_SERIALIZE_SIMPLE(Obj, ar, value, version)
   ar & named("i", value.i);
 }
 
+// XXX: map, multimap, set, ...
 struct SContainers
 {
   std::list<int> li;
@@ -249,19 +258,19 @@ struct SContainers
   bool
   operator ==(SContainers const& obj) const
   {
-    return (
-         std::equal(this->li.cbegin(), this->li.cend(), obj.li.cbegin())
-      && std::equal(this->lo.cbegin(), this->lo.cend(), obj.lo.cbegin())
-      && std::equal(this->ls.cbegin(), this->ls.cend(), obj.ls.cbegin())
-      && std::equal(this->vi.cbegin(), this->vi.cend(), obj.vi.cbegin())
-      && std::equal(this->vo.cbegin(), this->vo.cend(), obj.vo.cbegin())
-      && std::equal(this->vs.cbegin(), this->vs.cend(), obj.vs.cbegin())
+    return (std::equal(this->li.cbegin(), this->li.cend(), obj.li.cbegin()) &&
+            std::equal(this->lo.cbegin(), this->lo.cend(), obj.lo.cbegin()) &&
+            std::equal(this->ls.cbegin(), this->ls.cend(), obj.ls.cbegin()) &&
+            std::equal(this->vi.cbegin(), this->vi.cend(), obj.vi.cbegin()) &&
+            std::equal(this->vo.cbegin(), this->vo.cend(), obj.vo.cbegin()) &&
+            std::equal(this->vs.cbegin(), this->vs.cend(), obj.vs.cbegin())
       );
   }
 };
 
 std::ostream&
-operator <<(std::ostream& out, SContainers const& obj)
+operator <<(std::ostream& out,
+            SContainers const& obj)
 {
   return out
     << obj.li << std::endl
