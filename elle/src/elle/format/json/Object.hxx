@@ -3,12 +3,52 @@
 
 # include "_detail.hh"
 
+# include <elle/types.hh>
+# include <elle/Exception.hh>
+
 namespace elle
 {
   namespace format
   {
     namespace json
     {
+      namespace detail
+      {
+        template <typename TargetType>
+        struct SelectLoader
+        {
+          template <typename T>
+          static
+          bool
+          load(Object const* self, T& out)
+          {
+            if (auto ptr = dynamic_cast<TargetType const*>(self))
+              out = *ptr;
+            else
+              return false;
+            return true;
+          }
+        };
+
+        template <>
+        struct SelectLoader<Float>
+        {
+          template <typename T>
+          static
+          bool
+          load(Object const* self, T& out)
+          {
+            if (auto ptr = dynamic_cast<Float const*>(self))
+              out = *ptr;
+            else if (Integer const* ptr = dynamic_cast<Integer const*>(self))
+              out = ptr->value();
+            else
+              return false;
+            return true;
+          }
+        };
+      }
+
 
       template <typename T>
       void
@@ -22,9 +62,15 @@ namespace elle
         //     !std::is_base_of<Object, T>::value,
         //     "Cannot load into a json object"
         // );
-        typedef typename detail::SelectJSONType<T>::type SelfType;
-        out = dynamic_cast<SelfType const&>(*this);
+
+        typedef typename detail::SelectJSONType<T>::type TargetType;
+        if (!detail::SelectLoader<TargetType>::template load(this, out))
+          throw elle::Exception{
+            "cannot cast " + ELLE_PRETTY_OBJECT_TYPE(this) +
+            " to " + ELLE_PRETTY_TYPE(T)
+          };
       }
+
 
       template <typename T>
       T
