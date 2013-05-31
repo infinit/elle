@@ -17,6 +17,7 @@ def configure(cxx_toolkit = None,
               cxx_config = None,
               boost = None,
               elle = None,
+              stuntman = None,
               prefix = '/usr'):
 
   global asio_udt
@@ -28,6 +29,10 @@ def configure(cxx_toolkit = None,
 
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
+  cxx_config += stuntman.config()
+  cxx_config.lib('stuncore')
+  cxx_config.lib('stuncommon')
+  cxx_config.lib('crypto')
 
   config = drake.cxx.Config()
   config.add_local_include_path('src')
@@ -91,6 +96,8 @@ def configure(cxx_toolkit = None,
     'src/reactor/network/udp-socket.hh',
     'src/reactor/network/udt-server.cc',
     'src/reactor/network/udt-server.hh',
+    'src/reactor/network/udt-rdv-server.cc',
+    'src/reactor/network/udt-rdv-server.hh',
     'src/reactor/network/udt-socket.cc',
     'src/reactor/network/udt-socket.hh',
     'src/reactor/network/nat.cc',
@@ -118,7 +125,8 @@ def configure(cxx_toolkit = None,
   cxx_config.lib_path_runtime('.')
   # FIXME: should not depend on UDT
   lib_static = drake.cxx.StaticLib('lib/reactor', sources + [asio_udt_lib, udt_lib], cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('lib/reactor', sources + [asio_udt_lib, udt_lib], cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/reactor',
+          sources + [asio_udt_lib, udt_lib], cxx_toolkit, cxx_config)
 
   # Build
   rule_build = drake.Rule('build')

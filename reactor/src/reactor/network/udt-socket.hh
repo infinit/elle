@@ -27,6 +27,11 @@ namespace reactor
                 const std::string& port,
                 DurationOpt timeout = DurationOpt());
       UDTSocket(Scheduler& sched,
+                UDPSocket& socket,
+                std::string const& hostname,
+                std::string const& port,
+                DurationOpt timeout = DurationOpt());
+      UDTSocket(Scheduler& sched,
                 int fd,
                 const std::string& hostname,
                 const std::string& port,

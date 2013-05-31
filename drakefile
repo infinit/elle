@@ -23,6 +23,7 @@ def configure(cxx_toolkit = None,
               openssl = None,
               enable_rotation = False,
               dopenssl = None,
+              stuntman = None,
               prefix = '/usr'):
 
   global config
@@ -60,8 +61,8 @@ def configure(cxx_toolkit = None,
                           cxx_config = cxx_config,
                           boost = boost,
                           elle = elle,
+                          stuntman = stuntman,
                           prefix = prefix)
-
   curly = drake.include('curly',
                         cxx_toolkit = cxx_toolkit,
                         cxx_config = cxx_config,
