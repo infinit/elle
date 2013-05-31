@@ -4,6 +4,7 @@
 #include <elle/serialize/JSONArchive.hh>
 #include <elle/serialize/extract.hh>
 #include <elle/serialize/insert.hh>
+#include <elle/serialize/Concrete.hh>
 #include <elle/container/list.hh>
 #include <elle/container/vector.hh>
 
@@ -151,27 +152,40 @@ BOOST_AUTO_TEST_CASE(AggregatedClassSerialization)
 // - Inheritance ---------------------------------------------------------------
 struct B
 {
-  int i;
+  double i;
 
-  B(int i = 0):
+  B(double i = 0):
     i(i)
   {}
+  bool
+  operator ==(B const& c) const
+  {
+    return this->i == c.i;
+  }
 };
 
 struct C:
   public B
 {
-  int j;
+  float j;
+  std::string k;
+  B l;
 
-  C(int i = 0, int j = 0):
+  explicit
+  C(double i = 0, float j = 0):
     B(i),
-    j(j)
+    j(j),
+    k{"salut"},
+    l{j * 2.0f}
   {}
 
   bool
   operator ==(C const& c) const
   {
-    return (this->i == c.i && this->j == c.j);
+    return (this->i == c.i &&
+            this->j == c.j &&
+            this->k == c.k &&
+            this->l == c.l);
   }
 };
 
@@ -179,7 +193,9 @@ std::ostream&
 operator <<(std::ostream& out,
             C const& c)
 {
-  return out << "{" << c.i << ", " << c.j << "}";
+  return out << "{"
+             << c.i << ", " << c.j << ", " << c.k << ", " << c.l.i
+             << "}";
 }
 
 ELLE_SERIALIZE_SIMPLE(B, ar, value, version)
@@ -191,27 +207,31 @@ ELLE_SERIALIZE_SIMPLE(C, ar, value, version)
 {
   ar & base_class<B>(value);
   ar & named("j", value.j);
+  ar & named("l", value.l);
+  ar & named("k", value.k);
 }
 
 BOOST_AUTO_TEST_CASE(InheritedClassSerialization)
 {
-  C c_from{1, 1};
+  C c_from{1.0, 1.42f};
   C c_to{};
   std::string serialized{};
-  std::string reserialized{};
 
-  // XXX: This doesn't work!!!!
+  to_string<OutputJSONArchive>(serialized) << c_from;
+  from_string<InputJSONArchive>(serialized) >> c_to;
 
-  // to_string<OutputJSONArchive>(serialized) << c_from;
-  // from_string<InputJSONArchive>(serialized) >> c_to;
+  BOOST_CHECK_EQUAL(c_from, c_to);
 
-  //BOOST_CHECK_EQUAL(c_from.i, c_to.i);
-  //BOOST_CHECK_EQUAL(c_from.j, c_to.j);
-
-  // to_string<OutputJSONArchive>(reserialized) << c_to;
-
-  //BOOST_CHECK_EQUAL(serialized, reserialized);
-  //BOOST_CHECK_EQUAL(c_from, c_to);
+  {
+    std::string reserialized{};
+    to_string<OutputJSONArchive>(reserialized) << c_from;
+    BOOST_CHECK_EQUAL(serialized, reserialized);
+  }
+  {
+    std::string reserialized{};
+    to_string<OutputJSONArchive>(reserialized) << c_to;
+    BOOST_CHECK_EQUAL(serialized, reserialized);
+  }
 }
 
 // - Containers ----------------------------------------------------------------

@@ -1,188 +1,207 @@
 #ifndef ELLE_SERIALIZE_JSONARCHIVE_HXX
 # define ELLE_SERIALIZE_JSONARCHIVE_HXX
 
+# include "JSONArchive.hh"
+
 # include <elle/format/json.hh>
 
-# include "JSONArchive.hh"
-# include "BaseArchive.hxx"
+namespace elle
+{
+  namespace serialize
+  {
+    namespace json = elle::format::json;
 
-namespace elle { namespace serialize {
-
-    ///
-    /// an Serializer while receive this class which proxies
-    /// calls to a dictionary
-    ///
-    class OutputJSONArchive::_DictStream
+    template<ArchiveMode mode>
+    class JSONArchive:
+      public BaseArchive<mode, JSONArchive<mode>>
     {
-    public:
-      static ArchiveMode const mode;
-      typedef uint32_t SequenceSizeType;
     private:
-      OutputJSONArchive&  _archive;
-      bool                _isFirst;
+      typedef BaseArchive<mode, JSONArchive<mode>> BaseClass;
+      typedef typename BaseClass::StreamType StreamType;
+      friend class BaseClass::Access;
+
+      struct Kind
+      {
+        enum {array, dict, none} kind;
+        bool is_first;
+      };
+      std::vector<Kind> _save_stack;
 
     public:
-      _DictStream(OutputJSONArchive& archive) :
-        _archive(archive),
-        _isFirst(true)
-      { _archive.stream() << '{'; }
+      JSONArchive(StreamType& stream);
+      JSONArchive(StreamType& stream,
+                  json::Object&& obj);
+      JSONArchive(StreamType& stream,
+                  json::Object const& obj);
 
-      ~_DictStream()
-      { _archive.stream() << '}'; }
-
-      template<typename Pair> inline typename std::enable_if<
-          IsNamedValue<Pair>::value,
-          _DictStream&
-      >::type operator <<(Pair const& pair)
+      template <typename T>
+      JSONArchive(StreamType& stream,
+                  T&& obj):
+        BaseClass(stream)
       {
-        if (_isFirst)
-          _isFirst = false;
+        *this & std::forward<T>(obj);
+      }
+
+    protected:
+      void Save(uint16_t val);
+      void Save(uint32_t val);
+      void Save(uint64_t val);
+      void Save(int16_t val);
+      void Save(int32_t val);
+      void Save(int64_t val);
+      void Save(float val);
+      void Save(double val);
+      void Save(std::string const& val);
+
+      template<typename T> inline typename std::enable_if<
+          std::is_base_of<json::Object, T>::value
+      >::type Save(T const& value)
+      {
+        value.repr(this->stream());
+      }
+
+      template<typename T> inline typename std::enable_if<
+          !std::is_base_of<json::Object, T>::value &&
+          !std::is_arithmetic<T>::value &&
+          !std::is_same<T, std::string>::value
+      >::type Save(T const& val)
+      {
+        if (this->_save_stack.size() == 0)
+          this->_save_stack.push_back({Kind::none, true});
+        bool pushed = false;
+        if (this->_save_stack.back().kind == Kind::none)
+        {
+          pushed = true;
+          this->_save_stack.push_back({Kind::dict, true});
+          this->stream() << "{";
+        }
+        auto& back = this->_save_stack.back();
+        if (!pushed && back.kind == Kind::dict)
+        {
+          if (!back.is_first)
+          {
+            this->stream() << ',';
+            back.is_first = true;
+          }
+        }
+
+        typedef Serializer<typename std::remove_cv<T>::type> Serializer;
+        Serializer::Serialize(
+            *this,
+            const_cast<T&>(val),
+            0
+        );
+
+        if (pushed)
+        {
+          ELLE_ASSERT(this->_save_stack.size() != 0);
+          this->stream() << "}";
+          this->_save_stack.pop_back();
+        }
         else
-          _archive.stream() << ',';
-        _archive << pair.name;
-        _archive.stream() << ':';
-        _archive << pair.value;
-        return *this;
+          back.is_first = false;
       }
-      template<typename T> inline _DictStream& operator &(NamedValue<T const> const& pair)
+
+      template <typename T>
+      inline
+      void
+      Save(Concrete<T> const& concrete)
       {
-        return *this << pair;
+        ELLE_ASSERT(this->_save_stack.size() != 0);
+        this->_save_stack.push_back(this->_save_stack.back());
+        this->Save(concrete.value);
+        ELLE_ASSERT(this->_save_stack.size() != 0);
+        this->_save_stack.pop_back();
+        ELLE_ASSERT(this->_save_stack.size() != 0);
+        this->_save_stack.back().is_first = false;
       }
-      template<typename T> inline _DictStream& operator &(NamedValue<T const>& pair)
+
+      template <typename T>
+      inline
+      void
+      Save(NamedValue<T> const& pair)
       {
-        return *this << pair;
+        if (this->_save_stack.back().is_first)
+          this->_save_stack.back().is_first = false;
+        else
+          this->stream() << ',';
+        (*this) << pair.name;
+        this->stream() << ':';
+        this->_save_stack.push_back({Kind::none, true});
+        (*this) << pair.value;
+        this->_save_stack.pop_back();
       }
 
-      template<typename T> inline _DictStream& operator &(NamedValue<T> const& pair)
-      {
-        return *this << NamedValue<T const>(pair.name, pair.value);
-      }
-    };
-
-
-
-    template<typename T> inline typename std::enable_if<
-        std::is_base_of<json::Object, T>::value
-    >::type OutputJSONArchive::Save(T const& value)
-    {
-      static_cast<json::Object const&>(value).repr(this->stream());
-    }
-
-    template<typename T> inline typename std::enable_if<
-        !std::is_base_of<json::Object, T>::value &&
-        !std::is_arithmetic<T>::value &&
-        !std::is_same<T, std::string>::value
-    >::type OutputJSONArchive::Save(T const& val)
-    {
-      _DictStream dict(*this);
-      Format format(AccessDynamicFormat::fetch(val));
-      if (StoreFormat<T>::value == true)
-        dict << NamedValue<int32_t const>("_class_version", format.version);
-
-      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-      Serializer::Serialize(
-          dict,
-          const_cast<T&>(val),
-          format.version
-      );
-    }
-
-
-    class InputJSONArchive::_DictStream
-    {
-    public:
-      static ArchiveMode const mode;
-      typedef uint32_t SequenceSizeType;
+      friend class json::detail::BasicObject<int32_t>;
+      friend class json::detail::BasicObject<bool>;
+      friend class json::detail::BasicObject<double>;
+      friend class json::detail::BasicObject<std::string>;
+      friend class json::Null;
+      friend class json::Array;
+      friend class json::Dictionary;
 
     private:
-      json::Dictionary const& _dict;
-      InputJSONArchive& _in;
-
-    public:
-      _DictStream(InputJSONArchive& in, json::Dictionary const& dict)
-        : _dict(dict)
-        , _in(in)
-      {}
-
-      template<typename T> _DictStream& operator >>(NamedValue<T> const& pair)
+      std::vector<json::Object const*> _load_stack;
+    protected:
+      template<typename T>
+      typename std::enable_if<!json::detail::ObjectCanLoad<T>::value>::type
+      Load(T& val)
       {
-        this->load(_dict[pair.name], pair.value);
-        return *this;
-      }
-
-      template<typename T> _DictStream& operator &(NamedValue<T> const& pair)
-      {
-        return *this >> pair;
-      }
-
-      template<typename T> _DictStream& operator >>(NamedValue<T>&& pair)
-      {
-        this->load(_dict[pair.name], pair.value);
-        return *this;
-      }
-
-      template<typename T> _DictStream& operator &(NamedValue<T>&& pair)
-      {
-        return *this >> pair;
-      }
-
-      template<typename T> inline typename std::enable_if<
-          json::detail::ObjectCanLoad<T>::value
-      >::type load(json::Object const& obj, T& value)
+        bool pushed = false;
+        std::unique_ptr<json::Object> root;
+        if (this->_load_stack.size() == 0)
         {
-          obj.load(value);
+          auto parser = json::Parser<std::string>();
+          root = parser.parse(this->stream());
+          this->_load_stack.push_back(root.get());
+          pushed = true;
         }
+        auto& back = this->_load_stack.back();
+        ELLE_ASSERT(back != nullptr);
 
-      template<typename T> inline typename std::enable_if<
-          !json::detail::ObjectCanLoad<T>::value
-      >::type load(json::Object const& obj, T& value)
+        typedef Serializer<typename std::remove_cv<T>::type> Serializer;
+        Serializer::Serialize(
+            *this,
+            const_cast<T&>(val),
+            0
+        );
+        if (pushed)
         {
-          json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(&obj);
-          if (dict == nullptr)
-            throw std::runtime_error{
-                "Cannot convert '"+ obj.repr() +"' to a dictionary"
-            };
-
-          _DictStream dstream(_in, *dict);
-          Format format(0);
-          if (StoreFormat<T>::value == true)
-            {
-              dstream >> NamedValue<uint16_t>("_class_version", format.version);
-              AccessDynamicFormat::set(value, format.version);
-            }
-          typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-          Serializer::Serialize(dstream, const_cast<T&>(value), format.version);
+          ELLE_ASSERT(this->_load_stack.size() != 0);
+          this->_load_stack.pop_back();
         }
+      }
+
+      template<typename T>
+      typename std::enable_if<json::detail::ObjectCanLoad<T>::value>::type
+      Load(T& val)
+      {
+        ELLE_ASSERT(this->_load_stack.size() != 0);
+        this->_load_stack.back()->load(val);
+      }
+
+      template <typename T>
+      void
+      Load(Concrete<T> const& val)
+      {
+        BaseClass::Load(val);
+      }
+
+      template <typename T>
+      void
+      Load(NamedValue<T> const& pair)
+      {
+        ELLE_ASSERT(this->_load_stack.size() != 0);
+        json::Object const* object =
+          this->_load_stack.back()->as_dictionary().contains(pair.name);
+        ELLE_ASSERT(object != nullptr); // XXX KeyError
+        this->_load_stack.push_back(object);
+        this->Load(pair.value);
+        ELLE_ASSERT(this->_load_stack.size() != 0);
+        this->_load_stack.pop_back();
+      }
     };
-
-
-    template<typename T> void InputJSONArchive::Load(T& val)
-    {
-      auto parser = json::Parser<std::string>();
-      auto obj = parser.parse(this->stream());
-      assert(obj.get() != nullptr);
-      json::Dictionary const* dict = dynamic_cast<json::Dictionary const*>(
-          obj.get()
-      );
-      if (dict == nullptr)
-        throw std::runtime_error{
-          "Cannot convert '"+ obj->repr() +"' to a dictionary"
-        };
-      _DictStream dstream(*this, *dict);
-
-      unsigned int version = 0;
-      if (StoreFormat<T>::value == true)
-        dstream >> NamedValue<unsigned int>("_class_version", version);
-      typedef Serializer<typename std::remove_cv<T>::type> Serializer;
-      Serializer::Serialize(
-          dstream,
-          const_cast<T&>(val),
-          version
-      );
-    }
-
-
-}}
+  }
+}
 
 #endif
-
