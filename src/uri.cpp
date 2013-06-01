@@ -8,6 +8,8 @@
 #include <network/uri/uri.hpp>
 #include "detail/uri_parse.hpp"
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
@@ -261,16 +263,22 @@ namespace network {
     return pimpl_->uri_.end();
   }
 
-  namespace {
-    template <typename Iter>
-    inline
-    boost::string_ref to_string_ref(const uri::string_type &uri,
-				    boost::iterator_range<Iter> uri_part) {
+  namespace
+  {
+    inline boost::string_ref to_string_ref(const uri::string_type &uri,
+					   boost::iterator_range<uri::const_iterator> uri_part) {
       const char *c_str = uri.c_str();
       const char *uri_part_begin = &(*(std::begin(uri_part)));
       std::advance(c_str, std::distance(c_str, uri_part_begin));
       return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
     }
+
+    inline boost::string_ref to_string_ref(boost::string_ref::const_iterator uri_part_begin,
+					   boost::string_ref::const_iterator uri_part_end)
+    {
+      return boost::string_ref(uri_part_begin, std::distance(uri_part_begin, uri_part_end));
+    }
+
   } // namespace
 
   boost::optional<boost::string_ref> uri::scheme() const {
@@ -332,7 +340,7 @@ namespace network {
       last = std::end(*port);
     }
 
-    return to_string_ref(pimpl_->uri_, boost::make_iterator_range(first, last));
+    return to_string_ref(first, last);
   }
 
   uri::string_type uri::native() const {
@@ -595,6 +603,24 @@ namespace network {
     return uri(normalized);
   }
 
+  namespace {
+    inline uri::string_type to_string_type(boost::string_ref ref) {
+      return uri::string_type(std::begin(ref), std::end(ref));
+    }
+
+    inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref) {
+      return ref.is_initialized() ? to_string_type(ref.get()) : uri::string_type();
+    }
+
+    inline boost::optional<uri::string_type>
+      to_optional_string_type(boost::optional<boost::string_ref> ref) {
+      if (ref)
+        return boost::make_optional(to_string_type(ref.get()));
+      return boost::optional<uri::string_type>();
+    }
+
+  } // namespace
+
   uri uri::make_reference(const uri &other, uri_comparison_level level) const {
     if (opaque() || other.opaque()) {
       return other;
@@ -616,16 +642,16 @@ namespace network {
       return other;
     }
 
-    auto path = normalize_path(string_type(*this->path()), level),
-      other_path = normalize_path(string_type(*other.path()), level);
+    auto path = normalize_path(to_string_type(this->path()), level),
+      other_path = normalize_path(to_string_type(other.path()), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query.reset(string_type(*other.query()));
+      query.reset(to_string_type(other.query()));
     }
 
     if (other.fragment()) {
-      fragment.reset(string_type(*other.fragment()));
+      fragment.reset(to_string_type(other.fragment()));
     }
 
     return network::uri(boost::optional<string_type>(),
@@ -635,12 +661,144 @@ namespace network {
 			other_path, query, fragment);
   }
 
-  uri uri::resolve(const uri &other, uri_comparison_level level) const {
-    // http://tools.ietf.org/html/rfc3986#section-5.2
-    if (!other.absolute() && !other.opaque()) {
-      return other;
+  namespace {
+    template<typename Range>
+    void remove_last_segment(Range& path) {
+      while (!path.empty()) {
+        if (path.back() == '/') {
+          path.pop_back();
+          break;
+        }
+        path.pop_back();
+      }
     }
-    return other;
+
+    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
+    uri::string_type remove_dot_segments(uri::string_type input) {
+      using namespace boost::algorithm;
+      using std::begin;
+
+      uri::string_type output;
+      while(!input.empty()) {
+        if (starts_with(input, "../"))
+          erase_head(input, 3);
+        else if (starts_with(input, "./"))
+          erase_head(input, 2);
+        else if (starts_with(input, "/./"))
+          erase_head(input, 2);
+        else if(starts_with(input, "/../")) {
+          erase_head(input, 3);
+          remove_last_segment(output);
+        }
+        else if (starts_with(input, "/..")) {
+          replace_head(input, 3, "/");
+          remove_last_segment(output);
+        }
+        else if (starts_with(input, "/."))
+          replace_head(input, 2, "/");
+        else if(all(input, is_any_of(".")))
+          input.clear();
+
+        else {
+          int n = input.front() == '/' ? 1 : 0;
+          auto slash = find_nth(input, "/", n);
+          output.append(begin(input), begin(slash));
+          input.erase(begin(input), begin(slash));
+        }
+      }
+      return output;
+    }
+
+    template<typename Range>
+    uri::string_type remove_dot_segments(const Range& path) {
+      uri::string_type input(to_string_type(path));
+      return remove_dot_segments(move(input));
+    }
+
+    inline bool has_empty_path(const uri& uri) {
+      return !uri.path() || uri.path().get().empty();
+    }
+
+    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
+    inline uri::string_type merge_paths(const uri& base, const uri& reference) {
+      using std::begin;
+
+      uri::string_type path;
+      if (has_empty_path(base))
+        path = "/";
+      else {
+        const auto& base_path = base.path().get();
+        auto last_slash = boost::find_last(base_path, "/");
+        path.append(begin(base_path), last_slash.end());
+      }
+      path.append(to_string_type(reference.path()));
+      return remove_dot_segments(move(path));
+    }
+
+
+    template<typename T>
+    inline boost::optional<uri::string_type>
+      make_arg(T&& arg) {
+      return boost::optional<uri::string_type>(std::forward<T>(arg));
+    }
+
+    inline boost::optional<uri::string_type>
+      make_arg(boost::optional<boost::string_ref> ref) {
+      return to_optional_string_type(ref);
+    }
+  }  // namespace
+
+
+  uri uri::resolve(const uri &reference, uri_comparison_level level) const {
+    // http://tools.ietf.org/html/rfc3986#section-5.2
+
+    using std::move;
+
+    if (reference.absolute() && !reference.opaque()) {
+      return reference;
+    }
+
+    boost::optional<uri::string_type>
+      user_info,
+      host,
+      port,
+      path,
+      query;
+    const uri& base = *this;
+
+    if (reference.authority()) {
+      // //g -> http://g
+      user_info = make_arg(reference.user_info());
+      host = make_arg(reference.host());
+      port = make_arg(reference.port());
+      path = remove_dot_segments(reference.path());
+      query = make_arg(reference.query());
+    }
+    else {
+      if (has_empty_path(reference)) {
+        path = make_arg(base.path());
+        if (reference.query())
+          query = make_arg(reference.query());
+        else
+          query = make_arg(base.query());
+      }
+      else {
+        if (reference.path().get().front() == '/')
+          path = remove_dot_segments(reference.path());
+        else {
+          path = merge_paths(base, reference);
+        }
+        query = make_arg(reference.query());
+      }
+      user_info = make_arg(base.user_info());
+      host = make_arg(base.host());
+      port = make_arg(base.port());
+    }
+
+    return uri(make_arg(base.scheme()),
+	       move(user_info), move(host), move(port),
+	       move(path), move(query),
+	       make_arg(reference.fragment()));
   }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {
