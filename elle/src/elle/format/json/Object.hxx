@@ -23,7 +23,24 @@ namespace elle
           load(Object const* self, T& out)
           {
             if (auto ptr = dynamic_cast<TargetType const*>(self))
-              out = *ptr;
+              out = static_cast<T>(*ptr);
+            else
+              return false;
+            return true;
+          }
+        };
+
+        // Compatibility with enums
+        template <>
+        struct SelectLoader<Integer>
+        {
+          template <typename T>
+          static
+          bool
+          load(Object const* self, T& out)
+          {
+            if (auto ptr = dynamic_cast<Integer const*>(self))
+              out = static_cast<T>(ptr->value());
             else
               return false;
             return true;

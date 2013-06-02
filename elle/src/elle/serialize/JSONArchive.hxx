@@ -52,10 +52,17 @@ namespace elle
       void Save(float val);
       void Save(double val);
       void Save(std::string const& val);
+      template <typename T>
+      typename std::enable_if<std::is_enum<T>::value>::type
+      Save(T const value)
+      {
+        this->Save(static_cast<int32_t>(value));
+      }
 
-      template<typename T> inline typename std::enable_if<
-          std::is_base_of<json::Object, T>::value
-      >::type Save(T const& value)
+      template <typename T>
+      inline
+      typename std::enable_if<std::is_base_of<json::Object, T>::value>::type
+      Save(T const& value)
       {
         value.repr(this->stream());
       }
@@ -63,7 +70,8 @@ namespace elle
       template<typename T> inline typename std::enable_if<
           !std::is_base_of<json::Object, T>::value &&
           !std::is_arithmetic<T>::value &&
-          !std::is_same<T, std::string>::value
+          !std::is_same<T, std::string>::value &&
+          !std::is_enum<T>::value
       >::type Save(T const& val)
       {
         if (this->_save_stack.size() == 0)

@@ -193,6 +193,7 @@ namespace elle
         {
           static bool const value = (
                 std::is_arithmetic<T>::value
+            || std::is_enum<T>::value
             ||  std::is_same<T, std::string>::value
             ||  std::is_same<T, bool>::value
             ||  detail::IsArray<T>::value
@@ -212,7 +213,7 @@ namespace elle
                 std::is_floating_point<T>::value
               , Float
               , typename StaticIf<
-                  std::is_integral<T>::value
+                  std::is_integral<T>::value || std::is_enum<T>::value
                 , Integer
                 , typename StaticIf<
                     IsArray<T>::value
