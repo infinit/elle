@@ -243,9 +243,17 @@ namespace elle
           this->_load_stack.back()->as_dictionary().contains(pair.name);
         ELLE_ASSERT(object != nullptr); // XXX KeyError
         this->_load_stack.push_back(object);
-        this->Load(pair.value);
-        ELLE_ASSERT(this->_load_stack.size() != 0);
-        this->_load_stack.pop_back();
+        try
+        {
+          this->Load(pair.value);
+          ELLE_ASSERT(this->_load_stack.size() != 0);
+          this->_load_stack.pop_back();
+        }
+        catch (...)
+        {
+          this->_load_stack.pop_back();
+          throw;
+        }
       }
     };
   }
