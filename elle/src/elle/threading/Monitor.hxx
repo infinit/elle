@@ -65,8 +65,9 @@ namespace elle
 
       //- ctor/dtor -----------------------------------------------------------
     public:
-      Monitor():
-        _value{},
+      template <typename... Args>
+      Monitor(Args&&... args):
+        _value{std::forward<Args>(args)...},
         _mutex{},
         _counter{}
       {}
