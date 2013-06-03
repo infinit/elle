@@ -44,9 +44,10 @@ namespace elle { namespace serialize {
       };
 
     template<typename Key, typename T, typename Compare, typename Allocator>
-      struct Serializer<std::unordered_map<Key, T, Compare, Allocator>>
-        : public detail::SequenceSerializer<std::unordered_map<Key, T, Compare, Allocator>>
-      {};
+    struct Serializer<std::unordered_map<Key, T, Compare, Allocator>>
+      : public detail::SequenceSerializer<std::unordered_map<Key, T, Compare, Allocator>,
+                                          stl_insert::InsertPair>
+    {};
 
     template<typename Key, typename T, typename Compare, typename Allocator>
       struct StoreFormat<std::unordered_map<Key, T, Compare, Allocator>>
@@ -57,5 +58,3 @@ namespace elle { namespace serialize {
 }}
 
 #endif
-
-
