@@ -101,8 +101,6 @@ def configure(cxx_toolkit = None,
     'src/reactor/network/udt-rdv-server.hh',
     'src/reactor/network/udt-socket.cc',
     'src/reactor/network/udt-socket.hh',
-    'src/reactor/network/nat.cc',
-    'src/reactor/network/nat.hh',
     'src/reactor/operation.cc',
     'src/reactor/operation.hh',
     'src/reactor/rw-mutex.cc',
@@ -122,6 +120,12 @@ def configure(cxx_toolkit = None,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
+
+  if stuntman is not None:
+    sources += drake.nodes(
+      'src/reactor/network/nat.cc',
+      'src/reactor/network/nat.hh',
+      )
 
   cxx_config.lib_path_runtime('.')
   # FIXME: should not depend on UDT
@@ -145,8 +149,12 @@ def configure(cxx_toolkit = None,
     'reactor/network',
     'reactor/reactor',
     'reactor/udt-socket',
-    'reactor/nat',
     ]
+
+  if stuntman is not None:
+    tests += [
+      'reactor/nat'
+      ]
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests += boost.config()
