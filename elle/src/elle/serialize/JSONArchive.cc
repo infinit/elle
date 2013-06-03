@@ -49,6 +49,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(uint16_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -56,6 +57,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(uint32_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -63,6 +65,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(uint64_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -70,6 +73,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(int16_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -77,6 +81,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(int32_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -84,6 +89,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(int64_t val)
     {
+      this->_elem_save();
       this->stream() << val;
     }
 
@@ -91,6 +97,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(float val)
     {
+      this->_elem_save();
       this->stream() << std::setprecision(23) << val;
     }
 
@@ -98,6 +105,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(double val)
     {
+      this->_elem_save();
       this->stream() << std::setprecision(23) << val;
     }
 
@@ -105,6 +113,7 @@ namespace elle
     void
     JSONArchive<ArchiveMode::output>::Save(std::string const& val)
     {
+      this->_elem_save();
       elle::format::json::String(val).repr(this->stream());
     }
   }
