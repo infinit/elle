@@ -20,12 +20,47 @@ namespace elle
       typedef typename BaseClass::StreamType StreamType;
       friend class BaseClass::Access;
 
-      struct Kind
+      enum Kind {array, dict, base_class, none};
+      struct State
       {
-        enum {array, dict, none} kind;
+        Kind kind;
         bool is_first;
       };
-      std::vector<Kind> _save_stack;
+      std::vector<State> _save_stack;
+    protected:
+      void
+      _push_save(Kind const kind)
+      {
+        this->_save_stack.push_back({kind, true});
+        if (kind == Kind::dict)
+          this->stream() << '{';
+        else if (kind == Kind::array)
+          this->stream() << '[';
+      }
+
+      void
+      _pop_save(Kind const kind)
+      {
+        ELLE_ASSERT_GT(this->_save_stack.size(), 0u);
+        ELLE_ASSERT_EQ(this->_save_stack.back().kind, kind);
+        this->_save_stack.pop_back();
+        if (kind == Kind::dict)
+          this->stream() << '}';
+        else if (kind == Kind::array)
+          this->stream() << ']';
+        if (this->_save_stack.size() > 0)
+          this->_save_stack.back().is_first = false;
+      }
+
+      void _elem_save()
+      {
+        if (this->_save_stack.size() == 0)
+          return;
+        if (this->_save_stack.back().is_first)
+          this->_save_stack.back().is_first = false;
+        else
+          this->stream() << ',';
+      }
 
     public:
       JSONArchive(StreamType& stream);
@@ -56,6 +91,7 @@ namespace elle
       typename std::enable_if<std::is_enum<T>::value>::type
       Save(T const value)
       {
+        this->_elem_save();
         this->Save(static_cast<int32_t>(value));
       }
 
@@ -64,33 +100,29 @@ namespace elle
       typename std::enable_if<std::is_base_of<json::Object, T>::value>::type
       Save(T const& value)
       {
+        this->_elem_save();
         value.repr(this->stream());
       }
 
-      template<typename T> inline typename std::enable_if<
+      template <typename T>
+      inline
+      typename std::enable_if<
           !std::is_base_of<json::Object, T>::value &&
           !std::is_arithmetic<T>::value &&
           !std::is_same<T, std::string>::value &&
-          !std::is_enum<T>::value
-      >::type Save(T const& val)
+          !std::is_enum<T>::value &&
+          !elle::format::json::detail::IsArray<T>::value
+      >::type
+      Save(T const& val)
       {
-        if (this->_save_stack.size() == 0)
-          this->_save_stack.push_back({Kind::none, true});
-        bool pushed = false;
-        if (this->_save_stack.back().kind == Kind::none)
+        bool is_base_class =  (
+          this->_save_stack.size() > 0 &&
+          this->_save_stack.back().kind == Kind::base_class
+        );
+        if (!is_base_class)
         {
-          pushed = true;
-          this->_save_stack.push_back({Kind::dict, true});
-          this->stream() << "{";
-        }
-        auto& back = this->_save_stack.back();
-        if (!pushed && back.kind == Kind::dict)
-        {
-          if (!back.is_first)
-          {
-            this->stream() << ',';
-            back.is_first = true;
-          }
+          this->_elem_save();
+          this->_push_save(Kind::dict);
         }
 
         typedef Serializer<typename std::remove_cv<T>::type> Serializer;
@@ -100,14 +132,26 @@ namespace elle
             0
         );
 
-        if (pushed)
+        if (!is_base_class)
+          this->_pop_save(Kind::dict);
+      }
+
+      template <typename T>
+      inline
+      typename std::enable_if<
+        elle::format::json::detail::IsArray<T>::value
+      >::type
+      Save(T& value)
+      {
+        this->_push_save(Kind::array);
+        for (auto& el: value)
         {
-          ELLE_ASSERT(this->_save_stack.size() != 0);
-          this->stream() << "}";
-          this->_save_stack.pop_back();
+          this->_elem_save();
+          this->_push_save(Kind::none);
+          *this & el;
+          this->_pop_save(Kind::none);
         }
-        else
-          back.is_first = false;
+        this->_pop_save(Kind::array);
       }
 
       template <typename T>
@@ -115,13 +159,9 @@ namespace elle
       void
       Save(Concrete<T> const& concrete)
       {
-        ELLE_ASSERT(this->_save_stack.size() != 0);
-        this->_save_stack.push_back(this->_save_stack.back());
+        this->_push_save(Kind::base_class);
         this->Save(concrete.value);
-        ELLE_ASSERT(this->_save_stack.size() != 0);
-        this->_save_stack.pop_back();
-        ELLE_ASSERT(this->_save_stack.size() != 0);
-        this->_save_stack.back().is_first = false;
+        this->_pop_save(Kind::base_class);
       }
 
       template <typename T>
@@ -129,15 +169,14 @@ namespace elle
       void
       Save(NamedValue<T> const& pair)
       {
-        if (this->_save_stack.back().is_first)
-          this->_save_stack.back().is_first = false;
-        else
-          this->stream() << ',';
+        this->_elem_save();
+        this->_push_save(Kind::none);
         (*this) << pair.name;
+        this->_pop_save(Kind::none);
         this->stream() << ':';
-        this->_save_stack.push_back({Kind::none, true});
+        this->_push_save(Kind::none);
         (*this) << pair.value;
-        this->_save_stack.pop_back();
+        this->_pop_save(Kind::none);
       }
 
       friend class json::detail::BasicObject<int32_t>;

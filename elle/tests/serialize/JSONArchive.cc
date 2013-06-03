@@ -53,7 +53,7 @@ operator <<(std::ostream& out,
   return out;
 }
 
-ELLE_SERIALIZE_SIMPLE(A, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(A, ar, value,version)
 {
   ar & named("i", value.i);
   ar & named("str", value.str);
@@ -67,17 +67,17 @@ BOOST_AUTO_TEST_CASE(SimpleClassSerialization)
   // XXX: If d has a null fractional part, deserialization failed.
   // XXX: Also failed with double d = 6.7f;
   double d = 6.7;
-  A a_from{1, "deux", '3', 4.5f, d};
-  A a_to{};
+  A from{1, "deux", '3', 4.5f, d};
+  A to{};
   std::string serialized{};
   std::string reserialized{};
 
-  to_string<OutputJSONArchive>(serialized) << a_from;
-  from_string<InputJSONArchive>(serialized) >> a_to;
-  to_string<OutputJSONArchive>(reserialized) << a_to;
+  to_string<OutputJSONArchive>(serialized) << from;
+  from_string<InputJSONArchive>(serialized) >> to;
+  to_string<OutputJSONArchive>(reserialized) << to;
 
   BOOST_CHECK_EQUAL(serialized, reserialized);
-  BOOST_CHECK_EQUAL(a_from, a_to);
+  BOOST_CHECK_EQUAL(from, to);
 }
 
 // - Aggregation ---------------------------------------------------------------
@@ -122,29 +122,29 @@ operator <<(std::ostream& out,
 }
 
 
-ELLE_SERIALIZE_SIMPLE(D, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(D, ar, value,version)
 {
   ar & named("i", value.i);
 }
 
-ELLE_SERIALIZE_SIMPLE(E, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(E, ar, value,version)
 {
   ar & named("d", value.d);
 }
 
 BOOST_AUTO_TEST_CASE(AggregatedClassSerialization)
 {
-  E e_from{1};
-  E e_to{};
+  E from{1};
+  E to{};
   std::string serialized{};
   std::string reserialized{};
 
-  to_string<OutputJSONArchive>(serialized) << e_from;
-  from_string<InputJSONArchive>(serialized) >> e_to;
+  to_string<OutputJSONArchive>(serialized) << from;
+  from_string<InputJSONArchive>(serialized) >> to;
 
-  BOOST_CHECK_EQUAL(e_from, e_to);
+  BOOST_CHECK_EQUAL(from, to);
 
-  to_string<OutputJSONArchive>(reserialized) << e_to;
+  to_string<OutputJSONArchive>(reserialized) << to;
 
   BOOST_CHECK_EQUAL(serialized, reserialized);
 }
@@ -198,12 +198,12 @@ operator <<(std::ostream& out,
              << "}";
 }
 
-ELLE_SERIALIZE_SIMPLE(B, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(B, ar, value,version)
 {
   ar & named("i", value.i);
 }
 
-ELLE_SERIALIZE_SIMPLE(C, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(C, ar, value,version)
 {
   ar & base_class<B>(value);
   ar & named("j", value.j);
@@ -213,23 +213,23 @@ ELLE_SERIALIZE_SIMPLE(C, ar, value, version)
 
 BOOST_AUTO_TEST_CASE(InheritedClassSerialization)
 {
-  C c_from{1.0, 1.42f};
-  C c_to{};
+  C from{1.0, 1.42f};
+  C to{};
   std::string serialized{};
 
-  to_string<OutputJSONArchive>(serialized) << c_from;
-  from_string<InputJSONArchive>(serialized) >> c_to;
+  to_string<OutputJSONArchive>(serialized) << from;
+  from_string<InputJSONArchive>(serialized) >> to;
 
-  BOOST_CHECK_EQUAL(c_from, c_to);
+  BOOST_CHECK_EQUAL(from, to);
 
   {
     std::string reserialized{};
-    to_string<OutputJSONArchive>(reserialized) << c_from;
+    to_string<OutputJSONArchive>(reserialized) << from;
     BOOST_CHECK_EQUAL(serialized, reserialized);
   }
   {
     std::string reserialized{};
-    to_string<OutputJSONArchive>(reserialized) << c_to;
+    to_string<OutputJSONArchive>(reserialized) << to;
     BOOST_CHECK_EQUAL(serialized, reserialized);
   }
 }
@@ -260,7 +260,7 @@ operator <<(std::ostream& out,
   return out << obj.i;
 }
 
-ELLE_SERIALIZE_SIMPLE(Obj, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(Obj, ar, value,version)
 {
   ar & named("i", value.i);
 }
@@ -302,7 +302,7 @@ operator <<(std::ostream& out,
     ;
 }
 
-ELLE_SERIALIZE_SIMPLE(SContainers, ar, value, version)
+ELLE_SERIALIZE_SIMPLE(SContainers, ar, value,version)
 {
   ar & named("li", value.li);
   ar & named("ls", value.ls);
@@ -327,14 +327,11 @@ BOOST_AUTO_TEST_CASE(ContainersSerialization)
   std::string serialized{};
   std::string reserialized{};
 
-  (void) to;
-  (void) from;
-  // XXX: This doesn't work!!!!
-
-  // to_string<OutputJSONArchive>(serialized) << from;
-  // from_string<InputJSONArchive>(serialized) >> to;
-  // to_string<OutputJSONArchive>(reserialized) << to;
+  to_string<OutputJSONArchive>(serialized) << from;
+  elle::print("SERIALIZED:", serialized);
+  from_string<InputJSONArchive>(serialized) >> to;
+  to_string<OutputJSONArchive>(reserialized) << to;
 
   BOOST_CHECK_EQUAL(serialized, reserialized);
-  // BOOST_CHECK_EQUAL(from, to);
+  BOOST_CHECK_EQUAL(from, to);
 }

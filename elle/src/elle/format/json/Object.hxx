@@ -5,6 +5,8 @@
 
 # include <elle/types.hh>
 # include <elle/Exception.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/serialize/extract.hh>
 
 namespace elle
 {
@@ -47,6 +49,7 @@ namespace elle
           }
         };
 
+        // Convertibility from integer
         template <>
         struct SelectLoader<Float>
         {
@@ -64,22 +67,28 @@ namespace elle
             return true;
           }
         };
-      }
+
+        template <>
+        struct SelectLoader<void>
+        {
+          template <typename T>
+          static
+          bool
+          load(Object const* self, T& out)
+          {
+            using namespace elle::serialize;
+            from_string<InputJSONArchive>(self->repr()) >> out;
+            return true;
+          }
+        };
+
+      } // !detail
 
 
       template <typename T>
       void
       Object::load(T& out) const
       {
-        // XXX Was not designed to load a json object into json object.
-        //     Check if everything is still working as expected.
-        //     see: SelectJSONType
-
-        // static_assert(
-        //     !std::is_base_of<Object, T>::value,
-        //     "Cannot load into a json object"
-        // );
-
         typedef typename detail::SelectJSONType<T>::type TargetType;
         if (!detail::SelectLoader<TargetType>::template load(this, out))
           throw elle::Exception{
