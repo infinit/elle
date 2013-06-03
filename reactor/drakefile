@@ -29,10 +29,11 @@ def configure(cxx_toolkit = None,
 
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
-  cxx_config += stuntman.config()
-  cxx_config.lib('stuncore')
-  cxx_config.lib('stuncommon')
-  cxx_config.lib('crypto')
+  if stuntman is not None:
+    cxx_config += stuntman.config()
+    cxx_config.lib('stuncore')
+    cxx_config.lib('stuncommon')
+    cxx_config.lib('crypto')
 
   config = drake.cxx.Config()
   config.add_local_include_path('src')
