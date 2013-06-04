@@ -115,9 +115,11 @@ namespace reactor
             int port,
             int local_port = 0);
 
+#if defined(REACTOR_HAVE_STUN)
       Breach
       map(boost::asio::ip::udp::endpoint const& endpoint,
           unsigned short local_port = 0);
+#endif
 
     private:
       reactor::Scheduler&         sched;
