@@ -42,7 +42,6 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
-  cxx_config += boost.config()
   cxx_config += elle.config
 
   # Sources
