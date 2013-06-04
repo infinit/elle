@@ -34,6 +34,7 @@ def configure(cxx_toolkit = None,
     cxx_config.lib('stuncore')
     cxx_config.lib('stuncommon')
     cxx_config.lib('crypto')
+    cxx_config.define('REACTOR_HAVE_STUN')
 
   config = drake.cxx.Config()
   config.add_local_include_path('src')
@@ -76,29 +77,31 @@ def configure(cxx_toolkit = None,
     'src/reactor/logger.cc',
     'src/reactor/mutex.cc',
     'src/reactor/mutex.hh',
-    'src/reactor/network/Protocol.hh',
-    'src/reactor/network/Protocol.cc',
     'src/reactor/network/buffer.hh',
     'src/reactor/network/exception.cc',
     'src/reactor/network/exception.hh',
     'src/reactor/network/fwd.hh',
+    'src/reactor/network/nat.cc',
+    'src/reactor/network/nat.hh',
+    'src/reactor/network/Protocol.cc',
+    'src/reactor/network/Protocol.hh',
     'src/reactor/network/resolve.cc',
     'src/reactor/network/resolve.hh',
     'src/reactor/network/server.cc',
     'src/reactor/network/server.hh',
-    'src/reactor/network/socket-operation.hh',
     'src/reactor/network/socket.cc',
     'src/reactor/network/socket.hh',
+    'src/reactor/network/socket-operation.hh',
     'src/reactor/network/tcp-server.cc',
     'src/reactor/network/tcp-server.hh',
     'src/reactor/network/tcp-socket.cc',
     'src/reactor/network/tcp-socket.hh',
     'src/reactor/network/udp-socket.cc',
     'src/reactor/network/udp-socket.hh',
-    'src/reactor/network/udt-server.cc',
-    'src/reactor/network/udt-server.hh',
     'src/reactor/network/udt-rdv-server.cc',
     'src/reactor/network/udt-rdv-server.hh',
+    'src/reactor/network/udt-server.cc',
+    'src/reactor/network/udt-server.hh',
     'src/reactor/network/udt-socket.cc',
     'src/reactor/network/udt-socket.hh',
     'src/reactor/operation.cc',
@@ -120,12 +123,6 @@ def configure(cxx_toolkit = None,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
-
-  if stuntman is not None:
-    sources += drake.nodes(
-      'src/reactor/network/nat.cc',
-      'src/reactor/network/nat.hh',
-      )
 
   cxx_config.lib_path_runtime('.')
   # FIXME: should not depend on UDT

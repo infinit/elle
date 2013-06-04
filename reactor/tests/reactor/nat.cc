@@ -26,6 +26,7 @@ BOOST_AUTO_TEST_CASE(hole)
   sched.run();
 }
 
+#if defined(REACTOR_HAVE_STUN)
 BOOST_AUTO_TEST_CASE(breach)
 {
   Scheduler sched;
@@ -44,3 +45,4 @@ BOOST_AUTO_TEST_CASE(breach)
   Thread t(sched, "test", test_fn);
   sched.run();
 }
+#endif
