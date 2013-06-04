@@ -2634,7 +2634,8 @@ def reset():
 
 class Runner(Builder):
 
-  def __init__(self, exe):
+  def __init__(self, exe, args = None):
+    self.__args = args or list()
     self.__exe = exe
     self.__out = node('%s.out' % exe.name())
     self.__err = node('%s.err' % exe.name())
@@ -2656,8 +2657,8 @@ class Runner(Builder):
     with open(str(self.__out.path()), 'w') as out, \
          open(str(self.__err.path()), 'w') as err, \
          open(str(self.__status.path()), 'w') as rv:
-      self.output(path, 'Run %s' % self.__exe)
-      p = subprocess.Popen(path, stdout = out, stderr = err)
+      self.output(path, 'Run %s %s' % (self.__exe, " ".join(self.__args)))
+      p = subprocess.Popen([path] + self.__args, stdout = out, stderr = err)
       p.wait()
       status = p.returncode
       print(status, file = rv)
