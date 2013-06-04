@@ -15,16 +15,16 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  Scheduler::Scheduler()
-    : _shallstop(false)
-    , _current(0)
-    , _starting()
-    , _starting_mtx()
-    , _running()
-    , _frozen()
-    , _io_service()
-    , _io_service_work(new boost::asio::io_service::work(_io_service))
-    , _manager()
+  Scheduler::Scheduler():
+    _shallstop(false),
+    _current(0),
+    _starting(),
+    _starting_mtx(),
+    _running(),
+    _frozen(),
+    _io_service(),
+    _io_service_work(new boost::asio::io_service::work(_io_service)),
+    _manager()
   {
     this->_eptr = nullptr;
   }
