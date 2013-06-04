@@ -19,13 +19,14 @@ BOOST_AUTO_TEST_CASE(hole)
   {
     reactor::nat::NAT n{sched};
 
-    auto hole = n.punch("development.infinit.io", 9999, 8345);
+    auto hole = n.punch("punch.api.infinit.io", 9999, 8345);
     BOOST_CHECK_NE(hole.public_endpoint().port(), 0);
   };
   Thread t(sched, "test", test_fn);
   sched.run();
 }
 
+#if defined(REACTOR_HAVE_STUN)
 BOOST_AUTO_TEST_CASE(breach)
 {
   Scheduler sched;
@@ -34,7 +35,7 @@ BOOST_AUTO_TEST_CASE(breach)
   {
     reactor::nat::NAT n{sched};
 
-    auto host = reactor::network::resolve_udp(sched, "development.infinit.io",
+    auto host = reactor::network::resolve_udp(sched, "punch.api.infinit.io",
                                               std::to_string(3478));
     auto breach = n.map(host);
     elle::print(breach.mapped_endpoint());
@@ -44,3 +45,4 @@ BOOST_AUTO_TEST_CASE(breach)
   Thread t(sched, "test", test_fn);
   sched.run();
 }
+#endif

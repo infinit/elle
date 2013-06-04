@@ -16,10 +16,12 @@
 #include <reactor/thread.hh>
 #include <reactor/network/exception.hh>
 
-#include <stun/common/commonincludes.hpp>
-#include <stun/common/oshelper.h>
-#include <stun/stuncore/stuncore.h>
-#include <stun/stuncore/socketaddress.h>
+#if defined(REACTOR_HAVE_STUN)
+# include <stun/common/commonincludes.hpp>
+# include <stun/common/oshelper.h>
+# include <stun/stuncore/stuncore.h>
+# include <stun/stuncore/socketaddress.h>
+#endif
 
 ELLE_LOG_COMPONENT("reactor.NAT");
 
@@ -181,6 +183,7 @@ namespace reactor
       return ip::udp::endpoint{ip::address::from_string(addr), remote_port};
     }
 
+#if defined(REACTOR_HAVE_STUN)
     static std::string NatBehaviorToString(NatBehavior behavior)
     {
       std::string pretty_behavior;
@@ -403,6 +406,14 @@ namespace reactor
       return std::move(this->_handle);
     }
 
+    Breach
+    NAT::map(boost::asio::ip::udp::endpoint const& hostname,
+             unsigned short local_port)
+    {
+      return Breach(sched, hostname, local_port);
+    }
+#endif
+
     NAT::NAT(reactor::Scheduler &s):
       sched(s)
     {}
@@ -416,13 +427,5 @@ namespace reactor
         network::resolve_udp(sched, hostname, std::to_string(port));
       return Hole(sched, longinus, local_port);
     }
-
-    Breach
-    NAT::map(boost::asio::ip::udp::endpoint const& hostname,
-             unsigned short local_port)
-    {
-      return Breach(sched, hostname, local_port);
-    }
-
   } /* nat */
 } /* elle */

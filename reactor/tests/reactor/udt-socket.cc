@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(udtsocket)
 
   auto test_fn = [&]
   {
-    auto sock = elle::make_unique<UDPSocket>(sched, "development.infinit.io", 9999);
+    auto sock = elle::make_unique<UDPSocket>(sched, "punch.api.infinit.io", 9999);
     std::vector<char> buff(512);
 
     std::string msg{"unit_testing"}; // Will do an error, but it's normal
