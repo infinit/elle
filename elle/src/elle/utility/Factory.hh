@@ -79,6 +79,7 @@ namespace elle
       | Construction |
       `-------------*/
     public:
+      Factory() = default;
       Factory(Factory<P, A...>&& other);
       ~Factory();
 
