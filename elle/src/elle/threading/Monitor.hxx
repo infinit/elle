@@ -6,6 +6,8 @@
 
 # include <boost/thread/tss.hpp>
 
+# include <type_traits>
+
 namespace elle
 {
   namespace threading
@@ -19,6 +21,7 @@ namespace elle
     private:
       typedef unsigned int counter_type;
 
+      //- Proxy type for operator -> ------------------------------------------
     private:
       template <typename U>
       struct Proxy
@@ -53,12 +56,14 @@ namespace elle
         }
       };
 
+      //- Attributes ----------------------------------------------------------
     private:
       ELLE_ATTRIBUTE(T, value);
       ELLE_ATTRIBUTE(MutexType mutable, mutex);
       ELLE_ATTRIBUTE(boost::thread_specific_ptr<counter_type> mutable,
                      counter);
 
+      //- ctor/dtor -----------------------------------------------------------
     public:
       Monitor():
         _value{},
@@ -83,6 +88,7 @@ namespace elle
         ELLE_ASSERT(_counter.get() == nullptr or *_counter == 0);
       }
 
+      //- operator -> ---------------------------------------------------------
       Proxy<T const>
       operator ->() const
       {
@@ -107,6 +113,7 @@ namespace elle
         };
       }
 
+      //- operator () ---------------------------------------------------------
       template <typename Callable>
       decltype(std::declval<Callable>()(std::declval<T&>()))
       operator ()(Callable&& callable)
@@ -129,6 +136,27 @@ namespace elle
       {
         std::lock_guard<MutexType> lock{this->_mutex};
         return std::forward<Callable>(callable)();
+      }
+
+      //- operator [] ---------------------------------------------------------
+      template <typename KeyType>
+      typename std::remove_reference<
+        decltype(std::declval<T const&>()[std::declval<KeyType const&>()])
+      >::type
+      operator [](KeyType const& key) const
+      {
+        std::lock_guard<MutexType> lock{this->_mutex};
+        return this->_value[key];
+      }
+
+      template <typename KeyType>
+      typename std::remove_reference<
+        decltype(std::declval<T&>()[std::declval<KeyType const&>()])
+      >::type
+      operator [](KeyType const& key)
+      {
+        std::lock_guard<MutexType> lock{this->_mutex};
+        return this->_value[key];
       }
     };
   }

@@ -20,19 +20,19 @@ namespace elle
     struct Monitor;
 
     /// @typedef Monitor::value_type
-    /// The wrapped value type
+    /// The wrapped value type.
 
     /// @typedef Monitor::mutex_type
-    /// The mutex type
+    /// The mutex type.
 
     /// @fn Monitor::Monitor()
     /// The monitor class is default constructible.
 
     /// @fn Monitor::Monitor(value_type const& value)
-    /// Construct a monitor copy @a value of type @a value_type
+    /// Construct a monitor copy @a value of type @a value_type.
 
     /// @fn Monitor::Monitor(value_type&& value)
-    /// Construct a monitor moving @a value of type @a value_type
+    /// Construct a monitor moving @a value of type @a value_type.
 
     /// @fn T* Monitor::operator ->()
     /// @fn T const* Monitor::operator ->() const
@@ -44,7 +44,11 @@ namespace elle
     /// Access to the wrapped value in a callable.
 
     /// @fn Ret Monitor::operator ()(Callable<Ret()>) const
-    /// Lock the monitor while executing the callable
+    /// Lock the monitor while executing the callable.
+
+    /// @fn ValueType Monitor::operator [](KeyType const& key)
+    /// @fn ValueType Monitor::operator [](KeyType const& key) const
+    /// Return a copy of value[key].
   }
 }
 
