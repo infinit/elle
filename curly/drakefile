@@ -44,6 +44,9 @@ def configure(cxx_toolkit = None,
   cxx_config += config
   cxx_config += elle.config
 
+  # http
+  http_path = drake.Node('scripts/http.py')
+
   # Sources
   sources = drake.nodes(
     'curly/curly.cc',
@@ -99,6 +102,38 @@ def configure(cxx_toolkit = None,
   rule_build << lib_asio_dynamic
   rule_build << lib_sched_static
   rule_build << lib_sched_dynamic
+
+  class unit_test:
+      def __init__(self, sources, args):
+          self.sources = sources
+          if isinstance(args, (list, tuple)):
+              self.args = args
+          else:
+              self.args = [args]
+
+  # Tests
+  tests_sched = [
+      unit_test('tests/sched.cc', str(http_path.path())),
+  ]
+
+  global rule_check, rule_tests
+  rule_check = drake.Rule('check')
+  rule_tests = drake.Rule('tests')
+
+  for test in tests_sched:
+    import os
+    config_test = drake.cxx.Config(cxx_config)
+    config_test += reactor.config
+    config_test.lib_path_runtime('../../../lib/')
+    name, ext = os.path.splitext(os.path.basename(test.sources))
+    bin_path = drake.Path('tests/%s' % name)
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test.sources) +
+                               [lib_dynamic, lib_asio_dynamic,
+                                   reactor.lib_dynamic, elle.lib_dynamic],
+                               cxx_toolkit, config_test)
+    rule_tests << bin
+    rule_check << drake.Runner(bin, test.args).status
 
   # Install
   rule_install = drake.Rule('install')
