@@ -3,7 +3,7 @@
 
 # include <curly/curly.hh>
 # include <boost/asio.hpp>
-# include <set>
+# include <elle/container/set.hh>
 
 #define throw_if_mcode(code) _throw_if_mcode(__func__, __LINE__, (code))
 
@@ -15,7 +15,7 @@ namespace curly
   {
   public:
     curl_multi_deleter() = default;
-    void 
+    void
     operator ()(CURLM* ptr);
   };
 
@@ -32,7 +32,7 @@ namespace curly
     timeout_helper(CURLM *multi,
                    long timeout_ms,
                    void *userptr);
-  
+
     static
     int
     poll_helper(CURL *easy,
@@ -40,23 +40,33 @@ namespace curly
                 int what,
                 void *userptr,
                 void *socket_userptr);
-  
+
     void
     check_multi_info();
+
+    void
+    action_handler(boost::system::error_code const &error,
+                   int what,
+                   int sockfd,
+                   asio_request* req);
+    void
+    dispatch_action(int what,
+                    int sockfd,
+                    asio_request* req);
   public:
     static boost::asio::io_service::id id;
-  
+
     template <typename T>
     void
     option(CURLMoption opt, T&& param);
-  
+
     curl_service(boost::asio::io_service& io);
 
     ~curl_service() = default;
-  
+
     void
     add(asio_request* ptr);
-  
+
     void
     shutdown_service();
   };

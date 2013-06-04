@@ -96,6 +96,80 @@ namespace curly
     return 0;
   }
 
+  void
+  curl_service::action_handler(boost::system::error_code const &error,
+                               int what,
+                               int sockfd,
+                               asio_request* req)
+  {
+    std::string swhat;
+    switch (what)
+    {
+      case CURL_POLL_IN: swhat = "in"; break;
+      case CURL_POLL_OUT: swhat = "out"; break;
+      case CURL_POLL_INOUT: swhat = "inout"; break;
+    }
+
+    if (error)
+    {
+      if (error.value() != boost::system::errc::operation_canceled)
+      {
+        ELLE_WARN("(%s) error: %s", swhat, error.message());
+      }
+      return ;
+    }
+    ELLE_DEBUG("performed action(%s) for request(%s)", swhat, req);
+    auto mc = curl_multi_socket_action(this->_multi.get(), sockfd,
+                                       what, &this->_concurrent);
+    throw_if_mcode(mc);
+    this->check_multi_info();
+    ELLE_DEBUG("concurrency: %s", this->_concurrent);
+    if (this->_concurrent == 0)
+      this->_timer.cancel();
+    else
+      this->dispatch_action(what, sockfd, req);
+  }
+
+  void
+  curl_service::dispatch_action(int what,
+                                int sockfd,
+                                asio_request* req)
+  {
+    // The generic callback for read/write
+    // 'what' describe the action to perform.
+    auto fn = [&, what, sockfd, req]
+      (boost::system::error_code const &error, size_t)
+    {
+      this->action_handler(error, what, sockfd, req);
+    };
+
+    // Check what we have to poll for. The asio null_buffers allow checking only
+    // for readiness.
+    switch (what)
+    {
+      case CURL_POLL_IN:
+        ELLE_DEBUG("action: in(%s), requests: %s", req, this->_requests);
+        req->_socket.async_read_some(asio::null_buffers(), fn);
+        break;
+      case CURL_POLL_OUT:
+        ELLE_DEBUG("action: out(%s), requests: %s", req, this->_requests);
+        req->_socket.async_write_some(asio::null_buffers(), fn);
+        break;
+      case CURL_POLL_INOUT:
+        ELLE_DEBUG("action: inout(%s), requests: %s", req, this->_requests);
+        req->_socket.async_read_some(asio::null_buffers(), fn);
+        req->_socket.async_write_some(asio::null_buffers(), fn);
+        break;
+      case CURL_POLL_REMOVE:
+        ELLE_DEBUG("action: remove(%s), requests: %s", req, this->_requests);
+        break;
+      case CURL_POLL_NONE:
+        ELLE_DEBUG("action: none, requests: %s", this->_requests);
+      default:
+        break;
+    }
+  }
+
   int
   curl_service::poll_helper(CURL *easy_handle,
                             curl_socket_t sockfd,
@@ -112,11 +186,9 @@ namespace curly
     // This function is the very first place where it's correct to do that.
     if (req == nullptr)
     {
-      ELLE_DEBUG("looking for socket: %s", sockfd);
+      ELLE_DEBUG("looking for socket{%s}", sockfd);
       for (auto* request: _this->_requests)
       {
-        ELLE_DEBUG("(%s) request's socket is: %d", request,
-                   request->_socket.native_handle());
         if (request->_socket.native_handle() == sockfd)
         {
           auto mc = curl_multi_assign(_this->_multi.get(), sockfd, request);
@@ -127,42 +199,12 @@ namespace curly
       }
       if (req == nullptr)
       {
-        ELLE_DEBUG("socket not found: %d", sockfd);
+        ELLE_DEBUG("socket{%s} not found", sockfd);
         return 0;
       }
     }
-
-    // The generic callback for read/write
-    // 'what' describe the action to perform.
-    auto fn = [_this, what, sockfd]
-      (boost::system::error_code const&, size_t)
-    {
-      auto mc = curl_multi_socket_action(_this->_multi.get(), sockfd,
-                                         what, &_this->_concurrent);
-      throw_if_mcode(mc);
-      _this->check_multi_info();
-    };
-
-    // Check what we have to poll for. The asio null_buffers allow checking only
-    // for readiness.
-    switch (what)
-    {
-      case CURL_POLL_IN:
-        req->_socket.async_read_some(asio::null_buffers(), fn);
-        break;
-      case CURL_POLL_OUT:
-        req->_socket.async_write_some(asio::null_buffers(), fn);
-        break;
-      case CURL_POLL_INOUT:
-        req->_socket.async_read_some(asio::null_buffers(), fn);
-        req->_socket.async_write_some(asio::null_buffers(), fn);
-        break;
-      case CURL_POLL_REMOVE:
-        break;
-      default:
-        break;
-    }
-    return  0;
+    _this->dispatch_action(what, sockfd, req);
+    return 0;
   }
 
   void
@@ -182,8 +224,11 @@ namespace curly
         easy = msg->easy_handle;
         res = msg->data.result;
         curl_easy_getinfo(easy, CURLINFO_PRIVATE, &req);
+        req->_socket.cancel();
         req->_callback(res);
+        ELLE_DEBUG("request(%p) is complete", req);
         assert(this->_requests.erase(req) == 1);
+        curl_multi_remove_handle(this->_multi.get(), easy);
       }
     }
   }
@@ -192,15 +237,15 @@ namespace curly
   curl_service::add(asio_request* ptr)
   {
     ELLE_DEBUG("register request(%s) with fd: %d", ptr, ptr->_socket.native_handle());
+    this->_requests.insert(ptr);
     auto mc = curl_multi_add_handle(this->_multi.get(),
                                     ptr->_config.native_handle());
     throw_if_mcode(mc);
-    this->_requests.insert(ptr);
   }
 
   void
   curl_service::shutdown_service()
   {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    ELLE_TRACE("shutdown service");
   }
 } /* curly */

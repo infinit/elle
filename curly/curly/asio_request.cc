@@ -40,7 +40,7 @@ namespace curly
     if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
     {
       sockfd = self._socket.native_handle();
-      ELLE_DEBUG("opening socket %s", sockfd);
+      ELLE_DEBUG("opening socket{%s}", sockfd);
     }
     return sockfd;
   }
