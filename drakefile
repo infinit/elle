@@ -69,6 +69,7 @@ def configure(cxx_toolkit = None,
                         boost = boost,
                         elle = elle,
                         curl = curl,
+                        reactor = reactor,
                         prefix = prefix)
 
   config = drake.cxx.Config()
@@ -100,12 +101,14 @@ def configure(cxx_toolkit = None,
   rule_tests << elle.rule_tests
   rule_tests << cryptography.rule_tests
   rule_tests << reactor.rule_tests
+  rule_tests << curly.rule_tests
 
   global rule_check
   rule_check = drake.Rule('check')
   rule_check << elle.rule_check
   rule_check << cryptography.rule_check
   rule_check << reactor.rule_check
+  rule_check << curly.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install

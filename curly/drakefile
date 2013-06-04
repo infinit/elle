@@ -16,6 +16,7 @@ def configure(cxx_toolkit = None,
               boost = None,
               elle = None,
               curl = None,
+              reactor = None,
               prefix = '/usr'):
 
   global config, lib_static, lib_dynamic, rule_build, rule_install
