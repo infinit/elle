@@ -55,7 +55,7 @@ namespace reactor
     void terminate();
     void terminate_later();
   private:
-    bool _shallstop = false;
+    bool _shallstop;
 
   private:
     void _freeze(Thread& thread);

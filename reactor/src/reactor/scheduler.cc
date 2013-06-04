@@ -16,7 +16,8 @@ namespace reactor
   `-------------*/
 
   Scheduler::Scheduler()
-    : _current(0)
+    : _shallstop(false)
+    , _current(0)
     , _starting()
     , _starting_mtx()
     , _running()
