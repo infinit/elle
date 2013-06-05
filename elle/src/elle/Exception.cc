@@ -13,19 +13,21 @@ namespace elle
     Exception(Backtrace::current(1), message)
   {}
 
-  Exception::Exception(elle::Backtrace const& bt, elle::String const& message):
+  Exception::Exception(elle::Backtrace const& bt,
+                       elle::String const& message):
     std::runtime_error(message),
     _backtrace(bt),
     _inner_exception(0)
   {}
 
   std::ostream&
-  operator << (std::ostream& s, Exception const& e)
+  operator <<(std::ostream& s,
+              Exception const& e)
   {
     s << e.what() << std::endl;
     s << e.backtrace();
     if (Exception const* inner = e.inner_exception())
-      s << std::endl << "Exception was triggerd by: " << *inner;
+      s << std::endl << "Exception was triggered by: " << *inner;
     return s;
   }
 
@@ -35,18 +37,18 @@ namespace elle
     if (!eptr)
       eptr = std::current_exception();
     if (!eptr)
-      throw elle::Exception{"no current exception present"};
+      throw Exception{"no current exception present"};
     try
     {
       std::rethrow_exception(eptr);
     }
-    catch (elle::Exception const& e)
+    catch (Exception const& e)
     {
       return elle::sprint(e);
     }
     catch (std::exception const& e)
     {
-      return e.what();
+      return std::string(e.what());
     }
     catch (...)
     {
