@@ -241,7 +241,10 @@ namespace elle
         ELLE_ASSERT(this->_load_stack.size() != 0);
         json::Object const* object =
           this->_load_stack.back()->as_dictionary().contains(pair.name);
-        ELLE_ASSERT(object != nullptr); // XXX KeyError
+        if (object == nullptr)
+          throw elle::Exception{
+            "Cannot find any key '" + pair.name + "' in '" +
+            this->_load_stack.back()->repr() + "'"};
         this->_load_stack.push_back(object);
         try
         {
