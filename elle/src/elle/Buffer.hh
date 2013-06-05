@@ -59,7 +59,7 @@ namespace elle
     explicit
     Buffer(ContentPair&& pair);
     /// A buffer containing a copy of the given data.
-    Buffer(Byte const* data,
+    Buffer(void const* data,
            size_t size);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);

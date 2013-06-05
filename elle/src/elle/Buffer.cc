@@ -54,7 +54,7 @@ namespace elle
     _contents(pair.first.release())
   {}
 
-  Buffer::Buffer(Byte const* data,
+  Buffer::Buffer(void const* data,
                  size_t size):
     _size(0),
     _capacity(0),
