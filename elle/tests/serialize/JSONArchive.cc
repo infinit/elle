@@ -8,6 +8,7 @@
 #include <elle/container/list.hh>
 #include <elle/container/vector.hh>
 
+#include <elle/serialize/ListSerializer.hxx>
 #include <boost/test/unit_test.hpp>
 
 #include <list>
@@ -55,6 +56,7 @@ operator <<(std::ostream& out,
 
 ELLE_SERIALIZE_SIMPLE(A, ar, value,version)
 {
+  (void) version;
   ar & named("i", value.i);
   ar & named("str", value.str);
   ar & named("c", value.c);
@@ -68,7 +70,7 @@ BOOST_AUTO_TEST_CASE(SimpleClassSerialization)
   // XXX: Also failed with double d = 6.7f;
   double d = 6.7;
   A from{1, "deux", '3', 4.5f, d};
-  A to{};
+  A to;
   std::string serialized{};
   std::string reserialized{};
 
@@ -124,11 +126,13 @@ operator <<(std::ostream& out,
 
 ELLE_SERIALIZE_SIMPLE(D, ar, value,version)
 {
+  (void) version;
   ar & named("i", value.i);
 }
 
 ELLE_SERIALIZE_SIMPLE(E, ar, value,version)
 {
+  (void) version;
   ar & named("d", value.d);
 }
 
@@ -172,7 +176,8 @@ struct C:
   B l;
 
   explicit
-  C(double i = 0, float j = 0):
+  C(double i = 0,
+    float j = 0):
     B(i),
     j(j),
     k{"salut"},
@@ -200,11 +205,13 @@ operator <<(std::ostream& out,
 
 ELLE_SERIALIZE_SIMPLE(B, ar, value,version)
 {
+  (void) version;
   ar & named("i", value.i);
 }
 
 ELLE_SERIALIZE_SIMPLE(C, ar, value,version)
 {
+  (void) version;
   ar & base_class<B>(value);
   ar & named("j", value.j);
   ar & named("l", value.l);
@@ -214,7 +221,7 @@ ELLE_SERIALIZE_SIMPLE(C, ar, value,version)
 BOOST_AUTO_TEST_CASE(InheritedClassSerialization)
 {
   C from{1.0, 1.42f};
-  C to{};
+  C to;
   std::string serialized{};
 
   to_string<OutputJSONArchive>(serialized) << from;
@@ -262,14 +269,15 @@ operator <<(std::ostream& out,
 
 ELLE_SERIALIZE_SIMPLE(Obj, ar, value,version)
 {
+  (void) version;
   ar & named("i", value.i);
 }
 
 // XXX: map, multimap, set, ...
 struct SContainers
 {
-  std::list<int> li;
   std::list<std::string> ls;
+  std::list<int> li;
   std::list<Obj> lo;
   std::vector<int> vi;
   std::vector<std::string> vs;
@@ -278,9 +286,9 @@ struct SContainers
   bool
   operator ==(SContainers const& obj) const
   {
-    return (std::equal(this->li.cbegin(), this->li.cend(), obj.li.cbegin()) &&
+    return (std::equal(this->ls.cbegin(), this->ls.cend(), obj.ls.cbegin()) &&
+            std::equal(this->li.cbegin(), this->li.cend(), obj.li.cbegin()) &&
             std::equal(this->lo.cbegin(), this->lo.cend(), obj.lo.cbegin()) &&
-            std::equal(this->ls.cbegin(), this->ls.cend(), obj.ls.cbegin()) &&
             std::equal(this->vi.cbegin(), this->vi.cend(), obj.vi.cbegin()) &&
             std::equal(this->vo.cbegin(), this->vo.cend(), obj.vo.cbegin()) &&
             std::equal(this->vs.cbegin(), this->vs.cend(), obj.vs.cbegin())
@@ -293,8 +301,8 @@ operator <<(std::ostream& out,
             SContainers const& obj)
 {
   return out
-    << obj.li << std::endl
     << obj.ls << std::endl
+    << obj.li << std::endl
     << obj.lo << std::endl
     << obj.vi << std::endl
     << obj.vs << std::endl
@@ -304,8 +312,9 @@ operator <<(std::ostream& out,
 
 ELLE_SERIALIZE_SIMPLE(SContainers, ar, value,version)
 {
-  ar & named("li", value.li);
+  (void) version;
   ar & named("ls", value.ls);
+  ar & named("li", value.li);
   ar & named("lo", value.lo);
   ar & named("vs", value.vs);
   ar & named("vi", value.vi);
@@ -315,15 +324,15 @@ ELLE_SERIALIZE_SIMPLE(SContainers, ar, value,version)
 BOOST_AUTO_TEST_CASE(ContainersSerialization)
 {
   SContainers from{
-    {1, 2},
-    {"5", "6"},
+    {"1", "2"},
+    {5, 6},
     {{9}, {10}},
     {3, 4},
     {"7", "8"},
-    {{11}, {12}},
+    {{11}, {12}}
   };
 
-  SContainers to{};
+  SContainers to;
   std::string serialized{};
   std::string reserialized{};
 
