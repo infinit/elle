@@ -102,6 +102,10 @@ struct E
 {
   D d;
 
+  E(D d = D{}):
+    d(d)
+  {}
+
   bool
   operator ==(E const& e) const
   {
@@ -139,7 +143,7 @@ ELLE_SERIALIZE_SIMPLE(E, ar, value,version)
 BOOST_AUTO_TEST_CASE(AggregatedClassSerialization)
 {
   E from{1};
-  E to{};
+  E to;
   std::string serialized{};
   std::string reserialized{};
 
