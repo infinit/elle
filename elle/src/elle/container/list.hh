@@ -8,7 +8,8 @@ namespace std
 {
   template <typename T, typename ...OTHER>
   std::ostream&
-  operator <<(ostream& out, list<T, OTHER...> const& v);
+  operator <<(ostream& out,
+              list<T, OTHER...> const& v);
 }
 
 # include <elle/container/list.hxx>
