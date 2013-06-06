@@ -16,6 +16,7 @@ namespace elle
     {
       namespace detail
       {
+        // Generic loader for type T.
         template <typename TargetType>
         struct SelectLoader
         {
@@ -68,6 +69,7 @@ namespace elle
           }
         };
 
+        // Load complex type.
         template <>
         struct SelectLoader<void>
         {
@@ -81,9 +83,7 @@ namespace elle
             return true;
           }
         };
-
       } // !detail
-
 
       template <typename T>
       void
@@ -96,7 +96,6 @@ namespace elle
             " to " + ELLE_PRETTY_TYPE(T)
           };
       }
-
 
       template <typename T>
       T
