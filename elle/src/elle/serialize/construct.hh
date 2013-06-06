@@ -1,6 +1,9 @@
 #ifndef  ELLE_SERIALIZE_CONSTRUCT_HH
 # define ELLE_SERIALIZE_CONSTRUCT_HH
 
+# include <type_traits>
+# include <elle/types.hh>
+
 # ifndef BOOST_PP_VARIADICS
 #  error "BOOST_PP_VARIADICS must be enabled for ELLE_SERIALIZE to work."
 # endif
@@ -108,6 +111,35 @@
   __ESC_INITIALIZATION_LIST(__VA_ARGS__)                                      \
 /**/
 
+namespace elle
+{
+  namespace serialize
+  {
+    /// Check if a type is constructible with an archive.
+    template <typename T, typename Archive>
+    struct IsArchiveConstructible
+    {
+      typedef
+        typename std::remove_cv<typename std::remove_reference<T>::type>::type
+        clean_type;
+      typedef struct {char _[2];} yes_type;
+      typedef char no_type;
+      template <size_t> struct Helper {};
+
+      template <typename U>
+      static
+      yes_type
+      sfinae_test(U const&,
+                  Helper<sizeof(U(std::declval<Archive&>()))>* = nullptr);
+      static
+      no_type sfinae_test(...);
+
+      static bool const value =
+        sizeof(sfinae_test(std::declval<clean_type const&>())) == sizeof(yes_type);
+    };
+  }
+}
+
 //
 //- Internal types ------------------------------------------------------------
 //
@@ -116,6 +148,7 @@ namespace elle
 {
   namespace serialize
   {
+    // Flag to desambiguate no init constructor.
     enum NoInit { no_init };
   }
 }
