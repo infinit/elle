@@ -8,53 +8,69 @@
 
 # include "PairSerializer.hxx"
 
-namespace elle { namespace serialize {
+namespace elle
+{
+  namespace serialize
+  {
+    namespace stl_insert
+    {
+      template <typename Container>
+      struct InsertPair
+      {
+        typedef typename Container::value_type::first_type First;
+        typedef typename Container::value_type::second_type Second;
+        typedef std::pair<
+            typename std::remove_cv<First>::type
+          , typename std::remove_cv<Second>::type
+        > value_type;
 
-    namespace stl_insert {
-
-        template<typename Container>
-          struct InsertPair
-          {
-            typedef typename Container::value_type::first_type First;
-            typedef typename Container::value_type::second_type Second;
-            typedef std::pair<
-                typename std::remove_cv<First>::type
-              , typename std::remove_cv<Second>::type
-            > ValueType;
-
-            static inline void Save(Container& container,
-                                    ValueType const& value)
-            { container.insert(value); }
-          };
-
+        template <typename Archive>
+        static inline
+        void insert_elem(Archive& ar,
+                         Container& container)
+        {
+          container.insert(ar.template construct_value<value_type>());
+        }
+      };
     } // !ns stl_insert
 
-    template<typename Key, typename T, typename Compare, typename Allocator>
-      struct Serializer<std::map<Key, T, Compare, Allocator>>
-        : public detail::SequenceSerializer<
-              std::map<Key, T, Compare, Allocator>
-            , stl_insert::InsertPair
-          >
-      {};
-
-    template<typename Key, typename T, typename Compare, typename Allocator>
-      struct StoreFormat<std::map<Key, T, Compare, Allocator>>
-      {
-        static bool const value = false;
-      };
-
-    template<typename Key, typename T, typename Compare, typename Allocator>
-    struct Serializer<std::unordered_map<Key, T, Compare, Allocator>>
-      : public detail::SequenceSerializer<std::unordered_map<Key, T, Compare, Allocator>,
-                                          stl_insert::InsertPair>
+    template <typename Key,
+              typename T,
+              typename Compare,
+              typename Allocator>
+    struct Serializer<std::map<Key, T, Compare, Allocator>>:
+      public detail::SequenceSerializer<std::map<Key, T, Compare, Allocator>,
+                                        stl_insert::InsertPair>
     {};
 
-    template<typename Key, typename T, typename Compare, typename Allocator>
-      struct StoreFormat<std::unordered_map<Key, T, Compare, Allocator>>
-      {
-        static bool const value = false;
-      };
+    template <typename Key,
+              typename T,
+              typename Compare,
+              typename Allocator>
+    struct StoreFormat<std::map<Key, T, Compare, Allocator>>
+    {
+      static bool const value = false;
+    };
 
-}}
+    template <typename Key,
+              typename T,
+              typename Compare,
+              typename Allocator>
+    struct Serializer<std::unordered_map<Key, T, Compare, Allocator>>:
+      public detail::SequenceSerializer<
+        std::unordered_map<Key, T, Compare, Allocator>,
+        stl_insert::InsertPair>
+    {};
+
+    template <typename Key,
+              typename T,
+              typename Compare,
+              typename Allocator>
+    struct StoreFormat<std::unordered_map<Key, T, Compare, Allocator>>
+    {
+      static bool const value = false;
+    };
+  }
+}
 
 #endif
