@@ -34,6 +34,6 @@ namespace elle
   }
 }
 
-# include <elle/format/hexadecimal.hxx>
+# include "hexadecimal.hxx"
 
 #endif
