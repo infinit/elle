@@ -18,6 +18,7 @@
 # include "NamedValue.hh"
 # include "Polymorphic.hh"
 # include "Concrete.hh"
+# include "construct.hh"
 # include "Identity.hh"
 # include "detail/BaseArchiveOperators.hh"
 
@@ -144,16 +145,39 @@ namespace elle
       {
         T* ptr = nullptr;
         try
-          {
-            Access::template LoadConstruct<T>(this->self(), ptr);
-          }
+        {
+          Access::template LoadConstruct<T>(this->self(), ptr);
+        }
         catch (std::exception const& err)
-          {
-            delete ptr;
-            throw;
-          }
+        {
+          delete ptr;
+          throw;
+        }
         assert(ptr != nullptr);
         return std::unique_ptr<T>(ptr);
+      }
+
+      template <typename T>
+      inline
+      typename std::enable_if<
+        IsArchiveConstructible<T, Archive>::value,
+        T>::type
+      construct_value()
+      {
+        return T{this->self()};
+      }
+
+      template <typename T>
+      inline
+      typename std::enable_if<
+        std::is_default_constructible<T>::value &&
+        not IsArchiveConstructible<T, Archive>::value,
+        T>::type
+      construct_value()
+      {
+        T value;
+        this->self() >> value;
+        return value;
       }
 
     protected:
