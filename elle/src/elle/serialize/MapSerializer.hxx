@@ -17,11 +17,11 @@ namespace elle
       template <typename Container>
       struct InsertPair
       {
-        typedef typename Container::value_type::first_type First;
-        typedef typename Container::value_type::second_type Second;
+        typedef typename Container::value_type::first_type first_type;
+        typedef typename Container::value_type::second_type second_type;
         typedef std::pair<
-            typename std::remove_cv<First>::type
-          , typename std::remove_cv<Second>::type
+          typename std::remove_cv<first_type>::type,
+          typename std::remove_cv<second_type>::type
         > value_type;
 
         template <typename Archive>
