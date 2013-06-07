@@ -52,7 +52,6 @@ namespace elle
 
       namespace detail
       {
-
         void
         encode(unsigned char const* in,
                size_t size,

@@ -7,7 +7,7 @@
 # include <elle/Exception.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/extract.hh>
-
+#include<iostream>
 namespace elle
 {
   namespace format
@@ -27,6 +27,26 @@ namespace elle
           {
             if (auto ptr = dynamic_cast<TargetType const*>(self))
               out = static_cast<T>(*ptr);
+            else
+              return false;
+            return true;
+          }
+        };
+
+        template <>
+        struct SelectLoader<String>
+        {
+          template <typename T>
+          static
+          bool
+          load(Object const* self, T& out)
+          {
+            std::cerr << "out = " <<  out << std::endl;
+            if (auto ptr = dynamic_cast<String const*>(self))
+            {
+              std::cerr << "REPR = " << ptr->repr() << std::endl;
+              out = static_cast<T>(*ptr);
+            }
             else
               return false;
             return true;

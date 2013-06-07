@@ -170,7 +170,7 @@ namespace elle
         template <typename T>
         inline
         typename std::enable_if<IsWrapper<T>::value, Archive&>::type
-        operator >>(T const&& value)
+        operator >>(T const& value) //XXX
         {
           _ELLE_SERIALIZE_BASICARCHIVEOPERATORS_CHECK_TYPE(T);
           Archive::Access::Load(this->self(), value);

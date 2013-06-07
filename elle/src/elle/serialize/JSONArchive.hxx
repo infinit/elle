@@ -195,12 +195,12 @@ namespace elle
       Load(T& val)
       {
         bool pushed = false;
-        std::unique_ptr<json::Object> root;
         if (this->_load_stack.size() == 0)
         {
           auto parser = json::Parser<std::string>();
-          root = parser.parse(this->stream());
+          auto root = parser.parse(this->stream());
           this->_load_stack.push_back(root.get());
+          root.release();
           pushed = true;
         }
         auto& back = this->_load_stack.back();

@@ -14,6 +14,15 @@ namespace elle
   {
     namespace base64
     {
+      namespace detail
+      {
+        void encode(unsigned char const* in,
+                    size_t const size,
+                    std::string& out);
+        char
+        decode_char(unsigned char c);
+      }
+
       template <typename T>
       std::string
       encode(T&& buffer)

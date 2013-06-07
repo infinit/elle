@@ -10,38 +10,27 @@ namespace elle
   {
     namespace base64
     {
-      /// Convert any binary-based buffer to an base64 encoded string.
+      /// Encode a buffer into a base64 string.
+      /// @note `clear` can be a `Buffer` or a `WeakBuffer` instance.
       template <typename T>
       std::string
-      encode(T&& buffer);
+      encode(T&& clear);
 
-      /// Convert any binary-based buffer to an base64 encoded string.
-      ///
-      /// This version appends the result to the given string.
+      /// Encode a buffer and append it to the base64 string.
+      /// @note `clear` can be a `Buffer` or a `WeakBuffer` instance.
       template <typename T>
       void
-      encode(T&& buffer,
-             std::string& base64_string);
+      encode(T&& clear,
+             std::string& base64);
 
-      /// Convert any base64 string to a buffer.
+      /// Decode a base64 string into a buffer.
       Buffer
-      decode(std::string const& base64_string);
+      decode(std::string const& base64);
 
-      /// Convert any base64 to a decoded binary data.
-      ///
-      /// This version appends the result to the given buffer.
+      /// Decode a base64 string and append it to the clear buffer.
       void
-      decode(std::string const& base64_string,
-             Buffer& binary_data);
-
-      namespace detail
-      {
-        void encode(unsigned char const* in,
-                    size_t const size,
-                    std::string& out);
-        char
-        decode_char(unsigned char c);
-      }
+      decode(std::string const& base64,
+             Buffer& clear);
     }
   }
 }
