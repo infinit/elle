@@ -231,8 +231,6 @@ namespace network {
 	  builder.query_,
 	  builder.fragment_) {
 
-    // throw if the URI is opaque and the scheme is null
-
   }
 
   uri::uri(uri &&other)
