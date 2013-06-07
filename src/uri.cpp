@@ -7,6 +7,7 @@
 
 #include <network/uri/uri.hpp>
 #include "detail/uri_parse.hpp"
+#include "detail/uri_percent_encode.hpp"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -376,86 +377,6 @@ namespace network {
   }
 
   namespace {
-    std::unordered_map<std::string, char> make_percent_decoded_chars() {
-      std::unordered_map<std::string, char> map;
-      map["%41"] = 'a'; map["%61"] = 'A';
-      map["%42"] = 'b'; map["%62"] = 'B';
-      map["%43"] = 'c'; map["%63"] = 'C';
-      map["%44"] = 'd'; map["%64"] = 'D';
-      map["%45"] = 'e'; map["%65"] = 'E';
-      map["%46"] = 'f'; map["%66"] = 'F';
-      map["%47"] = 'g'; map["%67"] = 'G';
-      map["%48"] = 'h'; map["%68"] = 'H';
-      map["%49"] = 'i'; map["%69"] = 'I';
-      map["%4A"] = 'j'; map["%6A"] = 'J';
-      map["%4B"] = 'k'; map["%6B"] = 'K';
-      map["%4C"] = 'l'; map["%6C"] = 'L';
-      map["%4D"] = 'm'; map["%6D"] = 'M';
-      map["%4E"] = 'n'; map["%6E"] = 'N';
-      map["%4F"] = 'o'; map["%6F"] = 'O';
-      map["%50"] = 'p'; map["%70"] = 'P';
-      map["%51"] = 'q'; map["%71"] = 'Q';
-      map["%52"] = 'r'; map["%72"] = 'R';
-      map["%53"] = 's'; map["%73"] = 'S';
-      map["%54"] = 't'; map["%74"] = 'T';
-      map["%55"] = 'u'; map["%75"] = 'U';
-      map["%56"] = 'v'; map["%76"] = 'V';
-      map["%57"] = 'w'; map["%77"] = 'W';
-      map["%58"] = 'x'; map["%78"] = 'X';
-      map["%59"] = 'y'; map["%79"] = 'Y';
-      map["%5A"] = 'z'; map["%7A"] = 'Z';
-      map["%30"] = '0';
-      map["%31"] = '1';
-      map["%32"] = '2';
-      map["%33"] = '3';
-      map["%34"] = '4';
-      map["%35"] = '5';
-      map["%36"] = '6';
-      map["%37"] = '7';
-      map["%38"] = '8';
-      map["%39"] = '9';
-      map["%2D"] = '-';
-      map["%2E"] = '.';
-      map["%5F"] = '_';
-      map["%7E"] = '~';
-      return map;
-    }
-
-    static const auto percent_decoded_chars =  make_percent_decoded_chars();
-
-    template <class Iter>
-    void percent_encoding_to_upper(Iter first, Iter last) {
-      auto it = first;
-      while (it != last) {
-	if (*it == '%') {
-	  ++it; *it = std::toupper(*it);
-	  ++it; *it = std::toupper(*it);
-	}
-	++it;
-      }
-    }
-
-    template <class Iter>
-    Iter decode_encoded_chars(Iter first, Iter last) {
-      auto it = first, it2 = first;
-      while (it != last) {
-	if (*it == '%') {
-	  auto sfirst = it, slast = it;
-	  std::advance(slast, 3);
-	  auto char_it = percent_decoded_chars.find(uri::string_type(sfirst, slast));
-	  if (char_it != std::end(percent_decoded_chars)) {
-	    *it2 = char_it->second;
-	  }
-	  ++it; ++it;
-	}
-	else {
-	  *it2 = *it;
-	}
-	++it; ++it2;
-      }
-      return it2;
-    }
-
     template <class Source>
     void normalize_path_segments(Source &path) {
       using namespace boost;
@@ -512,12 +433,12 @@ namespace network {
       if ((uri_comparison_level::case_normalization == level) ||
 	  (uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	percent_encoding_to_upper(std::begin(path), std::end(path));
+	detail::percent_encoding_to_upper(std::begin(path), std::end(path));
       }
 
       if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	path.erase(decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
+	path.erase(detail::decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
       }
 
       if (uri_comparison_level::path_segment_normalization == level) {
@@ -552,13 +473,13 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
+      detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
     }
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
-      normalized.erase(decode_encoded_chars(std::begin(normalized), std::end(normalized)),
+      normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 		       std::end(normalized));
     }
 
