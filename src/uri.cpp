@@ -8,6 +8,7 @@
 #include <network/uri/uri.hpp>
 #include "detail/uri_parse.hpp"
 #include "detail/uri_percent_encode.hpp"
+#include "detail/uri_normalize.hpp"
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
@@ -376,84 +377,6 @@ namespace network {
     return (is_absolute() && !authority());
   }
 
-  namespace {
-    template <class Source>
-    void normalize_path_segments(Source &path) {
-      using namespace boost;
-      using namespace boost::algorithm;
-
-      if (!path.empty()) {
-	std::vector<Source> path_segments;
-	boost::split(path_segments, path, is_any_of("/"));
-
-	// remove single dot segments
-	boost::remove_erase_if(path_segments,
-			       [] (const Source &s) {
-				 return (s == ".");
-			       });
-
-	// remove double dot segments
-	std::vector<Source> normalized_segments;
-	boost::for_each(path_segments,
-			[&normalized_segments] (const Source &s) {
-			  if (s == "..") {
-			    // in a valid path, the minimum number of segments is 1
-			    if (normalized_segments.size() <= 1) {
-			      throw uri_builder_error();
-			    }
-
-			    normalized_segments.pop_back();
-			  }
-			  else {
-			    normalized_segments.push_back(s);
-			  }
-			});
-
-	// remove adjacent slashes
-	boost::optional<Source> prev_segment;
-	boost::remove_erase_if(normalized_segments,
-			       [&prev_segment] (const Source &segment) {
-				 bool has_adjacent_slash =
-				   ((prev_segment && prev_segment->empty()) && segment.empty());
-				 if (!has_adjacent_slash) {
-				   prev_segment.reset(segment);
-				 }
-				 return has_adjacent_slash;
-			       });
-
-	path = boost::join(normalized_segments, "/");
-      }
-
-      if (path.empty()) {
-	path = "/";
-      }
-    }
-
-    uri::string_type normalize_path(uri::string_type path, uri_comparison_level level) {
-      if ((uri_comparison_level::case_normalization == level) ||
-	  (uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
-	detail::percent_encoding_to_upper(std::begin(path), std::end(path));
-      }
-
-      if ((uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
-	path.erase(detail::decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
-      }
-
-      if (uri_comparison_level::path_segment_normalization == level) {
-	normalize_path_segments(path);
-      }
-
-      return std::move(path);
-    }
-
-    template <class Iter>
-    uri::string_type normalize_path(Iter first, Iter last, uri_comparison_level level) {
-      return normalize_path(uri::string_type(first, last), level);
-    }
-  } // namespace
-
   uri uri::normalize(uri_comparison_level level) const {
     string_type normalized(pimpl_->uri_);
     detail::uri_parts<string_type::iterator> parts;
@@ -490,7 +413,7 @@ namespace network {
 
       if (parts.hier_part.path) {
 	string_type path(std::begin(*parts.hier_part.path), std::end(*parts.hier_part.path));
-	normalize_path_segments(path);
+	detail::normalize_path_segments(path);
 
 	// put the normalized path back into the uri
 	boost::optional<string_type> query, fragment;
@@ -563,8 +486,8 @@ namespace network {
       return other;
     }
 
-    auto path = normalize_path(to_string_type(this->path()), level),
-      other_path = normalize_path(to_string_type(other.path()), level);
+    auto path = detail::normalize_path(to_string_type(this->path()), level),
+      other_path = detail::normalize_path(to_string_type(other.path()), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
