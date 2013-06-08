@@ -27,7 +27,8 @@ namespace network {
       if ((uri_comparison_level::case_normalization == level) ||
 	  (uri_comparison_level::percent_encoding_normalization == level) ||
 	  (uri_comparison_level::path_segment_normalization == level)) {
-	detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
+	//detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
+	boost::for_each(normalized, normalize_percent_encoded());
       }
 
       if ((uri_comparison_level::percent_encoding_normalization == level) ||

@@ -396,7 +396,7 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
+      boost::for_each(normalized, detail::normalize_percent_encoded());
     }
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||

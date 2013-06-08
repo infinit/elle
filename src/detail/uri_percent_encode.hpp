@@ -15,20 +15,27 @@ namespace network {
 
     boost::optional<char> percent_encode(std::string s);
 
-    template <class Iter>
-    void percent_encoding_to_upper(Iter first, Iter last) {
-      auto it = first;
-      while (it != last) {
-	if (*it == '%') {
-	  ++it; *it = std::toupper(*it);
-	  ++it; *it = std::toupper(*it);
+    struct normalize_percent_encoded {
+
+      normalize_percent_encoded()
+	: count(0) {}
+
+      void operator () (char &c) {
+	if (c == '%') {
+	  count = 2;
 	}
-	++it;
+	else if (count > 0) {
+	  c = std::toupper(c);
+	  --count;
+	}
       }
-    }
+
+      unsigned count;
+
+    };
 
     template <class Iter>
-    Iter decode_encoded_chars(Iter first, Iter last) {
+    Iter decode(Iter first, Iter last) {
       auto it = first, it2 = first;
       while (it != last) {
 	if (*it == '%') {
