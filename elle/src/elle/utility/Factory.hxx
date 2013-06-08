@@ -10,6 +10,15 @@ namespace elle
   namespace utility
   {
 //
+// ---------- Functionoid -----------------------------------------------------
+//
+
+    template <typename P,
+              typename... A>
+    Factory<P, A...>::Functionoid::~Functionoid()
+    {}
+
+//
 // ---------- Generatoid ------------------------------------------------------
 //
 
@@ -22,8 +31,7 @@ namespace elle
     template <typename T>
     Factory<P, A...>::Generatoid<T>::Generatoid(P const& product):
       _product(product)
-    {
-    }
+    {}
 
     /*--------.
     | Methods |
@@ -33,9 +41,9 @@ namespace elle
               typename... A>
     template <typename T>
     void*
-    Factory<P, A...>::Generatoid<T>::allocate(A... arguments) const
+    Factory<P, A...>::Generatoid<T>::allocate(A&&... arguments) const
     {
-      return (new T{arguments...});
+      return (new T(std::forward<A>(arguments)...));
     }
 
 //
@@ -57,8 +65,8 @@ namespace elle
               typename... A>
     Factory<P, A...>::~Factory()
     {
-      for (auto scoutor: this->_container)
-        delete scoutor.second;
+      for (auto const& pair: this->_container)
+        delete pair.second;
 
       this->_container.clear();
     }
@@ -103,7 +111,7 @@ namespace elle
     template <typename T>
     T*
     Factory<P, A...>::allocate(P const& product,
-                               A... arguments) const
+                               A&&... arguments) const
     {
       ELLE_LOG_COMPONENT("elle.utility.Factory");
       ELLE_TRACE_METHOD(product);
@@ -117,7 +125,9 @@ namespace elle
                                       "given product '%s'", product));
 
       // Allocate and return the instance.
-      return (reinterpret_cast<T*>(scoutor->second->allocate(arguments...)));
+      return (
+        reinterpret_cast<T*>(
+          scoutor->second->allocate(std::forward<A>(arguments)...)));
     }
   }
 }

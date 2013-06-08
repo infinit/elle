@@ -36,15 +36,13 @@ namespace elle
       public:
         // construction
         virtual
-        ~Functionoid()
-        {
-        }
+        ~Functionoid();
 
         // methods
       public:
         virtual
         void*
-        allocate(A... arguments) const = 0;
+        allocate(A&&... arguments) const = 0;
       };
 
       /// This functionoid contains a method for generating a void object
@@ -60,7 +58,7 @@ namespace elle
         // methods
       public:
         void*
-        allocate(A... arguments) const;
+        allocate(A&&... arguments) const;
 
         // attributes
       private:
@@ -96,7 +94,7 @@ namespace elle
       template <typename T>
       T*
       allocate(P const& product,
-               A... arguments) const;
+               A&&... arguments) const;
 
       /*-----------.
       | Attributes |
