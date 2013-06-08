@@ -412,8 +412,8 @@ namespace network {
       assert(is_valid);
 
       if (parts.hier_part.path) {
-	string_type path(std::begin(*parts.hier_part.path), std::end(*parts.hier_part.path));
-	detail::normalize_path_segments(path);
+	uri::string_type path = detail::normalize_path_segments(
+	  to_string_ref(normalized, *parts.hier_part.path));
 
 	// put the normalized path back into the uri
 	boost::optional<string_type> query, fragment;
@@ -486,8 +486,8 @@ namespace network {
       return other;
     }
 
-    auto path = detail::normalize_path(to_string_type(this->path()), level),
-      other_path = detail::normalize_path(to_string_type(other.path()), level);
+    auto path = detail::normalize_path(*this->path(), level),
+      other_path = detail::normalize_path(*other.path(), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
@@ -505,7 +505,7 @@ namespace network {
 			other_path, query, fragment);
   }
 
-  namespace {
+  namespace detail {
     template<typename Range>
     void remove_last_segment(Range& path) {
       while (!path.empty()) {
@@ -524,12 +524,15 @@ namespace network {
 
       uri::string_type output;
       while(!input.empty()) {
-        if (starts_with(input, "../"))
+        if (starts_with(input, "../")) {
           erase_head(input, 3);
-        else if (starts_with(input, "./"))
+	}
+        else if (starts_with(input, "./")) {
           erase_head(input, 2);
-        else if (starts_with(input, "/./"))
+	}
+        else if (starts_with(input, "/./")) {
           erase_head(input, 2);
+	}
         else if(starts_with(input, "/../")) {
           erase_head(input, 3);
           remove_last_segment(output);
@@ -538,11 +541,12 @@ namespace network {
           replace_head(input, 3, "/");
           remove_last_segment(output);
         }
-        else if (starts_with(input, "/."))
+        else if (starts_with(input, "/.")) {
           replace_head(input, 2, "/");
-        else if(all(input, is_any_of(".")))
+	}
+        else if(all(input, is_any_of(".")))  {
           input.clear();
-
+	}
         else {
           int n = input.front() == '/' ? 1 : 0;
           auto slash = find_nth(input, "/", n);
@@ -559,7 +563,8 @@ namespace network {
       return remove_dot_segments(move(input));
     }
 
-    inline bool has_empty_path(const uri& uri) {
+    inline
+    bool has_empty_path(const uri& uri) {
       return !uri.path() || uri.path().get().empty();
     }
 
@@ -568,8 +573,9 @@ namespace network {
       using std::begin;
 
       uri::string_type path;
-      if (has_empty_path(base))
+      if (has_empty_path(base)) {
         path = "/";
+      }
       else {
         const auto& base_path = base.path().get();
         auto last_slash = boost::find_last(base_path, "/");
@@ -582,67 +588,65 @@ namespace network {
 
     template<typename T>
     inline boost::optional<uri::string_type>
-      make_arg(T&& arg) {
+    make_arg(T&& arg) {
       return boost::optional<uri::string_type>(std::forward<T>(arg));
     }
 
     inline boost::optional<uri::string_type>
-      make_arg(boost::optional<boost::string_ref> ref) {
+    make_arg(boost::optional<boost::string_ref> ref) {
       return to_optional_string_type(ref);
     }
-  }  // namespace
+  }  // namespace detail
 
 
   uri uri::resolve(const uri &reference, uri_comparison_level level) const {
-    // http://tools.ietf.org/html/rfc3986#section-5.2
-
-    using std::move;
+    // This implementation uses the psuedo-code given in
+    // http://tools.ietf.org/html/rfc3986#section-5.2.2
 
     if (reference.absolute() && !reference.opaque()) {
       return reference;
     }
 
     boost::optional<uri::string_type>
-      user_info,
-      host,
-      port,
-      path,
-      query;
+      user_info, host, port, path, query;
     const uri& base = *this;
 
     if (reference.authority()) {
-      // //g -> http://g
-      user_info = make_arg(reference.user_info());
-      host = make_arg(reference.host());
-      port = make_arg(reference.port());
-      path = remove_dot_segments(reference.path());
-      query = make_arg(reference.query());
+      // g -> http://g
+      user_info = detail::make_arg(reference.user_info());
+      host = detail::make_arg(reference.host());
+      port = detail::make_arg(reference.port());
+      path = detail::remove_dot_segments(reference.path());
+      query = detail::make_arg(reference.query());
     }
     else {
-      if (has_empty_path(reference)) {
-        path = make_arg(base.path());
-        if (reference.query())
-          query = make_arg(reference.query());
-        else
-          query = make_arg(base.query());
+      if (detail::has_empty_path(reference)) {
+        path = detail::make_arg(base.path());
+        if (reference.query()) {
+          query = detail::make_arg(reference.query());
+	}
+	else {
+          query = detail::make_arg(base.query());
+	}
       }
       else {
-        if (reference.path().get().front() == '/')
-          path = remove_dot_segments(reference.path());
+        if (reference.path().get().front() == '/') {
+          path = detail::remove_dot_segments(reference.path());
+	}
         else {
-          path = merge_paths(base, reference);
+          path = detail::merge_paths(base, reference);
         }
-        query = make_arg(reference.query());
+        query = detail::make_arg(reference.query());
       }
-      user_info = make_arg(base.user_info());
-      host = make_arg(base.host());
-      port = make_arg(base.port());
+      user_info = detail::make_arg(base.user_info());
+      host = detail::make_arg(base.host());
+      port = detail::make_arg(base.port());
     }
 
-    return uri(make_arg(base.scheme()),
-	       move(user_info), move(host), move(port),
-	       move(path), move(query),
-	       make_arg(reference.fragment()));
+    return uri(detail::make_arg(base.scheme()),
+	       std::move(user_info), std::move(host), std::move(port),
+	       std::move(path), std::move(query),
+	       detail::make_arg(reference.fragment()));
   }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {
