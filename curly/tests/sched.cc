@@ -28,8 +28,8 @@ BOOST_AUTO_TEST_CASE(simple_test)
 
   auto pc = elle::system::process_config(elle::system::normal_config);
   elle::system::Process p{std::move(pc),
-    "python",
-    {http_path, "56789"}
+    "python3",
+    {"-mhttp.server", "56789"}
   };
   sleep(1);
 
