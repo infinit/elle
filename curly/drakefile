@@ -135,7 +135,7 @@ def configure(cxx_toolkit = None,
     config_test = drake.cxx.Config(cxx_config)
     config_test += reactor.config
     config_test.lib_path_runtime('../../../lib/')
-    config_test.lib_path_runtime('../reactor/lib/')
+    config_test.lib_path_runtime('../../reactor/lib/')
     config_test.lib('curly')
     config_test.lib('curly_asio')
     config_test.lib('curly_sched')
