@@ -31,7 +31,7 @@ class Config:
             self.__system_includes = {}
             self.__lib_paths = sched.OrderedSet()
             self.__libs = {}
-            self.flags = set()
+            self.flags = []
             self._framework = {}
             self._defines = {}
             self.__standard = None
@@ -107,7 +107,7 @@ class Config:
 
     def flag(self, f):
 
-        self.flags.add(f)
+        self.flags.append(f)
 
     def framework_add(self, name):
 
@@ -247,7 +247,7 @@ class Config:
         res._framework.update(rhs._framework)
         res.__lib_paths.update(rhs.__lib_paths)
         res.__libs.update(rhs.__libs)
-        res.flags |= rhs.flags
+        res.flags += rhs.flags
         std_s = self.__standard
         std_o = rhs.__standard
         if std_s is not None and std_o is not None:
@@ -453,7 +453,7 @@ class GccToolkit(Toolkit):
       extraflags = []
       if pic:
           extraflags.append('-fPIC')
-      return [c and self.c or self.cxx] + list(set(cfg.flags)) + \
+      return [c and self.c or self.cxx] + cfg.flags + \
           self.cppflags(cfg) + self.cflags(cfg) + \
           extraflags + ['-c', str(src), '-o', str(obj)]
 
@@ -512,7 +512,7 @@ class GccToolkit(Toolkit):
       return cmd
 
   def dynlink(self, cfg, objs, exe):
-      cmd = [self.cxx] + list(cfg.flags) + self.ldflags(cfg)
+      cmd = [self.cxx] + cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
@@ -841,6 +841,7 @@ class Linker(Builder):
     # Flags
     h['export_dynamic'] = self.config.export_dynamic
     flags = self.config.flags
+    flags.sort()
     h['flags'] = flags
     frameworks = list(self.config.frameworks())
     frameworks.sort()
@@ -851,6 +852,7 @@ class Linker(Builder):
     rpath.sort()
     h['rpath'] = rpath
     libs = self.config.libs
+    libs.sort()
     h['libs'] = libs
     dynlibs = ' '.join(map(lambda lib: lib.lib_name,
                            self.exe.dynamic_libraries))
