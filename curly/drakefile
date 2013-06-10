@@ -6,6 +6,12 @@ config = None
 lib_static = None
 lib_dynamic = None
 
+lib_asio_static = None
+lib_asio_dynamic = None
+
+lib_sched_static = None
+lib_sched_dynamic = None
+
 rule_build = None
 rule_check = None
 rule_install = None
@@ -19,7 +25,8 @@ def configure(cxx_toolkit = None,
               reactor = None,
               prefix = '/usr'):
 
-  global config, lib_static, lib_dynamic, rule_build, rule_install
+  global config, lib_static, lib_dynamic, lib_sched_static, lib_sched_dynamic,\
+          lib_asio_dynamic, lib_asio_dynamic, rule_build, rule_install
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
