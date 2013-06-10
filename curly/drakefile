@@ -108,8 +108,10 @@ def configure(cxx_toolkit = None,
           self.sources = sources
           if isinstance(args, (list, tuple)):
               self.args = args
-          else:
+          elif args:
               self.args = [args]
+          else:
+              self.args = None
 
   # Tests
   tests_sched = [
