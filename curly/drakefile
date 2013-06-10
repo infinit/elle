@@ -137,7 +137,10 @@ def configure(cxx_toolkit = None,
                                    reactor.lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
     rule_tests << bin
-    rule_check << drake.Runner(bin, test.args).status
+    if test.args:
+        rule_check << drake.Runner(bin, test.args).status
+    else:
+        rule_check << drake.Runner(bin).status
 
   # Install
   rule_install = drake.Rule('install')
