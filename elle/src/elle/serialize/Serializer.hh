@@ -67,6 +67,7 @@
 # include <stdexcept>
 # include <type_traits>
 
+# include <iostream> //XXX
 namespace elle
 {
   namespace serialize
@@ -119,7 +120,7 @@ namespace elle
       {
         assert(ptr == nullptr);
         static_assert(!std::is_pointer<T>::value, "You cannot construct pointers...");
-        ptr = new T;
+        ptr = new T{};
         archive >> const_cast<typename std::remove_cv<T>::type&>(*ptr);
       }
 

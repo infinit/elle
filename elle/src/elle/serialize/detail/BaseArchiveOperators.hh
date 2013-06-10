@@ -1,4 +1,4 @@
-#ifndef  ELLE_SERIALIZE_DETAIL_BASEARCHIVEOPERATORS_HH
+#ifndef ELLE_SERIALIZE_DETAIL_BASEARCHIVEOPERATORS_HH
 # define ELLE_SERIALIZE_DETAIL_BASEARCHIVEOPERATORS_HH
 
 # include <elle/serialize/Serializable.hh>
@@ -12,7 +12,6 @@ namespace elle
   {
     namespace detail
     {
-
       // Desambiguate param types.
       template <typename T>
       struct CallTraits
@@ -118,12 +117,28 @@ namespace elle
       };
 
       template <typename T>
-      struct IsWrapper {static const bool value = false;};
-      template <typename T> struct IsWrapper<Polymorphic<T>> {static const bool value = true;};
-      template <typename T> struct IsWrapper<Concrete<T>> {static const bool value = true;};
-      template <typename T> struct IsWrapper<NamedValue<T>> {static const bool value = true;};
-      template <typename T> struct IsWrapper<Pointer<T>> {static const bool value = true;};
-      template <typename T> struct IsWrapper<AlivePointer<T>> {static const bool value = true;};
+      struct IsWrapper
+      {static const bool value = false;};
+
+      template <typename T>
+      struct IsWrapper<Polymorphic<T>>
+      {static const bool value = true;};
+
+      template <typename T>
+      struct IsWrapper<Concrete<T>>
+      {static const bool value = true;};
+
+      template <typename T>
+      struct IsWrapper<NamedValue<T>>
+      {static const bool value = true;};
+
+      template <typename T>
+      struct IsWrapper<Pointer<T>>
+      {static const bool value = true;};
+
+      template <typename T>
+      struct IsWrapper<AlivePointer<T>>
+      {static const bool value = true;};
 
       // Provides operators >> and & for input archive.
       template <typename Archive>
@@ -157,33 +172,24 @@ namespace elle
           return this->self();
         }
 
-        // & ref (forward to >>)
-        template <typename T>
-        inline
-        Archive&
-        operator &(T& value)
-        {
-          return *this >> value;
-        }
-
-        // >> const move (for wrappers)
+        // >> const& (for wrappers)
         template <typename T>
         inline
         typename std::enable_if<IsWrapper<T>::value, Archive&>::type
-        operator >>(T const& value) //XXX
+        operator >>(T const& value)
         {
           _ELLE_SERIALIZE_BASICARCHIVEOPERATORS_CHECK_TYPE(T);
           Archive::Access::Load(this->self(), value);
           return this->self();
         }
 
-        // & const move (forward to >>)
+        // & universal reference (forward to >>)
         template <typename T>
         inline
         Archive&
-        operator &(T const&& value)
+        operator &(T&& value)
         {
-          return *this >> value;
+          return *this >> std::forward<T>(value);
         }
       };
 
@@ -199,7 +205,6 @@ namespace elle
       struct BaseArchiveOperators<ArchiveMode::output, Archive>:
         public OutputArchiveOperators<Archive>
       {};
-
     }
   }
 }

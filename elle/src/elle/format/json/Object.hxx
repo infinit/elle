@@ -33,26 +33,6 @@ namespace elle
           }
         };
 
-        template <>
-        struct SelectLoader<String>
-        {
-          template <typename T>
-          static
-          bool
-          load(Object const* self, T& out)
-          {
-            std::cerr << "out = " <<  out << std::endl;
-            if (auto ptr = dynamic_cast<String const*>(self))
-            {
-              std::cerr << "REPR = " << ptr->repr() << std::endl;
-              out = static_cast<T>(*ptr);
-            }
-            else
-              return false;
-            return true;
-          }
-        };
-
         // Compatibility with enums
         template <>
         struct SelectLoader<Integer>

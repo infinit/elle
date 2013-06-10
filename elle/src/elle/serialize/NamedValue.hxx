@@ -5,18 +5,19 @@ namespace elle
 {
   namespace serialize
   {
-
     template <typename T>
     struct NamedValue
     {
       std::string name;
       T& value;
 
-      NamedValue(std::string const& name, T& value) :
-        name(name), value(value)
+      NamedValue(std::string const& name,
+                 T& value):
+        name(name),
+        value(value)
       {}
 
-      NamedValue(NamedValue&& o) :
+      NamedValue(NamedValue&& o):
         name(std::move(o.name)),
         value(o.value)
       {}
@@ -31,7 +32,6 @@ namespace elle
 
       template <typename T> struct IsNamedValue<NamedValue<T>>
       { static bool const value = true;  };
-
     }
 
     template <typename T> struct IsNamedValue
@@ -60,9 +60,7 @@ namespace elle
     {
       return NamedValue<T const>(name, value);
     }
-
   }
 }
 
 #endif
-

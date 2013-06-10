@@ -1,6 +1,8 @@
 #ifndef  ELLE_SERIALIZE_CONSTRUCT_HH
 # define ELLE_SERIALIZE_CONSTRUCT_HH
 
+# include "ArchiveMode.hh"
+
 # include <type_traits>
 # include <elle/types.hh>
 

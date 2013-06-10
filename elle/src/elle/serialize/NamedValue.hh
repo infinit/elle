@@ -60,4 +60,3 @@ namespace elle
 # include "NamedValue.hxx"
 
 #endif
-
