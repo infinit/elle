@@ -16,6 +16,7 @@ def configure(cxx_toolkit = None,
               boost = None,
               elle = None,
               curl = None,
+              reactor = None,
               prefix = '/usr'):
 
   global config, lib_static, lib_dynamic, rule_build, rule_install
@@ -41,23 +42,102 @@ def configure(cxx_toolkit = None,
   cxx_config = cxx_config or drake.cxx.Config()
   cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
-  cxx_config += boost.config()
   cxx_config += elle.config
+
+  # http
+  http_path = drake.Node('scripts/http.py')
 
   # Sources
   sources = drake.nodes(
-    'curly.cc',
-    'curly.hh',
-    'curly.hxx',
-    )
+    'curly/curly.cc',
+    'curly/curly.hh',
+    'curly/curly.hxx',
+  )
 
   lib_static = drake.cxx.StaticLib('lib/curly', sources, cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/curly', sources, cxx_toolkit, cxx_config)
+
+  # Local Configuration Asio
+  cxx_config_asio = drake.cxx.Config(cxx_config)
+  cxx_config_asio += cxx_config
+  cxx_config_asio += boost.config()
+  cxx_config_asio.lib('curly')
+
+  source_asio = drake.nodes(
+      'curly/asio_request.cc',
+      'curly/asio_request.hh',
+      'curly/curly_service.cc',
+      'curly/curly_service.hh',
+      'curly/curly_service.hxx',
+  ) + [lib_dynamic]
+
+
+  lib_asio_static = drake.cxx.StaticLib('lib/curly_asio', source_asio,
+          cxx_toolkit, cxx_config_asio)
+  lib_asio_dynamic = drake.cxx.DynLib('lib/curly_asio', source_asio,
+          cxx_toolkit, cxx_config_asio)
+
+  # Local Configuration reactor
+  cxx_config_sched = drake.cxx.Config(cxx_config_asio)
+  cxx_config_sched += cxx_config_asio
+  cxx_config_sched += reactor.config
+  cxx_config_sched.lib('reactor')
+  cxx_config_sched.lib('curly_asio')
+
+  source_sched = drake.nodes(
+      'curly/curly_sched.cc',
+      'curly/curly_sched.hh',
+  ) + [lib_asio_dynamic]
+
+  lib_sched_static = drake.cxx.StaticLib('lib/curly_sched', source_sched,
+          cxx_toolkit, cxx_config_sched)
+  lib_sched_dynamic = drake.cxx.DynLib('lib/curly_sched', source_sched,
+          cxx_toolkit, cxx_config_sched)
 
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
   rule_build << lib_dynamic
+  rule_build << lib_asio_static
+  rule_build << lib_asio_dynamic
+  rule_build << lib_sched_static
+  rule_build << lib_sched_dynamic
+
+  class unit_test:
+      def __init__(self, sources, args = None):
+          self.sources = sources
+          if isinstance(args, (list, tuple)):
+              self.args = args
+          else:
+              self.args = [args]
+
+  # Tests
+  tests_sched = [
+      unit_test('tests/sched.cc', str(http_path.path())),
+      unit_test('tests/test.cc'),
+  ]
+
+  global rule_check, rule_tests
+  rule_check = drake.Rule('check')
+  rule_tests = drake.Rule('tests')
+
+  for test in tests_sched:
+    import os
+    config_test = drake.cxx.Config(cxx_config)
+    config_test += reactor.config
+    config_test.lib_path_runtime('../../../lib/')
+    config_test.lib('curly')
+    config_test.lib('curly_asio')
+    config_test.lib('curly_sched')
+    name, ext = os.path.splitext(os.path.basename(test.sources))
+    bin_path = drake.Path('tests/%s' % name)
+    bin = drake.cxx.Executable(bin_path,
+                               drake.nodes(test.sources) +
+                               [lib_dynamic, lib_sched_dynamic,
+                                   reactor.lib_dynamic, elle.lib_dynamic],
+                               cxx_toolkit, config_test)
+    rule_tests << bin
+    rule_check << drake.Runner(bin, test.args).status
 
   # Install
   rule_install = drake.Rule('install')

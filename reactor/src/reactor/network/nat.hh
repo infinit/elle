@@ -1,6 +1,5 @@
-#pragma once
-#ifndef HOLEPUNCHER_LFFVGYPW
-# define HOLEPUNCHER_LFFVGYPW
+#ifndef REACTOR_NETWORK_NAT_HH
+# define REACTOR_NETWORK_NAT_HH
 
 #include <elle/network/Locus.hh>
 #include <elle/attribute.hh>
@@ -90,7 +89,7 @@ namespace reactor
       Breach() = delete;
       Breach(Breach const&) = delete;
       Breach& operator =(Breach const&) = delete;
-      Breach& operator =(Breach &&) = delete;
+      Breach& operator =(Breach&&) = delete;
       ~Breach() = default;
 
       Breach(Breach&& breach);
@@ -106,7 +105,7 @@ namespace reactor
     public:
 
     public:
-      NAT(reactor::Scheduler &s);
+      NAT(reactor::Scheduler& s);
       ~NAT() = default;
 
     public:
@@ -128,4 +127,4 @@ namespace reactor
   } /* nat */
 } /* elle */
 
-#endif /* end of include guard: HOLEPUNCHER_LFFVGYPW */
+#endif /* end of include guard: REACTOR_NETWORK_NAT_HH */

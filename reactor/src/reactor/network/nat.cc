@@ -50,7 +50,7 @@ namespace /*annon*/
     HeartbeatFailed(elle::String const& message):
       Exception(elle::sprintf("heartbeat failed: %s", message))
     {}
-    HeartbeatFailed(elle::Exception const &e):
+    HeartbeatFailed(elle::Exception const& e):
       HeartbeatFailed(e.what())
     {}
   };
@@ -62,7 +62,7 @@ namespace /*annon*/
     PunchTimeout(elle::String const& message):
       PunchException(elle::sprintf("timed out: %s", message))
     {}
-    PunchTimeout(elle::Exception const &e):
+    PunchTimeout(elle::Exception const& e):
       PunchTimeout(e.what())
     {}
   };
@@ -74,7 +74,7 @@ namespace /*annon*/
     PunchFormat(elle::String const& message):
       PunchException(elle::sprintf("format error: %s", message))
     {}
-    PunchFormat(elle::Exception const &e):
+    PunchFormat(elle::Exception const& e):
       PunchFormat(e.what())
     {}
   };
@@ -85,7 +85,7 @@ namespace reactor
   namespace nat
   {
 
-    Hole::Hole(reactor::Scheduler &sched,
+    Hole::Hole(reactor::Scheduler& sched,
                boost::asio::ip::udp::endpoint const& longinus,
                int local_port):
       _handle{nullptr},
@@ -321,8 +321,8 @@ namespace reactor
                                                GetMillisecondCounter());
         if (SUCCEEDED(r))
         {
-          struct sockaddr const *s = addrDest.GetSockAddr();
-          struct sockaddr_in const * sin = (struct sockaddr_in*)s;
+          struct sockaddr const* s = addrDest.GetSockAddr();
+          struct sockaddr_in const* sin = (struct sockaddr_in*)s;
 
           boost::asio::ip::address_v4 addr(ntohl(sin->sin_addr.s_addr));
           boost::asio::ip::udp::endpoint dest{addr, ntohs(sin->sin_port)};
@@ -414,7 +414,7 @@ namespace reactor
     }
 #endif
 
-    NAT::NAT(reactor::Scheduler &s):
+    NAT::NAT(reactor::Scheduler& s):
       sched(s)
     {}
 
