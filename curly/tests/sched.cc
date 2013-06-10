@@ -23,9 +23,6 @@ BOOST_AUTO_TEST_CASE(simple_test)
 {
   reactor::Scheduler sched;
 
-  std::string http_path =
-    boost::unit_test::framework::master_test_suite().argv[1];
-
   auto pc = elle::system::process_config(elle::system::normal_config);
   elle::system::Process p{std::move(pc),
     "python3",
