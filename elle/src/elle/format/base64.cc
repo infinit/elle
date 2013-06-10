@@ -62,8 +62,8 @@ namespace elle
           if (size == 0)
             return;
 
-          out.resize(out.size() + size + (size / 2) + 4);
           size_t i = out.size();
+          out.resize(out.size() + size + (size / 2) + 4);
 
           unsigned char c1;
           unsigned char c2;
