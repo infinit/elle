@@ -35,9 +35,9 @@ class Config:
             self.__debug = False
             self.__export_dynamic = None
             self._includes = {}
-            self.__local_includes = {}
+            self.__local_includes = sched.OrderedSet()
             self.__optimization = 1
-            self.__system_includes = {}
+            self.__system_includes = sched.OrderedSet()
             self.__lib_paths = sched.OrderedSet()
             self.__libs = sched.OrderedSet()
             self.flags = []
@@ -50,9 +50,9 @@ class Config:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
             self._includes = deepcopy(model._includes)
-            self.__local_includes = deepcopy(model.__local_includes)
+            self.__local_includes = sched.OrderedSet(model.__local_includes)
             self.__optimization = model.__optimization
-            self.__system_includes = deepcopy(model.__system_includes)
+            self.__system_includes = sched.OrderedSet(model.__system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.__libs = sched.OrderedSet(model.__libs)
             self.flags = deepcopy(model.flags)
@@ -129,7 +129,7 @@ class Config:
     def add_local_include_path(self, path):
 
         path = prefix() / Path(path)
-        self.__local_includes[path] = None
+        self.__local_includes.add(path)
         self._includes[path] = None
 
 
@@ -141,7 +141,7 @@ class Config:
             return
         if not path.absolute():
             path = srctree() / prefix() / path
-        self.__system_includes[path] = None
+        self.__system_includes.add(path)
         self._includes[path] = None
 
 
