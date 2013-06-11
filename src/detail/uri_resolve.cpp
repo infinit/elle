@@ -33,7 +33,10 @@ namespace network {
           erase_head(input, 2);
 	}
         else if (starts_with(input, "/./")) {
-          erase_head(input, 2);
+          replace_head(input, 3, "/");
+	}
+        else if (input == "/.") {
+          replace_head(input, 2, "/");
 	}
         else if(starts_with(input, "/../")) {
           erase_head(input, 3);
@@ -43,9 +46,6 @@ namespace network {
           replace_head(input, 3, "/");
           remove_last_segment(output);
         }
-        else if (starts_with(input, "/.")) {
-          replace_head(input, 2, "/");
-	}
         else if(all(input, is_any_of(".")))  {
           input.clear();
 	}
