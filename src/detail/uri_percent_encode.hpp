@@ -35,7 +35,7 @@ namespace network {
     };
 
     template <class Iter>
-    Iter decode(Iter first, Iter last) {
+    Iter decode_encoded_chars(Iter first, Iter last) {
       auto it = first, it2 = first;
       while (it != last) {
 	if (*it == '%') {

@@ -9,6 +9,7 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_percent_encode.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_normalize.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_resolve.cpp
   )
 if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
   add_library(cppnetlib-uri ${Uri_SRCS})

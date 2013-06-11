@@ -9,7 +9,9 @@
 #include "detail/uri_parse.hpp"
 #include "detail/uri_percent_encode.hpp"
 #include "detail/uri_normalize.hpp"
+#include "detail/uri_resolve.hpp"
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
@@ -402,6 +404,8 @@ namespace network {
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
+      // there's got to be a better way of doing this that doesn't
+      // mean parsing again (twice!)
       normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 		       std::end(normalized));
     }
@@ -447,24 +451,6 @@ namespace network {
     return uri(normalized);
   }
 
-  namespace {
-    inline uri::string_type to_string_type(boost::string_ref ref) {
-      return uri::string_type(std::begin(ref), std::end(ref));
-    }
-
-    inline uri::string_type to_string_type(boost::optional<boost::string_ref> ref) {
-      return ref.is_initialized() ? to_string_type(ref.get()) : uri::string_type();
-    }
-
-    inline boost::optional<uri::string_type>
-      to_optional_string_type(boost::optional<boost::string_ref> ref) {
-      if (ref)
-        return boost::make_optional(to_string_type(ref.get()));
-      return boost::optional<uri::string_type>();
-    }
-
-  } // namespace
-
   uri uri::make_reference(const uri &other, uri_comparison_level level) const {
     if (opaque() || other.opaque()) {
       return other;
@@ -489,13 +475,13 @@ namespace network {
     auto path = detail::normalize_path(*this->path(), level),
       other_path = detail::normalize_path(*other.path(), level);
 
-    boost::optional<string_type> query, fragment;
+    string_type query, fragment;
     if (other.query()) {
-      query.reset(to_string_type(other.query()));
+      query = uri::string_type(*other.query());
     }
 
     if (other.fragment()) {
-      fragment.reset(to_string_type(other.fragment()));
+      fragment = uri::string_type(*other.fragment());
     }
 
     return network::uri(boost::optional<string_type>(),
@@ -506,86 +492,6 @@ namespace network {
   }
 
   namespace detail {
-    template<typename Range>
-    void remove_last_segment(Range& path) {
-      while (!path.empty()) {
-        if (path.back() == '/') {
-          path.pop_back();
-          break;
-        }
-        path.pop_back();
-      }
-    }
-
-    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
-    uri::string_type remove_dot_segments(uri::string_type input) {
-      using namespace boost::algorithm;
-      using std::begin;
-
-      uri::string_type output;
-      while(!input.empty()) {
-        if (starts_with(input, "../")) {
-          erase_head(input, 3);
-	}
-        else if (starts_with(input, "./")) {
-          erase_head(input, 2);
-	}
-        else if (starts_with(input, "/./")) {
-          erase_head(input, 2);
-	}
-        else if(starts_with(input, "/../")) {
-          erase_head(input, 3);
-          remove_last_segment(output);
-        }
-        else if (starts_with(input, "/..")) {
-          replace_head(input, 3, "/");
-          remove_last_segment(output);
-        }
-        else if (starts_with(input, "/.")) {
-          replace_head(input, 2, "/");
-	}
-        else if(all(input, is_any_of(".")))  {
-          input.clear();
-	}
-        else {
-          int n = input.front() == '/' ? 1 : 0;
-          auto slash = find_nth(input, "/", n);
-          output.append(begin(input), begin(slash));
-          input.erase(begin(input), begin(slash));
-        }
-      }
-      return output;
-    }
-
-    template<typename Range>
-    uri::string_type remove_dot_segments(const Range& path) {
-      uri::string_type input(to_string_type(path));
-      return remove_dot_segments(move(input));
-    }
-
-    inline
-    bool has_empty_path(const uri& uri) {
-      return !uri.path() || uri.path().get().empty();
-    }
-
-    // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
-    inline uri::string_type merge_paths(const uri& base, const uri& reference) {
-      using std::begin;
-
-      uri::string_type path;
-      if (has_empty_path(base)) {
-        path = "/";
-      }
-      else {
-        const auto& base_path = base.path().get();
-        auto last_slash = boost::find_last(base_path, "/");
-        path.append(begin(base_path), last_slash.end());
-      }
-      path.append(to_string_type(reference.path()));
-      return remove_dot_segments(move(path));
-    }
-
-
     template<typename T>
     inline boost::optional<uri::string_type>
     make_arg(T&& arg) {
@@ -594,10 +500,12 @@ namespace network {
 
     inline boost::optional<uri::string_type>
     make_arg(boost::optional<boost::string_ref> ref) {
-      return to_optional_string_type(ref);
+      if (ref) {
+        return uri::string_type(*ref);
+      }
+      return boost::optional<uri::string_type>();
     }
   }  // namespace detail
-
 
   uri uri::resolve(const uri &reference, uri_comparison_level level) const {
     // This implementation uses the psuedo-code given in
@@ -616,11 +524,11 @@ namespace network {
       user_info = detail::make_arg(reference.user_info());
       host = detail::make_arg(reference.host());
       port = detail::make_arg(reference.port());
-      path = detail::remove_dot_segments(reference.path());
+      path = detail::remove_dot_segments(*reference.path());
       query = detail::make_arg(reference.query());
     }
     else {
-      if (detail::has_empty_path(reference)) {
+      if (!reference.path() || reference.path()->empty()) {
         path = detail::make_arg(base.path());
         if (reference.query()) {
           query = detail::make_arg(reference.query());
@@ -631,7 +539,7 @@ namespace network {
       }
       else {
         if (reference.path().get().front() == '/') {
-          path = detail::remove_dot_segments(reference.path());
+          path = detail::remove_dot_segments(*reference.path());
 	}
         else {
           path = detail::merge_paths(base, reference);
