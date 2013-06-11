@@ -153,7 +153,7 @@ for prop, library in Boost._Boost__libraries.items():
                                      self._Boost__lib_path,
                                      self._Boost__cxx_toolkit)
         c = Config()
-        c.lib(name)
+        c.lib(name, static = static)
         if library == 'filesystem':
           c.define('BOOST_FILESYSTEM_DYN_LINK', static and '0' or '1')
         setattr(self, pname, c)
