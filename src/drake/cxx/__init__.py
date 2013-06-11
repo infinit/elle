@@ -21,6 +21,15 @@ from .. import sched
 
 class Config:
 
+    class Library:
+
+        def __init__(self, name, static = False):
+            self.name = name
+            self.static = static
+
+        def __hash__(self):
+            return hash(self.name)
+
     def __init__(self, model = None):
         if model is None:
             self.__debug = False
@@ -30,7 +39,7 @@ class Config:
             self.__optimization = 1
             self.__system_includes = {}
             self.__lib_paths = sched.OrderedSet()
-            self.__libs = {}
+            self.__libs = sched.OrderedSet()
             self.flags = []
             self._framework = {}
             self._defines = {}
@@ -45,7 +54,7 @@ class Config:
             self.__optimization = model.__optimization
             self.__system_includes = deepcopy(model.__system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
-            self.__libs = deepcopy(model.__libs)
+            self.__libs = sched.OrderedSet(model.__libs)
             self.flags = deepcopy(model.flags)
             self._framework = deepcopy(model._framework)
             self._defines = deepcopy(model._defines)
@@ -178,11 +187,11 @@ class Config:
     def lib(self, lib, static = False):
 
       if lib in self.__libs:
-        if self.__libs[lib] != static:
+        if self.__libs[lib].static != static:
           raise Exception('library %s dynamic versus static '
                           'linkage conflict' % lib)
       else:
-        self.__libs[lib] = static
+        self.__libs.add(Config.Library(lib, static))
 
 
     def __add__(self, rhs):
@@ -294,7 +303,7 @@ class Config:
 
     @property
     def libs(self):
-        return list(self.__libs.keys())
+        return list(self.__libs)
 
     @property
     def libs_dynamic(self):
@@ -305,8 +314,7 @@ class Config:
         return self.__libs_filter(True)
 
     def __libs_filter(self, f):
-      return list(key for key, value in self.__libs.items()
-                  if value is f)
+      return list(lib.name for lib in self.__libs if lib.static is f)
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -852,7 +860,6 @@ class Linker(Builder):
     rpath.sort()
     h['rpath'] = rpath
     libs = self.config.libs
-    libs.sort()
     h['libs'] = libs
     dynlibs = ' '.join(map(lambda lib: lib.lib_name,
                            self.exe.dynamic_libraries))
