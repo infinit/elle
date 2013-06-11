@@ -43,6 +43,7 @@ def configure(cxx_toolkit = None,
   config.add_local_include_path('.')
   config.lib_path('lib')
   config += curl
+  config += boost.config()
   config.lib('curl')
 
   # Local Configuration
