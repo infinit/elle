@@ -845,26 +845,7 @@ class Linker(Builder):
   name = 'executable linkage'
 
   def hash(self):
-    h = {}
-    # Flags
-    h['export_dynamic'] = self.config.export_dynamic
-    flags = self.config.flags
-    flags.sort()
-    h['flags'] = flags
-    frameworks = list(self.config.frameworks())
-    frameworks.sort()
-    h['frameworks'] = frameworks
-    lib_paths = self.config._Config__lib_paths
-    h['lib_paths'] = lib_paths
-    rpath = self.config._Config__rpath
-    rpath.sort()
-    h['rpath'] = rpath
-    libs = self.config.libs
-    h['libs'] = libs
-    dynlibs = ' '.join(map(lambda lib: lib.lib_name,
-                           self.exe.dynamic_libraries))
-    h['dynlibs'] = dynlibs
-    return repr(h)
+    return str(self.command)
 
   def dependencies(self):
     for hook in self.toolkit.hook_bin_deps():
@@ -964,8 +945,8 @@ class StaticLibLinker(ShellCommand):
             self.lib)
 
     def hash(self):
-        res = ' '.join(sorted(map(str, self.objs)))
-        return res
+        return str(self.command)
+
 
 class Source(Node):
 
