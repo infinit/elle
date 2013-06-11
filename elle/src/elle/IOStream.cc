@@ -1,8 +1,9 @@
 #include <streambuf>
 #include <unistd.h>
 
-#include <elle/log.hh>
+#include <elle/Buffer.hh>
 #include <elle/IOStream.hh>
+#include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("elle.IOStream");
 

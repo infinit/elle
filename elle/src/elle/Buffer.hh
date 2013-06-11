@@ -1,8 +1,9 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
-# include <elle/attribute.hh>
+# include <elle/IOStream.hh>
 # include <elle/Orderable.hh>
+# include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/fwd.hh>

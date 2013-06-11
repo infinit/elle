@@ -1,8 +1,9 @@
 #ifndef ELLE_SERIALIZE_FOOTPRINT_HXX
 # define ELLE_SERIALIZE_FOOTPRINT_HXX
 
-# include <elle/assert.hh>
+# include <elle/Buffer.hh>
 # include <elle/IOStream.hh>
+# include <elle/assert.hh>
 
 namespace elle
 {

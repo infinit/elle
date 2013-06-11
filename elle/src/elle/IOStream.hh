@@ -3,7 +3,7 @@
 
 # include <iostream>
 
-# include <elle/Buffer.hh>
+# include <elle/fwd.hh>
 
 namespace elle
 {
