@@ -10,31 +10,15 @@ namespace elle
   {
     namespace base64
     {
-      /// Encode a buffer into a base64 string.
-      /// @note `clear` can be a `Buffer` or a `WeakBuffer` instance.
-      template <typename T>
-      std::string
-      encode(T&& clear);
-
-      /// Encode a buffer and append it to the base64 string.
-      /// @note `clear` can be a `Buffer` or a `WeakBuffer` instance.
-      template <typename T>
-      void
-      encode(T&& clear,
-             std::string& base64);
-
-      /// Decode a base64 string into a buffer.
+      /// Encode to base64.
       Buffer
-      decode(std::string const& base64);
+      encode(Buffer const& clear);
 
-      /// Decode a base64 string and append it to the clear buffer.
-      void
-      decode(std::string const& base64,
-             Buffer& clear);
+      /// Decode from base64.
+      Buffer
+      decode(Buffer const& input);
     }
   }
 }
-
-# include "base64.hxx"
 
 #endif

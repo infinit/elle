@@ -1,7 +1,11 @@
-#include "base64.hh"
+#include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/binary_from_base64.hpp>
+#include <boost/archive/iterators/ostream_iterator.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
 
-#include <elle/assert.hh>
 #include <elle/Exception.hh>
+#include <elle/assert.hh>
+#include <elle/format/base64.hh>
 
 namespace elle
 {
@@ -9,130 +13,80 @@ namespace elle
   {
     namespace base64
     {
-      static char const base64_chars[65] =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
+      using namespace boost::archive::iterators;
 
-      Buffer
-      decode(std::string const& base64_string)
+      template <typename Iterator>
+      void
+      _encode(Buffer const& input, Iterator output)
       {
-        Buffer b;
-        decode(base64_string, b);
-        return b;
+        typedef base64_from_binary<transform_width<const char *, 6, 8>> encoder;
+        auto const size = input.size();
+        output = std::copy(encoder(input.mutable_contents()),
+                           encoder(input.mutable_contents() + size),
+                           output);
+        // Unfortunately, Boost does not handle base64 padding. Pad manually.
+        for (signed i = 0; i < (3 - (signed(size) % 3)) % 3; ++i)
+        {
+          *output = '=';
+          ++output;
+        }
       }
 
       void
-      decode(std::string const& base64_string,
-             Buffer& binary_data)
+      encode(Buffer const& input, std::ostream& output)
       {
-        unsigned char const* src =
-          reinterpret_cast<unsigned char const*>(base64_string.data());
-        size_t size = base64_string.size();
-
-        size_t i = binary_data.size();
-        binary_data.size(i + size * 3 / 4 + 1);
-        unsigned char* dst = binary_data.mutable_contents();
-        unsigned char from[4];
-        while (size >= 3)
-        {
-          from[0] = detail::decode_char(*src++);
-          from[1] = detail::decode_char(*src++);
-          from[2] = detail::decode_char(*src++);
-          from[3] = detail::decode_char(*src++);
-
-          dst[i++] = (from[0] << 2) + ((from[1] & 0x30) >> 4);
-          dst[i++] = ((from[1] & 0xf) << 4) + ((from[2] & 0x3c) >> 2);
-          dst[i++] = ((from[2] & 0x3) << 6) + from[3];
-          size -= 3;
-          ELLE_ASSERT_LT(i, binary_data.size());
-        }
-        ELLE_ASSERT_EQ(size, 0u);
+        return _encode(input, std::ostream_iterator<char>(output));
       }
 
-      namespace detail
+      Buffer
+      encode(Buffer const& input)
       {
-        void
-        encode(unsigned char const* in,
-               size_t size,
-               std::string& out)
+        size_t size = (signed(input.size()) + 2) / 3 * 4;
+        Buffer::ContentPtr content(
+          reinterpret_cast<unsigned char*>(malloc(size)));
+        _encode<unsigned char*>(input, content.get());
+        return Buffer(Buffer::ContentPair(std::move(content), size));
+      }
+
+      static
+      size_t
+      _decoded_size(Buffer const& encoded)
+      {
+        size_t size = encoded.size();
+        int padding =
+          encoded.mutable_contents()[size - 2] == '=' ? 2 :
+          encoded.mutable_contents()[size - 1] == '=' ? 1 : 0;
+        return size / 4 * 3 - padding;
+      }
+
+      template <typename Iterator>
+      void
+      _decode(Buffer const& input, Iterator output)
+      {
+        typedef transform_width<binary_from_base64<char const *>, 8, 6> decoder;
+        size_t decoded_size = _decoded_size(input);
+        auto begin = decoder(input.mutable_contents());
+        // Boost doesn't handle padding, we have to stop at the exact right
+        // character.
+        for (unsigned i = 0; i < decoded_size; ++i)
         {
-          ELLE_ASSERT(in != nullptr);
-
-          if (size == 0)
-            return;
-
-          size_t i = out.size();
-          out.resize(out.size() + size + (size / 2) + 4);
-
-          unsigned char c1;
-          unsigned char c2;
-          unsigned char c3;
-
-          while (size >= 3)
-          {
-            c1 = *in++;
-            c2 = *in++;
-            c3 = *in++;
-            size -= 3;
-            out[i++] = base64_chars[(c1 & 0xfc) >> 2];
-            out[i++] = base64_chars[((c1 & 0x03) << 4) + ((c2 & 0xf0) >> 4)];
-            out[i++] = base64_chars[((c2 & 0x0f) << 2) + ((c3 & 0xc0) >> 6)];
-            out[i++] = base64_chars[c3 & 0x3f];
-          }
-
-          switch (size)
-          {
-          case 2:
-            c1 = *in++;
-            c2 = *in++;
-            out[i++] = base64_chars[(c1 & 0xfc) >> 2];
-            out[i++] = base64_chars[((c1 & 0x03) << 4) + ((c2 & 0xf0) >> 4)];
-            out[i++] = base64_chars[(c2 & 0x0f) << 2];
-            out[i++] = '=';
-            break;
-          case 1:
-            c1 = *in++;
-            out[i++] = base64_chars[(c1 & 0xfc) >> 2];
-            out[i++] = base64_chars[(c1 & 0x03) << 4];
-            out[i++] = '=';
-            out[i++] = '=';
-            break;
-          case 0:
-            return;
-          default:
-            elle::unreachable();
-          }
+          *output = *(begin++);
+          ++output;
         }
+      }
 
-        char
-        decode_char(unsigned char c)
-        {
-          static int8_t const reverse[256] = {
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52, 53, 54,
-            55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3,
-            4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-            22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32,
-            33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-            50, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
-          };
+      void
+      decode(Buffer const& input, std::ostream& output)
+      {
+        return _decode(input, std::ostream_iterator<char>(output));
+      }
 
-          if (c == '=')
-            return 0;
-          char res = reverse[c];
-          if (res < 0)
-            throw elle::Exception{"unexpected base64 char"};
-          return res;
-        }
+      Buffer
+      decode(Buffer const& input)
+      {
+        Buffer res(_decoded_size(input));
+        _decode(input, res.mutable_contents());
+        return res;
       }
     }
   }

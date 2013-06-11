@@ -13,13 +13,11 @@ BOOST_AUTO_TEST_CASE(encode_decode_base64)
   std::string to_encode = "";
   for (unsigned int i = 0; i < 100; ++i)
   {
-    elle::Buffer buffin(to_encode.data(), to_encode.length());
-    std::string encoded = elle::format::base64::encode(buffin);
-    auto buffout = elle::format::base64::decode(encoded);
-    std::string decoded((char *) buffout.contents(), buffout.size());
+    elle::Buffer source(to_encode.data(), to_encode.length());
+    elle::Buffer encoded(elle::format::base64::encode(source));
+    elle::Buffer decoded(elle::format::base64::decode(encoded));
 
-    BOOST_CHECK_EQUAL(to_encode.size(), decoded.size());
-    BOOST_CHECK_EQUAL(to_encode, decoded);
+    BOOST_CHECK_EQUAL(source, decoded);
     to_encode += std::to_string(i);
   }
 }
