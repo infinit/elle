@@ -42,7 +42,7 @@ class Config:
             self.__libs = sched.OrderedSet()
             self.flags = []
             self._framework = {}
-            self._defines = {}
+            self.__defines = sched.OrderedDict()
             self.__standard = None
             self.__rpath = []
             self.__warnings = Config.Warnings()
@@ -57,7 +57,7 @@ class Config:
             self.__libs = sched.OrderedSet(model.__libs)
             self.flags = deepcopy(model.flags)
             self._framework = deepcopy(model._framework)
-            self._defines = deepcopy(model._defines)
+            self.__defines = sched.OrderedDict(model.__defines)
             self.__standard = model.__standard
             self.__rpath = deepcopy(model.__rpath)
             self.__warnings = model.__warnings
@@ -109,10 +109,10 @@ class Config:
 
     def define(self, name, value = None):
 
-        self._defines[name] = value
+        self.__defines[name] = value
 
     def defines(self):
-        return self._defines
+        return self.__defines
 
     def flag(self, f):
 
@@ -241,14 +241,14 @@ class Config:
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
 
-        for key, value in rhs._defines.items():
-          if key in res._defines:
-            old = res._defines[key]
+        for key, value in rhs.__defines.items():
+          if key in res.__defines:
+            old = res.__defines[key]
             if old != value:
               raise Exception('redefinition of %s from %s to %s' % \
                               (key, old, value))
           else:
-            res._defines[key] = value
+            res.__defines[key] = value
 
         res.__local_includes.update(rhs.__local_includes)
         res.__system_includes.update(rhs.__system_includes)
