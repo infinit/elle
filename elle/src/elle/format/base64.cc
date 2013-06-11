@@ -53,9 +53,11 @@ namespace elle
       _decoded_size(Buffer const& encoded)
       {
         size_t size = encoded.size();
-        int padding =
-          encoded.mutable_contents()[size - 2] == '=' ? 2 :
-          encoded.mutable_contents()[size - 1] == '=' ? 1 : 0;
+        int padding = 0;
+        if (size >= 1 && encoded.mutable_contents()[size - 1] == '=')
+          ++padding;
+        if (size >= 2 && encoded.mutable_contents()[size - 2] == '=')
+          ++padding;
         return size / 4 * 3 - padding;
       }
 
