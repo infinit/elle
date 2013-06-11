@@ -7,7 +7,7 @@
 # include <elle/Exception.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/extract.hh>
-#include<iostream>
+
 namespace elle
 {
   namespace format
