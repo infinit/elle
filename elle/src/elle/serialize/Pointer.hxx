@@ -1,90 +1,83 @@
 #ifndef  ELLE_SERIALIZE_POINTER_HXX
 # define ELLE_SERIALIZE_POINTER_HXX
 
+# include "Pointer.hh"
+# include "Serializer.hh"
+
+# include <elle/log.hh>
+
 # include <memory>
 # include <stdexcept>
 # include <type_traits>
-
-# include <elle/serialize/Serializer.hh>
-
-# include <elle/serialize/Pointer.hh>
 
 namespace elle
 {
   namespace serialize
   {
-
-    template<typename T>
+    template <typename T>
     class Pointer
     {
+    public:
+      typedef typename std::remove_reference<T>::type pointer_type;
+      static_assert(std::is_pointer<pointer_type>::value,
+                    "Cannot use pointer with a non pointer type.");
+      typedef
+        typename std::remove_cv<
+          typename std::remove_pointer<pointer_type>::type
+        >::type
+        value_type;
       friend struct Serializer<Pointer<T>>;
+
+    protected:
+      T _ptr;
     public:
-      typedef T pointer_type;
-      static_assert(
-          std::is_pointer<pointer_type>::value,
-          "Cannot use alive pointer with a non pointer type."
-      );
-    private:
-      pointer_type& _ptr;
-    public:
-      Pointer(pointer_type& ptr)
-        : _ptr(ptr)
+      Pointer(T ptr):
+        _ptr(ptr)
       {}
 
-      Pointer(Pointer&& other)
-        : _ptr(other._ptr)
+      Pointer(Pointer&& other):
+        _ptr(other._ptr)
       {}
 
-      Pointer(Pointer const& other)
-        : _ptr(other._ptr)
+      Pointer(Pointer const& other):
+        _ptr(other._ptr)
       {}
     };
 
-    template<typename T>
-    class AlivePointer
+    template <typename T>
+    class AlivePointer:
+      Pointer<T>
     {
       friend struct Serializer<AlivePointer<T>>;
+
     public:
-      typedef T pointer_type;
-      static_assert(
-          std::is_pointer<pointer_type>::value,
-          "Cannot use alive pointer with a non pointer type."
-      );
-    private:
-      pointer_type& _ptr;
-    public:
-      AlivePointer(pointer_type& ptr)
-        : _ptr(ptr)
+      AlivePointer(T ptr):
+        Pointer<T>(ptr)
       {}
 
-      AlivePointer(AlivePointer&& other)
-        : _ptr(other._ptr)
+      AlivePointer(AlivePointer&& other):
+        Pointer<T>(other)
       {}
 
-      AlivePointer(AlivePointer const& other)
-        : _ptr(other._ptr)
+      AlivePointer(AlivePointer const& other):
+        Pointer<T>(other)
       {}
     };
 
     template <typename T>
     inline
-    Pointer<typename std::remove_reference<T>::type>
+    Pointer<T>
     pointer(T&& ptr)
     {
-      return Pointer<typename std::remove_reference<T>::type>{
-        std::forward<T>(ptr)
-      };
+      return Pointer<T>{std::forward<T>(ptr)};
     }
 
-    template
-    <typename T>
+    template <typename T>
     inline
-    AlivePointer<typename std::remove_reference<T>::type>
+    AlivePointer<T>
     alive_pointer(T&& ptr)
     {
-      return AlivePointer<typename std::remove_reference<T>::type>{
-        std::forward<T>(ptr)
-      };
+      return AlivePointer<T>{std::forward<T>(ptr)};
     }
 
     //
@@ -93,126 +86,128 @@ namespace elle
     // passed as a lvalue reference, but still serialize stored pointer.
     //
 
-    template<typename T1>
+    template <typename T1>
     struct Serializer<Pointer<T1>>:
       public BaseSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
-      template<typename Archive>
-        static inline typename std::enable_if<
-            Archive::mode == ArchiveMode::Input
-        >::type       Serialize(Archive&              archive,
-                                Pointer<T1> const&    value,
-                                unsigned int          version)
+      template <typename Archive>
+      static inline
+      typename std::enable_if<Archive::mode == ArchiveMode::Input>::type
+      Serialize(Archive& archive,
+                Pointer<T1> const& value,
+                unsigned int version)
+      {
+        ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
+        BaseSerializer<Pointer<T1>>::enforce(version == 0);
+
+        if (value._ptr != nullptr)
         {
-          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
-
-          BaseSerializer<Pointer<T1>>::enforce(version == 0);
-
-          if (value._ptr != nullptr)
-            {
-              ELLE_WARN("deleting the previous pointed value");
-            }
-
+          ELLE_WARN("deleting the previous pointed value");
           delete value._ptr;
           value._ptr = nullptr;
-
-          bool not_null;
-          archive >> not_null;
-
-          typedef typename std::remove_pointer<T1>::type value_type;
-          if (not_null)
-            value._ptr = archive.template Construct<value_type>().release();
         }
+
+        bool not_null;
+        archive >> not_null;
+
+        typedef typename Pointer<T1>::value_type value_type;
+        if (not_null)
+          value._ptr = archive.template Construct<value_type>().release();
+      }
 
       // Save
-      template<typename Archive>
-        static inline typename std::enable_if<
-            Archive::mode == ArchiveMode::Output
-        >::type       Serialize(Archive&              archive,
-                                Pointer<T1> const&    value,
-                                unsigned int          version)
-        {
-          BaseSerializer<Pointer<T1>>::enforce(version == 0);
-          if (value._ptr != nullptr)
-            {
-              archive << true
-                      << *(value._ptr);
-            }
-          else
-            {
-              archive << false;
-            }
-        }
-      template<typename Archive>
-        static inline void LoadConstruct(Archive&, Pointer<T1>*, unsigned int)
-        {
-          static_assert(Archive::mode, "You cannot construct a pointer container !");
-        }
+      template <typename Archive>
+      static inline
+      typename std::enable_if<Archive::mode == ArchiveMode::Output>::type
+      Serialize(Archive& archive,
+                Pointer<T1> const& value,
+                unsigned int version)
+      {
+        BaseSerializer<Pointer<T1>>::enforce(version == 0);
+        if (value._ptr != nullptr)
+          archive << true << *(value._ptr);
+        else
+          archive << false;
+      }
+      template <typename Archive>
+      static inline
+      void
+      LoadConstruct(Archive&,
+                    Pointer<T1>*,
+                    unsigned int)
+      {
+        static_assert(Archive::mode,
+                      "You cannot construct a pointer container !");
+      }
     };
 
-    template<typename T1>
+    template <typename T1>
     struct Serializer<AlivePointer<T1>>:
       public BaseSerializer<Pointer<T1>>
     {
       // Load method (note the const&)
-      template<typename Archive>
-        static inline typename std::enable_if<
-            Archive::mode == ArchiveMode::Input
-        >::type       Serialize(Archive&                  archive,
-                                AlivePointer<T1> const&   value,
-                                unsigned int              version)
+      template <typename Archive>
+      static inline
+      typename std::enable_if<Archive::mode == ArchiveMode::Input>::type
+      Serialize(Archive& archive,
+                AlivePointer<T1> const& value,
+                unsigned int version)
+      {
+        ELLE_LOG_COMPONENT("elle.serialize.Pointer");
+
+        BaseSerializer<AlivePointer<T1>>::enforce(version == 0);
+
+        if (value._ptr != nullptr)
         {
-          ELLE_LOG_COMPONENT("elle.serialize.Pointer");
-
-          BaseSerializer<AlivePointer<T1>>::enforce(version == 0);
-
-          if (value._ptr != nullptr)
-            {
-              ELLE_WARN("deleting the previous pointed value");
-            }
-
+          ELLE_WARN("deleting the previous pointed value");
           delete value._ptr;
           value._ptr = nullptr;
-
-          typedef typename std::remove_pointer<T1>::type value_type;
-          value._ptr = archive.template Construct<value_type>().release();
         }
+
+        typedef typename AlivePointer<T1>::value_type value_type;
+        value._ptr = archive.template Construct<value_type>().release();
+      }
 
       // Save
       template<typename Archive>
-        static inline typename std::enable_if<
-            Archive::mode == ArchiveMode::Output
-        >::type       Serialize(Archive&                  archive,
-                                AlivePointer<T1> const&   value,
-                                unsigned int              version)
-        {
-          BaseSerializer<Pointer<T1>>::enforce(version == 0);
-          if (value._ptr == nullptr)
-            throw std::runtime_error("Pointer is null, cannot archive it");
-          archive << *(value._ptr);
-        }
+      static inline
+      typename std::enable_if<Archive::mode == ArchiveMode::Output>::type
+      Serialize(Archive& archive,
+                AlivePointer<T1> const& value,
+                unsigned int version)
+      {
+        BaseSerializer<Pointer<T1>>::enforce(version == 0);
+        if (value._ptr == nullptr)
+          throw std::runtime_error("Pointer is null, cannot archive it");
+        archive << *(value._ptr);
+      }
 
-      template<typename Archive>
-        static inline void LoadConstruct(Archive&, AlivePointer<T1>*, unsigned int)
-        {
-          static_assert(Archive::mode, "You cannot construct a pointer container !");
-        }
+      template <typename Archive>
+      static inline
+      void
+      LoadConstruct(Archive&,
+                    AlivePointer<T1>*,
+                    unsigned int)
+      {
+        static_assert(Archive::mode,
+                      "You cannot construct a pointer container !");
+      }
     };
 
 
-    template<typename T>
-      struct StoreFormat<Pointer<T>>
-      {
-        static bool const value = false;
-      };
+    template <typename T>
+    struct StoreFormat<Pointer<T>>
+    {
+      static bool const value = false;
+    };
 
-    template<typename T>
-      struct StoreFormat<AlivePointer<T>>
-      {
-        static bool const value = false;
-      };
-
+    template <typename T>
+    struct StoreFormat<AlivePointer<T>>
+    {
+      static bool const value = false;
+    };
   }
 }
 

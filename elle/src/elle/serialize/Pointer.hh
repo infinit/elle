@@ -53,7 +53,7 @@ namespace elle
     ///
     template <typename T>
     inline
-    Pointer<typename std::remove_reference<T>::type>
+    Pointer<T>
     pointer(T&& ptr);
 
     ///
@@ -69,13 +69,11 @@ namespace elle
     ///
     template <typename T>
     inline
-    AlivePointer<typename std::remove_reference<T>::type>
+    AlivePointer<T>
     alive_pointer(T&& ptr);
-
   }
 }
 
 # include "Pointer.hxx"
 
-#endif /* ! POINTER_HH */
-
+#endif
