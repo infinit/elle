@@ -103,7 +103,7 @@ namespace elle
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       // this const_cast is safe since the archive is in output mode
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE(
+      ELLE_DEBUG(
         "save %p with its concrete type %s (%s format = %d)",
         &val,
         ELLE_PRETTY_TYPE(T),
@@ -135,7 +135,7 @@ namespace elle
 
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE(
+      ELLE_DEBUG(
         "load %p with its concrete type %s (%s format = %d)",
         &val,
         ELLE_PRETTY_TYPE(T),
@@ -162,7 +162,7 @@ namespace elle
       //  Access::Load(this->self(), classVersion);
       typedef Serializer<typename std::remove_cv<T>::type> Serializer;
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Load construct %p with its concrete type %s",
+      ELLE_DEBUG("Load construct %p with its concrete type %s",
                  this, ELLE_PRETTY_TYPE(T)
         ) Serializer::template LoadConstruct<Archive>(this->self(), ptr);
     }
@@ -242,7 +242,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(int16_t val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving int16_t '%s'", val);
+      ELLE_DEBUG("Saving int16_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::SaveBinary(this->self(), &val, sizeof(val));
@@ -276,7 +276,7 @@ namespace elle
           (static_cast<int16_t>(tab[1]) << 8 )
         ;
 # endif
-      ELLE_TRACE("Loaded int16_t '%s'", val);
+      ELLE_DEBUG("Loaded int16_t '%s'", val);
     }
 
     //-------------------------------------------------------------------------
@@ -287,7 +287,7 @@ namespace elle
     BaseArchive<mode_, Archive, CT, STS>::Save(int32_t val)
     {
       ELLE_LOG_COMPONENT("elle.serialize.BaseArchive");
-      ELLE_TRACE("Saving int32_t '%s'", val);
+      ELLE_DEBUG("Saving int32_t '%s'", val);
 
 # ifdef BOOST_LITTLE_ENDIAN
       Access::SaveBinary(this->self(), &val, sizeof(val));

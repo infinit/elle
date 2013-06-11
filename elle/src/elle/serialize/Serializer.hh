@@ -203,7 +203,7 @@ namespace elle
 
 # define _ELLE_SERIALIZE_LOG_ACTION(T, version, mode, _value)                 \
   ELLE_LOG_COMPONENT("elle.serialize.Serializer");                            \
-  ELLE_TRACE("%s " BOOST_PP_STRINGIZE(T) " (%s): %p",                         \
+  ELLE_DEBUG("%s " BOOST_PP_STRINGIZE(T) " (%s): %p",                         \
                  mode == ArchiveMode::Input ? "Loading" : "Saving",           \
                  (elle::serialize::StoreFormat<T>::value                      \
                     ? elle::sprint("version", version)                        \
