@@ -163,17 +163,50 @@ TEST_F(uri_resolve_test, abnormal_example_6) {
   ASSERT_EQ("http://a/b/c/.g", resolved(".g"));
 }
 
+TEST_F(uri_resolve_test, abnormal_example_7) {
+  ASSERT_EQ("http://a/b/c/g..", resolved("g.."));
+}
 
+TEST_F(uri_resolve_test, abnormal_example_8) {
+  ASSERT_EQ("http://a/b/g", resolved("..g"));
+}
 
-//      "g.."           =  "http://a/b/c/g.."
-//      "..g"           =  "http://a/b/c/..g"
-//      "./../g"        =  "http://a/b/g"
-//      "./g/."         =  "http://a/b/c/g/"
-//      "g/./h"         =  "http://a/b/c/g/h"
-//      "g/../h"        =  "http://a/b/c/h"
-//      "g;x=1/./y"     =  "http://a/b/c/g;x=1/y"
-//      "g;x=1/../y"    =  "http://a/b/c/y"
-//      "g?y/./x"       =  "http://a/b/c/g?y/./x"
-//      "g?y/../x"      =  "http://a/b/c/g?y/../x"
-//      "g#s/./x"       =  "http://a/b/c/g#s/./x"
-//      "g#s/../x"      =  "http://a/b/c/g#s/../x"
+TEST_F(uri_resolve_test, abnormal_example_9) {
+  ASSERT_EQ("http://a/b/g", resolved("./../g"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_10) {
+  ASSERT_EQ("http://a/b/c/g/", resolved("./g/."));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_11) {
+  ASSERT_EQ("http://a/b/c/g/h", resolved("g/./h"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_12) {
+  ASSERT_EQ("http://a/b/c/h", resolved("g/../h"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_13) {
+  ASSERT_EQ("http://a/b/c/g;x=1/y", resolved("g;x=1/./y"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_14) {
+  ASSERT_EQ("http://a/b/c/y", resolved("g;x=1/../y"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_15) {
+  ASSERT_EQ("http://a/b/c/g?y/./x", resolved("g?y/./x"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_16) {
+  ASSERT_EQ("http://a/b/c/g?y/../x", resolved("g?y/../x"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_17) {
+  ASSERT_EQ("http://a/b/c/g#s/./x", resolved("g#s/./x"));
+}
+
+TEST_F(uri_resolve_test, abnormal_example_18) {
+  ASSERT_EQ("http://a/b/c/g#s/../x", resolved("g#s/../x"));
+}
