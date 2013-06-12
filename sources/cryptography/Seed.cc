@@ -21,11 +21,11 @@ namespace infinit
     `---------------*/
 
     Seed
-    Seed::generate(KeyPair const& pair)
+    Seed::generate(KeyPair const& keypair)
     {
-      ELLE_TRACE_FUNCTION(pair);
+      ELLE_TRACE_FUNCTION(keypair);
 
-      switch (pair.cryptosystem())
+      switch (keypair.cryptosystem())
       {
         case Cryptosystem::rsa:
         {
@@ -34,15 +34,15 @@ namespace infinit
 
           std::unique_ptr<seed::Interface> implementation(
             new rsa::Seed(
-              rsa::seed::generate(pair.K().implementation(),
-                                  pair.k().implementation())));
+              rsa::seed::generate(keypair.K().implementation(),
+                                  keypair.k().implementation())));
 
           return (Seed(std::move(implementation)));
         }
         default:
           throw Exception(
             elle::sprintf("unknown or non-supported asymmetric "
-                          "cryptosystem '%s'", pair.cryptosystem()));
+                          "cryptosystem '%s'", keypair.cryptosystem()));
       }
 
       elle::unreachable();

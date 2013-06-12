@@ -20,7 +20,7 @@ static
 void
 test_represent_rsa()
 {
-  infinit::cryptography::KeyPair pair =
+  infinit::cryptography::KeyPair keypair =
     infinit::cryptography::KeyPair::generate(
       infinit::cryptography::Cryptosystem::rsa,
       1024);
@@ -29,14 +29,14 @@ test_represent_rsa()
   {
     elle::String archive;
     elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << pair.k();
+      elle::serialize::OutputBase64Archive>(archive) << keypair.k();
     elle::printf("[representation 1] %s\n", archive);
   }
 
   // 2)
   {
     infinit::cryptography::Code code =
-      pair.K().encrypt(
+      keypair.K().encrypt(
         infinit::cryptography::Plain(
           elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(_input1.c_str())),
                                                    _input1.length()}));
@@ -48,7 +48,7 @@ test_represent_rsa()
 
   // 3)
   {
-    infinit::cryptography::Code code = pair.K().encrypt(_input2);
+    infinit::cryptography::Code code = keypair.K().encrypt(_input2);
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << code;
