@@ -475,7 +475,7 @@ namespace network {
     auto path = detail::normalize_path(*this->path(), level),
       other_path = detail::normalize_path(*other.path(), level);
 
-    string_type query, fragment;
+    boost::optional<string_type> query, fragment;
     if (other.query()) {
       query = uri::string_type(*other.query());
     }
