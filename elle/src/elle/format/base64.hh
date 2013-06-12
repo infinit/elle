@@ -10,6 +10,21 @@ namespace elle
   {
     namespace base64
     {
+      class StreamBuffer;
+
+      class Stream:
+        public elle::IOStream
+      {
+      public:
+        Stream(std::iostream& underlying);
+        ~Stream();
+
+      private:
+        friend class StreamBuffer;
+        ELLE_ATTRIBUTE(StreamBuffer*, buffer);
+        ELLE_ATTRIBUTE_R(std::iostream&, underlying);
+      };
+
       /// Encode to base64.
       Buffer
       encode(Buffer const& clear);
