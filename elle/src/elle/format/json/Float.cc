@@ -1,4 +1,5 @@
 #include <ostream>
+#include <iomanip>
 
 #include "Float.hh"
 
@@ -10,14 +11,12 @@ namespace elle
     {
       namespace detail
       {
-
         template<>
         void
         Float::repr(std::ostream& out) const
         {
-          out << _value;
+          out << std::setprecision(16) << this->_value;
         }
-
       }
     }
   }
