@@ -68,54 +68,6 @@ class OrderedSet:
     return 'OrderedSet(%r)' % self.__list
 
 
-class OrderedDict:
-
-  def __init__(self, model = None):
-    if model is None:
-      self.__dict = dict()
-      self.__list = []
-    else:
-      self.__dict = dict(model.__dict)
-      self.__list = list(model.__list)
-
-  def __setitem__(self, k, v):
-    self.__dict.__setitem__(k, v)
-    self.__list.append((k, v))
-
-  def __getitem__(self, k):
-    return self.__dict.__getitem__(k)
-
-  def __iter__(self):
-    for k, v in self.items():
-      yield k
-
-  def __contains__(self, k):
-    return self.__dict.__contains__(k)
-
-  def items(self):
-    remove = []
-    i = len(self.__list) - 1
-    seen = set()
-    while i >= 0:
-      key, value = self.__list[i]
-      if key in self.__dict and key not in seen:
-        seen.add(key)
-        yield (key, value)
-      else:
-        del self.__list[i]
-      i -= 1
-
-  def __bool__(self):
-    return bool(self.__set)
-
-  def update(self, rhs):
-    self.__set.update(rhs.__set)
-    self.__list.extend(rhs.__list)
-
-  def __repr__(self):
-    return 'OrderedDict(%r)' % self.__list
-
-
 class Scheduler:
 
   __instance = None

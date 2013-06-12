@@ -6,6 +6,7 @@
 #
 # See the LICENSE file for more information.
 
+import collections
 import drake
 import re
 import shutil
@@ -42,7 +43,7 @@ class Config:
             self.__libs = sched.OrderedSet()
             self.flags = []
             self._framework = {}
-            self.__defines = sched.OrderedDict()
+            self.__defines = collections.OrderedDict()
             self.__standard = None
             self.__rpath = []
             self.__warnings = Config.Warnings()
@@ -57,7 +58,7 @@ class Config:
             self.__libs = sched.OrderedSet(model.__libs)
             self.flags = deepcopy(model.flags)
             self._framework = deepcopy(model._framework)
-            self.__defines = sched.OrderedDict(model.__defines)
+            self.__defines = collections.OrderedDict(model.__defines)
             self.__standard = model.__standard
             self.__rpath = deepcopy(model.__rpath)
             self.__warnings = model.__warnings
