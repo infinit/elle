@@ -386,52 +386,45 @@ namespace elle
     return (stream);
   }
 
-  ///////////////////////////////////////////////////////////////////////////
+  /*------------------.
+  | InputStreamBuffer |
+  `------------------*/
 
   template<typename BufferType>
-  class InputStreamBuffer:
-    public StreamBuffer
+  InputStreamBuffer<BufferType>::InputStreamBuffer(BufferType const& buffer):
+    _buffer(buffer),
+    _read(false)
   {
-  private:
-    BufferType const& _buffer;
-    size_t            _index;
+    ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s",
+               buffer.size());
+  }
 
-  public:
-    explicit
-    InputStreamBuffer(BufferType const& buffer):
-      _buffer(buffer),
-      _index(0)
+  template<typename BufferType>
+  WeakBuffer
+  InputStreamBuffer<BufferType>::write_buffer()
+  {
+    throw Exception("the buffer is in input mode");
+  }
+
+  template<typename BufferType>
+  WeakBuffer
+  InputStreamBuffer<BufferType>::read_buffer()
+  {
+    if (!this->_read)
     {
-      ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s", buffer.size());
+      this->_read = true;
+      return WeakBuffer((char*)_buffer.contents(), _buffer.size());
     }
+    else
+      return WeakBuffer(nullptr, 0);
+  }
 
-    WeakBuffer
-    write_buffer()
-    {
-      throw Exception("the buffer is in input mode");
-    }
-
-    WeakBuffer
-    read_buffer()
-    {
-      ELLE_DEBUG(
-        "read from an InputStreamBuffer at index %s (bytes left = %s)",
-        _index, _buffer.size() - _index
-      );
-      assert(_index <= _buffer.size());
-      return WeakBuffer(
-        (char*)_buffer.contents() + _index, _buffer.size() - _index
-      );
-    }
-
-    void flush(Size size)
-    {
-      ELLE_DEBUG("flush %s bytes from index %s of an InputStreamBuffer", size, _index);
-      _index += size;
-      assert(_index <= _buffer.size());
-    }
-
-  };
+  template<typename BufferType>
+  void
+  InputStreamBuffer<BufferType>::flush(Size size)
+  {
+    throw Exception("the buffer is in input mode");
+  }
 
   ///////////////////////////////////////////////////////////////////////////
 
@@ -460,46 +453,39 @@ namespace elle
     _istream = nullptr;
   }
 
-  ///////////////////////////////////////////////////////////////////////////
+  /*-------------------.
+  | OutputStreamBuffer |
+  `-------------------*/
 
-  class OutputStreamBuffer:
-    public StreamBuffer
+  OutputStreamBuffer::OutputStreamBuffer(Buffer& buffer):
+    _old_size(buffer.size()),
+    _buffer(buffer)
+  {}
+
+  WeakBuffer
+  OutputStreamBuffer::write_buffer()
   {
-  private:
-    size_t  _old_size;
-    Buffer& _buffer;
-
-  public:
-    OutputStreamBuffer(Buffer& buffer):
-      _old_size(buffer.size()),
-      _buffer(buffer)
-    {}
-
-    WeakBuffer
-    write_buffer()
-    {
-      _buffer.size(_old_size + 512);
-      ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
-      return WeakBuffer(
-          (char*)_buffer.mutable_contents() + _old_size,
-          512
+    _buffer.size(_old_size + 512);
+    ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
+    return WeakBuffer(
+      (char*)_buffer.mutable_contents() + _old_size,
+      512
       );
-    }
+  }
 
-    void
-    flush(Size size)
-    {
-      ELLE_DEBUG("Flush buffer stream size: %s", size);
-      _old_size += size;
-      _buffer.size(_old_size);
-    }
+  WeakBuffer
+  OutputStreamBuffer::read_buffer()
+  {
+    throw Exception("the buffer is in output mode");
+  }
 
-    WeakBuffer
-    read_buffer()
-    {
-      throw Exception("the buffer is in output mode");
-    }
-  };
+  void
+  OutputStreamBuffer::flush(Size size)
+  {
+    ELLE_DEBUG("Flush buffer stream size: %s", size);
+    _old_size += size;
+    _buffer.size(_old_size);
+  }
 
   ///////////////////////////////////////////////////////////////////////////
 

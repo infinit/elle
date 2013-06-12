@@ -209,6 +209,62 @@ namespace elle
     dump(const Natural32 shift = 0) const;
   };
 
+  /*-------------------.
+  | OutputStreamBuffer |
+  `-------------------*/
+
+  /// A StreamBuffer to write into a Buffer.
+  class OutputStreamBuffer:
+    public StreamBuffer
+  {
+  public:
+    OutputStreamBuffer(Buffer& buffer);
+
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+
+  private:
+    size_t _old_size;
+    Buffer& _buffer;
+  };
+
+  /*------------------.
+  | InputStreamBuffer |
+  `------------------*/
+
+  template<typename BufferType>
+  class InputStreamBuffer:
+    public StreamBuffer
+  {
+  public:
+    explicit
+    InputStreamBuffer(BufferType const& buffer);
+
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+
+  private:
+    BufferType const& _buffer;
+    bool _read;
+  };
+
+
   /*----------.
   | Operators |
   `----------*/
