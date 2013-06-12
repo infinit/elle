@@ -18,12 +18,12 @@ static
 infinit::cryptography::KeyPair
 _test_generate_rsa(elle::Natural32 const length)
 {
-  infinit::cryptography::KeyPair pair =
+  infinit::cryptography::KeyPair keypair =
     infinit::cryptography::KeyPair::generate(
       infinit::cryptography::Cryptosystem::rsa,
       length);
 
-  return (pair);
+  return (keypair);
 }
 
 /*----------.
@@ -36,12 +36,12 @@ test_represent_rsa()
 {
   // 1)
   {
-    infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+    infinit::cryptography::KeyPair keypair = _test_generate_rsa(1024);
     infinit::cryptography::Seed seed =
-      infinit::cryptography::Seed::generate(pair);
+      infinit::cryptography::Seed::generate(keypair);
     elle::String archive;
     elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << pair;
+      elle::serialize::OutputBase64Archive>(archive) << keypair;
     elle::printf("[representation 1] %s\n", archive);
   }
 }
@@ -68,10 +68,10 @@ static
 infinit::cryptography::Seed
 test_generate_rsa()
 {
-  infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+  infinit::cryptography::KeyPair keypair = _test_generate_rsa(1024);
 
   infinit::cryptography::Seed seed =
-    infinit::cryptography::Seed::generate(pair);
+    infinit::cryptography::Seed::generate(keypair);
 
   return (seed);
 }
@@ -115,68 +115,68 @@ void
 test_operate()
 {
   // RSA.
-  infinit::cryptography::KeyPair pair = _test_generate_rsa(1024);
+  infinit::cryptography::KeyPair keypair = _test_generate_rsa(1024);
 
   // Perform a sequence of rotation/derivation.
   {
     infinit::cryptography::Seed seed0 =
-      infinit::cryptography::Seed::generate(pair);
+      infinit::cryptography::Seed::generate(keypair);
 
-    infinit::cryptography::Seed seed1 = pair.k().rotate(seed0);
+    infinit::cryptography::Seed seed1 = keypair.k().rotate(seed0);
 
     // XXX
     elle::printf("seed1: %s\n", seed1);
 
-    infinit::cryptography::KeyPair pair1(seed1);
+    infinit::cryptography::KeyPair keypair1(seed1);
     infinit::cryptography::PublicKey K1(seed1);
     infinit::cryptography::PrivateKey k1(seed1);
 
-    infinit::cryptography::Seed seed2 = pair.k().rotate(seed1);
+    infinit::cryptography::Seed seed2 = keypair.k().rotate(seed1);
 
     // XXX
     elle::printf("seed2: %s\n", seed2);
 
-    infinit::cryptography::KeyPair pair2(seed2);
+    infinit::cryptography::KeyPair keypair2(seed2);
     infinit::cryptography::PublicKey K2(seed2);
     infinit::cryptography::PrivateKey k2(seed2);
 
-    infinit::cryptography::Seed seed3 = pair.k().rotate(seed2);
+    infinit::cryptography::Seed seed3 = keypair.k().rotate(seed2);
 
     // XXX
     elle::printf("seed3: %s\n", seed3);
 
-    infinit::cryptography::Seed _seed2 = pair.K().derive(seed3);
+    infinit::cryptography::Seed _seed2 = keypair.K().derive(seed3);
 
     // XXX
     elle::printf("_seed2: %s\n", _seed2);
 
-    infinit::cryptography::KeyPair _pair2(_seed2);
+    infinit::cryptography::KeyPair _keypair2(_seed2);
     infinit::cryptography::PublicKey _K2(_seed2);
     infinit::cryptography::PrivateKey _k2(_seed2);
 
-    infinit::cryptography::Seed _seed1 = pair.K().derive(_seed2);
+    infinit::cryptography::Seed _seed1 = keypair.K().derive(_seed2);
 
     // XXX
     elle::printf("_seed1: %s\n", _seed1);
 
-    infinit::cryptography::KeyPair _pair1(_seed1);
+    infinit::cryptography::KeyPair _keypair1(_seed1);
     infinit::cryptography::PublicKey _K1(_seed1);
     infinit::cryptography::PrivateKey _k1(_seed1);
 
-    infinit::cryptography::Seed _seed0 = pair.K().derive(_seed0);
+    infinit::cryptography::Seed _seed0 = keypair.K().derive(_seed0);
 
     // XXX
     elle::printf("_seed0: %s\n", _seed0);
 
     BOOST_CHECK_EQUAL(seed2, _seed2);
-    BOOST_CHECK_EQUAL(pair2, _pair2);
-    BOOST_CHECK_EQUAL(_pair2.K(), _K2);
-    BOOST_CHECK_EQUAL(_pair2.k(), _k2);
+    BOOST_CHECK_EQUAL(keypair2, _keypair2);
+    BOOST_CHECK_EQUAL(_keypair2.K(), _K2);
+    BOOST_CHECK_EQUAL(_keypair2.k(), _k2);
 
     BOOST_CHECK_EQUAL(seed1, _seed1);
-    BOOST_CHECK_EQUAL(pair1, _pair1);
-    BOOST_CHECK_EQUAL(_pair1.K(), _K1);
-    BOOST_CHECK_EQUAL(_pair1.k(), _k1);
+    BOOST_CHECK_EQUAL(keypair1, _keypair1);
+    BOOST_CHECK_EQUAL(_keypair1.K(), _K1);
+    BOOST_CHECK_EQUAL(_keypair1.k(), _k1);
 
     BOOST_CHECK_EQUAL(seed0, _seed0);
 
