@@ -67,7 +67,7 @@ class Config:
 
       def __init__(self):
         self.__default = True
-        self.__warnings = {}
+        self.__warnings = collections.OrderedDict()
 
       def __name(self, name):
         if name not in ['empty_body', 'parentheses']:
