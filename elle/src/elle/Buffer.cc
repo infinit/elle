@@ -72,13 +72,24 @@ namespace elle
   }
 
   Buffer::Buffer(Buffer&& other):
-    _size(other._size),
-    _capacity(other._capacity),
-    _contents(other._contents)
+    _size(0),
+    _capacity(0),
+    _contents(nullptr)
   {
+    (*this) = std::move(other);
+  }
+
+  Buffer&
+  Buffer::operator = (Buffer&& other)
+  {
+    this->_size = other._size;
+    this->_capacity = other._capacity;
+    this->_contents = other._contents;
+    // XXX: this cost a lot !
     other._contents = static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE));
     other._size = 0;
     other._capacity = ELLE_BUFFER_INITIAL_SIZE;
+    return *this;
   }
 
   ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
