@@ -7,7 +7,13 @@
 
 #include <network/uri/uri.hpp>
 #include "detail/uri_parse.hpp"
+#include "detail/uri_percent_encode.hpp"
+#include "detail/uri_normalize.hpp"
+#include "detail/uri_resolve.hpp"
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
@@ -259,16 +265,22 @@ namespace network {
     return pimpl_->uri_.end();
   }
 
-  namespace {
-    template <typename Iter>
-    inline
-    boost::string_ref to_string_ref(const uri::string_type &uri,
-				    boost::iterator_range<Iter> uri_part) {
+  namespace
+  {
+    inline boost::string_ref to_string_ref(const uri::string_type &uri,
+					   boost::iterator_range<uri::const_iterator> uri_part) {
       const char *c_str = uri.c_str();
       const char *uri_part_begin = &(*(std::begin(uri_part)));
       std::advance(c_str, std::distance(c_str, uri_part_begin));
       return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
     }
+
+    inline boost::string_ref to_string_ref(boost::string_ref::const_iterator uri_part_begin,
+					   boost::string_ref::const_iterator uri_part_end)
+    {
+      return boost::string_ref(uri_part_begin, std::distance(uri_part_begin, uri_part_end));
+    }
+
   } // namespace
 
   boost::optional<boost::string_ref> uri::scheme() const {
@@ -330,7 +342,7 @@ namespace network {
       last = std::end(*port);
     }
 
-    return to_string_ref(pimpl_->uri_, boost::make_iterator_range(first, last));
+    return to_string_ref(first, last);
   }
 
   uri::string_type uri::native() const {
@@ -365,164 +377,6 @@ namespace network {
     return (is_absolute() && !authority());
   }
 
-  namespace {
-    std::unordered_map<std::string, char> make_percent_decoded_chars() {
-      std::unordered_map<std::string, char> map;
-      map["%41"] = 'a'; map["%61"] = 'A';
-      map["%42"] = 'b'; map["%62"] = 'B';
-      map["%43"] = 'c'; map["%63"] = 'C';
-      map["%44"] = 'd'; map["%64"] = 'D';
-      map["%45"] = 'e'; map["%65"] = 'E';
-      map["%46"] = 'f'; map["%66"] = 'F';
-      map["%47"] = 'g'; map["%67"] = 'G';
-      map["%48"] = 'h'; map["%68"] = 'H';
-      map["%49"] = 'i'; map["%69"] = 'I';
-      map["%4A"] = 'j'; map["%6A"] = 'J';
-      map["%4B"] = 'k'; map["%6B"] = 'K';
-      map["%4C"] = 'l'; map["%6C"] = 'L';
-      map["%4D"] = 'm'; map["%6D"] = 'M';
-      map["%4E"] = 'n'; map["%6E"] = 'N';
-      map["%4F"] = 'o'; map["%6F"] = 'O';
-      map["%50"] = 'p'; map["%70"] = 'P';
-      map["%51"] = 'q'; map["%71"] = 'Q';
-      map["%52"] = 'r'; map["%72"] = 'R';
-      map["%53"] = 's'; map["%73"] = 'S';
-      map["%54"] = 't'; map["%74"] = 'T';
-      map["%55"] = 'u'; map["%75"] = 'U';
-      map["%56"] = 'v'; map["%76"] = 'V';
-      map["%57"] = 'w'; map["%77"] = 'W';
-      map["%58"] = 'x'; map["%78"] = 'X';
-      map["%59"] = 'y'; map["%79"] = 'Y';
-      map["%5A"] = 'z'; map["%7A"] = 'Z';
-      map["%30"] = '0';
-      map["%31"] = '1';
-      map["%32"] = '2';
-      map["%33"] = '3';
-      map["%34"] = '4';
-      map["%35"] = '5';
-      map["%36"] = '6';
-      map["%37"] = '7';
-      map["%38"] = '8';
-      map["%39"] = '9';
-      map["%2D"] = '-';
-      map["%2E"] = '.';
-      map["%5F"] = '_';
-      map["%7E"] = '~';
-      return map;
-    }
-
-    static const auto percent_decoded_chars =  make_percent_decoded_chars();
-
-    template <class Iter>
-    void percent_encoding_to_upper(Iter first, Iter last) {
-      auto it = first;
-      while (it != last) {
-	if (*it == '%') {
-	  ++it; *it = std::toupper(*it);
-	  ++it; *it = std::toupper(*it);
-	}
-	++it;
-      }
-    }
-
-    template <class Iter>
-    Iter decode_encoded_chars(Iter first, Iter last) {
-      auto it = first, it2 = first;
-      while (it != last) {
-	if (*it == '%') {
-	  auto sfirst = it, slast = it;
-	  std::advance(slast, 3);
-	  auto char_it = percent_decoded_chars.find(uri::string_type(sfirst, slast));
-	  if (char_it != std::end(percent_decoded_chars)) {
-	    *it2 = char_it->second;
-	  }
-	  ++it; ++it;
-	}
-	else {
-	  *it2 = *it;
-	}
-	++it; ++it2;
-      }
-      return it2;
-    }
-
-    template <class Source>
-    void normalize_path_segments(Source &path) {
-      using namespace boost;
-      using namespace boost::algorithm;
-
-      if (!path.empty()) {
-	std::vector<Source> path_segments;
-	boost::split(path_segments, path, is_any_of("/"));
-
-	// remove single dot segments
-	boost::remove_erase_if(path_segments,
-			       [] (const Source &s) {
-				 return (s == ".");
-			       });
-
-	// remove double dot segments
-	std::vector<Source> normalized_segments;
-	boost::for_each(path_segments,
-			[&normalized_segments] (const Source &s) {
-			  if (s == "..") {
-			    // in a valid path, the minimum number of segments is 1
-			    if (normalized_segments.size() <= 1) {
-			      throw uri_builder_error();
-			    }
-
-			    normalized_segments.pop_back();
-			  }
-			  else {
-			    normalized_segments.push_back(s);
-			  }
-			});
-
-	// remove adjacent slashes
-	boost::optional<Source> prev_segment;
-	boost::remove_erase_if(normalized_segments,
-			       [&prev_segment] (const Source &segment) {
-				 bool has_adjacent_slash =
-				   ((prev_segment && prev_segment->empty()) && segment.empty());
-				 if (!has_adjacent_slash) {
-				   prev_segment.reset(segment);
-				 }
-				 return has_adjacent_slash;
-			       });
-
-	path = boost::join(normalized_segments, "/");
-      }
-
-      if (path.empty()) {
-	path = "/";
-      }
-    }
-
-    uri::string_type normalize_path(uri::string_type path, uri_comparison_level level) {
-      if ((uri_comparison_level::case_normalization == level) ||
-	  (uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
-	percent_encoding_to_upper(std::begin(path), std::end(path));
-      }
-
-      if ((uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
-	path.erase(decode_encoded_chars(std::begin(path), std::end(path)), std::end(path));
-      }
-
-      if (uri_comparison_level::path_segment_normalization == level) {
-	normalize_path_segments(path);
-      }
-
-      return std::move(path);
-    }
-
-    template <class Iter>
-    uri::string_type normalize_path(Iter first, Iter last, uri_comparison_level level) {
-      return normalize_path(uri::string_type(first, last), level);
-    }
-  } // namespace
-
   uri uri::normalize(uri_comparison_level level) const {
     string_type normalized(pimpl_->uri_);
     detail::uri_parts<string_type::iterator> parts;
@@ -542,13 +396,15 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
+      boost::for_each(normalized, detail::normalize_percent_encoded());
     }
 
     if ((uri_comparison_level::percent_encoding_normalization == level) ||
 	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
-      normalized.erase(decode_encoded_chars(std::begin(normalized), std::end(normalized)),
+      // there's got to be a better way of doing this that doesn't
+      // mean parsing again (twice!)
+      normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 		       std::end(normalized));
     }
 
@@ -558,8 +414,8 @@ namespace network {
       assert(is_valid);
 
       if (parts.hier_part.path) {
-	string_type path(std::begin(*parts.hier_part.path), std::end(*parts.hier_part.path));
-	normalize_path_segments(path);
+	uri::string_type path = detail::normalize_path_segments(
+	  to_string_ref(normalized, *parts.hier_part.path));
 
 	// put the normalized path back into the uri
 	boost::optional<string_type> query, fragment;
@@ -614,16 +470,16 @@ namespace network {
       return other;
     }
 
-    auto path = normalize_path(string_type(*this->path()), level),
-      other_path = normalize_path(string_type(*other.path()), level);
+    auto path = detail::normalize_path(*this->path(), level),
+      other_path = detail::normalize_path(*other.path(), level);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query.reset(string_type(*other.query()));
+      query = uri::string_type(*other.query());
     }
 
     if (other.fragment()) {
-      fragment.reset(string_type(*other.fragment()));
+      fragment = uri::string_type(*other.fragment());
     }
 
     return network::uri(boost::optional<string_type>(),
@@ -633,12 +489,70 @@ namespace network {
 			other_path, query, fragment);
   }
 
-  uri uri::resolve(const uri &other, uri_comparison_level level) const {
-    // http://tools.ietf.org/html/rfc3986#section-5.2
-    if (!other.absolute() && !other.opaque()) {
-      return other;
+  namespace detail {
+    template<typename T>
+    inline boost::optional<uri::string_type>
+    make_arg(T&& arg) {
+      return boost::optional<uri::string_type>(std::forward<T>(arg));
     }
-    return other;
+
+    inline boost::optional<uri::string_type>
+    make_arg(boost::optional<boost::string_ref> ref) {
+      if (ref) {
+        return uri::string_type(*ref);
+      }
+      return boost::optional<uri::string_type>();
+    }
+  }  // namespace detail
+
+  uri uri::resolve(const uri &reference, uri_comparison_level level) const {
+    // This implementation uses the psuedo-code given in
+    // http://tools.ietf.org/html/rfc3986#section-5.2.2
+
+    if (reference.absolute() && !reference.opaque()) {
+      return reference;
+    }
+
+    boost::optional<uri::string_type>
+      user_info, host, port, path, query;
+    const uri& base = *this;
+
+    if (reference.authority()) {
+      // g -> http://g
+      user_info = detail::make_arg(reference.user_info());
+      host = detail::make_arg(reference.host());
+      port = detail::make_arg(reference.port());
+      path = detail::remove_dot_segments(*reference.path());
+      query = detail::make_arg(reference.query());
+    }
+    else {
+      if (!reference.path() || reference.path()->empty()) {
+        path = detail::make_arg(base.path());
+        if (reference.query()) {
+          query = detail::make_arg(reference.query());
+	}
+	else {
+          query = detail::make_arg(base.query());
+	}
+      }
+      else {
+        if (reference.path().get().front() == '/') {
+          path = detail::remove_dot_segments(*reference.path());
+	}
+        else {
+          path = detail::merge_paths(base, reference);
+        }
+        query = detail::make_arg(reference.query());
+      }
+      user_info = detail::make_arg(base.user_info());
+      host = detail::make_arg(base.host());
+      port = detail::make_arg(base.port());
+    }
+
+    return uri(detail::make_arg(base.scheme()),
+	       std::move(user_info), std::move(host), std::move(port),
+	       std::move(path), std::move(query),
+	       detail::make_arg(reference.fragment()));
   }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {
