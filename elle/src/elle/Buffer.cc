@@ -256,21 +256,22 @@ namespace elle
 
     // Display the string, depending on its length.
     if (hexadecimal.length() == 0)
-      {
-        stream << "empty";
-      }
+    {
+      stream << "empty";
+    }
     else if (hexadecimal.length() < length)
-      {
-        // If the string is short enough, display it in its entirety.
-        stream << hexadecimal;
-      }
+    {
+      // If the string is short enough, display it in its entirety.
+      stream << "0x" << hexadecimal;
+    }
     else
-      {
-        // Otherwise chop it and display the begining and the end only.
-        stream << hexadecimal.substr(0, length / 2)
-               << "..." << std::dec << buffer.size() << " bytes" << "..."
-               << hexadecimal.substr(hexadecimal.length() - (length / 2));
-      }
+    {
+      // Otherwise chop it and display the begining and the end only.
+      stream << "0x"
+             << hexadecimal.substr(0, length / 2)
+             << "..." << std::dec << buffer.size() << " bytes" << "..."
+             << hexadecimal.substr(hexadecimal.length() - (length / 2));
+    }
 
     return (stream);
   }
@@ -365,21 +366,22 @@ namespace elle
 
     // Display the string, depending on its length.
     if (hexadecimal.length() == 0)
-      {
-        stream << "empty";
-      }
+    {
+      stream << "empty";
+    }
     else if (hexadecimal.length() < length)
-      {
-        // If the string is short enough, display it in its entirety.
-        stream << hexadecimal;
-      }
+    {
+      // If the string is short enough, display it in its entirety.
+      stream << "0x" << hexadecimal;
+    }
     else
-      {
-        // Otherwise chop it and display the begining and the end only.
-        stream << hexadecimal.substr(0, length / 2)
-               << "..." << std::dec << buffer.size() << " bytes" << "..."
-               << hexadecimal.substr(hexadecimal.length() - (length / 2));
-      }
+    {
+      // Otherwise chop it and display the begining and the end only.
+      stream << "0x"
+             << hexadecimal.substr(0, length / 2)
+             << "..." << std::dec << buffer.size() << " bytes" << "..."
+             << hexadecimal.substr(hexadecimal.length() - (length / 2));
+    }
 
     return (stream);
   }
