@@ -7,13 +7,22 @@
 # See the LICENSE file for more information.
 
 import greenlet
+import os
 import sys
 import threading
 import time
 import traceback
 import types
+
 import drake.debug
 import drake.threadpool
+import drake.log
+
+
+conf = None
+if 'DRAKE_LOG_LEVEL' in os.environ:
+  conf = os.environ['DRAKE_LOG_LEVEL']
+logger = drake.log.Logger(configuration_string = conf)
 
 class Frozen:
   pass
@@ -94,8 +103,7 @@ class Scheduler:
     return self.__running
 
   def debug(self, msg):
-    drake.debug.debug(msg, drake.debug.DEBUG_SCHED)
-
+    return logger.log('drake.scheduler', msg, drake.log.LogLevel.trace)
 
   def add(self, coro):
     self.debug('new coroutine: %s' % (coro.name))
