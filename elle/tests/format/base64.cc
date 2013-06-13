@@ -46,10 +46,13 @@ BOOST_AUTO_TEST_CASE(streams)
     }
   }
 
-  BOOST_CHECK_EQUAL(result.str(),
-                    "SWYgbXkgY2FsY3VsYXRpb25zIGFyZSBjb3JyZWN0LCB3aGVuIHRoaX"
-                    "MgYmFieSBoaXRzIDg4IG1pbGVzIHBlciBob3VyIC4uLiB5b3UncmUg"
-                    "Z29ubmEgc2VlIHNvbWUgc2VyaW91cyBzaGl0Lm==");
+#define BEGINNING                                               \
+  "SWYgbXkgY2FsY3VsYXRpb25zIGFyZSBjb3JyZWN0LCB3aGVuIHRoaX"      \
+    "MgYmFieSBoaXRzIDg4IG1pbGVzIHBlciBob3VyIC4uLiB5b3UncmUg"    \
+    "Z29ubmEgc2VlIHNvbWUgc2VyaW91cyBzaGl0L"
+
+  BOOST_CHECK(result.str() == BEGINNING "g==" ||
+              result.str() == BEGINNING "m==");
 
   {
     elle::format::base64::Stream base64(result);
