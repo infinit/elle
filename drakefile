@@ -139,7 +139,7 @@ def configure(cxx_toolkit = None,
   lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
   # Build
-  rule_build = drake.Rule('build')
+  rule_build = drake.TestSuite('build')
   rule_build << lib_static
   rule_build << lib_dynamic
 
@@ -187,7 +187,9 @@ def configure(cxx_toolkit = None,
                                [lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
     rule_tests << bin
-    rule_check << drake.Runner(bin).status
+    runner = drake.Runner(bin).status
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_check << runner
 
   # Install
   rule_install = drake.Rule('install')
