@@ -137,7 +137,7 @@ def configure(cxx_toolkit = None,
 
   # Tests
   global rule_check, rule_tests
-  rule_check = drake.Rule('check')
+  rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
 
   tests = [
@@ -168,6 +168,7 @@ def configure(cxx_toolkit = None,
                                 cxx_toolkit, config)
     rule_tests << test
     runner = drake.Runner(test)
+    runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
   # Install

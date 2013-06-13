@@ -297,7 +297,7 @@ def configure(cxx_toolkit = None,
   # Tests
 
   rule_tests = drake.Rule('tests')
-  rule_check = drake.Rule('check')
+  rule_check = drake.TestSuite('check')
 
   tests = [
     "attributes.cc",
@@ -377,6 +377,7 @@ def configure(cxx_toolkit = None,
                                     cxx_toolkit, config_test)
         rule_tests << test
         runner = drake.Runner(test)
+        runner.reporting = drake.Runner.Reporting.on_failure
         rule_check << runner.status
 
   # Install

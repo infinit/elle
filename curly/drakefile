@@ -128,7 +128,7 @@ def configure(cxx_toolkit = None,
   ]
 
   global rule_check, rule_tests
-  rule_check = drake.Rule('check')
+  rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
 
   for test in tests_sched:
@@ -149,10 +149,9 @@ def configure(cxx_toolkit = None,
                                    reactor.lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
     rule_tests << bin
-    if test.args:
-        rule_check << drake.Runner(bin, test.args).status
-    else:
-        rule_check << drake.Runner(bin).status
+    runner = drake.Runner(bin, test.args).status
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_check << runner
 
   # Install
   rule_install = drake.Rule('install')
