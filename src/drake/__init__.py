@@ -1335,12 +1335,7 @@ class Builder:
                                       _scheduler(),
                                       sched.Coroutine.current))
 
-                try:
-                    sched.coro_wait(coroutines_static)
-                except:
-                    for coro in coroutines_static:
-                        coro.terminate()
-                    raise
+                sched.coro_wait(coroutines_static)
 
                 # Build dynamic dependencies
                 debug.debug('Build dynamic dependencies')
@@ -1355,16 +1350,13 @@ class Builder:
                                       _scheduler(),
                                       sched.Coroutine.current))
 
-                while True:
-                    try:
-                        sched.coro_wait(coroutines_dynamic)
-                    except Exception as e:
-                        debug.debug('Execution needed because some '
-                                    'dynamic dependency couldn\'t '
-                                    'be built')
-                        execute = True
-                    else:
-                        break
+                try:
+                    sched.coro_wait(coroutines_dynamic)
+                except Exception as e:
+                    debug.debug('Execution needed because some '
+                                'dynamic dependency couldn\'t '
+                                'be built')
+                    execute = True
 
                 # If any non-virtual target is missing, we must rebuild.
                 if not execute:

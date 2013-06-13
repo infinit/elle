@@ -41,10 +41,10 @@ class Logger:
       self.__logger = logger
 
     def __enter__(self):
-      self.__logger._Logger__indent += 1
+      self.__logger._Logger__indentation += 1
 
     def __exit__(self, type, value, traceback):
-      self.__logger._Logger__indent -= 1
+      self.__logger._Logger__indentation -= 1
 
 
   class NoOp:

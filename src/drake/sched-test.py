@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# Ensure this drake is used
+import os.path
+import sys
+SELF = os.path.realpath(__file__)
+sys.path = [os.path.dirname(os.path.dirname(SELF))] + sys.path
+
 import sched
 import unittest
 
@@ -129,6 +135,15 @@ class TestStandaloneCoroutine(unittest.TestCase):
       self.r.step()
     self.assertTrue(self.r.done)
 
+class Sleep(sched.ThreadedOperation):
+  def __init__(self, duration):
+    sched.ThreadedOperation.__init__(self)
+    self.__duration = duration
+
+  def run(self):
+    import time
+    time.sleep(self.__duration)
+
 class TestScheduler(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):
@@ -176,15 +191,6 @@ class TestScheduler(unittest.TestCase):
     self.scheduler.run()
 
   def test_reactor(self):
-
-    class Sleep(sched.ThreadedOperation):
-      def __init__(self, duration):
-        sched.ThreadedOperation.__init__(self)
-        self.__duration = duration
-
-      def run(self):
-        import time
-        time.sleep(self.__duration)
 
     s = Sleep(1)
     cw = sched.Coroutine(lambda: self.coroutine_wait(s), 'coro_wait',
@@ -242,5 +248,36 @@ class TestScheduler(unittest.TestCase):
       check(3)
     read = sched.Coroutine(lambda: read_f(beacon), 'read', self.scheduler)
     self.scheduler.run()
+
+  def test_continue_raise(self):
+
+    def thrower():
+      raise BeaconException()
+
+    def waiter(beacon):
+      s = Sleep(1)
+      s.start()
+      sched.coro_wait(s)
+      beacon[0] += 1
+
+    def main():
+      beacon = [0]
+      t = sched.Coroutine(thrower, 'thrower', self.scheduler,
+                          parent = sched.Coroutine.current)
+      w = sched.Coroutine(lambda: waiter(beacon),
+                          'waiter', self.scheduler,
+                          parent = sched.Coroutine.current)
+      try:
+        sched.coro_wait([t, w])
+      finally:
+        assert beacon[0] == 1
+
+    sched.Coroutine(main, 'main', self.scheduler)
+    try:
+      self.scheduler.run()
+    except BeaconException:
+      pass
+    else:
+      assert False
 
 unittest.main()

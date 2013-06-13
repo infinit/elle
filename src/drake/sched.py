@@ -92,6 +92,9 @@ class Scheduler:
     self.__lock = threading.Condition()
     self.__scheduled = []
 
+  def __str__(self):
+    return 'Scheduler'
+
   def reset(self):
     self.__coroutines = OrderedSet()
     self.__coroutines_frozen = set()
@@ -106,7 +109,7 @@ class Scheduler:
     return logger.log('drake.scheduler', msg, drake.log.LogLevel.trace)
 
   def add(self, coro):
-    self.debug('new coroutine: %s' % (coro.name))
+    self.debug('%s: new coroutine: %s' % (self, coro.name))
     self.__coroutines.add(coro)
 
   def run(self):
@@ -120,7 +123,8 @@ class Scheduler:
     try:
       while True:
         if self.__exception is not None:
-          self.debug('pending exception %s, dying' % (self.__exception,))
+          self.debug('%s: pending exception %s, dying' % \
+                     (self, self.__exception))
           # FIXME: terminate everyone
           e = self.__exception
           self.__exception = None
@@ -154,26 +158,29 @@ class Scheduler:
   def __step(self, coro):
     if (coro.done):
       return
-    self.debug('step %s' % coro)
-    triggered = None
-    try:
-      coro.step()
-    except Exception as e:
-      parent = coro._Coroutine__parent
-      if parent is not None:
-        parent.throw(e, coro._Coroutine__traceback)
-        triggered = parent
-      else:
-        self.__exception = e.with_traceback(coro._Coroutine__traceback)
-    if coro.done:
-      self.debug('%s ended' % coro)
-      self.__coroutines.remove(coro)
-    elif coro.frozen:
-      self.debug('%s froze' % coro)
-      self.__coroutines_frozen.add(coro)
-      self.__coroutines.remove(coro)
-    if triggered is not None:
-      self.__step(triggered)
+    with self.debug('%s: schedule %s' % (self, coro)):
+      triggered = None
+      try:
+        with self.debug('%s: step %s' % (self, coro)):
+          coro.step()
+      except Exception as e:
+        self.debug('%s: %s threw %s' % (self, coro, e))
+        parent = coro._Coroutine__parent
+        if parent is not None:
+          self.debug('%s: forward exception to parent :%s' % (self, parent))
+          parent.throw(e, coro._Coroutine__traceback)
+          triggered = parent
+        else:
+          self.__exception = e.with_traceback(coro._Coroutine__traceback)
+      if coro.done:
+        self.debug('%s ended' % coro)
+        self.__coroutines.remove(coro)
+      elif coro.frozen:
+        self.debug('%s froze' % coro)
+        self.__coroutines_frozen.add(coro)
+        self.__coroutines.remove(coro)
+      if triggered is not None:
+        self.__step(triggered)
 
   def unfreeze(self, coro):
     self.debug('%s wakes up' % coro)
@@ -309,21 +316,27 @@ class Coroutine(Waitable):
     if isinstance(waitables, Waitable):
       return self.wait([waitables], handle_exceptions)
     else:
-      freeze = False
-      for waitable in waitables:
-        if waitable._Waitable__wait(self):
-          self.__waited.add(waitable)
-          freeze = True
-      if freeze:
-        self.__frozen = True
-        if self.current:
-          coro_yield(handle_exceptions = handle_exceptions)
+      with logger.log('drake.scheduler',
+                      '%s: wait %s' % (self, waitables),
+                      drake.log.LogLevel.debug):
+        freeze = False
+        for waitable in waitables:
+          if waitable._Waitable__wait(self):
+            self.__waited.add(waitable)
+            freeze = True
+        if freeze:
+          self.__frozen = True
+          if self.current:
+            coro_yield(handle_exceptions = handle_exceptions)
 
   def __unwait(self, waitable):
-    assert waitable in self.__waited
-    self.__waited.remove(waitable)
-    if not self.__waited:
-      self.__unfreeze()
+    with logger.log('drake.scheduler',
+                    '%s: unwait %s' % (self, waitable),
+                    drake.log.LogLevel.debug):
+      assert waitable in self.__waited
+      self.__waited.remove(waitable)
+      if not self.__waited:
+        self.__unfreeze()
 
   def run(self):
     while not self.done:
@@ -373,6 +386,15 @@ class Coroutine(Waitable):
     else:
       self.throw(Terminate())
 
+  @property
+  def status(self):
+    if self.done:
+      return 'done'
+    elif self.frozen:
+      return 'frozen'
+    else:
+      return 'running'
+
 class ThreadedOperation(Signal):
 
   def start(self):
@@ -391,10 +413,21 @@ def coro_yield(handle_exceptions = True):
       raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
 
 def coro_wait(waitable):
-  Coroutine.current.wait(waitable, handle_exceptions = False)
-  exception = Coroutine.current._Coroutine__exception
-  if exception is not None:
+  done = False
+  exception = None
+  while not done:
+    Coroutine.current.wait(waitable, handle_exceptions = False)
+    current_exception = Coroutine.current._Coroutine__exception
     Coroutine.current._Coroutine__exception = None
+    if current_exception is None:
+      done = True
+    else:
+      if exception is None:
+        exception = current_exception
+      else:
+        current_exception.__context__ = exception
+      exception = current_exception
+  if exception is not None:
     raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
 
 def background(f):
