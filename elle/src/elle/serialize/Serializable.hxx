@@ -173,7 +173,7 @@ namespace elle
 
 # define __ESS_LOG_ACTION(action, ptr)                                        \
     ELLE_LOG_COMPONENT("elle.serialize.Serializable");                        \
-    ELLE_TRACE_SCOPE((#action " %p using type %s"),                           \
+    ELLE_DEBUG_SCOPE((#action " %p using type %s"),                           \
                          ptr, ELLE_PRETTY_OBJECT_TYPE(ptr))                   \
 /**/
 

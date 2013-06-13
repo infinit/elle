@@ -20,7 +20,7 @@ namespace elle
         ELLE_LOG_COMPONENT("elle.concept.Uniquable");
         try
           {
-            ELLE_TRACE_SCOPE("Save %p of type %s to a Unique string",
+            ELLE_DEBUG_SCOPE("save %p of type %s to a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t const*>(this) != nullptr);
@@ -44,7 +44,7 @@ namespace elle
         try
           {
             ELLE_LOG_COMPONENT("elle.concept.Uniquable");
-            ELLE_TRACE_SCOPE("Load %p of type %s from a Unique string",
+            ELLE_DEBUG_SCOPE("load %p of type %s from a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
             assert(dynamic_cast<interface_t*>(this) != nullptr);

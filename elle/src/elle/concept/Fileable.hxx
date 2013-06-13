@@ -21,9 +21,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.concept.Fileable");
 
-      ELLE_TRACE_SCOPE("load(%s)", path);
-
-      ELLE_TRACE("open file in read mode");
+      ELLE_DEBUG_SCOPE("load(%s) in read mode", path);
 
       std::ifstream in(path.string(),
                        std::ios_base::in | std::ios_base::binary);
@@ -34,7 +32,7 @@ namespace elle
 
       try
         {
-          ELLE_TRACE_SCOPE("deserializing the instance '%p' from the file '%s'",
+          ELLE_DEBUG_SCOPE("deserializing the instance '%p' from the file '%s'",
                            this, path);
 
           typedef serialize::_Serializable<Archive> interface_t;
@@ -55,7 +53,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.concept.Fileable");
 
-      ELLE_TRACE_SCOPE("store(%s)", path);
+      ELLE_DEBUG_SCOPE("store(%s)", path);
 
       if (elle::io::File::Dig(path) == elle::Status::Error)
         throw std::runtime_error(
@@ -70,7 +68,7 @@ namespace elle
 
       try
         {
-          ELLE_TRACE_SCOPE("serializing the instance '%p' to the file '%s'",
+          ELLE_DEBUG_SCOPE("serializing the instance '%p' to the file '%s'",
                            this, path);
 
           typedef serialize::_Serializable<Archive> interface_t;
@@ -91,7 +89,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.concept.Fileable");
 
-      ELLE_TRACE_SCOPE("erase(%s)", path);
+      ELLE_DEBUG_SCOPE("erase(%s)", path);
 
       if (elle::io::File::Erase(path) == elle::Status::Error)
         throw std::runtime_error(
@@ -104,7 +102,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.concept.Fileable");
 
-      ELLE_TRACE_SCOPE("exists(%s)", path);
+      ELLE_DEBUG_SCOPE("exists(%s)", path);
 
       return (elle::io::File::Exist(path));
     }
