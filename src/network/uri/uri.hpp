@@ -256,7 +256,7 @@ namespace network {
 
   inline
   bool operator == (const uri &lhs, const char *rhs) {
-    if (std::strlen(rhs) != std::distance(std::begin(lhs), std::end(lhs))) {
+    if (std::strlen(rhs) != std::size_t(std::distance(std::begin(lhs), std::end(lhs)))) {
       return false;
     }
     return std::equal(std::begin(lhs), std::end(lhs), rhs);
