@@ -23,6 +23,7 @@ import time
 import types
 from copy import deepcopy
 from drake.sched import Coroutine, Scheduler
+from drake.enumeration import Enumerated
 
 def _scheduled():
     return Coroutine.current and \
@@ -805,6 +806,10 @@ class BaseNode(object, metaclass = _BaseNodeType):
                 self.builder.run()
             self.polish()
 
+    @property
+    def build_status(self):
+      return self.builder.build_status
+
     def polish(self):
         """A hook called when a node has been built.
 
@@ -877,6 +882,14 @@ class BaseNode(object, metaclass = _BaseNodeType):
         """All first-level dependencies"""
         return itertools.chain(self.builder.sources().values(),
                                self.builder._Builder__dynsrc.values())
+
+    def report_dependencies(self, dependencies):
+        """Called when dependencies have been built.
+
+        This hook is always called no matter whether the nodes
+        were successfully built or not.
+        """
+        pass
 
 class VirtualNode(BaseNode):
 
@@ -1176,6 +1189,10 @@ class Builder:
         """The list of target nodes."""
         return self.__targets
 
+    @property
+    def path_stdout(self):
+      return self.cachedir() / 'stdout'
+
     def cmd(self, pretty, c, cwd = None, leave_stdout = False):
         """Run a shell command.
 
@@ -1188,7 +1205,7 @@ class Builder:
         """
         if not isinstance(c, tuple):
             c = (c,)
-        with open(str(self.cachedir() / 'stdout'), 'w') as f:
+        with open(str(self.path_stdout), 'w') as f:
             def fun():
                 for cmd in c:
                     cmd = list(map(str, cmd))
@@ -1248,6 +1265,26 @@ class Builder:
     def get_type(self, tname):
         """Return the node type with the given name."""
         return _BaseNodeTypeType.node_types[tname]
+
+    def report_dependencies(self, dependencies):
+        """Called when dependencies have been built.
+
+        This hook is always called no matter whether the nodes
+        were successfully built or not.
+        """
+        pass
+
+    def __report_dependencies(self, dependencies):
+        self.report_dependencies(dependencies)
+        for target in self.__targets:
+            target.report_dependencies(dependencies)
+
+    @property
+    def build_status(self):
+      if not self.__executed:
+        return None
+      else:
+        return self.__executed_exception is None
 
     def run(self):
         """Build sources recursively, check if our target are up to
@@ -1334,8 +1371,10 @@ class Builder:
                                       str(node),
                                       _scheduler(),
                                       sched.Coroutine.current))
-
-                sched.coro_wait(coroutines_static)
+                try:
+                  sched.coro_wait(coroutines_static)
+                finally:
+                  self.__report_dependencies(self.__sources.values())
 
                 # Build dynamic dependencies
                 debug.debug('Build dynamic dependencies')
@@ -1471,8 +1510,12 @@ class Builder:
                     self.__executed = True
                     debug.debug('Everything is up to date.',
                                 debug.DEBUG_TRACE_PLUS)
+            except Exception as e:
+              self.__executed_exception = e
+              raise
             finally:
-                self.__executed_signal.signal()
+              self.__executed = True
+              self.__executed_signal.signal()
 
 
     def execute(self):
@@ -2299,6 +2342,8 @@ class Rule(VirtualNode):
             @property
             def command(self):
                 return None
+            def __str__(self):
+                return 'RuleBuilder(%s)' % self._Builder__targets[0]
         RuleBuilder(nodes, [self])
 
     def hash(self):
@@ -2324,6 +2369,7 @@ class EmptyBuilder(Builder):
     def execute(self):
         """Do nothing."""
         return True
+
 
 class TouchBuilder(Builder):
 
@@ -2638,6 +2684,10 @@ def reset():
 
 class Runner(Builder):
 
+  class Reporting(Enumerated,
+                  values = ['always', 'never', 'on_failure']):
+    pass
+
   def __init__(self, exe, args = None):
     self.__args = args or list()
     self.__exe = exe
@@ -2645,6 +2695,8 @@ class Runner(Builder):
     self.__err = node('%s.err' % exe.name())
     self.__status = node('%s.status' % exe.name())
     self.__sources = [exe] + exe.dynamic_libraries
+    self.stdout_reporting = Runner.Reporting.never
+    self.stderr_reporting = Runner.Reporting.always
     Builder.__init__(self,
                      self.__sources,
                      [self.__out, self.__err, self.__status])
@@ -2652,6 +2704,24 @@ class Runner(Builder):
   @property
   def status(self):
     return self.__status
+
+  def __reporting_set(self, val):
+    self.stdout_reporting = val
+    self.stderr_reporting = val
+  reporting = property(fget = None, fset = __reporting_set)
+
+  def __must_report(self, reporting, status):
+    if reporting is Runner.Reporting.always:
+      return True
+    elif reporting is Runner.Reporting.on_failure:
+      return status != 0
+    else:
+      return False
+
+  def __report(self, node):
+    with open(str(node.path()), 'r') as f:
+      for line in f:
+        print('  %s' % line, end = '')
 
   def execute(self):
     import subprocess
@@ -2666,6 +2736,10 @@ class Runner(Builder):
       p.wait()
       status = p.returncode
       print(status, file = rv)
+    if self.__must_report(self.stdout_reporting, status):
+      self.__report(self.__out)
+    if self.__must_report(self.stderr_reporting, status):
+      self.__report(self.__err)
     return status == 0
 
   @property
@@ -2674,3 +2748,37 @@ class Runner(Builder):
 
   def __str__(self):
     return str(self.__exe)
+
+
+class TestSuite(Rule):
+
+  def __init__(self, *args, **kwargs):
+    Rule.__init__(self, *args, **kwargs)
+    self.__success = 0
+    self.__failures = 0
+
+  @property
+  def success(self):
+    return self.__success
+
+  @property
+  def failures(self):
+    return self.__failures
+
+  @property
+  def total(self):
+    return self.success + self.failures
+
+  def report_dependencies(self, deps):
+    failures = []
+    for dep in deps:
+      if dep.build_status:
+        self.__success += 1
+      else:
+        failures.append(dep)
+        self.__failures += 1
+    self.builder.output('%s: %s / %s tests passed.' %
+                        (self, self.success, self.total))
+
+  def __str__(self):
+    return 'Test suite %s' % self.name()
