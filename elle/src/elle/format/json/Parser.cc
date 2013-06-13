@@ -119,7 +119,7 @@ namespace elle
       typename Parser<T>::ObjectPtr
       Parser<T>::parse(StreamType& input)
       {
-        ELLE_TRACE_SCOPE("Parsing json from stream");
+        ELLE_DEBUG_SCOPE("Parsing json from stream");
         if (!input.good())
           throw elle::Exception("The stream is not good.");
         if (input.eof())
