@@ -31,6 +31,8 @@ namespace elle
     `-------------*/
     public:
       Locus();
+      /// Create a Locus from an host:port representation.
+      Locus(std::string const& str);
       Locus(std::string const& hostname, int port);
       Locus(Locus const&) = default;
 

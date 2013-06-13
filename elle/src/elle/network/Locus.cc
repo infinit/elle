@@ -1,3 +1,6 @@
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/lexical_cast.hpp>
 #include <elle/network/Locus.hh>
 #include <elle/io/Dumpable.hh>
 
@@ -19,6 +22,29 @@ namespace elle
       : port(0)
     {}
 
+    Locus::Locus(std::string const& str):
+      Locus()
+    {
+      std::vector<std::string> components;
+      boost::algorithm::split(components, str,
+                              boost::algorithm::is_any_of(":"));
+      if (components.size() != 2)
+        throw elle::Exception(elle::sprintf("invalid network endpoint: %s",
+                                            str));
+      Host h;
+      h.Create(components[0]);
+      int port;
+      try
+      {
+        port = boost::lexical_cast<int>(components[1]);
+      }
+      catch (boost::bad_lexical_cast const&)
+      {
+        throw elle::Exception(elle::sprintf("invalid network port: %s",
+                                            components[1]));
+      }
+      Create(h, port);
+    }
 
     Locus::Locus(std::string const& hostname, int port)
       : Locus()
