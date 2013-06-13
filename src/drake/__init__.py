@@ -1120,6 +1120,14 @@ class Builder:
     name = 'build'
     _deps_handlers = {}
 
+    class Failed(Exception):
+
+      def __init__(self, builder):
+        self.__builder = builder
+
+      def __str__(self):
+          return '%s failed' % self.__builder
+
     @classmethod
     def register_deps_handler(self, name, f):
         """Add a dependency handler."""
@@ -1432,7 +1440,7 @@ class Builder:
                     if not self.execute():
                       self.__executed = True
                       self.__executed_exception = \
-                        Exception('%s failed' % self)
+                        Builder.Failed(self)
                       raise self.__executed_exception
 
                     # Check every non-virtual target was built.
@@ -1665,7 +1673,7 @@ class Expander(Builder):
     >>> target.build()
     Traceback (most recent call last):
       ...
-    drake.Exception: MyExpander failed
+    drake.Failed: MyExpander failed
     >>> target.builder = None
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target,
@@ -1963,15 +1971,19 @@ def _register_commands():
             return list(Node.nodes.values())
 
     def build(nodes):
-        with CWDPrinter():
-            if not len(nodes):
-                nodes = [node for node in Node.nodes.values()
-                         if not len(node.consumers)]
-            coroutines = []
-            for node in nodes:
-                coroutines.append(Coroutine(node.build, str(node),
-                                            _scheduler()))
-            _scheduler().run()
+      with CWDPrinter():
+        try:
+          if not len(nodes):
+            nodes = [node for node in Node.nodes.values()
+                     if not len(node.consumers)]
+          coroutines = []
+          for node in nodes:
+            coroutines.append(Coroutine(node.build, str(node),
+                                        _scheduler()))
+          _scheduler().run()
+        except Builder.Failed as e:
+          print('%s: *** %s' % (sys.argv[0], e))
+          exit(1)
     command_add('build', build)
 
     def clean(nodes):
