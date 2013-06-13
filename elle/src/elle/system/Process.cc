@@ -530,26 +530,35 @@ namespace elle
         return;
 
       try
+      {
+        if (this->running())
         {
-          ELLE_WARN("destroying a running process %s (%s)",
+          ELLE_WARN("terminating a running process %s(%d)",
                     _this->binary, _this->pid);
-          if (this->running())
-            {
-              ELLE_WARN("killing a running process %s(%d)",
-                        _this->binary, _this->pid);
-              this->kill(ProcessTermination::wait);
-            }
+          this->terminate(ProcessTermination::dont_wait);
+          this->wait(Milliseconds(100));
         }
-      catch (std::runtime_error const& err)
-        {
-          ELLE_WARN("got an exception while killing %s(%d): %s",
-                    _this->binary, _this->pid, err.what());
-        }
+      }
       catch (...)
+      {
+        ELLE_WARN("got an exception error while terminating %s(%d): %s",
+                  _this->binary, _this->pid, elle::exception_string());
+      }
+
+      try
+      {
+        if (this->running())
         {
-          ELLE_WARN("got an unknown error while killing %s(%d)",
+          ELLE_WARN("killing a running process %s(%d)",
                     _this->binary, _this->pid);
+          this->kill(ProcessTermination::wait);
         }
+      }
+      catch (...)
+      {
+        ELLE_WARN("got an exception error while killing %s(%d): %s",
+                  _this->binary, _this->pid, elle::exception_string());
+      }
     }
 
     Process::StatusCode
@@ -711,12 +720,7 @@ namespace elle
     Process&
     Process::kill(ProcessTermination const term)
     {
-      if (_this->pid != 0)
-      {
-        ::kill(_this->pid, SIGKILL);
-        if (term == ProcessTermination::wait)
-          this->wait_status();
-      }
+      this->_signal(SIGKILL, term);
       return *this;
     }
 
