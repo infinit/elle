@@ -184,6 +184,8 @@ environment_format_test()
       << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
       << "[Test] Test 5\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
+
+  elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
 }
 
 static
