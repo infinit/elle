@@ -54,7 +54,12 @@ namespace elle
     void
     logger(std::unique_ptr<Logger> logger)
     {
+      ELLE_ASSERT(logger != nullptr);
       std::unique_lock<std::mutex> ulock{log_mutex()};
+      if (_logger() != nullptr)
+      {
+        logger->_indentation = std::move(_logger()->_indentation);
+      }
       _logger() = std::move(logger);
     }
 

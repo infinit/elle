@@ -105,6 +105,9 @@ namespace elle
     `------------*/
     private:
       friend class detail::Send;
+      friend
+      void
+      logger(std::unique_ptr<Logger> logger);
       unsigned int
       indentation();
       void
