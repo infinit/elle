@@ -2190,6 +2190,16 @@ def drake(root, *cfg, **kwcfg):
       name = match.group(1)
       value = match.group(2)
       if name in specs.args:
+        if name in specs.annotations:
+          t = specs.annotations[name]
+          if t is bool:
+            if value.lower() in ['true', 'yes']:
+              value = True
+            elif value.lower() in ['false', 'no']:
+              value = False
+            else:
+              raise Exception('invalid value for '
+                              'boolean option %s: %s' % (name, value))
         kwcfg[name] = value
         del args[i]
         continue
