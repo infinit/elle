@@ -1102,6 +1102,11 @@ class DynLib(Binary):
   def lib_name(self):
     return self.__lib_name
 
+  @property
+  def install_command(self):
+    if self.tk.os is drake.os.macos:
+      return ['install_name_tool', '-id', self.path(), self.path()]
+
 Node.extensions['so'] = DynLib
 Node.extensions['dylib'] = DynLib
 
