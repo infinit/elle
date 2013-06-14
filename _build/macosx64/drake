@@ -5,9 +5,8 @@ import drake
 import drake.cxx
 
 c_compiler = os.getenv('CC', 'gcc')
-cxx_compiler = os.getenv('CXX', 'g++')
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler_c = c_compiler, compiler = cxx_compiler)
+cxx_toolkit = drake.cxx.GccToolkit(compiler_c = c_compiler, compiler = c_compiler)
 cxx_config = drake.cxx.Config()
 cxx_config.flag('-fPIC')
 cxx_config.flag('-Wall')
