@@ -2095,25 +2095,33 @@ def _args_doc(doc):
 
 
 def help():
-    print('%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0])
-    print('''\
+  print('%s [OPTIONS] [CONFIG] [ACTIONS]' % sys.argv[0])
+  print('''\
 
 OPTIONS:
 \t--help, -h: print this usage and exit.
 \t--jobs N, -j N: set number of concurrent jobs to N.
 ''')
 
-    print('CONFIG:')
-    doc = {}
-    if _CONFIG.__doc__ is not None:
-        doc = _args_doc(_CONFIG.__doc__)
-    for arg in inspect.getargspec(_CONFIG).args:
-        sys.stdout.write('\t--%s=%s' % (arg, arg.upper()))
-        if arg in doc:
-            print(': %s' % doc[arg])
-        else:
-            print()
-    print('''\
+  print('CONFIG:')
+  doc = {}
+  if _CONFIG.__doc__ is not None:
+    doc = _args_doc(_CONFIG.__doc__)
+  specs = inspect.getfullargspec(_CONFIG)
+  for arg in specs.args:
+    type = str
+    if arg in specs.annotations:
+      type = specs.annotations[arg]
+    if type is str:
+      type = 'string'
+    elif type is bool:
+      type = 'boolean'
+    sys.stdout.write('\t--%s=%s' % (arg, type))
+    if arg in doc:
+      print(': %s' % doc[arg])
+    else:
+      print()
+  print('''\
 
 ACTIONS:
 	--build [NODES]: build NODES, or all nodes in NODES is empty.
@@ -2123,7 +2131,7 @@ ACTIONS:
 	  NODES (requires dot).
 	--dot-show NODES: show a dependency graph for NODES (requires
 	  dot and xv).''')
-    exit(0)
+  exit(0)
 
 _OPTIONS = {
     '--jobs': _jobs_set,
