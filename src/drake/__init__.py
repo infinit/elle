@@ -2183,17 +2183,21 @@ def drake(root, *cfg, **kwcfg):
   _CONFIG = root.configure
   # Fetch configuration from the command line.
   i = 0
+  specs = inspect.getfullargspec(root.configure)
   while i < len(args):
     match = _ARG_CONF_RE.match(args[i])
     if match:
-      kwcfg[match.group(1)] = match.group(2)
-      del args[i]
-      continue
+      name = match.group(1)
+      value = match.group(2)
+      if name in specs.args:
+        kwcfg[name] = value
+        del args[i]
+        continue
     elif args[i] in _OPTIONS:
       opt = args[i]
       del args[i]
       opt_args = []
-      for a in inspect.getargspec(_OPTIONS[opt]).args:
+      for a in inspect.getfullargspec(_OPTIONS[opt]).args:
         opt_args.append(args[i])
         del args[i]
       _OPTIONS[opt](*opt_args)
