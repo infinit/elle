@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2011, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2013, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -1031,6 +1031,10 @@ class Node(BaseNode):
         sorting/indexing."""
         return self.path() < rhs.path()
 
+    @property
+    def install_command(self):
+      return None
+
 
 def node(path, type = None):
     """Create or get a BaseNode.
@@ -1193,27 +1197,28 @@ class Builder:
     def path_stdout(self):
       return self.cachedir() / 'stdout'
 
-    def cmd(self, pretty, c, cwd = None, leave_stdout = False):
+    def cmd(self, pretty, cmd, cwd = None, leave_stdout = False):
         """Run a shell command.
 
-        pretty -- A pretty version for output.
-        c      -- The command.
+        pretty  -- A pretty version for output.
+        command -- The command.
 
         The expansion handles shell escaping. The pretty version is
         printed, except if drake is in raw mode, in which case the
         actual command is printed.
         """
-        if not isinstance(c, tuple):
-            c = (c,)
+        if not isinstance(cmd, tuple):
+          cmd = (cmd,)
         with open(str(self.path_stdout), 'w') as f:
             def fun():
-                for cmd in c:
-                    cmd = list(map(str, cmd))
-                    self.output(' '.join(cmd), pretty)
+                for c in cmd:
+                    c = list(map(str, c))
+                    if pretty is not None:
+                      self.output(' '.join(c), pretty)
                     stdout = None
                     if not leave_stdout:
                         stdout = f
-                    return command(cmd, cwd = cwd, stdout = stdout)
+                    return command(c, cwd = cwd, stdout = stdout)
             if _JOBS_LOCK is not None:
                 with _JOBS_LOCK:
                     return sched.background(fun)
@@ -1612,7 +1617,8 @@ class ShellCommand(Builder):
 
     def execute(self):
         """Run the command given at construction time."""
-        return self.cmd(self.__pretty, self.__command)
+        return self.cmd(self.__pretty or ' '.join(self.__command),
+                        self.__command)
 
     @property
     def command(self):
@@ -2240,6 +2246,11 @@ class Copy(Builder):
         self.__target.builder = None
         Builder.__init__(self, [self.__source], [self.__target])
 
+    @property
+    def source(self):
+      """The source node."""
+      return self.__source
+
     def target(self):
         """The target node."""
         return self.__target
@@ -2248,7 +2259,10 @@ class Copy(Builder):
         """Copy the source to the target."""
         self.output('Copy %s to %s' % (self.__source.path(),
                                        self.__target.path()),
-                    'Copy %s' % self.__target,)
+                    'Copy %s' % self.__target)
+        return self._execute()
+
+    def _execute(self):
         dst = str(self.__target.path())
         # FIXME: errors!
         try:
@@ -2266,47 +2280,86 @@ class Copy(Builder):
     def command(self):
         return ['cp', self.__source.path(), self.__target.path()]
 
+
+class Install(Copy):
+  """Builder to install files.
+
+  Same as copy, but also executes the node install hook.
+  """
+
+  def execute(self):
+    self.output('Install %s to %s' % (self.source.path(),
+                                   self.target().path()),
+                'Install %s' % self.target())
+    if not self._execute():
+      return False
+    if self.target().install_command is not None:
+      path = str(self.target().path())
+      _OS.chmod(path, _OS.stat(path).st_mode | stat.S_IWUSR)
+      res = self.cmd(pretty = None,
+                     cmd = self.target().install_command)
+      _OS.chmod(path, _OS.stat(path).st_mode & ~stat.S_IWRITE)
+      return res
+    return True
+
+  @property
+  def command(self):
+    return (super().command, self.source.install_command)
+
+
+def __copy(sources, to, strip_prefix, builder):
+  if isinstance(sources, list):
+    res = []
+    for node in sources:
+        res.append(__copy(node, to, strip_prefix, builder))
+    return res
+  else:
+    path = sources.name()
+    if strip_prefix is not None:
+      path.strip_prefix(strip_prefix)
+    path = Path(to) / path
+    return builder(sources, path).target()
+
+
 def copy(sources, to, strip_prefix = None):
-    """Convenience function to create Copy builders.
+  """Convenience function to create Copy builders.
 
-    When copying large file trees, iterating and creating Copy
-    builders manually by computing the destination path can be a
-    hassle. This convenience function provides a condensed mean to
-    express common file trees copies, and returns the list of copied
-    nodes.
+  When copying large file trees, iterating and creating Copy
+  builders manually by computing the destination path can be a
+  hassle. This convenience function provides a condensed mean to
+  express common file trees copies, and returns the list of copied
+  nodes.
 
-    The sources nodes are copied in the to directory. The sources path
-    is kept and concatenated to the destination directory. That is,
-    copying 'foo/bar' into 'baz/quux' whill create the
-    'baz/quux/foo/bar' node.
+  The sources nodes are copied in the to directory. The sources path
+  is kept and concatenated to the destination directory. That is,
+  copying 'foo/bar' into 'baz/quux' whill create the
+  'baz/quux/foo/bar' node.
 
-    If strip_prefix is specified, it is stripped from the source
-    pathes before copying. That is, copying 'foo/bar/baz' into 'quux'
-    with a strip prefix of 'foo' wil create the 'bar/baz/quux' node.
+  If strip_prefix is specified, it is stripped from the source
+  pathes before copying. That is, copying 'foo/bar/baz' into 'quux'
+  with a strip prefix of 'foo' wil create the 'bar/baz/quux' node.
 
-    sources      -- List of nodes to copy, or a single node to copy.
-    to           -- Path where to copy.
-    strip_prefix -- Prefix Path stripped from source pathes.
+  sources      -- List of nodes to copy, or a single node to copy.
+  to           -- Path where to copy.
+  strip_prefix -- Prefix Path stripped from source pathes.
 
-    >>> sources = [node('/tmp/.drake.copy.source/a'),
-    ...            node('/tmp/.drake.copy.source/b')]
-    >>> targets = copy(sources, '/tmp/.drake.copy.dest',
-    ...                strip_prefix = '/tmp')
-    >>> targets
-    [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
+  >>> sources = [node('/tmp/.drake.copy.source/a'),
+  ...            node('/tmp/.drake.copy.source/b')]
+  >>> targets = copy(sources, '/tmp/.drake.copy.dest',
+  ...                strip_prefix = '/tmp')
+  >>> targets
+  [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
+  """
+  return __copy(sources, to, strip_prefix, Copy)
 
-    """
-    if isinstance(sources, list):
-        res = []
-        for node in sources:
-            res.append(copy(node, to, strip_prefix))
-        return res
-    else:
-        path = sources.name()
-        if strip_prefix is not None:
-            path.strip_prefix(strip_prefix)
-        path = Path(to) / path
-        return Copy(sources, path).target()
+
+def install(sources, to, strip_prefix = None):
+  """Convenience function to create Install builders.
+
+  See documentation of copy.
+  """
+  return __copy(sources, to, strip_prefix, Install)
+
 
 class Rule(VirtualNode):
 
