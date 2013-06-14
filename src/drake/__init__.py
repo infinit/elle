@@ -2215,6 +2215,27 @@ def drake(root, *cfg, **kwcfg):
       break
 
 
+class WritePermissions:
+
+  def __init__(self, node):
+    self.__path = str(node.path())
+
+  def __enter__(self):
+    # FIXME: errors!
+    try:
+      _OS.chmod(self.__path,
+                _OS.stat(self.__path).st_mode | stat.S_IWUSR)
+    except OSError as e:
+      if e.errno == 2:
+        pass
+      else:
+        raise
+
+  def __exit__(self, *args):
+    _OS.chmod(self.__path,
+              _OS.stat(self.__path).st_mode & ~stat.S_IWRITE)
+
+
 class Copy(Builder):
 
     """Builder to copy files.
@@ -2263,18 +2284,10 @@ class Copy(Builder):
         return self._execute()
 
     def _execute(self):
-        dst = str(self.__target.path())
-        # FIXME: errors!
-        try:
-            _OS.chmod(dst, _OS.stat(dst).st_mode | stat.S_IWUSR)
-        except OSError as e:
-            if e.errno == 2:
-                pass
-            else:
-                raise
-        shutil.copy2(str(self.__source.path()), dst)
-        _OS.chmod(dst, _OS.stat(dst).st_mode & ~stat.S_IWRITE)
-        return True
+      with WritePermissions(self.__target):
+        shutil.copy2(str(self.__source.path()),
+                     str(self.__target.path()))
+      return True
 
     @property
     def command(self):
@@ -2294,12 +2307,9 @@ class Install(Copy):
     if not self._execute():
       return False
     if self.target().install_command is not None:
-      path = str(self.target().path())
-      _OS.chmod(path, _OS.stat(path).st_mode | stat.S_IWUSR)
-      res = self.cmd(pretty = None,
-                     cmd = self.target().install_command)
-      _OS.chmod(path, _OS.stat(path).st_mode & ~stat.S_IWRITE)
-      return res
+      with WritePermissions(self.target()):
+        return self.cmd(pretty = None,
+                        cmd = self.target().install_command)
     return True
 
   @property
