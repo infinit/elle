@@ -384,6 +384,8 @@ def configure(cxx_toolkit = None,
 
   rule_install = drake.Rule('install')
   prefix = drake.Path(prefix)
-  rule_install << drake.copy(lib_dynamic, prefix)
-  rule_install << drake.copy(lib_static, prefix)
-  rule_install << drake.copy(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'src')
+  rule_install << drake.install(lib_dynamic, prefix)
+  rule_install << drake.install(lib_static, prefix)
+  rule_install << drake.install(
+    list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+    prefix / 'include', 'src')
