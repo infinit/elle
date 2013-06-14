@@ -390,7 +390,7 @@ namespace elle
   | InputStreamBuffer |
   `------------------*/
 
-  template<typename BufferType>
+  template <typename BufferType>
   InputStreamBuffer<BufferType>::InputStreamBuffer(BufferType const& buffer):
     _buffer(buffer),
     _read(false)
@@ -399,14 +399,14 @@ namespace elle
                buffer.size());
   }
 
-  template<typename BufferType>
+  template <typename BufferType>
   WeakBuffer
   InputStreamBuffer<BufferType>::write_buffer()
   {
     throw Exception("the buffer is in input mode");
   }
 
-  template<typename BufferType>
+  template <typename BufferType>
   WeakBuffer
   InputStreamBuffer<BufferType>::read_buffer()
   {
@@ -419,7 +419,7 @@ namespace elle
       return WeakBuffer(nullptr, 0);
   }
 
-  template<typename BufferType>
+  template <typename BufferType>
   void
   InputStreamBuffer<BufferType>::flush(Size size)
   {

@@ -240,7 +240,7 @@ namespace elle
   | InputStreamBuffer |
   `------------------*/
 
-  template<typename BufferType>
+  template <typename BufferType>
   class InputStreamBuffer:
     public StreamBuffer
   {
