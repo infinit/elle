@@ -23,6 +23,7 @@ def configure(prefix = '.'):
   sources = drake.nodes(
     'src/drake/__init__.py',
     'src/drake/air.py',
+    'src/drake/enumeration.py',
     'src/drake/imagemagick.py',
     'src/drake/cxx/__init__.py',
     'src/drake/cxx/bison.py',
@@ -37,6 +38,7 @@ def configure(prefix = '.'):
     'src/drake/debug.py',
     'src/drake/flex.py',
     'src/drake/git.py',
+    'src/drake/log.py',
     'src/drake/opencv.py',
     'src/drake/python/__init__.py',
     'src/drake/sched.py',
