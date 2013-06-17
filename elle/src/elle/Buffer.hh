@@ -163,7 +163,7 @@ namespace elle
     /// WeakBuffer for the given memory segment.
     WeakBuffer(void* data, size_t size);
     /// WeakBuffer for the given Buffer content.
-    WeakBuffer(Buffer const& buffer);
+    WeakBuffer(Buffer const& buffer) /* implicit */;
     /// WeakBuffer copy.
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
