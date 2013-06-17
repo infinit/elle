@@ -22,7 +22,7 @@ namespace curly
   {
   public:
     curl_easy_deleter() = default;
-    void 
+    void
     operator ()(CURL* ptr);
   };
 
@@ -30,7 +30,7 @@ namespace curly
   {
   public:
     curl_slist_deleter() = default;
-    void 
+    void
     operator ()(struct curl_slist* ptr);
   };
 
