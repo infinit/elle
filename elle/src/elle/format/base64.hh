@@ -10,7 +10,47 @@ namespace elle
   {
     namespace base64
     {
-      class StreamBuffer;
+      class StreamBuffer:
+        public elle::StreamBuffer,
+        public elle::Printable
+      {
+      /*-------------.
+      | Construction |
+      `-------------*/
+      public:
+        StreamBuffer(std::iostream& stream);
+
+      /*-------------------.
+      | elle::StreamBuffer |
+      `-------------------*/
+      public:
+        virtual
+        WeakBuffer
+        read_buffer();
+        virtual
+        WeakBuffer
+        write_buffer();
+        virtual
+        void
+        flush(Size size);
+        void
+        finalize();
+      private:
+        friend class Stream;
+        std::iostream& _stream;
+        int _remaining_write;
+        char _buffer_write[1 << 12];
+        int _remaining_read;
+        char _buffer_read[1 << 12];
+
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        virtual
+        void
+        print(std::ostream& output) const;
+      };
 
       class Stream:
         public elle::IOStream
