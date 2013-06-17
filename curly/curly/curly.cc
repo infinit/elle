@@ -23,7 +23,7 @@ namespace curly
       std::stringstream ss;
       std::string msg{curl_easy_strerror(code)};
       ss
-        << "error code: " << code 
+        << "error code: " << code
         << ": " << msg
         << ": " << url
         << ": " << error_message;
@@ -78,7 +78,7 @@ namespace curly
   {
     return _easy_handle.get();
   }
-  
+
   std::string
   request_configuration::header(std::pair<std::string, std::string> const&p)
   {
@@ -125,7 +125,7 @@ namespace curly
     request* _this = reinterpret_cast<request*>(userptr);
     ssize_t total_size = size * nmemb;
     if (total_size > 0)
-      (*_this->_config._output) << std::string{data, data + (size * nmemb)};
+      (*_this->_config._output) << std::string{data, data + total_size};
     return size * nmemb;
   }
 
