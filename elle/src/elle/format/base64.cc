@@ -87,12 +87,12 @@ namespace elle
         public elle::Printable
       {
       public:
-        StreamBuffer(Stream& stream):
+        StreamBuffer(std::iostream& stream):
           _stream(stream),
           _remaining_write(0),
           _remaining_read(0)
         {}
-        ELLE_ATTRIBUTE(Stream&, stream);
+        ELLE_ATTRIBUTE(std::iostream&, stream);
 
       protected:
         virtual
@@ -105,8 +105,8 @@ namespace elle
           size_t read;
           ELLE_DEBUG("%s: read up to %s bytes from the backend", *this, size)
           {
-            this->_stream._underlying.read(buffer, size);
-            read = this->_stream._underlying.gcount();
+            this->_stream.read(buffer, size);
+            read = this->_stream.gcount();
             ELLE_DUMP("%s: got %s bytes", *this, read);
             if (read > 0)
               ELLE_DUMP("%s: encoded data: %s", *this,
@@ -174,7 +174,7 @@ namespace elle
                              *this, size);
             _stream_encode(this->_buffer_write,
                            this->_buffer_write + size,
-                           std::ostream_iterator<char>(_stream._underlying));
+                           std::ostream_iterator<char>(_stream));
           }
           if (this->_remaining_write > 0)
           {
@@ -197,14 +197,14 @@ namespace elle
             _stream_encode(
               this->_buffer_write,
               this->_buffer_write + this->_remaining_write,
-              std::ostream_iterator<char>(this->_stream._underlying));
+              std::ostream_iterator<char>(this->_stream));
             switch (this->_remaining_write)
             {
               case 1:
-                this->_stream._underlying << "==";
+                this->_stream << "==";
                 break;
               case 2:
-                this->_stream._underlying << "=";
+                this->_stream << "=";
                 break;
               default:
                 elle::unreachable();
@@ -228,7 +228,7 @@ namespace elle
       };
 
       Stream::Stream(std::iostream& underlying):
-        IOStream(this->_buffer = new StreamBuffer(*this)),
+        IOStream(this->_buffer = new StreamBuffer(underlying)),
         _underlying(underlying)
       {}
 
