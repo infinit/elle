@@ -29,9 +29,17 @@ namespace elle
       Buffer
       encode(WeakBuffer clear);
 
+      /// The size of the encoded input.
+      size_t
+      encoded_size(WeakBuffer input);
+
       /// Decode from base64.
       Buffer
       decode(WeakBuffer input);
+
+      /// The size of the decoded input.
+      size_t
+      decoded_size(WeakBuffer input);
     }
   }
 }
