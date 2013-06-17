@@ -27,11 +27,11 @@ namespace elle
 
       /// Encode to base64.
       Buffer
-      encode(Buffer const& clear);
+      encode(WeakBuffer clear);
 
       /// Decode from base64.
       Buffer
-      decode(Buffer const& input);
+      decode(WeakBuffer input);
     }
   }
 }

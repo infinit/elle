@@ -19,7 +19,7 @@ namespace elle
       using namespace boost::archive::iterators;
 
       Buffer
-      encode(Buffer const& input)
+      encode(WeakBuffer input)
       {
         // XXX: pre-allocate the right size.
         // size_t size = (signed(input.size()) + 2) / 3 * 4;
@@ -33,7 +33,7 @@ namespace elle
 
       static
       size_t
-      _decoded_size(Buffer const& encoded)
+      _decoded_size(WeakBuffer encoded)
       {
         size_t size = encoded.size();
         int padding = 0;
@@ -45,11 +45,11 @@ namespace elle
       }
 
       Buffer
-      decode(Buffer const& input)
+      decode(WeakBuffer input)
       {
         size_t size = _decoded_size(input);
         Buffer res(size);
-        IOStream stream(new InputStreamBuffer<Buffer>(input));
+        IOStream stream(new InputStreamBuffer<WeakBuffer>(input));
         Stream base64_stream(stream);
         base64_stream.read(reinterpret_cast<char*>(res.mutable_contents()),
                            size);
