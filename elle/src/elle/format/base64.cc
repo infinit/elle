@@ -27,9 +27,8 @@ namespace elle
       Buffer
       encode(WeakBuffer input)
       {
-        // XXX: pre-allocate the right size.
-        // size_t size = (signed(input.size()) + 2) / 3 * 4;
         Buffer res;
+        res.capacity(encoded_size(input));
         IOStream stream(new OutputStreamBuffer(res));
         Stream base64_stream(stream);
         base64_stream.write(reinterpret_cast<char*>(input.contents()),
