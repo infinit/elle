@@ -123,7 +123,9 @@ namespace curly
                         void* userptr)
   {
     request* _this = reinterpret_cast<request*>(userptr);
-    (*_this->_config._output) << std::string{data, data + (size * nmemb)};
+    ssize_t total_size = size * nmemb;
+    if (total_size > 0)
+      (*_this->_config._output) << std::string{data, data + (size * nmemb)};
     return size * nmemb;
   }
 
