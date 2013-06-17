@@ -34,20 +34,22 @@ namespace curly
   make_method()
   {
     curly::request_configuration c;
-    
+
     c.option(Opt, 1);
     c.option(CURLOPT_VERBOSE, 1);
+    c.option(CURLOPT_NOSIGNAL, 1);
+    c.option(CURLOPT_CONNECTTIMEOUT, 300);
     return c;
   }
 
   template <CURLoption Opt>
   std::string
-  method_in(std::string const& url, 
+  method_in(std::string const& url,
             std::istream& in)
   {
     std::stringstream ss;
     curly::request_configuration c = make_method<Opt>();
-    
+
     c.url(url);
     c.input(in);
     c.output(ss);
@@ -61,7 +63,7 @@ namespace curly
              std::ostream& out)
   {
     curly::request_configuration c = make_method<Opt>();
-    
+
     c.url(url);
     c.output(out);
     curly::request req(std::move(c));
@@ -74,7 +76,7 @@ namespace curly
                std::ostream& out)
   {
     curly::request_configuration c = make_method<Opt>();
-    
+
     c.url(url);
     c.input(in);
     c.output(out);
