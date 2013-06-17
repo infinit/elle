@@ -104,6 +104,19 @@ namespace elle
     ::free(this->_contents);
   }
 
+  void
+  Buffer::capacity(size_t capacity)
+  {
+    if (capacity < ELLE_BUFFER_INITIAL_SIZE)
+      capacity = ELLE_BUFFER_INITIAL_SIZE;
+    void* tmp = ::realloc(this->_contents, capacity);
+    if (tmp == nullptr)
+      throw std::bad_alloc();
+    this->_contents = static_cast<Byte*>(tmp);
+    this->_capacity = capacity;
+    this->_size = std::min(this->_size, capacity);
+  }
+
   void Buffer::append(void const* data, size_t size)
   {
     ELLE_ASSERT(data != nullptr || size == 0);

@@ -80,7 +80,7 @@ namespace elle
     /// Size of the buffer.
     ELLE_ATTRIBUTE_Rw(size_t, size);
     /// Size of the underlying allocated memory.
-    ELLE_ATTRIBUTE_R(size_t, capacity);
+    ELLE_ATTRIBUTE_Rw(size_t, capacity);
     /// Buffer data.
     ELLE_ATTRIBUTE_R(Byte*, contents);
     /// Buffer mutable data.
