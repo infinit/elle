@@ -77,23 +77,21 @@ namespace curly
     return _easy_handle.get();
   }
 
-  std::string
-  request_configuration::header(std::pair<std::string, std::string> const&p)
+  void
+  request_configuration::header(std::string const& name,
+                                std::string const& value)
   {
-    std::stringstream ss;
-    ss << p.first << ": " << p.second;
-    return ss.str();
+    std::string header = name + ": " + value;
+    this->_headers.reset(
+      curl_slist_append(this->_headers.release(), header.c_str()));
+    this->option(CURLOPT_HTTPHEADER, this->_headers.get());
   }
 
   void
-  request_configuration::headers(std::map<std::string, std::string> const &m)
+  request_configuration::headers(std::map<std::string, std::string> const& m)
   {
-    struct curl_slist *headers = nullptr;
-
-    for (auto const& p: m)
-      headers = curl_slist_append(headers, header(p).c_str());
-    this->option(CURLOPT_HTTPHEADER, headers);
-    this->_header_list.reset(headers);
+    for (auto const& pair: m)
+      this->header(pair.first, pair.second);
   }
 
   void
@@ -155,10 +153,10 @@ namespace curly
       _config.option(CURLOPT_READFUNCTION, &request::read_helper);
       _config.option(CURLOPT_READDATA, this);
     }
+
     auto ec = curl_easy_perform(_config.native_handle());
     this->info(CURLINFO_RESPONSE_CODE, &this->_response_code);
     _throw_if_ecode(this->_config.native_handle(), ec, std::string{error});
-    // XXX don't ignore the error message !
   }
 
   std::string

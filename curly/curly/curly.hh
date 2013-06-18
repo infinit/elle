@@ -1,13 +1,15 @@
 #ifndef ELLE_CURLY_HH
 # define ELLE_CURLY_HH
 
+# include <elle/attribute.hh>
+
+# include <curl/curl.h>
+
 # include <chrono>
 # include <iosfwd>
 # include <map>
 # include <memory>
 # include <string>
-
-# include <curl/curl.h>
 
 #define throw_if_ecode(easy, code) _throw_if_ecode((easy), (code))
 
@@ -44,7 +46,8 @@ namespace curly
     friend class curl_service;
 
     std::shared_ptr<CURL> _easy_handle;
-    std::shared_ptr<struct curl_slist> _header_list = nullptr;
+    typedef std::unique_ptr<struct curl_slist, curl_slist_deleter> Headers;
+    ELLE_ATTRIBUTE(Headers, headers);
 
     // I/O of the body.
     std::ostream* _output = nullptr;
@@ -66,6 +69,9 @@ namespace curly
     output(std::ostream& out);
     void
     input(std::istream& out);
+    void
+    header(std::string const& name,
+           std::string const& value);
     void
     headers(std::map<std::string, std::string> const& m);
     void
