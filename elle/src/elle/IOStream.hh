@@ -38,6 +38,7 @@ namespace elle
   public:
     typedef unsigned int Size;
     StreamBuffer();
+    virtual
     ~StreamBuffer();
 
   /// API to override.
