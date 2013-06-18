@@ -53,12 +53,10 @@ namespace curly
     CURL*
     native_handle();
 
-    std::string
-    header(std::pair<std::string, std::string> const&p);
   public:
     request_configuration();
     request_configuration(request_configuration&&) = default;
-    request_configuration(request_configuration const&) = default;
+    request_configuration(request_configuration const&) = delete;
     ~request_configuration() = default;
 
     // Configuration helpers.

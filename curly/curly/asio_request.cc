@@ -58,7 +58,7 @@ namespace curly
   asio_request::asio_request(asio::io_service& io,
                              curly::request_configuration c):
     _io(asio::use_service<curl_service>(io)),
-    _config{c},
+    _config{std::move(c)},
     _socket{io, boost::asio::ip::tcp::v4()}
   {
     _config.option(CURLOPT_OPENSOCKETFUNCTION, &asio_request::open_socket);

@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(simple_test)
       get.option(CURLOPT_VERBOSE, 0);
       get.url("http://127.0.0.1:56789/drake");
       //get.url("http://fabien.le.boute-en-tra.in");
-      curly::sched_request req(sched, get);
+      curly::sched_request req(sched, std::move(get));
       req.run();
       std::cout << ss.str() << std::endl;
       v.push_back(ss.str());

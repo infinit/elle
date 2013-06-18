@@ -14,7 +14,7 @@ namespace curly
 
   public:
     sched_request(reactor::Scheduler& sched,
-                  curly::request_configuration const& conf);
+                  curly::request_configuration conf);
 
   protected:
     virtual void _start() override;

@@ -5,9 +5,9 @@
 namespace curly
 {
   sched_request::sched_request(reactor::Scheduler& sched,
-                               curly::request_configuration const& conf):
+                               curly::request_configuration conf):
     Operation{sched},
-    _request{sched.io_service(), conf}
+    _request{sched.io_service(), std::move(conf)}
   {}
 
   void

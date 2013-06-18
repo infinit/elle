@@ -44,10 +44,8 @@ namespace curly
   }
 
   request_configuration::request_configuration():
-    _easy_handle{curl_easy_init(), curl_easy_deleter{}},
-    _header_list{nullptr, curl_slist_deleter{}}
-  {
-  }
+    _easy_handle{curl_easy_init(), curl_easy_deleter{}}
+  {}
 
   void
   request_configuration::url(std::string const& url_)
