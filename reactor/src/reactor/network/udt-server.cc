@@ -22,7 +22,7 @@
 #include <reactor/network/nat.hh>
 #include <elle/os/getenv.hh>
 
-ELLE_LOG_COMPONENT("reactor.network.UDTServer");
+//ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 
 namespace reactor
 {
