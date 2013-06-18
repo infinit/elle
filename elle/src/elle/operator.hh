@@ -41,17 +41,17 @@
 #  define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                           \
   private:                                                              \
   _type_&                                                               \
-  operator =(_type_ const&);
+  operator =(_type_ const&);                                            \
+  _type_&                                                               \
+  operator =(_type_&&);
 # else
-#  define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                            \
+#  define ELLE_OPERATOR_NO_ASSIGNMENT(_type_)                           \
   public:                                                               \
   _type_&                                                               \
-  operator =(_type_ const&) = delete;
-/* XXX[to add]
+  operator =(_type_ const&) = delete;                                   \
   public:                                                               \
   _type_&                                                               \
   operator =(_type_&&) = delete;
-*/
 # endif
 
 /// Generate the operator ==() method. Note that this method relies on
