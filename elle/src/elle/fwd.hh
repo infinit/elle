@@ -13,6 +13,7 @@ namespace elle
 {
   class Authority;
   class Buffer;
+  class ConstWeakBuffer;
   class Passport;
   class WeakBuffer;
 }
