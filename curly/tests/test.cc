@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(threaded_lock)
     for (int i = 0; i < 10 * number_of_thread; ++i)
     {
       std::lock_guard<std::mutex> guard{mutex};
-      std::string page = curly::get("http://infinit.im:12345/");
+      std::string page = curly::get("http://meta.api.development.infinit.io:12345/");
       BOOST_CHECK(page.empty() == false);
     }
   };
