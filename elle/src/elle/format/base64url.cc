@@ -10,15 +10,17 @@ namespace elle
   {
     namespace base64url
     {
-      class RewriteStreamBuffer: public PlainStreamBuffer
+      class RewriteStreamBuffer:
+        public PlainStreamBuffer
       {
       public:
-        RewriteStreamBuffer(std::iostream& backend)
-          : _backend(backend)
+        RewriteStreamBuffer(std::iostream& backend):
+          _backend(backend)
         {}
 
         Size
-        read(char* buffer, Size size)
+        read(char* buffer,
+             Size size)
         {
           this->_backend.read(buffer, size);
           size = this->_backend.gcount();
@@ -33,7 +35,8 @@ namespace elle
         }
 
         void
-        write(char* buffer, Size size)
+        write(char* buffer,
+              Size size)
         {
           for (elle::Byte& c: elle::WeakBuffer(buffer, size))
           {
