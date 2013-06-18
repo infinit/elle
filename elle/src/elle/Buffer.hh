@@ -201,6 +201,19 @@ namespace elle
     reader() const;
 
   /*---------.
+  | Iterable |
+  `---------*/
+  public:
+    Byte*
+    begin();
+    const Byte*
+    begin() const;
+    Byte*
+    end();
+    const Byte*
+    end() const;
+
+  /*---------.
   | Dumpable |
   `---------*/
   public:

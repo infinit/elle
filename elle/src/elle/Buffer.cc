@@ -366,6 +366,34 @@ namespace elle
     }
   }
 
+  /*---------.
+  | Iterable |
+  `---------*/
+
+  Byte*
+  WeakBuffer::begin()
+  {
+    return this->_contents;
+  }
+
+  const Byte*
+  WeakBuffer::begin() const
+  {
+    return const_cast<WeakBuffer*>(this)->begin();
+  }
+
+  Byte*
+  WeakBuffer::end()
+  {
+    return this->_contents + this->_size;
+  }
+
+  const Byte*
+  WeakBuffer::end() const
+  {
+    return const_cast<WeakBuffer*>(this)->end();
+  }
+
   /*----------.
   | Operators |
   `----------*/
