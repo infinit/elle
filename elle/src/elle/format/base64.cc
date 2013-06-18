@@ -27,8 +27,11 @@ namespace elle
       Buffer
       encode(WeakBuffer input)
       {
+        ELLE_TRACE_SCOPE("encode %s", input);
+        size_t size = encoded_size(input);
+        ELLE_DEBUG("previsional size: %s", size);
         Buffer res;
-        res.capacity(encoded_size(input));
+        res.capacity(size);
         IOStream stream(new OutputStreamBuffer(res));
         Stream base64_stream(stream);
         base64_stream.write(reinterpret_cast<char*>(input.contents()),
@@ -51,7 +54,9 @@ namespace elle
       Buffer
       decode(WeakBuffer input)
       {
+        ELLE_TRACE_SCOPE("decode %s", input);
         size_t size = decoded_size(input);
+        ELLE_DEBUG("previsional size: %s", size);
         Buffer res(size);
         IOStream stream(new InputStreamBuffer<WeakBuffer>(input));
         Stream base64_stream(stream);
