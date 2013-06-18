@@ -153,8 +153,71 @@ namespace elle
   /// represent C-style buffers as one entity, with some useful shortcuts and
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
+  class ConstWeakBuffer:
+    public elle::Orderable<ConstWeakBuffer>
+  {
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    /// WeakBuffer for the given memory segment.
+    ConstWeakBuffer(const void* data, size_t size);
+    /// ConstWeakBuffer for the given Buffer content.
+    ConstWeakBuffer(Buffer const& buffer) /* implicit */;
+    /// ConstWeakBuffer copy.
+    ConstWeakBuffer(ConstWeakBuffer const& other);
+    /// ConstWeakBuffer move.
+    ConstWeakBuffer(ConstWeakBuffer&& other);
+  private:
+    /// ConstWeakBuffer cannot take ownership of memory.
+    ConstWeakBuffer(Buffer&&);
+
+  /*--------.
+  | Content |
+  `--------*/
+  public:
+    /// Size of the buffer.
+    ELLE_ATTRIBUTE_R(size_t, size);
+    /// Buffer constant data.
+    ELLE_ATTRIBUTE_R(const Byte*, contents);
+
+  /*----------.
+  | Orderable |
+  `----------*/
+  private:
+    friend class elle::Buffer;
+    friend class Orderable<elle::ConstWeakBuffer>;
+    Orderable<elle::ConstWeakBuffer>::Order
+    _order(ConstWeakBuffer const& other) const;
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    InputBufferArchive
+    reader() const;
+
+  /*---------.
+  | Iterable |
+  `---------*/
+  public:
+    const Byte*
+    begin() const;
+    const Byte*
+    end() const;
+
+  /*---------.
+  | Dumpable |
+  `---------*/
+  public:
+    // XXX[to remove in the future, if we use DumpArchives]
+    void
+    dump(const Natural32 shift = 0) const;
+  };
+
+  /// A ConstWeakBuffer with mutable data.
   class WeakBuffer:
-    public elle::Orderable<WeakBuffer>
+    public ConstWeakBuffer
   {
   /*-------------.
   | Construction |
@@ -176,29 +239,8 @@ namespace elle
   | Content |
   `--------*/
   public:
-    /// Size of the buffer.
-    ELLE_ATTRIBUTE_R(size_t, size);
-    /// Buffer constant data.
-    ELLE_ATTRIBUTE_R(Byte*, contents);
-    /// Buffer mutable data.
     Byte*
     mutable_contents() const;
-
-  /*----------.
-  | Orderable |
-  `----------*/
-  private:
-    friend class elle::Buffer;
-    friend class Orderable<elle::WeakBuffer>;
-    Orderable<elle::WeakBuffer>::Order
-    _order(WeakBuffer const& other) const;
-
-  /*--------------.
-  | Serialization |
-  `--------------*/
-  public:
-    InputBufferArchive
-    reader() const;
 
   /*---------.
   | Iterable |
@@ -206,20 +248,8 @@ namespace elle
   public:
     Byte*
     begin();
-    const Byte*
-    begin() const;
     Byte*
     end();
-    const Byte*
-    end() const;
-
-  /*---------.
-  | Dumpable |
-  `---------*/
-  public:
-    // XXX[to remove in the future, if we use DumpArchives]
-    void
-    dump(const Natural32 shift = 0) const;
   };
 
   /*-------------------.

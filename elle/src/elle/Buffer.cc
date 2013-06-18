@@ -294,13 +294,13 @@ namespace elle
 //
 
   InputBufferArchive
-  WeakBuffer::reader() const
+  ConstWeakBuffer::reader() const
   {
     return InputBufferArchive(*this);
   }
 
   void
-  WeakBuffer::dump(const Natural32 margin) const
+  ConstWeakBuffer::dump(const Natural32 margin) const
   {
     Natural32         space = 78 - margin - io::Dumpable::Shift.length();
     String            alignment(margin, ' ');
@@ -309,7 +309,7 @@ namespace elle
 
     std::cout << alignment
               << "[Buffer] "
-              << "address(" << static_cast<Void*>(this->_contents) << ") "
+              << "address(" << static_cast<void const*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ")"
               << std::endl;
 
@@ -347,22 +347,22 @@ namespace elle
       }
   }
 
-  Orderable<elle::WeakBuffer>::Order
-  WeakBuffer::_order(WeakBuffer const& other) const
+  Orderable<elle::ConstWeakBuffer>::Order
+  ConstWeakBuffer::_order(ConstWeakBuffer const& other) const
   {
     if (this->_size < other.size())
-      return Orderable<elle::WeakBuffer>::Order::less;
+      return Orderable<elle::ConstWeakBuffer>::Order::less;
     else if (this->_size > other.size())
-      return Orderable<elle::WeakBuffer>::Order::more;
+      return Orderable<elle::ConstWeakBuffer>::Order::more;
     else
     {
       auto cmp = ::memcmp(this->_contents, other.contents(), this->_size);
       if (cmp < 0)
-        return Orderable<elle::WeakBuffer>::Order::less;
+        return Orderable<elle::ConstWeakBuffer>::Order::less;
       else if (cmp == 0)
-        return Orderable<elle::WeakBuffer>::Order::equal;
+        return Orderable<elle::ConstWeakBuffer>::Order::equal;
       else
-        return Orderable<elle::WeakBuffer>::Order::more;
+        return Orderable<elle::ConstWeakBuffer>::Order::more;
     }
   }
 
@@ -373,25 +373,25 @@ namespace elle
   Byte*
   WeakBuffer::begin()
   {
-    return this->_contents;
+    return const_cast<Byte*>(this->ConstWeakBuffer::begin());
   }
 
   const Byte*
-  WeakBuffer::begin() const
+  ConstWeakBuffer::begin() const
   {
-    return const_cast<WeakBuffer*>(this)->begin();
+    return this->contents();
   }
 
   Byte*
   WeakBuffer::end()
   {
-    return this->_contents + this->_size;
+    return const_cast<Byte*>(this->ConstWeakBuffer::end());
   }
 
   const Byte*
-  WeakBuffer::end() const
+  ConstWeakBuffer::end() const
   {
-    return const_cast<WeakBuffer*>(this)->end();
+    return this->contents() + this->size();
   }
 
   /*----------.
@@ -469,9 +469,9 @@ namespace elle
 
   ///////////////////////////////////////////////////////////////////////////
 
-  InputBufferArchive::InputBufferArchive(WeakBuffer const& buffer):
+  InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer):
     serialize::InputBinaryArchive(
-      *(_istream = new IOStream(new InputStreamBuffer<WeakBuffer>(buffer)))
+      *(_istream = new IOStream(new InputStreamBuffer<ConstWeakBuffer>(buffer)))
     )
   {}
 

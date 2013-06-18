@@ -62,7 +62,7 @@ namespace elle
       }
 
       Buffer
-      encode(WeakBuffer input)
+      encode(ConstWeakBuffer input)
       {
         ELLE_TRACE_SCOPE("encode %s", input);
         size_t size = base64::encoded_size(input);
@@ -71,19 +71,19 @@ namespace elle
         res.capacity(size);
         IOStream stream(new OutputStreamBuffer(res));
         Stream base64_stream(stream);
-        base64_stream.write(reinterpret_cast<char*>(input.mutable_contents()),
+        base64_stream.write(reinterpret_cast<char const*>(input.contents()),
                             input.size());
         return res;
       }
 
       Buffer
-      decode(WeakBuffer input)
+      decode(ConstWeakBuffer input)
       {
         ELLE_TRACE_SCOPE("encode %s", input);
         size_t size = base64::decoded_size(input);
         ELLE_DEBUG("previsional size: %s", size);
         Buffer res(size);
-        IOStream stream(new InputStreamBuffer<WeakBuffer>(input));
+        IOStream stream(new InputStreamBuffer<ConstWeakBuffer>(input));
         Stream base64_stream(stream);
         base64_stream.read(reinterpret_cast<char*>(res.mutable_contents()),
                            size);

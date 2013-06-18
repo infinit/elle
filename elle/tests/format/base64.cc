@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE(streams)
   }
 }
 
-template <elle::Buffer (*Encode)(elle::WeakBuffer),
-          elle::Buffer (*Decode)(elle::WeakBuffer)>
+template <elle::Buffer (*Encode)(elle::ConstWeakBuffer),
+          elle::Buffer (*Decode)(elle::ConstWeakBuffer)>
 void
 encode_to_and_decode_from_base64_impl()
 {
@@ -100,7 +100,7 @@ encode_to_and_decode_from_base64_impl()
 BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
 {
   encode_to_and_decode_from_base64_impl<elle::format::base64::encode,
-                                   elle::format::base64::decode>();
+                                        elle::format::base64::decode>();
 }
 
 BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64url)
@@ -112,9 +112,9 @@ BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64url)
 BOOST_AUTO_TEST_CASE(values)
 {
   auto base64 = elle::format::base64::encode(
-    elle::WeakBuffer((void*)"\xF3\xDF\xBF", 3));
+    elle::ConstWeakBuffer("\xF3\xDF\xBF", 3));
   auto base64url = elle::format::base64url::encode(
-    elle::WeakBuffer((void*)"\xF3\xDF\xBF", 3));
+    elle::ConstWeakBuffer("\xF3\xDF\xBF", 3));
   BOOST_CHECK_EQUAL(elle::WeakBuffer(base64),
                     elle::WeakBuffer((void*)"89+/", 4));
   BOOST_CHECK_EQUAL(elle::WeakBuffer(base64url),

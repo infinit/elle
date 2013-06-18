@@ -19,13 +19,13 @@ namespace elle
       using namespace boost::archive::iterators;
 
       size_t
-      encoded_size(WeakBuffer input)
+      encoded_size(ConstWeakBuffer input)
       {
         return (signed(input.size()) + 2) / 3 * 4;
       }
 
       Buffer
-      encode(WeakBuffer input)
+      encode(ConstWeakBuffer input)
       {
         ELLE_TRACE_SCOPE("encode %s", input);
         size_t size = encoded_size(input);
@@ -34,31 +34,31 @@ namespace elle
         res.capacity(size);
         IOStream stream(new OutputStreamBuffer(res));
         Stream base64_stream(stream);
-        base64_stream.write(reinterpret_cast<char*>(input.contents()),
+        base64_stream.write(reinterpret_cast<char const*>(input.contents()),
                             input.size());
         return res;
       }
 
       size_t
-      decoded_size(WeakBuffer encoded)
+      decoded_size(ConstWeakBuffer encoded)
       {
         size_t size = encoded.size();
         int padding = 0;
-        if (size >= 1 && encoded.mutable_contents()[size - 1] == '=')
+        if (size >= 1 && encoded.contents()[size - 1] == '=')
           ++padding;
-        if (size >= 2 && encoded.mutable_contents()[size - 2] == '=')
+        if (size >= 2 && encoded.contents()[size - 2] == '=')
           ++padding;
         return size / 4 * 3 - padding;
       }
 
       Buffer
-      decode(WeakBuffer input)
+      decode(ConstWeakBuffer input)
       {
         ELLE_TRACE_SCOPE("decode %s", input);
         size_t size = decoded_size(input);
         ELLE_DEBUG("previsional size: %s", size);
         Buffer res(size);
-        IOStream stream(new InputStreamBuffer<WeakBuffer>(input));
+        IOStream stream(new InputStreamBuffer<ConstWeakBuffer>(input));
         Stream base64_stream(stream);
         base64_stream.read(reinterpret_cast<char*>(res.mutable_contents()),
                            size);

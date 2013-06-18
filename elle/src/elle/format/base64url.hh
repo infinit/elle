@@ -29,11 +29,11 @@ namespace elle
 
       /// Encode to base64url.
       Buffer
-      encode(WeakBuffer clear);
+      encode(ConstWeakBuffer input);
 
       /// Decode from base64url.
       Buffer
-      decode(WeakBuffer input);
+      decode(ConstWeakBuffer input);
     }
   }
 }

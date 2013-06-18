@@ -17,38 +17,59 @@ namespace elle
     return this->_contents;
   }
 
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   inline
-  WeakBuffer::WeakBuffer(void* data, size_t size):
+  ConstWeakBuffer::ConstWeakBuffer(const void* data, size_t size):
     _size(size),
-    _contents(static_cast<Byte*>(data))
+    _contents(static_cast<Byte*>(const_cast<void*>(data)))
   {}
 
   inline
-  WeakBuffer::WeakBuffer(Buffer const& buffer):
-    _size(buffer.size()),
-    _contents(buffer.mutable_contents())
+  ConstWeakBuffer::ConstWeakBuffer(Buffer const& buffer):
+    ConstWeakBuffer(buffer.mutable_contents(), buffer.size())
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer const& other):
-    _size(other._size),
-    _contents(other._contents)
+  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer const& other):
+    ConstWeakBuffer(other._contents, other._size)
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer&& other):
-    _size(other._size),
-    _contents(other._contents)
+  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer&& other):
+    ConstWeakBuffer(other)
   {
     other._contents = nullptr;
     other._size = 0;
   }
 
   inline
+  WeakBuffer::WeakBuffer(void* data, size_t size):
+    ConstWeakBuffer(data, size)
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(Buffer const& buffer):
+    ConstWeakBuffer(buffer)
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(WeakBuffer const& other):
+    ConstWeakBuffer(other)
+  {}
+
+  inline
+  WeakBuffer::WeakBuffer(WeakBuffer&& other):
+    ConstWeakBuffer(std::move(other))
+  {}
+
+  inline
   Byte*
   WeakBuffer::mutable_contents() const
   {
-    return this->_contents;
+    return const_cast<Byte*>(this->contents());
   }
 
   class InputBufferArchive:
@@ -59,7 +80,7 @@ namespace elle
 
   public:
     explicit
-    InputBufferArchive(WeakBuffer const& buffer);
+    InputBufferArchive(ConstWeakBuffer const& buffer);
     explicit
     InputBufferArchive(Buffer const& buffer);
     InputBufferArchive(InputBufferArchive&& other);

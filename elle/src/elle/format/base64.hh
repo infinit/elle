@@ -67,19 +67,19 @@ namespace elle
 
       /// Encode to base64.
       Buffer
-      encode(WeakBuffer clear);
+      encode(ConstWeakBuffer clear);
 
       /// The size of the encoded input.
       size_t
-      encoded_size(WeakBuffer input);
+      encoded_size(ConstWeakBuffer input);
 
       /// Decode from base64.
       Buffer
-      decode(WeakBuffer input);
+      decode(ConstWeakBuffer input);
 
       /// The size of the decoded input.
       size_t
-      decoded_size(WeakBuffer input);
+      decoded_size(ConstWeakBuffer input);
     }
   }
 }
