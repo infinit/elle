@@ -3,6 +3,7 @@
 
 #include <elle/Buffer.hh>
 #include <elle/format/base64.hh>
+#include <elle/format/base64url.hh>
 #include <elle/log.hh>
 
 #include <boost/test/unit_test.hpp>
@@ -60,7 +61,10 @@ BOOST_AUTO_TEST_CASE(streams)
   }
 }
 
-BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
+template <elle::Buffer (*Encode)(elle::WeakBuffer),
+          elle::Buffer (*Decode)(elle::WeakBuffer)>
+void
+encode_to_and_decode_from_base64_impl()
 {
   ELLE_TRACE_SCOPE("encode and decode generated strings");
   std::string to_encode = "";
@@ -72,13 +76,13 @@ BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
     elle::Buffer source(to_encode.data(), to_encode.length());
     elle::Buffer encoded;
     ELLE_TRACE("encode")
-      encoded = std::move(elle::format::base64::encode(source));
+      encoded = std::move(Encode(source));
     ELLE_TRACE("encoded: \"%s\"",
                std::string(reinterpret_cast<char*>(encoded.contents()),
                            encoded.size()));
     elle::Buffer decoded;
     ELLE_TRACE("decode")
-      decoded = std::move(elle::format::base64::decode(encoded));
+      decoded = std::move(Decode(encoded));
     ELLE_TRACE("decoded: %s", decoded);
 
     std::string decoded_str((char *) decoded.contents(), decoded.size());;
@@ -91,4 +95,28 @@ BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
 
     to_encode += i;
   }
+}
+
+BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
+{
+  encode_to_and_decode_from_base64_impl<elle::format::base64::encode,
+                                   elle::format::base64::decode>();
+}
+
+BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64url)
+{
+  encode_to_and_decode_from_base64_impl<elle::format::base64url::encode,
+                                        elle::format::base64url::decode>();
+}
+
+BOOST_AUTO_TEST_CASE(values)
+{
+  auto base64 = elle::format::base64::encode(
+    elle::WeakBuffer((void*)"\xF3\xDF\xBF", 3));
+  auto base64url = elle::format::base64url::encode(
+    elle::WeakBuffer((void*)"\xF3\xDF\xBF", 3));
+  BOOST_CHECK_EQUAL(elle::WeakBuffer(base64),
+                    elle::WeakBuffer((void*)"89+/", 4));
+  BOOST_CHECK_EQUAL(elle::WeakBuffer(base64url),
+                    elle::WeakBuffer((void*)"89-_", 4));
 }
