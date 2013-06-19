@@ -37,6 +37,7 @@ namespace elle
   }
 #endif
 
+  static
   bool
   demangle(const std::string& sym, std::string& res, std::string& error)
   {

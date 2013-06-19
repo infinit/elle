@@ -45,6 +45,8 @@ def configure(cxx_toolkit = None,
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
+  cxx_config.warnings.missing_declarations = \
+    drake.cxx.Config.Warnings.Error
 
   elle = drake.include('elle',
                        cxx_toolkit = cxx_toolkit,

@@ -226,7 +226,10 @@ namespace reactor
       return behavior;
     }
 
-    void DumpResults(StunClientLogicConfig& config, StunClientResults& results)
+    static
+    void
+    DumpResults(StunClientLogicConfig& config,
+                StunClientResults& results)
     {
       char buff[100];
       std::string result;

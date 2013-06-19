@@ -1,6 +1,6 @@
-#include <elle/types.hh>
-
 #include <elle/Exception.hh>
+#include <elle/types.hh>
+#include <elle/utility/Unicode.hh>
 
 #include <iconv.h>
 

@@ -13,6 +13,7 @@ namespace elle
 {
   namespace log
   {
+    static
     std::unique_ptr<Logger>&
     _logger()
     {
@@ -28,6 +29,7 @@ namespace elle
       return mutex;
     }
 
+    static
     Logger&
     logger()
     {

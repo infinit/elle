@@ -54,14 +54,23 @@ def configure(cxx_toolkit = None,
   cxx_config += asio_udt.config
   cxx_config.enable_debug_symbols()
 
-  sources = drake.nodes(
-    'src/reactor/Scope.cc',
-    'src/reactor/Scope.hh',
-    'src/reactor/asio.hh',
+  libcoroutine_sources = drake.nodes(
     'src/reactor/backend/coro_io/libcoroutine/asm.S',
     'src/reactor/backend/coro_io/libcoroutine/context.cc',
     'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
     'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
+  )
+  libcoroutine_cxx_config = drake.cxx.Config(cxx_config)
+  libcoroutine_cxx_config.warnings.missing_declarations = None
+  libcoroutine = drake.cxx.StaticLib('lib/coroutine',
+                                     libcoroutine_sources,
+                                     cxx_toolkit,
+                                     libcoroutine_cxx_config)
+
+  sources = drake.nodes(
+    'src/reactor/Scope.cc',
+    'src/reactor/Scope.hh',
+    'src/reactor/asio.hh',
     'src/reactor/backend/coro_io/thread.cc',
     'src/reactor/backend/coro_io/thread.hh',
     'src/reactor/backend/pthread/pthread.cc',
@@ -126,9 +135,12 @@ def configure(cxx_toolkit = None,
 
   cxx_config.lib_path_runtime('.')
   # FIXME: should not depend on UDT
-  lib_static = drake.cxx.StaticLib('lib/reactor', sources + [asio_udt_lib, udt_lib], cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('lib/reactor',
+                                   sources + [libcoroutine, asio_udt_lib, udt_lib],
+                                   cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/reactor',
-          sources + [asio_udt_lib, udt_lib], cxx_toolkit, cxx_config)
+                                 sources + [libcoroutine, asio_udt_lib, udt_lib],
+                                 cxx_toolkit, cxx_config)
 
   # Build
   rule_build = drake.Rule('build')
