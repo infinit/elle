@@ -61,15 +61,19 @@ class Config:
             self.__defines = collections.OrderedDict(model.__defines)
             self.__standard = model.__standard
             self.__rpath = deepcopy(model.__rpath)
-            self.__warnings = model.__warnings
+            self.__warnings = Config.Warnings(model.__warnings)
 
     class Warnings:
 
       Error = object()
 
-      def __init__(self):
-        self.__default = True
-        self.__warnings = collections.OrderedDict()
+      def __init__(self, model = None):
+        if model is None:
+          self.__default = True
+          self.__warnings = collections.OrderedDict()
+        else:
+          self.__default = model.__default
+          self.__warnings = collections.OrderedDict(model.__warnings)
 
       def __name(self, name):
         if name not in ['empty_body', 'parentheses']:
