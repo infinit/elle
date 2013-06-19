@@ -65,6 +65,8 @@ class Config:
 
     class Warnings:
 
+      Error = object()
+
       def __init__(self):
         self.__default = True
         self.__warnings = collections.OrderedDict()
@@ -76,7 +78,7 @@ class Config:
 
       def __setattr__(self, name, value):
         try:
-          self.__warnings[self.__name(name)] = bool(value)
+          self.__warnings[self.__name(name)] = value
         except:
           return super(Config.Warnings, self).__setattr__(name, value)
 
@@ -449,7 +451,15 @@ class GccToolkit(Toolkit):
       if cfg.warnings:
           res.append('-Wall')
       for warning, enable in cfg.warnings:
-          res.append('-W%s%s' % (enable and '' or 'no-', warning))
+        if enable is None:
+          pass
+        elif enable is Config.Warnings.Error:
+          prefix = 'error='
+        elif not enable:
+          prefix = 'no-'
+        else:
+          prefix = ''
+        res.append('-W%s%s' % (prefix, warning))
       return res
 
   def ldflags(self, cfg):
