@@ -41,6 +41,7 @@ struct A
   }
 };
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             A const& a)
@@ -113,6 +114,7 @@ struct E
   }
 };
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             D const& d)
@@ -120,6 +122,7 @@ operator <<(std::ostream& out,
   return out << d.i;
 }
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             E const& e)
@@ -198,6 +201,7 @@ struct C:
   }
 };
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             C const& c)
@@ -264,6 +268,7 @@ struct Obj
   }
 };
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             Obj const& obj)
@@ -300,6 +305,7 @@ struct SContainers
   }
 };
 
+static
 std::ostream&
 operator <<(std::ostream& out,
             SContainers const& obj)

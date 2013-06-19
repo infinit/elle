@@ -24,12 +24,14 @@ Fixture::~Fixture()
   sched = 0;
 }
 
+static
 void
 yield()
 {
   reactor::Scheduler::scheduler()->current()->yield();
 }
 
+static
 bool
 wait(reactor::Waitable& s,
      reactor::DurationOpt timeout = reactor::DurationOpt())
@@ -37,12 +39,14 @@ wait(reactor::Waitable& s,
   return sched->current()->wait(s, timeout);
 }
 
+static
 void
 wait(reactor::Waitables& s)
 {
   sched->current()->wait(s);
 }
 
+static
 void
 sleep(reactor::Duration d)
 {
@@ -61,6 +65,7 @@ empty()
 | Basics |
 `-------*/
 
+static
 void
 coro(int& step)
 {
@@ -71,6 +76,7 @@ coro(int& step)
   ++step;
 }
 
+static
 void
 test_basics_one()
 {
@@ -82,6 +88,7 @@ test_basics_one()
   BOOST_CHECK_EQUAL(step, 2);
 }
 
+static
 void
 coro1(int& step)
 {
@@ -97,6 +104,7 @@ coro1(int& step)
   BOOST_CHECK(step == 5);
 }
 
+static
 void
 coro2(int& step)
 {
@@ -107,6 +115,7 @@ coro2(int& step)
   ++step;
 }
 
+static
 void
 test_basics_interleave()
 {
@@ -123,6 +132,7 @@ test_basics_interleave()
 | Signals |
 `--------*/
 
+static
 void
 waiter(int& step,
        reactor::Waitables& waitables)
@@ -132,6 +142,7 @@ waiter(int& step,
   ++step;
 }
 
+static
 void
 sender_one(int& step,
            reactor::Signal& s, int expect)
@@ -148,6 +159,7 @@ sender_one(int& step,
   BOOST_CHECK_EQUAL(step, expect);
 }
 
+static
 void
 sender_two(int& step,
            reactor::Signal& s1,
@@ -171,6 +183,7 @@ sender_two(int& step,
   BOOST_CHECK_EQUAL(step, 1);
 }
 
+static
 void
 test_signals_one_on_one()
 {
@@ -189,6 +202,7 @@ test_signals_one_on_one()
   BOOST_CHECK_EQUAL(step, 1);
 }
 
+static
 void
 test_signals_one_on_two()
 {
@@ -208,6 +222,7 @@ test_signals_one_on_two()
   BOOST_CHECK_EQUAL(step, 1);
 }
 
+static
 void
 test_signals_two_on_one()
 {
@@ -228,6 +243,7 @@ test_signals_two_on_one()
   BOOST_CHECK_EQUAL(step, 2);
 }
 
+static
 void
 waiter_timeout()
 {
@@ -237,6 +253,7 @@ waiter_timeout()
   s.signal();
 }
 
+static
 void
 test_signals_timeout()
 {
@@ -250,6 +267,7 @@ test_signals_timeout()
 | Sleep |
 `------*/
 
+static
 void
 sleeper1(int& step)
 {
@@ -260,6 +278,7 @@ sleeper1(int& step)
   ++step;
 }
 
+static
 void
 sleeper2(int& step)
 {
@@ -270,6 +289,7 @@ sleeper2(int& step)
   ++step;
 }
 
+static
 void
 test_sleep_interleave()
 {
@@ -290,6 +310,7 @@ now()
   return boost::posix_time::microsec_clock::local_time();
 }
 
+static
 void
 sleep_timer(int& iterations)
 {
@@ -305,6 +326,7 @@ sleep_timer(int& iterations)
   }
 }
 
+static
 void
 test_sleep_timing()
 {
@@ -321,6 +343,7 @@ test_sleep_timing()
 | Join |
 `-----*/
 
+static
 void
 joined(int& count)
 {
@@ -332,6 +355,7 @@ joined(int& count)
   ++count;
 }
 
+static
 void
 join_waiter(reactor::Thread& thread,
             int& count)
@@ -341,6 +365,7 @@ join_waiter(reactor::Thread& thread,
   ++count;
 }
 
+static
 void
 test_join()
 {
@@ -356,6 +381,7 @@ test_join()
   BOOST_CHECK_EQUAL(count, 3);
 }
 
+static
 void
 join_waiter_multiple(reactor::Thread& thread,
                      int& count)
@@ -367,6 +393,7 @@ join_waiter_multiple(reactor::Thread& thread,
   ++count;
 }
 
+static
 void
 test_join_multiple()
 {
@@ -381,12 +408,14 @@ test_join_multiple()
   BOOST_CHECK_EQUAL(count, 1);
 }
 
+static
 void
 sleeping_beauty()
 {
   sleep(boost::posix_time::milliseconds(100));
 }
 
+static
 void
 prince_charming(reactor::Thread& sleeping_beauty)
 {
@@ -398,6 +427,7 @@ prince_charming(reactor::Thread& sleeping_beauty)
   BOOST_CHECK(sleeping_beauty.done());
 }
 
+static
 void
 test_join_timeout()
 {
@@ -413,6 +443,7 @@ test_join_timeout()
 | Timeout |
 `--------*/
 
+static
 void
 timeout(reactor::Signal& s,
         bool expect)
@@ -422,6 +453,7 @@ timeout(reactor::Signal& s,
   BOOST_CHECK(s.waiters().empty());
 }
 
+static
 void
 timeout_send(reactor::Signal& s)
 {
@@ -430,6 +462,7 @@ timeout_send(reactor::Signal& s)
   s.signal();
 }
 
+static
 void
 test_timeout_do()
 {
@@ -441,6 +474,7 @@ test_timeout_do()
   sched->run();
 }
 
+static
 void
 test_timeout_dont()
 {
@@ -460,20 +494,26 @@ test_timeout_dont()
 
 // Check abort + timeout is not an issue.
 
-void connor()
+static
+void
+connor()
 {
   reactor::Semaphore s(0);
   reactor::Scheduler::scheduler()->current()->wait(
     s, boost::posix_time::milliseconds(1));
 }
 
-void schwarzy()
+static
+void
+schwarzy()
 {
   reactor::Scheduler::scheduler()->terminate();
   ::usleep(10);
 }
 
-void test_timeout_aborted()
+static
+void
+test_timeout_aborted()
 {
   reactor::Scheduler sched;
 
@@ -487,12 +527,14 @@ void test_timeout_aborted()
 | VThread |
 `--------*/
 
+static
 int
 answer()
 {
   return 42;
 }
 
+static
 void
 test_vthread()
 {
@@ -508,6 +550,7 @@ test_vthread()
 | Multithread |
 `------------*/
 
+static
 void
 waker(reactor::Signal& s)
 {
@@ -521,6 +564,7 @@ waker(reactor::Signal& s)
   sleep(1);
 }
 
+static
 void
 test_multithread_spawn_wake()
 {
@@ -536,6 +580,7 @@ test_multithread_spawn_wake()
   s.join();
 }
 
+static
 int
 spawned(reactor::Signal& s)
 {
@@ -543,6 +588,7 @@ spawned(reactor::Signal& s)
   return 42;
 }
 
+static
 void
 spawn(reactor::Signal& s,
       int& res)
@@ -550,6 +596,7 @@ spawn(reactor::Signal& s,
   res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
 }
 
+static
 void
 spawner()
 {
@@ -561,6 +608,7 @@ spawner()
   BOOST_CHECK_EQUAL(res, 42);
 }
 
+static
 void
 test_multithread_run()
 {
@@ -574,6 +622,7 @@ test_multithread_run()
 | Semaphore |
 `----------*/
 
+static
 void
 semaphore_noblock_wait(reactor::Semaphore& s)
 {
@@ -584,6 +633,7 @@ semaphore_noblock_wait(reactor::Semaphore& s)
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
+static
 void
 test_semaphore_noblock()
 {
@@ -594,6 +644,7 @@ test_semaphore_noblock()
   sched->run();
 }
 
+static
 void
 semaphore_block_wait(reactor::Semaphore& s)
 {
@@ -602,6 +653,7 @@ semaphore_block_wait(reactor::Semaphore& s)
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
+static
 void
 semaphore_block_post(reactor::Semaphore& s)
 {
@@ -613,6 +665,7 @@ semaphore_block_post(reactor::Semaphore& s)
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
+static
 void
 test_semaphore_block()
 {
@@ -625,6 +678,7 @@ test_semaphore_block()
   sched->run();
 }
 
+static
 void
 semaphore_multi_wait(reactor::Semaphore& s,
                      int& step)
@@ -633,6 +687,7 @@ semaphore_multi_wait(reactor::Semaphore& s,
   ++step;
 }
 
+static
 void
 semaphore_multi_post(reactor::Semaphore& s,
                      int& step)
@@ -652,6 +707,7 @@ semaphore_multi_post(reactor::Semaphore& s,
   BOOST_CHECK_EQUAL(step, 2);
 }
 
+static
 void
 test_semaphore_multi()
 {
@@ -676,6 +732,7 @@ test_semaphore_multi()
 
 static const int mutex_yields = 32;
 
+static
 void
 mutex_count(int& i,
             reactor::Mutex& mutex,
@@ -704,6 +761,7 @@ mutex_count(int& i,
   }
 }
 
+static
 void
 test_mutex()
 {
@@ -726,6 +784,7 @@ test_mutex()
 | RWMutex |
 `--------*/
 
+static
 void
 rw_mutex_read(reactor::RWMutex& mutex,
               int& step)
@@ -736,6 +795,7 @@ rw_mutex_read(reactor::RWMutex& mutex,
   BOOST_CHECK_EQUAL(step, 3);
 }
 
+static
 void
 test_rw_mutex_multi_read()
 {
@@ -754,6 +814,7 @@ test_rw_mutex_multi_read()
   sched.run();
 }
 
+static
 void
 rw_mutex_write(reactor::RWMutex& mutex,
                int& step)
@@ -765,6 +826,7 @@ rw_mutex_write(reactor::RWMutex& mutex,
   BOOST_CHECK_EQUAL(step, prev);
 }
 
+static
 void
 test_rw_mutex_multi_write()
 {
@@ -783,6 +845,7 @@ test_rw_mutex_multi_write()
   sched.run();
 }
 
+static
 void
 rw_mutex_both_read(reactor::RWMutex& mutex,
                    int& step)
@@ -797,6 +860,7 @@ rw_mutex_both_read(reactor::RWMutex& mutex,
   BOOST_CHECK_EQUAL(step, v);
 }
 
+static
 void
 rw_mutex_both_write(reactor::RWMutex& mutex,
                     int& step)
@@ -809,6 +873,7 @@ rw_mutex_both_write(reactor::RWMutex& mutex,
   BOOST_CHECK_EQUAL(step % 2, 0);
 }
 
+static
 void
 test_rw_mutex_both()
 {
@@ -863,6 +928,7 @@ test_rw_mutex_both()
 | Storage |
 `--------*/
 
+static
 void
 storage(reactor::LocalStorage<int>& val,
         int start)
@@ -927,6 +993,7 @@ test_storage_multithread()
 | Multithread |
 `------------*/
 
+static
 void
 test_multithread()
 {
@@ -966,12 +1033,14 @@ public:
   {}
 };
 
+static
 void
 except_gen()
 {
   throw BeaconException();
 }
 
+static
 void
 thread_exception_test()
 {
@@ -1224,6 +1293,7 @@ test_exception_escape_collateral()
 | IO service throw |
 `-----------------*/
 
+static
 void
 poster(bool& beacon)
 {
@@ -1233,6 +1303,7 @@ poster(bool& beacon)
   beacon = true;
 }
 
+static
 void
 test_io_service_throw()
 {
@@ -1247,6 +1318,7 @@ test_io_service_throw()
 | Main |
 `-----*/
 
+static
 bool
 test_suite()
 {

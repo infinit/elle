@@ -76,6 +76,7 @@ ELLE_SERIALIZE_SIMPLE(Sample,
 | Operators |
 `----------*/
 
+static
 std::ostream&
 operator <<(std::ostream& stream,
             Sample const& x)

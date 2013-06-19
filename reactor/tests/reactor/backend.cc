@@ -10,6 +10,7 @@ using reactor::backend::Thread;
 
 Manager* m = 0;
 
+static
 void
 empty()
 {}
@@ -99,6 +100,7 @@ test_status()
   delete m;
 }
 
+static
 bool
 test_suite()
 {

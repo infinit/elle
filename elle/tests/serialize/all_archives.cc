@@ -148,7 +148,9 @@ template<template <ArchiveMode> class Archive> void testClass()
     }
 }
 
-void testJSON()
+static
+void
+testJSON()
 {
   A el1{"salut", "pif", "paf", 42.3f, 32, 3000};
   A el2{"1", "2", "3", 77.5f, 24, 3001};
@@ -205,6 +207,3 @@ BOOST_AUTO_TEST_CASE(all_archive)
   }
   // XXX
 }
-
-
-

@@ -13,6 +13,12 @@ test_backtrace_empty()
   BOOST_CHECK(empty.empty());
 }
 
+// Pacify -Wmissing-declarations.
+Backtrace foo();
+Backtrace bar();
+Backtrace baz();
+Backtrace quux();
+
 ELLE_COMPILER_ATTRIBUTE_NO_INLINE
 Backtrace
 quux()

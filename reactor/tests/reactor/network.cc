@@ -37,6 +37,7 @@ Fixture::~Fixture()
 | Destroy socket |
 `---------------*/
 
+static
 void
 test_destroy_socket_non_connected()
 {
@@ -54,6 +55,7 @@ test_destroy_socket_non_connected()
   BOOST_FAIL("Socket shouldn't have connected");
 }
 
+static
 void
 test_destroy_socket()
 {
@@ -243,6 +245,7 @@ test_echo_server()
   delete sched;
 }
 
+static
 bool
 test_suite()
 {

@@ -79,6 +79,7 @@ struct LL: public L
   void bar() const override { ELLE_TRACE("bar"); }
 };
 
+static
 LL const&
 static_from_function()
 {
@@ -87,13 +88,17 @@ static_from_function()
   return ll;
 }
 
-void g()
+static
+void
+g()
 {
   ELLE_WARN("g Me too!");
   ELLE_TRACE("g Me too!");
 }
 
-void f()
+static
+void
+f()
 {
   ELLE_WARN("f This is usefull, yellow first!");
   ELLE_TRACE("f This is usefull!");
@@ -104,7 +109,9 @@ void f()
   }
 }
 
-void s()
+static
+void
+s()
 {
   ELLE_TRACE("s This is usefull!");
   ELLE_WARN("s This is usefull, yellow second!");

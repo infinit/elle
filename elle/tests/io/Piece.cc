@@ -10,6 +10,7 @@ namespace elle
 {
   namespace io
   {
+    static
     std::ostream&
     operator << (std::ostream &out, elle::io::Piece const &p)
     {

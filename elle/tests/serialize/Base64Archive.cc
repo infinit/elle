@@ -36,7 +36,9 @@ template<typename Container>
               << ": " << ss.str() << std::endl;
   }
 
-void test_stl()
+static
+void
+test_stl()
 {
   double tab[] = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6};
   test_container(tab);
@@ -70,6 +72,3 @@ int main()
   std::cout << "tests done.\n";
   return 0;
 }
-
-
-

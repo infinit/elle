@@ -29,6 +29,7 @@ Fixture::~Fixture()
   sched = 0;
 }
 
+static
 void
 gen_message(const std::string& thread_name)
 {

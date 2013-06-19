@@ -47,6 +47,8 @@ def configure(cxx_toolkit = None,
   cxx_config.warnings.empty_body = False
   cxx_config.warnings.missing_declarations = \
     drake.cxx.Config.Warnings.Error
+  cxx_config.warnings.return_type = \
+    drake.cxx.Config.Warnings.Error
 
   elle = drake.include('elle',
                        cxx_toolkit = cxx_toolkit,

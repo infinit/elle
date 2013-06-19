@@ -59,7 +59,9 @@ static void test_simple()
 }
 
 
-void test_stl()
+static
+void
+test_stl()
 {
   // construct from std::map
     {
@@ -123,7 +125,9 @@ void test_stl()
 
 }
 
-void test_except()
+static
+void
+test_except()
 {
   json::Dictionary d;
 
@@ -187,5 +191,3 @@ int main()
   std::cout << "tests done.\n";
   return 0;
 }
-
-

@@ -197,6 +197,7 @@ test_cmp()
   }
 }
 
+static
 void
 test_capacity()
 {
@@ -216,6 +217,7 @@ test_capacity()
   BOOST_CHECK_EQUAL(b.capacity(), 8);
 }
 
+static
 void
 test_release()
 {

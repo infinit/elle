@@ -55,7 +55,9 @@ static void test_simple()
   assert(arr.repr() == "[10,[10],42.3,[1,2,3,4,5],null,null,null,null,true,false,true,false]");
 }
 
-void test_stl()
+static
+void
+test_stl()
 {
     {
       json::Array arr;
@@ -112,5 +114,3 @@ int main()
   std::cout << "tests done.\n";
   return 0;
 }
-
-

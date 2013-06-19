@@ -33,6 +33,7 @@ always_inline()
   // ::backtrace is subject to offsets and won't work.
 }
 
+static
 void
 test_always_inline()
 {
@@ -47,12 +48,14 @@ no_inline()
   // ::backtrace is subject to offsets and won't work.
 }
 
+static
 void
 test_no_inline()
 {
   no_inline();
 }
 
+static
 void
 test_pretty_function()
 {

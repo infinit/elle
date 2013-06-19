@@ -7,6 +7,10 @@
 
 using elle::Exception;
 
+// Pacify -Wmissing-declarations.
+void
+thrower();
+
 void
 thrower()
 {
