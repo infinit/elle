@@ -23,8 +23,7 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      explicit
-      Input(elle::WeakBuffer const& buffer);
+      Input(elle::WeakBuffer const& buffer); /* implicit */
     private:
       Input(Input const&);
       Input(Input&);
