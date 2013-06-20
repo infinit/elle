@@ -45,10 +45,20 @@ namespace reactor
                 int port,
                 int local_port,
                 DurationOpt timeout = DurationOpt());
+      UDTSocket(Scheduler& sched,
+                UDPSocket& socket);
       virtual ~UDTSocket();
     private:
-      friend class UDTServer;
       UDTSocket(Scheduler& sched, AsioSocket* socket);
+      friend class UDTServer;
+
+    /*--------.
+    | Connect |
+    `--------*/
+    public:
+      void
+      connect(std::string const& host,
+              int port);
 
     /*-----.
     | Read |

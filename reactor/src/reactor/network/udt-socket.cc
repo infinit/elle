@@ -33,6 +33,15 @@ namespace reactor
     }
 
     UDTSocket::UDTSocket(Scheduler& sched,
+                         UDPSocket& socket):
+      Super(sched, new boost::asio::ip::udt::socket{sched.io_service()}),
+      _write_mutex()
+    {
+      ELLE_DEBUG("%s: rebind %s", *this, socket)
+        this->socket()->_bind_fd(socket.socket()->native_handle());
+    }
+
+    UDTSocket::UDTSocket(Scheduler& sched,
                          UDPSocket& socket,
                          std::string const& hostname,
                          std::string const& port,
@@ -81,7 +90,7 @@ namespace reactor
       : Super(sched, new boost::asio::ip::udt::socket(sched.io_service()))
       , _write_mutex()
     {
-      this->socket()->_bind(local_port);
+      this->socket()->bind(local_port);
       _connect(resolve_udp(sched, hostname,
                            boost::lexical_cast<std::string>(port)), timeout);
     }
@@ -96,6 +105,19 @@ namespace reactor
     UDTSocket::UDTSocket(Scheduler& sched, AsioSocket* socket)
       : Super(sched, socket)
     {}
+
+    /*--------.
+    | Connect |
+    `--------*/
+
+    void
+    UDTSocket::connect(std::string const& host,
+                       int port)
+    {
+      auto& sched = *reactor::Scheduler::scheduler();
+      _connect(resolve_udp(sched, host, std::to_string(port)),
+               DurationOpt());
+    }
 
     /*-----.
     | Read |
