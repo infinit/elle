@@ -171,6 +171,7 @@ def configure(cxx_toolkit = None,
   cxx_config_tests += boost.config_signals()
   cxx_config_tests += boost.config_system()
   cxx_config_tests += boost.config_test()
+  cxx_config_tests.lib('asio-udt')
 
   for test in tests:
     config = drake.cxx.Config(cxx_config_tests)
