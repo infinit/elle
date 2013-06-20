@@ -28,14 +28,17 @@ namespace elle
       };
 
       /// Encode to base64url.
-      Buffer
+      template <typename T = Buffer>
+      T
       encode(ConstWeakBuffer input);
-
       /// Decode from base64url.
+      template <typename T = ConstWeakBuffer>
       Buffer
-      decode(ConstWeakBuffer input);
+      decode(T input);
     }
   }
 }
+
+# include <elle/format/base64url.hxx>
 
 #endif
