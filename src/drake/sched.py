@@ -422,9 +422,7 @@ def coro_wait(waitable):
     if current_exception is None:
       done = True
     else:
-      if exception is None:
-        exception = current_exception
-      else:
+      if exception is not None and exception is not current_exception:
         current_exception.__context__ = exception
       exception = current_exception
   if exception is not None:
