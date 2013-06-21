@@ -939,10 +939,15 @@ class Compiler(Builder):
 
   @property
   def pic(self):
-    for consumer in self.obj.consumers:
-      if isinstance(consumer, DynLibLinker):
-        return True
-    return False
+    def pic_rec(node):
+      for consumer in node.consumers:
+        if isinstance(consumer, DynLibLinker):
+          return True
+        elif isinstance(consumer, StaticLibLinker):
+          if pic_rec(consumer.library):
+            return True
+      return False
+    return pic_rec(self.obj)
 
   def hash(self):
     return str(self.command)
@@ -1050,20 +1055,24 @@ class StaticLibLinker(ShellCommand):
     def __init__(self, objs, lib, tk, cfg):
 
         self.objs = objs
-        self.lib = lib
+        self.__library = lib
         self.toolkit = tk
         self.config = cfg
         Builder.__init__(self, objs, [lib])
 
     def execute(self):
-        return self.cmd('Link %s' % self.lib, self.command)
+        return self.cmd('Link %s' % self.__library, self.command)
 
     @property
     def command(self):
         return self.toolkit.archive(
             self.config,
             self.objs + list(self.sources_dynamic()),
-            self.lib)
+            self.__library)
+
+    @property
+    def library(self):
+      return self.__library
 
     def hash(self):
         return str(self.command)
