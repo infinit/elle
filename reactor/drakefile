@@ -136,10 +136,10 @@ def configure(cxx_toolkit = None,
   cxx_config.lib_path_runtime('.')
   # FIXME: should not depend on UDT
   lib_static = drake.cxx.StaticLib('lib/reactor',
-                                   sources + [libcoroutine, asio_udt_lib, udt_lib],
+                                   sources + [libcoroutine, asio_udt_lib],
                                    cxx_toolkit, cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/reactor',
-                                 sources + [libcoroutine, asio_udt_lib, udt_lib],
+                                 sources + [libcoroutine, asio_udt_lib],
                                  cxx_toolkit, cxx_config)
 
   # Build
