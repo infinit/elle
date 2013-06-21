@@ -96,11 +96,20 @@ parallel_write()
 
   std::list<std::thread> threads;
   std::list<int> counters;
-  for (int i = 0; i < 64; ++i)
+  try
   {
-    counters.push_back(0);
-    int& counter = counters.back();
-    threads.push_back(std::thread([&](){ action(counter); }));
+    for (int i = 0; i < 64; ++i)
+    {
+      counters.push_back(0);
+      int& counter = counters.back();
+      threads.push_back(std::thread([&](){ action(counter); }));
+    }
+  }
+  catch (...)
+  {
+    for (auto& thread: threads)
+      thread.join();
+    throw;
   }
 
   for (auto& thread: threads)
