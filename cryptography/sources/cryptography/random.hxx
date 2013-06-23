@@ -122,6 +122,7 @@ namespace infinit
         {
           static_assert(sizeof (T) == 0,
                         "unsupported type for random generation");
+          elle::unreachable();
         }
       };
 
