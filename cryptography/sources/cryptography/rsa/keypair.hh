@@ -33,6 +33,12 @@ namespace infinit
         std::pair<PublicKey, PrivateKey>
         generate(cryptography::seed::Interface const& seed);
 # endif
+        /// Construct a pair of keys based on the given EVP structure.
+        ///
+        /// Note that the ownership on the given EVP structure is transferred
+        /// to the function.
+        std::pair<PublicKey, PrivateKey>
+        construct(::EVP_PKEY* key);
       }
     }
   }
