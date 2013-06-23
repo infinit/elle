@@ -22,28 +22,28 @@ namespace infinit
       | Functions |
       `----------*/
 
-      // The function emulating the password callback.
+      // The function emulating the passphrase callback.
       static
       int
       _callback(char* buffer, int size, int rwflag, void *u)
       {
-        char* password = (char*)u;
-        int length = ::strlen(password);
+        char* passphrase = (char*)u;
+        int length = ::strlen(passphrase);
 
         // If too long, truncate.
         if (length > size)
           length = size;
 
-        memcpy(buffer, password, length);
+        memcpy(buffer, passphrase, length);
 
         return (length);
       }
 
       KeyPair
       load_keypair(boost::filesystem::path const& path,
-                   elle::String const& password)
+                   elle::String const& passphrase)
       {
-        ELLE_TRACE_FUNCTION(path, password);
+        ELLE_TRACE_FUNCTION(path, passphrase);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -60,13 +60,13 @@ namespace infinit
               fd,
               &key,
               &_callback,
-              (void*)password.c_str()) == nullptr)
+              (void*)passphrase.c_str()) == nullptr)
         {
           ::fclose(fd);
 
           throw Exception(
             elle::sprintf("unable to read the private key from the PEM "
-                          "file; please check the file format or the password: "
+                          "file; please check the file format or the passphrase: "
                           "%s",
                           ::ERR_error_string(ERR_get_error(),
                                              nullptr)));
@@ -112,9 +112,9 @@ namespace infinit
 
       PublicKey
       load_K(boost::filesystem::path const& path,
-             elle::String const& password)
+             elle::String const& passphrase)
       {
-        ELLE_TRACE_FUNCTION(path, password);
+        ELLE_TRACE_FUNCTION(path, passphrase);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -131,13 +131,13 @@ namespace infinit
               fd,
               &key,
               &_callback,
-              (void*)password.c_str()) == nullptr)
+              (void*)passphrase.c_str()) == nullptr)
         {
           ::fclose(fd);
 
           throw Exception(
             elle::sprintf("unable to read the public key from the PEM "
-                          "file; please check the file format or the password: "
+                          "file; please check the file format or the passphrase: "
                           "%s",
                           ::ERR_error_string(ERR_get_error(),
                                              nullptr)));
@@ -180,9 +180,9 @@ namespace infinit
 
       PrivateKey
       load_k(boost::filesystem::path const& path,
-             elle::String const& password)
+             elle::String const& passphrase)
       {
-        cryptography::KeyPair keypair = load_keypair(path, password);
+        cryptography::KeyPair keypair = load_keypair(path, passphrase);
 
         return (keypair.k());
       }

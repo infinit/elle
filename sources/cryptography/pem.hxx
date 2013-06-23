@@ -16,31 +16,33 @@ namespace infinit
       load(boost::filesystem::path const&,
            elle::String const&)
       {
-        static_assert(sizeof (T) != 0, "non-supported type");
+        static_assert(sizeof (T) == 0,
+                      "unsupported type for loading from a PEM file");
+        elle::unreachable();
       }
 
       template <>
       KeyPair
       load(boost::filesystem::path const& path,
-           elle::String const& password)
+           elle::String const& passphrase)
       {
-        return (load_keypair(path, password));
+        return (load_keypair(path, passphrase));
       }
 
       template <>
       PublicKey
       load(boost::filesystem::path const& path,
-           elle::String const& password)
+           elle::String const& passphrase)
       {
-        return (load_K(path, password));
+        return (load_K(path, passphrase));
       }
 
       template <>
       PrivateKey
       load(boost::filesystem::path const& path,
-           elle::String const& password)
+           elle::String const& passphrase)
       {
-        return (load_k(path, password));
+        return (load_k(path, passphrase));
       }
     }
   }
