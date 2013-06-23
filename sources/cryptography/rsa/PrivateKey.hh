@@ -183,6 +183,10 @@ namespace infinit
         PrivateKey
         generate(cryptography::seed::Interface const& seed);
 # endif
+        /// Construct a private key based on the given EVP structure whose
+        /// ownership is transferred.
+        PrivateKey
+        construct(::EVP_PKEY* key);
       }
     }
   }

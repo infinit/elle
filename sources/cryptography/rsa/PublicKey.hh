@@ -173,6 +173,10 @@ namespace infinit
         PublicKey
         generate(cryptography::seed::Interface const& seed);
 # endif
+        /// Construct a public key based on the given EVP structure whose
+        /// ownership is transferred.
+        PublicKey
+        construct(::EVP_PKEY* key);
       }
     }
   }

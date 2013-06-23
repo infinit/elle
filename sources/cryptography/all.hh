@@ -21,6 +21,7 @@
 # include <cryptography/evp.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/oneway.hh>
+# include <cryptography/pem.hh>
 # include <cryptography/random.hh>
 # include <cryptography/rsa/all.hh>
 # include <cryptography/types.hh>

@@ -647,9 +647,23 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-          return (PublicKey(std::move(K)));
+          return (K);
         }
 #endif
+
+        PublicKey
+        construct(::EVP_PKEY* key)
+        {
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+
+          // Instanciate an RSA public key by transferring the ownership
+          // of the EVP structure.
+          PublicKey K(key);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+
+          return (K);
+        }
       }
     }
   }

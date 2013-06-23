@@ -173,6 +173,26 @@ namespace infinit
           return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
         }
 #endif
+
+        std::pair<PublicKey, PrivateKey>
+        construct(::EVP_PKEY* key)
+        {
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+
+          // Instanciate both a RSA public and private key based on the EVP's
+          // RSA structure.
+          //
+          // Note that some internal numbers need to be duplicated for the
+          // instanciation of the public key while the private key is
+          // constructed by transferring the ownership of the RSA.
+          PublicKey K(::BN_dup(key->pkey.rsa->n),
+                      ::BN_dup(key->pkey.rsa->e));
+          PrivateKey k(key);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+
+          return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
+        }
       }
     }
   }

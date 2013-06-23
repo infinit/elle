@@ -1,4 +1,5 @@
 #include <cryptography/evp.hh>
+#include <cryptography/cryptography.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/cipher.hh>
 #include <cryptography/Plain.hh>
@@ -79,6 +80,9 @@ namespace infinit
         {
           ELLE_TRACE_FUNCTION(input, context, function);
 
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
           // Compute the size of the encrypted buffer.
           ::size_t size;
 
@@ -129,6 +133,9 @@ namespace infinit
                 elle::Natural32 const padding_size)
         {
           ELLE_TRACE_FUNCTION(plain, context, function, padding_size);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
 
           // The overhead represents the difference between a bare secret
           // key length and the same key in its serialized form.
@@ -196,6 +203,9 @@ namespace infinit
         {
           ELLE_TRACE_FUNCTION(code, context, function);
 
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
           // 1) Extract the key and ciphered data from the code which
           //    is supposed to be an archive.
           auto extractor = code.buffer().reader();
@@ -230,6 +240,9 @@ namespace infinit
         {
           ELLE_TRACE_FUNCTION(digest, context, function);
 
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
           Signature signature(apply(elle::WeakBuffer{digest.buffer()},
                                     context,
                                     function));
@@ -248,6 +261,9 @@ namespace infinit
                                size_t))
         {
           ELLE_TRACE_FUNCTION(signature, digest, context, function);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
 
           ELLE_ASSERT_NEQ(context, nullptr);
           ELLE_ASSERT_NEQ(signature.buffer().contents(), nullptr);
@@ -314,6 +330,9 @@ namespace infinit
                 ::EVP_MD const* function_oneway)
         {
           ELLE_TRACE_FUNCTION(plain, secret, function_cipher, function_oneway);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
 
           // Generate a salt.
           unsigned char salt[PKCS5_SALT_LEN];
@@ -425,6 +444,9 @@ namespace infinit
                 ::EVP_MD const* function_oneway)
         {
           ELLE_TRACE_FUNCTION(code, secret, function_cipher, function_oneway);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
 
           // Check whether the code was produced with a salt.
           ELLE_ASSERT_NEQ(code.buffer().contents(), nullptr);
@@ -543,6 +565,9 @@ namespace infinit
              ::EVP_MD const* function)
         {
           ELLE_TRACE_FUNCTION(plain, function);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
 
           Digest digest(EVP_MD_size(function));
 
