@@ -57,6 +57,34 @@ namespace elle
             dst[j++] = ((v1 << 4) & 0xf0) + (v2 & 0xf);
           }
       }
+
+      String
+      encode(ConstWeakBuffer buffer)
+      {
+        String string;
+        encode(buffer, string);
+        return (string);
+      }
+
+      void
+      encode(ConstWeakBuffer buffer,
+             String& string)
+      {
+        static char const* chars = "0123456789abcdef";
+        if (buffer.size() == 0)
+          return;
+        Size i = string.size();
+        string.resize(i + buffer.size() * 2);
+        Byte const* ptr = buffer.contents();
+        Byte const* end = ptr + buffer.size();
+        while (ptr != end)
+        {
+          Byte c = *ptr++;
+          string[i++] = chars[(c >> 4) & 0xf];
+          string[i++] = chars[c & 0xf];
+        }
+        ELLE_ASSERT(string.length() == i);
+      }
     }
   }
 }

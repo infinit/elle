@@ -11,15 +11,13 @@ namespace elle
     namespace hexadecimal
     {
       /// Convert any binary-based buffer to an hexadecimal encoded string.
-      template <typename T>
       String
-      encode(T const& buffer);
+      encode(ConstWeakBuffer buffer);
       /// Convert any binary-based buffer to an hexadecimal encoded string.
       ///
       /// This version appends the result to the given string.
-      template <typename T>
       void
-      encode(T const& buffer,
+      encode(ConstWeakBuffer buffer,
              String& hexadecimal_string);
       /// Convert any hexadecimal string to a buffer.
       Buffer
