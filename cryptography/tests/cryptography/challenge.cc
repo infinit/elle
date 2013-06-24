@@ -29,12 +29,13 @@ test_operate()
 
   elle::String response =
     infinit::cryptography::challenge::accept(challenge,
-                                             challengee.k(),
+                                             challengee,
                                              challenger.K());
 
   BOOST_CHECK_EQUAL(infinit::cryptography::challenge::check(response,
                                                             challenger.k(),
-                                                            nonce), true);
+                                                            nonce),
+                    true);
 }
 
 /*-----.

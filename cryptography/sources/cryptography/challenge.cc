@@ -32,7 +32,7 @@ namespace infinit
       {}
 
       Challenge(PublicKey const& challenger_K,
-                elle::String const& nonce):
+                Code const& nonce):
         _challenger_K(challenger_K),
         _nonce(nonce)
       {}
@@ -48,7 +48,7 @@ namespace infinit
       {}
 
       ELLE_SERIALIZE_CONSTRUCT(Challenge,
-                               _challenger_K)
+                               _challenger_K, _nonce)
       {}
 
       /*-----------.
@@ -62,7 +62,7 @@ namespace infinit
       `-----------*/
     public:
       ELLE_ATTRIBUTE_R(PublicKey, challenger_K);
-      ELLE_ATTRIBUTE_R(elle::String, nonce);
+      ELLE_ATTRIBUTE_R(Code, nonce);
     };
   }
 }
@@ -117,53 +117,41 @@ namespace infinit
       {
         ELLE_TRACE_FUNCTION(challenger_K, challengee_K, nonce);
 
-        // Encrypt with the challengee's public key both the
-        // challenger's public key and the nonce.
+        // Encrypt the nonce with the challengee's public key.
         //
         // Once receiving the challenge, the challengee will
         // be able to decrypt it with its private key and
         // respond by encrypting the challenge by encrypting
         // it with the challenger's public key.
 
-        Challenge _challenge(challenger_K, nonce);
+        Code code = challengee_K.encrypt(nonce);
 
-        Code code = challengee_K.encrypt(_challenge);
+        Challenge _challenge(challenger_K, code);
 
         elle::String challenge;
         elle::serialize::to_string<
-          elle::serialize::OutputBase64Archive>(challenge) << code;
+          elle::serialize::OutputBase64Archive>(challenge) << _challenge;
 
         return (challenge);
       }
 
       static
-      Challenge
+      elle::String
       _accept(elle::String const& challenge,
-              PrivateKey const& challengee_k)
+              KeyPair const& challengee_keypair,
+              PublicKey const* challenger_K)
       {
-        ELLE_DEBUG_FUNCTION(challenge, challengee_k);
+        ELLE_DEBUG_FUNCTION(challenge, challengee_keypair, challenger_K);
 
+        // Decrypt the challenge so as to extract both the challenger's
+        // public key and the nonce, in its encrypted form.
         auto extractor =
           elle::serialize::from_string<
             elle::serialize::InputBase64Archive>(challenge);
-        Code code(extractor);
+        Challenge _challenge(extractor);
 
-        Challenge _challenge = challengee_k.decrypt<Challenge>(code);
-
-        return (_challenge);
-      }
-
-      static
-      elle::String
-      _accept(elle::String const& challenge,
-              PrivateKey const& challengee_k,
-              PublicKey const* challenger_K)
-      {
-        ELLE_DEBUG_FUNCTION(challenge, challengee_k, challenger_K);
-
-        // Decrypt the challenge and extract both the challenger's
-        // public key and the nonce.
-        Challenge _challenge = _accept(challenge, challengee_k);
+        elle::String _nonce =
+          challengee_keypair.k().decrypt<elle::String>(_challenge.nonce());
 
         // Check that the challenger is the expected one, if required.
         if (challenger_K != nullptr)
@@ -177,32 +165,29 @@ namespace infinit
 
         // Then, re-encrypt the nonce with the challenger's public key
         // for the challenger only to be able to decrypt it.
-        Code code = _challenge.challenger_K().encrypt(_challenge.nonce());
-
-        elle::String response;
-        elle::serialize::to_string<
-          elle::serialize::OutputBase64Archive>(response) << code;
+        elle::String response =
+          create(challengee_keypair.K(), _challenge.challenger_K(), _nonce);
 
         return (response);
       }
 
       elle::String
       accept(elle::String const& challenge,
-             PrivateKey const& challengee_k)
+             KeyPair const& challengee_keypair)
       {
-        ELLE_TRACE_FUNCTION(challenge, challengee_k);
+        ELLE_TRACE_FUNCTION(challenge, challengee_keypair);
 
-        return (_accept(challenge, challengee_k, nullptr));
+        return (_accept(challenge, challengee_keypair, nullptr));
       }
 
       elle::String
       accept(elle::String const& challenge,
-             PrivateKey const& challengee_k,
+             KeyPair const& challengee_keypair,
              PublicKey const& challenger_K)
       {
-        ELLE_TRACE_FUNCTION(challenge, challengee_k, challenger_K);
+        ELLE_TRACE_FUNCTION(challenge, challengee_keypair, challenger_K);
 
-        return (_accept(challenge, challengee_k, &challenger_K));
+        return (_accept(challenge, challengee_keypair, &challenger_K));
       }
 
       elle::Boolean
@@ -213,15 +198,16 @@ namespace infinit
         ELLE_TRACE_FUNCTION(response, challenger_k, nonce);
 
         // Decrypt the response with the challenger's public key and
-        // compare the extracted nonce from the original one.
+        // compare the extracted nonce, once decrypted, from the original one.
         try
         {
           auto extractor =
             elle::serialize::from_string<
               elle::serialize::InputBase64Archive>(response);
-          Code code(extractor);
+          Challenge _challenge(extractor);
 
-          elle::String _nonce = challenger_k.decrypt<elle::String>(code);
+          elle::String _nonce =
+            challenger_k.decrypt<elle::String>(_challenge.nonce());
 
           if (nonce != _nonce)
             return (false);
