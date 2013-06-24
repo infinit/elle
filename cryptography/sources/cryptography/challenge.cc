@@ -32,9 +32,9 @@ namespace infinit
       {}
 
       Challenge(PublicKey const& challenger_K,
-                Code const& nonce):
+                Code nonce):
         _challenger_K(challenger_K),
-        _nonce(nonce)
+        _nonce(std::move(nonce))
       {}
 
       Challenge(Challenge const& other):
@@ -126,7 +126,7 @@ namespace infinit
 
         Code code = challengee_K.encrypt(nonce);
 
-        Challenge _challenge(challenger_K, code);
+        Challenge _challenge(challenger_K, std::move(code));
 
         elle::String challenge;
         elle::serialize::to_string<
