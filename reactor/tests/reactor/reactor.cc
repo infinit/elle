@@ -41,13 +41,6 @@ wait(reactor::Waitable& s,
 
 static
 void
-wait(reactor::Waitables& s)
-{
-  sched->current()->wait(s);
-}
-
-static
-void
 sleep(reactor::Duration d)
 {
   sched->current()->sleep(d);
@@ -1382,6 +1375,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(sem);
   sem->add(BOOST_TEST_CASE(test_semaphore_noblock));
   sem->add(BOOST_TEST_CASE(test_semaphore_block));
+  sem->add(BOOST_TEST_CASE(test_semaphore_multi));
 
   boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
   boost::unit_test::framework::master_test_suite().add(mtx);
