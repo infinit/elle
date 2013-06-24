@@ -6,6 +6,7 @@
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 # include <elle/serialize/fwd.hh>
+# include <elle/serialize/construct.hh>
 
 namespace elle
 {
@@ -20,6 +21,7 @@ namespace elle
     Version(); // XXX[to remove later]
     Version(elle::Natural8 major,
             elle::Natural8 minor);
+    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Version);
 
     /*-----------.
     | Interfaces |

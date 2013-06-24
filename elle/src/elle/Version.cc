@@ -20,6 +20,9 @@ namespace elle
   {
   }
 
+  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Version)
+  {}
+
   /*----------.
   | Printable |
   `----------*/
