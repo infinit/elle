@@ -32,6 +32,4 @@ namespace elle
   }
 }
 
-# include "hexadecimal.hxx"
-
 #endif
