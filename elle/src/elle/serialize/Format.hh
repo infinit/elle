@@ -3,6 +3,8 @@
 
 # include <elle/Printable.hh>
 
+# include <elle/serialize/construct.hh>
+
 namespace elle
 {
   namespace serialize
@@ -29,6 +31,9 @@ namespace elle
 
       Format(Format const& other):
         version(other.version)
+      {}
+
+      ELLE_SERIALIZE_CONSTRUCT(Format)
       {}
 
       Format&
