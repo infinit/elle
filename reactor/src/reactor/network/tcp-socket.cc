@@ -1,6 +1,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <elle/log.hh>
+#include <elle/format/hexadecimal.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
@@ -158,7 +159,11 @@ namespace reactor
           ELLE_TRACE("%s: read timed out", *this);
           throw TimeOut();
         }
-      ELLE_TRACE("%s: read completed: %s bytes", *this, read.read());
+      ELLE_TRACE("%s: completed read of %s bytes: %s",
+                 *this, read.read(), buf);
+      ELLE_DUMP("%s: data: 0x%s", *this,
+                elle::format::hexadecimal::encode(
+                  elle::ConstWeakBuffer(buf.data(), buf.size())));
       return read.read();
     }
 
