@@ -65,13 +65,13 @@ namespace infinit
       /// extract the nonce and re-encrypt it with the challenger's public key.
       elle::String
       accept(elle::String const& challenge,
-             PrivateKey const& challengee_k);
+             KeyPair const& challengee_keypair);
       /// Accept a challenge and check that the challenger is the expected one
       /// by verifying that the public key embedded in the challenge string is
       /// the right one.
       elle::String
       accept(elle::String const& challenge,
-             PrivateKey const& challengee_k,
+             KeyPair const& challengee_keypair,
              PublicKey const& challenger_K);
       /// Decrypt the response with the challenger's private key, extract the
       /// response nonce and check its validy given the original nonce.
