@@ -2336,7 +2336,12 @@ class Install(Copy):
 
   @property
   def command(self):
-    return (super().command, self.source.install_command)
+    cmd = super().command
+    install_cmd = self.source.install_command
+    if install_cmd is not None:
+      return (cmd, install_cmd)
+    else:
+      return cmd
 
 
 def __copy(sources, to, strip_prefix, builder):
