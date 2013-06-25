@@ -1042,6 +1042,9 @@ class DynLibLinker(Builder):
   def hash(self):
     return repr(self.command)
 
+  def __str__(self):
+    return 'dynamic linkage of %s' % self.lib
+
 
 class StaticLibLinker(ShellCommand):
 
