@@ -207,7 +207,7 @@ namespace reactor
     Size
     UDTSocket::_read(Buffer buf, DurationOpt timeout, bool some)
     {
-      ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
+      ELLE_TRACE_SCOPE("%s: read %s%s bytes (timeout: %s)",
                            *this, some ? "up to " : "", buf.size(), timeout);
       UDTRead read(scheduler(), this, buf, some);
       bool finished;
