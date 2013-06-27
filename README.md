@@ -38,7 +38,7 @@ For the purpose of this tutorial, we will assume your machine runs a Linux
 
 ```Shell
 $> cd _build/linux64/
-```Shell
+```
 
 There are two ways for building dOpenSSL. The first relies on the
 [Drake](http://open.infinit.io/drake) build system (which must be installed
