@@ -2784,7 +2784,9 @@ class Runner(Builder):
     self.__out = node('%s.out' % exe.name())
     self.__err = node('%s.err' % exe.name())
     self.__status = node('%s.status' % exe.name())
-    self.__sources = [exe] + exe.dynamic_libraries
+    self.__sources = [exe]
+    if isinstance(exe, cxx.Executable):
+        self.__sources += exe.dynamic_libraries
     self.stdout_reporting = Runner.Reporting.never
     self.stderr_reporting = Runner.Reporting.always
     Builder.__init__(self,
