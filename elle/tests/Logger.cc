@@ -185,6 +185,23 @@ environment_format_test()
       << "[Test] Test 5\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
+  ss.str("");
+  res.str("");
+  clear_env();
+  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
+  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"), "1");
+  logger = new elle::log::TextLogger(ss);
+  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
+  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
+  ELLE_WARN("Test 5");
+  res << "[33;01;33m"
+      << "[Test] [warning] Test 5\n[0m";
+  BOOST_CHECK_EQUAL(ss.str(), res.str());
+  ELLE_ERR("Test 6")
+  res << "[33;01;33m"
+      << "[Test] [error] Test 6\n[0m";
+  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0", 1);
+
   elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
 }
 
