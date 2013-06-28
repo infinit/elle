@@ -36,11 +36,13 @@ namespace reactor
           , _peer()
         {}
 
-        virtual const char* type_name() const
-        {
-          static const char* name = "server accept";
-          return name;
-        }
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "accept on " << this->_acceptor.local_endpoint();
+      }
 
         TCPSocket::AsioSocket* socket()
         {

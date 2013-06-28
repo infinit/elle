@@ -7,12 +7,15 @@
 # include <boost/noncopyable.hpp>
 
 # include <elle/Exception.hh>
+# include <elle/Printable.hh>
 
 # include <reactor/fwd.hh>
 
 namespace reactor
 {
-  class Waitable: public boost::noncopyable
+  class Waitable:
+    public boost::noncopyable,
+    public elle::Printable
   {
     /*---------.
     | Typedefs |
@@ -40,8 +43,6 @@ namespace reactor
     public:
       /// Pretty name.
       const std::string& name() const;
-      /// Pretty type name.
-      virtual const char* type_name() const;
       /// Threads blocked on this.
       const Waiters& waiters() const;
     private:
@@ -94,14 +95,22 @@ namespace reactor
       Waiters _threads;
       /// Exception woken thread must throw.
       std::exception_ptr _exception;
+
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    virtual
+    void
+    print(std::ostream& stream) const override;
   };
 
   /// Add a Waitable into Waitables.
   Waitables& operator << (Waitables& waitables, Waitable& s);
   /// Add a Waitable into Waitables.
   Waitables& operator << (Waitables& waitables, Waitable* s);
-  /// Pretty print.
-  std::ostream& operator << (std::ostream& s, const Waitable& t);
+  /// Pretty print Waitables
+  std::ostream& operator << (std::ostream& stream, Waitables const& waitables);
 }
 
 # include <reactor/waitable.hxx>

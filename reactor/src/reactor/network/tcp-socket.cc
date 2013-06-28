@@ -84,6 +84,13 @@ namespace reactor
           return _read;
         }
 
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "read on " << this->socket()->local_endpoint();
+      }
+
       protected:
 
         virtual void _start()
@@ -184,6 +191,13 @@ namespace reactor
           , _buffer(buffer)
           , _written(0)
         {}
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "write on " << this->socket()->local_endpoint();
+      }
 
       protected:
         virtual void _start()

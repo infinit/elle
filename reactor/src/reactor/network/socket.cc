@@ -163,6 +163,13 @@ namespace reactor
           return name;
         }
 
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "connection to " << this->_endpoint;
+      }
+
       protected:
         virtual void _start()
         {

@@ -21,7 +21,14 @@ namespace reactor
         {}
 
       protected:
-        AsioSocket* socket()
+        AsioSocket*
+        socket()
+        {
+          return _socket->_socket;
+        }
+
+        AsioSocket const*
+        socket() const
         {
           return _socket->_socket;
         }

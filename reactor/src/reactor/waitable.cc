@@ -40,13 +40,6 @@ namespace reactor
     return _name;
   }
 
-  const char*
-  Waitable::type_name() const
-  {
-    static const char* name = "waitable";
-    return name;
-  }
-
   const Waitable::Waiters&
   Waitable::waiters() const
   {
@@ -106,6 +99,16 @@ namespace reactor
   }
 
   /*----------.
+  | Printable |
+  `----------*/
+
+  void
+  Waitable::print(std::ostream& stream) const
+  {
+    stream << "waitable " << this;
+  }
+
+  /*----------.
   | Waitables |
   `----------*/
 
@@ -123,17 +126,25 @@ namespace reactor
     return waitables;
   }
 
-  /*-------------.
-  | Pretty print |
-  `-------------*/
-
-  std::ostream& operator << (std::ostream& s, const Waitable& t)
+  std::ostream&
+  operator << (std::ostream& stream, Waitables const& waitables)
   {
-    s << t.type_name() << " ";
-    if (t.name().empty())
-      s << &t;
+    if (waitables.size() == 1)
+      stream << *waitables.begin();
     else
-      s << t.name();
-    return s;
+    {
+      stream << "{";
+      bool first = true;
+      for (auto const& waitable: waitables)
+      {
+        if (first)
+          first = false;
+        else
+          stream << ", ";
+        stream << *waitable;
+      }
+      stream << "}";
+    }
+    return stream;
   }
 };

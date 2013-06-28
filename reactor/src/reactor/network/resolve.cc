@@ -21,6 +21,13 @@ namespace reactor
           , _end_point()
         {}
 
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "resolution of " << this->_hostname << ":" << this->_service;
+      }
+
         virtual const char* type_name() const
         {
           static const char* name = "name resolution";
