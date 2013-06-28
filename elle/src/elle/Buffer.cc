@@ -249,13 +249,14 @@ namespace elle
   void
   Buffer::shrink_to_fit()
   {
-    if (this->_size < this->_capacity)
+    auto size = std::max(ELLE_BUFFER_INITIAL_SIZE, this->_size);
+    if (size < this->_capacity)
     {
-      void* tmp = ::realloc(_contents, this->_size);
+      void* tmp = ::realloc(_contents, size);
       if (tmp == nullptr)
         throw std::bad_alloc();
       this->_contents = static_cast<Byte*>(tmp);
-      this->_capacity = this->_size;
+      this->_capacity = size;
     }
   }
 
