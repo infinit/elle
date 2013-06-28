@@ -377,10 +377,11 @@ namespace reactor
   Thread*
   Scheduler::every(const boost::function<void ()>& f,
                    const std::string& name,
-                   Duration delay)
+                   Duration delay,
+                   bool dispose)
   {
     return new Thread(*this, name,
-                      boost::bind(&every_helper, this, f, delay), true);
+                      boost::bind(&every_helper, this, f, delay), dispose);
   }
 
   /*-----.

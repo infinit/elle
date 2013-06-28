@@ -124,12 +124,14 @@ namespace reactor
      *  \param op   The operation to run.
      *  \param name The name of the thread that will run the operation.
      *  \param freq The frequency at which to run the operation.
+     *  \param freq Whether to delete the thread when it's done.
      *  \return     The thread running the operation.
      */
     Thread*
     every(const boost::function<void ()>& op,
           const std::string& name,
-          Duration freq);
+          Duration freq,
+          bool dispose = false);
 
     /*-----.
     | Asio |
