@@ -38,8 +38,8 @@ namespace elle
 
     void
     TextLogger::_message(Level level,
-                     elle::log::Logger::Type type,
-                     std::string const& message)
+                         elle::log::Logger::Type type,
+                         std::string const& message)
     {
       static bool c = color();
       std::string color_code;
@@ -50,7 +50,7 @@ namespace elle
               break;
             case Type::warning:
               // Yellow
-              color_code =  "[33;01;33m";
+              color_code = "[33;01;33m";
               break;
             case Type::error:
               // Red
