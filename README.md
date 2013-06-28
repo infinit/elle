@@ -137,10 +137,15 @@ $> ./drake //install --prefix=$HOME/local/
 
 ### Make
 
-Once again, nothing could be simpler, the install rule make it extremely easy
+Once again, nothing could be simpler, the `install` rule make it extremely easy
 to install the library files:
 
-XXX
+```Shell
+$> make install
+```
+
+Note that you may need to be `root` in order to install the dOpenSSL library
+in one of your system's directories.
 
 Examples
 --------
