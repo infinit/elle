@@ -90,6 +90,27 @@ namespace elle
       return res;
     }
 
+    /*-----.
+    | Type |
+    `-----*/
+
+    static
+    std::string
+    _type_to_string(elle::log::Logger::Type type)
+    {
+      switch (type)
+      {
+        case elle::log::Logger::Type::info:
+          return "info";
+        case elle::log::Logger::Type::warning:
+          return "warning";
+        case elle::log::Logger::Type::error:
+          return "error";
+        default:
+          throw elle::Exception(elle::sprintf("unknown log type: %s", type));
+      }
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -114,7 +135,8 @@ namespace elle
   }
 
     Logger::Logger()
-      : _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
+      : _display_type(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE", "") == "1")
+      , _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
       , _enable_tid(elle::os::getenv("ELLE_LOG_TID", "") == "1")
       , _enable_time(elle::os::getenv("ELLE_LOG_TIME", "") == "1")
       , _universal_time(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "1")
@@ -205,6 +227,10 @@ namespace elle
           "[%s] ",
           boost::lexical_cast<std::string>(std::this_thread::get_id()));
       prefix += elle::sprintf("[%s] ", comp);
+      if (this->_display_type &&type != elle::log::Logger::Type::info)
+      {
+        prefix += elle::sprintf("[%s] ", _type_to_string(type));
+      }
       for (auto& tag: this->_tags())
         {
           std::string content(tag->content());

@@ -95,7 +95,8 @@ namespace elle
     | Environment Variables |
     `----------------------*/
     private:
-      bool const _enable_pid,
+      bool const _display_type,
+                 _enable_pid,
                  _enable_tid,
                  _enable_time,
                  _universal_time;
