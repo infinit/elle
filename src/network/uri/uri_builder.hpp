@@ -170,13 +170,13 @@ namespace network {
 
   private:
 
-    void set_scheme(const string_type &scheme);
-    void set_user_info(const string_type &user_info);
-    void set_host(const string_type &host);
-    void set_port(const string_type &port);
-    void set_path(const string_type &path);
-    void set_query(const string_type &query);
-    void set_fragment(const string_type &fragment);
+    void set_scheme(string_type scheme);
+    void set_user_info(string_type user_info);
+    void set_host(string_type host);
+    void set_port(string_type port);
+    void set_path(string_type path);
+    void set_query(string_type query);
+    void set_fragment(string_type fragment);
 
     boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 

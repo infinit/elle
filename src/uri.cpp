@@ -58,6 +58,24 @@ namespace network {
     return std::error_code(static_cast<int>(e), uri_category());
   }
 
+  uri_syntax_error::uri_syntax_error()
+    : std::system_error(make_error_code(uri_error::invalid_syntax)) {
+
+  }
+
+  uri_syntax_error::~uri_syntax_error() NETWORK_URI_NOEXCEPT {
+
+  }
+
+  uri_builder_error::uri_builder_error()
+    : std::system_error(make_error_code(uri_error::invalid_uri)) {
+
+  }
+
+  uri_builder_error::~uri_builder_error() NETWORK_URI_NOEXCEPT {
+
+  }
+
   namespace {
     inline
     boost::iterator_range<uri::string_type::iterator>
@@ -235,7 +253,8 @@ namespace network {
 
   }
 
-  uri::uri(const uri_builder &builder) {
+  uri::uri(const uri_builder &builder)
+    : pimpl_(new impl) {
     initialize(builder.scheme_,
 	       builder.user_info_,
 	       builder.host_,

@@ -59,14 +59,9 @@ namespace network {
 
   public:
 
-    uri_syntax_error()
-      : std::system_error(make_error_code(uri_error::invalid_syntax)) {
+    uri_syntax_error();
 
-    }
-
-    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT {
-
-    }
+    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
 
   };
 
@@ -74,14 +69,9 @@ namespace network {
 
   public:
 
-    uri_builder_error()
-      : std::system_error(make_error_code(uri_error::invalid_uri)) {
+    uri_builder_error();
 
-    }
-
-    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT {
-
-    }
+    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
 
   };
 
