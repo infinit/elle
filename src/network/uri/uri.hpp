@@ -41,7 +41,7 @@ namespace network {
 
   public:
 
-    uri_category_impl() NETWORK_URI_DEFAULT_CONSTRUCTOR;
+    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
 
     virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
 
@@ -51,16 +51,9 @@ namespace network {
 
   };
 
-  inline
-  const std::error_category &uri_category() {
-    static uri_category_impl uri_category;
-    return uri_category;
-  }
+  const std::error_category &uri_category();
 
-  inline
-  std::error_code make_error_code(uri_error e) {
-    return std::error_code(static_cast<int>(e), uri_category());
-  }
+  std::error_code make_error_code(uri_error e);
 
   class uri_syntax_error : public std::system_error {
 
@@ -251,23 +244,11 @@ namespace network {
     return uri(source, ec);
   }
 
-  inline
-  void swap(uri &lhs, uri &rhs) {
-    lhs.swap(rhs);
-  }
+  void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
 
-  inline
-  bool operator == (const uri &lhs, const uri &rhs) {
-    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) == 0;
-  }
+  bool operator == (const uri &lhs, const uri &rhs);
 
-  inline
-  bool operator == (const uri &lhs, const char *rhs) {
-    if (std::strlen(rhs) != std::size_t(std::distance(std::begin(lhs), std::end(lhs)))) {
-      return false;
-    }
-    return std::equal(std::begin(lhs), std::end(lhs), rhs);
-  }
+  bool operator == (const uri &lhs, const char *rhs);
 
   inline
   bool operator == (const char *lhs, const uri &rhs) {
@@ -279,10 +260,7 @@ namespace network {
     return !(lhs == rhs);
   }
 
-  inline
-  bool operator < (const uri &lhs, const uri &rhs) {
-    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) < 0;
-  }
+  bool operator < (const uri &lhs, const uri &rhs);
 
   inline
   bool operator > (const uri &lhs, const uri &rhs) {

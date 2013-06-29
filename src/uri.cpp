@@ -49,6 +49,15 @@ namespace network {
     return "Unknown URI error.";
   }
 
+  const std::error_category &uri_category() {
+    static uri_category_impl uri_category;
+    return uri_category;
+  }
+
+  std::error_code make_error_code(uri_error e) {
+    return std::error_code(static_cast<int>(e), uri_category());
+  }
+
   namespace {
     inline
     boost::iterator_range<uri::string_type::iterator>
@@ -587,5 +596,24 @@ namespace network {
       return is_valid;
     }
     return true;
+  }
+
+  void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT {
+    lhs.swap(rhs);
+  }
+
+  bool operator == (const uri &lhs, const uri &rhs) {
+    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) == 0;
+  }
+
+  bool operator == (const uri &lhs, const char *rhs) {
+    if (std::strlen(rhs) != std::size_t(std::distance(std::begin(lhs), std::end(lhs)))) {
+      return false;
+    }
+    return std::equal(std::begin(lhs), std::end(lhs), rhs);
+  }
+
+  bool operator < (const uri &lhs, const uri &rhs) {
+    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) < 0;
   }
 } // namespace network
