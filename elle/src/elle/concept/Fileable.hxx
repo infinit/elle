@@ -27,7 +27,7 @@ namespace elle
                        std::ios_base::in | std::ios_base::binary);
 
       if (!in.good())
-        throw std::runtime_error(
+        throw elle::Exception(
           elle::sprintf("unable to open the file '%s'", path));
 
       try
@@ -41,7 +41,7 @@ namespace elle
         }
       catch (std::exception const& e)
         {
-          throw std::runtime_error(
+          throw elle::Exception(
             elle::sprintf("unable to deserialize the instance from "
                           "the file: %s", e.what()));
         }
@@ -56,14 +56,14 @@ namespace elle
       ELLE_DEBUG_SCOPE("store(%s)", path);
 
       if (elle::io::File::Dig(path) == elle::Status::Error)
-        throw std::runtime_error(
+        throw elle::Exception(
           elle::sprintf("unable to dig the path '%s'", path));
 
       std::ofstream out(path.string(),
                         std::ios_base::out | std::ios_base::binary);
 
       if (!out.good())
-        throw std::runtime_error(
+        throw elle::Exception(
           elle::sprintf("unable to open the file '%s'", path));
 
       try
@@ -77,7 +77,7 @@ namespace elle
         }
       catch (std::exception const& e)
         {
-          throw std::runtime_error(
+          throw elle::Exception(
             elle::sprintf("unable to serialize the instance to the file: %s",
                           e.what()));
         }
@@ -92,7 +92,7 @@ namespace elle
       ELLE_DEBUG_SCOPE("erase(%s)", path);
 
       if (elle::io::File::Erase(path) == elle::Status::Error)
-        throw std::runtime_error(
+        throw elle::Exception(
           elle::sprintf("unable to erase the file '%s'", path));
     }
 
@@ -111,4 +111,3 @@ namespace elle
 }
 
 #endif
-
