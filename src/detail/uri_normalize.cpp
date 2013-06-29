@@ -99,4 +99,3 @@ namespace network {
     }
   } // namespace detail
 } // namespace network
-

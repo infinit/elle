@@ -198,21 +198,21 @@ namespace network {
 	   qi::attr(boost::optional<boost::iterator_range<iterator> >())
 	   >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
 	   >>  qi::attr(boost::optional<boost::iterator_range<iterator> >())
-	   >>  
-       (path_absolute | path_rootless | path_empty)
+	   >>
+	   (path_absolute | path_rootless | path_empty)
 	   )
 	  ;
 
 	start %=
-      (
-	    (scheme >> ':') 
-          >> hier_part >> -('?' >> query) >> -('#' >> fragment)
-      )
-      | // relative reference
-      (
-        qi::attr(boost::optional<boost::iterator_range<iterator> >())
+	  (
+	   (scheme >> ':')
+	   >> hier_part >> -('?' >> query) >> -('#' >> fragment)
+	   )
+	  | // relative reference
+	  (
+	   qi::attr(boost::optional<boost::iterator_range<iterator> >())
            >> hier_part >> -('?' >> query) >> -('#' >> fragment)
-      )
+	   )
 
 
 	  ;

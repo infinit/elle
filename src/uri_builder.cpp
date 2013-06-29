@@ -17,11 +17,6 @@ namespace network {
 
   }
 
-  //uri_builder::uri_builder(const network::uri &base_uri)
-  //  : base_uri_(base_uri) {
-  //
-  //}
-
   uri_builder::~uri_builder() {
 
   }

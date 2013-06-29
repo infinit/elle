@@ -27,25 +27,25 @@ namespace network {
     invalid_syntax = 1,
 
     // builder errors
-    invalid_uri,
-    invalid_scheme,
-    invalid_user_info,
-    invalid_host,
-    invalid_port,
-    invalid_path,
-    invalid_query,
-    invalid_fragment,
-  };
+      invalid_uri,
+      invalid_scheme,
+      invalid_user_info,
+      invalid_host,
+      invalid_port,
+      invalid_path,
+      invalid_query,
+      invalid_fragment,
+      };
 
   class NETWORK_URI_DECL uri_category_impl : public std::error_category {
 
   public:
 
-    uri_category_impl() = default;
+    uri_category_impl() NETWORK_URI_DEFAULT_CONSTRUCTOR;
 
-    virtual ~uri_category_impl() noexcept;
+    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
 
-    virtual const char *name() const noexcept;
+    virtual const char *name() const NETWORK_URI_NOEXCEPT;
 
     virtual std::string message(int ev) const;
 
@@ -71,7 +71,7 @@ namespace network {
 
     }
 
-    virtual ~uri_syntax_error() noexcept {
+    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT {
 
     }
 
@@ -86,7 +86,7 @@ namespace network {
 
     }
 
-    virtual ~uri_builder_error() noexcept {
+    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT {
 
     }
 
@@ -94,10 +94,10 @@ namespace network {
 
   enum class uri_comparison_level {
     string_comparison,
-    case_normalization,
-    percent_encoding_normalization,
-    path_segment_normalization,
-  };
+      case_normalization,
+      percent_encoding_normalization,
+      path_segment_normalization,
+      };
 
   class uri_builder;
 
@@ -115,34 +115,34 @@ namespace network {
 
   private:
 
-    uri(boost::optional<string_type> scheme,
-	boost::optional<string_type> user_info,
-	boost::optional<string_type> host,
-	boost::optional<string_type> port,
-	boost::optional<string_type> path,
-	boost::optional<string_type> query,
-	boost::optional<string_type> fragment);
+    void initialize(boost::optional<string_type> scheme,
+		    boost::optional<string_type> user_info,
+		    boost::optional<string_type> host,
+		    boost::optional<string_type> port,
+		    boost::optional<string_type> path,
+		    boost::optional<string_type> query,
+		    boost::optional<string_type> fragment);
 
   public:
 
     uri();
 
     template <class InputIter>
-    uri(const InputIter &first, const InputIter &last) {
+      uri(const InputIter &first, const InputIter &last) {
       if (!initialize(string_type(first, last))) {
 	throw uri_syntax_error();
       }
     }
 
     template <class Source>
-    explicit uri(const Source &uri) {
+      explicit uri(const Source &uri) {
       if (!initialize(detail::translate(uri))) {
 	throw uri_syntax_error();
       }
     }
 
     template <class Source>
-    explicit uri(const Source &uri, std::error_code &ec) {
+      explicit uri(const Source &uri, std::error_code &ec) {
       if (!initialize(detail::translate(uri))) {
 	ec = make_error_code(uri_error::invalid_syntax);
       }
@@ -158,7 +158,7 @@ namespace network {
 
     uri &operator = (uri other);
 
-    void swap(uri &other) noexcept;
+    void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
     const_iterator begin() const;
     const_iterator end() const;
@@ -173,20 +173,27 @@ namespace network {
     boost::optional<string_view> authority() const;
 
     string_type native() const;
+#if !defined(_MSC_VER)
     template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
+      std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
+#else
+    template <typename CharT, class CharTraits, class Alloc>
+      std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
+      return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
+    }
+#endif // !/defined(_MSC_VER)
     std::string string() const;
     std::wstring wstring() const;
     std::u16string u16string() const;
     std::u32string u32string() const;
 
-    bool empty() const noexcept;
-    bool is_absolute() const noexcept;
-    bool is_opaque() const noexcept;
-    bool absolute() const noexcept { return is_absolute(); }
-    bool opaque() const noexcept { return is_opaque(); }
+    bool empty() const NETWORK_URI_NOEXCEPT;
+    bool is_absolute() const NETWORK_URI_NOEXCEPT;
+    bool is_opaque() const NETWORK_URI_NOEXCEPT;
+    bool absolute() const NETWORK_URI_NOEXCEPT { return is_absolute(); }
+    bool opaque() const NETWORK_URI_NOEXCEPT { return is_opaque(); }
 
     uri normalize(uri_comparison_level level) const;
     uri make_reference(const uri &other, uri_comparison_level level) const;
@@ -195,37 +202,37 @@ namespace network {
     int compare(const uri &other, uri_comparison_level level) const;
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_user_info(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_host(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_host(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_host(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_port(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_port(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_port(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_path(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_path(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_path(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_query(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_query(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_query(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter encode_fragment(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter encode_fragment(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_fragment(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-    static OutputIter decode(InputIter first, InputIter last, OutputIter out) {
+      static OutputIter decode(InputIter first, InputIter last, OutputIter out) {
       return detail::decode(first, last, out);
     }
 
@@ -240,7 +247,7 @@ namespace network {
 
   template <class Source>
   inline
-  uri make_uri(const Source &source, std::error_code &ec) noexcept {
+  uri make_uri(const Source &source, std::error_code &ec) NETWORK_URI_NOEXCEPT {
     return uri(source, ec);
   }
 

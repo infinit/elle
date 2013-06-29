@@ -12,6 +12,7 @@
 #include <iosfwd>
 
 namespace network {
+#if !defined(_MSC_VER)
   template <typename CharT, class CharTraits = std::char_traits<CharT> >
   std::basic_ostream<CharT, CharTraits> &operator << (std::basic_ostream<CharT, CharTraits> &os,
 						      const uri &uri_) {
@@ -24,7 +25,36 @@ namespace network {
     std::basic_string<CharT, CharTraits> uri_string;
     is >> uri_string;
     uri_ = uri(uri_string);
+    return is;
   }
+#else
+  inline
+  std::ostream &operator << (std::ostream &os, const uri &uri_) {
+    return os << uri_.string();
+  }
+
+  inline
+  std::wostream &operator << (std::wostream &os, const uri &uri_) {
+    return os << uri_.wstring();
+  }
+
+  inline
+  std::istream &operator >> (std::istream &is, uri &uri_) {
+    std::string uri_string;
+    is >> uri_string;
+    uri_ = uri(uri_string);
+    return is;
+  }
+
+  inline
+  std::wistream &operator >> (std::wistream &is, uri &uri_) {
+    std::wstring uri_string;
+    is >> uri_string;
+    uri_ = uri(uri_string);
+    return is;
+  }
+#endif // !defined(_MSC_VER)
+
 } // namespace network
 
 #endif // NETWORK_URI_URI_IO_INC

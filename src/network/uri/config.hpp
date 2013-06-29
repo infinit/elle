@@ -18,5 +18,16 @@
 #define NETWORK_URI_DECL
 #endif // defined(BOOST_ALL_DYN_LINK) || defined(BOOST_URI_DYN_LINK)
 
+#if defined(_MSC_VER)
+#define NETWORK_URI_DELETED_FUNCTION
+#define NETWORK_URI_DEFAULT_CONSTRUCTOR {}
+#define NETWORK_URI_NOEXCEPT throw()
+#define NETWORK_URI_OVERRIDE
+#else
+#define NETWORK_URI_DELETED_FUNCTION = delete
+#define NETWORK_URI_DEFAULT_CONSTRUCTOR = default
+#define NETWORK_URI_NOEXCEPT noexcept
+#define NETWORK_URI_OVERRIDE override
+#endif // defined _MSC_VER
 
 #endif // NETWORK_URI_CONFIG_INC

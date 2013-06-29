@@ -14,8 +14,6 @@
 #include <type_traits>
 #include <boost/asio/ip/address.hpp>
 #include <boost/filesystem/path.hpp>
-//#include <map>
-//#include <unordered_map>
 
 namespace network {
 
@@ -94,64 +92,64 @@ namespace network {
 
     friend class uri;
 
-    uri_builder(const uri_builder &) = delete;
-    uri_builder &operator = (const uri_builder &) = delete;
+    uri_builder(const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
+    uri_builder &operator = (const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
 
   public:
 
     typedef network::uri::string_type string_type;
 
     uri_builder();
-    //uri_builder(const network::uri &base_uri);
+
     ~uri_builder();
 
     template <typename Source>
-    uri_builder &scheme(const Source &scheme) {
+      uri_builder &scheme(const Source &scheme) {
       set_scheme(detail::translate(scheme));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &user_info(const Source &user_info) {
+      uri_builder &user_info(const Source &user_info) {
       set_user_info(detail::translate(user_info));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &host(const Source &host) {
+      uri_builder &host(const Source &host) {
       detail::host_converter<Source> convert;
       set_host(convert(host));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &port(const Source &port) {
+      uri_builder &port(const Source &port) {
       detail::port_converter<Source> convert;
       set_port(convert(port));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &authority(const Source &authority) {
+      uri_builder &authority(const Source &authority) {
       set_authority(detail::translate(authority));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &path(const Source &path) {
+      uri_builder &path(const Source &path) {
       detail::path_converter<Source> convert;
       set_path(convert(path));
       return *this;
     }
 
     template <typename Source>
-    uri_builder &query(const Source &query) {
+      uri_builder &query(const Source &query) {
       set_query(detail::translate(query));
       return *this;
     }
 
     template <typename Key, typename Value>
-    uri_builder &query(const Key &key, const Value &value) {
+      uri_builder &query(const Key &key, const Value &value) {
       if (!query_) {
 	query_.reset(string_type());
       }
@@ -165,7 +163,7 @@ namespace network {
     }
 
     template <typename Source>
-    uri_builder &fragment(const Source &fragment) {
+      uri_builder &fragment(const Source &fragment) {
       set_fragment(detail::translate(fragment));
       return *this;
     }

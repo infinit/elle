@@ -23,7 +23,6 @@
 #include <boost/range/as_literal.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
-#include <boost/optional.hpp>
 #include <cctype>
 #include <algorithm>
 #include <functional>
@@ -31,11 +30,11 @@
 #include <vector>
 
 namespace network {
-  uri_category_impl::~uri_category_impl() noexcept {
+  uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {
 
   }
 
-  const char *uri_category_impl::name() const noexcept {
+  const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
     static const char name[] = "uri_error";
     return name;
   }
@@ -121,14 +120,13 @@ namespace network {
     return other.release();
   }
 
-  uri::uri(boost::optional<string_type> scheme,
-	   boost::optional<string_type> user_info,
-	   boost::optional<string_type> host,
-	   boost::optional<string_type> port,
-	   boost::optional<string_type> path,
-	   boost::optional<string_type> query,
-	   boost::optional<string_type> fragment)
-    : pimpl_(new impl) {
+  void uri::initialize(boost::optional<string_type> scheme,
+		       boost::optional<string_type> user_info,
+		       boost::optional<string_type> host,
+		       boost::optional<string_type> port,
+		       boost::optional<string_type> path,
+		       boost::optional<string_type> query,
+		       boost::optional<string_type> fragment) {
     if (scheme) {
       pimpl_->uri_.append(*scheme);
     }
@@ -228,15 +226,14 @@ namespace network {
 
   }
 
-  uri::uri(const uri_builder &builder)
-    : uri(builder.scheme_,
-	  builder.user_info_,
-	  builder.host_,
-	  builder.port_,
-	  builder.path_,
-	  builder.query_,
-	  builder.fragment_) {
-
+  uri::uri(const uri_builder &builder) {
+    initialize(builder.scheme_,
+	       builder.user_info_,
+	       builder.host_,
+	       builder.port_,
+	       builder.path_,
+	       builder.query_,
+	       builder.fragment_);
   }
 
   uri::uri(uri &&other)
@@ -253,7 +250,7 @@ namespace network {
     return *this;
   }
 
-  void uri::swap(uri &other) noexcept {
+  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
     std::swap(pimpl_, other.pimpl_);
   }
 
@@ -269,10 +266,13 @@ namespace network {
   {
     inline boost::string_ref to_string_ref(const uri::string_type &uri,
 					   boost::iterator_range<uri::const_iterator> uri_part) {
-      const char *c_str = uri.c_str();
-      const char *uri_part_begin = &(*(std::begin(uri_part)));
-      std::advance(c_str, std::distance(c_str, uri_part_begin));
-      return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
+      if (!uri_part.empty()) {
+	const char *c_str = uri.c_str();
+	const char *uri_part_begin = &(*(std::begin(uri_part)));
+	std::advance(c_str, std::distance(c_str, uri_part_begin));
+	return boost::string_ref(c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
+      }
+      return boost::string_ref();
     }
 
     inline boost::string_ref to_string_ref(boost::string_ref::const_iterator uri_part_begin,
@@ -365,15 +365,15 @@ namespace network {
     return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
   }
 
-  bool uri::empty() const noexcept {
+  bool uri::empty() const NETWORK_URI_NOEXCEPT {
     return pimpl_->uri_.empty();
   }
 
-  bool uri::is_absolute() const noexcept {
+  bool uri::is_absolute() const NETWORK_URI_NOEXCEPT {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::is_opaque() const noexcept {
+  bool uri::is_opaque() const NETWORK_URI_NOEXCEPT {
     return (is_absolute() && !authority());
   }
 
@@ -415,7 +415,7 @@ namespace network {
 
       if (parts.hier_part.path) {
 	uri::string_type path = detail::normalize_path_segments(
-	  to_string_ref(normalized, *parts.hier_part.path));
+								to_string_ref(normalized, *parts.hier_part.path));
 
 	// put the normalized path back into the uri
 	boost::optional<string_type> query, fragment;
@@ -475,18 +475,20 @@ namespace network {
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query = uri::string_type(*other.query());
+      query = uri::string_type(std::begin(*other.query()), std::end(*other.query()));
     }
 
     if (other.fragment()) {
-      fragment = uri::string_type(*other.fragment());
+      fragment = uri::string_type(std::begin(*other.fragment()), std::end(*other.fragment()));
     }
 
-    return network::uri(boost::optional<string_type>(),
-			boost::optional<string_type>(),
-			boost::optional<string_type>(),
-			boost::optional<string_type>(),
-			other_path, query, fragment);
+    network::uri result;
+    result.initialize(boost::optional<string_type>(),
+		      boost::optional<string_type>(),
+		      boost::optional<string_type>(),
+		      boost::optional<string_type>(),
+		      other_path, query, fragment);
+    return std::move(result);
   }
 
   namespace detail {
@@ -499,7 +501,7 @@ namespace network {
     inline boost::optional<uri::string_type>
     make_arg(boost::optional<boost::string_ref> ref) {
       if (ref) {
-        return uri::string_type(*ref);
+        return uri::string_type(std::begin(*ref), std::end(*ref));
       }
       return boost::optional<uri::string_type>();
     }
@@ -549,10 +551,12 @@ namespace network {
       port = detail::make_arg(base.port());
     }
 
-    return uri(detail::make_arg(base.scheme()),
-	       std::move(user_info), std::move(host), std::move(port),
-	       std::move(path), std::move(query),
-	       detail::make_arg(reference.fragment()));
+    network::uri result;
+    result.initialize(detail::make_arg(base.scheme()),
+		      std::move(user_info), std::move(host), std::move(port),
+		      std::move(path), std::move(query),
+		      detail::make_arg(reference.fragment()));
+    return std::move(result);
   }
 
   int uri::compare(const uri &other, uri_comparison_level level) const {
