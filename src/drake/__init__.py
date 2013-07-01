@@ -2829,10 +2829,15 @@ class Runner(Builder):
          open(str(self.__err.path()), 'w') as err, \
          open(str(self.__status.path()), 'w') as rv:
       self.output(path, 'Run %s %s' % (self.__exe, " ".join(self.__args)))
-      p = subprocess.Popen([path] + self.__args, stdout = out, stderr = err)
-      p.wait()
-      status = p.returncode
-      print(status, file = rv)
+      try:
+        p = subprocess.Popen([path] + self.__args, stdout = out, stderr = err)
+        p.wait()
+        status = p.returncode
+        print(status, file = rv)
+      except:
+        import traceback
+        traceback.print_exception(*sys.exc_info(), file = err)
+        return False
     if self.__must_report(self.stdout_reporting, status):
       self.__report(self.__out)
     if self.__must_report(self.stderr_reporting, status):
