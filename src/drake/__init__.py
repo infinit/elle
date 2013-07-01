@@ -314,6 +314,11 @@ class Path(object):
             return True
         return _OS.path.exists(str(self))
 
+    @property
+    def executable(self):
+        """Whether the designed file is executable by the user."""
+        return _OS.access(str(self), _OS.X_OK)
+
     def is_file(self):
         """Whether the designed file exists and is a regular file.
 
