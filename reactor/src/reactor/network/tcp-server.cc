@@ -18,7 +18,10 @@ namespace reactor
     TCPServer::TCPServer(Scheduler& sched)
       : Super(sched)
       , _acceptor()
-    {}
+    {
+      // XXX: use the current scheduler API.
+      ELLE_ASSERT(&sched);
+    }
 
     TCPServer::~TCPServer()
     {}
