@@ -47,10 +47,11 @@ def configure(cxx_toolkit = None,
   config.lib('curl')
 
   # Local Configuration
-  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config = drake.cxx.Config(cxx_config or drake.cxx.Config())
   cxx_config.standard = drake.cxx.Config.cxx_11
   cxx_config += config
   cxx_config += elle.config
+  cxx_config.lib_path_runtime('.')
 
   # http
   http_path = drake.Node('scripts/http.py')
