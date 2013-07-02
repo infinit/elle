@@ -59,7 +59,7 @@ namespace reactor
         , _manager(manager)
         , _action(action)
         , _coro(Coro_new())
-        , _caller(0)
+        , _caller(nullptr)
       {}
 
       Thread::Thread(Manager& manager)
@@ -79,7 +79,7 @@ namespace reactor
         if (_coro)
           {
             Coro_free(_coro);
-            _coro = 0;
+            _coro = nullptr;
           }
       }
 
@@ -112,7 +112,7 @@ namespace reactor
       void
       Thread::step()
       {
-        ELLE_ASSERT(_caller);
+        ELLE_ASSERT(_caller == nullptr);
         if (this->_status == status::starting)
         {
           _status = status::running;
@@ -173,7 +173,7 @@ namespace reactor
           std::abort();
         }
         Thread* caller = _caller;
-        _caller = 0;
+        _caller = nullptr;
         _status = status::done;
         _manager._current = caller;
         ELLE_TRACE("%s: done", this->_name);
@@ -189,7 +189,7 @@ namespace reactor
         _manager._current = _caller;
         ELLE_TRACE("%s: yield back to %s",
                        this->_name, _manager._current->_name);
-        _caller = 0;
+        _caller = nullptr;
         Coro_switchTo_(_coro, _manager._current->_coro);
       }
     }
