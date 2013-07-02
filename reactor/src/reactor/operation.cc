@@ -5,6 +5,8 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
+#include <elle/assert.hh>
+
 namespace reactor
 {
   Operation::Operation(Scheduler& sched)
@@ -16,7 +18,7 @@ namespace reactor
   Operation::run(DurationOpt timeout)
   {
     Thread* current = _sched.current();
-    assert(current);
+    ELLE_ASSERT(current);
     start();
     try
       {

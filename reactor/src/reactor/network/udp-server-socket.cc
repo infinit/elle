@@ -6,6 +6,7 @@
 #include <reactor/thread.hh>
 
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDPServerSocket");
 
@@ -43,9 +44,9 @@ namespace reactor
     {
       while (_read_buffer_size < buffer.size())
         scheduler().current()->wait(_read_ready);
-      assert(_read_buffer_size >= buffer.size());
+      ELLE_ASSERT_GTE(_read_buffer_size, buffer.size());
       Size size = read_some(buffer, timeout);
-      assert(size == buffer.size());
+      ELLE_ASSERT_EQ(size, buffer.size());
     }
 
     Size
@@ -58,7 +59,7 @@ namespace reactor
         if (!scheduler().current()->wait(_read_ready, timeout))
           throw TimeOut(scheduler());
       }
-      assert(_read_buffer_size > 0);
+      ELLE_ASSERT_GT(_read_buffer_size, 0);
       Size size = std::min(buffer.size(), _read_buffer_size);
       ELLE_TRACE("%s: read %s bytes", *this, size);
       memmove(buffer.data(), _read_buffer, size);

@@ -1,4 +1,5 @@
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 #include <reactor/rw-mutex.hh>
 #include <reactor/thread.hh>
@@ -46,7 +47,7 @@ namespace reactor
         return false;
       }
     ELLE_TRACE_SCOPE("%s: release writing lock", *this);
-    assert(_locked);
+    ELLE_ASSERT(_locked);
     if (!_signal_one())
       {
         _locked = 0;
@@ -78,7 +79,7 @@ namespace reactor
       else
       {
         ELLE_TRACE("%s: already locked for writing, waiting.", *this);
-        assert(_locked);
+        ELLE_ASSERT(_locked);
       }
       bool res = Waitable::_wait(thread);
       return res;
@@ -139,14 +140,14 @@ namespace reactor
       {
         ELLE_TRACE("%s: release one of the %s recursive writing lock",
                        *this, this->_write._locked_recursive);
-        assert(this->_write._locked_recursive > 0);
+        ELLE_ASSERT_GT(this->_write._locked_recursive, 0);
         --this->_write._locked_recursive;
         return false;
       }
 
     ELLE_TRACE_SCOPE("%s: release one reading lock (readers now: %s)",
                          _readers - 1, *this);
-    assert(_readers > 0);
+    ELLE_ASSERT_GT(_readers, 0);
     --_readers;
     if (!_readers)
       if (_write._signal_one())

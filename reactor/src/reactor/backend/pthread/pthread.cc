@@ -5,6 +5,7 @@
 #include <reactor/backend/pthread/pthread.hh>
 
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 ELLE_LOG_COMPONENT("reactor.backend.Threads");
 
@@ -86,7 +87,7 @@ namespace reactor
       Thread::~Thread()
       {
         ELLE_TRACE("%s: die", this->_name);
-        assert(_status == status::done || this == &_manager._self);
+        ELLE_ASSERT(_status == status::done || this == &_manager._self);
       }
 
       /*---------------.
@@ -118,8 +119,8 @@ namespace reactor
       void
       Thread::step()
       {
-        assert(_status == status::waiting || _status == status::starting);
-        assert(_caller == 0);
+        ELLE_ASSERT(_status == status::waiting || _status == status::starting);
+        ELLE_ASSERT(_caller == 0);
         _status = status::running;
         Thread* current = _manager._current;
         _caller = current;
@@ -183,8 +184,8 @@ namespace reactor
       void
       Thread::yield()
       {
-        assert(_manager._current == this);
-        assert(_status == status::running);
+        ELLE_ASSERT_EQ(_manager._current, this);
+        ELLE_ASSERT_EQ(_status, status::running);
         boost::unique_lock<boost::mutex> lock(_mutex);
         _status = status::waiting;
         _manager._current = _caller;

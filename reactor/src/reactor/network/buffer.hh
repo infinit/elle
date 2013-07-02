@@ -1,12 +1,13 @@
 #ifndef INFINIT_REACTOR_NETWORK_BUFFER_HH
 # define INFINIT_REACTOR_NETWORK_BUFFER_HH
 
-# include <cassert>
 # include <cstring>
 
 # include <string>
 
 # include <reactor/network/fwd.hh>
+
+# include <elle/assert.hh>
 
 namespace reactor
 {
@@ -50,7 +51,7 @@ namespace reactor
 
         Byte& operator[](Size pos)
         {
-          assert(pos < _size);
+          ELLE_ASSERT_LT(pos, _size);
           return _data[pos];
         }
 

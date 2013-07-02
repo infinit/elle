@@ -3,6 +3,8 @@
 
 # include <reactor/thread.hh>
 
+# include <elle/assert.hh>
+
 namespace reactor
 {
   /*----------------.
@@ -15,7 +17,7 @@ namespace reactor
                       const boost::function<R ()>& action,
                       R& res)
   {
-    assert(action);
+    ELLE_ASSERT(action);
     res = action();
     boost::unique_lock<boost::mutex> lock(mutex);
     cond.notify_one();

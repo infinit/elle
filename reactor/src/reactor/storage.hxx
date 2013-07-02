@@ -4,6 +4,8 @@
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
 
+# include <elle/assert.hh>
+
 namespace reactor
 {
   template <typename T>
@@ -67,7 +69,7 @@ namespace reactor
   {
     std::lock_guard<std::mutex> lock(_mutex);
     typename Content::iterator it = this->_content.find(current);
-    assert(it != this->_content.end());
+    ELLE_ASSERT_NEQ(it, this->_content.end());
     this->_content.erase(it);
   }
 }

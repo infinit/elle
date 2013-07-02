@@ -1,5 +1,6 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
@@ -71,14 +72,14 @@ namespace reactor
   void
   Scheduler::run()
   {
-    assert(!scheduler());
+    ELLE_ASSERT(!scheduler());
     while (step())
       /* nothing */;
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
     ELLE_TRACE("Scheduler: done");
-    assert(_frozen.empty());
+    ELLE_ASSERT(_frozen.empty());
     if (_eptr != nullptr)
     {
       std::rethrow_exception(_eptr);
@@ -168,7 +169,7 @@ namespace reactor
   void
   Scheduler::_step(Thread* thread)
   {
-    ELLE_ASSERT(thread->state() == Thread::State::running);
+    ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
     Thread* previous = _current;
     _current = thread;
     try
@@ -205,8 +206,8 @@ namespace reactor
   void
   Scheduler::_freeze(Thread& thread)
   {
-    assert(thread.state() == Thread::state::running);
-    assert(_running.find(&thread) != _running.end());
+    ELLE_ASSERT_EQ(thread.state(), Thread::state::running);
+    ELLE_ASSERT_NEQ(_running.find(&thread), _running.end());
     _running.erase(&thread);
     _frozen.insert(&thread);
   }
@@ -230,7 +231,7 @@ namespace reactor
   void
   Scheduler::_unfreeze(Thread& thread)
   {
-    assert(thread.state() == Thread::state::frozen);
+    ELLE_ASSERT_EQ(thread.state(), Thread::state::frozen);
     _frozen.erase(&thread);
     _running.insert(&thread);
     if (_running.size() == 1)
@@ -287,7 +288,7 @@ namespace reactor
         case Thread::state::frozen:
           thread->raise<Terminate>(thread->name());
           thread->_wait_abort();
-          assert(thread->state() == Thread::state::running);
+          ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
           break;
         case Thread::state::done:
           break;
@@ -404,7 +405,7 @@ namespace reactor
                 boost::condition_variable& cond,
                 const boost::function<void ()>& action)
   {
-    assert(action);
+    ELLE_ASSERT(action);
     action();
     boost::unique_lock<boost::mutex> lock(mutex);
     cond.notify_one();

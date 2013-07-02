@@ -5,6 +5,7 @@
 #include <reactor/thread.hh>
 
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDPServer");
 
@@ -57,7 +58,7 @@ namespace reactor
         ELLE_TRACE("%s: wait for incoming connection", *this);
         scheduler().current()->wait(_accept);
       }
-      assert(!_accepted.empty());
+      ELLE_ASSERT(!_accepted.empty());
       UDPServerSocket* res = _accepted.back();
       _accepted.pop_back();
       // ELLE_TRACE("%s: got client: %s", *this, *res);

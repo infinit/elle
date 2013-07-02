@@ -1,4 +1,5 @@
 #include <elle/Backtrace.hh>
+#include <elle/assert.hh>
 #include <elle/log.hh>
 
 #include <reactor/backend/thread.hh>
@@ -65,13 +66,15 @@ namespace reactor
         : Thread(manager, "<root>", Action())
       {
         _status = status::running;
-        assert(_coro);
+        ELLE_ASSERT(_coro);
         Coro_initializeMainCoro(_coro);
       }
 
       Thread::~Thread()
       {
-        assert(status() == status::done || status() == status::starting || this == &_manager._self);
+        ELLE_ASSERT(status() == status::done ||
+                    status() == status::starting ||
+                    this == &_manager._self);
         ELLE_TRACE("%s: die", this->_name);
         if (_coro)
           {
@@ -109,21 +112,21 @@ namespace reactor
       void
       Thread::step()
       {
-        assert(_caller == 0);
+        ELLE_ASSERT(_caller);
         if (this->_status == status::starting)
         {
           _status = status::running;
           Thread* current = _manager._current;
           _caller = current;
           _manager._current = this;
-          assert(_coro);
+          ELLE_ASSERT(_coro);
           ELLE_TRACE("%s: start %s", current->_name , this->_name);
           Coro_startCoro_(_caller->_coro, _coro, this, &starter);
           ELLE_TRACE("%s: back from %s", current->_name, _name);
         }
         else
         {
-          assert(_status == status::waiting);
+          ELLE_ASSERT_EQ(_status, status::waiting);
           _status = status::running;
           Thread* current = _manager._current;
           _caller = current;
@@ -143,7 +146,7 @@ namespace reactor
         _status = status::running;
         try
         {
-          assert(_action);
+          ELLE_ASSERT(_action);
           _action();
         }
         catch (reactor::Exception const& e)
@@ -180,8 +183,8 @@ namespace reactor
       void
       Thread::yield()
       {
-        assert(_manager._current == this);
-        assert(_status == status::running);
+        ELLE_ASSERT_EQ(_manager._current, this);
+        ELLE_ASSERT_EQ(_status, status::running);
         _status = status::waiting;
         _manager._current = _caller;
         ELLE_TRACE("%s: yield back to %s",

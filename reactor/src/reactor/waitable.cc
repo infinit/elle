@@ -1,6 +1,7 @@
 #include <boost/foreach.hpp>
 
 #include <elle/log.hh>
+#include <elle/assert.hh>
 
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>
@@ -27,7 +28,7 @@ namespace reactor
 
   Waitable::~Waitable()
   {
-    assert(_threads.empty());
+    ELLE_ASSERT(_threads.empty());
   }
 
   /*-------.
@@ -85,7 +86,7 @@ namespace reactor
   Waitable::_wait(Thread* t)
   {
     ELLE_TRACE("%s: wait %s", *t, *this);
-    assert(_threads.find(t) == _threads.end());
+    ELLE_ASSERT_EQ(_threads.find(t), _threads.end());
     _threads.insert(t);
     return true;
   }
@@ -94,7 +95,7 @@ namespace reactor
   Waitable::_unwait(Thread* t)
   {
     ELLE_TRACE("%s: unwait %s", *t, *this);
-    assert(_threads.find(t) != _threads.end());
+    ELLE_ASSERT_NEQ(_threads.find(t), _threads.end());
     _threads.erase(t);
   }
 

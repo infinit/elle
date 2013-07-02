@@ -1,5 +1,7 @@
 #include <reactor/mutex.hh>
 
+#include <elle/assert.hh>
+
 namespace reactor
 {
   Mutex::Mutex()
@@ -15,7 +17,7 @@ namespace reactor
   bool
   Mutex::release()
   {
-    assert(_locked);
+    ELLE_ASSERT(_locked);
     if (!_signal_one())
     {
       _locked = false;

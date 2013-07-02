@@ -1,4 +1,5 @@
 #include <elle/printf.hh>
+#include <elle/assert.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-server.hh>
@@ -84,7 +85,7 @@ namespace reactor
     TCPServer::accept()
     {
       // FIXME: server should listen in ctor to avoid this crappy state ?
-      assert(_acceptor);
+      ELLE_ASSERT_NEQ(_acceptor, nullptr);
       TCPAccept accept(scheduler(), *_acceptor);
       accept.run();
       TCPSocket* socket = new TCPSocket(scheduler(), accept.socket());
