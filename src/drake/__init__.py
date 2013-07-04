@@ -956,7 +956,19 @@ class Node(BaseNode):
 
     def path(self):
         """Filesystem path to node file, relative to the root of the
-        build directory."""
+        build directory.
+
+        >>> with Drake('source/tree') as drake:
+        ...   n = node('file')
+        ...   print(n.path())
+        ...   builder = TouchBuilder([n])
+        ...   print(n.path())
+        ...   n = node('//virtual/node')
+        ...   print(n.path())
+        source/tree/file
+        file
+        //virtual/node
+        """
         if self.name().absolute() or self.name().virtual:
             # assert self.builder is None
             return self.name()
