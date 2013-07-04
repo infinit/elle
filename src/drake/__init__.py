@@ -26,8 +26,8 @@ from drake.sched import Coroutine, Scheduler
 from drake.enumeration import Enumerated
 
 def _scheduled():
-    return Coroutine.current and \
-        Coroutine.current._Coroutine__scheduler
+  return Coroutine.current and \
+    Coroutine.current._Coroutine__scheduler
 
 
 class Profile:
