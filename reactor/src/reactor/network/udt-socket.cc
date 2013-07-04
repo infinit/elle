@@ -171,10 +171,10 @@ namespace reactor
                      std::size_t read)
         {
           if (error == boost::system::errc::operation_canceled)
-            {
-              ELLE_TRACE("read canceled");
-              return;
-            }
+          {
+            ELLE_TRACE("read canceled");
+            return;
+          }
           if (error)
             ELLE_TRACE("%s: read error: %s", *this, error.message());
           else
@@ -212,19 +212,19 @@ namespace reactor
       UDTRead read(scheduler(), this, buf, some);
       bool finished;
       try
-        {
-          finished  = read.run(timeout);
-        }
+      {
+        finished  = read.run(timeout);
+      }
       catch (...)
-        {
-          ELLE_TRACE("%s: read threw", *this);
-          throw;
-        }
+      {
+        ELLE_WARN("%s: read threw: %s", *this, elle::exception_string());
+        throw;
+      }
       if (!finished)
-        {
-          ELLE_TRACE("%s: read timed out", *this);
-          throw TimeOut();
-        }
+      {
+        ELLE_TRACE("%s: read timed out", *this);
+        throw TimeOut();
+      }
       ELLE_TRACE("%s: read completed: %s bytes", *this, read.read());
       return read.read();
     }
