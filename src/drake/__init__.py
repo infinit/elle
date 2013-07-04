@@ -957,7 +957,7 @@ class Node(BaseNode):
     def path(self):
         """Filesystem path to node file, relative to the root of the
         build directory."""
-        if self.name().absolute():
+        if self.name().absolute() or self.name().virtual:
             # assert self.builder is None
             return self.name()
         if self.builder is None:
