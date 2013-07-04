@@ -2166,6 +2166,21 @@ def run(root, *cfg, **kwcfg):
     print('%s: interrupted.' % sys.argv[0])
     exit(1)
 
+
+class Drake:
+
+  def __init__(self, root):
+    self.__root = Path(root)
+
+  def __enter__(self):
+    global _srctree
+    _srctree = self.__root
+
+  def __exit__(self, *args, **kwargs):
+    global _srctree
+    _srctree = Path('')
+
+
 def drake(root, *cfg, **kwcfg):
   """Run a drakefile.
 
@@ -2177,69 +2192,69 @@ def drake(root, *cfg, **kwcfg):
   (sys.argv).
   """
   global _CONFIG, _srctree
-  _srctree = Path(root)
-  args = sys.argv[1:]
-  # Load the root drakefile
-  g = {}
-  path = str(srctree() / 'drakefile')
-  # execfile(path, g)
-  exec(compile(open(path).read(), path, 'exec'), g)
-  root = _Module(g)
-  _CONFIG = root.configure
-  # Fetch configuration from the command line.
-  i = 0
-  specs = inspect.getfullargspec(root.configure)
-  while i < len(args):
-    match = _ARG_CONF_RE.match(args[i])
-    if match:
-      name = match.group(1)
-      value = match.group(2)
-      if name in specs.args:
-        if name in specs.annotations:
-          t = specs.annotations[name]
-          if t is bool:
-            if value.lower() in ['true', 'yes']:
-              value = True
-            elif value.lower() in ['false', 'no']:
-              value = False
-            else:
-              raise Exception('invalid value for '
-                              'boolean option %s: %s' % (name, value))
-        kwcfg[name] = value
+  with Drake(root) as drake:
+    args = sys.argv[1:]
+    # Load the root drakefile
+    g = {}
+    path = str(srctree() / 'drakefile')
+    # execfile(path, g)
+    exec(compile(open(path).read(), path, 'exec'), g)
+    root = _Module(g)
+    _CONFIG = root.configure
+    # Fetch configuration from the command line.
+    i = 0
+    specs = inspect.getfullargspec(root.configure)
+    while i < len(args):
+      match = _ARG_CONF_RE.match(args[i])
+      if match:
+        name = match.group(1)
+        value = match.group(2)
+        if name in specs.args:
+          if name in specs.annotations:
+            t = specs.annotations[name]
+            if t is bool:
+              if value.lower() in ['true', 'yes']:
+                value = True
+              elif value.lower() in ['false', 'no']:
+                value = False
+              else:
+                raise Exception('invalid value for '
+                                'boolean option %s: %s' % (name, value))
+          kwcfg[name] = value
+          del args[i]
+          continue
+      elif args[i] in _OPTIONS:
+        opt = args[i]
         del args[i]
+        opt_args = []
+        for a in inspect.getfullargspec(_OPTIONS[opt]).args:
+          opt_args.append(args[i])
+          del args[i]
+        _OPTIONS[opt](*opt_args)
         continue
-    elif args[i] in _OPTIONS:
-      opt = args[i]
-      del args[i]
-      opt_args = []
-      for a in inspect.getfullargspec(_OPTIONS[opt]).args:
-        opt_args.append(args[i])
-        del args[i]
-      _OPTIONS[opt](*opt_args)
-      continue
-    i += 1
-  root.configure(*cfg, **kwcfg)
-  mode = _MODES['build']
-  i = 0
-  while True:
-    if i < len(args):
-      arg = args[i]
-      if arg[0:2] == '--':
-        arg = arg[2:]
-        if arg in _MODES:
-          mode = _MODES[arg]
-        else:
-          raise Exception('Unknown option: %s.' % arg)
-        i += 1
-    nodes = []
-    while i < len(args) and args[i][0:2] != '--':
-      nodes.append(node(args[i]))
       i += 1
-    if not nodes:
-      nodes = _DEFAULTS
-    mode(nodes)
-    if i == len(args):
-      break
+    root.configure(*cfg, **kwcfg)
+    mode = _MODES['build']
+    i = 0
+    while True:
+      if i < len(args):
+        arg = args[i]
+        if arg[0:2] == '--':
+          arg = arg[2:]
+          if arg in _MODES:
+            mode = _MODES[arg]
+          else:
+            raise Exception('Unknown option: %s.' % arg)
+          i += 1
+      nodes = []
+      while i < len(args) and args[i][0:2] != '--':
+        nodes.append(node(args[i]))
+        i += 1
+      if not nodes:
+        nodes = _DEFAULTS
+      mode(nodes)
+      if i == len(args):
+        break
 
 
 class WritePermissions:
