@@ -8,7 +8,7 @@
 
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptograhy.oneway");
+ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
 
 namespace infinit
 {
