@@ -144,12 +144,6 @@ namespace reactor
           return name;
         }
 
-        Size
-        read()
-        {
-          return _read;
-        }
-
       protected:
 
         virtual void _start()
@@ -188,7 +182,7 @@ namespace reactor
         }
 
         Buffer& _buffer;
-        Size _read;
+        ELLE_ATTRIBUTE_R(Size, read);
         bool _some;
     };
 
