@@ -264,23 +264,27 @@ namespace reactor
         }
 
         Buffer& _buffer;
-        Size _written;
+        ELLE_ATTRIBUTE_R(Size, written);
     };
 
     void
     UDTSocket::write(Buffer buffer)
     {
+      ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
       scheduler().current()->wait(_write_mutex);
+      UDTWrite write(scheduler(), this, buffer);
       try
-        {
-          UDTWrite write(scheduler(), this, buffer);
-          write.run();
-        }
+      {
+        write.run();
+      }
       catch (...)
-        {
-          _write_mutex.release();
-          throw;
-        }
+      {
+        ELLE_WARN("%s: write threw: %s", *this, elle::exception_string());
+        _write_mutex.release();
+        throw;
+      }
+      ELLE_TRACE("%s: write completed: %s bytes", *this, write.written());
+      ELLE_ASSERT_EQ(buffer.size(), write.written());
       _write_mutex.release();
     }
 
