@@ -87,17 +87,24 @@ namespace network {
       return boost::make_iterator_range(part_first, it);
     }
 
-    void advance(uri::string_type::iterator first,
-		 uri::string_type::iterator last,
-		 detail::uri_parts<uri::string_type::iterator> &parts,
-		 const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
+    void advance_parts(uri::string_type::iterator first,
+		       uri::string_type::iterator last,
+		       detail::uri_parts<uri::string_type::iterator> &parts,
+		       const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
       auto it = first;
       if (auto scheme = existing_parts.scheme) {
 	parts.scheme.reset(copy_range(std::begin(*scheme), std::end(*scheme), it));
 
-	// ignore ://
-	while ((':' == *it) || ('/' == *it)) {
+	// ignore : for all URIs
+	if (':' == *it) {
 	  ++it;
+	}
+
+	// ignore // for hierarchical URIs
+	if (existing_parts.hier_part.host) {
+	  while ('/' == *it) {
+	    ++it;
+	  }
 	}
       }
 
@@ -129,6 +136,12 @@ namespace network {
 	parts.fragment.reset(copy_range(std::begin(*fragment), std::end(*fragment), it));
       }
     }
+
+    void advance_parts(boost::iterator_range<uri::string_type::iterator> range,
+		       detail::uri_parts<uri::string_type::iterator> &parts,
+		       const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
+      advance_parts(std::begin(range), std::end(range), parts, existing_parts);
+    }
   } // namespace
 
   struct uri::impl {
@@ -143,7 +156,7 @@ namespace network {
   uri::impl *uri::impl::clone() {
     std::unique_ptr<impl> other(new impl);
     other->uri_ = uri_;
-    advance(std::begin(other->uri_), std::end(other->uri_), other->uri_parts_, uri_parts_);
+    advance_parts(boost::as_literal(other->uri_), other->uri_parts_, uri_parts_);
     return other.release();
   }
 
@@ -408,7 +421,7 @@ namespace network {
   uri uri::normalize(uri_comparison_level level) const {
     string_type normalized(pimpl_->uri_);
     detail::uri_parts<string_type::iterator> parts;
-    advance(std::begin(normalized), std::end(normalized), parts, pimpl_->uri_parts_);
+    advance_parts(normalized, parts, pimpl_->uri_parts_);
 
     if ((uri_comparison_level::case_normalization == level) ||
 	(uri_comparison_level::percent_encoding_normalization == level) ||
@@ -478,7 +491,7 @@ namespace network {
   }
 
   uri uri::make_reference(const uri &other, uri_comparison_level level) const {
-    if (opaque() || other.opaque()) {
+    if (is_opaque() || other.is_opaque()) {
       return other;
     }
 
@@ -539,7 +552,11 @@ namespace network {
     // This implementation uses the psuedo-code given in
     // http://tools.ietf.org/html/rfc3986#section-5.2.2
 
-    if (reference.absolute() && !reference.opaque()) {
+    if (reference.is_absolute() && !reference.is_opaque()) {
+      return reference;
+    }
+
+    if (reference.is_opaque()) {
       return reference;
     }
 

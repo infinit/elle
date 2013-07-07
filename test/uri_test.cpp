@@ -12,7 +12,6 @@
 #include <map>
 #include <set>
 #include <unordered_set>
-#include <cstring>
 #include "string_utility.hpp"
 
 TEST(uri_test, construct_invalid_uri) {
@@ -550,17 +549,17 @@ TEST(uri_test, construct_uri_reference_from_char_array) {
 
 TEST(uri_test, uri_reference_scheme_test) {
   network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.scheme()) << *instance.scheme();  
+  ASSERT_FALSE(instance.scheme()) << *instance.scheme();
 }
 
 TEST(uri_test, uri_reference_host_test) {
   network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.host()) << *instance.host();  
+  ASSERT_FALSE(instance.host()) << *instance.host();
 }
 
 TEST(uri_test, uri_reference_authority_test) {
   network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.authority()) << *instance.authority();  
+  ASSERT_FALSE(instance.authority()) << *instance.authority();
 }
 
 TEST(uri_test, uri_reference_path_test) {
@@ -590,4 +589,149 @@ TEST(uri_test, git) {
 
 TEST(uri_test, invalid_port_test) {
   ASSERT_THROW(network::uri("http://123.34.23.56:6662626/"), network::uri_syntax_error);
+}
+
+TEST(uri_test, full_copy_uri_scheme_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("http", *instance.scheme());
+}
+
+TEST(uri_test, full_copy_uri_user_info_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("user:password", *instance.user_info());
+}
+
+TEST(uri_test, full_copy_uri_host_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("www.example.com", *instance.host());
+}
+
+TEST(uri_test, full_copy_uri_port_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("80", *instance.port());
+}
+
+TEST(uri_test, full_copy_uri_path_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("/path", *instance.path());
+}
+
+TEST(uri_test, full_copy_uri_query_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, full_copy_uri_fragment_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("fragment", *instance.fragment());
+}
+
+TEST(uri_test, full_move_uri_scheme_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("http", *instance.scheme());
+}
+
+TEST(uri_test, full_move_uri_user_info_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("user:password", *instance.user_info());
+}
+
+TEST(uri_test, full_move_uri_host_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("www.example.com", *instance.host());
+}
+
+TEST(uri_test, full_move_uri_port_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("80", *instance.port());
+}
+
+TEST(uri_test, full_move_uri_path_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("/path", *instance.path());
+}
+
+TEST(uri_test, full_move_uri_query_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, full_move_uri_fragment_test) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_EQ("fragment", *instance.fragment());
+}
+
+TEST(uri_test, mailto_uri_path) {
+  network::uri origin("mailto:john.doe@example.com?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("john.doe@example.com", *instance.path());
+}
+
+TEST(uri_test, mailto_uri_query) {
+  network::uri origin("mailto:john.doe@example.com?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, mailto_uri_fragment) {
+  network::uri origin("mailto:john.doe@example.com?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("fragment", *instance.fragment());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash) {
+  network::uri instance("scheme:/path/");
+  ASSERT_TRUE(instance.is_opaque());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_scheme) {
+  network::uri instance("scheme:/path/");
+  ASSERT_EQ("scheme", *instance.scheme());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_path) {
+  network::uri instance("scheme:/path/");
+  ASSERT_EQ("/path/", *instance.path());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_query) {
+  network::uri instance("scheme:/path/?query#fragment");
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_fragment) {
+  network::uri instance("scheme:/path/?query#fragment");
+  ASSERT_EQ("fragment", *instance.fragment());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_copy) {
+  network::uri origin("scheme:/path/");
+  network::uri instance = origin;
+  ASSERT_TRUE(instance.is_opaque());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_copy_query) {
+  network::uri origin("scheme:/path/?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("query", *instance.query());
+}
+
+TEST(uri_test, opaque_uri_with_one_slash_copy_fragment) {
+  network::uri origin("scheme:/path/?query#fragment");
+  network::uri instance = origin;
+  ASSERT_EQ("fragment", *instance.fragment());
 }

@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 #include <network/uri.hpp>
+#include "string_utility.hpp"
 
 using namespace network;
 
@@ -210,4 +211,46 @@ TEST_F(uri_resolve_test, abnormal_example_17) {
 
 TEST_F(uri_resolve_test, abnormal_example_18) {
   ASSERT_EQ("http://a/b/c/g#s/../x", resolved("g#s/../x"));
+}
+
+TEST_F(uri_resolve_test, issue_resolve_from_copy) {
+  // https://github.com/cpp-netlib/uri/issues/15
+  network::uri base{"http://a.com/"};
+  network::uri uri{"http:/example.com/path/"};
+  network::uri copy = uri;
+  ASSERT_TRUE(copy.is_opaque());
+  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  ASSERT_EQ("http:/example.com/path/", result);
+}
+
+TEST_F(uri_resolve_test, issue_resolve_from_move) {
+  // https://github.com/cpp-netlib/uri/issues/15
+  network::uri base{"http://a.com/"};
+  network::uri uri{"http:/example.com/path/"};
+  network::uri copy = std::move(uri);
+  ASSERT_TRUE(copy.is_opaque());
+  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  ASSERT_EQ("http:/example.com/path/", result);
+}
+
+TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_query) {
+  // https://github.com/cpp-netlib/uri/issues/15
+  network::uri base{"http://a.com/"};
+  network::uri uri{"http:/example.com/path/?query#fragment"};
+  network::uri copy = uri;
+  ASSERT_TRUE(copy.is_opaque());
+  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  ASSERT_EQ("query", *uri.query());
+  ASSERT_EQ("query", *copy.query());
+  ASSERT_EQ("query", *result.query());
+}
+
+TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_fragment) {
+  // https://github.com/cpp-netlib/uri/issues/15
+  network::uri base{"http://a.com/"};
+  network::uri uri{"http:/example.com/path/?query#fragment"};
+  network::uri copy = uri;
+  ASSERT_TRUE(copy.is_opaque());
+  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  ASSERT_EQ("fragment", *result.fragment());
 }
