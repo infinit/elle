@@ -52,7 +52,8 @@ namespace reactor
   public:
     typedef std::set<Thread*> Threads;
     Thread* current() const;
-    void terminate();
+    Threads terminate();
+    void terminate_now();
     void terminate_later();
   private:
     bool _shallstop;

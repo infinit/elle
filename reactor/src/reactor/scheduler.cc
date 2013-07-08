@@ -246,10 +246,11 @@ namespace reactor
     this->io_service().post([&] {});
   }
 
-  void
+  Scheduler::Threads
   Scheduler::terminate()
   {
     ELLE_TRACE_SCOPE("%s: terminate", *this);
+    Threads terminated;
     BOOST_FOREACH(Thread* t, _starting)
     {
       // Threads expect to be done when deleted. For this very
@@ -261,9 +262,23 @@ namespace reactor
     _starting.clear();
     BOOST_FOREACH(Thread* t, Threads(_running))
       if (t != _current)
+      {
         t->terminate();
+        terminated.insert(t);
+      }
     BOOST_FOREACH(Thread* t, Threads(_frozen))
+    {
       t->terminate();
+      terminated.insert(t);
+    }
+    return terminated;
+  }
+
+  void
+  Scheduler::terminate_now()
+  {
+    auto threads = this->terminate();
+    this->current()->wait(Waitables(threads.begin(), threads.end()));
   }
 
   void
