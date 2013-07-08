@@ -251,15 +251,13 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: terminate", *this);
     BOOST_FOREACH(Thread* t, _starting)
-      {
-        t->_state = Thread::state::done;
-        if (t->_dispose)
-          {
-            // Threads expect to be done when deleted. For this very
-            // particuliar case, hack the state before deletion.
-            delete t;
-          }
-      }
+    {
+      // Threads expect to be done when deleted. For this very
+      // particuliar case, hack the state before deletion.
+      t->_state = Thread::state::done;
+      if (t->_dispose)
+        delete t;
+    }
     _starting.clear();
     BOOST_FOREACH(Thread* t, Threads(_running))
       if (t != _current)
