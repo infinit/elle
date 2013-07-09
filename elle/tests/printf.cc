@@ -29,3 +29,27 @@ BOOST_AUTO_TEST_CASE(test_too_few)
 {
   BOOST_CHECK_THROW(elle::sprintf("%s%s", "foo"), std::exception);
 }
+
+namespace detail
+{
+  struct foo
+  {
+    int i;
+  };
+
+  std::ostream&
+  operator <<(std::ostream& out, foo const& f);
+
+  std::ostream&
+  operator <<(std::ostream& out, foo const& f)
+  {
+    return out << "foo(i = " << f.i << ")";
+  }
+}
+
+
+BOOST_AUTO_TEST_CASE(scoped)
+{
+  std::string str = elle::sprintf("%s", detail::foo{5});
+  BOOST_CHECK_EQUAL(str, "foo(i = 5)");
+}
