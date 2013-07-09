@@ -69,12 +69,18 @@ namespace reactor
       bool done() const;
       /// Pretty name.
       std::string name() const;
-      /// Pretty print.
-      void Print(std::ostream& output) const;
       /// Debug dump.
       void Dump(std::ostream& output) const;
     private:
       State _state;
+
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    virtual
+    void
+    print(std::ostream& output) const override;
 
     /*----.
     | Run |
@@ -185,7 +191,6 @@ namespace reactor
   | Print operators |
   `----------------*/
 
-  std::ostream& operator << (std::ostream& s, const Thread& t);
   std::ostream& operator << (std::ostream& s, Thread::State state);
 }
 

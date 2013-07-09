@@ -75,7 +75,7 @@ namespace reactor
   }
 
   void
-  Thread::Print(std::ostream& s) const
+  Thread::print(std::ostream& s) const
   {
     s << "thread " << name();
   }
@@ -124,6 +124,7 @@ namespace reactor
     _thread.step();
     if (_thread.status() == backend::status::done)
     {
+      ELLE_TRACE_SCOPE("%s: done", *this);
       _state = Thread::state::done;
       _signal();
     }
@@ -316,14 +317,6 @@ namespace reactor
   /*----------------.
   | Print operators |
   `----------------*/
-
-  std::ostream&
-  operator <<(std::ostream&     s,
-              Thread const&     t)
-  {
-    t.Print(s);
-    return s;
-  }
 
   std::ostream&
   operator <<(std::ostream&     s,
