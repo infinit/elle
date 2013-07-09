@@ -16,6 +16,14 @@ namespace reactor
       virtual void _abort();
       virtual void _start();
 
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    virtual
+    void
+    print(std::ostream& stream) const override;
+
     private:
       void _wakeup(const boost::system::error_code& error);
       Duration _duration;

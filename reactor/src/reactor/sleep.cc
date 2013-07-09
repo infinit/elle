@@ -10,6 +10,16 @@ namespace reactor
     , _timer(scheduler.io_service(), d)
   {}
 
+  /*----------.
+  | Printable |
+  `----------*/
+
+  void
+  Sleep::print(std::ostream& stream) const
+  {
+    stream << "sleep for " << this->_duration;
+  }
+
   void
   Sleep::_abort()
   {
