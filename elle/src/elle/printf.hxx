@@ -2,6 +2,8 @@
 # define ELLE_PRINTF_HXX
 
 # include <elle/assert.hh>
+# include <elle/Exception.hh>
+# include <elle/log.hh>
 # include <elle/print.hh>
 
 # include <cstddef>
@@ -92,7 +94,17 @@ namespace elle
     {
       boost::format boost_fmt{fmt};
       format_feed(boost_fmt, std::forward<T>(values)...);
-      return boost_fmt.str();
+      try
+      {
+        return boost_fmt.str();
+      }
+      catch (boost::io::format_error const& e)
+      {
+        ELLE_LOG_COMPONENT("elle.printf");
+        auto msg = elle::sprintf("format error with \"%s\": %s", fmt, e.what());
+        ELLE_ERR("%s", msg);
+        throw elle::Exception(msg);
+      }
     }
   }
 

@@ -1,8 +1,5 @@
 #ifndef ELLE_LOG_MACROS_HH
 
-# include <elle/assert.hh>
-# include <elle/log/Send.hh>
-
 # define ELLE_LOG_MACROS_HH
 # define ELLE_LOG_COMPONENT(_component_)                                \
     static char const* _trace_component_ = _component_;
@@ -86,5 +83,7 @@
                   elle::sprint(elle::iomanip::Separator(", "),          \
                                ##__VA_ARGS__),                          \
                   *this, this)
+
+# include <elle/log/Send.hh>
 
 #endif

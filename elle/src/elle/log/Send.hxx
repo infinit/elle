@@ -1,6 +1,7 @@
 #ifndef ELLE_LOG_SEND_HXX
 # define ELLE_LOG_SEND_HXX
 
+# include <elle/print.hh>
 # include <elle/printf.hh>
 
 namespace elle

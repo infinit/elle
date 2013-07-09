@@ -1,12 +1,27 @@
 #ifndef ELLE_ASSERT_HH
 # define ELLE_ASSERT_HH
 
+# include <string>
+# include <stdexcept>
+
+# include <elle/compiler.hh>
+
+namespace elle
+{
+  /// Print the message and abort program execution.
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  void
+  abort(std::string const& msg);
+
+  /// Abort the program. Flags unreachable code.
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  void
+  unreachable();
+}
+
 # include <elle/compiler.hh>
 # include <elle/printf.hh>
 # include <elle/types.hh>
-
-# include <string>
-# include <stdexcept>
 
 namespace elle
 {
@@ -82,16 +97,6 @@ namespace elle
 
 namespace elle
 {
-  /// Print the message and abort program execution.
-  ELLE_COMPILER_ATTRIBUTE_NORETURN
-  void
-  abort(std::string const& msg);
-
-  /// Abort the program. Flags unreachable code.
-  ELLE_COMPILER_ATTRIBUTE_NORETURN
-  void
-  unreachable();
-
   // Throw an AssertError if the predicate is false.
   void _assert(bool predicate,
                std::string const& message,

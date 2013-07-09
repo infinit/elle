@@ -23,7 +23,7 @@ namespace elle
         template <typename ... Args>
         Send(elle::log::Logger::Level level,
                      elle::log::Logger::Type type,
-                     elle::String const& component,
+                     std::string const& component,
                      char const* file,
                      unsigned int line,
                      char const* function,
@@ -35,7 +35,7 @@ namespace elle
         bool _proceed;
         static bool _enabled(elle::log::Logger::Type type,
                              elle::log::Logger::Level level,
-                             elle::String const& component);
+                             std::string const& component);
 
       private:
         void _send(elle::log::Logger::Level level,
