@@ -1,8 +1,9 @@
 #include "reactor.hh"
 
-#include <reactor/semaphore.hh>
+#include <reactor/duration.hh>
 #include <reactor/mutex.hh>
 #include <reactor/rw-mutex.hh>
+#include <reactor/semaphore.hh>
 #include <reactor/signal.hh>
 #include <reactor/storage.hh>
 #include <reactor/thread.hh>
@@ -45,6 +46,15 @@ sleep(reactor::Duration d)
 {
   sched->current()->sleep(d);
 }
+
+class BeaconException:
+  public elle::Exception
+{
+public:
+  BeaconException()
+    : elle::Exception("beacon")
+  {}
+};
 
 /*--------.
 | Helpers |
@@ -514,6 +524,34 @@ test_timeout_aborted()
   reactor::Thread t1(sched, "John", &connor);
   reactor::Thread t2(sched, "Terminator", &schwarzy);
   sched.run();
+}
+
+/*--------------.
+| Timeout threw |
+`--------------*/
+
+static
+void
+test_timeout_threw()
+{
+  reactor::Scheduler sched;
+  reactor::Semaphore sem(0);
+
+  reactor::Thread thrower(sched, "thrower", [&] {
+      thrower.wait(sem);
+      throw BeaconException();
+    });
+  reactor::Thread waiter(sched, "waiter", [&] {
+      sem.release();
+      waiter.wait(thrower, 100_ms);
+    });
+
+  try
+  {
+    sched.run();
+  }
+  catch (BeaconException const&)
+  {}
 }
 
 /*--------.
@@ -1022,15 +1060,6 @@ test_multithread()
 | Terminate |
 `----------*/
 
-class BeaconException:
-  public elle::Exception
-{
-public:
-  BeaconException()
-    : elle::Exception("beacon")
-  {}
-};
-
 static
 void
 except_gen()
@@ -1361,6 +1390,7 @@ test_suite()
   timeout->add(BOOST_TEST_CASE(test_timeout_do));
   timeout->add(BOOST_TEST_CASE(test_timeout_dont));
   timeout->add(BOOST_TEST_CASE(test_timeout_aborted));
+  timeout->add(BOOST_TEST_CASE(test_timeout_threw));
 
   boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
   boost::unit_test::framework::master_test_suite().add(vthread);

@@ -1,5 +1,6 @@
 #include <boost/foreach.hpp>
 
+#include <elle/finally.hh>
 #include <elle/log.hh>
 
 #include <reactor/exception.hh>
@@ -184,7 +185,7 @@ namespace reactor
 
   bool
   Thread::wait(Waitable& s,
-               boost::optional<Duration> timeout)
+               DurationOpt timeout)
   {
     Waitables waitables(1, &s);
     return wait(waitables, timeout);
@@ -192,9 +193,10 @@ namespace reactor
 
   bool
   Thread::wait(Waitables const& waitables,
-               boost::optional<Duration> timeout)
+               DurationOpt timeout)
   {
-    ELLE_TRACE_SCOPE("%s: wait %s", *this, waitables);
+    ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
+                     timeout ? elle::sprintf(" for %s", timeout) : "");
     ELLE_ASSERT_EQ(_state, state::running);
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
@@ -212,14 +214,12 @@ namespace reactor
         this->_timeout = false;
         this->_timeout_timer.async_wait(
           boost::bind(&Thread::_wait_timeout, this, _1));
+        elle::Finally cancel_timer([&] {
+            if (!_timeout)
+              this->_timeout_timer.cancel();
+          });
         _freeze();
-        if (_timeout)
-          return false;
-        else
-        {
-          this->_timeout_timer.cancel();
-          return true;
-        }
+        return !this->_timeout;
       }
       else
       {
