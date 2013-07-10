@@ -1,5 +1,5 @@
 #ifndef ELLE_SYSTEM_PLATFORM_HH
-# define ELLE_SYSTEM_PLATEFORM_HH
+# define ELLE_SYSTEM_PLATFORM_HH
 
 namespace elle
 {
