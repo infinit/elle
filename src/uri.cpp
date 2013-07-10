@@ -23,6 +23,7 @@
 #include <boost/range/as_literal.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
+#include <cassert>
 #include <cctype>
 #include <algorithm>
 #include <functional>
@@ -154,7 +155,8 @@ namespace network {
   };
 
   uri::impl *uri::impl::clone() {
-    std::unique_ptr<impl> other(new impl);
+    std::unique_ptr<impl> other(new (std::nothrow) impl);
+    assert(other.get() && "Unable to allocate memory for network::uri");
     other->uri_ = uri_;
     advance_parts(boost::as_literal(other->uri_), other->uri_parts_, uri_parts_);
     return other.release();
@@ -257,17 +259,18 @@ namespace network {
   }
 
   uri::uri()
-    : pimpl_(new impl) {
-
+    : pimpl_(new (std::nothrow) impl) {
+    assert(pimpl_ && "Unable to allocate memory for network::uri");
   }
 
   uri::uri(const uri &other)
     : pimpl_(other.pimpl_->clone()) {
-
+    assert(pimpl_ && "Unable to allocate memory for network::uri");
   }
 
   uri::uri(const uri_builder &builder)
-    : pimpl_(new impl) {
+    : pimpl_(new (std::nothrow) impl) {
+    assert(pimpl_ && "Unable to allocate memory for network::uri");
     initialize(builder.scheme_,
 	       builder.user_info_,
 	       builder.host_,
@@ -278,8 +281,9 @@ namespace network {
   }
 
   uri::uri(uri &&other)
-    : pimpl_(other.pimpl_) {
-    other.pimpl_ = new impl;
+    : pimpl_(new (std::nothrow) impl) {
+    assert(other.pimpl_ && "Unable to allocate memory for network::uri");
+    std::swap(pimpl_, other.pimpl_);
   }
 
   uri::~uri() {
@@ -623,7 +627,8 @@ namespace network {
   }
 
   bool uri::initialize(const string_type &uri) {
-    pimpl_ = new impl;
+    pimpl_ = new (std::nothrow) impl;
+    assert(pimpl_ && "Unable to allocate memory for network::uri");
 
     pimpl_->uri_ = boost::trim_copy(uri);
     if (!pimpl_->uri_.empty()) {

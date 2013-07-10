@@ -77,10 +77,12 @@ namespace network {
 
   enum class uri_comparison_level {
     string_comparison,
-      case_normalization,
-      percent_encoding_normalization,
-      path_segment_normalization,
-      };
+    case_normalization,
+    percent_encoding_normalization,
+    path_segment_normalization,
+    scheme_normalization,
+    protocol_normalization
+  };
 
   class uri_builder;
 
@@ -111,7 +113,7 @@ namespace network {
     uri();
 
     template <class InputIter>
-      uri(const InputIter &first, const InputIter &last) {
+      uri(InputIter first, InputIter last) {
       if (!initialize(string_type(first, last))) {
 	throw uri_syntax_error();
       }
@@ -185,37 +187,37 @@ namespace network {
     int compare(const uri &other, uri_comparison_level level) const;
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_user_info(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_host(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_host(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_host(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_port(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_port(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_port(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_path(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_path(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_path(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_query(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_query(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_query(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter encode_fragment(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter encode_fragment(InputIter first, InputIter last, OutputIter out) {
       return detail::encode_fragment(first, last, out);
     }
 
     template <typename InputIter, typename OutputIter>
-      static OutputIter decode(InputIter first, InputIter last, OutputIter out) {
+    static OutputIter decode(InputIter first, InputIter last, OutputIter out) {
       return detail::decode(first, last, out);
     }
 
