@@ -17,7 +17,7 @@ namespace elle
   {
     namespace detail
     {
-      class Send;
+      struct Send;
     }
 
     class Indentation
@@ -105,7 +105,7 @@ namespace elle
     | Indentation |
     `------------*/
     private:
-      friend class detail::Send;
+      friend struct detail::Send;
       friend
       void
       logger(std::unique_ptr<Logger> logger);
