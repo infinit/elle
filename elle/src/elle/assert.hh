@@ -11,7 +11,9 @@ namespace elle
   /// Print the message and abort program execution.
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
-  abort(std::string const& msg);
+  _abort(std::string const& msg,
+         char const* file,
+         int line);
 
   /// Abort the program. Flags unreachable code.
   ELLE_COMPILER_ATTRIBUTE_NORETURN
@@ -44,6 +46,9 @@ namespace elle
     what() const throw();
   };
 }
+
+#  define ELLE_ABORT(...)                                               \
+  ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
 
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.

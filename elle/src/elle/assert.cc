@@ -16,21 +16,21 @@ namespace elle
           int line)
   {
     if (!predicate)
-      throw elle::AssertError(message.c_str(), file, line);
+      _abort(message, file, line);
   }
 
   void
   unreachable()
   {
-    abort("unreachable code reached");
+    _abort("unreachable code reached", "", 0);
   }
 
   void
-  abort(std::string const& message)
+  _abort(std::string const& message,
+         char const* file,
+         int line)
   {
-    // FIXME: argv[0]
-    std::cerr << "fatal error: " << message << std::endl;
-    std::abort();
+    throw elle::AssertError(message.c_str(), file, line);
   }
 
   // XXX should fill a backtrace.
