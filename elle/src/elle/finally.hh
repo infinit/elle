@@ -64,7 +64,7 @@ namespace elle
     `-------------*/
   public:
     Finally(std::function<void()> const& action);
-    ~Finally();
+    ~Finally() noexcept(false);
 
     /*--------.
     | Methods |

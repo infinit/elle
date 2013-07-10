@@ -19,13 +19,10 @@ namespace elle
     {
       this->_action();
     }
-    catch (std::exception const& err)
-    {
-      ELLE_ERR("cleaning scope failed: %s", err.what());
-    }
     catch (...)
     {
-      ELLE_ERR("cleaning scope failed: unknown error type");
+      ELLE_ERR("finally failed: %s", elle::exception_string());
+      throw;
     }
   }
 
