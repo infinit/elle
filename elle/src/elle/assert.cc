@@ -30,6 +30,13 @@ namespace elle
          char const* file,
          int line)
   {
+    if (std::current_exception() == std::exception_ptr{})
+    {
+      // There is already an exception happening.
+      auto e = std::current_exception();
+      ELLE_ERR("raising an assert (%s at %s:%s) with an exception already in flight",
+               message, file, line);
+    }
     throw elle::AssertError(message.c_str(), file, line);
   }
 
