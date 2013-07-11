@@ -11,7 +11,7 @@ namespace elle
     _action(action)
   {}
 
-  Finally::~Finally()
+  Finally::~Finally() noexcept(false)
   {
     if (!this->_action)
       return;
