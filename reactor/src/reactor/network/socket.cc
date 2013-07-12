@@ -24,24 +24,28 @@ namespace reactor
       public:
         typedef elle::DynamicStreamBuffer Super;
         typedef Super::Size Size;
-        StreamBuffer(Socket* socket)
-        : Super(1 << 16)
-        , _socket(socket)
+        StreamBuffer(Socket* socket):
+          Super(1 << 16),
+          _socket(socket),
+          _pacified(false)
         {}
 
-      protected:
         virtual Size read(char* buffer, Size size)
         {
-          return _socket->read_some(network::Buffer(buffer, size));
+          if (!_pacified)
+            return _socket->read_some(network::Buffer(buffer, size));
+          else
+            return 0;
         }
 
         virtual void write(char* buffer, Size size)
         {
-          _socket->write(network::Buffer(buffer, size));
+          if (!_pacified)
+            _socket->write(network::Buffer(buffer, size));
         }
 
-      private:
         Socket* _socket;
+        bool _pacified;
       };
     }
 
@@ -76,6 +80,12 @@ namespace reactor
           default:
             elle::unreachable();
         }
+    }
+
+    void
+    Socket::_pacify_streambuffer()
+    {
+      static_cast<StreamBuffer*>(this->rdbuf())->_pacified = true;
     }
 
     /*----------------.

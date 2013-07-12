@@ -44,6 +44,9 @@ namespace reactor
                const std::string& hostname,
                int port,
                DurationOpt connection_timeout);
+      protected:
+        void
+        _pacify_streambuffer();
 
       /*------.
       | Write |
