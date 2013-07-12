@@ -97,7 +97,17 @@ namespace reactor
       void
       print(std::ostream& stream) const override
       {
-        stream << "read on " << this->socket()->local_endpoint();
+        try
+        {
+          stream << "read on " << this->socket()->local_endpoint();
+        }
+        catch (boost::system::system_error const& e)
+        {
+          if (e.code() == boost::system::errc::bad_file_descriptor)
+            stream << "read on invalid socket";
+          else
+            throw;
+        }
       }
 
       protected:
@@ -205,7 +215,17 @@ namespace reactor
       void
       print(std::ostream& stream) const override
       {
-        stream << "write on " << this->socket()->local_endpoint();
+        try
+        {
+          stream << "write on " << this->socket()->local_endpoint();
+        }
+        catch (boost::system::system_error const& e)
+        {
+          if (e.code() == boost::system::errc::bad_file_descriptor)
+            stream << "read on invalid socket";
+          else
+            throw;
+        }
       }
 
       protected:
