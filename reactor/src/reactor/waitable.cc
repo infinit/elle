@@ -131,7 +131,7 @@ namespace reactor
   operator << (std::ostream& stream, Waitables const& waitables)
   {
     if (waitables.size() == 1)
-      stream << *waitables.begin();
+      stream << **waitables.begin();
     else
     {
       stream << "{";

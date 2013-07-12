@@ -16,6 +16,11 @@ namespace std
   std::ostream&
   operator <<(ostream& out,
               unordered_set<T, OTHER...> const& v);
+
+  template <typename V, typename T, typename ...OTHER>
+  bool
+  contains(unordered_set<T, OTHER...> const& set,
+           V&& value);
 }
 
 # include <elle/container/set.hxx>
