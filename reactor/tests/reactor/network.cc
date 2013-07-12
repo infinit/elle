@@ -5,6 +5,8 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
+#include <elle/memory.hh>
+
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
@@ -41,7 +43,7 @@ silent_server()
 {
   Server server(*reactor::Scheduler::scheduler());
   server.listen(4242);
-  reactor::network::Socket* socket = server.accept();
+  std::unique_ptr<reactor::network::Socket> socket(server.accept());
   while (true)
   {
     char buffer[512];
@@ -282,8 +284,13 @@ test_socket_destruction()
 
   auto action = [&] ()
     {
-      reactor::network::TCPSocket socket(sched, "127.0.0.1", 4242);
-      socket << "foo";
+      auto socket = elle::make_unique<reactor::network::TCPSocket>(
+        sched, "127.0.0.1", 4242);
+      *socket << "foo";
+      socket->socket()->close();
+      // Check the IOStream doesn't try to flush the buffer if the TCPSocket
+      // failed at it.
+      BOOST_CHECK_THROW(delete socket.release(), elle::Exception);
     };
 
   reactor::Thread t(sched, "client", action);
