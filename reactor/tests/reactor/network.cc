@@ -1,5 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 
+#include <memory>
+
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
@@ -31,6 +33,27 @@ Fixture::~Fixture()
 {
   delete sched;
   sched = 0;
+}
+
+template <typename Server, typename Socket>
+void
+silent_server()
+{
+  Server server(*reactor::Scheduler::scheduler());
+  server.listen(4242);
+  reactor::network::Socket* socket = server.accept();
+  while (true)
+  {
+    char buffer[512];
+    try
+    {
+      socket->read_some(reactor::network::Buffer(buffer, sizeof(buffer)));
+    }
+    catch (reactor::network::ConnectionClosed const&)
+    {
+      break;
+    }
+  }
 }
 
 /*---------------.
@@ -71,14 +94,13 @@ test_destroy_socket()
 
 template <typename Server, typename Socket>
 void
-silent_server()
+slowpoke_server()
 {
   Server server(*sched);
   server.listen(4242);
-  reactor::network::Socket* socket = server.accept();
+  std::unique_ptr<reactor::network::Socket> socket(server.accept());
   sched->current()->sleep(boost::posix_time::milliseconds(400));
   socket->write("0");
-  delete socket;
 }
 
 template <typename Server, typename Socket>
@@ -110,7 +132,7 @@ test_timeout_read()
 {
   Fixture f;
 
-  reactor::Thread server(*sched, "server", &silent_server<Server, Socket>);
+  reactor::Thread server(*sched, "server", &slowpoke_server<Server, Socket>);
   reactor::Thread client(*sched, "read", &timeout_read<Server, Socket>);
   sched->run();
 }
@@ -245,6 +267,34 @@ test_echo_server()
   delete sched;
 }
 
+/*-------------------.
+| Socket destruction |
+`-------------------*/
+
+static
+void
+test_socket_destruction()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread server(sched, "server", &silent_server<TCPServer, TCPSocket>);
+
+
+  auto action = [&] ()
+    {
+      reactor::network::TCPSocket socket(sched, "127.0.0.1", 4242);
+      socket << "foo";
+    };
+
+  reactor::Thread t(sched, "client", action);
+
+  sched.run();
+}
+
+/*-----------.
+| Test suite |
+`-----------*/
+
 static
 bool
 test_suite()
@@ -260,6 +310,7 @@ test_suite()
 
   INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
+  network->add(BOOST_TEST_CASE(test_socket_destruction));
   return true;
 }
 

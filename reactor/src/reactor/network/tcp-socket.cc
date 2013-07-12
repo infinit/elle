@@ -44,6 +44,7 @@ namespace reactor
 
     TCPSocket::~TCPSocket()
     {
+      ELLE_TRACE_SCOPE("%s: finalize", *this);
       // XXX: Flush the socket, otherwise the parent ~IOStream will flush the
       // buffer which will in turn write to the (deleted) socket.
       this->flush();
