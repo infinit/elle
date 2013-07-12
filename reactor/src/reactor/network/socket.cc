@@ -136,7 +136,16 @@ namespace reactor
     template <typename AsioSocket>
     PlainSocket<AsioSocket>::~PlainSocket()
     {
-      _disconnect();
+      try
+      {
+        _disconnect();
+      }
+      catch (elle::Exception const&)
+      {
+        // Nothing. If the socket was invalid, no need to disconnect it. We
+        // might be able to catch a more precise exception if _disconnect throws
+        // differently.
+      }
       delete _socket;
     }
 
