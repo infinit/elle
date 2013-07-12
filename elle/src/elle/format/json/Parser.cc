@@ -195,7 +195,7 @@ namespace elle
         if (!in.eof() && in.good())
           {
             auto charpos = in.tellg();
-            assert(pos != -1 && "Corrupition");
+            assert(pos != -1 && "Corruption");
             in >> c;
             if (c != '.')
               in.seekg(charpos);
