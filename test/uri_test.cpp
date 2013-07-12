@@ -745,3 +745,45 @@ TEST(uri_test, opaque_uri_with_one_slash_copy_fragment) {
   network::uri instance = origin;
   ASSERT_EQ("fragment", *instance.fragment());
 }
+
+TEST(uri_test, move_empty_uri_check_scheme) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.scheme());
+}
+
+TEST(uri_test, move_empty_uri_check_user_info) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.user_info());
+}
+
+TEST(uri_test, move_empty_uri_check_host) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.host());
+}
+
+TEST(uri_test, move_empty_uri_check_port) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.port());
+}
+
+TEST(uri_test, move_empty_uri_check_path) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.path());
+}
+
+TEST(uri_test, move_empty_uri_check_query) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.query());
+}
+
+TEST(uri_test, move_empty_uri_check_fragment) {
+  network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance = std::move(origin);
+  ASSERT_FALSE(origin.fragment());
+}

@@ -14,6 +14,7 @@
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
 #include <boost/utility/string_ref.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
 #include <system_error>
@@ -22,20 +23,42 @@
 
 
 namespace network {
+  namespace detail {
+    template <
+      class FwdIter
+      >
+    struct hierarchical_part {
+      boost::optional<boost::iterator_range<FwdIter> > user_info;
+      boost::optional<boost::iterator_range<FwdIter> > host;
+      boost::optional<boost::iterator_range<FwdIter> > port;
+      boost::optional<boost::iterator_range<FwdIter> > path;
+    };
+
+    template <
+      class FwdIter
+      >
+    struct uri_parts {
+      boost::optional<boost::iterator_range<FwdIter> > scheme;
+      hierarchical_part<FwdIter> hier_part;
+      boost::optional<boost::iterator_range<FwdIter> > query;
+      boost::optional<boost::iterator_range<FwdIter> > fragment;
+    };
+  } // namespace detail
+
   enum class uri_error {
     // parser errors
     invalid_syntax = 1,
 
     // builder errors
-      invalid_uri,
-      invalid_scheme,
-      invalid_user_info,
-      invalid_host,
-      invalid_port,
-      invalid_path,
-      invalid_query,
-      invalid_fragment,
-      };
+    invalid_uri,
+    invalid_scheme,
+    invalid_user_info,
+    invalid_host,
+    invalid_port,
+    invalid_path,
+    invalid_query,
+    invalid_fragment,
+  };
 
   class NETWORK_URI_DECL uri_category_impl : public std::error_category {
 
@@ -113,21 +136,21 @@ namespace network {
     uri();
 
     template <class InputIter>
-      uri(InputIter first, InputIter last) {
+    uri(InputIter first, InputIter last) {
       if (!initialize(string_type(first, last))) {
 	throw uri_syntax_error();
       }
     }
 
     template <class Source>
-      explicit uri(const Source &uri) {
+    explicit uri(const Source &uri) {
       if (!initialize(detail::translate(uri))) {
 	throw uri_syntax_error();
       }
     }
 
     template <class Source>
-      explicit uri(const Source &uri, std::error_code &ec) {
+    explicit uri(const Source &uri, std::error_code &ec) {
       if (!initialize(detail::translate(uri))) {
 	ec = make_error_code(uri_error::invalid_syntax);
       }
@@ -160,12 +183,12 @@ namespace network {
     string_type native() const;
 #if !defined(_MSC_VER)
     template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >
-      std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
+    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
 #else
     template <typename CharT, class CharTraits, class Alloc>
-      std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
+    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
 #endif // !/defined(_MSC_VER)
@@ -225,8 +248,8 @@ namespace network {
 
     bool initialize(const string_type &uri);
 
-    struct impl;
-    impl *pimpl_;
+    string_type uri_;
+    detail::uri_parts<string_type::iterator> uri_parts_;
 
   };
 
