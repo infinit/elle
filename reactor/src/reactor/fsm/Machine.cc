@@ -71,9 +71,22 @@ namespace reactor
     Machine::_run_state(State* state)
     {
       ELLE_TRACE_SCOPE("%s: run state %s", *this, *state);
+      ELLE_ASSERT(Scheduler::scheduler());
       auto& sched = *Scheduler::scheduler();
-      Thread action(sched, elle::sprintf("%s action", *state),
-                             state->_action);
+      auto action = [&] () {
+        try
+        {
+          state->_action();
+        }
+        catch (elle::Exception&)
+        {
+          ELLE_DEBUG("%s: forward exception: %s",
+                     *this, elle::exception_string());
+          this->_exception = std::current_exception();
+          return;
+        };
+      };
+      Thread action_thread(sched, elle::sprintf("%s action", *state), action);
       reactor::Signal triggered;
       Transition* trigger(nullptr);
       std::vector<std::unique_ptr<Thread>> transitions;
@@ -91,7 +104,8 @@ namespace reactor
           transitions.emplace_back(
             new Thread(sched,
                        elle::sprintf("%s transition %s", state, *transition),
-                       [transition, this, &sched, &trigger, &action, &triggered](){
+                       [transition, this,
+                        &sched, &trigger, &action_thread, &triggered](){
                          sched.current()->wait(transition->trigger());
                          if (!trigger)
                          {
@@ -99,7 +113,7 @@ namespace reactor
                                       *this, *transition);
                            trigger = transition;
                            if (transition->preemptive())
-                             action.terminate();
+                             action_thread.terminate();
                            triggered.signal();
                          }
                        }));
@@ -107,9 +121,15 @@ namespace reactor
       }
       state->_entered.signal();
       elle::Finally exited([&]() {state->_exited.signal(); });
-      sched.current()->wait(action);
+      sched.current()->wait(action_thread);
       state->_done.signal();
       ELLE_DEBUG("%s: state action finished", *this);
+      if (this->_exception)
+      {
+        ELLE_WARN("%s: state action threw: %s",
+                  *this, elle::exception_string(this->_exception));
+        std::rethrow_exception(this->_exception);
+      }
       if (state->transitions_out().empty())
       {
         ELLE_DEBUG("%s: end state, leaving", *this);

@@ -12,14 +12,22 @@ using reactor::fsm::Machine;
 using reactor::fsm::State;
 using reactor::fsm::Transition;
 
+class BeaconException:
+  public elle::Exception
+{
+public:
+  BeaconException():
+    elle::Exception("beacon")
+  {}
+};
+
 static
 void
 test_model()
 {
   Machine m;
   State& s1 = m.state_make();
-  State& s2 = m.state_add
-    (std::unique_ptr<State>(new State()));
+  State& s2 = m.state_add(std::unique_ptr<State>(new State()));
 
   reactor::Signal s;
 
@@ -173,6 +181,65 @@ test_run_preemptive_transition(bool preemptive)
 }
 
 static
+void
+test_run_two_transitions_triggered(bool order)
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  reactor::Signal trigger_state;
+  State& s1 = m.state_make("start", [&] () { beacon1 = true; });
+  State& s2 = m.state_make("end_2", [&] () { beacon2 = true; });
+  State& s3 = m.state_make("end_3", [&] () { beacon3 = true; });
+  reactor::Signal trigger2;
+  m.transition_add(s1, s2, reactor::Waitables{&trigger2});
+  reactor::Signal trigger3;
+  m.transition_add(s1, s3, reactor::Waitables{&trigger3});
+
+  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread check(sched, "check", [&](){
+      auto& current = *sched.current();
+      // Make sure we're way into the FSM.
+      current.yield();
+      current.yield();
+      if (order)
+      {
+        trigger2.signal();
+        current.yield();
+        trigger3.signal();
+      }
+      else
+      {
+        trigger3.signal();
+        current.yield();
+        trigger2.signal();
+      }
+    });
+
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2 == order);
+  BOOST_CHECK(beacon3 == !order);
+}
+
+static
+void
+test_exception()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  m.state_make("start", [&] () { throw BeaconException(); });
+
+  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+}
+
+static
 bool
 test_suite()
 {
@@ -185,6 +252,9 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_run_unused_transition));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, true)));
+  fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, false)));
+  fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, true)));
+  fsm->add(BOOST_TEST_CASE(test_exception));
   return true;
 }
 

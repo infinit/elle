@@ -56,6 +56,7 @@ namespace reactor
       State*
       _run_state(State* state);
       ELLE_ATTRIBUTE_R(bool, running);
+      ELLE_ATTRIBUTE(std::exception_ptr, exception);
     };
   }
 }
