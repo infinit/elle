@@ -25,6 +25,14 @@ namespace reactor
       friend class Machine;
       ELLE_ATTRIBUTE_R(Waitables, trigger);
       ELLE_ATTRIBUTE_R(bool, preemptive);
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const;
     };
   }
 }

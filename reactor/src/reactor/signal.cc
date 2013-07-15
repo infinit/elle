@@ -17,4 +17,17 @@ namespace reactor
   {
     return _signal_one();
   }
+
+  /*----------.
+  | Printable |
+  `----------*/
+  void
+  Signal::print(std::ostream& stream) const
+  {
+    stream << "signal ";
+    if (!this->name().empty())
+      stream << this->name();
+    else
+      stream << this;
+  }
 };

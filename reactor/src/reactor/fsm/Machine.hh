@@ -5,6 +5,8 @@
 # include <unordered_set>
 # include <vector>
 
+# include <elle/Printable.hh>
+
 # include <reactor/fsm/State.hh>
 # include <reactor/fsm/Transition.hh>
 
@@ -12,7 +14,8 @@ namespace reactor
 {
   namespace fsm
   {
-    class Machine
+    class Machine:
+      public elle::Printable
     {
     /*-------------.
     | Construction |
@@ -63,6 +66,14 @@ namespace reactor
       _run_state(State* state);
       ELLE_ATTRIBUTE_R(bool, running);
       ELLE_ATTRIBUTE(std::exception_ptr, exception);
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const;
     };
   }
 }

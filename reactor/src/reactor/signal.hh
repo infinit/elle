@@ -5,7 +5,8 @@
 
 namespace reactor
 {
-  class Signal: public Waitable
+  class Signal
+    : public Waitable
   {
   public:
     typedef Signal Self;
@@ -13,10 +14,19 @@ namespace reactor
     Signal(const std::string& name = std::string());
     bool signal();
     bool signal_one();
+
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    virtual
+    void
+    print(std::ostream& stream) const override;
   };
 
   template <typename V>
-  class VSignal: public Waitable
+  class VSignal
+    : public Waitable
   {
     public:
       typedef Signal Self;

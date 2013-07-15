@@ -152,5 +152,15 @@ namespace reactor
       }
       return &trigger->end();
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Machine::print(std::ostream& stream) const
+    {
+      stream << "FSM " << this;
+    }
   }
 }

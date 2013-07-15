@@ -45,5 +45,15 @@ namespace reactor
       _trigger(trigger),
       _preemptive(preemptive)
     {}
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    WaitableTransition::print(std::ostream& stream) const
+    {
+      stream << "transition on " << this->trigger();
+    }
   }
 }

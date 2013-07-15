@@ -8,7 +8,8 @@ namespace reactor
 {
   namespace fsm
   {
-    class Transition
+    class Transition:
+      public elle::Printable
     {
     public:
       virtual
@@ -25,6 +26,14 @@ namespace reactor
       friend class Machine;
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const;
     };
   }
 }
