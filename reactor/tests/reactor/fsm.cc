@@ -312,6 +312,38 @@ transition_catch()
   BOOST_CHECK(beacon3);
 }
 
+
+static
+void
+transition_actions()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+
+  State& s1 = m.state_make([&] () {
+      BOOST_CHECK(!beacon1);
+      BOOST_CHECK(!beacon2);
+    });
+  State& s2 = m.state_make([&] () {
+      BOOST_CHECK(beacon1);
+      BOOST_CHECK(!beacon2);
+    });
+  State& s3 = m.state_make([&] () {
+      BOOST_CHECK(beacon1);
+      BOOST_CHECK(beacon2);
+    });
+  m.transition_add(s1, s2).action([&] () { beacon1 = true; });
+  m.transition_add(s2, s3).action([&] () { beacon2 = true; });
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+}
+
 static
 bool
 test_suite()
@@ -330,6 +362,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_exception));
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
   fsm->add(BOOST_TEST_CASE(transition_catch));
+  fsm->add(BOOST_TEST_CASE(transition_actions));
   return true;
 }
 

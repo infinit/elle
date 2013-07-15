@@ -150,6 +150,8 @@ namespace reactor
         ELLE_DEBUG("%s: waiting for transition", *this);
         sched.current()->wait(triggered);
       }
+      if (trigger->action())
+        trigger->action()();
       return &trigger->end();
     }
 

@@ -26,6 +26,7 @@ namespace reactor
       friend class Machine;
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);
+      ELLE_ATTRIBUTE_RW(std::function<void()>, action);
 
     /*----------.
     | Printable |
