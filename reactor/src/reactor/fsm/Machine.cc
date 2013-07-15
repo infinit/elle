@@ -1,7 +1,11 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/memory.hh>
 
+#include <reactor/fsm/CatchTransition.hh>
+#include <reactor/fsm/EndTransition.hh>
 #include <reactor/fsm/Machine.hh>
+#include <reactor/fsm/WaitableTransition.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 
@@ -46,7 +50,29 @@ namespace reactor
                             bool preemptive)
     {
       std::unique_ptr<Transition> transition(
-        new Transition(start, end, trigger, preemptive));
+        new WaitableTransition(start, end, trigger, preemptive));
+      Transition& res = *transition.get();
+      this->_transitions.insert(std::move(transition));
+      return res;
+    }
+
+    Transition&
+    Machine::transition_add(State& start,
+                            State& end)
+    {
+      std::unique_ptr<Transition> transition(
+        new EndTransition(start, end));
+      Transition& res = *transition.get();
+      this->_transitions.insert(std::move(transition));
+      return res;
+    }
+
+    Transition&
+    Machine::transition_add_catch(State& start,
+                                  State& end)
+    {
+      std::unique_ptr<Transition> transition(
+        new CatchTransition(start, end));
       Transition& res = *transition.get();
       this->_transitions.insert(std::move(transition));
       return res;
@@ -70,7 +96,7 @@ namespace reactor
     State*
     Machine::_run_state(State* state)
     {
-      ELLE_TRACE_SCOPE("%s: run state %s", *this, *state);
+      ELLE_TRACE_SCOPE("%s: run %s", *this, *state);
       ELLE_ASSERT(Scheduler::scheduler());
       auto& sched = *Scheduler::scheduler();
       auto action = [&] () {
@@ -90,40 +116,24 @@ namespace reactor
       reactor::Signal triggered;
       Transition* trigger(nullptr);
       std::vector<std::unique_ptr<Thread>> transitions;
+      elle::Finally terminate_transitions([&] () {
+          for (auto& thread: transitions)
+            thread->terminate_now();
+        });
       for (auto transition: state->transitions_out())
       {
-        if (transition->trigger().empty())
-        {
-          ELLE_ASSERT(!trigger);
-          trigger = transition;
-        }
-        else
-        {
-          ELLE_DEBUG("%s: start transition %s on %s",
-                     *this, *transition, transition->trigger());
-          transitions.emplace_back(
-            new Thread(sched,
-                       elle::sprintf("%s transition %s", state, *transition),
-                       [transition, this,
-                        &sched, &trigger, &action_thread, &triggered](){
-                         sched.current()->wait(transition->trigger());
-                         if (!trigger)
-                         {
-                           ELLE_TRACE("%s: trigger transition %s",
-                                      *this, *transition);
-                           trigger = transition;
-                           if (transition->preemptive())
-                             action_thread.terminate();
-                           triggered.signal();
-                         }
-                       }));
-        }
+        std::unique_ptr<Thread> thread(
+          transition->run(triggered, trigger, action_thread).release());
+        if (thread)
+          transitions.emplace_back(thread.release());
       }
       state->_entered.signal();
       elle::Finally exited([&]() {state->_exited.signal(); });
       sched.current()->wait(action_thread);
       state->_done.signal();
       ELLE_DEBUG("%s: state action finished", *this);
+      for (auto transition: state->transitions_out())
+        transition->done(trigger, this->_exception);
       if (this->_exception)
       {
         ELLE_WARN("%s: state action threw: %s",
@@ -140,8 +150,6 @@ namespace reactor
         ELLE_DEBUG("%s: waiting for transition", *this);
         sched.current()->wait(triggered);
       }
-      for (auto& thread: transitions)
-        thread->terminate_now();
       return &trigger->end();
     }
   }

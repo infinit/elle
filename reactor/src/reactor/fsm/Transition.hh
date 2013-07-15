@@ -10,16 +10,21 @@ namespace reactor
   {
     class Transition
     {
-    private:
+    public:
+      virtual
+      std::unique_ptr<Thread>
+      run(reactor::Signal& triggered,
+          Transition*& trigger,
+          Thread& action_thread);
+      virtual
+      void
+      done(Transition*& trigger, std::exception_ptr& exn);
+    protected:
       Transition(State& start,
-                 State& end,
-                 Waitables const& trigger,
-                 bool preemptive = false);
+                 State& end);
       friend class Machine;
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);
-      ELLE_ATTRIBUTE_R(Waitables, trigger);
-      ELLE_ATTRIBUTE_R(bool, preemptive);
     };
   }
 }

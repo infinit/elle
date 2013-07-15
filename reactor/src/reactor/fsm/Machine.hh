@@ -40,8 +40,14 @@ namespace reactor
       Transition&
       transition_add(State& start,
                      State& end,
-                     Waitables const& trigger = Waitables(),
+                     Waitables const& trigger,
                      bool preemptive = false);
+      Transition&
+      transition_add(State& start,
+                     State& end);
+      Transition&
+      transition_add_catch(State& start,
+                           State& end);
     private:
       ELLE_ATTRIBUTE(
         std::unordered_set<std::unique_ptr<Transition>>, transitions);

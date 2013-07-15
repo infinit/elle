@@ -5,6 +5,7 @@
 # include <string>
 # include <unordered_set>
 
+# include <elle/Printable.hh>
 # include <elle/attribute.hh>
 
 # include <reactor/fsm/fwd.hh>
@@ -15,7 +16,7 @@ namespace reactor
   namespace fsm
   {
     class State:
-      elle::Printable
+      public elle::Printable
     {
     /*------.
     | Types |

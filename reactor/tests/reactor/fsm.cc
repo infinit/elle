@@ -240,6 +240,79 @@ test_exception()
 }
 
 static
+void
+transition_auto_versus_waitable()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  State& s1 = m.state_make([&] () {
+      beacon1 = true;
+      auto& current = *reactor::Scheduler::scheduler()->current();
+      current.yield();
+      current.yield();
+      current.yield();
+      current.yield();
+    });
+  State& s2 = m.state_make([&] () {
+      beacon2 = true;
+    });
+  State& s3 = m.state_make([&] () {
+      beacon3 = true;
+    });
+  m.transition_add(s1, s2);
+  reactor::Signal trigger;
+  m.transition_add(s1, s3, reactor::Waitables{&trigger});
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread trigger_thread(sched, "trigger", [&] () {
+      auto& current = *reactor::Scheduler::scheduler()->current();
+      current.yield();
+      current.yield();
+      trigger.signal();
+    });
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+  BOOST_CHECK(beacon3);
+}
+
+static
+void
+transition_catch()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  State& s1 = m.state_make([&] () {
+      beacon1 = true;
+      throw BeaconException();
+    });
+  State& s2 = m.state_make([&] () {
+      beacon2 = true;
+    });
+  State& s3 = m.state_make([&] () {
+      beacon3 = true;
+    });
+  m.transition_add(s1, s2);
+  m.transition_add_catch(s1, s3);
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+  BOOST_CHECK(beacon3);
+}
+
+static
 bool
 test_suite()
 {
@@ -255,6 +328,8 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, true)));
   fsm->add(BOOST_TEST_CASE(test_exception));
+  fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
+  fsm->add(BOOST_TEST_CASE(transition_catch));
   return true;
 }
 

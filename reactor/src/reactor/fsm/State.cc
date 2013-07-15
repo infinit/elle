@@ -28,7 +28,11 @@ namespace reactor
     void
     State::print(std::ostream& stream) const
     {
-      stream << "State " << this->name();
+      stream << "state ";
+      if (!this->name().empty())
+        stream << this->name();
+      else
+        stream << this;
     }
   }
 }
