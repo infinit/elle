@@ -45,18 +45,20 @@ namespace elle
       std::string color_code;
       if (c)
         switch (type)
-          {
-            case Type::info:
-              break;
-            case Type::warning:
-              // Yellow
-              color_code = "[33;01;33m";
-              break;
-            case Type::error:
-              // Red
-              color_code = "[33;01;31m";
-              break;
-          }
+        {
+          case Type::info:
+            if (level == Level::log)
+              color_code = "[1m";
+            break;
+          case Type::warning:
+            // Yellow
+            color_code = "[33;01;33m";
+            break;
+          case Type::error:
+            // Red
+            color_code = "[33;01;31m";
+            break;
+        }
       _output << color_code;
       _output << message << std::endl;
       if (!color_code.empty())
