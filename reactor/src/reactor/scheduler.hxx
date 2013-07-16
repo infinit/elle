@@ -14,11 +14,18 @@ namespace reactor
   template <typename R>
   static void wrapper(boost::mutex& mutex,
                       boost::condition_variable& cond,
-                      const boost::function<R ()>& action,
+                      const std::function<R ()>& action,
+                      std::exception_ptr& exn,
                       R& res)
   {
-    ELLE_ASSERT(action);
-    res = action();
+    try
+    {
+      res = action();
+    }
+    catch (...)
+    {
+      exn = std::current_exception();
+    }
     boost::unique_lock<boost::mutex> lock(mutex);
     cond.notify_one();
   }
@@ -31,14 +38,19 @@ namespace reactor
     R result;
     boost::mutex mutex;
     boost::condition_variable condition;
+    std::exception_ptr exn;
     {
       boost::unique_lock<boost::mutex> lock(mutex);
       new reactor::Thread(*this, name,
-                          boost::bind(&wrapper<R>,
-                                      boost::ref(mutex),
-                                      boost::ref(condition),
-                                      action, boost::ref(result)), true);
+                          std::bind(&wrapper<R>,
+                                    std::ref(mutex),
+                                    std::ref(condition),
+                                    action,
+                                    std::ref(exn),
+                                    std::ref(result)), true);
       condition.wait(lock);
+      if (exn)
+        std::rethrow_exception(exn);
     }
     return result;
   }

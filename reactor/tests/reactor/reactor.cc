@@ -1,3 +1,5 @@
+#include <elle/finally.hh>
+
 #include "reactor.hh"
 
 #include <reactor/duration.hh>
@@ -647,6 +649,27 @@ test_multithread_run()
 
   reactor::Thread t(*sched, "spawner", spawner);
   sched->run();
+}
+
+
+static
+void
+test_multithread_run_exception()
+{
+  reactor::Scheduler sched;
+
+  reactor::Signal terminate;
+  reactor::Thread holder(sched, "spawner",
+                         [&] () { sched.current()->wait(terminate); });
+  std::thread runner(std::bind(&reactor::Scheduler::run, &sched));
+  BOOST_CHECK_THROW(
+    sched.mt_run<void>("thrower", [] () { throw BeaconException(); }),
+    BeaconException);
+  BOOST_CHECK_THROW(
+    sched.mt_run<int>("thrower", [] () -> int { throw BeaconException(); }),
+    BeaconException);
+  sched.mt_run<void>("terminator", [&] () { terminate.signal(); });
+  runner.join();
 }
 
 /*----------.
@@ -1400,6 +1423,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(mt);
   mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake));
   mt->add(BOOST_TEST_CASE(test_multithread_run));
+  mt->add(BOOST_TEST_CASE(test_multithread_run_exception));
 
   boost::unit_test::test_suite* sem = BOOST_TEST_SUITE("Semaphore");
   boost::unit_test::framework::master_test_suite().add(sem);

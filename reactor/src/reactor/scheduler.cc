@@ -417,10 +417,17 @@ namespace reactor
   void
   _wrapper_void(boost::mutex& mutex,
                 boost::condition_variable& cond,
-                const boost::function<void ()>& action)
+                const std::function<void ()>& action,
+                std::exception_ptr& exn)
   {
-    ELLE_ASSERT(action);
-    action();
+    try
+    {
+      action();
+    }
+    catch (...)
+    {
+      exn = std::current_exception();
+    }
     boost::unique_lock<boost::mutex> lock(mutex);
     cond.notify_one();
   }
@@ -432,14 +439,18 @@ namespace reactor
   {
     boost::mutex mutex;
     boost::condition_variable condition;
+    std::exception_ptr exn;
     {
       boost::unique_lock<boost::mutex> lock(mutex);
       new reactor::Thread(*this, name,
-                          boost::bind(_wrapper_void,
-                                      boost::ref(mutex),
-                                      boost::ref(condition),
-                                      action), true);
+                          std::bind(_wrapper_void,
+                                    std::ref(mutex),
+                                    std::ref(condition),
+                                    action,
+                                    std::ref(exn)), true);
       condition.wait(lock);
+      if (exn)
+        std::rethrow_exception(exn);
     }
   }
 
