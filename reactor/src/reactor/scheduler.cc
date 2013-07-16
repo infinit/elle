@@ -413,52 +413,12 @@ namespace reactor
   | Multithread API |
   `----------------*/
 
-  static
-  void
-  _wrapper_void(boost::mutex& mutex,
-                boost::condition_variable& cond,
-                const std::function<void ()>& action,
-                std::exception_ptr& exn)
-  {
-    try
-    {
-      action();
-    }
-    catch (...)
-    {
-      exn = std::current_exception();
-    }
-    boost::unique_lock<boost::mutex> lock(mutex);
-    cond.notify_one();
-  }
-
-  // FIXME: duplicated from non-void case
-  void
-  Scheduler::_mt_run_void(const std::string& name,
-                          const boost::function<void ()>& action)
-  {
-    boost::mutex mutex;
-    boost::condition_variable condition;
-    std::exception_ptr exn;
-    {
-      boost::unique_lock<boost::mutex> lock(mutex);
-      new reactor::Thread(*this, name,
-                          std::bind(_wrapper_void,
-                                    std::ref(mutex),
-                                    std::ref(condition),
-                                    action,
-                                    std::ref(exn)), true);
-      condition.wait(lock);
-      if (exn)
-        std::rethrow_exception(exn);
-    }
-  }
-
   template <>
   void
   Scheduler::mt_run<void>(const std::string& name,
                           const boost::function<void ()>& action)
   {
-    _mt_run_void(name, action);
+    // Bounce on the non-void case with a dummy int value.
+    this->mt_run<int>(name, [&] () { action(); return 42; });
   }
 }
