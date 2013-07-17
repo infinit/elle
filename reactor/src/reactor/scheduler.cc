@@ -72,13 +72,18 @@ namespace reactor
   void
   Scheduler::run()
   {
+    reactor::scheduler(this);
+    ELLE_TRACE_SCOPE("%s: run", *this);
+    reactor::scheduler(nullptr);
     ELLE_ASSERT(!scheduler());
     while (step())
       /* nothing */;
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
-    ELLE_TRACE("Scheduler: done");
+    reactor::scheduler(this);
+    ELLE_TRACE("%s: done", *this);
+    reactor::scheduler(nullptr);
     ELLE_ASSERT(_frozen.empty());
     if (_eptr != nullptr)
     {
@@ -187,7 +192,7 @@ namespace reactor
     }
     if (thread->state() == Thread::state::done)
     {
-      ELLE_TRACE("Scheduler: cleanup %s", *thread);
+      ELLE_TRACE("%s: %s finished", *this, *thread);
       _running.erase(thread);
       if (thread->_dispose)
         delete thread;
@@ -285,7 +290,7 @@ namespace reactor
   void
   Scheduler::_terminate(Thread* thread)
   {
-    ELLE_TRACE_SCOPE("%s: terminate", *thread);
+    ELLE_TRACE_SCOPE("%s: terminate %s", *this, *thread);
     if (current() == thread)
       throw Terminate(thread->name());
     // If the underlying coroutine was never run, nothing to do.
