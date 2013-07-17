@@ -49,6 +49,7 @@ namespace elle
                    elle::log::Logger::Type type,
                    std::string const& component,
                    std::string const& msg);
+        unsigned int* _indentation;
       };
 
       template <typename... Args>

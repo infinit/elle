@@ -68,7 +68,7 @@ namespace elle
       {
         if (!_proceed)
           return;
-        logger().unindent();
+        --*this->_indentation;
       }
 
       bool
@@ -89,7 +89,8 @@ namespace elle
                           const std::string& msg)
       {
         static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
-        logger().indent();
+        this->_indentation = &logger().indentation();
+        ++*this->_indentation;
         if (location)
           {
             static boost::format fmt("%s (at %s:%s in %s)");

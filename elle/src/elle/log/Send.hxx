@@ -13,14 +13,15 @@ namespace elle
       template <typename ... Args>
       inline
       Send::Send(elle::log::Logger::Level level,
-                                 elle::log::Logger::Type type,
-                                 elle::String const& component,
-                                 char const* file,
-                                 unsigned int line,
-                                 char const* function,
-                                 char const* fmt,
-                                 Args const& ... args)
-        : _proceed(this->_enabled(type, level, component))
+                 elle::log::Logger::Type type,
+                 elle::String const& component,
+                 char const* file,
+                 unsigned int line,
+                 char const* function,
+                 char const* fmt,
+                 Args const& ... args):
+        _proceed(this->_enabled(type, level, component)),
+        _indentation(nullptr)
       {
         if (!_proceed)
           return;
