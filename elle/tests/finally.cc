@@ -1,4 +1,5 @@
 #define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE finally
 
 #include <elle/finally.hh>
 
@@ -8,7 +9,7 @@ class TestObject
 {
 public:
   static int i;
-  
+
   TestObject()
   {
     ++i;
@@ -23,9 +24,7 @@ public:
 
 int TestObject::i = 0;
 
-static
-void
-test_lambda()
+BOOST_AUTO_TEST_CASE(test_lambda)
 {
   int* test = new int(5);
   {
@@ -39,9 +38,7 @@ test_lambda()
   delete test;
 }
 
-static
-void
-test_delete()
+BOOST_AUTO_TEST_CASE(test_delete)
 {
   TestObject* obj = new TestObject;
   BOOST_CHECK(TestObject::i == 1);
@@ -51,9 +48,7 @@ test_delete()
   BOOST_CHECK(TestObject::i == 0);
 }
 
-static
-void
-test_delete_array()
+BOOST_AUTO_TEST_CASE(test_delete_array)
 {
   TestObject* arr = new TestObject[10];
   BOOST_CHECK(TestObject::i == 10);
@@ -65,9 +60,7 @@ test_delete_array()
 
 // XXX No test for free as it's not possible
 
-static
-void
-test_abort()
+BOOST_AUTO_TEST_CASE(test_abort)
 {
   TestObject* obj = new TestObject;
   BOOST_CHECK(TestObject::i == 1);
@@ -79,22 +72,14 @@ test_abort()
   delete obj;
 }
 
-static
-bool
-test_suite()
+BOOST_AUTO_TEST_CASE(test_advanced)
 {
-  boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
-  boost::unit_test::framework::master_test_suite().add(basics);
-  basics->add(BOOST_TEST_CASE(std::bind(test_lambda)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_delete)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_delete_array)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_abort)));
-
-	return true;
+  int i = 1;
+  {
+    ELLE_AT_SCOPE_EXIT {
+      i--;
+    };
+  }
+  BOOST_CHECK_EQUAL(i, 0);
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

@@ -50,6 +50,11 @@
   auto BOOST_PP_CAT(__on_scope_exit_, __LINE__) = ::elle::Finally{_lambda_}    \
 /**/
 
+# define ELLE_AT_SCOPE_EXIT                                                   \
+  auto BOOST_PP_CAT(__on_scope_exit, __LINE__) =                             \
+    ::elle::detail::finally_builder() + [&] ()                                \
+/**/
+
 namespace elle
 {
   /// Provide a way for a final action to be performed i.e when leaving the
@@ -59,12 +64,16 @@ namespace elle
   /// action.
   class Finally
   {
+  private:
+    Finally(Finally const& f);
     /*-------------.
     | Construction |
     `-------------*/
   public:
     Finally(std::function<void()> const& action);
     ~Finally() noexcept(false);
+
+    Finally(Finally&& f);
 
     /*--------.
     | Methods |
@@ -79,6 +88,15 @@ namespace elle
   private:
     ELLE_ATTRIBUTE(std::function<void()>, action);
   };
+
+  namespace detail
+  {
+    struct finally_builder
+    {
+      Finally
+      operator +(std::function<void()> const& action);
+    };
+  }
 }
 
 #endif

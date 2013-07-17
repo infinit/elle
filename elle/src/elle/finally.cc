@@ -26,9 +26,22 @@ namespace elle
     }
   }
 
+  Finally::Finally(Finally&& f):
+    _action{std::move(f._action)}
+  {}
+
   void
   Finally::abort()
   {
     this->_action = std::function<void()>();
+  }
+
+  namespace detail
+  {
+    Finally
+    finally_builder::operator +(std::function<void()> const& action)
+    {
+      return Finally(action);
+    }
   }
 }
