@@ -40,18 +40,18 @@ message_test()
   {
     ELLE_LOG_COMPONENT("Test");
     ELLE_LOG_SCOPE("Test Message");
-    BOOST_CHECK_EQUAL(ss.str(), "[Test] Test Message\n");
+    BOOST_CHECK_EQUAL(ss.str(), "[1m[Test] Test Message\n[0m");
 
     ss.str("");
     ELLE_LOG("Another Test Message");
-    BOOST_CHECK_EQUAL(ss.str(), "[Test]   Another Test Message\n");
+    BOOST_CHECK_EQUAL(ss.str(), "[1m[Test]   Another Test Message\n[0m");
 
     {
       ELLE_LOG_COMPONENT("Another");
 
       ss.str("");
       ELLE_LOG("Test");
-      BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test\n");
+      BOOST_CHECK_EQUAL(ss.str(), "[1m[Another]   Test\n[0m");
 
       ss.str("");
       ELLE_TRACE("Test2");
@@ -110,8 +110,9 @@ environment_format_test()
                     Level::log);
 
   ELLE_LOG("Test");
-  res << boost::posix_time::second_clock::local_time()
-      << ": [Test] Test\n";
+  res << "[1m"
+      << boost::posix_time::second_clock::local_time()
+      << ": [Test] Test\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -128,8 +129,9 @@ environment_format_test()
                     Level::log);
 
   ELLE_LOG("Test 2");
-  res << boost::posix_time::second_clock::universal_time() << ": "
-      << "[Test] Test 2\n";
+  res << "[1m"
+      << boost::posix_time::second_clock::universal_time() << ": "
+      << "[Test] Test 2\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -144,8 +146,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
   ELLE_LOG("Test 3");
-  res << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] Test 3\n";
+  res << "[1m[" << boost::lexical_cast<std::string>(getpid()) << "] "
+      << "[Test] Test 3\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -162,9 +164,10 @@ environment_format_test()
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
   ELLE_LOG("Test 4");
-  res << boost::posix_time::second_clock::universal_time() << ": "
+  res << "[1m"
+      << boost::posix_time::second_clock::universal_time() << ": "
       << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] Test 4\n";
+      << "[Test] Test 4\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");

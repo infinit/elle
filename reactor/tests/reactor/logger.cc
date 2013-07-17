@@ -54,10 +54,10 @@ scheduler_log_test()
 
   sched->run();
 
-  res << "[Test] [Thread1] Test message from Thread 1\n"
-      << "[Test] [Thread2] Test message from Thread 2\n"
-      << "[Test] [Thread1]   Another message from Thread 1\n"
-      << "[Test] [Thread2]   Another message from Thread 2\n"
+  res << "[1m[Test] [Thread1] Test message from Thread 1\n[0m"
+      << "[1m[Test] [Thread2] Test message from Thread 2\n[0m"
+      << "[1m[Test] [Thread1]   Another message from Thread 1\n[0m"
+      << "[1m[Test] [Thread2]   Another message from Thread 2\n[0m"
       << "[33;01;33m[Test] [Thread1]   A third message from Thread 1\n[0m"
       << "[33;01;33m[Test] [Thread2]   A third message from Thread 2\n[0m";
 
