@@ -13,7 +13,7 @@ namespace reactor
     {}
 
     virtual
-    unsigned int
+    unsigned int&
     indentation()
     {
       return this->_indentation()->indentation();

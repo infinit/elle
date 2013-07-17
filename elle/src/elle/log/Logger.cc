@@ -26,7 +26,7 @@ namespace elle
       {}
 
       virtual
-      unsigned int
+      unsigned int&
       indentation()
       {
         return this->_indentation;
@@ -59,7 +59,7 @@ namespace elle
       return res;
     }
 
-    unsigned int
+    unsigned int&
     Logger::indentation()
     {
       return this->_indentation->indentation();

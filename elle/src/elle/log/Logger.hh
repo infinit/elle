@@ -24,7 +24,7 @@ namespace elle
     {
     public:
       virtual
-      unsigned int
+      unsigned int&
       indentation() = 0;
       virtual
       void
@@ -109,7 +109,7 @@ namespace elle
       friend
       void
       logger(std::unique_ptr<Logger> logger);
-      unsigned int
+      unsigned int&
       indentation();
       void
       indent();
