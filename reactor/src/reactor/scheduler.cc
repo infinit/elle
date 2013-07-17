@@ -17,6 +17,7 @@ namespace reactor
   `-------------*/
 
   Scheduler::Scheduler():
+    _done(false),
     _shallstop(false),
     _current(0),
     _starting(),
@@ -82,6 +83,7 @@ namespace reactor
     _io_service_work = 0;
     _io_service.run();
     reactor::scheduler(this);
+    _done = true;
     ELLE_TRACE("%s: done", *this);
     reactor::scheduler(nullptr);
     ELLE_ASSERT(_frozen.empty());

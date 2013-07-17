@@ -9,6 +9,7 @@
 # include <boost/thread.hpp>
 
 # include <elle/Printable.hh>
+# include <elle/attribute.hh>
 
 # include <reactor/asio.hh>
 # include <reactor/duration.hh>
@@ -45,6 +46,7 @@ namespace reactor
     bool step();
   private:
     void _step(Thread* t);
+    ELLE_ATTRIBUTE_R(bool, done);
 
   /*-------------------.
   | Threads management |

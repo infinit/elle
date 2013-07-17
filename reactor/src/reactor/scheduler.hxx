@@ -35,6 +35,7 @@ namespace reactor
   Scheduler::mt_run(const std::string& name,
                     const boost::function<R ()>& action)
   {
+    ELLE_ASSERT(!this->done());
     R result;
     boost::mutex mutex;
     boost::condition_variable condition;
