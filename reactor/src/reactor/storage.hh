@@ -20,7 +20,7 @@ namespace reactor
 
   private:
     void _Clean(Thread* t);
-    typedef std::unordered_map<Thread*, T> Content;
+    typedef std::unordered_map<void*, T> Content;
     Content _content;
     std::mutex _mutex;
   };

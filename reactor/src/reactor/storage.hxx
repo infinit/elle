@@ -26,16 +26,16 @@ namespace reactor
   {
     Scheduler* sched = Scheduler::scheduler();
     Thread* current = sched ? sched->current() : 0;
-
+    void* key = current ? (void*)current : (void*)sched;
     std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(current);
+    typename Content::iterator it = this->_content.find(key);
     if (it == this->_content.end())
       {
         if (current != nullptr)
           current->destructed().connect(
               boost::bind(&Self::_Clean, this, current)
           );
-        return this->_content[current];
+        return this->_content[key];
       }
     else
       return it->second;
@@ -48,16 +48,17 @@ namespace reactor
   {
     Scheduler* sched = Scheduler::scheduler();
     Thread* current = sched ? sched->current() : 0;
+    void* key = current ? (void*)current : (void*)sched;
     std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(current);
+    typename Content::iterator it = this->_content.find(key);
     if (it == this->_content.end())
       {
-        this->_content[current] = def;
+        this->_content[key] = def;
         if (current != nullptr)
           current->destructed().connect(
               boost::bind(&Self::_Clean, this, current)
           );
-        return this->_content[current];
+        return this->_content[key];
       }
     else
       return it->second;
