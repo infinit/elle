@@ -91,16 +91,6 @@ namespace elle
       virtual
       ~Logger();
 
-    /*----------------------.
-    | Environment Variables |
-    `----------------------*/
-    private:
-      bool const _display_type,
-                 _enable_pid,
-                 _enable_tid,
-                 _enable_time,
-                 _universal_time;
-
     /*------------.
     | Indentation |
     `------------*/

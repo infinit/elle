@@ -1,14 +1,12 @@
 #include <fnmatch.h>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/getenv.hh>
 #include <elle/printf.hh>
 
-#include <thread>
 
 namespace elle
 {
@@ -90,27 +88,6 @@ namespace elle
       return res;
     }
 
-    /*-----.
-    | Type |
-    `-----*/
-
-    static
-    std::string
-    _type_to_string(elle::log::Logger::Type type)
-    {
-      switch (type)
-      {
-        case elle::log::Logger::Type::info:
-          return "info";
-        case elle::log::Logger::Type::warning:
-          return "warning";
-        case elle::log::Logger::Type::error:
-          return "error";
-        default:
-          throw elle::Exception(elle::sprintf("unknown log type: %s", type));
-      }
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -135,12 +112,7 @@ namespace elle
   }
 
     Logger::Logger()
-      : _display_type(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE", "") == "1")
-      , _enable_pid(elle::os::getenv("ELLE_LOG_PID", "") == "1")
-      , _enable_tid(elle::os::getenv("ELLE_LOG_TID", "") == "1")
-      , _enable_time(elle::os::getenv("ELLE_LOG_TIME", "") == "1")
-      , _universal_time(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "1")
-      , _indentation(this->_factory()())
+      : _indentation(this->_factory()())
       , _component_patterns()
       , _component_levels()
       , _component_max_size(0)
@@ -186,31 +158,15 @@ namespace elle
     Logger::message(Level level,
                     elle::log::Logger::Type type,
                     std::string const& component,
-                    std::string const& msg_,
+                    std::string const& msg,
                     std::string const& file,
                     unsigned int line,
                     std::string const& function)
     {
-      static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
       std::lock_guard<std::mutex> lock(_indentation_mutex);
 
       int indent = this->indentation();
-      assert(indent >= 1);
-
-      // Location
-      std::string msg = msg_;
-      if (location)
-        msg = elle::sprintf("%s (at %s:%s in %s)", msg, file, line, function);
-
-      // Component
-      std::string comp;
-      {
-        unsigned int size = component.size();
-        ELLE_ASSERT_LTE(size, this->component_max_size());
-        unsigned int pad = this->component_max_size() - size;
-        comp = std::string(pad / 2, ' ')
-          + component + std::string(pad / 2 + pad % 2, ' ');
-      }
+      ELLE_ASSERT_GTE(indent, 1);
 
       // Message
       std::string message;
@@ -219,35 +175,14 @@ namespace elle
         message = align + msg;
       }
 
-      // Format
-      std::string prefix;
-      if (this->_enable_time)
-        prefix += elle::sprintf(
-          "%s: ",
-          this->_universal_time ?
-          boost::posix_time::second_clock::universal_time() :
-          boost::posix_time::second_clock::local_time());
-      if (this->_enable_pid)
-        prefix += elle::sprintf(
-          "[%s] ",
-          boost::lexical_cast<std::string>(getpid()));
-      if (this->_enable_tid)
-        prefix += elle::sprintf(
-          "[%s] ",
-          boost::lexical_cast<std::string>(std::this_thread::get_id()));
-      prefix += elle::sprintf("[%s] ", comp);
-      if (this->_display_type &&type != elle::log::Logger::Type::info)
-      {
-        prefix += elle::sprintf("[%s] ", _type_to_string(type));
-      }
       for (auto& tag: this->_tags())
         {
           std::string content(tag->content());
           if (!content.empty())
-            prefix += elle::sprintf("[%s] ", content);
+            message = elle::sprintf("[%s] ", content) + message;
         }
       this->_message(level, type, component,
-                     prefix + message, file, line, function);
+                     message, file, line, function);
     }
 
     /*--------.

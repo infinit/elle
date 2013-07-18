@@ -25,6 +25,11 @@ namespace elle
                std::string const& function);
     private:
       ELLE_ATTRIBUTE_R(std::ostream&, output);
+      ELLE_ATTRIBUTE_RW(bool, display_type);
+      ELLE_ATTRIBUTE_RW(bool, enable_pid);
+      ELLE_ATTRIBUTE_RW(bool, enable_tid);
+      ELLE_ATTRIBUTE_RW(bool, enable_time);
+      ELLE_ATTRIBUTE_RW(bool, universal_time);
     };
   }
 }
