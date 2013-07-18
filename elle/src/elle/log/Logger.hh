@@ -105,7 +105,7 @@ namespace elle
       indent();
       void
       unindent();
-      std::recursive_mutex _indentation_mutex;
+      std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
       template <typename I>
       friend class RegisterIndenter;

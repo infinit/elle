@@ -69,14 +69,12 @@ namespace elle
     void
     Logger::indent()
     {
-      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
       this->_indentation->indent();
     }
 
     void
     Logger::unindent()
     {
-      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
       this->_indentation->unindent();
     }
 
@@ -166,7 +164,7 @@ namespace elle
                     unsigned int line,
                     std::string const& function)
     {
-      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
 
       int indent = this->indentation();
       ELLE_ASSERT_GTE(indent, 1);
@@ -195,7 +193,7 @@ namespace elle
     Logger::Level
     Logger::component_enabled(std::string const& name)
     {
-      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto elt = this->_component_levels.find(name);
       Level res = Level::log;
       if (elt == this->_component_levels.end())
