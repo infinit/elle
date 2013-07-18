@@ -135,13 +135,20 @@ namespace elle
       void message(Level level,
                    elle::log::Logger::Type type,
                    std::string const& component,
-                   std::string const& values);
+                   std::string const& message,
+                   std::string const& file,
+                   unsigned int line,
+                   std::string const& function);
     protected:
       virtual
       void
       _message(Level level,
                elle::log::Logger::Type type,
-               std::string const& message) = 0;
+               std::string const& component,
+               std::string const& message,
+               std::string const& file,
+               unsigned int line,
+               std::string const& function) = 0;
 
     /*-----------.
     | Components |

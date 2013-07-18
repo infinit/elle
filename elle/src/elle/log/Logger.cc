@@ -186,12 +186,21 @@ namespace elle
     Logger::message(Level level,
                     elle::log::Logger::Type type,
                     std::string const& component,
-                    std::string const& msg)
+                    std::string const& msg_,
+                    std::string const& file,
+                    unsigned int line,
+                    std::string const& function)
     {
+      static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
       std::lock_guard<std::mutex> lock(_indentation_mutex);
 
       int indent = this->indentation();
       assert(indent >= 1);
+
+      // Location
+      std::string msg = msg_;
+      if (location)
+        msg = elle::sprintf("%s (at %s:%s in %s)", msg, file, line, function);
 
       // Component
       std::string comp;
@@ -237,7 +246,8 @@ namespace elle
           if (!content.empty())
             prefix += elle::sprintf("[%s] ", content);
         }
-      this->_message(level, type, prefix + message);
+      this->_message(level, type, component,
+                     prefix + message, file, line, function);
     }
 
     /*--------.

@@ -45,10 +45,6 @@ namespace elle
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
-        void _send(elle::log::Logger::Level level,
-                   elle::log::Logger::Type type,
-                   std::string const& component,
-                   std::string const& msg);
         unsigned int* _indentation;
       };
 

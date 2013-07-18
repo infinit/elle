@@ -88,26 +88,9 @@ namespace elle
                           char const* function,
                           const std::string& msg)
       {
-        static bool const location = ::getenv("ELLE_LOG_LOCATIONS") != nullptr;
         this->_indentation = &logger().indentation();
         ++*this->_indentation;
-        if (location)
-          {
-            static boost::format fmt("%s (at %s:%s in %s)");
-            this->_send(level, type, component,
-                        str(fmt % msg % file % line % function));
-          }
-        else
-          this->_send(level, type, component, msg);
-      }
-
-      void
-      Send::_send(elle::log::Logger::Level level,
-                          elle::log::Logger::Type type,
-                          std::string const& component,
-                          std::string const& msg)
-      {
-        logger().message(level, type, component, msg);
+        logger().message(level, type, component, msg, file, line, function);
       }
     }
   }

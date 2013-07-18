@@ -18,7 +18,11 @@ namespace elle
       void
       _message(Level level,
                elle::log::Logger::Type type,
-               std::string const& message);
+               std::string const& component,
+               std::string const& message,
+               std::string const& file,
+               unsigned int line,
+               std::string const& function);
     private:
       ELLE_ATTRIBUTE_R(std::ostream&, output);
     };

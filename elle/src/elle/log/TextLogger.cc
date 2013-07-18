@@ -39,7 +39,11 @@ namespace elle
     void
     TextLogger::_message(Level level,
                          elle::log::Logger::Type type,
-                         std::string const& message)
+                         std::string const& component,
+                         std::string const& message,
+                         std::string const& file,
+                         unsigned int line,
+                         std::string const& function)
     {
       static bool c = color();
       std::string color_code;
