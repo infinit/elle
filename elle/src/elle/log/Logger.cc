@@ -1,6 +1,7 @@
 #include <fnmatch.h>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/thread/tss.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/log/Logger.hh>
@@ -20,33 +21,35 @@ namespace elle
     {
     public:
       PlainIndentation()
-        : _indentation(0)
+        : _indentation()
       {}
 
       virtual
       unsigned int&
       indentation()
       {
-        return this->_indentation;
+        if (!this->_indentation.get())
+          this->_indentation.reset(new unsigned int(0));
+        return *this->_indentation;
       }
 
       virtual
       void
       indent()
       {
-        this->_indentation += 1;
+        this->indentation() += 1;
       }
 
       virtual
       void
       unindent()
       {
-        assert(_indentation >= 1);
-        this->_indentation -= 1;
+        assert(this->indentation() >= 1);
+        this->indentation() -= 1;
       }
 
     private:
-      unsigned int _indentation;
+      boost::thread_specific_ptr<unsigned int> _indentation;
     };
 
     std::function<std::unique_ptr<Indentation> ()>&
@@ -66,14 +69,14 @@ namespace elle
     void
     Logger::indent()
     {
-      std::lock_guard<std::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
       this->_indentation->indent();
     }
 
     void
     Logger::unindent()
     {
-      std::lock_guard<std::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
       this->_indentation->unindent();
     }
 
@@ -163,7 +166,7 @@ namespace elle
                     unsigned int line,
                     std::string const& function)
     {
-      std::lock_guard<std::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
 
       int indent = this->indentation();
       ELLE_ASSERT_GTE(indent, 1);
@@ -192,7 +195,7 @@ namespace elle
     Logger::Level
     Logger::component_enabled(std::string const& name)
     {
-      std::lock_guard<std::mutex> lock(_indentation_mutex);
+      std::lock_guard<std::recursive_mutex> lock(_indentation_mutex);
       auto elt = this->_component_levels.find(name);
       Level res = Level::log;
       if (elt == this->_component_levels.end())

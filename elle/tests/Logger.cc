@@ -6,6 +6,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/log/Logger.cc>
 #include <elle/log/TextLogger.hh>
@@ -234,12 +235,17 @@ parallel_write()
     };
 
   int c1 = 0;;
-  std::thread t1([&](){ action(c1); });
   int c2 = 0;
-  std::thread t2([&](){ action(c2); });
+  {
+    std::thread t1([&](){ action(c1); });
+    std::thread t2([&](){ action(c2); });
 
-  t1.join();
-  t2.join();
+    elle::Finally join([&]
+                       {
+                         t1.join();
+                         t2.join();
+                       });
+  }
 
   BOOST_CHECK_GT(c1, 64);
   BOOST_CHECK_GT(c2, 64);
