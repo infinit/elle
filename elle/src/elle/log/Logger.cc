@@ -169,21 +169,15 @@ namespace elle
       int indent = this->indentation();
       ELLE_ASSERT_GTE(indent, 1);
 
-      // Message
-      std::string message;
-      {
-        std::string align = std::string((indent - 1) * 2, ' ');
-        message = align + msg;
-      }
-
+      std::string message = msg;
       for (auto& tag: this->_tags())
         {
           std::string content(tag->content());
           if (!content.empty())
             message = elle::sprintf("[%s] ", content) + message;
         }
-      this->_message(level, type, component,
-                     message, file, line, function);
+      this->_message(level, type, component, message,
+                     indent - 1, file, line, function);
     }
 
     /*--------.

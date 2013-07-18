@@ -71,11 +71,18 @@ namespace elle
                          elle::log::Logger::Type type,
                          std::string const& component,
                          std::string const& message,
+                         int indentation,
                          std::string const& file,
                          unsigned int line,
                          std::string const& function)
     {
       std::string msg = message;
+
+      // Indentation
+      {
+        std::string align = std::string(indentation * 2, ' ');
+        msg = align + msg;
+      }
 
       // Location
       static bool const location = ::getenv("ELLE_LOG_LOCATIONS");

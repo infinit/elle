@@ -136,6 +136,7 @@ namespace elle
                elle::log::Logger::Type type,
                std::string const& component,
                std::string const& message,
+               int indentation,
                std::string const& file,
                unsigned int line,
                std::string const& function) = 0;
