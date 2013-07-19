@@ -12,19 +12,22 @@ namespace reactor
       public Transition
     {
     public:
+      typedef std::function<bool ()> PreTrigger;
       virtual
       std::unique_ptr<Thread>
       run(reactor::Signal& triggered,
-          Transition*& trigger, Thread&
-          action_thread);
+          Transition*& trigger,
+          Thread& action_thread);
     protected:
       WaitableTransition(State& start,
                          State& end,
                          Waitables const& trigger,
-                         bool preemptive = false);
+                         bool preemptive = false,
+                         PreTrigger const& pre_trigger = PreTrigger());
       friend class Machine;
       ELLE_ATTRIBUTE_R(Waitables, trigger);
       ELLE_ATTRIBUTE_R(bool, preemptive);
+      ELLE_ATTRIBUTE_R(std::function<bool ()>, pre_trigger);
 
     /*----------.
     | Printable |

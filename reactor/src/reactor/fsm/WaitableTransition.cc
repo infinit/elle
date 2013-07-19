@@ -19,6 +19,21 @@ namespace reactor
       ELLE_ASSERT(Scheduler::scheduler());
       auto& sched = *Scheduler::scheduler();
 
+      if (this->_pre_trigger && this->_pre_trigger())
+      {
+        ELLE_DEBUG("%s: pre-triggered", *this);
+        if (!trigger)
+        {
+          ELLE_TRACE("%s: trigger", *this);
+          trigger = this;
+          // FIXME: thread isn't started yet.
+          if (this->preemptive())
+            action_thread.terminate();
+          triggered.signal();
+        }
+        return nullptr;
+      }
+
       ELLE_DEBUG("%s: start on %s", *this, this->trigger());
       return elle::make_unique<Thread>(
         sched,
@@ -40,10 +55,12 @@ namespace reactor
     WaitableTransition::WaitableTransition(State& start,
                                            State& end,
                                            Waitables const& trigger,
-                                           bool preemptive):
+                                           bool preemptive,
+                                           PreTrigger const& pre_trigger):
       Transition(start, end),
       _trigger(trigger),
-      _preemptive(preemptive)
+      _preemptive(preemptive),
+      _pre_trigger(pre_trigger)
     {}
 
     /*----------.

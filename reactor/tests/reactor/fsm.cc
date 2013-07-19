@@ -154,6 +154,34 @@ test_run_transition_signal()
 
 static
 void
+test_run_transition_pre_trigger()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  State& s1 = m.state_make([&] {beacon1 = true;});
+  State& s2 = m.state_make([&] {beacon2 = true;});
+  State& s3 = m.state_make([&] {beacon3 = true;});
+  reactor::Signal trigger1;
+  m.transition_add(s1, s2,
+                   reactor::Waitables{&trigger1}, false, [] { return false; });
+  reactor::Signal trigger2;
+  m.transition_add(s1, s3,
+                   reactor::Waitables{&trigger2}, false, [] { return true; });
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+  BOOST_CHECK(beacon3);
+}
+
+static
+void
 test_run_unused_transition()
 {
   Machine m;
@@ -411,6 +439,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_run_two_states));
   fsm->add(BOOST_TEST_CASE(test_run_start_state));
   fsm->add(BOOST_TEST_CASE(test_run_transition_signal));
+  fsm->add(BOOST_TEST_CASE(test_run_transition_pre_trigger));
   fsm->add(BOOST_TEST_CASE(test_run_unused_transition));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, true)));

@@ -47,10 +47,11 @@ namespace reactor
     Machine::transition_add(State& start,
                             State& end,
                             Waitables const& trigger,
-                            bool preemptive)
+                            bool preemptive,
+                            std::function<bool ()> const& pre_trigger)
     {
       std::unique_ptr<Transition> transition(
-        new WaitableTransition(start, end, trigger, preemptive));
+        new WaitableTransition(start, end, trigger, preemptive, pre_trigger));
       Transition& res = *transition.get();
       this->_transitions.insert(std::move(transition));
       return res;

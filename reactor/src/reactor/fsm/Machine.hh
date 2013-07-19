@@ -17,6 +17,12 @@ namespace reactor
     class Machine:
       public elle::Printable
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef std::function<bool ()> PreTrigger;
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -41,10 +47,12 @@ namespace reactor
     `------------*/
     public:
       Transition&
-      transition_add(State& start,
-                     State& end,
-                     Waitables const& trigger,
-                     bool preemptive = false);
+      transition_add(
+        State& start,
+        State& end,
+        Waitables const& trigger,
+        bool preemptive = false,
+        PreTrigger const& pre_trigger = PreTrigger());
       Transition&
       transition_add(State& start,
                      State& end);
