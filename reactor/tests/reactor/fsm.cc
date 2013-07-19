@@ -51,7 +51,7 @@ test_run_one_state()
   m.state_make([&] () { beacon = true; });
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   sched.run();
 
   BOOST_CHECK(beacon);
@@ -80,9 +80,37 @@ test_run_two_states()
   m.transition_add(s1, s2);
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   sched.run();
   BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+}
+
+static
+void
+test_run_start_state()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+
+  State& s1 = m.state_make([&] () {
+      BOOST_CHECK(!beacon1);
+      BOOST_CHECK(!beacon2);
+      beacon1 = true;
+    });
+  State& s2 = m.state_make([&] () {
+      BOOST_CHECK(!beacon1);
+      BOOST_CHECK(!beacon2);
+      beacon2 = true;
+    });
+  m.transition_add(s1, s2);
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", [&] { m.run(s2); });
+  sched.run();
+  BOOST_CHECK(!beacon1);
   BOOST_CHECK(beacon2);
 }
 
@@ -106,7 +134,7 @@ test_run_transition_signal()
   m.transition_add(s1, s2, reactor::Waitables{&trigger});
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   reactor::Thread check(sched, "check", [&](){
       auto& current = *sched.current();
       current.wait(s1.done());
@@ -137,7 +165,7 @@ test_run_unused_transition()
   m.transition_add(s1, s2, reactor::Waitables{&trigger});
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   sched.run();
 }
 
@@ -163,7 +191,7 @@ test_run_preemptive_transition(bool preemptive)
   reactor::Signal trigger;
   m.transition_add(s1, s2, reactor::Waitables{&trigger}, preemptive);
 
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   reactor::Thread check(sched, "check", [&](){
       auto& current = *sched.current();
       // Make sure we're way into the FSM.
@@ -200,7 +228,7 @@ test_run_two_transitions_triggered(bool order)
   reactor::Signal trigger3;
   m.transition_add(s1, s3, reactor::Waitables{&trigger3});
 
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   reactor::Thread check(sched, "check", [&](){
       auto& current = *sched.current();
       // Make sure we're way into the FSM.
@@ -235,7 +263,7 @@ test_exception()
 
   m.state_make("start", [&] () { throw BeaconException(); });
 
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   BOOST_CHECK_THROW(sched.run(), BeaconException);
 }
 
@@ -268,7 +296,7 @@ transition_auto_versus_waitable()
   m.transition_add(s1, s3, reactor::Waitables{&trigger});
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   reactor::Thread trigger_thread(sched, "trigger", [&] () {
       auto& current = *reactor::Scheduler::scheduler()->current();
       current.yield();
@@ -305,7 +333,7 @@ transition_catch()
   m.transition_add_catch(s1, s3);
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   sched.run();
   BOOST_CHECK(beacon1);
   BOOST_CHECK(!beacon2);
@@ -338,7 +366,7 @@ transition_actions()
   m.transition_add(s2, s3).action([&] () { beacon2 = true; });
 
   reactor::Scheduler sched;
-  reactor::Thread run(sched, "run", std::bind(&Machine::run, &m));
+  reactor::Thread run(sched, "run", [&] { m.run(); });
   sched.run();
   BOOST_CHECK(beacon1);
   BOOST_CHECK(beacon2);
@@ -353,6 +381,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_model));
   fsm->add(BOOST_TEST_CASE(test_run_one_state));
   fsm->add(BOOST_TEST_CASE(test_run_two_states));
+  fsm->add(BOOST_TEST_CASE(test_run_start_state));
   fsm->add(BOOST_TEST_CASE(test_run_transition_signal));
   fsm->add(BOOST_TEST_CASE(test_run_unused_transition));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, false)));

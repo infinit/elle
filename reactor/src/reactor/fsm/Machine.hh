@@ -61,6 +61,8 @@ namespace reactor
     public:
       void
       run();
+      void
+      run(State& start);
     private:
       State*
       _run_state(State* state);

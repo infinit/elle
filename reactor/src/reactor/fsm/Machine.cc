@@ -85,12 +85,18 @@ namespace reactor
     void
     Machine::run()
     {
+      run(*this->_start);
+    }
+
+    void
+    Machine::run(State& start)
+    {
       ELLE_TRACE_SCOPE("%s: run", *this);
       this->_running = true;
-      State* current = this->_start;
+      elle::Finally finally([&] { this->_running = false; });
+      State* current = &start;
       while (current = this->_run_state(current))
         /* nothing */;
-      this->_running = false;
     }
 
     State*
