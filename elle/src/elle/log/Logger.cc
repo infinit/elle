@@ -1,6 +1,8 @@
 #include <fnmatch.h>
+#include <thread>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/thread/tss.hpp>
 
 #include <elle/Exception.hh>
@@ -114,6 +116,7 @@ namespace elle
 
     Logger::Logger()
       : _indentation(this->_factory()())
+      , _time_universal(::getenv("ELLE_LOG_TIME_UNIVERSAL"))
       , _component_patterns()
       , _component_levels()
       , _component_max_size(0)
@@ -169,14 +172,19 @@ namespace elle
       int indent = this->indentation();
       ELLE_ASSERT_GTE(indent, 1);
 
-      std::string message = msg;
-      for (auto& tag: this->_tags())
-        {
-          std::string content(tag->content());
-          if (!content.empty())
-            message = elle::sprintf("[%s] ", content) + message;
-        }
-      this->_message(level, type, component, message,
+      std::vector<std::pair<std::string, std::string>> tags;
+      for (auto const& tag: this->_tags())
+      {
+        std::string content = tag->content();
+        if (!content.empty())
+          tags.push_back(std::make_pair(tag->name(), content));
+      }
+
+
+      auto time = this->_time_universal ?
+        boost::posix_time::second_clock::universal_time() :
+        boost::posix_time::second_clock::local_time();
+      this->_message(level, type, component, time, msg, tags,
                      indent - 1, file, line, function);
     }
 
@@ -233,5 +241,39 @@ namespace elle
       }
       return stream;
     }
+
+    /*-----.
+    | Tags |
+    `-----*/
+
+#define ELLE_LOGGER_TAG(Name, Content)                          \
+    class Name##Tag:                                            \
+      public elle::log::Tag                                     \
+    {                                                           \
+    public:                                                     \
+      virtual                                                   \
+      std::string                                               \
+      content()                                                 \
+      {                                                         \
+        return Content;                                         \
+      }                                                         \
+                                                                \
+      virtual                                                   \
+      std::string                                               \
+      name()                                                    \
+      {                                                         \
+        return #Name;                                           \
+      }                                                         \
+    };                                                          \
+                                                                \
+    static                                                      \
+    elle::log::RegisterTag<Name##Tag> register_tag_##Name;      \
+
+    ELLE_LOGGER_TAG(
+      PID, boost::lexical_cast<std::string>(getpid()));
+    ELLE_LOGGER_TAG(
+      TID, boost::lexical_cast<std::string>(std::this_thread::get_id()));
+
+#undef ELLE_LOGGER_TAG
   }
 }

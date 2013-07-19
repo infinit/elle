@@ -53,6 +53,13 @@ namespace reactor
   public:
     virtual
     std::string
+    name()
+    {
+      return "coroutine";
+    }
+
+    virtual
+    std::string
     content()
     {
       if (reactor::Scheduler* sched = reactor::Scheduler::scheduler())

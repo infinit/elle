@@ -7,6 +7,7 @@
 # include <unordered_map>
 # include <vector>
 
+# include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/noncopyable.hpp>
 
 # include <elle/attribute.hh>
@@ -44,6 +45,9 @@ namespace elle
     class Tag
     {
     public:
+      virtual
+      std::string
+      name() = 0;
       virtual
       std::string
       content() = 0;
@@ -117,6 +121,7 @@ namespace elle
       static
       std::vector<std::unique_ptr<Tag>>&
       _tags();
+      ELLE_ATTRIBUTE_R(bool, time_universal);
 
     /*----------.
     | Messaging |
@@ -135,7 +140,9 @@ namespace elle
       _message(Level level,
                elle::log::Logger::Type type,
                std::string const& component,
+               boost::posix_time::ptime const& time,
                std::string const& message,
+               std::vector<std::pair<std::string, std::string>> const& tags,
                int indentation,
                std::string const& file,
                unsigned int line,

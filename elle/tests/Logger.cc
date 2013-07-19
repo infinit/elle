@@ -261,8 +261,8 @@ test_suite()
 
   boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
   boost::unit_test::framework::master_test_suite().add(logger);
-  logger->add(BOOST_TEST_CASE(std::bind(message_test)));
-  logger->add(BOOST_TEST_CASE(std::bind(environment_format_test)));
+  logger->add(BOOST_TEST_CASE(message_test));
+  logger->add(BOOST_TEST_CASE(environment_format_test));
 
   boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("Concurrency");
   boost::unit_test::framework::master_test_suite().add(concurrency);

@@ -1,7 +1,6 @@
 #include <unistd.h>
 
 #include <iostream>
-#include <thread>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
@@ -67,14 +66,17 @@ namespace elle
 
 
     void
-    TextLogger::_message(Level level,
-                         elle::log::Logger::Type type,
-                         std::string const& component,
-                         std::string const& message,
-                         int indentation,
-                         std::string const& file,
-                         unsigned int line,
-                         std::string const& function)
+    TextLogger::_message(
+      Level level,
+      elle::log::Logger::Type type,
+      std::string const& component,
+      boost::posix_time::ptime const& time,
+      std::string const& message,
+      std::vector<std::pair<std::string, std::string>> const& tags,
+      int indentation,
+      std::string const& file,
+      unsigned int line,
+      std::string const& function)
     {
       std::string msg = message;
 
@@ -105,26 +107,19 @@ namespace elle
       }
       msg = comp + msg;
 
-      // TID
-      if (this->_enable_tid)
-        msg = elle::sprintf(
-          "[%s] ",
-          boost::lexical_cast<std::string>(std::this_thread::get_id())) + msg;
-
-      // PID
-      if (this->_enable_pid)
-        msg = elle::sprintf(
-          "[%s] ",
-          boost::lexical_cast<std::string>(getpid())) + msg;
+      // Tags
+      for (auto const& tag: tags)
+      {
+        if (tag.first == "PID" && !this->_enable_pid)
+          continue;
+        if (tag.first == "TID" && !this->_enable_tid)
+          continue;
+        msg = elle::sprintf("[%s] %s", tag.second, msg);
+      }
 
       // Time
       if (this->_enable_time)
-        msg =
-          elle::sprintf(
-            "%s: ",
-            this->_universal_time ?
-            boost::posix_time::second_clock::universal_time() :
-            boost::posix_time::second_clock::local_time()) + msg;
+        msg = elle::sprintf("%s: %s", time, msg);
 
       static bool c = color();
       std::string color_code;

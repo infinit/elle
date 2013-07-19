@@ -54,12 +54,12 @@ scheduler_log_test()
 
   sched->run();
 
-  res << "[1m[Test] [Thread1] Test message from Thread 1\n[0m"
-      << "[1m[Test] [Thread2] Test message from Thread 2\n[0m"
-      << "[1m[Test] [Thread1]   Another message from Thread 1\n[0m"
-      << "[1m[Test] [Thread2]   Another message from Thread 2\n[0m"
-      << "[33;01;33m[Test] [Thread1]   A third message from Thread 1\n[0m"
-      << "[33;01;33m[Test] [Thread2]   A third message from Thread 2\n[0m";
+  res << "[1m[Thread1] [Test] Test message from Thread 1\n[0m"
+      << "[1m[Thread2] [Test] Test message from Thread 2\n[0m"
+      << "[1m[Thread1] [Test]   Another message from Thread 1\n[0m"
+      << "[1m[Thread2] [Test]   Another message from Thread 2\n[0m"
+      << "[33;01;33m[Thread1] [Test]   A third message from Thread 1\n[0m"
+      << "[33;01;33m[Thread2] [Test]   A third message from Thread 2\n[0m";
 
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 }
