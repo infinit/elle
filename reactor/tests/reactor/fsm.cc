@@ -373,6 +373,34 @@ transition_actions()
 }
 
 static
+void
+transition_action_throw()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+  bool beacon4 = false;
+
+  State& s1 = m.state_make([&] { beacon1 = true; });
+  State& s2 = m.state_make([&] { beacon2 = true; });
+  State& s3 = m.state_make([&] { beacon3 = true; });
+  State& s4 = m.state_make([&] { beacon4 = true; });
+  m.transition_add(s1, s2).action([&] () { throw BeaconException(); });
+  m.transition_add_catch(s1, s3);
+  m.transition_add(s3, s4).action([&] () { throw BeaconException(); });
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+  BOOST_CHECK(beacon3);
+  BOOST_CHECK(!beacon4);
+}
+
+static
 bool
 test_suite()
 {
@@ -392,6 +420,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
   fsm->add(BOOST_TEST_CASE(transition_catch));
   fsm->add(BOOST_TEST_CASE(transition_actions));
+  fsm->add(BOOST_TEST_CASE(transition_action_throw));
   return true;
 }
 

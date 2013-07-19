@@ -138,27 +138,38 @@ namespace reactor
       sched.current()->wait(action_thread);
       state->_done.signal();
       ELLE_DEBUG("%s: state action finished", *this);
-      for (auto transition: state->transitions_out())
-        transition->done(trigger, this->_exception);
-      if (this->_exception)
+      while (true)
       {
-        ELLE_WARN("%s: state action threw: %s",
-                  *this, elle::exception_string(this->_exception));
-        std::rethrow_exception(this->_exception);
+        for (auto transition: state->transitions_out())
+          transition->done(trigger, this->_exception);
+        if (this->_exception)
+        {
+          ELLE_WARN("%s: state action threw: %s",
+                    *this, elle::exception_string(this->_exception));
+          std::rethrow_exception(this->_exception);
+        }
+        if (state->transitions_out().empty())
+        {
+          ELLE_DEBUG("%s: end state, leaving", *this);
+          return nullptr;
+        }
+        while (!trigger)
+        {
+          ELLE_DEBUG("%s: waiting for transition", *this);
+          sched.current()->wait(triggered);
+        }
+        if (trigger->action())
+          try
+          {
+            trigger->action()();
+          }
+          catch (...)
+          {
+            this->_exception = std::current_exception();
+            continue;
+          }
+        return &trigger->end();
       }
-      if (state->transitions_out().empty())
-      {
-        ELLE_DEBUG("%s: end state, leaving", *this);
-        return nullptr;
-      }
-      while (!trigger)
-      {
-        ELLE_DEBUG("%s: waiting for transition", *this);
-        sched.current()->wait(triggered);
-      }
-      if (trigger->action())
-        trigger->action()();
-      return &trigger->end();
     }
 
     /*----------.
