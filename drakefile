@@ -144,7 +144,7 @@ def configure(cxx_toolkit = None,
   lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
 
   # Build
-  rule_build = drake.TestSuite('build')
+  rule_build = drake.Rule('build')
   rule_build << lib_static
   rule_build << lib_dynamic
 
@@ -178,7 +178,7 @@ def configure(cxx_toolkit = None,
     tests_cxx_config.lib('dopenssl')
 
   global rule_check, rule_tests
-  rule_check = drake.Rule('check')
+  rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
   for test in tests:
     import os
