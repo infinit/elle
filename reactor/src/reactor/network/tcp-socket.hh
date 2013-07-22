@@ -30,7 +30,7 @@ namespace reactor
                 const std::string& hostname,
                 int port,
                 DurationOpt timeout = DurationOpt());
-      virtual ~TCPSocket() noexcept(false);
+      virtual ~TCPSocket();
     private:
       friend class TCPServer;
       TCPSocket(Scheduler& sched, AsioSocket* socket);
