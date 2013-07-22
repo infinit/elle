@@ -8,6 +8,7 @@
 #ifndef NETWORK_URI_ENCODE_INC
 #define NETWORK_URI_ENCODE_INC
 
+#include <network/uri/uri_errors.hpp>
 #include <iterator>
 #include <cstring>
 #include <cassert>
@@ -28,8 +29,7 @@ namespace network {
 	return in - 10 + 'A';
       }
 
-      // throw
-      return CharT();
+      throw uri_encoding_error(uri_error::encoding_error);
     }
 
     template <

@@ -8,6 +8,7 @@
 #ifndef NETWORK_URI_DECODE_INC
 #define NETWORK_URI_DECODE_INC
 
+#include <network/uri/uri_errors.hpp>
 #include <iterator>
 #include <cassert>
 
@@ -28,8 +29,8 @@ namespace network {
       if ((in >= 'A') && (in <= 'F')) {
 	return in + 10 - 'A';
       }
-      // throw
-      return CharT();
+
+      throw uri_encoding_error(uri_error::decoding_error);
     }
 
     template <
