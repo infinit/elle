@@ -2810,13 +2810,14 @@ class Runner(Builder):
                   values = ['always', 'never', 'on_failure']):
     pass
 
-  def __init__(self, exe, args = None):
+  def __init__(self, exe, args = None, env = None):
     self.__args = args or list()
     self.__exe = exe
     self.__out = node('%s.out' % exe.name())
     self.__err = node('%s.err' % exe.name())
     self.__status = node('%s.status' % exe.name())
     self.__sources = [exe]
+    self.__env = env
     if isinstance(exe, cxx.Executable):
         self.__sources += exe.dynamic_libraries
     self.stdout_reporting = Runner.Reporting.never
@@ -2857,7 +2858,10 @@ class Runner(Builder):
          open(str(self.__status.path()), 'w') as rv:
       self.output(path, 'Run %s %s' % (self.__exe, " ".join(self.__args)))
       try:
-        p = subprocess.Popen([path] + self.__args, stdout = out, stderr = err)
+        p = subprocess.Popen([path] + self.__args,
+                             stdout = out,
+                             stderr = err,
+                             env = self.__env)
         p.wait()
         status = p.returncode
         print(status, file = rv)
