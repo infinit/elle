@@ -177,7 +177,8 @@ def configure(cxx_toolkit = None,
 
   if stuntman is not None:
     tests += [
-      'reactor/nat'
+      # XXX: Nat is disabled for now.
+      #'reactor/nat'
       ]
 
   cxx_config_tests = cxx_config + config
