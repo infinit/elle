@@ -54,7 +54,10 @@ namespace reactor
       catch (...)
       {
         _pacify_streambuffer();
-        throw;
+        // XXX: std::iostream technically can't throw due to virtual noexcept
+        // destructor. Find something better.
+        // throw;
+        ELLE_ERR("error while flushing socket: %s", elle::exception_string());
       }
     }
 
