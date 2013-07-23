@@ -9,6 +9,7 @@
 #define NETWORK_URI_DECODE_INC
 
 #include <network/uri/uri_errors.hpp>
+#include <boost/spirit/home/qi.hpp>
 #include <iterator>
 #include <cassert>
 
@@ -30,21 +31,21 @@ namespace network {
 	return in + 10 - 'A';
       }
 
-      throw uri_encoding_error(uri_error::decoding_error);
+      throw percent_decoding_error(uri_error::non_hex_input);
     }
 
     template <
       class InputIterator,
-      typename CharT
+      class OutputIterator
       >
-    InputIterator decode_char(InputIterator it, CharT &v) {
+    InputIterator decode_char(InputIterator it, OutputIterator &out) {
       assert(*it == '%');
       ++it;
       auto v0 = detail::letter_to_hex(*it);
       ++it;
       auto v1 = detail::letter_to_hex(*it);
       ++it;
-      v = (0x10 * v0) + v1;
+      *out = (0x10 * v0) + v1;
       return it;
     }
 
@@ -58,13 +59,16 @@ namespace network {
       auto it = in_begin;
       auto out = out_begin;
       while (it != in_end) {
-	if (*it == '%') {
-	  it = decode_char(it, *out);
+      	if (*it == '%') {
+      	  if (std::distance(it, in_end) < 3) {
+	    throw percent_decoding_error(uri_error::not_enough_input);
+      	  }
+      	  it = decode_char(it, out);
 	  ++out;
-	}
-	else {
-	  *out++ = *it++;
-	}
+      	}
+      	else {
+      	  *out++ = *it++;
+      	}
       }
       return out;
     }

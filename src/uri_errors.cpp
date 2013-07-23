@@ -54,12 +54,12 @@ namespace network {
 
   }
 
-  uri_encoding_error::uri_encoding_error(uri_error error)
+  percent_decoding_error::percent_decoding_error(uri_error error)
     : std::system_error(make_error_code(error)) {
 
   }
 
-  uri_encoding_error::~uri_encoding_error() NETWORK_URI_NOEXCEPT {
+  percent_decoding_error::~percent_decoding_error() NETWORK_URI_NOEXCEPT {
 
   }
 

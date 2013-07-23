@@ -29,7 +29,7 @@ namespace network {
 	return in - 10 + 'A';
       }
 
-      throw uri_encoding_error(uri_error::encoding_error);
+      return in;
     }
 
     template <

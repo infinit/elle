@@ -27,8 +27,8 @@ namespace network {
     invalid_fragment,
 
     // encoding errors
-    encoding_error,
-    decoding_error,
+    not_enough_input,
+    non_hex_input,
   };
 
   class NETWORK_URI_DECL uri_category_impl : public std::error_category {
@@ -69,13 +69,13 @@ namespace network {
 
   };
 
-  class uri_encoding_error : public std::system_error {
+  class percent_decoding_error : public std::system_error {
 
   public:
 
-    explicit uri_encoding_error(uri_error error);
+    explicit percent_decoding_error(uri_error error);
 
-    virtual ~uri_encoding_error() NETWORK_URI_NOEXCEPT;
+    virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
 
   };
 } // namespace network

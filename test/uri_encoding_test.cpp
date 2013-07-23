@@ -87,7 +87,7 @@ TEST(uri_encoding_test, decode_iterator_error_1) {
   std::string instance;
   ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
 				    std::back_inserter(instance)),
-	       network::uri_encoding_error);
+	       network::percent_decoding_error);
 }
 
 TEST(uri_encoding_test, decode_iterator_error_2) {
@@ -96,7 +96,43 @@ TEST(uri_encoding_test, decode_iterator_error_2) {
   std::string instance;
   ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
 				    std::back_inserter(instance)),
-	       network::uri_encoding_error);
+	       network::percent_decoding_error);
+}
+
+TEST(uri_encoding_test, decode_iterator_error_3) {
+  const std::string encoded("%%%");
+
+  std::string instance;
+  ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
+				    std::back_inserter(instance)),
+	       network::percent_decoding_error);
+}
+
+TEST(uri_encoding_test, decode_iterator_error_4) {
+  const std::string encoded("%2%");
+
+  std::string instance;
+  ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
+				    std::back_inserter(instance)),
+	       network::percent_decoding_error);
+}
+
+TEST(uri_encoding_test, decode_iterator_error_5) {
+  const std::string encoded("%GF");
+
+  std::string instance;
+  ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
+				    std::back_inserter(instance)),
+	       network::percent_decoding_error);
+}
+
+TEST(uri_encoding_test, decode_iterator_error_6) {
+  const std::string encoded("%FG");
+
+  std::string instance;
+  ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
+				    std::back_inserter(instance)),
+	       network::percent_decoding_error);
 }
 
 TEST(uri_encoding_test, decode_iterator_not_an_error) {
