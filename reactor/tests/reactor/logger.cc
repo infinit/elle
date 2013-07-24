@@ -14,19 +14,9 @@ reactor::Scheduler* sched = 0;
 elle::log::TextLogger* logger;
 std::stringstream ss, res;
 
-Fixture::Fixture()
+static void yield()
 {
-  elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP", 1);
-  sched = new reactor::Scheduler;
-  logger = new elle::log::TextLogger(ss);
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-}
-
-Fixture::~Fixture()
-{
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
-  delete sched;
-  sched = 0;
+  reactor::Scheduler::scheduler()->current()->yield();
 }
 
 static
@@ -35,9 +25,9 @@ gen_message(const std::string& thread_name)
 {
   ELLE_LOG_COMPONENT("Test");
   ELLE_LOG_SCOPE("Test message from %s", thread_name);
-  sched->current()->yield();
+  yield();
   ELLE_LOG("Another message from %s", thread_name);
-  sched->current()->yield();
+  yield();
   ELLE_WARN("A third message from %s", thread_name);
 }
 
@@ -45,14 +35,18 @@ static
 void
 scheduler_log_test()
 {
-  Fixture f;
+  elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP", 1);
+  logger = new elle::log::TextLogger(ss);
+  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
 
-  reactor::Thread t1(*sched, "Thread1",
+  reactor::Scheduler sched;
+
+  reactor::Thread t1(sched, "Thread1",
                      std::bind(gen_message, std::ref("Thread 1")));
-  reactor::Thread t2(*sched, "Thread2",
+  reactor::Thread t2(sched, "Thread2",
                      std::bind(gen_message, std::ref("Thread 2")));
 
-  sched->run();
+  sched.run();
 
   res << "[1m[Thread1] [Test] Test message from Thread 1\n[0m"
       << "[1m[Thread2] [Test] Test message from Thread 2\n[0m"
@@ -125,8 +119,8 @@ test_suite()
 {
   boost::unit_test::test_suite* sched_log = BOOST_TEST_SUITE("Sched Logger");
   boost::unit_test::framework::master_test_suite().add(sched_log);
-  sched_log->add(BOOST_TEST_CASE(std::bind(scheduler_log_test)));
-  sched_log->add(BOOST_TEST_CASE(std::bind(parallel_write)));
+  sched_log->add(BOOST_TEST_CASE(scheduler_log_test));
+  sched_log->add(BOOST_TEST_CASE(parallel_write));
 
   return true;
 }
