@@ -6,6 +6,10 @@
 # include <thread>
 # include <unordered_map>
 
+# include <boost/multi_index_container.hpp>
+# include <boost/multi_index/hashed_index.hpp>
+# include <boost/multi_index/identity.hpp>
+# include <boost/multi_index/sequenced_index.hpp>
 # include <boost/thread.hpp>
 
 # include <elle/Printable.hh>
@@ -52,7 +56,13 @@ namespace reactor
   | Threads management |
   `-------------------*/
   public:
-    typedef std::set<Thread*> Threads;
+    typedef boost::multi_index::multi_index_container<
+    Thread*,
+    boost::multi_index::indexed_by<
+      boost::multi_index::hashed_unique<boost::multi_index::identity<Thread*>>,
+      boost::multi_index::sequenced<>
+      >
+    > Threads;
     Thread* current() const;
     Threads terminate();
     void terminate_now();

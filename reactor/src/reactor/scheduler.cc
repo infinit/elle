@@ -102,10 +102,12 @@ namespace reactor
     // Could avoid locking if no jobs are pending with a boolean.
     {
       boost::unique_lock<boost::mutex> lock(_starting_mtx);
-      _running.insert(_starting.begin(), _starting.end());
+      auto& ordered = this->_starting.get<1>();
+      _running.insert(ordered.begin(), ordered.end());
       _starting.clear();
     }
-    Threads running(_running);
+    auto& ordered = this->_running.get<1>();
+    std::vector<Thread*> running(ordered.begin(), ordered.end());
     ELLE_TRACE("Scheduler: new round with %s jobs", running.size());
     BOOST_FOREACH (Thread* t, running)
     {
