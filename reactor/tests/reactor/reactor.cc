@@ -752,9 +752,11 @@ test_semaphore_multi()
       BOOST_CHECK_EQUAL(step, 0);
       s.release();
       yield();
+      yield();
       BOOST_CHECK_EQUAL(s.count(), -1);
       BOOST_CHECK_EQUAL(step, 1);
       s.release();
+      yield();
       yield();
       BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 2);
