@@ -7,6 +7,8 @@
 # include <elle/types.hh>
 # include <elle/serialize/insert.hh>
 # include <elle/serialize/extract.hh>
+# include <elle/serialize/Base64Archive.hh>
+# include <elle/serialize/JSONArchive.hh>
 
 # include <functional>
 
