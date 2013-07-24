@@ -192,13 +192,12 @@ class Config:
         try:
           self.__warnings[self.__name(name)] = value
         except:
-          return super(Config.Warnings, self).__setattr__(name, value)
+          return super().__setattr__(name, value)
 
       def __getattr__(self, name):
-        sup = super(Config.Warnings, self)
-        wname = sup.__getattr__('_Config__name')(name)
+        wname = super().__getattr__('_Config__name')(name)
         try:
-          return sup.__getattr__('_Warnings__warnings')[wname]
+          return super().__getattr__('_Warnings__warnings')[wname]
         except KeyError:
           return None
         except:
