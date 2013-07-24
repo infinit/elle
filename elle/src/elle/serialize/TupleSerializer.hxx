@@ -75,10 +75,10 @@ namespace elle
 
 
     /// Helper to create tuples of references
-    template<typename... T>
-      std::tuple<T&...> make_tuple(T&... values)
+    template<typename ... T>
+      std::tuple<T&...> make_tuple(T&&... values)
       {
-        return std::tuple<T&...>(values...);
+        return std::tuple<T&...>(std::forward<T>(values)...);
       }
   }
 }

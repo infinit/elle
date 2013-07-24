@@ -14,8 +14,10 @@
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/BaseArchive.hxx>
 
-namespace elle { namespace serialize {
-
+namespace elle
+{
+  namespace serialize
+  {
     // Output specialisation
     template<> class Base64Archive<ArchiveMode::Output> :
       public BaseArchive<ArchiveMode::Output, Base64Archive<ArchiveMode::Output>>
@@ -65,5 +67,3 @@ namespace elle { namespace serialize {
 }} // !namespace elle::serialize
 
 #endif /* ! BASE64ARCHIVE_HH */
-
-

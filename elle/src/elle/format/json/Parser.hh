@@ -4,7 +4,13 @@
 # include <stdexcept>
 # include <string>
 
-# include "Object.hh"
+# ifndef ELLE_FORMAT_JSON_OBJECT_HXX
+#  define ELLE_FORMAT_JSON_OBJECT_HXX
+#  include <elle/format/json/Object.hh>
+#  undef ELLE_FORMAT_JSON_OBJECT_HXX
+# else
+#  include <elle/format/json/Object.hh>
+# endif
 
 namespace elle
 {
@@ -97,6 +103,8 @@ namespace elle
 
     }
   }
-} // !namespace elle::format::json
+}
 
-#endif /* ! PARSER_HH */
+# include <elle/format/json/Object.hxx>
+
+#endif

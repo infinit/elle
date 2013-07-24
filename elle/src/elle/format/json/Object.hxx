@@ -1,12 +1,13 @@
-#ifndef  ELLE_FORMAT_JSON_OBJECT_HXX
+#ifndef ELLE_FORMAT_JSON_OBJECT_HXX
 # define ELLE_FORMAT_JSON_OBJECT_HXX
 
 # include "_detail.hh"
 
-# include <elle/types.hh>
 # include <elle/Exception.hh>
-# include <elle/serialize/fwd.hh>
+# include <elle/serialize/JSONArchive.hh>
 # include <elle/serialize/extract.hh>
+# include <elle/serialize/fwd.hh>
+# include <elle/types.hh>
 
 namespace elle
 {

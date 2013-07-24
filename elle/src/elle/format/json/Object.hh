@@ -14,7 +14,6 @@ namespace elle
   {
     namespace json
     {
-
       /// Root object for all json types
       class Object
       {
@@ -169,6 +168,6 @@ namespace elle
   }
 }
 
-# include "Object.hxx"
+# include <elle/format/json/Object.hxx>
 
-#endif /* ! OBJECT_HH */
+#endif

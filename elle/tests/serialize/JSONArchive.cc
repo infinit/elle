@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE JSONSerialization
 
+#include <elle/format/json/Array.hh>
 #include <elle/serialize/JSONArchive.hh>
 #include <elle/serialize/extract.hh>
 #include <elle/serialize/insert.hh>

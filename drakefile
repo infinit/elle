@@ -45,6 +45,8 @@ def configure(cxx_toolkit = None,
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
+  # Clang/GCC disagree on std::hash struct versus class.
+  cxx_config.warnings.mismatched_tags = False
   cxx_config.warnings.missing_declarations = \
     drake.cxx.Config.Warnings.Error
   cxx_config.warnings.return_type = \
