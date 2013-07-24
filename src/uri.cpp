@@ -145,23 +145,6 @@ namespace network {
     }
   } // namespace
 
-  struct uri::impl {
-
-    string_type uri_;
-    detail::uri_parts<string_type::iterator> uri_parts_;
-
-    impl *clone();
-
-  };
-
-  uri::impl *uri::impl::clone() {
-    std::unique_ptr<impl> other(new (std::nothrow) impl);
-    assert(other.get() && "Unable to allocate memory for network::uri");
-    other->uri_ = uri_;
-    advance_parts(boost::as_literal(other->uri_), other->uri_parts_, uri_parts_);
-    return other.release();
-  }
-
   void uri::initialize(boost::optional<string_type> scheme,
 		       boost::optional<string_type> user_info,
 		       boost::optional<string_type> host,
@@ -170,35 +153,35 @@ namespace network {
 		       boost::optional<string_type> query,
 		       boost::optional<string_type> fragment) {
     if (scheme) {
-      pimpl_->uri_.append(*scheme);
+      uri_.append(*scheme);
     }
 
     if (user_info || host || port) {
       if (scheme) {
-	pimpl_->uri_.append("://");
+	uri_.append("://");
       }
 
       if (user_info) {
-	pimpl_->uri_.append(*user_info);
-	pimpl_->uri_.append("@");
+	uri_.append(*user_info);
+	uri_.append("@");
       }
 
       if (host) {
-	pimpl_->uri_.append(*host);
+	uri_.append(*host);
       }
       else {
 	throw uri_builder_error();
       }
 
       if (port) {
-	pimpl_->uri_.append(":");
-	pimpl_->uri_.append(*port);
+	uri_.append(":");
+	uri_.append(*port);
       }
     }
     else {
       if (scheme) {
 	if (path || query || fragment) {
-	  pimpl_->uri_.append(":");
+	  uri_.append(":");
 	}
 	else {
 	  throw uri_builder_error();
@@ -207,22 +190,22 @@ namespace network {
     }
 
     if (path) {
-      pimpl_->uri_.append(*path);
+      uri_.append(*path);
     }
 
     if (query) {
-      pimpl_->uri_.append("?");
-      pimpl_->uri_.append(*query);
+      uri_.append("?");
+      uri_.append(*query);
     }
 
     if (fragment) {
-      pimpl_->uri_.append("#");
-      pimpl_->uri_.append(*fragment);
+      uri_.append("#");
+      uri_.append(*fragment);
     }
 
-    auto it = std::begin(pimpl_->uri_);
+    auto it = std::begin(uri_);
     if (scheme) {
-      pimpl_->uri_parts_.scheme.reset(copy_range(std::begin(*scheme), std::end(*scheme), it));
+      uri_parts_.scheme.reset(copy_range(std::begin(*scheme), std::end(*scheme), it));
       // ignore ://
       while ((':' == *it) || ('/' == *it)) {
 	++it;
@@ -230,47 +213,44 @@ namespace network {
     }
 
     if (user_info) {
-      pimpl_->uri_parts_.hier_part.user_info.reset(copy_range(std::begin(*user_info), std::end(*user_info), it));
+      uri_parts_.hier_part.user_info.reset(copy_range(std::begin(*user_info), std::end(*user_info), it));
       ++it; // ignore @
     }
 
     if (host) {
-      pimpl_->uri_parts_.hier_part.host.reset(copy_range(std::begin(*host), std::end(*host), it));
+      uri_parts_.hier_part.host.reset(copy_range(std::begin(*host), std::end(*host), it));
     }
 
     if (port) {
       ++it; // ignore :
-      pimpl_->uri_parts_.hier_part.port.reset(copy_range(std::begin(*port), std::end(*port), it));
+      uri_parts_.hier_part.port.reset(copy_range(std::begin(*port), std::end(*port), it));
     }
 
     if (path) {
-      pimpl_->uri_parts_.hier_part.path.reset(copy_range(std::begin(*path), std::end(*path), it));
+      uri_parts_.hier_part.path.reset(copy_range(std::begin(*path), std::end(*path), it));
     }
 
     if (query) {
       ++it; // ignore ?
-      pimpl_->uri_parts_.query.reset(copy_range(std::begin(*query), std::end(*query), it));
+      uri_parts_.query.reset(copy_range(std::begin(*query), std::end(*query), it));
     }
 
     if (fragment) {
       ++it; // ignore #
-      pimpl_->uri_parts_.fragment.reset(copy_range(std::begin(*fragment), std::end(*fragment), it));
+      uri_parts_.fragment.reset(copy_range(std::begin(*fragment), std::end(*fragment), it));
     }
   }
 
-  uri::uri()
-    : pimpl_(new (std::nothrow) impl) {
-    assert(pimpl_ && "Unable to allocate memory for network::uri");
+  uri::uri() {
+
   }
 
   uri::uri(const uri &other)
-    : pimpl_(other.pimpl_->clone()) {
-    assert(pimpl_ && "Unable to allocate memory for network::uri");
+    : uri_(other.uri_) {
+    advance_parts(uri_, uri_parts_, other.uri_parts_);
   }
 
-  uri::uri(const uri_builder &builder)
-    : pimpl_(new (std::nothrow) impl) {
-    assert(pimpl_ && "Unable to allocate memory for network::uri");
+  uri::uri(const uri_builder &builder) {
     initialize(builder.scheme_,
 	       builder.user_info_,
 	       builder.host_,
@@ -281,13 +261,14 @@ namespace network {
   }
 
   uri::uri(uri &&other)
-    : pimpl_(new (std::nothrow) impl) {
-    assert(other.pimpl_ && "Unable to allocate memory for network::uri");
-    std::swap(pimpl_, other.pimpl_);
+    : uri_(std::move(other.uri_)) {
+    advance_parts(uri_, uri_parts_, other.uri_parts_);
+    other.uri_.clear();
+    other.uri_parts_ = detail::uri_parts<string_type::iterator>();
   }
 
   uri::~uri() {
-    delete pimpl_;
+
   }
 
   uri &uri::operator = (uri other) {
@@ -296,15 +277,17 @@ namespace network {
   }
 
   void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
-    std::swap(pimpl_, other.pimpl_);
+    advance_parts(other.uri_, uri_parts_, other.uri_parts_);
+    uri_.swap(other.uri_);
+    advance_parts(other.uri_, other.uri_parts_, uri_parts_);
   }
 
   uri::const_iterator uri::begin() const {
-    return pimpl_->uri_.begin();
+    return uri_.begin();
   }
 
   uri::const_iterator uri::end() const {
-    return pimpl_->uri_.end();
+    return uri_.end();
   }
 
   namespace
@@ -329,44 +312,44 @@ namespace network {
   } // namespace
 
   boost::optional<boost::string_ref> uri::scheme() const {
-    return pimpl_->uri_parts_.scheme?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.scheme)
+    return uri_parts_.scheme?
+      to_string_ref(uri_, *uri_parts_.scheme)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::user_info() const {
-    return pimpl_->uri_parts_.hier_part.user_info?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.user_info)
+    return uri_parts_.hier_part.user_info?
+      to_string_ref(uri_, *uri_parts_.hier_part.user_info)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::host() const {
-    return pimpl_->uri_parts_.hier_part.host?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.host)
+    return uri_parts_.hier_part.host?
+      to_string_ref(uri_, *uri_parts_.hier_part.host)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::port() const {
-    return pimpl_->uri_parts_.hier_part.port?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.port)
+    return uri_parts_.hier_part.port?
+      to_string_ref(uri_, *uri_parts_.hier_part.port)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::path() const {
-    return pimpl_->uri_parts_.hier_part.path?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.hier_part.path)
+    return uri_parts_.hier_part.path?
+      to_string_ref(uri_, *uri_parts_.hier_part.path)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::query() const {
-    return pimpl_->uri_parts_.query ?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.query)
+    return uri_parts_.query ?
+      to_string_ref(uri_, *uri_parts_.query)
       : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::fragment() const {
-    return pimpl_->uri_parts_.fragment?
-      to_string_ref(pimpl_->uri_, *pimpl_->uri_parts_.fragment)
+    return uri_parts_.fragment?
+      to_string_ref(uri_, *uri_parts_.fragment)
       : boost::optional<boost::string_ref>();
   }
 
@@ -391,27 +374,27 @@ namespace network {
   }
 
   uri::string_type uri::native() const {
-    return pimpl_->uri_;
+    return uri_;
   }
 
   std::string uri::string() const {
-    return pimpl_->uri_;
+    return uri_;
   }
 
   std::wstring uri::wstring() const {
-    return std::wstring(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
+    return std::wstring(std::begin(uri_), std::end(uri_));
   }
 
   std::u16string uri::u16string() const {
-    return std::u16string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
+    return std::u16string(std::begin(uri_), std::end(uri_));
   }
 
   std::u32string uri::u32string() const {
-    return std::u32string(std::begin(pimpl_->uri_), std::end(pimpl_->uri_));
+    return std::u32string(std::begin(uri_), std::end(uri_));
   }
 
   bool uri::empty() const NETWORK_URI_NOEXCEPT {
-    return pimpl_->uri_.empty();
+    return uri_.empty();
   }
 
   bool uri::is_absolute() const NETWORK_URI_NOEXCEPT {
@@ -423,9 +406,9 @@ namespace network {
   }
 
   uri uri::normalize(uri_comparison_level level) const {
-    string_type normalized(pimpl_->uri_);
+    string_type normalized(uri_);
     detail::uri_parts<string_type::iterator> parts;
-    advance_parts(normalized, parts, pimpl_->uri_parts_);
+    advance_parts(normalized, parts, uri_parts_);
 
     if ((uri_comparison_level::case_normalization == level) ||
 	(uri_comparison_level::percent_encoding_normalization == level) ||
@@ -627,13 +610,10 @@ namespace network {
   }
 
   bool uri::initialize(const string_type &uri) {
-    pimpl_ = new (std::nothrow) impl;
-    assert(pimpl_ && "Unable to allocate memory for network::uri");
-
-    pimpl_->uri_ = boost::trim_copy(uri);
-    if (!pimpl_->uri_.empty()) {
-      auto first = std::begin(pimpl_->uri_), last = std::end(pimpl_->uri_);
-      bool is_valid = detail::parse(first, last, pimpl_->uri_parts_);
+    uri_ = boost::trim_copy(uri);
+    if (!uri_.empty()) {
+      auto first = std::begin(uri_), last = std::end(uri_);
+      bool is_valid = detail::parse(first, last, uri_parts_);
       return is_valid;
     }
     return true;

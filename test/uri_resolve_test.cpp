@@ -215,8 +215,8 @@ TEST_F(uri_resolve_test, abnormal_example_18) {
 
 TEST_F(uri_resolve_test, issue_resolve_from_copy) {
   // https://github.com/cpp-netlib/uri/issues/15
-  network::uri base{"http://a.com/"};
-  network::uri uri{"http:/example.com/path/"};
+  network::uri base("http://a.com/");
+  network::uri uri("http:/example.com/path/");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
   auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
@@ -225,8 +225,8 @@ TEST_F(uri_resolve_test, issue_resolve_from_copy) {
 
 TEST_F(uri_resolve_test, issue_resolve_from_move) {
   // https://github.com/cpp-netlib/uri/issues/15
-  network::uri base{"http://a.com/"};
-  network::uri uri{"http:/example.com/path/"};
+  network::uri base("http://a.com/");
+  network::uri uri("http:/example.com/path/");
   network::uri copy = std::move(uri);
   ASSERT_TRUE(copy.is_opaque());
   auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
@@ -235,8 +235,8 @@ TEST_F(uri_resolve_test, issue_resolve_from_move) {
 
 TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_query) {
   // https://github.com/cpp-netlib/uri/issues/15
-  network::uri base{"http://a.com/"};
-  network::uri uri{"http:/example.com/path/?query#fragment"};
+  network::uri base("http://a.com/");
+  network::uri uri("http:/example.com/path/?query#fragment");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
   auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
@@ -247,8 +247,8 @@ TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_query) {
 
 TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_fragment) {
   // https://github.com/cpp-netlib/uri/issues/15
-  network::uri base{"http://a.com/"};
-  network::uri uri{"http:/example.com/path/?query#fragment"};
+  network::uri base("http://a.com/");
+  network::uri uri("http:/example.com/path/?query#fragment");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
   auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);

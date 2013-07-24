@@ -171,7 +171,7 @@ namespace network {
 	  ;
 
 	port %=
-	  qi::raw[qi::ushort_]
+	  qi::raw[qi::ushort_ | qi::eps] 
 	  ;
 
 	// query = *( pchar / "/" / "?" )

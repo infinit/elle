@@ -32,7 +32,7 @@ Configuring ``Boost``
 
 Boost can be downloaded from
 http://www.boost.org/users/download/. This library requires at least
-Boost 1.51. Follow instructions to build boost at
+Boost 1.53. Follow instructions to build boost at
 http://www.boost.org/doc/html/bbv2/installation.html and set the
 environment variable ``BOOST_ROOT`` to the location of the installation.
 
