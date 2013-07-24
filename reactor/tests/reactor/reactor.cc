@@ -39,14 +39,14 @@ bool
 wait(reactor::Waitable& s,
      reactor::DurationOpt timeout = reactor::DurationOpt())
 {
-  return sched->current()->wait(s, timeout);
+  return reactor::Scheduler::scheduler()->current()->wait(s, timeout);
 }
 
 static
 void
 sleep(reactor::Duration d)
 {
-  sched->current()->sleep(d);
+  return reactor::Scheduler::scheduler()->current()->sleep(d);
 }
 
 class BeaconException:
@@ -734,50 +734,32 @@ test_semaphore_block()
 
 static
 void
-semaphore_multi_wait(reactor::Semaphore& s,
-                     int& step)
-{
-  wait(s);
-  ++step;
-}
-
-static
-void
-semaphore_multi_post(reactor::Semaphore& s,
-                     int& step)
-{
-  yield();
-  yield();
-  yield();
-  BOOST_CHECK_EQUAL(s.count(), -2);
-  BOOST_CHECK_EQUAL(step, 0);
-  s.release();
-  yield();
-  BOOST_CHECK_EQUAL(s.count(), -1);
-  BOOST_CHECK_EQUAL(step, 1);
-  s.release();
-  yield();
-  BOOST_CHECK_EQUAL(s.count(), 0);
-  BOOST_CHECK_EQUAL(step, 2);
-}
-
-static
-void
 test_semaphore_multi()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::Semaphore s;
   int step = 0;
-  reactor::Thread wait1(*sched, "wait1",
-                       boost::bind(&semaphore_multi_wait,
-                                   boost::ref(s), boost::ref(step)));
-  reactor::Thread wait2(*sched, "wait2",
-                       boost::bind(&semaphore_multi_wait,
-                                   boost::ref(s), boost::ref(step)));
-  reactor::Thread post(*sched, "post",
-                       boost::bind(&semaphore_multi_post,
-                                   boost::ref(s), boost::ref(step)));
-  sched->run();
+
+  auto multi_wait = [&] { wait(s); ++step; };
+
+  reactor::Thread wait1(sched, "wait1", multi_wait);
+  reactor::Thread wait2(sched, "wait2", multi_wait);
+  reactor::Thread post(sched, "post", [&] {
+      yield();
+      yield();
+      yield();
+      BOOST_CHECK_EQUAL(s.count(), -2);
+      BOOST_CHECK_EQUAL(step, 0);
+      s.release();
+      yield();
+      BOOST_CHECK_EQUAL(s.count(), -1);
+      BOOST_CHECK_EQUAL(step, 1);
+      s.release();
+      yield();
+      BOOST_CHECK_EQUAL(s.count(), 0);
+      BOOST_CHECK_EQUAL(step, 2);
+    });
+  sched.run();
 }
 
 /*------.
