@@ -9,7 +9,6 @@
 #define NETWORK_URI_DECODE_INC
 
 #include <network/uri/uri_errors.hpp>
-#include <boost/spirit/home/qi.hpp>
 #include <iterator>
 #include <cassert>
 
