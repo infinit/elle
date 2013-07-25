@@ -5,7 +5,7 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/tcp-socket.hh>
-#include <reactor/network/udt-socket.hh>
+// #include <reactor/network/udt-socket.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/scheduler.hh>
 
@@ -74,9 +74,9 @@ namespace reactor
           case Protocol::tcp:
             return std::unique_ptr<Socket>
               (new TCPSocket(sched, hostname, port, timeout));
-          case Protocol::udt:
-            return std::unique_ptr<Socket>
-              (new UDTSocket(sched, hostname, port, timeout));
+          // case Protocol::udt:
+          //   return std::unique_ptr<Socket>
+          //     (new UDTSocket(sched, hostname, port, timeout));
           default:
             elle::unreachable();
         }
@@ -326,7 +326,7 @@ namespace reactor
     class PlainSocket<boost::asio::ip::tcp::socket>;
     template
     class PlainSocket<boost::asio::ip::udp::socket>;
-    template
-    class PlainSocket<boost::asio::ip::udt::socket>;
+    // template
+    // class PlainSocket<boost::asio::ip::udt::socket>;
   }
 }

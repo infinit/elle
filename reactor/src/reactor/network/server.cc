@@ -1,7 +1,7 @@
 #include <reactor/network/server.hh>
 #include <reactor/network/tcp-server.hh>
-#include <reactor/network/udt-server.hh>
-#include <reactor/network/udt-rdv-server.hh>
+//#include <reactor/network/udt-server.hh>
+//#include <reactor/network/udt-rdv-server.hh>
 
 namespace reactor
 {
@@ -33,8 +33,8 @@ namespace reactor
         {
           case Protocol::tcp:
             return std::unique_ptr<Server>(new TCPServer(sched));
-          case Protocol::udt:
-            return std::unique_ptr<Server>(new UDTRendezVousServer(sched));
+          // case Protocol::udt:
+          //   return std::unique_ptr<Server>(new UDTRendezVousServer(sched));
           default:
             elle::unreachable();
         }
