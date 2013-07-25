@@ -260,14 +260,14 @@ namespace network {
 	       builder.fragment_);
   }
 
-  uri::uri(uri &&other)
+  uri::uri(uri &&other) NETWORK_URI_NOEXCEPT
     : uri_(std::move(other.uri_)) {
     advance_parts(uri_, uri_parts_, other.uri_parts_);
     other.uri_.clear();
     other.uri_parts_ = detail::uri_parts<string_type::iterator>();
   }
 
-  uri::~uri() {
+  uri::~uri() NETWORK_URI_NOEXCEPT {
 
   }
 
@@ -591,7 +591,7 @@ namespace network {
     return std::move(result);
   }
 
-  int uri::compare(const uri &other, uri_comparison_level level) const {
+  int uri::compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (empty() && other.empty()) {

@@ -142,6 +142,13 @@ namespace network {
       }
     }
 
+    template <class InputIter>
+    explicit uri(InputIter first, InputIter last, std::error_code &ec) {
+      if (!initialize(string_type(first, last))) {
+	ec = make_error_code(uri_error::invalid_syntax);
+      }
+    }
+
     template <class Source>
     explicit uri(const Source &uri) {
       if (!initialize(detail::translate(uri))) {
@@ -160,9 +167,9 @@ namespace network {
 
     uri(const uri &other);
 
-    uri(uri &&other);
+    uri(uri &&other) NETWORK_URI_NOEXCEPT;
 
-    ~uri();
+    ~uri() NETWORK_URI_NOEXCEPT;
 
     uri &operator = (uri other);
 
@@ -257,6 +264,12 @@ namespace network {
   inline
   uri make_uri(const Source &source, std::error_code &ec) NETWORK_URI_NOEXCEPT {
     return uri(source, ec);
+  }
+
+  template <class InputIter>
+  inline
+  uri make_uri(InputIter first, InputIter last, std::error_code &ec) NETWORK_URI_NOEXCEPT {
+    return uri(first, last, ec);
   }
 
   void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
