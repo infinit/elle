@@ -10,6 +10,7 @@
 #define NETWORK_URI_INC
 
 #include <network/uri/config.hpp>
+#include <network/uri/uri_errors.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
@@ -17,7 +18,6 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/optional.hpp>
 #include <iterator>
-#include <system_error>
 #include <algorithm>
 #include <functional>
 
@@ -44,59 +44,6 @@ namespace network {
       boost::optional<boost::iterator_range<FwdIter> > fragment;
     };
   } // namespace detail
-
-  enum class uri_error {
-    // parser errors
-    invalid_syntax = 1,
-
-    // builder errors
-    invalid_uri,
-    invalid_scheme,
-    invalid_user_info,
-    invalid_host,
-    invalid_port,
-    invalid_path,
-    invalid_query,
-    invalid_fragment,
-  };
-
-  class NETWORK_URI_DECL uri_category_impl : public std::error_category {
-
-  public:
-
-    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
-
-    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
-
-    virtual const char *name() const NETWORK_URI_NOEXCEPT;
-
-    virtual std::string message(int ev) const;
-
-  };
-
-  const std::error_category &uri_category();
-
-  std::error_code make_error_code(uri_error e);
-
-  class uri_syntax_error : public std::system_error {
-
-  public:
-
-    uri_syntax_error();
-
-    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
-
-  };
-
-  class uri_builder_error : public std::system_error {
-
-  public:
-
-    uri_builder_error();
-
-    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
-
-  };
 
   enum class uri_comparison_level {
     string_comparison,
