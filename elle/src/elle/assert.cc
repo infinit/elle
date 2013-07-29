@@ -1,6 +1,7 @@
 #include <elle/assert.hh>
 #include <elle/Backtrace.hh>
 #include <elle/log.hh>
+#include <elle/os/getenv.hh>
 
 #include <iostream>
 #include <sstream>
@@ -34,9 +35,15 @@ namespace elle
     {
       // There is already an exception happening.
       auto e = std::current_exception();
-      ELLE_ERR("raising an assert (%s at %s:%s) with an exception already in flight",
-               message, file, line);
+      ELLE_ERR("raising an assert (%s at %s:%s) with an exception already in flight: %s",
+               message, file, line, elle::exception_string());
     }
+    if (!elle::os::getenv("ELLE_REAL_ASSERT").empty())
+    {
+      ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
+      assert(false);
+    }
+
     throw elle::AssertError(message.c_str(), file, line);
   }
 
