@@ -30,7 +30,7 @@ namespace elle
          char const* file,
          int line)
   {
-    if (std::current_exception() == std::exception_ptr{})
+    if (std::current_exception() != std::exception_ptr{})
     {
       // There is already an exception happening.
       auto e = std::current_exception();
