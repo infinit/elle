@@ -2,6 +2,7 @@
 
 #include "reactor.hh"
 
+#include <reactor/Barrier.hh>
 #include <reactor/duration.hh>
 #include <reactor/mutex.hh>
 #include <reactor/rw-mutex.hh>
@@ -266,6 +267,49 @@ test_signals_timeout()
 
   reactor::Thread t(*sched, "waiter", waiter_timeout);
   sched->run();
+}
+
+/*--------.
+| Barrier |
+`--------*/
+
+static
+void
+barrier_closed()
+{
+  reactor::Scheduler sched;
+  reactor::Barrier barrier;
+  bool beacon = false;
+  reactor::Thread waiter(sched, "waiter", [&] {
+      BOOST_CHECK(!barrier.opened());
+      wait(barrier);
+      BOOST_CHECK(barrier.opened());
+      BOOST_CHECK(!beacon);
+      beacon = true;
+    });
+  reactor::Thread opener(sched, "opener", [&] {
+      yield();
+      yield();
+      yield();
+      BOOST_CHECK(!beacon);
+      barrier.open();
+    });
+  sched.run();
+  BOOST_CHECK(beacon);
+}
+
+static
+void
+barrier_opened()
+{
+  reactor::Scheduler sched;
+  reactor::Barrier barrier;
+  barrier.open();
+  BOOST_CHECK(barrier.opened());
+  reactor::Thread waiter(sched, "waiter", [&] {
+      wait(barrier);
+    });
+  sched.run();
 }
 
 /*------.
@@ -1370,6 +1414,11 @@ test_suite()
   signals->add(BOOST_TEST_CASE(test_signals_one_on_two));
   signals->add(BOOST_TEST_CASE(test_signals_two_on_one));
   signals->add(BOOST_TEST_CASE(test_signals_timeout));
+
+  boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
+  boost::unit_test::framework::master_test_suite().add(barrier);
+  signals->add(BOOST_TEST_CASE(barrier_closed));
+  signals->add(BOOST_TEST_CASE(barrier_opened));
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
   boost::unit_test::framework::master_test_suite().add(sleep);
