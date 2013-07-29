@@ -38,7 +38,8 @@ namespace elle
       ELLE_ERR("raising an assert (%s at %s:%s) with an exception already in flight: %s",
                message, file, line, elle::exception_string());
     }
-    if (!elle::os::getenv("ELLE_REAL_ASSERT").empty())
+
+    if (elle::os::in_env("ELLE_REAL_ASSERT"))
     {
       ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
       assert(false);
