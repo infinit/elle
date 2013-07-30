@@ -14,7 +14,7 @@ namespace curly
   {
     auto ec = curl_easy_setopt(_easy_handle.get(),
                                opt, std::forward<T>(param));
-    throw_if_ecode(this->native_handle(), ec);
+    throw_if_ecode(this->native_handle(), ec, "");
     return ec;
   }
 
@@ -25,7 +25,7 @@ namespace curly
   {
     auto ec = curl_easy_getinfo(this->_config.native_handle(), info,
                                 std::forward<T>(param));
-    throw_if_ecode(this->_config.native_handle(), ec);
+    throw_if_ecode(this->_config.native_handle(), ec, "");
     return ec;
   }
 

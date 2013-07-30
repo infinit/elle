@@ -10,9 +10,9 @@
 namespace curly
 {
   void
-  _throw_if_ecode(CURL* easy,
-                  CURLcode code,
-                  std::string const& error_message)
+  throw_if_ecode(CURL* easy,
+                 CURLcode code,
+                 std::string const& error_message)
   {
     if (code != CURLE_OK)
     {
@@ -73,6 +73,12 @@ namespace curly
 
   CURL*
   request_configuration::native_handle()
+  {
+    return _easy_handle.get();
+  }
+
+  CURL*
+  request_configuration::native_handle() const
   {
     return _easy_handle.get();
   }
@@ -156,7 +162,7 @@ namespace curly
 
     auto ec = curl_easy_perform(_config.native_handle());
     this->info(CURLINFO_RESPONSE_CODE, &this->_response_code);
-    _throw_if_ecode(this->_config.native_handle(), ec, std::string{error});
+    throw_if_ecode(this->_config.native_handle(), ec, std::string{error});
   }
 
   std::string

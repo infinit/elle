@@ -11,6 +11,10 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 #include <reactor/Scope.hh>
+#include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/signal.hh>
+#include <reactor/sleep.hh>
 
 #include <elle/container/vector.hh>
 
@@ -66,4 +70,48 @@ BOOST_AUTO_TEST_CASE(simple_test)
   reactor::Thread main(sched, "main", run_test);
   sched.run();
   p.interrupt();
+}
+
+BOOST_AUTO_TEST_CASE(timeout)
+{
+  reactor::Scheduler sched;
+  reactor::Signal sig;
+  reactor::Signal go;
+  int port;
+
+  auto tcp_serv = [&]
+  {
+    reactor::network::TCPServer serv(sched);
+
+    auto* current = sched.current();
+    current->wait(go);
+    serv.listen(0);
+    port = serv.port();
+    sig.signal();
+    reactor::network::TCPSocket* client = serv.accept();
+    while (1)
+    {
+       reactor::Sleep pause(sched, 1_sec);
+       pause.run();
+    }
+  };
+  reactor::Thread tcp(sched, "tcp", tcp_serv);
+
+  auto run_test = [&]
+  {
+    go.signal();
+    auto* current = sched.current();
+    current->wait(sig);
+
+    auto get = curly::make_get();
+
+    get.option(CURLOPT_VERBOSE, 0);
+    get.option(CURLOPT_TIMEOUT, 2); // set timeout to 2sec
+    get.url(elle::sprintf("http://127.0.0.1:%d/", port));
+    curly::sched_request req(sched, std::move(get));
+    BOOST_CHECK_THROW(req.run(), elle::Exception);
+    tcp.terminate_now();
+  };
+  reactor::Thread main(sched, "main", run_test);
+  sched.run();
 }

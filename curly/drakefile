@@ -92,6 +92,7 @@ def configure(cxx_toolkit = None,
   cxx_config_sched += reactor.config
   cxx_config_sched.lib('reactor')
   cxx_config_sched.lib('curly_asio')
+  cxx_config_sched.lib_path_runtime('../../reactor/lib/')
 
   source_sched = drake.nodes(
       'curly/curly_sched.cc',

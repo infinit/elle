@@ -11,14 +11,12 @@
 # include <memory>
 # include <string>
 
-#define throw_if_ecode(easy, code) _throw_if_ecode((easy), (code))
-
 namespace curly
 {
   void
-  _throw_if_ecode(CURL* easy,
-                  CURLcode code,
-                  std::string const& error_message = "");
+  throw_if_ecode(CURL* easy,
+                 CURLcode code,
+                 std::string const& error_message);
 
   class curl_easy_deleter
   {
@@ -53,14 +51,17 @@ namespace curly
     std::ostream* _output = nullptr;
     std::istream* _input = nullptr;
 
-    CURL*
-    native_handle();
-
   public:
     request_configuration();
     request_configuration(request_configuration&&) = default;
     request_configuration(request_configuration const&) = delete;
     ~request_configuration() = default;
+
+    CURL*
+    native_handle() const;
+
+    CURL*
+    native_handle();
 
     // Configuration helpers.
     void

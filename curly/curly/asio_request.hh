@@ -21,6 +21,7 @@ namespace curly
     curl_service& _io;
     curly::request_configuration _config;
     boost::asio::ip::tcp::socket _socket;
+    char _error[CURL_ERROR_SIZE];
   
     static size_t
     write_helper(char* data,
@@ -48,6 +49,12 @@ namespace curly
 
     void
     async_perform(completion_callback const& f);
+
+    curly::request_configuration const&
+    config();
+
+    std::string
+    error_string() const;
   };
   
 } /* curly */

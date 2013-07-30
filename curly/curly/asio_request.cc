@@ -59,8 +59,10 @@ namespace curly
                              curly::request_configuration c):
     _io(asio::use_service<curl_service>(io)),
     _config{std::move(c)},
-    _socket{io, boost::asio::ip::tcp::v4()}
+    _socket{io, boost::asio::ip::tcp::v4()},
+    _error{}
   {
+    _config.option(CURLOPT_ERRORBUFFER, this->_error);
     _config.option(CURLOPT_OPENSOCKETFUNCTION, &asio_request::open_socket);
     _config.option(CURLOPT_OPENSOCKETDATA, this);
     _config.option(CURLOPT_PRIVATE, this);
@@ -84,5 +86,17 @@ namespace curly
   {
     this->_callback = f;
     _io.add(this);
+  }
+
+  curly::request_configuration const&
+  asio_request::config()
+  {
+    return this->_config;
+  }
+
+  std::string
+  asio_request::error_string() const
+  {
+    return std::string{this->_error};
   }
 } /* curly */

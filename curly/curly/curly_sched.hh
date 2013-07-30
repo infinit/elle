@@ -12,6 +12,11 @@ namespace curly
   private:
     curly::asio_request _request;
 
+    void
+    raise_if_ecode(CURL* easy,
+                   CURLcode code,
+                   std::string const& message);
+
   public:
     sched_request(reactor::Scheduler& sched,
                   curly::request_configuration conf);

@@ -11,11 +11,34 @@ namespace curly
   {}
 
   void
+  sched_request::raise_if_ecode(CURL* easy,
+                                CURLcode code,
+                                std::string const& message)
+  {
+    if (code != CURLE_OK)
+    {
+      char *url_ptr;
+      curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &url_ptr);
+
+      std::string url{url_ptr};
+      std::stringstream ss;
+      std::string msg{curl_easy_strerror(code)};
+      ss
+        << "error code: " << code
+        << ": " << msg
+        << ": " << url
+        << ": " << message;
+      this->_raise<elle::Exception>(ss.str());
+    }
+  }
+
+  void
   sched_request::_start()
   {
     auto fn = [&] (int code)
     {
-      (void)code;
+      this->raise_if_ecode(this->_request.config().native_handle(),
+		    (CURLcode)code, this->_request.error_string());
       this->_signal();
     };
     this->_request.async_perform(fn);
