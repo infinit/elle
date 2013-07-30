@@ -654,3 +654,16 @@ TEST(builder_test, build_uri_with_multiple_query_items) {
 //    ;
 //  ASSERT_EQ("http://www.example.com/?a=1&b=2", network::uri(builder));
 //}
+
+TEST(builder_test, construct_from_existing_uri) {
+  network::uri instance("http://www.example.com/");
+  network::uri_builder builder(instance);
+  ASSERT_EQ("http://www.example.com/", network::uri(builder));
+}
+
+TEST(builder_test, build_from_existing_uri) {
+  network::uri instance("http://www.example.com/");
+  network::uri_builder builder(instance);
+  builder.query("a", "1").query("b", "2").fragment("fragment");
+  ASSERT_EQ("http://www.example.com/?a=1&b=2#fragment", network::uri(builder));
+}

@@ -13,11 +13,37 @@
 #include <boost/algorithm/string/classification.hpp>
 
 namespace network {
-  uri_builder::uri_builder() {
+  uri_builder::uri_builder(const uri &existing_uri) {
+    if (auto scheme = existing_uri.scheme()) {
+      set_scheme(string_type(std::begin(*scheme), std::end(*scheme)));
+    }
 
+    if (auto user_info = existing_uri.user_info()) {
+      set_user_info(string_type(std::begin(*user_info), std::end(*user_info)));
+    }
+
+    if (auto host = existing_uri.host()) {
+      set_host(tring_type(std::begin(*host), std::end(*host)));
+    }
+
+    if (auto port = existing_uri.port()) {
+      set_port(string_type(std::begin(*port), std::end(*port)));
+    }
+
+    if (auto path = existing_uri.path()) {
+      set_path(string_type(std::begin(*path), std::end(*path)));
+    }
+
+    if (auto query = existing_uri.query()) {
+      set_query(string_type(std::begin(*query), std::end(*query)));
+    }
+
+    if (auto fragment = existing_uri.fragment()) {
+      set_fragment(string_type(std::begin(*fragment), std::end(*fragment)));
+    }
   }
 
-  uri_builder::~uri_builder() {
+  uri_builder::~uri_builder() NETWORK_URI_NOEXCEPT {
 
   }
 
