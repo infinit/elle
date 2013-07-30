@@ -52,8 +52,9 @@ namespace elle
 #elif defined(INFINIT_WINDOWS)
       elle::os::path::make_symlink(link.string(), target.string());
       if (elle::os::path::check_symlink(target.string()))
-        throw Exception("Symlink failed: '%s' -> '%s'.", link.string().c_str(),
-               target.string().c_str());
+        throw Exception{
+          elle::sprintf("Symlink failed: '%s' -> '%s'.", link.string().c_str(),
+               target.string().c_str())};
 #else
 # error "unsupported platform"
 #endif

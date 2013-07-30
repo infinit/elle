@@ -91,7 +91,7 @@ namespace elle
     ///
     /// this method writes the given data into the given file.
     ///
-    Status              File::Write(const Path&                 path,
+    Status              File::Write(Path const& path,
                                     Buffer const& data)
     {
       int               fd;
@@ -141,8 +141,8 @@ namespace elle
     ///
     /// this method reads the given file's content.
     ///
-    Status              File::Read(const Path&                  path,
-                                   standalone::Region& data)
+    Status              File::Read(Path const& path,
+                                   Buffer& data)
     {
       struct ::stat     status;
       HANDLE            fd;
@@ -150,15 +150,16 @@ namespace elle
 
       // does the file exist.
       if (File::Exist(path) == false)
-         throw Exception("the file '%s' does not seem to exist", path);
+         throw Exception{
+           elle::sprintf("the file '%s' does not seem to exist", path)
+         };
 
       // retrieve information.
       if (::stat(path.string().c_str(), &status) == -1)
-        throw Exception(::strerror(errno));
+        throw Exception{::strerror(errno)};
 
-      // prepare the data.
-      if (data.Prepare(static_cast<Natural32>(status.st_size)) == Status::Error)
-        throw Exception("unable to prepare the region");
+      // prealocate the buffer.
+      data.capacity(status.st_size);
 
       // open the file.
       fd = ::CreateFile(path.string().c_str(), GENERIC_READ,
@@ -167,16 +168,18 @@ namespace elle
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        throw Exception("failed to open %s", path.string().c_str());
+        throw Exception{
+          elle::sprintf("failed to open %s", path.string().c_str())
+        };
 
       // read the file's content.
-      while (roffset < data.capacity)
+      while (roffset < data.capacity())
         {
           DWORD rbytes;
 
           BOOL succeed = ::ReadFile(fd,
-                                    data.contents + roffset,
-                                    data.capacity - roffset,
+                                    data.contents() + roffset,
+                                    data.capacity() - roffset,
                                     &rbytes,
                                     nullptr);
 
@@ -192,7 +195,7 @@ namespace elle
           roffset += rbytes;
         }
 
-      data.size = roffset;
+      data.size(roffset);
 
       // close the file.
       ::CloseHandle(fd);
@@ -203,8 +206,8 @@ namespace elle
     ///
     /// this method writes the given data into the given file.
     ///
-    Status              File::Write(const Path&                 path,
-                                    const standalone::Region& data)
+    Status              File::Write(Path const& path,
+                                    Buffer const& data)
     {
       HANDLE            fd;
       DWORD             woffset = 0;
@@ -220,16 +223,18 @@ namespace elle
                         nullptr);
 
       if (fd == INVALID_HANDLE_VALUE)
-        throw Exception("failed to open %s", path.string().c_str());
+        throw Exception{
+          elle::sprintf("failed to open %s", path.string().c_str())
+        };
 
       // write the text to the file.
-      while (woffset < data.size)
+      while (woffset < data.size())
         {
           DWORD         wbytes;
           BOOL          succeed;
 
-          succeed = ::WriteFile(fd, data.contents + woffset,
-                                data.size - woffset, &wbytes, nullptr);
+          succeed = ::WriteFile(fd, data.contents() + woffset,
+                                data.size() - woffset, &wbytes, nullptr);
 
           if (!succeed)
             {
