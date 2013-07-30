@@ -2,6 +2,7 @@
 # define ELLE_FORMAT_JSON_DICT_HXX
 
 # include <cassert>
+# include <elle/assert.hh>
 
 # include "Factory.hh"
 
@@ -66,7 +67,7 @@ namespace elle
           delete _value;
           _value = nullptr;
           _value = val.clone().release();
-          assert(_value != nullptr);
+          ELLE_ASSERT_NEQ(_value, nullptr);
           _map[_key] = _value;
           return *this;
         }
@@ -81,7 +82,7 @@ namespace elle
         {
           delete _value;
           _value = val.release();
-          assert(_value != nullptr);
+          ELLE_ASSERT_NEQ(_value, nullptr);
           _map[_key] = _value;
           return *this;
         }

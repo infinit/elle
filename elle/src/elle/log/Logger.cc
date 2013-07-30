@@ -46,7 +46,7 @@ namespace elle
       void
       unindent()
       {
-        assert(this->indentation() >= 1);
+        ELLE_ASSERT_GTE(this->indentation(), 1);
         this->indentation() -= 1;
       }
 

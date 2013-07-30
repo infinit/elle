@@ -1,5 +1,6 @@
 #include <ostream>
 
+#include <elle/assert.hh>
 #include "Array.hh"
 #include "Dictionary.hh"
 
@@ -62,7 +63,7 @@ namespace elle
         auto res = std::unique_ptr<Dictionary>(new Dictionary);
         for (auto it = _map.begin(), end = _map.end(); it != end; ++it)
           {
-            assert(it->second != nullptr);
+            ELLE_ASSERT_NEQ(it->second, nullptr);
             res->_map[it->first] = it->second->clone().release();
           }
         return std::unique_ptr<Object>(res.release());

@@ -39,9 +39,9 @@ Base64Archive<ArchiveMode::Output>::~Base64Archive()
   case 0:
     return;
   default:
-    assert(false && "Never reached");
+    ELLE_ASSERT(false);
     }
-  assert(_trailingChars.size() > 0);
+  ELLE_ASSERT_GT(_trailingChars.size(), 0);
   BaseClass::SaveBinary(res, 4);
 }
 
@@ -49,7 +49,7 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
 {
   if (size == 0)
     return;
-  assert(data != nullptr);
+  ELLE_ASSERT_NEQ(data, nullptr);
 
   size_t i = 0;
   unsigned char const* ptr = static_cast<unsigned char const*>(data);
@@ -63,15 +63,15 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
     {
       if (size + _trailingChars.size() < 3)
         {
-          assert(size == 1);
-          assert(_trailingChars.size() == 1);
+          ELLE_ASSERT_EQ(size, 1);
+          ELLE_ASSERT_EQ(_trailingChars.size(), 1);
           _trailingChars.push_back(*ptr);
           return;
         }
       c1 = _trailingChars[0];
       if (_trailingChars.size() > 1)
         {
-          assert(_trailingChars.size() == 2);
+          ELLE_ASSERT_EQ(_trailingChars.size(), 2);
           c2 = _trailingChars[1];
           c3 = *ptr++;
           size -= 1;
@@ -113,7 +113,7 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
     case 0:
       break;
     default:
-      assert(false && "Never reached");
+      ELLE_ASSERT(false);
       break;
     }
 
@@ -175,7 +175,7 @@ void Base64Archive<ArchiveMode::Input>::LoadBinary(void* data, size_t size)
           _dataLeft[1] = ((from[2] & 0x3) << 6) + from[3];
           break;
         default:
-          assert(false && "Never reached");
+          ELLE_ASSERT(false);
         }
     }
 }

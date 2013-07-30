@@ -11,7 +11,7 @@ File::~File()
        end = _sections.end();
   for (; it != end; ++it)
     {
-      assert(it->second != nullptr);
+      ELLE_ASSERT_NEQ(it->second, nullptr);
       delete it->second;
     }
   _sections.clear();
@@ -28,7 +28,7 @@ Section& File::operator [](elle::String const& section_name)
     }
   else
     section = it->second;
-  assert(section != nullptr);
+  ELLE_ASSERT_NEQ(section, nullptr);
   return *section;
 }
 
@@ -37,7 +37,7 @@ Section const& File::operator [](elle::String const& section_name) const
   auto it = _sections.find(section_name);
   if (it != _sections.end())
     {
-      assert(it->second != nullptr);
+      ELLE_ASSERT_NEQ(it->second, nullptr);
       return *it->second;
     }
   throw std::runtime_error("KeyError: '" + section_name + "'");
@@ -55,7 +55,7 @@ Section const* File::Contains(elle::String const& section_name) const
   auto it = _sections.find(section_name);
   if (it != _sections.end())
     {
-      assert(it->second != nullptr);
+      ELLE_ASSERT_NEQ(it->second, nullptr);
       return it->second;
     }
   return nullptr;

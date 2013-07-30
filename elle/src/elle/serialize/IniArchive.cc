@@ -36,7 +36,7 @@ OutputIniArchive& OutputIniArchive::operator <<(elle::format::ini::File const& i
        end = ini_file.end();
   for (; it != end; ++it)
     {
-      assert(it->second != nullptr);
+      ELLE_ASSERT_NEQ(it->second, nullptr);
       *this << *it->second;
     }
   return *this;

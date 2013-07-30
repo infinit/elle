@@ -28,7 +28,7 @@ namespace elle
       void
       Array::push_back(std::unique_ptr<Object>&& value)
       {
-        assert(value.get() != nullptr);
+        ELLE_ASSERT_NEQ(value.get(), nullptr);
         _value.push_back(value.get());
         value.release();
       }

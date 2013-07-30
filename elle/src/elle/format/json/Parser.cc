@@ -1,4 +1,3 @@
-#include <cassert>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -128,7 +127,7 @@ namespace elle
         ObjectPtr res;
         if (!_ReadJSONValue(input, res))
           throw elle::Exception("Couldn't read any JSON value");
-        assert(res && "true returned, the object should not be null");
+        ELLE_ASSERT_EQ(bool(res), true); // true returned, the object should not be null
         return res;
       }
 
@@ -185,9 +184,9 @@ namespace elle
                               ObjectPtr& out)
       {
         ELLE_DUMP("Trying reading int.");
-        assert(in.good());
+        ELLE_ASSERT(in.good());
         auto pos = in.tellg();
-        assert(pos != -1);
+        ELLE_ASSERT_NEQ(pos, -1);
         json::Integer::Type i;
 
         in >> i;
@@ -195,7 +194,7 @@ namespace elle
         if (!in.eof() && in.good())
           {
             auto charpos = in.tellg();
-            assert(pos != -1 && "Corruption");
+            ELLE_ASSERT_NEQ(pos, -1); // Corruption
             in >> c;
             if (c != '.')
               in.seekg(charpos);
@@ -204,7 +203,7 @@ namespace elle
           {
             in.clear();
             in.seekg(pos);
-            assert(in.good());
+            ELLE_ASSERT(in.good());
             return false;
           }
         out.reset(new json::Integer(i));
@@ -224,7 +223,7 @@ namespace elle
           {
             in.clear();
             in.seekg(pos);
-            assert(in.good());
+            ELLE_ASSERT(in.good());
             return false;
           }
         out.reset(new json::Float(f));
@@ -390,7 +389,8 @@ namespace elle
               }
             else
               {
-                assert(dynamic_cast<json::String*>(key.get()) != nullptr);
+                ELLE_ASSERT_NEQ(dynamic_cast<json::String*>(key.get()),
+                  nullptr);
 
                 _Skip(in);
 

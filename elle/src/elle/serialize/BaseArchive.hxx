@@ -156,7 +156,7 @@ namespace elle
     void
     BaseArchive<mode_, Archive, CT, STS>::LoadConstruct(T*& ptr)
     {
-      assert(ptr == nullptr);
+      ELLE_ASSERT_EQ(ptr, nullptr);
       //Format classVersion(0);
       //if (StoreFormat<T>::value == true)
       //  Access::Load(this->self(), classVersion);
@@ -535,7 +535,7 @@ namespace elle
     typename std::enable_if<std::is_enum<T>::value == true>::type
     BaseArchive<mode_, Archive, CT, STS>::Save(T value)
     {
-      assert(static_cast<unsigned int>(value) < 65536);
+      ELLE_ASSERT_LT(static_cast<unsigned int>(value), 65536);
       Access::Save(this->self(), static_cast<uint16_t>(value));
     }
 

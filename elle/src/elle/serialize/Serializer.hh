@@ -118,7 +118,7 @@ namespace elle
       template <typename Archive>
       static inline void LoadConstruct(Archive& archive, T*& ptr)
       {
-        assert(ptr == nullptr);
+        ELLE_ASSERT_EQ(ptr, nullptr);
         static_assert(!std::is_pointer<T>::value, "You cannot construct pointers...");
         ptr = new T{};
         archive >> const_cast<typename std::remove_cv<T>::type&>(*ptr);

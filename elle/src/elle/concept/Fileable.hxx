@@ -36,7 +36,7 @@ namespace elle
                            this, path);
 
           typedef serialize::_Serializable<Archive> interface_t;
-          assert(dynamic_cast<interface_t*>(this) != nullptr);
+          ELLE_ASSERT_NE(dynamic_cast<interface_t*>(this), nullptr);
           static_cast<interface_t*>(this)->deserialize(in);
         }
       catch (std::exception const& e)
@@ -72,7 +72,7 @@ namespace elle
                            this, path);
 
           typedef serialize::_Serializable<Archive> interface_t;
-          assert(dynamic_cast<interface_t const*>(this) != nullptr);
+          ELLE_ASSERT_NEQ(dynamic_cast<interface_t const*>(this), nullptr);
           static_cast<interface_t const*>(this)->serialize(out);
         }
       catch (std::exception const& e)
