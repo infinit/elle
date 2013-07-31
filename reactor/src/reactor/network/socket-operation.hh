@@ -35,7 +35,17 @@ namespace reactor
 
         virtual void _abort()
         {
-          socket()->cancel();
+          try
+          {
+            socket()->cancel();
+          }
+          catch (boost::system::system_error const&)
+          {
+            // Cancel may fail if for instance the socket was closed
+            // manually. If cancel fails, assume the operation is de facto
+            // cancelled and we can carry on. I no of no case were we "were not
+            // actually able to cancel the operation".
+          }
           _signal();
         }
 
