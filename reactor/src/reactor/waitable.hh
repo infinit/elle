@@ -9,6 +9,7 @@
 # include <elle/Exception.hh>
 # include <elle/Printable.hh>
 
+# include <reactor/duration.hh>
 # include <reactor/fwd.hh>
 
 namespace reactor
@@ -48,9 +49,13 @@ namespace reactor
     private:
       std::string _name;
 
-    /*--------.
-    | Waiting |
-    `--------*/
+  /*--------.
+  | Waiting |
+  `--------*/
+  public:
+    bool
+    wait(DurationOpt timeout = DurationOpt());
+
     protected:
       /** Wake a thread when we are done, if we must be waited.
        *

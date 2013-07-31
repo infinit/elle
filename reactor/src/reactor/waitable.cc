@@ -3,6 +3,7 @@
 #include <elle/log.hh>
 #include <elle/assert.hh>
 
+#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 #include <reactor/waitable.hh>
 
@@ -50,6 +51,12 @@ namespace reactor
   /*--------.
   | Waiting |
   `--------*/
+
+  bool
+  Waitable::wait(DurationOpt timeout)
+  {
+    return reactor::Scheduler::scheduler()->current()->wait(*this, timeout);
+  }
 
   int
   Waitable::_signal()
