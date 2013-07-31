@@ -175,19 +175,19 @@ namespace reactor
       Read read(scheduler(), this, buf, some);
       bool finished;
       try
-        {
-          finished  = read.run(timeout);
-        }
+      {
+        finished  = read.run(timeout);
+      }
       catch (...)
-        {
-          ELLE_TRACE("%s: read threw", *this);
-          throw;
-        }
+      {
+        ELLE_TRACE("%s: read threw: %s", *this, elle::exception_string());
+        throw;
+      }
       if (!finished)
-        {
-          ELLE_TRACE("%s: read timed out", *this);
-          throw TimeOut();
-        }
+      {
+        ELLE_TRACE("%s: read timed out", *this);
+        throw TimeOut();
+      }
       ELLE_TRACE("%s: completed read of %s bytes: %s",
                  *this, read.read(), buf);
       ELLE_DUMP("%s: data: 0x%s", *this,
