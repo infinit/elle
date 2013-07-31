@@ -109,6 +109,8 @@ namespace reactor
       auto action = [&] () {
         try
         {
+          // XXX: ensures transitions were registered.
+          sched.current()->yield();
           state->_action();
         }
         catch (elle::Exception&)

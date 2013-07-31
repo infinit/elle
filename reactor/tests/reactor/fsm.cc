@@ -428,6 +428,25 @@ transition_action_throw()
   BOOST_CHECK(!beacon4);
 }
 
+// Check state can't trigger transition before they add the time to actually
+// wait on their event.
+static
+void
+transition_give_time()
+{
+  Machine m;
+
+  reactor::Signal trigger;
+
+  State& s1 = m.state_make([&] { trigger.signal(); });
+  State& s2 = m.state_make();
+  m.transition_add(s1, s2, reactor::Waitables{&trigger});
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  sched.run();
+}
+
 static
 bool
 test_suite()
@@ -450,6 +469,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(transition_catch));
   fsm->add(BOOST_TEST_CASE(transition_actions));
   fsm->add(BOOST_TEST_CASE(transition_action_throw));
+  fsm->add(BOOST_TEST_CASE(transition_give_time));
   return true;
 }
 
