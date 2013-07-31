@@ -96,6 +96,11 @@
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
   ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_)                             \
 
+# define ELLE_ATTRIBUTE_rw(_type_, _name_)                              \
+  ELLE_ATTRIBUTE(_type_, _name_)                                        \
+  ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_);                            \
+  ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_);                            \
+
 # define ELLE_ATTRIBUTE_RX(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
   ELLE_ATTRIBUTE_RX_ACCESSORS(_type_, _name_)
