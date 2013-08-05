@@ -23,7 +23,7 @@ namespace network {
     }
 
     if (auto host = existing_uri.host()) {
-      set_host(tring_type(std::begin(*host), std::end(*host)));
+      set_host(string_type(std::begin(*host), std::end(*host)));
     }
 
     if (auto port = existing_uri.port()) {

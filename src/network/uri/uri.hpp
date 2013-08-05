@@ -161,7 +161,7 @@ namespace network {
     uri make_reference(const uri &other, uri_comparison_level level) const;
     uri resolve(const uri &other, uri_comparison_level level) const;
 
-    int compare(const uri &other, uri_comparison_level level) const;
+    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
 
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_user_info(InputIter first, InputIter last, OutputIter out) {
