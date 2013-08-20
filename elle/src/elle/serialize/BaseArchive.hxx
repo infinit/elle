@@ -535,7 +535,7 @@ namespace elle
     typename std::enable_if<std::is_enum<T>::value == true>::type
     BaseArchive<mode_, Archive, CT, STS>::Save(T value)
     {
-      ELLE_ASSERT_LT(static_cast<unsigned int>(value), 65536);
+      ELLE_ASSERT_LT(static_cast<unsigned int>(value), 65536u);
       Access::Save(this->self(), static_cast<uint16_t>(value));
     }
 

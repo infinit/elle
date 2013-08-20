@@ -153,7 +153,7 @@ namespace elle
           delete ptr;
           throw;
         }
-        ELLE_ASSERT_NE(ptr, nullptr);
+        ELLE_ASSERT_NEQ(ptr, nullptr);
         return std::unique_ptr<T>(ptr);
       }
 
