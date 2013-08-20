@@ -33,7 +33,6 @@ def configure(cxx_toolkit = None,
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   local_cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
-  local_cxx_config += config
   local_cxx_config.lib_path_runtime('.')
 
   # Boost
@@ -46,7 +45,7 @@ def configure(cxx_toolkit = None,
     local_cxx_config.lib('stuncore')
     local_cxx_config.lib('stuncommon')
     local_cxx_config.lib('crypto')
-    local_cxx_config.define('REACTOR_HAVE_STUN')
+    config.define('REACTOR_HAVE_STUN')
 
   # Elle
   elle = elle or drake.include('../elle')
@@ -58,7 +57,9 @@ def configure(cxx_toolkit = None,
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
   udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
 
-  #
+  local_cxx_config += config
+
+  # Boost libraries
   local_cxx_config += boost.config_signals()
   local_cxx_config += boost.config_system()
   local_cxx_config.enable_debug_symbols()
