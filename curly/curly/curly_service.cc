@@ -126,7 +126,7 @@ namespace curly
     ELLE_DEBUG("concurrency: %s", this->_concurrent);
     if (this->_concurrent == 0)
       this->_timer.cancel();
-    else
+    else if (this->_requests.find(req) != this->_requests.end())
       this->dispatch_action(what, sockfd, req);
   }
 
