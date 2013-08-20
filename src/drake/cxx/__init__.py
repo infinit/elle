@@ -31,6 +31,9 @@ class Config:
         def __hash__(self):
             return hash(self.name)
 
+        def __repr__(self):
+            return 'Library(%r, %r)' % (self.name, self.static)
+
     def __init__(self, model = None):
         if model is None:
             self.__debug = False
