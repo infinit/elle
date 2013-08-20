@@ -255,6 +255,10 @@ namespace reactor
   {
     if (e == boost::system::errc::operation_canceled)
       return;
+    // If we're not frozen anymore, the task must have ended in the same asio
+    // poll than the timeout: Thread::_wake was just called. Ignore the timeout.
+    if (state() != state::frozen)
+      return;
     ELLE_TRACE("%s: timed out", *this);
     this->_timeout = true;
     this->_wait_abort();

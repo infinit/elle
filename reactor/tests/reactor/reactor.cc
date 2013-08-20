@@ -8,6 +8,7 @@
 #include <reactor/rw-mutex.hh>
 #include <reactor/semaphore.hh>
 #include <reactor/signal.hh>
+#include <reactor/sleep.hh>
 #include <reactor/storage.hh>
 #include <reactor/thread.hh>
 
@@ -598,6 +599,27 @@ test_timeout_threw()
   }
   catch (BeaconException const&)
   {}
+}
+
+/*---------------------.
+| Timeout and finished |
+`---------------------*/
+
+static
+void
+test_timeout_finished()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread waiter(sched, "waiter", [&] {
+      reactor::Sleep s(sched, 10_ms);
+      s.start();
+      // Block the IO service to make sure the task times out in the same cycle
+      // it finishes.
+      sched.io_service().post([] { ::usleep(200000); });
+      wait(s, 11_ms);
+    });
+  sched.run();
 }
 
 /*--------.
@@ -1461,6 +1483,7 @@ test_suite()
   timeout->add(BOOST_TEST_CASE(test_timeout_dont));
   timeout->add(BOOST_TEST_CASE(test_timeout_aborted));
   timeout->add(BOOST_TEST_CASE(test_timeout_threw));
+  timeout->add(BOOST_TEST_CASE(test_timeout_finished));
 
   boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
   boost::unit_test::framework::master_test_suite().add(vthread);
