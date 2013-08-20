@@ -227,7 +227,8 @@ namespace curly
         req->_socket.cancel();
         req->_callback(res);
         ELLE_DEBUG("request(%p) is complete", req);
-        assert(this->_requests.erase(req) == 1);
+        int removed = this->_requests.erase(req);
+        ELLE_ASSERT(removed == 1);
         curl_multi_remove_handle(this->_multi.get(), easy);
       }
     }
