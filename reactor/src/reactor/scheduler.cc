@@ -26,7 +26,8 @@ namespace reactor
     _frozen(),
     _io_service(),
     _io_service_work(new boost::asio::io_service::work(_io_service)),
-    _manager()
+    _manager(),
+    _running_thread()
   {
     this->_eptr = nullptr;
   }
@@ -77,8 +78,10 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: run", *this);
     reactor::scheduler(nullptr);
     ELLE_ASSERT(!scheduler());
+    this->_running_thread = std::this_thread::get_id();
     while (step())
       /* nothing */;
+    this->_running_thread = std::thread::id();
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
@@ -427,6 +430,7 @@ namespace reactor
   Scheduler::mt_run<void>(const std::string& name,
                           const boost::function<void ()>& action)
   {
+    ELLE_ASSERT_NEQ(this->_running_thread, std::this_thread::get_id());
     // Bounce on the non-void case with a dummy int value.
     this->mt_run<int>(name, [&] () { action(); return 42; });
   }

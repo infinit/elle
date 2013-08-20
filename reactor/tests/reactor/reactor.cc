@@ -695,7 +695,6 @@ test_multithread_run()
   sched->run();
 }
 
-
 static
 void
 test_multithread_run_exception()
@@ -714,6 +713,21 @@ test_multithread_run_exception()
     BeaconException);
   sched.mt_run<void>("terminator", [&] () { terminate.signal(); });
   runner.join();
+}
+
+static
+void
+test_multithread_deadlock_assert()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread t(sched, "thread",
+                    [&]
+                    {
+                      BOOST_CHECK_THROW(sched.mt_run<void>("noop", [] {}),
+                                        std::exception);
+                    });
+  sched.run();
 }
 
 /*----------.
@@ -1457,6 +1471,7 @@ test_suite()
   mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake));
   mt->add(BOOST_TEST_CASE(test_multithread_run));
   mt->add(BOOST_TEST_CASE(test_multithread_run_exception));
+  mt->add(BOOST_TEST_CASE(test_multithread_deadlock_assert));
 
   boost::unit_test::test_suite* sem = BOOST_TEST_SUITE("Semaphore");
   boost::unit_test::framework::master_test_suite().add(sem);

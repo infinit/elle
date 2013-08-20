@@ -161,6 +161,7 @@ namespace reactor
     private:
       friend class Thread;
       backend::Manager _manager;
+      std::thread::id _running_thread;
   };
 }
 
