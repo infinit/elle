@@ -90,19 +90,20 @@ def configure(cxx_toolkit = None,
   cxx_config_sched = drake.cxx.Config(cxx_config_asio)
   cxx_config_sched += cxx_config_asio
   cxx_config_sched += reactor.config
-  cxx_config_sched.lib('reactor')
-  cxx_config_sched.lib('curly_asio')
-  cxx_config_sched.lib_path_runtime('../../reactor/lib/')
 
   source_sched = drake.nodes(
       'curly/curly_sched.cc',
       'curly/curly_sched.hh',
   ) + [lib_asio_dynamic]
 
-  lib_sched_static = drake.cxx.StaticLib('lib/curly_sched', source_sched,
-          cxx_toolkit, cxx_config_sched)
-  lib_sched_dynamic = drake.cxx.DynLib('lib/curly_sched', source_sched,
-          cxx_toolkit, cxx_config_sched)
+  lib_sched_static = \
+    drake.cxx.StaticLib('lib/curly_sched',
+                        source_sched + [reactor.lib_static, lib_asio_static],
+                        cxx_toolkit, cxx_config_sched)
+  lib_sched_dynamic = \
+    drake.cxx.DynLib('lib/curly_sched',
+                     source_sched + [reactor.lib_dynamic, lib_asio_dynamic],
+                     cxx_toolkit, cxx_config_sched)
 
   # Build
   rule_build = drake.Rule('build')
@@ -135,21 +136,22 @@ def configure(cxx_toolkit = None,
 
   for test in tests_sched:
     import os
-    config_test = drake.cxx.Config(cxx_config)
-    config_test += reactor.config
-    config_test.lib_path_runtime('../../../lib/')
-    config_test.lib_path_runtime('../../reactor/lib/')
-    config_test.lib_path_runtime('../lib')
-    config_test.lib('curly')
-    config_test.lib('curly_asio')
-    config_test.lib('curly_sched')
+    cxx_config_tests = drake.cxx.Config(cxx_config)
+    cxx_config_tests += reactor.config
+    cxx_config_tests.lib_path_runtime('../../../lib/')
+    cxx_config_tests.lib_path_runtime('../../reactor/lib/')
+    cxx_config_tests.lib_path_runtime('../lib')
+    cxx_config_tests.lib('curly')
+    cxx_config_tests.lib('curly_asio')
+    cxx_config_tests.lib('curly_sched')
+    cxx_config_tests += boost.config_test()
     name, ext = os.path.splitext(os.path.basename(test.sources))
     bin_path = drake.Path('tests/%s' % name)
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(test.sources) +
                                [lib_dynamic, lib_sched_dynamic,
                                    reactor.lib_dynamic, elle.lib_dynamic],
-                               cxx_toolkit, config_test)
+                               cxx_toolkit, cxx_config_tests)
     rule_tests << bin
     runner = drake.Runner(bin, test.args)
     runner.reporting = drake.Runner.Reporting.on_failure
