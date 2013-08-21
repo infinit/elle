@@ -165,6 +165,7 @@ int main()
 
   global.foo();
 
+  ELLE_LOG("Multi\nline comment\nOh yeah\n\n\nPIF\n\n\n");
   elle::print("tests done.");
   return 0;
 }
