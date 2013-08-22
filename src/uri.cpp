@@ -265,43 +265,43 @@ namespace network {
 
   } // namespace
 
-  boost::optional<boost::string_ref> uri::scheme() const {
+  boost::optional<boost::string_ref> uri::scheme() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.scheme?
       to_string_ref(uri_, *uri_parts_.scheme)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::user_info() const {
+  boost::optional<boost::string_ref> uri::user_info() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.hier_part.user_info?
       to_string_ref(uri_, *uri_parts_.hier_part.user_info)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::host() const {
+  boost::optional<boost::string_ref> uri::host() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.hier_part.host?
       to_string_ref(uri_, *uri_parts_.hier_part.host)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::port() const {
+  boost::optional<boost::string_ref> uri::port() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.hier_part.port?
       to_string_ref(uri_, *uri_parts_.hier_part.port)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::path() const {
+  boost::optional<boost::string_ref> uri::path() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.hier_part.path?
       to_string_ref(uri_, *uri_parts_.hier_part.path)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::query() const {
+  boost::optional<boost::string_ref> uri::query() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.query ?
       to_string_ref(uri_, *uri_parts_.query)
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::fragment() const {
+  boost::optional<boost::string_ref> uri::fragment() const NETWORK_URI_NOEXCEPT {
     return uri_parts_.fragment?
       to_string_ref(uri_, *uri_parts_.fragment)
       : boost::optional<boost::string_ref>();

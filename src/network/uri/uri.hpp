@@ -123,14 +123,14 @@ namespace network {
     const_iterator begin() const;
     const_iterator end() const;
 
-    boost::optional<string_view> scheme() const;
-    boost::optional<string_view> user_info() const;
-    boost::optional<string_view> host() const;
-    boost::optional<string_view> port() const;
-    boost::optional<string_view> path() const;
-    boost::optional<string_view> query() const;
-    boost::optional<string_view> fragment() const;
-    boost::optional<string_view> authority() const;
+    boost::optional<string_view> scheme() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> user_info() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> host() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> port() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> path() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> query() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> fragment() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> authority() const NETWORK_URI_NOEXCEPT;
 
 #if !defined(_MSC_VER)
     template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >

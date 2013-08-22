@@ -60,7 +60,7 @@ namespace network {
     };
 
     template <class T>
-    struct port_converter<T, typename std::enable_if<std::is_integral<T>::value>::type> {
+    struct port_converter<T, typename std::enable_if<std::is_integral<typename std::decay<T>::type>::value>::type> {
 
       uri::string_type operator () (std::uint16_t port) const {
 	return std::to_string(port);
@@ -101,7 +101,7 @@ namespace network {
 
     uri_builder() NETWORK_URI_DEFAULTED_FUNCTION;
 
-    explicit uri_builder(const uri &existing_uri);
+    explicit uri_builder(const uri &base_uri);
 
     ~uri_builder() NETWORK_URI_NOEXCEPT;
 

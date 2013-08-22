@@ -13,32 +13,32 @@
 #include <boost/algorithm/string/classification.hpp>
 
 namespace network {
-  uri_builder::uri_builder(const uri &existing_uri) {
-    if (auto scheme = existing_uri.scheme()) {
+  uri_builder::uri_builder(const uri &base_uri) {
+    if (auto scheme = base_uri.scheme()) {
       set_scheme(string_type(std::begin(*scheme), std::end(*scheme)));
     }
 
-    if (auto user_info = existing_uri.user_info()) {
+    if (auto user_info = base_uri.user_info()) {
       set_user_info(string_type(std::begin(*user_info), std::end(*user_info)));
     }
 
-    if (auto host = existing_uri.host()) {
+    if (auto host = base_uri.host()) {
       set_host(string_type(std::begin(*host), std::end(*host)));
     }
 
-    if (auto port = existing_uri.port()) {
+    if (auto port = base_uri.port()) {
       set_port(string_type(std::begin(*port), std::end(*port)));
     }
 
-    if (auto path = existing_uri.path()) {
+    if (auto path = base_uri.path()) {
       set_path(string_type(std::begin(*path), std::end(*path)));
     }
 
-    if (auto query = existing_uri.query()) {
+    if (auto query = base_uri.query()) {
       set_query(string_type(std::begin(*query), std::end(*query)));
     }
 
-    if (auto fragment = existing_uri.fragment()) {
+    if (auto fragment = base_uri.fragment()) {
       set_fragment(string_type(std::begin(*fragment), std::end(*fragment)));
     }
   }
