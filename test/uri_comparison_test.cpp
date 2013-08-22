@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -23,7 +23,7 @@ TEST(uri_comparison_test, equality_test_capitalized_scheme) {
 TEST(uri_comparison_test, equality_test_capitalized_scheme_with_case_normalization) {
   network::uri lhs("http://www.example.com/");
   network::uri rhs("HTTP://www.example.com/");
-  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::case_normalization), 0);
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
 }
 
 //TEST(uri_comparison_test, equality_test_capitalized_host) {

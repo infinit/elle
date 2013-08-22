@@ -18,8 +18,7 @@ struct uri_resolve_test : public ::testing::Test {
 
   uri::string_type resolved(const network::uri& base, uri::string_type reference) {
     uri reference_uri(reference);
-    return base.resolve(reference_uri,
-      network::uri_comparison_level::string_comparison).string();
+    return base.resolve(reference_uri).string();
   }
 
   uri::string_type resolved(uri::string_type base, uri::string_type reference) {
@@ -219,7 +218,7 @@ TEST_F(uri_resolve_test, issue_resolve_from_copy) {
   network::uri uri("http:/example.com/path/");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
-  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  auto result = base.resolve(copy);
   ASSERT_EQ("http:/example.com/path/", result);
 }
 
@@ -229,7 +228,7 @@ TEST_F(uri_resolve_test, issue_resolve_from_move) {
   network::uri uri("http:/example.com/path/");
   network::uri copy = std::move(uri);
   ASSERT_TRUE(copy.is_opaque());
-  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  auto result = base.resolve(copy);
   ASSERT_EQ("http:/example.com/path/", result);
 }
 
@@ -239,7 +238,7 @@ TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_query) {
   network::uri uri("http:/example.com/path/?query#fragment");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
-  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  auto result = base.resolve(copy);
   ASSERT_EQ("query", *uri.query());
   ASSERT_EQ("query", *copy.query());
   ASSERT_EQ("query", *result.query());
@@ -251,6 +250,6 @@ TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_fragment) {
   network::uri uri("http:/example.com/path/?query#fragment");
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
-  auto result = base.resolve(copy, network::uri_comparison_level::string_comparison);
+  auto result = base.resolve(copy);
   ASSERT_EQ("fragment", *result.fragment());
 }

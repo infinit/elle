@@ -24,20 +24,13 @@ namespace network {
     uri::string_type normalize_path(uri::string_view path, uri_comparison_level level) {
       uri::string_type normalized(std::begin(path), std::end(path));
 
-      if ((uri_comparison_level::case_normalization == level) ||
-	  (uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
+      if (uri_comparison_level::syntax_based == level) {
 	//detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
 	boost::for_each(normalized, normalize_percent_encoded());
-      }
 
-      if ((uri_comparison_level::percent_encoding_normalization == level) ||
-	  (uri_comparison_level::path_segment_normalization == level)) {
 	normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 			 std::end(normalized));
-      }
 
-      if (uri_comparison_level::path_segment_normalization == level) {
 	normalized = normalize_path_segments(normalized);
       }
 

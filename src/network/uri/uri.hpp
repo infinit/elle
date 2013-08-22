@@ -47,11 +47,9 @@ namespace network {
 
   enum class uri_comparison_level {
     string_comparison,
-    case_normalization,
-    percent_encoding_normalization,
-    path_segment_normalization,
-    scheme_normalization,
-    protocol_normalization
+    syntax_based,
+    scheme_based,
+    protocol_based
   };
 
   class uri_builder;
@@ -134,7 +132,6 @@ namespace network {
     boost::optional<string_view> fragment() const;
     boost::optional<string_view> authority() const;
 
-    string_type native() const;
 #if !defined(_MSC_VER)
     template <typename CharT, class CharTraits = std::char_traits<CharT>, class Alloc = std::allocator<CharT> >
     std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc = Alloc()) const {
@@ -154,12 +151,10 @@ namespace network {
     bool empty() const NETWORK_URI_NOEXCEPT;
     bool is_absolute() const NETWORK_URI_NOEXCEPT;
     bool is_opaque() const NETWORK_URI_NOEXCEPT;
-    bool absolute() const NETWORK_URI_NOEXCEPT { return is_absolute(); }
-    bool opaque() const NETWORK_URI_NOEXCEPT { return is_opaque(); }
 
     uri normalize(uri_comparison_level level) const;
-    uri make_reference(const uri &other, uri_comparison_level level) const;
-    uri resolve(const uri &other, uri_comparison_level level) const;
+    uri make_reference(const uri &other) const;
+    uri resolve(const uri &other) const;
 
     int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
 

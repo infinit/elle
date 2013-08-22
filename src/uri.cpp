@@ -327,10 +327,6 @@ namespace network {
     return to_string_ref(first, last);
   }
 
-  uri::string_type uri::native() const {
-    return uri_;
-  }
-
   std::string uri::string() const {
     return uri_;
   }
@@ -364,9 +360,7 @@ namespace network {
     detail::uri_parts<string_type::iterator> parts;
     advance_parts(normalized, parts, uri_parts_);
 
-    if ((uri_comparison_level::case_normalization == level) ||
-	(uri_comparison_level::percent_encoding_normalization == level) ||
-	(uri_comparison_level::path_segment_normalization == level)) {
+    if (uri_comparison_level::syntax_based == level) {
       // All alphabetic characters in the scheme and host are
       // lower-case...
       if (parts.scheme) {
@@ -379,18 +373,13 @@ namespace network {
 
       // ...except when used in percent encoding
       boost::for_each(normalized, detail::normalize_percent_encoded());
-    }
 
-    if ((uri_comparison_level::percent_encoding_normalization == level) ||
-	(uri_comparison_level::path_segment_normalization == level)) {
       // parts are invalidated here
       // there's got to be a better way of doing this that doesn't
       // mean parsing again (twice!)
       normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 		       std::end(normalized));
-    }
 
-    if (uri_comparison_level::path_segment_normalization == level) {
       // need to parse the parts again as the underlying string has changed
       bool is_valid = detail::parse(std::begin(normalized), std::end(normalized), parts);
       assert(is_valid);
@@ -431,7 +420,7 @@ namespace network {
     return uri(normalized);
   }
 
-  uri uri::make_reference(const uri &other, uri_comparison_level level) const {
+  uri uri::make_reference(const uri &other) const {
     if (is_opaque() || other.is_opaque()) {
       return other;
     }
@@ -452,8 +441,8 @@ namespace network {
       return other;
     }
 
-    auto path = detail::normalize_path(*this->path(), level),
-      other_path = detail::normalize_path(*other.path(), level);
+    auto path = detail::normalize_path(*this->path(), uri_comparison_level::syntax_based),
+      other_path = detail::normalize_path(*other.path(), uri_comparison_level::syntax_based);
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
@@ -489,7 +478,7 @@ namespace network {
     }
   }  // namespace detail
 
-  uri uri::resolve(const uri &reference, uri_comparison_level level) const {
+  uri uri::resolve(const uri &reference) const {
     // This implementation uses the psuedo-code given in
     // http://tools.ietf.org/html/rfc3986#section-5.2.2
 
@@ -560,7 +549,7 @@ namespace network {
       return 1;
     }
 
-    return normalize(level).native().compare(other.normalize(level).native());
+    return normalize(level).uri_.compare(other.normalize(level).uri_);
   }
 
   bool uri::initialize(const string_type &uri) {
@@ -578,7 +567,7 @@ namespace network {
   }
 
   bool operator == (const uri &lhs, const uri &rhs) {
-    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) == 0;
+    return lhs.compare(rhs, uri_comparison_level::syntax_based) == 0;
   }
 
   bool operator == (const uri &lhs, const char *rhs) {
@@ -589,6 +578,6 @@ namespace network {
   }
 
   bool operator < (const uri &lhs, const uri &rhs) {
-    return lhs.compare(rhs, uri_comparison_level::path_segment_normalization) < 0;
+    return lhs.compare(rhs, uri_comparison_level::syntax_based) < 0;
   }
 } // namespace network
