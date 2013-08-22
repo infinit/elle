@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -78,7 +80,13 @@ namespace elle
       unsigned int line,
       std::string const& function)
     {
-      std::string msg = message;
+      std::vector<std::string> lines;
+      boost::split(lines,
+                   message,
+                   boost::algorithm::is_any_of("\r\n"),
+                   boost::token_compress_on);
+      ELLE_ASSERT(lines.size() > 0);
+      std::string msg = lines[0];
 
       // Indentation
       {
@@ -141,6 +149,13 @@ namespace elle
         }
       _output << color_code;
       _output << msg << std::endl;
+      if (lines.size() > 1)
+      {
+          ELLE_ASSERT_GT(msg.size(), lines[0].size());
+          std::string indent(msg.size() - lines[0].size(), ' ');
+          for (elle::Size i = 1; i < lines.size(); i++)
+              _output << indent << lines[i] << std::endl;
+      }
       if (!color_code.empty())
         _output << "[0m";
       _output.flush();
