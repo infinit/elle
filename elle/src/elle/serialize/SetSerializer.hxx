@@ -21,7 +21,6 @@ namespace elle { namespace serialize {
 
 // XXX set::unordered_set is a typedef of std::set on gcc, need to check
 // on other os.
-#if 0
     template<typename T, typename Compare, typename Allocator>
       struct Serializer<std::unordered_set<T, Compare, Allocator>>
         : public detail::AssociativeSerializer<std::unordered_set<T, Compare, Allocator>>
@@ -32,9 +31,7 @@ namespace elle { namespace serialize {
       {
         static bool const value = false;
       };
-#endif
 
 }}
 
 #endif
-
