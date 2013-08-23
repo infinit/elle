@@ -41,7 +41,7 @@ Base64Archive<ArchiveMode::Output>::~Base64Archive()
   default:
     ELLE_ASSERT(false);
     }
-  ELLE_ASSERT_GT(_trailingChars.size(), 0);
+  ELLE_ASSERT_GT(_trailingChars.size(), 0u);
   BaseClass::SaveBinary(res, 4);
 }
 
@@ -63,8 +63,8 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
     {
       if (size + _trailingChars.size() < 3)
         {
-          ELLE_ASSERT_EQ(size, 1);
-          ELLE_ASSERT_EQ(_trailingChars.size(), 1);
+          ELLE_ASSERT_EQ(size, 1u);
+          ELLE_ASSERT_EQ(_trailingChars.size(), 1u);
           _trailingChars.push_back(*ptr);
           return;
         }
