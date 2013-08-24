@@ -130,7 +130,12 @@ namespace network {
     template <typename IntT>
     boost::optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const NETWORK_URI_NOEXCEPT {
       if (auto p = port()) {
+	try {
 	  return static_cast<IntT>(std::stoi(string_type(std::begin(*p), std::end(*p))));
+	}
+	catch (std::invalid_argument &) {
+	  return boost::optional<IntT>();
+	}
       }
       return boost::optional<IntT>();
     }

@@ -611,6 +611,11 @@ TEST(uri_test, empty_port_test) {
   ASSERT_EQ("", *instance.port());
 }
 
+TEST(uri_test, empty_port_as_int_test) {
+  network::uri instance("http://123.34.23.56:/");
+  ASSERT_TRUE(!instance.port<int>());
+}
+
 TEST(uri_test, full_copy_uri_scheme_test) {
   network::uri origin("http://user:password@www.example.com:80/path?query#fragment");
   network::uri instance = origin;
