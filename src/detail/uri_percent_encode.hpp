@@ -15,9 +15,9 @@ namespace network {
 
     boost::optional<char> percent_encode(std::string s);
 
-    struct normalize_percent_encoded {
+    struct percent_encoded_to_upper {
 
-      normalize_percent_encoded()
+      percent_encoded_to_upper()
 	: count(0) {}
 
       void operator () (char &c) {
