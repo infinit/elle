@@ -49,7 +49,6 @@ namespace network {
     string_comparison,
     syntax_based,
     scheme_based,
-    protocol_based
   };
 
   class uri_builder;
