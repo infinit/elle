@@ -127,6 +127,13 @@ namespace network {
     boost::optional<string_view> user_info() const NETWORK_URI_NOEXCEPT;
     boost::optional<string_view> host() const NETWORK_URI_NOEXCEPT;
     boost::optional<string_view> port() const NETWORK_URI_NOEXCEPT;
+    template <typename IntT>
+    boost::optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const NETWORK_URI_NOEXCEPT {
+      if (auto p = port()) {
+	  return static_cast<IntT>(std::stoi(string_type(std::begin(*p), std::end(*p))));
+      }
+      return boost::optional<IntT>();
+    }
     boost::optional<string_view> path() const NETWORK_URI_NOEXCEPT;
     boost::optional<string_view> query() const NETWORK_URI_NOEXCEPT;
     boost::optional<string_view> fragment() const NETWORK_URI_NOEXCEPT;
