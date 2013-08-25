@@ -307,7 +307,7 @@ namespace network {
       : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::authority() const {
+  boost::optional<boost::string_ref> uri::authority() const NETWORK_URI_NOEXCEPT {
     auto host = this->host();
     if (!host) {
       return boost::optional<boost::string_ref>();
