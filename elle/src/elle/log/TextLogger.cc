@@ -4,6 +4,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -80,9 +81,13 @@ namespace elle
       unsigned int line,
       std::string const& function)
     {
+      std::string trimmed_message = message;
+      boost::algorithm::trim_if(
+        trimmed_message,
+        boost::algorithm::is_any_of(" \t\n\r"));
       std::vector<std::string> lines;
       boost::split(lines,
-                   message,
+                   trimmed_message,
                    boost::algorithm::is_any_of("\r\n"),
                    boost::token_compress_on);
       ELLE_ASSERT(lines.size() > 0);
