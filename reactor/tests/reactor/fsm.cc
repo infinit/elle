@@ -368,6 +368,30 @@ transition_catch()
   BOOST_CHECK(beacon3);
 }
 
+static
+void
+transition_catch_terminate()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+
+  State& s1 = m.state_make([&] () {
+      beacon1 = true;
+      sched.terminate();
+    });
+  State& s2 = m.state_make([&] () {
+      beacon2 = true;
+    });
+  m.transition_add_catch(s1, s2);
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+}
 
 static
 void
@@ -467,6 +491,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_exception));
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
   fsm->add(BOOST_TEST_CASE(transition_catch));
+  fsm->add(BOOST_TEST_CASE(transition_catch_terminate));
   fsm->add(BOOST_TEST_CASE(transition_actions));
   fsm->add(BOOST_TEST_CASE(transition_action_throw));
   fsm->add(BOOST_TEST_CASE(transition_give_time));
