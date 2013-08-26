@@ -3,6 +3,7 @@
 #include <sstream>
 #include <thread>
 
+#include <boost/algorithm/string/split.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -10,6 +11,7 @@
 #include <elle/log.hh>
 #include <elle/log/Logger.cc>
 #include <elle/log/TextLogger.hh>
+#include <elle/memory.hh>
 #include <elle/os/getenv.hh>
 #include <elle/os/setenv.hh>
 #include <elle/os/unsetenv.hh>
@@ -252,6 +254,61 @@ parallel_write()
 }
 
 static
+void
+multiline()
+{
+  std::stringstream output;
+  elle::log::logger(
+    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+  ELLE_LOG_COMPONENT("multiline");
+  ELLE_LOG("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
+
+  std::vector<std::string> lines;
+  auto str = output.str();
+  boost::split(lines,
+               str,
+               boost::algorithm::is_any_of("\r\n"),
+               boost::token_compress_on);
+  BOOST_CHECK_EQUAL(lines.size(), 6);
+}
+
+#ifndef BOOST_CHECK_NOT_EQUAL
+template<typename T>
+static
+void
+BOOST_CHECK_NOT_EQUAL(T a, T b)
+{
+  BOOST_CHECK_PREDICATE(std::not_equal_to<T>(), (a)(b));
+}
+#endif
+
+static
+void
+trim()
+{
+  std::stringstream output;
+  // XXX This does not work for the moment.
+  // elle::os::setenv("ELLE_LOG_COLOR", "0");
+  elle::log::logger(
+    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+  ELLE_LOG_COMPONENT("trim");
+  ELLE_LOG("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");
+  std::string out = output.str();
+  {
+    std::cerr << "OUTPUT: >>>" << out << "<<<\n";
+    unsigned int pos = 0;
+    for (unsigned int pos = 0; pos < out.size() - 1; ++pos)
+    {
+      std::cerr << pos << ' ' << out.size() << std::endl;
+      BOOST_CHECK_NOT_EQUAL(out[pos], '\t');
+      // XXX When colors can be disabled, these tests should pass.
+      //BOOST_CHECK_NOT_EQUAL(out[pos], '\r');
+      //BOOST_CHECK_NOT_EQUAL(out[pos], '\n');
+    }
+  }
+}
+
+static
 bool
 test_suite()
 {
@@ -268,6 +325,10 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(concurrency);
   concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
 
+  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("Format");
+  boost::unit_test::framework::master_test_suite().add(format);
+  concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
+  concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
   return true;
 }
 
