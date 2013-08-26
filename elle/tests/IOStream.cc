@@ -139,29 +139,64 @@ test_stream_buffer_write(int write_size)
   BOOST_CHECK_EQUAL(res, content);
 }
 
+class BeaconException
+{};
+
+class ExceptionBuffer:
+  public elle::StreamBuffer
+{
+  virtual
+  elle::WeakBuffer
+  write_buffer()
+  {
+    throw BeaconException();
+  }
+
+  virtual
+  elle::WeakBuffer
+  read_buffer()
+  {
+    throw BeaconException();
+  }
+};
+
+static
+void
+exceptions()
+{
+  {
+    elle::IOStream stream(new ExceptionBuffer);
+    BOOST_CHECK_THROW(stream.write("lol", 3), BeaconException);
+  }
+  {
+    elle::IOStream stream(new ExceptionBuffer);
+    char buf[3];
+    BOOST_CHECK_THROW(stream.read(buf, sizeof(buf)), BeaconException);
+  }
+}
+
 static
 bool
 test_suite()
 {
-  boost::unit_test::test_suite* stream_buffer = BOOST_TEST_SUITE("StreamBuffer");
-  boost::unit_test::framework::master_test_suite().add(stream_buffer);
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 1)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 2)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 3)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 4)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 5)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 6)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 7)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 8)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 1)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 2)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 3)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 4)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 5)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 6)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
-  stream_buffer->add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
-
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 1)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 2)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 3)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 4)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 5)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 6)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 7)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 8)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 1)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 2)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 3)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 4)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 5)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 6)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
+  suite.add(BOOST_TEST_CASE(exceptions));
   return true;
 }
 
