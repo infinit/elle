@@ -67,6 +67,19 @@ namespace reactor
       Transition&
       transition_add_catch(State& start,
                            State& end);
+      /// Add a transition upon exception.
+      ///
+      /// Add a transition that will switch execution to state \a end if an
+      /// exception of type\a T is thrown during the execution of state \a
+      /// start.
+      ///
+      /// \param  start The state where to catch transition.
+      /// \param  end   The state to switch to.
+      /// \return       The added transition.
+      template <typename T>
+      Transition&
+      transition_add_catch_specific(State& start,
+                                    State& end);
     private:
       ELLE_ATTRIBUTE(
         std::unordered_set<std::unique_ptr<Transition>>, transitions);

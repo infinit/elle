@@ -21,6 +21,15 @@ public:
   {}
 };
 
+class OtherException:
+  public elle::Exception
+{
+public:
+  OtherException():
+    elle::Exception("other")
+  {}
+};
+
 static
 void
 test_model()
@@ -370,6 +379,60 @@ transition_catch()
 
 static
 void
+transition_catch_specific()
+{
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  State& s1 = m.state_make(
+    "s1",
+    [&] ()
+    {
+      beacon1 = true;
+      throw BeaconException();
+    });
+  State& s2 = m.state_make(
+    "s2",
+    [&] ()
+    {
+      beacon2 = true;
+      throw BeaconException();
+    });
+  State& s3 = m.state_make(
+    "s3",
+    [&] ()
+    {
+      beacon3 = true;
+      throw BeaconException();
+    });
+  State& forbidden = m.state_make(
+    "forbidden",
+    [&] ()
+    {
+      BOOST_CHECK(false);
+    });
+  // Check we follow the right exception
+  m.transition_add_catch_specific<OtherException>(s1, forbidden);
+  m.transition_add_catch_specific<BeaconException>(s1, s2);
+  // Check we follow the default.
+  m.transition_add_catch_specific<OtherException>(s2, forbidden);
+  m.transition_add_catch(s2, s3);
+  // Check the exception escapes.
+  m.transition_add_catch_specific<OtherException>(s3, forbidden);
+
+  reactor::Scheduler sched;
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  BOOST_CHECK_THROW(sched.run(), BeaconException);
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+  BOOST_CHECK(beacon3);
+}
+
+static
+void
 transition_catch_terminate()
 {
   reactor::Scheduler sched;
@@ -491,6 +554,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_exception));
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
   fsm->add(BOOST_TEST_CASE(transition_catch));
+  fsm->add(BOOST_TEST_CASE(transition_catch_specific));
   fsm->add(BOOST_TEST_CASE(transition_catch_terminate));
   fsm->add(BOOST_TEST_CASE(transition_actions));
   fsm->add(BOOST_TEST_CASE(transition_action_throw));

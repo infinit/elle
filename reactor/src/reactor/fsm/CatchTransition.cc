@@ -17,11 +17,12 @@ namespace reactor
     CatchTransition::done(Transition*& trigger, std::exception_ptr& exn)
     {
       if (exn)
-      {
-        ELLE_TRACE("%s: trigger", *this);
-        trigger = this;
-        exn = std::exception_ptr();
-      }
+        if (!this->condition() || this->condition()(exn))
+        {
+          ELLE_TRACE("%s: trigger", *this);
+          trigger = this;
+          exn = std::exception_ptr();
+        }
     }
   }
 }
