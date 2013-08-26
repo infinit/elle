@@ -8,7 +8,13 @@ cmake_minimum_required(VERSION 2.8)
 project(Uri)
 
 find_package(Threads REQUIRED)
-set(Boost_USE_STATIC_LIBS ON)
+
+if(CPP-NETLIB_BUILD_SHARED_LIBS OR BUILD_SHARED_LIBS)
+  set(Boost_USE_STATIC_LIBS OFF)
+else()
+  set(Boost_USE_STATIC_LIBS ON)
+endif()
+
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost 1.53 REQUIRED system filesystem)
 
