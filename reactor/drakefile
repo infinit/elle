@@ -12,6 +12,7 @@ rule_install = None
 rule_tests = None
 
 asio_udt = None
+asio_fs = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
@@ -20,7 +21,7 @@ def configure(cxx_toolkit = None,
               stuntman = None,
               prefix = '/usr'):
 
-  global asio_udt
+  global asio_udt, asio_fs
   global config, lib_static, lib_dynamic
   global rule_build, rule_install
 
@@ -57,7 +58,12 @@ def configure(cxx_toolkit = None,
   asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
   udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
 
+  # Asio-FS
+  asio_fs = drake.include('asio-fs', cxx_toolkit, cxx_config, boost = boost)
+  asio_fs_lib = drake.copy(asio_fs.library, '', 'asio-fs')
+
   local_cxx_config += config
+  local_cxx_config += asio_fs.config
 
   # Boost libraries
   local_cxx_config += boost.config_signals()
@@ -92,6 +98,8 @@ def configure(cxx_toolkit = None,
     'src/reactor/duration.hh',
     'src/reactor/exception.cc',
     'src/reactor/exception.hh',
+    'src/reactor/fs/File.hh',
+    'src/reactor/fs/File.cc',
     'src/reactor/fsm/fwd.hh',
     'src/reactor/fsm/CatchTransition.cc',
     'src/reactor/fsm/CatchTransition.hh',
@@ -159,10 +167,10 @@ def configure(cxx_toolkit = None,
     'src/reactor/waitable.hh',
     )
   lib_static = drake.cxx.StaticLib('lib/reactor',
-                                   sources + [libcoroutine],
+                                   sources + [libcoroutine, asio_fs_lib],
                                    cxx_toolkit, local_cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/reactor',
-                                 sources + [libcoroutine],
+                                 sources + [libcoroutine, asio_fs_lib],
                                  cxx_toolkit, local_cxx_config)
 
   # Build
