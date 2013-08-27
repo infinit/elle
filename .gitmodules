@@ -4,3 +4,6 @@
 [submodule "drake"]
 	path = drake
 	url = git@git.infinit.io:drake
+[submodule "reactor/asio-fs"]
+	path = reactor/asio-fs
+	url = git@git.infinit.io:asio-fs
