@@ -3,6 +3,7 @@
 
 # include "JSONArchive.hh"
 
+# include <elle/finally.hh>
 # include <elle/format/json/Dictionary.hh>
 # include <elle/format/json/Parser.hh>
 
@@ -182,7 +183,9 @@ namespace elle
       if (pushed)
       {
         ELLE_ASSERT(this->_load_stack.size() != 0);
-        this->_load_stack.pop_back();
+        elle::Finally pop_back([this] () { this->_load_stack.pop_back(); });
+        // According to the documentation, JSONObject destructors don't throw.
+        delete this->_load_stack.back();
       }
     }
 
