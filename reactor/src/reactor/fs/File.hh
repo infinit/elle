@@ -43,4 +43,6 @@ namespace reactor
   }
 }
 
+# include <reactor/fs/File.hxx>
+
 #endif
