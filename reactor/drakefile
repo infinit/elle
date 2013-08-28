@@ -11,8 +11,8 @@ rule_check = None
 rule_install = None
 rule_tests = None
 
-asio_udt = None
-asio_fs = None
+asio_udt_lib = None
+asio_fs_lib = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
@@ -21,7 +21,7 @@ def configure(cxx_toolkit = None,
               stuntman = None,
               prefix = '/usr'):
 
-  global asio_udt, asio_fs
+  global asio_udt_lib, asio_fs_lib
   global config, lib_static, lib_dynamic
   global rule_build, rule_install
 
