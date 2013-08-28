@@ -16,6 +16,7 @@ curly_asio_dynamic = None
 curly_asio_static = None
 curly_sched_dynamic = None
 curly_sched_static = None
+asio_fs = None
 asio_udt = None
 rule_check = None
 rule_tests = None
@@ -34,8 +35,9 @@ def configure(cxx_toolkit = None,
   global elle_dynamic, elle_static
   global cryptography_dynamic, cryptography_static
   global reactor, reactor_dynamic, reactor_static
-  global curly, curly_dynamic, curly_static, curly_asio_dynamic,\
-          curly_asio_static, curly_sched_dynamic, curly_sched_static
+  global asio_fs, asio_udt, curly, curly_dynamic, curly_static, \
+          curly_asio_dynamic, curly_asio_static, curly_sched_dynamic, \
+          curly_sched_static
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
@@ -97,6 +99,9 @@ def configure(cxx_toolkit = None,
 
   reactor_dynamic = reactor.lib_dynamic
   reactor_static = reactor.lib_static
+
+  asio_fs = reactor.asio_fs_lib
+  asio_udt = reactor.asio_udt_lib
 
   curly_dynamic = curly.lib_dynamic
   curly_static = curly.lib_static
