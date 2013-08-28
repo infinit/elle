@@ -52,3 +52,34 @@ BOOST_AUTO_TEST_CASE(simple)
   }};
   sched.run();
 }
+
+BOOST_AUTO_TEST_CASE(bigfile)
+{
+  reactor::Scheduler sched;
+  bool done = false;
+  size_t const write_count = 500;
+  reactor::Thread grow_file{sched, "grow", [&] {
+    TmpFile tmp;
+    std::string data(5000000, '@');
+    std::cerr << data.size() << std::endl;
+    for (size_t i = 0; i < write_count; i++)
+    {
+      reactor::fs::File f{sched, tmp.name};
+      f.write_some(elle::ConstWeakBuffer{data.c_str(), data.size()});
+    }
+    done = true;
+  }};
+
+  size_t idle_count = 0;
+  reactor::Thread idle{sched, "idle", [&] {
+    while (!done)
+    {
+      idle_count++;
+      sched.current()->yield();
+    }
+  }};
+  sched.run();
+  BOOST_CHECK(idle_count > write_count);
+}
+
+
