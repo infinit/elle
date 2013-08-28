@@ -61,9 +61,9 @@ def configure(cxx_toolkit = None,
   # Asio-FS
   asio_fs = drake.include('asio-fs', cxx_toolkit, cxx_config, boost = boost)
   asio_fs_lib = drake.copy(asio_fs.library_dynamic, '', 'asio-fs')
+  config += asio_fs.config
 
   local_cxx_config += config
-  local_cxx_config += asio_fs.config
 
   # Boost libraries
   local_cxx_config += boost.config_signals()
