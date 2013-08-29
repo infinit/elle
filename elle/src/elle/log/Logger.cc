@@ -19,6 +19,9 @@ namespace elle
     | Indentation |
     `------------*/
 
+    Indentation::~Indentation()
+    {}
+
     class PlainIndentation: public Indentation
     {
     public:

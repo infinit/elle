@@ -25,6 +25,8 @@ namespace elle
     {
     public:
       virtual
+      ~Indentation();
+      virtual
       unsigned int&
       indentation() = 0;
       virtual
