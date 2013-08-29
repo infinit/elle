@@ -111,10 +111,12 @@ class Boost(drake.Configuration):
       suffixes = [suffix] + suffixes
     for suffix in suffixes:
       libname = lib + suffix
-      test = lib_path / cxx_toolkit.libname_dyn(self.__cfg,
-                                                    libname)
-      if test.exists():
-        return libname
+      filename = cxx_toolkit.libname_dyn(self.__cfg, libname)
+      test_plain = lib_path / filename
+      test_versioned = lib_path / ('%s.%s' % (filename, self.__version))
+      for test in [test_plain, test_versioned]:
+        if test.exists():
+          return libname
     raise Exception('Unable to find boost library %s '
                     'in %s' % (lib, lib_path))
 
