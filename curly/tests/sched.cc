@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(timeout)
     serv.listen(0);
     port = serv.port();
     sig.signal();
-    reactor::network::TCPSocket* client = serv.accept();
+    serv.accept();
     while (1)
     {
        reactor::Sleep pause(sched, 1_sec);
