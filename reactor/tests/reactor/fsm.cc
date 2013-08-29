@@ -4,6 +4,7 @@
 
 #include <elle/container/set.hh>
 
+#include <reactor/Barrier.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/fsm.hh>
@@ -242,6 +243,31 @@ test_run_preemptive_transition(bool preemptive)
   sched.run();
   BOOST_CHECK(beacon1);
   BOOST_CHECK(beacon2 == !preemptive);
+  BOOST_CHECK(beacon3);
+}
+
+static void
+test_run_preemptive_transition_pre_opened()
+{
+  reactor::Scheduler sched;
+  Machine m;
+  reactor::Barrier trigger;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+  bool beacon3 = false;
+
+  State& s1 = m.state_make("s1", [&] () { beacon1 = true; trigger.open(); });
+  State& s2 = m.state_make("s2", [&] () { beacon2 = true; });
+  State& s3 = m.state_make("s3", [&] () { beacon3 = true; });
+  m.transition_add(s1, s2, reactor::Waitables{&trigger}, true);
+  m.transition_add(s2, s3, reactor::Waitables{&trigger}, true);
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  sched.run();
+
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
   BOOST_CHECK(beacon3);
 }
 
@@ -549,6 +575,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_run_unused_transition));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, true)));
+  fsm->add(BOOST_TEST_CASE(test_run_preemptive_transition_pre_opened));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, true)));
   fsm->add(BOOST_TEST_CASE(test_exception));
