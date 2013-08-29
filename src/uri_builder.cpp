@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/classification.hpp>
 
 namespace network {
-  uri_builder::uri_builder(const uri &base_uri) {
+  uri_builder::uri_builder(const network::uri &base_uri) {
     if (auto scheme = base_uri.scheme()) {
       set_scheme(string_type(std::begin(*scheme), std::end(*scheme)));
     }
@@ -45,6 +45,10 @@ namespace network {
 
   uri_builder::~uri_builder() NETWORK_URI_NOEXCEPT {
 
+  }
+
+  network::uri uri_builder::uri() const {
+    return network::uri(*this);
   }
 
   void uri_builder::set_scheme(string_type scheme) {

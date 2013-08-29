@@ -16,7 +16,6 @@
 #include <boost/filesystem/path.hpp>
 
 namespace network {
-
   namespace detail {
 
     template <class T, class Enable = void>
@@ -169,6 +168,8 @@ namespace network {
       set_fragment(detail::translate(fragment));
       return *this;
     }
+
+    network::uri uri() const;
 
   private:
 
