@@ -7,8 +7,10 @@
 #define __NETWORK_DETAIL_URI_PERCENT_ENCODE_INC__
 
 #include <string>
+#include <vector>
 #include <cctype>
 #include <boost/optional.hpp>
+#include <network/uri/detail/decode.hpp>
 
 namespace network {
   namespace detail {
@@ -16,7 +18,7 @@ namespace network {
     inline
     boost::optional<char> percent_encode(std::string s) {
       try {
-	std::string output;
+	std::vector<char> output;
 	detail::decode_char(std::begin(s), std::back_inserter(output));
 	return output[0];
       }

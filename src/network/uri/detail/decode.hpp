@@ -37,7 +37,7 @@ namespace network {
       class InputIterator,
       class OutputIterator
       >
-    InputIterator decode_char(InputIterator it, OutputIterator &out) {
+    InputIterator decode_char(InputIterator it, OutputIterator out) {
       assert(*it == '%');
       ++it;
       auto v0 = detail::letter_to_hex(*it);
