@@ -560,6 +560,28 @@ transition_give_time()
   sched.run();
 }
 
+// Check the Machine terminates its current state before destroying it.
+static
+void
+terminate()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+  m.state_make(
+    [&]
+    {
+      sched.terminate();
+      reactor::Scheduler::scheduler()->current()->yield();
+      reactor::Scheduler::scheduler()->current()->yield();
+      reactor::Scheduler::scheduler()->current()->yield();
+      reactor::Scheduler::scheduler()->current()->yield();
+    });
+
+  sched.run();
+}
+
 static
 bool
 test_suite()
@@ -586,6 +608,7 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(transition_actions));
   fsm->add(BOOST_TEST_CASE(transition_action_throw));
   fsm->add(BOOST_TEST_CASE(transition_give_time));
+  fsm->add(BOOST_TEST_CASE(terminate));
   return true;
 }
 

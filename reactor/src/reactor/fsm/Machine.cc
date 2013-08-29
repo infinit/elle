@@ -6,6 +6,7 @@
 #include <reactor/fsm/EndTransition.hh>
 #include <reactor/fsm/Machine.hh>
 #include <reactor/fsm/WaitableTransition.hh>
+#include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 
@@ -138,7 +139,15 @@ namespace reactor
       }
       state->_entered.signal();
       elle::Finally exited([&]() {state->_exited.signal(); });
-      sched.current()->wait(action_thread);
+      try
+      {
+        sched.current()->wait(action_thread);
+      }
+      catch (reactor::Terminate&)
+      {
+        action_thread.terminate_now();
+        throw;
+      }
       state->_done.signal();
       ELLE_DEBUG("%s: state action finished", *this);
       while (true)
