@@ -103,15 +103,7 @@ test_ctor_weak_copy_move()
 template <typename Buffer>
 static
 Buffer
-mkbuf(size_t size)
-{
-  elle::Buffer buffer(size);
-
-  for (int i = 0; i < 16; ++i)
-    buffer.mutable_contents()[i] = i;
-
-  return buffer;
-}
+mkbuf(size_t size);
 
 template <>
 elle::Buffer
