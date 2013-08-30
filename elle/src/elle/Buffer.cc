@@ -265,29 +265,7 @@ namespace elle
   operator <<(std::ostream& stream,
               Buffer const& buffer)
   {
-    static Natural32 const length = 40;
-    String hexadecimal = format::hexadecimal::encode(buffer);
-
-    // Display the string, depending on its length.
-    if (hexadecimal.length() == 0)
-    {
-      stream << "empty";
-    }
-    else if (hexadecimal.length() < length)
-    {
-      // If the string is short enough, display it in its entirety.
-      stream << "0x" << hexadecimal;
-    }
-    else
-    {
-      // Otherwise chop it and display the begining and the end only.
-      stream << "0x"
-             << hexadecimal.substr(0, length / 2)
-             << "..." << std::dec << buffer.size() << " bytes" << "..."
-             << hexadecimal.substr(hexadecimal.length() - (length / 2));
-    }
-
-    return (stream);
+    return stream << WeakBuffer(buffer);
   }
 
 //
@@ -403,29 +381,24 @@ namespace elle
   operator <<(std::ostream& stream,
               WeakBuffer const& buffer)
   {
-    static Natural32 const length = 40;
-    String hexadecimal = format::hexadecimal::encode(buffer);
+    static size_t const max_length = 20;
 
     // Display the string, depending on its length.
-    if (hexadecimal.length() == 0)
-    {
+    if (buffer.size() == 0)
       stream << "empty";
-    }
-    else if (hexadecimal.length() < length)
-    {
-      // If the string is short enough, display it in its entirety.
-      stream << "0x" << hexadecimal;
-    }
+    else if (buffer.size() <= max_length)
+      stream << "0x" << format::hexadecimal::encode(buffer);
     else
-    {
       // Otherwise chop it and display the begining and the end only.
       stream << "0x"
-             << hexadecimal.substr(0, length / 2)
+             << format::hexadecimal::encode(
+                 WeakBuffer{buffer.mutable_contents(), max_length / 2})
              << "..." << std::dec << buffer.size() << " bytes" << "..."
-             << hexadecimal.substr(hexadecimal.length() - (length / 2));
-    }
-
-    return (stream);
+             << format::hexadecimal::encode(
+                 WeakBuffer{
+                   buffer.mutable_contents() + buffer.size() - max_length / 2,
+                   max_length / 2});
+    return stream;
   }
 
   /*------------------.
