@@ -20,7 +20,7 @@ namespace elle
       struct Send
       {
       public:
-        template <typename ... Args>
+        template <typename... Args>
         Send(elle::log::Logger::Level level,
                      elle::log::Logger::Type type,
                      std::string const& component,
@@ -28,11 +28,12 @@ namespace elle
                      unsigned int line,
                      char const* function,
                      char const* fmt,
-                     Args const& ... args);
+                     Args&&... args);
         ~Send();
         operator bool() const;
       private:
         bool _proceed;
+      public: // used by macros
         static bool _enabled(elle::log::Logger::Type type,
                              elle::log::Logger::Level level,
                              std::string const& component);
@@ -50,7 +51,7 @@ namespace elle
 
       template <typename... Args>
       std::string
-      print_function_params(Args const&... args);
+      print_function_params(Args&&... args);
     }
   }
 }

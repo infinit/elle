@@ -10,7 +10,7 @@ namespace elle
   {
     namespace detail
     {
-      template <typename ... Args>
+      template <typename... Args>
       inline
       Send::Send(elle::log::Logger::Level level,
                  elle::log::Logger::Type type,
@@ -19,14 +19,14 @@ namespace elle
                  unsigned int line,
                  char const* function,
                  char const* fmt,
-                 Args const& ... args):
+                 Args&&... args):
         _proceed(this->_enabled(type, level, component)),
         _indentation(nullptr)
       {
         if (!_proceed)
           return;
         this->_send(level, type, component, file, line, function,
-                    elle::sprintf(fmt, args...));
+                    elle::sprintf(fmt, std::forward<Args>(args)...));
       }
 
       inline
@@ -37,9 +37,10 @@ namespace elle
 
       template <typename... Args>
       std::string
-      print_function_params(Args const&... args)
+      print_function_params(Args&&... args)
       {
-        return elle::sprint(elle::iomanip::Separator(", "), args...);
+        return elle::sprint(elle::iomanip::Separator(", "),
+                            std::forward<Args>(args)...);
       }
     }
   }
