@@ -42,48 +42,58 @@
 /// @param  the list of arguments
 /// XXX does not work with empty call
 
-# define ELLE_TRACE_FUNCTION(...)                                       \
-  ELLE_TRACE_SCOPE("%s(%s)",                                            \
-                   __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(", "),         \
-                                ##__VA_ARGS__))
+# define ELLE_TRACE_FUNCTION(...)                                             \
+  std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
+  if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
+                                        elle::log::Logger::Level::trace,      \
+                                        _trace_component_))                   \
+    BOOST_PP_CAT(__trace_str_, __LINE__) =                                    \
+      elle::sprint(elle::iomanip::Separator(", "), ##__VA_ARGS__);            \
+  ELLE_TRACE_SCOPE("%s(%s)",                                                  \
+                   __FUNCTION__,                                              \
+                   BOOST_PP_CAT(__trace_str_, __LINE__))                      \
+/**/
 
-# define ELLE_DEBUG_FUNCTION(...)                                       \
-  ELLE_DEBUG_SCOPE("%s(%s)",                                            \
-                   __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(", "),         \
-                                ##__VA_ARGS__))
-
-# define ELLE_DUMP_FUNCTION(...)                                        \
-  ELLE_DUMP_SCOPE("%s(%s)",                                             \
-                  __FUNCTION__,                                         \
-                  elle::sprint(elle::iomanip::Separator(", "),          \
-                               ##__VA_ARGS__))
+# define ELLE_DEBUG_FUNCTION(...)                                             \
+  std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
+  if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
+                                        elle::log::Logger::Level::debug,      \
+                                        _trace_component_))                   \
+    BOOST_PP_CAT(__trace_str_, __LINE__) =                                    \
+      elle::sprint(elle::iomanip::Separator(", "), ##__VA_ARGS__);            \
+  ELLE_DEBUG_SCOPE("%s(%s)",                                                  \
+                   __FUNCTION__,                                              \
+                   BOOST_PP_CAT(__trace_str_, __LINE__))                      \
+/**/
 
 /// Shortcut to log a method name, the instance and its arguments.
 ///
 /// @param  the list of arguments
 /// XXX does not work with empty call
-# define ELLE_TRACE_METHOD(...)                                         \
-  ELLE_TRACE_SCOPE("%s(%s) <%s at %s>",                                 \
-                   __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(", "),         \
-                                ##__VA_ARGS__),                         \
-                   *this, this)
 
-# define ELLE_DEBUG_METHOD(...)                                         \
-  ELLE_DEBUG_SCOPE("%s(%s) <%s at %s>",                                 \
-                   __FUNCTION__,                                        \
-                   elle::sprint(elle::iomanip::Separator(", "),         \
-                                ##__VA_ARGS__),                         \
-                   *this, this)
+# define ELLE_TRACE_METHOD(...)                                               \
+  std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
+  if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
+                                        elle::log::Logger::Level::trace,      \
+                                        _trace_component_))                   \
+    BOOST_PP_CAT(__trace_str_, __LINE__) =                                    \
+      elle::sprint(elle::iomanip::Separator(", "), ##__VA_ARGS__);            \
+  ELLE_TRACE_SCOPE("%s(%s) <%s at %s>",                                       \
+                   __FUNCTION__,                                              \
+                   BOOST_PP_CAT(__trace_str_, __LINE__), *this, this)         \
+/**/
 
-# define ELLE_DUMP_METHOD(...)                                          \
-  ELLE_DUMP_SCOPE("%s(%s) <%s at %s>",                                  \
-                  __FUNCTION__,                                         \
-                  elle::sprint(elle::iomanip::Separator(", "),          \
-                               ##__VA_ARGS__),                          \
-                  *this, this)
+# define ELLE_DEBUG_METHOD(...)                                               \
+  std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
+  if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
+                                        elle::log::Logger::Level::debug,      \
+                                        _trace_component_))                   \
+    BOOST_PP_CAT(__trace_str_, __LINE__) =                                    \
+      elle::sprint(elle::iomanip::Separator(", "), ##__VA_ARGS__);            \
+  ELLE_DEBUG_SCOPE("%s(%s) <%s at %s>",                                       \
+                   __FUNCTION__,                                              \
+                   BOOST_PP_CAT(__trace_str_, __LINE__), *this, this)         \
+/**/
 
 # include <elle/log/Send.hh>
 
