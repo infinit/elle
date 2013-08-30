@@ -56,9 +56,6 @@ namespace elle
     /// A buffer of a specify size.
     explicit
     Buffer(size_t size);
-    /// A bufferSteal a pointer as internal buffer
-    explicit
-    Buffer(ContentPair&& pair);
     /// A buffer containing a copy of the given data.
     Buffer(void const* data,
            size_t size);

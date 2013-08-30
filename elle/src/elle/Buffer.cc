@@ -48,12 +48,6 @@ namespace elle
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(ContentPair&& pair):
-    _size(pair.second),
-    _capacity(pair.second),
-    _contents(pair.first.release())
-  {}
-
   Buffer::Buffer(void const* data,
                  size_t size):
     _size(0),

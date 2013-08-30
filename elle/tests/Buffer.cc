@@ -46,22 +46,6 @@ test_ctor_raw(size_t size)
 
 static
 void
-test_ctor_content_pair(size_t size)
-{
-  elle::Byte* raw = new elle::Byte[size];
-  for (unsigned i = 0; i < size; ++i)
-    raw[i] = 0x55;
-  elle::Buffer b(std::make_pair(elle::Buffer::ContentPtr(raw), size));
-  BOOST_CHECK_EQUAL(b.size(), size);
-  BOOST_CHECK_EQUAL(b.contents(), raw);
-  for (unsigned i = 0; i < size; ++i)
-    raw[i] = 0xaa;
-  for (unsigned i = 0; i < size; ++i)
-    BOOST_CHECK_EQUAL(b.contents()[i], 0xaa);
-}
-
-static
-void
 test_ctor_move(size_t size)
 {
   elle::Buffer source(size);
