@@ -130,7 +130,7 @@ mkbuf<elle::WeakBuffer>(size_t size)
   return buffer;
 }
 
-template <typename Buffer>
+template <typename Buffer, void (*Delete) (elle::Byte*)>
 static
 void
 test_cmp()
@@ -152,6 +152,9 @@ test_cmp()
     BOOST_CHECK_NE(b1, b2);
     BOOST_CHECK_LT(b1, b2);
     BOOST_CHECK_LE(b1, b2);
+
+    Delete(b1.mutable_contents());
+    Delete(b2.mutable_contents());
   }
 
   {
@@ -161,6 +164,9 @@ test_cmp()
     BOOST_CHECK_NE(b1, b2);
     BOOST_CHECK_LT(b1, b2);
     BOOST_CHECK_LE(b1, b2);
+
+    Delete(b1.mutable_contents());
+    Delete(b2.mutable_contents());
   }
 
   {
@@ -170,6 +176,9 @@ test_cmp()
     BOOST_CHECK_NE(b1, b2);
     BOOST_CHECK_GT(b1, b2);
     BOOST_CHECK_GE(b1, b2);
+
+    Delete(b1.mutable_contents());
+    Delete(b2.mutable_contents());
   }
 }
 
@@ -205,6 +214,18 @@ test_release()
 }
 
 static
+void
+delete_noop(elle::Byte*)
+{}
+
+static
+void
+delete_array(elle::Byte* p)
+{
+  delete [] p;
+}
+
+static
 bool
 test_suite()
 {
@@ -226,13 +247,12 @@ test_suite()
 
   SIZE(test_ctor_size);
   SIZE(test_ctor_raw);
-  SIZE(test_ctor_content_pair);
   SIZE(test_ctor_move);
 #undef SIZE
 
   boost::unit_test::test_suite* cmp = BOOST_TEST_SUITE("Comparisons");
   buffer->add(cmp);
-  cmp->add(BOOST_TEST_CASE(test_cmp<elle::Buffer>));
+  cmp->add(BOOST_TEST_CASE((&test_cmp<elle::Buffer, delete_noop>)));
 
   boost::unit_test::test_suite* memory = BOOST_TEST_SUITE("Memory");
   buffer->add(memory);
@@ -252,7 +272,7 @@ test_suite()
 
   boost::unit_test::test_suite* cmp_weak = BOOST_TEST_SUITE("Comparisons");
   weakbuffer->add(cmp_weak);
-  cmp_weak->add(BOOST_TEST_CASE(test_cmp<elle::WeakBuffer>));
+  cmp_weak->add(BOOST_TEST_CASE((&test_cmp<elle::WeakBuffer, delete_array>)));
 
   return true;
 }
