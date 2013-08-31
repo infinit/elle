@@ -106,6 +106,12 @@ namespace reactor
     _threads.erase(t);
   }
 
+  void
+  Waitable::_raise(std::exception_ptr e)
+  {
+    this->_exception = e;
+  }
+
   /*----------.
   | Printable |
   `----------*/

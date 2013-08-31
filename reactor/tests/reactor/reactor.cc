@@ -1428,6 +1428,139 @@ test_io_service_throw()
   BOOST_CHECK(!beacon);
 }
 
+/*-----------.
+| Background |
+`-----------*/
+
+namespace background
+{
+  static
+  void
+  operation()
+  {
+    reactor::Scheduler sched;
+    int i = 0;
+    reactor::Thread thread(
+      sched, "main",
+      [&i]
+      {
+        reactor::background([] { ::sleep(1); });
+        BOOST_CHECK_EQUAL(i, 3);
+      });
+    reactor::Thread counter(
+      sched, "counter",
+      [&]
+      {
+        ++i;
+        yield();
+        ++i;
+        yield();
+        ++i;
+      });
+    sched.run();
+  }
+
+  static
+  void
+  operations()
+  {
+    reactor::Scheduler sched;
+    static int const iterations = 16;
+    reactor::Thread main(
+      sched, "main",
+      [&]
+      {
+        // Run it three times to check the thread pool doesn't exceed 16.
+        for (int run = 0; run < 3; ++run)
+        {
+          int count = 0;
+          reactor::Waitables threads;
+          for (int i = 0; i < iterations; ++i)
+            threads.push_back(
+              new reactor::Thread(sched, elle::sprintf("thread %s", i),
+                                  [&count]
+                                  {
+                                    reactor::background([] { ::sleep(1); });
+                                    ++count;
+                                  }));
+          auto start = std::chrono::system_clock::now();
+          sched.current()->wait(threads);
+          auto duration = std::chrono::system_clock::now() - start;
+          BOOST_CHECK_EQUAL(count, iterations);
+          BOOST_CHECK_EQUAL(sched.background_pool_size(), iterations);
+          BOOST_CHECK(duration < std::chrono::seconds(2));
+        }
+      });
+    sched.run();
+  }
+
+  static
+  void
+  exception()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread thread(
+      sched, "main",
+      [&]
+      {
+        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                          std::exception);
+        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                          std::exception);
+        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                          std::exception);
+        BOOST_CHECK_EQUAL(sched.background_pool_size(), 1);
+      });
+    sched.run();
+  }
+
+  static
+  void
+  aborted()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread main(
+      sched, "main",
+      [&]
+      {
+        auto start = std::chrono::system_clock::now();
+        reactor::background([] { ::sleep(1); });
+        auto duration = std::chrono::system_clock::now() - start;
+        BOOST_CHECK(duration < std::chrono::seconds(1));
+      });
+    reactor::Thread kill(
+      sched, "kill",
+      [&]
+      {
+        main.terminate();
+      });
+    sched.run();
+  }
+
+  static
+  void
+  aborted_throw()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread main(
+      sched, "main",
+      [&]
+      {
+        auto start = std::chrono::system_clock::now();
+        reactor::background([] { ::sleep(1); throw BeaconException(); });
+        auto duration = std::chrono::system_clock::now() - start;
+        BOOST_CHECK(duration < std::chrono::seconds(1));
+      });
+    reactor::Thread kill(
+      sched, "kill",
+      [&]
+      {
+        main.terminate();
+      });
+    sched.run();
+  }
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -1524,6 +1657,17 @@ test_suite()
   boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("IO service");
   boost::unit_test::framework::master_test_suite().add(io_service);
   io_service->add(BOOST_TEST_CASE(test_io_service_throw));
+
+  boost::unit_test::test_suite* background = BOOST_TEST_SUITE("background");
+  boost::unit_test::framework::master_test_suite().add(background);
+  {
+    using namespace background;
+    background->add(BOOST_TEST_CASE(operation));
+    background->add(BOOST_TEST_CASE(operations));
+    background->add(BOOST_TEST_CASE(exception));
+    background->add(BOOST_TEST_CASE(aborted));
+    background->add(BOOST_TEST_CASE(aborted_throw));
+  }
 
   return true;
 }

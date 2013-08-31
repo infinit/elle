@@ -92,6 +92,7 @@ namespace reactor
        */
       template <typename Exception, typename... Args>
       void _raise(Args&&... args);
+      void _raise(std::exception_ptr e);
 
     private:
       /// Let threads register/unregister themselves.

@@ -146,6 +146,23 @@ namespace reactor
           Duration freq,
           bool dispose = false);
 
+  /*----------------.
+  | Background jobs |
+  `----------------*/
+  public:
+    /// Number of threads spawned to run background jobs.
+    int
+    background_pool_size() const;
+  private:
+    void
+    _run_background(std::function<void ()> const& action);
+    ELLE_ATTRIBUTE(boost::asio::io_service, background_service);
+    ELLE_ATTRIBUTE(boost::asio::io_service::work*, background_service_work);
+    ELLE_ATTRIBUTE(std::vector<std::thread>, background_pool);
+    ELLE_ATTRIBUTE(int, background_pool_free);
+    friend class BackgroundOperation;
+    friend void background(std::function<void()> const& action);
+
     /*-----.
     | Asio |
     `-----*/
@@ -163,6 +180,13 @@ namespace reactor
       backend::Manager _manager;
       std::thread::id _running_thread;
   };
+
+  /*---------------.
+  | Free functions |
+  `---------------*/
+
+  /// Run \a action in a thread and yield until completion.
+  void background(std::function<void()> const& action);
 }
 
 # include <reactor/scheduler.hxx>

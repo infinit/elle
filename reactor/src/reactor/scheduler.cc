@@ -1,8 +1,10 @@
+#include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/assert.hh>
 
 #include <reactor/exception.hh>
+#include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
@@ -24,8 +26,13 @@ namespace reactor
     _starting_mtx(),
     _running(),
     _frozen(),
+    _background_service(),
+    _background_service_work(
+      new boost::asio::io_service::work(this->_background_service)),
+    _background_pool(),
+    _background_pool_free(0),
     _io_service(),
-    _io_service_work(new boost::asio::io_service::work(_io_service)),
+    _io_service_work(new boost::asio::io_service::work(this->_io_service)),
     _manager(),
     _running_thread()
   {
@@ -82,6 +89,10 @@ namespace reactor
     while (step())
       /* nothing */;
     this->_running_thread = std::thread::id();
+    delete this->_background_service_work;
+    this->_background_service_work = 0;
+    for (auto& thread: this->_background_pool)
+      thread.join();
     delete _io_service_work;
     _io_service_work = 0;
     _io_service.run();
@@ -411,6 +422,109 @@ namespace reactor
                       boost::bind(&every_helper, this, f, delay), dispose);
   }
 
+  /*----------------.
+  | Background jobs |
+  `----------------*/
+
+  int
+  Scheduler::background_pool_size() const
+  {
+    return this->_background_pool.size();
+  }
+
+  class BackgroundOperation:
+    public Operation
+  {
+  public:
+    typedef std::function<void ()> Action;
+    struct Status
+    {
+      bool aborted;
+    };
+
+  public:
+    BackgroundOperation(Action const& action):
+      Operation(*Scheduler::scheduler()),
+      _action(action),
+      _status(new Status)
+    {
+      this->_status->aborted = false;
+    }
+    ELLE_ATTRIBUTE(Action, action);
+    std::shared_ptr<Status> _status;
+
+  protected:
+    virtual
+    void
+    _abort() override
+    {
+      auto& sched = *Scheduler::scheduler();
+      ELLE_TRACE_SCOPE("%s: abort background operation", sched);
+      this->_status->aborted = true;
+      this->_signal();
+      ++sched._background_pool_free;
+    }
+
+    virtual
+    void
+    _start() override
+    {
+      auto& sched = *Scheduler::scheduler();
+      auto& current = *sched.current();
+      if (sched._background_pool_free == 0)
+      {
+        ELLE_DEBUG("%s: spawn new background thread", sched);
+        sched._background_pool.emplace_back([&sched]
+                                            {
+                                              sched._background_service.run();
+                                            });
+      }
+      else
+        --sched._background_pool_free;
+      sched._background_service.post(
+        [this, action = this->_action, status = this->_status,
+         &current, &sched]
+        {
+          try
+          {
+            ELLE_TRACE_SCOPE("%s: run background operation", sched);
+            action();
+            ELLE_TRACE("%s: background operation finished", sched);
+            sched.io_service().post([this, status, &sched]
+                                    {
+                                      if (!status->aborted)
+                                      {
+                                        this->_signal();
+                                        ++sched._background_pool_free;
+                                      }
+                                    });
+          }
+          catch (...)
+          {
+            ELLE_TRACE("%s: background operation threw: %s",
+                       sched, elle::exception_string());
+            sched.io_service().post([this, status,
+                                     &sched, e = std::current_exception()]
+                                    {
+                                      if (!status->aborted)
+                                      {
+                                        this->_raise(e);
+                                        this->_signal();
+                                        ++sched._background_pool_free;
+                                      }
+                                    });
+          }
+      });
+    }
+  };
+
+  void
+  Scheduler::_run_background(std::function<void ()> const& action)
+  {
+    BackgroundOperation o(action);
+    o.run();
+  }
+
   /*-----.
   | Asio |
   `-----*/
@@ -433,5 +547,17 @@ namespace reactor
     ELLE_ASSERT_NEQ(this->_running_thread, std::this_thread::get_id());
     // Bounce on the non-void case with a dummy int value.
     this->mt_run<int>(name, [&] () { action(); return 42; });
+  }
+
+  /*---------------.
+  | Free functions |
+  `---------------*/
+
+  void
+  background(std::function<void()> const& action)
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    sched->_run_background(action);
   }
 }
