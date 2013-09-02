@@ -118,19 +118,25 @@ class Boost(drake.Configuration):
       filename_st = cxx_toolkit.libname_static(self.__cfg, libname)
       test_plain = lib_path / filename
       test_plain_st = lib_path / filename_st
+      test_plain_lib = lib_path / ('lib%s' % (filename))
+      test_plain_slib = lib_path / ('lib%s' % (filename_st))
       test_versioned = lib_path / ('%s.%s' % (filename, self.__version))
       test_versioned_st = lib_path / ('%s.%s' % (filename_st, self.__version))
-      if cxx_toolkit.os == drake.os.windows:
-        path = Path(libname)
-        windows_path = lib_path / path.dirname() / ('%s.a' % str(path.basename()))
+      test_versioned_lib = lib_path / ('lib%s.%s' %(filename, self.__version))
+      test_versioned_slib = lib_path / ('lib%s.%s' %(filename_st, self.__version))
       tests = [
           test_plain,
           test_plain_st,
+          test_plain_lib,
+          test_plain_slib,
           test_versioned,
           test_versioned_st,
+          test_versioned_lib,
+          test_versioned_slib,
       ]
       if cxx_toolkit.os == drake.os.windows:
-        tests.append(windows_path)
+        test_windows = lib_path / ('lib%s.a' % (libname)) # Force .a on windows
+        tests.append(test_windows)
       for test in  tests:
         if test.exists():
           return libname
