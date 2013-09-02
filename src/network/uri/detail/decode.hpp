@@ -40,9 +40,15 @@ namespace network {
     InputIterator decode_char(InputIterator it, OutputIterator out) {
       assert(*it == '%');
       ++it;
-      auto v0 = detail::letter_to_hex(*it);
+      auto h0 = *it;
+      auto v0 = detail::letter_to_hex(h0);
       ++it;
-      auto v1 = detail::letter_to_hex(*it);
+      auto h1 = *it;
+      auto v1 = detail::letter_to_hex(h1);
+      if (h0 >= '8') {
+	// unable to decode characters above %80
+	throw percent_decoding_error(uri_error::conversion_failed);
+      }
       ++it;
       *out = (0x10 * v0) + v1;
       return it;
