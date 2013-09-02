@@ -52,6 +52,7 @@ def configure(cxx_toolkit = None,
   cxx_config += config
   cxx_config += elle.config
   cxx_config.lib_path_runtime('.')
+  cxx_config += boost.config_system()
 
   # http
   http_path = drake.Node('scripts/http.py')
