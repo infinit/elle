@@ -68,6 +68,7 @@ def configure(cxx_toolkit = None,
   # Boost libraries
   local_cxx_config += boost.config_signals()
   local_cxx_config += boost.config_system()
+  local_cxx_config += boost.config_thread()
   local_cxx_config.enable_debug_symbols()
 
   libcoroutine_sources = drake.nodes(
