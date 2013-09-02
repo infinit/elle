@@ -2,7 +2,6 @@
 # define ELLE_BUFFER_HH
 
 # include <elle/IOStream.hh>
-# include <elle/Orderable.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialize/construct.hh>
@@ -11,6 +10,7 @@
 
 # include <iosfwd>
 # include <memory>
+# include <boost/operators.hpp>
 
 namespace elle
 {
@@ -36,7 +36,7 @@ namespace elle
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
   class Buffer:
-    public elle::Orderable<Buffer>
+    private boost::totally_ordered<Buffer>
   {
   /*------.
   | Types |
@@ -107,13 +107,14 @@ namespace elle
     append(void const* data,
            size_t size);
 
-  /*----------.
-  | Orderable |
-  `----------*/
-  private:
-    friend class Orderable<elle::Buffer>;
-    Orderable<elle::Buffer>::Order
-    _order(Buffer const& other) const;
+  /*---------------------.
+  | Relational Operators |
+  `---------------------*/
+  public:
+    bool
+    operator == (Buffer const& other) const;
+    bool
+    operator < (Buffer const& other) const;
 
   /*--------------.
   | Serialization |
@@ -154,7 +155,7 @@ namespace elle
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
   class ConstWeakBuffer:
-    public elle::Orderable<ConstWeakBuffer>
+    private boost::totally_ordered<ConstWeakBuffer>
   {
   /*-------------.
   | Construction |
@@ -181,14 +182,14 @@ namespace elle
     /// Buffer constant data.
     ELLE_ATTRIBUTE_R(const Byte*, contents);
 
-  /*----------.
-  | Orderable |
-  `----------*/
-  private:
-    friend class elle::Buffer;
-    friend class Orderable<elle::ConstWeakBuffer>;
-    Orderable<elle::ConstWeakBuffer>::Order
-    _order(ConstWeakBuffer const& other) const;
+  /*---------------------.
+  | Relational Operators |
+  `---------------------*/
+  public:
+    bool
+    operator == (ConstWeakBuffer const& other) const;
+    bool
+    operator < (ConstWeakBuffer const& other) const;
 
   /*--------------.
   | Serialization |
@@ -217,7 +218,7 @@ namespace elle
 
   /// A ConstWeakBuffer with mutable data.
   class WeakBuffer:
-    public ConstWeakBuffer
+    public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
   {
   /*-------------.
   | Construction |

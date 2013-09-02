@@ -235,15 +235,19 @@ namespace elle
       return 32;
     if (size < 4096)
       return size *= 2;
-    return (size + size  / 2);
+    return (size + size / 2);
   }
 
-  Orderable<elle::Buffer>::Order
-  Buffer::_order(Buffer const& other) const
+  bool
+  Buffer::operator == (Buffer const& ot) const
   {
-    auto res = WeakBuffer(_contents, _size)._order(
-      WeakBuffer(other._contents, other._size));
-    return Orderable<elle::Buffer>::Order(res);
+    return WeakBuffer(_contents, _size) == WeakBuffer(ot._contents, ot._size);
+  }
+
+  bool
+  Buffer::operator < (Buffer const& ot) const
+  {
+    return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
   }
 
   void
@@ -326,23 +330,20 @@ namespace elle
       }
   }
 
-  Orderable<elle::ConstWeakBuffer>::Order
-  ConstWeakBuffer::_order(ConstWeakBuffer const& other) const
+  bool
+  ConstWeakBuffer::operator == (ConstWeakBuffer const& other) const
   {
-    if (this->_size < other.size())
-      return Orderable<elle::ConstWeakBuffer>::Order::less;
-    else if (this->_size > other.size())
-      return Orderable<elle::ConstWeakBuffer>::Order::more;
-    else
-    {
-      auto cmp = ::memcmp(this->_contents, other.contents(), this->_size);
-      if (cmp < 0)
-        return Orderable<elle::ConstWeakBuffer>::Order::less;
-      else if (cmp == 0)
-        return Orderable<elle::ConstWeakBuffer>::Order::equal;
-      else
-        return Orderable<elle::ConstWeakBuffer>::Order::more;
-    }
+    if (this->_size != other.size())
+        return false;
+    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
+  }
+
+  bool
+  ConstWeakBuffer::operator < (ConstWeakBuffer const& other) const
+  {
+    if ((this->_size < other.size()) == false)
+        return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
+    return true;
   }
 
   /*---------.
