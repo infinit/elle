@@ -142,3 +142,12 @@ TEST(uri_encoding_test, decode_iterator_not_an_error) {
   ASSERT_NO_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
 				       std::back_inserter(instance)));
 }
+
+TEST(uri_encoding_test, DISABLED_fail_to_decode) {
+  const std::string encoded("%80");
+
+  std::string instance;
+  ASSERT_THROW(network::uri::decode(std::begin(encoded), std::end(encoded),
+				    std::back_inserter(instance)),
+	       network::percent_decoding_error);
+}

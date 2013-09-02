@@ -50,12 +50,6 @@ TEST(uri_make_reference_test, simple_test_with_fragment) {
   ASSERT_EQ("/path/#fragment", uri_1.make_reference(uri_2));
 }
 
-TEST(uri_make_reference_test, make_reference_with_case_normalization) {
-  network::uri uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/%aa");
-  ASSERT_EQ("/%AA", uri_1.make_reference(uri_2));
-}
-
 TEST(uri_make_reference_test, make_reference_with_percent_encoding_normalization) {
   network::uri uri_1("http://www.example.com/");
   network::uri uri_2("http://www.example.com/%7E%66%6F%6F%62%61%72%5F%36%39/");
