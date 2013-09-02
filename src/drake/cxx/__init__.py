@@ -343,8 +343,8 @@ class Config:
         drake.Exception: redefinition of B from 0 to 1
         """
         def merge_bool(attr):
-          mine = getattr(self, attr)
-          hers = getattr(rhs, attr)
+          mine = getattr(self, attr, None)
+          hers = getattr(rhs, attr, None)
           if mine is None:
             return hers
           elif hers is None:
