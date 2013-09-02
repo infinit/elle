@@ -110,12 +110,28 @@ class Boost(drake.Configuration):
                                     self.version.major,
                                     self.version.minor)
       suffixes = [suffix] + suffixes
+    mgw = '-mgw-mt-%s_%s' % (self.version.major, self.version.minor)
+    suffixes += [mgw]
     for suffix in suffixes:
       libname = lib + suffix
       filename = cxx_toolkit.libname_dyn(self.__cfg, libname)
+      filename_st = cxx_toolkit.libname_static(self.__cfg, libname)
       test_plain = lib_path / filename
+      test_plain_st = lib_path / filename_st
       test_versioned = lib_path / ('%s.%s' % (filename, self.__version))
-      for test in [test_plain, test_versioned]:
+      test_versioned_st = lib_path / ('%s.%s' % (filename_st, self.__version))
+      if cxx_toolkit.os == drake.os.windows:
+        path = Path(libname)
+        windows_path = lib_path / path.dirname() / ('%s.a' % str(path.basename()))
+      tests = [
+          test_plain,
+          test_plain_st,
+          test_versioned,
+          test_versioned_st,
+      ]
+      if cxx_toolkit.os == drake.os.windows:
+        tests.append(windows_path)
+      for test in  tests:
         if test.exists():
           return libname
     raise Exception('Unable to find boost library %s '
@@ -124,18 +140,20 @@ class Boost(drake.Configuration):
   def config(self):
       return self.__cfg
 
-  def config_python(self):
+  def config_python(self, static = False):
     if self.__cfg_python is None:
       self.__cfg_python = Config()
       # FIXME: do something smart here
       try:
         self.__cfg_python.lib(self.__find_lib('boost_python-3.2',
                                               self.__lib_path,
-                                              self.__cxx_toolkit))
+                                              self.__cxx_toolkit),
+                                              static)
       except:
         self.__cfg_python.lib(self.__find_lib('boost_python3',
                                               self.__lib_path,
-                                              self.__cxx_toolkit))
+                                              self.__cxx_toolkit),
+                                              static)
     return self.__cfg_python
 
   def __repr__(self):
