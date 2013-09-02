@@ -62,15 +62,27 @@ silent_server()
 | Destroy socket |
 `---------------*/
 
+// Find a free port. Of course there's a race condition, but it's better than an
+// hardcoded one.
+static
+int
+free_port()
+{
+  TCPServer s(*reactor::Scheduler::scheduler());
+  s.listen();
+  return s.port();
+}
+
 static
 void
 test_destroy_socket_non_connected()
 {
+  auto& sched = *reactor::Scheduler::scheduler();
   // Used to fail because shuting down a socket whose connection
   // failed used to raise.
   try
   {
-    TCPSocket socket(*sched, "127.0.0.1", 4242);
+    TCPSocket socket(sched, "127.0.0.1", free_port());
   }
   catch (...)
   {
@@ -84,10 +96,9 @@ static
 void
 test_destroy_socket()
 {
-  sched = new reactor::Scheduler;
-  Thread t(*sched, "thread", &test_destroy_socket_non_connected);
-  sched->run();
-  delete sched;
+  reactor::Scheduler sched;
+  Thread t(sched, "thread", &test_destroy_socket_non_connected);
+  sched.run();
 }
 
 /*---------.
