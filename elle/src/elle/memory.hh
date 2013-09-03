@@ -30,7 +30,7 @@ namespace elle
     generic_unique_ptr();
     /// Construct a null pointer.
     constexpr
-    generic_unique_ptr(nullptr_t);
+    generic_unique_ptr(std::nullptr_t);
     /// Construct a pointer to \a p.
     explicit
     generic_unique_ptr(typename Self::pointer p);

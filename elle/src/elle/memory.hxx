@@ -22,7 +22,7 @@ namespace elle
 
   template <typename T>
   constexpr
-  generic_unique_ptr<T>::generic_unique_ptr(nullptr_t p):
+  generic_unique_ptr<T>::generic_unique_ptr(std::nullptr_t p):
     Super(p)
   {}
 
