@@ -215,6 +215,19 @@ test_release()
 
 static
 void
+test_assign()
+{
+  elle::Buffer b1(8);
+  elle::Buffer b2(16);
+  BOOST_CHECK_EQUAL(b1.size(), 8);
+  BOOST_CHECK_EQUAL(b2.size(), 16);
+  b1 = std::move(b2);
+  BOOST_CHECK_EQUAL(b1.size(), 16);
+  BOOST_CHECK_EQUAL(b2.size(), 0);
+}
+
+static
+void
 delete_noop(elle::Byte*)
 {}
 
@@ -258,6 +271,7 @@ test_suite()
   buffer->add(memory);
   memory->add(BOOST_TEST_CASE(test_capacity));
   memory->add(BOOST_TEST_CASE(test_release));
+  memory->add(BOOST_TEST_CASE(test_assign));
 
 
   // WeakBuffer
