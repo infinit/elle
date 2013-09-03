@@ -34,6 +34,12 @@ TEST(uri_normalization_test, normalize_percent_encoding) {
 	    instance.normalize(network::uri_comparison_level::syntax_based));
 }
 
+TEST(uri_normalization_test, normalize_with_lower_case) {
+  network::uri instance("http://www.example.com/%2a");
+  ASSERT_EQ("http://www.example.com/%2A",
+	    instance.normalize(network::uri_comparison_level::syntax_based));
+}
+
 TEST(uri_normalization_test, normalize_percent_encoding_with_lower_case_elements) {
   network::uri instance("http://www%2eexample%2ecom/%7e%66%6f%6f%62%61%72%5f%36%39/");
   ASSERT_EQ("http://www.example.com/~foobar_69/",
