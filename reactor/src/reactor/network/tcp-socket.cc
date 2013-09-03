@@ -1,7 +1,10 @@
+#include <boost/optional.hpp>
+
 #include <boost/lexical_cast.hpp>
 
-#include <elle/log.hh>
+#include <elle/Lazy.hh>
 #include <elle/format/hexadecimal.hh>
+#include <elle/log.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
@@ -191,8 +194,12 @@ namespace reactor
       ELLE_TRACE("%s: completed read of %s bytes: %s",
                  *this, read.read(), buf);
       ELLE_DUMP("%s: data: 0x%s", *this,
-                elle::format::hexadecimal::encode(
-                  elle::ConstWeakBuffer(buf.data(), buf.size())));
+                elle::lazy([data = buf.data(), size = read.read()]
+                           {
+                             return elle::format::hexadecimal::encode(
+                               elle::ConstWeakBuffer(data, size));
+                           }));
+
       return read.read();
     }
 
