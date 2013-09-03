@@ -183,7 +183,7 @@ namespace elle
                          this->_buffer_write + size,
                          std::ostream_iterator<char>(_stream));
         }
-        if (this->_remaining_write > 0)
+        if (size && this->_remaining_write > 0)
         {
           ELLE_DEBUG_SCOPE("%s: push back %s bytes in the buffer",
                            *this, this->_remaining_write);
