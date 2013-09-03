@@ -1,7 +1,8 @@
 #include <elle/attribute.hh>
+#include <elle/assert.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
-#include <elle/assert.hh>
+#include <elle/Measure.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
@@ -123,17 +124,20 @@ namespace reactor
     auto& ordered = this->_running.get<1>();
     std::vector<Thread*> running(ordered.begin(), ordered.end());
     ELLE_TRACE("Scheduler: new round with %s jobs", running.size());
-    BOOST_FOREACH (Thread* t, running)
-    {
-      // If the thread was stopped during this round, skip. Can be caused by
-      // terminate_now, for instance.
-      if (_running.find(t) == _running.end())
-        continue;
-      ELLE_TRACE("Scheduler: schedule %s", *t);
-      _step(t);
-    }
+
+    ELLE_MEASURE("Scheduler round")
+      BOOST_FOREACH (Thread* t, running)
+      {
+        // If the thread was stopped during this round, skip. Can be caused by
+        // terminate_now, for instance.
+        if (_running.find(t) == _running.end())
+          continue;
+        ELLE_TRACE("Scheduler: schedule %s", *t);
+        _step(t);
+      }
     ELLE_TRACE("%s: run asynchronous jobs", *this)
     {
+      ELLE_MEASURE_SCOPE("Asio callbacks");
       try
       {
         _io_service.reset();

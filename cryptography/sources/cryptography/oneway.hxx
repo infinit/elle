@@ -7,6 +7,7 @@
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
+# include <elle/Measure.hh>
 
 # include <utility>
 
@@ -32,8 +33,10 @@ namespace infinit
                       "this call should never have occured");
 
         elle::Buffer buffer;
-        buffer.writer() << value;
+        ELLE_MEASURE("Serialize into the buffer")
+          buffer.writer() << value;
 
+        ELLE_MEASURE_SCOPE("Hash the buffer");
         return (hash(Plain(elle::WeakBuffer(buffer)), algorithm));
       }
     }
