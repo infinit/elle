@@ -239,13 +239,13 @@ namespace elle
   }
 
   bool
-  Buffer::operator == (Buffer const& ot) const
+  Buffer::operator ==(Buffer const& ot) const
   {
     return WeakBuffer(_contents, _size) == WeakBuffer(ot._contents, ot._size);
   }
 
   bool
-  Buffer::operator < (Buffer const& ot) const
+  Buffer::operator <(Buffer const& ot) const
   {
     return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
   }
@@ -331,7 +331,7 @@ namespace elle
   }
 
   bool
-  ConstWeakBuffer::operator == (ConstWeakBuffer const& other) const
+  ConstWeakBuffer::operator ==(ConstWeakBuffer const& other) const
   {
     if (this->_size != other.size())
         return false;
@@ -339,7 +339,7 @@ namespace elle
   }
 
   bool
-  ConstWeakBuffer::operator < (ConstWeakBuffer const& other) const
+  ConstWeakBuffer::operator <(ConstWeakBuffer const& other) const
   {
     if ((this->_size < other.size()) == false)
         return ::memcmp(this->_contents, other.contents(), this->_size) < 0;

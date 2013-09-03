@@ -112,9 +112,9 @@ namespace elle
   `---------------------*/
   public:
     bool
-    operator == (Buffer const& other) const;
+    operator ==(Buffer const& other) const;
     bool
-    operator < (Buffer const& other) const;
+    operator <(Buffer const& other) const;
 
   /*--------------.
   | Serialization |
@@ -187,9 +187,9 @@ namespace elle
   `---------------------*/
   public:
     bool
-    operator == (ConstWeakBuffer const& other) const;
+    operator ==(ConstWeakBuffer const& other) const;
     bool
-    operator < (ConstWeakBuffer const& other) const;
+    operator <(ConstWeakBuffer const& other) const;
 
   /*--------------.
   | Serialization |
