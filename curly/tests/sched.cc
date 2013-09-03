@@ -4,38 +4,81 @@
 #define BOOST_TEST_MODULE curly_sched
 #include <boost/test/unit_test.hpp>
 
-#include <curly/curly_sched.cc>
-#include <elle/printf.hh>
-#include <elle/system/Process.hh>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <string>
 
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
+#include <elle/Buffer.hh>
+#include <elle/container/vector.hh>
+#include <elle/printf.hh>
+
+#include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>
+#include <reactor/thread.hh>
 
-#include <elle/container/vector.hh>
-
-#include <fstream>
-#include <string>
-#include <algorithm>
-#include <iterator>
+#include <curly/curly_sched.cc>
 
 BOOST_AUTO_TEST_CASE(simple_test)
 {
+  static int const concurrent = 8;
   reactor::Scheduler sched;
 
-  auto pc = elle::system::process_config(elle::system::normal_config);
-  elle::system::Process p{std::move(pc),
-    "python3",
-    {"-mhttp.server", "56789"}
-  };
-  sleep(1);
+  int port;
+  reactor::Barrier served;
 
-  auto run_test = [&] {
-    std::vector<std::string> v;
+  reactor::Thread server(
+    sched, "server",
+    [&]
+    {
+      auto& sched = *reactor::Scheduler::scheduler();
+      reactor::network::TCPServer server(sched);
+      server.listen();
+      port = server.port();
+      served.open();
+
+      int clients = 0;
+      reactor::Barrier everybody_is_there;
+      reactor::Scope scope;
+      while (true)
+      {
+        std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
+        scope.run_background(
+          "request server",
+          [&, socket]
+          {
+            char buffer[1024];
+            socket->getline(buffer, sizeof(buffer), '\n');
+            buffer[socket->gcount()] = 0;
+            BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
+            while (std::string(buffer) != "\r")
+            {
+              socket->getline(buffer, sizeof(buffer), '\n');
+              buffer[socket->gcount()] = 0;
+            }
+            if (++clients == concurrent)
+              everybody_is_there.open();
+            // Wait until every client made the request, to check they are done
+            // concurrently.
+            sched.current()->wait(everybody_is_there);
+            socket->write(
+              "HTTP/1.0 200 OK\r\n"
+              "Server: Custom HTTP of doom\r\n"
+              "Content-Length: 4\r\n"
+              "\r\n"
+              "lol\n");
+          });
+      }
+    });
+
+  auto run_test = [&]
+  {
+    auto& sched = *reactor::Scheduler::scheduler();
 
     reactor::Thread* current = sched.current();
     auto fn = [&]
@@ -45,31 +88,24 @@ BOOST_AUTO_TEST_CASE(simple_test)
 
       get.output(ss);
       get.option(CURLOPT_VERBOSE, 0);
-      get.url("http://127.0.0.1:56789/drake");
-      //get.url("http://fabien.le.boute-en-tra.in");
+      get.url(elle::sprintf("http://127.0.0.1:%s/some/path", port));
       curly::sched_request req(sched, std::move(get));
       req.run();
-      std::cout << ss.str() << std::endl;
-      v.push_back(ss.str());
+      BOOST_CHECK_EQUAL(ss.str(), "lol\n");
     };
 
-    reactor::Thread t0(sched, "test-0", fn);
-    reactor::Thread t1(sched, "test-1", fn);
-    reactor::Thread t2(sched, "test-2", fn);
-    reactor::Thread t3(sched, "test-3", fn);
-
-    current->wait(t0);
-    current->wait(t1);
-    current->wait(t2);
-    current->wait(t3);
-
-    std::set<std::string> s;
-    std::move(begin(v), end(v), std::inserter(s, s.begin()));
-    BOOST_CHECK_EQUAL(s.size(), 1);
+    sched.current()->wait(served);
+    std::vector<reactor::Waitable*> threads;
+    for (int i = 0; i < concurrent; ++i)
+      threads.push_back(
+        new reactor::Thread(sched, elle::sprintf("client %s", i), fn));
+    current->wait(threads);
+    for (auto thread: threads)
+      delete thread;
+    server.terminate();
   };
   reactor::Thread main(sched, "main", run_test);
   sched.run();
-  p.interrupt();
 }
 
 BOOST_AUTO_TEST_CASE(timeout)
@@ -88,7 +124,7 @@ BOOST_AUTO_TEST_CASE(timeout)
     serv.listen(0);
     port = serv.port();
     sig.signal();
-    serv.accept();
+    std::unique_ptr<reactor::network::TCPSocket> socket(serv.accept());
     while (1)
     {
        reactor::Sleep pause(sched, 1_sec);
