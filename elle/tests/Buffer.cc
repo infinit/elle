@@ -135,8 +135,8 @@ mkbuf<elle::Buffer>(size_t size)
 {
   elle::Buffer buffer(size);
 
-  for (int i = 0; i < 16; ++i)
-    buffer.mutable_contents()[i] = i;
+  for (size_t i = 0; i < size; ++i)
+    buffer.mutable_contents()[i] = ((elle::Byte) i);
 
   return buffer;
 }
@@ -148,8 +148,8 @@ mkbuf<elle::WeakBuffer>(size_t size)
   elle::Byte* raw = new elle::Byte[size];
   elle::WeakBuffer buffer(raw, size);
 
-  for (int i = 0; i < 16; ++i)
-    buffer.mutable_contents()[i] = i;
+  for (size_t i = 0; i < size; ++i)
+    buffer.mutable_contents()[i] = ((elle::Byte) i);
 
   return buffer;
 }
