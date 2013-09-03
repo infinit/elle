@@ -1586,8 +1586,8 @@ test_suite()
 
   boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
   boost::unit_test::framework::master_test_suite().add(barrier);
-  signals->add(BOOST_TEST_CASE(barrier_closed));
-  signals->add(BOOST_TEST_CASE(barrier_opened));
+  barrier->add(BOOST_TEST_CASE(barrier_closed));
+  barrier->add(BOOST_TEST_CASE(barrier_opened));
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
   boost::unit_test::framework::master_test_suite().add(sleep);
@@ -1650,9 +1650,10 @@ test_suite()
   storage->add(BOOST_TEST_CASE(test_storage));
   storage->add(BOOST_TEST_CASE(test_storage_multithread));
 
-  boost::unit_test::test_suite* thread_exception = BOOST_TEST_SUITE("Thread Exception");
+  boost::unit_test::test_suite* thread_exception =
+    BOOST_TEST_SUITE("Thread exception");
   boost::unit_test::framework::master_test_suite().add(thread_exception);
-  storage->add(BOOST_TEST_CASE(thread_exception_test));
+  thread_exception->add(BOOST_TEST_CASE(thread_exception_test));
 
   boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("IO service");
   boost::unit_test::framework::master_test_suite().add(io_service);
