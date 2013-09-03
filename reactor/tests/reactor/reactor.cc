@@ -462,14 +462,14 @@ static
 void
 sleeping_beauty()
 {
-  sleep(boost::posix_time::milliseconds(100));
+  sleep(boost::posix_time::milliseconds(200));
 }
 
 static
 void
 prince_charming(reactor::Thread& sleeping_beauty)
 {
-  bool finished = wait(sleeping_beauty, boost::posix_time::milliseconds(50));
+  bool finished = wait(sleeping_beauty, boost::posix_time::milliseconds(100));
   BOOST_CHECK(!finished);
   BOOST_CHECK(!sleeping_beauty.done());
   finished = wait(sleeping_beauty, boost::posix_time::milliseconds(200));
