@@ -76,6 +76,7 @@ namespace elle
   Buffer&
   Buffer::operator = (Buffer&& other)
   {
+    ::free(this->_contents);
     this->_size = other._size;
     this->_capacity = other._capacity;
     this->_contents = other._contents;
