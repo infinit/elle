@@ -50,17 +50,11 @@ def configure(cxx_toolkit = None,
     config += dopenssl
 
   # Local Configuration
-  cxx_config = cxx_config or drake.cxx.Config()
-  cxx_config.standard = drake.cxx.Config.cxx_11
+  cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += config
   cxx_config += boost.config()
   cxx_config += boost.config_system()
   cxx_config += elle.config
-  cxx_config.lib('crypto')
-  cxx_config.lib('ssl')
-  if enable_rotation:
-    cxx_config.lib('dopenssl')
-  cxx_config.lib_path_runtime('.')
 
   # Sources
   sources = drake.nodes(
@@ -140,8 +134,17 @@ def configure(cxx_toolkit = None,
       'sources/cryptography/rsa/Seed.hxx',
       )
 
-  lib_static = drake.cxx.StaticLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('lib/cryptography', sources, cxx_toolkit, cxx_config)
+  cxx_config_lib = drake.cxx.Config(cxx_config)
+  cxx_config_lib.lib('crypto')
+  cxx_config_lib.lib('ssl')
+  if enable_rotation:
+    cxx_config.lib('dopenssl')
+  cxx_config_lib.lib_path_runtime('.')
+
+  lib_static = drake.cxx.StaticLib(
+    'lib/cryptography', sources, cxx_toolkit, cxx_config_lib)
+  lib_dynamic = drake.cxx.DynLib(
+    'lib/cryptography', sources, cxx_toolkit, cxx_config_lib)
 
   # Build
   rule_build = drake.Rule('build')
@@ -172,10 +175,7 @@ def configure(cxx_toolkit = None,
   if enable_rotation:
     tests_cxx_config += dopenssl
   tests_cxx_config += elle.config
-  tests_cxx_config.lib('crypto')
-  tests_cxx_config.lib('ssl')
-  if enable_rotation:
-    tests_cxx_config.lib('dopenssl')
+  tests_cxx_config.lib('crypto') # Some test require bignum.
 
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
