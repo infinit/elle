@@ -340,7 +340,31 @@ namespace reactor
   Scheduler::_terminate_now(Thread* thread)
   {
     _terminate(thread);
-    this->current()->wait(*thread);
+
+    // wait on the thread object and ignore exceptions until the wait is done
+    std::exception_ptr saved_exception(nullptr);
+    while (true)
+    {
+      try
+      {
+        this->current()->wait(*thread);
+        ELLE_ERR("wait ended correctly");
+      }
+      catch (...)
+      {
+        saved_exception = std::current_exception();
+        ELLE_ERR("exception encountered during wait. resuming wait...");
+        continue;
+      }
+
+      break;
+    }
+
+    if (saved_exception != nullptr)
+    {
+      ELLE_ERR("throwing exception catched previously");
+      std::rethrow_exception(saved_exception);
+    }
   }
 
   /*-------.

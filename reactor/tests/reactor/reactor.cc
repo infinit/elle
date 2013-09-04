@@ -1275,6 +1275,93 @@ test_terminate_now()
   sched.run();
 }
 
+/*------------------------.
+| Terminate now destroyed |
+`------------------------*/
+
+static
+void
+terminate_now_destroyed_t1(void)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  auto& self = *sched.current();
+
+  // ignore the first Terminate (sent by t2) and catch the second one (by t4)
+  try
+  {
+    while (true)
+      self.yield();
+  }
+  catch (...)
+  {}
+
+  while (true)
+    self.yield();
+}
+
+static
+void
+terminate_now_destroyed_t2(reactor::Thread& t1)
+{
+  t1.terminate_now();
+  BOOST_FAIL("terminate_now should have failed (killed by t3 during wait)");
+}
+
+static
+void
+terminate_now_destroyed_t3(reactor::Thread& t2)
+{
+  t2.terminate_now();
+}
+
+static
+void
+terminate_now_destroyed_t4(reactor::Thread& t1,
+                           reactor::Thread& t2,
+                           reactor::Thread& t3)
+{
+  auto& sched = *reactor::Scheduler::scheduler();
+  auto& self = *sched.current();
+
+  while (true)
+  {
+    // t2 did not wait for t1 to end before dying
+    if (t1.state() == reactor::Thread::state::running &&
+        t2.state() == reactor::Thread::state::done)
+      BOOST_FAIL("2nd thread did not wait for 1st thread to die before dying");
+    // if t2 is effectively waiting for t1 to die and t3 for t2 to die
+    // then the test has passed
+    else if (t1.state() == reactor::Thread::state::running &&
+             t2.state() == reactor::Thread::state::frozen &&
+             t3.state() == reactor::Thread::state::frozen)
+    {
+      t1.terminate_now();
+      break;
+    }
+
+    self.yield();
+  }
+}
+
+static
+void
+test_terminate_now_destroyed()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread t1(sched, "t1", &terminate_now_destroyed_t1);
+  reactor::Thread t2(sched, "t2", std::bind(&terminate_now_destroyed_t2,
+                                            std::ref(t1)));
+  reactor::Thread t3(sched, "t3", std::bind(&terminate_now_destroyed_t3,
+                                            std::ref(t2)));
+  reactor::Thread t4(sched, "t4", std::bind(&terminate_now_destroyed_t4,
+                                            std::ref(t1),
+                                            std::ref(t2),
+                                            std::ref(t3)));
+
+  sched.run();
+}
+
 /*-----------------------.
 | Terminate now disposed |
 `-----------------------*/
@@ -1604,6 +1691,7 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(terminate);
   terminate->add(BOOST_TEST_CASE(test_terminate_yield));
   terminate->add(BOOST_TEST_CASE(test_terminate_now));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_destroyed));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled));
