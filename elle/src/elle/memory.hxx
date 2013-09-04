@@ -42,7 +42,7 @@ namespace elle
   template <typename D>
   generic_unique_ptr<T>::generic_unique_ptr(typename Self::pointer p,
                                             D&& deleter):
-    Super(p, [d = std::forward<D>(deleter)] (T* p) { d(p); })
+    Super(p, [deleter] (T* p) { deleter(p); })
   {}
 
   template <typename T>
@@ -50,10 +50,19 @@ namespace elle
     Super(p.release(), p.get_deleter())
   {}
 
+  template <typename P, typename D, typename T>
+  static
+  std::function<void(T*)>
+  extract_deleter(std::unique_ptr<P, D>&& source)
+  {
+    auto d = source.get_deleter();
+    return [=] (T* p) { d(p); };
+  }
+
   template <typename T>
   template <typename P, typename D>
   generic_unique_ptr<T>::generic_unique_ptr(std::unique_ptr<P, D>&& source):
-    Super(source.release(), [d = source.get_deleter()] (T* p) { d(p); })
+    Super(source.release(), extract_deleter<P, D, T>(source))
   {}
 
   /*-----------.

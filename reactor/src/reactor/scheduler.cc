@@ -510,9 +510,10 @@ namespace reactor
       else
         --sched._background_pool_free;
       sched._background_service.post(
-        [this, action = this->_action, status = this->_status,
-         &current, &sched]
+        [this, &current, &sched]
         {
+          auto action = this->_action;
+          auto status = this->_status;
           try
           {
             ELLE_TRACE_SCOPE("%s: run background operation", sched);
@@ -531,8 +532,8 @@ namespace reactor
           {
             ELLE_TRACE("%s: background operation threw: %s",
                        sched, elle::exception_string());
-            sched.io_service().post([this, status,
-                                     &sched, e = std::current_exception()]
+            auto e = std::current_exception();
+            sched.io_service().post([this, status, &sched, e]
                                     {
                                       if (!status->aborted)
                                       {

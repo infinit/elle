@@ -193,8 +193,10 @@ namespace reactor
       }
       ELLE_TRACE("%s: completed read of %s bytes: %s",
                  *this, read.read(), buf);
+      auto data = buf.data();
+      auto size = read.read();
       ELLE_DUMP("%s: data: 0x%s", *this,
-                elle::lazy([data = buf.data(), size = read.read()]
+                elle::lazy([data, size]
                            {
                              return elle::format::hexadecimal::encode(
                                elle::ConstWeakBuffer(data, size));
