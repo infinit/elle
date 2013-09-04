@@ -1,6 +1,7 @@
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.valgrind
 import sys
 
 config = None
@@ -17,7 +18,8 @@ def configure(cxx_toolkit = None,
               boost = None,
               curl = None,
               enable_tests = True,
-              prefix = '/usr'):
+              prefix = '/usr',
+              valgrind = None):
 
   global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install, rule_tests
 
@@ -374,19 +376,22 @@ def configure(cxx_toolkit = None,
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests += boost.config_test()
-
   if enable_tests:
-      import os
-      for test in tests:
-        config_test = drake.cxx.Config(cxx_config_tests)
-        config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
-        test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
-                                    drake.nodes('tests/%s' % test) + [lib_dynamic],
-                                    cxx_toolkit, config_test)
-        rule_tests << test
-        runner = drake.Runner(test)
-        runner.reporting = drake.Runner.Reporting.on_failure
-        rule_check << runner.status
+    import os
+    for test in tests:
+      config_test = drake.cxx.Config(cxx_config_tests)
+      config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
+      test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
+                                  drake.nodes('tests/%s' % test) + [lib_dynamic],
+                                  cxx_toolkit, config_test)
+      rule_tests << test
+      if valgrind is not None:
+        runner = drake.valgrind.ValgrindRunner(exe = test,
+                                               valgrind = valgrind)
+      else:
+        runner = drake.Runner(exe = test)
+      runner.reporting = drake.Runner.Reporting.on_failure
+      rule_check << runner.status
 
   # Install
 

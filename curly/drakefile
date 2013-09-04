@@ -1,6 +1,7 @@
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.valgrind
 
 config = None
 lib_static = None
@@ -23,7 +24,8 @@ def configure(cxx_toolkit = None,
               elle = None,
               curl = None,
               reactor = None,
-              prefix = '/usr'):
+              prefix = '/usr',
+              valgrind = None):
 
   global config, lib_static, lib_dynamic, lib_sched_static, lib_sched_dynamic,\
           lib_asio_dynamic, lib_asio_dynamic, rule_build, rule_install
@@ -134,7 +136,6 @@ def configure(cxx_toolkit = None,
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
-
   for test in tests_sched:
     import os
     cxx_config_tests = drake.cxx.Config(cxx_config)
@@ -154,7 +155,12 @@ def configure(cxx_toolkit = None,
                                    reactor.lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, cxx_config_tests)
     rule_tests << bin
-    runner = drake.Runner(bin, test.args)
+    if valgrind is not None:
+      runner = drake.valgrind.ValgrindRunner(exe = bin,
+                                             args = test.args,
+                                             valgrind = valgrind)
+    else:
+      runner = drake.Runner(exe = bin, args = test.args)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 

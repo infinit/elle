@@ -19,7 +19,8 @@ def configure(cxx_toolkit = None,
               boost = None,
               elle = None,
               stuntman = None,
-              prefix = '/usr'):
+              prefix = '/usr',
+              valgrind = None):
 
   global asio_udt_lib, asio_fs_lib
   global config, lib_static, lib_dynamic
@@ -79,6 +80,8 @@ def configure(cxx_toolkit = None,
   )
   libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
   libcoroutine_cxx_config.warnings.missing_declarations = None
+  if valgrind is not None:
+    libcoroutine_cxx_config.define('USE_VALGRIND')
   libcoroutine = drake.cxx.StaticLib('lib/coroutine',
                                      libcoroutine_sources,
                                      cxx_toolkit,
@@ -210,7 +213,11 @@ def configure(cxx_toolkit = None,
                                 drake.nodes('tests/%s.cc' % test) + [lib_dynamic, elle_lib, asio_fs_lib],
                                 cxx_toolkit, tests_config)
     rule_tests << test
-    runner = drake.Runner(test)
+    if valgrind is not None:
+      runner = drake.valgrind.ValgrindRunner(exe = test,
+                                             valgrind = valgrind)
+    else:
+      runner = drake.Runner(exe = test)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
