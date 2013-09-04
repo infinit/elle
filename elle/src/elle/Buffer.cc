@@ -336,9 +336,9 @@ namespace elle
   bool
   ConstWeakBuffer::operator <(ConstWeakBuffer const& other) const
   {
-    if ((this->_size < other.size()) == false)
+    if (this->_size == other.size())
         return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
-    return true;
+    return this->_size < other.size();
   }
 
   /*---------.
