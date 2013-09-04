@@ -348,12 +348,11 @@ namespace reactor
       try
       {
         this->current()->wait(*thread);
-        ELLE_ERR("wait ended correctly");
       }
       catch (...)
       {
         saved_exception = std::current_exception();
-        ELLE_ERR("exception encountered during wait. resuming wait...");
+        ELLE_TRACE("%s: terminate_now interrupted, delaying exception", *this);
         continue;
       }
 
@@ -362,7 +361,6 @@ namespace reactor
 
     if (saved_exception != nullptr)
     {
-      ELLE_ERR("throwing exception catched previously");
       std::rethrow_exception(saved_exception);
     }
   }
