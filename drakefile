@@ -1,6 +1,7 @@
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.valgrind
 
 config = None
 lib_static = None
@@ -18,7 +19,8 @@ def configure(cxx_toolkit = None,
               dopenssl = None,
               boost = None,
               elle = None,
-              prefix = '/usr'):
+              prefix = '/usr',
+              valgrind = None):
 
   global config, lib_static, lib_dynamic, rule_build, rule_install
 
@@ -193,7 +195,11 @@ def configure(cxx_toolkit = None,
                                [lib_dynamic, elle.lib_dynamic],
                                cxx_toolkit, config_test)
     rule_tests << bin
-    runner = drake.Runner(bin)
+    if valgrind is not None:
+      runner = drake.valgrind.ValgrindRunner(exe = bin,
+                                             valgrind = valgrind)
+    else:
+      runner = drake.Runner(exe = bin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
