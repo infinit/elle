@@ -53,7 +53,7 @@ namespace elle
   template <typename P, typename D, typename T>
   static
   std::function<void(T*)>
-  extract_deleter(std::unique_ptr<P, D>&& source)
+  extract_deleter(std::unique_ptr<P, D> const& source)
   {
     auto d = source.get_deleter();
     return [=] (T* p) { d(p); };
