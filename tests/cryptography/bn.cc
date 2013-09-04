@@ -64,6 +64,7 @@ test_serialize()
       elle::serialize::OutputBase64Archive>(archive2) << bn;
 
     BOOST_CHECK_EQUAL(archive1, archive2);
+    ::BN_free(&bn);
   }
 
   // Deserialize an invalid representation.
