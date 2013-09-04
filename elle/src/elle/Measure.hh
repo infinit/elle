@@ -22,7 +22,7 @@
 
 # define ELLE_MEASURE(_name)                                                  \
   if (ELLE_MEASURE_SCOPE(_name))                                              \
-    ;                                                                         \
+    (void)BOOST_PP_CAT(_elle_mesure_, __LINE__);                              \
   else                                                                        \
 /**/
 
