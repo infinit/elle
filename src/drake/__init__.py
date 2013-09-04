@@ -2877,15 +2877,13 @@ class Runner(Builder):
 
   def execute(self):
     import subprocess
-    path = str(self.__exe.path())
-    if not self.__exe.path().absolute():
-        path = './%s' % path
     with open(str(self.__out.path()), 'w') as out, \
          open(str(self.__err.path()), 'w') as err, \
          open(str(self.__status.path()), 'w') as rv:
-      self.output(path, 'Run %s %s' % (self.__exe, " ".join(self.__args)))
+      self.output(' '.join(self.command),
+                  'Run %s' % self.__exe)
       try:
-        p = subprocess.Popen([path] + self.__args,
+        p = subprocess.Popen(self.command,
                              stdout = out,
                              stderr = err,
                              env = self.__env)
@@ -2904,7 +2902,14 @@ class Runner(Builder):
 
   @property
   def command(self):
-      return [self.__exe.path()]
+    path = str(self.__exe.path())
+    if not self.__exe.path().absolute():
+      path = './%s' % path
+    return [str(path)] + list(map(str, self.__args))
+
+  @property
+  def executable(self):
+    return self.__exe
 
   def __str__(self):
     return str(self.__exe)
