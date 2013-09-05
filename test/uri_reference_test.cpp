@@ -50,26 +50,20 @@ TEST(uri_make_reference_test, simple_test_with_fragment) {
   ASSERT_EQ("/path/#fragment", uri_1.make_reference(uri_2));
 }
 
-TEST(uri_make_reference_test, make_reference_with_case_normalization) {
-  network::uri uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/%aa");
-  ASSERT_EQ("/%AA", uri_1.make_reference(uri_2));
-}
-
 TEST(uri_make_reference_test, make_reference_with_percent_encoding_normalization) {
   network::uri uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/%7E%46%4F%4F%42%41%52%5F%36%39/");
+  network::uri uri_2("http://www.example.com/%7E%66%6F%6F%62%61%72%5F%36%39/");
   ASSERT_EQ("/~foobar_69/", uri_1.make_reference(uri_2));
 }
 
 TEST(uri_make_reference_test, make_reference_with_percent_encoding_normalization_with_query) {
   network::uri uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/%7E%46%4F%4F%42%41%52%5F%36%39/?key=value");
+  network::uri uri_2("http://www.example.com/%7E%66%6F%6F%62%61%72%5F%36%39/?key=value");
   ASSERT_EQ("/~foobar_69/?key=value", uri_1.make_reference(uri_2));
 }
 
 TEST(uri_make_reference_test, make_reference_with_percent_encoding_normalization_with_fragment) {
   network::uri uri_1("http://www.example.com/");
-  network::uri uri_2("http://www.example.com/%7E%46%4F%4F%42%41%52%5F%36%39/#fragment");
+  network::uri uri_2("http://www.example.com/%7E%66%6F%6F%62%61%72%5F%36%39/#fragment");
   ASSERT_EQ("/~foobar_69/#fragment", uri_1.make_reference(uri_2));
 }

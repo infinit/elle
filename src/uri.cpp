@@ -372,7 +372,7 @@ namespace network {
       }
 
       // ...except when used in percent encoding
-      boost::for_each(normalized, detail::normalize_percent_encoded());
+      boost::for_each(normalized, detail::percent_encoded_to_upper());
 
       // parts are invalidated here
       // there's got to be a better way of doing this that doesn't

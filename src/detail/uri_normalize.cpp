@@ -25,12 +25,14 @@ namespace network {
       uri::string_type normalized(std::begin(path), std::end(path));
 
       if (uri_comparison_level::syntax_based == level) {
-	//detail::percent_encoding_to_upper(std::begin(normalized), std::end(normalized));
-	boost::for_each(normalized, normalize_percent_encoded());
+	// case normalization
+	boost::for_each(normalized, percent_encoded_to_upper());
 
+	// % encoding normalization
 	normalized.erase(detail::decode_encoded_chars(std::begin(normalized), std::end(normalized)),
 			 std::end(normalized));
 
+	// % path segment normalization
 	normalized = normalize_path_segments(normalized);
       }
 

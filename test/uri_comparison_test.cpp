@@ -26,71 +26,29 @@ TEST(uri_comparison_test, equality_test_capitalized_scheme_with_case_normalizati
   ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
 }
 
-//TEST(uri_comparison_test, equality_test_capitalized_host) {
-//  network::uri lhs("http://www.example.com/");
-//  network::uri rhs("http://WWW.EXAMPLE.COM/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_user_info) {
-//  network::uri lhs("ftp://john.doe@ftp.example.com/");
-//  network::uri rhs("ftp://JOHN.DOE@ftp.example.com/");
-//  ASSERT_NE(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_default_http_port) {
-//  network::uri lhs("http://www.example.com/");
-//  network::uri rhs("http://www.example.com:80/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_default_http_port_2) {
-//  network::uri lhs("http://www.example.com:80/");
-//  network::uri rhs("http://www.example.com/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_default_https_port) {
-//  network::uri lhs("https://www.example.com/");
-//  network::uri rhs("https://www.example.com:443/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_default_https_port_2) {
-//  network::uri lhs("https://www.example.com:443/");
-//  network::uri rhs("https://www.example.com/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_empty_path_with_trailing_slash) {
-//  network::uri lhs("http://www.example.com/");
-//  network::uri rhs("http://www.example.com");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_with_single_dot_segment) {
-//  network::uri lhs("http://www.example.com/./path");
-//  network::uri rhs("http://www.example.com/path");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_with_double_dot_segment) {
-//  network::uri lhs("http://www.example.com/1/../2/");
-//  network::uri rhs("http://www.example.com/2/");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_with_trailing_slash) {
-//  network::uri lhs("http://www.example.com/path/");
-//  network::uri rhs("http://www.example.com/path");
-//  ASSERT_EQ(lhs, rhs);
-//}
-//
-//TEST(uri_comparison_test, equality_test_with_file_ext) {
-//  network::uri lhs("http://www.example.com/filename.txt");
-//  network::uri rhs("http://www.example.com/filename.txt/");
-//  ASSERT_NE(lhs, rhs);
-//}
+TEST(uri_comparison_test, equality_test_capitalized_host) {
+  network::uri lhs("http://www.example.com/");
+  network::uri rhs("http://WWW.EXAMPLE.COM/");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}
+
+TEST(uri_comparison_test, equality_test_with_single_dot_segment) {
+  network::uri lhs("http://www.example.com/./path");
+  network::uri rhs("http://www.example.com/path");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}
+
+TEST(uri_comparison_test, equality_test_with_double_dot_segment) {
+  network::uri lhs("http://www.example.com/1/../2/");
+  network::uri rhs("http://www.example.com/2/");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}
+
+TEST(uri_comparison_test, DISABLED_given_example_test) {
+  network::uri lhs("example://a/b/c/%7Bfoo%7D");
+  network::uri rhs("eXAMPLE://a/./b/../b/%63/%7bfoo%7d");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}
 
 TEST(uri_comparison_test, equality_empty_lhs) {
   network::uri lhs;

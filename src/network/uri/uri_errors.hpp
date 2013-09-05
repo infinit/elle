@@ -29,6 +29,7 @@ namespace network {
     // encoding errors
     not_enough_input,
     non_hex_input,
+    conversion_failed,
   };
 
   class NETWORK_URI_DECL uri_category_impl : public std::error_category {

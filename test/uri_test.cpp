@@ -86,6 +86,11 @@ TEST(uri_test, basic_uri_port_test) {
   ASSERT_FALSE(instance.port());
 }
 
+TEST(uri_test, basic_uri_port_as_int_test) {
+  network::uri instance("http://www.example.com/");
+  ASSERT_FALSE(instance.port<int>());
+}
+
 TEST(uri_test, basic_uri_path_test) {
   network::uri instance("http://www.example.com/");
   ASSERT_TRUE(instance.path());
@@ -131,6 +136,11 @@ TEST(uri_test, full_uri_host_test) {
 TEST(uri_test, full_uri_port_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_EQ("80", *instance.port());
+}
+
+TEST(uri_test, full_uri_port_as_int_test) {
+  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  ASSERT_EQ(80, *instance.port<int>());
 }
 
 TEST(uri_test, full_uri_path_test) {
@@ -599,6 +609,11 @@ TEST(uri_test, empty_port_test) {
   network::uri instance("http://123.34.23.56:/");
   ASSERT_TRUE(instance.port());
   ASSERT_EQ("", *instance.port());
+}
+
+TEST(uri_test, empty_port_as_int_test) {
+  network::uri instance("http://123.34.23.56:/");
+  ASSERT_TRUE(!instance.port<int>());
 }
 
 TEST(uri_test, full_copy_uri_scheme_test) {
