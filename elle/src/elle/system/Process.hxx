@@ -201,6 +201,7 @@ namespace elle
       while (cmd.last().process().running())
         s += cmd.last().process().read();
       cmd.wait();
+      s += cmd.last().process().read();
       return s;
     }
 
@@ -208,4 +209,3 @@ namespace elle
 }
 
 #endif
-
