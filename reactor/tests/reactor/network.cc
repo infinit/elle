@@ -112,7 +112,7 @@ slowpoke_server()
   Server server(*sched);
   server.listen(4242);
   std::unique_ptr<reactor::network::Socket> socket(server.accept());
-  sched->current()->sleep(boost::posix_time::milliseconds(400));
+  sched->current()->sleep(boost::posix_time::seconds(2));
   socket->write("0");
 }
 
@@ -130,7 +130,7 @@ timeout_read()
     reactor::network::TimeOut);
   try
   {
-    socket.read_some(buffer, boost::posix_time::milliseconds(400));
+    socket.read_some(buffer, boost::posix_time::seconds(4));
   }
   catch (reactor::network::TimeOut&)
   {
