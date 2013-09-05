@@ -116,9 +116,9 @@ void Coro_free(Coro *self)
 		DeleteFiber(self->fiber);
 	}
 #else
-	STACK_DEREGISTER(self);
 	if (self->stack)
 	{
+                STACK_DEREGISTER(self);
 		io_free(self->stack);
 	}
 #endif
