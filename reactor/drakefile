@@ -34,7 +34,7 @@ def configure(cxx_toolkit = None,
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
-  local_cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
+  local_cxx_config = drake.cxx.Config(cxx_config)
   local_cxx_config.lib_path_runtime('.')
 
   # Boost
