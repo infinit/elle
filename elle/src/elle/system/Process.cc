@@ -495,7 +495,8 @@ namespace elle
               if (!cmd.empty())
               {
                 // XXX: FIXME: we need to make this extensible
-                ::system(elle::sprintf(cmd.c_str(), this->id()).c_str());
+                if (::system(elle::sprintf(cmd.c_str(), this->id()).c_str()) == -1)
+                  throw elle::Exception("fork failed");
               }
             }
           }
