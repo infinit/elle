@@ -341,7 +341,7 @@ namespace reactor
   {
     _terminate(thread);
 
-    // wait on the thread object and ignore exceptions until the wait is done
+    // Wait on the thread object and ignore exceptions until the wait is done.
     std::exception_ptr saved_exception(nullptr);
     while (true)
     {
@@ -360,9 +360,7 @@ namespace reactor
     }
 
     if (saved_exception != nullptr)
-    {
       std::rethrow_exception(saved_exception);
-    }
   }
 
   /*-------.

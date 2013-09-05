@@ -1286,7 +1286,7 @@ terminate_now_destroyed_t1(void)
   auto& sched = *reactor::Scheduler::scheduler();
   auto& self = *sched.current();
 
-  // ignore the first Terminate (sent by t2) and catch the second one (by t4)
+  // Ignore the first Terminate (sent by t2) and catch the second one (by t4).
   try
   {
     while (true)
@@ -1325,12 +1325,12 @@ terminate_now_destroyed_t4(reactor::Thread& t1,
 
   while (true)
   {
-    // t2 did not wait for t1 to end before dying
+    // The thread t2 did not wait for t1 to end before dying.
     if (t1.state() == reactor::Thread::state::running &&
         t2.state() == reactor::Thread::state::done)
       BOOST_FAIL("2nd thread did not wait for 1st thread to die before dying");
-    // if t2 is effectively waiting for t1 to die and t3 for t2 to die
-    // then the test has passed
+    // If t2 is effectively waiting for t1 to die and t3 for t2 to die
+    // then the test has passed.
     else if (t1.state() == reactor::Thread::state::running &&
              t2.state() == reactor::Thread::state::frozen &&
              t3.state() == reactor::Thread::state::frozen)
