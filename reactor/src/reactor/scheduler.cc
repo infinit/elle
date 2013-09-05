@@ -506,10 +506,8 @@ namespace reactor
       else
         --sched._background_pool_free;
       sched._background_service.post(
-        [this, &current, &sched]
+        [this, status = this->_status, action = this->_action, &current, &sched]
         {
-          auto action = this->_action;
-          auto status = this->_status;
           try
           {
             ELLE_TRACE_SCOPE("%s: run background operation", sched);
