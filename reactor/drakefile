@@ -209,6 +209,8 @@ def configure(cxx_toolkit = None,
   for test in tests:
     tests_config = drake.cxx.Config(cxx_config_tests)
     tests_config.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
+    if valgrind is not None:
+      tests_config.define('VALGRIND')
     test = drake.cxx.Executable('tests/%s' % test,
                                 drake.nodes('tests/%s.cc' % test) + [lib_dynamic, elle_lib, asio_fs_lib],
                                 cxx_toolkit, tests_config)

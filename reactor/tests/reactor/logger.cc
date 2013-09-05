@@ -4,6 +4,10 @@
 
 #include <boost/test/unit_test.hpp>
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#endif
+
 #include <elle/log.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/os/setenv.hh>
@@ -63,17 +67,21 @@ void
 parallel_write()
 {
   std::stringstream output;
-  elle::log::TextLogger logger(output);
-  logger.component_enabled("in");
-  logger.component_enabled("out");
+  std::unique_ptr<elle::log::Logger> logger
+    (new elle::log::TextLogger(output));
 
-  auto action = [&logger](int& counter)
+  logger->component_enabled("in");
+  logger->component_enabled("out");
+  elle::log::logger(std::move(logger));
+
+  auto action = [](int& counter)
     {
       reactor::Scheduler sched;
-      reactor::Thread t(sched, "logger", [&logger,&counter]()
+      reactor::Thread t(sched, "logger", [&counter]()
         {
           using namespace boost::posix_time;
-          ptime deadline = microsec_clock::local_time() + seconds(3);
+          ptime deadline =
+            microsec_clock::local_time() + seconds(3);
           while (microsec_clock::local_time() < deadline)
           {
             ELLE_LOG_COMPONENT("out");
@@ -92,7 +100,7 @@ parallel_write()
   std::list<int> counters;
   try
   {
-    for (int i = 0; i < 64; ++i)
+    for (int i = 0; i < (RUNNING_ON_VALGRIND ? 4 : 64); ++i)
     {
       counters.push_back(0);
       int& counter = counters.back();
@@ -110,7 +118,10 @@ parallel_write()
     thread.join();
 
   for (auto counter: counters)
-    BOOST_CHECK_GT(counter, 64);
+  {
+    static int const expected = RUNNING_ON_VALGRIND ? 16 : 64;
+    BOOST_CHECK_GT(counter, expected);
+  }
 }
 
 static
