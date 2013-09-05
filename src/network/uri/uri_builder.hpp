@@ -18,7 +18,7 @@
 namespace network {
   namespace detail {
 
-    template <class T, class Enable = void>
+    template <class T>
     struct host_converter {
 
       uri::string_type operator () (const T &host) const {
@@ -27,19 +27,19 @@ namespace network {
 
     };
 
-    template <class T>
-    struct host_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::asio::ip::address_v4>::value>::type> {
+    template <>
+    struct host_converter<boost::asio::ip::address_v4> {
 
-      uri::string_type operator () (const T &host) const {
+      uri::string_type operator () (const boost::asio::ip::address_v4 &host) const {
     	return host.to_string();
       }
 
     };
 
-    template <class T>
-    struct host_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::asio::ip::address_v6>::value>::type> {
+    template <>
+    struct host_converter<boost::asio::ip::address_v6> {
 
-      uri::string_type operator () (const T &host) const {
+      uri::string_type operator () (const boost::asio::ip::address_v6 &host) const {
 	uri::string_type host_str;
 	host_str.append("[");
 	host_str.append(host.to_string());
@@ -67,7 +67,7 @@ namespace network {
 
     };
 
-    template <class T, class Enable = void>
+    template <class T>
     struct path_converter {
 
       uri::string_type operator () (const T &path) const {
@@ -76,10 +76,10 @@ namespace network {
 
     };
 
-    template <class T>
-    struct path_converter<T, typename std::enable_if<std::is_same<typename std::decay<T>::type, boost::filesystem::path>::value>::type> {
+    template <>
+    struct path_converter<boost::filesystem::path> {
 
-      uri::string_type operator () (const T &path) const {
+      uri::string_type operator () (const boost::filesystem::path &path) const {
 	return path.string();
       }
 
