@@ -329,7 +329,7 @@ namespace elle
   ConstWeakBuffer::operator ==(ConstWeakBuffer const& other) const
   {
     if (this->_size != other.size())
-        return false;
+      return false;
     return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
@@ -337,7 +337,7 @@ namespace elle
   ConstWeakBuffer::operator <(ConstWeakBuffer const& other) const
   {
     if (this->_size == other.size())
-        return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
+      return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
     return this->_size < other.size();
   }
 
