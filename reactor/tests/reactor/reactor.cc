@@ -1572,6 +1572,8 @@ namespace background
                                   }));
           auto start = std::chrono::system_clock::now();
           sched.current()->wait(threads);
+          for (auto thread: threads)
+            delete thread;
           auto duration = std::chrono::system_clock::now() - start;
           BOOST_CHECK_EQUAL(count, iterations);
           BOOST_CHECK_EQUAL(sched.background_pool_size(), iterations);
