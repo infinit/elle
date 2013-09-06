@@ -15,13 +15,17 @@
   ::elle::Measure(__FILE__, __LINE__, _name)                                  \
 /**/
 
+# define ELLE_MEASURE_SCOPE_INTERNAL(_name)                                   \
+  auto BOOST_PP_CAT(_elle_mesure_, __LINE__) = ELLE_MEASURE_INSTANCE(_name)   \
+/**/
+
 # define ELLE_MEASURE_SCOPE(_name)                                            \
-  auto BOOST_PP_CAT(_elle_mesure_, __LINE__) =                                \
-    ::elle::Measure(__FILE__, __LINE__, _name)                                \
+  ELLE_MEASURE_SCOPE_INTERNAL(_name);                                         \
+  (void)BOOST_PP_CAT(_elle_mesure_, __LINE__)                                 \
 /**/
 
 # define ELLE_MEASURE(_name)                                                  \
-  if (ELLE_MEASURE_SCOPE(_name))                                              \
+  if (ELLE_MEASURE_SCOPE_INTERNAL(_name))                                     \
     (void)BOOST_PP_CAT(_elle_mesure_, __LINE__);                              \
   else                                                                        \
 /**/
