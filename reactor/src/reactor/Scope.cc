@@ -5,8 +5,11 @@
 namespace reactor
 {
   Scope::Scope():
-    _threads()
-  {}
+    _threads(),
+    _running(0)
+  {
+    this->open();
+  }
 
   Scope::~Scope()
   {
@@ -24,8 +27,16 @@ namespace reactor
   Scope::run_background(std::string const& name,
                         Thread::Action const& a)
   {
+    this->close();
     auto& sched = *Scheduler::scheduler();
-    this->_threads.push_back(new Thread(sched, name, a));
+    this->_threads.push_back(new Thread(sched, name,
+                                        [this, a]
+                                        {
+                                          ++this->_running;
+                                          a();
+                                          if (!--this->_running)
+                                            this->open();
+                                        }));
 
     auto it = begin(this->_threads);
     for (; it != end(this->_threads); ++it)
