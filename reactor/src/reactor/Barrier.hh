@@ -33,6 +33,16 @@ namespace reactor
     /// @param name The barrier name, for pretty-printing purpose.
     Barrier(const std::string& name = std::string());
 
+  /*---------.
+  | Openness |
+  `---------*/
+  public:
+    /// Whether this is opened.
+    operator bool() const;
+  private:
+    /// Whether this is opened.
+    ELLE_ATTRIBUTE_R(bool, opened);
+
   /*--------.
   | Waiting |
   `--------*/
@@ -44,9 +54,6 @@ namespace reactor
   protected:
     /// Stop the thread if and only if this is closed.
     virtual bool _wait(Thread* thread);
-  private:
-    /// Whether this is opened.
-    ELLE_ATTRIBUTE_R(bool, opened);
 
   /*----------.
   | Printable |

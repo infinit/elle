@@ -12,6 +12,15 @@ namespace reactor
   {}
 
   /*---------.
+  | Openness |
+  `---------*/
+
+  Barrier::operator bool() const
+  {
+    return this->opened();
+  }
+
+  /*---------.
   | Waitable |
   `---------*/
 
