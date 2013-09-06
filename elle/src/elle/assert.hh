@@ -73,6 +73,12 @@ namespace elle
 #  define ELLE_ENFORCE_LTE(A, B)                                              \
   ::elle::_assert_lte(A, B, #A, #B, __FILE__, __LINE__)
 
+#  define ELLE_ENFORCE_CONTAINS(C, E)                                         \
+  ::elle::_assert_contains(C, E, #C, #E, __FILE__, __LINE__)
+
+#  define ELLE_ENFORCE_NCONTAINS(C, E)                                        \
+  ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
+
 # if defined(DEBUG) || !defined(NDEBUG)
 /// Throw if the condition is unmet.
 #  define ELLE_ASSERT(_condition_) ELLE_ENFORCE(_condition_)
@@ -82,6 +88,8 @@ namespace elle
 #  define ELLE_ASSERT_GTE(A, B) ELLE_ENFORCE_GTE(A, B)
 #  define ELLE_ASSERT_LT(A, B) ELLE_ENFORCE_LT(A, B)
 #  define ELLE_ASSERT_LTE(A, B) ELLE_ENFORCE_LTE(A, B)
+#  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ENFORCE_CONTAINS(C, E)
+#  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ENFORCE_NCONTAINS(C, E)
 # else
 #  define ELLE_ASSERT(_condition_) ((void) 0)
 #  define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT(true)
@@ -90,6 +98,8 @@ namespace elle
 #  define ELLE_ASSERT_GTE(A, B) ELLE_ASSERT(true)
 #  define ELLE_ASSERT_LT(A, B) ELLE_ASSERT(true)
 #  define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT(true)
+#  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ASSERT(true)
+#  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ASSERT(true)
 # endif
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
@@ -136,6 +146,40 @@ namespace elle
   ELLE_ASSERT_OP_CHECK(<, lt);
   ELLE_ASSERT_OP_CHECK(<=, lte);
 #undef ELLE_ASSERT_OP_CHECK
+
+  template <typename C, typename E>
+  inline
+  void _assert_contains(C const& container,
+                         E const& element,
+                        char const* c_str,
+                        char const* e_str,
+                        char const* file,
+                        int line)
+  {
+    if (container.find(element) == container.end())
+      _assert(false,
+              elle::sprintf("%s does not contain %s: (%s=%s, %s=%s)",
+                            c_str, e_str, c_str, container, e_str, element),
+              file,
+              line);
+  }
+
+  template <typename C, typename E>
+  inline
+  void _assert_ncontains(C const& container,
+                         E const& element,
+                         char const* c_str,
+                         char const* e_str,
+                         char const* file,
+                         int line)
+  {
+    if (container.find(element) != container.end())
+      _assert(false,
+              elle::sprintf("%s contains %s: (%s=%s, %s=%s)",
+                            c_str, e_str, c_str, container, e_str, element),
+              file,
+              line);
+  }
 }
 
 #endif
