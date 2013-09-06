@@ -7,6 +7,10 @@ namespace elle
 {
   ELLE_LOG_COMPONENT("elle.Finally");
 
+  Finally::Finally():
+    _action([] {})
+  {}
+
   Finally::Finally(std::function<void()> const& action):
     _action(action)
   {}

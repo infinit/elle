@@ -70,6 +70,7 @@ namespace elle
     | Construction |
     `-------------*/
   public:
+    Finally();
     Finally(std::function<void()> const& action);
     ~Finally() noexcept(false);
 
@@ -86,7 +87,7 @@ namespace elle
     | Attributes |
     `-----------*/
   private:
-    ELLE_ATTRIBUTE(std::function<void()>, action);
+    ELLE_ATTRIBUTE_RW(std::function<void()>, action);
   };
 
   namespace detail
