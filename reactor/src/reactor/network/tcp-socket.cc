@@ -270,6 +270,7 @@ namespace reactor
     TCPSocket::write(Buffer buffer)
     {
       scheduler().current()->wait(_write_mutex);
+      ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
       try
         {
           Write write(scheduler(), this, buffer);
