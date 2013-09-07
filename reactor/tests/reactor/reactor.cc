@@ -3,7 +3,9 @@
 #include "reactor.hh"
 
 #include <reactor/Barrier.hh>
+#include <reactor/Scope.hh>
 #include <reactor/duration.hh>
+#include <reactor/exception.hh>
 #include <reactor/mutex.hh>
 #include <reactor/rw-mutex.hh>
 #include <reactor/semaphore.hh>
@@ -59,14 +61,6 @@ public:
     : elle::Exception("beacon")
   {}
 };
-
-/*--------.
-| Helpers |
-`--------*/
-
-void
-empty()
-{}
 
 /*-------.
 | Basics |
@@ -314,6 +308,94 @@ barrier_opened()
 }
 
 /*------.
+| Scope |
+`------*/
+
+namespace scope
+{
+  static
+  void
+  empty()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread t(
+      sched, "main",
+      []
+      {
+        reactor::Scope s;
+      });
+    sched.run();
+  }
+
+  static
+  void
+  wait()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread t(
+      sched, "main",
+      []
+      {
+        bool beacon1 = false;
+        bool beacon2 = false;
+        reactor::Scope s;
+        s.run_background(
+          "1",
+          [&]
+          {
+            reactor::yield();
+            reactor::yield();
+            beacon1 = true;
+          });
+        reactor::yield();
+        s.run_background(
+          "2",
+          [&]
+          {
+            reactor::yield();
+            reactor::yield();
+            beacon2 = true;
+          });
+        s.wait();
+        BOOST_CHECK(beacon1);
+        BOOST_CHECK(beacon2);
+      });
+    sched.run();
+  }
+
+  static
+  void
+  exception()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread t(
+      sched, "main",
+      []
+      {
+        bool beacon = false;
+        reactor::Scope s;
+        s.run_background(
+          "1",
+          [&]
+          {
+            reactor::yield();
+            reactor::yield();
+            beacon = true;
+          });
+        s.run_background(
+          "2",
+          []
+          {
+            throw BeaconException();
+          });
+        BOOST_CHECK_THROW(s.wait(), BeaconException);
+        BOOST_CHECK(!beacon);
+      });
+    sched.run();
+  }
+}
+
+/*------.
 | Sleep |
 `------*/
 
@@ -450,7 +532,7 @@ test_join_multiple()
   Fixture f;
 
   int count = 0;
-  reactor::Thread e(*sched, "empty", empty);
+  reactor::Thread e(*sched, "empty", [] {});
   reactor::Thread w(*sched, "waiter",
                     boost::bind(join_waiter_multiple,
                                 boost::ref(e), boost::ref(count)));
@@ -1393,7 +1475,7 @@ test_terminate_now_starting()
   bool beacon = true;
   reactor::Scheduler sched;
 
-  reactor::Thread starting(sched, "starting", &empty);
+  reactor::Thread starting(sched, "starting", [] {});
   reactor::Thread terminate(sched, "terminate", std::bind(&terminate_now,
                                                           std::ref(starting),
                                                           std::ref(beacon)));
@@ -1677,6 +1759,18 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(barrier);
   barrier->add(BOOST_TEST_CASE(barrier_closed));
   barrier->add(BOOST_TEST_CASE(barrier_opened));
+
+  // Scope
+  {
+    boost::unit_test::test_suite* scope = BOOST_TEST_SUITE("scope");
+    boost::unit_test::framework::master_test_suite().add(scope);
+    auto empty = &scope::empty;
+    scope->add(BOOST_TEST_CASE(empty));
+    auto wait = &scope::wait;
+    scope->add(BOOST_TEST_CASE(wait));
+    auto exception = &scope::exception;
+    scope->add(BOOST_TEST_CASE(exception));
+  }
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
   boost::unit_test::framework::master_test_suite().add(sleep);
