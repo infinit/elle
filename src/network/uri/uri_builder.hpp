@@ -16,6 +16,7 @@
 #include <boost/filesystem/path.hpp>
 
 namespace network {
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
 
     template <class T>
@@ -86,6 +87,7 @@ namespace network {
     };
 
   } // namespace detail
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   class NETWORK_URI_DECL uri_builder {
 

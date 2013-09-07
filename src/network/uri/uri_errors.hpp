@@ -32,20 +32,6 @@ namespace network {
     conversion_failed,
   };
 
-  class NETWORK_URI_DECL uri_category_impl : public std::error_category {
-
-  public:
-
-    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
-
-    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
-
-    virtual const char *name() const NETWORK_URI_NOEXCEPT;
-
-    virtual std::string message(int ev) const;
-
-  };
-
   const std::error_category &uri_category();
 
   std::error_code make_error_code(uri_error e);

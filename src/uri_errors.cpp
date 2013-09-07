@@ -8,6 +8,20 @@
 
 namespace network {
 
+  class uri_category_impl : public std::error_category {
+
+  public:
+
+    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
+
+    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
+
+    virtual const char *name() const NETWORK_URI_NOEXCEPT;
+
+    virtual std::string message(int ev) const;
+
+  };
+
   uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {}
 
   const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {

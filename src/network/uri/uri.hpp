@@ -21,6 +21,7 @@
 #include <network/uri/detail/translate.hpp>
 
 namespace network {
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
     template <class FwdIter>
     struct hierarchical_part {
@@ -38,6 +39,7 @@ namespace network {
       boost::optional<boost::iterator_range<FwdIter> > fragment;
     };
   }  // namespace detail
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   enum class uri_comparison_level {
     string_comparison,
@@ -269,6 +271,7 @@ namespace network {
   }
 }  // namespace network
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace std {
   template <>
   struct is_error_code_enum<network::uri_error> : public true_type {};
@@ -289,6 +292,7 @@ namespace std {
     }
   };
 }  // namespace std
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 #include <network/uri/uri_builder.hpp>
 
