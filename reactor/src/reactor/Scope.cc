@@ -29,14 +29,23 @@ namespace reactor
   {
     this->close();
     auto& sched = *Scheduler::scheduler();
-    this->_threads.push_back(new Thread(sched, name,
-                                        [this, a]
-                                        {
-                                          ++this->_running;
-                                          a();
-                                          if (!--this->_running)
-                                            this->open();
-                                        }));
+    this->_threads.push_back(
+      new Thread(sched, name,
+                 [this, a]
+                 {
+                   ++this->_running;
+                   try
+                   {
+                     a();
+                   }
+                   catch (...)
+                   {
+                     this->_raise(std::current_exception());
+                     this->open();
+                   }
+                   if (!--this->_running)
+                     this->open();
+                 }));
 
     auto it = begin(this->_threads);
     for (; it != end(this->_threads); ++it)
