@@ -186,7 +186,11 @@ namespace reactor
   `---------------*/
 
   /// Run \a action in a thread and yield until completion.
-  void background(std::function<void()> const& action);
+  void
+  background(std::function<void()> const& action);
+  /// Yield execution for this scheduler round.
+  void
+  yield();
 }
 
 # include <reactor/scheduler.hxx>
