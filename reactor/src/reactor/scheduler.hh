@@ -191,6 +191,9 @@ namespace reactor
   /// Yield execution for this scheduler round.
   void
   yield();
+  /// Yield for \a duration.
+  void
+  sleep(Duration duration);
 }
 
 # include <reactor/scheduler.hxx>

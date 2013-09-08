@@ -593,4 +593,14 @@ namespace reactor
     ELLE_ASSERT(current);
     current->yield();
   }
+
+  void
+  sleep(Duration d)
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto* current = sched->current();
+    ELLE_ASSERT(current);
+    current->sleep(d);
+  }
 }
