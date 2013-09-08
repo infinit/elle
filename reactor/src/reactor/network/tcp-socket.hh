@@ -31,6 +31,8 @@ namespace reactor
                 int port,
                 DurationOpt timeout = DurationOpt());
       virtual ~TCPSocket();
+      void
+      close();
     private:
       friend class TCPServer;
       TCPSocket(Scheduler& sched, AsioSocket* socket);

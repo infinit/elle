@@ -68,6 +68,13 @@ namespace reactor
       : Super(sched, socket)
     {}
 
+    void
+    TCPSocket::close()
+    {
+      ELLE_TRACE_SCOPE("%s: close", *this);
+      this->socket()->close();
+    }
+
     /*-----.
     | Read |
     `-----*/
