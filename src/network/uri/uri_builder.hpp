@@ -89,35 +89,69 @@ namespace network {
   } // namespace detail
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+  /**
+   * \class uri_builder uri.hpp network/uri.hpp
+   * \brief A class that allows complex uri objects to be constructed.
+   */
   class NETWORK_URI_DECL uri_builder {
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri;
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     uri_builder(const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
     uri_builder &operator = (const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
 
   public:
 
+    /**
+     * \brief The uri_builder string_type.
+     */
     typedef network::uri::string_type string_type;
 
+    /**
+     * \brief Constructor.
+     */
     uri_builder() NETWORK_URI_DEFAULTED_FUNCTION;
 
-    explicit uri_builder(const uri &base_uri);
+    /**
+     * \brief Constructor.
+     * \param base A URI that is the base on which a new URI is built.
+     */
+    explicit uri_builder(const uri &base);
 
+    /**
+     * \brief Destructor.
+     */
     ~uri_builder() NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Adds a new scheme to the uri_builder.
+     * \param scheme The scheme.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &scheme(const Source &scheme) {
       set_scheme(detail::translate(scheme));
       return *this;
     }
 
+    /**
+     * \brief Adds a new user info to the uri_builder.
+     * \param user_info The user info.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &user_info(const Source &user_info) {
       set_user_info(detail::translate(user_info));
       return *this;
     }
 
+    /**
+     * \brief Adds a new host to the uri_builder.
+     * \param host The host.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &host(const Source &host) {
       detail::host_converter<Source> convert;
@@ -125,6 +159,11 @@ namespace network {
       return *this;
     }
 
+    /**
+     * \brief Adds a new port to the uri_builder.
+     * \param port The port.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &port(const Source &port) {
       detail::port_converter<Source> convert;
@@ -132,12 +171,22 @@ namespace network {
       return *this;
     }
 
+    /**
+     * \brief Adds a new authority to the uri_builder.
+     * \param authority The authority.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &authority(const Source &authority) {
       set_authority(detail::translate(authority));
       return *this;
     }
 
+    /**
+     * \brief Adds a new path to the uri_builder.
+     * \param path The path.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &path(const Source &path) {
       detail::path_converter<Source> convert;
@@ -145,12 +194,23 @@ namespace network {
       return *this;
     }
 
+    /**
+     * \brief Adds a new query to the uri_builder.
+     * \param query The query.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &query(const Source &query) {
       set_query(detail::translate(query));
       return *this;
     }
 
+    /**
+     * \brief Adds a new query to the uri_builder.
+     * \param key The query key.
+     * \param value The query value.
+     * \returns \c *this
+     */
     template <typename Key, typename Value>
     uri_builder &query(const Key &key, const Value &value) {
       if (!query_) {
@@ -165,12 +225,25 @@ namespace network {
       return *this;
     }
 
+    /**
+     * \brief Adds a new fragment to the uri_builder.
+     * \param fragment The fragment.
+     * \returns \c *this
+     */
     template <typename Source>
     uri_builder &fragment(const Source &fragment) {
       set_fragment(detail::translate(fragment));
       return *this;
     }
 
+    /**
+     * \brief Builds a new uri object.
+     * \returns A valid uri object.
+     * \throws uri_builder_error if the uri_builder is unable to build
+     *         a valid URI.
+     * \throws std::bad_alloc If the underlying string cannot be
+     *         allocated.
+     */
     network::uri uri() const;
 
   private:

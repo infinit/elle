@@ -49,16 +49,40 @@ namespace network {
 
   class uri_builder;
 
+  /**
+   * \class uri uri.hpp network/uri.hpp
+   * \brief A class representing a URI.
+   */
   class NETWORK_URI_DECL uri {
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri_builder;
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
    public:
 
+    /**
+     * \brief The URI string_type.
+     */
     typedef std::string string_type;
+
+    /**
+     * \brief The URI iterator type.
+     */
+    typedef string_type::const_iterator iterator;
+    /**
+     * \brief The URI const_iterator type.
+     */
     typedef string_type::const_iterator const_iterator;
-    typedef const_iterator iterator;
+
+    /**
+     * \brief The URI value_type.
+     */
     typedef std::iterator_traits<iterator>::value_type value_type;
+
+    /**
+     * \brief A reference to the underlying string_type parts.
+     */
     typedef boost::string_ref string_view;
 
    private:
@@ -73,8 +97,18 @@ namespace network {
 
    public:
 
+    /**
+     * \brief Constructor.
+     */
     uri();
 
+    /**
+     * \brief Constructor.
+     * \param first The first element in a string sequence.
+     * \param last The end + 1th element in a string sequence.
+     * \throws uri_syntax_error if the sequence is not a valid URI.
+     * \throws std::bad_alloc If the underlying string cannot be allocated.
+     */
     template <class InputIter>
     uri(InputIter first, InputIter last) {
       if (!initialize(string_type(first, last))) {
@@ -82,46 +116,111 @@ namespace network {
       }
     }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     template <class InputIter>
     explicit uri(InputIter first, InputIter last, std::error_code &ec) {
       if (!initialize(string_type(first, last))) {
         ec = make_error_code(uri_error::invalid_syntax);
       }
     }
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+    /**
+     * \brief Constructor.
+     * \param source A source string that is to be parsed as a URI.
+     * \throws uri_syntax_error if the source is not a valid URI.
+     * \throws std::bad_alloc If the underlying string cannot be allocated.
+     */
     template <class Source>
-    explicit uri(const Source &uri) {
-      if (!initialize(detail::translate(uri))) {
+    explicit uri(const Source &source) {
+      if (!initialize(detail::translate(source))) {
         throw uri_syntax_error();
       }
     }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     template <class Source>
-    explicit uri(const Source &uri, std::error_code &ec) {
-      if (!initialize(detail::translate(uri))) {
+    explicit uri(const Source &source, std::error_code &ec) {
+      if (!initialize(detail::translate(source))) {
         ec = make_error_code(uri_error::invalid_syntax);
       }
     }
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     explicit uri(const uri_builder &builder);
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+    /**
+     * \brief Copy constructor.
+     * \throws std::bad_alloc If the underlying string cannot be allocated.
+     */
     uri(const uri &other);
 
+    /**
+     * \brief Move constructor.
+     */
     uri(uri &&other) NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Destructor.
+     */
     ~uri() NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Assignment operator.
+     * \throws std::bad_alloc If the underlying string cannot be allocated.
+     */
     uri &operator=(uri other);
 
+    /**
+     * \brief Swaps one uri object with another.
+     * \param other The other uri object.
+     */
     void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Returns an iterator at the first element in the
+     *        underlying sequence.
+     * \return An iterator starting at the first element.
+     */
     const_iterator begin() const;
+
+    /**
+     * \brief Returns an iterator at the end + 1th element in the
+     *        underlying sequence.
+     * \return An iterator starting at the end + 1th element.
+     */
     const_iterator end() const;
 
+    /**
+     * \brief Returns the URI scheme.
+     * \return The scheme, if it exists, or boost::none.
+     */
     boost::optional<string_view> scheme() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI user info.
+     * \return The user info, if it exists, or boost::none.
+     */
     boost::optional<string_view> user_info() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI host.
+     * \return The host, if it exists, or boost::none.
+     */
     boost::optional<string_view> host() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI port.
+     * \return The port, if it exists, or boost::none.
+     */
     boost::optional<string_view> port() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI port as an integer.
+     * \return The port, if it exists, or boost::none.
+     */
     template <typename IntT>
     boost::optional<IntT> port(typename std::is_integral<IntT>::type * =
                                    0) const NETWORK_URI_NOEXCEPT {
@@ -136,12 +235,36 @@ namespace network {
       }
       return boost::optional<IntT>();
     }
+
+    /**
+     * \brief Returns the URI path.
+     * \return The path, if it exists, or boost::none.
+     */
     boost::optional<string_view> path() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI query.
+     * \return The query, if it exists, or boost::none.
+     */
     boost::optional<string_view> query() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI fragment.
+     * \return The fragment, if it exists, or boost::none.
+     */
     boost::optional<string_view> fragment() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Returns the URI authority.
+     * \return The authority, if it exists, or boost::none.
+     */
     boost::optional<string_view> authority() const NETWORK_URI_NOEXCEPT;
 
 #if !defined(_MSC_VER)
+    /**
+     * \brief Returns the URI as a std::basic_string object.
+     * \return A URI string.
+     */
     template <typename CharT, class CharTraits = std::char_traits<CharT>,
               class Alloc = std::allocator<CharT> >
     std::basic_string<CharT, CharTraits, Alloc> to_string(const Alloc &alloc =
@@ -149,78 +272,228 @@ namespace network {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     template <typename CharT, class CharTraits = std::char_traits<CharT>,
               class Alloc = std::allocator<CharT> >
     std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
                                                            Alloc()) const {
       return to_string<CharT, CharTraits, Alloc>(alloc);
     }
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #else
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     template <typename CharT, class CharTraits, class Alloc>
     std::basic_string<CharT, CharTraits, Alloc> to_string(const Alloc &alloc =
                                                               Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
 
-    template <typename CharT, class CharTraits, class Alloc>
+    template <typename CharT, class CharTraits = std::char_traits<CharT>,
+              class Alloc = std::allocator<CharT> >
     std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
                                                            Alloc()) const {
       return to_string<CharT, CharTraits, Alloc>(alloc);
     }
-#endif  // !/defined(_MSC_VER)
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
+#endif // !/defined(_MSC_VER)
+
+    /**
+     * \brief Returns the URI as a std::string object.
+     * \returns A URI string.
+     */
     std::string string() const;
+
+    /**
+     * \brief Returns the URI as a std::wstring object.
+     * \returns A URI string.
+     */
     std::wstring wstring() const;
+
+    /**
+     * \brief Returns the URI as a std::u16string object.
+     * \returns A URI string.
+     */
     std::u16string u16string() const;
+
+    /**
+     * \brief Returns the URI as a std::u32string object.
+     * \returns A URI string.
+     */
     std::u32string u32string() const;
 
+    /**
+     * \brief Checks if the uri object is empty, i.e. it has no parts.
+     * \returns \c true if there are no parts, \c false otherwise.
+     */
     bool empty() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Checks if the uri is absolute, i.e. it has a scheme.
+     * \returns \c true if it is absolute, \c false if it is relative.
+     */
     bool is_absolute() const NETWORK_URI_NOEXCEPT;
+
+    /**
+     * \brief Checks if the uri is opaque, i.e. if it doesn't have an
+     *        authority.
+     * \returns \c true if it is opaque, \c false if it is hierarchical.
+     */
     bool is_opaque() const NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Normalizes a uri object at a given level in the
+     *        comparison ladder.
+     * \param level The comparison level.
+     * \returns A normalized uri.
+     * \post compare(normalize(uri, level), level) == 0
+     * \throws std::bad_alloc
+     */
     uri normalize(uri_comparison_level level) const;
+
+    /**
+     * \brief Returns a relative reference against the base URI.
+     * \param base The base URI.
+     * \returns A relative reference of this URI against the base.
+     * \throws std::bad_alloc
+     */
     uri make_relative(const uri &other) const;
-    uri make_reference(const uri &other) const { return make_relative(other); }
+
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+    uri make_reference(const uri &base) const { return make_relative(base); }
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
+
+    /**
+     * \brief Resolves a relative reference against this URI.
+     * \param other A URI reference.
+     * \returns An absolute URI.
+     * \throws std::bad_alloc
+     */
     uri resolve(const uri &other) const;
 
-    int compare(const uri &other, uri_comparison_level level) const
-        NETWORK_URI_NOEXCEPT;
+    /**
+     * \brief Compares this URI against another, corresponding to the
+     *        level in the comparison ladder.
+     * \param other The other URI.
+     * \param level The level in the comparison ladder.
+     * \returns \c 0 if the URIs are considered equal, \c -1 if this is
+     *         less than other and and 1 if this is greater than
+     *         other.
+     */
+    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        user info part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_user_info(InputIter first, InputIter last,
                                        OutputIter out) {
       return detail::encode_user_info(first, last, out);
     }
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        host part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_host(InputIter first, InputIter last,
                                   OutputIter out) {
       return detail::encode_host(first, last, out);
     }
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        port part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_port(InputIter first, InputIter last,
                                   OutputIter out) {
       return detail::encode_port(first, last, out);
     }
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        path part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_path(InputIter first, InputIter last,
                                   OutputIter out) {
       return detail::encode_path(first, last, out);
     }
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        query part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_query(InputIter first, InputIter last,
                                    OutputIter out) {
       return detail::encode_query(first, last, out);
     }
 
+    /**
+     * \brief Encodes a sequence according to the rules for encoding a
+     *        fragment part.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter encode_fragment(InputIter first, InputIter last,
                                       OutputIter out) {
       return detail::encode_fragment(first, last, out);
     }
 
+    /**
+     * \brief Decodes a sequence according to the percent decoding
+     *        rules.
+     * \param first The iterator at first element in the input
+     *        sequence.
+     * \param last The iterator at end + 1th element in the input
+     *        sequence.
+     * \param out The iterator at the first element in the output
+     *        sequence.
+     * \returns The iterator at the end + 1th in the output sequence.
+     */
     template <typename InputIter, typename OutputIter>
     static OutputIter decode(InputIter first, InputIter last, OutputIter out) {
       return detail::decode(first, last, out);

@@ -36,32 +36,63 @@ namespace network {
 
   std::error_code make_error_code(uri_error e);
 
+  /**
+   * \class uri_syntax_error uri.hpp network/uri.hpp
+   * \brief An exception thrown when a URI cannot be parsed.
+   */
   class uri_syntax_error : public std::system_error {
 
   public:
 
+    /**
+     * \brief Constructor.
+     */
     uri_syntax_error();
 
+    /**
+     * \brief Destructor.
+     */
     virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
 
   };
 
+  /**
+   * \class uri_builder_error uri.hpp network/uri.hpp
+   * \brief An exception thrown when the \c uri_builder cannot build a
+   *        valid URI.
+   */
   class uri_builder_error : public std::system_error {
 
   public:
 
+    /**
+     * \brief Constructor.
+     */
     uri_builder_error();
 
+    /**
+     * \brief Destructor.
+     */
     virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
 
   };
 
+  /**
+   * \class percent_decoding_error uri.hpp network/uri.hpp
+   * \brief An exception thrown when during percent decoding.
+   */
   class percent_decoding_error : public std::system_error {
 
   public:
 
+    /**
+     * \brief Constructor.
+     */
     explicit percent_decoding_error(uri_error error);
 
+    /**
+     * \brief Destructor.
+     */
     virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
 
   };
