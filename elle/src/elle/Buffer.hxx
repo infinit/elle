@@ -28,6 +28,11 @@ namespace elle
   {}
 
   inline
+  ConstWeakBuffer::ConstWeakBuffer(std::string const& data):
+    ConstWeakBuffer(data.c_str(), data.size())
+  {}
+
+  inline
   ConstWeakBuffer::ConstWeakBuffer(Buffer const& buffer):
     ConstWeakBuffer(buffer.mutable_contents(), buffer.size())
   {}

@@ -236,7 +236,13 @@ namespace elle
   bool
   Buffer::operator ==(Buffer const& ot) const
   {
-    return WeakBuffer(_contents, _size) == WeakBuffer(ot._contents, ot._size);
+    return *this == ConstWeakBuffer(ot._contents, ot._size);
+  }
+
+  bool
+  Buffer::operator ==(ConstWeakBuffer const& other) const
+  {
+    return WeakBuffer(_contents, _size) == other;
   }
 
   bool
@@ -375,7 +381,7 @@ namespace elle
 
   std::ostream&
   operator <<(std::ostream& stream,
-              WeakBuffer const& buffer)
+              ConstWeakBuffer const& buffer)
   {
     static size_t const max_length = 20;
 
@@ -388,11 +394,11 @@ namespace elle
       // Otherwise chop it and display the begining and the end only.
       stream << "0x"
              << format::hexadecimal::encode(
-                 WeakBuffer{buffer.mutable_contents(), max_length / 2})
+                 ConstWeakBuffer{buffer.contents(), max_length / 2})
              << "..." << std::dec << buffer.size() << " bytes" << "..."
              << format::hexadecimal::encode(
-                 WeakBuffer{
-                   buffer.mutable_contents() + buffer.size() - max_length / 2,
+                 ConstWeakBuffer{
+                   buffer.contents() + buffer.size() - max_length / 2,
                    max_length / 2});
     return stream;
   }

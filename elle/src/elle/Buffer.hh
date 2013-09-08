@@ -115,6 +115,8 @@ namespace elle
     bool
     operator ==(Buffer const& other) const;
     bool
+    operator ==(ConstWeakBuffer const& other) const;
+    bool
     operator <(Buffer const& other) const;
 
   /*--------------.
@@ -164,6 +166,8 @@ namespace elle
   public:
     /// WeakBuffer for the given memory segment.
     ConstWeakBuffer(const void* data, size_t size);
+    /// WeakBuffer with \a data content.
+    ConstWeakBuffer(std::string const& data) /* implicit */;
     /// ConstWeakBuffer for the given Buffer content.
     ConstWeakBuffer(Buffer const& buffer) /* implicit */;
     /// ConstWeakBuffer copy.
@@ -316,7 +320,7 @@ namespace elle
 
   std::ostream&
   operator <<(std::ostream& stream,
-              WeakBuffer const& buffer);
+              ConstWeakBuffer const& buffer);
 
 }
 
