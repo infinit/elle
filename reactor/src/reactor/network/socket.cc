@@ -193,7 +193,8 @@ namespace reactor
         virtual void _start()
         {
           this->socket()->async_connect(
-            _endpoint, boost::bind(&Connection::_wakeup, this, _1));
+            _endpoint, boost::bind(&Connection::_wakeup,
+                                   this, this->_canceled, _1));
         }
 
       private:

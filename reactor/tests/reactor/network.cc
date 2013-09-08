@@ -7,6 +7,7 @@
 
 #include <elle/memory.hh>
 
+#include <reactor/Scope.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
@@ -310,6 +311,45 @@ test_socket_destruction()
   sched.run();
 }
 
+
+/*-------------.
+| Socket close |
+`-------------*/
+
+static
+void
+test_socket_close()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread server(sched, "server", &silent_server<TCPServer, TCPSocket>);
+
+  auto action = [&] ()
+    {
+      auto socket = elle::make_unique<reactor::network::TCPSocket>(
+        sched, "127.0.0.1", 4242);
+      reactor::Scope scope;
+      scope.run_background(
+        "read",
+        [&]
+        {
+          BOOST_CHECK_THROW(socket->get(), elle::Exception);
+        });
+      scope.run_background(
+        "close",
+        [&]
+        {
+          reactor::yield();
+          socket->close();
+        });
+      scope.wait();
+    };
+
+  reactor::Thread t(sched, "client", action);
+
+  sched.run();
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -330,6 +370,7 @@ test_suite()
   INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
   network->add(BOOST_TEST_CASE(test_socket_destruction));
+  network->add(BOOST_TEST_CASE(test_socket_close));
   return true;
 }
 

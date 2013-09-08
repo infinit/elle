@@ -15,9 +15,10 @@ namespace reactor
     {
       public:
         SocketOperation(Scheduler& scheduler,
-                        PlainSocket<AsioSocket>* socket)
-          : Operation(scheduler)
-          , _socket(socket)
+                        PlainSocket<AsioSocket>* socket):
+          Operation(scheduler),
+          _socket(socket),
+          _canceled(new bool(false))
         {}
 
       protected:
@@ -37,6 +38,7 @@ namespace reactor
         {
           try
           {
+            *this->_canceled = true;
             socket()->cancel();
           }
           catch (boost::system::system_error const&)
@@ -50,17 +52,17 @@ namespace reactor
         }
 
       protected:
-        void _wakeup(const boost::system::error_code& error)
+        void _wakeup(std::shared_ptr<bool> canceled,
+                     const boost::system::error_code& error)
         {
+          if (*canceled)
+            return;
           if (error)
-            {
-              if (error == boost::system::errc::operation_canceled)
-                return;
-              _raise<Exception>(error.message());
-            }
+            this->_raise<Exception>(error.message());
           _signal();
         }
         PlainSocket<AsioSocket>* _socket;
+        std::shared_ptr<bool> _canceled;
     };
   }
 }

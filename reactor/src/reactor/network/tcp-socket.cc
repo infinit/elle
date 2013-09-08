@@ -131,23 +131,21 @@ namespace reactor
           if (_some)
             this->socket()->async_read_some(
               boost::asio::buffer(_buffer.data(), _buffer.size()),
-              boost::bind(&Read::_wakeup, this, _1, _2));
+              boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
           else
             boost::asio::async_read(
               *this->socket(),
               boost::asio::buffer(_buffer.data(), _buffer.size()),
-              boost::bind(&Read::_wakeup, this, _1, _2));
+              boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
         }
 
       private:
-        void _wakeup(const boost::system::error_code& error,
+        void _wakeup(std::shared_ptr<bool> canceled,
+                     const boost::system::error_code& error,
                      std::size_t read)
         {
-          if (error == boost::system::errc::operation_canceled)
-            {
-              ELLE_TRACE("read canceled");
-              return;
-            }
+          if (*canceled)
+            return;
           if (error)
             ELLE_TRACE("%s: read error: %s", *this, error.message());
           else
@@ -254,13 +252,20 @@ namespace reactor
                                    boost::asio::buffer(_buffer.data(),
                                                        _buffer.size()),
                                    boost::bind(&Write::_wakeup,
-                                               this, _1, _2));
+                                               this, this->_canceled, _1, _2));
         }
 
       private:
-        void _wakeup(const boost::system::error_code& error,
+        void _wakeup(std::shared_ptr<bool> canceled,
+                     const boost::system::error_code& error,
                      std::size_t written)
         {
+          if (*canceled)
+            return;
+          if (error)
+            ELLE_TRACE("%s: read error: %s", *this, error.message());
+          else
+            ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _written = written;
           if (error == boost::asio::error::eof)
             this->_raise<ConnectionClosed>();
