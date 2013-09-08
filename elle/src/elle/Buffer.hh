@@ -11,6 +11,7 @@
 # include <iosfwd>
 # include <memory>
 # include <boost/operators.hpp>
+# include <limits>
 
 namespace elle
 {
@@ -94,6 +95,9 @@ namespace elle
     shrink_to_fit();
   private:
     static size_t _next_size(size_t);
+
+  public:
+    static const size_t max_size = std::numeric_limits<size_t>::max();
 
   /*-----------.
   | Operations |
