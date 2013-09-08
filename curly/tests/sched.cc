@@ -10,6 +10,7 @@
 #include <string>
 
 #include <elle/Buffer.hh>
+#include <elle/log.hh>
 #include <elle/container/vector.hh>
 #include <elle/printf.hh>
 
@@ -23,6 +24,8 @@
 #include <reactor/thread.hh>
 
 #include <curly/curly_sched.cc>
+
+ELLE_LOG_COMPONENT("curly.test");
 
 BOOST_AUTO_TEST_CASE(simple_test)
 {
@@ -40,6 +43,7 @@ BOOST_AUTO_TEST_CASE(simple_test)
       reactor::network::TCPServer server(sched);
       server.listen();
       port = server.port();
+      ELLE_LOG("listen on port %s", port);
       served.open();
 
       int clients = 0;
@@ -48,16 +52,19 @@ BOOST_AUTO_TEST_CASE(simple_test)
       while (true)
       {
         std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
+        ELLE_LOG("accept connection from %s", socket->peer());
         scope.run_background(
-          "request server",
+          elle::sprintf("request %s", socket->peer()),
           [&, socket]
           {
             char buffer[1024];
             socket->getline(buffer, sizeof(buffer), '\n');
             buffer[socket->gcount()] = 0;
+            ELLE_LOG("got request: %s", buffer);
             BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
             while (std::string(buffer) != "\r")
             {
+              ELLE_LOG("got header from: %s", buffer);
               socket->getline(buffer, sizeof(buffer), '\n');
               buffer[socket->gcount()] = 0;
             }
@@ -66,12 +73,14 @@ BOOST_AUTO_TEST_CASE(simple_test)
             // Wait until every client made the request, to check they are done
             // concurrently.
             sched.current()->wait(everybody_is_there);
-            socket->write(
+            std::string answer(
               "HTTP/1.0 200 OK\r\n"
               "Server: Custom HTTP of doom\r\n"
               "Content-Length: 4\r\n"
               "\r\n"
               "lol\n");
+            ELLE_LOG("send response: %s", answer);
+            socket->write(answer.c_str());
           });
       }
     });
@@ -90,7 +99,9 @@ BOOST_AUTO_TEST_CASE(simple_test)
       get.option(CURLOPT_VERBOSE, 0);
       get.url(elle::sprintf("http://127.0.0.1:%s/some/path", port));
       curly::sched_request req(sched, std::move(get));
+      ELLE_LOG("send request");
       req.run();
+      ELLE_LOG("got response");
       BOOST_CHECK_EQUAL(ss.str(), "lol\n");
     };
 
