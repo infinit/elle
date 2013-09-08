@@ -108,6 +108,24 @@ namespace reactor
     }
   }
 
+  static
+  std::ostream&
+  operator << (std::ostream& output, Scheduler::Threads const& threads)
+  {
+    bool first = true;
+    output << "[";
+    for (auto thread: threads)
+    {
+      if (first)
+        first = false;
+      else
+        output << ", ";
+      output << *thread;
+    }
+    output << "]";
+    return output;
+  }
+
   bool
   Scheduler::step()
   {
@@ -123,8 +141,11 @@ namespace reactor
     }
     auto& ordered = this->_running.get<1>();
     std::vector<Thread*> running(ordered.begin(), ordered.end());
-    ELLE_TRACE("Scheduler: new round with %s jobs", running.size());
+    ELLE_TRACE_SCOPE("Scheduler: new round with %s jobs", running.size());
 
+    ELLE_DUMP("%s: starting: %s", *this, this->_starting);
+    ELLE_DUMP("%s: running: %s", *this, this->_running);
+    ELLE_DUMP("%s: frozen: %s", *this, this->_frozen);
     ELLE_MEASURE("Scheduler round")
       BOOST_FOREACH (Thread* t, running)
       {
