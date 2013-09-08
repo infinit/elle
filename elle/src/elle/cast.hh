@@ -8,7 +8,10 @@ namespace elle
   template <typename T>
   struct cast
   {
-    // XXX move should be explicit, this specialization should not be used.
+    /// Cast \a p to type \a T.
+    ///
+    /// If the cast is possible, the new pointer is returned and \a p is
+    /// reseted, otherwise null is returned an \a p is left untouched.
     template <typename U>
     static std::unique_ptr<T>
     runtime(std::unique_ptr<U>& p)
@@ -17,9 +20,13 @@ namespace elle
       if (!res)
         return nullptr;
       p.release();
-      return std::unique_ptr<T>(static_cast<T*>(res));
+      return std::unique_ptr<T>(res);
     }
 
+    /// Cast \a p to type \a T.
+    ///
+    /// If the cast is possible, the new pointer is returned, otherwise null is
+    /// returned.
     template <typename U>
     static std::unique_ptr<T>
     runtime(std::unique_ptr<U>&& p)
@@ -28,7 +35,7 @@ namespace elle
       if (!res)
         return nullptr;
       p.release();
-      return std::unique_ptr<T>(static_cast<T*>(res));
+      return std::unique_ptr<T>(res);
     }
 
     // XXX[???]
