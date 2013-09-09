@@ -110,7 +110,7 @@ namespace reactor
 
   static
   std::ostream&
-  operator << (std::ostream& output, Scheduler::Threads const& threads)
+  operator <<(std::ostream& output, Scheduler::Threads const& threads)
   {
     bool first = true;
     output << "[";
