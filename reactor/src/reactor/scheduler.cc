@@ -373,7 +373,8 @@ namespace reactor
       catch (...)
       {
         saved_exception = std::current_exception();
-        ELLE_TRACE("%s: terminate_now interrupted, delaying exception", *this);
+        ELLE_TRACE("%s: terminate_now interrupted, delaying exception: %s",
+                   *this, elle::exception_string());
         continue;
       }
 
@@ -381,7 +382,11 @@ namespace reactor
     }
 
     if (saved_exception != nullptr)
+    {
+      ELLE_TRACE("%s: terminate_now finished, re-throwing: %s",
+                 *this, elle::exception_string(saved_exception));
       std::rethrow_exception(saved_exception);
+    }
   }
 
   /*-------.
