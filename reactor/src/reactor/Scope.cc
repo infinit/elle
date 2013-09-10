@@ -12,9 +12,7 @@ namespace reactor
   Scope::Scope():
     _threads(),
     _running(0)
-  {
-    this->open();
-  }
+  {}
 
   Scope::~Scope()
   {
@@ -29,30 +27,25 @@ namespace reactor
   Scope::run_background(std::string const& name,
                         Thread::Action const& a)
   {
-    this->close();
     auto& sched = *Scheduler::scheduler();
+    ++this->_running;
     this->_threads.push_back(
       new Thread(sched, name,
                  [this, a]
                  {
-                   ++this->_running;
                    try
                    {
                      a();
                    }
                    catch (Terminate const&)
-                   {
-                     if (!--this->_running)
-                       this->open();
-                     throw;
-                   }
+                   {}
                    catch (...)
                    {
                      this->_raise(std::current_exception());
                      this->_terminate_now();
                    }
                    if (!--this->_running)
-                     this->open();
+                     this->_signal();
                  }));
 
     auto it = begin(this->_threads);
@@ -80,5 +73,18 @@ namespace reactor
       delete t;
     }
     _threads.clear();
+  }
+
+  /*---------.
+  | Waitable |
+  `---------*/
+
+  bool
+  Scope::_wait(Thread* thread)
+  {
+    if (this->_running == 0)
+      return false;
+    else
+      return Waitable::_wait(thread);
   }
 }

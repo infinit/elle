@@ -1651,7 +1651,7 @@ namespace background
         for (int run = 0; run < 3; ++run)
         {
           int count = 0;
-          reactor::Waitables threads;
+          std::vector<reactor::Thread*> threads;
           for (int i = 0; i < iterations; ++i)
             threads.push_back(
               new reactor::Thread(sched, elle::sprintf("thread %s", i),
@@ -1661,7 +1661,8 @@ namespace background
                                     ++count;
                                   }));
           auto start = std::chrono::system_clock::now();
-          sched.current()->wait(threads);
+          sched.current()->wait(reactor::Waitables(begin(threads),
+                                                   end(threads)));
           for (auto thread: threads)
             delete thread;
           auto duration = std::chrono::system_clock::now() - start;
@@ -1778,6 +1779,8 @@ test_suite()
     scope->add(BOOST_TEST_CASE(wait));
     auto exception = &scope::exception;
     scope->add(BOOST_TEST_CASE(exception));
+    auto terminate = &scope::terminate;
+    scope->add(BOOST_TEST_CASE(terminate));
   }
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
