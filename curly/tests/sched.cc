@@ -48,41 +48,43 @@ BOOST_AUTO_TEST_CASE(simple_test)
 
       int clients = 0;
       reactor::Barrier everybody_is_there;
-      reactor::Scope scope;
-      while (true)
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
-        std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
-        ELLE_LOG("accept connection from %s", socket->peer());
-        scope.run_background(
-          elle::sprintf("request %s", socket->peer()),
-          [&, socket]
-          {
-            char buffer[1024];
-            socket->getline(buffer, sizeof(buffer), '\n');
-            buffer[socket->gcount()] = 0;
-            ELLE_LOG("got request: %s", buffer);
-            BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
-            while (std::string(buffer) != "\r")
+        while (true)
+        {
+          std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
+          ELLE_LOG("accept connection from %s", socket->peer());
+          scope.run_background(
+            elle::sprintf("request %s", socket->peer()),
+            [&, socket]
             {
-              ELLE_LOG("got header from: %s", buffer);
+              char buffer[1024];
               socket->getline(buffer, sizeof(buffer), '\n');
               buffer[socket->gcount()] = 0;
-            }
-            if (++clients == concurrent)
-              everybody_is_there.open();
-            // Wait until every client made the request, to check they are done
-            // concurrently.
-            sched.current()->wait(everybody_is_there);
-            std::string answer(
-              "HTTP/1.0 200 OK\r\n"
-              "Server: Custom HTTP of doom\r\n"
-              "Content-Length: 4\r\n"
-              "\r\n"
-              "lol\n");
-            ELLE_LOG("send response: %s", answer);
-            socket->write(answer.c_str());
-          });
-      }
+              ELLE_LOG("got request: %s", buffer);
+              BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
+              while (std::string(buffer) != "\r")
+              {
+                ELLE_LOG("got header from: %s", buffer);
+                socket->getline(buffer, sizeof(buffer), '\n');
+                buffer[socket->gcount()] = 0;
+              }
+              if (++clients == concurrent)
+                everybody_is_there.open();
+              // Wait until every client made the request, to check they are done
+              // concurrently.
+              sched.current()->wait(everybody_is_there);
+              std::string answer(
+                "HTTP/1.0 200 OK\r\n"
+                "Server: Custom HTTP of doom\r\n"
+                "Content-Length: 4\r\n"
+                "\r\n"
+                "lol\n");
+              ELLE_LOG("send response: %s", answer);
+              socket->write(answer.c_str());
+            });
+        }
+      };
     });
 
   auto run_test = [&]

@@ -322,7 +322,7 @@ namespace scope
       sched, "main",
       []
       {
-        reactor::Scope s;
+        elle::With<reactor::Scope> s;
       });
     sched.run();
   }
@@ -338,28 +338,31 @@ namespace scope
       {
         bool beacon1 = false;
         bool beacon2 = false;
-        reactor::Scope s;
-        s.run_background(
-          "1",
-          [&]
-          {
-            reactor::yield();
-            reactor::yield();
-            beacon1 = true;
-          });
-        reactor::yield();
-        s.run_background(
-          "2",
-          [&]
-          {
-            reactor::yield();
-            reactor::yield();
-            beacon2 = true;
-          });
-        s.wait();
-        BOOST_CHECK(beacon1);
-        BOOST_CHECK(beacon2);
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          s.run_background(
+            "1",
+            [&]
+            {
+              reactor::yield();
+              reactor::yield();
+              beacon1 = true;
+            });
+          reactor::yield();
+          s.run_background(
+            "2",
+            [&]
+            {
+              reactor::yield();
+              reactor::yield();
+              beacon2 = true;
+            });
+          s.wait();
+          BOOST_CHECK(beacon1);
+          BOOST_CHECK(beacon2);
+        };
       });
+
     sched.run();
   }
 
@@ -373,31 +376,33 @@ namespace scope
       []
       {
         bool beacon = false;
-        reactor::Scope s;
-        s.run_background(
-          "1",
-          [&]
-          {
-            try
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          s.run_background(
+            "1",
+            [&]
             {
-              reactor::yield();
-              reactor::yield();
-            }
-            catch (...)
+              try
+              {
+                reactor::yield();
+                reactor::yield();
+              }
+              catch (...)
+              {
+                beacon = true;
+                throw;
+              }
+              BOOST_FAIL("should have been killed");
+            });
+          s.run_background(
+            "2",
+            []
             {
-              beacon = true;
-              throw;
-            }
-            BOOST_FAIL("should have been killed");
-          });
-        s.run_background(
-          "2",
-          []
-          {
-            throw BeaconException();
-          });
-        BOOST_CHECK_THROW(s.wait(), BeaconException);
-        BOOST_CHECK(beacon);
+              throw BeaconException();
+            });
+          BOOST_CHECK_THROW(s.wait(), BeaconException);
+          BOOST_CHECK(beacon);
+        };
       });
     sched.run();
   }
@@ -412,25 +417,27 @@ namespace scope
       sched, "main",
       [&]
       {
-        reactor::Scope s;
-        s.run_background(
-          "1",
-          [&]
-          {
-            try
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          s.run_background(
+            "1",
+            [&]
             {
-              ready.open();
-              reactor::sleep(1_sec);
-              BOOST_FAIL("should have been killed");
-            }
-            catch (...)
-            {
-              t.terminate();
-              reactor::sleep(1_sec);
-              throw;
-            }
-          });
-        ready.wait();
+              try
+              {
+                ready.open();
+                reactor::sleep(1_sec);
+                BOOST_FAIL("should have been killed");
+              }
+              catch (...)
+              {
+                t.terminate();
+                reactor::sleep(1_sec);
+                throw;
+              }
+            });
+          ready.wait();
+        };
       });
     sched.run();
   }

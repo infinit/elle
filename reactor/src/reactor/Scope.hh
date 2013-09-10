@@ -1,6 +1,8 @@
 #ifndef REACTOR_SCOPE_HH
 # define REACTOR_SCOPE_HH
 
+# include <elle/With.hh>
+
 # include <reactor/Barrier.hh>
 # include <reactor/fwd.hh>
 # include <reactor/thread.hh>
@@ -21,13 +23,15 @@ namespace reactor
   /*-------------.
   | Construction |
   `-------------*/
-  public:
+  private:
     /// Create a scope.
     Scope();
     /// Destruct a scope, terminating all managed threads now.
     ///
     /// \throw Terminate if interrupted while killing managed threads.
     ~Scope() noexcept(false);
+    /// Let With manage us.
+    friend class elle::With<Scope>;
 
   /*--------.
   | Threads |

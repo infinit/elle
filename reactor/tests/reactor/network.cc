@@ -328,21 +328,23 @@ test_socket_close()
     {
       auto socket = elle::make_unique<reactor::network::TCPSocket>(
         sched, "127.0.0.1", 4242);
-      reactor::Scope scope;
-      scope.run_background(
-        "read",
-        [&]
-        {
-          BOOST_CHECK_THROW(socket->get(), elle::Exception);
-        });
-      scope.run_background(
-        "close",
-        [&]
-        {
-          reactor::yield();
-          socket->close();
-        });
-      scope.wait();
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+      {
+        scope.run_background(
+          "read",
+          [&]
+          {
+            BOOST_CHECK_THROW(socket->get(), elle::Exception);
+          });
+        scope.run_background(
+          "close",
+          [&]
+          {
+            reactor::yield();
+            socket->close();
+          });
+        scope.wait();
+      };
     };
 
   reactor::Thread t(sched, "client", action);
