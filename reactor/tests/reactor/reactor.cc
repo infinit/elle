@@ -378,9 +378,17 @@ namespace scope
           "1",
           [&]
           {
-            reactor::yield();
-            reactor::yield();
-            beacon = true;
+            try
+            {
+              reactor::yield();
+              reactor::yield();
+            }
+            catch (...)
+            {
+              beacon = true;
+              throw;
+            }
+            BOOST_FAIL("should have been killed");
           });
         s.run_background(
           "2",
@@ -389,7 +397,7 @@ namespace scope
             throw BeaconException();
           });
         BOOST_CHECK_THROW(s.wait(), BeaconException);
-        BOOST_CHECK(!beacon);
+        BOOST_CHECK(beacon);
       });
     sched.run();
   }
