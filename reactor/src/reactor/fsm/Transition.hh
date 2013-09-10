@@ -20,6 +20,9 @@ namespace reactor
       virtual
       void
       done(Transition*& trigger, std::exception_ptr& exn);
+    public:
+      virtual
+      ~Transition() = default;
     protected:
       Transition(State& start,
                  State& end);
