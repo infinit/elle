@@ -108,11 +108,11 @@ BOOST_AUTO_TEST_CASE(simple_test)
     };
 
     sched.current()->wait(served);
-    std::vector<reactor::Waitable*> threads;
+    std::vector<reactor::Thread*> threads;
     for (int i = 0; i < concurrent; ++i)
       threads.push_back(
         new reactor::Thread(sched, elle::sprintf("client %s", i), fn));
-    current->wait(threads);
+    current->wait(reactor::Waitables(begin(threads), end(threads)));
     for (auto thread: threads)
       delete thread;
     server.terminate();
