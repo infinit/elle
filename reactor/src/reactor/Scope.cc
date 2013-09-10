@@ -14,7 +14,7 @@ namespace reactor
     _running(0)
   {}
 
-  Scope::~Scope()
+  Scope::~Scope() noexcept(false)
   {
     this->_terminate_now();
   }

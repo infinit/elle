@@ -401,6 +401,39 @@ namespace scope
       });
     sched.run();
   }
+
+  static
+  void
+  terminate()
+  {
+    reactor::Scheduler sched;
+    reactor::Barrier ready;
+    reactor::Thread t(
+      sched, "main",
+      [&]
+      {
+        reactor::Scope s;
+        s.run_background(
+          "1",
+          [&]
+          {
+            try
+            {
+              ready.open();
+              reactor::sleep(1_sec);
+              BOOST_FAIL("should have been killed");
+            }
+            catch (...)
+            {
+              t.terminate();
+              reactor::sleep(1_sec);
+              throw;
+            }
+          });
+        ready.wait();
+      });
+    sched.run();
+  }
 }
 
 /*------.

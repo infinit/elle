@@ -27,7 +27,7 @@ namespace reactor
     /// Destruct a scope, terminating all managed threads now.
     ///
     /// \throw Terminate if interrupted while killing managed threads.
-    ~Scope();
+    ~Scope() noexcept(false);
 
   /*--------.
   | Threads |
