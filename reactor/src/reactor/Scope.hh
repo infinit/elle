@@ -43,6 +43,8 @@ namespace reactor
     run_background(std::string const& name,
                    Thread::Action const& a);
   private:
+    void
+    _terminate_now();
     /// Managed threads.
     ELLE_ATTRIBUTE(std::vector<Thread*>, threads);
     /// Number of running threads.

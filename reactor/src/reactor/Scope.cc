@@ -1,9 +1,14 @@
-#include <reactor/scheduler.hh>
 #include <reactor/Scope.hh>
+#include <reactor/exception.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 namespace reactor
 {
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   Scope::Scope():
     _threads(),
     _running(0)
@@ -13,15 +18,12 @@ namespace reactor
 
   Scope::~Scope()
   {
-    //auto& sched = *Scheduler::scheduler()->current();
-    // sched.wait(this->_threads);
-    for (auto* t: this->_threads)
-    {
-      t->terminate_now();
-      delete t;
-    }
-    _threads.clear();
+    this->_terminate_now();
   }
+
+  /*--------.
+  | Threads |
+  `--------*/
 
   void
   Scope::run_background(std::string const& name,
@@ -38,10 +40,16 @@ namespace reactor
                    {
                      a();
                    }
+                   catch (Terminate const&)
+                   {
+                     if (!--this->_running)
+                       this->open();
+                     throw;
+                   }
                    catch (...)
                    {
                      this->_raise(std::current_exception());
-                     this->open();
+                     this->_terminate_now();
                    }
                    if (!--this->_running)
                      this->open();
@@ -58,5 +66,19 @@ namespace reactor
         it = this->_threads.erase(it);
       }
     }
+  }
+
+  void
+  Scope::_terminate_now()
+  {
+    auto current = reactor::Scheduler::scheduler()->current();
+    for (auto* t: this->_threads)
+    {
+      if (t == current)
+        continue;
+      t->terminate_now();
+      delete t;
+    }
+    _threads.clear();
   }
 }
