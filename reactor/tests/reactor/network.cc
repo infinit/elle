@@ -173,15 +173,15 @@ server()
   Server server(*sched);
   server.listen(4242);
   int nclients = 2;
-  reactor::Waitables clients;
+  std::vector<reactor::Thread*> clients;
   while (nclients--)
   {
     reactor::network::Socket* socket = server.accept();
-    clients << new reactor::Thread(*sched, "serve",
-                                   boost::bind(serve, socket));
+    clients.push_back(new reactor::Thread(*sched, "serve",
+                                          boost::bind(serve, socket)));
   }
-  sched->current()->wait(clients);
-  BOOST_FOREACH(reactor::Waitable* thread, clients)
+  sched->current()->wait(reactor::Waitables(begin(clients), end(clients)));
+  BOOST_FOREACH(auto* thread, clients)
     delete thread;
 }
 
