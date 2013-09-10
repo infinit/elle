@@ -65,14 +65,25 @@ namespace reactor
   Scope::_terminate_now()
   {
     auto current = reactor::Scheduler::scheduler()->current();
+    std::exception_ptr e;
     for (auto* t: this->_threads)
     {
       if (t == current)
         continue;
-      t->terminate_now();
+      try
+      {
+        t->terminate_now();
+      }
+      catch (...)
+      {
+        e = std::current_exception();
+      }
       delete t;
     }
-    _threads.clear();
+    this->_threads.clear();
+    this->_threads.push_back(current);
+    if (e)
+      std::rethrow_exception(e);
   }
 
   /*---------.
