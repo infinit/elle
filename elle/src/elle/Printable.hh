@@ -12,10 +12,6 @@ namespace elle
   class Printable
   {
   public:
-    /// Destroy a Printable.
-    virtual
-    ~Printable();
-
     /// Print pretty representation to \a stream.
     virtual
     void
@@ -24,6 +20,13 @@ namespace elle
     /// The pretty representation.
     std::string
     stringify() const;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+  protected:
+    /// Destroy a Printable.
+    ~Printable() = default;
   };
 
   /// Print pretty representation of \a o to \a stream.

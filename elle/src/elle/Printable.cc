@@ -4,9 +4,6 @@
 
 namespace elle
 {
-  Printable::~Printable()
-  {}
-
   std::string
   Printable::stringify() const
   {

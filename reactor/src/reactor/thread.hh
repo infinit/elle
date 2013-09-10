@@ -33,6 +33,7 @@ namespace reactor
              const std::string& name,
              const Action& action,
              bool dispose = false);
+      virtual
       ~Thread();
     private:
       bool _dispose;

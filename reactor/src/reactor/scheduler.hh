@@ -28,11 +28,12 @@ namespace reactor
   class Scheduler:
     public elle::Printable
   {
-    /*-------------.
-    | Construction |
-    `-------------*/
-    public:
-      Scheduler();
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    Scheduler();
+    virtual ~Scheduler() = default;
 
   /*------------------.
   | Current scheduler |

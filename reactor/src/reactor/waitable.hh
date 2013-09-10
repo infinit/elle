@@ -35,8 +35,9 @@ namespace reactor
     Waitable(const std::string& name = std::string());
     /// Move a Waitable.
     Waitable(Waitable&& source);
+  protected:
     /// Destroy a Waitable.
-    virtual ~Waitable();
+    ~Waitable();
 
     /*-------.
     | Status |
