@@ -1,5 +1,7 @@
 #include "file.hh"
 
+#include <elle/Exception.hh>
+
 #include <boost/filesystem.hpp>
 
 namespace elle
@@ -12,7 +14,7 @@ namespace elle
       size(std::string const& path)
       {
         if (!boost::filesystem::exists(path))
-          throw std::runtime_error{"file " + path + " doesn't exist"};
+          throw elle::Exception{"file " + path + " doesn't exist"};
 
         if (!boost::filesystem::is_directory(path))
           return boost::filesystem::file_size(path);
