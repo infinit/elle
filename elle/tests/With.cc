@@ -73,3 +73,13 @@ BOOST_AUTO_TEST_CASE(double_exception)
   }
   BOOST_FAIL("should have thrown");
 }
+
+BOOST_AUTO_TEST_CASE(value)
+{
+  BOOST_CHECK_EQUAL(
+    elle::With<GoodBoy>() << [&] (GoodBoy&)
+    {
+      return 1664;
+    },
+    1664);
+}

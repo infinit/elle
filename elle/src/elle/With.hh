@@ -6,15 +6,29 @@ namespace elle
   template <typename T>
   class With
   {
+  /*------.
+  | Types |
+  `------*/
+  public:
+    typedef With<T> Self;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
     template <typename ... Args>
     With(Args&&... args);
-    template <typename F>
-    void operator <<(F const& action);
-
   private:
     char _value[sizeof(T)];
     bool _used;
+
+  /*--------.
+  | Running |
+  `--------*/
+  public:
+    template <typename F>
+    auto
+    operator <<(F const& action) -> decltype(action(*(T*)(nullptr)));
   };
 }
 

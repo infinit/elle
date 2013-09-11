@@ -8,6 +8,10 @@
 
 namespace elle
 {
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   template <typename T>
   template <typename ... Args>
   With<T>::With(Args&&... args):
@@ -16,18 +20,66 @@ namespace elle
     new (this->_value) T(std::forward<Args>(args)...);
   }
 
+  /*--------.
+  | Running |
+  `--------*/
+
+  template <typename T>
+  class
+  ReturnHolder
+  {
+  public:
+    template <typename F, typename V>
+    inline
+    ReturnHolder(F const& f, V& v):
+      _value(f(v))
+    {}
+
+    inline
+    T&&
+    value()
+    {
+      return std::move(this->_value);
+    }
+
+  private:
+    T _value;
+  };
+
+  template <>
+  class
+  ReturnHolder<void>
+  {
+  public:
+    template <typename F, typename V>
+    inline
+    ReturnHolder(F const& f, V& v)
+    {
+      f(v);
+    }
+
+    inline
+    void
+    value()
+    {}
+  };
+
   template <typename T>
   template <typename F>
-  void
-  With<T>::operator <<(F const& action)
+  auto
+  With<T>::operator <<(F const& action) -> decltype(action(*(T*)(nullptr)))
   {
+    typedef decltype(action(*(T*)(nullptr))) Value;
+
     ELLE_LOG_COMPONENT("elle.With");
 
     ELLE_ASSERT(!this->_used);
     this->_used = true;
     try
     {
-      action(reinterpret_cast<T&>(this->_value));
+      ReturnHolder<Value> res(action, reinterpret_cast<T&>(this->_value));
+      reinterpret_cast<T&>(this->_value).~T();
+      return res.value();
     }
     catch (...)
     {
@@ -44,7 +96,6 @@ namespace elle
       }
       throw;
     }
-    reinterpret_cast<T&>(this->_value).~T();
   }
 }
 
