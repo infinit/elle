@@ -79,15 +79,19 @@ namespace elle
 
     ELLE_ASSERT(!this->_used);
     this->_used = true;
+    bool succeeded = false;
     try
     {
       ReturnHolder<Value> res(action, reinterpret_cast<T&>(this->_value));
+      succeeded = true;
       ELLE_TRACE("%s: destruct", *this)
         reinterpret_cast<T&>(this->_value).~T();
       return res.value();
     }
     catch (...)
     {
+      if (succeeded)
+        throw;
       auto e = std::current_exception();
       try
       {
