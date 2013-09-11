@@ -6,23 +6,38 @@
 
 class GoodBoy
 {
+public:
+  GoodBoy():
+    _destructed(false)
+  {}
 
+  ~GoodBoy()
+  {
+    BOOST_CHECK(!this->_destructed);
+    this->_destructed = true;
+  }
+private:
+  bool _destructed;
 };
 
 class BadBoy
 {
   public:
     BadBoy(int i):
-      _i(i)
+      _i(i),
+      _destructed(false)
     {}
 
     ~BadBoy() noexcept(false)
     {
+      BOOST_CHECK(!this->_destructed);
+      this->_destructed = true;
       throw this->_i;
     }
 
   private:
     int _i;
+    bool _destructed;
 };
 
 BOOST_AUTO_TEST_CASE(normal)
