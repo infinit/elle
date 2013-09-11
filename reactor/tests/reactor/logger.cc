@@ -121,7 +121,7 @@ parallel_write()
 
   for (auto counter: counters)
   {
-    static int const expected = RUNNING_ON_VALGRIND ? 16 : 64;
+    static int const expected = RUNNING_ON_VALGRIND ? 8 : 64;
     BOOST_CHECK_GT(counter, expected);
   }
 }
