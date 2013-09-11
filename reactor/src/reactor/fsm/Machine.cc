@@ -1,7 +1,9 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/With.hh>
 
+#include <reactor/Scope.hh>
 #include <reactor/fsm/CatchTransition.hh>
 #include <reactor/fsm/EndTransition.hh>
 #include <reactor/fsm/Machine.hh>
@@ -125,63 +127,57 @@ namespace reactor
       Thread action_thread(sched, elle::sprintf("%s action", *state), action);
       reactor::Signal triggered;
       Transition* trigger(nullptr);
-      std::vector<std::unique_ptr<Thread>> transitions;
-      elle::Finally terminate_transitions([&] () {
-          for (auto& thread: transitions)
-            thread->terminate_now();
-        });
-      for (auto transition: state->transitions_out())
-      {
-        auto action = transition->run(triggered, trigger, action_thread);
-        if (action)
-          transitions.emplace_back(
-            new reactor::Thread(sched, elle::sprint(*this), action.get()));
-      }
-      state->_entered.signal();
-      elle::Finally exited([&]() {state->_exited.signal(); });
-      try
-      {
-        sched.current()->wait(action_thread);
-      }
-      catch (reactor::Terminate&)
-      {
-        action_thread.terminate_now();
-        throw;
-      }
-      state->_done.signal();
-      ELLE_DEBUG("%s: state action finished", *this);
-      while (true)
+      return elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
         for (auto transition: state->transitions_out())
-          transition->done(trigger, this->_exception);
-        if (this->_exception)
+          if (auto t = transition->run(triggered, trigger, action_thread))
+            scope.run_background(elle::sprint(*this), t.get());
+        state->_entered.signal();
+        elle::Finally exited([&]() {state->_exited.signal(); });
+        try
         {
-          ELLE_WARN("%s: state action threw: %s",
-                    *this, elle::exception_string(this->_exception));
-          std::rethrow_exception(this->_exception);
+          sched.current()->wait(action_thread);
         }
-        if (state->transitions_out().empty())
+        catch (reactor::Terminate&)
         {
-          ELLE_DEBUG("%s: end state, leaving", *this);
-          return nullptr;
+          action_thread.terminate_now();
+          throw;
         }
-        while (!trigger)
+        state->_done.signal();
+        ELLE_DEBUG("%s: state action finished", *this);
+        while (true)
         {
-          ELLE_DEBUG("%s: waiting for transition", *this);
-          sched.current()->wait(triggered);
-        }
-        if (trigger->action())
-          try
+          for (auto transition: state->transitions_out())
+            transition->done(trigger, this->_exception);
+          if (this->_exception)
           {
-            trigger->action()();
+            ELLE_WARN("%s: state action threw: %s",
+                      *this, elle::exception_string(this->_exception));
+            std::rethrow_exception(this->_exception);
           }
-          catch (...)
+          if (state->transitions_out().empty())
           {
-            this->_exception = std::current_exception();
-            continue;
+            ELLE_DEBUG("%s: end state, leaving", *this);
+            return (State*)(nullptr);
           }
-        return &trigger->end();
-      }
+          while (!trigger)
+          {
+            ELLE_DEBUG("%s: waiting for transition", *this);
+            sched.current()->wait(triggered);
+          }
+          if (trigger->action())
+            try
+            {
+              trigger->action()();
+            }
+            catch (...)
+            {
+              this->_exception = std::current_exception();
+              continue;
+            }
+          return &trigger->end();
+        }
+      };
     }
 
     /*----------.
