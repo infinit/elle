@@ -3,6 +3,7 @@
 
 # include <utility>
 
+# include <elle/log.hh>
 # include <elle/assert.hh>
 # include <elle/log.hh>
 
@@ -17,7 +18,10 @@ namespace elle
   With<T>::With(Args&&... args):
     _used(false)
   {
-    new (this->_value) T(std::forward<Args>(args)...);
+    ELLE_LOG_COMPONENT("elle.With");
+
+    ELLE_TRACE("%s: construct", *this)
+      new (this->_value) T(std::forward<Args>(args)...);
   }
 
   /*--------.
@@ -78,7 +82,8 @@ namespace elle
     try
     {
       ReturnHolder<Value> res(action, reinterpret_cast<T&>(this->_value));
-      reinterpret_cast<T&>(this->_value).~T();
+      ELLE_TRACE("%s: destruct", *this)
+        reinterpret_cast<T&>(this->_value).~T();
       return res.value();
     }
     catch (...)
@@ -86,7 +91,8 @@ namespace elle
       auto e = std::current_exception();
       try
       {
-        reinterpret_cast<T&>(this->_value).~T();
+        ELLE_TRACE("%s: destruct", *this)
+          reinterpret_cast<T&>(this->_value).~T();
       }
       catch (...)
       {
