@@ -6,12 +6,12 @@ namespace reactor
 {
   namespace fsm
   {
-    std::unique_ptr<Thread>
+    boost::optional<std::function<void()>>
     Transition::run(reactor::Signal&,
                     Transition*&,
                     Thread&)
     {
-      return nullptr;
+      return boost::optional<std::function<void()>>();
     }
 
     void

@@ -132,10 +132,10 @@ namespace reactor
         });
       for (auto transition: state->transitions_out())
       {
-        std::unique_ptr<Thread> thread(
-          transition->run(triggered, trigger, action_thread).release());
-        if (thread)
-          transitions.emplace_back(thread.release());
+        auto action = transition->run(triggered, trigger, action_thread);
+        if (action)
+          transitions.emplace_back(
+            new reactor::Thread(sched, elle::sprint(*this), action.get()));
       }
       state->_entered.signal();
       elle::Finally exited([&]() {state->_exited.signal(); });

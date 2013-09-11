@@ -1,6 +1,8 @@
 #ifndef REACTOR_FSM_TRANSITION_HH
 # define REACTOR_FSM_TRANSITION_HH
 
+# include <boost/optional.hpp>
+
 # include <reactor/fsm/fwd.hh>
 # include <reactor/waitable.hh>
 
@@ -13,7 +15,7 @@ namespace reactor
     {
     public:
       virtual
-      std::unique_ptr<Thread>
+      boost::optional<std::function<void()>>
       run(reactor::Signal& triggered,
           Transition*& trigger,
           Thread& action_thread);

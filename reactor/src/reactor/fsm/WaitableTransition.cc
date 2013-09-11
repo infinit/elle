@@ -11,7 +11,7 @@ namespace reactor
 {
   namespace fsm
   {
-    std::unique_ptr<Thread>
+    boost::optional<std::function<void()>>
     WaitableTransition::run(reactor::Signal& triggered,
                             Transition*& trigger,
                             Thread& action_thread)
@@ -35,11 +35,13 @@ namespace reactor
       }
 
       ELLE_DEBUG("%s: start on %s", *this, this->trigger());
-      return elle::make_unique<Thread>(
-        sched,
-        elle::sprint(*this),
+      return std::function<void ()>(
         [this,
-         &sched, &trigger, &action_thread, &triggered](){
+         &sched,
+         &trigger,
+         &action_thread,
+         &triggered] ()
+        {
           sched.current()->wait(this->trigger());
           if (!trigger)
           {
@@ -50,7 +52,7 @@ namespace reactor
             triggered.signal();
           }
         });
-    }
+    };
 
     WaitableTransition::WaitableTransition(State& start,
                                            State& end,

@@ -14,7 +14,7 @@ namespace reactor
     public:
       typedef std::function<bool ()> PreTrigger;
       virtual
-      std::unique_ptr<Thread>
+      boost::optional<std::function<void()>>
       run(reactor::Signal& triggered,
           Transition*& trigger,
           Thread& action_thread);
