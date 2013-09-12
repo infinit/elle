@@ -97,7 +97,7 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: run", *this);
       this->_running = true;
-      elle::Finally finally([&] { this->_running = false; });
+      elle::SafeFinally finally([&] { this->_running = false; });
       State* current = &start;
       while (current = this->_run_state(current))
         /* nothing */;
@@ -133,7 +133,7 @@ namespace reactor
           if (auto t = transition->run(triggered, trigger, action_thread))
             scope.run_background(elle::sprint(*this), t.get());
         state->_entered.signal();
-        elle::Finally exited([&]() {state->_exited.signal(); });
+        elle::SafeFinally exited([&]() { state->_exited.signal(); });
         try
         {
           sched.current()->wait(action_thread);

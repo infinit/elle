@@ -7,6 +7,34 @@ namespace elle
 {
   ELLE_LOG_COMPONENT("elle.Finally");
 
+  SafeFinally::SafeFinally():
+    _action([] {})
+  {}
+
+  SafeFinally::SafeFinally(std::function<void()> const& action):
+    _action(action)
+  {}
+
+  SafeFinally::~SafeFinally()
+  {
+    if (!this->_action)
+      return;
+    try
+    {
+      this->_action();
+    }
+    catch (...)
+    {
+      ELLE_ABORT("safe finally threw: %s", elle::exception_string());
+    }
+  }
+
+  void
+  SafeFinally::abort()
+  {
+    this->_action = std::function<void()>();
+  }
+
   Finally::Finally():
     _action([] {})
   {}
@@ -19,33 +47,12 @@ namespace elle
   {
     if (!this->_action)
       return;
-    try
-    {
-      this->_action();
-    }
-    catch (...)
-    {
-      ELLE_ERR("finally failed: %s", elle::exception_string());
-      throw;
-    }
+    this->_action();
   }
-
-  Finally::Finally(Finally&& f):
-    _action{std::move(f._action)}
-  {}
 
   void
   Finally::abort()
   {
     this->_action = std::function<void()>();
-  }
-
-  namespace detail
-  {
-    Finally
-    finally_builder::operator +(std::function<void()> const& action)
-    {
-      return Finally(action);
-    }
   }
 }

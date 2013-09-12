@@ -363,6 +363,7 @@ namespace infinit
 
           ::EVP_CIPHER_CTX_init(&context);
 
+
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
           // Initialise the ciphering process.

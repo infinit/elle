@@ -4,6 +4,7 @@
 # include <elle/Exception.hh>
 # include <elle/log.hh>
 # include <elle/finally.hh>
+# include <elle/memory.hh>
 
 namespace elle
 {
@@ -89,21 +90,20 @@ namespace elle
         throw Exception("unable to register an already registered product");
 
       // Create a generatoid.
-      auto generatoid = new Factory<P, A...>::Generatoid<T>(product);
-
-      ELLE_FINALLY_ACTION_DELETE(generatoid);
+      auto generatoid =
+        elle::make_unique<Factory<P, A...>::Generatoid<T>>(product);
 
       // Insert the generator in the container.
       auto result =
         this->_container.insert(
           std::pair<P const, Factory<P, A...>::Functionoid*>(product,
-                                                             generatoid));
+                                                             generatoid.get()));
 
       // Check if the insertion was successful.
       if (result.second == false)
         throw Exception("unable to insert the generatoid into the container");
 
-      ELLE_FINALLY_ABORT(generatoid);
+      generatoid.release();
     }
 
     template <typename P,

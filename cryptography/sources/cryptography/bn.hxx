@@ -28,7 +28,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
 
   unsigned char* buffer = new unsigned char[size];
 
-  ELLE_FINALLY_ACTION_DELETE_ARRAY(buffer);
+  elle::SafeFinally free([&] { delete [] buffer; });
 
   // Copy the binary data into the buffer.
   ::BN_bn2bin(&value, buffer);
@@ -36,10 +36,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
   // Serialize both the size and the binary data.
   archive << static_cast<elle::Natural32>(size);
   archive.SaveBinary(buffer, size);
-
-  ELLE_FINALLY_ABORT(buffer);
-
-  delete [] buffer;
 }
 
 // Note that the big number (i.e _value_) must have been initialized either
@@ -60,7 +56,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   // Allocate a buffer.
   unsigned char* buffer = new unsigned char[size];
 
-  ELLE_FINALLY_ACTION_DELETE_ARRAY(buffer);
+  elle::SafeFinally finally([&] { delete[] buffer; });
 
   // Extract the buffer.
   archive.LoadBinary(buffer, size);
@@ -70,10 +66,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
     throw infinit::cryptography::Exception(
       elle::sprintf("unable to convert the binary data into a big number: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
-
-  ELLE_FINALLY_ABORT(buffer);
-
-  delete [] buffer;
 }
 
 #endif

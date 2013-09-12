@@ -130,7 +130,7 @@ namespace reactor
   Scheduler::step()
   {
     reactor::scheduler(this);
-    ELLE_FINALLY(pop, reactor::scheduler(nullptr));
+    elle::SafeFinally pop([] { reactor::scheduler(nullptr); });
 
     // Could avoid locking if no jobs are pending with a boolean.
     {

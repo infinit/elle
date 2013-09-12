@@ -242,11 +242,8 @@ parallel_write()
     std::thread t1([&](){ action(c1); });
     std::thread t2([&](){ action(c2); });
 
-    elle::Finally join([&]
-                       {
-                         t1.join();
-                         t2.join();
-                       });
+    t1.join();
+    t2.join();
   }
 
   BOOST_CHECK_GT(c1, 64);

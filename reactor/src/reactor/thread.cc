@@ -214,12 +214,16 @@ namespace reactor
         this->_timeout = false;
         this->_timeout_timer.async_wait(
           boost::bind(&Thread::_wait_timeout, this, _1));
-        elle::Finally cancel_timer([&] {
+        auto cancel_timeout = [&]
+          {
             if (!_timeout)
               this->_timeout_timer.cancel();
-          });
-        _freeze();
-        return !this->_timeout;
+          };
+        return elle::With<elle::Finally>(cancel_timeout) << [&]
+        {
+          _freeze();
+          return !this->_timeout;
+        };
       }
       else
       {

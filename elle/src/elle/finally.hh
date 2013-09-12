@@ -1,62 +1,42 @@
 #ifndef ELLE_FINALLY_HH
 # define ELLE_FINALLY_HH
 
-# include <elle/attribute.hh>
-
-# include <boost/preprocessor/cat.hpp>
-
 # include <functional>
 # include <cstdlib>
 
-/// Provide a lambda-based skeleton for creating Finally instances based
-/// on the name of a variable.
-# define ELLE_FINALLY(_variable_, _exp_)                                \
-  auto BOOST_PP_CAT(_elle_finally_lambda_, __LINE__) = [&](){_exp_;};   \
-  elle::Finally BOOST_PP_CAT(_elle_finally_variable_, _variable_)(      \
-    BOOST_PP_CAT(_elle_finally_lambda_, __LINE__));
+# include <boost/preprocessor/cat.hpp>
 
-/// Provide a lambda-based skeleton for creating Finally instances based
-/// on the name of a variable.
-# define ELLE_FINALLY_LAMBDA(_variable_, _lambda_)                      \
-  auto BOOST_PP_CAT(_elle_finally_lambda_, __LINE__) = _lambda_;        \
-  elle::Finally BOOST_PP_CAT(_elle_finally_variable_, _variable_)(      \
-    std::bind(BOOST_PP_CAT(_elle_finally_lambda_, __LINE__), _variable_));
-
-/// Make it extremely simple to call delete on a pointer when leaving the
-/// variable's scope.
-# define ELLE_FINALLY_ACTION_DELETE(_variable_)                         \
-  ELLE_FINALLY_LAMBDA(                                                  \
-    _variable_,                                                         \
-    [] (decltype(_variable_) pointer) { delete pointer; });
-
-/// Make it simple to delete an array.
-# define ELLE_FINALLY_ACTION_DELETE_ARRAY(_variable_)                   \
-  ELLE_FINALLY_LAMBDA(                                                  \
-    _variable_,                                                         \
-    [] (decltype(_variable_) pointer) { delete [] pointer; });
-
-/// Make it extremely simple to call free on a pointer when leaving a scope.
-# define ELLE_FINALLY_ACTION_FREE(_variable_)                           \
-  ELLE_FINALLY_LAMBDA(                                                  \
-    _variable_,                                                         \
-    [] (void* pointer) { ::free(pointer); });
-
-/// Make it super easy to abort the final action based on the name of
-/// the variable it relates to.
-# define ELLE_FINALLY_ABORT(_variable_)                                 \
-  BOOST_PP_CAT(_elle_finally_variable_, _variable_).abort();
-
-# define ELLE_SCOPE_EXIT(_lambda_)                                             \
-  auto BOOST_PP_CAT(__on_scope_exit_, __LINE__) = ::elle::Finally{_lambda_}    \
-/**/
-
-# define ELLE_AT_SCOPE_EXIT                                                   \
-  auto BOOST_PP_CAT(__on_scope_exit, __LINE__) =                             \
-    ::elle::detail::finally_builder() + [&] ()                                \
-/**/
+# include <elle/With.hh>
+# include <elle/attribute.hh>
 
 namespace elle
 {
+  class SafeFinally
+  {
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    SafeFinally();
+    SafeFinally(std::function<void()> const& action);
+    ~SafeFinally();
+    SafeFinally(SafeFinally&& f) = delete;
+    SafeFinally(SafeFinally const& f) = delete;
+
+  /*--------.
+  | Methods |
+  `--------*/
+  public:
+    void
+    abort();
+
+  /*-----------.
+  | Attributes |
+  `-----------*/
+  private:
+    ELLE_ATTRIBUTE_RW(std::function<void()>, action);
+  };
+
   /// Provide a way for a final action to be performed i.e when leaving the
   /// current scope.
   ///
@@ -64,40 +44,29 @@ namespace elle
   /// action.
   class Finally
   {
+  /*-------------.
+  | Construction |
+  `-------------*/
   private:
-    Finally(Finally const& f);
-    /*-------------.
-    | Construction |
-    `-------------*/
-  public:
     Finally();
     Finally(std::function<void()> const& action);
     ~Finally() noexcept(false);
+    /// Let With manage us.
+    friend class elle::With<Finally>;
 
-    Finally(Finally&& f);
-
-    /*--------.
-    | Methods |
-    `--------*/
+  /*--------.
+  | Methods |
+  `--------*/
   public:
     void
     abort();
 
-    /*-----------.
-    | Attributes |
-    `-----------*/
+  /*-----------.
+  | Attributes |
+  `-----------*/
   private:
     ELLE_ATTRIBUTE_RW(std::function<void()>, action);
   };
-
-  namespace detail
-  {
-    struct finally_builder
-    {
-      Finally
-      operator +(std::function<void()> const& action);
-    };
-  }
 }
 
 #endif
