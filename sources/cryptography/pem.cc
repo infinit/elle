@@ -82,7 +82,7 @@ namespace infinit
         {
           case EVP_PKEY_RSA:
           {
-            ELLE_FINALLY_ABORT(key);
+            INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
             std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
               rsa::keypair::construct(key);
@@ -153,7 +153,7 @@ namespace infinit
         {
           case EVP_PKEY_RSA:
           {
-            ELLE_FINALLY_ABORT(key);
+            INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
             rsa::PublicKey implementation = rsa::publickey::construct(key);
 
