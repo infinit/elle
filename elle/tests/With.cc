@@ -7,7 +7,8 @@
 class GoodBoy
 {
 public:
-  GoodBoy():
+  GoodBoy(int i):
+    _i(i),
     _destructed(false)
   {}
 
@@ -16,7 +17,10 @@ public:
     BOOST_CHECK(!this->_destructed);
     this->_destructed = true;
   }
+
+
 private:
+  ELLE_ATTRIBUTE_RW(int, i);
   bool _destructed;
 };
 
@@ -36,15 +40,16 @@ class BadBoy
     }
 
   private:
-    int _i;
+    ELLE_ATTRIBUTE_RW(int, i);
     bool _destructed;
 };
 
 BOOST_AUTO_TEST_CASE(normal)
 {
   bool beacon = false;
-  elle::With<GoodBoy>() << [&] (GoodBoy& b)
+  elle::With<GoodBoy>(3) << [&] (GoodBoy& g)
   {
+    BOOST_CHECK_EQUAL(g.i(), 3);
     beacon = true;
   };
   BOOST_CHECK(beacon);
@@ -55,7 +60,7 @@ BOOST_AUTO_TEST_CASE(exception)
   bool beacon = false;
   try
   {
-    elle::With<BadBoy>(42) << [&] (BadBoy& b)
+    elle::With<BadBoy>(42) << [&] ()
     {
       beacon = true;
     };
@@ -74,8 +79,9 @@ BOOST_AUTO_TEST_CASE(double_exception)
   bool beacon = false;
   try
   {
-    elle::With<BadBoy>(51) << [&] (BadBoy& b)
+    elle::With<BadBoy>(42) << [&] (BadBoy& b)
     {
+      b.i(51);
       beacon = true;
       throw 69;
     };
@@ -92,9 +98,9 @@ BOOST_AUTO_TEST_CASE(double_exception)
 BOOST_AUTO_TEST_CASE(value)
 {
   BOOST_CHECK_EQUAL(
-    elle::With<GoodBoy>() << [&] (GoodBoy&)
+    elle::With<GoodBoy>(1660) << [&] (GoodBoy& g)
     {
-      return 1664;
+      return g.i() + 4;
     },
     1664);
 }

@@ -29,6 +29,15 @@ namespace elle
     template <typename F>
     auto
     operator <<(F const& action) -> decltype(action(*(T*)(nullptr)));
+
+    template <typename F>
+    auto
+    operator <<(F const& action) -> decltype(action());
+
+  private:
+    template <typename F>
+    auto
+    _run(F const& action) -> decltype(action(*(T*)(nullptr)));
   };
 }
 
