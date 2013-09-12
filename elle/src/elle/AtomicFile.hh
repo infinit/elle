@@ -5,6 +5,7 @@
 
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
+# include <elle/With.hh>
 
 namespace elle
 {
@@ -82,18 +83,21 @@ namespace elle
     /// A read operation to an atomic file.
     class Read
     {
-    public:
+    private:
       /// Move a read operation.
       Read(Read&& source);
       /// Destruct a read operation.
       ///
       /// \post !this->owner->reading()
       ~Read();
-      /// The AtomicFile this operation runs on.
-      ELLE_ATTRIBUTE_R(AtomicFile*, owner);
+      /// Let With manage us.
+      friend class elle::With<Read>;
+    public:
       /// The stream to read content from.
       std::istream&
       stream();
+      /// The AtomicFile this operation runs on.
+      ELLE_ATTRIBUTE_R(AtomicFile*, owner);
     private:
       /// Create a Read for the given
       Read(AtomicFile* owner);
@@ -111,7 +115,7 @@ namespace elle
     /// \pre !this->reading()
     /// \pre !this->writing()
     /// \post this->reading()
-    Read
+    elle::With<Read>
     read() const;
     /// Whether the file is in read mode.
     ELLE_ATTRIBUTE_R(bool, reading);
@@ -123,7 +127,7 @@ namespace elle
     /// A write operation to an atomic file.
     class Write
     {
-    public:
+    private:
       /// Move a write operation.
       Write(Write&& source);
       /// Destruct a write operation, commiting the changes.
@@ -131,11 +135,14 @@ namespace elle
       /// \post !this->owner->exists()
       /// \post !this->owner->writing()
       ~Write() noexcept(false);
-      /// The AtomicFile this operation runs on.
-      ELLE_ATTRIBUTE_R(AtomicFile*, owner);
+      /// Let With manage us.
+      friend class elle::With<Write>;
+    public:
       /// The stream to write new content to.
       std::ostream&
       stream();
+      /// The AtomicFile this operation runs on.
+      ELLE_ATTRIBUTE_R(AtomicFile*, owner);
     private:
       /// Create a Write for the given
       Write(AtomicFile* owner);
@@ -154,7 +161,7 @@ namespace elle
     /// \pre !this->writing()
     /// \post this->exists()
     /// \post this->writing()
-    Write
+    elle::With<Write>
     write();
     /// Whether the file is in write mode.
     ELLE_ATTRIBUTE_R(bool, writing);

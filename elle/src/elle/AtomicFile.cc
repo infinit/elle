@@ -71,7 +71,7 @@ namespace elle
     return *this->_stream;
   }
 
-  AtomicFile::Read
+  elle::With<AtomicFile::Read>
   AtomicFile::read() const
   {
     ELLE_TRACE_SCOPE("%s: open for reading", *this);
@@ -79,8 +79,7 @@ namespace elle
     ELLE_ASSERT(!this->reading());
     ELLE_ASSERT(!this->writing());
     auto self = const_cast<AtomicFile*>(this);
-    Read read(self);
-    return std::move(read);
+    return elle::With<Read>(self);
   }
 
   /*--------.
@@ -117,15 +116,14 @@ namespace elle
     return *this->_stream;
   }
 
-  AtomicFile::Write
+  elle::With<AtomicFile::Write>
   AtomicFile::write()
   {
     ELLE_TRACE_SCOPE("%s: open for writing", *this);
     ELLE_ASSERT(!this->reading());
     ELLE_ASSERT(!this->writing());
     auto self = const_cast<AtomicFile*>(this);
-    Write write(self);
-    return std::move(write);
+    return elle::With<Write>(self);
   }
 
   /*------------.
