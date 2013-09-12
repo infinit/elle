@@ -21,7 +21,8 @@ namespace elle
       return;
     try
     {
-      this->_action();
+      ELLE_TRACE("%s: run action", *this)
+        this->_action();
     }
     catch (...)
     {
@@ -32,6 +33,7 @@ namespace elle
   void
   SafeFinally::abort()
   {
+    ELLE_TRACE("%s: abort", *this);
     this->_action = std::function<void()>();
   }
 
@@ -47,12 +49,14 @@ namespace elle
   {
     if (!this->_action)
       return;
-    this->_action();
+    ELLE_TRACE("%s: run action", *this)
+      this->_action();
   }
 
   void
   Finally::abort()
   {
+    ELLE_TRACE("%s: abort", *this);
     this->_action = std::function<void()>();
   }
 }
