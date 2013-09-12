@@ -52,6 +52,22 @@ private:
   bool _destructed;
 };
 
+class CheckDestruct
+{
+public:
+  CheckDestruct(bool& beacon):
+    _beacon(beacon)
+  {}
+
+  ~CheckDestruct()
+  {
+    this->_beacon = true;
+  }
+
+private:
+  ELLE_ATTRIBUTE(bool&, beacon);
+};
+
 BOOST_AUTO_TEST_CASE(normal)
 {
   bool beacon = false;
@@ -138,4 +154,11 @@ BOOST_AUTO_TEST_CASE(move)
     return;
   }
   BOOST_FAIL("should have thrown");
+}
+
+BOOST_AUTO_TEST_CASE(unused)
+{
+  bool beacon = false;
+  elle::With<CheckDestruct>{beacon};
+  BOOST_CHECK(beacon);
 }
