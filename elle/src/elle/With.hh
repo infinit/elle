@@ -18,6 +18,8 @@ namespace elle
   public:
     template <typename ... Args>
     With(Args&&... args);
+    With(With<T>&& model);
+    ~With();
   private:
     char _value[sizeof(T)];
     bool _used;

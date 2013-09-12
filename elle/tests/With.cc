@@ -26,22 +26,30 @@ private:
 
 class BadBoy
 {
-  public:
-    BadBoy(int i):
-      _i(i),
-      _destructed(false)
-    {}
+public:
+  BadBoy(int i):
+    _i(i),
+    _destructed(false)
+  {}
 
-    ~BadBoy() noexcept(false)
-    {
-      BOOST_CHECK(!this->_destructed);
-      this->_destructed = true;
+  BadBoy(BadBoy&& source):
+    _i(source._i),
+    _destructed(false)
+  {
+    source._i = 0;
+  }
+
+  ~BadBoy() noexcept(false)
+  {
+    BOOST_CHECK(!this->_destructed);
+    this->_destructed = true;
+    if (this->_i)
       throw this->_i;
-    }
+  }
 
-  private:
-    ELLE_ATTRIBUTE_RW(int, i);
-    bool _destructed;
+private:
+  ELLE_ATTRIBUTE_RW(int, i);
+  bool _destructed;
 };
 
 BOOST_AUTO_TEST_CASE(normal)
@@ -103,4 +111,31 @@ BOOST_AUTO_TEST_CASE(value)
       return g.i() + 4;
     },
     1664);
+}
+
+static
+elle::With<BadBoy>
+make_with(int i)
+{
+  return elle::With<BadBoy>(i);
+}
+
+BOOST_AUTO_TEST_CASE(move)
+{
+  bool beacon = false;
+  try
+  {
+    auto with = make_with(86);
+    with << [&]
+    {
+      beacon = true;
+    };
+  }
+  catch (int i)
+  {
+    BOOST_CHECK(beacon);
+    BOOST_CHECK_EQUAL(i, 86);
+    return;
+  }
+  BOOST_FAIL("should have thrown");
 }

@@ -19,9 +19,32 @@ namespace elle
     _used(false)
   {
     ELLE_LOG_COMPONENT("elle.With");
-
     ELLE_TRACE("%s: construct", *this)
       new (this->_value) T(std::forward<Args>(args)...);
+  }
+
+  template <typename T>
+  With<T>::With(With<T>&& value):
+    _used(value._used)
+  {
+    ELLE_LOG_COMPONENT("elle.With");
+    ELLE_TRACE("%s: construct by copy", *this)
+      new (this->_value) T(std::move(*reinterpret_cast<T*>(this->_value)));
+  }
+
+  template <typename T>
+  With<T>::~With()
+  {
+    if (!this->_used)
+      try
+      {
+        reinterpret_cast<T&>(this->_value).~T();
+      }
+      catch (...)
+      {
+        ELLE_ABORT("destructor of unused elle::With threw: %s",
+                   elle::exception_string());
+      }
   }
 
   /*--------.
