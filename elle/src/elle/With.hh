@@ -21,8 +21,9 @@ namespace elle
     With(With<T>&& model);
     ~With();
   private:
-    char _value[sizeof(T)];
+    char _data[sizeof(T)];
     bool _used;
+    T* _value;
 
   /*--------.
   | Running |

@@ -16,7 +16,8 @@ namespace elle
   template <typename T>
   template <typename ... Args>
   With<T>::With(Args&&... args):
-    _used(false)
+    _used(false),
+    _value(reinterpret_cast<T*>(this->_data))
   {
     ELLE_LOG_COMPONENT("elle.With");
     ELLE_TRACE("%s: construct", *this)
@@ -25,11 +26,12 @@ namespace elle
 
   template <typename T>
   With<T>::With(With<T>&& value):
-    _used(value._used)
+    _used(value._used),
+    _value(reinterpret_cast<T*>(this->_data))
   {
     ELLE_LOG_COMPONENT("elle.With");
     ELLE_TRACE("%s: construct by copy", *this)
-      new (this->_value) T(std::move(*reinterpret_cast<T*>(this->_value)));
+      new (this->_value) T(std::move(*this->_value));
   }
 
   template <typename T>
@@ -38,7 +40,7 @@ namespace elle
     if (!this->_used)
       try
       {
-        reinterpret_cast<T&>(this->_value).~T();
+        this->_value->~T();
       }
       catch (...)
       {
@@ -121,10 +123,10 @@ namespace elle
     bool succeeded = false;
     try
     {
-      ReturnHolder<Value> res(action, reinterpret_cast<T&>(this->_value));
+      ReturnHolder<Value> res(action, *this->_value);
       succeeded = true;
       ELLE_TRACE("%s: destruct", *this)
-        reinterpret_cast<T&>(this->_value).~T();
+        this->_value->~T();
       return res.value();
     }
     catch (...)
@@ -135,7 +137,7 @@ namespace elle
       try
       {
         ELLE_TRACE("%s: destruct", *this)
-          reinterpret_cast<T&>(this->_value).~T();
+          this->_value->~T();
       }
       catch (...)
       {
