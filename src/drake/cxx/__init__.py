@@ -499,6 +499,7 @@ class GccToolkit(Toolkit):
     Toolkit.__init__(self)
     self.arch = arch.x86
     self.os = os
+    self.__recursive_linkage = False
     try:
       version = drake.cmd_output([compiler, '--version'])
     except:
@@ -533,6 +534,9 @@ class GccToolkit(Toolkit):
             '\nInput:\n%s\nStderr:\n%s\n' % \
             (p.returncode, code, stderr))
     return stdout.decode("utf-8")
+
+  def enable_recursive_linkage(self, doit = True):
+      self.__recursive_linkage = doit
 
   def object_extension(self):
 
@@ -611,6 +615,8 @@ class GccToolkit(Toolkit):
               ['ranlib', str(lib.path())])
 
   def __libraries_flags(self, cfg, cmd):
+    if self.__recursive_linkage:
+      cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
       cmd.append('-l%s' % lib)
     # XXX Should refer to libraries with path on MacOS.
@@ -635,6 +641,8 @@ class GccToolkit(Toolkit):
                 break
           if not found:
             raise Exception('can\'t find static version of %s' % lib)
+    if self.__recursive_linkage:
+      cmd.append('-Wl,-)')
 
 
   def link(self, cfg, objs, exe):
