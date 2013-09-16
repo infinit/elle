@@ -694,6 +694,10 @@ def path_src(path):
         return path
     return srctree() / path_build(path)
 
+def path_root():
+    """The directory containing the root drakefile."""
+    return Path(_OS.getcwd())
+
 class _BaseNodeTypeType(type):
 
     node_types = {}
