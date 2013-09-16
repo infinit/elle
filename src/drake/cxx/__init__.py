@@ -683,6 +683,17 @@ class GccToolkit(Toolkit):
 
       return Path(path)
 
+  def rpath_set_command(self, binary, path):
+    path = self.rpath(path)
+    if self.os is drake.os.macos:
+      return ['install_name_tool',
+              '-add_rpath', str(path),
+              str(binary)]
+    else:
+      return ['patchelf',
+              '--set-rpath', str(path),
+              str(binary)]
+
   def rpath(self, path):
     path = drake.Path(path)
     if not path.absolute():
