@@ -65,15 +65,16 @@ namespace reactor
                  }));
 
     auto it = begin(this->_threads);
-    for (; it != end(this->_threads); ++it)
+    while (it != end(this->_threads))
     {
       auto* t = *it;
-
       if (t->state() == Thread::State::done)
       {
         delete t;
         it = this->_threads.erase(it);
       }
+      else
+        ++it;
     }
   }
 
