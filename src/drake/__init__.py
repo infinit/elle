@@ -514,14 +514,16 @@ class Path(object):
         """
         if (not isinstance(rhs, Path)):
             rhs = Path(rhs)
-        if self.__path[0:len(rhs.__path)] != rhs.__path:
-            # FIXME: naive if rhs contains some '..'
-            self.__path = ['..'] * len(rhs) + self.__path
-        else:
-            self.__path = self.__path[len(rhs.__path):]
-            if not self.__path:
-                self.__path = ['.']
-            self.__absolute = self.__path[0] == ''
+        rhs = list(rhs.__path)
+        path = self.__path
+        while len(rhs) and len(path) and path[0] == rhs[0]:
+          rhs = rhs[1:]
+          path = path[1:]
+        # FIXME: naive if rhs contains some '..'
+        self.__path = ['..'] * len(rhs) + path
+        if not self.__path:
+          self.__path = ['.']
+        self.__absolute = self.__path[0] == ''
 
     def __len__(self):
         return len(self.__path)
