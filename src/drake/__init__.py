@@ -2980,3 +2980,28 @@ class HTTPDownload(Builder):
     with open(str(self.__dest.path()), 'wb') as f:
       f.write(content)
     return True
+
+
+class TarballExtractor(Builder):
+
+  def __init__(self, tarball, targets = []):
+    self.__tarball = tarball
+    import tarfile
+    directory = self.__tarball.name().dirname()
+    self.__targets = [node(self.__tarball.name().dirname() / target)
+                      for target in targets]
+    # targets = []
+    # with tarfile.open(str(self.__tarball.path()), 'r') as f:
+    #   for name in f.getnames():
+    #     targets.append(directory / name)
+    # for target in targets:
+    #   print(target)
+    # self.__targets = nodes(*targets)
+    Builder.__init__(self, [tarball], self.__targets)
+
+  def execute(self):
+    import tarfile
+    self.output('Extract %s' % self.__tarball)
+    with tarfile.open(str(self.__tarball.path()), 'r') as f:
+      f.extractall(str(self.__tarball.path().dirname()))
+    return True
