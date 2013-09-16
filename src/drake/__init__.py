@@ -2949,3 +2949,34 @@ class TestSuite(Rule):
 
   def __str__(self):
     return 'Test suite %s' % self.name()
+
+
+class HTTPDownload(Builder):
+
+  def __init__(self, url, dest, fingerprint = None):
+    self.__url = url
+    self.__dest = dest
+    self.__fingerprint = fingerprint
+    Builder.__init__(self, [], [self.__dest])
+
+  def execute(self):
+    self.output('Download %s to %s' % (self.__url, self.__dest),
+                'Download %s' % self.__dest)
+    import httplib2
+    h = httplib2.Http()
+    resp, content = h.request(self.__url, "GET")
+    status = resp['status']
+    if status != '200':
+      print('download failed with status %s' % status,
+            file = sys.stderr)
+      return False
+    if self.__fingerprint is not None:
+      import hashlib
+      d = hashlib.md5()
+      d.update(content)
+      if d.hexdigest() != self.__fingerprint:
+        print('checksum failed', file = sys.stderr)
+        return False
+    with open(str(self.__dest.path()), 'wb') as f:
+      f.write(content)
+    return True
