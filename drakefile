@@ -1,5 +1,7 @@
 import drake
 import drake.cxx
+import os
+import sys
 
 config = None
 elle_dynamic = None
@@ -16,7 +18,6 @@ curly_asio_dynamic = None
 curly_asio_static = None
 curly_sched_dynamic = None
 curly_sched_static = None
-asio_fs = None
 asio_udt = None
 rule_check = None
 rule_tests = None
@@ -24,11 +25,8 @@ rule_tests = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               boost = None,
-              curl = None,
-              openssl = None,
               enable_rotation = False,
               dopenssl = None,
-              stuntman = None,
               prefix = '/usr',
               valgrind = None):
 
@@ -36,9 +34,11 @@ def configure(cxx_toolkit = None,
   global elle_dynamic, elle_static
   global cryptography_dynamic, cryptography_static
   global reactor, reactor_dynamic, reactor_static
-  global asio_fs, asio_udt, curly, curly_dynamic, curly_static, \
-          curly_asio_dynamic, curly_asio_static, curly_sched_dynamic, \
-          curly_sched_static
+  global asio_udt, curly, curly_dynamic, curly_static, \
+    curly_asio_dynamic, curly_asio_static, curly_sched_dynamic, \
+    curly_sched_static
+
+  cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
@@ -59,13 +59,11 @@ def configure(cxx_toolkit = None,
                        cxx_toolkit = cxx_toolkit,
                        cxx_config = cxx_config,
                        boost = boost,
-                       curl = curl,
                        prefix = prefix,
                        valgrind = valgrind)
   cryptography = drake.include('cryptography',
                                cxx_toolkit = cxx_toolkit,
                                cxx_config = cxx_config,
-                               openssl = openssl,
                                enable_rotation = enable_rotation,
                                dopenssl = dopenssl,
                                boost = boost,
@@ -77,18 +75,21 @@ def configure(cxx_toolkit = None,
                           cxx_config = cxx_config,
                           boost = boost,
                           elle = elle,
-                          stuntman = stuntman,
                           prefix = prefix,
                           valgrind = valgrind)
-  curly = drake.include('curly',
-                        cxx_toolkit = cxx_toolkit,
-                        cxx_config = cxx_config,
-                        boost = boost,
-                        elle = elle,
-                        curl = curl,
-                        reactor = reactor,
-                        prefix = prefix,
-                        valgrind = valgrind)
+  curly = drake.include(
+    'curly',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    boost = boost,
+    elle = elle,
+    curl = None,
+    reactor = reactor,
+    prefix = prefix,
+    valgrind = valgrind,
+    openssl = cryptography.openssl_prefix,
+    openssl_libs = cryptography.openssl_libs,
+  )
 
   config = drake.cxx.Config()
   config += elle.config
@@ -105,7 +106,6 @@ def configure(cxx_toolkit = None,
   reactor_dynamic = reactor.lib_dynamic
   reactor_static = reactor.lib_static
 
-  asio_fs = reactor.asio_fs_lib
   asio_udt = reactor.asio_udt_lib
 
   curly_dynamic = curly.lib_dynamic

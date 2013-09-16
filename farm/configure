@@ -45,6 +45,7 @@ sys.path.insert(
 
 import drake
 import drake.cxx
+import drake.cxx.boost
 
 cxx_toolkit = drake.cxx.GccToolkit()
 cxx_config = drake.cxx.Config()
@@ -56,7 +57,9 @@ cxx_config.flag('-m64')
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
 
-drake.run('../%s', cxx_toolkit, cxx_config)
+boost = drake.cxx.boost.Boost(prefix='%%s/local' %% os.environ['HOME'])
+
+drake.run('../%s', cxx_toolkit, cxx_config, boost = boost)
 """
 
 

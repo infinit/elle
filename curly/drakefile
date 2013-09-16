@@ -1,3 +1,5 @@
+import os
+
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -24,29 +26,95 @@ def configure(cxx_toolkit = None,
               elle = None,
               curl = None,
               reactor = None,
+              openssl = None,
+              openssl_libs = None,
               prefix = '/usr',
               valgrind = None):
 
-  global config, lib_static, lib_dynamic, lib_sched_static, lib_sched_dynamic,\
-          lib_asio_dynamic, lib_asio_dynamic, rule_build, rule_install
+  global config
+  global lib_static, lib_dynamic
+  global lib_sched_static, lib_sched_dynamic
+  global lib_asio_dynamic, lib_asio_dynamic
+  global rule_build, rule_install
+
+  with open(str(drake.path_src('../drake-utils.py')), 'r') as f:
+    exec(f.read(), globals(), globals())
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
-  # Libraries
+  # Boost
   boost = boost or drake.cxx.boost.Boost()
-  curl = drake.cxx.find_library(token = 'curl/curl.h',
-                                prefix = curl)
+
+  # Curl
+  curl_basename = 'curl-7.30.0'
+  curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
+  curl_root = drake.Path('curl') / curl_basename
+  curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
+  drake.HTTPDownload(curl_url, curl_tarball,
+                     fingerprint = '60bb6ff558415b73ba2f00163fd307c5')
+  drake.TarballExtractor(
+    curl_tarball,
+    targets =
+    [
+      'curl-7.30.0/configure',
+      'curl-7.30.0/include/curl/typecheck-gcc.h',
+      'curl-7.30.0/include/curl/stdcheaders.h',
+      'curl-7.30.0/include/curl/easy.h',
+      'curl-7.30.0/include/curl/mprintf.h',
+      'curl-7.30.0/include/curl/curl.h',
+      'curl-7.30.0/include/curl/curlver.h',
+      'curl-7.30.0/include/curl/multi.h',
+      'curl-7.30.0/include/curl/curlbuild.h',
+      'curl-7.30.0/include/curl/curlrules.h',
+    ])
+  curl_configure = drake.node(curl_root / 'configure')
+  from drake.cxx import DynLib
+  curl_lib = DynLib('curl/lib/libcurl.so.4', lib_name = 'curl')
+  openssl_libs = drake.copy(openssl_libs, 'lib',
+                            openssl_libs[0].name().dirname())
+  # print(openssl_libs[0].path())
+  # print(openssl_libs[0].path().dirname())
+  openssl_prefix = drake.path_root() / openssl
+  GNUBuilder(cxx_toolkit,
+             curl_configure,
+             [curl_lib],
+             args = [
+               '--prefix=%s/%s' % (os.getcwd(),
+                                   drake.path_build('curl')),
+               '--with-ssl=%s' % openssl_prefix,
+               '--enable-hidden-symbols',
+               '--enable-optimize',
+               '--enable-warnings',
+               '--enable-threaded-resolver',
+               '--disable-static',
+               '--disable-ldap',
+               '--disable-ldaps',
+               '--disable-rtmp',
+               '--disable-sspi',
+               '--disable-ssh',
+               '--disable-rtsp',
+               '--with-gssapi',
+               '--without-libidn',
+               # So curl links its curl binary with the right SSL.
+               'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'),
+             ],
+             sources = openssl_libs)
+  curl_lib = drake.copy(curl_lib, '.', 'curl')
+  curl_config = drake.cxx.Config()
+  curl_config.add_local_include_path(curl_root / 'include')
+
   elle = elle or drake.include('../elle')
+  elle_lib = drake.copy(elle.lib_dynamic, 'lib',
+                        elle.lib_dynamic.name().dirname())
 
   # Global Configuration
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('.')
   config.lib_path('lib')
-  config += curl
+  config += curl_config
   config += boost.config()
-  config.lib('curl')
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config or drake.cxx.Config())
@@ -66,8 +134,12 @@ def configure(cxx_toolkit = None,
     'curly/curly.hxx',
   )
 
-  lib_static = drake.cxx.StaticLib('lib/curly', sources, cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('lib/curly', sources, cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('lib/curly',
+                                   sources + [curl_lib],
+                                   cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/curly',
+                                 sources + [curl_lib],
+                                 cxx_toolkit, cxx_config)
 
   # Local Configuration Asio
   cxx_config_asio = drake.cxx.Config(cxx_config)
@@ -93,6 +165,8 @@ def configure(cxx_toolkit = None,
   cxx_config_sched = drake.cxx.Config(cxx_config_asio)
   cxx_config_sched += cxx_config_asio
   cxx_config_sched += reactor.config
+  reactor_lib = drake.copy(reactor.lib_dynamic, 'lib',
+                           reactor.lib_dynamic.name().dirname())
 
   source_sched = drake.nodes(
       'curly/curly_sched.cc',
@@ -137,22 +211,19 @@ def configure(cxx_toolkit = None,
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
   for test in tests_sched:
-    import os
     cxx_config_tests = drake.cxx.Config(cxx_config)
     cxx_config_tests += reactor.config
-    cxx_config_tests.lib_path_runtime('../../../lib/')
-    cxx_config_tests.lib_path_runtime('../../reactor/lib/')
     cxx_config_tests.lib_path_runtime('../lib')
-    cxx_config_tests.lib('curly')
-    cxx_config_tests.lib('curly_asio')
-    cxx_config_tests.lib('curly_sched')
     cxx_config_tests += boost.config_test()
     name, ext = os.path.splitext(os.path.basename(test.sources))
     bin_path = drake.Path('tests/%s' % name)
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(test.sources) +
-                               [lib_dynamic, lib_sched_dynamic,
-                                   reactor.lib_dynamic, elle.lib_dynamic],
+                               [lib_dynamic,
+                                lib_asio_dynamic,
+                                lib_sched_dynamic,
+                                reactor_lib, elle_lib,
+                                curl_lib],
                                cxx_toolkit, cxx_config_tests)
     rule_tests << bin
     if valgrind is not None:

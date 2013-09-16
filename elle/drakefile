@@ -16,7 +16,6 @@ rule_tests = None
 def configure(cxx_toolkit = None,
               cxx_config = None,
               boost = None,
-              curl = None,
               enable_tests = True,
               prefix = '/usr',
               valgrind = None):
@@ -57,11 +56,6 @@ def configure(cxx_toolkit = None,
   # XXX[for fuse only]
   if cxx_toolkit.os == drake.os.macos:
     config.define('HAVE_STATFS')
-
-  # Curl
-  # curl = drake.cxx.find_library('curl/curl.h', curl)
-  # cxx_config += curl
-  # cxx_config.lib('curl')
 
   cxx_config = cxx_config + config
 

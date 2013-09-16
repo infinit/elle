@@ -1,3 +1,5 @@
+import os
+
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -6,6 +8,10 @@ import drake.valgrind
 config = None
 lib_static = None
 lib_dynamic = None
+
+openssl_config = None
+openssl_libs = None
+openssl_prefix = None
 
 rule_build = None
 rule_check = None
@@ -22,14 +28,128 @@ def configure(cxx_toolkit = None,
               prefix = '/usr',
               valgrind = None):
 
-  global config, lib_static, lib_dynamic, rule_build, rule_install
+  global config
+  global lib_static, lib_dynamic
+  global openssl_config, openssl_libs, openssl_prefix
+  global rule_build, rule_install
+
+  with open(str(drake.path_src('../drake-utils.py')), 'r') as f:
+    exec(f.read(), globals(), globals())
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
-  # Libraries
-  openssl = drake.cxx.find_library(token = 'openssl/opensslconf.h',
-                                   prefix = openssl)
+  # OpenSSL
+  openssl_basename = 'openssl-1.0.1c'
+  openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
+  openssl_root = drake.Path('openssl') / openssl_basename
+  openssl_url = 'http://openssl.org/source/%s.tar.gz'% openssl_basename
+  drake.HTTPDownload(openssl_url, openssl_tarball,
+                     fingerprint = 'ae412727c8c15b67880aef7bd2999b2e')
+  drake.TarballExtractor(
+    openssl_tarball,
+    targets =
+    [
+      'openssl-1.0.1c/config',
+      'openssl-1.0.1c/include/openssl/aes.h',
+      'openssl-1.0.1c/include/openssl/asn1.h',
+      'openssl-1.0.1c/include/openssl/asn1_mac.h',
+      'openssl-1.0.1c/include/openssl/asn1t.h',
+      'openssl-1.0.1c/include/openssl/bio.h',
+      'openssl-1.0.1c/include/openssl/blowfish.h',
+      'openssl-1.0.1c/include/openssl/bn.h',
+      'openssl-1.0.1c/include/openssl/buffer.h',
+      'openssl-1.0.1c/include/openssl/camellia.h',
+      'openssl-1.0.1c/include/openssl/cast.h',
+      'openssl-1.0.1c/include/openssl/cmac.h',
+      'openssl-1.0.1c/include/openssl/cms.h',
+      'openssl-1.0.1c/include/openssl/comp.h',
+      'openssl-1.0.1c/include/openssl/conf_api.h',
+      'openssl-1.0.1c/include/openssl/conf.h',
+      'openssl-1.0.1c/include/openssl/crypto.h',
+      'openssl-1.0.1c/include/openssl/des.h',
+      'openssl-1.0.1c/include/openssl/des_old.h',
+      'openssl-1.0.1c/include/openssl/dh.h',
+      'openssl-1.0.1c/include/openssl/dsa.h',
+      'openssl-1.0.1c/include/openssl/dso.h',
+      'openssl-1.0.1c/include/openssl/dtls1.h',
+      'openssl-1.0.1c/include/openssl/ebcdic.h',
+      'openssl-1.0.1c/include/openssl/ecdh.h',
+      'openssl-1.0.1c/include/openssl/ecdsa.h',
+      'openssl-1.0.1c/include/openssl/ec.h',
+      'openssl-1.0.1c/include/openssl/engine.h',
+      'openssl-1.0.1c/include/openssl/e_os2.h',
+      'openssl-1.0.1c/include/openssl/err.h',
+      'openssl-1.0.1c/include/openssl/evp.h',
+      'openssl-1.0.1c/include/openssl/hmac.h',
+      'openssl-1.0.1c/include/openssl/idea.h',
+      'openssl-1.0.1c/include/openssl/krb5_asn.h',
+      'openssl-1.0.1c/include/openssl/kssl.h',
+      'openssl-1.0.1c/include/openssl/lhash.h',
+      'openssl-1.0.1c/include/openssl/md4.h',
+      'openssl-1.0.1c/include/openssl/md5.h',
+      'openssl-1.0.1c/include/openssl/mdc2.h',
+      'openssl-1.0.1c/include/openssl/modes.h',
+      'openssl-1.0.1c/include/openssl/objects.h',
+      'openssl-1.0.1c/include/openssl/obj_mac.h',
+      'openssl-1.0.1c/include/openssl/ocsp.h',
+      'openssl-1.0.1c/include/openssl/opensslconf.h',
+      'openssl-1.0.1c/include/openssl/opensslv.h',
+      'openssl-1.0.1c/include/openssl/ossl_typ.h',
+      'openssl-1.0.1c/include/openssl/pem2.h',
+      'openssl-1.0.1c/include/openssl/pem.h',
+      'openssl-1.0.1c/include/openssl/pkcs12.h',
+      'openssl-1.0.1c/include/openssl/pkcs7.h',
+      'openssl-1.0.1c/include/openssl/pqueue.h',
+      'openssl-1.0.1c/include/openssl/rand.h',
+      'openssl-1.0.1c/include/openssl/rc2.h',
+      'openssl-1.0.1c/include/openssl/rc4.h',
+      'openssl-1.0.1c/include/openssl/ripemd.h',
+      'openssl-1.0.1c/include/openssl/rsa.h',
+      'openssl-1.0.1c/include/openssl/safestack.h',
+      'openssl-1.0.1c/include/openssl/seed.h',
+      'openssl-1.0.1c/include/openssl/sha.h',
+      'openssl-1.0.1c/include/openssl/srp.h',
+      'openssl-1.0.1c/include/openssl/srtp.h',
+      'openssl-1.0.1c/include/openssl/ssl23.h',
+      'openssl-1.0.1c/include/openssl/ssl2.h',
+      'openssl-1.0.1c/include/openssl/ssl3.h',
+      'openssl-1.0.1c/include/openssl/ssl.h',
+      'openssl-1.0.1c/include/openssl/stack.h',
+      'openssl-1.0.1c/include/openssl/symhacks.h',
+      'openssl-1.0.1c/include/openssl/tls1.h',
+      'openssl-1.0.1c/include/openssl/ts.h',
+      'openssl-1.0.1c/include/openssl/txt_db.h',
+      'openssl-1.0.1c/include/openssl/ui_compat.h',
+      'openssl-1.0.1c/include/openssl/ui.h',
+      'openssl-1.0.1c/include/openssl/whrlpool.h',
+      'openssl-1.0.1c/include/openssl/x509.h',
+      'openssl-1.0.1c/include/openssl/x509v3.h',
+      'openssl-1.0.1c/include/openssl/x509_vfy.h',
+    ])
+  openssl_configure = drake.node(openssl_root / 'config')
+  from drake.cxx import DynLib
+  openssl_lib_ssl = DynLib('openssl/lib/libssl.so.1.0.0',
+                           lib_name = 'ssl')
+  openssl_lib_crypto = DynLib('openssl/lib/libcrypto.so.1.0.0',
+                              lib_name = 'crypto')
+  openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
+  openssl_prefix = drake.path_build('openssl')
+  GNUBuilder(cxx_toolkit,
+             openssl_configure,
+             openssl_libs,
+             args = [
+               '--prefix=%s/%s' % (os.getcwd(), openssl_prefix),
+               'shared',
+               'no-asm',
+               '-DPURIFY',
+             ])
+  openssl_libs = drake.copy(openssl_libs, '.', 'openssl')
+  openssl_config = drake.cxx.Config()
+  openssl_config.add_local_include_path(openssl_root / 'include')
+  # Not needed since we use the nodes directly
+  # openssl_config.lib_path('openssl/lib')
+
   if enable_rotation:
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
@@ -47,7 +167,7 @@ def configure(cxx_toolkit = None,
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('sources')
   config.lib_path('lib')
-  config += openssl
+  config += openssl_config
   if enable_rotation:
     config += dopenssl
 
@@ -137,16 +257,18 @@ def configure(cxx_toolkit = None,
       )
 
   cxx_config_lib = drake.cxx.Config(cxx_config)
-  cxx_config_lib.lib('crypto')
-  cxx_config_lib.lib('ssl')
   if enable_rotation:
     cxx_config.lib('dopenssl')
   cxx_config_lib.lib_path_runtime('.')
 
-  lib_static = drake.cxx.StaticLib(
-    'lib/cryptography', sources, cxx_toolkit, cxx_config_lib)
-  lib_dynamic = drake.cxx.DynLib(
-    'lib/cryptography', sources, cxx_toolkit, cxx_config_lib)
+  lib_static = drake.cxx.StaticLib('lib/cryptography',
+                                   sources + openssl_libs,
+                                   cxx_toolkit,
+                                   cxx_config_lib)
+  lib_dynamic = drake.cxx.DynLib('lib/cryptography',
+                                 sources + openssl_libs,
+                                 cxx_toolkit,
+                                 cxx_config_lib)
 
   # Build
   rule_build = drake.Rule('build')
@@ -173,7 +295,7 @@ def configure(cxx_toolkit = None,
   tests_cxx_config += config
   tests_cxx_config += boost.config()
   tests_cxx_config += boost.config_test()
-  tests_cxx_config += openssl
+  tests_cxx_config += openssl_config
   if enable_rotation:
     tests_cxx_config += dopenssl
   tests_cxx_config += elle.config
@@ -182,7 +304,6 @@ def configure(cxx_toolkit = None,
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
   for test in tests:
-    import os
     config_test = drake.cxx.Config(tests_cxx_config)
     config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
     # FIXME: this is the path to libelle, but it's kinda hardcoded
