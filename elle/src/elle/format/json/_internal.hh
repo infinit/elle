@@ -23,7 +23,7 @@ namespace elle
         ///
 
         typedef bool                                      Bool;
-        typedef int32_t                                   Integer;
+        typedef int64_t                                   Integer;
         typedef double                                    Float;
         typedef std::string                               String;
         typedef std::vector<Object*>                      Array;
