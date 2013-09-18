@@ -998,10 +998,6 @@ class Linker(Builder):
     self.exe = exe
     self.toolkit = tk
     self.config = drake.cxx.Config(cfg)
-    for lib in exe.dynamic_libraries:
-      path = drake.Path(lib.name())
-      self.config.lib_path(path.dirname())
-      self.config.lib(lib.lib_name)
     Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
 
   def execute(self):
@@ -1009,9 +1005,11 @@ class Linker(Builder):
 
   @property
   def command(self):
-    return self.toolkit.link(self.config,
-                             self.exe.sources + list(self.sources_dynamic()),
-                             self.exe)
+    objects = self.exe.sources + self.exe.dynamic_libraries
+    return self.toolkit.link(
+        self.config,
+        objects + list(self.sources_dynamic()),
+        self.exe)
 
   def __repr__(self):
     return 'Linker(%s)' % self.exe
@@ -1033,11 +1031,9 @@ class DynLibLinker(Builder):
     self.toolkit = tk
     self.config = Config(cfg)
     self.__library = lib
-    for sublib in self.lib.dynamic_libraries:
-      self.config.lib_path(sublib.path().dirname())
-      self.config.lib(sublib.lib_name)
     # This duplicates self.__sources, but preserves the order.
     self.__objects = lib.sources
+    self.__dynamic_libraries = lib.dynamic_libraries
     Builder.__init__(self,
                      self.__objects + lib.dynamic_libraries,
                      [lib])
@@ -1047,9 +1043,10 @@ class DynLibLinker(Builder):
 
   @property
   def command(self):
+    objects = self.__objects + self.__dynamic_libraries
     return self.toolkit.dynlink(
         self.config,
-        self.__objects + list(self.sources_dynamic()),
+        objects + list(self.sources_dynamic()),
         self.lib)
 
   def __repr__(self):
