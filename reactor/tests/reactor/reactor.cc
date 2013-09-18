@@ -382,15 +382,17 @@ namespace scope
             "1",
             [&]
             {
-              try
               {
-                reactor::yield();
-                reactor::yield();
-              }
-              catch (...)
-              {
-                beacon = true;
-                throw;
+                try
+                {
+                  reactor::yield();
+                  reactor::yield();
+                }
+                catch (...)
+                {
+                  beacon = true;
+                  throw;
+                }
               }
               BOOST_FAIL("should have been killed");
             });
@@ -423,17 +425,19 @@ namespace scope
             "1",
             [&]
             {
-              try
               {
-                ready.open();
-                reactor::sleep(1_sec);
-                BOOST_FAIL("should have been killed");
-              }
-              catch (...)
-              {
-                t.terminate();
-                reactor::sleep(1_sec);
-                throw;
+                try
+                {
+                  ready.open();
+                  reactor::sleep(1_sec);
+                  BOOST_FAIL("should have been killed");
+                }
+                catch (...)
+                {
+                  t.terminate();
+                  reactor::sleep(1_sec);
+                  throw;
+                }
               }
             });
           ready.wait();
