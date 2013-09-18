@@ -28,6 +28,7 @@ class Boost(drake.Configuration):
     'regex': 'boost_regex',
     'program': 'boost_program_options',
     'chrono': 'boost_chrono',
+    'iostreams': 'boost_iostreams',
     }
 
   def __init__(self,
