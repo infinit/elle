@@ -177,7 +177,6 @@ def configure(cxx_toolkit = None,
   if enable_rotation:
     tests_cxx_config += dopenssl
   tests_cxx_config += elle.config
-  tests_cxx_config.lib('crypto') # Some test require bignum.
 
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
@@ -190,9 +189,11 @@ def configure(cxx_toolkit = None,
     config_test.lib_path_runtime('%s../../../elle/lib' % ('../' * test.count('/')))
     path = drake.Path('tests/cryptography/%s' % test)
     bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
-    bin = drake.cxx.Executable(bin_path,
-                               drake.nodes(path) +
-                               [lib_dynamic, elle.lib_dynamic],
+    sources = drake.nodes(path)
+    sources.append(lib_dynamic)
+    sources.append(elle.lib_dynamic)
+    sources.append(openssl_lib_crypto) # Some tests use BIGNUM
+    bin = drake.cxx.Executable(bin_path, sources,
                                cxx_toolkit, config_test)
     rule_tests << bin
     if valgrind is not None:
