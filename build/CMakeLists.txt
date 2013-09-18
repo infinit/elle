@@ -57,7 +57,7 @@ ENDIF()
 # Requirements
 #########################
 IF(NOT Boost_INCLUDE_DIR)
-  FIND_PACKAGE(Boost 1.34 REQUIRED COMPONENTS system)
+  FIND_PACKAGE(Boost 1.34 REQUIRED COMPONENTS system thread)
 
   STRING(REPLACE "boost_system" "boost_thread" Boost_THREAD_LIBRARY ${Boost_SYSTEM_LIBRARY})
   STRING(REPLACE "boost_system" "boost_thread" Boost_THREAD_LIBRARY_DEBUG ${Boost_SYSTEM_LIBRARY_DEBUG})
