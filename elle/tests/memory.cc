@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(make_unique)
 BOOST_AUTO_TEST_CASE(generic_unique_ptr)
 {
   elle::generic_unique_ptr<int> empty();
-  elle::generic_unique_ptr<int> null(nullptr_t());
+  elle::generic_unique_ptr<int> null(nullptr);
   elle::generic_unique_ptr<int> simple(new int);
   elle::generic_unique_ptr<int> array(new int[10],
                                       std::function<void (int*)>(
