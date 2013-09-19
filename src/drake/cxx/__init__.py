@@ -651,7 +651,8 @@ class GccToolkit(Toolkit):
         cmd += ['-undefined', 'dynamic_lookup',
                 '-Wl,-install_name,@rpath/%s' % exe.path().basename(),
                 '-Wl,-headerpad_max_install_names']
-      cmd.append('-Wl,-soname,%s' % exe.name().basename())
+      if self.os is drake.os.linux:
+        cmd.append('-Wl,-soname,%s' % exe.name().basename())
       for obj in objs:
           cmd.append(obj.path())
       cmd += ['-shared', '-o', exe.path()]
