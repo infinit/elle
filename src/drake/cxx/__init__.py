@@ -575,6 +575,10 @@ class GccToolkit(Toolkit):
       if cfg.warnings:
           res.append('-Wall')
       for warning, enable in cfg.warnings:
+        if self.__kind is GccToolkit.Kind.gcc and warning in [
+            'mismatched-tags',
+        ]:
+            continue
         if enable is None:
           pass
         elif enable is Config.Warnings.Error:
