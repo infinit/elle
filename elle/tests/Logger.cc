@@ -3,30 +3,18 @@
 #include <sstream>
 #include <thread>
 
-#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
-#include <elle/log/Logger.cc>
+#include <elle/log/Logger.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
 #include <elle/os/getenv.hh>
 #include <elle/os/setenv.hh>
 #include <elle/os/unsetenv.hh>
-
-static
-void
-plain_indent_test()
-{
-  elle::log::PlainIndentation indenter;
-  indenter.indent();
-  indenter.indent();
-  BOOST_CHECK_EQUAL(indenter.indentation(), 2);
-  indenter.unindent();
-  BOOST_CHECK_EQUAL(indenter.indentation(), 1);
-}
 
 static
 void
@@ -309,10 +297,6 @@ static
 bool
 test_suite()
 {
-  boost::unit_test::test_suite* indentation = BOOST_TEST_SUITE("Indentation");
-  boost::unit_test::framework::master_test_suite().add(indentation);
-  indentation->add(BOOST_TEST_CASE(std::bind(plain_indent_test)));
-
   boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
   boost::unit_test::framework::master_test_suite().add(logger);
   logger->add(BOOST_TEST_CASE(message_test));
