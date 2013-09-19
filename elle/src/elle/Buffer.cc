@@ -438,7 +438,7 @@ namespace elle
 
   template <typename BufferType>
   void
-  InputStreamBuffer<BufferType>::flush(Size size)
+  InputStreamBuffer<BufferType>::flush(Size)
   {
     throw Exception("the buffer is in input mode");
   }
