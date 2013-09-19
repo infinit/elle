@@ -5,6 +5,11 @@
 # include <string>
 # include <unordered_set>
 
+# include <boost/multi_index_container.hpp>
+# include <boost/multi_index/hashed_index.hpp>
+# include <boost/multi_index/identity.hpp>
+# include <boost/multi_index/sequenced_index.hpp>
+
 # include <elle/Printable.hh>
 # include <elle/attribute.hh>
 
@@ -44,8 +49,18 @@ namespace reactor
     `------------*/
     private:
       friend class Transition;
-      ELLE_ATTRIBUTE_R(std::unordered_set<Transition*>, transitions_out);
-      ELLE_ATTRIBUTE_R(std::unordered_set<Transition*>, transitions_in);
+
+    public:
+      typedef boost::multi_index::multi_index_container<
+        Transition*,
+      boost::multi_index::indexed_by<
+        boost::multi_index::hashed_unique<boost::multi_index::identity<Transition*>>,
+        boost::multi_index::sequenced<>
+        >
+      > Transitions;
+
+      ELLE_ATTRIBUTE_R(Transitions, transitions_out);
+      ELLE_ATTRIBUTE_R(Transitions, transitions_in);
 
     /*----------.
     | Execution |

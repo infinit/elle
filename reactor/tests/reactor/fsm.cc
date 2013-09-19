@@ -46,10 +46,18 @@ test_model()
   BOOST_CHECK_EQUAL(m.start(), &s1);
   BOOST_CHECK_EQUAL(s1.transitions_out().size(), 1);
   BOOST_CHECK_EQUAL(s1.transitions_in().size(), 0);
-  BOOST_CHECK(contains(s1.transitions_out(), &t));
+
+  BOOST_CHECK(std::find(s1.transitions_out().begin(),
+                        s1.transitions_out().end(),
+                        &t) != s1.transitions_out().end());
+
   BOOST_CHECK_EQUAL(s2.transitions_out().size(), 0);
   BOOST_CHECK_EQUAL(s2.transitions_in().size(), 1);
-  BOOST_CHECK(contains(s2.transitions_in(), &t));
+
+  BOOST_CHECK(std::find(s2.transitions_in().begin(),
+                        s2.transitions_in().end(),
+                        &t) != s2.transitions_in().end());
+
 }
 
 static
@@ -319,6 +327,105 @@ test_run_two_transitions_triggered(bool order)
 
 static
 void
+test_recursive_state()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  int beacon1 = 0;
+  bool beacon2 = false;
+
+  State& s1 = m.state_make("start", [&] () { ++beacon1;
+                                             if(beacon1 == 10)
+                                               throw BeaconException(); });
+  State& end = m.state_make("end", [&] () { beacon2 = true; });
+
+  m.transition_add_catch(s1, end);
+  m.transition_add(s1, s1);
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+
+  sched.run();
+  BOOST_CHECK_EQUAL(beacon1, 10);
+  BOOST_CHECK(beacon2);
+}
+
+static
+void
+test_circular()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  int beacon1 = 0;
+  int beacon2 = 0;
+  int beacon3 = 0;
+  bool beacon4 = true;
+
+  State& s1 = m.state_make("start", [&] () { ++beacon1; });
+  State& s2 = m.state_make("s2", [&] () { ++beacon2; });
+  State& s3 = m.state_make("s3", [&] () { ++beacon3;
+                                          if(beacon3 == 3)
+                                            throw BeaconException(); });
+  State& end = m.state_make("end", [&] () { beacon4 = true; });
+
+  m.transition_add(s1, s2);
+  m.transition_add(s2, s3);
+  m.transition_add(s3, s1);
+  m.transition_add_catch(s3, end);
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+
+  sched.run();
+  BOOST_CHECK_EQUAL(beacon1, 3);
+  BOOST_CHECK_EQUAL(beacon2, 3);
+  BOOST_CHECK_EQUAL(beacon3, 3);
+  BOOST_CHECK(beacon4);
+}
+
+// FIFT stands for First In, First Triggered.
+static
+void
+test_FIFT()
+{
+  reactor::Scheduler sched;
+  Machine m;
+
+  bool beacon1 = false;
+  bool beacon2 = false;
+
+  State& s1 = m.state_make("start", [&] () { beacon1 = true; });
+  State& s2 = m.state_make("end", [&] () { beacon2 = true; });
+  State& forbidden1 = m.state_make("forbidden1",
+                                  [&] ()
+                                  {
+                                    BOOST_CHECK(false);
+                                  });
+  State& forbidden2 = m.state_make("forbidden2",
+                                  [&] ()
+                                  {
+                                    BOOST_CHECK(false);
+                                  });
+  State& forbidden3 = m.state_make("forbidden3",
+                                  [&] ()
+                                  {
+                                    BOOST_CHECK(false);
+                                  });
+
+  m.transition_add_catch(s1, forbidden3);
+  m.transition_add(s1, s2);
+  m.transition_add(s1, forbidden1);
+  m.transition_add(s1, forbidden2);
+
+  reactor::Thread run(sched, "run", [&] { m.run(); });
+
+  sched.run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+}
+
+static
+void
 test_exception()
 {
   reactor::Scheduler sched;
@@ -443,9 +550,12 @@ transition_catch_specific()
   // Check we follow the right exception
   m.transition_add_catch_specific<OtherException>(s1, forbidden);
   m.transition_add_catch_specific<BeaconException>(s1, s2);
+  m.transition_add_catch(s1, forbidden);
+
   // Check we follow the default.
   m.transition_add_catch_specific<OtherException>(s2, forbidden);
   m.transition_add_catch(s2, s3);
+
   // Check the exception escapes.
   m.transition_add_catch_specific<OtherException>(s3, forbidden);
 
@@ -600,6 +710,9 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(test_run_preemptive_transition_pre_opened));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, false)));
   fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, true)));
+  fsm->add(BOOST_TEST_CASE(test_recursive_state));
+  fsm->add(BOOST_TEST_CASE(test_circular));
+  fsm->add(BOOST_TEST_CASE(test_FIFT));
   fsm->add(BOOST_TEST_CASE(test_exception));
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable));
   fsm->add(BOOST_TEST_CASE(transition_catch));

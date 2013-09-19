@@ -129,7 +129,7 @@ namespace reactor
       Transition* trigger(nullptr);
       return elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
-        for (auto transition: state->transitions_out())
+        for (auto transition: state->transitions_out().get<1>())
           if (auto t = transition->run(triggered, trigger, action_thread))
             scope.run_background(elle::sprint(*this), t.get());
         state->_entered.signal();
@@ -147,7 +147,8 @@ namespace reactor
         ELLE_DEBUG("%s: state action finished", *this);
         while (true)
         {
-          for (auto transition: state->transitions_out())
+          // Ordered by insertion order.
+          for (auto transition: state->transitions_out().get<1>())
             transition->done(trigger, this->_exception);
           if (this->_exception)
           {
