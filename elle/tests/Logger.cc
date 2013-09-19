@@ -211,7 +211,7 @@ parallel_write()
   auto action = [&logger](int& counter)
     {
       using namespace boost::posix_time;
-      ptime deadline = microsec_clock::local_time() + seconds(1);
+      ptime deadline = microsec_clock::local_time() + seconds(3);
       while (microsec_clock::local_time() < deadline)
       {
         ELLE_LOG_COMPONENT("out");
