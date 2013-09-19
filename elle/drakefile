@@ -32,6 +32,7 @@ def configure(cxx_toolkit = None,
   cxx_config += boost.config_system()
   cxx_config += boost.config_thread()
   cxx_config += boost.config_chrono()
+  cxx_config += boost.config_iostreams()
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
@@ -115,6 +116,10 @@ def configure(cxx_toolkit = None,
     'src/elle/format/base64url.cc',
     'src/elle/format/base64url.hh',
     'src/elle/format/base64url.hxx',
+    'src/elle/format/gzip.cc',
+    'src/elle/format/gzip.hh',
+    #'src/elle/format/lzo.cc',
+    #'src/elle/format/lzo.hh',
     'src/elle/format/ini/File.cc',
     'src/elle/format/ini/File.hh',
     'src/elle/format/ini/Section.cc',
@@ -335,6 +340,7 @@ def configure(cxx_toolkit = None,
     "format/json/Integer.cc",
     "format/json/Null.cc",
     "format/json/String.cc",
+    "format/gzip.cc",
     "io/Path.cc",
     "io/Piece.cc",
     #"nat/nat_hole_ctor.cc",
