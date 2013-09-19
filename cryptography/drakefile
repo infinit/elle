@@ -50,7 +50,7 @@ def configure(cxx_toolkit = None,
     openssl_tarball,
     targets =
     ['%s/%s' % (openssl_basename, f) for f in [
-        'config',
+        'Configure',
         'include/openssl/aes.h',
         'include/openssl/asn1.h',
         'include/openssl/asn1_mac.h',
@@ -127,7 +127,7 @@ def configure(cxx_toolkit = None,
         'include/openssl/x509v3.h',
         'include/openssl/x509_vfy.h',
         ]])
-  openssl_configure = drake.node(openssl_root / 'config')
+  openssl_configure = drake.node(openssl_root / 'Configure')
   from drake.cxx import DynLib
   if cxx_toolkit.os is drake.os.linux:
     openssl_lib_ssl = DynLib('openssl/lib/libssl.so.1.0.0',
@@ -141,14 +141,20 @@ def configure(cxx_toolkit = None,
                                 lib_name = 'crypto')
   openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
   openssl_prefix = drake.path_build('openssl')
+  if :
+    os_string = 'x86_64-whatever-linux2'
+  else:
+    os_string = 'darwin64-x86_64-cc'
   GNUBuilder(cxx_toolkit,
-             openssl_configure,
-             openssl_libs,
+             configure = openssl_configure,
+             configure_interpreter = 'perl',
+             targets = openssl_libs,
              args = [
                '--prefix=%s/%s' % (os.getcwd(), openssl_prefix),
                'shared',
                'no-asm',
                '-DPURIFY',
+               os_string,
              ])
   openssl_libs = drake.copy(openssl_libs, '.', 'openssl')
   openssl_config = drake.cxx.Config()
