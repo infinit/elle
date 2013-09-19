@@ -46,7 +46,7 @@ class ValgrindRunner(drake.Runner):
     return [
       str(self.__valgrind.path),
       '--leak-check=full',
-      '--num-callers=500',
+      '--num-callers=50',
       '--log-file=%s' % self.__valgrind_status.path(),
       '--error-exitcode=1',
     ] + super().command
