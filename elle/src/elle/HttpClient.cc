@@ -34,7 +34,7 @@ namespace elle
     std::string                                   content_type;
     std::unordered_map<std::string, std::string>  headers;
     std::unordered_map<std::string, std::string>  post_fields;
-    std::unordered_map<std::string, std::string>  parameters;
+    std::unordered_multimap<std::string, std::string> parameters;
     std::stringstream                             response;
     // Reading body flushes it.
     mutable std::unique_ptr<std::istream>         body;
@@ -79,6 +79,7 @@ namespace elle
 
       std::string body;
       bool first = true;
+
       for (auto const& pair: _this->post_fields)
       {
         if (!first)
@@ -88,7 +89,10 @@ namespace elle
           body += "?";
           first = false;
         }
-        body += pair.first + "=" + pair.second; //XXX must be encoded.
+        if (pair.first.empty())
+          body += pair.second;
+        else
+          body += pair.first + "=" + pair.second; //XXX must be encoded.
       }
 
       return std::unique_ptr<std::istream>{new std::stringstream{body}};
@@ -133,17 +137,26 @@ namespace elle
     std::string url = _this->url;
 
     bool first = true;
-    for (auto const& pair: _this->parameters)
-    {
-      if (!first)
-        url += "&";
-      else
+
+    auto seperator = [&] () -> std::string
       {
-        url += "?";
-        first = false;
-      }
-      url += pair.first + "=" + pair.second; //XXX must be encoded.
-    }
+        if (!first)
+          return "&";
+        else
+        {
+          first = false;
+          return "?";
+        }
+      };
+
+    /// Find the empty keys, and put them first.
+    for (auto const& pair: _this->parameters)
+      if (pair.first.empty())
+        url += seperator() + pair.second;
+
+    for (auto const& pair: _this->parameters)
+      if (!pair.first.empty())
+        url += seperator() + pair.first + "=" + pair.second;
 
     return url;
   }
@@ -211,7 +224,7 @@ namespace elle
   Request::parameter(std::string const& key,
                      std::string const& value)
   {
-    _this->parameters[key] = value;
+    _this->parameters.emplace(std::make_pair(key, value));
     return *this;
   }
 
