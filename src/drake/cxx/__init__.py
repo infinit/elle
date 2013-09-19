@@ -491,6 +491,10 @@ def concatenate(chunks, prefix = ''):
 
 class GccToolkit(Toolkit):
 
+  class Kind(drake.Enumerated,
+             values = ['gcc', 'clang']):
+    pass
+
   def __init__(self, compiler = 'g++', compiler_c = 'gcc', os = None):
     Toolkit.__init__(self)
     self.arch = arch.x86
@@ -502,11 +506,17 @@ class GccToolkit(Toolkit):
     self.cxx = compiler
     self.c = compiler_c
     if self.os is None:
-      osx = '__APPLE__'
-      if self.preprocess(osx).strip().split('\n')[-1] != osx:
+      if self.preprocess_isdef('__APPLE__'):
         self.os = drake.os.macos
       else:
         self.os = drake.os.linux
+    if self.preprocess_isdef('__clang__'):
+      self.__kind = GccToolkit.Kind.clang
+    else:
+      self.__kind = GccToolkit.Kind.gcc
+
+  def preprocess_isdef(self, var, config = Config()):
+    return self.preprocess(var, config).strip().split('\n')[-1] != var
 
   def preprocess(self, code, config = Config()):
     cmd = [self.cxx]
