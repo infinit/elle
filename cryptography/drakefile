@@ -142,7 +142,7 @@ def configure(cxx_toolkit = None,
   openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
   openssl_prefix = drake.path_build('openssl')
   if cxx_toolkit.os is drake.os.linux:
-    os_string = 'x86_64-whatever-linux2'
+    os_string = 'linux-x86_64'
   else:
     os_string = 'darwin64-x86_64-cc'
   GNUBuilder(cxx_toolkit,
