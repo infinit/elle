@@ -79,29 +79,31 @@ def configure(cxx_toolkit = None,
   # print(openssl_libs[0].path())
   # print(openssl_libs[0].path().dirname())
   openssl_prefix = drake.path_root() / openssl
+  openssl_configure_args = [
+    '--prefix=%s/%s' % (os.getcwd(), drake.path_build('curl')),
+    '--with-ssl=%s' % openssl_prefix,
+    '--enable-hidden-symbols',
+    '--enable-optimize',
+    '--enable-warnings',
+    '--enable-threaded-resolver',
+    '--disable-static',
+    '--disable-ldap',
+    '--disable-ldaps',
+    '--disable-rtmp',
+    '--disable-sspi',
+    '--disable-ssh',
+    '--disable-rtsp',
+    '--with-gssapi',
+    '--without-libidn',
+  ]
+  if cxx_toolkit.os is drake.os.linux:
+    # So curl links its curl binary with the right SSL.
+    openssl_configure_args.append(
+      'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'))
   GNUBuilder(cxx_toolkit,
              curl_configure,
              [curl_lib],
-             args = [
-               '--prefix=%s/%s' % (os.getcwd(),
-                                   drake.path_build('curl')),
-               '--with-ssl=%s' % openssl_prefix,
-               '--enable-hidden-symbols',
-               '--enable-optimize',
-               '--enable-warnings',
-               '--enable-threaded-resolver',
-               '--disable-static',
-               '--disable-ldap',
-               '--disable-ldaps',
-               '--disable-rtmp',
-               '--disable-sspi',
-               '--disable-ssh',
-               '--disable-rtsp',
-               '--with-gssapi',
-               '--without-libidn',
-               # So curl links its curl binary with the right SSL.
-               'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'),
-             ],
+             args = openssl_configure_args,
              sources = openssl_libs)
   curl_lib = drake.copy(curl_lib, '.', 'curl')
   curl_config = drake.cxx.Config()
