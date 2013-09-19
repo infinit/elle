@@ -71,7 +71,7 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
       c1 = _trailingChars[0];
       if (_trailingChars.size() > 1)
         {
-          ELLE_ASSERT_EQ(_trailingChars.size(), 2);
+          ELLE_ASSERT_EQ(_trailingChars.size(), 2u);
           c2 = _trailingChars[1];
           c3 = *ptr++;
           size -= 1;
