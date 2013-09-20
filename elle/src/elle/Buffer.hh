@@ -43,6 +43,8 @@ namespace elle
   | Types |
   `------*/
   public:
+    /// Size of a Buffer.
+    typedef size_t Size;
     /// Data owned by a Buffer:
     typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
     /// Content owned by a Buffer: data and size.
@@ -76,9 +78,9 @@ namespace elle
   `------------------*/
   public:
     /// Size of the buffer.
-    ELLE_ATTRIBUTE_Rw(size_t, size);
+    ELLE_ATTRIBUTE_Rw(Size, size);
     /// Size of the underlying allocated memory.
-    ELLE_ATTRIBUTE_Rw(size_t, capacity);
+    ELLE_ATTRIBUTE_Rw(Size, capacity);
     /// Buffer data.
     ELLE_ATTRIBUTE_R(Byte*, contents);
     /// Buffer mutable data.
