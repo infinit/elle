@@ -121,6 +121,14 @@ namespace elle
     bool
     operator <(Buffer const& other) const;
 
+  /*------------.
+  | Conversions |
+  `------------*/
+  public:
+    /// The content of the buffer as a string.
+    std::string
+    string() const;
+
   /*--------------.
   | Serialization |
   `--------------*/

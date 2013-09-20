@@ -251,6 +251,18 @@ namespace elle
     return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
   }
 
+  /*------------.
+  | Conversions |
+  `------------*/
+
+  std::string
+  Buffer::string() const
+  {
+    return std::string(reinterpret_cast<char const*>(this->contents()),
+                       this->size());
+  }
+
+
   void
   Buffer::shrink_to_fit()
   {
