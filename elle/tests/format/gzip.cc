@@ -9,43 +9,7 @@
 
 #include <elle/format/gzip.hh>
 
-static
-bool
-my_popen(const std::string& cmd, std::string& out)
-{
-    const int SIZEBUF = 1234;
-    char buf [SIZEBUF];
-    FILE* fp;
-
-    if ((fp = popen(cmd.c_str (), "r")) == NULL)
-        return false;
-
-    fgets(buf, sizeof (buf), fp);
-    out = std::string(buf);
-
-    pclose(fp);
-    return true;
-}
-
-BOOST_AUTO_TEST_CASE(basic_case)
-{
-  std::string content("this is CONTENT!!!");
-  std::string tmpfile1("/tmp/streamed1");
-
-  {
-    std::ofstream tmp1(tmpfile1);
-    BOOST_CHECK(tmp1.good());
-    elle::format::gzip::Stream filter(tmp1);
-    filter << content;
-  }
-
-  std::string output;
-  my_popen("gzip -cd " + tmpfile1, output);
-
-  BOOST_CHECK_EQUAL(content, output);
-}
-
-BOOST_AUTO_TEST_CASE(bigger_content)
+BOOST_AUTO_TEST_CASE(data)
 {
   std::string content(
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit"
@@ -59,45 +23,48 @@ BOOST_AUTO_TEST_CASE(bigger_content)
     "dolor ut lorem. Mauris lacinia ultrices feugiat. Nullam sit amet dolor ut"
     "posuere.");
 
-  std::string tmpfile1("/tmp/streamed2");
+  std::stringstream buffer;
 
   {
-    std::ofstream tmp1(tmpfile1);
-    BOOST_CHECK(tmp1.good());
-    elle::format::gzip::Stream filter(tmp1);
+    elle::format::gzip::Stream filter(buffer);
     filter << content;
   }
 
-  std::string output;
-  my_popen("gzip -cd " + tmpfile1, output);
+  BOOST_CHECK_LT(buffer.str().size(), content.size());
 
-  BOOST_CHECK_EQUAL(content, output);
+  elle::Buffer output(content.size());
+  {
+    boost::iostreams::filtering_istream filter;
+    filter.push(boost::iostreams::gzip_decompressor());
+    filter.push(buffer);
+    filter.read(reinterpret_cast<char*>(output.mutable_contents()),
+                output.size());
+    BOOST_CHECK_EQUAL(filter.gcount(), content.size());
+    char c;
+    filter.read(&c, 1);
+    BOOST_CHECK_EQUAL(filter.gcount(), 0);
+    BOOST_CHECK(filter.eof());
+  }
+  BOOST_CHECK_EQUAL(content, output.string());
 }
 
 BOOST_AUTO_TEST_CASE(empty_content)
 {
-  std::string content("");
-  std::string tmpfile1("/tmp/streamed3");
-
+  std::string content;
+  std::stringstream buffer;
   {
-    std::ofstream tmp1(tmpfile1);
-    BOOST_CHECK(tmp1.good());
-    elle::format::gzip::Stream filter(tmp1);
+    elle::format::gzip::Stream filter(buffer);
     filter << content;
   }
-
-  BOOST_CHECK_EQUAL(boost::filesystem::file_size(tmpfile1), 0);
+  BOOST_CHECK_EQUAL(buffer.str().size(), 0);
 }
 
 BOOST_AUTO_TEST_CASE(no_content)
 {
-  std::string tmpfile1("/tmp/streamed4");
-
+  std::string content;
+  std::stringstream buffer;
   {
-    std::ofstream tmp1(tmpfile1);
-    BOOST_CHECK(tmp1.good());
-    elle::format::gzip::Stream filter(tmp1);
+    elle::format::gzip::Stream filter(buffer);
   }
-
-  BOOST_CHECK_EQUAL(boost::filesystem::file_size(tmpfile1), 0);
+  BOOST_CHECK_EQUAL(buffer.str().size(), 0);
 }
