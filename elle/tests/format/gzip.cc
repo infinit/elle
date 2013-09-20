@@ -16,7 +16,7 @@ data_size(std::string content, bool flush, int buffer_size)
   std::stringstream buffer;
 
   {
-    elle::format::gzip::Stream filter(buffer, true, buffer_size);
+    elle::format::gzip::Stream filter(buffer, flush, buffer_size);
     filter << content;
   }
 
@@ -77,6 +77,13 @@ BOOST_AUTO_TEST_CASE(data_small_buffer)
 BOOST_AUTO_TEST_CASE(data_small_buffer_noflush)
 {
   return data_size(content(), false, 1 << 12);
+}
+
+BOOST_AUTO_TEST_CASE(data_pico_buffer_noflush)
+{
+  // This checks that with honor_flush = false, data is not encoded by chunks of
+  // 8 bytes, this yielding a bigger size.
+  return data_size(content(), false, 8);
 }
 
 BOOST_AUTO_TEST_CASE(empty_content)
