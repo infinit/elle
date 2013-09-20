@@ -243,18 +243,18 @@ void
 multiline()
 {
   std::stringstream output;
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
   elle::log::logger(
     std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
   ELLE_LOG_COMPONENT("multiline");
-  ELLE_LOG("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
-
-  std::vector<std::string> lines;
-  auto str = output.str();
-  boost::split(lines,
-               str,
-               boost::algorithm::is_any_of("\r\n"),
-               boost::token_compress_on);
-  BOOST_CHECK_EQUAL(lines.size(), 6);
+  ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
+  auto expected =
+    "[multiline] This message\n"
+    "            is\n"
+    "            splitted\n"
+    "            into\n"
+    "            5 lines\n";
+  BOOST_CHECK_EQUAL(output.str(),expected);
 }
 
 #ifndef BOOST_CHECK_NOT_EQUAL
@@ -272,25 +272,12 @@ void
 trim()
 {
   std::stringstream output;
-  // XXX This does not work for the moment.
-  // elle::os::setenv("ELLE_LOG_COLOR", "0");
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
   elle::log::logger(
     std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
   ELLE_LOG_COMPONENT("trim");
-  ELLE_LOG("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");
-  std::string out = output.str();
-  {
-    std::cerr << "OUTPUT: >>>" << out << "<<<\n";
-    unsigned int pos = 0;
-    for (unsigned int pos = 0; pos < out.size() - 1; ++pos)
-    {
-      std::cerr << pos << ' ' << out.size() << std::endl;
-      BOOST_CHECK_NOT_EQUAL(out[pos], '\t');
-      // XXX When colors can be disabled, these tests should pass.
-      //BOOST_CHECK_NOT_EQUAL(out[pos], '\r');
-      //BOOST_CHECK_NOT_EQUAL(out[pos], '\n');
-    }
-  }
+  ELLE_TRACE("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");
+  BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
 static
