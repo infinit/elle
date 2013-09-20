@@ -19,7 +19,8 @@ namespace elle
         public elle::StreamBuffer
       {
       public:
-        StreamBuffer(std::ostream& underlying);
+        StreamBuffer(std::ostream& underlying,
+                     Buffer::Size buffer_size);
 
         virtual WeakBuffer write_buffer();
         virtual WeakBuffer read_buffer();
@@ -34,7 +35,7 @@ namespace elle
         public elle::IOStream
       {
       public:
-        Stream(std::ostream& underlying);
+        Stream(std::ostream& underlying, Buffer::Size buffer_size = 1 << 16);
 
       private:
         std::ostream& _underlying;

@@ -6,9 +6,8 @@ namespace elle
   {
     namespace gzip
     {
-      static Size const buffer_size = 1 << 16;
-
-      StreamBuffer::StreamBuffer(std::ostream& underlying):
+      StreamBuffer::StreamBuffer(std::ostream& underlying,
+                                 Buffer::Size buffer_size):
         _underlying(underlying),
         _buffer(buffer_size)
       {}
@@ -28,8 +27,7 @@ namespace elle
       void
       StreamBuffer::flush(Size size)
       {
-        if (size > buffer_size)
-          throw elle::Exception("Not enough space in the Gzip buffer.");
+        ELLE_ASSERT_LTE(size, this->_buffer.size());
 
         boost::iostreams::filtering_ostream filter;
         filter.push(boost::iostreams::gzip_compressor());
@@ -38,8 +36,8 @@ namespace elle
                      size);
       }
 
-      Stream::Stream(std::ostream& underlying):
-        IOStream(new StreamBuffer(underlying)),
+      Stream::Stream(std::ostream& underlying, Buffer::Size buffer_size):
+        IOStream(new StreamBuffer(underlying, buffer_size)),
         _underlying(underlying)
       {}
     }
