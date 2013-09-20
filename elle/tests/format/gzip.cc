@@ -11,26 +11,16 @@
 
 static
 void
-data_size(int buffer_size)
+data_size(std::string content, bool flush, int buffer_size)
 {
-  std::string content(
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit"
-    "tortor, facilisis eget nisl ac, convallis mattis dui. Donec laoreet purus"
-    "at ligula congue, ut gravida felis viverra. Suspendisse potenti. Quisque"
-    "elementum lacus ante, ut pellentesque purus tincidunt et. Aliquam"
-    "fringilla, augue a consectetur viverra, ante urna pharetra lectus, et"
-    "hendrerit purus orci ut lacus. Aliquam erat volutpat. Cras ligula elit,"
-    "lobortis euismod pellentesque non, consequat nec sapien. Sed pharetra,"
-    "nulla nec hendrerit tempor, odio nisl suscipit sapien, at lacinia dolor"
-    "dolor ut lorem. Mauris lacinia ultrices feugiat. Nullam sit amet dolor ut"
-    "posuere.");
-
   std::stringstream buffer;
 
   {
-    elle::format::gzip::Stream filter(buffer, buffer_size);
+    elle::format::gzip::Stream filter(buffer, true, buffer_size);
     filter << content;
   }
+
+  BOOST_CHECK_LE(buffer.str().size(), content.size() * 80 / 100 + 20);
 
   elle::Buffer output(content.size());
   {
@@ -45,41 +35,72 @@ data_size(int buffer_size)
     BOOST_CHECK_EQUAL(filter.gcount(), 0);
     BOOST_CHECK(filter.eof());
   }
-  BOOST_CHECK_EQUAL(content, output.string());
+  // Do not use BOOST_CHECK_EQUAL because the output is HUGE.
+  BOOST_CHECK(content == output.string());
 }
 
-BOOST_AUTO_TEST_CASE(data_1024)
+static
+std::string
+content()
 {
-  return data_size(1024);
+  std::stringstream res;
+  for (int i = 0; i < 1024; ++i)
+    res <<
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit"
+      "tortor, facilisis eget nisl ac, convallis mattis dui. Donec laoreet purus"
+      "at ligula congue, ut gravida felis viverra. Suspendisse potenti. Quisque"
+      "elementum lacus ante, ut pellentesque purus tincidunt et. Aliquam"
+      "fringilla, augue a consectetur viverra, ante urna pharetra lectus, et"
+      "hendrerit purus orci ut lacus. Aliquam erat volutpat. Cras ligula elit,"
+      "lobortis euismod pellentesque non, consequat nec sapien. Sed pharetra,"
+      "nulla nec hendrerit tempor, odio nisl suscipit sapien, at lacinia dolor"
+      "dolor ut lorem. Mauris lacinia ultrices feugiat. Nullam sit amet dolor ut"
+      "posuere.";
+  return res.str();
 }
 
-BOOST_AUTO_TEST_CASE(data_32)
+BOOST_AUTO_TEST_CASE(data_big_buffer)
 {
-  return data_size(32);
+  return data_size(content(), true, 1 << 18);
 }
 
-BOOST_AUTO_TEST_CASE(data_1)
+BOOST_AUTO_TEST_CASE(data_big_buffer_noflush)
 {
-  return data_size(1);
+  return data_size(content(), false, 1 << 18);
+}
+
+BOOST_AUTO_TEST_CASE(data_small_buffer)
+{
+  return data_size(content(), true, 1 << 12);
+}
+
+BOOST_AUTO_TEST_CASE(data_small_buffer_noflush)
+{
+  return data_size(content(), false, 1 << 12);
 }
 
 BOOST_AUTO_TEST_CASE(empty_content)
 {
-  std::string content;
-  std::stringstream buffer;
-  {
-    elle::format::gzip::Stream filter(buffer);
-    filter << content;
-  }
-  BOOST_CHECK_EQUAL(buffer.str().size(), 0);
+  return data_size("", true, 1024);
 }
 
-BOOST_AUTO_TEST_CASE(no_content)
+BOOST_AUTO_TEST_CASE(empty_content_noflush)
 {
-  std::string content;
+  return data_size("", false, 1024);
+}
+
+BOOST_AUTO_TEST_CASE(flush)
+{
   std::stringstream buffer;
   {
-    elle::format::gzip::Stream filter(buffer);
+    elle::format::gzip::Stream filter(buffer, true);
+    BOOST_CHECK_EQUAL(buffer.str().size(), 0);
+    filter << "a first line";
+    filter.flush();
+    auto size = buffer.str().size();
+    BOOST_CHECK_GT(size, 0);
+    filter << "a second line";
+    filter.flush();
+    BOOST_CHECK_GT(buffer.str().size(), size);
   }
-  BOOST_CHECK_EQUAL(buffer.str().size(), 0);
 }

@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <fstream>
+# include <zlib.h>
 
 # include <boost/iostreams/filter/gzip.hpp>
 # include <boost/iostreams/filtering_stream.hpp>
@@ -20,22 +21,31 @@ namespace elle
       {
       public:
         StreamBuffer(std::ostream& underlying,
+                     bool honor_flush,
                      Buffer::Size buffer_size);
+        ~StreamBuffer();
 
         virtual WeakBuffer write_buffer();
         virtual WeakBuffer read_buffer();
         virtual void flush(Size size);
 
       private:
-        std::ostream& _underlying;
-        elle::Buffer _buffer;
+        void
+        _send(int flush);
+        ELLE_ATTRIBUTE(bool, honor_flush);
+        ELLE_ATTRIBUTE(z_stream, z_stream);
+        ELLE_ATTRIBUTE(std::ostream&, underlying);
+        ELLE_ATTRIBUTE(elle::Buffer, buffer);
+        ELLE_ATTRIBUTE(elle::Buffer, buffer_compression);
       };
 
       class Stream:
         public elle::IOStream
       {
       public:
-        Stream(std::ostream& underlying, Buffer::Size buffer_size = 1 << 16);
+        Stream(std::ostream& underlying,
+               bool honor_flush,
+               Buffer::Size buffer_size = 1 << 16);
 
       private:
         std::ostream& _underlying;
