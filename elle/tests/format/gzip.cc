@@ -9,7 +9,9 @@
 
 #include <elle/format/gzip.hh>
 
-BOOST_AUTO_TEST_CASE(data)
+static
+void
+data_size(int buffer_size)
 {
   std::string content(
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam velit"
@@ -26,11 +28,9 @@ BOOST_AUTO_TEST_CASE(data)
   std::stringstream buffer;
 
   {
-    elle::format::gzip::Stream filter(buffer);
+    elle::format::gzip::Stream filter(buffer, buffer_size);
     filter << content;
   }
-
-  BOOST_CHECK_LT(buffer.str().size(), content.size());
 
   elle::Buffer output(content.size());
   {
@@ -46,6 +46,21 @@ BOOST_AUTO_TEST_CASE(data)
     BOOST_CHECK(filter.eof());
   }
   BOOST_CHECK_EQUAL(content, output.string());
+}
+
+BOOST_AUTO_TEST_CASE(data_1024)
+{
+  return data_size(1024);
+}
+
+BOOST_AUTO_TEST_CASE(data_32)
+{
+  return data_size(32);
+}
+
+BOOST_AUTO_TEST_CASE(data_1)
+{
+  return data_size(1);
 }
 
 BOOST_AUTO_TEST_CASE(empty_content)
