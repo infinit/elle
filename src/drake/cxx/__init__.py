@@ -641,10 +641,15 @@ class GccToolkit(Toolkit):
           cmd += ['-framework', framework]
       for path in cfg.library_path:
           cmd += ['-L', path]
-          if self.os == drake.os.linux:
-              cmd.append('-Wl,-rpath-link,%s' % path)
       for path in cfg._Config__rpath:
         cmd.append('-Wl,-rpath,%s' % self.rpath(path))
+      if self.os == drake.os.linux:
+        rpath_link = set()
+        for lib in (lib for lib in objs if isinstance(lib, DynLib)):
+          for library in lib.dynamic_libraries:
+            rpath_link.add(str(library.path().dirname()))
+        for path in rpath_link:
+          cmd.append('-Wl,-rpath-link,%s' % path)
       if self.os == drake.os.macos:
           cmd += ['-undefined', 'dynamic_lookup']
       for obj in objs:
