@@ -99,11 +99,9 @@ environment_format_test()
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
-
+  auto time = boost::posix_time::second_clock::local_time();
   ELLE_LOG("Test");
-  res << "[1m"
-      << boost::posix_time::second_clock::local_time()
-      << ": [Test] Test\n[0m";
+  res << "[1m" << time << ": [Test] Test\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -211,8 +209,8 @@ parallel_write()
   auto action = [&logger](int& counter)
     {
       using namespace boost::posix_time;
-      ptime deadline = microsec_clock::local_time() + seconds(3);
-      while (microsec_clock::local_time() < deadline)
+      ptime deadline = microsec_clock::local_time() + seconds(1);
+      while (microsec_clock::local_time() < deadline && counter < 64)
       {
         ELLE_LOG_COMPONENT("out");
         ELLE_LOG("out")
@@ -234,8 +232,8 @@ parallel_write()
     t2.join();
   }
 
-  BOOST_CHECK_GT(c1, 64);
-  BOOST_CHECK_GT(c2, 64);
+  BOOST_CHECK_GE(c1, 64);
+  BOOST_CHECK_GE(c2, 64);
 }
 
 static
