@@ -1,7 +1,6 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_IGNORE_SIGCHLD
 #define BOOST_TEST_IGNORE_NON_ZERO_CHILD_CODE
-#define BOOST_TEST_MODULE curly_sched
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
@@ -27,7 +26,9 @@
 
 ELLE_LOG_COMPONENT("curly.test");
 
-BOOST_AUTO_TEST_CASE(simple_test)
+static
+void
+parallel_queries()
 {
   static int const concurrent = 8;
   reactor::Scheduler sched;
@@ -121,7 +122,9 @@ BOOST_AUTO_TEST_CASE(simple_test)
   sched.run();
 }
 
-BOOST_AUTO_TEST_CASE(timeout)
+static
+void
+timeout()
 {
   reactor::Scheduler sched;
   reactor::Signal sig;
@@ -163,4 +166,21 @@ BOOST_AUTO_TEST_CASE(timeout)
   };
   reactor::Thread main(sched, "main", run_test);
   sched.run();
+}
+
+
+static
+bool
+test_suite()
+{
+  auto& ts = boost::unit_test::framework::master_test_suite();
+  ts.add(BOOST_TEST_CASE(parallel_queries), 10);
+  ts.add(BOOST_TEST_CASE(timeout), 5);
+  return true;
+}
+
+int
+main(int argc, char** argv)
+{
+  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
