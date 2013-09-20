@@ -1,7 +1,8 @@
+# include <zlib.h>
+
 #include <elle/finally.hh>
-#include <elle/format/hexadecimal.hh>
-#include <elle/log.hh>
 #include <elle/format/gzip.hh>
+#include <elle/log.hh>
 
 // Do not think about using Boost IOstream for GZip compression. It has a nasty
 // bug with empty gzip streams (see
@@ -15,6 +16,29 @@ namespace elle
   {
     namespace gzip
     {
+      class StreamBuffer:
+        public elle::StreamBuffer
+      {
+      public:
+        StreamBuffer(std::ostream& underlying,
+                     bool honor_flush,
+                     Buffer::Size buffer_size);
+        ~StreamBuffer();
+
+        virtual WeakBuffer write_buffer();
+        virtual WeakBuffer read_buffer();
+        virtual void flush(Size size);
+
+      private:
+        void
+        _send(int flush);
+        ELLE_ATTRIBUTE(bool, honor_flush);
+        ELLE_ATTRIBUTE(z_stream, z_stream);
+        ELLE_ATTRIBUTE(std::ostream&, underlying);
+        ELLE_ATTRIBUTE(elle::Buffer, buffer);
+        ELLE_ATTRIBUTE(elle::Buffer, buffer_compression);
+      };
+
       StreamBuffer::StreamBuffer(std::ostream& underlying,
                                  bool honor_flush,
                                  Buffer::Size buffer_size):

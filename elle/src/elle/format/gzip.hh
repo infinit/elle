@@ -1,14 +1,8 @@
 #ifndef ELLE_FORMAT_GZIP_HH
 # define ELLE_FORMAT_GZIP_HH
 
-# include <iostream>
-# include <fstream>
-# include <zlib.h>
-
-# include <boost/iostreams/filter/gzip.hpp>
-# include <boost/iostreams/filtering_stream.hpp>
-
 # include <elle/Buffer.hh>
+# include <elle/IOStream.hh>
 
 namespace elle
 {
@@ -16,38 +10,38 @@ namespace elle
   {
     namespace gzip
     {
-      class StreamBuffer:
-        public elle::StreamBuffer
-      {
-      public:
-        StreamBuffer(std::ostream& underlying,
-                     bool honor_flush,
-                     Buffer::Size buffer_size);
-        ~StreamBuffer();
-
-        virtual WeakBuffer write_buffer();
-        virtual WeakBuffer read_buffer();
-        virtual void flush(Size size);
-
-      private:
-        void
-        _send(int flush);
-        ELLE_ATTRIBUTE(bool, honor_flush);
-        ELLE_ATTRIBUTE(z_stream, z_stream);
-        ELLE_ATTRIBUTE(std::ostream&, underlying);
-        ELLE_ATTRIBUTE(elle::Buffer, buffer);
-        ELLE_ATTRIBUTE(elle::Buffer, buffer_compression);
-      };
-
+      /// Stream wrapper that compresses to GZIP.
+      ///
+      /// Data written to the stream are compressed on the fly and written back
+      /// to the wrapped stream.
+      ///
+      /// The honor_flush parameter enables to chose whether to force
+      /// compression and writing on flush or not. Not doing so lets ZLIB choose
+      /// whether to flush directly or keep compressing the next buffer if data
+      /// have especially low entropy. Delaying writing this way can be a
+      /// problem though if someone expects the data to be written after each
+      /// flush. For instance, compressing complete data to a file on disk
+      /// should set honor_flush to false to let ZLIB write a compressed block
+      /// when it sees fit, but compressing network packet should set it to true
+      /// to ensure compressed packets are sent immediately on flush() and not
+      /// waiting to be compressed with the next ones.
+      ///
+      /// Decompression is not supported for now.
       class Stream:
         public elle::IOStream
       {
       public:
+        /// Construct a Stream.
+        ///
+        /// \param underlying  The wrapped stream to write compressed data to.
+        /// \param honor_flush Whether to force output when flushed.
+        /// \param buffer_size The chunk size to compress data by.
         Stream(std::ostream& underlying,
                bool honor_flush,
                Buffer::Size buffer_size = 1 << 16);
 
       private:
+        /// The underlying stream to write to.
         std::ostream& _underlying;
       };
     }
