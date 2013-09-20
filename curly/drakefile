@@ -33,8 +33,8 @@ def configure(cxx_toolkit = None,
 
   global config
   global lib_static, lib_dynamic
-  global lib_sched_static, lib_sched_dynamic
-  global lib_asio_dynamic, lib_asio_dynamic
+  global lib_sched_dynamic, lib_sched_static
+  global lib_asio_dynamic, lib_asio_static
   global rule_build, rule_install
 
   with open(str(drake.path_src('../drake-utils.py')), 'r') as f:
