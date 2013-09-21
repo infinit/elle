@@ -50,8 +50,9 @@ namespace network {
   class uri_builder;
 
   /**
-   * \class uri uri.hpp network/uri.hpp
-   * \brief A class representing a URI.
+   * \ingroup uri
+   * \class uri network/uri/uri.hpp network/uri.hpp
+   * \brief A class that parses a URI string into its component parts.
    */
   class NETWORK_URI_DECL uri {
 

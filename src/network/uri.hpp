@@ -8,6 +8,10 @@
 #ifndef NETWORK_URI_HPP
 #define NETWORK_URI_HPP
 
+/**
+ * \defgroup uri URI
+ */
+
 #include <network/uri/uri.hpp>
 #include <network/uri/uri_io.hpp>
 

@@ -90,8 +90,10 @@ namespace network {
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   /**
-   * \class uri_builder uri.hpp network/uri.hpp
+   * \ingroup uri
+   * \class uri_builder network/uri/uri_builder.hpp network/uri.hpp
    * \brief A class that allows complex uri objects to be constructed.
+   * \sa uri
    */
   class NETWORK_URI_DECL uri_builder {
 
