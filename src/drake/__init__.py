@@ -1235,7 +1235,9 @@ class Builder:
                     stdout = None
                     if not leave_stdout:
                         stdout = f
-                    return command(c, cwd = cwd, stdout = stdout)
+                    if not command(c, cwd = cwd, stdout = stdout):
+                        return False
+                return True
             if _JOBS_LOCK is not None:
                 with _JOBS_LOCK:
                     return sched.background(fun)
