@@ -2152,11 +2152,31 @@ ACTIONS:
 	  dot and xv).''')
   exit(0)
 
+def complete_modes():
+  for mode in sorted(_MODES.keys()):
+    print('%s\tswitch to %s mode' % (mode, mode))
+  exit(0)
+
+def complete_nodes():
+  def res():
+    for node in BaseNode.nodes:
+      print(node)
+    exit(0)
+  return res
+
+def complete_options():
+  print('-j,--jobs\tset the number of parallel jobs\tnumber of parallel jobs')
+  print('-h,--help\tshow usage')
+  exit(0)
+
 _OPTIONS = {
-    '--jobs': _jobs_set,
-    '-j'    : _jobs_set,
-    '--help': help,
-    '-h'    : help,
+  '--jobs': _jobs_set,
+  '-j'    : _jobs_set,
+  '--help': help,
+  '-h'    : help,
+  '--complete-modes': complete_modes,
+  '--complete-options': complete_options,
+  '--complete-nodes': complete_nodes,
 }
 
 _ARG_CONF_RE = re.compile('--(\\w+)=(.*)')
@@ -2218,6 +2238,7 @@ def drake(root, *cfg, **kwcfg):
     # Fetch configuration from the command line.
     i = 0
     specs = inspect.getfullargspec(root.configure)
+    callbacks = []
     while i < len(args):
       match = _ARG_CONF_RE.match(args[i])
       if match:
@@ -2244,10 +2265,14 @@ def drake(root, *cfg, **kwcfg):
         for a in inspect.getfullargspec(_OPTIONS[opt]).args:
           opt_args.append(args[i])
           del args[i]
-        _OPTIONS[opt](*opt_args)
+        cb = _OPTIONS[opt](*opt_args)
+        if cb is not None:
+          callbacks.append(cb)
         continue
       i += 1
     root.configure(*cfg, **kwcfg)
+    for cb in callbacks:
+      cb()
     mode = _MODES['build']
     i = 0
     while True:
