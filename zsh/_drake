@@ -1,0 +1,100 @@
+#compdef drake
+
+
+# compadd()
+# {
+#     echo
+#     echo compadd "$@"
+#     # for arg; do
+#     #     echo "> $arg$"
+#     # done
+#     while test $# -ne 0; do
+#         case $1 in
+#             (-D)
+#                 echo "-D $2"
+#                 echo ">> ${(P)2}$"
+#                 ;;
+#             (-d)
+#                 echo "-d $2"
+#                 for arg in ${(P)2}; do
+#                     echo ">> $arg$"
+#                 done
+#                 ;;
+#             (-a)
+#                 echo "-a $2"
+#                 echo ">> ${(P)2}$"
+#                 ;;
+#         esac
+#         shift
+#     done
+# }
+
+drake_options=()
+_drake_cache_options()
+{
+    local option parts switches
+    _call_program drake-complete-options $words[1] --complete-options | while read option
+    do
+        parts=(${(s:	:)option})
+        switches=$parts[1]
+        switches=(${(s:,:)switches})
+        for switch in $switches
+        do
+            option="(${switches})${switch}[$parts[2]]"
+            if test $#parts -gt 2
+            then
+                option="$option:$parts[3]:"
+            fi
+            drake_options=($drake_options $option)
+        done
+    done
+}
+_drake_cache_options
+
+drake_modes=()
+_drake_cache_modes()
+{
+    local mode parts
+    _call_program drake-complete-modes $words[1] --complete-modes | while read mode
+    do
+        parts=(${(s:	:)mode})
+        drake_modes=($drake_modes "--$parts[1],$parts[2]")
+    done
+}
+_drake_cache_modes
+
+_drake()
+{
+    local self
+    self=$words[1]
+    _arguments : $drake_options '*:: :->rest'
+    case "$state" in
+        (rest)
+            _alternative                              \
+                "nodes:node:_drake_nodes"             \
+                "modes:mode:_drake_modes"             \
+                ;;
+    esac
+}
+
+_drake_nodes()
+{
+    local node
+    _call_program drake-complete-nodes $self --complete-nodes | while read node
+    do
+        compadd "$@" - "$node"
+    done
+}
+
+_drake_modes()
+{
+    local desc mode parts
+    desc=()
+    for mode in $drake_modes
+    do
+        parts=(${(s:,:)mode})
+        compadd -Q -2V modes "$@"  - $parts[1]
+        desc=($desc "$parts[2]                                                  ")
+    done
+    #compadd -E$#desc -Q "$@" -d desc
+}
