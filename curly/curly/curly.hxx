@@ -38,7 +38,7 @@ namespace curly
     c.option(Opt, 1);
     c.option(CURLOPT_VERBOSE, 1);
     c.option(CURLOPT_NOSIGNAL, 1);
-    c.option(CURLOPT_CONNECTTIMEOUT, 300);
+    c.option(CURLOPT_CONNECTTIMEOUT, 10);
     return c;
   }
 
