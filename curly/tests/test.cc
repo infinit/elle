@@ -1,5 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE curly
 #include <boost/test/unit_test.hpp>
 
 #include <boost/algorithm/string.hpp>
@@ -47,13 +46,17 @@ public:
 
 httpd global_server;
 
-BOOST_AUTO_TEST_CASE(simple)
+static
+void
+simple()
 {
   std::string page = curly::get(global_server.root_url());
   BOOST_CHECK(page.empty() == false);
 }
 
-BOOST_AUTO_TEST_CASE(complex)
+static
+void
+complex()
 {
   auto rc = curly::make_get();
 
@@ -62,7 +65,9 @@ BOOST_AUTO_TEST_CASE(complex)
   BOOST_CHECK(r.code() == 200);
 }
 
-BOOST_AUTO_TEST_CASE(timed)
+static
+void
+timed()
 {
   auto rc = curly::make_get();
 
@@ -73,7 +78,9 @@ BOOST_AUTO_TEST_CASE(timed)
   BOOST_CHECK(r.time() != std::chrono::duration<double>(0));
 }
 
-BOOST_AUTO_TEST_CASE(threaded)
+static
+void
+threaded()
 {
   int const number_of_thread = 3;
   std::vector<std::thread> vt;
@@ -108,4 +115,22 @@ BOOST_AUTO_TEST_CASE(threaded)
 
   for (auto& th: vt)
     th.join();
+}
+
+static
+bool
+test_suite()
+{
+  auto& ts = boost::unit_test::framework::master_test_suite();
+  ts.add(BOOST_TEST_CASE(simple), 0, 20);
+  ts.add(BOOST_TEST_CASE(complex), 0, 20);
+  ts.add(BOOST_TEST_CASE(timed), 0, 20);
+  ts.add(BOOST_TEST_CASE(threaded), 0, 20);
+  return true;
+}
+
+int
+main(int argc, char** argv)
+{
+  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }
