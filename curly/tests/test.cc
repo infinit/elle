@@ -40,7 +40,10 @@ public:
   std::string
   root_url()
   {
-    return elle::sprintf("http://localhost:%s/", this->port);
+    // For some reason, resolution sometimes times out under valgrind, hence the
+    // IP instead of localhost. This is unrelated to curly since the simplest
+    // Curl request yields the same behavior.
+    return elle::sprintf("http://127.0.0.1:%s/", this->port);
   }
 };
 
