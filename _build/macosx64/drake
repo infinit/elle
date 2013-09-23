@@ -7,6 +7,8 @@ sys.path.insert(
         os.path.join(os.path.dirname(__file__), '../../drake/src')
     )
 )
+import resource
+resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
 
 import drake
 import drake.cxx
@@ -30,6 +32,5 @@ drake.run(
     '../..',
     cxx_toolkit,
     cxx_config,
-    openssl = '/opt/local',
     boost = boost,
 )
