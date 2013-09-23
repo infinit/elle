@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_IGNORE_SIGCHLD
 #define BOOST_TEST_IGNORE_NON_ZERO_CHILD_CODE
+#define BOOST_TEST_MODULE curly_sched
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
@@ -26,11 +27,10 @@
 
 ELLE_LOG_COMPONENT("curly.test");
 
-static
-void
-parallel_queries()
+BOOST_AUTO_TEST_CASE(simple_test)
 {
   static int const concurrent = 8;
+  static size_t const message_size = 20000;
   reactor::Scheduler sched;
 
   int port;
@@ -76,12 +76,20 @@ parallel_queries()
               // concurrently.
               sched.current()->wait(everybody_is_there);
               std::string answer(
-                "HTTP/1.0 200 OK\r\n"
+                "HTTP/1.1 200 OK\r\n"
                 "Server: Custom HTTP of doom\r\n"
-                "Content-Length: 4\r\n"
-                "\r\n"
-                "lol\n");
+                "Content-Length: " + std::to_string(message_size) + "\r\n"
+                "\r\n");
               ELLE_LOG("send response: %s", answer);
+              std::string chunk = "lol\n";
+              assert(message_size % chunk.size() == 0);
+              size_t sent = 0;
+              while (sent + chunk.size() <= message_size)
+              {
+                answer += chunk;
+                sent += chunk.size();
+              }
+              assert(sent == message_size);
               socket->write(answer.c_str());
             });
         }
@@ -99,13 +107,13 @@ parallel_queries()
       auto get = curly::make_get();
 
       get.output(ss);
-      get.option(CURLOPT_VERBOSE, 0);
+      get.option(CURLOPT_VERBOSE, 1);
       get.url(elle::sprintf("http://127.0.0.1:%s/some/path", port));
       curly::sched_request req(sched, std::move(get));
       ELLE_LOG("send request");
       req.run();
       ELLE_LOG("got response");
-      BOOST_CHECK_EQUAL(ss.str(), "lol\n");
+      BOOST_CHECK_EQUAL(ss.str().substr(0, 4), "lol\n");
     };
 
     sched.current()->wait(served);
@@ -122,9 +130,7 @@ parallel_queries()
   sched.run();
 }
 
-static
-void
-timeout()
+BOOST_AUTO_TEST_CASE(timeout)
 {
   reactor::Scheduler sched;
   reactor::Signal sig;
@@ -166,21 +172,4 @@ timeout()
   };
   reactor::Thread main(sched, "main", run_test);
   sched.run();
-}
-
-
-static
-bool
-test_suite()
-{
-  auto& ts = boost::unit_test::framework::master_test_suite();
-  ts.add(BOOST_TEST_CASE(parallel_queries), 10);
-  ts.add(BOOST_TEST_CASE(timeout), 5);
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

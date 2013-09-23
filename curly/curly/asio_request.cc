@@ -10,8 +10,9 @@ namespace curly
 {
   size_t
   asio_request::write_helper(char* data,
-                        size_t size, size_t nmemb,
-                        void* userptr)
+                             size_t size,
+                             size_t nmemb,
+                             void* userptr)
   {
     auto* _this = reinterpret_cast<asio_request*>(userptr);
     (*_this->_config._output) << std::string{data, data + (size * nmemb)};
@@ -51,7 +52,7 @@ namespace curly
   {
     (void)userptr;
     (void)sockfd;
-    //no much to do
+    // Not much to do.
     return 0;
   }
 
