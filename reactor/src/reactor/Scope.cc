@@ -79,6 +79,13 @@ namespace reactor
   }
 
   void
+  Scope::terminate_now()
+  {
+    ELLE_TRACE_SCOPE("terminating all threads belonging to %s", *this);
+    this->_terminate_now();
+  }
+
+  void
   Scope::_terminate_now()
   {
     ELLE_TRACE_SCOPE("%s: terminate now", *this);

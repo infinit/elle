@@ -440,7 +440,40 @@ namespace scope
                 }
               }
             });
-          ready.wait();
+        };
+      });
+    sched.run();
+  }
+
+  static
+  void
+  terminate_all()
+  {
+    reactor::Scheduler sched;
+    reactor::Barrier ready;
+    reactor::Thread t(
+      sched, "main",
+      [&]
+      {
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          s.run_background(
+            "1",
+            [&]
+            {
+              while (true)
+                reactor::yield();
+            });
+
+          s.run_background(
+            "2",
+            [&]
+            {
+              while (true)
+                reactor::yield();
+            });
+
+          s.terminate_now();
         };
       });
     sched.run();
@@ -1825,6 +1858,8 @@ test_suite()
     scope->add(BOOST_TEST_CASE(exception));
     auto terminate = &scope::terminate;
     scope->add(BOOST_TEST_CASE(terminate));
+    auto terminate_all = &scope::terminate_all;
+    scope->add(BOOST_TEST_CASE(terminate_all));
   }
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");

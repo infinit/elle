@@ -47,6 +47,10 @@ namespace reactor
     void
     run_background(std::string const& name,
                    Thread::Action const& a);
+
+    void
+    terminate_now();
+
   private:
     void
     _terminate_now();
