@@ -23,7 +23,7 @@
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
-#include <curly/curly_sched.cc>
+#include <curly/curly_sched.hh>
 
 ELLE_LOG_COMPONENT("curly.test");
 
@@ -81,16 +81,16 @@ BOOST_AUTO_TEST_CASE(simple_test)
                 "Content-Length: " + std::to_string(message_size) + "\r\n"
                 "\r\n");
               ELLE_LOG("send response: %s", answer);
+              socket->write(answer.c_str());
               std::string chunk = "lol\n";
               assert(message_size % chunk.size() == 0);
               size_t sent = 0;
               while (sent + chunk.size() <= message_size)
               {
-                answer += chunk;
+                socket->write(chunk.c_str());
                 sent += chunk.size();
               }
               assert(sent == message_size);
-              socket->write(answer.c_str());
             });
         }
       };

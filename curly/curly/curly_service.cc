@@ -103,6 +103,7 @@ namespace curly
         _this->check_multi_info();
       }
     };
+
     if (timeout_ms > 0)
     {
       /* update timer */
@@ -149,6 +150,9 @@ namespace curly
     ELLE_DEBUG("concurrency: %s", this->_concurrent);
     if (this->_concurrent == 0)
       this->_timer.cancel();
+    else if (this->_requests.find(req) != this->_requests.end() &&
+             req->_next_action == what)
+      this->dispatch_action(what, sockfd, req);
   }
 
   void
@@ -161,9 +165,7 @@ namespace curly
                      poll_action_string(what));
     // The generic callback for read/write
     // 'what' describe the action to perform.
-    auto fn = [this, what, sockfd, req]
-      (boost::system::error_code const &error, size_t)
-    {
+    auto fn = [=] (boost::system::error_code const& error, size_t) {
       ELLE_DEBUG("action handler triggered for socket %s (what = %s)",
                  sockfd,
                  poll_action_string(what))
@@ -174,6 +176,7 @@ namespace curly
                poll_action_string(what),
                req,
                this->_requests);
+    req->_next_action = CURL_POLL_NONE;
     // Check what we have to poll for. The asio null_buffers allow checking
     // only for readiness.
     switch (what)
@@ -194,6 +197,7 @@ namespace curly
       default:
         break;
     }
+    req->_next_action = what;
   }
 
   int
@@ -208,8 +212,8 @@ namespace curly
     auto* _this = reinterpret_cast<curl_service*>(userptr);
     auto* req = reinterpret_cast<asio_request*>(socket_userptr);
 
-    // We can not assign a per socket userptr until the socket have been
-    // properly registered into the multi_handle.  This function is the very
+    // We cannot assign a per socket userptr until the socket have been
+    // properly registered into the multi_handle. This function is the very
     // first place where it's correct to do that.
     if (req == nullptr)
     {
@@ -221,10 +225,6 @@ namespace curly
           auto mc = curl_multi_assign(_this->_multi.get(), sockfd, request);
           throw_if_mcode(mc);
           req = request;
-          mc = curl_multi_socket_action(_this->_multi.get(),
-                                        sockfd,
-                                        0,
-                                        &_this->_concurrent);
           break;
         }
       }
@@ -246,10 +246,12 @@ namespace curly
     CURL *easy;
     CURLcode res;
     asio_request *req;
+    int count = 0;
 
     while ((msg = curl_multi_info_read(this->_multi.get(), &msgs_left)) != nullptr)
     {
-      ELLE_DEBUG("Got message");
+      count++;
+      ELLE_DEBUG("got message");
       easy = msg->easy_handle;
       res = msg->data.result;
       curl_easy_getinfo(easy, CURLINFO_PRIVATE, &req);
@@ -268,6 +270,7 @@ namespace curly
         ELLE_WARN("got an unknown message: %d", msg->msg);
       }
     }
+    ELLE_DEBUG("checked infos (%s messages)", count);
   }
 
   void

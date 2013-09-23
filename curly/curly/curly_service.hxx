@@ -9,7 +9,8 @@ namespace curly
   void
   curl_service::option(CURLMoption opt, T&& param)
   {
-    auto mc = curl_multi_setopt(this->_multi.get(), opt,
+    auto mc = curl_multi_setopt(this->_multi.get(),
+                                opt,
                                 std::forward<T>(param));
     throw_if_mcode(mc);
   }

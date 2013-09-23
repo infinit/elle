@@ -61,7 +61,8 @@ namespace curly
     _io(asio::use_service<curl_service>(io)),
     _config{std::move(c)},
     _socket{io, boost::asio::ip::tcp::v4()},
-    _error{}
+    _error{},
+    _next_action{CURL_POLL_NONE}
   {
     _config.option(CURLOPT_ERRORBUFFER, this->_error);
     _config.option(CURLOPT_OPENSOCKETFUNCTION, &asio_request::open_socket);
