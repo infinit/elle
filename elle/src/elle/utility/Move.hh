@@ -10,42 +10,25 @@ namespace elle
     template <typename T>
     struct Move
     {
+    public:
+      Move(T&& t);
+      Move(Move const& other);
+      Move(Move&& other);
+      Move&
+      operator =(Move const& other);
+      Move&
+      operator =(Move&& other);
+
+    public:
       mutable T value;
-
-      Move(T&& t):
-        value{std::move(t)}
-      {}
-
-      Move(Move const& other):
-        value{std::move(other.value)}
-      {}
-
-      Move(Move&& other):
-        value{std::move(other.value)}
-      {}
-
-      Move&
-      operator =(Move const& other)
-      {
-        value = std::move(other.value);
-        return *this;
-      }
-
-      Move&
-      operator =(Move&& other)
-      {
-        value = std::move(other.value);
-        return *this;
-      }
     };
 
     template <typename T>
     Move<T>
-    move_on_copy(T&& v)
-    {
-      return Move<T>(std::forward<T>(v));
-    }
+    move_on_copy(T&& v);
   }
 }
+
+# include <elle/utility/Move.hxx>
 
 #endif
