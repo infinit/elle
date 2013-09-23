@@ -81,14 +81,26 @@ public:
           ELLE_ERR("%s: read error on %s: %s", *this, peer, e);
           std::abort();
         }
-        ELLE_LOG("%s: read on %s: %s", *this, peer, buffer);
+        std::string path;
+        {
+          std::istream s(buffer);
+          char line[1024];
+          s.getline(line, sizeof(line));
+          ELLE_LOG("%s: read on %s: %s", *this, peer, line);
+          std::vector<std::string> words;
+          boost::algorithm::split(words, line,
+                                  boost::algorithm::is_any_of(" "));
+          BOOST_CHECK_EQUAL(words[0], "GET");
+          BOOST_CHECK_EQUAL(words[2], "HTTP/1.1\r");
+          path = words[1];
+        }
         delete buffer;
         auto answer = new std::string(
           "HTTP/1.1 200 OK\r\n"
           "Content-Type: text/plain; charset=UTF-8\r\n"
           "Connection: Close\r\n"
-          "\r\n"
-          "lol\n");
+          "\r\n");
+        *answer += path;
         auto answer_buffer = boost::asio::buffer(answer->c_str(),
                                                  answer->size());
         auto cb = [this, socket_move, answer]
@@ -144,20 +156,25 @@ static
 void
 simple()
 {
-  ELLE_LOG("Get %s", global_server.root_url());
-  std::string page = curly::get(global_server.root_url());
-  BOOST_CHECK(page.empty() == false);
+  auto url = global_server.root_url() + "simple";
+  ELLE_LOG("Get %s", url);
+  std::string page = curly::get(url);
+  BOOST_CHECK_EQUAL(page, "/simple");
 }
 
 static
 void
 complex()
 {
+  auto url = global_server.root_url() + "complex";
+  ELLE_LOG("Get %s", url);
   auto rc = curly::make_get();
-
-  rc.url(global_server.root_url());
+  rc.url(url);
+  std::stringstream content;
+  rc.output(content);
   curly::request r(std::move(rc));
   BOOST_CHECK(r.code() == 200);
+  BOOST_CHECK(content.str() == "/complex");
 }
 
 static
@@ -167,9 +184,10 @@ timed()
   auto rc = curly::make_get();
 
   rc.url(global_server.root_url());
+  std::stringstream content;
+  rc.output(content);
   curly::request r(std::move(rc));
   BOOST_CHECK(r.code() == 200);
-  std::cout << "time is " << r.time().count() << std::endl;
   BOOST_CHECK(r.time() != std::chrono::duration<double>(0));
 }
 
