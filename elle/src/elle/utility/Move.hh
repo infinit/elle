@@ -8,37 +8,44 @@ namespace elle
   namespace utility
   {
     template <typename T>
-    struct move_on_copy
+    struct Move
     {
       mutable T value;
 
-      move_on_copy(T&& t):
+      Move(T&& t):
         value{std::move(t)}
       {}
 
-      move_on_copy(move_on_copy const& other):
+      Move(Move const& other):
         value{std::move(other.value)}
       {}
 
-      move_on_copy(move_on_copy&& other):
+      Move(Move&& other):
         value{std::move(other.value)}
       {}
 
-      move_on_copy&
-      operator =(move_on_copy const& other)
+      Move&
+      operator =(Move const& other)
       {
         value = std::move(other.value);
         return *this;
       }
 
-      move_on_copy&
-      operator =(move_on_copy&& other)
+      Move&
+      operator =(Move&& other)
       {
         value = std::move(other.value);
         return *this;
       }
     };
-  } /* utility */
-} /* elle */
+
+    template <typename T>
+    Move<T>
+    move_on_copy(T&& v)
+    {
+      return Move<T>(std::forward<T>(v));
+    }
+  }
+}
 
 #endif

@@ -69,7 +69,7 @@ public:
   _serve(std::unique_ptr<boost::asio::ip::tcp::socket> _socket)
   {
     auto socket = _socket.get();
-    auto socket_move = elle::utility::move_on_copy<std::unique_ptr<boost::asio::ip::tcp::socket>>(std::move(_socket));
+    auto socket_move = elle::utility::move_on_copy(std::move(_socket));
     auto buffer = new boost::asio::streambuf;
     auto cb = [this, socket_move, buffer]
       (boost::system::error_code const& e, size_t size)
