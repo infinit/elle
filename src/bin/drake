@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import drake
+import sys
+
+path = '.'
+if len(sys.argv) > 1:
+  path = sys.argv[1]
+  del sys.argv[1]
+
+drake.run(path)

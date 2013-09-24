@@ -20,6 +20,7 @@ def configure(prefix = '.'):
 
   prefix = drake.Path(prefix)
 
+  # Sources
   sources = drake.nodes(
     'src/drake/__init__.py',
     'src/drake/air.py',
@@ -46,13 +47,16 @@ def configure(prefix = '.'):
     'src/drake/urbi/__init__.py',
     'src/drake/utils.py',
     )
+  command = drake.node('src/bin/drake')
 
+  # Install
   lib = drake.Path('lib/python%s.%s/site-packages' % \
                      (sys.version_info[0], sys.version_info[1]))
-  python = drake.copy(sources, prefix / lib, 'src')
+  install = drake.Rule('install')
+  install << drake.copy(sources, prefix / lib, 'src')
+  install << drake.copy(command, prefix/'bin', 'src/bin')
 
-  install = drake.Rule('install', python)
-
+  # Tests
   tests = [
     'base/deps-dyn',
     'base/no-builder-to-make',
