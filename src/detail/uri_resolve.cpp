@@ -9,7 +9,7 @@
 namespace network {
   namespace detail {
     // remove_dot_segments
-    template<typename Range>
+    template <typename Range>
     void remove_last_segment(Range& path) {
       while (!path.empty()) {
         if (path.back() == '/') {
@@ -26,31 +26,24 @@ namespace network {
       using std::begin;
 
       uri::string_type output;
-      while(!input.empty()) {
+      while (!input.empty()) {
         if (starts_with(input, "../")) {
           erase_head(input, 3);
-	}
-        else if (starts_with(input, "./")) {
+        } else if (starts_with(input, "./")) {
           erase_head(input, 2);
-	}
-        else if (starts_with(input, "/./")) {
+        } else if (starts_with(input, "/./")) {
           replace_head(input, 3, "/");
-	}
-        else if (input == "/.") {
+        } else if (input == "/.") {
           replace_head(input, 2, "/");
-	}
-        else if(starts_with(input, "/../")) {
+        } else if (starts_with(input, "/../")) {
           erase_head(input, 3);
           remove_last_segment(output);
-        }
-        else if (starts_with(input, "/..")) {
+        } else if (starts_with(input, "/..")) {
           replace_head(input, 3, "/");
           remove_last_segment(output);
-        }
-        else if(all(input, is_any_of(".")))  {
+        } else if (all(input, is_any_of("."))) {
           input.clear();
-	}
-        else {
+        } else {
           int n = input.front() == '/' ? 1 : 0;
           auto slash = find_nth(input, "/", n);
           output.append(begin(input), begin(slash));
@@ -61,24 +54,25 @@ namespace network {
     }
 
     uri::string_type remove_dot_segments(uri::string_view path) {
-      return remove_dot_segments(uri::string_type(std::begin(path), std::end(path)));
+      return remove_dot_segments(
+          uri::string_type(std::begin(path), std::end(path)));
     }
 
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
-    uri::string_type merge_paths(const uri &base, const uri &reference) {
+    uri::string_type merge_paths(const uri& base, const uri& reference) {
       uri::string_type path;
       if (!base.path() || base.path()->empty()) {
         path = "/";
-      }
-      else {
+      } else {
         const auto& base_path = base.path().get();
         auto last_slash = boost::find_last(base_path, "/");
         path.append(std::begin(base_path), last_slash.end());
       }
       if (reference.path()) {
-	path.append(uri::string_type(std::begin(*reference.path()), std::end(*reference.path())));
+        path.append(uri::string_type(std::begin(*reference.path()),
+                                     std::end(*reference.path())));
       }
       return remove_dot_segments(std::move(path));
     }
-  } // namespace detail
-} // namespace network
+  }  // namespace detail
+}  // namespace network

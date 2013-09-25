@@ -7,8 +7,8 @@
 #ifndef NETWORK_URI_ERRORS_INC
 #define NETWORK_URI_ERRORS_INC
 
-#include <network/uri/config.hpp>
 #include <system_error>
+#include <network/uri/config.hpp>
 
 namespace network {
 
