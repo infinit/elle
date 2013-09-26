@@ -2851,7 +2851,8 @@ class Runner(Builder):
     self.__status = node('%s.status' % exe.name())
     self.__sources = [exe]
     self.__env = env
-    if isinstance(exe, cxx.Executable):
+    import drake.cxx
+    if isinstance(exe, drake.cxx.Executable):
         self.__sources += exe.dynamic_libraries
     self.stdout_reporting = Runner.Reporting.never
     self.stderr_reporting = Runner.Reporting.always
