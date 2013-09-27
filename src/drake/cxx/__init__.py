@@ -1210,13 +1210,13 @@ class Binary(Node):
 
         Node.__init__(self, path)
 
-        self.sources = []
         self.__dynamic_libraries = []
 
+        self.sources = None
         if sources is not None:
-            for source in sources:
-                self.src_add(source, self.tk, self.cfg)
-
+          self.sources = []
+          for source in sources:
+            self.src_add(source, self.tk, self.cfg)
 
     def clone(self, path):
         return self.__class__(path, self.sources, self.tk, self.cfg)
