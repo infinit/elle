@@ -2,6 +2,7 @@
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/container/set.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
@@ -84,7 +85,10 @@ namespace reactor
   void
   Thread::Dump(std::ostream& s) const
   {
-    s << "Thread " << name() << " [ State = " << state() << "]";
+    s << "Thread " << name()
+      << " @" << this
+      << " [ State = " << state() << "]"
+      << " waited by " << this->_threads;
   }
 
   /*----.
