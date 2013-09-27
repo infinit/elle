@@ -1,7 +1,7 @@
 #ifndef ELLE_BACKTRACE_HXX
 # define ELLE_BACKTRACE_HXX
 
-# ifndef _MSC_VER
+# ifndef INFINIT_WINDOWS
 #  include <execinfo.h>
 # endif
 
@@ -11,7 +11,7 @@ namespace elle
   Backtrace
   Backtrace::current(unsigned skip)
   {
-# ifdef _MSC_VER
+# ifdef INFINIT_WINDOWS
     return Backtrace();
 # else
     static const size_t size = 128;

@@ -14,7 +14,7 @@
 
 namespace elle
 {
-#if !defined(INFINIT_MACOSX)
+#if !defined(INFINIT_MACOSX) and !defined(INFINIT_WINDOWS)
   static bool
   extract(std::string& str, std::string& chunk, unsigned char until)
   {
@@ -85,7 +85,7 @@ namespace elle
     : SuperType()
   {}
 
-#ifndef _MSC_VER
+#ifndef INFINIT_WINDOWS
   Backtrace
   Backtrace::_current(void** callstack, size_t frames, unsigned skip)
   {
@@ -138,7 +138,7 @@ namespace elle
 
     return bt;
   }
-#endif
+#endif // INFINIT_WINDOWs
 
   void
   Backtrace::strip_base(const Backtrace& base)
