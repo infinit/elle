@@ -54,9 +54,9 @@ def configure(cxx_toolkit = None,
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', elle.lib_dynamic.name().dirname())
 
   # UDT
-  asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
-  asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
-  udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
+  #asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
+  #asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
+  #udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
 
   # Asio-FS
   # asio_fs = drake.include('asio-fs', cxx_toolkit, cxx_config, boost = boost)
