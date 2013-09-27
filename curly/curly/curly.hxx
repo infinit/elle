@@ -36,7 +36,7 @@ namespace curly
     curly::request_configuration c;
 
     c.option(Opt, 1);
-    c.option(CURLOPT_VERBOSE, 0);
+    c.option(CURLOPT_VERBOSE, 1);
     c.option(CURLOPT_NOSIGNAL, 1);
     c.option(CURLOPT_CONNECTTIMEOUT, 10);
     return c;
