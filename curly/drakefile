@@ -101,9 +101,9 @@ def configure(cxx_toolkit = None,
     openssl_configure_args.append(
       'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'))
   GNUBuilder(cxx_toolkit,
-             curl_configure,
-             [curl_lib],
-             args = openssl_configure_args,
+             configure = curl_configure,
+             targets = [curl_lib],
+             configure_args = openssl_configure_args,
              sources = openssl_libs)
   curl_lib = drake.copy(curl_lib, '.', 'curl')
   curl_config = drake.cxx.Config()
@@ -130,7 +130,7 @@ def configure(cxx_toolkit = None,
   cxx_config += boost.config_system()
 
   # http
-  http_path = drake.Node('scripts/http.py')
+#http_path = drake.Node('scripts/http.py')
 
   # Sources
   sources = drake.nodes(
