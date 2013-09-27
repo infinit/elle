@@ -1311,10 +1311,14 @@ class Module(Binary):
 
 class StaticLib(Binary):
 
-  def __init__(self, path, sources, tk, cfg):
-    Binary.__init__(self, tk.libname_static(cfg, path),
-                    sources, tk, cfg)
-    StaticLibLinker(self.sources, self, self.tk, self.cfg)
+  def __init__(self, path, sources = None, tk = None, cfg = None):
+    if tk is not None:
+      path = tk.libname_static(cfg, path)
+    Binary.__init__(self, path, sources, tk, cfg)
+    if sources is not None:
+      assert tk is not None
+      assert cfg is not None
+      StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
 
 class Executable(Binary):
