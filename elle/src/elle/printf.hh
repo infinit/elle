@@ -6,20 +6,20 @@
 
 namespace elle
 {
-  template <typename... T>
+  template <typename F, typename... T>
   size_t
-  printf(char const* fmt,
+  printf(F&& fmt,
          T&&... values);
 
-  template <typename... T>
+  template <typename F, typename... T>
   size_t
   fprintf(std::ostream& out,
-          char const* fmt,
+          F&& fmt,
           T&&... values);
 
-  template <typename... T>
+  template <typename F, typename... T>
   std::string
-  sprintf(char const* fmt,
+  sprintf(F&& fmt,
           T&&... values);
 }
 

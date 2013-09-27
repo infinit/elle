@@ -88,11 +88,11 @@ namespace elle
 
 
     // XXX virer les const& et utiliser les bon traits
-    template<typename... T>
+    template<typename F, typename... T>
     std::string
-    format(char const* fmt, T&&... values)
+    format(F&& fmt, T&&... values)
     {
-      boost::format boost_fmt{fmt};
+      boost::format boost_fmt{std::forward<F>(fmt)};
       format_feed(boost_fmt, std::forward<T>(values)...);
       try
       {
@@ -109,25 +109,27 @@ namespace elle
   }
 
 
-  template<typename... T>
+  template<typename F, typename... T>
   size_t
-  fprintf(std::ostream& out, char const* fmt, T&&... values)
+  fprintf(std::ostream& out, F&& fmt, T&&... values)
   {
-    std::string res = elle::detail::format(fmt, std::forward<T>(values)...);
+    std::string res = elle::detail::format(std::forward<F>(fmt),
+                                           std::forward<T>(values)...);
     out << res;
     return res.size();
   }
 
-  template<typename... T>
-  size_t printf(char const* fmt, T&&... values)
+  template<typename F, typename... T>
+  size_t printf(F&& fmt, T&&... values)
   {
-    return fprintf(std::cout, fmt, std::forward<T>(values)...);
+    return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values)...);
   }
 
-  template<typename... T>
-  std::string sprintf(char const* fmt, T&&... values)
+  template<typename F, typename... T>
+  std::string sprintf(F&& fmt, T&&... values)
   {
-    return elle::detail::format(fmt, std::forward<T>(values)...);
+    return elle::detail::format(std::forward<F>(fmt),
+                                std::forward<T>(values)...);
   }
 
 }
