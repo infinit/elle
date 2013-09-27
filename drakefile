@@ -1,5 +1,6 @@
 import drake
 import drake.cxx
+import drake.cxx.boost
 import os
 import sys
 
@@ -42,6 +43,7 @@ def configure(cxx_toolkit = None,
     curly_sched_static
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+  boost = boost or drake.cxx.boost.Boost(cxx_toolkit = cxx_toolkit)
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
