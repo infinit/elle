@@ -265,6 +265,8 @@ def configure(cxx_toolkit = None,
     'src/elle/system/platform.hh',
     'src/elle/system/signal.hh',
     'src/elle/system/signal.cc',
+    'src/elle/system/getpid.hh',
+    'src/elle/system/getpid.cc',
     'src/elle/types.hh',
     )
 
