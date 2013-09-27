@@ -60,7 +60,9 @@ namespace reactor
 
         {
           if (error)
-            _raise<Exception>(error.message());
+            _raise<Exception>(
+              elle::sprintf("%s when resolving %s:%s",
+                            error.message(), this->_hostname, this->_service));
           else
             _end_point = *it;
           _signal();
