@@ -509,8 +509,12 @@ class GccToolkit(Toolkit):
     if self.os is None:
       if self.preprocess_isdef('__APPLE__'):
         self.os = drake.os.macos
-      else:
+      elif self.preprocess_isdef('_WIN32'):
+        self.os = drake.os.windows
+      elif self.preprocess_isdef('__linux__'):
         self.os = drake.os.linux
+      else:
+        raise Exception("Host OS not found")
     if self.preprocess_isdef('__clang__'):
       self.__kind = GccToolkit.Kind.clang
     else:
