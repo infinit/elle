@@ -1,5 +1,8 @@
 #include "Process.hh"
 
+// XXX not ported on windows
+#ifndef INFINIT_WINDOWS
+
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -19,8 +22,11 @@
 #include <signal.h>     // kill
 #include <stdlib.h>     // exit, malloc
 #include <sys/types.h>
-#include <sys/wait.h>   // waitpid
-#include <unistd.h>     // fork, close, execvp, environ
+#ifdef INFINIT_WINDOWS
+#else
+# include <sys/wait.h>   // waitpid
+# include <unistd.h>     // fork, close, execvp, environ
+#endif
 #include <stdio.h>
 
 ELLE_LOG_COMPONENT("elle.system.Process");
@@ -810,3 +816,5 @@ namespace elle
 
   }
 }
+
+#endif // INFINIT_WINDOWS

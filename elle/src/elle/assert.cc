@@ -42,7 +42,7 @@ namespace elle
     if (elle::os::in_env("ELLE_REAL_ASSERT"))
     {
       ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
-      assert(false);
+      std::abort();
     }
 
     throw elle::AssertError(message.c_str(), file, line);

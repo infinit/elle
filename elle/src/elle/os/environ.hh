@@ -9,6 +9,10 @@ namespace elle
   namespace os
   {
 
+# ifdef environ // Prevent windows.h macros.
+#  undef environ
+# endif
+
     /// Retrieve a fresh copy of environ.
     std::unordered_map<std::string, std::string>
     environ();

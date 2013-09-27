@@ -1,6 +1,5 @@
 #include <elle/system/Process.hh>
 #include <elle/Exception.hh>
-#include <unistd.h>
 #include <iostream>
 
 int

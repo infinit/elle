@@ -1,6 +1,6 @@
-#include <unistd.h>
-
-#include <iostream>
+#include <elle/Exception.hh>
+#include <elle/log/TextLogger.hh>
+#include <elle/printf.hh>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -8,9 +8,9 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <elle/Exception.hh>
-#include <elle/log/TextLogger.hh>
-#include <elle/printf.hh>
+#include <iostream>
+
+#include <unistd.h>
 
 namespace elle
 {

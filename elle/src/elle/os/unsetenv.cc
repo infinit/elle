@@ -4,35 +4,25 @@
 
 #include <cstdlib>
 
+#ifdef INFINIT_WINDOWS
+# include <windows.h>
+#endif
+
 namespace elle
 {
   namespace os
   {
 
-    class KeyError:
-      public elle::Exception
-    {
-    public:
-      KeyError(std::string const& key):
-        elle::Exception("KeyError '" + key + "'")
-      {}
-    };
-
     void
     unsetenv(std::string const& key)
     {
+#ifdef INFINIT_WINDOWS
+      if (::_putenv((key + "=").c_str()) != 0)
+#else
       if(::unsetenv(key.c_str()) == -1)
-        throw KeyError(key);
-    }
-
-    std::string
-    unsetenv(std::string const& key,
-             std::string const& default_)
-    {
-      if (::unsetenv(key.c_str()) == -1)
-        return key;
-      else
-        return default_;
+#endif
+        throw elle::Exception{
+          "couldn't unset environment variable '" + key + "'"};
     }
 
   }

@@ -6,6 +6,9 @@
 #include <boost/filesystem.hpp>
 
 #include <cassert>
+#include <cstdint>
+#include <stddef.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 ELLE_LOG_COMPONENT("elle.os.path");

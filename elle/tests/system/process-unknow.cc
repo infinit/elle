@@ -1,6 +1,9 @@
 #include <elle/system/Process.hh>
-#include <unistd.h>
+
 #include <iostream>
+
+#include <sys/types.h>
+#include <unistd.h>
 
 int
 main()

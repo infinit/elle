@@ -1,9 +1,8 @@
 #ifndef  ELLE_CONCEPT_UNIQUABLE_HXX
 # define ELLE_CONCEPT_UNIQUABLE_HXX
 
-// XXX[two logs included?]
+# include <elle/assert.hh>
 # include <elle/log.hh>
-
 # include <elle/serialize/Base64Archive.hh>
 
 # include <sstream>
@@ -23,8 +22,8 @@ namespace elle
             ELLE_DEBUG_SCOPE("save %p of type %s to a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
-            assert(dynamic_cast<interface_t const*>(this) != nullptr);
-            assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
+            ELLE_ASSERT(dynamic_cast<interface_t const*>(this) != nullptr);
+            ELLE_ASSERt(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t const*>(this)->serialize(ss);
           }
         catch (std::exception const& err)
@@ -47,8 +46,8 @@ namespace elle
             ELLE_DEBUG_SCOPE("load %p of type %s from a Unique string",
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
-            assert(dynamic_cast<interface_t*>(this) != nullptr);
-            assert(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
+            ELLE_ASSERT(dynamic_cast<interface_t*>(this) != nullptr);
+            ELLE_ASSERT(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t*>(this)->deserialize(ss);
           }
         catch (std::exception const& err)

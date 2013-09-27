@@ -2,30 +2,36 @@
 
 #include <elle/Exception.hh>
 
-#include <cstdlib>
+#include <stdlib.h>
+
+#ifdef INFINIT_WINDOWS
+# include <windows.h>
+#endif
 
 namespace elle
 {
   namespace os
   {
 
-    class KeyError:
-      public elle::Exception
-    {
-    public:
-      KeyError(std::string const& key):
-        elle::Exception("KeyError '" + key + "'")
-      {}
-    };
-
     std::string
     setenv(std::string const& key,
            std::string const& val,
-           int mode)
+           bool mode)
     {
-      if (::setenv(key.c_str(), val.c_str(), mode) == -1)
-        throw KeyError(key);
+      if (mode == false)
+        if (char const* old_value = ::getenv(key.c_str()))
+          return std::string{old_value};
+
+#ifdef INFINIT_WINDOWS
+      if (::_putenv((key + "=" + val).c_str()) != 0)
+#else
+      if (::setenv(key.c_str(), val.c_str(), 1) == -1)
+#endif
+        throw elle::Exception{
+          "couldn't set " + key + "=" + val};
+
       return val;
     }
+
   }
 }

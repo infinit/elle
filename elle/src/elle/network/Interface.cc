@@ -1,5 +1,7 @@
 #include <elle/network/Interface.hh>
 #include <elle/utility/Suffixes.hh>
+#include <elle/Exception.hh>
+#include <elle/printf.hh>
 
 #include <iomanip>
 #include <iostream>
@@ -7,18 +9,23 @@
 #include <sstream>
 #include <string>
 
+#ifdef INFINIT_WINDOWS
+# include <Winsock2.h>
+#else
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <net/if.h>
+# include <ifaddrs.h>
+#endif
+
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-#include <ifaddrs.h>
 
 #ifdef AF_LINK // BSD systems
-#   include <net/if_dl.h>
+# include <net/if_dl.h>
 #endif
 #ifdef AF_PACKET // linux
-#   include <netpacket/packet.h>
+# include <netpacket/packet.h>
 #endif
 
 #include <stdio.h>
@@ -41,9 +48,57 @@ namespace elle
   namespace network
   {
 
-    namespace {
+
+#ifdef INFINIT_WINDOWS
+    std::map<std::string, Interface>
+    Interface::get_map(Filter filter)
+    {
+      std::map<std::string, Interface> addresses;
+      char local_hostname[512] = "";
+      int res;
+
+      res = gethostname(local_hostname, sizeof(local_hostname));
+      if (res != 0) // error
+      {
+        int errnum = WSAGetLastError();
+        if  (errnum == WSANOTINITIALISED)
+        {
+          WSAData data;
+          res = WSAStartup(MAKEWORD(2, 2), &data);
+          if (res != 0) // error
+          {
+            int errnum = WSAGetLastError();
+            throw elle::Exception{
+              elle::sprintf("WSAStartup failed: %d", errnum)};
+          }
+        }
+      }
+
+      struct hostent* host = gethostbyname(local_hostname);
+      if (host == nullptr)
+      {
+        int errnum = WSAGetLastError();
+        throw elle::Exception{elle::sprintf("gethostbyname failed with %d", errnum)};
+      }
+      for (int i = 0; host->h_addr_list[i] != 0; i++)
+      {
+        struct in_addr addr;
+        Interface if_;
+
+        if_.mac_address = "";
+        addr.s_addr = *(u_long*)host->h_addr_list[i];
+        if_.ipv4_address = inet_ntoa(addr);
+        addresses[elle::sprintf("%s-%d", host->h_name, i)] = if_;
+      }
+
+      return addresses;
+    }
+#else
+    namespace
+    {
+
       bool
-      check_ipv4_autoip(struct sockaddr *sock)
+      check_ipv4_autoip(struct sockaddr* sock)
       {
         using namespace elle::suffix;
         // 169.254.0.0
@@ -55,22 +110,24 @@ namespace elle
         if (sock->sa_family != AF_INET)
           return false;
 
-        struct sockaddr_in *sin = (struct sockaddr_in *)sock;
+        struct sockaddr_in* sin = (struct sockaddr_in*) sock;
         auto addr_bits = std::bitset<32>(ntohl(sin->sin_addr.s_addr));
 
         return autoip_addr == (autoip_netmask & addr_bits);
       }
+
     }
+
     std::map<std::string, Interface>
     Interface::get_map(Interface::Filter filter)
     {
       std::map<std::string, Interface> map;
 
-      ifaddrs * ifap = 0;
+      ifaddrs* ifap = 0;
       if (getifaddrs(&ifap) != 0)
         return map;
 
-      for (ifaddrs* iter = ifap; iter != NULL; iter = iter->ifa_next)
+      for (ifaddrs* iter = ifap; iter != nullptr; iter = iter->ifa_next)
       {
         // Apply filters
         if (filter & Interface::Filter::no_loopback &&
@@ -118,7 +175,7 @@ namespace elle
       freeifaddrs(ifap);
       return map;
     }
+#endif
 
   }
 }
-

@@ -2,6 +2,7 @@
 # define ELLE_THREADING_MONITOR_HH
 
 # include <mutex>
+# include <thread>
 
 namespace elle
 {

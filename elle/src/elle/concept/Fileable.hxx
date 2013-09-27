@@ -1,14 +1,14 @@
 #ifndef ELLE_CONCEPT_FILEABLE_HXX
 # define ELLE_CONCEPT_FILEABLE_HXX
 
-# include <fstream>
 
 # include <elle/log.hh>
-
-# include <elle/io/File.hh>
+# include <elle/serialize/BinaryArchive.hxx>
 # include <elle/io/Path.hh>
 
-# include <elle/serialize/BinaryArchive.hxx>
+# include <boost/filesystem.hpp>
+
+# include <fstream>
 
 namespace elle
 {
@@ -55,9 +55,8 @@ namespace elle
 
       ELLE_DEBUG_SCOPE("store(%s)", path);
 
-      if (elle::io::File::Dig(path) == elle::Status::Error)
-        throw elle::Exception(
-          elle::sprintf("unable to dig the path '%s'", path));
+      auto dir = boost::filesystem::path{path.string()}.parent_path();
+      boost::filesystem::create_directories(dir);
 
       std::ofstream out(path.string(),
                         std::ios_base::out | std::ios_base::binary);
@@ -91,9 +90,7 @@ namespace elle
 
       ELLE_DEBUG_SCOPE("erase(%s)", path);
 
-      if (elle::io::File::Erase(path) == elle::Status::Error)
-        throw elle::Exception(
-          elle::sprintf("unable to erase the file '%s'", path));
+      boost::filesystem::remove(path.string());
     }
 
     template<__ESS_ARCHIVE_TPL(Archive)>
@@ -104,7 +101,7 @@ namespace elle
 
       ELLE_DEBUG_SCOPE("exists(%s)", path);
 
-      return (elle::io::File::Exist(path));
+      return (boost::filesystem::exists(path.string()));
     }
 
   }

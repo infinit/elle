@@ -4,7 +4,6 @@
 
 #include <elle/utility/Duration.hh>
 
-#include <pthread.h>
 #include <ctime>
 
 ELLE_LOG_COMPONENT("elle.utility.Time");

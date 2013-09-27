@@ -308,8 +308,10 @@ namespace elle
   void
   HTTPClient::fire(Request& request)
   {
-    std::string uri = std::string("http://") + _impl->server
-        + ":" + std::to_string(_impl->port) + request.url();
+    std::string uri = elle::sprintf("http://%s:%s%s",
+                                    _impl->server,
+                                    _impl->port,
+                                    request.url());
     namespace ip = boost::asio::ip;
 
     ip::tcp::socket socket(_impl->io_service);

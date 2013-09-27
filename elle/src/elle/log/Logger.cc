@@ -1,15 +1,25 @@
-#include <fnmatch.h>
-#include <thread>
+#include <elle/Exception.hh>
+#include <elle/log/Logger.hh>
+#include <elle/os/getenv.hh>
+#include <elle/system/getpid.hh>
+#include <elle/printf.hh>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/tss.hpp>
 
-#include <elle/Exception.hh>
-#include <elle/log/Logger.hh>
-#include <elle/os/getenv.hh>
-#include <elle/printf.hh>
+#ifdef __MINGW32__
+#include <boost/thread/thread.hpp>
+namespace std { namespace this_thread = boost::this_thread; }
+#endif
 
+#ifdef INFINIT_WINDOWS
+# include <Shlwapi.h>
+#else
+# include <fnmatch.h>
+#endif
+
+#include <thread>
 
 namespace elle
 {
@@ -204,8 +214,13 @@ namespace elle
       if (elt == this->_component_levels.end())
       {
         for (auto const& pattern: this->_component_patterns)
+#ifdef INFINIT_WINDOWS
+          if (::PathMatchSpec(name.c_str(), pattern.first.c_str()) == TRUE)
+#else
           if (fnmatch(pattern.first.c_str(), name.c_str(), 0) == 0)
+#endif
             res = pattern.second;
+
         if (res > Level::none)
           this->_component_max_size =
             std::max(this->_component_max_size,
@@ -273,7 +288,7 @@ namespace elle
     elle::log::RegisterTag<Name##Tag> register_tag_##Name;      \
 
     ELLE_LOGGER_TAG(
-      PID, boost::lexical_cast<std::string>(getpid()));
+      PID, boost::lexical_cast<std::string>(elle::system::getpid()));
     ELLE_LOGGER_TAG(
       TID, boost::lexical_cast<std::string>(std::this_thread::get_id()));
 

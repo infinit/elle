@@ -1,5 +1,4 @@
 #include <elle/system/Process.hh>
-#include <unistd.h>
 #include <iostream>
 
 int

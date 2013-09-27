@@ -6,6 +6,10 @@
 
 #include <fstream>
 #include <mutex>
+#ifdef __MINGW32__ // XXX mutex not in std on mingw
+# include <boost/thread/mutex.hpp>
+namespace std { using boost::mutex; }
+#endif
 
 #include <elle/os/getenv.hh>
 
