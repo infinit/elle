@@ -959,12 +959,6 @@ class BaseNode(object, metaclass = _BaseNodeType):
       for dependency in self.dependencies:
         dependency.makefile(marks)
 
-    @property
-    def dependencies(self):
-        """All first-level dependencies"""
-        return itertools.chain(self.builder.sources().values(),
-                               self.builder._Builder__dynsrc.values())
-
     def report_dependencies(self, dependencies):
         """Called when dependencies have been built.
 
@@ -996,34 +990,37 @@ class VirtualNode(BaseNode):
 
 class Node(BaseNode):
 
-    """BaseNode representing a file."""
+  """BaseNode representing a file."""
 
-    def __init__(self, path):
+  def __init__(self, path):
         """Construct a Node with the given path."""
         self.__hash = None
         path = Path(path)
         if not path.absolute():
             path = drake.Drake.current.prefix / path
         BaseNode.__init__(self, path)
+        self.__dependencies = set()
 
-    def clone(self, path):
+  def clone(self, path):
         """Clone of this node, with an other path."""
         return Node(path)
 
-    def hash(self):
-        """Digest of the file as a string."""
-        if self.__hash is None:
-            with open(str(self.path()), 'rb') as f:
-                hasher = hashlib.sha1()
-                while True:
-                    chunk = f.read(8192)
-                    if not chunk:
-                        break
-                    hasher.update(chunk)
-            self.__hash = hasher.hexdigest()
-        return self.__hash
+  def hash(self):
+    """Digest of the file as a string."""
+    if self.__hash is None:
+      hasher = hashlib.sha1()
+      for node in sorted(itertools.chain((self,), self.dependencies)):
+        path = node.path()
+        with open(str(path), 'rb') as f:
+          while True:
+            chunk = f.read(8192)
+            if not chunk:
+              break
+            hasher.update(chunk)
+      self.__hash = hasher.hexdigest()
+    return self.__hash
 
-    def clean(self):
+  def clean(self):
         """Clean this node's file if it is generated, and recursively
         its sources recursively."""
         BaseNode.clean(self)
@@ -1031,7 +1028,7 @@ class Node(BaseNode):
             print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
-    def path(self):
+  def path(self):
         """Filesystem path to node file, relative to the root of the
         build directory.
 
@@ -1054,14 +1051,14 @@ class Node(BaseNode):
         else:
             return self.name_absolute()
 
-    def missing(self):
+  def missing(self):
         """Whether the associated file doesn't exist.
 
         Nodes are built if their file does not exist.
         """
         return not self.path().exists()
 
-    def build(self):
+  def build(self):
         """Builds this node.
 
         Building a Node raises an error if the associated file does
@@ -1107,7 +1104,7 @@ class Node(BaseNode):
                 self.builder.run()
             self.polish()
 
-    def __setattr__(self, name, value):
+  def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
         if name == 'builder' and 'builder' in self.__dict__:
             del Drake.current.nodes[self._BaseNode__name]
@@ -1116,18 +1113,25 @@ class Node(BaseNode):
         else:
             self.__dict__[name] = value
 
-    def __repr__(self):
+  def __repr__(self):
         """Filesystem path to the node file, as a string."""
         return str(self.path())
 
-    def __lt__(self, rhs):
+  def __lt__(self, rhs):
         """Arbitrary global order on nodes, to enable
         sorting/indexing."""
         return self.path() < rhs.path()
 
-    @property
-    def install_command(self):
+  @property
+  def install_command(self):
       return None
+
+  @property
+  def dependencies(self):
+      return self.__dependencies
+
+  def dependency_add(self, dep):
+      self.__dependencies.add(dep)
 
 
 def node(path, type = None):
