@@ -15,6 +15,9 @@ set(Uri_SRCS
 if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
   add_library(cppnetlib-uri ${Uri_SRCS})
   target_link_libraries(cppnetlib-uri ${Boost_LIBRARIES})
+  if (NOT CPP-NETLIB_DISABLE_LIBCXX)
+    target_link_libraries(cppnetlib-uri "c++")
+  endif()
   install(
     TARGETS
     cppnetlib-uri
