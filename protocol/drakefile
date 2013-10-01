@@ -72,6 +72,8 @@ def configure(cryptography,
     'src/protocol/Channel.hh',
     'src/protocol/Serializer.cc',
     'src/protocol/RPC.cc',
+    'src/protocol/exceptions.cc',
+    'src/protocol/exceptions.hh',
     'src/protocol/fwd.hh',
   )
   global lib_static, lib_dynamic

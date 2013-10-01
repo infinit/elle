@@ -7,6 +7,7 @@
 #include <reactor/scheduler.hh>
 
 #include <protocol/Serializer.hh>
+#include <protocol/exceptions.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.Serializer");
 
@@ -64,7 +65,7 @@ namespace infinit
         if (hash_local.buffer() != hash)
         {
           ELLE_ERR("%s: wrong packet checksum", *this);
-          throw elle::Exception("wrong checksum");
+          throw ChecksumError();
         }
         else
           ELLE_DUMP("%s: checksum match", *this);
