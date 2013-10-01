@@ -23,6 +23,7 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
+      Serializer(std::iostream& stream);
       Serializer(reactor::Scheduler& scheduler, std::iostream& stream);
 
     /*----------.

@@ -4,6 +4,8 @@
 
 #include <cryptography/oneway.hh>
 
+#include <reactor/scheduler.hh>
+
 #include <protocol/Serializer.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.Serializer");
@@ -16,11 +18,16 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Serializer::Serializer(reactor::Scheduler& scheduler, std::iostream& stream)
-      : Super(scheduler)
-      , _stream(stream)
-      , _lock_write()
-      , _lock_read()
+    Serializer::Serializer(std::iostream& stream):
+      Serializer(*reactor::Scheduler::scheduler(), stream)
+    {}
+
+    Serializer::Serializer(reactor::Scheduler& scheduler,
+                           std::iostream& stream):
+      Super(scheduler),
+      _stream(stream),
+      _lock_write(),
+      _lock_read()
     {}
 
     /*----------.
