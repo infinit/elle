@@ -9,8 +9,14 @@ namespace reactor
   void
   Waitable::_raise(Args&&... args)
   {
-    this->_raise(std::make_exception_ptr(
-                   Exception(std::forward<Args>(args)...)));
+    try
+    {
+      throw Exception(std::forward<Args>(args)...);
+    }
+    catch (...)
+    {
+      this->_raise(std::current_exception());
+    }
   }
 }
 

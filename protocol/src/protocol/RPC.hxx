@@ -198,11 +198,9 @@ namespace infinit
             input >> frame.offset;
             bt.push_back(frame);
           }
-          elle::Exception* inner =
-            new elle::Exception(bt, error);
           reactor::network::Exception e
             (elle::sprintf("remote procedure '%s' failed", this->_name));
-          e.inner_exception(inner);
+          e.inner_exception(elle::make_unique<elle::Exception>(bt, error));
           throw e;
         }
       }

@@ -17,8 +17,14 @@ namespace elle
                        elle::String const& message):
     std::runtime_error(message),
     _backtrace(bt),
-    _inner_exception(0)
+    _inner_exception(nullptr)
   {}
+
+  void
+  Exception::inner_exception(std::unique_ptr<Exception>&& exception)
+  {
+    this->_inner_exception = std::move(exception);
+  }
 
   std::ostream&
   operator <<(std::ostream& s,
@@ -26,7 +32,7 @@ namespace elle
   {
     s << e.what() << std::endl;
     s << e.backtrace();
-    if (Exception const* inner = e.inner_exception())
+    if (auto const& inner = e.inner_exception())
       s << std::endl << "Exception was triggered by: " << *inner;
     return s;
   }

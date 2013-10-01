@@ -1,6 +1,7 @@
 #ifndef ELLE_EXCEPTION_HH
 # define ELLE_EXCEPTION_HH
 
+# include <memory>
 # include <stdexcept>
 
 # include <elle/attribute.hh>
@@ -18,10 +19,12 @@ namespace elle
   public:
     Exception(elle::String const& format);
     Exception(elle::Backtrace const& bt, elle::String const& format);
+    void
+    inner_exception(std::unique_ptr<Exception>&& exception);
 
   private:
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);
-    ELLE_ATTRIBUTE_RW(Exception*, inner_exception);
+    ELLE_ATTRIBUTE_R(std::unique_ptr<Exception>, inner_exception);
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);
