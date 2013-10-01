@@ -22,9 +22,15 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
+      TCPSocket(const std::string& hostname,
+                const std::string& port,
+                DurationOpt timeout = DurationOpt());
       TCPSocket(Scheduler& sched,
                 const std::string& hostname,
                 const std::string& port,
+                DurationOpt timeout = DurationOpt());
+      TCPSocket(const std::string& hostname,
+                int port,
                 DurationOpt timeout = DurationOpt());
       TCPSocket(Scheduler& sched,
                 const std::string& hostname,

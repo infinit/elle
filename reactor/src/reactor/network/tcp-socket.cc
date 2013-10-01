@@ -24,14 +24,24 @@ namespace reactor
     | Construction |
     `-------------*/
 
+    TCPSocket::TCPSocket(const std::string& hostname,
+                         const std::string& port,
+                         DurationOpt timeout):
+      TCPSocket(*reactor::Scheduler::scheduler(), hostname, port, timeout)
+    {}
+
     TCPSocket::TCPSocket(Scheduler& sched,
                          const std::string& hostname,
                          const std::string& port,
-                         DurationOpt timeout)
-      : Super(sched,
-              resolve_tcp(sched, hostname, port),
-              timeout)
-      , _write_mutex()
+                         DurationOpt timeout):
+      Super(sched, resolve_tcp(sched, hostname, port), timeout),
+      _write_mutex()
+    {}
+
+    TCPSocket::TCPSocket(const std::string& hostname,
+                         int port,
+                         DurationOpt timeout):
+      TCPSocket(*reactor::Scheduler::scheduler(), hostname, port, timeout)
     {}
 
     TCPSocket::TCPSocket(Scheduler& sched,
