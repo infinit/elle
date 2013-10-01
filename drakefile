@@ -8,6 +8,8 @@ elle_dynamic = None
 elle_static = None
 cryptography_dynamic = None
 cryptography_static = None
+protocol_dynamic = None
+protocol_static = None
 reactor = None
 reactor_dynamic = None
 reactor_static = None
@@ -33,6 +35,7 @@ def configure(cxx_toolkit = None,
   global config
   global elle_dynamic, elle_static
   global cryptography_dynamic, cryptography_static
+  global protocol_dynamic, protocol_static
   global reactor, reactor_dynamic, reactor_static
   global asio_udt, curly, curly_dynamic, curly_static, \
     curly_asio_dynamic, curly_asio_static, curly_sched_dynamic, \
@@ -101,16 +104,20 @@ def configure(cxx_toolkit = None,
                            valgrind = valgrind)
 
   config = drake.cxx.Config()
-  config += elle.config
   config += cryptography.config
-  config += reactor.config
   config += curly.config
+  config += elle.config
+  config += protocol.config
+  config += reactor.config
 
   elle_dynamic = elle.lib_dynamic
   elle_static = elle.lib_static
 
   cryptography_dynamic = cryptography.lib_dynamic
   cryptography_static = cryptography.lib_static
+
+  protocol_dynamic = protocol.lib_dynamic
+  protocol_static = protocol.lib_static
 
   reactor_dynamic = reactor.lib_dynamic
   reactor_static = reactor.lib_static
