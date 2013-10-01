@@ -15,11 +15,14 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    TCPServer::TCPServer(Scheduler& sched)
-      : Super(sched)
-      , _acceptor()
+    TCPServer::TCPServer():
+      TCPServer(*reactor::Scheduler::scheduler())
+    {}
+
+    TCPServer::TCPServer(Scheduler& sched):
+      Super(sched),
+      _acceptor()
     {
-      // XXX: use the current scheduler API.
       ELLE_ASSERT(&sched);
     }
 

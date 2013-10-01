@@ -12,6 +12,7 @@ namespace reactor
     {
       public:
         typedef Server Super;
+        TCPServer();
         TCPServer(Scheduler& sched);
         virtual ~TCPServer();
 
