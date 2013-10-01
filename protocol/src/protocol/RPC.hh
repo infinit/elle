@@ -107,7 +107,8 @@ namespace infinit
       virtual void parallel_run();
     protected:
       typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;
-      typedef std::pair<std::string, LocalProcedure*> NamedProcedure;
+      typedef std::pair<std::string,
+                        std::unique_ptr<LocalProcedure>> NamedProcedure;
       typedef std::unordered_map<uint32_t, NamedProcedure> Procedures;
       Procedures _procedures;
       std::vector<BaseRPC*> _rpcs;

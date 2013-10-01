@@ -146,9 +146,8 @@ namespace infinit
       auto proc = _owner._procedures.find(_id);
       assert(proc != _owner._procedures.end());
       assert(proc->second.second == nullptr);
-      typedef Procedure<IS, OS, R, Args...> Proc;
-      Proc* res = new Proc(_name, _owner, _id, f);
-      _owner._procedures[_id].second = res;
+      _owner._procedures[_id].second.reset(
+        new Procedure<IS, OS, R, Args...>(_name, _owner, _id, f));
     }
 
 
