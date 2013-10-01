@@ -24,7 +24,7 @@ namespace elle
 
   private:
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);
-    ELLE_ATTRIBUTE_R(std::unique_ptr<Exception>, inner_exception);
+    ELLE_ATTRIBUTE_R(std::shared_ptr<Exception>, inner_exception);
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);
