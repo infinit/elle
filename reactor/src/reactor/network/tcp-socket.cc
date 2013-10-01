@@ -161,7 +161,8 @@ namespace reactor
           else
             ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
-          if (error == boost::asio::error::eof)
+          if (error == boost::asio::error::eof || \
+              error == boost::system::errc::operation_canceled)
             this->_raise<ConnectionClosed>();
           else if (error)
             this->_raise<Exception>(error.message());
@@ -277,7 +278,9 @@ namespace reactor
           else
             ELLE_TRACE("%s: write completed: %s bytes", *this, written);
           _written = written;
-          if (error == boost::asio::error::eof)
+          if (error == boost::asio::error::eof || \
+              error == boost::system::errc::operation_canceled ||   \
+              error == boost::system::errc::broken_pipe)
             this->_raise<ConnectionClosed>();
           else if (error)
             this->_raise<Exception>(error.message());
