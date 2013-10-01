@@ -2410,7 +2410,8 @@ class Install(Copy):
 
 
 def __copy(sources, to, strip_prefix, builder):
-  if isinstance(sources, list):
+  import collections
+  if isinstance(sources, collections.Iterable):
     res = []
     for node in sources:
         res.append(__copy(node, to, strip_prefix, builder))
