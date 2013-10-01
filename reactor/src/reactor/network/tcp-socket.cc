@@ -249,7 +249,7 @@ namespace reactor
         catch (boost::system::system_error const& e)
         {
           if (e.code() == boost::system::errc::bad_file_descriptor)
-            stream << "read on invalid socket";
+            stream << "write on invalid socket";
           else
             throw;
         }
@@ -273,9 +273,9 @@ namespace reactor
           if (*canceled)
             return;
           if (error)
-            ELLE_TRACE("%s: read error: %s", *this, error.message());
+            ELLE_TRACE("%s: write error: %s", *this, error.message());
           else
-            ELLE_TRACE("%s: read completed: %s bytes", *this, read);
+            ELLE_TRACE("%s: write completed: %s bytes", *this, written);
           _written = written;
           if (error == boost::asio::error::eof)
             this->_raise<ConnectionClosed>();
