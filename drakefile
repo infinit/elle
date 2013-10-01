@@ -90,6 +90,15 @@ def configure(cxx_toolkit = None,
     openssl = cryptography.openssl_prefix,
     openssl_libs = cryptography.openssl_libs,
   )
+  protocol = drake.include('protocol',
+                           cxx_toolkit = cxx_toolkit,
+                           cxx_config = cxx_config,
+                           boost = boost,
+                           cryptography = cryptography,
+                           elle = elle,
+                           reactor = reactor,
+                           prefix = prefix,
+                           valgrind = valgrind)
 
   config = drake.cxx.Config()
   config += elle.config
@@ -127,6 +136,7 @@ def configure(cxx_toolkit = None,
   rule_tests << cryptography.rule_tests
   rule_tests << reactor.rule_tests
   rule_tests << curly.rule_tests
+  rule_tests << protocol.rule_tests
 
   global rule_check
   rule_check = drake.Rule('check')
@@ -134,9 +144,11 @@ def configure(cxx_toolkit = None,
   rule_check << cryptography.rule_check
   rule_check << reactor.rule_check
   rule_check << curly.rule_check
+  rule_check << protocol.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
   install << cryptography.rule_install
   install << reactor.rule_install
   install << curly.rule_install
+  install << protocol.rule_install
