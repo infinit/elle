@@ -13,7 +13,7 @@ namespace infinit
     {
     public:
       typedef elle::Exception Super;
-      using Super::Exception;
+      Error(std::string const& message);
     };
 
     /// An operation failure because the received data is corrupted.
