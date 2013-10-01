@@ -9,12 +9,12 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Exception::Exception(elle::String const& message):
+  Exception::Exception(std::string const& message):
     Exception(Backtrace::current(1), message)
   {}
 
   Exception::Exception(elle::Backtrace const& bt,
-                       elle::String const& message):
+                       std::string const& message):
     std::runtime_error(message),
     _backtrace(bt),
     _inner_exception(nullptr)
