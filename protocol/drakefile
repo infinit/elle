@@ -97,7 +97,8 @@ def configure(cryptography,
   rule_tests = drake.Rule('tests')
 
   tests = [
-    'rpc'
+    'rpc',
+    'serializer',
     ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
