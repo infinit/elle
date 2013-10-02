@@ -644,7 +644,7 @@ class GccToolkit(Toolkit):
       for path in cfg._Config__rpath:
         cmd.append('-Wl,-rpath,%s' % self.rpath(path))
       if self.os == drake.os.linux:
-        rpath_link = set()
+        rpath_link = sched.OrderedSet()
         for lib in (lib for lib in objs if isinstance(lib, DynLib)):
           for library in lib.dynamic_libraries:
             rpath_link.add(str(library.path().dirname()))
