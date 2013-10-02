@@ -877,15 +877,13 @@ class BaseNode(object, metaclass = _BaseNodeType):
         is, roughly, run this node runner.
         """
         if not _scheduled():
-            Coroutine(self.build, str(self), Drake.current.scheduler)
-            Drake.current.scheduler.run()
+          Coroutine(self.build, str(self), Drake.current.scheduler)
+          Drake.current.scheduler.run()
         else:
-            debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-            with debug.indentation():
-                if self.builder is None:
-                    self.polish()
-                    return
-                self.builder.run()
+          debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+          with debug.indentation():
+            if self.builder is not None:
+              self.builder.run()
             self.polish()
 
     @property
@@ -1052,57 +1050,57 @@ class Node(BaseNode):
             return self.name_absolute()
 
   def missing(self):
-        """Whether the associated file doesn't exist.
+    """Whether the associated file doesn't exist.
 
-        Nodes are built if their file does not exist.
-        """
-        return not self.path().exists()
+    Nodes are built if their file does not exist.
+    """
+    return not self.path().exists() or \
+      any(map(BaseNode.missing, self.dependencies))
 
   def build(self):
-        """Builds this node.
+    """Builds this node.
 
-        Building a Node raises an error if the associated file does
-        not exist and it has no builder.
+    Building a Node raises an error if the associated file does
+    not exist and it has no builder.
 
-        >>> n = node('/tmp/.drake.node')
-        >>> n.path().remove()
-        >>> n.build()
-        Traceback (most recent call last):
-            ...
-        drake.NoBuilder: no builder to make /tmp/.drake.node
+    >>> n = node('/tmp/.drake.node')
+    >>> n.path().remove()
+    >>> n.build()
+    Traceback (most recent call last):
+        ...
+    drake.NoBuilder: no builder to make /tmp/.drake.node
 
-        If the file exist, drake consider it is a provided input and
-        building it does nothing.
+    If the file exist, drake consider it is a provided input and
+    building it does nothing.
 
-        >>> n.path().touch()
-        >>> n.build()
+    >>> n.path().touch()
+    >>> n.build()
 
-        If a Node needs to be built and its builder is executed, it
-        must create the Node's associated file.
+    If a Node needs to be built and its builder is executed, it
+    must create the Node's associated file.
 
-        >>> n.path().remove()
-        >>> class EmptyBuilder(Builder):
-        ...   def execute(self):
-        ...     return True
-        >>> builder = EmptyBuilder([], [n])
-        >>> n.build()
-        Traceback (most recent call last):
-            ...
-        drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
-        """
-        if not _scheduled():
-            Coroutine(self.build, str(self), Drake.current.scheduler)
-            Drake.current.scheduler.run()
+    >>> n.path().remove()
+    >>> class EmptyBuilder(Builder):
+    ...   def execute(self):
+    ...     return True
+    >>> builder = EmptyBuilder([], [n])
+    >>> n.build()
+    Traceback (most recent call last):
+        ...
+    drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
+    """
+    if not _scheduled():
+      Coroutine(self.build, str(self), Drake.current.scheduler)
+      Drake.current.scheduler.run()
+    else:
+      debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+      with debug.indentation():
+        if self.builder is None:
+          if self.missing():
+            raise NoBuilder(self)
         else:
-            debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-            with debug.indentation():
-                if self.builder is None:
-                    if self.missing():
-                        raise NoBuilder(self)
-                    self.polish()
-                    return
-                self.builder.run()
-            self.polish()
+          self.builder.run()
+        self.polish()
 
   def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
