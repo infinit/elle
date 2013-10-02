@@ -72,7 +72,7 @@ except()
 
 static
 void
-wait()
+await()
 {
   reactor::Scheduler::scheduler()->current()->sleep(
     boost::posix_time::seconds(2));
@@ -147,7 +147,7 @@ runner(reactor::Semaphore& lock,
   rpc.raise = &except;
   rpc.suicide = &suicide;
   rpc.count = &count;
-  rpc.wait = &wait;
+  rpc.wait = &await;
   try
   {
     if (sync)
