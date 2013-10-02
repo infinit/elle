@@ -2455,7 +2455,10 @@ def __copy(sources, to, strip_prefix, builder):
     if strip_prefix is not None:
       path.strip_prefix(strip_prefix)
     path = Path(to) / path
-    return builder(sources, path).target()
+    res = builder(sources, path).target()
+    for dep in sources.dependencies:
+      res.dependency_add(__copy(dep, to, strip_prefix, builder))
+    return res
 
 
 def copy(sources, to, strip_prefix = None):
