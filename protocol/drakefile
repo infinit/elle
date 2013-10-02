@@ -105,6 +105,7 @@ def configure(cryptography,
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests += boost.config_test()
+  cxx_config_tests += boost.config_system()
   cxx_config_tests.lib_path_runtime('../lib')
 
   for name in tests:
