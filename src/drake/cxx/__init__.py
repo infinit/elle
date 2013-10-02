@@ -909,7 +909,7 @@ def mkdeps(res, n, lvl, config, marks,
     for include_path in search:
       name = include_path / include
       test = name
-      if str(test) in Node.nodes:
+      if str(test) in drake.Drake.current.nodes:
         # Check this is not an old cached dependency from
         # cxx.inclusions. Not sure of myself though.
         if test.is_file() or node(str(test)).builder is not None:
@@ -1215,8 +1215,8 @@ class Binary(Node):
             # FIXME: factor
             p = Path(source.name())
             p.extension = 'o'
-            if str(p) in Node.nodes:
-                o = Node.nodes[p]
+            if str(p) in drake.Drake.current.nodes:
+                o = drake.Drake.current.nodes[p]
             else:
                 o = Object(source, tk, cfg)
             self.sources.append(o)
@@ -1320,7 +1320,7 @@ def all_objects_if_none(nodes):
   if len(nodes):
     return nodes
   else:
-    return [node for node in Node.nodes.values()
+    return [node for node in drake.Drake.current.nodes.values()
             if node.__class__ == Object]
 
 def dot_merge(nodes):

@@ -90,6 +90,10 @@ class Drake:
     """
     return self.__prefix
 
+  @property
+  def nodes(self):
+    return self.__nodes
+
   def recurse(self, path):
     class Recurser:
       def __init__(self, drake):
@@ -110,6 +114,7 @@ class Drake:
     self.__source = drake.Path(root)
     self.__scheduler = Scheduler()
     self.__prefix = drake.Path('.')
+    self.__nodes = {}
 
 class Profile:
 
@@ -711,7 +716,7 @@ class DepFile:
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
       for path in list(self.__sha1.keys()):
-        if path not in Node.nodes:
+        if path not in Drake.current.nodes:
           del self.__sha1[path]
           continue
         h = node(path).hash()
@@ -786,8 +791,8 @@ class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
         try:
             return type.__call__(c, *args, **kwargs)
         except NodeRedefinition as e:
-            assert e.name() in BaseNode.nodes
-            node = BaseNode.nodes[e.name()]
+            assert e.name() in Drake.current.nodes
+            node = Drake.current.nodes[e.name()]
             assert node.__class__ is c
             return node
 
@@ -805,19 +810,18 @@ class BaseNode(object, metaclass = _BaseNodeType):
     source node, a generated file in the case of a target node), in
     which case its type is Node."""
 
-    nodes = {}
     uid = 0
     extensions = {}
 
     def __init__(self, name):
         """Create a node with the given name."""
-        if str(name) in BaseNode.nodes:
+        if str(name) in Drake.current.nodes:
             raise NodeRedefinition(str(name))
         self.__name = name
         self.uid = BaseNode.uid
         BaseNode.uid += 1
         self.builder = None
-        BaseNode.nodes[str(name)] = self
+        Drake.current.nodes[str(name)] = self
         self.consumers = []
 
     def name(self):
@@ -1106,9 +1110,9 @@ class Node(BaseNode):
     def __setattr__(self, name, value):
         """Adapt the node path is the builder is changed."""
         if name == 'builder' and 'builder' in self.__dict__:
-            del self.nodes[self._BaseNode__name]
+            del Drake.current.nodes[self._BaseNode__name]
             self.__dict__[name] = value
-            self.nodes[self._BaseNode__name] = self
+            Drake.current.nodes[self._BaseNode__name] = self
         else:
             self.__dict__[name] = value
 
@@ -1142,8 +1146,8 @@ def node(path, type = None):
     """
     if path.__class__ != Path:
         path = Path(path)
-    if str(path) in Node.nodes:
-        return Node.nodes[str(path)]
+    if str(path) in Drake.current.nodes:
+        return Drake.current.nodes[str(path)]
     if type is not None:
         return type(path)
     if path.extension not in Node.extensions:
@@ -1440,8 +1444,8 @@ class Builder:
                               '%s is already in our sources.' % path,
                               debug.DEBUG_DEPS)
                           continue
-                        if path in Node.nodes:
-                          node = Node.nodes[path]
+                        if path in Drake.current.nodes:
+                          node = Drake.current.nodes[path]
                         else:
                           debug.debug('%s is unknown, calling handler.' % path,
                                       debug.DEBUG_DEPS)
@@ -2098,13 +2102,13 @@ def _register_commands():
         if len(nodes):
             return nodes
         else:
-            return list(Node.nodes.values())
+            return list(Drake.current.nodes.values())
 
     def build(nodes):
       with CWDPrinter():
         try:
           if not len(nodes):
-            nodes = [node for node in Node.nodes.values()
+            nodes = [node for node in Drake.current.nodes.values()
                      if not len(node.consumers)]
           coroutines = []
           for node in nodes:
@@ -2143,7 +2147,7 @@ def _register_commands():
     command_add('dot-show', dot_show_cmd)
 
     def makefile(nodes):
-        root_nodes = [node for node in Node.nodes.values()
+        root_nodes = [node for node in Drake.current.nodes.values()
                       if not len(node.consumers)]
         if not len(nodes):
             nodes = root_nodes
@@ -2212,7 +2216,7 @@ def complete_modes():
 
 def complete_nodes():
   def res():
-    for node in BaseNode.nodes:
+    for node in Drake.current.nodes:
       print(node)
     exit(0)
   return res
@@ -2292,26 +2296,26 @@ def run(root, *cfg, **kwcfg):
       cb()
     mode = _MODES['build']
     i = 0
-    while True:
-      if i < len(args):
-        arg = args[i]
-        if arg[0:2] == '--':
-          arg = arg[2:]
-          if arg in _MODES:
-            mode = _MODES[arg]
-          else:
-            raise Exception('Unknown option: %s.' % arg)
+    with drake:
+      while True:
+        if i < len(args):
+          arg = args[i]
+          if arg[0:2] == '--':
+            arg = arg[2:]
+            if arg in _MODES:
+              mode = _MODES[arg]
+            else:
+              raise Exception('Unknown option: %s.' % arg)
+            i += 1
+        nodes = []
+        while i < len(args) and args[i][0:2] != '--':
+          nodes.append(node(args[i]))
           i += 1
-      nodes = []
-      while i < len(args) and args[i][0:2] != '--':
-        nodes.append(node(args[i]))
-        i += 1
-      if not nodes:
-        nodes = _DEFAULTS
-      with drake:
+        if not nodes:
+          nodes = _DEFAULTS
         mode(nodes)
-      if i == len(args):
-        break
+        if i == len(args):
+          break
   except Exception as e:
     print('%s: %s' % (sys.argv[0], e))
     if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
@@ -2601,11 +2605,11 @@ class os:
 
 
 def reset():
-    for node in BaseNode.nodes.values():
+    for node in Drake.current.nodes.values():
         if node.builder is not None:
             node.builder._Builder__built = False
             node.builder._Builder__dynsrc = {}
-    BaseNode.nodes = {}
+    Drake.current._Drake__nodes = {}
 
 # Configuration
 class Configuration:
@@ -2857,9 +2861,6 @@ class Version:
         else:
             return self.__major > rhs.__major
 
-
-def reset():
-    BaseNode.nodes = {}
 
 class Runner(Builder):
 
