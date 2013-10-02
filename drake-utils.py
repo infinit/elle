@@ -8,8 +8,10 @@ class GNUBuilder(drake.Builder):
                targets = [],
                configure: """Configure script path (or None if no configure
                              step is needed)""" = None,
+               working_directory: "Deduced from configure" = None,
                configure_args: "Arguments of the configure script" = [],
                sources = [],
+               make_binary: "Make binary" = 'make',
                makefile: "Makefile filename, used if not None" = None,
                build_args: "Additional arguments for the make command" = [],
                configure_interpreter = None):
@@ -18,8 +20,17 @@ class GNUBuilder(drake.Builder):
     self.__configure_interpreter = configure_interpreter
     self.__configure_args = configure_args
     self.__targets = targets
+    self.__make_binary = make_binary
     self.__makefile = makefile
     self.__build_args = build_args
+    if working_directory is not None:
+        self.__working_directory = working_directory
+    else:
+        if self.__configure is None:
+            raise Exception(
+                "Cannot deduce the working directory (no configure script)"
+            )
+        self.__working_directory = self.__configure.path().dirname()
     drake.Builder.__init__(
       self,
       (configure is not None and [configure] or []) + sources,
@@ -28,12 +39,12 @@ class GNUBuilder(drake.Builder):
 
   def execute(self):
     # Configure step
-    if self.__configure is not None and \
-       not self.cmd('Configure %s' % self.work_directory,
-                    self.command_configure,
-                    cwd = self.work_directory,
-                    leave_stdout = True):
-      return False
+    if self.__configure is not None:
+       if not self.cmd('Configure %s' % self.work_directory,
+                       self.command_configure,
+                       cwd = self.work_directory,
+                       leave_stdout = True):
+           return False
 
     # Build step
     if not self.cmd('Build %s' % self.work_directory,
@@ -56,6 +67,8 @@ class GNUBuilder(drake.Builder):
 
   @property
   def command_configure(self):
+    if self.__configure is None:
+        return None
     basename = str(self.__configure.path().basename())
     if self.__configure_interpreter is None:
       config = ['./%s' % basename]
@@ -66,12 +79,12 @@ class GNUBuilder(drake.Builder):
   @property
   def command_build(self):
     if self.__makefile is not None:
-      return ['make', '-f', self.__makefile, 'install'] + self.__build_args
-    return ['make', 'install'] + self.__build_args
+      return [self.__make_binary, '-f', self.__makefile, 'install'] + self.__build_args
+    return [self.__make_binary, 'install'] + self.__build_args
 
   @property
   def work_directory(self):
-    return str(self.__configure.path().dirname())
+    return str(self.__working_directory)
 
 
   def hash(self):
