@@ -37,7 +37,7 @@ def configure(cxx_toolkit = None,
   global lib_asio_dynamic, lib_asio_static
   global rule_build, rule_install
 
-  with open(str(drake.path_src('../drake-utils.py')), 'r') as f:
+  with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
     exec(f.read(), globals(), globals())
 
   # Toolkit
