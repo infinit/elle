@@ -1100,6 +1100,8 @@ class Node(BaseNode):
             raise NoBuilder(self)
         else:
           self.builder.run()
+        for dep in self.dependencies:
+          dep.build()
         self.polish()
 
   def __setattr__(self, name, value):
