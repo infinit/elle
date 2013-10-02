@@ -1294,7 +1294,8 @@ class DynLib(Binary):
 
   @property
   def install_command(self):
-    if self.tk.os is drake.os.macos:
+    import platform
+    if platform.system() == 'Darwin':
       return ['install_name_tool', '-id', self.path(), self.path()]
 
 Node.extensions['so'] = DynLib
