@@ -1984,8 +1984,11 @@ class FunctionExpander(Expander):
     """An Expander that maps a function on the dictionaries content.
 
     >>> target = Node('/tmp/.drake.function.expander')
-    >>> version = Dictionary('version', { 'version_major': 4,
-    ...                                   'version_minor': 2 })
+    >>> import collections
+    >>> dict = collections.OrderedDict()
+    >>> dict['version_major'] = 4
+    >>> dict['version_minor'] = 2
+    >>> version = Dictionary('version', dict)
     >>> def define(k, v):
     ...     return '# define %s %s\\n' % (k.upper(), v)
     >>> builder = FunctionExpander(define, [version], target)
@@ -1995,7 +1998,7 @@ class FunctionExpander(Expander):
     >>> with open('/tmp/.drake.function.expander') as f:
     ...   content = f.read()
     >>> content
-    '# define VERSION_MINOR 2\\n# define VERSION_MAJOR 4\\n\\n'
+    '# define VERSION_MAJOR 4\\n# define VERSION_MINOR 2\\n\\n'
     """
 
     def __init__(self, function, *args, **kwargs):
