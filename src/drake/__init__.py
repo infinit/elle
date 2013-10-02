@@ -2251,8 +2251,8 @@ def run(root, *cfg, **kwcfg):
     configure = module.configure
     # Parse arguments
     options = {
-      '--jobs': drake.jobs_set,
-      '-j'    : drake.jobs_set,
+      '--jobs': lambda j: drake.jobs_set(j),
+      '-j'    : lambda j : drake.jobs_set(j),
       '--help': help,
       '-h'    : help,
       '--complete-modes': complete_modes,
