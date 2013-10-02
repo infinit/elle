@@ -7,7 +7,7 @@
 # See the LICENSE file for more information.
 
 import platform, re
-from .. import Builder, Exception, Node, Path, node, srctree, _CACHEDIR, debug
+from .. import Builder, Exception, Node, Path, node, _CACHEDIR, debug
 from .  import Config, StaticLib, Header, Object, Source
 
 #class MocBuilder:
@@ -33,7 +33,7 @@ class Qt:
         for path in test:
             p = Path(path)
             if not p.absolute:
-                p = srctree() / p
+                p = drake.path_source() / p
             for subdir in subdirs:
                 if (p / 'include' / subdir / beacon).exists():
 

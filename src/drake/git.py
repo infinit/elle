@@ -16,7 +16,9 @@ class Git(VirtualNode):
     """An iterable node with information on a git repository.
 
     # With the following dummy git repository.
-    >>> git = 'git'
+    >>> def run(cmd):
+    ...   import subprocess
+    ...   subprocess.check_output(cmd)
     >>> os.chdir('/tmp')
     >>> path = Path('.drake.git')
     >>> path.remove()
@@ -24,14 +26,12 @@ class Git(VirtualNode):
     >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
     >>> if 'GIT_DIR' in os.environ:
     ...   del os.environ['GIT_DIR']
-    >>> os.system('git init %s' % path)
-    0
+    >>> import subprocess
+    >>> run(['git', 'init', str(path)])
     >>> os.chdir(str(path))
     >>> Path('somefile').touch()
-    >>> os.system('%s add somefile' % git)
-    0
-    >>> os.system('%s commit -m "Commit message."' % git)
-    0
+    >>> run(['git', 'add', 'somefile'])
+    >>> run(['git', 'commit', '-m', 'Commit message.'])
     >>> node = Git(path)
 
     # >>> d = node.author_date().split(' ')[0]
@@ -46,9 +46,9 @@ class Git(VirtualNode):
         path -- path to the repository; the source dir by default.
         """
         if path is None:
-            self.__path = drake.path_src('.')
+            self.__path = drake.path_source('.')
         else:
-            self.__path = drake.path_src(path)
+            self.__path = drake.path_source(path)
         VirtualNode.__init__(self, Path('git/version') / self.__path)
         self.__author_date = None
         self.__revision    = None

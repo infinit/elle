@@ -29,6 +29,87 @@ def _scheduled():
   return Coroutine.current and \
     Coroutine.current._Coroutine__scheduler
 
+def path_source(path = None):
+  if path is None:
+    return Drake.current.path_source
+  path = Path(path)
+  if path.absolute():
+    return path
+  else:
+    return Drake.current.path_source / Drake.current.prefix / path
+
+class Drake:
+
+  current = None
+
+  @property
+  def jobs(self):
+    return self.__jobs
+
+  def jobs_set(self, n):
+    n = int(n)
+    if n == 1:
+      self.__jobs_lock = None
+    else:
+      self.__jobs_lock = sched.Semaphore(n)
+  jobs.setter(jobs_set)
+
+  @property
+  def path_source(self):
+    """The path to the source directory relative to the build directory."""
+    return self.__source
+
+  @property
+  def configure(self):
+    return self.__configure
+
+  @property
+  def scheduler(self):
+    return self.__scheduler
+
+  @property
+  def jobs_lock(self):
+    return self.__jobs_lock
+
+  __previous = []
+  def __enter__(self):
+    Drake.__previous.append(Drake.current)
+    Drake.current = self
+    return self
+
+  def __exit__(self, *args):
+    Drake.current = Drake.__previous[-1]
+    del Drake.__previous[-1]
+
+  @property
+  def prefix(self):
+    """The current prefix.
+
+    The prefix is the path from the root of the build tree to the
+    current drakefile build tree. This is '.' for the root drakefile.
+    """
+    return self.__prefix
+
+  def recurse(self, path):
+    class Recurser:
+      def __init__(self, drake):
+        self.__drake = drake
+        self.__previous = None
+      def __enter__(self):
+        self.__previous = self.__drake.prefix
+        self.__drake._Drake__prefix = self.__previous / path
+      def __exit__(self, *args, **kwargs):
+        self.__drake._Drake__prefix = self.__previous
+    return Recurser(self)
+
+  def __init__(self, root = None):
+    if root is None:
+      root = drake.Path('.')
+    self.__jobs = 1
+    self.__jobs_lock = None
+    self.__source = drake.Path(root)
+    self.__scheduler = Scheduler()
+    self.__prefix = drake.Path('.')
 
 class Profile:
 
@@ -409,9 +490,10 @@ class Path(object):
         foobar
         """
         if not self.dirname().empty():
-            self.dirname().mkpath()
+          self.dirname().mkpath()
         if not _OS.path.exists(str(self)):
-            open(str(self), 'w').close()
+          with open(str(self), 'w') as f:
+            pass
 
     def mkpath(self):
         """Create the designed directory.
@@ -514,7 +596,7 @@ class Path(object):
         """
         if (not isinstance(rhs, Path)):
             rhs = Path(rhs)
-        rhs = list(rhs.__path)
+        rhs = list((path for path in rhs.__path if path != '.'))
         path = self.__path
         while len(rhs) and len(path) and path[0] == rhs[0]:
           rhs = rhs[1:]
@@ -614,16 +696,17 @@ class DepFile:
 
 
     def read(self):
-        """Read the hashes from the store file."""
-        res = []
-        self.path().touch()
-        for line in open(str(self.path()), 'r'):
-            chunks = line[:-1].split(' ')
-            sha1 = chunks[0]
-            name = ' '.join(chunks[1:-1])
-            data = chunks[-1]
-            src = Path(name)
-            self.__sha1[str(src)] = (sha1, data)
+      """Read the hashes from the store file."""
+      res = []
+      self.path().touch()
+      with open(str(self.path()), 'r') as f:
+        for line in f:
+          chunks = line[:-1].split(' ')
+          sha1 = chunks[0]
+          name = ' '.join(chunks[1:-1])
+          data = chunks[-1]
+          src = Path(name)
+          self.__sha1[str(src)] = (sha1, data)
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
@@ -677,22 +760,7 @@ def path_build(path):
     path = Path(path)
     if path.absolute():
         return path
-    return prefix() / path
-
-def path_src(path):
-    """Return path as found in the source directory.
-
-    This function prepend the necessary prefix to a path relative to
-    the current drakefile to make it relative to the root of the
-    source directory.
-
-    This function is similar to path_build, except for the source
-    directory.
-    """
-    path = Path(path)
-    if path.absolute():
-        return path
-    return srctree() / path_build(path)
+    return drake.Drake.current.prefix / path
 
 def path_root():
     """The directory containing the root drakefile."""
@@ -749,14 +817,13 @@ class BaseNode(object, metaclass = _BaseNodeType):
         self.uid = BaseNode.uid
         BaseNode.uid += 1
         self.builder = None
-        self.srctree = srctree()
         BaseNode.nodes[str(name)] = self
         self.consumers = []
 
     def name(self):
         """Node name, relative to the current drakefile."""
         res = Path(self.__name)
-        res.strip_prefix(prefix())
+        res.strip_prefix(drake.Drake.current.prefix)
         return res
 
     def name_absolute(self):
@@ -806,8 +873,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
         is, roughly, run this node runner.
         """
         if not _scheduled():
-            Coroutine(self.build, str(self), _scheduler())
-            _scheduler().run()
+            Coroutine(self.build, str(self), Drake.current.scheduler)
+            Drake.current.scheduler.run()
         else:
             debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
             with debug.indentation():
@@ -914,7 +981,7 @@ class VirtualNode(BaseNode):
 
     def __init__(self, name):
         """Create a virtual node with the given name."""
-        path = prefix() / name
+        path = drake.Drake.current.prefix / name
         path.virtual = True
         BaseNode.__init__(self, path)
 
@@ -932,7 +999,7 @@ class Node(BaseNode):
         self.__hash = None
         path = Path(path)
         if not path.absolute():
-            path = prefix() / path
+            path = drake.Drake.current.prefix / path
         BaseNode.__init__(self, path)
 
     def clone(self, path):
@@ -979,7 +1046,7 @@ class Node(BaseNode):
             # assert self.builder is None
             return self.name()
         if self.builder is None:
-            return self.srctree / self.name_absolute()
+            return drake.path_source() / self.name_absolute()
         else:
             return self.name_absolute()
 
@@ -1023,8 +1090,8 @@ class Node(BaseNode):
         drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
         """
         if not _scheduled():
-            Coroutine(self.build, str(self), _scheduler())
-            _scheduler().run()
+            Coroutine(self.build, str(self), Drake.current.scheduler)
+            Drake.current.scheduler.run()
         else:
             debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
             with debug.indentation():
@@ -1118,16 +1185,20 @@ def cmd(cmd, cwd = None, stdout = None):
     return p.returncode == 0
 
 def command(cmd, cwd = None, stdout = None):
-    """Run the shell command.
+  """Run the shell command.
 
-    cmd -- the shell command.
-    cwd -- the dir to chdir to before.
-    """
-    if cwd is not None:
-        cwd = str(cwd)
+  cmd -- the shell command.
+  cwd -- the dir to chdir to before.
+  """
+  if cwd is not None:
+    cwd = str(cwd)
+  try:
     p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout)
     p.wait()
     return p.returncode == 0
+  except FileNotFoundError as e:
+    print(e, file = sys.stderr)
+    return False
 
 
 def cmd_output(cmd, cwd = None):
@@ -1244,8 +1315,8 @@ class Builder:
                     if not command(c, cwd = cwd, stdout = stdout):
                         return False
                 return True
-            if _JOBS_LOCK is not None:
-                with _JOBS_LOCK:
+            if Drake.current.jobs_lock is not None:
+                with Drake.current.jobs_lock:
                     return sched.background(fun)
             else:
                 return fun()
@@ -1261,7 +1332,7 @@ class Builder:
         path = self.__targets[0].name()
         res = path.dirname() / _CACHEDIR / path.basename()
         if not res.absolute():
-            res = prefix() / res
+            res = drake.Drake.current.prefix / res
         res.mkpath()
         return res
 
@@ -1399,7 +1470,7 @@ class Builder:
                         coroutines_static.append(
                             Coroutine(node.build,
                                       str(node),
-                                      _scheduler(),
+                                      Drake.current.scheduler,
                                       sched.Coroutine.current))
                 try:
                   sched.coro_wait(coroutines_static)
@@ -1416,7 +1487,7 @@ class Builder:
                         coroutines_dynamic.append(
                             Coroutine(node.build,
                                       str(node),
-                                      _scheduler(),
+                                      Drake.current.scheduler,
                                       sched.Coroutine.current))
 
                 try:
@@ -1704,7 +1775,9 @@ class Expander(Builder):
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.expander.1
-    >>> open('/tmp/.drake.expander.1').read()
+    >>> with open('/tmp/.drake.expander.1') as f:
+    ...   content = f.read()
+    >>> content
     'Apples are red, bananas are yellow.\\n'
 
     The expanded pattern can me configured by setting a custom
@@ -1724,7 +1797,9 @@ class Expander(Builder):
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.expander.2
-    >>> open('/tmp/.drake.expander.2').read()
+    >>> with open('/tmp/.drake.expander.2') as f:
+    ...   content = f.read()
+    >>> content
     'Bananas are 15 centimeters long.\\n'
 
     The behavior in case a key is not found can be adjusted with
@@ -1748,7 +1823,9 @@ class Expander(Builder):
     False
     >>> target.build()
     Expand /tmp/.drake.expander.3
-    >>> open('/tmp/.drake.expander.3').read()
+    >>> with open('/tmp/.drake.expander.3') as f:
+    ...   content = f.read()
+    >>> content
     'Kiwis are @kiwi-color@.\\n'
     """
 
@@ -1818,7 +1895,9 @@ class FileExpander(Expander):
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.file.expander.target
-    >>> open('/tmp/.drake.file.expander.target').read()
+    >>> with open('/tmp/.drake.file.expander.target') as f:
+    ...   content = f.read()
+    >>> content
     'Expand that.\\n\\n'
     """
     def __init__(self, source, dicts, target = None, *args, **kwargs):
@@ -1852,7 +1931,8 @@ class FileExpander(Expander):
 
     def content(self):
         """The content of the source file."""
-        return open(str(self.__source.path()), 'r').read()
+        with open(str(self.__source.path()), 'r') as f:
+          return f.read()
 
     def source(self):
         """The source node."""
@@ -1869,7 +1949,9 @@ class TextExpander(Expander):
   >>> target.path().remove()
   >>> target.build()
   Expand /tmp/.drake.text.expander
-  >>> open('/tmp/.drake.text.expander').read()
+  >>> with open('/tmp/.drake.text.expander') as f:
+  ...   content = f.read()
+  >>> content
   'Expand that.\\n'
   """
   def __init__(self, text, *args, **kwargs):
@@ -1902,7 +1984,9 @@ class FunctionExpander(Expander):
     >>> target.path().remove()
     >>> target.build()
     Expand /tmp/.drake.function.expander
-    >>> open('/tmp/.drake.function.expander').read()
+    >>> with open('/tmp/.drake.function.expander') as f:
+    ...   content = f.read()
+    >>> content
     '# define VERSION_MINOR 2\\n# define VERSION_MAJOR 4\\n\\n'
     """
 
@@ -1928,23 +2012,6 @@ class FunctionExpander(Expander):
         """The function."""
         return self.__function
 
-_prefix = Path('')
-
-def prefix():
-    """The current prefix.
-
-    The prefix is the path from the root of the build tree to the
-    current drakefile build tree. This is '.' for the root drakefile.
-    """
-    return _prefix
-
-_srctree = Path('')
-
-def srctree():
-    """Path to the root of the source tree, from the root of the
-    build tree."""
-    global _srctree
-    return _srctree
 
 class _Module:
 
@@ -1966,33 +2033,30 @@ def include(path, *args, **kwargs):
     graph with ours and return an object that has all variables
     defined globally by the sub-drakefile as attributes.
     """
-    global _prefix
     path = Path(path)
-    previous_prefix = _prefix
-    _prefix = _prefix / path
-    drakefile = None
-    names = ['drakefile', 'drakefile.py']
-    for name in names:
-        if path_src(name).exists():
-            drakefile = previous_prefix / path / name
-            break
-    if drakefile is None:
-        raise Exception('cannot find %s or %s in %s' % \
-                        (', '.join(names[:-1]), names[-1], path))
-    res = _raw_include(str(drakefile), *args, **kwargs)
-    _prefix = previous_prefix
-    return res
+    with Drake.current.recurse(path):
+      drakefile = None
+      names = ['drakefile', 'drakefile.py']
+      for name in names:
+        path = drake.path_source(name)
+        if path.exists():
+          drakefile = path
+          break
+      if drakefile is None:
+          raise Exception('cannot find %s or %s in %s' % \
+                          (', '.join(names[:-1]), names[-1], path))
+      res = _raw_include(str(drakefile), *args, **kwargs)
+      return res
 
 
 def _raw_include(path, *args, **kwargs):
-
-    g = {}
-    path = str(srctree() / path)
-    #execfile(path, g)
-    exec(compile(open(path).read(), path, 'exec'), g)
-    res = _Module(g)
-    res.configure(*args, **kwargs)
-    return res
+  g = {}
+  #execfile(path, g)
+  with open(path) as f:
+    exec(compile(f.read(), path, 'exec'), g)
+  res = _Module(g)
+  res.configure(*args, **kwargs)
+  return res
 
 def dot(node, *filters):
 
@@ -2045,8 +2109,8 @@ def _register_commands():
           coroutines = []
           for node in nodes:
             coroutines.append(Coroutine(node.build, str(node),
-                                        _scheduler()))
-          _scheduler().run()
+                                        Drake.current.scheduler))
+          Drake.current.scheduler.run()
         except Builder.Failed as e:
           print('%s: *** %s' % (sys.argv[0], e))
           exit(1)
@@ -2091,23 +2155,6 @@ def _register_commands():
     command_add('makefile', makefile)
 
 _register_commands()
-
-
-def _scheduler():
-    res = Scheduler.scheduler()
-    if res is None:
-        return Scheduler()
-    else:
-        return res
-
-_JOBS_LOCK = None
-def _jobs_set(n):
-    global _JOBS_LOCK
-    n = int(n)
-    if n == 1:
-        _JOBS_LOCK = None
-    else:
-        _JOBS_LOCK = sched.Semaphore(n)
 
 _ARG_DOC_RE = re.compile('\\s*(\\w+)\\s*--\\s*(.*)')
 def _args_doc(doc):
@@ -2175,19 +2222,6 @@ def complete_options():
   print('-h,--help\tshow usage')
   exit(0)
 
-_OPTIONS = {
-  '--jobs': _jobs_set,
-  '-j'    : _jobs_set,
-  '--help': help,
-  '-h'    : help,
-  '--complete-modes': complete_modes,
-  '--complete-options': complete_options,
-  '--complete-nodes': complete_nodes,
-}
-
-_ARG_CONF_RE = re.compile('--(\\w+)=(.*)')
-_CONFIG = None
-
 _DEFAULTS = []
 
 def add_default_node(node):
@@ -2195,58 +2229,32 @@ def add_default_node(node):
 
 def run(root, *cfg, **kwcfg):
   try:
-    drake(root, *cfg, **kwcfg)
-  except Exception as e:
-    print('%s: %s' % (sys.argv[0], e))
-    if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-      import traceback
-      traceback.print_exc()
-    exit(1)
-  except KeyboardInterrupt:
-    print('%s: interrupted.' % sys.argv[0])
-    exit(1)
-
-
-class Drake:
-
-  def __init__(self, root):
-    self.__root = Path(root)
-
-  def __enter__(self):
-    global _srctree
-    _srctree = self.__root
-
-  def __exit__(self, *args, **kwargs):
-    global _srctree
-    _srctree = Path('')
-
-
-def drake(root, *cfg, **kwcfg):
-  """Run a drakefile.
-
-  root       -- The directory where the drakefile is located.
-  cfg, kwcfg -- Arguments for the drakeile's configure.
-
-  Load the drakefile located in root, configure it with the given
-  arguments and run all action specified on the command line
-  (sys.argv).
-  """
-  global _CONFIG, _srctree
-  with Drake(root) as drake:
-    args = sys.argv[1:]
-    # Load the root drakefile
+    drake = Drake(root)
     g = {}
-    path = str(srctree() / 'drakefile')
-    # execfile(path, g)
-    exec(compile(open(path).read(), path, 'exec'), g)
-    root = _Module(g)
-    _CONFIG = root.configure
-    # Fetch configuration from the command line.
-    i = 0
-    specs = inspect.getfullargspec(root.configure)
+    # Load the root drakefile
+    path = str(drake.path_source / 'drakefile')
+    with open(path, 'r') as drakefile:
+      with drake:
+        exec(compile(drakefile.read(), path, 'exec'), g)
+    module = _Module(g)
+    configure = module.configure
+    # Parse arguments
+    options = {
+      '--jobs': drake.jobs_set,
+      '-j'    : drake.jobs_set,
+      '--help': help,
+      '-h'    : help,
+      '--complete-modes': complete_modes,
+      '--complete-options': complete_options,
+      '--complete-nodes': complete_nodes,
+    }
+    arguments_re = re.compile('--(\\w+)=(.*)')
+    specs = inspect.getfullargspec(configure)
     callbacks = []
+    i = 0
+    args = sys.argv[1:]
     while i < len(args):
-      match = _ARG_CONF_RE.match(args[i])
+      match = arguments_re.match(args[i])
       if match:
         name = match.group(1)
         value = match.group(2)
@@ -2264,19 +2272,22 @@ def drake(root, *cfg, **kwcfg):
           kwcfg[name] = value
           del args[i]
           continue
-      elif args[i] in _OPTIONS:
+      elif args[i] in options:
         opt = args[i]
         del args[i]
         opt_args = []
-        for a in inspect.getfullargspec(_OPTIONS[opt]).args:
+        for a in inspect.getfullargspec(options[opt]).args:
           opt_args.append(args[i])
           del args[i]
-        cb = _OPTIONS[opt](*opt_args)
+        cb = options[opt](*opt_args)
         if cb is not None:
           callbacks.append(cb)
         continue
       i += 1
-    root.configure(*cfg, **kwcfg)
+    # Configure
+    with drake:
+      configure(*cfg, **kwcfg)
+    # Run callbacks.
     for cb in callbacks:
       cb()
     mode = _MODES['build']
@@ -2297,9 +2308,19 @@ def drake(root, *cfg, **kwcfg):
         i += 1
       if not nodes:
         nodes = _DEFAULTS
-      mode(nodes)
+      with drake:
+        mode(nodes)
       if i == len(args):
         break
+  except Exception as e:
+    print('%s: %s' % (sys.argv[0], e))
+    if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+      import traceback
+      traceback.print_exc()
+    exit(1)
+  except KeyboardInterrupt:
+    print('%s: interrupted.' % sys.argv[0])
+    exit(1)
 
 
 class WritePermissions:
@@ -2339,7 +2360,9 @@ class Copy(Builder):
     >>> target.path().remove()
     >>> builder.target().build()
     Copy /tmp/.drake.Copy.dest
-    >>> open(str(target.path()), 'r').read()
+    >>> with open(str(target.path()), 'r') as f:
+    ...   content = f.read()
+    >>> content
     'Content.\\n'
     """
 

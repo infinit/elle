@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import doctest
 import os
 import os.path
 import sys
+import unittest
 
 myself = os.getcwd()
 dir = os.path.dirname(__file__)
@@ -11,7 +13,6 @@ if dir:
 sys.path = [myself + '/../src'] + sys.path
 os.environ['PYTHONPATH'] = ':'.join(sys.path)
 
-import doctest
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -26,10 +27,22 @@ assert os.system('src/drake/sched-test.py') == 0
 os.chdir('_build')
 assert os.system('./drake //check') == 0
 
-assert(doctest.testmod(sched)[0] == 0)
-assert(doctest.testmod(drake)[0] == 0)
-assert(doctest.testmod(drake.cxx)[0] == 0)
-assert(doctest.testmod(drake.cxx.boost)[0] == 0)
-assert(doctest.testmod(drake.git)[0] == 0)
-assert(doctest.testmod(drake.python)[0] == 0)
-assert(doctest.testmod(drake.utils)[0] == 0)
+def test_suite():
+  tests = []
+
+  instance = [None]
+  def setup(test):
+    instance[0] = drake.Drake()
+    instance[0].__enter__()
+
+  def teardown(test):
+    instance[0].__exit__(None, None, None)
+    instance[0] = None
+
+  tests = [doctest.DocTestSuite(module = m,
+                                setUp = setup, tearDown = teardown)
+           for m in (sched, drake, drake.cxx, drake.cxx.boost,
+                     drake.git, drake.python, drake.utils)]
+  return unittest.TestSuite(tests)
+
+unittest.main(defaultTest='test_suite')

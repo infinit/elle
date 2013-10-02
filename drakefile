@@ -7,7 +7,7 @@ import sys
 PYTHONPATH = ''
 if 'PYTHONPATH' in os.environ:
    PYTHONPATH = os.environ['PYTHONPATH']
-source = '%s/%s' % (os.getcwd(), drake.path_src('src'))
+source = '%s/%s' % (os.getcwd(), drake.path_source('src'))
 PYTHONPATH = '%s:%s' % (source, PYTHONPATH)
 os.environ['PYTHONPATH'] = PYTHONPATH
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- python -*-
 
 # Check a node isn't built twice when threading, with a pattern like
 # this:
@@ -28,16 +29,17 @@ class TimedBuilder(drake.Builder):
     time.sleep(1)
     return self.cmd('Touch %s' % self.targets()[0], ['touch', self.targets()[0].path()])
 
-node = drake.node('node')
-TimedBuilder(node)
+with drake.Drake():
+  node = drake.node('node')
+  TimedBuilder(node)
 
-node.path().remove()
+  node.path().remove()
 
-sub1 = drake.Rule('sub1', [node])
-sub2 = drake.Rule('sub2', [node])
+  sub1 = drake.Rule('sub1', [node])
+  sub2 = drake.Rule('sub2', [node])
 
-root = drake.Rule('root', [sub1, sub2])
+  root = drake.Rule('root', [sub1, sub2])
 
-sched = drake.sched.Scheduler()
-drake.sched.Coroutine(root.build, 'main', sched)
-sched.run()
+  sched = drake.Drake.current.scheduler
+  drake.sched.Coroutine(root.build, 'main', sched)
+  sched.run()

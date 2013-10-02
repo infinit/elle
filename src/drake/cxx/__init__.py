@@ -15,7 +15,7 @@ import sys
 import tempfile
 
 _OS = __import__('os')
-from .. import ShellCommand, Builder, Node, Path, node, prefix, srctree, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
+from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
 from copy import deepcopy
 from .. import sched
@@ -246,7 +246,7 @@ class Config:
 
     def add_local_include_path(self, path):
 
-        path = prefix() / Path(path)
+        path = drake.Drake.current.prefix / Path(path)
         self.__local_includes.add(path)
         self._includes[path] = None
 
@@ -258,7 +258,7 @@ class Config:
         if path == Path('/include') or path == Path('/usr/include'):
             return
         if not path.absolute():
-            path = srctree() / prefix() / path
+            path = drake.path_source() / drake.Drake.current.prefix / path
         self.__system_includes.add(path)
         self._includes[path] = None
 
@@ -291,9 +291,9 @@ class Config:
             return
         p = Path(path)
         # if not p.absolute():
-        #     p = srctree() / prefix() / p
+        #     p = drake.path_source() / drake.Drake.current.prefix / p
         if not p.absolute():
-            p = prefix() / p
+            p = drake.Drake.current.prefix / p
         self.__lib_paths.add(p)
 
 
@@ -550,7 +550,7 @@ class GccToolkit(Toolkit):
           res.append(utils.shell_escape(include))
       for include in cfg.local_include_path:
           res.append('-I')
-          res.append(utils.shell_escape(srctree() / include))
+          res.append(utils.shell_escape(drake.path_source() / include))
           res.append('-I')
           res.append(utils.shell_escape(include))
       return res
@@ -810,7 +810,7 @@ class VisualToolkit(Toolkit):
     for path in cfg.system_include_path:
       flags.append('/I%s' % utils.shell_escape(path))
     for path in cfg.local_include_path:
-      flags.append('/I%s' % utils.shell_escape(srctree() / path))
+      flags.append('/I%s' % utils.shell_escape(drake.path_source() / path))
       flags.append('/I%s' % utils.shell_escape(path))
     return flags
 
@@ -915,8 +915,8 @@ def mkdeps(res, n, lvl, config, marks,
         if test.is_file() or node(str(test)).builder is not None:
           found, via = unique(include, via, found, test, node(test))
           # debug.debug('%sfound node: %s' % (idt, test))
-      if not found or srctree() != Path('.'):
-        test = srctree() / test
+      if not found or drake.path_source() != Path('.'):
+        test = drake.path_source() / test
         if test.is_file():
           # debug.debug('%sfound file: %s' % (idt, test))
           found, via = unique(include, via, found, test,
@@ -1471,7 +1471,7 @@ class LibraryConfiguration(drake.Configuration):
         prefix_symbolic = drake.Path(prefix)
         prefix = drake.Path(prefix)
         if not prefix.absolute():
-          prefix = drake.path_src(prefix)
+          prefix = drake.path_source(prefix)
       # Compute the search path.
       if prefix is None:
         test = [Path('/usr'), Path('/usr/local')]
@@ -1482,7 +1482,7 @@ class LibraryConfiguration(drake.Configuration):
       include_dir.strip_suffix(token)
       include_path = prefix / include_dir
       if not include_path.absolute():
-        include_path.strip_prefix(srctree())
+        include_path.strip_prefix(drake.path_source())
       self.__prefix = prefix
       self.__config.add_system_include_path(include_path)
       self.__prefix_symbolic = prefix_symbolic or self.__prefix

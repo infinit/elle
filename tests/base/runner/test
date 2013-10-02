@@ -6,27 +6,28 @@ import drake.cxx
 import subprocess
 import sys
 
-with open('lib.cc', 'w') as f:
-  print('''\
-int answer()
-{
-  return 42;
-}
-''', file = f)
+with drake.Drake():
+  with open('lib.cc', 'w') as f:
+    print('''\
+  int answer()
+  {
+    return 42;
+  }
+  ''', file = f)
 
-drake.run('.')
-drake.reset()
+  drake.run('.')
+  drake.reset()
 
-assert subprocess.check_output(['./main']).strip() == b'out 42'
+  assert subprocess.check_output(['./main']).strip() == b'out 42'
 
-with open('lib.cc', 'w') as f:
-  print('''\
-int answer()
-{
-  return 51;
-}
-''', file = f)
+  with open('lib.cc', 'w') as f:
+    print('''\
+  int answer()
+  {
+    return 51;
+  }
+  ''', file = f)
 
-drake.run('.')
+  drake.run('.')
 
-assert subprocess.check_output(['./main']).strip() == b'out 51'
+  assert subprocess.check_output(['./main']).strip() == b'out 51'

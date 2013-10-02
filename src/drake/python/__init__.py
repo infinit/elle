@@ -12,7 +12,7 @@ import platform
 import string
 import random
 
-from .. import Path, Exception, srctree
+from .. import Path, Exception
 
 def check_version(expected, effective):
 
@@ -120,7 +120,7 @@ class Python:
         for path in test:
             p = Path(path)
             if not p.absolute:
-                p = srctree() / p
+                p = drake.Drake.current.path_source / p
             if (p / 'bin/python').exists():
                 self.prefix = p
                 break

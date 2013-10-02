@@ -10,7 +10,7 @@ import drake
 import drake.cxx
 import sys
 
-from .. import Exception, Path, Version, srctree
+from .. import Exception, Path, Version
 from .  import Config, StaticLib
 
 
@@ -56,7 +56,7 @@ class Boost(drake.Configuration):
       test = [Path(prefix)]
     for i in range(len(test)):
       if not test[i].absolute():
-        test[i] = srctree() / test[i]
+        test[i] = drake.path_source() / test[i]
     token = drake.Path('boost/version.hpp')
     include_subdirs = {drake.Path('include')}
     for prefix in test:

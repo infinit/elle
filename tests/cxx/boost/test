@@ -6,15 +6,16 @@ import drake.cxx
 import drake.cxx.boost
 
 def test(path, expect = True):
-  if expect:
-    drake.cxx.boost.Boost(prefix = path)
-  else:
-    try:
+  with drake.Drake():
+    if expect:
       drake.cxx.boost.Boost(prefix = path)
-    except:
-      pass
     else:
-      raise Exception('Boost shall not be found in %s' % path)
+      try:
+        drake.cxx.boost.Boost(prefix = path)
+      except:
+        pass
+      else:
+        raise Exception('Boost shall not be found in %s' % path)
 
 # Simplest case
 test('deps/simplest')
