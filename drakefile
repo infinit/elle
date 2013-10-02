@@ -59,6 +59,7 @@ def configure(prefix = '.'):
 
   # Tests
   tests = [
+    'base/dependency',
     'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',
