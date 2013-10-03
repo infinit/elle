@@ -58,11 +58,11 @@ message_test()
 
     ss.str("");
     ELLE_WARN("Test5");
-    BOOST_CHECK_EQUAL(ss.str(), "[33;01;33m[ Test  ]   Test5\n[0m");
+    BOOST_CHECK_EQUAL(ss.str(), "[33;01;33m[ Test  ] [warning]   Test5\n[0m");
 
     ss.str("");
     ELLE_ERR("Test6");
-    BOOST_CHECK_EQUAL(ss.str(), "[33;01;31m[ Test  ]   Test6\n[0m");
+    BOOST_CHECK_EQUAL(ss.str(), "[33;01;31m[ Test  ] [error]   Test6\n[0m");
   }
 }
 
@@ -173,7 +173,7 @@ environment_format_test()
   res << "[33;01;33m"
       << boost::posix_time::second_clock::local_time() << ": "
       << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] Test 5\n[0m";
+      << "[Test] [warning] Test 5\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -208,7 +208,7 @@ parallel_write()
   auto action = [&logger](int& counter)
     {
       using namespace boost::posix_time;
-      ptime deadline = microsec_clock::local_time() + seconds(1);
+      ptime deadline = microsec_clock::local_time() + seconds(10);
       while (microsec_clock::local_time() < deadline && counter < 64)
       {
         ELLE_LOG_COMPONENT("out");
