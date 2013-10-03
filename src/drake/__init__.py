@@ -327,7 +327,7 @@ class Path(object):
                     self.virtual = True
                 self.__path = re.split(r'/|\\', path)
                 slash = self.__path[0] == ''
-                volume = re.compile('^[A-Z]:').match(self.__path[0])
+                volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
                 self.__absolute = bool(slash or volume)
             else:
                 if path[:2] == '//':
