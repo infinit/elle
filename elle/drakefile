@@ -95,7 +95,7 @@ def configure(cxx_toolkit = None,
       '--prefix=%s/%s' % (os.getcwd(), zlib_prefix),
       '--static',
     ],
-    env = {
+    additional_env = {
       'CFLAGS': '-fPIC',
     },
     working_directory = drake.path_build(zlib_root),
