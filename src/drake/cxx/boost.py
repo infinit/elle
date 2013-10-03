@@ -34,7 +34,8 @@ class Boost(drake.Configuration):
   def __init__(self,
                cxx_toolkit = None,
                prefix = None,
-               version = Version()):
+               version = Version(),
+               prefer_shared = True):
     """Find and create a configuration for Boost.
 
     prefix -- Where to find Boost, should contain
@@ -42,10 +43,12 @@ class Boost(drake.Configuration):
               /usr/local are searched by default. If relative, it
               is rooted in the source tree.
     version -- Requested version.
+    prefer_shared -- Check dynamic libraries first.
     """
     # Fix arguments
     cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
     self.__cxx_toolkit = cxx_toolkit
+    self.__prefer_shared = prefer_shared
     # Compute the search path.
     if prefix is None:
       if cxx_toolkit.os == drake.os.windows:
@@ -124,16 +127,23 @@ class Boost(drake.Configuration):
       test_versioned_st = lib_path / ('%s.%s' % (filename_st, self.__version))
       test_versioned_lib = lib_path / ('lib%s.%s' %(filename, self.__version))
       test_versioned_slib = lib_path / ('lib%s.%s' %(filename_st, self.__version))
-      tests = [
+      tests_dyn = [
           test_plain,
-          test_plain_st,
           test_plain_lib,
-          test_plain_slib,
           test_versioned,
-          test_versioned_st,
           test_versioned_lib,
+
+      ]
+      tests_st = [
+          test_plain_st,
+          test_plain_slib,
+          test_versioned_st,
           test_versioned_slib,
       ]
+      if self.__prefer_shared:
+          tests = tests_dyn + tests_st
+      else:
+          tests = tests_st + tests_dyn
       if cxx_toolkit.os == drake.os.windows:
         test_windows = lib_path / ('lib%s.a' % (libname)) # Force .a on windows
         tests.append(test_windows)
@@ -172,7 +182,9 @@ class Boost(drake.Configuration):
 
 for prop, library in Boost._Boost__libraries.items():
   def unclosure(prop, library):
-    def m(self, static = False):
+    def m(self, static = None):
+      if static is None:
+          static = not self._Boost__prefer_shared
       pname = '_Boost__cfg_%s%s' % (prop, static and '_static' or '')
 
       if getattr(self, pname) is None:
@@ -181,8 +193,10 @@ for prop, library in Boost._Boost__libraries.items():
                                      self._Boost__cxx_toolkit)
         c = Config()
         c.lib(name, static = static)
-        if library == 'filesystem':
-          c.define('BOOST_FILESYSTEM_DYN_LINK', static and '0' or '1')
+
+        c.define('%s_%s_LINK' % (
+            library.upper(), static and 'STATIC' or 'DYN'
+        ), 1)
         setattr(self, pname, c)
       return getattr(self, pname)
     setattr(Boost, 'config_%s' % prop, m)
