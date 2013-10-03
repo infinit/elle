@@ -116,6 +116,100 @@ class Drake:
     self.__prefix = drake.Path('.')
     self.__nodes = {}
 
+  def run(self, *cfg, **kwcfg):
+    try:
+      g = {}
+      # Load the root drakefile
+      path = str(self.path_source / 'drakefile')
+      with open(path, 'r') as drakefile:
+        with self:
+          exec(compile(drakefile.read(), path, 'exec'), g)
+      module = _Module(g)
+      configure = module.configure
+      # Parse arguments
+      options = {
+        '--jobs': lambda j: self.jobs_set(j),
+        '-j'    : lambda j : self.jobs_set(j),
+        '--help': help,
+        '-h'    : help,
+        '--complete-modes': complete_modes,
+        '--complete-options': complete_options,
+        '--complete-nodes': complete_nodes,
+      }
+      arguments_re = re.compile('--(\\w+)=(.*)')
+      specs = inspect.getfullargspec(configure)
+      callbacks = []
+      i = 0
+      args = sys.argv[1:]
+      while i < len(args):
+        match = arguments_re.match(args[i])
+        if match:
+          name = match.group(1)
+          value = match.group(2)
+          if name in specs.args:
+            if name in specs.annotations:
+              t = specs.annotations[name]
+              if t is bool:
+                if value.lower() in ['true', 'yes']:
+                  value = True
+                elif value.lower() in ['false', 'no']:
+                  value = False
+                else:
+                  raise Exception('invalid value for '
+                                  'boolean option %s: %s' % (name, value))
+            kwcfg[name] = value
+            del args[i]
+            continue
+        elif args[i] in options:
+          opt = args[i]
+          del args[i]
+          opt_args = []
+          for a in inspect.getfullargspec(options[opt]).args:
+            opt_args.append(args[i])
+            del args[i]
+          cb = options[opt](*opt_args)
+          if cb is not None:
+            callbacks.append(cb)
+          continue
+        i += 1
+      # Configure
+      with self:
+        configure(*cfg, **kwcfg)
+      # Run callbacks.
+      for cb in callbacks:
+        cb()
+      mode = _MODES['build']
+      i = 0
+      with self:
+        while True:
+          if i < len(args):
+            arg = args[i]
+            if arg[0:2] == '--':
+              arg = arg[2:]
+              if arg in _MODES:
+                mode = _MODES[arg]
+              else:
+                raise Exception('Unknown option: %s.' % arg)
+              i += 1
+          nodes = []
+          while i < len(args) and args[i][0:2] != '--':
+            nodes.append(node(args[i]))
+            i += 1
+          if not nodes:
+            nodes = _DEFAULTS
+          mode(nodes)
+          if i == len(args):
+            break
+    except Exception as e:
+      print('%s: %s' % (sys.argv[0], e))
+      if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+        import traceback
+        traceback.print_exc()
+      exit(1)
+    except KeyboardInterrupt:
+      print('%s: interrupted.' % sys.argv[0])
+      exit(1)
+
 class Profile:
 
     def __init__(self, name):
@@ -2238,100 +2332,10 @@ _DEFAULTS = []
 def add_default_node(node):
   _DEFAULTS.append(node)
 
+
 def run(root, *cfg, **kwcfg):
-  try:
-    drake = Drake(root)
-    g = {}
-    # Load the root drakefile
-    path = str(drake.path_source / 'drakefile')
-    with open(path, 'r') as drakefile:
-      with drake:
-        exec(compile(drakefile.read(), path, 'exec'), g)
-    module = _Module(g)
-    configure = module.configure
-    # Parse arguments
-    options = {
-      '--jobs': lambda j: drake.jobs_set(j),
-      '-j'    : lambda j : drake.jobs_set(j),
-      '--help': help,
-      '-h'    : help,
-      '--complete-modes': complete_modes,
-      '--complete-options': complete_options,
-      '--complete-nodes': complete_nodes,
-    }
-    arguments_re = re.compile('--(\\w+)=(.*)')
-    specs = inspect.getfullargspec(configure)
-    callbacks = []
-    i = 0
-    args = sys.argv[1:]
-    while i < len(args):
-      match = arguments_re.match(args[i])
-      if match:
-        name = match.group(1)
-        value = match.group(2)
-        if name in specs.args:
-          if name in specs.annotations:
-            t = specs.annotations[name]
-            if t is bool:
-              if value.lower() in ['true', 'yes']:
-                value = True
-              elif value.lower() in ['false', 'no']:
-                value = False
-              else:
-                raise Exception('invalid value for '
-                                'boolean option %s: %s' % (name, value))
-          kwcfg[name] = value
-          del args[i]
-          continue
-      elif args[i] in options:
-        opt = args[i]
-        del args[i]
-        opt_args = []
-        for a in inspect.getfullargspec(options[opt]).args:
-          opt_args.append(args[i])
-          del args[i]
-        cb = options[opt](*opt_args)
-        if cb is not None:
-          callbacks.append(cb)
-        continue
-      i += 1
-    # Configure
-    with drake:
-      configure(*cfg, **kwcfg)
-    # Run callbacks.
-    for cb in callbacks:
-      cb()
-    mode = _MODES['build']
-    i = 0
-    with drake:
-      while True:
-        if i < len(args):
-          arg = args[i]
-          if arg[0:2] == '--':
-            arg = arg[2:]
-            if arg in _MODES:
-              mode = _MODES[arg]
-            else:
-              raise Exception('Unknown option: %s.' % arg)
-            i += 1
-        nodes = []
-        while i < len(args) and args[i][0:2] != '--':
-          nodes.append(node(args[i]))
-          i += 1
-        if not nodes:
-          nodes = _DEFAULTS
-        mode(nodes)
-        if i == len(args):
-          break
-  except Exception as e:
-    print('%s: %s' % (sys.argv[0], e))
-    if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-      import traceback
-      traceback.print_exc()
-    exit(1)
-  except KeyboardInterrupt:
-    print('%s: interrupted.' % sys.argv[0])
-    exit(1)
+  drake = Drake(root)
+  drake.run(*cfg, **kwcfg)
 
 
 class WritePermissions:
