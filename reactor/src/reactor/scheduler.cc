@@ -335,13 +335,18 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: terminate %s", *this, *thread);
     if (current() == thread)
+    {
+      ELLE_DEBUG("%s: terminating the current thread, throwing directly",
+                 *this, *thread);
       throw Terminate(thread->name());
+    }
     // If the underlying coroutine was never run, nothing to do.
     if (_starting.erase(thread))
-      {
-        thread->_state = Thread::state::done;
-        return;
-      }
+    {
+      ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
+      thread->_state = Thread::state::done;
+      return;
+    }
     switch (thread->state())
       {
         case Thread::state::running:
