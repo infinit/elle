@@ -137,6 +137,8 @@ def configure(cxx_toolkit = None,
     'curly/curly.cc',
     'curly/curly.hh',
     'curly/curly.hxx',
+    'curly/exceptions.cc',
+    'curly/exceptions.hh',
   )
 
   lib_static = drake.cxx.StaticLib('lib/curly',

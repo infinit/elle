@@ -1,11 +1,12 @@
-#include <curly/curly.hh>
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <string>
 
 #include <elle/Exception.hh>
 
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <cstring>
+#include <curly/curly.hh>
+#include <curly/exceptions.hh>
 
 namespace curly
 {
@@ -16,18 +17,14 @@ namespace curly
   {
     if (code != CURLE_OK)
     {
-      char *url_ptr;
+      char* url_ptr;
       curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &url_ptr);
+      std::string url(url_ptr);
 
-      std::string url{url_ptr};
-      std::stringstream ss;
-      std::string msg{curl_easy_strerror(code)};
-      ss
-        << "error code: " << code
-        << ": " << msg
-        << ": " << url
-        << ": " << error_message;
-      throw elle::Exception{ss.str()};
+      if (code == CURLE_GOT_NOTHING)
+        throw curly::EmptyResponse(url);
+      else
+        throw curly::RequestError(code, url, error_message);
     }
   }
 

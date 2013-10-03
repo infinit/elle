@@ -1,15 +1,17 @@
 #ifndef ELLE_CURLY_HH
 # define ELLE_CURLY_HH
 
-# include <elle/attribute.hh>
-
-# include <curl/curl.h>
-
 # include <chrono>
 # include <iosfwd>
 # include <map>
 # include <memory>
 # include <string>
+
+# include <curl/curl.h>
+
+# include <elle/attribute.hh>
+
+# include <curly/exceptions.hh>
 
 namespace curly
 {
