@@ -93,7 +93,8 @@ def configure(cxx_toolkit = None,
     configure = zlib_configure,
     configure_args = [
       '--prefix=%s/%s' % (os.getcwd(), zlib_prefix),
-      '--static'
+      '--static',
+      'CFLAGS=-fPIC'
     ],
     working_directory = drake.path_build(zlib_root),
     targets = zlib_libs + [drake.node('zlib/include/zlib.h')],
