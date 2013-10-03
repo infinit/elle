@@ -26,9 +26,11 @@ class GNUBuilder(drake.Builder):
                working_directory: "Deduced from configure" = None,
                configure_args: "Arguments of the configure script" = [],
                sources = [],
-               make_binary: "Make binary" = 'make',
+               make_binary: "Make binary" = _DEFAULT_MAKE_BINARY,
                makefile: "Makefile filename, used if not None" = None,
-               build_args: "Additional arguments for the make command" = [],
+               build_args: "Additional arguments for the make command" = ['install'],
+               additional_env: "Additional environment variables" = {},
+               env: "Base environment" = os.environ,
                configure_interpreter = None):
     self.__toolkit = cxx_toolkit
     self.__configure = configure
@@ -38,6 +40,9 @@ class GNUBuilder(drake.Builder):
     self.__make_binary = make_binary
     self.__makefile = makefile
     self.__build_args = build_args
+    self.__env = {}
+    self.__env.update(env)
+    self.__env.update(additional_env)
     if working_directory is not None:
         self.__working_directory = working_directory
     else:
@@ -58,6 +63,7 @@ class GNUBuilder(drake.Builder):
        if not self.cmd('Configure %s' % self.work_directory,
                        self.command_configure,
                        cwd = self.work_directory,
+                       env = self.__env,
                        leave_stdout = True):
            return False
 
@@ -65,6 +71,7 @@ class GNUBuilder(drake.Builder):
     if not self.cmd('Build %s' % self.work_directory,
                     self.command_build,
                     cwd = self.work_directory,
+                    env = self.__env,
                     leave_stdout = True):
       return False
 
