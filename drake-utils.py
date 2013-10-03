@@ -1,6 +1,21 @@
 import drake
 import drake.cxx
 
+def _default_make_binary():
+    from drake.which import which
+    to_try = [
+        'make',
+        'gmake',
+        'mingw32-make',
+        'mingw64-make',
+    ]
+    for binary in to_try:
+        path = which(binary)
+        if path is not None:
+            return path
+
+_DEFAULT_MAKE_BINARY = _default_make_binary()
+
 class GNUBuilder(drake.Builder):
 
   def __init__(self,
