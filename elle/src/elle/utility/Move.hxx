@@ -17,8 +17,8 @@ namespace elle
 
     template <typename T>
     Move<T>::Move(Move&& other):
-        value{std::move(other.value)}
-      {}
+      value(std::move(other.value))
+    {}
 
     template <typename T>
     Move<T>&
@@ -37,10 +37,16 @@ namespace elle
     }
 
     template <typename T>
-    Move<T>
+    Move<T>::operator T ()
+    {
+      return std::move(this->value);
+    }
+
+    template <typename T>
+    Move<typename std::remove_reference<T>::type>
     move_on_copy(T&& v)
     {
-      return Move<T>(std::forward<T>(v));
+      return Move<typename std::remove_reference<T>::type>(std::move(v));
     }
   }
 }

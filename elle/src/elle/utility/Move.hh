@@ -2,6 +2,8 @@
 # define ELLE_UTILITY_MOVE_HH
 
 # include <algorithm>
+# include <type_traits>
+
 
 namespace elle
 {
@@ -18,13 +20,13 @@ namespace elle
       operator =(Move const& other);
       Move&
       operator =(Move&& other);
-
+      operator T ();
     public:
       mutable T value;
     };
 
     template <typename T>
-    Move<T>
+    Move<typename std::remove_reference<T>::type>
     move_on_copy(T&& v);
   }
 }
