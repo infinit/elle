@@ -201,6 +201,107 @@ complex()
   BOOST_CHECK(content.str() == "/complex");
 }
 
+class SilentHttpServer:
+  public httpd
+{
+  virtual
+  void
+  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
+          boost::asio::streambuf* buffer,
+          boost::system::error_code const& e,
+          size_t size)
+  {
+    delete buffer;
+    _socket->close();
+  }
+};
+
+static
+void
+no_answer()
+{
+  SilentHttpServer server;
+  auto url = server.root_url() + "no_answer";
+  ELLE_LOG("Get %s", url);
+  auto rc = curly::make_get();
+  rc.url(url);
+  std::stringstream content;
+  rc.output(content);
+  BOOST_CHECK_THROW(curly::request(std::move(rc)), curly::EmptyResponse);
+}
+
+class PartialHttpServer:
+  public httpd
+{
+  virtual
+  void
+  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> socket,
+          boost::asio::streambuf* buffer,
+          boost::system::error_code const& e,
+          size_t size)
+  {
+    delete buffer;
+    auto answer = new std::string(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
+      "Content-Length: 42"
+      "Connection: Close\r\n"
+      "\r\n"
+      "crap");
+    auto answer_buffer = boost::asio::buffer(answer->c_str(),
+                                             answer->size());
+    auto peer = socket->remote_endpoint();
+    ELLE_LOG("%s: write to %s: %s", *this, peer, *answer);
+    auto& s = *socket;
+    auto cb = std::bind(&httpd::_answered,
+                        this,
+                        elle::utility::move_on_copy(socket),
+                        answer,
+                        std::placeholders::_1,
+                        std::placeholders::_2);
+    boost::asio::async_write(s, answer_buffer, cb);
+  }
+};
+
+static
+void
+partial_answer()
+{
+  PartialHttpServer server;
+  auto url = server.root_url() + "partial";
+  ELLE_LOG("Get %s", url);
+  auto rc = curly::make_get();
+  rc.url(url);
+  std::stringstream content;
+  rc.output(content);
+  BOOST_CHECK_THROW(curly::request(std::move(rc)), curly::RequestError);
+}
+
+class FuckOffHttpServer:
+  public httpd
+{
+  virtual
+  void
+  _serve(std::unique_ptr<boost::asio::ip::tcp::socket> socket)
+  {
+    socket->close();
+  }
+};
+
+static
+void
+connection_reset()
+{
+  FuckOffHttpServer server;
+  auto url = server.root_url() + "connection_reset";
+  ELLE_LOG("Get %s", url);
+  auto rc = curly::make_get();
+  rc.url(url);
+  std::stringstream content;
+  rc.output(content);
+  BOOST_CHECK_THROW(curly::request(std::move(rc)), curly::RequestError);
+}
+
 static
 void
 timed()
@@ -261,6 +362,9 @@ test_suite()
   auto& ts = boost::unit_test::framework::master_test_suite();
   ts.add(BOOST_TEST_CASE(simple), 0, 20);
   ts.add(BOOST_TEST_CASE(complex), 0, 20);
+  ts.add(BOOST_TEST_CASE(no_answer), 0, 3);
+  ts.add(BOOST_TEST_CASE(partial_answer), 0, 3);
+  ts.add(BOOST_TEST_CASE(connection_reset), 0, 3);
   ts.add(BOOST_TEST_CASE(timed), 0, 20);
   ts.add(BOOST_TEST_CASE(threaded), 0, 20);
   return true;
