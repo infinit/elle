@@ -12,16 +12,19 @@ ELLE_LOG_COMPONENT("elle.HTTPClient");
 
 namespace elle
 {
-  //- Exception ---------------------------------------------------------------
-  HTTPException::HTTPException(ResponseCode code, std::string const& message)
-    : std::runtime_error(message)
-    , code(code)
-  {}
-
-  bool
-  HTTPException::operator ==(HTTPException const& e)
+  namespace http
   {
-    return (this->code == e.code);
+    //- Exception ---------------------------------------------------------------
+    Exception::Exception(ResponseCode code, std::string const& message)
+      : elle::Exception(message)
+      , code(code)
+    {}
+
+    bool
+    Exception::operator ==(Exception const& e)
+    {
+      return (this->code == e.code);
+    }
   }
 
   //- Request -----------------------------------------------------------------
@@ -415,7 +418,8 @@ namespace elle
     catch (std::exception const& err)
     {
       ELLE_TRACE("PUT %s %s threw an error", url, data.repr());
-      throw HTTPException(ResponseCode::internal_server_error, err.what());
+      throw http::Exception(http::ResponseCode::internal_server_error,
+                            err.what());
     }
 
     return true;

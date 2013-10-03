@@ -7,39 +7,42 @@
 
 namespace elle
 {
-  // Error values.
-  enum class ResponseCode : int
+  namespace http
   {
-    // Success
-    ok = 200,
-    accepted = 202,
+    // Error values.
+    enum class ResponseCode : int
+    {
+      // Success
+      ok = 200,
+      accepted = 202,
 
-    // Client error
-    error = 400,
-    bad_request = 400,
-    forbidden = 403,
-    not_found = 404,
-    im_a_teapot = 418,
+      // Client error
+      error = 400,
+      bad_request = 400,
+      forbidden = 403,
+      not_found = 404,
+      im_a_teapot = 418,
 
-    // Server error
-    internal_server_error = 500,
-    bad_content = 601,
-    unknown_error = 666
-  };
+      // Server error
+      internal_server_error = 500,
+      bad_content = 601,
+      unknown_error = 666
+    };
 
-  //- Exception ---------------------------------------------------------------
+    //- Exception ---------------------------------------------------------------
 
-  /// Exception thrown by HttpClient methods
-  class HTTPException
-    : public std::runtime_error
-  {
-  public:
-    ResponseCode const code;
+    /// Exception thrown by HttpClient methods
+    class Exception
+      : public elle::Exception
+    {
+    public:
+      ResponseCode const code;
 
-  public:
-    HTTPException(ResponseCode code, std::string const& message = "");
-    bool operator ==(HTTPException const& e);
-  }; // ! HTTPException
+    public:
+      Exception(ResponseCode code, std::string const& message = "");
+      bool operator ==(Exception const& e);
+    }; // ! HTTPException
+  }
 
   class HTTPClient;
 
@@ -170,7 +173,5 @@ namespace elle
     ELLE_ATTRIBUTE_RW(std::string, token);
   };
 }
-
-# include <elle/HttpClient.hxx>
 
 #endif
