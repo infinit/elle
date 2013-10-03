@@ -128,17 +128,23 @@ def configure(cxx_toolkit = None,
         'include/openssl/x509_vfy.h',
         ]])
   openssl_configure = drake.node(openssl_root / 'Configure')
-  from drake.cxx import DynLib
+  from drake.cxx import DynLib, StaticLib
+  openssl_shared = True
   if cxx_toolkit.os is drake.os.linux:
-    openssl_lib_ssl = DynLib('openssl/lib/libssl.so.1.0.0',
+    openssl_lib_ssl = DynLib(openssl_root / 'libssl.so.1.0.0',
                              lib_name = 'ssl')
-    openssl_lib_crypto = DynLib('openssl/lib/libcrypto.so.1.0.0',
+    openssl_lib_crypto = DynLib(openssl_root / 'libcrypto.so.1.0.0',
                                 lib_name = 'crypto')
-  else:
-    openssl_lib_ssl = DynLib('openssl/lib/libssl.1.0.0.dylib',
+  elif cxx_toolkit.os is drake.os.macos:
+    openssl_lib_ssl = DynLib(openssl_root / 'libssl.1.0.0.dylib',
                              lib_name = 'ssl')
-    openssl_lib_crypto = DynLib('openssl/lib/libcrypto.1.0.0.dylib',
+    openssl_lib_crypto = DynLib(openssl_root / 'libcrypto.1.0.0.dylib',
                                 lib_name = 'crypto')
+  elif cxx_toolkit.os is drake.os.windows:
+    openssl_lib_ssl = StaticLib(openssl_root / 'libssl.a')
+    openssl_lib_crypto = StaticLib(openssl_root / 'libcrypto.a')
+    openssl_shared = False
+
   openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
   openssl_prefix = drake.path_build('openssl')
   if cxx_toolkit.os is drake.os.linux:
@@ -153,12 +159,14 @@ def configure(cxx_toolkit = None,
              targets = openssl_libs,
              configure_args = [
                '--prefix=%s/%s' % (os.getcwd(), openssl_prefix),
-               'shared',
+                '%sshared' % (not openssl_shared and 'no-' or ''),
                'no-asm',
                '-DPURIFY',
                os_string,
+             ],
+             build_args = [
+               'all'
              ])
-  openssl_libs = drake.copy(openssl_libs, '.', 'openssl')
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_root / 'include')
   # Not needed since we use the nodes directly
@@ -287,7 +295,8 @@ def configure(cxx_toolkit = None,
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  rule_build << lib_dynamic
+  if cxx_toolkit.os != drake.os.windows:
+    rule_build << lib_dynamic
 
   # Tests
   tests = [
