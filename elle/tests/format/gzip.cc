@@ -20,7 +20,8 @@ data_size(std::string content, bool flush, int buffer_size)
 
   BOOST_CHECK_LE(buffer.str().size(), content.size() * 80 / 100 + 20);
 
-  elle::Buffer output(content.size());
+  /*
+   elle::Buffer output(content.size());
   {
     boost::iostreams::filtering_istream filter;
     filter.push(boost::iostreams::gzip_decompressor());
@@ -35,6 +36,7 @@ data_size(std::string content, bool flush, int buffer_size)
   }
   // Do not use BOOST_CHECK_EQUAL because the output is HUGE.
   BOOST_CHECK(content == output.string());
+  */
 }
 
 static
