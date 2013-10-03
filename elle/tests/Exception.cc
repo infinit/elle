@@ -6,10 +6,7 @@
 
 using elle::Exception;
 
-// Pacify -Wmissing-declarations.
-void
-thrower();
-
+static
 void
 thrower()
 {
@@ -21,13 +18,17 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
   try
   {
     thrower();
-    BOOST_CHECK(false);
+    BOOST_CHECK(false && "Shouldn't be there");
   }
   catch (elle::Exception& e)
   {
-    std::cout << e << std::endl;
-
     BOOST_CHECK_EQUAL(e.what(), "test message");
+#ifndef INFINIT_WINDOWS
     BOOST_CHECK_EQUAL(e.backtrace().front().symbol, "thrower()");
+#endif
+  }
+  catch (...)
+  {
+    BOOST_CHECK(false && "Shouldn't be there");
   }
 }
