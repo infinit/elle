@@ -113,5 +113,5 @@ class GNUBuilder(drake.Builder):
     return ''.join([
       str(self.command_configure),
       str(self.command_build),
-      str(self.__env),
+      str(tuple(sorted(self.__env.items()))),
     ])
