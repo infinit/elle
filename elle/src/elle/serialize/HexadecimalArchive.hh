@@ -1,8 +1,7 @@
 #ifndef ELLE_SERIALIZE_HEXADECIMALARCHIVE_HH
 # define ELLE_SERIALIZE_HEXADECIMALARCHIVE_HH
 
-# include <cassert>
-
+# include <elle/assert.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/BaseArchive.hxx>
 
@@ -35,7 +34,7 @@ namespace elle { namespace serialize {
     {
       if (size == 0)
         return;
-      assert(data != nullptr);
+      ELLE_ASSERT(data != nullptr);
       this->_temp.resize(size * 2);
 
       size_t i = 0;

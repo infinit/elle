@@ -1,5 +1,5 @@
 
-#include <cassert>
+#include <elle/assert.hh>
 #include <sstream>
 #include <string>
 
@@ -18,7 +18,7 @@ ELLE_SERIALIZE_STATIC_FORMAT(Old, 0); // not needed
 
 ELLE_SERIALIZE_SIMPLE(Old, ar, value, version)
 {
-  assert(version == 0);
+  ELLE_ASSERT(version == 0);
   ar & value.s;
   ar & value.i;
 }
@@ -41,7 +41,7 @@ ELLE_SERIALIZE_SIMPLE(New, ar, value, version)
     }
   else
     {
-      assert(version == 1);
+      ELLE_ASSERT(version == 1);
       ar & value.d;
     }
 }
@@ -59,7 +59,7 @@ int main()
 
   elle::serialize::InputBinaryArchive{ss, new_};
 
-  assert(new_.d == 42.0);
+  ELLE_ASSERT(new_.d == 42.0);
 
   std::cout << "tests done.\n";
   return 0;
