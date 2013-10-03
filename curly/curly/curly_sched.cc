@@ -7,7 +7,9 @@ namespace curly
   sched_request::sched_request(reactor::Scheduler& sched,
                                curly::request_configuration conf):
     Operation{sched},
-    _request{sched.io_service(), std::move(conf)}
+    _request{sched.io_service(), std::move(conf)},
+    _code(-1), // -1 is not a bad value...
+    _succeed(false)
   {}
 
   void
@@ -16,6 +18,11 @@ namespace curly
                                 std::string const& error_message)
   {
     // XXX: duplicated with throw_if_ecode.
+    curl_easy_getinfo(easy, CURLINFO_RESPONSE_CODE, &this->_code);
+
+    this->_succeed = ((this->_code == 200) &&
+                      (code != CURLE_ABORTED_BY_CALLBACK));
+
     if (code != CURLE_OK)
     {
       char* url_ptr;

@@ -24,6 +24,9 @@ namespace curly
   protected:
     virtual void _start() override;
     virtual void _abort() override;
+
+    ELLE_ATTRIBUTE_R(long, code);
+    ELLE_ATTRIBUTE_R(bool, succeed);
   };
 } /* curly */
 
