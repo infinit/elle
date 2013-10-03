@@ -57,8 +57,16 @@ namespace reactor
                    {
                      ELLE_TRACE_SCOPE("%s: background job %s threw: %s",
                                       *this, name, elle::exception_string());
-                     this->_raise(std::current_exception());
-                     this->_terminate_now();
+                     if (!this->_exception)
+                     {
+                       this->_exception = std::current_exception();
+                       this->_raise(std::current_exception());
+                       this->_terminate_now();
+                     }
+                     else
+                       ELLE_WARN(
+                         "%s: exception already caught, losing exception: %s",
+                         *this, elle::exception_string());
                    }
                    if (!--this->_running)
                      this->_signal();
@@ -81,7 +89,6 @@ namespace reactor
   void
   Scope::terminate_now()
   {
-    ELLE_TRACE_SCOPE("terminating all threads belonging to %s", *this);
     this->_terminate_now();
   }
 
@@ -91,23 +98,42 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: terminate now", *this);
     auto current = reactor::Scheduler::scheduler()->current();
     std::exception_ptr e;
+    bool inside = false;
+    Waitables join;
+    join.reserve(this->_threads.size());
     for (auto* t: this->_threads)
     {
       if (t == current)
+      {
+        inside = true;
         continue;
+      }
+      ELLE_DEBUG("%s: terminate %s", *this, *t)
+        t->terminate();
+      join.push_back(t);
+    }
+    while (true)
+    {
+      ELLE_DEBUG_SCOPE("%s: wait for all threads to finish", *this);
       try
       {
-        ELLE_DEBUG_SCOPE("%s: terminate %s now", *this, *t);
-        t->terminate_now();
+        Scheduler::scheduler()->current()->wait(join);
+        break;
       }
       catch (...)
       {
         e = std::current_exception();
       }
+    }
+    for (auto* t: this->_threads)
+    {
+      if (t == current)
+        continue;
       delete t;
     }
     this->_threads.clear();
-    this->_threads.push_back(current);
+    if (inside)
+      this->_threads.push_back(current);
     if (e)
       std::rethrow_exception(e);
   }

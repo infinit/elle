@@ -47,10 +47,8 @@ namespace reactor
     void
     run_background(std::string const& name,
                    Thread::Action const& a);
-
     void
     terminate_now();
-
   private:
     void
     _terminate_now();
@@ -58,6 +56,7 @@ namespace reactor
     ELLE_ATTRIBUTE(std::vector<Thread*>, threads);
     /// Number of running threads.
     ELLE_ATTRIBUTE(int, running);
+    ELLE_ATTRIBUTE(std::exception_ptr, exception);
 
   /*---------.
   | Waitable |
