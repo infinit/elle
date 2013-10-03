@@ -25,6 +25,7 @@ namespace elle
       }
 
       template <>
+      inline
       elle::String
       encode(ConstWeakBuffer input)
       {
@@ -56,6 +57,7 @@ namespace elle
       }
 
       template <>
+      inline
       Buffer
       decode(elle::String const& input)
       {
