@@ -1219,7 +1219,7 @@ class Binary(Node):
             self.src_add(source, self.tk, self.cfg)
 
     def clone(self, path):
-        return self.__class__(path, self.sources, self.tk, self.cfg)
+        return self.__class__(path)
 
     @property
     def dynamic_libraries(self):
@@ -1304,7 +1304,7 @@ Node.extensions['dylib'] = DynLib
 
 class Module(Binary):
 
-  def __init__(self, path, sources, tk, cfg):
+  def __init__(self, path, sources = None, tk = None, cfg = None):
     Binary.__init__(self, tk.libname_module(cfg, path),
                     sources, tk, cfg)
     DynLibLinker(self, self.tk, self.cfg)
@@ -1324,10 +1324,12 @@ class StaticLib(Binary):
 
 class Executable(Binary):
 
-  def __init__(self, path, sources, tk, cfg):
-    path = tk.exename(cfg, path)
+  def __init__(self, path, sources = None, tk = None, cfg = None):
+    if tk is not None:
+      path = tk.exename(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
-    Linker(self, self.tk, self.cfg)
+    if sources is not None:
+      Linker(self, self.tk, self.cfg)
 
 
 def deps_merge(nodes):
