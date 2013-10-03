@@ -424,22 +424,26 @@ def configure(cxx_toolkit = None,
     "serialize/version_change.cc",
     "serialize/footprint.cc",
     "serialize/extract.cc",
-    "system/process.cc",
-    "system/process-args.cc",
-    "system/process-fail.cc",
-    "system/process-sleep.cc",
-    "system/process-kill.cc",
-    "system/process-unknow.cc",
-    "system/process-unknonw-wait.cc",
-    "system/process-output-config.cc",
-    "system/process-pipe.cc",
-    "system/process-checkoutput.cc",
-    "system/process-pipe2.cc",
-    "system/process-shortcuts.cc",
-    "system/process-pipe-to-file.cc",
     "threading/monitor.cc",
     "utility/Suffixes.cc",
     ]
+
+  if cxx_toolkit.os != drake.os.windows:
+    tests.expand([
+      "system/process.cc",
+      "system/process-args.cc",
+      "system/process-fail.cc",
+      "system/process-sleep.cc",
+      "system/process-kill.cc",
+      "system/process-unknow.cc",
+      "system/process-unknonw-wait.cc",
+      "system/process-output-config.cc",
+      "system/process-pipe.cc",
+      "system/process-checkoutput.cc",
+      "system/process-pipe2.cc",
+      "system/process-shortcuts.cc",
+      "system/process-pipe-to-file.cc",
+    ])
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests += boost.config_test()
@@ -448,7 +452,7 @@ def configure(cxx_toolkit = None,
       config_test = drake.cxx.Config(cxx_config_tests)
       config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
       test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
-                                  drake.nodes('tests/%s' % test) + [lib_preferred],
+                                  drake.nodes('tests/%s' % test) + [lib_preferred] + zlib_libs,
                                   cxx_toolkit, config_test)
       rule_tests << test
       if valgrind is not None:
