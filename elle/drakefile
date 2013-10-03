@@ -69,7 +69,6 @@ def configure(cxx_toolkit = None,
     zlib_tarball,
     fingerprint = '44d667c142d7cda120332623eab69f40'
   )
-  zlib_configure = drake.node(zlib_root / 'configure')
   drake.TarballExtractor(
     zlib_tarball,
     targets = ['%s/%s' % (zlib_basename, 'configure')],
@@ -82,20 +81,18 @@ def configure(cxx_toolkit = None,
   if cxx_toolkit.os is drake.os.windows:
     # XXX only for mingw
     zlib_makefile = 'win32/Makefile.gcc'
-    class ZLibBuilder(GNUBuilder):
-      @property
-      def command_configure(self):
-        return ['echo', 'zlib is not configurable on windows']
+    zlib_configure = None
   else:
-    ZLibBuilder = GNUBuilder
+    zlib_makefile = None
+    zlib_configure = drake.node(zlib_root / 'configure')
 
-  ZLibBuilder(
+  GNUBuilder(
     cxx_toolkit,
     configure = zlib_configure,
-    configure_interpreter = 'sh',
-    targets = zlib_libs,
+    working_directory = drake.path_build(zlib_root),
+    targets = zlib_libs + [drake.node('zlib/include/zlib.h')],
     makefile = zlib_makefile,
-    build_args = list(s.replace('\\', '/') for s in [
+    build_args = ['install'] + list(s.replace('\\', '/') for s in [
       "INCLUDE_PATH='%s/%s/include'" % (os.getcwd(), zlib_prefix),
       "BINARY_PATH='%s/%s/bin'" % (os.getcwd(), zlib_prefix),
       "LIBRARY_PATH='%s/%s/lib'" % (os.getcwd(), zlib_prefix),
