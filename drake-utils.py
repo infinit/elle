@@ -96,13 +96,13 @@ class GNUBuilder(drake.Builder):
       config = ['./%s' % basename]
     else:
       config = [self.__configure_interpreter, basename]
-    return config + self.__args
+    return config + self.__configure_args
 
   @property
   def command_build(self):
     if self.__makefile is not None:
       return [self.__make_binary, '-f', self.__makefile, 'install'] + self.__build_args
-    return [self.__make_binary, 'install'] + self.__build_args
+    return [self.__make_binary] + self.__build_args
 
   @property
   def work_directory(self):
