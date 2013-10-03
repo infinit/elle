@@ -7,15 +7,6 @@
 # include <unordered_map>
 # include <vector>
 
-// With mingw-gcc4.8.1, <mutex> header does not include recursive_mutex.
-# ifdef __MINGW32__
-#  include <boost/thread/recursive_mutex.hpp>
-namespace std
-{
-  using boost::recursive_mutex;
-}
-# endif
-
 # include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/noncopyable.hpp>
 

@@ -8,11 +8,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/tss.hpp>
 
-#ifdef __MINGW32__
-#include <boost/thread/thread.hpp>
-namespace std { namespace this_thread = boost::this_thread; }
-#endif
-
 #ifdef INFINIT_WINDOWS
 # include <Shlwapi.h>
 #else
