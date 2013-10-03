@@ -71,10 +71,10 @@ static
 void
 clear_env()
 {
-  elle::os::unsetenv("ELLE_LOG_LEVEL", "");
-  elle::os::unsetenv("ELLE_LOG_TIME", "");
-  elle::os::unsetenv("ELLE_LOG_TIME_UNIVERSAL", "");
-  elle::os::unsetenv("ELLE_LOG_PID", "");
+  elle::os::unsetenv("ELLE_LOG_LEVEL");
+  elle::os::unsetenv("ELLE_LOG_TIME");
+  elle::os::unsetenv("ELLE_LOG_TIME_UNIVERSAL");
+  elle::os::unsetenv("ELLE_LOG_PID");
 }
 
 static
