@@ -36,6 +36,13 @@ public:
     this->_thread.reset(new std::thread(run));
   }
 
+  virtual
+  ~httpd()
+  {
+    this->_server.close();
+    this->_thread->join();
+  }
+
   void
   _accept()
   {
@@ -65,67 +72,84 @@ public:
     this->_accept();
   }
 
+  virtual
   void
   _serve(std::unique_ptr<boost::asio::ip::tcp::socket> _socket)
   {
-    auto socket = _socket.get();
-    auto socket_move = elle::utility::move_on_copy(std::move(_socket));
     auto buffer = new boost::asio::streambuf;
-    auto cb = [this, socket_move, buffer]
-      (boost::system::error_code const& e, size_t size)
-      {
-        auto& socket = *socket_move.value;
-        auto peer = socket.remote_endpoint();
-        if (e)
-        {
-          ELLE_ERR("%s: read error on %s: %s", *this, peer, e);
-          std::abort();
-        }
-        std::string path;
-        {
-          std::istream s(buffer);
-          char line[1024];
-          s.getline(line, sizeof(line));
-          ELLE_LOG("%s: read on %s: %s", *this, peer, line);
-          std::vector<std::string> words;
-          boost::algorithm::split(words, line,
-                                  boost::algorithm::is_any_of(" "));
-          BOOST_CHECK_EQUAL(words[0], "GET");
-          BOOST_CHECK_EQUAL(words[2], "HTTP/1.1\r");
-          path = words[1];
-        }
-        delete buffer;
-        auto answer = new std::string(
-          "HTTP/1.1 200 OK\r\n"
-          "Content-Type: text/plain; charset=UTF-8\r\n"
-          "Connection: Close\r\n"
-          "\r\n");
-        *answer += path;
-        auto answer_buffer = boost::asio::buffer(answer->c_str(),
-                                                 answer->size());
-        auto cb = [this, socket_move, answer]
-          (boost::system::error_code const& e, size_t size)
-          {
-            delete answer;
-            auto& socket = *socket_move.value;
-            auto peer = socket.remote_endpoint();
-            if (e)
-            {
-              ELLE_ERR("%s: write error on %s: %s", *this, peer, e);
-              std::abort();
-            }
-          };
-        ELLE_LOG("%s: write to %s: %s", *this, peer, *answer);
-        boost::asio::async_write(socket, answer_buffer, cb);
-      };
-    boost::asio::async_read_until(*socket, *buffer,
+    auto& socket = *_socket;
+    auto cb = std::bind(&httpd::_answer,
+                        this,
+                        elle::utility::move_on_copy(_socket),
+                        buffer,
+                        std::placeholders::_1,
+                        std::placeholders::_2
+      );
+    boost::asio::async_read_until(socket, *buffer,
                                   std::string("\r\n\r\n"), cb);
   }
 
-  ~httpd()
+  virtual
+  void
+  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
+          boost::asio::streambuf* buffer,
+          boost::system::error_code const& e,
+          size_t size)
   {
-    this->_server.close();
-    this->_thread->join();
+    auto& socket = *_socket;
+    auto peer = socket.remote_endpoint();
+    if (e)
+    {
+      ELLE_ERR("%s: read error on %s: %s", *this, peer, e);
+      std::abort();
+    }
+    std::string path;
+    {
+      std::istream s(buffer);
+      char line[1024];
+      s.getline(line, sizeof(line));
+      ELLE_LOG("%s: read on %s: %s", *this, peer, line);
+      std::vector<std::string> words;
+      boost::algorithm::split(words, line,
+                              boost::algorithm::is_any_of(" "));
+      BOOST_CHECK_EQUAL(words[0], "GET");
+      BOOST_CHECK_EQUAL(words[2], "HTTP/1.1\r");
+      path = words[1];
+    }
+    delete buffer;
+    auto answer = new std::string(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
+      "Connection: Close\r\n"
+      "\r\n");
+    *answer += path;
+    auto answer_buffer = boost::asio::buffer(answer->c_str(),
+                                             answer->size());
+    ELLE_LOG("%s: write to %s: %s", *this, peer, *answer);
+    auto cb = std::bind(&httpd::_answered,
+                        this,
+                        elle::utility::move_on_copy(_socket),
+                        answer,
+                        std::placeholders::_1,
+                        std::placeholders::_2);
+    boost::asio::async_write(socket, answer_buffer, cb);
+  }
+
+  virtual
+  void
+  _answered(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
+            std::string* answer,
+            boost::system::error_code const& e,
+            size_t size)
+  {
+    delete answer;
+    auto& socket = *_socket;
+    auto peer = socket.remote_endpoint();
+    if (e)
+    {
+      ELLE_ERR("%s: write error on %s: %s", *this, peer, e);
+      std::abort();
+    }
   }
 
   int port()
