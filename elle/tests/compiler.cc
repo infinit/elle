@@ -1,10 +1,11 @@
-#include <execinfo.h>
-
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/compiler.hh>
 
+#ifndef INFINIT_WINDOWS
+# include <execinfo.h>
+#endif
 
 static ELLE_COMPILER_ATTRIBUTE_NORETURN
 void

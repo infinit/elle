@@ -1,8 +1,12 @@
-#include <arpa/inet.h>
-
 #include <elle/log.hh>
 
 #include <protocol/Stream.hh>
+
+#ifdef INFINIT_WINDOWS
+# include <Winsock2.h>
+#else
+#include <arpa/inet.h>
+#endif
 
 namespace infinit
 {

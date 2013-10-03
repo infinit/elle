@@ -1,4 +1,8 @@
-#include <arpa/inet.h>
+#ifdef INFINIT_WINDOWS
+# include <Winsock2.h>
+#else
+# include <arpa/inet.h>
+#endif
 
 #include <elle/log.hh>
 
