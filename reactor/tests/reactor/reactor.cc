@@ -411,6 +411,49 @@ namespace scope
 
   static
   void
+  multiple_exception()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread t(
+      sched, "main",
+      []
+      {
+        bool beacon = false;
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          auto thrower = [] { throw BeaconException(); };
+
+          s.run_background(
+            "0",
+            [&]
+            {
+              {
+                try
+                {
+                  reactor::yield();
+                  reactor::yield();
+                }
+                catch (...)
+                {
+                  beacon = true;
+                  throw;
+                }
+              }
+              BOOST_FAIL("should have been killed");
+            });
+
+          for (int i = 1; i <= 2; ++i)
+            s.run_background(elle::sprintf("%s", i), [&] { thrower(); });
+
+          BOOST_CHECK_THROW(s.wait(), BeaconException);
+          BOOST_CHECK(beacon);
+        };
+      });
+    sched.run();
+  }
+
+  static
+  void
   terminate()
   {
     reactor::Scheduler sched;
@@ -1856,6 +1899,8 @@ test_suite()
     scope->add(BOOST_TEST_CASE(wait));
     auto exception = &scope::exception;
     scope->add(BOOST_TEST_CASE(exception));
+    auto multiple_exception = &scope::multiple_exception;
+    scope->add(BOOST_TEST_CASE(multiple_exception));
     auto terminate = &scope::terminate;
     scope->add(BOOST_TEST_CASE(terminate));
     auto terminate_all = &scope::terminate_all;
