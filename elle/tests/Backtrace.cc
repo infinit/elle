@@ -80,11 +80,15 @@ boost::unit_test::test_suite*
 init_unit_test_suite(int, char**)
 {
   boost::unit_test::test_suite* bt = BOOST_TEST_SUITE("Backtrace");
+#ifndef INFINIT_WINDOWS
   boost::unit_test::framework::master_test_suite().add(bt);
   bt->add(BOOST_TEST_CASE(test_backtrace_empty));
   bt->add(BOOST_TEST_CASE(test_backtrace));
   bt->add(BOOST_TEST_CASE(test_strip_base));
-
+#else
+  struct dummy { static void f() {} };
+  bt->add(BOOST_TEST_CASE(dummy::f));
+#endif
   return bt;
 }
 
