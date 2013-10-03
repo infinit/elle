@@ -31,20 +31,26 @@ def configure(cryptography,
   boost = boost or drake.cxx.boost.Boost()
   config += boost.config()
 
+  if cxx_toolkit.os == drake.os.windows:
+    #XXX
+    getlib = lambda module: getattr(module, 'lib_static')
+  else:
+    getlib = lambda module: getattr(module, 'lib_dynamic')
+
   # Elle
   config += elle.config
-  elle_lib = drake.copy(elle.lib_dynamic, 'lib',
-                        elle.lib_dynamic.name().dirname())
+  elle_lib = drake.copy(getlib(elle), 'lib',
+                        getlib(elle).name().dirname())
 
   # Reactor
   config += reactor.config
-  reactor_lib = drake.copy(reactor.lib_dynamic, 'lib',
-                           reactor.lib_dynamic.name().dirname())
+  reactor_lib = drake.copy(getlib(reactor), 'lib',
+                           getlib(reactor).name().dirname())
 
   # Cryptography
   config += cryptography.config
-  cryptography_lib = drake.copy(cryptography.lib_dynamic, 'lib',
-                                cryptography.lib_dynamic.name().dirname())
+  cryptography_lib = drake.copy(getlib(cryptography), 'lib',
+                                getlib(cryptography).name().dirname())
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -91,7 +97,8 @@ def configure(cryptography,
   global rule_build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  rule_build << lib_dynamic
+  if cxx_toolkit.os != drake.os.windows:
+    rule_build << lib_dynamic
 
   # Tests
   global rule_check, rule_tests

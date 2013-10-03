@@ -180,7 +180,8 @@ def configure(cxx_toolkit = None,
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  rule_build << lib_dynamic
+  if cxx_toolkit.os != drake.os.windows:
+    rule_build << lib_dynamic
 
   # Tests
   global rule_check, rule_tests
