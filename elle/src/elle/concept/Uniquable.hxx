@@ -23,7 +23,7 @@ namespace elle
                                  this, ELLE_PRETTY_OBJECT_TYPE(this));
             typedef serialize::_Serializable<Archive> interface_t;
             ELLE_ASSERT(dynamic_cast<interface_t const*>(this) != nullptr);
-            ELLE_ASSERt(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
+            ELLE_ASSERT(dynamic_cast<interface_t const*>(this) == static_cast<interface_t const*>(this));
             static_cast<interface_t const*>(this)->serialize(ss);
           }
         catch (std::exception const& err)
