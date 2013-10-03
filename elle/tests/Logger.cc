@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 
 #include <sstream>
 #include <thread>
@@ -278,10 +277,13 @@ trim()
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
-static
-bool
-test_suite()
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
+  elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
   boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
   boost::unit_test::framework::master_test_suite().add(logger);
   logger->add(BOOST_TEST_CASE(message_test));
@@ -295,12 +297,5 @@ test_suite()
   boost::unit_test::framework::master_test_suite().add(format);
   concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
   concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
+  return logger;
 }

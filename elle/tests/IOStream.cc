@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Buffer.hh>
@@ -175,9 +174,12 @@ exceptions()
   }
 }
 
-static
-bool
-test_suite()
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 1)));
@@ -197,11 +199,5 @@ test_suite()
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
   suite.add(BOOST_TEST_CASE(exceptions));
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
+  return nullptr;
 }

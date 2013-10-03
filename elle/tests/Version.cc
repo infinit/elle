@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 
 #include <elle/Version.hh>
 
@@ -69,9 +68,11 @@ test_greater_equal(int maj1, int min1, int maj2, int min2, bool result)
 
 
 
-static
-bool
-test_suite()
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
 	boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
 	boost::unit_test::framework::master_test_suite().add(basics);
@@ -126,11 +127,6 @@ test_suite()
 	basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 5, 0, 1, 1, true)));
 	basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 5, 0, 5, 0, true)));
 
-	return true;
+	return basics;
 }
 
-int
-main(int argc, char** argv)
-{
-	return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

@@ -1,5 +1,4 @@
 #define BOOST_TEST_MODULE footprint
-#define BOOST_TEST_DYN_LINK
 
 #include <elle/serialize/footprint.hh>
 #include <boost/test/unit_test.hpp>

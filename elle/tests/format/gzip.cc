@@ -1,12 +1,9 @@
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE Gzip
 #include <boost/test/unit_test.hpp>
 
 #include <sstream>
 
 #include <boost/filesystem.hpp>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
 
 #include <elle/format/gzip.hh>
 

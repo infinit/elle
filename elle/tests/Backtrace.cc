@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Backtrace.hh>
@@ -74,9 +73,11 @@ test_strip_base()
   BOOST_CHECK_EQUAL(bt.front().symbol, "quux()");
 }
 
-static
-bool
-test_suite()
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
   boost::unit_test::test_suite* bt = BOOST_TEST_SUITE("Backtrace");
   boost::unit_test::framework::master_test_suite().add(bt);
@@ -84,11 +85,6 @@ test_suite()
   bt->add(BOOST_TEST_CASE(test_backtrace));
   bt->add(BOOST_TEST_CASE(test_strip_base));
 
-  return true;
+  return bt;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

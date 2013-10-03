@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Exception.hh>
@@ -90,9 +89,12 @@ test_x()
   BOOST_CHECK_EQUAL(t.x().copy, 2);
 }
 
-static
-bool
-test_suite()
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
   boost::unit_test::test_suite* exn = BOOST_TEST_SUITE("attributes");
   boost::unit_test::framework::master_test_suite().add(exn);
@@ -100,11 +102,6 @@ test_suite()
   exn->add(BOOST_TEST_CASE(test_w));
   exn->add(BOOST_TEST_CASE(test_x));
 
-  return true;
+  return exn;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

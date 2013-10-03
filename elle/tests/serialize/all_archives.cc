@@ -3,7 +3,6 @@
 #include <sstream>
 
 #define BOOST_TEST_MODULE AllArchive
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Exception.hh>

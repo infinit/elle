@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Buffer.hh>
@@ -238,9 +237,11 @@ delete_array(elle::Byte* p)
   delete [] p;
 }
 
-static
-bool
-test_suite()
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**);
+
+boost::unit_test::test_suite*
+init_unit_test_suite(int, char**)
 {
   // Buffer
   boost::unit_test::test_suite* buffer = BOOST_TEST_SUITE("Buffer");
@@ -288,11 +289,6 @@ test_suite()
   weakbuffer->add(cmp_weak);
   cmp_weak->add(BOOST_TEST_CASE((&test_cmp<elle::WeakBuffer, delete_array>)));
 
-  return true;
+  return buffer;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}
