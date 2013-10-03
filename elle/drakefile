@@ -34,7 +34,7 @@ def configure(cxx_toolkit = None,
   boost = boost or drake.cxx.boost.Boost()
 
   cxx_config += boost.config()
-  cxx_config += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos))
+  cxx_config += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos or None))
   cxx_config += boost.config_system()
   cxx_config += boost.config_thread()
   cxx_config += boost.config_chrono()
