@@ -110,8 +110,8 @@ class GNUBuilder(drake.Builder):
 
 
   def hash(self):
-    return ''.join(
+    return ''.join([
       str(self.command_configure),
       str(self.command_build),
       str(self.__env),
-    )
+    ])
