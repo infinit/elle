@@ -382,7 +382,6 @@ def configure(cxx_toolkit = None,
   tests = [
     "attributes.cc",
     "compiler.cc",
-    "AtomicFile.cc",
     "Backtrace.cc",
     "Buffer.cc",
     "Exception.cc",
@@ -437,6 +436,7 @@ def configure(cxx_toolkit = None,
 
   if cxx_toolkit.os != drake.os.windows:
     tests.extend([
+      "AtomicFile.cc",
       "system/process.cc",
       "system/process-args.cc",
       "system/process-fail.cc",
