@@ -54,6 +54,8 @@ def configure(cxx_toolkit = None,
     config.define('INFINIT_MACOSX')
   elif cxx_toolkit.os == drake.os.windows:
     config.define('INFINIT_WINDOWS')
+    config.lib('Shlwapi')
+    config.lib('ws2_32')
   else:
     raise Exception('unsupported os')
 
