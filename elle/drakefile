@@ -429,7 +429,7 @@ def configure(cxx_toolkit = None,
     ]
 
   if cxx_toolkit.os != drake.os.windows:
-    tests.expand([
+    tests.extend([
       "system/process.cc",
       "system/process-args.cc",
       "system/process-fail.cc",
