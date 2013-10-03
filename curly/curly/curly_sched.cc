@@ -13,22 +13,19 @@ namespace curly
   void
   sched_request::raise_if_ecode(CURL* easy,
                                 CURLcode code,
-                                std::string const& message)
+                                std::string const& error_message)
   {
+    // XXX: duplicated with throw_if_ecode.
     if (code != CURLE_OK)
     {
-      char *url_ptr;
+      char* url_ptr;
       curl_easy_getinfo(easy, CURLINFO_EFFECTIVE_URL, &url_ptr);
+      std::string url(url_ptr);
 
-      std::string url{url_ptr};
-      std::stringstream ss;
-      std::string msg{curl_easy_strerror(code)};
-      ss
-        << "error code: " << code
-        << ": " << msg
-        << ": " << url
-        << ": " << message;
-      this->_raise<elle::Exception>(ss.str());
+      if (code == CURLE_GOT_NOTHING)
+        this->_raise<curly::EmptyResponse>(url);
+      else
+        this->_raise<curly::RequestError>(code, url, error_message);
     }
   }
 

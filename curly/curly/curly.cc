@@ -15,6 +15,7 @@ namespace curly
                  CURLcode code,
                  std::string const& error_message)
   {
+    // XXX: duplicated with raise_if_ecode.
     if (code != CURLE_OK)
     {
       char* url_ptr;
