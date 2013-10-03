@@ -1286,7 +1286,7 @@ def cmd(cmd, cwd = None, stdout = None):
     p.wait()
     return p.returncode == 0
 
-def command(cmd, cwd = None, stdout = None):
+def command(cmd, cwd = None, stdout = None, env = None):
   """Run the shell command.
 
   cmd -- the shell command.
@@ -1295,7 +1295,7 @@ def command(cmd, cwd = None, stdout = None):
   if cwd is not None:
     cwd = str(cwd)
   try:
-    p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout)
+    p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout, env = env)
     p.wait()
     return p.returncode == 0
   except FileNotFoundError as e:
@@ -1393,7 +1393,7 @@ class Builder:
     def path_stdout(self):
       return self.cachedir() / 'stdout'
 
-    def cmd(self, pretty, cmd, cwd = None, leave_stdout = False):
+    def cmd(self, pretty, cmd, cwd = None, leave_stdout = False, env = None):
         """Run a shell command.
 
         pretty  -- A pretty version for output.
@@ -1414,7 +1414,7 @@ class Builder:
                     stdout = None
                     if not leave_stdout:
                         stdout = f
-                    if not command(c, cwd = cwd, stdout = stdout):
+                    if not command(c, cwd = cwd, stdout = stdout, env = env):
                         return False
                 return True
             if Drake.current.jobs_lock is not None:
