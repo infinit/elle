@@ -58,62 +58,6 @@ namespace elle
       return Status::Ok;
     }
 
-    ///
-    /// this method converts a time object into a time_t structure.
-    ///
-    Status              Time::Get(::time_t&                     time) const
-    {
-      // set the time i.e in seconds.
-      time = this->nanoseconds / 1000000000;
-
-      return Status::Ok;
-    }
-
-    ///
-    /// this method converts a time_t into a time object.
-    ///
-    Status              Time::Set(const ::time_t&               time)
-    {
-      this->nanoseconds = time * 1000000000;
-
-      return Status::Ok;
-    }
-
-#if defined(INFINIT_WINDOWS)
-    ///
-    /// This method converts a FILETIME into a Time object.
-    ///
-    Status              Time::Get(::FILETIME&                   ft) const
-    {
-      ULARGE_INTEGER    value;
-
-      // quad part is in 100ns, since 1601-01-01 ... fuck ms
-      value.QuadPart = this->nanoseconds / 100
-        + ((369ULL * 365 + 89) * 24 * 60 * 60 * 1000 * 1000 * 10);
-      //   y         d     bis   h    m    s    ms     us     100ns
-
-      ft.dwLowDateTime  = value.LowPart;
-      ft.dwHighDateTime = value.HighPart;
-
-      return Status::Ok;
-    }
-
-    ///
-    /// This method converts a FILETIME into a Time object.
-    ///
-    Status              Time::Set(const ::FILETIME&             ft)
-    {
-      ULARGE_INTEGER    value;
-
-      value.LowPart = ft.dwLowDateTime;
-      value.HighPart = ft.dwHighDateTime;
-
-      this->nanoseconds = value.QuadPart * 100;
-
-      return Status::Ok;
-    }
-#endif
-
 //
 // ---------- object ----------------------------------------------------------
 //

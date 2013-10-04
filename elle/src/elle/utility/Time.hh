@@ -9,9 +9,6 @@
 
 # include <chrono>
 # include <ctime>
-# if defined(INFINIT_WINDOWS)
-#  include <windows.h>
-# endif
 
 namespace elle
 {
@@ -44,14 +41,6 @@ namespace elle
       // methods
       //
       Status            Current();
-
-      Status            Get(::time_t&) const;
-      Status            Set(const ::time_t&);
-
-#if defined(INFINIT_WINDOWS)
-      Status            Get(::FILETIME&) const;
-      Status            Set(const ::FILETIME&);
-#endif
 
       //
       // interfaces
