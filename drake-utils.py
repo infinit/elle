@@ -43,6 +43,8 @@ class GNUBuilder(drake.Builder):
     self.__env = {}
     self.__env.update(env)
     self.__env.update(additional_env)
+    if make_binary is not None:
+        self.__env.setdefault('MAKE', make_binary)
     if working_directory is not None:
         self.__working_directory = working_directory
     else:
