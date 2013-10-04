@@ -501,7 +501,7 @@ class GccToolkit(Toolkit):
     self.os = os
     self.__recursive_linkage = False
     try:
-      version = drake.cmd_output([compiler, '--version'])
+      version = subprocess.check_output([compiler, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
     self.cxx = compiler
@@ -1416,7 +1416,7 @@ def find_library(token = None, name = None, prefix = None,
 class PkgConfig():
 
     try:
-        drake.cmd_output(['which', 'pkg-config'])
+        subprocess.check_output(['which', 'pkg-config'])
         available = True
     except:
         available = False
@@ -1438,7 +1438,7 @@ class PkgConfig():
         return self.__exists
 
     def __pkg_config(self, cmd):
-      output = drake.cmd_output(['pkg-config', self.__package] + cmd)
+      output = subprocess.check_output(['pkg-config', self.__package] + cmd)
       return output.decode('utf-8').strip().split()
 
     def __flags(self, cmd, expected):

@@ -1303,17 +1303,6 @@ def command(cmd, cwd = None, stdout = None, env = None):
     return False
 
 
-def cmd_output(cmd, cwd = None):
-    """Run the given command and return its standard output.
-
-    Expansion handles shell escaping.
-    """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, cwd = cwd)
-    res = p.communicate()[0]
-    if p.returncode != 0:
-        raise Exception('command failed: %s' % cmd)
-    return res
-
 def _can_skip_node(node):
     if node.builder is None:
         if isinstance(node, Node):

@@ -9,7 +9,8 @@
 from datetime import date
 import drake
 import os
-from . import VirtualNode, cmd_output, Path
+import subprocess
+from . import VirtualNode, Path
 
 class Git(VirtualNode):
 
@@ -57,8 +58,9 @@ class Git(VirtualNode):
         self.__message     = None
 
     def __cmd(self, args):
-        cmd = ['git'] + args
-        return cmd_output(cmd, cwd = str(self.__path)).decode('utf-8').strip()
+      cmd = ['git'] + args
+      data = subprocess.check_output(cmd, cwd = str(self.__path))
+      return data.decode('utf-8').strip()
 
     def ls_files(self, *paths):
         """Run git ls-files and return the list of Paths.
