@@ -10,6 +10,7 @@
 #include <reactor/Scope.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
+#include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/signal.hh>
@@ -352,6 +353,26 @@ test_socket_close()
   sched.run();
 }
 
+/*-------------------.
+| Resolution failure |
+`-------------------*/
+
+static
+void
+resolution_failure()
+{
+  reactor::Scheduler sched;
+  reactor::Thread t(
+    sched, "resolver",
+    [&]
+    {
+      BOOST_CHECK_THROW(
+        reactor::network::resolve_tcp(sched, "does.not.exist", "http"),
+        reactor::network::ResolutionError);
+    });
+  sched.run();
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -373,6 +394,7 @@ test_suite()
 #undef INFINIT_REACTOR_NETWORK_TEST
   network->add(BOOST_TEST_CASE(test_socket_destruction));
   network->add(BOOST_TEST_CASE(test_socket_close));
+  network->add(BOOST_TEST_CASE(resolution_failure));
   return true;
 }
 

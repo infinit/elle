@@ -1,4 +1,4 @@
-#include <reactor/exception.hh>
+#include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
@@ -60,9 +60,7 @@ namespace reactor
 
         {
           if (error)
-            _raise<Exception>(
-              elle::sprintf("%s when resolving %s:%s",
-                            error.message(), this->_hostname, this->_service));
+            _raise<ResolutionError>(this->_hostname, error.message());
           else
             _end_point = *it;
           _signal();
