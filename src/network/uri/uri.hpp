@@ -365,11 +365,11 @@ namespace network {
 
     /**
      * \brief Resolves a relative reference against this URI.
-     * \param other A URI reference.
+     * \param reference A URI reference.
      * \returns An absolute URI.
      * \throws std::bad_alloc
      */
-    uri resolve(const uri &other) const;
+    uri resolve(const uri &reference) const;
 
     /**
      * \brief Compares this URI against another, corresponding to the
