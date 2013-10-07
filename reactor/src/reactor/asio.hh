@@ -5,8 +5,5 @@
 #  include <SDKDDKVer.h>
 # endif
 # include <boost/asio.hpp>
-# ifdef INFINIT_WINDOWS
-#  include <Windows.h>
-# endif
 
 #endif

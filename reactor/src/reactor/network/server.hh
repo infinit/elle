@@ -3,8 +3,7 @@
 
 # include <memory>
 
-# include <boost/asio.hpp>
-
+# include <reactor/asio.hh>
 # include <reactor/network/fwd.hh>
 # include <reactor/network/Protocol.hh>
 
