@@ -9,6 +9,7 @@ import os
 config = None
 lib_static = None
 lib_dynamic = None
+library = None
 
 rule_build = None
 rule_check = None
@@ -26,7 +27,7 @@ def configure(cxx_toolkit = None,
               prefix = '/usr',
               valgrind = None):
 
-  global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install, rule_tests
+  global config, lib_static, lib_dynamic, library, rule_build, rule_check, rule_install, rule_tests
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
@@ -364,15 +365,14 @@ def configure(cxx_toolkit = None,
     cxx_toolkit,
     cxx_config
   )
-  if cxx_toolkit.os == drake.os.windows:
-    lib_preferred = lib_static
-  else:
-    lib_preferred = lib_dynamic
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
     rule_build << lib_dynamic
+    library = lib_dynamic
+  else:
+    library = lib_static
 
   # Tests
 
@@ -460,7 +460,7 @@ def configure(cxx_toolkit = None,
       config_test = drake.cxx.Config(cxx_config_tests)
       config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
       test = drake.cxx.Executable('tests/%s' % os.path.splitext(test)[0],
-                                  drake.nodes('tests/%s' % test) + [lib_preferred] + zlib_libs,
+                                  drake.nodes('tests/%s' % test) + [library] + zlib_libs,
                                   cxx_toolkit, config_test)
       rule_tests << test
       if valgrind is not None:

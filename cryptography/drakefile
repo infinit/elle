@@ -8,6 +8,7 @@ import drake.valgrind
 config = None
 lib_static = None
 lib_dynamic = None
+library = None
 
 openssl_config = None
 openssl_libs = None
@@ -29,7 +30,7 @@ def configure(cxx_toolkit = None,
               valgrind = None):
 
   global config
-  global lib_static, lib_dynamic
+  global lib_static, lib_dynamic, library
   global openssl_config, openssl_libs, openssl_prefix
   global rule_build, rule_install
 
@@ -297,6 +298,9 @@ def configure(cxx_toolkit = None,
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
     rule_build << lib_dynamic
+    library = lib_dynamic
+  else:
+    library = lib_static
 
   # Tests
   tests = [

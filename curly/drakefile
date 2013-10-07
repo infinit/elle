@@ -8,12 +8,15 @@ import drake.valgrind
 config = None
 lib_static = None
 lib_dynamic = None
+library = None
 
 lib_asio_static = None
 lib_asio_dynamic = None
+library_asio = None
 
 lib_sched_static = None
 lib_sched_dynamic = None
+library_sched = None
 
 rule_build = None
 rule_check = None
@@ -32,9 +35,9 @@ def configure(cxx_toolkit = None,
               valgrind = None):
 
   global config
-  global lib_static, lib_dynamic
-  global lib_sched_dynamic, lib_sched_static
-  global lib_asio_dynamic, lib_asio_static
+  global lib_static, lib_dynamic, library
+  global library_asio, lib_sched_static, library_sched
+  global lib_asio_dynamic, lib_asio_static, library_asio
   global rule_build, rule_install
 
   with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
@@ -149,9 +152,9 @@ def configure(cxx_toolkit = None,
                                  cxx_toolkit, cxx_config)
 
   if cxx_toolkit.os == drake.os.windows:
-    lib_preferred = lib_static
+    library = lib_static
   else:
-    lib_preferred = lib_dynamic
+    library = lib_dynamic
 
   # Local Configuration Asio
   cxx_config_asio = drake.cxx.Config(cxx_config)
@@ -160,44 +163,43 @@ def configure(cxx_toolkit = None,
   cxx_config_asio.lib('curly')
 
   source_asio = drake.nodes(
-      'curly/asio_request.cc',
-      'curly/asio_request.hh',
-      'curly/curly_service.cc',
-      'curly/curly_service.hh',
-      'curly/curly_service.hxx',
-  ) + [lib_preferred]
+    'curly/asio_request.cc',
+    'curly/asio_request.hh',
+    'curly/curly_service.cc',
+    'curly/curly_service.hh',
+    'curly/curly_service.hxx',
+  )
 
 
-  lib_asio_static = drake.cxx.StaticLib('lib/curly_asio', source_asio,
-          cxx_toolkit, cxx_config_asio)
-  lib_asio_dynamic = drake.cxx.DynLib('lib/curly_asio', source_asio,
-          cxx_toolkit, cxx_config_asio)
+  lib_asio_static = drake.cxx.StaticLib(
+    'lib/curly_asio',
+    source_asio + [library],
+    cxx_toolkit,
+    cxx_config_asio
+  )
 
-  if cxx_toolkit.os == drake.os.windows:
-    lib_asio_preferred = lib_static
-  else:
-    lib_asio_preferred = lib_dynamic
+  lib_asio_dynamic = drake.cxx.DynLib(
+    'lib/curly_asio',
+    source_asio + [library],
+    cxx_toolkit,
+    cxx_config_asio
+  )
 
   # Local Configuration reactor
-  if cxx_toolkit.os == drake.os.windows:
-    #XXX
-    getlib = lambda module: getattr(module, 'lib_static')
-  else:
-    getlib = lambda module: getattr(module, 'lib_dynamic')
   cxx_config_sched = drake.cxx.Config(cxx_config_asio)
   cxx_config_sched += cxx_config_asio
   cxx_config_sched += reactor.config
-  reactor_lib = drake.copy(getlib(reactor), 'lib',
-                           getlib(reactor).name().dirname())
+  reactor_lib = drake.copy(reactor.library, 'lib',
+                           reactor.library.name().dirname())
 
   source_sched = drake.nodes(
       'curly/curly_sched.cc',
       'curly/curly_sched.hh',
-  ) + [lib_asio_preferred]
+  )
 
   lib_sched_static = \
     drake.cxx.StaticLib('lib/curly_sched',
-                        source_sched + [reactor.lib_static, lib_asio_static],
+                        source_sched + [reactor.library, lib_asio_static],
                         cxx_toolkit, cxx_config_sched)
   lib_sched_dynamic = \
     drake.cxx.DynLib('lib/curly_sched',
@@ -213,6 +215,12 @@ def configure(cxx_toolkit = None,
     rule_build << lib_dynamic
     rule_build << lib_asio_dynamic
     rule_build << lib_sched_dynamic
+    library_asio = lib_asio_dynamic
+    library_sched = lib_sched_dynamic
+  else:
+    library_asio = lib_asio_static
+    library_sched = lib_sched_static
+
 
   class unit_test:
       def __init__(self, sources, args = None):
@@ -242,9 +250,9 @@ def configure(cxx_toolkit = None,
     bin_path = drake.Path('tests/%s' % name)
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(test.sources) +
-                               [lib_dynamic,
-                                lib_asio_dynamic,
-                                lib_sched_dynamic,
+                               [library,
+                                library_asio,
+                                library_sched,
                                 reactor_lib, elle_lib,
                                 curl_lib],
                                cxx_toolkit, cxx_config_tests)

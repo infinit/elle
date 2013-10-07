@@ -5,6 +5,7 @@ import drake.cxx.boost
 config = None
 lib_static = None
 lib_dynamic = None
+library = None
 
 rule_build = None
 rule_check = None
@@ -22,7 +23,7 @@ def configure(cxx_toolkit = None,
               valgrind = None):
 
   global asio_udt_lib
-  global config, lib_static, lib_dynamic
+  global config, lib_static, lib_dynamic, library
   global rule_build, rule_install
 
   # Public C++ configuration
@@ -51,7 +52,7 @@ def configure(cxx_toolkit = None,
   # Elle
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.lib_dynamic, 'lib', elle.lib_dynamic.name().dirname())
+  elle_lib = drake.copy(elle.library, 'lib', elle.library.name().dirname())
 
   # UDT
   #asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
@@ -182,6 +183,9 @@ def configure(cxx_toolkit = None,
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
     rule_build << lib_dynamic
+    library = lib_dynamic
+  else:
+    library = lib_static
 
   # Tests
   global rule_check, rule_tests
@@ -213,7 +217,7 @@ def configure(cxx_toolkit = None,
     if valgrind is not None:
       tests_config.define('VALGRIND')
     test = drake.cxx.Executable('tests/%s' % test,
-                                drake.nodes('tests/%s.cc' % test) + [lib_dynamic, elle_lib],
+                                drake.nodes('tests/%s.cc' % test) + [library, elle_lib],
                                 cxx_toolkit, tests_config)
     rule_tests << test
     if valgrind is not None:
