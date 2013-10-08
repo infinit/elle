@@ -618,7 +618,7 @@ class GccToolkit(Toolkit):
                   list(map(lambda n: str(n.path()), objs)),
               ['ranlib', str(lib.path())])
 
-  def __libraries_flags(self, cfg, cmd):
+  def __libraries_flags(self, cfg, libraries, cmd):
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
@@ -645,6 +645,11 @@ class GccToolkit(Toolkit):
                 break
           if not found:
             raise Exception('can\'t find static version of %s' % lib)
+    for lib in libraries:
+      if isinstance(lib, (StaticLib, DynLib)):
+        cmd.append(lib.path())
+      else:
+        raise Exception("cannot link an object of type %s" % type(lib))
     if self.__recursive_linkage:
       cmd.append('-Wl,-)')
 
@@ -667,9 +672,10 @@ class GccToolkit(Toolkit):
       if self.os == drake.os.macos:
           cmd += ['-undefined', 'dynamic_lookup']
       for obj in objs:
-          cmd.append(obj.path())
+        cmd.append(obj.path())
       cmd += ['-o', exe.path()]
-      self.__libraries_flags(cfg, cmd)
+      libraries = (obj for obj in objs if isinstance(obj, Library))
+      self.__libraries_flags(cfg, libraries, cmd)
       return cmd
 
   def dynlink(self, cfg, objs, exe):
@@ -686,10 +692,14 @@ class GccToolkit(Toolkit):
                 '-Wl,-headerpad_max_install_names']
       if self.os is drake.os.linux:
         cmd.append('-Wl,-soname,%s' % exe.name().basename())
+      to_link = []
       for obj in objs:
-          cmd.append(obj.path())
+          if isinstance(obj, (StaticLib, DynLib)):
+            to_link.append(obj)
+          else:
+            cmd.append(obj.path())
       cmd += ['-shared', '-o', exe.path()]
-      self.__libraries_flags(cfg, cmd)
+      self.__libraries_flags(cfg, to_link, cmd)
       return cmd
 
   def libname_static(self, cfg, path):
@@ -1263,8 +1273,10 @@ class Binary(Node):
             raise Exception('invalid source for a library: %s' % source)
             # self.src_add(obj, tk, cfg)
 
+class Library(Binary):
+  pass
 
-class DynLib(Binary):
+class DynLib(Library):
   def __init__(self, path, sources = None, tk = None, cfg = None,
                preserve_filename = False):
     path = Path(path)
@@ -1292,7 +1304,7 @@ Node.extensions['so'] = DynLib
 Node.extensions['dylib'] = DynLib
 
 
-class Module(Binary):
+class Module(Library):
 
   def __init__(self, path, sources = None, tk = None, cfg = None,
                preserve_filename = False):
@@ -1313,7 +1325,7 @@ class Module(Binary):
     return res
 
 
-class StaticLib(Binary):
+class StaticLib(Library):
 
   def __init__(self, path, sources = None, tk = None, cfg = None):
     if tk is not None:
