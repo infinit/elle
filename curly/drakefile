@@ -75,24 +75,30 @@ def configure(cxx_toolkit = None,
     )]
   )
   curl_configure = drake.node(curl_root / 'configure')
-  from drake.cxx import DynLib
+  from drake.cxx import DynLib, StaticLib
   if cxx_toolkit.os is drake.os.linux:
     curl_lib = DynLib('curl/lib/libcurl.so.4', lib_name = 'curl')
-  else:
+  elif cxx_toolkit.os is drake.os.macos:
     curl_lib = DynLib('curl/lib/libcurl.4.dylib', lib_name = 'curl')
+  elif cxx_toolkit.os is drake.os.windows:
+    curl_lib = StaticLib('curl/lib/libcurl.a')
+  else:
+    raise Exception("Unknown OS")
+  library_curl = curl_lib
+
   openssl_libs = drake.copy(openssl_libs, 'lib',
                             openssl_libs[0].name().dirname())
-  # print(openssl_libs[0].path())
-  # print(openssl_libs[0].path().dirname())
   openssl_prefix = drake.path_root() / openssl
-  openssl_configure_args = [
-    '--prefix=%s/%s' % (os.getcwd(), drake.path_build('curl')),
-    '--with-ssl=%s' % openssl_prefix,
+  curl_configure_args = [
+    '--prefix=%s/%s' % (
+      os.getcwd().replace('\\', '/'),
+      str(drake.path_build('curl')).replace('\\', '/'),
+    ),
+    '--with-ssl=%s' % str(openssl_prefix).replace('\\', '/'),
     '--enable-hidden-symbols',
     '--enable-optimize',
     '--enable-warnings',
     '--enable-threaded-resolver',
-    '--disable-static',
     '--disable-ldap',
     '--disable-ldaps',
     '--disable-rtmp',
@@ -102,15 +108,28 @@ def configure(cxx_toolkit = None,
     '--with-gssapi',
     '--without-libidn',
   ]
+  if isinstance(curl_lib, StaticLib):
+    curl_configure_args.extend([
+      '--disable-shared',
+      '--enable-static',
+    ])
+  else:
+    curl_configure_args.extend([
+      '--enable-shared',
+      '--disable-static',
+    ])
+
   if cxx_toolkit.os is drake.os.linux:
     # So curl links its curl binary with the right SSL.
-    openssl_configure_args.append(
+    curl_configure_args.append(
       'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'))
   GNUBuilder(cxx_toolkit,
              configure = curl_configure,
+             working_directory = drake.path_build(curl_root),
              targets = [curl_lib],
-             configure_args = openssl_configure_args,
-             sources = openssl_libs)
+             configure_args = curl_configure_args,
+             sources = openssl_libs + [curl_configure],
+             configure_interpreter = 'sh')
   curl_lib = drake.copy(curl_lib, '.', 'curl')
   curl_config = drake.cxx.Config()
   curl_config.add_local_include_path(curl_root / 'include')
@@ -126,6 +145,8 @@ def configure(cxx_toolkit = None,
   config.lib_path('lib')
   config += curl_config
   config += boost.config()
+  if isinstance(curl_lib, StaticLib):
+    config.define('CURL_STATICLIB', '1')
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config or drake.cxx.Config())
