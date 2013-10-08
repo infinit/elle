@@ -10,6 +10,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
+library_zlib = None
 
 rule_build = None
 rule_check = None
@@ -27,7 +28,8 @@ def configure(cxx_toolkit = None,
               prefix = '/usr',
               valgrind = None):
 
-  global config, lib_static, lib_dynamic, library, rule_build, rule_check, rule_install, rule_tests
+  global config, lib_static, lib_dynamic, library, library_zlib
+  global rule_build, rule_check, rule_install, rule_tests
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
@@ -81,9 +83,9 @@ def configure(cxx_toolkit = None,
     targets = ['%s/%s' % (zlib_basename, 'configure')],
   )
   zlib_prefix = drake.path_build('zlib')
-  zlib_libs = [
-    drake.cxx.StaticLib('zlib/lib/libz.a')
-  ]
+
+  library_zlib = drake.cxx.StaticLib('zlib/lib/libz.a')
+  zlib_libs = [library_zlib,]
 
   if cxx_toolkit.os is drake.os.windows:
     # XXX only for mingw

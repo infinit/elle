@@ -18,6 +18,8 @@ lib_sched_static = None
 lib_sched_dynamic = None
 library_sched = None
 
+library_curl = None
+
 rule_build = None
 rule_check = None
 rule_install = None
@@ -38,6 +40,7 @@ def configure(cxx_toolkit = None,
   global lib_static, lib_dynamic, library
   global library_asio, lib_sched_static, library_sched
   global lib_asio_dynamic, lib_asio_static, library_asio
+  global library_curl
   global rule_build, rule_install
 
   with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
