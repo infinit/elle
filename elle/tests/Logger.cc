@@ -9,12 +9,19 @@
 #include <elle/os/setenv.hh>
 #include <elle/os/unsetenv.hh>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include <sstream>
+#include <thread>
+
 static
 void
 message_test()
 {
   typedef elle::log::Logger::Level Level;
   elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
 
   std::stringstream ss;
   elle::log::TextLogger* logger = new elle::log::TextLogger(ss);
