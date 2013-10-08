@@ -100,18 +100,18 @@ namespace elle
       std::string offset;
       {
         std::string line(strs[i]);
-#ifdef INFINIT_MACOSX
+# ifdef INFINIT_MACOSX
         std::string file;
         std::string discard;
         std::stringstream stream(line);
         stream >> discard >> file >> addr >> symbol_mangled >> discard >> offset;
-#else
+# else
         discard(line, '(');
         if (extract(line, symbol_mangled, '+'))
           extract(line, offset, ')');
         discard(line, '[');
         extract(line, addr, ']');
-#endif
+# endif
       }
       frame.symbol_mangled = symbol_mangled;
       if (!symbol_mangled.empty())
@@ -126,11 +126,11 @@ namespace elle
       }
       {
         std::stringstream stream(addr);
-#ifdef INFINIT_MACOSX
+# ifdef INFINIT_MACOSX
         stream >> frame.address;
-#else
+# else
         stream >> std::hex >> frame.address;
-#endif
+# endif
       }
       bt.push_back(frame);
     }
