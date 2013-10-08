@@ -160,7 +160,7 @@ def configure(cxx_toolkit = None,
              targets = openssl_libs,
              configure_args = [
                '--prefix=%s/%s' % (os.getcwd(), openssl_prefix),
-                '%sshared' % (not openssl_shared and 'no-' or ''),
+                openssl_shared and 'shared' or 'no-shared',
                'no-asm',
                '-DPURIFY',
                os_string,
