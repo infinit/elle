@@ -281,6 +281,7 @@ def configure(cxx_toolkit = None,
     'src/elle/system/signal.cc',
     'src/elle/system/getpid.hh',
     'src/elle/system/getpid.cc',
+    'src/elle/system/home_directory.cc',
     'src/elle/types.hh',
     )
 
