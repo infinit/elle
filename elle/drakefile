@@ -438,7 +438,7 @@ def configure(cxx_toolkit = None,
     "serialize/version_change.cc",
     "serialize/footprint.cc",
     "serialize/extract.cc",
-    "system/home_directory.cc"
+    "system/home_directory.cc",
     "threading/monitor.cc",
     "utility/Suffixes.cc",
     ]
