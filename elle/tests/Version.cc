@@ -1,7 +1,5 @@
-
 #include <elle/Version.hh>
-
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 static
 void
@@ -68,16 +66,12 @@ test_greater_equal(int maj1, int min1, int maj2, int min2, bool result)
 
 
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
 	boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
 	boost::unit_test::framework::master_test_suite().add(basics);
 
-        // Default value
+  // Default value
 	basics->add(BOOST_TEST_CASE(std::bind(test_default)));
 
 	// == tests
@@ -126,7 +120,5 @@ init_unit_test_suite(int, char**)
 	basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 2, 2, 1, 2, true)));
 	basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 5, 0, 1, 1, true)));
 	basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 5, 0, 5, 0, true)));
-
-	return basics;
 }
 

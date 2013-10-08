@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/IOStream.hh>
@@ -175,11 +175,7 @@ exceptions()
 }
 
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_read, 1)));
@@ -199,5 +195,4 @@ init_unit_test_suite(int, char**)
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
   suite.add(BOOST_TEST_CASE(exceptions));
-  return nullptr;
 }

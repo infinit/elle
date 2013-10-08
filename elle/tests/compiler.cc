@@ -1,5 +1,4 @@
-#include <boost/test/unit_test.hpp>
-
+#include <elle/test.hh>
 #include <elle/compiler.hh>
 
 #ifndef INFINIT_WINDOWS
@@ -63,11 +62,7 @@ test_pretty_function()
                     "void test_pretty_function()");
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* exn = BOOST_TEST_SUITE("Exception");
   boost::unit_test::framework::master_test_suite().add(exn);
@@ -75,6 +70,4 @@ init_unit_test_suite(int, char**)
   exn->add(BOOST_TEST_CASE(test_always_inline));
   exn->add(BOOST_TEST_CASE(test_no_inline));
   exn->add(BOOST_TEST_CASE(test_pretty_function));
-
-  return exn;
 }

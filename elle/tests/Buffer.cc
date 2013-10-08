@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <elle/Buffer.hh>
 
@@ -237,11 +237,7 @@ delete_array(elle::Byte* p)
   delete [] p;
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   // Buffer
   boost::unit_test::test_suite* buffer = BOOST_TEST_SUITE("Buffer");
@@ -288,7 +284,4 @@ init_unit_test_suite(int, char**)
   boost::unit_test::test_suite* cmp_weak = BOOST_TEST_SUITE("Comparisons");
   weakbuffer->add(cmp_weak);
   cmp_weak->add(BOOST_TEST_CASE((&test_cmp<elle::WeakBuffer, delete_array>)));
-
-  return buffer;
 }
-

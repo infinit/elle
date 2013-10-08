@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <elle/Backtrace.hh>
 
@@ -73,11 +73,7 @@ test_strip_base()
   BOOST_CHECK_EQUAL(bt.front().symbol, "quux()");
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* bt = BOOST_TEST_SUITE("Backtrace");
 #ifndef INFINIT_WINDOWS
@@ -89,6 +85,5 @@ init_unit_test_suite(int, char**)
   struct dummy { static void f() {} };
   bt->add(BOOST_TEST_CASE(dummy::f));
 #endif
-  return bt;
 }
 

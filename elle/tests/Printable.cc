@@ -1,10 +1,8 @@
-#include <iostream>
-#include <sstream>
-
+#include <elle/test.hh>
 #include <elle/Printable.hh>
 
-#include <boost/test/unit_test.hpp>
-
+#include <iostream>
+#include <sstream>
 
 namespace elle
 {
@@ -70,17 +68,10 @@ test_generic(int x, int y)
 	BOOST_CHECK_EQUAL(output.str(), expected.str());
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
 	boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
 	boost::unit_test::framework::master_test_suite().add(basics);
 	basics->add(BOOST_TEST_CASE(std::bind(test_generic, 1, 2)));
 	basics->add(BOOST_TEST_CASE(std::bind(test_generic, 3, -5)));
-
-	return basics;
 }
-

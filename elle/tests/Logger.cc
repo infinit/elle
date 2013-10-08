@@ -1,10 +1,4 @@
-
-#include <sstream>
-#include <thread>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
@@ -277,11 +271,7 @@ trim()
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
   boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
@@ -297,5 +287,4 @@ init_unit_test_suite(int, char**)
   boost::unit_test::framework::master_test_suite().add(format);
   concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
   concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
-  return logger;
 }

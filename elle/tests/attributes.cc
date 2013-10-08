@@ -1,4 +1,4 @@
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <elle/Exception.hh>
 
@@ -90,18 +90,11 @@ test_x()
 }
 
 
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**);
-
-boost::unit_test::test_suite*
-init_unit_test_suite(int, char**)
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* exn = BOOST_TEST_SUITE("attributes");
   boost::unit_test::framework::master_test_suite().add(exn);
   exn->add(BOOST_TEST_CASE(test_r));
   exn->add(BOOST_TEST_CASE(test_w));
   exn->add(BOOST_TEST_CASE(test_x));
-
-  return exn;
 }
-
