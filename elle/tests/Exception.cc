@@ -1,16 +1,15 @@
-#define BOOST_TEST_MODULE Exception
-
-#include <boost/test/unit_test.hpp>
-
+#define ELLE_TEST_MODULE Exception
+#include <elle/test.hh>
 #include <elle/Exception.hh>
 
-using elle::Exception;
+// On linux, the function cannot be static
+void
+thrower();
 
-static
 void
 thrower()
 {
-  throw Exception("test message");
+  throw elle::Exception("test message");
 }
 
 BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
