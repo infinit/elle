@@ -34,12 +34,18 @@ def configure(cryptography,
 
   # Elle
   config += elle.config
+  elle_library = drake.copy(elle.library, 'lib',
+                            elle.library.name().dirname())
 
   # Reactor
   config += reactor.config
+  reactor_library = drake.copy(reactor.library, 'lib',
+                               reactor.library.name().dirname())
 
   # Cryptography
   config += cryptography.config
+  cryptography_library = drake.copy(cryptography.library, 'lib',
+                                    cryptography.library.name().dirname())
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -75,11 +81,11 @@ def configure(cryptography,
   from itertools import chain
   lib_static = drake.cxx.StaticLib(
     'lib/protocol',
-    chain(sources, (elle.library, reactor.library, cryptography.library)),
+    chain(sources, (elle_library, reactor_library, cryptography_library)),
     cxx_toolkit, local_cxx_config)
   lib_dynamic = drake.cxx.DynLib(
     'lib/protocol',
-    chain(sources, (elle.library, reactor.library, cryptography.library)),
+    chain(sources, (elle_library, reactor_library, cryptography_library)),
     cxx_toolkit, local_cxx_config)
 
   # Build
@@ -111,7 +117,7 @@ def configure(cryptography,
     test = drake.cxx.Executable(
       'tests/%s' % name,
       (drake.node('tests/%s.cc' % name),
-       lib_dynamic, elle.library, reactor.library),
+       library, elle_library, reactor_library, cryptography_library),
       cxx_toolkit, cxx_config_tests)
     rule_tests << test
     if valgrind is not None:
