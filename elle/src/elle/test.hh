@@ -4,7 +4,7 @@
 /// This header includes boost Unit Test Framework and provides a simple macro
 /// to customize the creation of your test suite.
 ///
-/// There is two supported ways to define your tests:
+/// There are two supported ways to define your tests:
 /// 1. Using BOOST_AUTO_TEST_CASE and generated test suite:
 /// {{{
 ///     #define ELLE_TEST_MODULE "My module"
@@ -19,7 +19,7 @@
 /// }}}
 ///
 
-# include <elle/exception.hh>
+# include <elle/Exception.hh>
 
 # ifdef ELLE_TEST_MODULE
 #  define BOOST_TEST_MODULE ELLE_TEST_MODULE
