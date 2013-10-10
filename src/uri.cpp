@@ -475,43 +475,45 @@ namespace network {
     }
   }  // namespace detail
 
-  uri uri::resolve(const uri &reference) const {
+  uri uri::resolve(const uri &base) const {
     // This implementation uses the psuedo-code given in
     // http://tools.ietf.org/html/rfc3986#section-5.2.2
 
-    if (reference.is_absolute() && !reference.is_opaque()) {
-      return reference;
+    if (is_absolute() && !is_opaque()) {
+      // throw an exception ?
+      return *this;
     }
 
-    if (reference.is_opaque()) {
-      return reference;
+    if (is_opaque()) {
+      // throw an exception ?
+      return *this;
     }
 
     boost::optional<uri::string_type> user_info, host, port, path, query;
-    const uri &base = *this;
+    //const uri &base = *this;
 
-    if (reference.authority()) {
+    if (this->authority()) {
       // g -> http://g
-      user_info = detail::make_arg(reference.user_info());
-      host = detail::make_arg(reference.host());
-      port = detail::make_arg(reference.port());
-      path = detail::remove_dot_segments(*reference.path());
-      query = detail::make_arg(reference.query());
+      user_info = detail::make_arg(this->user_info());
+      host = detail::make_arg(this->host());
+      port = detail::make_arg(this->port());
+      path = detail::remove_dot_segments(*this->path());
+      query = detail::make_arg(this->query());
     } else {
-      if (!reference.path() || reference.path()->empty()) {
+      if (!this->path() || this->path()->empty()) {
         path = detail::make_arg(base.path());
-        if (reference.query()) {
-          query = detail::make_arg(reference.query());
+        if (this->query()) {
+          query = detail::make_arg(this->query());
         } else {
           query = detail::make_arg(base.query());
         }
       } else {
-        if (reference.path().get().front() == '/') {
-          path = detail::remove_dot_segments(*reference.path());
+        if (this->path().get().front() == '/') {
+          path = detail::remove_dot_segments(*this->path());
         } else {
-          path = detail::merge_paths(base, reference);
+          path = detail::merge_paths(base, *this);
         }
-        query = detail::make_arg(reference.query());
+        query = detail::make_arg(this->query());
       }
       user_info = detail::make_arg(base.user_info());
       host = detail::make_arg(base.host());
@@ -521,7 +523,7 @@ namespace network {
     network::uri result;
     result.initialize(detail::make_arg(base.scheme()), std::move(user_info),
                       std::move(host), std::move(port), std::move(path),
-                      std::move(query), detail::make_arg(reference.fragment()));
+                      std::move(query), detail::make_arg(this->fragment()));
     return std::move(result);
   }
 

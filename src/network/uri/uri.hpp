@@ -364,12 +364,12 @@ namespace network {
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
-     * \brief Resolves a relative reference against this URI.
-     * \param reference A URI reference.
+     * \brief Resolves a relative reference against the given URI.
+     * \param base The base URI to resolve against.
      * \returns An absolute URI.
      * \throws std::bad_alloc
      */
-    uri resolve(const uri &reference) const;
+    uri resolve(const uri &base) const;
 
     /**
      * \brief Compares this URI against another, corresponding to the
