@@ -112,8 +112,11 @@ class GNUBuilder(drake.Builder):
 
 
   def hash(self):
+    env = {}
+    env.update(self.__env)
+    env.pop('DRAKE_RAW', '1')
     return ''.join([
       str(self.command_configure),
       str(self.command_build),
-      str(tuple(sorted(self.__env.items()))),
+      str(tuple(sorted(env))),
     ])
