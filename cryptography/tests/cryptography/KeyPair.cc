@@ -277,9 +277,7 @@ test_serialize()
 | Main |
 `-----*/
 
-static
-bool
-test()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("KeyPair");
 
@@ -290,13 +288,4 @@ test()
   suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);
-
-  return (true);
-}
-
-int
-main(int argc,
-     char** argv)
-{
-  return (boost::unit_test::unit_test_main(test, argc, argv));
 }

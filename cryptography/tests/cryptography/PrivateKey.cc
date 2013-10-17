@@ -72,6 +72,9 @@ test_represent()
 /*---------.
 | Generate |
 `---------*/
+#ifdef interface
+# undef interface
+#endif
 
 static
 infinit::cryptography::PrivateKey
@@ -82,8 +85,8 @@ test_generate_rsa(elle::Natural32 const length = 1024)
             infinit::cryptography::rsa::PrivateKey> pair =
     infinit::cryptography::rsa::keypair::generate(length);
 
-  std::unique_ptr<infinit::cryptography::privatekey::Interface> interface(
-    new infinit::cryptography::rsa::PrivateKey{std::move(pair.second)});
+  std::unique_ptr<infinit::cryptography::privatekey::Interface> interface{
+    new infinit::cryptography::rsa::PrivateKey{std::move(pair.second)}};
 
   infinit::cryptography::PrivateKey k(std::move(interface));
 
@@ -261,9 +264,7 @@ test_serialize()
 | Main |
 `-----*/
 
-static
-bool
-test()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("PrivateyKey");
 
@@ -275,13 +276,5 @@ test()
   suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);
-
-  return (true);
 }
 
-int
-main(int argc,
-     char** argv)
-{
-  return (boost::unit_test::unit_test_main(test, argc, argv));
-}

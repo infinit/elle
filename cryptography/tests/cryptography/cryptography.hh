@@ -1,14 +1,12 @@
 #ifndef CRYPTOGRAPHY_HH
 # define CRYPTOGRAPHY_HH
 
-# define BOOST_TEST_DYN_LINK
-# include <boost/test/unit_test.hpp>
-
 # include <elle/types.hh>
 # include <elle/serialize/insert.hh>
 # include <elle/serialize/extract.hh>
 # include <elle/serialize/Base64Archive.hh>
 # include <elle/serialize/JSONArchive.hh>
+# include <elle/test.hh>
 
 # include <functional>
 
