@@ -89,22 +89,12 @@ test_operate()
 | Main |
 `-----*/
 
-static
-bool
-test()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("random");
 
   suite->add(BOOST_TEST_CASE(test_operate));
 
   boost::unit_test::framework::master_test_suite().add(suite);
-
-  return (true);
 }
 
-int
-main(int argc,
-     char** argv)
-{
-  return (boost::unit_test::unit_test_main(test, argc, argv));
-}
