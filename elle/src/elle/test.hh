@@ -30,7 +30,13 @@
 # endif
 
 # define BOOST_TEST_ALTERNATIVE_INIT_API 1
-# include <boost/test/unit_test.hpp>
+# ifdef INFINIT_WINDOWS
+// Only if found to avoid unit_test_main symbol not found.
+#  include <boost/test/included/unit_test.hpp>
+# else
+#  include <boost/test/unit_test.hpp>
+# endif
+
 
 # define ELLE_TEST_SUITE()                                                    \
 static                                                                        \
