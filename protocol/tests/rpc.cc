@@ -1,8 +1,8 @@
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include <protocol/ChanneledStream.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/RPC.hh>
 
-#include <elle/serialize/BinaryArchive.hh>
-
+#include <reactor/asio.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
@@ -10,9 +10,8 @@
 #include <reactor/semaphore.hh>
 #include <reactor/thread.hh>
 
-#include <protocol/ChanneledStream.hh>
-#include <protocol/Serializer.hh>
-#include <protocol/RPC.hh>
+#include <elle/test.hh>
+#include <elle/serialize/BinaryArchive.hh>
 
 static
 int
@@ -318,7 +317,7 @@ disconnection_caller(reactor::Semaphore& lock,
 
 static
 int
-test_disconnection()
+test_disconnection(bool sync)
 {
   reactor::Scheduler sched;
   reactor::Semaphore lock;
@@ -347,9 +346,7 @@ test_disconnection()
 | Test suite |
 `-----------*/
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(std::bind(test, true)));
@@ -358,12 +355,6 @@ test_suite()
   suite.add(BOOST_TEST_CASE(std::bind(test_terminate, false)));
   suite.add(BOOST_TEST_CASE(std::bind(test_parallel, true)));
   suite.add(BOOST_TEST_CASE(std::bind(test_parallel, false)));
-  suite.add(BOOST_TEST_CASE(test_disconnection));
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
+  suite.add(BOOST_TEST_CASE(std::bind(test_disconnection, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_disconnection, false)));
 }

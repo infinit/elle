@@ -1,8 +1,7 @@
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include <protocol/exceptions.hh>
+#include <protocol/Serializer.hh>
 
-#include <elle/With.hh>
-
+#include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
 #include <reactor/network/buffer.hh>
@@ -10,8 +9,8 @@
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
 
-#include <protocol/exceptions.hh>
-#include <protocol/Serializer.hh>
+#include <elle/test.hh>
+#include <elle/With.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
@@ -302,20 +301,12 @@ corruption()
     });
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(exchange_packets), 0, 3);
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, 3);
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
   suite.add(BOOST_TEST_CASE(corruption), 0, 3);
-  return true;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

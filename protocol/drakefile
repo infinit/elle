@@ -111,14 +111,26 @@ def configure(cryptography,
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests += boost.config_test()
   cxx_config_tests += boost.config_system()
+  cxx_config_tests += boost.config_thread()
+  cxx_config_tests += boost.config_signals()
   cxx_config_tests.lib_path_runtime('../lib')
 
   for name in tests:
     test = drake.cxx.Executable(
       'tests/%s' % name,
-      (drake.node('tests/%s.cc' % name),
-       library, elle_library, reactor_library, cryptography_library),
-      cxx_toolkit, cxx_config_tests)
+      (
+        drake.node('tests/%s.cc' % name),
+        library,
+        elle_library,
+        reactor_library,
+        reactor.library_coroutine,
+        cryptography_library,
+        cryptography.openssl_lib_crypto,
+        cryptography.openssl_lib_ssl,
+      ),
+      cxx_toolkit,
+      cxx_config_tests,
+    )
     rule_tests << test
     if valgrind is not None:
       runner = drake.valgrind.ValgrindRunner(exe = test,
