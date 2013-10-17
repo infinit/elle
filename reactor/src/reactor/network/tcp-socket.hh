@@ -60,8 +60,7 @@ namespace reactor
     | Write |
     `------*/
     public:
-      virtual void write(Buffer buffer);
-      using Socket::write;
+      virtual void write(elle::ConstWeakBuffer buffer);
     private:
       Mutex _write_mutex;
 

@@ -66,9 +66,7 @@ namespace reactor
       | Write |
       `------*/
       public:
-        virtual void write(Buffer buffer);
-        using Super::write;
-
+        virtual void write(elle::ConstWeakBuffer buffer);
         void send_to(Buffer buffer,
                      EndPoint endpoint);
 

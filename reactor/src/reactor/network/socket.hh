@@ -1,8 +1,9 @@
 #ifndef INFINIT_REACTOR_NETWORK_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_SOCKET_HH
 
-# include <elle/attribute.hh>
+# include <elle/Buffer.hh>
 # include <elle/IOStream.hh>
+# include <elle/attribute.hh>
 # include <elle/network/Locus.hh>
 
 # include <reactor/duration.hh>
@@ -52,8 +53,7 @@ namespace reactor
       | Write |
       `------*/
       public:
-        virtual void write(Buffer buffer) = 0;
-        void write(const char* data);
+        virtual void write(elle::ConstWeakBuffer buffer) = 0;
 
       /*-----.
       | Read |

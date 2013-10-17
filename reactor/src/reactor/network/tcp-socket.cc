@@ -233,10 +233,10 @@ namespace reactor
         typedef SocketOperation<AsioSocket> Super;
         Write(Scheduler& scheduler,
               PlainSocket<AsioSocket>* socket,
-              Buffer& buffer)
-          : Super(scheduler, socket)
-          , _buffer(buffer)
-          , _written(0)
+              elle::ConstWeakBuffer buffer):
+          Super(scheduler, socket),
+          _buffer(buffer),
+          _written(0)
         {}
 
       virtual
@@ -259,11 +259,10 @@ namespace reactor
       protected:
         virtual void _start()
         {
-          boost::asio::async_write(*this->socket(),
-                                   boost::asio::buffer(_buffer.data(),
-                                                       _buffer.size()),
-                                   boost::bind(&Write::_wakeup,
-                                               this, this->_canceled, _1, _2));
+          boost::asio::async_write(
+            *this->socket(),
+            boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
+            boost::bind(&Write::_wakeup, this, this->_canceled, _1, _2));
         }
 
       private:
@@ -287,12 +286,12 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
+        elle::ConstWeakBuffer _buffer;
         Size _written;
     };
 
     void
-    TCPSocket::write(Buffer buffer)
+    TCPSocket::write(elle::ConstWeakBuffer buffer)
     {
       scheduler().current()->wait(_write_mutex);
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());

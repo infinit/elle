@@ -265,20 +265,19 @@ namespace reactor
         typedef boost::asio::ip::udp::endpoint EndPoint;
         typedef SocketOperation<AsioSocket> Super;
         UDPWrite(Scheduler& scheduler,
-              PlainSocket<AsioSocket>* socket,
-              Buffer& buffer)
-          : Super(scheduler, socket)
-          , _buffer(buffer)
-          , _written(0)
+                 PlainSocket<AsioSocket>* socket,
+                 elle::ConstWeakBuffer& buffer):
+          Super(scheduler, socket),
+          _buffer(buffer),
+          _written(0)
         {}
 
       protected:
         virtual void _start()
         {
-          this->socket()->async_send(boost::asio::buffer(_buffer.data(),
-                                                         _buffer.size()),
-                                     boost::bind(&UDPWrite::_wakeup,
-                                                 this, _1, _2));
+          this->socket()->async_send(
+            boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
+            boost::bind(&UDPWrite::_wakeup, this, _1, _2));
         }
 
       private:
@@ -293,7 +292,7 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
+        elle::ConstWeakBuffer _buffer;
         Size _written;
     };
 
@@ -344,7 +343,7 @@ namespace reactor
     };
 
     void
-    UDPSocket::write(Buffer buffer)
+    UDPSocket::write(elle::ConstWeakBuffer buffer)
     {
       ELLE_TRACE("%s: write %s bytes to %s",
                      *this, buffer.size(), _socket->remote_endpoint());

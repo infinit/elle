@@ -41,7 +41,7 @@ namespace reactor
         virtual void write(char* buffer, Size size)
         {
           if (!_pacified)
-            _socket->write(network::Buffer(buffer, size));
+            _socket->write(elle::ConstWeakBuffer(buffer, size));
         }
 
         Socket* _socket;
@@ -264,17 +264,6 @@ namespace reactor
       // XXX[unused arguments for now, do something with it]
       // Size s = buffer.size();
       // read_some(buffer);
-    }
-
-    /*------.
-    | Write |
-    `------*/
-
-    void
-    Socket::write(const char* data)
-    {
-      network::Buffer buffer(data, strlen(data));
-      return write(buffer);
     }
 
     /*-----------.
