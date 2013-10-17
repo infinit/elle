@@ -13,6 +13,8 @@ library = None
 openssl_config = None
 openssl_libs = None
 openssl_prefix = None
+openssl_lib_ssl = None
+openssl_lib_crypto = None
 
 rule_build = None
 rule_check = None
@@ -31,7 +33,7 @@ def configure(cxx_toolkit = None,
 
   global config
   global lib_static, lib_dynamic, library
-  global openssl_config, openssl_libs, openssl_prefix
+  global openssl_config, openssl_libs, openssl_prefix, openssl_lib_ssl, openssl_lib_crypto
   global rule_build, rule_install
 
   with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
