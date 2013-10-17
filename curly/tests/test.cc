@@ -1,19 +1,18 @@
-#include <boost/test/unit_test.hpp>
+#include <curly/curly.hh>
+
+#include <elle/log.hh>
+#include <elle/printf.hh>
+#include <elle/test.hh>
+#include <elle/utility/Move.hh>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/asio.hpp>
 
 #include <iostream>
 #include <sstream>
 #include <thread>
 #include <mutex>
 #include <memory>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/asio.hpp>
-
-#include <elle/log.hh>
-#include <elle/printf.hh>
-#include <elle/utility/Move.hh>
-
-#include <curly/curly.hh>
 
 ELLE_LOG_COMPONENT("curly.test");
 
@@ -354,9 +353,7 @@ threaded()
     th.join();
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   auto& ts = boost::unit_test::framework::master_test_suite();
   ts.add(BOOST_TEST_CASE(simple), 0, 20);
@@ -366,11 +363,4 @@ test_suite()
   ts.add(BOOST_TEST_CASE(connection_reset), 0, 3);
   ts.add(BOOST_TEST_CASE(timed), 0, 20);
   ts.add(BOOST_TEST_CASE(threaded), 0, 20);
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

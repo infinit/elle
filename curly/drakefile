@@ -135,8 +135,8 @@ def configure(cxx_toolkit = None,
   curl_config.add_local_include_path(curl_root / 'include')
 
   elle = elle or drake.include('../elle')
-  elle_lib = drake.copy(elle.lib_dynamic, 'lib',
-                        elle.lib_dynamic.name().dirname())
+  elle_lib = drake.copy(elle.library, 'lib',
+                        elle.library.name().dirname())
 
   # Global Configuration
   config = drake.cxx.Config()
@@ -270,16 +270,26 @@ def configure(cxx_toolkit = None,
     cxx_config_tests += reactor.config
     cxx_config_tests.lib_path_runtime('../lib')
     cxx_config_tests += boost.config_test()
+    cxx_config_tests += boost.config_signals()
+    cxx_config_tests += boost.config_thread()
     name, ext = os.path.splitext(os.path.basename(test.sources))
     bin_path = drake.Path('tests/%s' % name)
-    bin = drake.cxx.Executable(bin_path,
-                               drake.nodes(test.sources) +
-                               [library,
-                                library_asio,
-                                library_sched,
-                                reactor_lib, elle_lib,
-                                curl_lib],
-                               cxx_toolkit, cxx_config_tests)
+    bin = drake.cxx.Executable(
+      bin_path,
+      drake.nodes(test.sources) +
+      [
+        library,
+        library_asio,
+        library_sched,
+        reactor_lib,
+        elle_lib,
+        elle.library_zlib,
+        curl_lib,
+        reactor.library_coroutine,
+      ],
+      cxx_toolkit,
+      cxx_config_tests
+    )
     rule_tests << bin
     if valgrind is not None:
       runner = drake.valgrind.ValgrindRunner(exe = bin,

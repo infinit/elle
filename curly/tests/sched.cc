@@ -1,18 +1,8 @@
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_IGNORE_SIGCHLD
 #define BOOST_TEST_IGNORE_NON_ZERO_CHILD_CODE
 #define BOOST_TEST_MODULE curly_sched
-#include <boost/test/unit_test.hpp>
 
-#include <algorithm>
-#include <fstream>
-#include <iterator>
-#include <string>
-
-#include <elle/Buffer.hh>
-#include <elle/log.hh>
-#include <elle/container/vector.hh>
-#include <elle/printf.hh>
+#include <curly/curly_sched.hh>
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
@@ -23,7 +13,16 @@
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
 
-#include <curly/curly_sched.hh>
+#include <elle/Buffer.hh>
+#include <elle/log.hh>
+#include <elle/container/vector.hh>
+#include <elle/test.hh>
+#include <elle/printf.hh>
+
+#include <algorithm>
+#include <fstream>
+#include <iterator>
+#include <string>
 
 ELLE_LOG_COMPONENT("curly.test");
 
