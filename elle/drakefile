@@ -50,18 +50,6 @@ def configure(cxx_toolkit = None,
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
 
-  # OS
-  if cxx_toolkit.os == drake.os.linux:
-    config.define('INFINIT_LINUX')
-  elif cxx_toolkit.os == drake.os.macos:
-    config.define('INFINIT_MACOSX')
-  elif cxx_toolkit.os == drake.os.windows:
-    config.define('INFINIT_WINDOWS')
-    config.lib('Shlwapi')
-    config.lib('ws2_32')
-  else:
-    raise Exception('unsupported os')
-
   #Zlib
   zlib_version = '1.2.8'
   zlib_basename = 'zlib-%s' % zlib_version

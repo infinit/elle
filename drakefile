@@ -38,6 +38,16 @@ def configure(cxx_toolkit = None,
     prefix = drake.Path('..') / prefix
 
   cxx_config = drake.cxx.Config(cxx_config)
+  if cxx_toolkit.os == drake.os.linux:
+    config.define('INFINIT_LINUX')
+  elif cxx_toolkit.os == drake.os.macos:
+    config.define('INFINIT_MACOSX')
+  elif cxx_toolkit.os == drake.os.windows:
+    cxx_config.define('INFINIT_WINDOWS')
+    cxx_config.lib('Shlwapi')
+    cxx_config.lib('ws2_32')
+    cxx_config.lib('Gdi32')
+    cxx_config.lib('mswsock')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
