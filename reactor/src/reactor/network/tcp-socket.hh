@@ -51,6 +51,9 @@ namespace reactor
                         DurationOpt timeout = DurationOpt());
       virtual Size read_some(Buffer buffer,
                              DurationOpt timeout = DurationOpt());
+      elle::Buffer
+      read_until(std::string const& delimiter,
+                 DurationOpt opt = DurationOpt());
     private:
       virtual Size _read(Buffer buffer,
                          DurationOpt timeout,

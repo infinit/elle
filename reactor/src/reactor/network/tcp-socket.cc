@@ -221,6 +221,90 @@ namespace reactor
       return read.read();
     }
 
+    class ReadUntil:
+      public SocketOperation<boost::asio::ip::tcp::socket>
+    {
+    public:
+      ReadUntil(TCPSocket* socket,
+                std::string const& delimiter):
+        SocketOperation<boost::asio::ip::tcp::socket>(
+          *reactor::Scheduler::scheduler(),
+          socket),
+        _socket(*socket->socket()),
+        _delimiter(delimiter),
+        _streambuffer(),
+        _buffer()
+      {}
+
+    protected:
+      virtual void _start()
+      {
+        boost::asio::async_read_until(
+          this->_socket,
+          this->_streambuffer,
+          this->_delimiter,
+          std::bind(&ReadUntil::_wakeup,
+                    std::ref(*this),
+                    this->_canceled,
+                    std::placeholders::_1,
+                    std::placeholders::_2));
+      }
+
+      void _wakeup(std::shared_ptr<bool> canceled,
+                   const boost::system::error_code& error,
+                   std::size_t read)
+      {
+        if (*canceled)
+          return;
+        if (error)
+          ELLE_TRACE("%s: read until error: %s", *this, error.message());
+        else
+          ELLE_TRACE("%s: read until completed: %s bytes", *this, read);
+        if (error == boost::asio::error::eof || \
+            error == boost::system::errc::operation_canceled)
+          this->_raise<ConnectionClosed>();
+        else if (error)
+          this->_raise<Exception>(error.message());
+        {
+          std::istream s(&this->_streambuffer);
+          this->_buffer.size(read);
+          s.read((char*)this->_buffer.mutable_contents(), read);
+          ELLE_ASSERT(!s.fail());
+          ELLE_ASSERT_EQ(s.gcount(), static_cast<signed>(read));
+        }
+        this->_signal();
+      }
+
+    private:
+      boost::asio::ip::tcp::socket& _socket;
+      std::string _delimiter;
+      boost::asio::streambuf _streambuffer;
+      ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
+    };
+
+    elle::Buffer
+    TCPSocket::read_until(std::string const& delimiter,
+                          DurationOpt timeout)
+    {
+      ReadUntil read(this, delimiter);
+      bool finished;
+      try
+      {
+        finished  = read.run(timeout);
+      }
+      catch (...)
+      {
+        ELLE_TRACE("%s: read until threw: %s", *this, elle::exception_string());
+        throw;
+      }
+      if (!finished)
+      {
+        ELLE_TRACE("%s: read until timed out", *this);
+        throw TimeOut();
+      }
+      return std::move(read.buffer());
+    }
+
     /*------.
     | Write |
     `------*/
