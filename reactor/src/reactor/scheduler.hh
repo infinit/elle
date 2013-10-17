@@ -120,6 +120,13 @@ namespace reactor
   | Shortcuts |
   `----------*/
   public:
+    /** Run the given operation in the next cycle.
+     *
+     *  \param name Descriptive name of the operation, for debugging.
+     *  \param f    Operation to run later.
+     */
+    void run_later(std::string const& name,
+                   std::function<void ()> const& f);
     void CallLater(const boost::function<void ()>&      f,
                    const std::string&                   name,
                    Duration                             delay);
@@ -195,6 +202,13 @@ namespace reactor
   /// Yield for \a duration.
   void
   sleep(Duration duration);
+  /** Run the given operation in the next cycle.
+   *
+   *  \param name Descriptive name of the operation, for debugging.
+   *  \param f    Operation to run later.
+   */
+  void run_later(std::string const& name,
+                 std::function<void ()> const& f);
 }
 
 # include <reactor/scheduler.hxx>

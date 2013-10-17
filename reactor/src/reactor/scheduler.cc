@@ -438,6 +438,13 @@ namespace reactor
   | Shortcuts |
   `----------*/
 
+  void
+  Scheduler::run_later(const std::string& name,
+                       const std::function<void ()>&f)
+  {
+    new Thread(*this, name, f, true);
+  }
+
   static void CallLaterHelper(Scheduler* sched,
                               const boost::function<void ()>& f,
                               Duration delay)
@@ -633,5 +640,18 @@ namespace reactor
     auto* current = sched->current();
     ELLE_ASSERT(current);
     current->sleep(d);
+  }
+
+  /** Run the given operation in the next cycle.
+   *
+   *  \param name Descriptive name of the operation, for debugging.
+   *  \param f    Operation to run later.
+   */
+  void run_later(std::string const& name,
+                 std::function<void ()> const& f)
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    sched->run_later(name, f);
   }
 }
