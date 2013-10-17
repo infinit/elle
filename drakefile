@@ -324,6 +324,7 @@ def configure(cxx_toolkit = None,
   tests_cxx_config += config
   tests_cxx_config += boost.config()
   tests_cxx_config += boost.config_test()
+  tests_cxx_config += boost.config_thread()
   tests_cxx_config += openssl_config
   if enable_rotation:
     tests_cxx_config += dopenssl
@@ -340,8 +341,8 @@ def configure(cxx_toolkit = None,
     path = drake.Path('tests/cryptography/%s' % test)
     bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
     sources = drake.nodes(path)
-    sources.append(lib_dynamic)
-    sources.append(elle.lib_dynamic)
+    sources.append(library)
+    sources.append(elle.library)
     sources.append(openssl_lib_crypto) # Some tests use BIGNUM
     bin = drake.cxx.Executable(bin_path, sources,
                                cxx_toolkit, config_test)
