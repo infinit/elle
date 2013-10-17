@@ -1,7 +1,9 @@
-#include <elle/finally.hh>
-
 #include "reactor.hh"
 
+#include <elle/finally.hh>
+#include <elle/test.hh>
+
+#include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
 #include <reactor/duration.hh>
@@ -61,6 +63,21 @@ public:
     : elle::Exception("beacon")
   {}
 };
+
+#ifdef INFINIT_WINDOWS
+static
+void
+sleep(int sec)
+{
+  ::Sleep(sec);
+}
+static
+void
+usleep(int usec)
+{
+  ::Sleep(usec / 1000000.0);
+}
+#endif
 
 /*-------.
 | Basics |
@@ -574,7 +591,7 @@ static
 void
 sleep_timer(int& iterations)
 {
-  reactor::Duration delay(boost::posix_time::milliseconds(100));
+  reactor::Duration delay(boost::posix_time::milliseconds(1000));
 
   while (--iterations)
   {
@@ -582,7 +599,7 @@ sleep_timer(int& iterations)
     sleep(delay);
     double elapsed = (now() - start).total_milliseconds();
     double expected =  delay.total_milliseconds();
-    BOOST_CHECK_CLOSE(elapsed, expected, double(10));
+    BOOST_CHECK_CLOSE(elapsed, expected, double(15));
   }
 }
 
@@ -936,7 +953,7 @@ test_multithread_run_exception()
   reactor::Signal terminate;
   reactor::Thread holder(sched, "spawner",
                          [&] () { sched.current()->wait(terminate); });
-  std::thread runner(std::bind(&reactor::Scheduler::run, &sched));
+  boost::thread runner(std::bind(&reactor::Scheduler::run, &sched));
   BOOST_CHECK_THROW(
     sched.mt_run<void>("thrower", [] () { throw BeaconException(); }),
     BeaconException);

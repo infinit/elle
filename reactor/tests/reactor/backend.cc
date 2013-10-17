@@ -1,9 +1,8 @@
-#define BOOST_TEST_DYN_LINK
-
-#include <boost/bind.hpp>
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #include <reactor/backend/thread.hh>
+
+#include <boost/bind.hpp>
 
 using reactor::backend::Manager;
 using reactor::backend::Thread;
@@ -100,9 +99,7 @@ test_status()
   delete m;
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
   boost::unit_test::framework::master_test_suite().add(backend);
@@ -110,11 +107,4 @@ test_suite()
   backend->add(BOOST_TEST_CASE(test_deadlock_creation));
   backend->add(BOOST_TEST_CASE(test_deadlock_switch));
   backend->add(BOOST_TEST_CASE(test_status));
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

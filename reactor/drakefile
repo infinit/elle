@@ -220,7 +220,7 @@ def configure(cxx_toolkit = None,
     if valgrind is not None:
       tests_config.define('VALGRIND')
     test = drake.cxx.Executable('tests/%s' % test,
-                                drake.nodes('tests/%s.cc' % test) + [library, elle_lib],
+                                drake.nodes('tests/%s.cc' % test) + [library, library_coroutine, elle_lib],
                                 cxx_toolkit, tests_config)
     rule_tests << test
     if valgrind is not None:

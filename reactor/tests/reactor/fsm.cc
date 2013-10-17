@@ -1,13 +1,11 @@
-#define BOOST_TEST_DYN_LINK
-
-#include <boost/test/unit_test.hpp>
-
-#include <elle/container/set.hh>
-
+#include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/fsm.hh>
+
+#include <elle/test.hh>
+#include <elle/container/set.hh>
 
 using reactor::fsm::Machine;
 using reactor::fsm::State;
@@ -692,9 +690,7 @@ terminate()
   sched.run();
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* fsm = BOOST_TEST_SUITE("fsm");
   boost::unit_test::framework::master_test_suite().add(fsm);
@@ -722,11 +718,5 @@ test_suite()
   fsm->add(BOOST_TEST_CASE(transition_action_throw));
   fsm->add(BOOST_TEST_CASE(transition_give_time));
   fsm->add(BOOST_TEST_CASE(terminate));
-  return true;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

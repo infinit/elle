@@ -1,10 +1,9 @@
+#define ELLE_TEST_MODULE file
+#include <elle/Buffer.hh>
+#include <elle/test.hh>
+
 #include <reactor/fs/File.hh>
 
-#include <elle/Buffer.hh>
-
-#define BOOST_TEST_MODULE file
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
 
 #include <fstream>
 #include <iostream>

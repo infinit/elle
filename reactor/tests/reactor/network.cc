@@ -1,12 +1,6 @@
-#define BOOST_TEST_DYN_LINK
+#include "reactor.hh"
 
-#include <memory>
-
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-
-#include <elle/memory.hh>
-
+#include <reactor/asio.hh>
 #include <reactor/Scope.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
@@ -16,7 +10,13 @@
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
 
-#include "reactor.hh"
+#include <elle/test.hh>
+#include <elle/memory.hh>
+
+#include <boost/bind.hpp>
+#include <boost/foreach.hpp>
+
+#include <memory>
 
 using reactor::network::Byte;
 using reactor::network::Buffer;
@@ -377,9 +377,7 @@ resolution_failure()
 | Test suite |
 `-----------*/
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* network = BOOST_TEST_SUITE("Network");
   boost::unit_test::framework::master_test_suite().add(network);
@@ -395,12 +393,5 @@ test_suite()
   network->add(BOOST_TEST_CASE(test_socket_destruction));
   network->add(BOOST_TEST_CASE(test_socket_close));
   network->add(BOOST_TEST_CASE(resolution_failure));
-  return true;
 }
 
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

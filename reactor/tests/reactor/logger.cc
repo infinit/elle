@@ -1,8 +1,6 @@
-#define BOOST_TEST_DYN_LINK
-
 #include "reactor.hh"
 
-#include <boost/test/unit_test.hpp>
+#include <elle/test.hh>
 
 #ifdef VALGRIND
 # include <valgrind/valgrind.h>
@@ -126,20 +124,11 @@ parallel_write()
   }
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* sched_log = BOOST_TEST_SUITE("Sched Logger");
   boost::unit_test::framework::master_test_suite().add(sched_log);
   sched_log->add(BOOST_TEST_CASE(scheduler_log_test));
   sched_log->add(BOOST_TEST_CASE(parallel_write));
-
-  return true;
 }
 
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
-}

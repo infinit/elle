@@ -1,6 +1,5 @@
-#define BOOST_TEST_MODULE nat
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#define ELLE_TEST_MODULE nat
+#include <elle/test.hh>
 
 #include <reactor/network/nat.hh>
 #include <reactor/scheduler.hh>
