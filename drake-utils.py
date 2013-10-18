@@ -30,7 +30,6 @@ class GNUBuilder(drake.Builder):
                makefile: "Makefile filename, used if not None" = None,
                build_args: "Additional arguments for the make command" = ['install'],
                additional_env: "Additional environment variables" = {},
-               env: "Base environment" = os.environ,
                configure_interpreter = None):
     self.__toolkit = cxx_toolkit
     self.__configure = configure
@@ -41,7 +40,6 @@ class GNUBuilder(drake.Builder):
     self.__makefile = makefile
     self.__build_args = build_args
     self.__env = {}
-    self.__env.update(env)
     self.__env.update(additional_env)
     if make_binary is not None:
         self.__env.setdefault('MAKE', make_binary.replace('\\', '/'))
@@ -61,20 +59,22 @@ class GNUBuilder(drake.Builder):
 
   def execute(self):
     # Configure step
+    env = dict(self.__env)
+    env.update(os.environ)
     if self.__configure is not None:
        if not self.cmd('Configure %s' % self.work_directory,
                        self.command_configure,
                        cwd = self.work_directory,
-                       env = self.__env,
-                       leave_stdout = True):
+                       env = env,
+                       leave_stdout = False):
            return False
 
     # Build step
     if not self.cmd('Build %s' % self.work_directory,
                     self.command_build,
                     cwd = self.work_directory,
-                    env = self.__env,
-                    leave_stdout = True):
+                    env = env,
+                    leave_stdout = False):
       return False
 
     for target in self.__targets:
