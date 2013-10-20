@@ -286,6 +286,7 @@ namespace reactor
     TCPSocket::read_until(std::string const& delimiter,
                           DurationOpt timeout)
     {
+      ELLE_TRACE_SCOPE("%s: read until %s", *this, delimiter);
       ReadUntil read(this, delimiter);
       bool finished;
       try
