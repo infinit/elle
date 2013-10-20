@@ -101,7 +101,7 @@ namespace reactor
       /// Waiting threads.
       Waiters _threads;
       /// Exception woken thread must throw.
-      std::exception_ptr _exception;
+      ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
 
   /*----------.
   | Printable |
