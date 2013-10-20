@@ -270,6 +270,12 @@ namespace elle
   }
 
   bool
+  Buffer::operator ==(std::string const& other) const
+  {
+    return *this == ConstWeakBuffer(other);
+  }
+
+  bool
   Buffer::operator <(Buffer const& ot) const
   {
     return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
@@ -387,6 +393,12 @@ namespace elle
     if (this->_size == other.size())
       return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
     return this->_size < other.size();
+  }
+
+  bool
+  ConstWeakBuffer::operator ==(std::string const& other) const
+  {
+    return *this == ConstWeakBuffer(other);
   }
 
   /*---------.

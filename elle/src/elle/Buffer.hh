@@ -119,6 +119,8 @@ namespace elle
     bool
     operator ==(ConstWeakBuffer const& other) const;
     bool
+    operator ==(std::string const& other) const;
+    bool
     operator <(Buffer const& other) const;
 
   /*-----------.
@@ -225,6 +227,8 @@ namespace elle
     operator ==(ConstWeakBuffer const& other) const;
     bool
     operator <(ConstWeakBuffer const& other) const;
+    bool
+    operator ==(std::string const& other) const;
 
   /*--------------.
   | Serialization |
