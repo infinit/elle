@@ -174,6 +174,30 @@ namespace elle
     return InputBufferArchive(*this);
   }
 
+  const Byte*
+  Buffer::begin() const
+  {
+    return const_cast<Buffer*>(this)->begin();
+  }
+
+  const Byte*
+  Buffer::end() const
+  {
+    return const_cast<Buffer*>(this)->end();
+  }
+
+  Byte*
+  Buffer::begin()
+  {
+    return this->mutable_contents();
+  }
+
+  Byte*
+  Buffer::end()
+  {
+    return this->mutable_contents() + this->size();
+  }
+
   void
   Buffer::dump(const Natural32 margin) const
   {

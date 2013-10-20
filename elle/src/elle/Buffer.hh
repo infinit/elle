@@ -144,6 +144,21 @@ namespace elle
     reader() const;
 
   /*---------.
+  | Iterable |
+  `---------*/
+  public:
+    typedef Byte* iterator;
+    typedef Byte const* const_iterator;
+    const Byte*
+    begin() const;
+    const Byte*
+    end() const;
+    Byte*
+    begin();
+    Byte*
+    end();
+
+  /*---------.
   | Dumpable |
   `---------*/
   public:
@@ -217,6 +232,7 @@ namespace elle
   | Iterable |
   `---------*/
   public:
+    typedef Byte const* const_iterator;
     const Byte*
     begin() const;
     const Byte*
@@ -262,6 +278,7 @@ namespace elle
   | Iterable |
   `---------*/
   public:
+    typedef Byte* iterator;
     Byte*
     begin();
     Byte*
