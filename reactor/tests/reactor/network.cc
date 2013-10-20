@@ -10,13 +10,17 @@
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
 
-#include <elle/test.hh>
+#include <elle/utility/Move.hh>
+#include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/test.hh>
 
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
 #include <memory>
+
+ELLE_LOG_COMPONENT("reactor.network.test");
 
 using reactor::network::Byte;
 using reactor::network::Buffer;
@@ -115,7 +119,7 @@ slowpoke_server()
   server.listen(4242);
   std::unique_ptr<reactor::network::Socket> socket(server.accept());
   sched->current()->sleep(boost::posix_time::seconds(2));
-  socket->write("0");
+  socket->write(elle::ConstWeakBuffer("0"));
 }
 
 template <typename Server, typename Socket>
@@ -124,7 +128,7 @@ timeout_read()
 {
   Socket socket(*sched, "127.0.0.1", 4242);
   // Poke the server to establish the pseudo connection in the UDP case.
-  socket.write("poke");
+  socket.write(elle::ConstWeakBuffer("poke"));
   Byte b;
   reactor::network::Buffer buffer(&b, 1);
   BOOST_CHECK_THROW(
@@ -214,7 +218,7 @@ serve(reactor::network::Socket* socket)
     size_t pos;
     while ((pos = received.find('\n')) != std::string::npos)
     {
-      socket->write(Buffer(received.c_str(), pos + 1));
+      socket->write(elle::ConstWeakBuffer(received.c_str(), pos + 1));
       received = received.substr(pos + 1);
     }
   }
@@ -227,7 +231,7 @@ client(std::vector<std::string> messages, unsigned& check)
   Socket s(*sched, "127.0.0.1", 4242);
   BOOST_FOREACH (const std::string& message, messages)
   {
-    s.write(Buffer(message));
+    s.write(elle::ConstWeakBuffer(message));
 
     Byte buf[256];
     Size read = s.read_some(Buffer(buf, 256));
@@ -374,24 +378,120 @@ resolution_failure()
 }
 
 /*-----------.
+| Read until |
+`-----------*/
+
+
+class Server
+{
+public:
+  Server():
+    _server(),
+    _port(0)
+  {
+    this->_server.listen(0);
+    this->_port = this->_server.port();
+    ELLE_LOG("%s: listen on port %s", *this, this->_port);
+    this->_accepter.reset(
+      new reactor::Thread(*reactor::Scheduler::scheduler(),
+                          "accepter",
+                          std::bind(&Server::_accept,
+                                    std::ref(*this))));
+  }
+
+  ~Server()
+  {
+    this->_accepter->terminate_now();
+  }
+
+  ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
+  ELLE_ATTRIBUTE_R(int, port);
+  ELLE_ATTRIBUTE(std::unique_ptr<reactor::Thread>, accepter);
+
+private:
+  void
+  _accept()
+  {
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      while (true)
+      {
+        std::unique_ptr<reactor::network::TCPSocket> socket(
+          this->_server.accept());
+        ELLE_LOG("accept connection from %s", socket->peer());
+        auto name = elle::sprintf("request %s", socket->peer());
+        scope.run_background(
+          name,
+          std::bind(&Server::_serve, std::ref(*this),
+                    elle::utility::move_on_copy(socket)));
+      }
+    };
+  }
+
+  virtual
+  void
+  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) = 0;
+};
+
+class ContentServer:
+  public Server
+{
+public:
+  ContentServer(std::string const& content):
+    Server(),
+    _content(content)
+  {}
+
+  virtual
+  void
+  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) override
+  {
+    socket->write(this->_content);
+  }
+
+  ELLE_ATTRIBUTE_R(std::string, content);
+};
+
+static
+void
+read_until()
+{
+  reactor::Scheduler sched;
+
+  reactor::Thread main(
+    sched, "main",
+    []
+    {
+      ContentServer server("foo\r\n\r\nbar\r\n");
+
+      reactor::network::TCPSocket sock("127.0.0.1", server.port());
+      BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "foo\r\n");
+      BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "\r\n");
+      BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "bar\r\n");
+    });
+
+  sched.run();
+}
+
+
+/*-----------.
 | Test suite |
 `-----------*/
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* network = BOOST_TEST_SUITE("Network");
-  boost::unit_test::framework::master_test_suite().add(network);
-  network->add(BOOST_TEST_CASE(test_destroy_socket));
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(test_destroy_socket));
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \
-  network->add(BOOST_TEST_CASE((test_timeout_read                   \
-                                <Proto##Server, Proto##Socket>)));  \
-  network->add(BOOST_TEST_CASE((test_echo_server                    \
-                                <Proto##Server, Proto##Socket>)));  \
+  suite.add(BOOST_TEST_CASE((test_timeout_read                          \
+                                <Proto##Server, Proto##Socket>)));      \
+  suite.add(BOOST_TEST_CASE((test_echo_server                           \
+                                <Proto##Server, Proto##Socket>)));      \
 
   INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
-  network->add(BOOST_TEST_CASE(test_socket_destruction));
-  network->add(BOOST_TEST_CASE(test_socket_close));
-  network->add(BOOST_TEST_CASE(resolution_failure));
+  suite.add(BOOST_TEST_CASE(test_socket_destruction));
+  suite.add(BOOST_TEST_CASE(test_socket_close));
+  suite.add(BOOST_TEST_CASE(resolution_failure));
+  suite.add(BOOST_TEST_CASE(read_until));
 }
-
