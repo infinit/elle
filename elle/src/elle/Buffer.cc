@@ -275,9 +275,15 @@ namespace elle
     return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
   }
 
-  /*------------.
-  | Conversions |
-  `------------*/
+  /*-----------.
+  | Properties |
+  `-----------*/
+
+  bool
+  Buffer::empty() const
+  {
+    return this->size() == 0;
+  }
 
   std::string
   Buffer::string() const

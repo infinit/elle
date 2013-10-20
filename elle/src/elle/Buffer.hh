@@ -121,10 +121,13 @@ namespace elle
     bool
     operator <(Buffer const& other) const;
 
-  /*------------.
-  | Conversions |
-  `------------*/
+  /*-----------.
+  | Properties |
+  `-----------*/
   public:
+    /// Whether the size is 0.
+    bool
+    empty() const;
     /// The content of the buffer as a string.
     std::string
     string() const;
