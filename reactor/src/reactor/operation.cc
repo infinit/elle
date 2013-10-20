@@ -9,9 +9,13 @@
 
 namespace reactor
 {
-  Operation::Operation(Scheduler& sched)
-    : Super()
-    , _sched(sched)
+  Operation::Operation():
+    Operation(*Scheduler::scheduler())
+  {}
+
+  Operation::Operation(Scheduler& sched):
+    Super(),
+    _sched(sched)
   {}
 
   bool

@@ -11,6 +11,7 @@ namespace reactor
     public:
       typedef Operation Self;
       typedef Waitable Super;
+      Operation();
       Operation(Scheduler& scheduler);
       void abort();
       void start();
