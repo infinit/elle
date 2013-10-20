@@ -189,6 +189,8 @@ namespace elle
   | Construction |
   `-------------*/
   public:
+    /// ConstWeakBuffer with null memory segment and size.
+    ConstWeakBuffer();
     /// WeakBuffer for the given memory segment.
     ConstWeakBuffer(const void* data, size_t size);
     /// WeakBuffer with \a data content.
@@ -255,6 +257,8 @@ namespace elle
   | Construction |
   `-------------*/
   public:
+    /// WeakBuffer with null memory segment and size.
+    WeakBuffer();
     /// WeakBuffer for the given memory segment.
     WeakBuffer(void* data, size_t size);
     /// WeakBuffer for the given Buffer content.

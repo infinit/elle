@@ -22,6 +22,12 @@ namespace elle
   `-------------*/
 
   inline
+  ConstWeakBuffer::ConstWeakBuffer():
+    _size(0),
+    _contents(nullptr)
+  {}
+
+  inline
   ConstWeakBuffer::ConstWeakBuffer(const void* data, size_t size):
     _size(size),
     _contents(static_cast<Byte*>(const_cast<void*>(data)))
@@ -49,6 +55,11 @@ namespace elle
     other._contents = nullptr;
     other._size = 0;
   }
+
+  inline
+  WeakBuffer::WeakBuffer():
+    ConstWeakBuffer()
+  {}
 
   inline
   WeakBuffer::WeakBuffer(void* data, size_t size):
