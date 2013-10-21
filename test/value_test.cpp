@@ -81,12 +81,17 @@ namespace
         Value v1( 1 );
         Value v2( 1 );
         Value v3( INT_MAX );
+        Value v4( ULLONG_MAX );
 
         assert_eq( v1.type(), Value::INT_TYPE );
         assert_eq ( v1, v2 );
+        assert_eq( v3.type(), Value::INT_TYPE );
         assert_neq( v1, v3 );
+        assert_eq( v4.type(), Value::INT_TYPE );
+        assert_neq( v1, v4 );
 
         unsigned int uint_max = INT_MAX;
+        unsigned long long ullong_max = ULLONG_MAX;
 
         assert_eq( v1.getInt(),    1 );
         assert_eq( v1.getInt64(),  1 );
@@ -94,33 +99,35 @@ namespace
         assert_eq( v3.getInt(),    INT_MAX );
         assert_eq( v3.getInt64(),  INT_MAX );
         assert_eq( v3.getUInt64(), uint_max );
+        assert_eq( v4.getUInt64(), ULLONG_MAX );
+        assert_eq( v4.getUInt64(), ullong_max );
 
-        Value v4( max_int64 );
+        Value v5( max_int64 );
 
-        assert_eq( v4.getInt64(), max_int64 );
-        assert_eq( v4.getUInt64(), static_cast< uint64_t >( max_int64 ) );
+        assert_eq( v5.getInt64(), max_int64 );
+        assert_eq( v5.getUInt64(), static_cast< uint64_t >( max_int64 ) );
 
         const uint64_t max_int64_plus_1 = max_int64 + uint64_t( 1 );
 
-        Value v5( max_int64_plus_1 );
+        Value v6( max_int64_plus_1 );
 
-        assert_eq( v5.getUInt64(), max_int64_plus_1 );
+        assert_eq( v6.getUInt64(), max_int64_plus_1 );
 
-        Value v6( max_uint64 );
+        Value v7( max_uint64 );
 
-        assert_eq( v6.getUInt64(), max_uint64 );
+        assert_eq( v7.getUInt64(), max_uint64 );
 
-        Value v7( 0 );
+        Value v8( 0 );
 
-        assert_eq( v7.getInt(),    0 );
-        assert_eq( v7.getInt64(),  0 );
-        assert_eq( v7.getUInt64(), 0u );
+        assert_eq( v8.getInt(),    0 );
+        assert_eq( v8.getInt64(),  0 );
+        assert_eq( v8.getUInt64(), 0u );
 
-        Value v8( -1 );
+        Value v9( -1 );
 
-        assert_eq( v8.getInt(),   -1 );
-        assert_eq( v8.getInt64(), -1 );
-        assert_eq( v8.getUInt64(), max_uint64 );
+        assert_eq( v9.getInt(),   -1 );
+        assert_eq( v9.getInt64(), -1 );
+        assert_eq( v9.getUInt64(), max_uint64 );
     }
 
     void test_real_value()
