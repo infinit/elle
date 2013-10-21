@@ -44,7 +44,7 @@ namespace
         typedef typename Config_type::Array_type Array_type;
         typedef typename Config_type::ValueType ValueType;
         typedef typename Config_type::Pair_type Pair_type;
-        typedef typename String_type::value_type  Char_type;
+        typedef typename String_type::value_type Char_type;
         typedef typename String_type::const_iterator Iter_type;
         typedef std::basic_istringstream< Char_type > Istringstream_type;
         typedef std::basic_istream< Char_type > Istream_type;
@@ -115,6 +115,15 @@ namespace
             test_syntax( os.str().c_str() );
         }
 
+        void test_syntax( unsigned long long min_ullong, unsigned long long max_ullong )
+        {
+            ostringstream os;
+
+            os << "[" << min_ullong << "," << max_ullong << "]";
+
+            test_syntax( os.str().c_str() );
+        }
+
         void test_syntax()
         {
             test_syntax( "{}" );
@@ -156,6 +165,7 @@ namespace
 
             test_syntax( INT_MIN, INT_MAX );
             test_syntax( LLONG_MIN, LLONG_MAX );
+            test_syntax( 0, ULLONG_MAX );
             test_syntax( "[1 2 3]", false );
         }
 
@@ -194,6 +204,18 @@ namespace
             os << "[\n"
                    "    " << min_int << ",\n"
                    "    " << max_int << "\n"
+                   "]";
+
+            check_reading( os.str().c_str() );
+        }
+
+        void check_reading( unsigned long long min_ullong, unsigned long long max_ullong )
+        {
+            ostringstream os;
+
+            os << "[\n"
+                   "    " << min_ullong << ",\n"
+                   "    " << max_ullong << "\n"
                    "]";
 
             check_reading( os.str().c_str() );
@@ -416,6 +438,7 @@ namespace
 
             check_reading( INT_MIN, INT_MAX );
             check_reading( LLONG_MIN, LLONG_MAX );
+            check_reading( 0, ULLONG_MAX );
         }
 
         void test_reading_reals()
