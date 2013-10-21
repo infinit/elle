@@ -31,18 +31,16 @@ namespace reactor
     void
     SocketOperation<AsioSocket>::_abort()
     {
-      try
-      {
-        *this->_canceled = true;
-        socket()->cancel();
-      }
-      catch (boost::system::system_error const&)
-      {
-        // Cancel may fail if for instance the socket was closed
-        // manually. If cancel fails, assume the operation is de facto
-        // cancelled and we can carry on. I no of no case were we "were not
-        // actually able to cancel the operation".
-      }
+      *this->_canceled = true;
+      boost::system::error_code ec;
+      socket()->cancel(ec);
+
+      // Cancel may fail if for instance the socket was closed manually. If
+      // cancel fails, assume the operation is de facto cancelled and we can
+      // carry on. I know of no case were we "were not actually able to
+      // cancel the operation".
+      (void) ec;
+
       _signal();
     }
 
