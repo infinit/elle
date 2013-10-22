@@ -232,7 +232,11 @@ namespace reactor
         _socket->shutdown(AsioSocket::shutdown_both, error);
         if (error)
           {
-            if (error == boost::asio::error::not_connected)
+            if (error == boost::asio::error::not_connected
+#ifdef INFINIT_WINDOWS
+                || error == boost::asio::error::bad_descriptor
+#endif
+                )
               ; // It's ok to try to disconnect a non-connected socket.
             else
               throw Exception(error.message());

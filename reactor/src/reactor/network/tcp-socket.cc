@@ -155,12 +155,17 @@ namespace reactor
           if (*canceled)
             return;
           if (error)
-            ELLE_TRACE("%s: read error: %s", *this, error.message());
+            ELLE_TRACE("%s: read error: %s (%s)", *this, error.message(), error);
           else
             ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
-          if (error == boost::asio::error::eof || \
-              error == boost::system::errc::operation_canceled)
+          if (error == boost::asio::error::eof
+              || error == boost::system::errc::operation_canceled
+#ifdef INFINIT_WINDOWS
+              || error == boost::asio::error::bad_descriptor
+              || error == boost::asio::error::connection_reset
+#endif
+             )
             this->_raise<ConnectionClosed>();
           else if (error)
             this->_raise<Exception>(error.message());
