@@ -53,23 +53,19 @@ add_subdirectory(src)
 # Testing
 if (CMAKE_PROJECT_NAME STREQUAL "Uri" OR CPP-NETLIB_BUILD_TESTS)
   enable_testing()
-  if (NOT DEFINED GTEST_FOUND)
-    find_package(GTest REQUIRED)
-  endif()
+  find_package(GTest REQUIRED)
   add_subdirectory(test)
 endif()
 
 # Documentation
-if (NOT DOXYGEN_FOUND)
-  find_package(Doxygen)
-  if (DOXYGEN_FOUND)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    add_custom_target(doc
-      ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-      COMMENT "Generating API documentation with Doxygen" VERBATIM)
-  endif(DOXYGEN_FOUND)
-endif(NOT DOXYGEN_FOUND)
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+  add_custom_target(doc
+    ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating API documentation with Doxygen" VERBATIM)
+endif(DOXYGEN_FOUND)
 
 #propagate sources to parent scope for one-lib-build
 set(Uri_SRCS ${Uri_SRCS} PARENT_SCOPE)
