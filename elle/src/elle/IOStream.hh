@@ -24,6 +24,7 @@ namespace elle
   {
   public:
     IOStream(StreamBuffer* buffer);
+    IOStream(IOStream&& buffer);
     ~IOStream();
 
   protected:

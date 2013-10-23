@@ -29,15 +29,26 @@ namespace elle
   `---------*/
 
   IOStream::IOStream(StreamBuffer* buffer):
-    std::iostream(_buffer = buffer)
+    std::iostream(buffer),
+    _buffer(buffer)
   {
     exceptions(std::iostream::badbit);
   }
 
+  IOStream::IOStream(IOStream&& source):
+    std::iostream(source._buffer),
+    _buffer(source._buffer)
+  {
+    source._buffer = nullptr;
+  }
+
   IOStream::~IOStream()
   {
-    _buffer->sync();
-    delete _buffer;
+    if (this->_buffer)
+    {
+      this->_buffer->sync();
+      delete _buffer;
+    }
   }
 
   /*-------------.
