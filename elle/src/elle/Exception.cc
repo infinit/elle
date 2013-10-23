@@ -50,7 +50,7 @@ namespace elle
     }
     catch (Exception const& e)
     {
-      return elle::sprint(e);
+      return e.what();
     }
     catch (std::exception const& e)
     {
