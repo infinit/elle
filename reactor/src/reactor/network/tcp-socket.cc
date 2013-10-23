@@ -194,6 +194,16 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
                            *this, some ? "up to " : "", buf.size(), timeout);
+      if (this->_streambuffer.size())
+      {
+        std::istream s(&this->_streambuffer);
+        s.readsome(reinterpret_cast<char*>(buf.data()), buf.size());
+        unsigned size = s.gcount();
+        ELLE_ASSERT_GT(size, 0u);
+        if (size == buf.size() || some)
+          return size;
+        buf = Buffer(buf.data() + size, buf.size() - size);
+      }
       Read read(scheduler(), this, buf, some);
       bool finished;
       try
@@ -229,13 +239,14 @@ namespace reactor
     {
     public:
       ReadUntil(TCPSocket* socket,
+                boost::asio::streambuf& buffer,
                 std::string const& delimiter):
         SocketOperation<boost::asio::ip::tcp::socket>(
           *reactor::Scheduler::scheduler(),
           socket),
         _socket(*socket->socket()),
+        _streambuffer(buffer),
         _delimiter(delimiter),
-        _streambuffer(),
         _buffer()
       {}
 
@@ -279,9 +290,9 @@ namespace reactor
       }
 
     private:
-      boost::asio::ip::tcp::socket& _socket;
-      std::string _delimiter;
-      boost::asio::streambuf _streambuffer;
+      ELLE_ATTRIBUTE(boost::asio::ip::tcp::socket&, socket);
+      ELLE_ATTRIBUTE(boost::asio::streambuf&, streambuffer);
+      ELLE_ATTRIBUTE(std::string, delimiter);
       ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
     };
 
@@ -290,7 +301,7 @@ namespace reactor
                           DurationOpt timeout)
     {
       ELLE_TRACE_SCOPE("%s: read until %s", *this, delimiter);
-      ReadUntil read(this, delimiter);
+      ReadUntil read(this, this->_streambuffer, delimiter);
       bool finished;
       try
       {

@@ -42,6 +42,7 @@ namespace reactor
     private:
       friend class TCPServer;
       TCPSocket(Scheduler& sched, AsioSocket* socket);
+      ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 
     /*-----.
     | Read |

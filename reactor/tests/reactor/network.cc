@@ -462,10 +462,13 @@ read_until()
     sched, "main",
     []
     {
-      ContentServer server("foo\r\n\r\nbar\r\n");
+      ContentServer server("foo\r\nx\r\nbar\r\n");
 
       reactor::network::TCPSocket sock("127.0.0.1", server.port());
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "foo\r\n");
+      char c;
+      sock.read(reactor::network::Buffer(&c, 1));
+      BOOST_CHECK_EQUAL(c, 'x');
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "\r\n");
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "bar\r\n");
     });
