@@ -457,6 +457,24 @@ namespace elle
     return stream;
   }
 
+  /*-----------.
+  | Properties |
+  `-----------*/
+
+  bool
+  ConstWeakBuffer::empty() const
+  {
+    return this->size() == 0;
+  }
+
+  std::string
+  ConstWeakBuffer::string() const
+  {
+    return std::string(reinterpret_cast<char const*>(this->contents()),
+                       this->size());
+  }
+
+
   /*------------------.
   | InputStreamBuffer |
   `------------------*/
