@@ -106,19 +106,9 @@ namespace reactor
     }
     catch (const Terminate&)
     {}
-    catch (elle::Exception const& e)
-    {
-      ELLE_WARN("%s: exception escaped: %s", *this, e);
-      _exception_thrown = std::current_exception();
-    }
-    catch (std::exception const& e)
-    {
-      ELLE_WARN("%s: exception escaped: %s", *this, e.what());
-      _exception_thrown = std::current_exception();
-    }
     catch (...)
     {
-      ELLE_WARN("%s: unknown exception escaped", *this);
+      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string());
       _exception_thrown = std::current_exception();
     }
   }
