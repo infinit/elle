@@ -228,8 +228,8 @@ namespace reactor
     catch (...)
     {
       _current = previous;
-      ELLE_ERR("%s: exception escaped, terminating: %s",
-               *this, elle::exception_string())
+      ELLE_WARN("%s: exception escaped, terminating: %s",
+                *this, elle::exception_string())
         this->terminate();
       this->_eptr = std::current_exception();
     }
