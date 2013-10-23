@@ -120,9 +120,6 @@ namespace reactor
     | Implementation |
     `---------------*/
 
-    std::ostream&
-    operator << (std::ostream& output, Request::Impl const& r);
-
     class Request::Impl:
       public elle::StreamBuffer
     {
@@ -190,7 +187,7 @@ namespace reactor
 
       ~Impl()
       {
-        ELLE_TRACE_SCOPE("%s: terminate", *this);
+        ELLE_TRACE_SCOPE("%s: terminate", this->_request);
         curl_easy_cleanup(this->_handle);
       }
 
@@ -292,7 +289,8 @@ namespace reactor
         if (this->_conf.chunked_transfers())
         {
           this->_output.size(size);
-          ELLE_DEBUG_SCOPE("%s: output: post data: %s", *this, this->_output);
+          ELLE_DEBUG_SCOPE("%s: output: post data: %s",
+                           this->_request, this->_output);
           this->_output_available = true;
           curl_easy_pause(this->_handle, CURLPAUSE_CONT);
           this->_output_consumed.wait();
@@ -301,7 +299,8 @@ namespace reactor
         {
           elle::ConstWeakBuffer newdata(
             this->_output.mutable_contents() + this->_output.size(), size);
-          ELLE_DEBUG_SCOPE("%s: output: post data: %s", *this, newdata);
+          ELLE_DEBUG_SCOPE("%s: output: post data: %s",
+                           this->_request, newdata);
           this->_output.size(this->_output.size() + size);
         }
       }
@@ -311,14 +310,14 @@ namespace reactor
       {
         if (!this->_input_available.opened())
         {
-          ELLE_DEBUG_SCOPE("%s: input: wait for more data", *this);
+          ELLE_DEBUG_SCOPE("%s: input: wait for more data", this->_request);
           this->_input_available.wait();
         }
         if (!this->_input.empty())
         {
           this->_input_current = std::move(this->_input.front());
           ELLE_DEBUG_SCOPE("%s: input: fetch data: %s",
-                           *this, this->_input_current);
+                           this->_request, this->_input_current);
           this->_input.pop();
           if (this->_input.empty() && !this->_input_done)
             this->_input_available.close();
@@ -326,7 +325,7 @@ namespace reactor
         }
         else
         {
-          ELLE_DEBUG("%s: input: end of data", *this);
+          ELLE_DEBUG("%s: input: end of data", this->_request);
           return elle::WeakBuffer();
         }
       }
@@ -344,7 +343,7 @@ namespace reactor
       void
       enqueue_data(elle::Buffer buffer)
       {
-        ELLE_DEBUG_SCOPE("%s: input: got data: %s", *this, buffer);
+        ELLE_DEBUG_SCOPE("%s: input: got data: %s", this->_request, buffer);
         this->_input.push(std::move(buffer));
         this->_input_available.open();
       }
@@ -388,20 +387,21 @@ namespace reactor
         {
           if (this->_output_done)
           {
-            ELLE_DEBUG("%s: output: end of data", *this);
+            ELLE_DEBUG("%s: output: end of data", this->_request);
             return 0;
           }
           ELLE_ASSERT_GTE(buffer.size(), this->_output.size());
           if (!this->_output_available)
           {
-            ELLE_DEBUG("%s: output: no data available, pause", *this);
+            ELLE_DEBUG("%s: output: no data available, pause", this->_request);
             return CURL_READFUNC_PAUSE;
           }
           this->_output_available = false;
           memcpy(buffer.mutable_contents(),
                  this->_output.mutable_contents(), this->_output.size());
           this->_output_consumed.signal();
-          ELLE_DEBUG("%s: output: get %s bytes", *this, this->_output.size());
+          ELLE_DEBUG("%s: output: get %s bytes",
+                     this->_request, this->_output.size());
           return this->_output.size();
         }
         else
@@ -412,14 +412,14 @@ namespace reactor
             this->_output.size() - this->_output_offset);
           if (source.size() == 0)
           {
-            ELLE_DEBUG("%s: output: end of data", *this);
+            ELLE_DEBUG("%s: output: end of data", this->_request);
             return 0;
           }
           auto effective = std::min(source.size(), buffer.size());
           memcpy(buffer.mutable_contents(),
                  source.contents(), effective);
           this->_output_offset += effective;
-          ELLE_DEBUG("%s: output: get %s bytes", *this, effective);
+          ELLE_DEBUG("%s: output: get %s bytes", this->_request, effective);
           return effective;
         }
       }
@@ -432,22 +432,12 @@ namespace reactor
       friend
       CURL*
       handle_from_request(Request const& r);
-      friend
-      std::ostream&
-      operator << (std::ostream& output, Request::Impl const& r);
       Service& _curl;
       std::string _url;
       Method _method;
       CURL* _handle;
       std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
     };
-
-    std::ostream&
-    operator << (std::ostream& output, Request::Impl const& r)
-    {
-      output << r._method << " on " << r._url;
-      return output;
-    }
 
     CURL*
     handle_from_request(Request const& r)
@@ -613,7 +603,7 @@ namespace reactor
     void
     Request::print(std::ostream& stream) const
     {
-      stream << *this->_impl;
+      stream << this->_impl->_method << " on " << this->_impl->_url;
     }
 
     /*----------.
@@ -627,15 +617,5 @@ namespace reactor
       Request r(url, Method::GET, std::move(conf));
       return r.response();
     }
-
-    // elle::Buffer
-    // post(std::string const& url,
-    //      std::string const& content_type,
-    //      std::istream& input,
-    //      Request::Configuration conf)
-    // {
-    //   Request r(url, Method::POST, content_type, input, std::move(conf));
-    //   return _perform(r);
-    // }
   }
 }
