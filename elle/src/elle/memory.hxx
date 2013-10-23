@@ -34,7 +34,7 @@ namespace elle
   template <typename T>
   generic_unique_ptr<T>::generic_unique_ptr(
     typename Self::pointer p,
-    std::function<void (int*)> const& deleter):
+    std::function<void (T*)> const& deleter):
     Super(p, deleter)
   {}
 

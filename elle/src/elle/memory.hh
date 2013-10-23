@@ -12,14 +12,14 @@ namespace elle
 
   template <typename T>
   class generic_unique_ptr:
-    public std::unique_ptr<T, std::function<void (int*)>>
+    public std::unique_ptr<T, std::function<void (T*)>>
   {
   /*------.
   | Types |
   `------*/
   public:
     typedef generic_unique_ptr<T> Self;
-    typedef std::unique_ptr<T, std::function<void (int*)>> Super;
+    typedef std::unique_ptr<T, std::function<void (T*)>> Super;
 
   /*-------------.
   | Construction |
@@ -37,7 +37,7 @@ namespace elle
     /// Construct a pointer to \a p with specific deleter.
     explicit
     generic_unique_ptr(typename Self::pointer p,
-                       std::function<void (int*)> const& deleter);
+                       std::function<void (T*)> const& deleter);
     /// Construct a pointer to \a p with specific deleter.
     template <typename D>
     explicit
