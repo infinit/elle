@@ -174,12 +174,26 @@ def configure(cxx_toolkit = None,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
+
+  sources += drake.nodes(
+    'src/reactor/http/Client.cc',
+    'src/reactor/http/Client.hh',
+    'src/reactor/http/Request.cc',
+    'src/reactor/http/Request.hh',
+    'src/reactor/http/Service.cc',
+    'src/reactor/http/Service.hh',
+    'src/reactor/http/exceptions.cc',
+    'src/reactor/http/exceptions.hh',
+  )
+
+  lib_cxx_config = drake.cxx.Config(local_cxx_config)
+  lib_cxx_config.lib('curl')
   lib_static = drake.cxx.StaticLib('lib/reactor',
                                    sources + [libcoroutine],
-                                   cxx_toolkit, local_cxx_config)
+                                   cxx_toolkit, lib_cxx_config)
   lib_dynamic = drake.cxx.DynLib('lib/reactor',
-                                 sources + [libcoroutine],
-                                 cxx_toolkit, local_cxx_config)
+                                 sources + [libcoroutine, elle_lib],
+                                 cxx_toolkit, lib_cxx_config)
 
   # Build
   rule_build = drake.Rule('build')
@@ -198,6 +212,7 @@ def configure(cxx_toolkit = None,
   tests = [
     'reactor/backend',
     'reactor/fsm',
+    'reactor/http',
     'reactor/logger',
     'reactor/network',
     'reactor/reactor',
