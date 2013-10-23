@@ -55,7 +55,11 @@ namespace reactor
   bool
   Waitable::wait(DurationOpt timeout)
   {
-    return reactor::Scheduler::scheduler()->current()->wait(*this, timeout);
+    auto sched = reactor::Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto current = sched->current();
+    ELLE_ASSERT(current);
+    return current->wait(*this, timeout);
   }
 
   int
