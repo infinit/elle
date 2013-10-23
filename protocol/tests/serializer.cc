@@ -109,7 +109,7 @@ private:
                 routed = conf.quota;
               }
               ELLE_TRACE("%s: route %s bytes", *this, size);
-              b->write(Buffer(buffer, size));
+              b->write(elle::ConstWeakBuffer(buffer, size));
             }
           }
           catch (reactor::network::ConnectionClosed const&)
@@ -309,4 +309,3 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
   suite.add(BOOST_TEST_CASE(corruption), 0, 3);
 }
-

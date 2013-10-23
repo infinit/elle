@@ -80,13 +80,13 @@ BOOST_AUTO_TEST_CASE(simple_test)
                 "Content-Length: " + std::to_string(message_size) + "\r\n"
                 "\r\n");
               ELLE_LOG("send response: %s", answer);
-              socket->write(answer.c_str());
+              socket->write(elle::ConstWeakBuffer(answer));
               std::string chunk = "lol\n";
               assert(message_size % chunk.size() == 0);
               size_t sent = 0;
               while (sent + chunk.size() <= message_size)
               {
-                socket->write(chunk.c_str());
+                socket->write(elle::ConstWeakBuffer(chunk));
                 sent += chunk.size();
               }
               assert(sent == message_size);
