@@ -69,6 +69,7 @@ namespace reactor
     void
     Client::_register(Request const& request)
     {
+      ELLE_TRACE_SCOPE("%s: register %s", *this, request);
       auto res = curl_easy_setopt(handle_from_request(request),
                                   CURLOPT_SHARE, this->_impl->_share.get());
       if (res != CURLE_OK)
