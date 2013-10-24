@@ -1294,10 +1294,21 @@ Node.extensions['dylib'] = DynLib
 
 class Module(Binary):
 
-  def __init__(self, path, sources = None, tk = None, cfg = None):
-    Binary.__init__(self, tk.libname_module(cfg, path),
-                    sources, tk, cfg)
-    DynLibLinker(self, self.tk, self.cfg)
+  def __init__(self, path, sources = None, tk = None, cfg = None,
+               preserve_filename = False):
+    path = Path(path)
+    if not preserve_filename and tk is not None:
+      path = tk.libname_module(cfg, path)
+    Binary.__init__(self, path, sources, tk, cfg)
+    if tk is not None and cfg is not None:
+      DynLibLinker(self, self.tk, self.cfg)
+
+  # FIXME: Factor with DynLib.clone
+  def clone(self, path):
+    path = Path(path)
+    res = Module(path, self.sources, self.tk, self.cfg,
+                 preserve_filename = True)
+    return res
 
 
 class StaticLib(Binary):
