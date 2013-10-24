@@ -12,6 +12,7 @@
 #include <reactor/http/Client.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/http/Service.hh>
+#include <reactor/http/exceptions.hh>
 #include <reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("reactor.http.Client");
@@ -29,7 +30,7 @@ namespace reactor
         _share(curl_share_init(), &curl_share_cleanup)
       {
         if (!this->_share)
-          throw elle::Exception("unable to initialize CURL shared");
+          throw std::bad_alloc();
         curl_share_setopt(this->_share.get(),
                           CURLSHOPT_SHARE, CURL_LOCK_DATA_COOKIE);
       }
@@ -73,8 +74,9 @@ namespace reactor
       auto res = curl_easy_setopt(handle_from_request(request),
                                   CURLOPT_SHARE, this->_impl->_share.get());
       if (res != CURLE_OK)
-        throw elle::Exception(elle::sprintf("unable to set cookie jar: %s",
-                                            curl_easy_strerror(res)));
+        throw RequestError(request.url(),
+                           elle::sprintf("unable to set cookie jar: %s",
+                                         curl_easy_strerror(res)));
     }
   }
 }

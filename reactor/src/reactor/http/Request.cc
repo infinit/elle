@@ -1,4 +1,3 @@
-#include <iostream> // FIXME
 #include <queue>
 #include <string>
 
@@ -34,7 +33,8 @@ namespace reactor
     {
       auto res = curl_easy_setopt(handle, option, parameter);
       if (res != CURLE_OK)
-        throw elle::Exception("unable to set CURL opt"); // FIXME
+        throw RequestError("unable to set request option: %s",
+                           curl_easy_strerror(res));
     }
 
     /*-------.
@@ -292,7 +292,7 @@ namespace reactor
           std::max(timeout->total_seconds(), 1) : 0;
         setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
         if (!this->_handle)
-          throw elle::Exception("unable to initialize CURL handle");
+          throw RequestError(url, "unable to initialize request");
         // Set URL.
         setopt(this->_handle, CURLOPT_URL, url.c_str());
         // Set method.
@@ -722,8 +722,7 @@ namespace reactor
     {
       // XXX: We need not wait for the whole request.
       const_cast<Request*>(this)->wait();
-      if (this->_status == static_cast<StatusCode>(0))
-        throw elle::Exception("request is not done yet");
+      ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
       return this->_status;
     }
 

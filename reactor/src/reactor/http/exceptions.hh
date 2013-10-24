@@ -9,6 +9,7 @@ namespace reactor
 {
   namespace http
   {
+    /// Fatal error on a request that was not successfully completed.
     class RequestError:
       public elle::Exception
     {
@@ -21,6 +22,7 @@ namespace reactor
       ELLE_ATTRIBUTE_R(std::string, error);
     };
 
+    /// The server didn't send any response.
     class EmptyResponse:
       public RequestError
     {
@@ -29,6 +31,7 @@ namespace reactor
       EmptyResponse(std::string const& url);
     };
 
+    /// The request timed out.
     class Timeout:
       public RequestError
     {

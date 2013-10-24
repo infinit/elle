@@ -208,6 +208,8 @@ namespace reactor
       ///
       /// \param url The URL to query.  \param method The HTTP method to use.
       /// \param conf The Configuration to apply.
+      ///
+      /// \throw RequestError if the request cannot be created and started.
       Request(std::string const& url,
               Method method = Method::GET,
               Configuration conf = Configuration());
@@ -217,9 +219,12 @@ namespace reactor
       /// fed trough the output stream interface and whose end is signaled by a
       /// call to the finalize() method.
       ///
-      /// \param url The URL to query.  \param method The HTTP method to use.
-      /// \param content_type The MIME type of the uploded body.  \param conf
-      /// The Configuration to apply.
+      /// \param url          The URL to query.
+      /// \param method       The HTTP method to use.
+      /// \param content_type The MIME type of the uploded body.
+      /// \param conf         The Configuration to apply.
+      ///
+      /// \throw RequestError if the request cannot be created and started.
       Request(std::string const& url,
               Method method,
               std::string const& content_type,

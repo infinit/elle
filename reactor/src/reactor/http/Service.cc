@@ -5,6 +5,7 @@
 #include <elle/log.hh>
 
 #include <reactor/http/Service.hh>
+#include <reactor/http/exceptions.hh>
 #include <reactor/duration.hh>
 #include <reactor/scheduler.hh>
 
@@ -52,7 +53,7 @@ namespace reactor
       {
         int code = curl_global_init(CURL_GLOBAL_DEFAULT);
         if (code)
-          throw elle::Exception("Unable to initialize CURL");
+          throw std::bad_alloc();
       }
 
       ~CurlInitializer()
@@ -76,9 +77,7 @@ namespace reactor
       static CurlInitializer initializer;
       this->_curl = curl_multi_init();
       if (!this->_curl)
-        throw elle::Exception(
-          elle::sprintf("%s: unable to initialize CURL multi interface",
-                        *this));
+        throw std::bad_alloc();
       curl_multi_setopt(this->_curl, CURLMOPT_SOCKETDATA, this);
       curl_multi_setopt(this->_curl, CURLMOPT_TIMERDATA, this);
       curl_multi_setopt(this->_curl, CURLMOPT_SOCKETFUNCTION, &socket_callback);
@@ -113,16 +112,18 @@ namespace reactor
       this->_requests.insert(std::make_pair(handle, &request));
       auto res = curl_multi_add_handle(this->_curl, handle);
       if (res != CURLM_OK)
-        throw elle::Exception(elle::sprintf(
-                                "%s: unable to register HTTP request: %s",
-                                *this, curl_multi_strerror(res)));
+        throw RequestError(request.url(),
+                           elle::sprintf(
+                             "%s: unable to register HTTP request: %s",
+                             *this, curl_multi_strerror(res)));
       int running;
       res = curl_multi_socket_action(this->_curl,
                                      CURL_SOCKET_TIMEOUT, 0, &running);
       if (res != CURLM_OK)
-        throw elle::Exception(elle::sprintf(
-                                "%s: unable to start HTTP requests: %s",
-                                *this, curl_multi_strerror(res)));
+        throw RequestError(request.url(),
+                           elle::sprintf(
+                             "%s: unable to start HTTP request: %s",
+                             *this, curl_multi_strerror(res)));
       this->_pull_messages();
     }
 
