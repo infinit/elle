@@ -720,6 +720,8 @@ namespace reactor
     StatusCode
     Request::status() const
     {
+      // XXX: We need not wait for the whole request.
+      const_cast<Request*>(this)->wait();
       if (this->_status == static_cast<StatusCode>(0))
         throw elle::Exception("request is not done yet");
       return this->_status;
