@@ -77,9 +77,9 @@ def configure(cxx_toolkit = None,
   curl_configure = drake.node(curl_root / 'configure')
   from drake.cxx import DynLib, StaticLib
   if cxx_toolkit.os is drake.os.linux:
-    curl_lib = DynLib('curl/lib/libcurl.so.4', lib_name = 'curl')
+    curl_lib = DynLib('curl/lib/libcurl.so.4')
   elif cxx_toolkit.os is drake.os.macos:
-    curl_lib = DynLib('curl/lib/libcurl.4.dylib', lib_name = 'curl')
+    curl_lib = DynLib('curl/lib/libcurl.4.dylib')
   elif cxx_toolkit.os is drake.os.windows:
     curl_lib = StaticLib('curl/lib/libcurl.a')
   else:
@@ -122,7 +122,7 @@ def configure(cxx_toolkit = None,
   if cxx_toolkit.os is drake.os.linux:
     # So curl links its curl binary with the right SSL.
     curl_configure_args.append(
-      'LDFLAGS=-Wl,-rpath-link,%s' % (openssl_prefix / 'lib'))
+      'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
   GNUBuilder(cxx_toolkit,
              configure = curl_configure,
              working_directory = drake.path_build(curl_root),
