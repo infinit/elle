@@ -890,7 +890,7 @@ def deps_handler(builder, path, t, data):
 
 
 def mkdeps(res, n, lvl, config, marks,
-         f_submarks, f_init, f_add):
+           f_submarks, f_init, f_add):
   include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
   idt = ' ' * lvl * 2
@@ -901,11 +901,11 @@ def mkdeps(res, n, lvl, config, marks,
 
   f_init(res, n)
 
-  def unique(include, prev_via, prev, new_via, new):
+  def unique(path, include, prev_via, prev, new_via, new):
     if prev is not None:
-      raise Exception('two nodes match inclusion %s: '\
-                          '%s via %s and %s via %s' % \
-                          (include, prev, prev_via, new, new_via))
+      raise Exception('in %s, two nodes match inclusion %s: '\
+                      '%s via %s and %s via %s' % \
+                      (path, include, prev, prev_via, new, new_via))
     return new, new_via
 
   n.build()
@@ -931,13 +931,14 @@ def mkdeps(res, n, lvl, config, marks,
         # Check this is not an old cached dependency from
         # cxx.inclusions. Not sure of myself though.
         if test.is_file() or node(str(test)).builder is not None:
-          found, via = unique(include, via, found, test, node(test))
+          found, via = unique(path, include, via, found, include_path,
+                              node(test))
           # debug.debug('%sfound node: %s' % (idt, test))
       if not found or drake.path_source() != Path('.'):
         test = drake.path_source() / test
         if test.is_file():
           # debug.debug('%sfound file: %s' % (idt, test))
-          found, via = unique(include, via, found, test,
+          found, via = unique(path, include, via, found, include_path,
                               node(name, Header))
     if found is not None:
       rec = []
