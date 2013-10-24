@@ -168,8 +168,7 @@ def configure(cxx_toolkit = None,
              ])
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_root / 'include')
-  # Not needed since we use the nodes directly
-  # openssl_config.lib_path('openssl/lib')
+  openssl_libs = drake.copy(openssl_libs, 'lib', openssl_root)
 
   if enable_rotation:
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
