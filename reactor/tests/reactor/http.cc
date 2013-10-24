@@ -219,7 +219,7 @@ HTTP_TEST(complex)
   ELLE_LOG("Get %s", url);
   reactor::http::Request r(url);
   r.wait();
-  BOOST_CHECK_EQUAL(r.status(), 200);
+  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::OK);
   std::string content;
   r >> content;
   BOOST_CHECK_EQUAL(content, "/complex");
