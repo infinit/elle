@@ -1300,6 +1300,8 @@ class Module(Binary):
     if not preserve_filename and tk is not None:
       path = tk.libname_module(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
+    for lib in self.dynamic_libraries:
+      self.dependency_add(lib)
     if tk is not None and cfg is not None:
       DynLibLinker(self, self.tk, self.cfg)
 
