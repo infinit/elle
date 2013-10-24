@@ -2444,6 +2444,8 @@ def __copy(sources, to, strip_prefix, builder):
         res.append(__copy(node, to, strip_prefix, builder))
     return res
   else:
+    if strip_prefix is True:
+      strip_prefix = sources.name().dirname()
     path = sources.name()
     if strip_prefix is not None:
       path.strip_prefix(strip_prefix)
@@ -2474,7 +2476,8 @@ def copy(sources, to, strip_prefix = None):
 
   sources      -- List of nodes to copy, or a single node to copy.
   to           -- Path where to copy.
-  strip_prefix -- Prefix Path stripped from source pathes.
+  strip_prefix -- Prefix Path stripped from source pathes. If True,
+                  only the filename is kept.
 
   >>> sources = [node('/tmp/.drake.copy.source/a'),
   ...            node('/tmp/.drake.copy.source/b')]
