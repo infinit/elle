@@ -284,17 +284,20 @@ namespace reactor
         _handle(curl_easy_init()),
         _socket()
       {
+        if (!this->_handle)
+          throw RequestError(url, "unable to initialize request");
+        // Set error buffer.
         memset(this->_error, 0, CURL_ERROR_SIZE);
         setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
+        // Set version.
         auto version = this->_conf.version() == Version::v11 ?
           CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
         setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
+        // Set timeout.
         auto const& timeout = this->_conf.timeout();
         auto timeout_seconds = timeout ?
           std::max(timeout->total_seconds(), 1) : 0;
         setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
-        if (!this->_handle)
-          throw RequestError(url, "unable to initialize request");
         // Set URL.
         setopt(this->_handle, CURLOPT_URL, url.c_str());
         // Set method.
@@ -313,7 +316,7 @@ namespace reactor
           setopt(this->_handle, CURLOPT_UPLOAD, 1);
           break;
         }
-        // Set socket callback.
+        // Set socket callbacks.
         setopt(this->_handle, CURLOPT_OPENSOCKETFUNCTION, &Impl::open_socket);
         setopt(this->_handle, CURLOPT_OPENSOCKETDATA, this);
         setopt(this->_handle, CURLOPT_CLOSESOCKETFUNCTION, &Impl::close_socket);
