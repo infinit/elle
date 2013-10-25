@@ -30,7 +30,7 @@ namespace reactor
   void
   Sleep::_wakeup(const boost::system::error_code& error)
   {
-    if (error == boost::system::errc::operation_canceled)
+    if (error == boost::asio::error::operation_aborted)
       return;
     if (error)
       _raise<Exception>(error.message());
