@@ -284,6 +284,8 @@ namespace reactor
         _handle(curl_easy_init()),
         _socket()
       {
+        memset(this->_error, 0, CURL_ERROR_SIZE);
+        setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
         auto version = this->_conf.version() == Version::v11 ?
           CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
         setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
@@ -575,6 +577,7 @@ namespace reactor
       Method _method;
       CURL* _handle;
       std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
+      char _error[CURL_ERROR_SIZE];
     };
 
     CURL*
@@ -686,7 +689,9 @@ namespace reactor
         };
       if (code != CURLE_OK)
       {
-        message = curl_easy_strerror(CURLcode(code));
+        message = elle::sprintf("%s: %s",
+                                curl_easy_strerror(CURLcode(code)),
+                                this->_impl->_error);
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
