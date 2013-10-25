@@ -346,6 +346,9 @@ test_disconnection(bool sync)
 | Test suite |
 `-----------*/
 
+#define ELLE_TEST_NAMED_CASE(func, name)\
+  ::boost::unit_test::make_test_case(func, name)
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -355,6 +358,8 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(std::bind(test_terminate, false)));
   suite.add(BOOST_TEST_CASE(std::bind(test_parallel, true)));
   suite.add(BOOST_TEST_CASE(std::bind(test_parallel, false)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_disconnection, true)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_disconnection, false)));
+  suite.add(ELLE_TEST_NAMED_CASE(std::bind(test_disconnection, true),
+                                 "disconnection_sync"));
+  suite.add(ELLE_TEST_NAMED_CASE(std::bind(test_disconnection, false),
+                                 "disconnection_async"));
 }
