@@ -160,10 +160,12 @@ namespace reactor
             ELLE_TRACE("%s: read completed: %s bytes", *this, read);
           _read = read;
           if (error == boost::asio::error::eof
-              || error == boost::system::errc::operation_canceled
+              || error == boost::asio::error::operation_aborted
+              || error == boost::asio::error::connection_aborted
 #ifdef INFINIT_WINDOWS
               || error == boost::asio::error::bad_descriptor
               || error == boost::asio::error::connection_reset
+              || error.value() == ERROR_CONNECTION_ABORTED
 #endif
              )
             this->_raise<ConnectionClosed>();
@@ -374,9 +376,10 @@ namespace reactor
           else
             ELLE_TRACE("%s: write completed: %s bytes", *this, written);
           _written = written;
-          if (error == boost::asio::error::eof || \
-              error == boost::system::errc::operation_canceled ||   \
-              error == boost::system::errc::broken_pipe)
+          if (error == boost::asio::error::eof ||
+              error == boost::asio::error::operation_aborted ||
+              error == boost::asio::error::broken_pipe ||
+              error == boost::asio::error::connection_aborted)
             this->_raise<ConnectionClosed>();
           else if (error)
             this->_raise<Exception>(error.message());
