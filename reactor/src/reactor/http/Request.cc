@@ -282,7 +282,8 @@ namespace reactor
         _url(url),
         _method(method),
         _handle(curl_easy_init()),
-        _socket()
+        _socket(),
+        _pause_count(0)
       {
         if (!this->_handle)
           throw RequestError(url, "unable to initialize request");
@@ -378,7 +379,7 @@ namespace reactor
                   struct curl_sockaddr *address)
       {
         Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
-        ELLE_TRACE_SCOPE("%s: open socket", self);
+        ELLE_TRACE_SCOPE("%s: open socket", self._request);
         curl_socket_t sockfd = CURL_SOCKET_BAD;
         // FIXME: restricted to ipv4
         if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
@@ -418,6 +419,8 @@ namespace reactor
         }
         else
         {
+          if (this->_output_available)
+            this->_output_consumed.wait();
           this->_output.capacity(this->_output.size() + CURL_MAX_WRITE_SIZE);
           return elle::WeakBuffer(
             this->_output.mutable_contents() + this->_output.size(),
@@ -436,7 +439,6 @@ namespace reactor
                            this->_request, this->_output);
           this->_output_available = true;
           curl_easy_pause(this->_handle, CURLPAUSE_CONT);
-          this->_output_consumed.wait();
         }
         else
         {
@@ -528,15 +530,16 @@ namespace reactor
       {
         if (this->_conf.chunked_transfers())
         {
-          if (this->_output_done)
-          {
-            ELLE_DEBUG("%s: output: end of data", this->_request);
-            return 0;
-          }
           ELLE_ASSERT_GTE(buffer.size(), this->_output.size());
           if (!this->_output_available)
           {
+            if (this->_output_done)
+            {
+              ELLE_DEBUG("%s: output: end of data", this->_request);
+              return 0;
+            }
             ELLE_DEBUG("%s: output: no data available, pause", this->_request);
+            ++this->_pause_count;
             return CURL_READFUNC_PAUSE;
           }
           this->_output_available = false;
@@ -581,6 +584,7 @@ namespace reactor
       CURL* _handle;
       std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
       char _error[CURL_ERROR_SIZE];
+      ELLE_ATTRIBUTE_R(int, pause_count);
     };
 
     CURL*
@@ -663,9 +667,9 @@ namespace reactor
     {
       if (this->_impl->_output_done)
         return;
+      ELLE_TRACE_SCOPE("%s: output: finalize", *this);
       this->flush();
       this->_impl->_output_done = true;
-      this->_impl->_output_available = true;
       curl_easy_pause(this->_impl->_handle, CURLPAUSE_CONT);
       if (!this->_impl->_conf.chunked_transfers())
       {
@@ -751,6 +755,12 @@ namespace reactor
       // exceptions.
       this->wait();
       return res;
+    }
+
+    int
+    Request::pause_count() const
+    {
+      return this->_impl->_pause_count;
     }
 
     /*----------.

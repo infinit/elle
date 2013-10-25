@@ -707,6 +707,7 @@ post(reactor::http::Request::Configuration conf,
     conf);
   r << json;
   BOOST_CHECK_EQUAL(r.response(), json);
+  BOOST_CHECK_EQUAL(r.pause_count(), 0);
 }
 
 HTTP_TEST(post_10)

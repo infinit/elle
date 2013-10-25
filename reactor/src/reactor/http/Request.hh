@@ -299,6 +299,8 @@ namespace reactor
       ELLE_ATTRIBUTE_R(bool, reading);
       /// Whether the request is currently downloading data.
       ELLE_ATTRIBUTE_R(bool, writing);
+      /// How many time the request was paused in wait for output data.
+      ELLE_attribute_r(int, pause_count);
 
     /*----------.
     | Printable |
