@@ -682,11 +682,11 @@ namespace reactor
             this->_raise<Timeout>(this->_url,
                                   this->_impl->_conf.timeout().get());
           else
-            this->_raise<RequestError>(message, this->_url);
+            this->_raise<RequestError>(this->_url, message);
         };
       if (code != CURLE_OK)
       {
-        auto message = curl_easy_strerror(CURLcode(code));
+        message = curl_easy_strerror(CURLcode(code));
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
