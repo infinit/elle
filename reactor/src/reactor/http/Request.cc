@@ -629,6 +629,8 @@ namespace reactor
         this->_impl->header_add("Transfer-Encoding", "chunked");
         this->_impl->start();
       }
+      else
+        this->_impl->header_remove("Transfer-Encoding");
     }
 
     /// Move a Request.
