@@ -575,7 +575,7 @@ private:
     {
       this->response(*socket, path, cookies);
     }
-    else if (method == "POST")
+    else if (method == "POST" || method == "PUT")
     {
       if (v1_1)
       {
@@ -671,34 +671,38 @@ static
 void
 post(reactor::http::Request::Configuration conf,
      std::string const& version,
-     std::string const& method,
+     reactor::http::Method method,
      bool expect,
      bool chunked)
 {
   ScheduledHttpServer server;
-  server.check_version([&] (std::string const& v)
-                       {
-                         BOOST_CHECK_EQUAL(v, version);
-                       });
-  server.check_method([&] (std::string const& m)
-                      {
-                        BOOST_CHECK_EQUAL(m, method);
-                      });
-  server.check_expect_continue([&] (bool e)
-                               {
-                                 BOOST_CHECK_EQUAL(e, expect);
-                               });
-  server.check_chunked([&] (bool c)
-                       {
-                         BOOST_CHECK_EQUAL(c, chunked);
-                       });
+  server.check_version(
+    [&] (std::string const& v)
+    {
+      BOOST_CHECK_EQUAL(v, version);
+    });
+  server.check_method(
+    [&] (std::string const& m)
+    {
+      BOOST_CHECK_EQUAL(m, boost::lexical_cast<std::string>(method));
+    });
+  server.check_expect_continue(
+    [&] (bool e)
+    {
+      BOOST_CHECK_EQUAL(e, expect);
+    });
+  server.check_chunked(
+    [&] (bool c)
+    {
+      BOOST_CHECK_EQUAL(c, chunked);
+    });
   std::string json("{"
                    "  \"ploum\": \"ploum\","
                    "  \"tra\": \"lala\""
                    "}");
   reactor::http::Request r(
-    elle::sprintf("http://127.0.0.1:%s/post", server.port()),
-    reactor::http::Method::POST,
+    elle::sprintf("http://127.0.0.1:%s/%s", server.port(), method),
+    method,
     "application/json",
     conf);
   r << json;
@@ -709,20 +713,40 @@ HTTP_TEST(post_10)
 {
   reactor::http::Request::Configuration conf;
   conf.version(reactor::http::Version::v10);
-  post(conf, "HTTP/1.0", "POST", false, false);
+  post(conf, "HTTP/1.0", reactor::http::Method::POST, false, false);
 }
 
 HTTP_TEST(post_11)
 {
   reactor::http::Request::Configuration conf;
-  post(conf, "HTTP/1.1", "POST", true, false);
+  post(conf, "HTTP/1.1", reactor::http::Method::POST, true, false);
 }
 
 HTTP_TEST(post_11_chunked)
 {
   reactor::http::Request::Configuration conf;
   conf.chunked_transfers(true);
-  post(conf, "HTTP/1.1", "POST", true, true);
+  post(conf, "HTTP/1.1", reactor::http::Method::POST, true, true);
+}
+
+HTTP_TEST(put_10)
+{
+  reactor::http::Request::Configuration conf;
+  conf.version(reactor::http::Version::v10);
+  post(conf, "HTTP/1.0", reactor::http::Method::PUT, false, false);
+}
+
+HTTP_TEST(put_11)
+{
+  reactor::http::Request::Configuration conf;
+  post(conf, "HTTP/1.1", reactor::http::Method::PUT, true, false);
+}
+
+HTTP_TEST(put_11_chunked)
+{
+  reactor::http::Request::Configuration conf;
+  conf.chunked_transfers(true);
+  post(conf, "HTTP/1.1", reactor::http::Method::PUT, true, true);
 }
 
 HTTP_TEST(cookies)
@@ -758,6 +782,9 @@ test_suite()
   suite.add(BOOST_TEST_CASE(post_10));
   suite.add(BOOST_TEST_CASE(post_11));
   suite.add(BOOST_TEST_CASE(post_11_chunked));
+  suite.add(BOOST_TEST_CASE(put_10));
+  suite.add(BOOST_TEST_CASE(put_11));
+  suite.add(BOOST_TEST_CASE(put_11_chunked));
   suite.add(BOOST_TEST_CASE(cookies));
   return true;
 }
