@@ -87,6 +87,12 @@ class GNUBuilder(drake.Builder):
         if not self.cmd('Fix rpath for %s' % target.path(),
                         cmd):
           return False
+        if self.__toolkit.os is drake.os.macos:
+          cmd = ['install_name_tool',
+                 '-id', '@rpath/%s' % target.name().basename(),
+                  str(target.path())]
+          if not self.cmd('Fix rpath for %s' % target.path(), cmd):
+            return False
     return True
 
   @property
