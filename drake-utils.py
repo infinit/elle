@@ -1,18 +1,19 @@
 import drake
 import drake.cxx
+import subprocess
 
 def _default_make_binary():
-    from drake.which import which
-    to_try = [
-        'make',
-        'gmake',
-        'mingw32-make',
-        'mingw64-make',
-    ]
-    for binary in to_try:
-        path = which(binary)
-        if path is not None:
-            return path
+  from drake.which import which
+  to_try = [
+    'make',
+    'gmake',
+    'mingw32-make',
+    'mingw64-make',
+  ]
+  for binary in to_try:
+    path = which(binary)
+    if path is not None:
+      return path
 
 _DEFAULT_MAKE_BINARY = _default_make_binary()
 
@@ -93,7 +94,26 @@ class GNUBuilder(drake.Builder):
                   str(target.path())]
           if not self.cmd('Fix rpath for %s' % target.path(), cmd):
             return False
+          lib_dependecies = self.parse_otool_libraries(target.path())
+          for dep in lib_dependecies:
+            if dep.basename() in (t.path().basename() for t in self.__targets):
+              cmd = [
+                'install_name_tool',
+                '-change',
+                str(dep),
+                '@rpath/%s' % dep.basename(),
+                str(target.path()),
+              ]
+              if not self.cmd('Fix dependency name for %s' % target.path(), cmd):
+                return False
     return True
+
+  def parse_otool_libraries(self, path):
+    command = ['otool', '-L', str(path)]
+    return [drake.Path(line[1:].split(' ')[0])
+            for line
+            in subprocess.check_output(command).decode().split('\n')
+            if line.startswith('\t')]
 
   @property
   def command_configure(self):
