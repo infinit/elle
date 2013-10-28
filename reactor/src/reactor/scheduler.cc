@@ -1,8 +1,9 @@
+#include <elle/Measure.hh>
 #include <elle/attribute.hh>
 #include <elle/assert.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
-#include <elle/Measure.hh>
+#include <elle/memory.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
@@ -96,6 +97,8 @@ namespace reactor
       thread.join();
     delete _io_service_work;
     _io_service_work = 0;
+    // Cancel all pending signal handlers.
+    this->_signal_handlers.clear();
     _io_service.run();
     reactor::scheduler(this);
     _done = true;
@@ -586,6 +589,35 @@ namespace reactor
   {
     BackgroundOperation o(action);
     o.run();
+  }
+
+  /*--------.
+  | Signals |
+  `--------*/
+
+  static
+  void
+  signal_callback(boost::asio::signal_set& set,
+                  std::function<void ()> const& handler,
+                  boost::system::error_code const& error,
+                  int signal_number)
+  {
+    if (error == boost::asio::error::operation_aborted)
+      return;
+    handler();
+    set.async_wait(std::bind(&signal_callback, std::ref(set), handler,
+                             std::placeholders::_1, std::placeholders::_2));
+  };
+
+  void
+  Scheduler::signal_handle(int signal, std::function<void ()> const& handler)
+  {
+    ELLE_LOG("%s: handle signal %s", *this, ::strsignal(signal));
+    auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
+                                                          signal);
+    set->async_wait(std::bind(&signal_callback, std::ref(*set), handler,
+                              std::placeholders::_1, std::placeholders::_2));
+    this->_signal_handlers.emplace_back(std::move(set));
   }
 
   /*-----.

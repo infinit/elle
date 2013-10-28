@@ -1879,6 +1879,27 @@ namespace background
   }
 }
 
+/*--------.
+| Signals |
+`--------*/
+
+namespace system_signals
+{
+  static
+  void
+  terminate()
+  {
+    reactor::Scheduler sched;
+    reactor::Thread t(sched, "main", [&t] ()
+                      {
+                        ::kill(::getpid(), SIGINT);
+                        t.reactor::Waitable::wait();
+                      });
+    sched.signal_handle(SIGINT, [&sched] { sched.terminate(); });
+    sched.run();
+  }
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -2005,6 +2026,14 @@ test_suite()
     background->add(BOOST_TEST_CASE(exception));
     background->add(BOOST_TEST_CASE(aborted));
     background->add(BOOST_TEST_CASE(aborted_throw));
+  }
+
+  {
+    boost::unit_test::test_suite* system_signals =
+      BOOST_TEST_SUITE("system_signals");
+    boost::unit_test::framework::master_test_suite().add(system_signals);
+    auto terminate = system_signals::terminate;
+    system_signals->add(BOOST_TEST_CASE(terminate));
   }
 
   return true;

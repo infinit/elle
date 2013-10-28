@@ -171,6 +171,16 @@ namespace reactor
     friend class BackgroundOperation;
     friend void background(std::function<void()> const& action);
 
+  /*--------.
+  | Signals |
+  `--------*/
+  public:
+    void
+    signal_handle(int signal, std::function<void()> const& handler);
+  private:
+    ELLE_ATTRIBUTE(std::vector<std::unique_ptr<boost::asio::signal_set>>,
+                   signal_handlers);
+
     /*-----.
     | Asio |
     `-----*/
