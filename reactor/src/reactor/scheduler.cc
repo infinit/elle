@@ -543,8 +543,10 @@ namespace reactor
       }
       else
         --sched._background_pool_free;
+      auto status = this->_status;
+      auto action = this->_action;
       sched._background_service.post(
-        [this, status = this->_status, action = this->_action, &current, &sched]
+        [this, status, action, &current, &sched]
         {
           try
           {
