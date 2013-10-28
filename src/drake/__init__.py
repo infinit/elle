@@ -1304,13 +1304,15 @@ def command(cmd, cwd = None, stdout = None, env = None):
 
 
 def _can_skip_node(node):
-    if node.builder is None:
-        if isinstance(node, Node):
-            return not node.missing()
-        else:
-            return True
+  if node.builder is None:
+    if isinstance(node, Node):
+      if node.missing():
+        return False
+      return all(_can_skip_node(dep) for dep in node.dependencies)
     else:
-        return node.builder._Builder__executed
+      return True
+  else:
+    return node.builder._Builder__executed
 
 class Builder:
 
