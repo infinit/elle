@@ -150,7 +150,7 @@ def configure(cxx_toolkit = None,
     os_string = 'linux-x86_64'
   elif cxx_toolkit.os is drake.os.windows:
     os_string = 'mingw'
-  else:
+  elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
   GNUBuilder(cxx_toolkit,
              configure = openssl_configure,
