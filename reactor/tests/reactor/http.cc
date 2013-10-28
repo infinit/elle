@@ -673,7 +673,8 @@ post(reactor::http::Request::Configuration conf,
      std::string const& version,
      reactor::http::Method method,
      bool expect,
-     bool chunked)
+     bool chunked,
+     bool body = true)
 {
   ScheduledHttpServer server;
   server.check_version(
@@ -696,18 +697,37 @@ post(reactor::http::Request::Configuration conf,
     {
       BOOST_CHECK_EQUAL(c, chunked);
     });
-  std::string json("{"
-                   "  \"ploum\": \"ploum\","
-                   "  \"tra\": \"lala\""
-                   "}");
-  reactor::http::Request r(
-    elle::sprintf("http://127.0.0.1:%s/%s", server.port(), method),
-    method,
-    "application/json",
-    conf);
-  r << json;
-  BOOST_CHECK_EQUAL(r.response(), json);
-  BOOST_CHECK_EQUAL(r.pause_count(), 0);
+  if (body)
+  {
+    std::string json("{"
+                     "  \"ploum\": \"ploum\","
+                     "  \"tra\": \"lala\""
+                     "}");
+    reactor::http::Request r(
+      elle::sprintf("http://127.0.0.1:%s/%s", server.port(), method),
+      method,
+      "application/json",
+      conf);
+    r << json;
+    BOOST_CHECK_EQUAL(r.response(), json);
+    BOOST_CHECK_EQUAL(r.pause_count(), 0);
+  }
+  else
+  {
+    reactor::http::Request r(
+      elle::sprintf("http://127.0.0.1:%s/%s", server.port(), method),
+      method,
+      conf);
+    r.wait();
+    BOOST_CHECK_EQUAL(r.pause_count(), 0);
+  }
+}
+
+HTTP_TEST(post_no_body)
+{
+  reactor::http::Request::Configuration conf;
+  conf.version(reactor::http::Version::v10);
+  post(conf, "HTTP/1.0", reactor::http::Method::POST, false, false, false);
 }
 
 HTTP_TEST(post_10)
@@ -728,6 +748,13 @@ HTTP_TEST(post_11_chunked)
   reactor::http::Request::Configuration conf;
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", reactor::http::Method::POST, true, true);
+}
+
+HTTP_TEST(put_no_body)
+{
+  reactor::http::Request::Configuration conf;
+  conf.version(reactor::http::Version::v10);
+  post(conf, "HTTP/1.0", reactor::http::Method::PUT, false, false, false);
 }
 
 HTTP_TEST(put_10)
@@ -780,9 +807,11 @@ test_suite()
   suite.add(BOOST_TEST_CASE(connection_reset));
   suite.add(BOOST_TEST_CASE(concurrent));
   suite.add(BOOST_TEST_CASE(timeout));
+  suite.add(BOOST_TEST_CASE(post_no_body));
   suite.add(BOOST_TEST_CASE(post_10));
   suite.add(BOOST_TEST_CASE(post_11));
   suite.add(BOOST_TEST_CASE(post_11_chunked));
+  suite.add(BOOST_TEST_CASE(put_no_body));
   suite.add(BOOST_TEST_CASE(put_10));
   suite.add(BOOST_TEST_CASE(put_11));
   suite.add(BOOST_TEST_CASE(put_11_chunked));

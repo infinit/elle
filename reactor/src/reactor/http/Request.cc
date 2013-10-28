@@ -615,6 +615,7 @@ namespace reactor
                      Configuration conf):
       Request(url, method, std::move(conf), true)
     {
+      this->_impl->header_remove("Transfer-Encoding");
       if (conf.chunked_transfers())
         this->_impl->start();
     }
