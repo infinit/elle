@@ -97,8 +97,8 @@ namespace elle
   int
   StreamBuffer::sync()
   {
-    ELLE_TRACE_SCOPE("%s: sync", *this);
     unsigned int size = pptr() - pbase();
+    ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
     if (size > 0)
       flush(size);
     setp(0, 0);
