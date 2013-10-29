@@ -609,10 +609,23 @@ namespace reactor
                              std::placeholders::_1, std::placeholders::_2));
   };
 
+  namespace
+  {
+    std::string signal_string(int const signal)
+    {
+#ifdef INFINIT_WINDOWS
+        //XXX should at least map common signal values
+        return std::to_string(signal);
+#else
+        return ::strsignal(signal);
+#endif
+    }
+  }
+
   void
   Scheduler::signal_handle(int signal, std::function<void ()> const& handler)
   {
-    ELLE_LOG("%s: handle signal %s", *this, ::strsignal(signal));
+    ELLE_LOG("%s: handle signal %s", *this, signal_string(signal));
     auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
                                                           signal);
     set->async_wait(std::bind(&signal_callback, std::ref(*set), handler,
