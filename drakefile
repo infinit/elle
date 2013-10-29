@@ -381,6 +381,10 @@ def configure(cxx_toolkit = None,
   )
   reactor = drake.include(
     'reactor',
+    zlib_config = zlib_config,
+    zlib_lib = zlib_lib,
+    curl_config = curl_config,
+    curl_lib = curl_lib,
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,
