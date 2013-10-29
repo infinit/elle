@@ -839,27 +839,31 @@ class DepFile:
         """String representation."""
         return 'DepFile(%s)' % self.__builder
 
-def path_build(path):
-    """Return path as found in the build directory.
+def path_build(path, absolute = False):
+  """Return path as found in the build directory.
 
-    This function prepend the necessary prefix to a path relative to
-    the current drakefile to make it relative to the root of the build
-    directory.
+  This function prepend the necessary prefix to a path relative to
+  the current drakefile to make it relative to the root of the build
+  directory.
 
-    When computing pathes in a drakefile, one might need to find the
-    location of a path in the build directory relatively to this
-    drakefile. Since the build is runned at the root of the build
-    directory, if this drakefile is included from an other, path
-    relative to this drakefile won't be valid.
+  When computing pathes in a drakefile, one might need to find the
+  location of a path in the build directory relatively to this
+  drakefile. Since the build is runned at the root of the build
+  directory, if this drakefile is included from an other, path
+  relative to this drakefile won't be valid.
 
-    Most pathes are handled by nodes, so this function is rarely
-    used. However it is sometimes necessary, when generating shell
-    commands for instance.
-    """
-    path = Path(path)
-    if path.absolute():
-        return path
-    return drake.Drake.current.prefix / path
+  Most pathes are handled by nodes, so this function is rarely
+  used. However it is sometimes necessary, when generating shell
+  commands for instance.
+  """
+  path = Path(path)
+  if path.absolute():
+    return path
+  else:
+    path = drake.Drake.current.prefix / path
+  if absolute:
+    path = drake.Path(_OS.getcwd()) / path
+  return path
 
 def path_root():
     """The directory containing the root drakefile."""
