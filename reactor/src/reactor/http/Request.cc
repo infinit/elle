@@ -1,20 +1,12 @@
-#include <queue>
-#include <string>
-
 #include <curl/curl.h>
 
-#include <elle/Buffer.hh>
 #include <elle/Exception.hh>
-#include <elle/Lazy.hh>
 #include <elle/log.hh>
-#include <elle/memory.hh>
 
-#include <reactor/Barrier.hh>
 #include <reactor/http/exceptions.hh>
-#include <reactor/http/Request.hh>
+#include <reactor/http/RequestImpl.hh>
 #include <reactor/http/Service.hh>
 #include <reactor/scheduler.hh>
-#include <reactor/signal.hh>
 
 ELLE_LOG_COMPONENT("reactor.http.Request");
 
@@ -258,339 +250,296 @@ namespace reactor
     | Implementation |
     `---------------*/
 
-    class Request::Impl:
-      public elle::StreamBuffer
+    Request::Impl::Impl(Request& request,
+                        std::string const& url,
+                        Method method,
+                        Configuration conf):
+      _request(&request),
+      _conf(std::move(conf)),
+      _headers(nullptr, &curl_slist_free_all),
+      _input_done(false),
+      _input(),
+      _input_current(),
+      _input_available(),
+      _output_done(false),
+      _output(0),
+      _output_available(false),
+      _output_offset(0),
+      _curl(boost::asio::use_service<Service>(
+              Scheduler::scheduler()->io_service())),
+      _url(url),
+      _method(method),
+      _handle(curl_easy_init()),
+      _socket(),
+      _pause_count(0)
     {
-    public:
-      Impl(Request& request,
-           std::string const& url,
-           Method method,
-           Configuration conf):
-        _request(request),
-        _conf(std::move(conf)),
-        _headers(nullptr, &curl_slist_free_all),
-        _input_done(false),
-        _input(),
-        _input_current(),
-        _input_available(),
-        _output_done(false),
-        _output(0),
-        _output_available(false),
-        _output_offset(0),
-        _curl(boost::asio::use_service<Service>(
-                Scheduler::scheduler()->io_service())),
-        _url(url),
-        _method(method),
-        _handle(curl_easy_init()),
-        _socket(),
-        _pause_count(0)
+      if (!this->_handle)
+        throw RequestError(url, "unable to initialize request");
+      // Set error buffer.
+      memset(this->_error, 0, CURL_ERROR_SIZE);
+      setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
+      // Set version.
+      auto version = this->_conf.version() == Version::v11 ?
+        CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
+      setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
+      // Set timeout.
+      auto const& timeout = this->_conf.timeout();
+      auto timeout_seconds = timeout ?
+        std::max(timeout->total_seconds(), 1) : 0;
+      setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
+      // Set URL.
+      setopt(this->_handle, CURLOPT_URL, url.c_str());
+      // Set method.
+      switch (this->_method)
       {
-        if (!this->_handle)
-          throw RequestError(url, "unable to initialize request");
-        // Set error buffer.
-        memset(this->_error, 0, CURL_ERROR_SIZE);
-        setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
-        // Set version.
-        auto version = this->_conf.version() == Version::v11 ?
-          CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
-        setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
-        // Set timeout.
-        auto const& timeout = this->_conf.timeout();
-        auto timeout_seconds = timeout ?
-          std::max(timeout->total_seconds(), 1) : 0;
-        setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
-        // Set URL.
-        setopt(this->_handle, CURLOPT_URL, url.c_str());
-        // Set method.
-        switch (this->_method)
-        {
-        case Method::DELETE:
-          setopt(this->_handle, CURLOPT_CUSTOMREQUEST, "DELETE");
-          break;
-        case Method::GET:
-          setopt(this->_handle, CURLOPT_HTTPGET, 1);
-          break;
-        case Method::POST:
-          setopt(this->_handle, CURLOPT_POST, 1);
-          break;
-        case Method::PUT:
-          setopt(this->_handle, CURLOPT_UPLOAD, 1);
-          break;
-        }
-        // Set socket callbacks.
-        setopt(this->_handle, CURLOPT_OPENSOCKETFUNCTION, &Impl::open_socket);
-        setopt(this->_handle, CURLOPT_OPENSOCKETDATA, this);
-        setopt(this->_handle, CURLOPT_CLOSESOCKETFUNCTION, &Impl::close_socket);
-        setopt(this->_handle, CURLOPT_CLOSESOCKETDATA, this);
-        // Set input / output callbacks.
-        setopt(this->_handle, CURLOPT_WRITEFUNCTION, &Impl::write_callback);
-        setopt(this->_handle, CURLOPT_WRITEDATA, this);
-        setopt(this->_handle, CURLOPT_READFUNCTION, &Impl::read_callback);
-        setopt(this->_handle, CURLOPT_READDATA, this);
+      case Method::DELETE:
+        setopt(this->_handle, CURLOPT_CUSTOMREQUEST, "DELETE");
+        break;
+      case Method::GET:
+        setopt(this->_handle, CURLOPT_HTTPGET, 1);
+        break;
+      case Method::POST:
+        setopt(this->_handle, CURLOPT_POST, 1);
+        break;
+      case Method::PUT:
+        setopt(this->_handle, CURLOPT_UPLOAD, 1);
+        break;
       }
+      // Set socket callbacks.
+      setopt(this->_handle, CURLOPT_OPENSOCKETFUNCTION, &Impl::open_socket);
+      setopt(this->_handle, CURLOPT_OPENSOCKETDATA, this);
+      setopt(this->_handle, CURLOPT_CLOSESOCKETFUNCTION, &Impl::close_socket);
+      setopt(this->_handle, CURLOPT_CLOSESOCKETDATA, this);
+      // Set input / output callbacks.
+      setopt(this->_handle, CURLOPT_WRITEFUNCTION, &Impl::write_callback);
+      setopt(this->_handle, CURLOPT_WRITEDATA, this);
+      setopt(this->_handle, CURLOPT_READFUNCTION, &Impl::read_callback);
+      setopt(this->_handle, CURLOPT_READDATA, this);
+    }
 
-      ~Impl()
-      {
-        ELLE_TRACE_SCOPE("%s: terminate", this->_request);
-        curl_easy_cleanup(this->_handle);
-      }
+    Request::Impl::~Impl()
+    {
+      ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
+      curl_easy_cleanup(this->_handle);
+    }
 
-      void
-      start()
-      {
-        for (auto const& header: this->_conf.headers())
-          this->header_add(header.first, header.second);
-        setopt(this->_handle, CURLOPT_HTTPHEADER, this->_headers.get());
-        this->_curl.add(this->_request);
-      }
-
-      ELLE_ATTRIBUTE(Request&, request);
-      ELLE_ATTRIBUTE(Configuration, conf);
-      ELLE_ATTRIBUTE(elle::generic_unique_ptr<curl_slist>, headers);
+    void
+    Request::Impl::start()
+    {
+      for (auto const& header: this->_conf.headers())
+        this->header_add(header.first, header.second);
+      setopt(this->_handle, CURLOPT_HTTPHEADER, this->_headers.get());
+      this->_curl.add(*this->_request);
+    }
 
     /*--------.
     | Headers |
     `--------*/
-    public:
-      void
-      header_add(std::string const& header, std::string const& content)
-      {
-        auto line = elle::sprintf("%s: %s", header, content);
-        this->_headers.reset(curl_slist_append(this->_headers.release(),
-                                               line.c_str()));
-      }
+    void
+    Request::Impl::header_add(std::string const& header,
+                              std::string const& content)
+    {
+      auto line = elle::sprintf("%s: %s", header, content);
+      this->_headers.reset(curl_slist_append(this->_headers.release(),
+                                             line.c_str()));
+    }
 
-      void
-      header_remove(std::string const& header)
-      {
-        auto line = elle::sprintf("%s:", header);
-        this->_headers.reset(curl_slist_append(this->_headers.release(),
-                                               line.c_str()));
-      }
+    void
+    Request::Impl::header_remove(std::string const& header)
+    {
+      auto line = elle::sprintf("%s:", header);
+      this->_headers.reset(curl_slist_append(this->_headers.release(),
+                                             line.c_str()));
+    }
 
     /*-------.
     | Socket |
     `-------*/
-    public:
-      static
-      int
-      open_socket(void* data,
-                  curlsocktype purpose,
-                  struct curl_sockaddr *address)
+    int
+    Request::Impl::open_socket(void* data,
+                               curlsocktype purpose,
+                               struct curl_sockaddr *address)
+    {
+      Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
+      ELLE_TRACE_SCOPE("%s: open socket", self._request);
+      curl_socket_t sockfd = CURL_SOCKET_BAD;
+      // FIXME: restricted to ipv4
+      if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
-        ELLE_TRACE_SCOPE("%s: open socket", self._request);
-        curl_socket_t sockfd = CURL_SOCKET_BAD;
-        // FIXME: restricted to ipv4
-        if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
-        {
-          auto proto = boost::asio::ip::tcp::v4();
-          auto& service = self._curl.get_io_service();
-          self._socket.reset(new boost::asio::ip::tcp::socket(service, proto));
-          sockfd = self._socket->native_handle();
-        }
-        return sockfd;
+        auto proto = boost::asio::ip::tcp::v4();
+        auto& service = self._curl.get_io_service();
+        self._socket.reset(new boost::asio::ip::tcp::socket(service, proto));
+        sockfd = self._socket->native_handle();
       }
+      return sockfd;
+    }
 
-      static
-      int
-      close_socket(void*, curl_socket_t)
-      {
-        // Socket is closed directly by the Request destruction. Beware,
-        // curl_multi seems to keep reference to the socket and destroy it
-        // *after* the Request and its easy handle have been disposed of. The
-        // request is thus invalid in this concept, hence this design instead of
-        // closing the socket here.
-        return 0;
-      }
+    int
+    Request::Impl::close_socket(void*, curl_socket_t)
+    {
+      // Socket is closed directly by the Request destruction. Beware,
+      // curl_multi seems to keep reference to the socket and destroy it
+      // *after* the Request and its easy handle have been disposed of. The
+      // request is thus invalid in this concept, hence this design instead of
+      // closing the socket here.
+      return 0;
+    }
 
     /*-------------.
     | StreamBuffer |
     `-------------*/
-    protected:
-      elle::WeakBuffer
-      write_buffer() override
+
+    elle::WeakBuffer
+    Request::Impl::write_buffer()
+    {
+      ELLE_ASSERT(!this->_output_done);
+      if (this->_conf.chunked_transfers())
       {
-        ELLE_ASSERT(!this->_output_done);
-        if (this->_conf.chunked_transfers())
-        {
-          this->_output.size(CURL_MAX_WRITE_SIZE);
-          return this->_output;
-        }
-        else
-        {
-          if (this->_output_available)
-            this->_output_consumed.wait();
-          this->_output.capacity(this->_output.size() + CURL_MAX_WRITE_SIZE);
-          return elle::WeakBuffer(
-            this->_output.mutable_contents() + this->_output.size(),
-            CURL_MAX_WRITE_SIZE);
-        }
+        this->_output.size(CURL_MAX_WRITE_SIZE);
+        return this->_output;
       }
-
-      void
-      flush(unsigned int size) override
+      else
       {
-        ELLE_ASSERT(!this->_output_done);
-        if (this->_conf.chunked_transfers())
-        {
-          this->_output.size(size);
-          ELLE_DEBUG_SCOPE("%s: output: post data: %s",
-                           this->_request, this->_output);
-          this->_output_available = true;
-          curl_easy_pause(this->_handle, CURLPAUSE_CONT);
-        }
-        else
-        {
-          elle::ConstWeakBuffer newdata(
-            this->_output.mutable_contents() + this->_output.size(), size);
-          ELLE_DEBUG_SCOPE("%s: output: post data: %s",
-                           this->_request, newdata);
-          this->_output.size(this->_output.size() + size);
-        }
+        if (this->_output_available)
+          this->_output_consumed.wait();
+        this->_output.capacity(this->_output.size() + CURL_MAX_WRITE_SIZE);
+        return elle::WeakBuffer(
+          this->_output.mutable_contents() + this->_output.size(),
+          CURL_MAX_WRITE_SIZE);
       }
+    }
 
-      elle::WeakBuffer
-      read_buffer() override
+    void
+    Request::Impl::flush(unsigned int size)
+    {
+      ELLE_ASSERT(!this->_output_done);
+      if (this->_conf.chunked_transfers())
       {
-        if (!this->_input_available.opened())
-        {
-          ELLE_DEBUG_SCOPE("%s: input: wait for more data", this->_request);
-          this->_input_available.wait();
-        }
-        if (!this->_input.empty())
-        {
-          this->_input_current = std::move(this->_input.front());
-          ELLE_DEBUG_SCOPE("%s: input: fetch data: %s",
-                           this->_request, this->_input_current);
-          this->_input.pop();
-          if (this->_input.empty() && !this->_input_done)
-            this->_input_available.close();
-          return this->_input_current;
-        }
-        else
-        {
-          ELLE_DEBUG("%s: input: end of data", this->_request);
-          return elle::WeakBuffer();
-        }
+        this->_output.size(size);
+        ELLE_DEBUG_SCOPE("%s: output: post data: %s",
+                         *this->_request, this->_output);
+        this->_output_available = true;
+        curl_easy_pause(this->_handle, CURLPAUSE_CONT);
       }
-
-      static
-      size_t
-      write_callback(char* ptr, size_t chunk, size_t count, void* userdata)
+      else
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
-        auto size = chunk * count;
-        self.enqueue_data(elle::Buffer(ptr, size));
-        return size;
+        elle::ConstWeakBuffer newdata(
+          this->_output.mutable_contents() + this->_output.size(), size);
+        ELLE_DEBUG_SCOPE("%s: output: post data: %s",
+                         *this->_request, newdata);
+        this->_output.size(this->_output.size() + size);
       }
+    }
 
-      void
-      enqueue_data(elle::Buffer buffer)
+    elle::WeakBuffer
+    Request::Impl::read_buffer()
+    {
+      if (!this->_input_available.opened())
       {
-        ELLE_DEBUG_SCOPE("%s: input: got data: %s", this->_request, buffer);
-        this->_input.push(std::move(buffer));
-        this->_input_available.open();
+        ELLE_DEBUG_SCOPE("%s: input: wait for more data", *this->_request);
+        this->_input_available.wait();
       }
-
-    private:
-      void
-      _complete()
+      if (!this->_input.empty())
       {
-        this->_input_available.open();
-        this->_input_done = true;
+        this->_input_current = std::move(this->_input.front());
+        ELLE_DEBUG_SCOPE("%s: input: fetch data: %s",
+                         *this->_request, this->_input_current);
+        this->_input.pop();
+        if (this->_input.empty() && !this->_input_done)
+          this->_input_available.close();
+        return this->_input_current;
       }
+      else
+      {
+        ELLE_DEBUG("%s: input: end of data", *this->_request);
+        return elle::WeakBuffer();
+      }
+    }
 
-      bool _input_done;
-      std::queue<elle::Buffer> _input;
-      elle::Buffer _input_current;
-      reactor::Barrier _input_available;
+    size_t
+    Request::Impl::write_callback(char* ptr,
+                                  size_t chunk,
+                                  size_t count,
+                                  void* userdata)
+    {
+      Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+      auto size = chunk * count;
+      self.enqueue_data(elle::Buffer(ptr, size));
+      return size;
+    }
 
-      bool _output_done;
-      elle::Buffer _output;
-      bool _output_available;
-      reactor::Signal _output_consumed;
-      int _output_offset;
+    void
+    Request::Impl::enqueue_data(elle::Buffer buffer)
+    {
+      ELLE_DEBUG_SCOPE("%s: input: got data: %s", *this->_request, buffer);
+      this->_input.push(std::move(buffer));
+      this->_input_available.open();
+    }
+
+    void
+    Request::Impl::_complete()
+    {
+      this->_input_available.open();
+      this->_input_done = true;
+    }
 
     /*------.
     | Input |
     `------*/
-    private:
-      static
-      size_t
-      read_callback(char* ptr, size_t chunk, size_t count, void* userdata)
-      {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
-        auto size = chunk * count;
-        return self.read_data(elle::WeakBuffer(ptr, size));
-      }
+    size_t
+    Request::Impl::read_callback(char* ptr,
+                                 size_t chunk,
+                                 size_t count,
+                                 void* userdata)
+    {
+      Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+      auto size = chunk * count;
+      return self.read_data(elle::WeakBuffer(ptr, size));
+    }
 
-      size_t
-      read_data(elle::WeakBuffer buffer)
+    size_t
+    Request::Impl::read_data(elle::WeakBuffer buffer)
+    {
+      if (this->_conf.chunked_transfers())
       {
-        if (this->_conf.chunked_transfers())
+        ELLE_ASSERT_GTE(buffer.size(), this->_output.size());
+        if (!this->_output_available)
         {
-          ELLE_ASSERT_GTE(buffer.size(), this->_output.size());
-          if (!this->_output_available)
+          if (this->_output_done)
           {
-            if (this->_output_done)
-            {
-              ELLE_DEBUG("%s: output: end of data", this->_request);
-              return 0;
-            }
-            ELLE_DEBUG("%s: output: no data available, pause", this->_request);
-            ++this->_pause_count;
-            return CURL_READFUNC_PAUSE;
-          }
-          this->_output_available = false;
-          memcpy(buffer.mutable_contents(),
-                 this->_output.mutable_contents(), this->_output.size());
-          this->_output_consumed.signal();
-          ELLE_DEBUG("%s: output: get %s bytes",
-                     this->_request, this->_output.size());
-          return this->_output.size();
-        }
-        else
-        {
-          ELLE_ASSERT(this->_output_done);
-          elle::ConstWeakBuffer source(
-            this->_output.contents() + this->_output_offset,
-            this->_output.size() - this->_output_offset);
-          if (source.size() == 0)
-          {
-            ELLE_DEBUG("%s: output: end of data", this->_request);
+            ELLE_DEBUG("%s: output: end of data", *this->_request);
             return 0;
           }
-          auto effective = std::min(source.size(), buffer.size());
-          memcpy(buffer.mutable_contents(),
-                 source.contents(), effective);
-          this->_output_offset += effective;
-          ELLE_DEBUG("%s: output: get %s bytes", this->_request, effective);
-          return effective;
+          ELLE_DEBUG("%s: output: no data available, pause", *this->_request);
+          ++this->_pause_count;
+          return CURL_READFUNC_PAUSE;
         }
+        this->_output_available = false;
+        memcpy(buffer.mutable_contents(),
+               this->_output.mutable_contents(), this->_output.size());
+        this->_output_consumed.signal();
+        ELLE_DEBUG("%s: output: get %s bytes",
+                   *this->_request, this->_output.size());
+        return this->_output.size();
       }
-
-      /// XXX: For HTTP 1.0 servers. See comment in Request constructor.
-      std::unique_ptr<std::stringstream> _input_buffer;
-
-    private:
-      friend class Request;
-      friend
-      CURL*
-      handle_from_request(Request const& r);
-      Service& _curl;
-      std::string _url;
-      Method _method;
-      CURL* _handle;
-      std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
-      char _error[CURL_ERROR_SIZE];
-      ELLE_ATTRIBUTE_R(int, pause_count);
-    };
-
-    CURL*
-    handle_from_request(Request const& r)
-    {
-      return r._impl->_handle;
+      else
+      {
+        ELLE_ASSERT(this->_output_done);
+        elle::ConstWeakBuffer source(
+          this->_output.contents() + this->_output_offset,
+          this->_output.size() - this->_output_offset);
+        if (source.size() == 0)
+        {
+          ELLE_DEBUG("%s: output: end of data", *this->_request);
+          return 0;
+        }
+        auto effective = std::min(source.size(), buffer.size());
+        memcpy(buffer.mutable_contents(),
+               source.contents(), effective);
+        this->_output_offset += effective;
+        ELLE_DEBUG("%s: output: get %s bytes", *this->_request, effective);
+        return effective;
+      }
     }
 
     /*-------------.
@@ -640,12 +589,13 @@ namespace reactor
 
     /// Move a Request.
     Request::Request(Request&& source):
-      elle::IOStream(std::move(*this)),
+      elle::IOStream(std::move(source)),
       _method(source._method),
       _url(source._url),
       _impl(source._impl)
     {
-      ;
+      source._impl = nullptr;
+      this->_impl->_request = this;
     }
 
     Request::~Request()

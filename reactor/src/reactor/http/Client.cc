@@ -10,7 +10,7 @@
 #include <elle/memory.hh>
 
 #include <reactor/http/Client.hh>
-#include <reactor/http/Request.hh>
+#include <reactor/http/RequestImpl.hh>
 #include <reactor/http/Service.hh>
 #include <reactor/http/exceptions.hh>
 #include <reactor/scheduler.hh>
@@ -53,9 +53,6 @@ namespace reactor
       delete this->_impl;
     }
 
-    CURL*
-    handle_from_request(Request const& r);
-
     elle::Buffer
     Client::get(std::string const& url,
                 Request::Configuration conf)
@@ -64,14 +61,11 @@ namespace reactor
       return r.response();
     }
 
-    CURL*
-    handle_from_request(Request const& r);
-
     void
     Client::_register(Request const& request)
     {
       ELLE_TRACE_SCOPE("%s: register %s", *this, request);
-      auto res = curl_easy_setopt(handle_from_request(request),
+      auto res = curl_easy_setopt(request._impl->_handle,
                                   CURLOPT_SHARE, this->_impl->_share.get());
       if (res != CURLE_OK)
         throw RequestError(request.url(),

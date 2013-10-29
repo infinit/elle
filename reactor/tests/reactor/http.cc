@@ -795,6 +795,22 @@ HTTP_TEST(cookies)
                     "we: got\n/cookies");
 }
 
+HTTP_TEST(request_move)
+{
+  ScheduledHttpServer server;
+
+  reactor::http::Request a(
+    elle::sprintf("http://127.0.0.1:%s/move", server.port()),
+    reactor::http::Method::POST,
+    "application/json");
+  reactor::http::Request b(std::move(a));
+  b << "{}";
+  reactor::http::Request c(std::move(b));
+  c.finalize();
+  reactor::http::Request d(std::move(c));
+  BOOST_CHECK_EQUAL(d.response(), "{}");
+}
+
 static
 bool
 test_suite()
@@ -816,6 +832,7 @@ test_suite()
   suite.add(BOOST_TEST_CASE(put_11));
   suite.add(BOOST_TEST_CASE(put_11_chunked));
   suite.add(BOOST_TEST_CASE(cookies));
+  suite.add(BOOST_TEST_CASE(request_move));
   return true;
 }
 

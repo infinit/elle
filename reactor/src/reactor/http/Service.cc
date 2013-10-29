@@ -4,6 +4,7 @@
 #include <elle/assert.hh>
 #include <elle/log.hh>
 
+#include <reactor/http/RequestImpl.hh>
 #include <reactor/http/Service.hh>
 #include <reactor/http/exceptions.hh>
 #include <reactor/duration.hh>
@@ -101,15 +102,12 @@ namespace reactor
     | Request |
     `--------*/
 
-    CURL*
-    handle_from_request(Request const& r);
-
     void
     Service::add(Request& request)
     {
       ELLE_TRACE("%s: start %s", *this, request);
-      CURL* handle = handle_from_request(request);
-      this->_requests.insert(std::make_pair(handle, &request));
+      CURL* handle = request._impl->_handle;
+      this->_requests.insert(std::make_pair(handle, request._impl));
       auto res = curl_multi_add_handle(this->_curl, handle);
       if (res != CURLM_OK)
         throw RequestError(request.url(),
@@ -131,7 +129,7 @@ namespace reactor
     Service::remove(Request& request)
     {
       ELLE_TRACE_SCOPE("%s: remove %s", *this, request);
-      auto handle = handle_from_request(request);
+      auto handle = request._impl->_handle;
       if (this->_requests.erase(handle))
       {
         auto res = curl_multi_remove_handle(this->_curl, handle);
@@ -158,7 +156,7 @@ namespace reactor
 
     /// Callback called when a socket is ready to read or write.
     void
-    Service::handle_socket_ready(Request& request,
+    Service::handle_socket_ready(Request::Impl& request,
                                  curl_socket_t socket,
                                  int action,
                                  boost::system::error_code const& error,
@@ -174,7 +172,8 @@ namespace reactor
       else if (error)
       {
         // Notify CURL of the error.
-        ELLE_WARN("%s: %s has error: ", *this, request, error.message());
+        ELLE_WARN("%s: %s has error: ",
+                  *this, *request._request, error.message());
         auto res = curl_multi_socket_action(this->_curl,
                                             socket,
                                             CURL_CSELECT_ERR,
@@ -186,7 +185,7 @@ namespace reactor
       {
         // Notify CURL that the socket is ready for reading or writing.
         ELLE_DEBUG_SCOPE("%s: %s can %s",
-                         *this, request, action_string(action));
+                         *this, *request._request, action_string(action));
         auto res = curl_multi_socket_action(this->_curl,
                                             socket, action, &running);
         ELLE_ASSERT_EQ(res, CURLM_OK);
@@ -216,29 +215,30 @@ namespace reactor
       // Find the Request.
       if (this->_requests.find(handle) == this->_requests.end())
         return;
-      Request& request = *this->_requests.find(handle)->second;
+      Request::Impl& request = *this->_requests.find(handle)->second;
       ELLE_DEBUG_SCOPE("%s: %s wants to %s",
                        *this, request, action_string(action));
       // Cancel previous callbacks.
-      auto sock = request.socket();
+      auto sock = request._socket.get();
       if (sock)
         sock->cancel();
       // Set status and register needed callbacks.
-      request._writing = action & CURL_POLL_OUT;
-      request._reading = action & CURL_POLL_IN;
+      request._request->_writing = action & CURL_POLL_OUT;
+      request._request->_reading = action & CURL_POLL_IN;
       this->register_socket_write(request, socket);
       this->register_socket_read(request, socket);
     }
 
     /// Register write event if the request is writing.
     void
-    Service::register_socket_write(Request& request,
+    Service::register_socket_write(Request::Impl& request,
                                    curl_socket_t socket)
     {
-      if (!request._writing)
+      if (!request._request->_writing)
         return;
-      ELLE_DEBUG_SCOPE("%s: register %s for writing", *this, request);
-      auto sock = request.socket();
+      ELLE_DEBUG_SCOPE("%s: register %s for writing",
+                       *this, *request._request);
+      auto sock = request._socket.get();
       ELLE_ASSERT(sock);
       sock->async_write_some(boost::asio::null_buffers(),
                              std::bind(&Service::handle_socket_ready,
@@ -252,13 +252,14 @@ namespace reactor
 
     /// Register read event if the request is writing.
     void
-    Service::register_socket_read(Request& request,
+    Service::register_socket_read(Request::Impl& request,
                                   curl_socket_t socket)
     {
-      if (!request._reading)
+      if (!request._request->_reading)
         return;
-      ELLE_DEBUG_SCOPE("%s: register %s for reading", *this, request);
-      auto sock = request.socket();
+      ELLE_DEBUG_SCOPE("%s: register %s for reading",
+                       *this, *request._request);
+      auto sock = request._socket.get();
       ELLE_ASSERT(sock);
       sock->async_read_some(boost::asio::null_buffers(),
                             std::bind(&Service::handle_socket_ready,
@@ -332,13 +333,13 @@ namespace reactor
       {
         auto handle = msg->easy_handle;
         ELLE_ASSERT_CONTAINS(this->_requests, handle);
-        Request& request = *this->_requests.find(handle)->second;
+        Request::Impl& request = *this->_requests.find(handle)->second;
         CURLcode res = msg->data.result;
         if (msg->msg == CURLMSG_DONE)
         {
           ELLE_TRACE("%s: %s is complete with code %s", *this, request, res);
-          request._complete(res);
-          this->remove(request);
+          request._request->_complete(res);
+          this->remove(*request._request);
         }
         else
         {

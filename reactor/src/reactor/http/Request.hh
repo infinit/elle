@@ -10,6 +10,7 @@
 # include <elle/Printable.hh>
 # include <elle/attribute.hh>
 
+# include <reactor/http/fwd.hh>
 # include <reactor/operation.hh>
 
 namespace reactor
@@ -250,11 +251,12 @@ namespace reactor
       socket();
       /// The actual implementation content.
       class Impl;
-    public: // XXX: needed by handle_from_request
       /// The actual implementation.
       Impl* _impl;
       /// Let service manage our details.
       friend class Service;
+      /// Let client manage our details.
+      friend class Client;
 
     /*-----------.
     | Completion |

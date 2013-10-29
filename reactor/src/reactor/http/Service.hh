@@ -35,7 +35,7 @@ namespace reactor
       void add(Request& request);
       void remove(Request& request);
     private:
-      std::unordered_map<void*, Request*> _requests;
+      std::unordered_map<void*, Request::Impl*> _requests;
 
     /*-------.
     | Socket |
@@ -53,16 +53,16 @@ namespace reactor
                            curl_socket_t socket,
                            int action);
       void
-      handle_socket_ready(Request& r,
+      handle_socket_ready(Request::Impl& r,
                           curl_socket_t socket,
                           int action,
                           boost::system::error_code const& error,
                           size_t size);
       void
-      register_socket_write(Request& r,
+      register_socket_write(Request::Impl& r,
                             curl_socket_t socket);
       void
-      register_socket_read(Request& r,
+      register_socket_read(Request::Impl& r,
                            curl_socket_t socket);
 
     /*--------.
