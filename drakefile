@@ -252,14 +252,6 @@ def configure(cxx_toolkit = None,
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
       'configure',
-      'include/curl/typecheck-gcc.h',
-      'include/curl/stdcheaders.h',
-      'include/curl/easy.h',
-      'include/curl/mprintf.h',
-      'include/curl/curl.h',
-      'include/curl/curlver.h',
-      'include/curl/multi.h',
-      'include/curl/curlrules.h',
     )]
   )
   curl_configure = drake.node(curl_build / 'configure')
@@ -315,7 +307,16 @@ def configure(cxx_toolkit = None,
     cxx_toolkit,
     configure = curl_configure,
     working_directory = drake.path_build(curl_build),
-    targets = [curl_lib],
+    targets = [curl_lib] +
+      drake.nodes(*(curl_prefix / path for path in
+                    ('include/curl/typecheck-gcc.h',
+                     'include/curl/stdcheaders.h',
+                     'include/curl/easy.h',
+                     'include/curl/mprintf.h',
+                     'include/curl/curl.h',
+                     'include/curl/curlver.h',
+                     'include/curl/multi.h',
+                     'include/curl/curlrules.h'))),
     configure_args = curl_configure_args,
     sources = curl_dependency_libs + [curl_configure],
     configure_interpreter = 'sh',

@@ -11,4 +11,5 @@ sys.path.insert(
 import drake
 import drake.valgrind
 
-drake.run('../..', valgrind = drake.valgrind.Valgrind())
+with drake.Drake('../..') as d:
+  d.run(valgrind = drake.valgrind.Valgrind())
