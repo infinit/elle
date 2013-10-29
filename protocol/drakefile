@@ -34,18 +34,17 @@ def configure(cryptography,
 
   # Elle
   config += elle.config
-  elle_library = drake.copy(elle.library, 'lib',
-                            elle.library.name().dirname())
+  elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
 
   # Reactor
   config += reactor.config
   reactor_library = drake.copy(reactor.library, 'lib',
-                               reactor.library.name().dirname())
+                               strip_prefix = True)
 
   # Cryptography
   config += cryptography.config
   cryptography_library = drake.copy(cryptography.library, 'lib',
-                                    cryptography.library.name().dirname())
+                                    strip_prefix = True)
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -125,8 +124,8 @@ def configure(cryptography,
         reactor_library,
         reactor.library_coroutine,
         cryptography_library,
-        cryptography.openssl_lib_crypto,
-        cryptography.openssl_lib_ssl,
+        # cryptography.openssl_lib_crypto,
+        # cryptography.openssl_lib_ssl,
       ),
       cxx_toolkit,
       cxx_config_tests,

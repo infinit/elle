@@ -10,7 +10,6 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
-library_zlib = None
 
 rule_build = None
 rule_check = None
@@ -21,7 +20,9 @@ rule_tests = None
 with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
-def configure(cxx_toolkit = None,
+def configure(zlib_libs,
+              zlib_config,
+              cxx_toolkit = None,
               cxx_config = None,
               boost = None,
               enable_tests = True,
@@ -49,64 +50,6 @@ def configure(cxx_toolkit = None,
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
-
-  #Zlib
-  zlib_version = '1.2.8'
-  zlib_basename = 'zlib-%s' % zlib_version
-  zlib_tarball = drake.node('zlib/%s.tar.gz' % zlib_basename)
-  zlib_root = drake.Path('zlib') / zlib_basename
-  # This url does not work due to Apache that messes up with content-type headers
-  # zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
-  zlib_url = 'http://downloads.sourceforge.net/project/libpng/zlib/%s/%s.tar.gz' % (
-    zlib_version,
-    zlib_basename,
-  )
-  drake.HTTPDownload(
-    zlib_url,
-    zlib_tarball,
-    fingerprint = '44d667c142d7cda120332623eab69f40'
-  )
-  drake.TarballExtractor(
-    zlib_tarball,
-    targets = ['%s/%s' % (zlib_basename, 'configure')],
-  )
-  zlib_prefix = drake.path_build('zlib')
-
-  library_zlib = drake.cxx.StaticLib('zlib/lib/libz.a')
-  zlib_libs = [library_zlib,]
-
-  if cxx_toolkit.os is drake.os.windows:
-    # XXX only for mingw
-    zlib_makefile = 'win32/Makefile.gcc'
-    zlib_configure = None
-  else:
-    zlib_makefile = None
-    zlib_configure = drake.node(zlib_root / 'configure')
-
-  GNUBuilder(
-    cxx_toolkit,
-    configure = zlib_configure,
-    configure_args = [
-      '--prefix=%s/%s' % (os.getcwd(), zlib_prefix),
-      '--static',
-    ],
-    additional_env = {
-      'CFLAGS': '-fPIC',
-    },
-    working_directory = drake.path_build(zlib_root),
-    targets = zlib_libs + [drake.node('zlib/include/zlib.h')],
-    makefile = zlib_makefile,
-    sources = [drake.node(zlib_root / 'configure'),],
-    build_args = ['install'] + list(s.replace('\\', '/') for s in [
-      "INCLUDE_PATH='%s/%s/include'" % (os.getcwd(), zlib_prefix),
-      "BINARY_PATH='%s/%s/bin'" % (os.getcwd(), zlib_prefix),
-      "LIBRARY_PATH='%s/%s/lib'" % (os.getcwd(), zlib_prefix),
-      #"SHARED_MODE=1",
-    ])
-  )
-  zlib_libs = drake.copy(zlib_libs, '.', 'zlib')
-  zlib_config = drake.cxx.Config()
-  zlib_config.add_local_include_path('zlib/include')
 
   config += zlib_config
 

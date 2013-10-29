@@ -14,25 +14,18 @@ lib_asio_static = None
 lib_asio_dynamic = None
 library_asio = None
 
-lib_sched_static = None
-lib_sched_dynamic = None
-library_sched = None
-
-library_curl = None
-
 rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
 
-def configure(cxx_toolkit = None,
+def configure(curl_config,
+              curl_lib,
+              cxx_toolkit = None,
               cxx_config = None,
               boost = None,
               elle = None,
-              curl = None,
               reactor = None,
-              openssl = None,
-              openssl_libs = None,
               prefix = '/usr',
               valgrind = None):
 
@@ -52,91 +45,9 @@ def configure(cxx_toolkit = None,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
 
-  # Curl
-  curl_basename = 'curl-7.32.0'
-  curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
-  curl_root = drake.Path('curl') / curl_basename
-  curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
-  drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = 'f77cf3cb59cf2bfe686b80338323fd40')
-  drake.TarballExtractor(
-    curl_tarball,
-    targets = ['%s/%s' % (curl_basename, f) for f in (
-      'configure',
-      'include/curl/typecheck-gcc.h',
-      'include/curl/stdcheaders.h',
-      'include/curl/easy.h',
-      'include/curl/mprintf.h',
-      'include/curl/curl.h',
-      'include/curl/curlver.h',
-      'include/curl/multi.h',
-      'include/curl/curlbuild.h',
-      'include/curl/curlrules.h',
-    )]
-  )
-  curl_configure = drake.node(curl_root / 'configure')
-  from drake.cxx import DynLib, StaticLib
-  if cxx_toolkit.os is drake.os.linux:
-    curl_lib = DynLib('curl/lib/libcurl.so.4')
-  elif cxx_toolkit.os is drake.os.macos:
-    curl_lib = DynLib('curl/lib/libcurl.4.dylib')
-  elif cxx_toolkit.os is drake.os.windows:
-    curl_lib = StaticLib('curl/lib/libcurl.a')
-  else:
-    raise Exception("Unknown OS")
-  library_curl = curl_lib
-
-  openssl_libs = drake.copy(openssl_libs, 'lib',
-                            openssl_libs[0].name().dirname())
-  openssl_prefix = drake.path_root() / openssl
-  curl_configure_args = [
-    '--prefix=%s/%s' % (
-      os.getcwd().replace('\\', '/'),
-      str(drake.path_build('curl')).replace('\\', '/'),
-    ),
-    '--with-ssl=%s' % str(openssl_prefix).replace('\\', '/'),
-    '--enable-hidden-symbols',
-    '--enable-optimize',
-    '--enable-warnings',
-    '--enable-threaded-resolver',
-    '--disable-ldap',
-    '--disable-ldaps',
-    '--disable-rtmp',
-    '--disable-sspi',
-    '--disable-ssh',
-    '--disable-rtsp',
-    '--with-gssapi',
-    '--without-libidn',
-  ]
-  if isinstance(curl_lib, StaticLib):
-    curl_configure_args.extend([
-      '--disable-shared',
-      '--enable-static',
-    ])
-  else:
-    curl_configure_args.extend([
-      '--enable-shared',
-      '--disable-static',
-    ])
-
-  if cxx_toolkit.os is drake.os.linux:
-    # So curl links its curl binary with the right SSL.
-    curl_configure_args.append(
-      'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
-  GNUBuilder(cxx_toolkit,
-             configure = curl_configure,
-             working_directory = drake.path_build(curl_root),
-             targets = [curl_lib],
-             configure_args = curl_configure_args,
-             sources = openssl_libs + [curl_configure],
-             configure_interpreter = 'sh')
-  curl_lib = drake.copy(curl_lib, '.', 'curl')
-  curl_config = drake.cxx.Config()
-  curl_config.add_local_include_path(curl_root / 'include')
 
   elle = elle or drake.include('../elle')
-  elle_lib = drake.copy(elle.library, 'lib',
-                        elle.library.name().dirname())
+  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True)
 
   # Global Configuration
   config = drake.cxx.Config()
@@ -145,7 +56,7 @@ def configure(cxx_toolkit = None,
   config.lib_path('lib')
   config += curl_config
   config += boost.config()
-  if isinstance(curl_lib, StaticLib):
+  if isinstance(curl_lib, drake.cxx.StaticLib):
     config.define('CURL_STATICLIB', '1')
 
   # Local Configuration
@@ -156,8 +67,8 @@ def configure(cxx_toolkit = None,
   cxx_config.lib_path_runtime('.')
   cxx_config += boost.config_system()
 
-  # http
-#http_path = drake.Node('scripts/http.py')
+  # Libraries
+  curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
 
   # Sources
   sources = drake.nodes(
@@ -214,7 +125,7 @@ def configure(cxx_toolkit = None,
   cxx_config_sched += cxx_config_asio
   cxx_config_sched += reactor.config
   reactor_lib = drake.copy(reactor.library, 'lib',
-                           reactor.library.name().dirname())
+                           strip_prefix = True)
 
   source_sched = drake.nodes(
       'curly/curly_sched.cc',
@@ -283,7 +194,6 @@ def configure(cxx_toolkit = None,
         library_sched,
         reactor_lib,
         elle_lib,
-        elle.library_zlib,
         curl_lib,
         reactor.library_coroutine,
       ],

@@ -14,8 +14,11 @@ asio_udt = None
 rule_check = None
 rule_tests = None
 
+with open(str(drake.path_source('drake-utils.py')), 'r') as f:
+  exec(f.read(), globals(), globals())
+
 def configure(cxx_toolkit = None,
-              cxx_config = None,
+              cxx_config = drake.cxx.Config(),
               boost = None,
               enable_rotation = False,
               dopenssl = None,
@@ -30,12 +33,302 @@ def configure(cxx_toolkit = None,
   global asio_udt
   global curly
 
+  cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   boost = boost or drake.cxx.boost.Boost(cxx_toolkit = cxx_toolkit)
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
+
+  ## ---- ##
+  ## Zlib ##
+  ## ---- ##
+
+  zlib_version = '1.2.8'
+  zlib_basename = 'zlib-%s' % zlib_version
+  zlib_tarball = drake.node('zlib/%s.tar.gz' % zlib_basename)
+  zlib_prefix = drake.Path('zlib')
+  zlib_build = zlib_prefix / zlib_basename
+  zlib_configure = drake.node(zlib_build / 'configure')
+  # This url does not work due to Apache messing up with content-type
+  # headers:
+  # zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
+  zlib_url = 'http://downloads.sourceforge.net/project/libpng/zlib/%s/%s.tar.gz' % (
+    zlib_version,
+    zlib_basename,
+  )
+  drake.HTTPDownload(
+    zlib_url,
+    zlib_tarball,
+    fingerprint = '44d667c142d7cda120332623eab69f40'
+  )
+  drake.TarballExtractor(
+    zlib_tarball,
+    targets = ['%s/%s' % (zlib_basename, 'configure')],
+  )
+
+  if cxx_toolkit.os is drake.os.windows:
+    # XXX only for mingw
+    zlib_makefile = 'win32/Makefile.gcc'
+    zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
+    zlib_configure_call = None
+    zlib_configure_args = ['--static']
+  else:
+    zlib_makefile = None
+    zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.so.1.2.8')
+    zlib_configure_call = zlib_configure
+    zlib_configure_args = []
+  zlib_libs = [zlib_lib,]
+
+  zlib_prefix_absolute = drake.path_build(zlib_prefix,
+                                          absolute = True)
+  GNUBuilder(
+    cxx_toolkit,
+    configure = zlib_configure_call,
+    configure_args = [
+      '--prefix=%s' % zlib_prefix_absolute,
+    ] + zlib_configure_args,
+    additional_env = {
+      'CFLAGS': '-fPIC',
+    },
+    working_directory = drake.path_build(zlib_build),
+    targets = zlib_libs + [drake.node('zlib/include/zlib.h')],
+    makefile = zlib_makefile,
+    sources = [zlib_configure],
+    build_args = ['install'] + list(s.replace('\\', '/') for s in [
+      "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
+      "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
+      "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
+    ])
+  )
+  zlib_config = drake.cxx.Config()
+  zlib_config.add_local_include_path('zlib/include')
+
+  ## ------- ##
+  ## OpenSSL ##
+  ## ------- ##
+
+  openssl_basename = 'openssl-1.0.1c'
+  openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
+  openssl_prefix = drake.Path('openssl')
+  openssl_build = openssl_prefix / openssl_basename
+  openssl_url = 'http://openssl.org/source/%s.tar.gz'% openssl_basename
+  drake.HTTPDownload(openssl_url, openssl_tarball,
+                     fingerprint = 'ae412727c8c15b67880aef7bd2999b2e')
+  drake.TarballExtractor(
+    openssl_tarball,
+    targets =
+    ['%s/%s' % (openssl_basename, f) for f in [
+        'Configure',
+        'include/openssl/aes.h',
+        'include/openssl/asn1.h',
+        'include/openssl/asn1_mac.h',
+        'include/openssl/asn1t.h',
+        'include/openssl/bio.h',
+        'include/openssl/blowfish.h',
+        'include/openssl/bn.h',
+        'include/openssl/buffer.h',
+        'include/openssl/camellia.h',
+        'include/openssl/cast.h',
+        'include/openssl/cmac.h',
+        'include/openssl/cms.h',
+        'include/openssl/comp.h',
+        'include/openssl/conf_api.h',
+        'include/openssl/conf.h',
+        'include/openssl/crypto.h',
+        'include/openssl/des.h',
+        'include/openssl/des_old.h',
+        'include/openssl/dh.h',
+        'include/openssl/dsa.h',
+        'include/openssl/dso.h',
+        'include/openssl/dtls1.h',
+        'include/openssl/ebcdic.h',
+        'include/openssl/ecdh.h',
+        'include/openssl/ecdsa.h',
+        'include/openssl/ec.h',
+        'include/openssl/engine.h',
+        'include/openssl/e_os2.h',
+        'include/openssl/err.h',
+        'include/openssl/evp.h',
+        'include/openssl/hmac.h',
+        'include/openssl/idea.h',
+        'include/openssl/krb5_asn.h',
+        'include/openssl/kssl.h',
+        'include/openssl/lhash.h',
+        'include/openssl/md4.h',
+        'include/openssl/md5.h',
+        'include/openssl/mdc2.h',
+        'include/openssl/modes.h',
+        'include/openssl/objects.h',
+        'include/openssl/obj_mac.h',
+        'include/openssl/ocsp.h',
+        'include/openssl/opensslconf.h',
+        'include/openssl/opensslv.h',
+        'include/openssl/ossl_typ.h',
+        'include/openssl/pem2.h',
+        'include/openssl/pem.h',
+        'include/openssl/pkcs12.h',
+        'include/openssl/pkcs7.h',
+        'include/openssl/pqueue.h',
+        'include/openssl/rand.h',
+        'include/openssl/rc2.h',
+        'include/openssl/rc4.h',
+        'include/openssl/ripemd.h',
+        'include/openssl/rsa.h',
+        'include/openssl/safestack.h',
+        'include/openssl/seed.h',
+        'include/openssl/sha.h',
+        'include/openssl/srp.h',
+        'include/openssl/srtp.h',
+        'include/openssl/ssl23.h',
+        'include/openssl/ssl2.h',
+        'include/openssl/ssl3.h',
+        'include/openssl/ssl.h',
+        'include/openssl/stack.h',
+        'include/openssl/symhacks.h',
+        'include/openssl/tls1.h',
+        'include/openssl/ts.h',
+        'include/openssl/txt_db.h',
+        'include/openssl/ui_compat.h',
+        'include/openssl/ui.h',
+        'include/openssl/whrlpool.h',
+        'include/openssl/x509.h',
+        'include/openssl/x509v3.h',
+        'include/openssl/x509_vfy.h',
+        ]])
+  openssl_configure = drake.node(openssl_build / 'Configure')
+  from drake.cxx import DynLib, StaticLib
+  openssl_shared = True
+  if cxx_toolkit.os is drake.os.linux:
+    openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
+    openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.so.1.0.0')
+  elif cxx_toolkit.os is drake.os.macos:
+    openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.1.0.0.dylib')
+    openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.1.0.0.dylib')
+  elif cxx_toolkit.os is drake.os.windows:
+    openssl_lib_ssl = StaticLib(openssl_prefix / 'lib/libssl.a')
+    openssl_lib_crypto = StaticLib(openssl_prefix / 'lib/libcrypto.a')
+    openssl_shared = False
+  openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
+  if cxx_toolkit.os is drake.os.linux:
+    os_string = 'linux-x86_64'
+  elif cxx_toolkit.os is drake.os.windows:
+    os_string = 'mingw'
+  elif cxx_toolkit.os is drake.os.macos:
+    os_string = 'darwin64-x86_64-cc'
+  openssl_prefix = drake.Path('openssl')
+  GNUBuilder(
+    cxx_toolkit,
+    configure = openssl_configure,
+    configure_interpreter = 'perl',
+    targets = openssl_libs,
+    configure_args = [
+      '--prefix=%s' % drake.path_build(openssl_prefix,
+                                       absolute = True),
+      openssl_shared and 'shared' or 'no-shared',
+      'no-asm',
+      '-DPURIFY',
+      os_string,
+    ],
+  build_args = [
+    'all', 'install',
+  ])
+  openssl_config = drake.cxx.Config()
+  openssl_config.add_local_include_path(openssl_prefix / 'include')
+
+  ## ---- ##
+  ## Curl ##
+  ## ---- ##
+
+  curl_basename = 'curl-7.32.0'
+  curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
+  curl_prefix = drake.Path('curl')
+  curl_build = curl_prefix / curl_basename
+  curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
+  drake.HTTPDownload(curl_url, curl_tarball,
+                     fingerprint = 'f77cf3cb59cf2bfe686b80338323fd40')
+  drake.TarballExtractor(
+    curl_tarball,
+    targets = ['%s/%s' % (curl_basename, f) for f in (
+      'configure',
+      'include/curl/typecheck-gcc.h',
+      'include/curl/stdcheaders.h',
+      'include/curl/easy.h',
+      'include/curl/mprintf.h',
+      'include/curl/curl.h',
+      'include/curl/curlver.h',
+      'include/curl/multi.h',
+      'include/curl/curlrules.h',
+    )]
+  )
+  curl_configure = drake.node(curl_build / 'configure')
+  from drake.cxx import DynLib, StaticLib
+  if cxx_toolkit.os is drake.os.linux:
+    curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.4.3.0')
+  elif cxx_toolkit.os is drake.os.macos:
+    curl_lib = DynLib(curl_prefix / 'lib/libcurl.4.dylib')
+  elif cxx_toolkit.os is drake.os.windows:
+    curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
+  else:
+    raise Exception('Unknown OS')
+
+  curl_openssl_libs = drake.copy(openssl_libs, curl_prefix / 'lib',
+                                 strip_prefix = True)
+  curl_zlib_libs = drake.copy(zlib_libs, curl_prefix / 'lib',
+                              strip_prefix = True)
+  curl_configure_args = [
+    '--prefix=%s' % drake.path_build(curl_prefix, absolute = True),
+    '--with-ssl=%s' % drake.path_build(openssl_prefix,
+                                       absolute = True),
+    '--with-zlib=%s' % drake.path_build(zlib_prefix,
+                                        absolute = True),
+    '--enable-hidden-symbols',
+    '--enable-optimize',
+    '--enable-warnings',
+    '--enable-threaded-resolver',
+    '--disable-ldap',
+    '--disable-ldaps',
+    '--disable-rtmp',
+    '--disable-sspi',
+    '--disable-ssh',
+    '--disable-rtsp',
+    '--with-gssapi',
+    '--without-libidn',
+  ]
+  if isinstance(curl_lib, StaticLib):
+    curl_configure_args.extend([
+      '--disable-shared',
+      '--enable-static',
+    ])
+  else:
+    curl_configure_args.extend([
+      '--enable-shared',
+      '--disable-static',
+    ])
+  # if cxx_toolkit.os is drake.os.linux:
+  #   # So curl links its curl binary with the right SSL.
+  #   curl_configure_args.append(
+  #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
+  curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
+  GNUBuilder(
+    cxx_toolkit,
+    configure = curl_configure,
+    working_directory = drake.path_build(curl_build),
+    targets = [curl_lib],
+    configure_args = curl_configure_args,
+    sources = curl_dependency_libs + [curl_configure],
+    configure_interpreter = 'sh',
+    build_args = ['all', 'install',],
+  )
+  for lib in curl_dependency_libs:
+    curl_lib.dependency_add(lib)
+  curl_config = drake.cxx.Config()
+  curl_config.add_local_include_path(curl_prefix / 'include')
+
+  ## ------------- ##
+  ## Configuration ##
+  ## ------------- ##
 
   cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.linux:
@@ -58,54 +351,70 @@ def configure(cxx_toolkit = None,
   cxx_config.warnings.return_type = \
     drake.cxx.Config.Warnings.Error
 
-  elle = drake.include('elle',
-                       cxx_toolkit = cxx_toolkit,
-                       cxx_config = cxx_config,
-                       boost = boost,
-                       prefix = prefix,
-                       valgrind = valgrind)
-  cryptography = drake.include('cryptography',
-                               cxx_toolkit = cxx_toolkit,
-                               cxx_config = cxx_config,
-                               enable_rotation = enable_rotation,
-                               dopenssl = dopenssl,
-                               boost = boost,
-                               elle = elle,
-                               prefix = prefix,
-                               valgrind = valgrind)
-  reactor = drake.include('reactor',
-                          cxx_toolkit = cxx_toolkit,
-                          cxx_config = cxx_config,
-                          boost = boost,
-                          elle = elle,
-                          prefix = prefix,
-                          valgrind = valgrind)
-  curly = drake.include(
-    'curly',
+  ## -------------- ##
+  ## Subdirectories ##
+  ## -------------- ##
+
+  elle = drake.include(
+    'elle',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    zlib_config = zlib_config,
+    zlib_libs = zlib_libs,
+    boost = boost,
+    prefix = prefix,
+    valgrind = valgrind,
+  )
+  cryptography = drake.include(
+    'cryptography',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    openssl_config = openssl_config,
+    openssl_lib_crypto = openssl_lib_crypto,
+    openssl_lib_ssl = openssl_lib_ssl,
+    enable_rotation = enable_rotation,
+    dopenssl = dopenssl,
+    boost = boost,
+    elle = elle,
+    prefix = prefix,
+    valgrind = valgrind,
+  )
+  reactor = drake.include(
+    'reactor',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,
     elle = elle,
-    curl = None,
+    prefix = prefix,
+    valgrind = valgrind,
+  )
+  curly = drake.include(
+    'curly',
+    curl_config = curl_config,
+    curl_lib = curl_lib,
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    boost = boost,
+    elle = elle,
     reactor = reactor,
     prefix = prefix,
     valgrind = valgrind,
-    openssl = cryptography.openssl_prefix,
-    openssl_libs = cryptography.openssl_libs,
   )
-  protocol = drake.include('protocol',
-                           cxx_toolkit = cxx_toolkit,
-                           cxx_config = cxx_config,
-                           boost = boost,
-                           cryptography = cryptography,
-                           elle = elle,
-                           reactor = reactor,
-                           prefix = prefix,
-                           valgrind = valgrind)
+  protocol = drake.include(
+    'protocol',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    boost = boost,
+    cryptography = cryptography,
+    elle = elle,
+    reactor = reactor,
+    prefix = prefix,
+    valgrind = valgrind,
+  )
 
   config = drake.cxx.Config()
   config += cryptography.config
-  config += curly.config
+  # config += curly.config
   config += elle.config
   config += protocol.config
   config += reactor.config
@@ -116,14 +425,14 @@ def configure(cxx_toolkit = None,
   build << elle.rule_build
   build << cryptography.rule_build
   build << reactor.rule_build
-  build << curly.rule_build
+  # build << curly.rule_build
 
   global rule_tests
   rule_tests = drake.Rule('tests')
   rule_tests << elle.rule_tests
   rule_tests << cryptography.rule_tests
   rule_tests << reactor.rule_tests
-  rule_tests << curly.rule_tests
+  # rule_tests << curly.rule_tests
   rule_tests << protocol.rule_tests
 
   global rule_check
@@ -131,12 +440,12 @@ def configure(cxx_toolkit = None,
   rule_check << elle.rule_check
   rule_check << cryptography.rule_check
   rule_check << reactor.rule_check
-  rule_check << curly.rule_check
+  # rule_check << curly.rule_check
   rule_check << protocol.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
   install << cryptography.rule_install
   install << reactor.rule_install
-  install << curly.rule_install
+  # install << curly.rule_install
   install << protocol.rule_install
