@@ -19,6 +19,12 @@ rule_tests = None
 curl_config = None
 curl_lib = None
 
+openssl_config = None
+openssl_lib = None
+
+zlib_config = None
+zlib_lib = None
+
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
@@ -39,6 +45,8 @@ def configure(cxx_toolkit = None,
   global curly
 
   global curl_config, curl_lib
+  global openssl_config, openssl_lib
+  global zlib_config, zlib_lib
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
