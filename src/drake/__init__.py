@@ -1353,11 +1353,11 @@ class Builder:
         self.__vsrcs = {}
         for src in srcs:
             self.add_src(src)
-#        self.__sources = srcs
-        self.__targets = dsts
+        self.__targets = []
         for dst in dsts:
             if dst.builder is not None:
                 raise Exception('builder redefinition for %s' % dst)
+            self.__targets.append(dst)
             dst.builder = self
 
         self.uid = Builder.uid
