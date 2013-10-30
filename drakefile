@@ -52,6 +52,9 @@ def configure(openssl_config,
   config.lib_path('lib')
   if enable_rotation:
     config += dopenssl
+  # XXX: openssl should not be leaked.
+  # cryptography/fwd.hh leaks EVP_PKEY_CTX for instance.
+  config += openssl_config
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config)
