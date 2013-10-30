@@ -43,6 +43,7 @@ def configure(zlib_libs,
   cxx_config += boost.config_thread()
   cxx_config += boost.config_chrono()
   cxx_config += boost.config_iostreams()
+  cxx_config += zlib_config
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
@@ -50,8 +51,6 @@ def configure(zlib_libs,
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
-
-  config += zlib_config
 
   # XXX[for fuse only]
   config.define('HAVE_SETXATTR')
