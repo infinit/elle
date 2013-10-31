@@ -69,14 +69,24 @@ class Renderer(drake.Converter):
     import mako.runtime
     import sys
     tpl = str(self.__template.path(absolute = True))
-    for path in  self.__pythonpath:
-      sys.path.append(str(path))
-    tpl = mako.template.Template(filename = tpl)
-    with drake.WritePermissions(self.__target):
-      with open(str(self.__target.path()), 'w') as f:
-        ctx = mako.runtime.Context(f, **self.__content)
-        tpl.render_context(ctx)
-    return True
+    previous = sys.path
+    import copy
+    sys.path = copy.deepcopy(sys.path)
+    modules = set(sys.modules)
+    try:
+      sys.path = [str(path) for path in  self.__pythonpath] + sys.path
+      tpl = mako.template.Template(filename = tpl)
+      with drake.WritePermissions(self.__target):
+        with open(str(self.__target.path()), 'w') as f:
+          ctx = mako.runtime.Context(f, **self.__content)
+          tpl.render_context(ctx)
+      return True
+    finally:
+      # Restore path.
+      sys.path = previous
+      # Unload modules to avoid side effects.
+      for added in set(sys.modules) - modules:
+        del sys.modules[added]
 
   @property
   def rendered(self):
