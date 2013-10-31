@@ -20,6 +20,12 @@ from .. import utils
 from copy import deepcopy
 from .. import sched
 
+def chain(*collections):
+  for collection in collections:
+    if collection is not None:
+      for item in collection:
+        yield item
+
 class Config:
 
     class Library:
@@ -1303,7 +1309,8 @@ class DynLib(Library):
 
   def clone(self, path):
     path = Path(path)
-    res = DynLib(path, self.sources, self.tk, self.cfg,
+    res = DynLib(path, chain(self.sources, self.dynamic_libraries),
+                 self.tk, self.cfg,
                  preserve_filename = True)
     return res
 
