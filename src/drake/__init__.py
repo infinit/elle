@@ -1124,28 +1124,31 @@ class Node(BaseNode):
             print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
-  def path(self):
-        """Filesystem path to node file, relative to the root of the
-        build directory.
+  def path(self, absolute = False):
+    """Filesystem path to node file, relative to the root of the
+    build directory.
 
-        >>> with Drake('source/tree') as drake:
-        ...   n = node('file')
-        ...   print(n.path())
-        ...   builder = TouchBuilder([n])
-        ...   print(n.path())
-        ...   n = node('//virtual/node')
-        ...   print(n.path())
-        source/tree/file
-        file
-        //virtual/node
-        """
-        if self.name().absolute() or self.name().virtual:
-            # assert self.builder is None
-            return self.name()
-        if self.builder is None:
-            return drake.path_source() / self.name_absolute()
-        else:
-            return self.name_absolute()
+    >>> with Drake('source/tree') as drake:
+    ...   n = node('file')
+    ...   print(n.path())
+    ...   builder = TouchBuilder([n])
+    ...   print(n.path())
+    ...   n = node('//virtual/node')
+    ...   print(n.path())
+    source/tree/file
+    file
+    //virtual/node
+    """
+    if self.name().absolute() or self.name().virtual:
+      # assert self.builder is None
+      return self.name()
+    if self.builder is None:
+      path = drake.path_source() / self.name_absolute()
+    else:
+      path = self.name_absolute()
+    if absolute:
+      path = drake.path_root() / path
+    return path
 
   def missing(self):
     """Whether the associated file doesn't exist.
