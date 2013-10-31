@@ -312,6 +312,12 @@ namespace reactor
       virtual
       void
       print(std::ostream& stream) const;
+
+    /*------.
+    | Debug |
+    `------*/
+      void
+      print_cookies() const;
     };
 
     /*----------.

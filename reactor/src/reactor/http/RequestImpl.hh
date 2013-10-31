@@ -109,6 +109,13 @@ namespace reactor
       std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
       char _error[CURL_ERROR_SIZE];
       ELLE_ATTRIBUTE_R(int, pause_count);
+
+    /*------.
+    | Debug |
+    `------*/
+    public:
+      void
+      print_cookies() const;
     };
   }
 }

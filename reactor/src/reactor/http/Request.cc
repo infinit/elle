@@ -324,6 +324,34 @@ namespace reactor
     }
 
     void
+    Request::Impl::print_cookies() const
+    {
+      CURLcode res;
+      struct curl_slist *cookies;
+      struct curl_slist *nc;
+      int i;
+
+      ELLE_DUMP("Cookies");
+      res = curl_easy_getinfo(this->_handle,
+                              CURLINFO_COOKIELIST,
+                              &cookies);
+      if (res != CURLE_OK) {
+        ELLE_DUMP("getting cookies failed: %s", curl_easy_strerror(res));
+      }
+      nc = cookies, i = 1;
+      while (nc) {
+        ELLE_DUMP("[%d]: %s", i, nc->data);
+        nc = nc->next;
+        i++;
+      }
+      if (i == 1) {
+        ELLE_DUMP("none");
+      }
+      curl_slist_free_all(cookies);
+    }
+
+
+    void
     Request::Impl::start()
     {
       for (auto const& header: this->_conf.headers())
@@ -339,6 +367,7 @@ namespace reactor
     Request::Impl::header_add(std::string const& header,
                               std::string const& content)
     {
+      ELLE_DEBUG("%s: add header %s: %s", *this, header, content);
       auto line = elle::sprintf("%s: %s", header, content);
       this->_headers.reset(curl_slist_append(this->_headers.release(),
                                              line.c_str()));
@@ -347,6 +376,7 @@ namespace reactor
     void
     Request::Impl::header_remove(std::string const& header)
     {
+      ELLE_DEBUG("%s: remove header %s", *this, header);
       auto line = elle::sprintf("%s:", header);
       this->_headers.reset(curl_slist_append(this->_headers.release(),
                                              line.c_str()));
@@ -722,6 +752,12 @@ namespace reactor
     Request::print(std::ostream& stream) const
     {
       stream << this->_impl->_method << " on " << this->_impl->_url;
+    }
+
+    void
+    Request::print_cookies() const
+    {
+      this->_impl->print_cookies();
     }
 
     /*----------.
