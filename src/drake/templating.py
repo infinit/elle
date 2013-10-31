@@ -15,7 +15,7 @@ class Context:
   def __init__(self,
                content = {},
                sources = [],
-               pythonpath = None):
+               pythonpath = ()):
     self.content = content
     self.sources = sources
     self.pythonpath = pythonpath
@@ -49,7 +49,7 @@ class Renderer(drake.Converter):
                template,
                content = {},
                sources = [],
-               pythonpath = None):
+               pythonpath = ()):
     self.__template = template
     dst = drake.Path(template.name())
     dst.extension_strip_last_component()
