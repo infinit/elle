@@ -884,15 +884,17 @@ class _BaseNodeTypeType(type):
 
 class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
 
-    def __call__(c, *args, **kwargs):
+  def __call__(c, *args, **kwargs):
 
-        try:
-            return type.__call__(c, *args, **kwargs)
-        except NodeRedefinition as e:
-            assert e.name() in Drake.current.nodes
-            node = Drake.current.nodes[e.name()]
-            assert node.__class__ is c
-            return node
+    try:
+      return type.__call__(c, *args, **kwargs)
+    except NodeRedefinition as e:
+      assert e.name() in Drake.current.nodes
+      node = Drake.current.nodes[e.name()]
+      if node.__class__ is not c:
+        fmt = (node.__class__.__name__, node, c.__name__)
+        raise Exception('%s %s redefined as a %s' % fmt)
+      return node
 
 
 class BaseNode(object, metaclass = _BaseNodeType):
