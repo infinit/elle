@@ -564,7 +564,6 @@ private:
         boost::algorithm::split(chunks, words[1],
                                 boost::algorithm::is_any_of("="));
         BOOST_CHECK_EQUAL(chunks.size(), 2);
-        std::cerr << "COOKIE: " << chunks[0] << " = " << chunks[1] << std::endl;
         cookies[chunks[0]] = chunks[1];
       }
     }
@@ -789,8 +788,12 @@ HTTP_TEST(cookies)
 
   reactor::http::Client client;
 
-  BOOST_CHECK_EQUAL(client.get(server.url("cookies")).string(),
-                    "/cookies");
+  auto r = client.request(server.url("cookies"), reactor::http::Method::GET);
+  BOOST_CHECK_EQUAL(r.response(), "/cookies");
+  auto cookies = r.cookies();
+  BOOST_CHECK_EQUAL(cookies.size(), 1);
+  BOOST_CHECK(cookies.find("we") != cookies.end());
+  BOOST_CHECK_EQUAL(cookies["we"], "got");
   BOOST_CHECK_EQUAL(client.get(server.url("cookies")).string(),
                     "we: got\n/cookies");
 }

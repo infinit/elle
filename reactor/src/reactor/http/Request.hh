@@ -304,6 +304,14 @@ namespace reactor
       /// How many time the request was paused in wait for output data.
       ELLE_attribute_r(int, pause_count);
 
+    /*--------.
+    | Cookies |
+    `--------*/
+    public:
+      /// Get the query cookies.
+      std::unordered_map<std::string, std::string>
+      cookies() const;
+
     /*----------.
     | Printable |
     `----------*/
@@ -312,12 +320,6 @@ namespace reactor
       virtual
       void
       print(std::ostream& stream) const;
-
-    /*------.
-    | Debug |
-    `------*/
-      void
-      print_cookies() const;
     };
 
     /*----------.

@@ -114,8 +114,8 @@ namespace reactor
     | Debug |
     `------*/
     public:
-      void
-      print_cookies() const;
+      std::unordered_map<std::string, std::string>
+      cookies() const;
     };
   }
 }

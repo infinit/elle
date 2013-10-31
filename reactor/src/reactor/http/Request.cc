@@ -1,5 +1,7 @@
 #include <curl/curl.h>
 
+#include <boost/algorithm/string.hpp>
+
 #include <elle/Exception.hh>
 #include <elle/log.hh>
 
@@ -323,31 +325,31 @@ namespace reactor
       curl_easy_cleanup(this->_handle);
     }
 
-    void
-    Request::Impl::print_cookies() const
+    std::unordered_map<std::string, std::string>
+    Request::Impl::cookies() const
     {
+      std::unordered_map<std::string, std::string> cookies;
       CURLcode res;
-      struct curl_slist *cookies;
-      struct curl_slist *nc;
-      int i;
 
-      ELLE_DUMP("Cookies");
+      struct curl_slist* cookies_list = nullptr;
+
       res = curl_easy_getinfo(this->_handle,
                               CURLINFO_COOKIELIST,
-                              &cookies);
-      if (res != CURLE_OK) {
-        ELLE_DUMP("getting cookies failed: %s", curl_easy_strerror(res));
+                              &cookies_list);
+      if (res != CURLE_OK)
+        throw elle::Exception(elle::sprintf("retrieval of cookies failed: %s",
+                                            curl_easy_strerror(res)));
+      for (curl_slist* it = cookies_list; it; it = it->next)
+      {
+        std::vector<std::string> chunks;
+        boost::algorithm::split(chunks, it->data,
+                                boost::algorithm::is_any_of("\t"));
+        auto name = chunks[chunks.size() - 2];
+        auto value = chunks[chunks.size() - 1];
+        cookies[name] = value;
       }
-      nc = cookies, i = 1;
-      while (nc) {
-        ELLE_DUMP("[%d]: %s", i, nc->data);
-        nc = nc->next;
-        i++;
-      }
-      if (i == 1) {
-        ELLE_DUMP("none");
-      }
-      curl_slist_free_all(cookies);
+      curl_slist_free_all(cookies_list);
+      return cookies;
     }
 
 
@@ -754,10 +756,10 @@ namespace reactor
       stream << this->_impl->_method << " on " << this->_impl->_url;
     }
 
-    void
-    Request::print_cookies() const
+    std::unordered_map<std::string, std::string>
+    Request::cookies() const
     {
-      this->_impl->print_cookies();
+      return this->_impl->cookies();
     }
 
     /*----------.
