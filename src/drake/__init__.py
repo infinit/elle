@@ -2378,8 +2378,14 @@ class WritePermissions:
         raise
 
   def __exit__(self, *args):
-    _OS.chmod(self.__path,
-              _OS.stat(self.__path).st_mode & ~stat.S_IWRITE)
+    try:
+      _OS.chmod(self.__path,
+                _OS.stat(self.__path).st_mode & ~stat.S_IWRITE)
+    except OSError as e:
+      if e.errno == 2:
+        pass
+      else:
+        raise
 
 
 class Copy(Builder):
