@@ -931,6 +931,7 @@ def mkdeps(res, n, lvl, config, marks,
                   new_via, new.path())
     return new, new_via
 
+  # FIXME: is building a node during dependencies ok ?
   n.build()
   matches = []
   with open(str(path), 'rb') as include_file:
