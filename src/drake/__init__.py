@@ -1852,6 +1852,27 @@ class Dictionary(VirtualNode):
         return iter(self.content.items())
 
 
+class Converter(Builder):
+  """A builder that convert a node to another one.
+
+  This builder itself doesn't do anything. It is used as a flag to
+  discover a node is convertible to another expected type.
+  """
+  def __init__(self, source, target, additional_sources = []):
+    super().__init__(itertools.chain([source], additional_sources),
+                     [target])
+    self.__source = source
+    self.__target = target
+
+  @property
+  def target(self):
+    return self.__target
+
+  @property
+  def source(self):
+    return self.__source
+
+
 class Expander(Builder):
 
     """A builder that expands content of Dictionary in text.
@@ -1946,8 +1967,7 @@ class Expander(Builder):
       """
       if not isinstance(dicts, list):
           dicts = [dicts]
-
-      Builder.__init__(self, sources + dicts, [target])
+      super().__init__(sources + dicts, [target])
       self.__dicts = dicts
       self.matcher = re.compile(matcher)
       self.__missing_fatal = missing_fatal
