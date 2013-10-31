@@ -1238,28 +1238,31 @@ class Node(BaseNode):
 
 
 def node(path, type = None):
-    """Create or get a BaseNode.
+  """Create or get a BaseNode.
 
-    path -- path to the node file.
-    type -- optional type of the node.
+  path -- path to the node file.
+  type -- optional type of the node.
 
-    The returned node is determined as follow:
-    * If a node exists for the given path, it is returned.
-    * If the type is given, a node of that type is constructed with
-      the path as argument.
-    * If the path as a known extension, a node of the associated type
-      is constructed with the path as argument.
-    * A simple Node with that path is constructed.
-    """
-    if path.__class__ != Path:
-        path = Path(path)
-    if str(path) in Drake.current.nodes:
-        return Drake.current.nodes[str(path)]
-    if type is not None:
-        return type(path)
-    if path.extension not in Node.extensions:
-        return Node(path)
+  The returned node is determined as follow:
+  * If a node exists for the given path, it is returned.
+  * If the type is given, a node of that type is constructed with
+    the path as argument.
+  * If the path as a known extension, a node of the associated type
+    is constructed with the path as argument.
+  * A simple Node with that path is constructed.
+  """
+  if path.__class__ != Path:
+    path = Path(path)
+  if str(path) in Drake.current.nodes:
+    return Drake.current.nodes[str(path)]
+  if type is not None:
+    return type(path)
+  if path.extension in Node.extensions:
     return Node.extensions[path.extension](path)
+  last = path.extension.split('.')[-1]
+  if last in Node.extensions:
+    return Node.extensions[last](path)
+  return Node(path)
 
 
 def nodes(*paths):
