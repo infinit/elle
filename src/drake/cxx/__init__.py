@@ -911,11 +911,18 @@ def mkdeps(res, n, lvl, config, marks,
 
   f_init(res, n)
 
+  def unique_fail(path, include, prev_via, prev, new_via, new):
+    raise Exception('in %s, two nodes match inclusion %s: '\
+                    '%s via %s and %s via %s' % \
+                    (path, include,
+                     prev, prev_via,
+                     new, new_via))
+
   def unique(path, include, prev_via, prev, new_via, new):
     if prev is not None:
-      raise Exception('in %s, two nodes match inclusion %s: '\
-                      '%s via %s and %s via %s' % \
-                      (path, include, prev, prev_via, new, new_via))
+      unique_fail(path, include,
+                  prev_via, prev.path(),
+                  new_via, new.path())
     return new, new_via
 
   n.build()
@@ -937,17 +944,20 @@ def mkdeps(res, n, lvl, config, marks,
     for include_path in search:
       name = include_path / include
       test = name
-      if str(test) in drake.Drake.current.nodes:
+      registered = str(test) in drake.Drake.current.nodes
+      if registered:
         # Check this is not an old cached dependency from
         # cxx.inclusions. Not sure of myself though.
         if test.is_file() or node(str(test)).builder is not None:
           found, via = unique(path, include, via, found, include_path,
                               node(test))
-          # debug.debug('%sfound node: %s' % (idt, test))
+       # Check if such a file doesn't exist, unregistered, in the
+      # source path.
       if not found or drake.path_source() != Path('.'):
         test = drake.path_source() / test
         if test.is_file():
-          # debug.debug('%sfound file: %s' % (idt, test))
+          if registered and found:
+            unique_fail(path, include, via, found, include_path, test)
           found, via = unique(path, include, via, found, include_path,
                               node(name, Header))
     if found is not None:
