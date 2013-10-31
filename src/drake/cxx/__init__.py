@@ -1292,6 +1292,12 @@ class Binary(Node):
             raise Exception('invalid source for a library: %s' % source)
             # self.src_add(obj, tk, cfg)
 
+    def dependency_add(self, dependency):
+      if dependency not in self.dependencies:
+        if isinstance(dependency, DynLib):
+          self.__dynamic_libraries.append(dependency)
+        super().dependency_add(dependency)
+
 class Library(Binary):
   pass
 
@@ -1309,8 +1315,7 @@ class DynLib(Library):
 
   def clone(self, path):
     path = Path(path)
-    res = DynLib(path, chain(self.sources, self.dynamic_libraries),
-                 self.tk, self.cfg,
+    res = DynLib(path, self.sources, self.tk, self.cfg,
                  preserve_filename = True)
     return res
 
