@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2012, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2013, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -1228,75 +1228,63 @@ Node.extensions['o'] = Object
 
 class Binary(Node):
 
-    def __init__(self, path, sources, tk, cfg):
+  def __init__(self, path, sources, tk, cfg):
+    self.tk = tk
+    self.cfg = cfg
+    Node.__init__(self, path)
+    self.__dynamic_libraries = []
+    self.sources = None
+    if sources is not None:
+      self.sources = []
+      for source in sources:
+        self.src_add(source, self.tk, self.cfg)
 
-#         if len(args) == 0:
-#             Node.__init__(self, path)
-#             self.builder = None
-#             return
+  def clone(self, path):
+    return self.__class__(path)
 
-        self.tk = tk
-        self.cfg = cfg
+  @property
+  def dynamic_libraries(self):
+    return self.__dynamic_libraries
 
-        Node.__init__(self, path)
-
-        self.__dynamic_libraries = []
-
-        self.sources = None
-        if sources is not None:
-          self.sources = []
-          for source in sources:
-            self.src_add(source, self.tk, self.cfg)
-
-    def clone(self, path):
-        return self.__class__(path)
-
-    @property
-    def dynamic_libraries(self):
-        return self.__dynamic_libraries
-
-    def src_add(self, source, tk, cfg):
-
-        if source.__class__ == Object:
-            self.sources.append(source)
-        elif source.__class__ == StaticLib:
-            self.sources.append(source)
-        elif source.__class__ == Source:
-            # FIXME: factor
-            p = Path(source.name())
-            p.extension = 'o'
-            if str(p) in drake.Drake.current.nodes:
-                o = drake.Drake.current.nodes[p]
-            else:
-                o = Object(source, tk, cfg)
-            self.sources.append(o)
-        elif source.__class__ == Header:
+  def src_add(self, source, tk, cfg):
+    if source.__class__ == Object:
+      self.sources.append(source)
+    elif source.__class__ == StaticLib:
+      self.sources.append(source)
+    elif source.__class__ == Source:
+      # FIXME: factor
+      p = Path(source.name())
+      p.extension = 'o'
+      if str(p) in drake.Drake.current.nodes:
+        o = drake.Drake.current.nodes[p]
+      else:
+        o = Object(source, tk, cfg)
+      self.sources.append(o)
+    elif source.__class__ == Header:
+      pass
+    elif isinstance(source, DynLib):
+      self.__dynamic_libraries.append(source)
+    else:
+      for consumer in source.consumers:
+        if isinstance(consumer, drake.Converter) \
+           and consumer.source is source:
+          try:
+            self.src_add(consumer.target, tk, cfg)
+            return
+          except Exception:
             pass
-        elif isinstance(source, DynLib):
-            self.__dynamic_libraries.append(source)
-        else:
-            for consumer in source.consumers:
-                if isinstance(consumer, Expander):
-                    try:
-                        self.src_add(consumer.target(), tk, cfg)
-                        return
-                    except Exception:
-                        pass
-            for hook in tk.hook_bin_src():
-                res = hook(source)
-                if res is not None:
-                    self.src_add(res, tk, cfg)
-                    return
-            # obj = source.produced_direct()
-            # if obj is None:
-            raise Exception('invalid source for a library: %s' % source)
-            # self.src_add(obj, tk, cfg)
+      for hook in tk.hook_bin_src():
+        res = hook(source)
+        if res is not None:
+          self.src_add(res, tk, cfg)
+          return
+      raise Exception('invalid source for a library: %s' % source)
 
-    def dependency_add(self, dependency):
-      if dependency not in self.dependencies:
-        if isinstance(dependency, DynLib):
-          self.__dynamic_libraries.append(dependency)
-        super().dependency_add(dependency)
+  def dependency_add(self, dependency):
+    if dependency not in self.dependencies:
+      if isinstance(dependency, DynLib):
+        self.__dynamic_libraries.append(dependency)
+      super().dependency_add(dependency)
 
 class Library(Binary):
   pass
