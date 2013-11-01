@@ -42,7 +42,6 @@ def configure(zlib_lib,
   cxx_config += boost.config_system()
   cxx_config += boost.config_thread()
   cxx_config += boost.config_chrono()
-  cxx_config += boost.config_iostreams()
   cxx_config += zlib_config
 
   config = drake.cxx.Config()
