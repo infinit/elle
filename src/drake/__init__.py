@@ -1310,7 +1310,7 @@ def command(cmd, cwd = None, stdout = None, env = None):
     p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout, env = env)
     p.wait()
     return p.returncode == 0
-  except FileNotFoundError as e:
+  except getattr(__builtins__,'FileNotFoundError', IOError) as e:
     print(e, file = sys.stderr)
     return False
 
