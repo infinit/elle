@@ -174,6 +174,13 @@ namespace reactor
         void
         header_remove(std::string const& name);
 
+      /*--------.
+      | Cookies |
+      `--------*/
+      public:
+        typedef std::unordered_map<std::string, std::string> Cookies;
+        ELLE_ATTRIBUTE_RWX(Cookies, cookies);
+
       public:
         /// The HTTP version.
         ELLE_ATTRIBUTE_RW(Version, version);
@@ -309,7 +316,7 @@ namespace reactor
     `--------*/
     public:
       /// Get the query cookies.
-      std::unordered_map<std::string, std::string>
+      Request::Configuration::Cookies
       cookies() const;
 
     /*----------.

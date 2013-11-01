@@ -781,21 +781,33 @@ HTTP_TEST(cookies)
   ScheduledHttpServer server;
   server.headers()["Set-Cookie"] = "we=got";
 
-  BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
-                    "/cookies");
-  BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
-                    "/cookies");
+  {
+    BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
+                      "/cookies");
+    BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
+                      "/cookies");
+  }
 
-  reactor::http::Client client;
+  {
+    reactor::http::Client client;
+    auto r = client.request(server.url("cookies"), reactor::http::Method::GET);
+    BOOST_CHECK_EQUAL(r.response(), "/cookies");
+    auto cookies = r.cookies();
+    BOOST_CHECK_EQUAL(cookies.size(), 1);
+    BOOST_CHECK(cookies.find("we") != cookies.end());
+    BOOST_CHECK_EQUAL(cookies["we"], "got");
+    BOOST_CHECK_EQUAL(client.get(server.url("cookies")).string(),
+                      "we: got\n/cookies");
+  }
 
-  auto r = client.request(server.url("cookies"), reactor::http::Method::GET);
-  BOOST_CHECK_EQUAL(r.response(), "/cookies");
-  auto cookies = r.cookies();
-  BOOST_CHECK_EQUAL(cookies.size(), 1);
-  BOOST_CHECK(cookies.find("we") != cookies.end());
-  BOOST_CHECK_EQUAL(cookies["we"], "got");
-  BOOST_CHECK_EQUAL(client.get(server.url("cookies")).string(),
-                    "we: got\n/cookies");
+  {
+    reactor::http::Request::Configuration conf;
+    conf.cookies()["shitload"] = "of";
+    reactor::http::Request r(server.url("cookies"),
+                             reactor::http::Method::GET,
+                             conf);
+    BOOST_CHECK_EQUAL(r.response(), "shitload: of\n/cookies");
+  }
 }
 
 HTTP_TEST(request_move)

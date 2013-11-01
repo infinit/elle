@@ -330,9 +330,7 @@ namespace reactor
     {
       std::unordered_map<std::string, std::string> cookies;
       CURLcode res;
-
       struct curl_slist* cookies_list = nullptr;
-
       res = curl_easy_getinfo(this->_handle,
                               CURLINFO_COOKIELIST,
                               &cookies_list);
@@ -352,10 +350,24 @@ namespace reactor
       return cookies;
     }
 
+    void
+    Request::Impl::cookie_add(std::string const& name,
+                              std::string const& value)
+    {
+      static boost::format const fmt("Set-Cookie: %s=%s; path=/;");
+      auto line = str(boost::format(fmt) % name % value);
+      auto res = curl_easy_setopt(this->_handle,
+                                  CURLOPT_COOKIELIST, line.c_str());
+      if (res != CURLE_OK)
+        throw elle::Exception(elle::sprintf("failed to set cookie: %s",
+                                            curl_easy_strerror(res)));
+    }
 
     void
     Request::Impl::start()
     {
+      for (auto const& cookie: this->_conf.cookies())
+        this->cookie_add(cookie.first, cookie.second);
       for (auto const& header: this->_conf.headers())
         this->header_add(header.first, header.second);
       setopt(this->_handle, CURLOPT_HTTPHEADER, this->_headers.get());
@@ -746,6 +758,16 @@ namespace reactor
       return this->_impl->_pause_count;
     }
 
+    /*--------.
+    | Cookies |
+    `--------*/
+
+    Request::Configuration::Cookies
+    Request::cookies() const
+    {
+      return this->_impl->cookies();
+    }
+
     /*----------.
     | Printable |
     `----------*/
@@ -754,12 +776,6 @@ namespace reactor
     Request::print(std::ostream& stream) const
     {
       stream << this->_impl->_method << " on " << this->_impl->_url;
-    }
-
-    std::unordered_map<std::string, std::string>
-    Request::cookies() const
-    {
-      return this->_impl->cookies();
     }
 
     /*----------.

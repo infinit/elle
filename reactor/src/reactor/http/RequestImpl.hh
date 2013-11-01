@@ -83,6 +83,16 @@ namespace reactor
       reactor::Signal _output_consumed;
       int _output_offset;
 
+    /*--------.
+    | Cookies |
+    `--------*/
+    public:
+      std::unordered_map<std::string, std::string>
+      cookies() const;
+      void
+      cookie_add(std::string const& name,
+                 std::string const& value);
+
     /*------.
     | Input |
     `------*/
@@ -109,13 +119,6 @@ namespace reactor
       std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
       char _error[CURL_ERROR_SIZE];
       ELLE_ATTRIBUTE_R(int, pause_count);
-
-    /*------.
-    | Debug |
-    `------*/
-    public:
-      std::unordered_map<std::string, std::string>
-      cookies() const;
     };
   }
 }
