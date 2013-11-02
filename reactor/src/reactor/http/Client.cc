@@ -72,5 +72,23 @@ namespace reactor
                            elle::sprintf("unable to set cookie jar: %s",
                                          curl_easy_strerror(res)));
     }
+
+    /*--------.
+    | Cookies |
+    `--------*/
+
+    Request::Configuration::Cookies
+    Client::cookies() const
+    {
+      elle::generic_unique_ptr<CURL> handle(curl_easy_init(),
+                                            &curl_easy_cleanup);
+      if (!handle)
+        throw elle::Exception("unable to initialize request");
+      auto res = curl_easy_setopt(handle.get(),
+                                  CURLOPT_SHARE, this->_impl->_share.get());
+      if (res != CURLE_OK)
+        throw elle::Exception("unable to set cookie jar");
+      return Request::Impl::cookies(handle.get());
+    }
   }
 }

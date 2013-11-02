@@ -38,6 +38,14 @@ namespace reactor
       get(std::string const& url,
           Request::Configuration conf = Request::Configuration());
 
+    /*--------.
+    | Cookies |
+    `--------*/
+    public:
+      /// Get the client cookies.
+      Request::Configuration::Cookies
+      cookies() const;
+
     private:
       /// Register a Request to use this client's context.
       void

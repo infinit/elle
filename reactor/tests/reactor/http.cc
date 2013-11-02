@@ -792,10 +792,15 @@ HTTP_TEST(cookies)
     reactor::http::Client client;
     auto r = client.request(server.url("cookies"), reactor::http::Method::GET);
     BOOST_CHECK_EQUAL(r.response(), "/cookies");
-    auto cookies = r.cookies();
-    BOOST_CHECK_EQUAL(cookies.size(), 1);
-    BOOST_CHECK(cookies.find("we") != cookies.end());
-    BOOST_CHECK_EQUAL(cookies["we"], "got");
+    auto check_cookies =
+      [&] (reactor::http::Request::Configuration::Cookies const& cookies)
+      {
+        BOOST_CHECK_EQUAL(cookies.size(), 1);
+        BOOST_CHECK(cookies.find("we") != cookies.end());
+        BOOST_CHECK_EQUAL(cookies.find("we")->second, "got");
+      };
+    check_cookies(r.cookies());
+    check_cookies(client.cookies());
     BOOST_CHECK_EQUAL(client.get(server.url("cookies")).string(),
                       "we: got\n/cookies");
   }

@@ -326,12 +326,12 @@ namespace reactor
     }
 
     std::unordered_map<std::string, std::string>
-    Request::Impl::cookies() const
+    Request::Impl::cookies(CURL* handle)
     {
       std::unordered_map<std::string, std::string> cookies;
       CURLcode res;
       struct curl_slist* cookies_list = nullptr;
-      res = curl_easy_getinfo(this->_handle,
+      res = curl_easy_getinfo(handle,
                               CURLINFO_COOKIELIST,
                               &cookies_list);
       if (res != CURLE_OK)
@@ -348,6 +348,12 @@ namespace reactor
       }
       curl_slist_free_all(cookies_list);
       return cookies;
+    }
+
+    std::unordered_map<std::string, std::string>
+    Request::Impl::cookies() const
+    {
+      return this->cookies(this->_handle);
     }
 
     void

@@ -87,6 +87,9 @@ namespace reactor
     | Cookies |
     `--------*/
     public:
+      static
+      std::unordered_map<std::string, std::string>
+      cookies(CURL* handle);
       std::unordered_map<std::string, std::string>
       cookies() const;
       void
