@@ -17,13 +17,13 @@ namespace elle
   template <typename T>
   constexpr
   generic_unique_ptr<T>::generic_unique_ptr():
-    Super()
+    Super(nullptr, [] (T* p) { std::default_delete<T>()(p); })
   {}
 
   template <typename T>
   constexpr
   generic_unique_ptr<T>::generic_unique_ptr(std::nullptr_t p):
-    Super(p)
+    Super(p, [] (T* p) { std::default_delete<T>()(p); })
   {}
 
   template <typename T>
