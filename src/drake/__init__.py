@@ -313,11 +313,13 @@ class Path(object):
         self.virtual = False
         self.__absolute = False
         if path.__class__ == list:
-            self.__path = path
+          self.__path = path
+          if len(self.__path) > 0:
+            self.__absolute = self.__path[0] == ''
         elif path.__class__ == Path:
-            self.__path = deepcopy(path.__path)
-            self.__absolute = path.__absolute
-            self.virtual = path.virtual
+          self.__path = deepcopy(path.__path)
+          self.__absolute = path.__absolute
+          self.virtual = path.virtual
         else:
             if not path:
                 self.__path = []
@@ -337,6 +339,18 @@ class Path(object):
                 self.__absolute = self.__path[0] == ''
         if len(self.__path) > 1 and self.__path[-1] == '':
             self.__path = self.__path[:-1]
+
+    def canonize(self):
+      res = []
+      path = self.__path
+      for i in range(len(path)):
+        if path[i] == '..' and len(res) > 0 and res[-1] != '..':
+          res = res[:-1]
+        elif path[i] == '.':
+          pass
+        else:
+          res.append(path[i])
+      return drake.Path(res)
 
     def absolute(self):
         """Whether this path is absolute.
@@ -663,9 +677,7 @@ class Path(object):
         return rhs
       if rhs == Path('.'):
         return Path(self)
-      res = Path(self)
-      res.__path += rhs.__path
-      return res
+      return drake.Path(self.__path + rhs.__path)
 
     def strip_prefix(self, rhs):
         """Remove rhs prefix from self.
@@ -694,13 +706,14 @@ class Path(object):
         Path("../bar/baz")
         """
         if (not isinstance(rhs, Path)):
-            rhs = Path(rhs)
-        rhs = list((path for path in rhs.__path if path != '.'))
+          rhs = Path(rhs)
+        rhs = rhs.canonize().__path
         path = self.__path
         while len(rhs) and len(path) and path[0] == rhs[0]:
           rhs = rhs[1:]
           path = path[1:]
         # FIXME: naive if rhs contains some '..'
+        assert '..' not in rhs
         self.__path = ['..'] * len(rhs) + path
         if not self.__path:
           self.__path = ['.']
@@ -1143,11 +1156,11 @@ class Node(BaseNode):
     """
     if self.name().absolute() or self.name().virtual:
       # assert self.builder is None
-      return self.name()
+      return drake.Path(self.name())
     if self.builder is None:
       path = drake.path_source() / self.name_absolute()
     else:
-      path = self.name_absolute()
+      path = drake.Path(self.name_absolute())
     if absolute:
       path = drake.path_root() / path
     return path
@@ -2484,15 +2497,23 @@ def __copy(sources, to, strip_prefix, builder):
         res.append(__copy(node, to, strip_prefix, builder))
     return res
   else:
+    strip_prefix_save = strip_prefix
     if strip_prefix is True:
       strip_prefix = sources.name().dirname()
-    path = sources.name()
+    if strip_prefix is not None:
+      strip_prefix = drake.Path(strip_prefix)
+      if not strip_prefix.absolute():
+        if sources.builder:
+          strip_prefix = drake.path_build(strip_prefix)
+        else:
+          strip_prefix = drake.path_source(strip_prefix)
+    path = sources.path()
     if strip_prefix is not None:
       path.strip_prefix(strip_prefix)
     path = Path(to) / path
     res = builder(sources, path).target()
     for dep in sources.dependencies:
-      res.dependency_add(__copy(dep, to, strip_prefix, builder))
+      res.dependency_add(__copy(dep, to, strip_prefix_save, builder))
     return res
 
 
