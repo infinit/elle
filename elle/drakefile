@@ -10,6 +10,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
+python = None
 
 rule_build = None
 rule_check = None
@@ -25,11 +26,13 @@ def configure(zlib_lib,
               cxx_toolkit = None,
               cxx_config = None,
               boost = None,
+              python3 = None,
               enable_tests = True,
               prefix = '/usr',
               valgrind = None):
 
   global config, lib_static, lib_dynamic, library, library_zlib
+  global python
   global rule_build, rule_check, rule_install, rule_tests
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -305,6 +308,38 @@ def configure(zlib_lib,
     cxx_toolkit,
     cxx_config
   )
+
+  ## ------ ##
+  ## Python ##
+  ## ------ ##
+
+  python = []
+  python_rule = drake.Rule('python')
+
+  python3 = drake.cxx.find_library(
+    'pyconfig.h',
+    prefix = python3,
+    include_dir = ['include',
+                   'include/python3.2',
+                   'include/python3.2m',
+                   'include/python3.3m'])
+  python_cxx_config = drake.cxx.Config(cxx_config)
+  python_cxx_config += python3
+  python_cxx_config += boost.config_python()
+  python_cxx_config.lib_path_runtime('../..')
+
+  python_log_lib = drake.cxx.Module(
+    'lib/python/elle/_log',
+    [drake.node('src/elle/log/python.cc'), lib_dynamic],
+    cxx_toolkit, python_cxx_config)
+  python.append(python_log_lib)
+
+  python_sources = drake.nodes(
+    'src/elle/log.py',
+    'src/elle/__init__.py',
+    )
+  python += drake.copy(python_sources, 'lib/python', 'src')
+  python_rule << python
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
