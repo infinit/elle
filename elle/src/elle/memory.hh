@@ -60,6 +60,10 @@ namespace elle
     template <typename P, typename D>
     Self&
     operator = (std::unique_ptr<P, D>&& source);
+    /// Construct a pointer that steals ownership from \a p.
+    template <typename P>
+    Self&
+    operator = (elle::generic_unique_ptr<P>&& source);
   };
 }
 

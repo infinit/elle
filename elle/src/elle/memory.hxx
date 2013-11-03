@@ -78,6 +78,16 @@ namespace elle
     new (this) Self(std::move(source));
     return *this;
   }
+
+  template <typename T>
+  template <typename P>
+  generic_unique_ptr<T>&
+  generic_unique_ptr<T>::operator = (elle::generic_unique_ptr<P>&& source)
+  {
+    this->~Self();
+    new (this) Self(std::move(source));
+    return *this;
+  }
 }
 
 #endif
