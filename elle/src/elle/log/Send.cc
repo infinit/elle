@@ -68,7 +68,7 @@ namespace elle
       {
         if (!_proceed)
           return;
-        --*this->_indentation;
+        this->_unindent();
       }
 
       bool
@@ -81,16 +81,38 @@ namespace elle
 
       void
       Send::_send(elle::log::Logger::Level level,
-                          elle::log::Logger::Type type,
-                          std::string const& component,
-                          char const* file,
-                          unsigned int line,
-                          char const* function,
-                          const std::string& msg)
+                  elle::log::Logger::Type type,
+                  bool indent,
+                  std::string const& component,
+                  char const* file,
+                  unsigned int line,
+                  char const* function,
+                  const std::string& msg)
+      {
+        logger().message(level, type, component, msg, file, line, function);
+        if (indent)
+          this->_indent();
+      }
+
+      /*------------.
+      | Indentation |
+      `------------*/
+
+      void
+      Send::_indent()
       {
         this->_indentation = &logger().indentation();
         ++*this->_indentation;
-        logger().message(level, type, component, msg, file, line, function);
+      }
+
+      void
+      Send::_unindent()
+      {
+        if (this->_indentation)
+        {
+          --*this->_indentation;
+          this->_indentation = nullptr;
+        }
       }
     }
   }

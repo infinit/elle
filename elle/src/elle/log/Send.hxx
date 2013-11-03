@@ -14,6 +14,7 @@ namespace elle
       inline
       Send::Send(elle::log::Logger::Level level,
                  elle::log::Logger::Type type,
+                 bool indent,
                  elle::String const& component,
                  char const* file,
                  unsigned int line,
@@ -25,7 +26,7 @@ namespace elle
       {
         if (!_proceed)
           return;
-        this->_send(level, type, component, file, line, function,
+        this->_send(level, type, indent, component, file, line, function,
                     elle::sprintf(fmt, std::forward<Args>(args)...));
       }
 

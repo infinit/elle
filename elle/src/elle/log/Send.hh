@@ -23,15 +23,25 @@ namespace elle
       public:
         template <typename... Args>
         Send(elle::log::Logger::Level level,
-                     elle::log::Logger::Type type,
-                     std::string const& component,
-                     char const* file,
-                     unsigned int line,
-                     char const* function,
-                     char const* fmt,
-                     Args&&... args);
+             elle::log::Logger::Type type,
+             bool indent,
+             std::string const& component,
+             char const* file,
+             unsigned int line,
+             char const* function,
+             char const* fmt,
+             Args&&... args);
         ~Send();
         operator bool() const;
+
+      /*------------.
+      | Indentation |
+      `------------*/
+      protected:
+        void
+        _indent();
+        void
+        _unindent();
       private:
         bool _proceed;
       public: // used by macros
@@ -42,6 +52,7 @@ namespace elle
       private:
         void _send(elle::log::Logger::Level level,
                    elle::log::Logger::Type type,
+                   bool indent,
                    std::string const& component,
                    char const* file,
                    unsigned int line,

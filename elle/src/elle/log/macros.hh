@@ -9,6 +9,7 @@
       ::elle::log::detail::Send                                         \
       (elle::log::Logger::Level::Lvl,                                   \
        elle::log::Logger::Type::T,                                      \
+       true,                                                            \
        _trace_component_,                                               \
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
        __VA_ARGS__)                                                     \

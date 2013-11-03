@@ -39,7 +39,7 @@ namespace elle
       indentation()
       {
         if (!this->_indentation.get())
-          this->_indentation.reset(new unsigned int(0));
+          this->_indentation.reset(new unsigned int(1));
         return *this->_indentation;
       }
 
