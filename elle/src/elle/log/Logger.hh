@@ -11,6 +11,7 @@
 # include <boost/noncopyable.hpp>
 
 # include <elle/attribute.hh>
+# include <elle/memory.hh>
 
 namespace elle
 {
@@ -104,7 +105,7 @@ namespace elle
       friend struct detail::Send;
       friend
       void
-      logger(std::unique_ptr<Logger> logger);
+      logger(elle::generic_unique_ptr<Logger> logger);
       unsigned int&
       indentation();
       void

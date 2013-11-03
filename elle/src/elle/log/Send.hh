@@ -3,13 +3,14 @@
 
 # include <elle/compiler.hh>
 # include <elle/log/Logger.hh>
+# include <elle/memory.hh>
 
 namespace elle
 {
   namespace log
   {
     void
-    logger(std::unique_ptr<Logger> logger);
+    logger(elle::generic_unique_ptr<Logger> logger);
 
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
