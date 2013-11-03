@@ -1,8 +1,9 @@
 #include <boost/python.hpp>
 
 #include <elle/log/Logger.hh>
-#include <elle/log/TextLogger.hh>
 #include <elle/log/Send.hh>
+#include <elle/log/SysLogger.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
 
 using boost::python::class_;
@@ -96,6 +97,11 @@ BOOST_PYTHON_MODULE(_log)
          boost::python::bases<elle::log::Logger>,
          boost::noncopyable>
     ("TextLogger", boost::python::init<>())
+    ;
+  class_<elle::log::SysLogger,
+         boost::python::bases<elle::log::Logger>,
+         boost::noncopyable>
+    ("SysLogger", boost::python::init<std::string const&>())
     ;
   def("set_logger", &set_logger);
   class_<Send,

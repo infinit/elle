@@ -1,4 +1,5 @@
 import elle._log
+from elle._log import Logger, TextLogger, SysLogger, set_logger
 
 def message(level, type, message):
   import inspect
