@@ -1213,13 +1213,13 @@ class Object(Node):
         self.source = source
         self.toolkit = tk
         self.cfg = cfg
-        path = Path(source.name())
+        path = source.name()
         c = path.extension == 'c'
-        path.extension_strip_last_component()
+        path = path.without_last_extension()
         if len(path.extension):
-            path.extension += '.%s' % tk.object_extension()
+          path.with_extension('%s.%s' % (path.extension, tk.object_extension()))
         else:
-            path.extension = tk.object_extension()
+          path = path.with_extension(tk.object_extension())
         Node.__init__(self, path)
 
         Compiler(source, self, tk, cfg, c = c)
@@ -1257,8 +1257,7 @@ class Binary(Node):
       self.sources.append(source)
     elif source.__class__ == Source:
       # FIXME: factor
-      p = Path(source.name())
-      p.extension = 'o'
+      p = source.name().with_extension('o')
       if str(p) in drake.Drake.current.nodes:
         o = drake.Drake.current.nodes[p]
       else:
@@ -1539,10 +1538,10 @@ class LibraryConfiguration(drake.Configuration):
         test = [Path(prefix)]
       prefix, include_dir = self._search_many_all(
           [p / token for p in include_dir], test)[0]
-      include_dir.strip_suffix(token)
+      include_dir = include_dir.without_suffix(token)
       include_path = prefix / include_dir
       if not include_path.absolute():
-        include_path.strip_prefix(drake.path_source())
+        include_path = include_path.without_prefix(drake.path_source())
       self.__prefix = prefix
       self.__config.add_system_include_path(include_path)
       self.__prefix_symbolic = prefix_symbolic or self.__prefix

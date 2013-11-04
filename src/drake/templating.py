@@ -51,8 +51,7 @@ class Renderer(drake.Converter):
                sources = [],
                pythonpath = ()):
     self.__template = template
-    dst = drake.Path(template.name())
-    dst.extension_strip_last_component()
+    dst = template.name().without_last_extension()
     self.__target = drake.node(dst)
     super().__init__(self.__template,
                      self.__target,

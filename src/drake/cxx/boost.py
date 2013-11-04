@@ -74,7 +74,7 @@ class Boost(drake.Configuration):
     miss = []
     # Try every search path
     for path, include_subdir in prefixes:
-      include_subdir.strip_suffix(token)
+      include_subdir = include_subdir.without_suffix(token)
       # Create basic configuration for version checking.
       cfg = Config()
       cfg.add_system_include_path(path / include_subdir)

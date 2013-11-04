@@ -311,8 +311,12 @@ class Path(object):
         """
         self.virtual = False
         self.__absolute = False
-        if path.__class__ == list:
+        if isinstance(path, tuple):
           self.__path = path
+          if len(self.__path) > 0:
+            self.__absolute = self.__path[0] == ''
+        elif isinstance(path, list):
+          self.__path = tuple(path)
           if len(self.__path) > 0:
             self.__absolute = self.__path[0] == ''
         elif path.__class__ == Path:
@@ -321,12 +325,12 @@ class Path(object):
           self.virtual = path.virtual
         else:
             if not path:
-                self.__path = []
+              self.__path = ()
             elif platform.system() == 'Windows':
                 if path[:2] == '//' or path[:2] == '\\\\':
                     path = path[2:]
                     self.virtual = True
-                self.__path = re.split(r'/|\\', path)
+                self.__path = tuple(re.split(r'/|\\', path))
                 slash = self.__path[0] == ''
                 volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
                 self.__absolute = bool(slash or volume)
@@ -334,13 +338,13 @@ class Path(object):
                 if path[:2] == '//':
                     path = path[2:]
                     self.virtual = True
-                self.__path = path.split('/')
+                self.__path = tuple(path.split('/'))
                 self.__absolute = self.__path[0] == ''
         if len(self.__path) > 1 and self.__path[-1] == '':
             self.__path = self.__path[:-1]
 
     def canonize(self):
-      res = []
+      res = ()
       path = self.__path
       for i in range(len(path)):
         if path[i] == '..' and len(res) > 0 and res[-1] != '..':
@@ -348,7 +352,7 @@ class Path(object):
         elif path[i] == '.':
           pass
         else:
-          res.append(path[i])
+          res += (path[i],)
       return drake.Path(res)
 
     def absolute(self):
@@ -404,21 +408,33 @@ class Path(object):
         else:
             return ''
 
-    def __extension_set(self, value):
-        parts = self.__path[-1].split('.')
-        if len(parts) > 1:
-            if value == '':
-                parts = [parts[0]]
-            else:
-                parts = [parts[0], value]
-            self.__path[-1] = '.'.join(parts)
+    def with_extension(self, value):
+      '''The path with a different extension.
+
+      >>> p = Path('foo')
+      >>> p
+      Path("foo")
+      >>> p = p.with_extension('tar.bz2')
+      >>> p
+      Path("foo.tar.bz2")
+      >>> p.with_extension('txt')
+      Path("foo.txt")
+      '''
+      parts = self.__path[-1].split('.')
+      if len(parts) > 1:
+        if value == '':
+          parts = [parts[0]]
         else:
-            if value != '':
-                self.__path[-1] += '.%s' % value
-        return value
+          parts = [parts[0], value]
+        return Path(self.__path[:-1] + ('.'.join(parts),))
+      else:
+        if value != '':
+          return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),))
+        else:
+          return self
 
     extension = property(
-        fget = __extension_get, fset = __extension_set,
+        fget = __extension_get,
         doc = """Extension of the file name.
 
         The extension is the part after the first dot of the basename,
@@ -430,18 +446,9 @@ class Path(object):
         'tar.bz2'
         >>> Path('foo').extension
         ''
-        >>> p = Path('foo')
-        >>> p
-        Path("foo")
-        >>> p.extension = 'txt'
-        >>> p
-        Path("foo.txt")
-        >>> p.extension = 'tar.bz2'
-        >>> p
-        Path("foo.tar.bz2")
         """)
 
-    def extension_strip_last_component(self):
+    def without_last_extension(self):
         """Remove the last dot and what follows from the basename.
 
         Does nothing if there is no dot.
@@ -449,17 +456,17 @@ class Path(object):
         >>> p = Path('foo.tar.bz2')
         >>> p
         Path("foo.tar.bz2")
-        >>> p.extension_strip_last_component()
+        >>> p = p.without_last_extension()
         >>> p
         Path("foo.tar")
-        >>> p.extension_strip_last_component()
+        >>> p = p.without_last_extension()
         >>> p
         Path("foo")
-        >>> p.extension_strip_last_component()
-        >>> p
+        >>> p.without_last_extension()
         Path("foo")
         """
-        self.__extension_set('.'.join(self.extension.split('.')[:-1]))
+        ext = '.'.join(self.extension.split('.')[:-1])
+        return self.with_extension(ext)
 
     def __str__(self):
         """The path as a string, adapted to the underlying OS."""
@@ -540,13 +547,7 @@ class Path(object):
 
       >>> Path('foo/bar/baz').basename()
       Path("baz")
-      >>> Path('').basename()
-      Traceback (most recent call last):
-          ...
-      drake.Exception: Cannot take the basename of an empty path.
       """
-      if not self.__path:
-        raise Exception('Cannot take the basename of an empty path.')
       return Path(self.__path[-1:])
 
     def dirname(self):
@@ -559,26 +560,13 @@ class Path(object):
       Path("foo/bar")
       >>> Path('foo').dirname()
       Path(".")
-      >>> Path('').dirname()
-      Traceback (most recent call last):
-          ...
-      drake.Exception: Cannot take the dirname of an empty path.
       """
-      if not self.__path:
-        raise Exception('Cannot take the dirname of an empty path.')
-      res = Path(self.__path[0:-1])
-      res.__absolute = self.__absolute
-      return res
-
-    def empty(self):
-        """Whether the path is empty.
-
-        >>> Path('').empty()
-        True
-        >>> Path('foo').empty()
-        False
-        """
-        return len(self.__path) == 0
+      if len(self.__path) == 1:
+        return Path('.')
+      else:
+        res = Path(self.__path[0:-1])
+        res.__absolute = self.__absolute
+        return res
 
     def touch(self):
         """Create the designed file if it does not exists.
@@ -601,8 +589,9 @@ class Path(object):
         ...   print(f.read(), end = '')
         foobar
         """
-        if not self.dirname().empty():
-          self.dirname().mkpath()
+        parent = self.dirname()
+        if parent != Path('.'):
+          parent.mkpath()
         if not _OS.path.exists(str(self)):
           with open(str(self), 'w') as f:
             pass
@@ -636,8 +625,6 @@ class Path(object):
         >>> Path('foo/bar') == Path('/foo/bar')
         False
         >>> Path('/foo/bar') == Path('/foo/bar')
-        True
-        >>> Path('') == Path('.')
         True
         """
         if rhs.__class__ != Path:
@@ -678,7 +665,7 @@ class Path(object):
         return Path(self)
       return drake.Path(self.__path + rhs.__path)
 
-    def strip_prefix(self, rhs):
+    def without_prefix(self, rhs):
         """Remove rhs prefix from self.
 
         rhs -- the prefix to strip, as a Path or a string.
@@ -686,13 +673,12 @@ class Path(object):
         >>> p = Path('foo/bar/baz/quux')
         >>> p
         Path("foo/bar/baz/quux")
-        >>> p.strip_prefix("foo/bar")
-        >>> p
+        >>> p.without_prefix("foo/bar")
         Path("baz/quux")
         >>> p = Path('/foo/bar/baz')
         >>> p.absolute()
         True
-        >>> p.strip_prefix('/foo')
+        >>> p = p.without_prefix('/foo')
         >>> p
         Path("bar/baz")
         >>> p.absolute()
@@ -700,28 +686,25 @@ class Path(object):
 
         Rewinds if rhs is not a prefix of self.
 
-        >>> p.strip_prefix("quux")
-        >>> p
+        >>> p.without_prefix("quux")
         Path("../bar/baz")
         """
-        if (not isinstance(rhs, Path)):
-          rhs = Path(rhs)
-        rhs = rhs.canonize().__path
+        rhs = drake.Path(rhs).canonize().__path
         path = self.__path
         while len(rhs) and len(path) and path[0] == rhs[0]:
           rhs = rhs[1:]
           path = path[1:]
         # FIXME: naive if rhs contains some '..'
         assert '..' not in rhs
-        self.__path = ['..'] * len(rhs) + path
-        if not self.__path:
-          self.__path = ['.']
-        self.__absolute = self.__path[0] == ''
+        path = ('..',) * len(rhs) + path
+        if not path:
+          path = ['.']
+        return drake.Path(path)
 
     def __len__(self):
         return len(self.__path)
 
-    def strip_suffix(self, rhs):
+    def without_suffix(self, rhs):
         """Remove rhs suffix from self.
 
         rhs -- the suffix to strip, as a Path or a string.
@@ -729,25 +712,23 @@ class Path(object):
         >>> p = Path('foo/bar/baz/quux')
         >>> p
         Path("foo/bar/baz/quux")
-        >>> p.strip_suffix("baz/quux")
-        >>> p
+        >>> p.without_suffix("baz/quux")
         Path("foo/bar")
 
         Throws if rhs is not a prefix of self.
 
-        >>> p.strip_suffix("quux")
+        >>> p.without_suffix("baz")
         Traceback (most recent call last):
             ...
-        drake.Exception: quux is not a suffix of foo/bar
+        drake.Exception: baz is not a suffix of foo/bar/baz/quux
         """
-        if (not isinstance(rhs, Path)):
-            rhs = Path(rhs)
+        rhs = drake.Path(rhs)
         if self.__path[-len(rhs.__path):] != rhs.__path:
-            raise Exception("%s is not a suffix of %s" % (rhs, self))
-        self.__path = self.__path[0:-len(rhs.__path):]
-        if not self.__path:
-            self.__path = ['.']
-        self.__absolute = self.__path[0] == ''
+          raise Exception("%s is not a suffix of %s" % (rhs, self))
+        path = self.__path[0:-len(rhs.__path):]
+        if not path:
+          path = ['.']
+        return drake.Path(path)
 
     @classmethod
     def cwd(self):
@@ -937,9 +918,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
     def name(self):
         """Node name, relative to the current drakefile."""
-        res = Path(self.__name)
-        res.strip_prefix(drake.Drake.current.prefix)
-        return res
+        return self.__name.without_prefix(drake.Drake.current.prefix)
 
     def name_absolute(self):
         """Node name, relative to the root of the source directory."""
@@ -1146,11 +1125,8 @@ class Node(BaseNode):
     ...   print(n.path())
     ...   builder = TouchBuilder([n])
     ...   print(n.path())
-    ...   n = node('//virtual/node')
-    ...   print(n.path())
     source/tree/file
     file
-    //virtual/node
     """
     if self.name().absolute() or self.name().virtual:
       # assert self.builder is None
@@ -2045,8 +2021,7 @@ class FileExpander(Expander):
       self.__source = source
       assert isinstance(source, BaseNode)
       if target is None:
-        target = Path(source.name())
-        target.extension_strip_last_component()
+        target = source.name().without_last_extension()
         target = node(target)
       else:
         assert isinstance(target, BaseNode)
@@ -2351,8 +2326,8 @@ def complete_modes():
 
 def complete_nodes():
   def res():
-    for node in Drake.current.nodes:
-      print(node)
+    # for node in Drake.current.nodes:
+    #   print(node)
     exit(0)
   return res
 
@@ -2522,7 +2497,7 @@ def __copy(sources, to, strip_prefix, builder):
 def __copy_stripped(source, to, strip_prefix, builder):
   path = source.name_absolute()
   if strip_prefix is not None:
-    path.strip_prefix(strip_prefix)
+    path = path.without_prefix(strip_prefix)
   path = to / path
   res = builder(source, path).target()
   for dep in source.dependencies:

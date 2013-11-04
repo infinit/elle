@@ -79,8 +79,7 @@ def configure(prefix = '.'):
       self.__name = name
       path = drake.Path('tests') / drake.Path(name)
       self.__exe = drake.node(path / 'test')
-      path.extension = 'tst'
-      self.__target = drake.node(path)
+      self.__target = drake.node(path.with_extension('tst'))
       drake.Builder.__init__(self, [self.__exe] + sources, [self.__target])
 
     def execute(self):
