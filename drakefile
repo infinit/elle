@@ -253,9 +253,13 @@ def configure(cxx_toolkit = None,
       '-DPURIFY',
       os_string,
     ],
-  build_args = [
+    build_args = [
     'all', 'install',
-  ])
+    ],
+    additional_env = {
+        'PERL': 'perl',
+    },
+  )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
 
