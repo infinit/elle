@@ -70,8 +70,7 @@ class Renderer(drake.Converter):
     import sys
     tpl = str(self.__template.path(absolute = True))
     previous = sys.path
-    import copy
-    sys.path = copy.deepcopy(sys.path)
+    sys.path = sys.path[:]
     modules = set(sys.modules)
     try:
       sys.path = [str(path) for path in  self.__pythonpath] + sys.path

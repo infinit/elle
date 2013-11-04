@@ -21,7 +21,6 @@ import sys
 import threading
 import time
 import types
-from copy import deepcopy
 from drake.sched import Coroutine, Scheduler
 from drake.enumeration import Enumerated
 
@@ -317,7 +316,7 @@ class Path(object):
           if len(self.__path) > 0:
             self.__absolute = self.__path[0] == ''
         elif path.__class__ == Path:
-          self.__path = deepcopy(path.__path)
+          self.__path = path.__path[:]
           self.__absolute = path.__absolute
           self.virtual = path.virtual
         else:

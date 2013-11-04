@@ -17,7 +17,6 @@ import tempfile
 _OS = __import__('os')
 from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
-from copy import deepcopy
 from .. import sched
 
 def chain(*collections):
@@ -59,17 +58,17 @@ class Config:
         else:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
-            self._includes = deepcopy(model._includes)
+            self._includes = dict(model._includes)
             self.__local_includes = sched.OrderedSet(model.__local_includes)
             self.__optimization = model.__optimization
             self.__system_includes = sched.OrderedSet(model.__system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.__libs = sched.OrderedSet(model.__libs)
-            self.flags = deepcopy(model.flags)
-            self._framework = deepcopy(model._framework)
+            self.flags = model.flags[:]
+            self._framework = dict(model._framework)
             self.__defines = collections.OrderedDict(model.__defines)
             self.__standard = model.__standard
-            self.__rpath = deepcopy(model.__rpath)
+            self.__rpath = model.__rpath[:]
             self.__warnings = Config.Warnings(model.__warnings)
 
     class Warnings:
