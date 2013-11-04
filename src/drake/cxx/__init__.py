@@ -1302,12 +1302,12 @@ class DynLib(Library):
     Binary.__init__(self, path, sources, tk, cfg)
     for lib in self.dynamic_libraries:
       self.dependency_add(lib)
-    if tk is not None and cfg is not None:
+    if tk is not None and cfg is not None and sources is not None:
       DynLibLinker(self, self.tk, self.cfg)
 
   def clone(self, path):
     path = Path(path)
-    res = DynLib(path, self.sources, self.tk, self.cfg,
+    res = DynLib(path, None, self.tk, self.cfg,
                  preserve_filename = True)
     return res
 
@@ -1323,6 +1323,7 @@ Node.extensions['dylib'] = DynLib
 
 class Module(Library):
 
+  # FIXME: Factor with DynLib
   def __init__(self, path, sources = None, tk = None, cfg = None,
                preserve_filename = False):
     path = Path(path)
@@ -1331,13 +1332,13 @@ class Module(Library):
     Binary.__init__(self, path, sources, tk, cfg)
     for lib in self.dynamic_libraries:
       self.dependency_add(lib)
-    if tk is not None and cfg is not None:
+    if tk is not None and cfg is not None and sources is not None:
       DynLibLinker(self, self.tk, self.cfg)
 
   # FIXME: Factor with DynLib.clone
   def clone(self, path):
     path = Path(path)
-    res = Module(path, self.sources, self.tk, self.cfg,
+    res = Module(path, None, self.tk, self.cfg,
                  preserve_filename = True)
     return res
 

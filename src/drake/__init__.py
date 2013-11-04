@@ -2421,6 +2421,14 @@ class Copy(Builder):
     'Content.\\n'
     """
 
+    @classmethod
+    def __original(self, node):
+      b = node.builder
+      if b is not None and b.__class__ is Copy:
+        return self.__original(b.source)
+      else:
+        return node
+
     def __init__(self, source, to):
         """Create a copy builder.
 
@@ -2428,8 +2436,11 @@ class Copy(Builder):
         to     -- Destination path.
         """
         self.__source = source
-        self.__target = source.clone(Path(to))
-        self.__target.builder = None
+        self.__target = source.clone(Path(to).canonize())
+        if self.__target.builder is not None:
+          if self.__class__ is self.__target.builder.__class__:
+            if self.__original(self.__target.builder.source) is self.__original(source):
+              return
         Builder.__init__(self, [self.__source], [self.__target])
 
     @property
@@ -2486,34 +2497,36 @@ class Install(Copy):
     else:
       return cmd
 
-
+import collections
 def __copy(sources, to, strip_prefix, builder):
-  import collections
-  if isinstance(sources, collections.Iterable):
+  multiple = isinstance(sources, collections.Iterable)
+  if strip_prefix is not None:
+    if strip_prefix is True:
+      if multiple:
+        strip_prefix = sources[0].name().dirname()
+      else:
+        strip_prefix = sources.name().dirname()
+    else:
+      strip_prefix = drake.Path(strip_prefix)
+    if not strip_prefix.absolute():
+      strip_prefix = drake.path_build(strip_prefix)
+  if multiple:
     res = []
     for node in sources:
-        res.append(__copy(node, to, strip_prefix, builder))
+      res.append(__copy_stripped(node, to, strip_prefix, builder))
     return res
   else:
-    strip_prefix_save = strip_prefix
-    if strip_prefix is True:
-      strip_prefix = sources.name().dirname()
-    if strip_prefix is not None:
-      strip_prefix = drake.Path(strip_prefix)
-      if not strip_prefix.absolute():
-        if sources.builder:
-          strip_prefix = drake.path_build(strip_prefix)
-        else:
-          strip_prefix = drake.path_source(strip_prefix)
-    path = sources.path()
-    if strip_prefix is not None:
-      path.strip_prefix(strip_prefix)
-    path = Path(to) / path
-    res = builder(sources, path).target()
-    for dep in sources.dependencies:
-      res.dependency_add(__copy(dep, to, strip_prefix_save, builder))
-    return res
+    return __copy_stripped(sources, to, strip_prefix, builder)
 
+def __copy_stripped(source, to, strip_prefix, builder):
+  path = source.name_absolute()
+  if strip_prefix is not None:
+    path.strip_prefix(strip_prefix)
+  path = drake.Path(to) / path
+  res = builder(source, path).target()
+  for dep in source.dependencies:
+    res.dependency_add(__copy_stripped(dep, to, strip_prefix, builder))
+  return res
 
 def copy(sources, to, strip_prefix = None):
   """Convenience function to create Copy builders.
