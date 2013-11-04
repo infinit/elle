@@ -299,15 +299,16 @@ class PathType(type):
 
   cache = {}
 
-  def __call__(self, path, absolute = None):
+  def __call__(self, path, absolute = None, virtual = None):
     if path.__class__ is Path:
       assert absolute is None
+      assert virtual is None
       return path
     else:
-      key = (path, absolute)
+      key = (path, absolute, virtual)
       res = PathType.cache.get(key, None)
       if res is None:
-        res = type.__call__(self, path, absolute)
+        res = type.__call__(self, path, absolute, virtual)
         PathType.cache[key] = res
       return res
 
@@ -321,7 +322,7 @@ class Path(metaclass = PathType):
     if platform.system() == 'Windows':
         separator = '\\'
 
-    def __init__(self, path, absolute):
+    def __init__(self, path, absolute, virtual):
       """Build a path.
 
       path -- The path, as a string or an other Path.
@@ -330,11 +331,13 @@ class Path(metaclass = PathType):
       self.__absolute = False
       if isinstance(path, tuple):
         assert absolute is not None
+        assert virtual is not None
         self.__path = path
         self.__absolute = absolute
       else:
         assert path.__class__ == str
         assert absolute is None
+        assert virtual is None
         if platform.system() == 'Windows':
           if path[:2] == '//' or path[:2] == '\\\\':
             path = path[2:]
@@ -364,7 +367,9 @@ class Path(metaclass = PathType):
           pass
         else:
           res += (path[i],)
-      return drake.Path(res, absolute = self.__absolute)
+      return drake.Path(res,
+                        absolute = self.__absolute,
+                        virtual = self.virtual)
 
     def absolute(self):
         """Whether this path is absolute.
@@ -438,11 +443,13 @@ class Path(metaclass = PathType):
         else:
           parts = [parts[0], value]
         return Path(self.__path[:-1] + ('.'.join(parts),),
-                    absolute = self.__absolute)
+                    absolute = self.__absolute,
+                    virtual = self.virtual)
       else:
         if value != '':
           return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
-                      absolute = self.__absolute)
+                      absolute = self.__absolute,
+                      virtual = self.virtual)
         else:
           return self
 
@@ -568,7 +575,7 @@ class Path(metaclass = PathType):
       """
       if not self.__path:
         raise Exception('Cannot take the basename of an empty path.')
-      return Path(self.__path[-1:], absolute = False)
+      return Path(self.__path[-1:], absolute = False, virtual = False)
 
     def dirname(self):
       """The directory part of the path.
@@ -584,7 +591,9 @@ class Path(metaclass = PathType):
       if len(self.__path) == 1:
         return Path('.')
       else:
-        return Path(self.__path[0:-1], absolute = self.__absolute)
+        return Path(self.__path[0:-1],
+                    absolute = self.__absolute,
+                    virtual = self.virtual)
 
     def touch(self):
         """Create the designed file if it does not exists.
@@ -683,7 +692,8 @@ class Path(metaclass = PathType):
       if rhs == Path('.'):
         return Path(self)
       return drake.Path(self.__path + rhs.__path,
-                        absolute = self.__absolute)
+                        absolute = self.__absolute,
+                        virtual = self.virtual)
 
     def without_prefix(self, rhs):
         """Remove rhs prefix from self.
@@ -719,7 +729,7 @@ class Path(metaclass = PathType):
         path = ('..',) * len(rhs) + path
         if not path:
           path = ['.']
-        return drake.Path(path, absolute = False)
+        return drake.Path(path, absolute = False, virtual = False)
 
     def __len__(self):
         return len(self.__path)
@@ -748,7 +758,9 @@ class Path(metaclass = PathType):
         path = self.__path[0:-len(rhs.__path):]
         if not path:
           path = ['.']
-        return drake.Path(path, absolute = self.__absolute)
+        return drake.Path(path,
+                          absolute = self.__absolute,
+                          virtual = self.virtual)
 
     @classmethod
     def cwd(self):
