@@ -781,7 +781,6 @@ class DepFile:
         """Construct a dependency file for builder with given name."""
         self.__builder = builder
         self.name = name
-        builder.targets().sort()
         self.__files = {}
         self.__sha1 = {}
 
