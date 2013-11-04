@@ -961,13 +961,12 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
     def __init__(self, name):
         """Create a node with the given name."""
-        if str(name) in Drake.current.nodes:
-            raise NodeRedefinition(str(name))
+        if Drake.current.nodes.setdefault(name, self) is not self:
+          raise NodeRedefinition(str(name))
         self.__name = name
         self.uid = BaseNode.uid
         BaseNode.uid += 1
         self.builder = None
-        Drake.current.nodes[str(name)] = self
         self.consumers = []
 
     def name(self):
