@@ -619,7 +619,7 @@ class Path(metaclass = PathType):
       Path(".")
       """
       if len(self.__path) == 1:
-        return Path('.')
+        return Path.dot
       else:
         return Path(self.__path[0:-1],
                     absolute = self.__absolute,
@@ -647,7 +647,7 @@ class Path(metaclass = PathType):
         foobar
         """
         parent = self.dirname()
-        if parent != Path('.'):
+        if parent is not Path.dot:
           parent.mkpath()
         if not _OS.path.exists(str(self)):
           with open(str(self), 'w') as f:
@@ -706,13 +706,13 @@ class Path(metaclass = PathType):
       drake.Exception: Cannot concatenate an absolute path: Path("/absolute").
       """
       rhs = Path(rhs)
-      if rhs.absolute():
+      if rhs.__absolute:
         raise Exception(
             'Cannot concatenate an absolute path: %s.' % repr(rhs))
-      if self == '.':
+      if self is Path.dot:
         return rhs
-      if rhs == Path('.'):
-        return Path(self)
+      if rhs is Path.dot:
+        return self
       return drake.Path(self.__path + rhs.__path,
                         absolute = self.__absolute,
                         virtual = self.__virtual)
@@ -779,7 +779,7 @@ class Path(metaclass = PathType):
           raise Exception("%s is not a suffix of %s" % (rhs, self))
         path = self.__path[0:-len(rhs.__path):]
         if not path:
-          path = ['.']
+          path = ('.',)
         return drake.Path(path,
                           absolute = self.__absolute,
                           virtual = self.__virtual)
@@ -790,6 +790,10 @@ class Path(metaclass = PathType):
 
     def list(self):
         return _OS.listdir(str(self))
+
+
+Path.dot = Path('.')
+Path.dotdot = Path('..')
 
 _CACHEDIR = Path('.drake')
 
