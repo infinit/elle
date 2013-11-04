@@ -511,22 +511,26 @@ class GccToolkit(Toolkit):
       raise drake.Exception('Unable to find compiler: %s' % compiler)
     self.cxx = compiler
     self.c = compiler_c
+    apple, win32, linux, clang = self.preprocess_isdef(
+      ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
     if self.os is None:
-      if self.preprocess_isdef('__APPLE__'):
+      if apple:
         self.os = drake.os.macos
-      elif self.preprocess_isdef('_WIN32'):
+      elif win32:
         self.os = drake.os.windows
-      elif self.preprocess_isdef('__linux__'):
+      elif linux:
         self.os = drake.os.linux
       else:
         raise Exception("Host OS not found")
-    if self.preprocess_isdef('__clang__'):
+    if clang:
       self.__kind = GccToolkit.Kind.clang
     else:
       self.__kind = GccToolkit.Kind.gcc
 
-  def preprocess_isdef(self, var, config = Config()):
-    return self.preprocess(var, config).strip().split('\n')[-1] != var
+  def preprocess_isdef(self, vars, config = Config()):
+    content = '\n'.join(reversed(vars))
+    content = self.preprocess(content, config).strip().split('\n')
+    return map(lambda e: e[0] != e[1], zip(vars, reversed(content)))
 
   def preprocess(self, code, config = Config()):
     cmd = [self.cxx]
