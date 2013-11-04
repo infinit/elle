@@ -308,33 +308,42 @@ class PathType(type):
       if path.__class__ is str:
         assert absolute is None
         assert virtual is None
-        if platform.system() == 'Windows':
-          if path[:2] == '//' or path[:2] == '\\\\':
-            path = path[2:]
-            self.virtual = True
-          self.__path = tuple(re.split(r'/|\\', path))
-          slash = self.__path[0] == ''
-          volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
-          self.__absolute = bool(slash or volume)
+        strkey = path
+        res = PathType.cache.get(path, None)
+        if res is not None:
+          return res
         else:
-          if path[:2] == '//':
-            path = path[2:]
-            absolute = False
-            virtual = True
-          elif path[:1] == '/':
-            path = path[1:]
-            absolute = True
-            virtual = False
+          if drake.Path.windows:
+            if path[:2] == '//' or path[:2] == '\\\\':
+              path = path[2:]
+              self.virtual = True
+            self.__path = tuple(re.split(r'/|\\', path))
+            slash = self.__path[0] == ''
+            volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
+            self.__absolute = bool(slash or volume)
           else:
-            absolute = False
-            virtual = False
-          path = tuple(path.split('/'))
+            if path[:2] == '//':
+              path = path[2:]
+              absolute = False
+              virtual = True
+            elif path[:1] == '/':
+              path = path[1:]
+              absolute = True
+              virtual = False
+            else:
+              absolute = False
+              virtual = False
+            path = tuple(path.split('/'))
+      else:
+        strkey = None
       assert path.__class__ is tuple
       key = (path, absolute, virtual)
       res = PathType.cache.get(key, None)
       if res is None:
         res = type.__call__(self, path, absolute, virtual)
         PathType.cache[key] = res
+      if strkey is not None:
+        PathType.cache[strkey] = res
       return res
 
 
@@ -344,8 +353,9 @@ class Path(metaclass = PathType):
 
     separator = '/'
 
-    if platform.system() == 'Windows':
-        separator = '\\'
+    windows = platform.system() == 'Windows'
+    if windows:
+      separator = '\\'
 
     def __init__(self, path, absolute, virtual):
       """Build a path.
