@@ -305,6 +305,31 @@ class PathType(type):
       assert virtual is None
       return path
     else:
+      if path.__class__ is str:
+        assert absolute is None
+        assert virtual is None
+        if platform.system() == 'Windows':
+          if path[:2] == '//' or path[:2] == '\\\\':
+            path = path[2:]
+            self.virtual = True
+          self.__path = tuple(re.split(r'/|\\', path))
+          slash = self.__path[0] == ''
+          volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
+          self.__absolute = bool(slash or volume)
+        else:
+          if path[:2] == '//':
+            path = path[2:]
+            absolute = False
+            virtual = True
+          elif path[:1] == '/':
+            path = path[1:]
+            absolute = True
+            virtual = False
+          else:
+            absolute = False
+            virtual = False
+          path = tuple(path.split('/'))
+      assert path.__class__ is tuple
       key = (path, absolute, virtual)
       res = PathType.cache.get(key, None)
       if res is None:
@@ -327,35 +352,9 @@ class Path(metaclass = PathType):
 
       path -- The path, as a string or an other Path.
       """
-      self.virtual = False
-      self.__absolute = False
-      if isinstance(path, tuple):
-        assert absolute is not None
-        assert virtual is not None
-        self.__path = path
-        self.__absolute = absolute
-      else:
-        assert path.__class__ == str
-        assert absolute is None
-        assert virtual is None
-        if platform.system() == 'Windows':
-          if path[:2] == '//' or path[:2] == '\\\\':
-            path = path[2:]
-            self.virtual = True
-          self.__path = tuple(re.split(r'/|\\', path))
-          slash = self.__path[0] == ''
-          volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
-          self.__absolute = bool(slash or volume)
-        else:
-          if path[:2] == '//':
-            path = path[2:]
-            self.virtual = True
-          if path[:1] == '/':
-            path = path[1:]
-            self.__absolute = True
-          self.__path = tuple(path.split('/'))
-      if len(self.__path) > 1 and self.__path[-1] == '':
-        self.__path = self.__path[:-1]
+      self.__path = path
+      self.__absolute = absolute
+      self.__virtual = virtual
 
     def canonize(self):
       res = ()
@@ -369,7 +368,7 @@ class Path(metaclass = PathType):
           res += (path[i],)
       return drake.Path(res,
                         absolute = self.__absolute,
-                        virtual = self.virtual)
+                        virtual = self.__virtual)
 
     def absolute(self):
         """Whether this path is absolute.
@@ -384,6 +383,21 @@ class Path(metaclass = PathType):
         True
         """
         return self.__absolute
+
+    @property
+    def virtual(self):
+      """Whether this path is virtual.
+
+      >>> Path('.').virtual
+      False
+      >>> Path('foo/bar').virtual
+      False
+      >>> Path('//').virtual
+      True
+      >>> Path('//foo').virtual
+      True
+      """
+      return self.__virtual
 
     def remove(self, err = False):
         """Remove the target file.
@@ -444,12 +458,12 @@ class Path(metaclass = PathType):
           parts = [parts[0], value]
         return Path(self.__path[:-1] + ('.'.join(parts),),
                     absolute = self.__absolute,
-                    virtual = self.virtual)
+                    virtual = self.__virtual)
       else:
         if value != '':
           return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
                       absolute = self.__absolute,
-                      virtual = self.virtual)
+                      virtual = self.__virtual)
         else:
           return self
 
@@ -492,7 +506,7 @@ class Path(metaclass = PathType):
         """The path as a string, adapted to the underlying OS."""
         if self.__absolute:
           prefix = '/'
-        elif self.virtual:
+        elif self.__virtual:
           prefix = '//'
         else:
           prefix = ''
@@ -593,7 +607,7 @@ class Path(metaclass = PathType):
       else:
         return Path(self.__path[0:-1],
                     absolute = self.__absolute,
-                    virtual = self.virtual)
+                    virtual = self.__virtual)
 
     def touch(self):
         """Create the designed file if it does not exists.
@@ -693,7 +707,7 @@ class Path(metaclass = PathType):
         return Path(self)
       return drake.Path(self.__path + rhs.__path,
                         absolute = self.__absolute,
-                        virtual = self.virtual)
+                        virtual = self.__virtual)
 
     def without_prefix(self, rhs):
         """Remove rhs prefix from self.
@@ -760,7 +774,7 @@ class Path(metaclass = PathType):
           path = ['.']
         return drake.Path(path,
                           absolute = self.__absolute,
-                          virtual = self.virtual)
+                          virtual = self.__virtual)
 
     @classmethod
     def cwd(self):
@@ -1100,7 +1114,7 @@ class VirtualNode(BaseNode):
     def __init__(self, name):
         """Create a virtual node with the given name."""
         path = drake.Drake.current.prefix / name
-        path.virtual = True
+        path = drake.Path(path._Path__path, False, True)
         BaseNode.__init__(self, path)
 
     def hash(self):
@@ -1454,9 +1468,11 @@ class Builder:
     def cachedir(self):
         """The cachedir that stores dependency files."""
         path = self.__targets[0].name()
+        if path.virtual:
+          path = drake.Path(path._Path__path, False, False)
         res = path.dirname() / _CACHEDIR / path.basename()
         if not res.absolute():
-            res = drake.Drake.current.prefix / res
+          res = drake.Drake.current.prefix / res
         res.mkpath()
         return res
 
