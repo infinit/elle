@@ -20,7 +20,8 @@ curl_config = None
 curl_lib = None
 
 openssl_config = None
-openssl_lib = None
+openssl_lib_ssl = None
+openssl_lib_crypto = None
 
 zlib_config = None
 zlib_lib = None
@@ -46,7 +47,7 @@ def configure(cxx_toolkit = None,
   global curly
 
   global curl_config, curl_lib
-  global openssl_config, openssl_lib
+  global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
 
   cxx_config = drake.cxx.Config(cxx_config)
