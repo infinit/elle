@@ -943,7 +943,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
     def name_absolute(self):
         """Node name, relative to the root of the source directory."""
-        return self.__name
+        return drake.Path(self.__name)
 
     def dot(self, marks):
         """Print a dot representation of this nodes build graph."""
@@ -1156,9 +1156,9 @@ class Node(BaseNode):
       # assert self.builder is None
       return drake.Path(self.name())
     if self.builder is None:
-      path = drake.path_source() / self.name_absolute()
+      path = drake.path_source() / self._BaseNode__name
     else:
-      path = drake.Path(self.name_absolute())
+      path = drake.Path(self._BaseNode__name)
     if absolute:
       path = drake.path_root() / path
     return path
@@ -1757,7 +1757,7 @@ class Builder:
 
     def add_src(self, src):
         """Add a static source."""
-        self.__sources[str(src.name_absolute())] = src
+        self.__sources[str(src._BaseNode__name)] = src
         src.consumers.append(self)
 
 
