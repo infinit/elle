@@ -299,14 +299,16 @@ class PathType(type):
 
   cache = {}
 
-  def __call__(self, path):
+  def __call__(self, path, absolute = None):
     if path.__class__ is Path:
+      assert absolute is None
       return path
     else:
-      res = PathType.cache.get(path, None)
+      key = (path, absolute)
+      res = PathType.cache.get(key, None)
       if res is None:
-        res = type.__call__(self, path)
-        PathType.cache[path] = res
+        res = type.__call__(self, path, absolute)
+        PathType.cache[key] = res
       return res
 
 
@@ -319,7 +321,7 @@ class Path(metaclass = PathType):
     if platform.system() == 'Windows':
         separator = '\\'
 
-    def __init__(self, path):
+    def __init__(self, path, absolute):
       """Build a path.
 
       path -- The path, as a string or an other Path.
@@ -327,11 +329,12 @@ class Path(metaclass = PathType):
       self.virtual = False
       self.__absolute = False
       if isinstance(path, tuple):
+        assert absolute is not None
         self.__path = path
-        if len(self.__path) > 0:
-          self.__absolute = self.__path[0] == ''
+        self.__absolute = absolute
       else:
         assert path.__class__ == str
+        assert absolute is None
         if platform.system() == 'Windows':
           if path[:2] == '//' or path[:2] == '\\\\':
             path = path[2:]
@@ -344,8 +347,10 @@ class Path(metaclass = PathType):
           if path[:2] == '//':
             path = path[2:]
             self.virtual = True
+          if path[:1] == '/':
+            path = path[1:]
+            self.__absolute = True
           self.__path = tuple(path.split('/'))
-          self.__absolute = self.__path[0] == ''
       if len(self.__path) > 1 and self.__path[-1] == '':
         self.__path = self.__path[:-1]
 
@@ -359,7 +364,7 @@ class Path(metaclass = PathType):
           pass
         else:
           res += (path[i],)
-      return drake.Path(res)
+      return drake.Path(res, absolute = self.__absolute)
 
     def absolute(self):
         """Whether this path is absolute.
@@ -432,10 +437,12 @@ class Path(metaclass = PathType):
           parts = [parts[0]]
         else:
           parts = [parts[0], value]
-        return Path(self.__path[:-1] + ('.'.join(parts),))
+        return Path(self.__path[:-1] + ('.'.join(parts),),
+                    absolute = self.__absolute)
       else:
         if value != '':
-          return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),))
+          return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
+                      absolute = self.__absolute)
         else:
           return self
 
@@ -476,7 +483,12 @@ class Path(metaclass = PathType):
 
     def __str__(self):
         """The path as a string, adapted to the underlying OS."""
-        prefix = self.virtual and '//' or ''
+        if self.__absolute:
+          prefix = '/'
+        elif self.virtual:
+          prefix = '//'
+        else:
+          prefix = ''
         if not self.__path:
             body = '.'
         else:
@@ -554,7 +566,9 @@ class Path(metaclass = PathType):
       >>> Path('foo/bar/baz').basename()
       Path("baz")
       """
-      return Path(self.__path[-1:])
+      if not self.__path:
+        raise Exception('Cannot take the basename of an empty path.')
+      return Path(self.__path[-1:], absolute = False)
 
     def dirname(self):
       """The directory part of the path.
@@ -570,9 +584,7 @@ class Path(metaclass = PathType):
       if len(self.__path) == 1:
         return Path('.')
       else:
-        res = Path(self.__path[0:-1])
-        res.__absolute = self.__absolute
-        return res
+        return Path(self.__path[0:-1], absolute = self.__absolute)
 
     def touch(self):
         """Create the designed file if it does not exists.
@@ -640,7 +652,8 @@ class Path(metaclass = PathType):
                 return ['.']
             else:
                 return p
-        return neutralize(self.__path) == neutralize(rhs.__path)
+        return neutralize(self.__path) == neutralize(rhs.__path) \
+          and self.__absolute == rhs.__absolute
 
     def __truediv__(self, rhs):
       """The concatenation of self and rhs.
@@ -669,7 +682,8 @@ class Path(metaclass = PathType):
         return rhs
       if rhs == Path('.'):
         return Path(self)
-      return drake.Path(self.__path + rhs.__path)
+      return drake.Path(self.__path + rhs.__path,
+                        absolute = self.__absolute)
 
     def without_prefix(self, rhs):
         """Remove rhs prefix from self.
@@ -705,7 +719,7 @@ class Path(metaclass = PathType):
         path = ('..',) * len(rhs) + path
         if not path:
           path = ['.']
-        return drake.Path(path)
+        return drake.Path(path, absolute = False)
 
     def __len__(self):
         return len(self.__path)
@@ -734,7 +748,7 @@ class Path(metaclass = PathType):
         path = self.__path[0:-len(rhs.__path):]
         if not path:
           path = ['.']
-        return drake.Path(path)
+        return drake.Path(path, absolute = self.__absolute)
 
     @classmethod
     def cwd(self):
@@ -1137,7 +1151,7 @@ class Node(BaseNode):
     if self.name().absolute() or self.name().virtual:
       # assert self.builder is None
       return drake.Path(self.name())
-    if self.builder is None:
+    if self.builder is None and not self._BaseNode__name.absolute():
       path = drake.path_source() / self._BaseNode__name
     else:
       path = drake.Path(self._BaseNode__name)
