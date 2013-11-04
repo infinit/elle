@@ -315,33 +315,34 @@ def configure(zlib_lib,
   ## Python ##
   ## ------ ##
 
-  python = []
-  python_rule = drake.Rule('python')
 
-  python3 = drake.cxx.find_library(
-    'pyconfig.h',
-    prefix = python3,
-    include_dir = ['include',
-                   'include/python3.2',
-                   'include/python3.2m',
-                   'include/python3.3m'])
-  python_cxx_config = drake.cxx.Config(cxx_config)
-  python_cxx_config += python3
-  python_cxx_config += boost.config_python()
-  python_cxx_config.lib_path_runtime('../..')
+  if python3 is not None:
+    python = []
+    python_rule = drake.Rule('python')
+    python3 = drake.cxx.find_library(
+      'pyconfig.h',
+      prefix = python3,
+      include_dir = ['include',
+                     'include/python3.2',
+                     'include/python3.2m',
+                     'include/python3.3m'])
+    python_cxx_config = drake.cxx.Config(cxx_config)
+    python_cxx_config += python3
+    python_cxx_config += boost.config_python()
+    python_cxx_config.lib_path_runtime('../..')
 
-  python_log_lib = drake.cxx.Module(
-    'lib/python/elle/_log',
-    [drake.node('src/elle/log/python.cc'), lib_dynamic],
-    cxx_toolkit, python_cxx_config)
-  python.append(python_log_lib)
+    python_log_lib = drake.cxx.Module(
+      'lib/python/elle/_log',
+      [drake.node('src/elle/log/python.cc'), lib_dynamic],
+      cxx_toolkit, python_cxx_config)
+    python.append(python_log_lib)
 
-  python_sources = drake.nodes(
-    'src/elle/log.py',
-    'src/elle/__init__.py',
-    )
-  python += drake.copy(python_sources, 'lib/python', 'src')
-  python_rule << python
+    python_sources = drake.nodes(
+      'src/elle/log.py',
+      'src/elle/__init__.py',
+      )
+    python += drake.copy(python_sources, 'lib/python', 'src')
+    python_rule << python
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
