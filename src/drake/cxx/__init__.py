@@ -251,7 +251,7 @@ class Config:
 
     def add_local_include_path(self, path):
 
-        path = drake.Drake.current.prefix / Path(path)
+        path = drake.Drake.current.prefix / path
         self.__local_includes.add(path)
         self._includes[path] = None
 
