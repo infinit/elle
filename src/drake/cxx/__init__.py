@@ -1306,7 +1306,6 @@ class DynLib(Library):
       DynLibLinker(self, self.tk, self.cfg)
 
   def clone(self, path):
-    path = Path(path)
     res = DynLib(path, None, self.tk, self.cfg,
                  preserve_filename = True)
     return res
@@ -1337,7 +1336,6 @@ class Module(Library):
 
   # FIXME: Factor with DynLib.clone
   def clone(self, path):
-    path = Path(path)
     res = Module(path, None, self.tk, self.cfg,
                  preserve_filename = True)
     return res
