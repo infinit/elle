@@ -297,11 +297,17 @@ _SILENT = 'DRAKE_SILENT' in _OS.environ
 
 class PathType(type):
 
+  cache = {}
+
   def __call__(self, path):
     if path.__class__ is Path:
       return path
     else:
-      return type.__call__(self, path)
+      res = PathType.cache.get(path, None)
+      if res is None:
+        res = type.__call__(self, path)
+        PathType.cache[path] = res
+      return res
 
 
 class Path(metaclass = PathType):
@@ -314,43 +320,34 @@ class Path(metaclass = PathType):
         separator = '\\'
 
     def __init__(self, path):
-        """Build a path.
+      """Build a path.
 
-        path -- The path, as a string or an other Path.
-        """
-        self.virtual = False
-        self.__absolute = False
-        if isinstance(path, tuple):
-          self.__path = path
-          if len(self.__path) > 0:
-            self.__absolute = self.__path[0] == ''
-        elif isinstance(path, list):
-          self.__path = tuple(path)
-          if len(self.__path) > 0:
-            self.__absolute = self.__path[0] == ''
-        elif path.__class__ == Path:
-          self.__path = path.__path[:]
-          self.__absolute = path.__absolute
-          self.virtual = path.virtual
+      path -- The path, as a string or an other Path.
+      """
+      self.virtual = False
+      self.__absolute = False
+      if isinstance(path, tuple):
+        self.__path = path
+        if len(self.__path) > 0:
+          self.__absolute = self.__path[0] == ''
+      else:
+        assert path.__class__ == str
+        if platform.system() == 'Windows':
+          if path[:2] == '//' or path[:2] == '\\\\':
+            path = path[2:]
+            self.virtual = True
+          self.__path = tuple(re.split(r'/|\\', path))
+          slash = self.__path[0] == ''
+          volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
+          self.__absolute = bool(slash or volume)
         else:
-            if not path:
-              self.__path = ()
-            elif platform.system() == 'Windows':
-                if path[:2] == '//' or path[:2] == '\\\\':
-                    path = path[2:]
-                    self.virtual = True
-                self.__path = tuple(re.split(r'/|\\', path))
-                slash = self.__path[0] == ''
-                volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
-                self.__absolute = bool(slash or volume)
-            else:
-                if path[:2] == '//':
-                    path = path[2:]
-                    self.virtual = True
-                self.__path = tuple(path.split('/'))
-                self.__absolute = self.__path[0] == ''
-        if len(self.__path) > 1 and self.__path[-1] == '':
-            self.__path = self.__path[:-1]
+          if path[:2] == '//':
+            path = path[2:]
+            self.virtual = True
+          self.__path = tuple(path.split('/'))
+          self.__absolute = self.__path[0] == ''
+      if len(self.__path) > 1 and self.__path[-1] == '':
+        self.__path = self.__path[:-1]
 
     def canonize(self):
       res = ()
