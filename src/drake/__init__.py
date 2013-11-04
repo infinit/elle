@@ -295,7 +295,16 @@ _RAW = 'DRAKE_RAW' in _OS.environ
 _SILENT = 'DRAKE_SILENT' in _OS.environ
 
 
-class Path(object):
+class PathType(type):
+
+  def __call__(self, path):
+    if path.__class__ is Path:
+      return path
+    else:
+      return type.__call__(self, path)
+
+
+class Path(metaclass = PathType):
 
     """Node names, similar to a filesystem path."""
 
