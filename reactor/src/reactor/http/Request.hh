@@ -24,6 +24,9 @@ namespace reactor
     /// HTTP methods used to perform resquests.
     enum class Method
     {
+# ifdef DELETE
+#  undef DELETE
+# endif
       DELETE,
       GET,
       POST,
