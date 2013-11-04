@@ -2408,7 +2408,7 @@ class Copy(Builder):
     >>> source = node('/tmp/.drake.Copy.source')
     >>> with open(str(source.path()), 'w') as f:
     ...   print('Content.', file = f)
-    >>> builder = Copy(source, '/tmp/.drake.Copy.dest')
+    >>> builder = Copy(source, Path('/tmp/.drake.Copy.dest'))
     >>> target = builder.target()
     >>> target
     /tmp/.drake.Copy.dest
@@ -2436,7 +2436,7 @@ class Copy(Builder):
         to     -- Destination path.
         """
         self.__source = source
-        self.__target = source.clone(Path(to).canonize())
+        self.__target = source.clone(to.canonize())
         if self.__target.builder is not None:
           if self.__class__ is self.__target.builder.__class__:
             if self.__original(self.__target.builder.source) is self.__original(source):
@@ -2499,6 +2499,7 @@ class Install(Copy):
 
 import collections
 def __copy(sources, to, strip_prefix, builder):
+  to = drake.Path(to)
   multiple = isinstance(sources, collections.Iterable)
   if strip_prefix is not None:
     if strip_prefix is True:
@@ -2522,7 +2523,7 @@ def __copy_stripped(source, to, strip_prefix, builder):
   path = source.name_absolute()
   if strip_prefix is not None:
     path.strip_prefix(strip_prefix)
-  path = drake.Path(to) / path
+  path = to / path
   res = builder(source, path).target()
   for dep in source.dependencies:
     res.dependency_add(__copy_stripped(dep, to, strip_prefix, builder))
