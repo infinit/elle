@@ -352,8 +352,10 @@ class Path(metaclass = PathType):
 
       path -- The path, as a string or an other Path.
       """
-      self.__path = path
       self.__absolute = absolute
+      self.__str = None
+      self.__hash = None
+      self.__path = path
       self.__virtual = virtual
 
     def canonize(self):
@@ -503,18 +505,20 @@ class Path(metaclass = PathType):
         return self.with_extension(ext)
 
     def __str__(self):
-        """The path as a string, adapted to the underlying OS."""
+      """The path as a string, adapted to the underlying OS."""
+      if self.__str is None:
         if self.__absolute:
-          prefix = '/'
+          prefix = drake.Path.separator
         elif self.__virtual:
-          prefix = '//'
+          prefix = drake.Path.separator * 2
         else:
           prefix = ''
         if not self.__path:
-            body = '.'
+          body = '.'
         else:
-            body = self.separator.join(self.__path)
-        return prefix + body
+          body = self.separator.join(self.__path)
+        self.__str = prefix + body
+      return self.__str
 
     def __repr__(self):
         """Python representation."""
@@ -531,12 +535,14 @@ class Path(metaclass = PathType):
         return str(self) < str(rhs)
 
     def __hash__(self):
-        """Hash value.
+      """Hash value.
 
-        >>> hash(Path('foo')) == hash(Path('foo'))
-        True
-        """
-        return hash(str(self))
+      >>> hash(Path('foo')) == hash(Path('foo'))
+      True
+      """
+      if self.__hash is None:
+        self.__hash = hash(str(self))
+      return self.__hash
 
     def exists(self):
         """Whether the designed file or directory exists.
