@@ -668,15 +668,7 @@ class Path(metaclass = PathType):
         >>> Path('/foo/bar') == Path('/foo/bar')
         True
         """
-        if rhs.__class__ != Path:
-            rhs = Path(rhs)
-        def neutralize(p):
-            if not p:
-                return ['.']
-            else:
-                return p
-        return neutralize(self.__path) == neutralize(rhs.__path) \
-          and self.__absolute == rhs.__absolute
+        return self is drake.Path(rhs)
 
     def __truediv__(self, rhs):
       """The concatenation of self and rhs.
