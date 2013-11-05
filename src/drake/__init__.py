@@ -706,21 +706,18 @@ class Path(metaclass = PathType):
       >>> Path('.') / 'baz'
       Path("baz")
 
-      One cannot concatenate an absolute path.
+      Contatenating an absolute path yields the path itself.
 
       >>> Path('foo') / Path('/absolute')
-      Traceback (most recent call last):
-          ...
-      drake.Exception: Cannot concatenate an absolute path: Path("/absolute").
+      Path("/absolute")
       """
       rhs = Path(rhs)
-      if rhs.__absolute:
-        raise Exception(
-            'Cannot concatenate an absolute path: %s.' % repr(rhs))
       if self is Path.dot:
         return rhs
       if rhs is Path.dot:
         return self
+      if rhs.__absolute:
+        return rhs
       return drake.Path(self.__path + rhs.__path,
                         absolute = self.__absolute,
                         virtual = self.__virtual)
