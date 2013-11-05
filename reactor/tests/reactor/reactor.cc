@@ -89,7 +89,7 @@ coro(int& step)
 {
   BOOST_CHECK_EQUAL(step, 0);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 1);
   ++step;
 }
@@ -98,11 +98,12 @@ static
 void
 test_basics_one()
 {
-  Fixture f;
+
+  reactor::Scheduler sched;
 
   int step = 0;
-  reactor::Thread t(*sched, "coro", boost::bind(coro, boost::ref(step)));
-  sched->run();
+  reactor::Thread t(sched, "coro", std::bind(coro, std::ref(step)));
+  sched.run();
   BOOST_CHECK_EQUAL(step, 2);
 }
 
@@ -2033,7 +2034,7 @@ test_suite()
       BOOST_TEST_SUITE("system_signals");
     boost::unit_test::framework::master_test_suite().add(system_signals);
     auto terminate = system_signals::terminate;
-    system_signals->add(BOOST_TEST_CASE(terminate));
+    system_signals->add(BOOST_TEST_CASE(terminate), 0, 1);
   }
 
   return true;
