@@ -62,6 +62,7 @@ namespace reactor
       // buffer which will in turn write to the (deleted) socket.
       try
       {
+        ELLE_ASSERT(!this->bad() && !this->fail());
         this->flush();
       }
       catch (...)
