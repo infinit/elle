@@ -209,6 +209,11 @@ class Drake:
       print('%s: interrupted.' % sys.argv[0])
       exit(1)
 
+EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
+def explain(node, reason):
+  if EXPLAIN:
+    print('Execute %s because %s' % (node, reason))
+
 class Profile:
 
     def __init__(self, name):
@@ -865,9 +870,7 @@ class DepFile:
           continue
         h = node(path).hash()
         if self.__sha1[path][0] != h:
-          debug.debug(
-              'Execution needed because hash is outdated: %s.' % path,
-              debug.DEBUG_DEPS)
+          explain(self.__builder, '%s has changed' % path)
           return False
       return True
 
@@ -1644,20 +1647,17 @@ class Builder:
                 try:
                     sched.coro_wait(coroutines_dynamic)
                 except Exception as e:
-                    debug.debug('Execution needed because some '
-                                'dynamic dependency couldn\'t '
-                                'be built')
-                    execute = True
+                  explain(
+                    self,
+                    'some dynamic dependency couldn\'t be built')
+                  execute = True
 
                 # If any non-virtual target is missing, we must rebuild.
                 if not execute:
-                    for dst in self.__targets:
-                        if dst.missing():
-                            debug.debug('Execution needed because '
-                                        'of missing target: %s.' % \
-                                        dst.path(),
-                                        debug.DEBUG_DEPS)
-                            execute = True
+                  for dst in self.__targets:
+                    if dst.missing():
+                      explain(self, 'target %s is missing' % dst)
+                      execute = True
 
                 # Load static dependencies
                 self._depfile.read()
@@ -1667,9 +1667,7 @@ class Builder:
                   for p in self.__sources:
                     path = self.__sources[p].name()
                     if str(path) not in self._depfile.sha1s():
-                      debug.debug('Execution needed because a new '
-                                  'dependency appeared: %s.' % path,
-                                  debug.DEBUG_DEPS)
+                      explain(self, 'of new dependency %s' % path)
                       execute = True
                       break
 
@@ -1681,15 +1679,12 @@ class Builder:
                     if depfile_builder.exists():
                       with open(str(depfile_builder), 'r') as f:
                         if self.__builder_hash != f.read():
-                           debug.debug('Execution needed because the '
-                                       'hash for the builder is '
-                                       'outdated.',
-                                       debug.DEBUG_DEPS)
                            execute = True
+                           explain(self,
+                                   'hash for the builder is outdated')
                     else:
-                      debug.debug('Execution needed because the hash '
-                                  'for the builder is unkown.',
-                                  debug.DEBUG_DEPS)
+                      explain(self,
+                              'the builder hash is missing')
                       execute = True
 
                 # Check if we are up to date wrt all dependencies
