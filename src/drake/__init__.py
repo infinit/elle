@@ -304,28 +304,44 @@ class PathType(type):
 
   cache = {}
 
-  def __call__(self, path, absolute = None, virtual = None):
+  def __call__(self, path,
+               absolute = None,
+               virtual = None,
+               volume = None):
     if path.__class__ is Path:
       assert absolute is None
       assert virtual is None
+      assert volume is None
       return path
     else:
       if path.__class__ is str:
         assert absolute is None
         assert virtual is None
+        assert volume is None
         strkey = path
         res = PathType.cache.get(path, None)
         if res is not None:
           return res
         else:
-          if drake.Path.windows:
+          if Path.windows:
+            volume = re.compile('^([a-zA-Z]):').match(path)
+            if volume:
+              volume = volume.group(1)
+              path = path[2:]
+            else:
+              volume = ''
             if path[:2] == '//' or path[:2] == '\\\\':
               path = path[2:]
-              self.virtual = True
-            self.__path = tuple(re.split(r'/|\\', path))
-            slash = self.__path[0] == ''
-            volume = re.compile('^[a-zA-Z]:').match(self.__path[0])
-            self.__absolute = bool(slash or volume)
+              absolute = False
+              virtual = True
+            elif path[:1] == '/' or path[:1] == '\\':
+              path = path[1:]
+              absolute = True
+              virtual = False
+            else:
+              absolute = False
+              virtual = False
+            path = path = tuple(re.split(r'/|\\', path))
           else:
             if path[:2] == '//':
               path = path[2:]
@@ -340,12 +356,18 @@ class PathType(type):
               virtual = False
             path = tuple(path.split('/'))
       else:
+        assert absolute is not None
+        assert virtual is not None
+        assert not Path.windows or volume is not None
         strkey = None
       assert path.__class__ is tuple
-      key = (path, absolute, virtual)
+      if Path.windows:
+        key = (path, absolute, virtual, volume)
+      else:
+        key = (path, absolute, virtual)
       res = PathType.cache.get(key, None)
       if res is None:
-        res = type.__call__(self, path, absolute, virtual)
+        res = type.__call__(self, path, absolute, virtual, volume)
         PathType.cache[key] = res
       if strkey is not None:
         PathType.cache[strkey] = res
@@ -362,7 +384,7 @@ class Path(metaclass = PathType):
     if windows:
       separator = '\\'
 
-    def __init__(self, path, absolute, virtual):
+    def __init__(self, path, absolute, virtual, volume):
       """Build a path.
 
       path -- The path, as a string or an other Path.
@@ -372,6 +394,7 @@ class Path(metaclass = PathType):
       self.__path = path
       self.__str = None
       self.__virtual = virtual
+      self.__volume = volume
 
     def canonize(self):
       if self.__canonized is None:
@@ -389,7 +412,8 @@ class Path(metaclass = PathType):
         else:
           self.__canonized = drake.Path(res,
                                         absolute = self.__absolute,
-                                        virtual = self.__virtual)
+                                        virtual = self.__virtual,
+                                        volume = self.__volume)
       return self.__canonized
 
     def absolute(self):
@@ -480,12 +504,14 @@ class Path(metaclass = PathType):
           parts = [parts[0], value]
         return Path(self.__path[:-1] + ('.'.join(parts),),
                     absolute = self.__absolute,
-                    virtual = self.__virtual)
+                    virtual = self.__virtual,
+                    volume = self.__volume)
       else:
         if value != '':
           return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
                       absolute = self.__absolute,
-                      virtual = self.__virtual)
+                      virtual = self.__virtual,
+                      volume = self.__volume)
         else:
           return self
 
@@ -528,7 +554,10 @@ class Path(metaclass = PathType):
       """The path as a string, adapted to the underlying OS."""
       if self.__str is None:
         if self.__absolute:
-          prefix = drake.Path.separator
+          if self.__volume is None or self.__volume == '':
+            prefix = drake.Path.separator
+          else:
+            prefix = self.__volume + ':' + drake.Path.separator
         elif self.__virtual:
           prefix = drake.Path.separator * 2
         else:
@@ -613,7 +642,10 @@ class Path(metaclass = PathType):
       """
       if not self.__path:
         raise Exception('Cannot take the basename of an empty path.')
-      return Path(self.__path[-1:], absolute = False, virtual = False)
+      return Path(self.__path[-1:],
+                  absolute = False,
+                  virtual = False,
+                  volume = '')
 
     def dirname(self):
       """The directory part of the path.
@@ -631,7 +663,8 @@ class Path(metaclass = PathType):
       else:
         return Path(self.__path[0:-1],
                     absolute = self.__absolute,
-                    virtual = self.__virtual)
+                    virtual = self.__virtual,
+                    volume = self.__volume)
 
     def touch(self):
         """Create the designed file if it does not exists.
@@ -720,7 +753,8 @@ class Path(metaclass = PathType):
         return rhs
       return drake.Path(self.__path + rhs.__path,
                         absolute = self.__absolute,
-                        virtual = self.__virtual)
+                        virtual = self.__virtual,
+                        volume = self.__volume)
 
     def without_prefix(self, rhs):
         """Remove rhs prefix from self.
@@ -756,7 +790,10 @@ class Path(metaclass = PathType):
         path = ('..',) * len(rhs) + path
         if not path:
           path = ['.']
-        return drake.Path(path, absolute = False, virtual = False)
+        return drake.Path(path,
+                          absolute = False,
+                          virtual = False,
+                          volume = '')
 
     def __len__(self):
         return len(self.__path)
@@ -787,7 +824,8 @@ class Path(metaclass = PathType):
           path = ('.',)
         return drake.Path(path,
                           absolute = self.__absolute,
-                          virtual = self.__virtual)
+                          virtual = self.__virtual,
+                          volume = self.__volume)
 
     @classmethod
     def cwd(self):
