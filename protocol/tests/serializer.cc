@@ -169,8 +169,8 @@ dialog(std::function<void (SocketInstrumentation&)> const& conf,
 
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
       {
-        scope.run_background("alice", std::bind(a, std::ref(alice)));
-        scope.run_background("bob", std::bind(b, std::ref(bob)));
+        scope.run_background("alice", boost::bind(a, boost::ref(alice)));
+        scope.run_background("bob", boost::bind(b, boost::ref(bob)));
         scope.wait();
       };
     });
