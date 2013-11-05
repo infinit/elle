@@ -1226,7 +1226,7 @@ class Object(Node):
 
     def mkdeps(self):
 
-        return self.builder.mkdeps()
+        return self._builder.mkdeps()
 
 Node.extensions['o'] = Object
 

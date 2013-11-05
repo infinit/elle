@@ -823,7 +823,7 @@ class DepFile:
 
     def __init__(self, builder, name):
         """Construct a dependency file for builder with given name."""
-        self.__builder = builder
+        self._builder = builder
         self.name = name
         self.__files = {}
         self.__sha1 = {}
@@ -846,7 +846,7 @@ class DepFile:
 
     def path(self):
         """Path to the file storing the hashes."""
-        return self.__builder.cachedir() / self.name
+        return self._builder.cachedir() / self.name
 
 
     def read(self):
@@ -870,7 +870,7 @@ class DepFile:
           continue
         h = node(path).hash()
         if self.__sha1[path][0] != h:
-          explain(self.__builder, '%s has changed' % path)
+          explain(self._builder, '%s has changed' % path)
           return False
       return True
 
@@ -886,11 +886,11 @@ class DepFile:
 
     def __repr__(self):
         """Python representation."""
-        return 'DepFile(%s)' % repr(self.__builder)
+        return 'DepFile(%s)' % repr(self._builder)
 
     def __str__(self):
         """String representation."""
-        return 'DepFile(%s)' % self.__builder
+        return 'DepFile(%s)' % self._builder
 
 def path_build(path, absolute = False):
   """Return path as found in the build directory.
@@ -973,7 +973,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
         self.__name = name
         self.uid = BaseNode.uid
         BaseNode.uid += 1
-        self.builder = None
+        self._builder = None
         self.consumers = []
 
     def name(self):
@@ -992,9 +992,9 @@ class BaseNode(object, metaclass = _BaseNodeType):
             return True
         marks[self] = None
         print('  node_%s [label="%s"]' % (self.uid, self.__name))
-        if self.builder is not None:
-            if self.builder.dot(marks):
-                print('  builder_%s -> node_%s' % (self.builder.uid,
+        if self._builder is not None:
+            if self._builder.dot(marks):
+                print('  builder_%s -> node_%s' % (self._builder.uid,
                                                    self.uid))
         return True
 
@@ -1034,13 +1034,13 @@ class BaseNode(object, metaclass = _BaseNodeType):
         else:
           debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
           with debug.indentation():
-            if self.builder is not None:
-              self.builder.run()
+            if self._builder is not None:
+              self._builder.run()
             self.polish()
 
     @property
     def build_status(self):
-      return self.builder.build_status
+      return self._builder.build_status
 
     def polish(self):
         """A hook called when a node has been built.
@@ -1063,8 +1063,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
     def clean(self):
         """Clean recursively for this node sources."""
-        if self.builder is not None:
-            self.builder.clean()
+        if self._builder is not None:
+            self._builder.clean()
 
     def missing(self):
         """Whether this node is missing and must be built.
@@ -1085,7 +1085,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     def makefile(self, marks = None):
       """Print a Makefile for this node."""
       from pipes import quote
-      if self.builder is None:
+      if self._builder is None:
         return
       if marks is None:
         marks = set()
@@ -1096,7 +1096,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
       print('%s: %s' % (self.makefile_name(),
                         ' '.join(map(lambda n: n.makefile_name(),
                                      self.dependencies))))
-      cmd = self.builder.command
+      cmd = self._builder.command
       if cmd is not None:
         if isinstance(self, Node):
           print('\t@mkdir -p %s' % self.path().dirname())
@@ -1116,6 +1116,16 @@ class BaseNode(object, metaclass = _BaseNodeType):
         were successfully built or not.
         """
         pass
+
+    @property
+    def builder(self):
+      return self._builder
+
+    @builder.setter
+    def builder(self, builder):
+      del Drake.current.nodes[self._BaseNode__name]
+      self._builder = builder
+      Drake.current.nodes[self._BaseNode__name] = self
 
 class VirtualNode(BaseNode):
 
@@ -1143,13 +1153,11 @@ class Node(BaseNode):
   """BaseNode representing a file."""
 
   def __init__(self, path):
-        """Construct a Node with the given path."""
-        self.__hash = None
-        path = Path(path)
-        if not path.absolute():
-            path = drake.Drake.current.prefix / path
-        BaseNode.__init__(self, path)
-        self.__dependencies = set()
+    """Construct a Node with the given path."""
+    path = drake.Drake.current.prefix / path
+    BaseNode.__init__(self, path)
+    self.__dependencies = set()
+    self.__hash = None
 
   def clone(self, path):
         """Clone of this node, with an other path."""
@@ -1174,7 +1182,7 @@ class Node(BaseNode):
         """Clean this node's file if it is generated, and recursively
         its sources recursively."""
         BaseNode.clean(self)
-        if self.builder is not None and self.path().exists():
+        if self._builder is not None and self.path().exists():
             print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
@@ -1191,9 +1199,9 @@ class Node(BaseNode):
     file
     """
     if self.name().absolute() or self.name().virtual:
-      # assert self.builder is None
+      # assert self._builder is None
       return drake.Path(self.name())
-    if self.builder is None and not self._BaseNode__name.absolute():
+    if self._builder is None:
       path = drake.path_source() / self._BaseNode__name
     else:
       path = drake.Path(self._BaseNode__name)
@@ -1247,23 +1255,14 @@ class Node(BaseNode):
     else:
       debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
       with debug.indentation():
-        if self.builder is None:
+        if self._builder is None:
           if self.missing():
             raise NoBuilder(self)
         else:
-          self.builder.run()
+          self._builder.run()
         for dep in self.dependencies:
           dep.build()
         self.polish()
-
-  def __setattr__(self, name, value):
-        """Adapt the node path is the builder is changed."""
-        if name == 'builder' and 'builder' in self.__dict__:
-            del Drake.current.nodes[self._BaseNode__name]
-            self.__dict__[name] = value
-            Drake.current.nodes[self._BaseNode__name] = self
-        else:
-            self.__dict__[name] = value
 
   def __repr__(self):
         """Filesystem path to the node file, as a string."""
@@ -1388,10 +1387,10 @@ class Builder:
     class Failed(Exception):
 
       def __init__(self, builder):
-        self.__builder = builder
+        self._builder = builder
 
       def __str__(self):
-          return '%s failed' % self.__builder
+          return '%s failed' % self._builder
 
     @classmethod
     def register_deps_handler(self, name, f):
@@ -1647,7 +1646,7 @@ class Builder:
                                       sched.Coroutine.current))
 
                 try:
-                    sched.coro_wait(coroutines_dynamic)
+                  sched.coro_wait(coroutines_dynamic)
                 except Exception as e:
                   explain(
                     self,
@@ -1674,16 +1673,16 @@ class Builder:
                       break
 
                 # Check if we are up to date wrt to the builder itself
-                self.__builder_hash = self.hash()
+                self._builder_hash = self.hash()
                 depfile_builder = self.cachedir() / _DEPFILE_BUILDER
                 if not execute:
-                  if self.__builder_hash is not None:
+                  if self._builder_hash is not None:
                     if depfile_builder.exists():
                       with open(str(depfile_builder), 'r') as f:
-                        if self.__builder_hash != f.read():
-                           execute = True
-                           explain(self,
-                                   'hash for the builder is outdated')
+                        if self._builder_hash != f.read():
+                          explain(self,
+                                  'hash for the builder is outdated')
+                          execute = True
                     else:
                       explain(self,
                               'the builder hash is missing')
@@ -1736,7 +1735,7 @@ class Builder:
                     debug.debug('Write dependencies file %s' % \
                                 self._depfile,
                                 debug.DEBUG_TRACE_PLUS)
-                    if self.__builder_hash is None:
+                    if self._builder_hash is None:
                       debug.debug('Remove builder dependency file %s'\
                                   % depfile_builder,
                                   debug.DEBUG_TRACE_PLUS)
@@ -1746,7 +1745,7 @@ class Builder:
                                   % depfile_builder,
                                   debug.DEBUG_TRACE_PLUS)
                       with open(str(depfile_builder), 'w') as f:
-                        print(self.__builder_hash, file = f, end = '')
+                        print(self._builder_hash, file = f, end = '')
                     # FIXME: BUG: remove dynamic dependencies files
                     # that are no longer present, otherwise this will
                     # be rebuilt forever.
@@ -2649,8 +2648,7 @@ class Rule(VirtualNode):
             for node in nodes:
                 self << node
         else:
-            self.builder.add_src(nodes)
-
+            self._builder.add_src(nodes)
 
 class EmptyBuilder(Builder):
 
@@ -3084,7 +3082,7 @@ class TestSuite(Rule):
       else:
         failures.append(dep)
         self.__failures += 1
-    self.builder.output('%s: %s / %s tests passed.' %
+    self._builder.output('%s: %s / %s tests passed.' %
                         (self, self.success, self.total))
 
   def __str__(self):
