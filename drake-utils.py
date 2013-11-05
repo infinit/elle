@@ -81,8 +81,7 @@ class GNUBuilder(drake.Builder):
       return False
 
     for target in self.__targets:
-      path = drake.Path(target.path())
-      path.strip_prefix(self.work_directory)
+      path = target.path().without_prefix(self.work_directory)
       if not isinstance(target, drake.cxx.DynLib):
         continue
       with drake.WritePermissions(target):
@@ -149,6 +148,8 @@ class GNUBuilder(drake.Builder):
       str(tuple(sorted(env))),
     ])
 
+  def __str__(self):
+    return '%s(%s)' % (self.__class__.__name__, self.__working_directory)
 
 class VersionGenerator(drake.Builder):
 
