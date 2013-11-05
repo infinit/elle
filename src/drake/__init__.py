@@ -369,7 +369,6 @@ class Path(metaclass = PathType):
       """
       self.__absolute = absolute
       self.__str = None
-      self.__hash = None
       self.__path = path
       self.__virtual = virtual
 
@@ -555,9 +554,7 @@ class Path(metaclass = PathType):
       >>> hash(Path('foo')) == hash(Path('foo'))
       True
       """
-      if self.__hash is None:
-        self.__hash = hash(str(self))
-      return self.__hash
+      return id(self)
 
     def exists(self):
         """Whether the designed file or directory exists.
@@ -860,7 +857,7 @@ class DepFile:
           name = ' '.join(chunks[1:-1])
           data = chunks[-1]
           src = Path(name)
-          self.__sha1[str(src)] = (sha1, data)
+          self.__sha1[src] = (sha1, data)
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
@@ -969,7 +966,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     def __init__(self, name):
         """Create a node with the given name."""
         if Drake.current.nodes.setdefault(name, self) is not self:
-          raise NodeRedefinition(str(name))
+          raise NodeRedefinition(name)
         self.__name = name
         self.uid = BaseNode.uid
         BaseNode.uid += 1
@@ -978,6 +975,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
     def name(self):
         """Node name, relative to the current drakefile."""
+        if self.__name.absolute():
+          return self.__name
         return self.__name.without_prefix(drake.Drake.current.prefix)
 
     def name_absolute(self):
@@ -1300,8 +1299,8 @@ def node(path, type = None):
   """
   if path.__class__ != Path:
     path = Path(path)
-  if str(path) in Drake.current.nodes:
-    return Drake.current.nodes[str(path)]
+  if path in Drake.current.nodes:
+    return Drake.current.nodes[path]
   if type is not None:
     return type(path)
   if path.extension in Node.extensions:
@@ -1666,7 +1665,7 @@ class Builder:
                 if not execute:
                   for p in self.__sources:
                     path = self.__sources[p].name()
-                    if str(path) not in self._depfile.sha1s():
+                    if path not in self._depfile.sha1s():
                       explain(self, 'of new dependency %s' % path)
                       execute = True
                       break
