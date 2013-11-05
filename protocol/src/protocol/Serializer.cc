@@ -43,6 +43,7 @@ namespace infinit
     Serializer::read()
     {
       reactor::Lock lock(_lock_read);
+      elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: read packet", *this)
       {
         uint32_t hash_size(_uint32_get(_stream));
@@ -73,7 +74,6 @@ namespace infinit
         }
         else
           ELLE_DUMP("%s: checksum match", *this);
-
         return packet;
       }
     }
@@ -85,6 +85,7 @@ namespace infinit
     Serializer::_write(Packet& packet)
     {
       reactor::Lock lock(_lock_write);
+      elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: send %s", *this, packet)
       {
         auto hash = cryptography::oneway::hash(
