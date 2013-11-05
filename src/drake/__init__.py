@@ -368,23 +368,29 @@ class Path(metaclass = PathType):
       path -- The path, as a string or an other Path.
       """
       self.__absolute = absolute
-      self.__str = None
+      self.__canonized = None
       self.__path = path
+      self.__str = None
       self.__virtual = virtual
 
     def canonize(self):
-      res = ()
-      path = self.__path
-      for i in range(len(path)):
-        if path[i] == '..' and len(res) > 0 and res[-1] != '..':
-          res = res[:-1]
-        elif path[i] == '.':
-          pass
+      if self.__canonized is None:
+        res = ()
+        path = self.__path
+        for i in range(len(path)):
+          if path[i] == '..' and len(res) > 0 and res[-1] != '..':
+            res = res[:-1]
+          elif path[i] == '.':
+            pass
+          else:
+            res += (path[i],)
+        if res == self.__path:
+          self.__canonized = self
         else:
-          res += (path[i],)
-      return drake.Path(res,
-                        absolute = self.__absolute,
-                        virtual = self.__virtual)
+          self.__canonized = drake.Path(res,
+                                        absolute = self.__absolute,
+                                        virtual = self.__virtual)
+      return self.__canonized
 
     def absolute(self):
         """Whether this path is absolute.
