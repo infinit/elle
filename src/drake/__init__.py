@@ -296,6 +296,30 @@ class NoBuilder(Exception):
         Exception.__init__(self,
                            'no builder to make %s' % self.__node)
 
+
+class BuilderRedefinition(Exception):
+
+  """Exception raised when two builders are defined for a node."""
+
+  def __init__(self, node, previous, new):
+    self.__node = node
+    self.__previous = previous
+    self.__new = new
+    super().__init__('builder redefinition for %s' % self.__node)
+
+  @property
+  def node(self):
+    return self.__node
+
+  @property
+  def previous_builder(self):
+    return self.__previous
+
+  @property
+  def new_builder(self):
+    return self.__new
+
+
 _RAW = 'DRAKE_RAW' in _OS.environ
 _SILENT = 'DRAKE_SILENT' in _OS.environ
 
@@ -1446,13 +1470,13 @@ class Builder:
         self.__sources = {}
         self.__vsrcs = {}
         for src in srcs:
-            self.add_src(src)
+          self.add_src(src)
         self.__targets = []
         for dst in dsts:
-            if dst.builder is not None:
-                raise Exception('builder redefinition for %s' % dst)
-            self.__targets.append(dst)
-            dst.builder = self
+          if dst.builder is not None:
+            raise BuilderRedefinition(dst, dst.builder, self)
+          self.__targets.append(dst)
+          dst.builder = self
 
         self.uid = Builder.uid
         Builder.uid += 1
