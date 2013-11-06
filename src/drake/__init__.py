@@ -1346,6 +1346,10 @@ class Node(BaseNode):
   def dependency_add(self, dep):
       self.__dependencies.add(dep)
 
+  def dependencies_add(self, deps):
+    for dep in deps:
+      self.dependency_add(dep)
+
 
 def node(path, type = None):
   """Create or get a BaseNode.
