@@ -806,6 +806,11 @@ class Path(metaclass = PathType):
 
         >>> p.without_prefix("quux")
         Path("../bar/baz")
+
+        Rewinding a path entirerly yields the current directory.
+
+        >>> Path('foo/bar').without_prefix('foo/bar')
+        Path(".")
         """
         rhs = drake.Path(rhs).canonize().__path
         path = self.__path
@@ -816,7 +821,7 @@ class Path(metaclass = PathType):
         assert '..' not in rhs
         path = ('..',) * len(rhs) + path
         if not path:
-          path = ['.']
+          path = ('.',)
         return drake.Path(path,
                           absolute = False,
                           virtual = False,
