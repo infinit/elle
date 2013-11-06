@@ -957,7 +957,7 @@ class DepFile:
         """String representation."""
         return 'DepFile(%s)' % self._builder
 
-def path_build(path, absolute = False):
+def path_build(path = None, absolute = False):
   """Return path as found in the build directory.
 
   This function prepend the necessary prefix to a path relative to
@@ -974,11 +974,14 @@ def path_build(path, absolute = False):
   used. However it is sometimes necessary, when generating shell
   commands for instance.
   """
-  path = Path(path)
-  if path.absolute():
-    return path
+  if path is not None:
+    path = Path(path)
+    if path.absolute():
+      return path
+    else:
+      path = drake.Drake.current.prefix / path
   else:
-    path = drake.Drake.current.prefix / path
+    path = drake.Drake.current.prefix
   if absolute:
     path = drake.Path(_OS.getcwd()) / path
   return path
