@@ -43,10 +43,12 @@ def configure(prefix = '.'):
      'src/drake/opencv.py',
      'src/drake/python/__init__.py',
      'src/drake/sched.py',
+     'src/drake/templating.py',
      'src/drake/threadpool.py',
      'src/drake/urbi/__init__.py',
      'src/drake/utils.py',
      'src/drake/valgrind.py',
+     'src/drake/which.py',
   )
   command = drake.node('src/bin/drake')
 
