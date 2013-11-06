@@ -328,6 +328,11 @@ def configure(cxx_toolkit = None,
   #   # So curl links its curl binary with the right SSL.
   #   curl_configure_args.append(
   #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
+  curl_environment = {}
+  if cxx_toolkit.os is drake.os.macos:
+    key = 'DYLD_FALLBACK_LIBRARY_PATH'
+    path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
+    curl_environment[key] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   GNUBuilder(
     cxx_toolkit,
@@ -347,6 +352,7 @@ def configure(cxx_toolkit = None,
     sources = curl_dependency_libs + [curl_configure],
     configure_interpreter = 'sh',
     build_args = ['all', 'install',],
+    additional_env = curl_environment,
   )
   for lib in curl_dependency_libs:
     curl_lib.dependency_add(lib)
