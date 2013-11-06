@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import drake
+import drake.cxx
+import os.path
+import sys
+
+with drake.Drake('.') as d:
+  sys.argv = [sys.argv[0], 'main.o']
+  d.run()
+
+assert os.path.exists('include/gen/generated.hh')

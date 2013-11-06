@@ -68,6 +68,7 @@ def configure(prefix = '.'):
     'cxx/dependency-directory-clash',
     'cxx/find_library',
     'cxx/headers-deps',
+    'cxx/generated-headers-deps',
     'cxx/pkg-config',
     'sched/exceptions',
     'sched/thread-concurrency',

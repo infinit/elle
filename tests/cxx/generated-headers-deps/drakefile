@@ -1,0 +1,11 @@
+import drake
+import drake.cxx
+
+def configure():
+  generated = drake.node('include/gen/generated.hh')
+  drake.TouchBuilder(generated)
+  cxx_config = drake.cxx.Config()
+  cxx_config.add_local_include_path('include')
+  src = drake.node('main.cc')
+  obj = drake.node('main.o')
+  drake.cxx.Compiler(src, obj, drake.cxx.Toolkit(), cxx_config)

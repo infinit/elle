@@ -954,14 +954,14 @@ def mkdeps(res, n, lvl, config, marks,
     for include_path in search:
       name = include_path / include
       test = name
-      registered = str(test) in drake.Drake.current.nodes
-      if registered:
+      registered = drake.Drake.current.nodes.get(test, None)
+      if registered is not None:
         # Check this is not an old cached dependency from
         # cxx.inclusions. Not sure of myself though.
-        if test.is_file() or node(str(test)).builder is not None:
+        if test.is_file() or registered.builder is not None:
           found, via = unique(path, include, via, found, include_path,
                               node(test))
-       # Check if such a file doesn't exist, unregistered, in the
+      # Check if such a file doesn't exist, unregistered, in the
       # source path.
       if not found or drake.path_source() != Path('.'):
         test = drake.path_source() / test
