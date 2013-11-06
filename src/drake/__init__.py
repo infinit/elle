@@ -2626,6 +2626,8 @@ def __copy(sources, to, strip_prefix, builder):
       strip_prefix = drake.Path(strip_prefix)
     if not strip_prefix.absolute():
       strip_prefix = drake.path_build(strip_prefix)
+  else:
+    strip_prefix = drake.path_build()
   if multiple:
     res = []
     for node in sources:
