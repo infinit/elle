@@ -214,6 +214,9 @@ def explain(node, reason):
   if EXPLAIN:
     print('Execute %s because %s' % (node, reason))
 
+def warn(msg):
+  print('Warning: %s.' % msg, file = sys.stderr)
+
 class Profile:
 
     def __init__(self, name):
@@ -2497,73 +2500,84 @@ class WritePermissions:
 
 class Copy(Builder):
 
-    """Builder to copy files.
+  """Builder to copy files.
 
-    See the convenience function copy to copy multiple files easily.
+  See the convenience function copy to copy multiple files easily.
 
-    >>> source = node('/tmp/.drake.Copy.source')
-    >>> with open(str(source.path()), 'w') as f:
-    ...   print('Content.', file = f)
-    >>> builder = Copy(source, Path('/tmp/.drake.Copy.dest'))
-    >>> target = builder.target()
-    >>> target
-    /tmp/.drake.Copy.dest
-    >>> target.path().remove()
-    >>> builder.target().build()
-    Copy /tmp/.drake.Copy.dest
-    >>> with open(str(target.path()), 'r') as f:
-    ...   content = f.read()
-    >>> content
-    'Content.\\n'
+  >>> source = node('/tmp/.drake.Copy.source')
+  >>> with open(str(source.path()), 'w') as f:
+  ...   print('Content.', file = f)
+  >>> builder = Copy(source, Path('/tmp/.drake.Copy.dest'))
+  >>> target = builder.target()
+  >>> target
+  /tmp/.drake.Copy.dest
+  >>> target.path().remove()
+  >>> builder.target().build()
+  Copy /tmp/.drake.Copy.dest
+  >>> with open(str(target.path()), 'r') as f:
+  ...   content = f.read()
+  >>> content
+  'Content.\\n'
+  """
+
+  name = 'copy'
+
+  @classmethod
+  def __original(self, node):
+    b = node.builder
+    if b is not None and b.__class__ is Copy:
+      return self.__original(b.source)
+    else:
+      return node
+
+  def __init__(self, source, to):
+    """Create a copy builder.
+
+    source -- Node to copy.
+    to     -- Destination path.
     """
+    self.__source = source
+    self.__target = source.clone(to.canonize())
+    try:
+      Builder.__init__(self, [self.__source], [self.__target])
+    except BuilderRedefinition:
+      original = self.__original(self.__target.builder.source)
+      if original is self.__original(source):
+        if self.__class__ is self.__target.builder.__class__:
+          return
+        else:
+          drake.warn('%s is copied twice to %s '
+                     'but with different builder types (%s and %s), '
+                     'which is thus not considere equivalent' % (
+                       original, self.__target,
+                       self.__target.builder.name, self.name))
+      raise
 
-    @classmethod
-    def __original(self, node):
-      b = node.builder
-      if b is not None and b.__class__ is Copy:
-        return self.__original(b.source)
-      else:
-        return node
+  @property
+  def source(self):
+    """The source node."""
+    return self.__source
 
-    def __init__(self, source, to):
-        """Create a copy builder.
+  def target(self):
+    """The target node."""
+    return self.__target
 
-        source -- Node to copy.
-        to     -- Destination path.
-        """
-        self.__source = source
-        self.__target = source.clone(to.canonize())
-        if self.__target.builder is not None:
-          if self.__class__ is self.__target.builder.__class__:
-            if self.__original(self.__target.builder.source) is self.__original(source):
-              return
-        Builder.__init__(self, [self.__source], [self.__target])
+  def execute(self):
+    """Copy the source to the target."""
+    self.output('Copy %s to %s' % (self.__source.path(),
+                                   self.__target.path()),
+                'Copy %s' % self.__target)
+    return self._execute()
 
-    @property
-    def source(self):
-      """The source node."""
-      return self.__source
+  def _execute(self):
+    with WritePermissions(self.__target):
+      shutil.copy2(str(self.__source.path()),
+                   str(self.__target.path()))
+    return True
 
-    def target(self):
-        """The target node."""
-        return self.__target
-
-    def execute(self):
-        """Copy the source to the target."""
-        self.output('Copy %s to %s' % (self.__source.path(),
-                                       self.__target.path()),
-                    'Copy %s' % self.__target)
-        return self._execute()
-
-    def _execute(self):
-      with WritePermissions(self.__target):
-        shutil.copy2(str(self.__source.path()),
-                     str(self.__target.path()))
-      return True
-
-    @property
-    def command(self):
-        return ['cp', self.__source.path(), self.__target.path()]
+  @property
+  def command(self):
+    return ['cp', self.__source.path(), self.__target.path()]
 
 
 class Install(Copy):
@@ -2571,6 +2585,8 @@ class Install(Copy):
 
   Same as copy, but also executes the node install hook.
   """
+
+  name = 'install'
 
   def execute(self):
     self.output('Install %s to %s' % (self.source.path(),
