@@ -2419,8 +2419,8 @@ def complete_modes():
 
 def complete_nodes():
   def res():
-    # for node in Drake.current.nodes:
-    #   print(node)
+    for node in Drake.current.nodes:
+      print(node)
     exit(0)
   return res
 
