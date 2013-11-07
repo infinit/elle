@@ -38,7 +38,7 @@ class GNUBuilder(drake.Builder):
     self.__configure = configure
     self.__configure_interpreter = configure_interpreter
     self.__configure_args = configure_args
-    self.__targets = targets
+    self.__targets = list(targets)
     self.__make_binary = make_binary
     self.__makefile = makefile
     self.__build_args = build_args
@@ -57,8 +57,7 @@ class GNUBuilder(drake.Builder):
     drake.Builder.__init__(
       self,
       (configure is not None and [configure] or []) + sources,
-      targets
-    )
+      self.__targets)
 
   def execute(self):
     # Configure step
