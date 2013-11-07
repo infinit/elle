@@ -69,9 +69,8 @@ namespace elle
     operator = (Buffer&& other);
     /// Free owned memory.
     ~Buffer();
-  private:
     /// Buffer is not copyable
-    Buffer(Buffer const&);
+    Buffer(Buffer const&) = delete;
 
   /*------------------.
   | Memory management |
