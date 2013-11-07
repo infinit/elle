@@ -1358,6 +1358,8 @@ class Executable(Binary):
     if tk is not None:
       path = tk.exename(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
+    for lib in self.dynamic_libraries:
+      self.dependency_add(lib)
     if sources is not None:
       Linker(self, self.tk, self.cfg)
 
