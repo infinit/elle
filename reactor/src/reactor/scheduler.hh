@@ -77,7 +77,8 @@ namespace reactor
     void _unfreeze(Thread& thread);
   private:
     void _terminate(Thread* thread);
-    void _terminate_now(Thread* thread);
+    void _terminate_now(Thread* thread,
+                        bool suicide);
     Thread* _current;
     Threads _starting;
     boost::mutex _starting_mtx;

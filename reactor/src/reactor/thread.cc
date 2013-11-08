@@ -234,9 +234,9 @@ namespace reactor
     _scheduler._terminate(this);
   }
 
-  void Thread::terminate_now()
+  void Thread::terminate_now(bool suicide)
   {
-    _scheduler._terminate_now(this);
+    _scheduler._terminate_now(this, suicide);
   }
 
   bool

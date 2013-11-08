@@ -137,7 +137,7 @@ namespace reactor
        *
        */
       void terminate();
-      void terminate_now();
+      void terminate_now(bool suicide = true);
     protected:
       virtual bool _wait(Thread* thread);
     private:

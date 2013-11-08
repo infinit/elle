@@ -366,8 +366,12 @@ namespace reactor
   }
 
   void
-  Scheduler::_terminate_now(Thread* thread)
+  Scheduler::_terminate_now(Thread* thread,
+                            bool suicide)
   {
+    if (!suicide && this->current() == thread)
+      return;
+
     _terminate(thread);
 
     // Wait on the thread object and ignore exceptions until the wait is done.
