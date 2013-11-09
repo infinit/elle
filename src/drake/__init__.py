@@ -1043,7 +1043,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
         """Create a node with the given name."""
         self.__name = name.canonize()
         if Drake.current.nodes.setdefault(self.__name, self) is not self:
-          raise NodeRedefinition(name)
+          raise NodeRedefinition(self.__name)
         self.uid = BaseNode.uid
         BaseNode.uid += 1
         self._builder = None
