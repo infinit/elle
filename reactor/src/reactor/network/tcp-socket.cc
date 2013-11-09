@@ -34,8 +34,7 @@ namespace reactor
                          const std::string& hostname,
                          const std::string& port,
                          DurationOpt timeout):
-      Super(sched, resolve_tcp(sched, hostname, port), timeout),
-      _write_mutex()
+      TCPSocket(sched, resolve_tcp(sched, hostname, port), timeout)
     {}
 
     TCPSocket::TCPSocket(const std::string& hostname,
@@ -48,10 +47,16 @@ namespace reactor
                          const std::string& hostname,
                          int port,
                          DurationOpt timeout)
-      : Super(sched,
-              resolve_tcp(sched, hostname,
-                          boost::lexical_cast<std::string>(port)),
-              timeout)
+      : TCPSocket(sched, resolve_tcp(sched,
+                                     hostname,
+                                     boost::lexical_cast<std::string>(port)),
+                  timeout)
+    {}
+
+    TCPSocket::TCPSocket(Scheduler& sched,
+                         boost::asio::ip::tcp::endpoint const& endpoint,
+                         DurationOpt timeout)
+      : Super(sched, endpoint, timeout)
       , _write_mutex()
     {}
 

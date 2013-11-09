@@ -36,6 +36,9 @@ namespace reactor
                 const std::string& hostname,
                 int port,
                 DurationOpt timeout = DurationOpt());
+      TCPSocket(Scheduler& sched,
+                boost::asio::ip::tcp::endpoint const& endpoint,
+                DurationOpt timeout = DurationOpt());
       virtual ~TCPSocket();
       void
       close();
