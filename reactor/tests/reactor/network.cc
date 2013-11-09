@@ -373,6 +373,9 @@ resolution_failure()
       BOOST_CHECK_THROW(
         reactor::network::resolve_tcp(sched, "does.not.exist", "http"),
         reactor::network::ResolutionError);
+      BOOST_CHECK_THROW(
+        reactor::network::TCPSocket(sched, "does.not.exist", "http"),
+        reactor::network::ResolutionError);
     });
   sched.run();
 }
