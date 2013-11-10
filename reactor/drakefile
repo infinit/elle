@@ -23,6 +23,8 @@ def configure(curl_config,
               cxx_toolkit = None,
               cxx_config = None,
               boost = None,
+              enable_python = True,
+              python3 = None,
               elle = None,
               prefix = '/usr',
               valgrind = None):
@@ -44,12 +46,23 @@ def configure(curl_config,
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
 
+  # Python
+  if enable_python:
+    python3 = drake.cxx.find_library(
+      token = 'pyconfig.h',
+      prefix = prefix,
+      include_dir = 'include/python3.2')
+    local_cxx_config.define('REACTOR_PYTHON_BINDING')
+
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
   local_cxx_config += boost.config_signals()
   local_cxx_config += boost.config_system()
   local_cxx_config += boost.config_thread()
+  if enable_python:
+    local_cxx_config += boost.config_python()
+    local_cxx_config += python3
 
   # Curl
   local_cxx_config += curl_config
@@ -194,6 +207,14 @@ def configure(curl_config,
                                  sources + [libcoroutine,
                                             elle_lib, curl_lib],
                                  cxx_toolkit, lib_cxx_config)
+
+  if enable_python:
+    python_sources = drake.nodes('src/reactor/python.cc')
+    python_cxx_config = drake.cxx.Config(local_cxx_config)
+    python_cxx_config.lib_path_runtime('..')
+    python_lib = drake.cxx.Module('lib/python/reactor',
+                                  python_sources + [lib_dynamic],
+                                  cxx_toolkit, python_cxx_config)
 
   # Build
   rule_build = drake.Rule('build')

@@ -1,3 +1,8 @@
+#ifdef REACTOR_PYTHON_BINDING
+# include <boost/python.hpp>
+# include <reactor/python.hh>
+#endif
+
 #include <elle/Measure.hh>
 #include <elle/attribute.hh>
 #include <elle/assert.hh>
@@ -107,7 +112,18 @@ namespace reactor
     ELLE_ASSERT(_frozen.empty());
     if (_eptr != nullptr)
     {
-      std::rethrow_exception(_eptr);
+#ifdef REACTOR_PYTHON_BINDING
+      try
+      {
+#endif
+        std::rethrow_exception(_eptr);
+#ifdef REACTOR_PYTHON_BINDING
+      }
+      catch (PythonException const& e)
+      {
+        e.restore();
+      }
+#endif
     }
   }
 
@@ -240,8 +256,7 @@ namespace reactor
     {
       ELLE_TRACE("%s: %s finished", *this, *thread);
       _running.erase(thread);
-      if (thread->_dispose)
-        delete thread;
+      thread->_scheduler_release();
     }
   }
 
@@ -308,8 +323,7 @@ namespace reactor
       // Threads expect to be done when deleted. For this very
       // particuliar case, hack the state before deletion.
       t->_state = Thread::state::done;
-      if (t->_dispose)
-        delete t;
+      t->_scheduler_release();
     }
     _starting.clear();
     BOOST_FOREACH(Thread* t, Threads(_running))

@@ -35,6 +35,11 @@ namespace reactor
              bool dispose = false);
       virtual
       ~Thread();
+    protected:
+      /// Called by the scheduler when it doesn't reference this anymore.
+      virtual
+      void
+      _scheduler_release();
     private:
       bool _dispose;
 
