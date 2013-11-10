@@ -2786,6 +2786,11 @@ class TouchBuilder(Builder):
             node.path().touch()
         return True
 
+def touch(path):
+  res = node(Path(path))
+  TouchBuilder(res)
+  return res
+
 # Architectures
 class arch:
 
