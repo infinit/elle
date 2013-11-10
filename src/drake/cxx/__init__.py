@@ -1435,14 +1435,14 @@ command_add('cxx-deps-dot', dot_spread)
 
 def find_library(token = None, name = None, prefix = None,
                  include_dir = None):
-    if prefix is None or isinstance(prefix, str):
-        conf = LibraryConfiguration(token = token,
-                                    name = None,
-                                    prefix = prefix,
-                                    include_dir = include_dir)
-        return conf.config()
-    else:
-        return prefix
+  if prefix is None or isinstance(prefix, (str, Path)):
+    conf = LibraryConfiguration(token = token,
+                                name = None,
+                                prefix = prefix,
+                                include_dir = include_dir)
+    return conf.config()
+  else:
+    return prefix
 
 class PkgConfig():
 
