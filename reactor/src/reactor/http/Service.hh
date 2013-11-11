@@ -26,6 +26,7 @@ namespace reactor
       shutdown_service();
     private:
       friend class Client;
+      friend class Request::Impl;
       CURLM* _curl;
 
     /*---------.
@@ -41,6 +42,7 @@ namespace reactor
     | Socket |
     `-------*/
     private:
+      std::unordered_map<int, boost::asio::ip::tcp::socket*> _sockets;
       static
       int
       socket_callback(CURL *easy,

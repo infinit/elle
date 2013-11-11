@@ -17,7 +17,8 @@ namespace reactor
   namespace http
   {
     class Request::Impl:
-      public elle::StreamBuffer
+      public elle::StreamBuffer,
+      public elle::Printable
     {
     public:
       Impl(Request& request,
@@ -119,9 +120,17 @@ namespace reactor
       std::string _url;
       Method _method;
       CURL* _handle;
-      std::unique_ptr<boost::asio::ip::tcp::socket> _socket;
+      boost::asio::ip::tcp::socket* _socket;
       char _error[CURL_ERROR_SIZE];
       ELLE_ATTRIBUTE_R(int, pause_count);
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      /// Pretty print the request.
+      virtual
+      void
+      print(std::ostream& stream) const override;
     };
   }
 }

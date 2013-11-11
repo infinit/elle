@@ -272,7 +272,7 @@ namespace reactor
       _url(url),
       _method(method),
       _handle(curl_easy_init()),
-      _socket(),
+      _socket(nullptr),
       _pause_count(0)
     {
       if (!this->_handle)
@@ -311,7 +311,7 @@ namespace reactor
       setopt(this->_handle, CURLOPT_OPENSOCKETFUNCTION, &Impl::open_socket);
       setopt(this->_handle, CURLOPT_OPENSOCKETDATA, this);
       setopt(this->_handle, CURLOPT_CLOSESOCKETFUNCTION, &Impl::close_socket);
-      setopt(this->_handle, CURLOPT_CLOSESOCKETDATA, this);
+      setopt(this->_handle, CURLOPT_CLOSESOCKETDATA, &this->_curl);
       // Set input / output callbacks.
       setopt(this->_handle, CURLOPT_WRITEFUNCTION, &Impl::write_callback);
       setopt(this->_handle, CURLOPT_WRITEDATA, this);
@@ -323,6 +323,7 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
       curl_easy_cleanup(this->_handle);
+      this->_socket = nullptr;
     }
 
     std::unordered_map<std::string, std::string>
@@ -412,26 +413,33 @@ namespace reactor
     {
       Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
       ELLE_TRACE_SCOPE("%s: open socket", self._request);
-      curl_socket_t sockfd = CURL_SOCKET_BAD;
-      // FIXME: restricted to ipv4
-      if (purpose == CURLSOCKTYPE_IPCXN && address->family == AF_INET)
+      if (purpose == CURLSOCKTYPE_IPCXN)
       {
-        auto proto = boost::asio::ip::tcp::v4();
+        if (address->family != AF_INET && address->family != AF_INET6)
+          return CURL_SOCKET_BAD;
+        auto proto = address->family == AF_INET ?
+          boost::asio::ip::tcp::v4(): boost::asio::ip::tcp::v6();
         auto& service = self._curl.get_io_service();
-        self._socket.reset(new boost::asio::ip::tcp::socket(service, proto));
-        sockfd = self._socket->native_handle();
+        self._socket = new boost::asio::ip::tcp::socket(service, proto);
+        int sockfd = self._socket->native_handle();
+        self._curl._sockets[sockfd] = self._socket;
+        return sockfd;
       }
-      return sockfd;
+      else
+        return CURL_SOCKET_BAD;
     }
 
     int
-    Request::Impl::close_socket(void*, curl_socket_t)
+    Request::Impl::close_socket(void* data, curl_socket_t fd)
     {
-      // Socket is closed directly by the Request destruction. Beware,
-      // curl_multi seems to keep reference to the socket and destroy it
-      // *after* the Request and its easy handle have been disposed of. The
-      // request is thus invalid in this concept, hence this design instead of
-      // closing the socket here.
+      // Beware, curl_multi keeps reference to the socket and destroy it *after*
+      // the Request and its easy handle have been disposed of. The request is
+      // thus invalid in this concept, hence the use of a map in the Service to
+      // hold sockets. It seems that Curl does this to reuse sockets between
+      // requests in some cases.
+      Service& service = *reinterpret_cast<Service*>(data);
+      ELLE_ASSERT_CONTAINS(service._sockets, fd);
+      delete service._sockets.find(fd)->second;
       return 0;
     }
 
@@ -592,6 +600,16 @@ namespace reactor
       }
     }
 
+    /*---------.
+    | Printing |
+    `---------*/
+
+    void
+    Request::Impl::print(std::ostream& stream) const
+    {
+      stream << this->_method << " on " << this->_url;
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -656,7 +674,7 @@ namespace reactor
     boost::asio::ip::tcp::socket*
     Request::socket()
     {
-      return this->_impl->_socket.get();
+      return this->_impl->_socket;
     }
 
     /*-----------.
@@ -781,7 +799,7 @@ namespace reactor
     void
     Request::print(std::ostream& stream) const
     {
-      stream << this->_impl->_method << " on " << this->_impl->_url;
+      stream << *this->_impl;
     }
 
     /*----------.

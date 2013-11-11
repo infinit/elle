@@ -219,7 +219,7 @@ namespace reactor
       ELLE_DEBUG_SCOPE("%s: %s wants to %s",
                        *this, request, action_string(action));
       // Cancel previous callbacks.
-      auto sock = request._socket.get();
+      auto sock = request._socket;
       if (sock)
         sock->cancel();
       // Set status and register needed callbacks.
@@ -238,7 +238,7 @@ namespace reactor
         return;
       ELLE_DEBUG_SCOPE("%s: register %s for writing",
                        *this, *request._request);
-      auto sock = request._socket.get();
+      auto sock = request._socket;
       ELLE_ASSERT(sock);
       sock->async_write_some(boost::asio::null_buffers(),
                              std::bind(&Service::handle_socket_ready,
@@ -259,7 +259,7 @@ namespace reactor
         return;
       ELLE_DEBUG_SCOPE("%s: register %s for reading",
                        *this, *request._request);
-      auto sock = request._socket.get();
+      auto sock = request._socket;
       ELLE_ASSERT(sock);
       sock->async_read_some(boost::asio::null_buffers(),
                             std::bind(&Service::handle_socket_ready,
