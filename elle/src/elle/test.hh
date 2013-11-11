@@ -67,5 +67,27 @@ void                                                                          \
 _test_suite()                                                                 \
 /**/
 
+#define ELLE_TEST_SCHEDULED(Name)                       \
+static                                                  \
+void                                                    \
+Name##_impl();                                          \
+                                                        \
+static                                                  \
+void                                                    \
+Name()                                                  \
+{                                                       \
+  reactor::Scheduler sched;                             \
+  reactor::Thread main(                                 \
+    sched, "main",                                      \
+    [&]                                                 \
+    {                                                   \
+      Name##_impl();                                    \
+    });                                                 \
+  sched.run();                                          \
+}                                                       \
+                                                        \
+static                                                  \
+void                                                    \
+Name##_impl()                                           \
 
 #endif
