@@ -99,9 +99,9 @@ namespace elle
   {
     unsigned int size = pptr() - pbase();
     ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
+    setp(0, 0);
     if (size > 0)
       flush(size);
-    setp(0, 0);
     // Success
     return 0;
   }
