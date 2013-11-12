@@ -23,7 +23,7 @@ def configure(curl_config,
               cxx_toolkit = None,
               cxx_config = None,
               boost = None,
-              enable_python = True,
+              enable_python_bindings = False,
               python3 = None,
               elle = None,
               prefix = '/usr',
@@ -47,7 +47,7 @@ def configure(curl_config,
   local_cxx_config.enable_debug_symbols()
 
   # Python
-  if enable_python:
+  if enable_python_bindings:
     python3 = drake.cxx.find_library(
       token = 'pyconfig.h',
       prefix = python3,
@@ -60,7 +60,7 @@ def configure(curl_config,
   local_cxx_config += boost.config_signals()
   local_cxx_config += boost.config_system()
   local_cxx_config += boost.config_thread()
-  if enable_python:
+  if enable_python_bindings:
     local_cxx_config += boost.config_python()
     local_cxx_config += python3
 
@@ -208,7 +208,7 @@ def configure(curl_config,
                                             elle_lib, curl_lib],
                                  cxx_toolkit, lib_cxx_config)
 
-  if enable_python:
+  if enable_python_bindings:
     python_sources = drake.nodes('src/reactor/python.cc')
     python_cxx_config = drake.cxx.Config(local_cxx_config)
     python_cxx_config.lib_path_runtime('..')
