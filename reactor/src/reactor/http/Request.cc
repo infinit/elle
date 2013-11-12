@@ -420,10 +420,12 @@ namespace reactor
         auto proto = address->family == AF_INET ?
           boost::asio::ip::tcp::v4(): boost::asio::ip::tcp::v6();
         auto& service = self._curl.get_io_service();
-        self._socket = new boost::asio::ip::tcp::socket(service, proto);
-        int sockfd = self._socket->native_handle();
-        self._curl._sockets[sockfd] = self._socket;
-        return sockfd;
+        auto socket =
+          std::make_shared<boost::asio::ip::tcp::socket>(service, proto);
+        self._socket = socket;
+        auto fd = self._socket->native_handle();
+        self._curl._sockets[fd] = socket;
+        return fd;
       }
       else
         return CURL_SOCKET_BAD;
@@ -439,7 +441,7 @@ namespace reactor
       // requests in some cases.
       Service& service = *reinterpret_cast<Service*>(data);
       ELLE_ASSERT_CONTAINS(service._sockets, fd);
-      delete service._sockets.find(fd)->second;
+      ELLE_ENFORCE(service._sockets.erase(fd));
       return 0;
     }
 
@@ -674,7 +676,7 @@ namespace reactor
     boost::asio::ip::tcp::socket*
     Request::socket()
     {
-      return this->_impl->_socket;
+      return this->_impl->_socket.get();
     }
 
     /*-----------.

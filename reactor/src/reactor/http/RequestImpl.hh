@@ -120,7 +120,8 @@ namespace reactor
       std::string _url;
       Method _method;
       CURL* _handle;
-      boost::asio::ip::tcp::socket* _socket;
+      typedef std::shared_ptr<boost::asio::ip::tcp::socket> SocketPtr;
+      SocketPtr _socket;
       char _error[CURL_ERROR_SIZE];
       ELLE_ATTRIBUTE_R(int, pause_count);
     /*----------.

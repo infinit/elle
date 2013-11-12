@@ -239,7 +239,7 @@ namespace reactor
       ELLE_DEBUG_SCOPE("%s: register %s for writing",
                        *this, *request._request);
       auto sock = request._socket;
-      ELLE_ASSERT(sock);
+      ELLE_ASSERT(sock.get());
       sock->async_write_some(boost::asio::null_buffers(),
                              std::bind(&Service::handle_socket_ready,
                                        std::ref(*this),
@@ -260,7 +260,7 @@ namespace reactor
       ELLE_DEBUG_SCOPE("%s: register %s for reading",
                        *this, *request._request);
       auto sock = request._socket;
-      ELLE_ASSERT(sock);
+      ELLE_ASSERT(sock.get());
       sock->async_read_some(boost::asio::null_buffers(),
                             std::bind(&Service::handle_socket_ready,
                                       std::ref(*this),

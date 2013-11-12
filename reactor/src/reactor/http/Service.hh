@@ -42,7 +42,8 @@ namespace reactor
     | Socket |
     `-------*/
     private:
-      std::unordered_map<int, boost::asio::ip::tcp::socket*> _sockets;
+      typedef std::shared_ptr<boost::asio::ip::tcp::socket> SocketPtr;
+      std::unordered_map<int, SocketPtr> _sockets;
       static
       int
       socket_callback(CURL *easy,
