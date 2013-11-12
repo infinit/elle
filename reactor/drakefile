@@ -50,7 +50,7 @@ def configure(curl_config,
   if enable_python:
     python3 = drake.cxx.find_library(
       token = 'pyconfig.h',
-      prefix = prefix,
+      prefix = python3,
       include_dir = 'include/python3.2')
     local_cxx_config.define('REACTOR_PYTHON_BINDING')
 
