@@ -1,6 +1,8 @@
 #ifndef INFINIT_REACTOR_BARRIER_HH
 # define INFINIT_REACTOR_BARRIER_HH
 
+#include <boost/signals2/signal.hpp>
+
 # include <reactor/waitable.hh>
 
 namespace reactor
@@ -13,8 +15,9 @@ namespace reactor
   /// A Barrier is similar to a Signal, except it holds a state, enabling to
   /// detect if an event happens or already happened, while signals only pulse
   /// when triggered.
-  class Barrier
-    : public Waitable
+  class Barrier:
+    public Waitable,
+    public boost::signals2::signal<void (bool)>
   {
   /*------.
   | Types |

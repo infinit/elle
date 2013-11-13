@@ -29,12 +29,14 @@ namespace reactor
   {
     this->_opened = true;
     this->_signal();
+    (*this)(true);
   }
 
   void
   Barrier::close()
   {
     this->_opened = false;
+    (*this)(false);
   }
 
   bool
