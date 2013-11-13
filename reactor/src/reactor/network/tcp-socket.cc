@@ -101,13 +101,14 @@ namespace reactor
         typedef boost::asio::ip::tcp::socket AsioSocket;
         typedef boost::asio::ip::tcp::endpoint EndPoint;
         Read(Scheduler& scheduler,
-             PlainSocket<AsioSocket>* socket,
+             TCPSocket* socket,
              Buffer& buffer,
-             bool some)
-          : SocketOperation<AsioSocket>(scheduler, socket)
-          , _buffer(buffer)
-          , _read(0)
-          , _some(some)
+             bool some):
+          SocketOperation<AsioSocket>(scheduler, socket),
+          _buffer(buffer),
+          _read(0),
+          _some(some),
+          _socket(*socket)
         {}
 
         virtual const char* type_name() const
@@ -161,9 +162,11 @@ namespace reactor
           if (*canceled)
             return;
           if (error)
-            ELLE_TRACE("%s: read error: %s (%s)", *this, error.message(), error);
+            ELLE_TRACE("%s: read error: %s (%s)",
+                       this->_socket, error.message(), read);
           else
-            ELLE_TRACE("%s: read completed: %s bytes", *this, read);
+            ELLE_TRACE("%s: read completed: %s bytes",
+                       this->_socket, read);
           _read = read;
           if (error == boost::asio::error::eof
               || error == boost::asio::error::operation_aborted
@@ -183,6 +186,7 @@ namespace reactor
         Buffer& _buffer;
         Size _read;
         bool _some;
+      TCPSocket const& _socket;
     };
 
     void
@@ -339,11 +343,12 @@ namespace reactor
         typedef boost::asio::ip::tcp::endpoint EndPoint;
         typedef SocketOperation<AsioSocket> Super;
         Write(Scheduler& scheduler,
-              PlainSocket<AsioSocket>* socket,
+              TCPSocket* socket,
               elle::ConstWeakBuffer buffer):
           Super(scheduler, socket),
           _buffer(buffer),
-          _written(0)
+          _written(0),
+          _socket(*socket)
         {}
 
       virtual
@@ -378,9 +383,9 @@ namespace reactor
           if (*canceled)
             return;
           if (error)
-            ELLE_TRACE("%s: write error: %s", *this, error.message());
+            ELLE_TRACE("%s: write error: %s", this->_socket, error.message());
           else
-            ELLE_TRACE("%s: write completed: %s bytes", *this, written);
+            ELLE_TRACE("%s: write completed: %s bytes", this->_socket, written);
           _written = written;
           if (error == boost::asio::error::eof ||
               error == boost::asio::error::operation_aborted ||
@@ -394,6 +399,7 @@ namespace reactor
 
         elle::ConstWeakBuffer _buffer;
         Size _written;
+      TCPSocket const& _socket;
     };
 
     void
