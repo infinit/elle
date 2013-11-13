@@ -707,6 +707,26 @@ namespace reactor
     current->sleep(d);
   }
 
+  void
+  wait(Waitable& waitable, DurationOpt timeout)
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto* current = sched->current();
+    ELLE_ASSERT(current);
+    current->wait(waitable, timeout);
+  }
+
+  void
+  wait(Waitables const& waitables, DurationOpt timeout)
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto* current = sched->current();
+    ELLE_ASSERT(current);
+    current->wait(waitables, timeout);
+  }
+
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.

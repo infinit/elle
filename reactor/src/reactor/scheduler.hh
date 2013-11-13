@@ -213,6 +213,12 @@ namespace reactor
   /// Yield for \a duration.
   void
   sleep(Duration duration);
+  /// Wait for \a waitable.
+  void
+  wait(Waitable& waitable, DurationOpt timeout = DurationOpt());
+  /// Wait for \a waitables.
+  void
+  wait(Waitables const& waitables, DurationOpt timeout = DurationOpt());
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.
