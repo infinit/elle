@@ -662,9 +662,8 @@ class GccToolkit(Toolkit):
     if self.__recursive_linkage:
       cmd.append('-Wl,-)')
 
-
   def link(self, cfg, objs, exe):
-      cmd = [self.cxx] + self.ldflags(cfg)
+      cmd = [self.cxx] + cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
