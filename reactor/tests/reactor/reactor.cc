@@ -41,14 +41,6 @@ yield()
 }
 
 static
-bool
-_wait(reactor::Waitable& s,
-     reactor::DurationOpt timeout = reactor::DurationOpt())
-{
-  return reactor::Scheduler::scheduler()->current()->wait(s, timeout);
-}
-
-static
 void
 sleep(reactor::Duration d)
 {
@@ -267,7 +259,7 @@ void
 waiter_timeout()
 {
   reactor::Signal s;
-  bool finished = _wait(s, boost::posix_time::milliseconds(10));
+  bool finished = reactor::wait(s, boost::posix_time::milliseconds(10));
   BOOST_CHECK(!finished);
   s.signal();
 }
@@ -295,7 +287,7 @@ barrier_closed()
   bool beacon = false;
   reactor::Thread waiter(sched, "waiter", [&] {
       BOOST_CHECK(!barrier.opened());
-      _wait(barrier);
+      reactor::wait(barrier);
       BOOST_CHECK(barrier.opened());
       BOOST_CHECK(!beacon);
       beacon = true;
@@ -320,7 +312,7 @@ barrier_opened()
   barrier.open();
   BOOST_CHECK(barrier.opened());
   reactor::Thread waiter(sched, "waiter", [&] {
-      _wait(barrier);
+      reactor::wait(barrier);
     });
   sched.run();
 }
@@ -666,8 +658,8 @@ join_waiter_multiple(reactor::Thread& thread,
 {
   yield();
   BOOST_CHECK(thread.state() == reactor::Thread::state::done);
-  _wait(thread);
-  _wait(thread);
+  reactor::wait(thread);
+  reactor::wait(thread);
   ++count;
 }
 
@@ -697,10 +689,10 @@ static
 void
 prince_charming(reactor::Thread& sleeping_beauty)
 {
-  bool finished = _wait(sleeping_beauty, boost::posix_time::milliseconds(100));
+  bool finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(100));
   BOOST_CHECK(!finished);
   BOOST_CHECK(!sleeping_beauty.done());
-  finished = _wait(sleeping_beauty, boost::posix_time::milliseconds(200));
+  finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(200));
   BOOST_CHECK(finished);
   BOOST_CHECK(sleeping_beauty.done());
 }
@@ -726,7 +718,7 @@ void
 timeout(reactor::Signal& s,
         bool expect)
 {
-  bool finished = _wait(s, boost::posix_time::milliseconds(500));
+  bool finished = reactor::wait(s, boost::posix_time::milliseconds(500));
   BOOST_CHECK(finished == expect);
   BOOST_CHECK(s.waiters().empty());
 }
@@ -845,7 +837,7 @@ test_timeout_finished()
       // Block the IO service to make sure the task times out in the same cycle
       // it finishes.
       sched.io_service().post([] { ::usleep(200000); });
-      _wait(s, 11_ms);
+      reactor::wait(s, 11_ms);
     });
   sched.run();
 }
@@ -931,7 +923,7 @@ spawner()
   reactor::Signal s;
   int res = 0;
   boost::thread spawner(boost::bind(spawn, boost::ref(s), boost::ref(res)));
-  _wait(s);
+  reactor::wait(s);
   spawner.join();
   BOOST_CHECK_EQUAL(res, 42);
 }
@@ -990,9 +982,9 @@ void
 semaphore_noblock_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 2);
-  _wait(s);
+  reactor::wait(s);
   BOOST_CHECK_EQUAL(s.count(), 1);
-  _wait(s);
+  reactor::wait(s);
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1012,7 +1004,7 @@ void
 semaphore_block_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 0);
-  _wait(s);
+  reactor::wait(s);
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1049,7 +1041,7 @@ test_semaphore_multi()
   reactor::Semaphore s;
   int step = 0;
 
-  auto multi_wait = [&] { _wait(s); ++step; };
+  auto multi_wait = [&] { reactor::wait(s); ++step; };
 
   reactor::Thread wait1(sched, "wait1", multi_wait);
   reactor::Thread wait2(sched, "wait2", multi_wait);
