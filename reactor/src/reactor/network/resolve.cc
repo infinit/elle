@@ -1,7 +1,11 @@
+#include <elle/log.hh>
+
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
+
+ELLE_LOG_COMPONENT("reactor.network.resolve");
 
 namespace reactor
 {
@@ -48,6 +52,7 @@ namespace reactor
 
         virtual void _start()
         {
+          ELLE_TRACE("resolve %s:%s", this->_hostname, this->_service);
           typename Resolver::query query(_hostname, _service);
           _resolver.async_resolve(
             query,
