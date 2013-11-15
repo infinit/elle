@@ -205,7 +205,7 @@ namespace reactor
     TCPSocket::_read(Buffer buf, DurationOpt timeout, bool some)
     {
       ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
-                           *this, some ? "up to " : "", buf.size(), timeout);
+                       *this, some ? "up to " : "", buf.size(), timeout);
       if (this->_streambuffer.size())
       {
         std::istream s(&this->_streambuffer);
@@ -213,7 +213,14 @@ namespace reactor
         unsigned size = s.gcount();
         ELLE_ASSERT_GT(size, 0u);
         if (size == buf.size() || some)
+        {
+          ELLE_DEBUG("%s: completed read of %s (cached) bytes: %s",
+                     *this, size, elle::ConstWeakBuffer(buf.data(),
+                                                        buf.size()).string());
           return size;
+        }
+        else if (size)
+          ELLE_TRACE("%s: read %s cached bytes, carrying on", *this);
         buf = Buffer(buf.data() + size, buf.size() - size);
       }
       Read read(scheduler(), this, buf, some);
