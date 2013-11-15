@@ -707,24 +707,24 @@ namespace reactor
     current->sleep(d);
   }
 
-  void
+  bool
   wait(Waitable& waitable, DurationOpt timeout)
   {
     auto* sched = Scheduler::scheduler();
     ELLE_ASSERT(sched);
     auto* current = sched->current();
     ELLE_ASSERT(current);
-    current->wait(waitable, timeout);
+    return current->wait(waitable, timeout);
   }
 
-  void
+  bool
   wait(Waitables const& waitables, DurationOpt timeout)
   {
     auto* sched = Scheduler::scheduler();
     ELLE_ASSERT(sched);
     auto* current = sched->current();
     ELLE_ASSERT(current);
-    current->wait(waitables, timeout);
+    return current->wait(waitables, timeout);
   }
 
   /** Run the given operation in the next cycle.

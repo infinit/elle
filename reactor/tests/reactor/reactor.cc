@@ -630,7 +630,7 @@ void
 join_waiter(reactor::Thread& thread,
             int& count)
 {
-  wait(thread);
+  reactor::wait(thread);
   BOOST_CHECK_EQUAL(count, 2);
   ++count;
 }

@@ -214,10 +214,10 @@ namespace reactor
   void
   sleep(Duration duration);
   /// Wait for \a waitable.
-  void
+  bool
   wait(Waitable& waitable, DurationOpt timeout = DurationOpt());
   /// Wait for \a waitables.
-  void
+  bool
   wait(Waitables const& waitables, DurationOpt timeout = DurationOpt());
   /** Run the given operation in the next cycle.
    *
