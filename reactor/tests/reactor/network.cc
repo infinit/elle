@@ -479,6 +479,56 @@ read_until()
   sched.run();
 }
 
+/*----------.
+| underflow |
+`----------*/
+
+// Check that when a read is complete, the next buffer isn't loaded though
+// std::streambuf::underflow, entailing dead locks. This happens on OSX lion
+// (10.7).
+static
+void
+underflow()
+{
+  reactor::Scheduler sched;
+  reactor::Barrier listening;
+  int port = 0;
+  reactor::Thread t(
+    sched, "main",
+    [&]
+    {
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+      {
+        scope.run_background(
+          "server",
+          [&]
+          {
+            reactor::network::TCPServer server;
+            server.listen(0);
+            port = server.port();
+            listening.open();
+            auto socket = server.accept();
+            socket->write(std::string("lulz"));
+            socket->write(std::string("lol"));
+          });
+        scope.run_background(
+          "client",
+          [&]
+          {
+            reactor::wait(listening);
+            reactor::network::TCPSocket socket("127.0.0.1", port);
+            socket.write(std::string("lulz"));
+            char data[1024];
+            ELLE_LOG("first read")
+              socket.std::iostream::read(data, 4);
+            ELLE_LOG("second read")
+              socket.std::iostream::read(data, 3);
+          });
+        reactor::wait(scope);
+      };
+    });
+  sched.run();
+}
 
 /*-----------.
 | Test suite |
@@ -500,4 +550,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(test_socket_close));
   suite.add(BOOST_TEST_CASE(resolution_failure));
   suite.add(BOOST_TEST_CASE(read_until));
+  suite.add(BOOST_TEST_CASE(underflow));
 }
