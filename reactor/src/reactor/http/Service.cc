@@ -87,15 +87,13 @@ namespace reactor
     }
 
     Service::~Service()
-    {
-      auto res = curl_multi_cleanup(this->_curl);
-      assert(res == CURLM_OK);
-    }
+    {}
 
     void
     Service::shutdown_service()
     {
-      // Nothing.
+      auto res = curl_multi_cleanup(this->_curl);
+      assert(res == CURLM_OK);
     }
 
     /*--------.
