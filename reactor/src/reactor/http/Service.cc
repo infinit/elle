@@ -103,8 +103,9 @@ namespace reactor
     void
     Service::add(Request& request)
     {
-      ELLE_TRACE("%s: start %s", *this, request);
+      ELLE_TRACE_SCOPE("%s: start %s", *this, request);
       CURL* handle = request._impl->_handle;
+      ELLE_ASSERT_NCONTAINS(this->_requests, handle);
       this->_requests.insert(std::make_pair(handle, request._impl));
       auto res = curl_multi_add_handle(this->_curl, handle);
       if (res != CURLM_OK)
@@ -126,18 +127,29 @@ namespace reactor
     void
     Service::remove(Request& request)
     {
-      ELLE_TRACE_SCOPE("%s: remove %s", *this, request);
       auto handle = request._impl->_handle;
+      ELLE_ASSERT_CONTAINS(this->_requests, handle);
       if (this->_requests.erase(handle))
       {
+        ELLE_TRACE_SCOPE("%s: remove %s", *this, request);
         auto res = curl_multi_remove_handle(this->_curl, handle);
         ELLE_ASSERT_EQ(res, CURLM_OK);
       }
+      else
+        ELLE_ASSERT(false);
     }
 
     /*-------.
     | Socket |
     `-------*/
+
+    Service::SocketPtr
+    Service::socket(int fd)
+    {
+      auto it = Socket::_sockets.find(fd);
+      ELLE_ASSERT(it != Socket::_sockets.end());
+      return SocketPtr(it->second);
+    }
 
     /// Simple bouncer from the C-style CURL callback to handle_socket_action.
     int
@@ -155,7 +167,7 @@ namespace reactor
     /// Callback called when a socket is ready to read or write.
     void
     Service::handle_socket_ready(Request::Impl& request,
-                                 curl_socket_t socket,
+                                 SocketPtr socket,
                                  int action,
                                  boost::system::error_code const& error,
                                  size_t)
@@ -170,10 +182,10 @@ namespace reactor
       else if (error)
       {
         // Notify CURL of the error.
-        ELLE_WARN("%s: %s has error: ",
+        ELLE_WARN("%s: %s has error: %s",
                   *this, *request._request, error.message());
         auto res = curl_multi_socket_action(this->_curl,
-                                            socket,
+                                            socket->native_handle(),
                                             CURL_CSELECT_ERR,
                                             &running);
         this->_pull_messages();
@@ -182,10 +194,12 @@ namespace reactor
       else
       {
         // Notify CURL that the socket is ready for reading or writing.
-        ELLE_DEBUG_SCOPE("%s: %s can %s",
-                         *this, *request._request, action_string(action));
+        ELLE_DEBUG_SCOPE("%s: %s (fd: %s) can %s",
+                         *this, *request._request,
+                         socket, action_string(action));
         auto res = curl_multi_socket_action(this->_curl,
-                                            socket, action, &running);
+                                            socket->native_handle(),
+                                            action, &running);
         ELLE_ASSERT_EQ(res, CURLM_OK);
         this->_pull_messages();
       }
@@ -212,61 +226,60 @@ namespace reactor
     {
       // Find the Request.
       if (this->_requests.find(handle) == this->_requests.end())
+      {
+        ELLE_ERR("missing request: %s, %s", handle, socket);
         return;
+      }
       Request::Impl& request = *this->_requests.find(handle)->second;
-      ELLE_DEBUG_SCOPE("%s: %s wants to %s",
-                       *this, request, action_string(action));
-      // Cancel previous callbacks.
-      auto sock = request._socket;
-      if (sock)
-        sock->cancel();
+      ELLE_DEBUG_SCOPE("%s: %s (fd: %s) wants to %s",
+                       *this, request, socket, action_string(action));
+      auto sock = request._curl.socket(socket);
       // Set status and register needed callbacks.
-      request._request->_writing = action & CURL_POLL_OUT;
-      request._request->_reading = action & CURL_POLL_IN;
-      this->register_socket_write(request, socket);
-      this->register_socket_read(request, socket);
+      sock->writing = action & CURL_POLL_OUT;
+      sock->reading = action & CURL_POLL_IN;
+      // Cancel previous callbacks.
+      sock->cancel();
+      // Re-register needed callbacks.
+      this->register_socket_write(request, sock);
+      this->register_socket_read(request, sock);
     }
 
     /// Register write event if the request is writing.
     void
     Service::register_socket_write(Request::Impl& request,
-                                   curl_socket_t socket)
+                                   SocketPtr socket)
     {
-      if (!request._request->_writing)
+      if (!socket->writing)
         return;
-      ELLE_DEBUG_SCOPE("%s: register %s for writing",
-                       *this, *request._request);
-      auto sock = request._socket;
-      ELLE_ASSERT(sock.get());
-      sock->async_write_some(boost::asio::null_buffers(),
-                             std::bind(&Service::handle_socket_ready,
-                                       std::ref(*this),
-                                       std::ref(request),
-                                       socket,
-                                       CURL_CSELECT_OUT,
-                                       std::placeholders::_1,
-                                       std::placeholders::_2));
+      ELLE_DEBUG_SCOPE("%s: register %s (fd: %s) for writing",
+                       *this, *request._request, socket->native_handle());
+      socket->async_write_some(boost::asio::null_buffers(),
+                               std::bind(&Service::handle_socket_ready,
+                                         std::ref(*this),
+                                         std::ref(request),
+                                         socket,
+                                         CURL_CSELECT_OUT,
+                                         std::placeholders::_1,
+                                         std::placeholders::_2));
     }
 
     /// Register read event if the request is writing.
     void
     Service::register_socket_read(Request::Impl& request,
-                                  curl_socket_t socket)
+                                  SocketPtr socket)
     {
-      if (!request._request->_reading)
+      if (!socket->reading)
         return;
-      ELLE_DEBUG_SCOPE("%s: register %s for reading",
-                       *this, *request._request);
-      auto sock = request._socket;
-      ELLE_ASSERT(sock.get());
-      sock->async_read_some(boost::asio::null_buffers(),
-                            std::bind(&Service::handle_socket_ready,
-                                      std::ref(*this),
-                                      std::ref(request),
-                                      socket,
-                                      CURL_CSELECT_IN,
-                                      std::placeholders::_1,
-                                      std::placeholders::_2));
+      ELLE_DEBUG_SCOPE("%s: register %s (fd: %s) for reading",
+                       *this, *request._request, socket->native_handle());
+      socket->async_read_some(boost::asio::null_buffers(),
+                              std::bind(&Service::handle_socket_ready,
+                                        std::ref(*this),
+                                        std::ref(request),
+                                        socket,
+                                        CURL_CSELECT_IN,
+                                        std::placeholders::_1,
+                                        std::placeholders::_2));
     }
 
     /*--------.
@@ -355,5 +368,8 @@ namespace reactor
     {
       stream << "Service";
     }
+
+    std::unordered_map<int, std::weak_ptr<Service::Socket>>
+    Service::Socket::_sockets;
   }
 }

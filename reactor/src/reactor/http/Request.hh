@@ -256,9 +256,6 @@ namespace reactor
               Method method,
               Configuration conf,
               bool flag);
-      /// The underlying ASIO socket performing the request, for Servic access.
-      boost::asio::ip::tcp::socket*
-      socket();
       /// The actual implementation content.
       class Impl;
       /// The actual implementation.
@@ -307,10 +304,6 @@ namespace reactor
       response();
       /// The HTTP status. Null until the request is completed.
       ELLE_ATTRIBUTE_r(StatusCode, status);
-      /// Whether the request is currently uploading data.
-      ELLE_ATTRIBUTE_R(bool, reading);
-      /// Whether the request is currently downloading data.
-      ELLE_ATTRIBUTE_R(bool, writing);
       /// How many time the request was paused in wait for output data.
       ELLE_attribute_r(int, pause_count);
 

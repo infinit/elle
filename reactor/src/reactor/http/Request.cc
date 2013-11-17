@@ -272,7 +272,6 @@ namespace reactor
       _url(url),
       _method(method),
       _handle(curl_easy_init()),
-      _socket(nullptr),
       _pause_count(0)
     {
       if (!this->_handle)
@@ -323,7 +322,6 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
       curl_easy_cleanup(this->_handle);
-      this->_socket = nullptr;
     }
 
     std::unordered_map<std::string, std::string>
@@ -406,13 +404,13 @@ namespace reactor
     /*-------.
     | Socket |
     `-------*/
+
     int
     Request::Impl::open_socket(void* data,
                                curlsocktype purpose,
                                struct curl_sockaddr *address)
     {
       Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
-      ELLE_TRACE_SCOPE("%s: open socket", self._request);
       if (purpose == CURLSOCKTYPE_IPCXN)
       {
         if (address->family != AF_INET && address->family != AF_INET6)
@@ -421,10 +419,13 @@ namespace reactor
           boost::asio::ip::tcp::v4(): boost::asio::ip::tcp::v6();
         auto& service = self._curl.get_io_service();
         auto socket =
-          std::make_shared<boost::asio::ip::tcp::socket>(service, proto);
-        self._socket = socket;
-        auto fd = self._socket->native_handle();
-        self._curl._sockets[fd] = socket;
+          std::make_shared<Service::Socket>(service, proto);
+        Service::Socket::_sockets.insert(
+          std::make_pair(socket->native_handle(), socket));
+        auto fd = socket->native_handle();
+        ELLE_TRACE_SCOPE("%s: open socket %s for %s", self._curl, fd, self);
+        ELLE_ASSERT_NCONTAINS(self._curl._sockets, fd);
+        self._curl._sockets.insert(std::make_pair(fd, socket));
         return fd;
       }
       else
@@ -440,6 +441,7 @@ namespace reactor
       // hold sockets. It seems that Curl does this to reuse sockets between
       // requests in some cases.
       Service& service = *reinterpret_cast<Service*>(data);
+      ELLE_TRACE_SCOPE("%s: close socket %s", service, fd);
       ELLE_ASSERT_CONTAINS(service._sockets, fd);
       ELLE_ENFORCE(service._sockets.erase(fd));
       return 0;
@@ -624,9 +626,7 @@ namespace reactor
                                             std::move(conf))),
       _method(method),
       _url(url),
-      _status(static_cast<StatusCode>(0)),
-      _reading(false),
-      _writing(false)
+      _status(static_cast<StatusCode>(0))
     {}
 
     Request::Request(std::string const& url,
@@ -671,12 +671,6 @@ namespace reactor
     Request::~Request()
     {
       // The impl is deleted as the StreamBuffer.
-    }
-
-    boost::asio::ip::tcp::socket*
-    Request::socket()
-    {
-      return this->_impl->_socket.get();
     }
 
     /*-----------.

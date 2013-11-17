@@ -41,8 +41,36 @@ namespace reactor
     /*-------.
     | Socket |
     `-------*/
+    public:
+      class Socket:
+        public boost::asio::ip::tcp::socket
+      {
+      public:
+        template <typename ... T>
+        Socket(T&& ... args):
+          boost::asio::ip::tcp::socket(std::forward<T>(args)...),
+          reading(false),
+          writing(false)
+        {
+          // Socket::_sockets.insert(std::make_pair(this->native_handle(), this));
+        }
+
+        ~Socket()
+        {
+          Socket::_sockets.erase(this->native_handle());
+        }
+
+        bool reading;
+        bool writing;
+      private:
+        friend class Request;
+        friend class Service;
+        static std::unordered_map<int, std::weak_ptr<Socket> > _sockets;
+      };
+      typedef std::shared_ptr<Socket> SocketPtr;
+      SocketPtr
+      socket(int fd);
     private:
-      typedef std::shared_ptr<boost::asio::ip::tcp::socket> SocketPtr;
       std::unordered_map<int, SocketPtr> _sockets;
       static
       int
@@ -57,16 +85,16 @@ namespace reactor
                            int action);
       void
       handle_socket_ready(Request::Impl& r,
-                          curl_socket_t socket,
+                          SocketPtr socket,
                           int action,
                           boost::system::error_code const& error,
                           size_t size);
       void
       register_socket_write(Request::Impl& r,
-                            curl_socket_t socket);
+                            SocketPtr socket);
       void
       register_socket_read(Request::Impl& r,
-                           curl_socket_t socket);
+                           SocketPtr socket);
 
     /*--------.
     | Timeout |
