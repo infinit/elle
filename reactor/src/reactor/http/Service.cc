@@ -129,10 +129,13 @@ namespace reactor
     {
       auto handle = request._impl->_handle;
       ELLE_ASSERT_CONTAINS(this->_requests, handle);
-      if (this->_requests.erase(handle))
+      // Remove the request from the map only after curl_multi_remove_handle,
+      // because it might run callbacks that need the request.
+      if (this->_requests.find(handle) != this->_requests.end())
       {
         ELLE_TRACE_SCOPE("%s: remove %s", *this, request);
         auto res = curl_multi_remove_handle(this->_curl, handle);
+        this->_requests.erase(handle);
         ELLE_ASSERT_EQ(res, CURLM_OK);
       }
       else

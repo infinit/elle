@@ -503,6 +503,7 @@ private:
     };
   }
 
+  virtual
   void
   _serve(std::unique_ptr<reactor::network::TCPSocket> socket)
   {
@@ -831,6 +832,33 @@ HTTP_TEST(request_move)
   BOOST_CHECK_EQUAL(d.response(), "{}");
 }
 
+class ScheduledSilentHttpServer:
+  public ScheduledHttpServer
+{
+protected:
+  virtual
+  void
+  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) override
+  {
+    reactor::sleep(3_sec);
+  }
+};
+
+HTTP_TEST(interrupted)
+{
+  ScheduledSilentHttpServer server;
+
+  {
+    reactor::http::Request r(
+      elle::sprintf("http://127.0.0.1:%s/move", server.port()),
+      reactor::http::Method::POST,
+      "application/json");
+    r << "{}";
+    r.finalize();
+    reactor::sleep(100_ms); // XXX: wait for curl to read.
+  }
+}
+
 static
 bool
 test_suite()
@@ -853,6 +881,7 @@ test_suite()
   suite.add(BOOST_TEST_CASE(put_11_chunked));
   suite.add(BOOST_TEST_CASE(cookies));
   suite.add(BOOST_TEST_CASE(request_move));
+  suite.add(BOOST_TEST_CASE(interrupted));
   return true;
 }
 
