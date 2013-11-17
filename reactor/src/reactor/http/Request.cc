@@ -611,7 +611,8 @@ namespace reactor
     void
     Request::Impl::print(std::ostream& stream) const
     {
-      stream << this->_method << " on " << this->_url;
+      stream << this->_method << " on " << this->_url
+             << " (" << this->_handle << ")";
     }
 
     /*-------------.
