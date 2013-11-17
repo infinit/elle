@@ -321,6 +321,11 @@ namespace reactor
     Request::Impl::~Impl()
     {
       ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
+      if (this->_curl._requests.erase(this->_handle))
+      {
+        ELLE_LOG_COMPONENT("reactor.http.Service");
+        ELLE_TRACE("%s: remove unfinished %s", this->_curl, *this->_request);
+      }
       curl_easy_cleanup(this->_handle);
     }
 
