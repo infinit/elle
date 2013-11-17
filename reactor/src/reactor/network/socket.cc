@@ -17,6 +17,8 @@ namespace reactor
 {
   namespace network
   {
+    size_t const Socket::buffer_size = 1 << 16;
+
     namespace
     {
       class StreamBuffer: public elle::DynamicStreamBuffer
@@ -25,7 +27,7 @@ namespace reactor
         typedef elle::DynamicStreamBuffer Super;
         typedef Super::Size Size;
         StreamBuffer(Socket* socket):
-          Super(1 << 16),
+          Super(Socket::buffer_size),
           _socket(socket),
           _pacified(false)
         {}

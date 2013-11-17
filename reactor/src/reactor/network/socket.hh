@@ -26,6 +26,13 @@ namespace reactor
         /// Self type.
         typedef Socket Self;
 
+    /*----------.
+    | Constants |
+    `----------*/
+    public:
+      static size_t const buffer_size;
+
+
       /*-------------.
       | Construction |
       `-------------*/
