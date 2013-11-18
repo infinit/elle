@@ -135,8 +135,8 @@ environment_format_test()
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
   ELLE_LOG("Test 3");
-  res << "[1m[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] Test 3\n[0m";
+  res << "[1m[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+      << "Test 3\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -155,8 +155,8 @@ environment_format_test()
   ELLE_LOG("Test 4");
   res << "[1m"
       << boost::posix_time::second_clock::universal_time() << ": "
-      << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] Test 4\n[0m";
+      << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+      << "Test 4\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -173,8 +173,8 @@ environment_format_test()
   ELLE_WARN("Test 5");
   res << "[33;01;33m"
       << boost::posix_time::second_clock::local_time() << ": "
-      << "[" << boost::lexical_cast<std::string>(getpid()) << "] "
-      << "[Test] [warning] Test 5\n[0m";
+      << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+      << "[warning] Test 5\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
