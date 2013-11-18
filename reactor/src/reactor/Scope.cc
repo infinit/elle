@@ -36,7 +36,7 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: register background job %s", *this, name);
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
-    this->_threads.push_back(
+    auto thread =
       new Thread(sched, name,
                  [this, a, name]
                  {
@@ -68,10 +68,13 @@ namespace reactor
                          "%s: exception already caught, losing exception: %s",
                          *this, elle::exception_string());
                    }
-                   if (!--this->_running)
-                     this->_signal();
-                 }));
-
+                 });
+    this->_threads.push_back(thread);
+    thread->connect([this]
+                    {
+                      if (!--this->_running)
+                        this->_signal();
+                    });
     auto it = begin(this->_threads);
     while (it != end(this->_threads))
     {
