@@ -65,19 +65,19 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: finalize", *this);
       // XXX: Flush the socket, otherwise the parent ~IOStream will flush the
       // buffer which will in turn write to the (deleted) socket.
-      try
-      {
-        ELLE_ASSERT(!this->bad() && !this->fail());
-        this->flush();
-      }
-      catch (...)
-      {
-        _pacify_streambuffer();
-        // XXX: std::iostream technically can't throw due to virtual noexcept
-        // destructor. Find something better.
-        // throw;
-        ELLE_ERR("error while flushing socket: %s", elle::exception_string());
-      }
+      if (!this->fail() && !this->bad())
+        try
+        {
+          this->flush();
+        }
+        catch (...)
+        {
+          _pacify_streambuffer();
+          // XXX: std::iostream technically can't throw due to virtual noexcept
+          // destructor. Find something better.
+          // throw;
+          ELLE_ERR("error while flushing socket: %s", elle::exception_string());
+        }
     }
 
     TCPSocket::TCPSocket(Scheduler& sched, AsioSocket* socket)
