@@ -508,7 +508,8 @@ underflow()
             server.listen(0);
             port = server.port();
             listening.open();
-            auto socket = server.accept();
+            std::unique_ptr<reactor::network::TCPSocket> socket(
+              server.accept());
             socket->write(std::string("lulz"));
             socket->write(std::string("lol"));
           });
