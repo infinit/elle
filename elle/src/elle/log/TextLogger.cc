@@ -108,6 +108,16 @@ namespace elle
       if (this->_display_type && type != elle::log::Logger::Type::info)
         msg = elle::sprintf("[%s] ", _type_to_string(type)) + msg;
 
+      // Tags
+      for (auto const& tag: tags)
+      {
+        if (tag.first == "PID" && !this->_enable_pid)
+          continue;
+        if (tag.first == "TID" && !this->_enable_tid)
+          continue;
+        msg = elle::sprintf("[%s] %s", tag.second, msg);
+      }
+
       // Component
       std::string comp;
       {
@@ -119,16 +129,6 @@ namespace elle
           + std::string("] ");
       }
       msg = comp + msg;
-
-      // Tags
-      for (auto const& tag: tags)
-      {
-        if (tag.first == "PID" && !this->_enable_pid)
-          continue;
-        if (tag.first == "TID" && !this->_enable_tid)
-          continue;
-        msg = elle::sprintf("[%s] %s", tag.second, msg);
-      }
 
       // Time
       if (this->_enable_time)
