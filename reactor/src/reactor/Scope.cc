@@ -150,4 +150,14 @@ namespace reactor
     else
       return Waitable::_wait(thread);
   }
+
+  /*----------.
+  | Printable |
+  `----------*/
+
+  void
+  Scope::print(std::ostream& stream) const
+  {
+    stream << "Scope " << this;
+  }
 }

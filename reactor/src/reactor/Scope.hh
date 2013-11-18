@@ -66,6 +66,14 @@ namespace reactor
     _wait(Thread* thread);
   private:
     ELLE_ATTRIBUTE(reactor::Barrier, barrier);
+
+  /*----------.
+  | Printable |
+  `----------*/
+  public:
+    virtual
+    void
+    print(std::ostream& stream) const override;
   };
 }
 
