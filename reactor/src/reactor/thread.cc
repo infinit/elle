@@ -129,6 +129,14 @@ namespace reactor
   {
     try
     {
+      if (this->_exception)
+      {
+        ELLE_TRACE("%s: re-raise exception: %s",
+                   *this, elle::exception_string(this->_exception));
+        std::exception_ptr tmp = this->_exception;
+        this->_exception = std::exception_ptr{};
+        std::rethrow_exception(tmp);
+      }
       _backtrace_root = elle::Backtrace::current();
       ELLE_ASSERT(action);
       action();

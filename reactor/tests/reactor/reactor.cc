@@ -1621,6 +1621,26 @@ test_terminate_now_starting()
   sched.run();
 }
 
+/*----------------------.
+| Terminate now started |
+`----------------------*/
+
+static
+void
+test_terminate_now_started()
+{
+  bool beacon = true;
+  reactor::Scheduler sched;
+  std::unique_ptr<reactor::Thread> starting;
+  reactor::Thread terminate(sched, "terminate",
+                            [&] { starting->terminate_now(); });
+  starting.reset(
+    new reactor::Thread(sched, "starting",
+                        [&] { beacon = false; reactor::yield(); }));
+  sched.run();
+  BOOST_CHECK(beacon);
+}
+
 /*------------------------.
 | Terminate now scheduled |
 `------------------------*/
@@ -1957,6 +1977,7 @@ test_suite()
   terminate->add(BOOST_TEST_CASE(test_terminate_now_destroyed));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_started));
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled));
   terminate->add(BOOST_TEST_CASE(test_exception_escape));
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral));
