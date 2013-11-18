@@ -68,6 +68,7 @@ namespace reactor
     if (_threads.empty())
     {
       _exception = std::exception_ptr{}; // An empty one.
+      (*this)(); // Trigger the Boost signal.
       return false;
     }
     BOOST_FOREACH (Thread* thread, _threads)
@@ -75,6 +76,7 @@ namespace reactor
     int res = _threads.size();
     _threads.clear();
     _exception = std::exception_ptr{}; // An empty one.
+    (*this)(); // Trigger the Boost signal.
     return res;
   }
 
@@ -84,12 +86,15 @@ namespace reactor
     if (_threads.empty())
     {
       _exception = std::exception_ptr{}; // An empty one.
+      (*this)(); // Trigger the Boost signal.
       return nullptr;
     }
     Thread* thread = *_threads.begin();
     thread->_wake(this);
     _threads.erase(thread);
     _exception = std::exception_ptr{}; // An empty one.
+    if (this->_threads.empty())
+      (*this)(); // Trigger the Boost signal.
     return thread;
   }
 

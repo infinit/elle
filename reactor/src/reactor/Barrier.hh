@@ -16,8 +16,7 @@ namespace reactor
   /// detect if an event happens or already happened, while signals only pulse
   /// when triggered.
   class Barrier:
-    public Waitable,
-    public boost::signals2::signal<void (bool)>
+    public Waitable
   {
   /*------.
   | Types |

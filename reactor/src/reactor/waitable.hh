@@ -5,6 +5,7 @@
 
 # include <boost/function.hpp>
 # include <boost/noncopyable.hpp>
+# include <boost/signals2.hpp>
 
 # include <elle/Exception.hh>
 # include <elle/Printable.hh>
@@ -15,7 +16,7 @@
 namespace reactor
 {
   class Waitable:
-    public boost::noncopyable,
+    public boost::signals2::signal<void ()>,
     public elle::Printable
   {
     /*---------.
