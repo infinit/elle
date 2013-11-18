@@ -339,7 +339,8 @@ test_socket_close()
           "read",
           [&]
           {
-            BOOST_CHECK_THROW(socket->get(), elle::Exception);
+            BOOST_CHECK_THROW(socket->get(),
+                              reactor::network::ConnectionClosed);
           });
         scope.run_background(
           "close",
