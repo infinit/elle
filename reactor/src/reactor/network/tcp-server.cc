@@ -1,10 +1,13 @@
-#include <elle/printf.hh>
 #include <elle/assert.hh>
+#include <elle/log.hh>
+#include <elle/printf.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
+
+ELLE_LOG_COMPONENT("reactor.network.TCPServer");
 
 namespace reactor
 {
@@ -90,11 +93,13 @@ namespace reactor
     TCPSocket*
     TCPServer::accept()
     {
+      ELLE_TRACE_SCOPE("%s: wait for connection", *this);
       // FIXME: server should listen in ctor to avoid this crappy state ?
       ELLE_ASSERT_NEQ(_acceptor, nullptr);
       TCPAccept accept(scheduler(), *_acceptor);
       accept.run();
       TCPSocket* socket = new TCPSocket(scheduler(), accept.socket());
+      ELLE_TRACE("%s: got connection: %s", *this, *socket);
       return socket;
     }
 
