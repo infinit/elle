@@ -70,11 +70,11 @@ namespace reactor
                    }
                  });
     this->_threads.push_back(thread);
-    thread->connect([this]
-                    {
-                      if (!--this->_running)
-                        this->_signal();
-                    });
+    thread->on_signaled().connect([this]
+                                  {
+                                    if (!--this->_running)
+                                      this->_signal();
+                                  });
     auto it = begin(this->_threads);
     while (it != end(this->_threads))
     {

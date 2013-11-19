@@ -16,7 +16,6 @@
 namespace reactor
 {
   class Waitable:
-    public boost::signals2::signal<void ()>,
     public elle::Printable
   {
     /*---------.
@@ -38,7 +37,7 @@ namespace reactor
     Waitable(Waitable&& source);
   protected:
     /// Destroy a Waitable.
-    ~Waitable();
+    ~Waitable() noexcept(false);
 
     /*-------.
     | Status |
@@ -103,6 +102,13 @@ namespace reactor
       Waiters _threads;
       /// Exception woken thread must throw.
       ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
+
+  /*-------.
+  | Events |
+  `-------*/
+  public:
+    /// Signal triggered when the waitable wakes its waiting threads.
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, on_signaled);
 
   /*----------.
   | Printable |
