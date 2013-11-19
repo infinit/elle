@@ -57,10 +57,12 @@ class Git(VirtualNode):
         self.__version    = None
         self.__message     = None
 
-    def __cmd(self, args):
+    def __cmd(self, args, raw = False):
       cmd = ['git'] + args
       data = subprocess.check_output(cmd, cwd = str(self.__path))
-      return data.decode('utf-8').strip()
+      if not raw:
+        data = data.decode('utf-8').strip()
+      return data
 
     def ls_files(self, *paths):
         """Run git ls-files and return the list of Paths.
@@ -74,7 +76,11 @@ class Git(VirtualNode):
         return list(map(drake.Path, out))
 
     def hash(self):
-        return self.__cmd(['rev-parse', 'HEAD'])[:-1]
+      import hashlib
+      hasher = hashlib.sha1()
+      hasher.update(self.__cmd(['rev-parse', 'HEAD'], raw = 1))
+      hasher.update(self.version().encode('utf-8'))
+      return hasher.hexdigest()
 
     def author_date(self):
         """The author date, as given by git %ai format."""
