@@ -50,7 +50,7 @@ class Git(VirtualNode):
             self.__path = drake.path_source('.')
         else:
             self.__path = drake.path_source(path)
-        VirtualNode.__init__(self, Path('git/version') / self.__path)
+        VirtualNode.__init__(self, self.__path / 'git')
         self.__author_date = None
         self.__revision    = None
         self.__description = None
