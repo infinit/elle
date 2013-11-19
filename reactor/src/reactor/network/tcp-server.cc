@@ -73,21 +73,19 @@ namespace reactor
                                  boost::bind(&TCPAccept::_wakeup, this, _1));
         }
 
-      private:
+    private:
+      void _wakeup(const boost::system::error_code& error)
+      {
+        if (error == boost::system::errc::operation_canceled)
+          return;
+        if (error)
+          _raise<Exception>(error.message());
+        _signal();
+      }
 
-        void _wakeup(const boost::system::error_code& error)
-
-        {
-          if (error == boost::system::errc::operation_canceled)
-            return;
-          if (error)
-            _raise<Exception>(error.message());
-          _signal();
-        }
-
-        boost::asio::ip::tcp::acceptor& _acceptor;
-        std::unique_ptr<TCPSocket::AsioSocket> _socket;
-        TCPSocket::EndPoint _peer;
+      boost::asio::ip::tcp::acceptor& _acceptor;
+      std::unique_ptr<TCPSocket::AsioSocket> _socket;
+      ELLE_ATTRIBUTE_R(TCPSocket::EndPoint, peer);
     };
 
     TCPSocket*
@@ -98,7 +96,9 @@ namespace reactor
       ELLE_ASSERT_NEQ(_acceptor, nullptr);
       TCPAccept accept(scheduler(), *_acceptor);
       accept.run();
-      TCPSocket* socket = new TCPSocket(scheduler(), accept.socket());
+      TCPSocket* socket = new TCPSocket(scheduler(),
+                                        accept.socket(),
+                                        accept.peer());
       ELLE_TRACE("%s: got connection: %s", *this, *socket);
       return socket;
     }

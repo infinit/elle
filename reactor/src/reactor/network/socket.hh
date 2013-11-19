@@ -119,7 +119,12 @@ namespace reactor
                   EndPoint const& peer,
                   DurationOpt timeout = DurationOpt());
       /// Create wrapping socket.
-      PlainSocket(Scheduler& sched, AsioSocket* socket);
+      PlainSocket(Scheduler& sched,
+                  AsioSocket* socket);
+      /// Create wrapping socket.
+      PlainSocket(Scheduler& sched,
+                  AsioSocket* socket,
+                  typename AsioSocket::endpoint_type const& peer);
       /// Destroy a socket.
       virtual ~PlainSocket();
 

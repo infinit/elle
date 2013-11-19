@@ -44,7 +44,11 @@ namespace reactor
       close();
     private:
       friend class TCPServer;
-      TCPSocket(Scheduler& sched, AsioSocket* socket);
+      TCPSocket(Scheduler& sched,
+                AsioSocket* socket);
+      TCPSocket(Scheduler& sched,
+                AsioSocket* socket,
+                AsioSocket::endpoint_type const& peer);
       ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 
     /*-----.

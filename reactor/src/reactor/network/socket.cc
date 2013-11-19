@@ -122,16 +122,14 @@ namespace reactor
       _connect(_peer, timeout);
     }
 
-    template <typename AsioSocket>
-    PlainSocket<AsioSocket>::PlainSocket(Scheduler& sched,
-                                         AsioSocket* socket)
-      : Super(sched)
-      , _socket(socket)
-      , _peer()
+    template <typename Socket>
+    static
+    typename Socket::endpoint_type
+    _get_peer(Socket& socket)
     {
       try
       {
-        _peer = socket->remote_endpoint();
+        return socket.remote_endpoint();
       }
       catch (boost::system::system_error const& e)
       {
@@ -139,11 +137,33 @@ namespace reactor
         {
           // The socket might not have a remote endpoint if it's a listening
           // socket for instance.
+          return typename Socket::endpoint_type();
+        }
+        else if (e.code() == boost::system::errc::not_connected)
+        {
+          throw ConnectionClosed();
         }
         else
           throw;
       }
     }
+
+    template <typename AsioSocket>
+    PlainSocket<AsioSocket>
+    ::PlainSocket(Scheduler& sched,
+                  AsioSocket* socket):
+      PlainSocket<AsioSocket>(sched, socket, _get_peer(*socket))
+    {}
+
+    template <typename AsioSocket>
+    PlainSocket<AsioSocket>
+    ::PlainSocket(Scheduler& sched,
+                  AsioSocket* socket,
+                  typename AsioSocket::endpoint_type const& peer):
+      Super(sched),
+      _socket(socket),
+      _peer(peer)
+    {}
 
     template <typename AsioSocket>
     PlainSocket<AsioSocket>::~PlainSocket()

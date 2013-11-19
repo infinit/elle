@@ -80,8 +80,14 @@ namespace reactor
         }
     }
 
-    TCPSocket::TCPSocket(Scheduler& sched, AsioSocket* socket)
-      : Super(sched, socket)
+    TCPSocket::TCPSocket(Scheduler& sched, AsioSocket* socket):
+      Super(sched, socket)
+    {}
+
+    TCPSocket::TCPSocket(Scheduler& sched,
+                         AsioSocket* socket,
+                         AsioSocket::endpoint_type const& peer):
+      Super(sched, socket, peer)
     {}
 
     void
