@@ -950,7 +950,7 @@ class DepFile:
       with open(str(self.path()), 'w') as f:
         for path in self.__files:
           h = self.__files[path].hash()
-          print('%s %s %s' % (h, self.__files[path].name(),
+          print('%s %s %s' % (h, self.__files[path].name_absolute(),
                               self.__files[path].drake_type()),
                 file = f)
 
@@ -1743,7 +1743,7 @@ class Builder:
                 # If a new dependency appeared, we must rebuild.
                 if not execute:
                   for p in self.__sources:
-                    path = self.__sources[p].name()
+                    path = self.__sources[p].name_absolute()
                     if path not in self._depfile.sha1s():
                       explain(self, 'of new dependency %s' % path)
                       execute = True
