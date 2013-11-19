@@ -161,7 +161,7 @@ class VersionGenerator(drake.Builder):
   def execute(self):
     self.output('Generate %s' % self.__output.path())
     chunks = {}
-    version = self.__git.version()
+    version = self.__git.description()
     chunks['version'] = version
     chunks['major'], chunks['minor'], chunks['subminor'] = \
       map(int, version.split('-')[0].split('.'))
