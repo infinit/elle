@@ -37,7 +37,7 @@ namespace reactor
     Waitable(Waitable&& source);
   protected:
     /// Destroy a Waitable.
-    ~Waitable() noexcept(false);
+    ~Waitable();
 
     /*-------.
     | Status |
