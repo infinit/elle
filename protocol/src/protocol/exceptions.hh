@@ -24,6 +24,15 @@ namespace infinit
       typedef Error Super;
       ChecksumError();
     };
+
+    /// A remote RPC could not be called.
+    class RPCError:
+      public Error
+    {
+    public:
+      typedef Error Super;
+      RPCError(std::string const& message);
+    };
   }
 }
 

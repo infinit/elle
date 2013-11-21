@@ -16,6 +16,7 @@
 # include <protocol/Channel.hh>
 # include <protocol/ChanneledStream.hh>
 # include <protocol/Packet.hh>
+# include <protocol/exceptions.hh>
 
 namespace infinit
 {
@@ -198,7 +199,9 @@ namespace infinit
             input >> frame.offset;
             bt.push_back(frame);
           }
-          reactor::network::Exception e
+          // FIXME: only protocol error should throw this, not remote
+          // exceptions.
+          RPCError e
             (elle::sprintf("remote procedure '%s' failed", this->_name));
           e.inner_exception(elle::make_unique<elle::Exception>(bt, error));
           throw e;

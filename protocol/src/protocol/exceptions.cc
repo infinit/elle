@@ -11,5 +11,9 @@ namespace infinit
     ChecksumError::ChecksumError():
       Super("checksum error")
     {}
+
+    RPCError::RPCError(std::string const& message):
+      Super(message)
+    {}
   }
 }
