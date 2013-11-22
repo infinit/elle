@@ -9,7 +9,8 @@ namespace elle
 
   Version::Version():
     _major(0),
-    _minor(0)
+    _minor(0),
+    _subminor(0)
   {}
 
   Version::Version(elle::Natural8 major,
