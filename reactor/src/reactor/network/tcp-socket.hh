@@ -2,20 +2,20 @@
 # define INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 
 # include <reactor/asio.hh>
-# include <reactor/mutex.hh>
 # include <reactor/network/socket.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class TCPSocket: public PlainSocket<boost::asio::ip::tcp::socket>
+    class TCPSocket:
+      public StreamSocket<boost::asio::ip::tcp::socket>
     {
     /*---------.
     | Typedefs |
     `---------*/
     public:
-      typedef PlainSocket<boost::asio::ip::tcp::socket> Super;
+      typedef StreamSocket<boost::asio::ip::tcp::socket> Super;
       typedef boost::asio::ip::tcp::resolver AsioResolver;
 
     /*-------------.
@@ -64,14 +64,6 @@ namespace reactor
       virtual Size _read(Buffer buffer,
                          DurationOpt timeout,
                          bool some);
-
-    /*------.
-    | Write |
-    `------*/
-    public:
-      virtual void write(elle::ConstWeakBuffer buffer);
-    private:
-      Mutex _write_mutex;
 
     /*----------------.
     | Pretty printing |

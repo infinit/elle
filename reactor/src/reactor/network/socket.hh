@@ -7,6 +7,7 @@
 # include <elle/network/Locus.hh>
 
 # include <reactor/duration.hh>
+# include <reactor/mutex.hh>
 # include <reactor/network/fwd.hh>
 # include <reactor/network/Protocol.hh>
 
@@ -164,6 +165,43 @@ namespace reactor
       friend class SocketOperation;
       ELLE_ATTRIBUTE_R(AsioSocket*, socket);
       EndPoint _peer;
+    };
+
+    template <typename AsioSocket_>
+    class StreamSocket:
+      public PlainSocket<AsioSocket_>
+    {
+    /*---------.
+    | Typedefs |
+    `---------*/
+    public:
+      /// Self type.
+      typedef StreamSocket<AsioSocket_> Self;
+      /// Super type.
+      typedef PlainSocket<AsioSocket_> Super;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      using Super::Super;
+
+    /*------.
+    | Write |
+    `------*/
+    public:
+      virtual void write(elle::ConstWeakBuffer buffer);
+    private:
+      Mutex _write_mutex;
+
+    /*-----------------.
+    | Concrete sockets |
+    `-----------------*/
+    protected:
+      friend class TCPServer;
+      friend class TCPSocket;
+      friend class UDPServer;
+      friend class UDPSocket;
     };
   }
 }

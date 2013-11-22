@@ -346,12 +346,107 @@ namespace reactor
         return this->_socket->local_endpoint();
     }
 
+    /*-------------.
+    | StreamSocket |
+    `-------------*/
+
+    /*------.
+    | Write |
+    `------*/
+
+    template <typename AsioSocket>
+    class Write:
+      public SocketOperation<AsioSocket>
+    {
+    public:
+      typedef typename AsioSocket::endpoint_type EndPoint;
+      typedef SocketOperation<AsioSocket> Super;
+      Write(PlainSocket<AsioSocket>* socket,
+            elle::ConstWeakBuffer buffer):
+        Super(*Scheduler::scheduler(), socket),
+        _socket(*socket),
+        _buffer(buffer),
+        _written(0)
+      {}
+
+    protected:
+      virtual void _start()
+      {
+        boost::asio::async_write(
+          *this->socket(),
+          boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
+          boost::bind(&Write::_wakeup, this, this->_canceled, _1, _2));
+      }
+
+    private:
+      void _wakeup(std::shared_ptr<bool> canceled,
+                   const boost::system::error_code& error,
+                   std::size_t written)
+      {
+        if (*canceled)
+          return;
+        if (error)
+          ELLE_TRACE("%s: write error: %s", this->_socket, error.message());
+        else
+          ELLE_TRACE("%s: write completed: %s bytes", this->_socket, written);
+        _written = written;
+        if (error == boost::asio::error::eof ||
+            error == boost::asio::error::operation_aborted ||
+            error == boost::asio::error::broken_pipe ||
+            error == boost::asio::error::connection_aborted)
+          this->template _raise<ConnectionClosed>();
+        else if (error)
+          this->template _raise<Exception>(error.message());
+        this->_signal();
+      }
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "write on ";
+        try
+        {
+          stream << this->socket()->local_endpoint();
+        }
+        catch (std::exception const&)
+        {
+          stream << "an invalid socket (" << elle::exception_string() << ")";
+        }
+      }
+
+      ELLE_ATTRIBUTE(PlainSocket<AsioSocket> const&, socket);
+      ELLE_ATTRIBUTE(elle::ConstWeakBuffer, buffer);
+      ELLE_ATTRIBUTE_R(Size, written);
+    };
+
+    template <typename AsioSocket>
+    void
+    StreamSocket<AsioSocket>::write(elle::ConstWeakBuffer buffer)
+    {
+      reactor::wait(this->_write_mutex);
+      ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
+      try
+      {
+        Write<AsioSocket> write(this, buffer);
+        write.run();
+      }
+      catch (...)
+      {
+        _write_mutex.release();
+        throw;
+      }
+      _write_mutex.release();
+    }
+
     /*------------------------.
     | Explicit instantiations |
     `------------------------*/
 
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;
+    template
+    class StreamSocket<boost::asio::ip::tcp::socket>;
     template
     class PlainSocket<boost::asio::ip::udp::socket>;
     // template
