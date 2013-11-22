@@ -20,7 +20,8 @@ namespace elle
   public:
     Version(); // XXX[to remove later]
     Version(elle::Natural8 major,
-            elle::Natural8 minor);
+            elle::Natural8 minor,
+            elle::Natural8 subminor);
     ELLE_SERIALIZE_CONSTRUCT_DECLARE(Version);
 
     /*-----------.
@@ -53,6 +54,7 @@ namespace elle
   private:
     ELLE_ATTRIBUTE(elle::Natural8, major);
     ELLE_ATTRIBUTE(elle::Natural8, minor);
+    ELLE_ATTRIBUTE(elle::Natural8, subminor);
   };
 }
 

@@ -3,15 +3,17 @@
 
 # include <elle/serialize/Serializer.hh>
 
+ELLE_SERIALIZE_STATIC_FORMAT(elle::Version, 1);
+
 ELLE_SERIALIZE_SIMPLE(elle::Version,
                       archive,
                       value,
                       version)
 {
-  enforce(version == 0);
-
   archive & value._major;
   archive & value._minor;
+  if (version == 1)
+    archive & value._subminor;
 }
 
 #endif
