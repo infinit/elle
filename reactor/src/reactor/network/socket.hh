@@ -131,6 +131,8 @@ namespace reactor
     /*-----------.
     | Connection |
     `-----------*/
+    public:
+      void close();
     protected:
       void _connect(const EndPoint& peer, DurationOpt timeout = DurationOpt());
       void _disconnect();

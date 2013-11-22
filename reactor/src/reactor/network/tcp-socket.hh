@@ -40,8 +40,6 @@ namespace reactor
                 boost::asio::ip::tcp::endpoint const& endpoint,
                 DurationOpt timeout = DurationOpt());
       virtual ~TCPSocket();
-      void
-      close();
     private:
       friend class TCPServer;
       TCPSocket(Scheduler& sched,

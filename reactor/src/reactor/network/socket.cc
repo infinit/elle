@@ -223,6 +223,18 @@ namespace reactor
         EndPoint _endpoint;
     };
 
+    /*-----------.
+    | Connection |
+    `-----------*/
+
+    template <typename AsioSocket>
+    void
+    PlainSocket<AsioSocket>::close()
+    {
+      ELLE_TRACE_SCOPE("%s: close", *this);
+      this->socket()->close();
+    }
+
     template <typename AsioSocket>
     void
     PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint, DurationOpt timeout)
