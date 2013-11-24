@@ -112,8 +112,9 @@ namespace reactor
     protected:
       /// Create and connect socket.
       PlainSocket(Scheduler& sched,
+                  AsioSocket* socket,
                   EndPoint const& peer,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout);
       /// Create wrapping socket.
       PlainSocket(Scheduler& sched,
                   AsioSocket* socket,
@@ -126,9 +127,11 @@ namespace reactor
     `-----------*/
     public:
       void close();
-    protected:
-      void _connect(const EndPoint& peer, DurationOpt timeout = DurationOpt());
-      void _disconnect();
+    private:
+      void
+      _connect(EndPoint const& peer, DurationOpt timeout);
+      void
+      _disconnect();
 
     /*-----------.
     | Properties |

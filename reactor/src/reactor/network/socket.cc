@@ -55,6 +55,36 @@ namespace reactor
       };
     }
 
+
+    template <typename Socket_>
+    struct SocketSpecialization
+    {
+      typedef Socket_ Socket;
+      typedef Socket_ Stream;
+
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s;
+      }
+    };
+
+    template <>
+    struct SocketSpecialization<
+      boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>
+    {
+      typedef boost::asio::ip::tcp::socket Socket;
+      typedef boost::asio::ssl::stream<Socket> Stream;
+
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s.next_layer();
+      }
+    };
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -117,13 +147,14 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(Scheduler& sched,
+                                                   AsioSocket* socket,
                                                    const EndPoint& peer,
-                                                   DurationOpt timeout)
-      : Super(sched)
-      , _socket(0)
-      , _peer(peer)
+                                                   DurationOpt timeout):
+      Super(sched),
+      _socket(socket),
+      _peer(peer)
     {
-      _connect(_peer, timeout);
+      this->_connect(peer, timeout);
     }
 
     template <typename AsioSocket, typename EndPoint>
@@ -193,70 +224,16 @@ namespace reactor
         EndPoint _endpoint;
     };
 
-    template <typename Socket_>
-    struct SocketSpecialization
-    {
-      typedef Socket_ Socket;
-      typedef Socket_ Stream;
-
-      static
-      Socket&
-      socket(Stream& s)
-      {
-        return s;
-      }
-
-      static
-      Stream*
-      make(boost::asio::io_service& s)
-      {
-        return new Stream(s);
-      }
-    };
-
-    template <>
-    struct SocketSpecialization<
-      boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>
-    {
-      typedef boost::asio::ip::tcp::socket Socket;
-      typedef boost::asio::ssl::stream<Socket> Stream;
-
-      static
-      Socket&
-      socket(Stream& s)
-      {
-        return s.next_layer();
-      }
-
-      static
-      Stream*
-      make(boost::asio::io_service& s)
-      {
-        boost::asio::ssl::context ctx(boost::asio::ssl::context::sslv23);
-        return new Stream(s, ctx);
-      }
-    };
-
     template <typename AsioSocket, typename EndPoint>
     void
-    PlainSocket<AsioSocket, EndPoint>::close()
-    {
-      ELLE_TRACE_SCOPE("%s: close", *this);
-      typedef SocketSpecialization<AsioSocket> Spe;
-      Spe::socket(*this->socket()).close();
-    }
-
-    template <typename AsioSocket, typename EndPoint>
-    void
-    PlainSocket<AsioSocket, EndPoint>::_connect(const EndPoint& endpoint,
+    PlainSocket<AsioSocket, EndPoint>::_connect(const EndPoint& peer,
                                                 DurationOpt timeout)
     {
-      ELLE_TRACE("%s: connecting to %s", *this, endpoint);
+      ELLE_TRACE_SCOPE("%s: connecting to %s", *this, peer);
+      ELLE_ASSERT(this->_socket);
       typedef SocketSpecialization<AsioSocket> Spe;
-      if (!this->_socket)
-        this->_socket = Spe::make(this->scheduler().io_service());
       Connection<typename Spe::Socket> connection(
-        this->scheduler(), Spe::socket(*this->_socket), endpoint);
+        this->scheduler(), Spe::socket(*this->_socket), peer);
       try
       {
         if (!connection.run(timeout))
@@ -268,6 +245,15 @@ namespace reactor
         _socket = 0;
         throw;
       }
+    }
+
+    template <typename AsioSocket, typename EndPoint>
+    void
+    PlainSocket<AsioSocket, EndPoint>::close()
+    {
+      ELLE_TRACE_SCOPE("%s: close", *this);
+      typedef SocketSpecialization<AsioSocket> Spe;
+      Spe::socket(*this->socket()).close();
     }
 
     template <typename AsioSocket, typename EndPoint>
@@ -702,18 +688,22 @@ namespace reactor
     | Explicit instantiations |
     `------------------------*/
 
+    // TCP
     template
     class PlainSocket<boost::asio::ip::tcp::socket>;
     template
     class StreamSocket<boost::asio::ip::tcp::socket>;
+    // SSL
     template
     class PlainSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
                       boost::asio::ip::tcp::socket::endpoint_type>;
     template
     class StreamSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
                        boost::asio::ip::tcp::socket::endpoint_type>;
+    // UDP
     template
     class PlainSocket<boost::asio::ip::udp::socket>;
+    // UDT
     // template
     // class PlainSocket<boost::asio::ip::udt::socket>;
   }

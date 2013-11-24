@@ -23,31 +23,31 @@ namespace reactor
 
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
-                         const std::string& port)
-      : Super(sched, resolve_udp(sched, hostname, port))
+                         const std::string& port):
+      Super(sched, new boost::asio::ip::udp::socket(sched.io_service()),
+            resolve_udp(sched, hostname, port), DurationOpt())
     {}
 
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
-                         int port)
-      : Super(sched, resolve_udp(sched, hostname,
-                                 boost::lexical_cast<std::string>(port)))
+                         int port):
+      UDPSocket(sched, hostname, boost::lexical_cast<std::string>(port))
     {}
 
-    UDPSocket::UDPSocket(Scheduler& sched,
-                         int local_port,
-                         const std::string& hostname,
-                         int port)
-      : Super(sched, new AsioSocket(sched.io_service()),
-              resolve_udp(sched, hostname,
-                          boost::lexical_cast<std::string>(port)))
-    {
-      this->_socket->open(boost::asio::ip::udp::v4());
-      boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
-                                           local_port);
-      this->_socket->bind(local);
-      this->_connect(this->peer());
-    }
+    // UDPSocket::UDPSocket(Scheduler& sched,
+    //                      int local_port,
+    //                      const std::string& hostname,
+    //                      int port)
+    //   : Super(sched, new AsioSocket(sched.io_service()),
+    //           resolve_udp(sched, hostname,
+    //                       boost::lexical_cast<std::string>(port)))
+    // {
+    //   this->_socket->open(boost::asio::ip::udp::v4());
+    //   boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
+    //                                        local_port);
+    //   this->_socket->bind(local);
+    //   this->_connect(this->peer());
+    // }
 
     // UDPSocket::UDPSocket(Scheduler& sched,
     //                      int native_handle):

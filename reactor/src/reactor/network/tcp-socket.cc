@@ -43,17 +43,18 @@ namespace reactor
     TCPSocket::TCPSocket(Scheduler& sched,
                          const std::string& hostname,
                          int port,
-                         DurationOpt timeout)
-      : TCPSocket(sched, resolve_tcp(sched,
-                                     hostname,
-                                     boost::lexical_cast<std::string>(port)),
-                  timeout)
+                         DurationOpt timeout):
+      TCPSocket(sched, resolve_tcp(sched,
+                                   hostname,
+                                   boost::lexical_cast<std::string>(port)),
+                timeout)
     {}
 
     TCPSocket::TCPSocket(Scheduler& sched,
                          boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout):
-      Super(sched, endpoint, timeout)
+      Super(sched, new boost::asio::ip::tcp::socket(sched.io_service()),
+            endpoint, timeout)
     {}
 
     TCPSocket::~TCPSocket()
