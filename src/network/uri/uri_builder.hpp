@@ -254,6 +254,7 @@ namespace network {
     void set_user_info(string_type user_info);
     void set_host(string_type host);
     void set_port(string_type port);
+    void set_authority(string_type authority);
     void set_path(string_type path);
     void set_query(string_type query);
     void set_fragment(string_type fragment);

@@ -3,8 +3,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef __NETWORK_DETAIL_URI_PERCENT_ENCODE_INC__
-#define __NETWORK_DETAIL_URI_PERCENT_ENCODE_INC__
+#ifndef NETWORK_DETAIL_URI_PERCENT_ENCODE_INC
+#define NETWORK_DETAIL_URI_PERCENT_ENCODE_INC
 
 #include <string>
 #include <vector>
@@ -70,4 +70,4 @@ namespace network {
   } // namespace detail
 } // namespace network
 
-#endif // __NETWORK_DETAIL_URI_PERCENT_ENCODE_INC__
+#endif // NETWORK_DETAIL_URI_PERCENT_ENCODE_INC

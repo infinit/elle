@@ -71,6 +71,10 @@ namespace network {
                               std::back_inserter(*port_));
   }
 
+  void uri_builder::set_authority(string_type authority) {
+
+  }
+
   void uri_builder::set_path(string_type path) {
     path_.reset(string_type());
     network::uri::encode_path(std::begin(path), std::end(path),
