@@ -179,6 +179,8 @@ namespace reactor
     `-------------*/
     public:
       using Super::Super;
+      virtual
+      ~StreamSocket();
 
     /*-----.
     | Read |
