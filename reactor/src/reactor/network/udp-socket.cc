@@ -10,6 +10,7 @@
 #include <reactor/thread.hh>
 
 #include <elle/log.hh>
+#include <elle/memory.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDPSocket");
 
@@ -24,8 +25,10 @@ namespace reactor
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
                          const std::string& port):
-      Super(sched, new boost::asio::ip::udp::socket(sched.io_service()),
-            resolve_udp(sched, hostname, port), DurationOpt())
+      Super(sched,
+            elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
+            resolve_udp(sched, hostname, port),
+            DurationOpt())
     {}
 
     UDPSocket::UDPSocket(Scheduler& sched,
@@ -80,25 +83,6 @@ namespace reactor
     {
       socket()->open(boost::asio::ip::udp::v4());
       socket()->bind(endpoint);
-    }
-
-    /*-----------.
-    | Connection |
-    `-----------*/
-
-    void
-    UDPSocket::connect(const std::string& hostname, int service)
-    {
-      connect(hostname, boost::lexical_cast<std::string>(service));
-    }
-
-    void
-    UDPSocket::connect(const std::string& hostname,
-                       const std::string& service)
-    {
-      _socket = new boost::asio::ip::udp::socket(scheduler().io_service());
-      _socket->connect(resolve_udp(scheduler(), hostname, service));
-      //Super::connect(resolve_udp(scheduler(), hostname, service));
     }
 
     /*-----.

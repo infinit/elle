@@ -95,8 +95,7 @@ namespace reactor
     {}
 
     Socket::~Socket()
-    {
-    }
+    {}
 
     std::unique_ptr<Socket>
     Socket::create(Protocol protocol,
@@ -146,23 +145,25 @@ namespace reactor
     `-------------*/
 
     template <typename AsioSocket, typename EndPoint>
-    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Scheduler& sched,
-                                                   AsioSocket* socket,
-                                                   const EndPoint& peer,
-                                                   DurationOpt timeout):
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(
+      Scheduler& sched,
+      std::unique_ptr<AsioSocket> socket,
+      const EndPoint& peer,
+      DurationOpt timeout):
       Super(sched),
-      _socket(socket),
+      _socket(std::move(socket)),
       _peer(peer)
     {
       this->_connect(peer, timeout);
     }
 
     template <typename AsioSocket, typename EndPoint>
-    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Scheduler& sched,
-                                                   AsioSocket* socket,
-                                                   EndPoint const& peer):
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(
+      Scheduler& sched,
+      std::unique_ptr<AsioSocket> socket,
+      EndPoint const& peer):
       Super(sched),
-      _socket(socket),
+      _socket(std::move(socket)),
       _peer(peer)
     {}
 
@@ -179,7 +180,6 @@ namespace reactor
         // might be able to catch a more precise exception if _disconnect throws
         // differently.
       }
-      delete _socket;
     }
 
     /*-----------.
@@ -229,20 +229,19 @@ namespace reactor
     PlainSocket<AsioSocket, EndPoint>::_connect(const EndPoint& peer,
                                                 DurationOpt timeout)
     {
-      ELLE_TRACE_SCOPE("%s: connecting to %s", *this, peer);
-      ELLE_ASSERT(this->_socket);
+      ELLE_TRACE_SCOPE("%s: connect to %s", *this, peer);
       typedef SocketSpecialization<AsioSocket> Spe;
-      Connection<typename Spe::Socket> connection(
-        this->scheduler(), Spe::socket(*this->_socket), peer);
       try
       {
+        Connection<typename Spe::Socket> connection(
+          this->scheduler(), Spe::socket(*this->_socket), peer);
         if (!connection.run(timeout))
           throw TimeOut();
       }
       catch (...)
       {
-        delete _socket;
-        _socket = 0;
+        ELLE_TRACE("%s: connection failed: %s",
+                   *this, elle::exception_string());
         throw;
       }
     }
@@ -260,8 +259,9 @@ namespace reactor
     void
     PlainSocket<AsioSocket, EndPoint>::_disconnect()
     {
+      ELLE_TRACE_SCOPE("%s: disconnect", *this);
       typedef SocketSpecialization<AsioSocket> Spe;
-      if (_socket)
+      if (this->_socket)
       {
         boost::system::error_code error;
         Spe::socket(*this->_socket).shutdown(Spe::Socket::shutdown_both, error);
@@ -274,11 +274,12 @@ namespace reactor
             )
             ; // It's ok to try to disconnect a non-connected socket.
           else
+          {
+            ELLE_TRACE("%s: disconnection error: %s", *this, error.message());
             throw Exception(error.message());
+          }
         }
         Spe::socket(*this->_socket).close();
-        delete _socket;
-        _socket = 0;
       }
     }
 

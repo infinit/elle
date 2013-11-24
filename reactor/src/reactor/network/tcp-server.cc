@@ -38,14 +38,13 @@ namespace reactor
 
     class TCPAccept: public Operation
     {
-      public:
-        TCPAccept(Scheduler& scheduler, boost::asio::ip::tcp::acceptor& acceptor)
-          : Operation(scheduler)
-          , _acceptor(acceptor)
-          , _socket()
-          , _peer()
-        {}
-
+    public:
+      TCPAccept(Scheduler& scheduler, boost::asio::ip::tcp::acceptor& acceptor):
+        Operation(scheduler),
+        _acceptor(acceptor),
+        _socket(),
+        _peer()
+      {}
 
       virtual
       void
@@ -54,24 +53,19 @@ namespace reactor
         stream << "accept on " << this->_acceptor.local_endpoint();
       }
 
-        TCPSocket::AsioSocket* socket()
-        {
-          return _socket.release();
-        }
+    protected:
+      virtual void _abort()
+      {
+        _acceptor.cancel();
+        _signal();
+      }
 
-      protected:
-        virtual void _abort()
-        {
-          _acceptor.cancel();
-          _signal();
-        }
-
-        virtual void _start()
-        {
-          _socket.reset(new TCPSocket::AsioSocket(scheduler().io_service()));
-          _acceptor.async_accept(*_socket, _peer,
-                                 boost::bind(&TCPAccept::_wakeup, this, _1));
-        }
+      virtual void _start()
+      {
+        _socket.reset(new TCPSocket::AsioSocket(scheduler().io_service()));
+        _acceptor.async_accept(*_socket, _peer,
+                               boost::bind(&TCPAccept::_wakeup, this, _1));
+      }
 
     private:
       void _wakeup(const boost::system::error_code& error)
@@ -83,8 +77,8 @@ namespace reactor
         _signal();
       }
 
-      boost::asio::ip::tcp::acceptor& _acceptor;
-      std::unique_ptr<TCPSocket::AsioSocket> _socket;
+      ELLE_ATTRIBUTE(boost::asio::ip::tcp::acceptor&, acceptor);
+      ELLE_ATTRIBUTE_X(std::unique_ptr<TCPSocket::AsioSocket>, socket);
       ELLE_ATTRIBUTE_R(TCPSocket::EndPoint, peer);
     };
 
@@ -97,7 +91,7 @@ namespace reactor
       TCPAccept accept(scheduler(), *_acceptor);
       accept.run();
       TCPSocket* socket = new TCPSocket(scheduler(),
-                                        accept.socket(),
+                                        std::move(accept.socket()),
                                         accept.peer());
       ELLE_TRACE("%s: got connection: %s", *this, *socket);
       return socket;

@@ -43,14 +43,6 @@ namespace reactor
       public:
         void bind(boost::asio::ip::udp::endpoint const& endpoint);
 
-      /*-----------.
-      | Connection |
-      `-----------*/
-      public:
-        void connect(const std::string& hostname, int port);
-        void connect(const std::string& hostname,
-                     const std::string& service);
-
       /*-----.
       | Read |
       `-----*/

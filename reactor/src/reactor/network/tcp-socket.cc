@@ -3,6 +3,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <elle/log.hh>
+#include <elle/memory.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
@@ -53,7 +54,8 @@ namespace reactor
     TCPSocket::TCPSocket(Scheduler& sched,
                          boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout):
-      Super(sched, new boost::asio::ip::tcp::socket(sched.io_service()),
+      Super(sched,
+            elle::make_unique<boost::asio::ip::tcp::socket>(sched.io_service()),
             endpoint, timeout)
     {}
 
@@ -78,9 +80,9 @@ namespace reactor
     }
 
     TCPSocket::TCPSocket(Scheduler& sched,
-                         AsioSocket* socket,
+                         std::unique_ptr<AsioSocket> socket,
                          AsioSocket::endpoint_type const& peer):
-      Super(sched, socket, peer)
+      Super(sched, std::move(socket), peer)
     {}
 
     /*----------------.

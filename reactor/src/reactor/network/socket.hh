@@ -112,12 +112,12 @@ namespace reactor
     protected:
       /// Create and connect socket.
       PlainSocket(Scheduler& sched,
-                  AsioSocket* socket,
+                  std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer,
                   DurationOpt timeout);
       /// Create wrapping socket.
       PlainSocket(Scheduler& sched,
-                  AsioSocket* socket,
+                  std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer);
       /// Destroy a socket.
       virtual ~PlainSocket();
@@ -156,7 +156,7 @@ namespace reactor
       friend class UDPSocket;
       template <typename AsioSocket>
       friend class SocketOperation;
-      ELLE_ATTRIBUTE_R(AsioSocket*, socket);
+      ELLE_ATTRIBUTE_R(std::unique_ptr<AsioSocket>, socket);
       EndPoint _peer;
     };
 
