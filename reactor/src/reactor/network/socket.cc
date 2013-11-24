@@ -10,7 +10,7 @@
 #include <reactor/network/socket.hh>
 #include <reactor/network/tcp-socket.hh>
 // #include <reactor/network/udt-socket.hh>
-#include <reactor/network/socket-operation.hh>
+#include <reactor/network/SocketOperation.hh>
 #include <reactor/scheduler.hh>
 
 #include <elle/log.hh>
@@ -164,7 +164,7 @@ namespace reactor
         Connection(Scheduler& scheduler,
                    AsioSocket& socket,
                    const EndPoint& endpoint):
-          Super(scheduler, &socket),
+          Super(scheduler, socket),
           _endpoint(endpoint)
         {}
 
@@ -184,9 +184,9 @@ namespace reactor
       protected:
         virtual void _start()
         {
-          this->socket()->async_connect(
+          this->socket().async_connect(
             _endpoint, boost::bind(&Connection::_wakeup,
-                                   this, this->_canceled, _1));
+                                   this, this->canceled(), _1));
         }
 
       private:
@@ -363,7 +363,7 @@ namespace reactor
     public:
       Read(Scheduler& scheduler,
            PlainSocket& plain,
-           AsioSocket* socket,
+           AsioSocket& socket,
            Buffer& buffer,
            bool some):
         SocketOperation<AsioSocket>(scheduler, socket),
@@ -380,7 +380,7 @@ namespace reactor
         stream << "read on ";
         try
         {
-          stream << this->socket()->local_endpoint();
+          stream << this->socket().local_endpoint();
         }
         catch (std::exception const&)
         {
@@ -393,14 +393,14 @@ namespace reactor
       {
         // FIXME: be synchronous if enough bytes are available
         if (_some)
-          this->socket()->async_read_some(
+          this->socket().async_read_some(
             boost::asio::buffer(_buffer.data(), _buffer.size()),
-            boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
+            boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
         else
           boost::asio::async_read(
-            *this->socket(),
+            this->socket(),
             boost::asio::buffer(_buffer.data(), _buffer.size()),
-            boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
+            boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
       }
 
     private:
@@ -482,7 +482,7 @@ namespace reactor
       typedef SocketSpecialization<AsioSocket> Spe;
       Read<Self, typename Spe::Socket> read(this->scheduler(),
                                             *this,
-                                            &Spe::socket(*this->socket()),
+                                            Spe::socket(*this->socket()),
                                             buf, some);
       bool finished;
       try
@@ -519,7 +519,7 @@ namespace reactor
     {
     public:
       ReadUntil(PlainSocket& plain,
-                AsioSocket* socket,
+                AsioSocket& socket,
                 boost::asio::streambuf& buffer,
                 std::string const& delimiter):
         SocketOperation<AsioSocket>(
@@ -534,12 +534,12 @@ namespace reactor
       virtual void _start()
       {
         boost::asio::async_read_until(
-          *this->socket(),
+          this->socket(),
           this->_streambuffer,
           this->_delimiter,
           std::bind(&ReadUntil::_wakeup,
                     std::ref(*this),
-                    this->_canceled,
+                    this->canceled(),
                     std::placeholders::_1,
                     std::placeholders::_2));
       }
@@ -586,7 +586,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: read until %s", *this, delimiter);
       typedef SocketSpecialization<AsioSocket> Spe;
       ReadUntil<Self, typename Spe::Socket> read(
-        *this, &Spe::socket(*this->socket()),
+        *this, Spe::socket(*this->socket()),
         this->_streambuffer, delimiter);
       bool finished;
       try
@@ -617,7 +617,7 @@ namespace reactor
     public:
       typedef SocketOperation<AsioSocket> Super;
       Write(PlainSocket& plain,
-            AsioSocket* socket,
+            AsioSocket& socket,
             elle::ConstWeakBuffer buffer):
         Super(*Scheduler::scheduler(), socket),
         _socket(plain),
@@ -629,9 +629,9 @@ namespace reactor
       virtual void _start()
       {
         boost::asio::async_write(
-          *this->socket(),
+          this->socket(),
           boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
-          boost::bind(&Write::_wakeup, this, this->_canceled, _1, _2));
+          boost::bind(&Write::_wakeup, this, this->canceled(), _1, _2));
       }
 
     private:
@@ -663,7 +663,7 @@ namespace reactor
         stream << "write on ";
         try
         {
-          stream << this->socket()->local_endpoint();
+          stream << this->socket().local_endpoint();
         }
         catch (std::exception const&)
         {
@@ -686,7 +686,7 @@ namespace reactor
       {
         typedef SocketSpecialization<AsioSocket> Spe;
         Write<Self, typename Spe::Socket> write(*this,
-                                                &Spe::socket(*this->socket()),
+                                                Spe::socket(*this->socket()),
                                                 buffer);
         write.run();
       }

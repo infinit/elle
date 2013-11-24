@@ -1,4 +1,4 @@
-#include <reactor/network/socket-operation.hh>
+#include <reactor/network/SocketOperation.hh>
 
 namespace reactor
 {
@@ -7,25 +7,11 @@ namespace reactor
     template <typename AsioSocket>
     SocketOperation<AsioSocket>::SocketOperation(
       Scheduler& scheduler,
-      AsioSocket* socket):
+      AsioSocket& socket):
       Operation(scheduler),
       _socket(socket),
       _canceled(new bool(false))
     {}
-
-    template <typename AsioSocket>
-    AsioSocket*
-    SocketOperation<AsioSocket>::socket()
-    {
-      return this->_socket;
-    }
-
-    template <typename AsioSocket>
-    AsioSocket const*
-    SocketOperation<AsioSocket>::socket() const
-    {
-      return this->_socket;
-    }
 
     template <typename AsioSocket>
     void
@@ -33,14 +19,12 @@ namespace reactor
     {
       *this->_canceled = true;
       boost::system::error_code ec;
-      socket()->cancel(ec);
-
+      this->_socket.cancel(ec);
       // Cancel may fail if for instance the socket was closed manually. If
       // cancel fails, assume the operation is de facto cancelled and we can
       // carry on. I know of no case were we "were not actually able to
       // cancel the operation".
       (void) ec;
-
       _signal();
     }
 

@@ -3,7 +3,7 @@
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
-#include <reactor/network/socket-operation.hh>
+#include <reactor/network/SocketOperation.hh>
 #include <reactor/network/udp-server.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
@@ -113,10 +113,10 @@ namespace reactor
         typedef SocketOperation<AsioSocket> Super;
         UDPRead(Scheduler& scheduler,
                 PlainSocket<AsioSocket>* socket,
-                Buffer& buffer)
-          : Super(scheduler, socket->socket())
-          , _buffer(buffer)
-          , _read(0)
+                Buffer& buffer):
+          Super(scheduler, *socket->socket()),
+          _buffer(buffer),
+          _read(0)
         {}
 
         virtual const char* type_name() const
@@ -137,7 +137,7 @@ namespace reactor
         {
           // FIXME: be synchronous if enough bytes are available
           EndPoint peer;
-          this->socket()->async_receive(
+          this->socket().async_receive(
             boost::asio::buffer(_buffer.data(), _buffer.size()),
             boost::bind(&UDPRead::_wakeup, this, _1, _2));
         }
@@ -186,7 +186,7 @@ namespace reactor
                     PlainSocket<AsioSocket>* socket,
                     Buffer& buffer,
                     boost::asio::ip::udp::endpoint & endpoint)
-          : Super(scheduler, socket->socket())
+          : Super(scheduler, *socket->socket())
           , _buffer(buffer)
           , _read(0)
           , _endpoint(endpoint)
@@ -212,7 +212,7 @@ namespace reactor
             this->_wakeup(e, w);
           };
 
-          this->socket()->async_receive_from(
+          this->socket().async_receive_from(
             boost::asio::buffer(_buffer.data(), _buffer.size()),
             this->_endpoint,
             wake);
@@ -268,7 +268,7 @@ namespace reactor
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
                  elle::ConstWeakBuffer& buffer):
-          Super(scheduler, socket->socket()),
+          Super(scheduler, *socket->socket()),
           _buffer(buffer),
           _written(0)
         {}
@@ -276,7 +276,7 @@ namespace reactor
       protected:
         virtual void _start()
         {
-          this->socket()->async_send(
+          this->socket().async_send(
             boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
             boost::bind(&UDPWrite::_wakeup, this, _1, _2));
         }
@@ -306,11 +306,11 @@ namespace reactor
         UDPSendTo(Scheduler& scheduler,
                   PlainSocket<AsioSocket>* socket,
                   Buffer& buffer,
-                  EndPoint const & endpoint)
-          : Super(scheduler, socket->socket())
-          , _buffer(buffer)
-          , _written(0)
-          , _endpoint(endpoint)
+                  EndPoint const & endpoint):
+          Super(scheduler, *socket->socket()),
+          _buffer(buffer),
+          _written(0),
+          _endpoint(endpoint)
         {}
 
       protected:
@@ -319,11 +319,8 @@ namespace reactor
           auto wake = [&] (boost::system::error_code const e, std::size_t w) {
             this->_wakeup(e, w);
           };
-
-          this->socket()->async_send_to(boost::asio::buffer(_buffer.data(),
-                                                         _buffer.size()),
-                                        this->_endpoint,
-                                        wake);
+          auto buffer = boost::asio::buffer(_buffer.data(), _buffer.size());
+          this->socket().async_send_to(buffer, this->_endpoint, wake);
         }
 
       private:
