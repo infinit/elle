@@ -438,6 +438,18 @@ TEST(builder_test, relative_uri_scheme) {
   ASSERT_FALSE(network::uri(builder).scheme());
 }
 
+TEST(builder_test, authority) {
+  network::uri_builder builder;
+  builder
+    .scheme("http")
+    .authority("www.example.com:8080")
+    .path("/")
+    ;
+  ASSERT_EQ("http://www.example.com:8080/", network::uri(builder));
+  ASSERT_EQ("www.example.com", *network::uri(builder).host());
+  ASSERT_EQ("8080", *network::uri(builder).port());
+}
+
 TEST(builder_test, relative_uri_has_host) {
   network::uri_builder builder;
   builder

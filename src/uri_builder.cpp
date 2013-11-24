@@ -10,6 +10,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include "network/uri.hpp"
+#include "detail/uri_parse_authority.hpp"
 
 namespace network {
   uri_builder::uri_builder(const network::uri &base_uri) {
@@ -69,6 +70,24 @@ namespace network {
     port_.reset(string_type());
     network::uri::encode_port(std::begin(port), std::end(port),
                               std::back_inserter(*port_));
+  }
+
+  void uri_builder::set_authority(string_type authority) {
+    boost::optional<uri::string_type> user_info, host, port;
+    detail::parse_authority(std::begin(authority), std::end(authority),
+                            user_info, host, port);
+
+    if (user_info) {
+      set_user_info(*user_info);
+    }
+
+    if (host) {
+      set_host(*host);
+    }
+
+    if (port) {
+      set_port(*port);
+    }
   }
 
   void uri_builder::set_path(string_type path) {

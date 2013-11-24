@@ -4,8 +4,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 
-#ifndef __NETWORK_DETAIL_NORMALIZE_INC__
-#define __NETWORK_DETAIL_NORMALIZE_INC__
+#ifndef NETWORK_DETAIL_NORMALIZE_INC
+#define NETWORK_DETAIL_NORMALIZE_INC
 
 #include <network/uri/uri.hpp>
 
@@ -18,4 +18,4 @@ namespace network {
 } // namespace network
 
 
-#endif // __NETWORK_DETAIL_NORMALIZE_INC__
+#endif // NETWORK_DETAIL_NORMALIZE_INC

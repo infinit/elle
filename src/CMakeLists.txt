@@ -8,6 +8,7 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_builder.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_errors.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_percent_encode.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_normalize.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_resolve.cpp
