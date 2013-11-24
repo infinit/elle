@@ -6,6 +6,7 @@
 # include <elle/attribute.hh>
 # include <elle/network/Locus.hh>
 
+# include <reactor/asio.hh>
 # include <reactor/duration.hh>
 # include <reactor/mutex.hh>
 # include <reactor/network/fwd.hh>
@@ -80,13 +81,6 @@ namespace reactor
       private:
         Scheduler& _sched;
 
-     /*------.
-     | Locus |
-     `------*/
-      public:
-        virtual elle::network::Locus local_locus() const = 0;
-        virtual elle::network::Locus remote_locus() const = 0;
-
      /*----------------.
      | Pretty printing |
      `----------------*/
@@ -95,21 +89,22 @@ namespace reactor
     };
     std::ostream& operator << (std::ostream& s, const Socket& socket);
 
-    template <typename AsioSocket_>
+    template <typename AsioSocket_,
+              typename EndPoint_ = typename AsioSocket_::endpoint_type>
     class PlainSocket: public Socket
     {
-      /*---------.
-      | Typedefs |
-      `---------*/
-      public:
-        /// Self type.
-        typedef Socket Self;
-        /// Super type.
-        typedef Socket Super;
-        /// Underlying asio socket type.
-        typedef AsioSocket_ AsioSocket;
-        /// End point type for the asio socket type.
-        typedef typename AsioSocket::endpoint_type EndPoint;
+    /*---------.
+    | Typedefs |
+    `---------*/
+    public:
+      /// Self type.
+      typedef PlainSocket<AsioSocket_, EndPoint_> Self;
+      /// Super type.
+      typedef Socket Super;
+      /// Underlying asio socket type.
+      typedef AsioSocket_ AsioSocket;
+      /// End point type for the asio socket type.
+      typedef EndPoint_ EndPoint;
 
     /*-------------.
     | Construction |
@@ -121,11 +116,8 @@ namespace reactor
                   DurationOpt timeout = DurationOpt());
       /// Create wrapping socket.
       PlainSocket(Scheduler& sched,
-                  AsioSocket* socket);
-      /// Create wrapping socket.
-      PlainSocket(Scheduler& sched,
                   AsioSocket* socket,
-                  typename AsioSocket::endpoint_type const& peer);
+                  EndPoint const& peer);
       /// Destroy a socket.
       virtual ~PlainSocket();
 
@@ -142,8 +134,6 @@ namespace reactor
     | Properties |
     `-----------*/
     public:
-      virtual elle::network::Locus local_locus() const;
-      virtual elle::network::Locus remote_locus() const;
       EndPoint peer() const;
       EndPoint local_endpoint() const;
 
@@ -167,24 +157,46 @@ namespace reactor
       EndPoint _peer;
     };
 
-    template <typename AsioSocket_>
+    template <typename AsioSocket_,
+              typename EndPoint_ = typename AsioSocket_::endpoint_type>
     class StreamSocket:
-      public PlainSocket<AsioSocket_>
+      public PlainSocket<AsioSocket_, EndPoint_>
     {
     /*---------.
     | Typedefs |
     `---------*/
     public:
       /// Self type.
-      typedef StreamSocket<AsioSocket_> Self;
+      typedef StreamSocket<AsioSocket_, EndPoint_> Self;
       /// Super type.
-      typedef PlainSocket<AsioSocket_> Super;
+      typedef PlainSocket<AsioSocket_, EndPoint_> Super;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
       using Super::Super;
+
+    /*-----.
+    | Read |
+    `-----*/
+    public:
+      virtual
+      void
+      read(Buffer buffer,
+           DurationOpt timeout = DurationOpt());
+      virtual
+      Size
+      read_some(Buffer buffer,
+                DurationOpt timeout = DurationOpt());
+      elle::Buffer
+      read_until(std::string const& delimiter,
+                 DurationOpt opt = DurationOpt());
+    private:
+      virtual Size _read(Buffer buffer,
+                         DurationOpt timeout,
+                         bool some);
+      ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 
     /*------.
     | Write |

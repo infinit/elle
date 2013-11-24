@@ -1,5 +1,9 @@
+#include <boost/asio/ssl.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+
+#include <elle/Lazy.hh>
+#include <elle/format/hexadecimal.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
@@ -94,9 +98,9 @@ namespace reactor
     | Pretty printing |
     `----------------*/
 
-    template <typename AsioSocket>
+    template <typename AsioSocket, typename EndPoint>
     void
-    PlainSocket<AsioSocket>::print(std::ostream& s) const
+    PlainSocket<AsioSocket, EndPoint>::print(std::ostream& s) const
     {
       s << "reactor::network::Socket(" << this->peer() << ")";
     }
@@ -111,10 +115,10 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    template <typename AsioSocket>
-    PlainSocket<AsioSocket>::PlainSocket(Scheduler& sched,
-                                         const EndPoint& peer,
-                                         DurationOpt timeout)
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Scheduler& sched,
+                                                   const EndPoint& peer,
+                                                   DurationOpt timeout)
       : Super(sched)
       , _socket(0)
       , _peer(peer)
@@ -122,51 +126,17 @@ namespace reactor
       _connect(_peer, timeout);
     }
 
-    template <typename Socket>
-    static
-    typename Socket::endpoint_type
-    _get_peer(Socket& socket)
-    {
-      try
-      {
-        return socket.remote_endpoint();
-      }
-      catch (boost::system::system_error const& e)
-      {
-        if (e.code() == boost::system::errc::bad_file_descriptor)
-        {
-          // The socket might not have a remote endpoint if it's a listening
-          // socket for instance.
-          return typename Socket::endpoint_type();
-        }
-        else if (e.code() == boost::system::errc::not_connected)
-        {
-          throw ConnectionClosed();
-        }
-        else
-          throw;
-      }
-    }
-
-    template <typename AsioSocket>
-    PlainSocket<AsioSocket>
-    ::PlainSocket(Scheduler& sched,
-                  AsioSocket* socket):
-      PlainSocket<AsioSocket>(sched, socket, _get_peer(*socket))
-    {}
-
-    template <typename AsioSocket>
-    PlainSocket<AsioSocket>
-    ::PlainSocket(Scheduler& sched,
-                  AsioSocket* socket,
-                  typename AsioSocket::endpoint_type const& peer):
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Scheduler& sched,
+                                                   AsioSocket* socket,
+                                                   EndPoint const& peer):
       Super(sched),
       _socket(socket),
       _peer(peer)
     {}
 
-    template <typename AsioSocket>
-    PlainSocket<AsioSocket>::~PlainSocket()
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::~PlainSocket()
     {
       try
       {
@@ -192,10 +162,10 @@ namespace reactor
         typedef typename AsioSocket::endpoint_type EndPoint;
         typedef SocketOperation<AsioSocket> Super;
         Connection(Scheduler& scheduler,
-                   PlainSocket<AsioSocket>* socket,
-                   const EndPoint& endpoint)
-          : Super(scheduler, socket)
-          , _endpoint(endpoint)
+                   AsioSocket& socket,
+                   const EndPoint& endpoint):
+          Super(scheduler, &socket),
+          _endpoint(endpoint)
         {}
 
         virtual const char* type_name() const
@@ -223,26 +193,70 @@ namespace reactor
         EndPoint _endpoint;
     };
 
-    /*-----------.
-    | Connection |
-    `-----------*/
+    template <typename Socket_>
+    struct SocketSpecialization
+    {
+      typedef Socket_ Socket;
+      typedef Socket_ Stream;
 
-    template <typename AsioSocket>
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s;
+      }
+
+      static
+      Stream*
+      make(boost::asio::io_service& s)
+      {
+        return new Stream(s);
+      }
+    };
+
+    template <>
+    struct SocketSpecialization<
+      boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>
+    {
+      typedef boost::asio::ip::tcp::socket Socket;
+      typedef boost::asio::ssl::stream<Socket> Stream;
+
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s.next_layer();
+      }
+
+      static
+      Stream*
+      make(boost::asio::io_service& s)
+      {
+        boost::asio::ssl::context ctx(boost::asio::ssl::context::sslv23);
+        return new Stream(s, ctx);
+      }
+    };
+
+    template <typename AsioSocket, typename EndPoint>
     void
-    PlainSocket<AsioSocket>::close()
+    PlainSocket<AsioSocket, EndPoint>::close()
     {
       ELLE_TRACE_SCOPE("%s: close", *this);
-      this->socket()->close();
+      typedef SocketSpecialization<AsioSocket> Spe;
+      Spe::socket(*this->socket()).close();
     }
 
-    template <typename AsioSocket>
+    template <typename AsioSocket, typename EndPoint>
     void
-    PlainSocket<AsioSocket>::_connect(const EndPoint& endpoint, DurationOpt timeout)
+    PlainSocket<AsioSocket, EndPoint>::_connect(const EndPoint& endpoint,
+                                                DurationOpt timeout)
     {
       ELLE_TRACE("%s: connecting to %s", *this, endpoint);
+      typedef SocketSpecialization<AsioSocket> Spe;
       if (!this->_socket)
-        this->_socket = new AsioSocket(this->scheduler().io_service());
-      Connection<AsioSocket> connection(this->scheduler(), this, endpoint);
+        this->_socket = Spe::make(this->scheduler().io_service());
+      Connection<typename Spe::Socket> connection(
+        this->scheduler(), Spe::socket(*this->_socket), endpoint);
       try
       {
         if (!connection.run(timeout))
@@ -256,26 +270,27 @@ namespace reactor
       }
     }
 
-    template <typename AsioSocket>
+    template <typename AsioSocket, typename EndPoint>
     void
-    PlainSocket<AsioSocket>::_disconnect()
+    PlainSocket<AsioSocket, EndPoint>::_disconnect()
     {
+      typedef SocketSpecialization<AsioSocket> Spe;
       if (_socket)
       {
         boost::system::error_code error;
-        _socket->shutdown(AsioSocket::shutdown_both, error);
+        Spe::socket(*this->_socket).shutdown(Spe::Socket::shutdown_both, error);
         if (error)
-          {
-            if (error == boost::asio::error::not_connected
+        {
+          if (error == boost::asio::error::not_connected
 #ifdef INFINIT_WINDOWS
-                || error == boost::asio::error::bad_descriptor
+              || error == boost::asio::error::bad_descriptor
 #endif
-                )
-              ; // It's ok to try to disconnect a non-connected socket.
-            else
-              throw Exception(error.message());
-          }
-        _socket->close();
+            )
+            ; // It's ok to try to disconnect a non-connected socket.
+          else
+            throw Exception(error.message());
+        }
+        Spe::socket(*this->_socket).close();
         delete _socket;
         _socket = 0;
       }
@@ -318,53 +333,294 @@ namespace reactor
       return elle::network::Locus(host, port);
     }
 
-    template <typename AsioSocket>
-    elle::network::Locus
-    PlainSocket<AsioSocket>::local_locus() const
-    {
-      return locus_from_endpoint<AsioSocket>(local_endpoint());
-    }
-
-    template <typename AsioSocket>
-    elle::network::Locus
-    PlainSocket<AsioSocket>::remote_locus() const
-    {
-      return locus_from_endpoint<AsioSocket>(peer());
-    }
-
-    template <typename AsioSocket>
-    typename PlainSocket<AsioSocket>::EndPoint
-    PlainSocket<AsioSocket>::peer() const
+    template <typename AsioSocket, typename EndPoint>
+    EndPoint
+    PlainSocket<AsioSocket, EndPoint>::peer() const
     {
       return this->_peer;
     }
 
-    template <typename AsioSocket>
-    typename PlainSocket<AsioSocket>::EndPoint
-    PlainSocket<AsioSocket>::local_endpoint() const
+    template <typename AsioSocket, typename EndPoint>
+    EndPoint
+    PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
-        return this->_socket->local_endpoint();
+      typedef SocketSpecialization<AsioSocket> Spe;
+      return Spe::socket(*this->_socket).local_endpoint();
     }
 
     /*-------------.
     | StreamSocket |
     `-------------*/
 
+    /*-----.
+    | Read |
+    `-----*/
+
+    template <typename PlainSocket, typename AsioSocket>
+    class Read:
+      public SocketOperation<AsioSocket>
+    {
+    public:
+      Read(Scheduler& scheduler,
+           PlainSocket& plain,
+           AsioSocket* socket,
+           Buffer& buffer,
+           bool some):
+        SocketOperation<AsioSocket>(scheduler, socket),
+        _buffer(buffer),
+        _read(0),
+        _some(some),
+        _socket(plain)
+      {}
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "read on ";
+        try
+        {
+          stream << this->socket()->local_endpoint();
+        }
+        catch (std::exception const&)
+        {
+          stream << "an invalid socket (" << elle::exception_string() << ")";
+        }
+      }
+
+    protected:
+      virtual void _start()
+      {
+        // FIXME: be synchronous if enough bytes are available
+        if (_some)
+          this->socket()->async_read_some(
+            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
+        else
+          boost::asio::async_read(
+            *this->socket(),
+            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::bind(&Read::_wakeup, this, this->_canceled, _1, _2));
+      }
+
+    private:
+      void _wakeup(std::shared_ptr<bool> canceled,
+                   const boost::system::error_code& error,
+                   std::size_t read)
+      {
+        if (*canceled)
+          return;
+        if (error)
+          ELLE_TRACE("%s: read error: %s (%s)",
+                     this->_socket, error.message(), read);
+        else
+          ELLE_TRACE("%s: read completed: %s bytes",
+                     this->_socket, read);
+        _read = read;
+        if (error == boost::asio::error::eof
+            || error == boost::asio::error::operation_aborted
+            || error == boost::asio::error::connection_aborted
+#ifdef INFINIT_WINDOWS
+            || error == boost::asio::error::bad_descriptor
+            || error == boost::asio::error::connection_reset
+            || error.value() == ERROR_CONNECTION_ABORTED
+#endif
+          )
+          this->template _raise<reactor::network::ConnectionClosed>();
+        else if (error)
+          this->template _raise<Exception>(error.message());
+        this->_signal();
+      }
+
+      ELLE_ATTRIBUTE(Buffer&, buffer);
+      ELLE_ATTRIBUTE_R(Size, read);
+      ELLE_ATTRIBUTE(bool, some);
+      ELLE_ATTRIBUTE(PlainSocket const&, socket);
+    };
+
+    template <typename AsioSocket, typename EndPoint>
+    void
+    StreamSocket<AsioSocket, EndPoint>::read(Buffer buf,
+                                             DurationOpt timeout)
+    {
+      _read(buf, timeout, false);
+    }
+
+    template <typename AsioSocket, typename EndPoint>
+    Size
+    StreamSocket<AsioSocket, EndPoint>::read_some(Buffer buf,
+                                                  DurationOpt timeout)
+    {
+      return _read(buf, timeout, true);
+    }
+
+    template <typename AsioSocket, typename EndPoint>
+    Size
+    StreamSocket<AsioSocket, EndPoint>::_read(Buffer buf,
+                                              DurationOpt timeout,
+                                              bool some)
+    {
+      ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
+                       *this, some ? "up to " : "", buf.size(), timeout);
+      if (this->_streambuffer.size())
+      {
+        std::istream s(&this->_streambuffer);
+        s.readsome(reinterpret_cast<char*>(buf.data()), buf.size());
+        unsigned size = s.gcount();
+        ELLE_ASSERT_GT(size, 0u);
+        if (size == buf.size() || some)
+        {
+          ELLE_DEBUG("%s: completed read of %s (cached) bytes: %s",
+                     *this, size, elle::ConstWeakBuffer(buf.data(),
+                                                        buf.size()).string());
+          return size;
+        }
+        else if (size)
+          ELLE_TRACE("%s: read %s cached bytes, carrying on", *this);
+        buf = Buffer(buf.data() + size, buf.size() - size);
+      }
+      typedef SocketSpecialization<AsioSocket> Spe;
+      Read<Self, typename Spe::Socket> read(this->scheduler(),
+                                            *this,
+                                            &Spe::socket(*this->socket()),
+                                            buf, some);
+      bool finished;
+      try
+      {
+        finished  = read.run(timeout);
+      }
+      catch (...)
+      {
+        ELLE_TRACE("%s: read threw: %s", *this, elle::exception_string());
+        throw;
+      }
+      if (!finished)
+      {
+        ELLE_TRACE("%s: read timed out", *this);
+        throw TimeOut();
+      }
+      ELLE_TRACE("%s: completed read of %s bytes: %s",
+                 *this, read.read(), buf);
+      auto data = buf.data();
+      auto size = read.read();
+      ELLE_DUMP("%s: data: 0x%s", *this,
+                elle::lazy([data, size]
+                           {
+                             return elle::format::hexadecimal::encode(
+                               elle::ConstWeakBuffer(data, size));
+                           }));
+
+      return read.read();
+    }
+
+    template <typename PlainSocket, typename AsioSocket>
+    class ReadUntil:
+      public SocketOperation<boost::asio::ip::tcp::socket>
+    {
+    public:
+      ReadUntil(PlainSocket& plain,
+                AsioSocket* socket,
+                boost::asio::streambuf& buffer,
+                std::string const& delimiter):
+        SocketOperation<AsioSocket>(
+          *reactor::Scheduler::scheduler(), socket),
+        _socket(plain),
+        _streambuffer(buffer),
+        _delimiter(delimiter),
+        _buffer()
+      {}
+
+    protected:
+      virtual void _start()
+      {
+        boost::asio::async_read_until(
+          *this->socket(),
+          this->_streambuffer,
+          this->_delimiter,
+          std::bind(&ReadUntil::_wakeup,
+                    std::ref(*this),
+                    this->_canceled,
+                    std::placeholders::_1,
+                    std::placeholders::_2));
+      }
+
+      void _wakeup(std::shared_ptr<bool> canceled,
+                   const boost::system::error_code& error,
+                   std::size_t read)
+      {
+        if (*canceled)
+          return;
+        if (error)
+          ELLE_TRACE("%s: read until error: %s",
+                     this->_socket, error.message());
+        else
+          ELLE_TRACE("%s: read until completed: %s bytes",
+                     this->_socket, read);
+        if (error == boost::asio::error::eof || \
+            error == boost::system::errc::operation_canceled)
+          this->_raise<ConnectionClosed>();
+        else if (error)
+          this->_raise<Exception>(error.message());
+        {
+          std::istream s(&this->_streambuffer);
+          this->_buffer.size(read);
+          s.read((char*)this->_buffer.mutable_contents(), read);
+          ELLE_ASSERT(!s.fail());
+          ELLE_ASSERT_EQ(s.gcount(), static_cast<signed>(read));
+        }
+        this->_signal();
+      }
+
+    private:
+      ELLE_ATTRIBUTE(PlainSocket&, socket);
+      ELLE_ATTRIBUTE(boost::asio::streambuf&, streambuffer);
+      ELLE_ATTRIBUTE(std::string, delimiter);
+      ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
+    };
+
+    template <typename AsioSocket, typename EndPoint>
+    elle::Buffer
+    StreamSocket<AsioSocket, EndPoint>::read_until(std::string const& delimiter,
+                                                   DurationOpt timeout)
+    {
+      ELLE_TRACE_SCOPE("%s: read until %s", *this, delimiter);
+      typedef SocketSpecialization<AsioSocket> Spe;
+      ReadUntil<Self, typename Spe::Socket> read(
+        *this, &Spe::socket(*this->socket()),
+        this->_streambuffer, delimiter);
+      bool finished;
+      try
+      {
+        finished  = read.run(timeout);
+      }
+      catch (...)
+      {
+        ELLE_TRACE("%s: read until threw: %s", *this, elle::exception_string());
+        throw;
+      }
+      if (!finished)
+      {
+        ELLE_TRACE("%s: read until timed out", *this);
+        throw TimeOut();
+      }
+      return std::move(read.buffer());
+    }
+
     /*------.
     | Write |
     `------*/
 
-    template <typename AsioSocket>
+    template <typename PlainSocket, typename AsioSocket>
     class Write:
       public SocketOperation<AsioSocket>
     {
     public:
-      typedef typename AsioSocket::endpoint_type EndPoint;
       typedef SocketOperation<AsioSocket> Super;
-      Write(PlainSocket<AsioSocket>* socket,
+      Write(PlainSocket& plain,
+            AsioSocket* socket,
             elle::ConstWeakBuffer buffer):
         Super(*Scheduler::scheduler(), socket),
-        _socket(*socket),
+        _socket(plain),
         _buffer(buffer),
         _written(0)
       {}
@@ -415,20 +671,23 @@ namespace reactor
         }
       }
 
-      ELLE_ATTRIBUTE(PlainSocket<AsioSocket> const&, socket);
+      ELLE_ATTRIBUTE(PlainSocket const&, socket);
       ELLE_ATTRIBUTE(elle::ConstWeakBuffer, buffer);
       ELLE_ATTRIBUTE_R(Size, written);
     };
 
-    template <typename AsioSocket>
+    template <typename AsioSocket, typename EndPoint>
     void
-    StreamSocket<AsioSocket>::write(elle::ConstWeakBuffer buffer)
+    StreamSocket<AsioSocket, EndPoint>::write(elle::ConstWeakBuffer buffer)
     {
       reactor::wait(this->_write_mutex);
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
       try
       {
-        Write<AsioSocket> write(this, buffer);
+        typedef SocketSpecialization<AsioSocket> Spe;
+        Write<Self, typename Spe::Socket> write(*this,
+                                                &Spe::socket(*this->socket()),
+                                                buffer);
         write.run();
       }
       catch (...)
@@ -447,6 +706,12 @@ namespace reactor
     class PlainSocket<boost::asio::ip::tcp::socket>;
     template
     class StreamSocket<boost::asio::ip::tcp::socket>;
+    template
+    class PlainSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
+                      boost::asio::ip::tcp::socket::endpoint_type>;
+    template
+    class StreamSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
+                       boost::asio::ip::tcp::socket::endpoint_type>;
     template
     class PlainSocket<boost::asio::ip::udp::socket>;
     // template

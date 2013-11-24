@@ -38,30 +38,31 @@ namespace reactor
                          int local_port,
                          const std::string& hostname,
                          int port)
-      : Super(sched, new AsioSocket(sched.io_service()))
+      : Super(sched, new AsioSocket(sched.io_service()),
+              resolve_udp(sched, hostname,
+                          boost::lexical_cast<std::string>(port)))
     {
       this->_socket->open(boost::asio::ip::udp::v4());
       boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
                                            local_port);
       this->_socket->bind(local);
-      this->_connect(resolve_udp(sched, hostname,
-                                 boost::lexical_cast<std::string>(port)));
+      this->_connect(this->peer());
     }
 
-    UDPSocket::UDPSocket(Scheduler& sched,
-                         int native_handle):
-      Super(sched,
-            new boost::asio::ip::udp::socket{
-              sched.io_service(),
-              boost::asio::ip::udp::v4(),
-              native_handle
-            })
-    {
-    }
+    // UDPSocket::UDPSocket(Scheduler& sched,
+    //                      int native_handle):
+    //   Super(sched,
+    //         new boost::asio::ip::udp::socket{
+    //           sched.io_service(),
+    //             boost::asio::ip::udp::v4(),
+    //             native_handle
+    //         })
+    // {
+    // }
 
-    UDPSocket::UDPSocket(Scheduler& sched)
-      : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
-    {}
+    // UDPSocket::UDPSocket(Scheduler& sched)
+    //   : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
+    // {}
 
     UDPSocket::~UDPSocket()
     {
@@ -111,9 +112,9 @@ namespace reactor
         typedef boost::asio::ip::udp::endpoint EndPoint;
         typedef SocketOperation<AsioSocket> Super;
         UDPRead(Scheduler& scheduler,
-             PlainSocket<AsioSocket>* socket,
-             Buffer& buffer)
-          : Super(scheduler, socket)
+                PlainSocket<AsioSocket>* socket,
+                Buffer& buffer)
+          : Super(scheduler, socket->socket())
           , _buffer(buffer)
           , _read(0)
         {}
@@ -185,7 +186,7 @@ namespace reactor
                     PlainSocket<AsioSocket>* socket,
                     Buffer& buffer,
                     boost::asio::ip::udp::endpoint & endpoint)
-          : Super(scheduler, socket)
+          : Super(scheduler, socket->socket())
           , _buffer(buffer)
           , _read(0)
           , _endpoint(endpoint)
@@ -267,7 +268,7 @@ namespace reactor
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
                  elle::ConstWeakBuffer& buffer):
-          Super(scheduler, socket),
+          Super(scheduler, socket->socket()),
           _buffer(buffer),
           _written(0)
         {}
@@ -306,7 +307,7 @@ namespace reactor
                   PlainSocket<AsioSocket>* socket,
                   Buffer& buffer,
                   EndPoint const & endpoint)
-          : Super(scheduler, socket)
+          : Super(scheduler, socket->socket())
           , _buffer(buffer)
           , _written(0)
           , _endpoint(endpoint)

@@ -1,7 +1,6 @@
 #ifndef INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 # define INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
 
-# include <reactor/asio.hh>
 # include <reactor/network/socket.hh>
 
 namespace reactor
@@ -43,27 +42,8 @@ namespace reactor
     private:
       friend class TCPServer;
       TCPSocket(Scheduler& sched,
-                AsioSocket* socket);
-      TCPSocket(Scheduler& sched,
                 AsioSocket* socket,
                 AsioSocket::endpoint_type const& peer);
-      ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
-
-    /*-----.
-    | Read |
-    `-----*/
-    public:
-      virtual void read(Buffer buffer,
-                        DurationOpt timeout = DurationOpt());
-      virtual Size read_some(Buffer buffer,
-                             DurationOpt timeout = DurationOpt());
-      elle::Buffer
-      read_until(std::string const& delimiter,
-                 DurationOpt opt = DurationOpt());
-    private:
-      virtual Size _read(Buffer buffer,
-                         DurationOpt timeout,
-                         bool some);
 
     /*----------------.
     | Pretty printing |

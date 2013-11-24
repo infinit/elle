@@ -7,7 +7,7 @@ namespace reactor
     template <typename AsioSocket>
     SocketOperation<AsioSocket>::SocketOperation(
       Scheduler& scheduler,
-      PlainSocket<AsioSocket>* socket):
+      AsioSocket* socket):
       Operation(scheduler),
       _socket(socket),
       _canceled(new bool(false))
@@ -17,14 +17,14 @@ namespace reactor
     AsioSocket*
     SocketOperation<AsioSocket>::socket()
     {
-      return _socket->_socket;
+      return this->_socket;
     }
 
     template <typename AsioSocket>
     AsioSocket const*
     SocketOperation<AsioSocket>::socket() const
     {
-      return _socket->_socket;
+      return this->_socket;
     }
 
     template <typename AsioSocket>

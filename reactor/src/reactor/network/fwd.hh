@@ -9,7 +9,7 @@ namespace reactor
   {
     class Buffer;
     class Socket;
-    template <typename AsioSocket>
+    template <typename AsioSocket, typename EndPoint>
     class PlainSocket;
     class TCPSocket;
     class UDPSocket;

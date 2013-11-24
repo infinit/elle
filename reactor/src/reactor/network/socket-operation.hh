@@ -16,7 +16,7 @@ namespace reactor
     {
       public:
         SocketOperation(Scheduler& scheduler,
-                        PlainSocket<AsioSocket>* socket);
+                        AsioSocket* socket);
       protected:
         AsioSocket*
         socket();
@@ -28,7 +28,7 @@ namespace reactor
         void
         _wakeup(std::shared_ptr<bool> canceled,
                 const boost::system::error_code& error);
-        PlainSocket<AsioSocket>* _socket;
+        AsioSocket* _socket;
         std::shared_ptr<bool> _canceled;
     };
   }
