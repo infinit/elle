@@ -160,25 +160,39 @@ namespace reactor
       EndPoint _peer;
     };
 
-    template <typename AsioSocket_,
-              typename EndPoint_ = typename AsioSocket_::endpoint_type>
+    template <typename AsioSocket,
+              typename EndPoint = typename AsioSocket::endpoint_type>
     class StreamSocket:
-      public PlainSocket<AsioSocket_, EndPoint_>
+      public PlainSocket<AsioSocket, EndPoint>
     {
     /*---------.
     | Typedefs |
     `---------*/
     public:
       /// Self type.
-      typedef StreamSocket<AsioSocket_, EndPoint_> Self;
+      typedef StreamSocket<AsioSocket, EndPoint> Self;
       /// Super type.
-      typedef PlainSocket<AsioSocket_, EndPoint_> Super;
+      typedef PlainSocket<AsioSocket, EndPoint> Super;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      using Super::Super;
+      // XXX: gcc 4.7 can't use parent's constructor.
+      StreamSocket(Scheduler& sched,
+                   std::unique_ptr<AsioSocket> socket,
+                   EndPoint const& peer,
+                   DurationOpt timeout):
+        Super(sched, std::move(socket), peer, timeout)
+      {}
+
+      // XXX: gcc 4.7 can't use parent's constructor.
+      StreamSocket(Scheduler& sched,
+                   std::unique_ptr<AsioSocket> socket,
+                   EndPoint const& peer):
+        Super(sched, std::move(socket), peer)
+      {}
+
       virtual
       ~StreamSocket();
 
