@@ -20,18 +20,27 @@ import drake
 import drake.cxx
 import drake.cxx.boost
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler="g++-4.7")
+cxx_toolkit = drake.cxx.GccToolkit(compiler = 'clang++')
+os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
 cxx_config = drake.cxx.Config()
 
-cxx_config.flag('-fPIC')
-cxx_config.flag('-Wall')
-cxx_config.flag('-W')
-cxx_config.flag('-m64')
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
-boost = drake.cxx.boost.Boost(prefix='/opt/local')
+cxx_config.flag('-ftemplate-depth=512')
+cxx_config.flag('-std=c++11')
+cxx_config.flag('-stdlib=libc++')
+cxx_config.warnings.overloaded_virtual = False
 
-drake.run('../%s', cxx_toolkit, cxx_config, boost = boost)
+boost = drake.cxx.boost.Boost(prefix = '/usr/local')
+python2 = '/usr/local/Frameworks/Python.framework/Versions/2.7'
+python3 = '/usr/local/Frameworks/Python.framework/Versions/3.2'
+
+drake.run('../%s',
+          cxx_toolkit,
+          cxx_config,
+          boost = boost,
+          python2 = python2,
+          python3 = python3)
 '''
 else:
   template = """\
