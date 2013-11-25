@@ -32,14 +32,12 @@ cxx_config.flag('-stdlib=libc++')
 cxx_config.warnings.overloaded_virtual = False
 
 boost = drake.cxx.boost.Boost(prefix = '/usr/local')
-python2 = '/usr/local/Frameworks/Python.framework/Versions/2.7'
 python3 = '/usr/local/Frameworks/Python.framework/Versions/3.2'
 
 drake.run('../%s',
           cxx_toolkit,
           cxx_config,
           boost = boost,
-          python2 = python2,
           python3 = python3)
 '''
 else:
