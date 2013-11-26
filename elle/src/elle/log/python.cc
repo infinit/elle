@@ -56,7 +56,7 @@ public:
       file.c_str(),
       line,
       function.c_str(),
-      message.c_str()) // FIXME: replace % by %%
+      boost::algorithm::replace_all_copy(message, "%", "%%").c_str())
   {}
 
   void
