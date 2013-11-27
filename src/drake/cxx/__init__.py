@@ -614,12 +614,12 @@ class GccToolkit(Toolkit):
       return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
-      extraflags = []
-      if pic:
-          extraflags.append('-fPIC')
-      return [c and self.c or self.cxx] + cfg.flags + \
-          self.cppflags(cfg) + self.cflags(cfg) + \
-          extraflags + ['-c', str(src), '-o', str(obj)]
+    extraflags = []
+    if pic and self.os is not drake.os.windows:
+      extraflags.append('-fPIC')
+    return [c and self.c or self.cxx] + cfg.flags + \
+        self.cppflags(cfg) + self.cflags(cfg) + \
+        extraflags + ['-c', str(src), '-o', str(obj)]
 
   def archive(self, cfg, objs, lib):
       # FIXME: ;
