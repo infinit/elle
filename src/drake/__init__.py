@@ -2327,15 +2327,21 @@ def command_add(name, action):
     """
     _MODES[name] = action
 
+
+class CWDPrinter:
+
+  def __init__(self, path = None):
+    self.__path = path or _OS.getcwd()
+
+  def __enter__(self):
+    print('%s: Entering directory `%s\'' % (sys.argv[0], self.__path))
+
+  def __exit__(self, *args):
+    print('%s: Leaving directory `%s\'' % (sys.argv[0], self.__path))
+
+
 def _register_commands():
 
-    class CWDPrinter:
-        def __enter__(self):
-            print('%s: Entering directory `%s\'' % (sys.argv[0],
-                                                    _OS.getcwd()))
-        def __exit__(self, *args):
-            print('%s: Leaving directory `%s\'' % (sys.argv[0],
-                                                   _OS.getcwd()))
 
     def all_if_none(nodes):
         # Copy it, since it will change during iteration. This shouldn't
