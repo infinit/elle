@@ -72,7 +72,7 @@ namespace elle
       }
 
       bool
-      Send::_enabled(elle::log::Logger::Type type,
+      Send::_enabled(elle::log::Logger::Type,
                      elle::log::Logger::Level level,
                      elle::String const& component)
       {

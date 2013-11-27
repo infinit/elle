@@ -32,7 +32,7 @@ namespace elle
     SysLogger::_message(Level level,
                         Logger::Type type,
                         std::string const& component,
-                        boost::posix_time::ptime const& time,
+                        boost::posix_time::ptime const&,
                         std::string const& message,
                         std::vector<std::pair<std::string, std::string>> const& tags,
                         int indentation,

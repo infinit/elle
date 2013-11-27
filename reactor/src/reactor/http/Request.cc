@@ -624,7 +624,7 @@ namespace reactor
     Request::Request(std::string const& url,
                      Method method,
                      Configuration conf,
-                     bool flag):
+                     bool):
       elle::IOStream(this->_impl = new Impl(*this, url, method,
                                             std::move(conf))),
       _method(method),

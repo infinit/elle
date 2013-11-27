@@ -160,9 +160,9 @@ namespace reactor
         Configuration(DurationOpt timeout = 30_sec,
                       Version version = Version::v11);
         /// Configuration are not copiable.
-        Configuration(Configuration const& model) = default;
+        Configuration(Configuration const&) = default;
         /// Move a configuration.
-        Configuration(Configuration&& source) = default;
+        Configuration(Configuration&&) = default;
         /// Dispose of a Configuration.
         ~Configuration();
         /// Add a custom header to be sent to the server.

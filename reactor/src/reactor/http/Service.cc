@@ -290,9 +290,9 @@ namespace reactor
     `--------*/
 
     int
-    Service::timeout_callback(CURLM* multi,
-                           long ms,
-                           void* userp)
+    Service::timeout_callback(CURLM*,
+                              long ms,
+                              void* userp)
     {
       Service* self = reinterpret_cast<Service*>(userp);
       if (ms == -1)
