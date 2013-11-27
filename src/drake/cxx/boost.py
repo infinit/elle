@@ -8,6 +8,7 @@
 
 import drake
 import drake.cxx
+import itertools
 import sys
 
 from .. import Exception, Path, Version
@@ -19,16 +20,16 @@ class Boost(drake.Configuration):
   """Configuration for the Boost C++ library collection"""
 
   __libraries = {
-    'test': 'boost_unit_test_framework',
-    'thread': 'boost_thread',
-    'system': 'boost_system',
-    'filesystem': 'boost_filesystem',
-    'signals': 'boost_signals',
-    'date': 'boost_date_time',
-    'regex': 'boost_regex',
-    'program': 'boost_program_options',
-    'chrono': 'boost_chrono',
-    'iostreams': 'boost_iostreams',
+    'test': 'unit_test_framework',
+    'thread': 'thread',
+    'system': 'system',
+    'filesystem': 'filesystem',
+    'signals': 'signals',
+    'date': 'date_time',
+    'regex': 'regex',
+    'program': 'program_options',
+    'chrono': 'chrono',
+    'iostreams': 'iostreams',
     }
 
   def __init__(self,
@@ -107,6 +108,7 @@ class Boost(drake.Configuration):
                      ', '.join(map(str, miss))))
 
   def __find_lib(self, lib, lib_path, cxx_toolkit):
+    # Suffixes
     suffixes = ['-mt', '']
     if isinstance(cxx_toolkit, drake.cxx.VisualToolkit):
       suffix = '-vc%s0-mt-%s_%s' % (cxx_toolkit.version,
@@ -115,30 +117,26 @@ class Boost(drake.Configuration):
       suffixes = [suffix] + suffixes
     mgw = '-mgw-mt-%s_%s' % (self.version.major, self.version.minor)
     suffixes += [mgw]
-    for suffix in suffixes:
-      libname = lib + suffix
+    # Variants
+    variants = ['']
+    if lib == 'thread' and cxx_toolkit.os is drake.os.windows:
+      variants.append('_win32')
+    for suffix, variant in itertools.product(suffixes, variants):
+      libname = 'boost_%s%s%s' % (lib, variant, suffix)
       filename = cxx_toolkit.libname_dyn(self.__cfg, libname)
       filename_st = cxx_toolkit.libname_static(self.__cfg, libname)
       test_plain = lib_path / filename
       test_plain_st = lib_path / filename_st
-      test_plain_lib = lib_path / ('lib%s' % (filename))
-      test_plain_slib = lib_path / ('lib%s' % (filename_st))
       test_versioned = lib_path / ('%s.%s' % (filename, self.__version))
       test_versioned_st = lib_path / ('%s.%s' % (filename_st, self.__version))
-      test_versioned_lib = lib_path / ('lib%s.%s' %(filename, self.__version))
-      test_versioned_slib = lib_path / ('lib%s.%s' %(filename_st, self.__version))
       tests_dyn = [
           test_plain,
-          test_plain_lib,
           test_versioned,
-          test_versioned_lib,
 
       ]
       tests_st = [
           test_plain_st,
-          test_plain_slib,
           test_versioned_st,
-          test_versioned_slib,
       ]
       if self.__prefer_shared:
           tests = tests_dyn + tests_st
@@ -161,12 +159,12 @@ class Boost(drake.Configuration):
       self.__cfg_python = Config()
       # FIXME: do something smart here
       try:
-        self.__cfg_python.lib(self.__find_lib('boost_python-3.2',
+        self.__cfg_python.lib(self.__find_lib('python-3.2',
                                               self.__lib_path,
                                               self.__cxx_toolkit),
                                               static)
       except:
-        self.__cfg_python.lib(self.__find_lib('boost_python3',
+        self.__cfg_python.lib(self.__find_lib('python3',
                                               self.__lib_path,
                                               self.__cxx_toolkit),
                                               static)
