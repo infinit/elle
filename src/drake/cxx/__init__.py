@@ -736,7 +736,7 @@ class GccToolkit(Toolkit):
   def exename(self, cfg, path):
       path = Path(path)
       if self.os == drake.os.windows:
-        path.extension = "exe"
+        path = path.with_extension('exe')
       return path
 
   def rpath_set_command(self, binary, path):
