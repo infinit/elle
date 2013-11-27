@@ -36,9 +36,9 @@ namespace elle
                         std::string const& message,
                         std::vector<std::pair<std::string, std::string>> const& tags,
                         int indentation,
-                        std::string const& file,
-                        unsigned int line,
-                        std::string const& function)
+                        std::string const&,
+                        unsigned int,
+                        std::string const&)
     {
       int lvl = 0;
       switch (type)
