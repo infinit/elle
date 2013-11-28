@@ -473,6 +473,7 @@ def configure(cxx_toolkit = None,
   build << cryptography.rule_build
   build << reactor.rule_build
   build << curly.rule_build
+  build << protocol.rule_build
 
   global rule_tests
   rule_tests = drake.Rule('tests')
