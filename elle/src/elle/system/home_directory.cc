@@ -3,7 +3,7 @@
 #include <elle/os/getenv.hh>
 
 #ifdef INFINIT_WINDOWS
-# include <Shlobj.h>
+# include <shlobj.h>
 #else
 # include <pwd.h>
 #endif

@@ -9,7 +9,7 @@
 #include <boost/thread/tss.hpp>
 
 #ifdef INFINIT_WINDOWS
-# include <Shlwapi.h>
+# include <shlwapi.h>
 #else
 # include <fnmatch.h>
 #endif

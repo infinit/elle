@@ -370,9 +370,9 @@ def configure(cxx_toolkit = None,
     cxx_config.define('INFINIT_MACOSX')
   elif cxx_toolkit.os == drake.os.windows:
     cxx_config.define('INFINIT_WINDOWS')
-    cxx_config.lib('Shlwapi')
+    cxx_config.lib('shlwapi')
     cxx_config.lib('ws2_32')
-    cxx_config.lib('Gdi32')
+    cxx_config.lib('gdi32')
     cxx_config.lib('mswsock')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
