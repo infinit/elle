@@ -5,8 +5,10 @@ import subprocess
 import sys
 import platform
 
+arch, osyst, comp = os.environ['BUILDFARM_NAME'].split('-')
+
 template = ""
-if platform.system() == "Darwin":
+if osyst == 'OSX':
   template = '''\
 import os, sys
 sys.path.insert(
@@ -39,6 +41,36 @@ drake.run('../%s',
           cxx_config,
           boost = boost,
           python3 = python3)
+'''
+elif osyst == 'win64':
+  template = '''\
+import os, sys
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '../source/drake/src')
+    )
+)
+
+import drake
+import drake.cxx
+import drake.cxx.boost
+
+cxx_toolkit = drake.cxx.GccToolkit(compiler = 'x86_64-w64-mingw32-g++')
+cxx_config = drake.cxx.Config()
+cxx_config.enable_debug_symbols()
+cxx_config.enable_optimization(False)
+cxx_config.flag('-ftemplate-depth=512')
+cxx_config.flag('-std=c++11')
+
+boost = drake.cxx.boost.Boost(prefix = '/usr/local',
+                              cxx_toolkit = cxx_toolkit)
+
+drake.run('../%s',
+          cxx_toolkit = cxx_toolkit,
+          cxx_config = cxx_config,
+          boost = boost,
+)
 '''
 else:
   template = """\

@@ -121,6 +121,7 @@ def configure(cxx_toolkit = None,
       "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
       "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
       "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
+      "PREFIX=%s" % cxx_toolkit.prefix,
     ])
   )
   zlib_config = drake.cxx.Config()
@@ -235,7 +236,7 @@ def configure(cxx_toolkit = None,
   if cxx_toolkit.os is drake.os.linux:
     os_string = 'linux-x86_64'
   elif cxx_toolkit.os is drake.os.windows:
-    os_string = 'mingw'
+    os_string = 'mingw64'
   elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
   GNUBuilder(
@@ -258,7 +259,9 @@ def configure(cxx_toolkit = None,
     ],
     additional_env = {
         'PERL': 'perl',
+        'CC': cxx_toolkit.c,
     },
+    patch = drake.node('openssl.patch'),
   )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
@@ -333,6 +336,9 @@ def configure(cxx_toolkit = None,
     key = 'DYLD_FALLBACK_LIBRARY_PATH'
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_environment[key] = str(path)
+  elif cxx_toolkit.os is drake.os.windows:
+    curl_environment['CC'] = cxx_toolkit.c
+    curl_configure_args.append('--host=x86_64-w64-mingw32')
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   GNUBuilder(
     cxx_toolkit,
@@ -350,7 +356,6 @@ def configure(cxx_toolkit = None,
                      'include/curl/curlrules.h'))),
     configure_args = curl_configure_args,
     sources = curl_dependency_libs + [curl_configure],
-    configure_interpreter = 'sh',
     build_args = ['all', 'install',],
     additional_env = curl_environment,
   )
@@ -422,6 +427,9 @@ def configure(cxx_toolkit = None,
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,
+    openssl_config = openssl_config,
+    openssl_lib_crypto = openssl_lib_crypto,
+    openssl_lib_ssl = openssl_lib_ssl,
     python3 = python3,
     elle = elle,
     prefix = prefix,

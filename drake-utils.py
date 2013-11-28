@@ -33,7 +33,8 @@ class GNUBuilder(drake.Builder):
                makefile: "Makefile filename, used if not None" = None,
                build_args: "Additional arguments for the make command" = ['install'],
                additional_env: "Additional environment variables" = {},
-               configure_interpreter = None):
+               configure_interpreter = None,
+               patch = None):
     self.__toolkit = cxx_toolkit
     self.__configure = configure
     self.__configure_interpreter = configure_interpreter
@@ -44,6 +45,7 @@ class GNUBuilder(drake.Builder):
     self.__build_args = build_args
     self.__env = {}
     self.__env.update(additional_env)
+    self.__patch = patch
     if make_binary is not None:
         self.__env.setdefault('MAKE', make_binary.replace('\\', '/'))
     if working_directory is not None:
@@ -60,25 +62,32 @@ class GNUBuilder(drake.Builder):
       self.__targets)
 
   def execute(self):
-    # Configure step
     env = dict(self.__env)
     env.update(os.environ)
-    if self.__configure is not None:
-       if not self.cmd('Configure %s' % self.work_directory,
-                       self.command_configure,
-                       cwd = self.work_directory,
-                       env = env,
-                       leave_stdout = False):
-           return False
-
-    # Build step
-    if not self.cmd('Build %s' % self.work_directory,
-                    self.command_build,
-                    cwd = self.work_directory,
-                    env = env,
-                    leave_stdout = False):
-      return False
-
+    with drake.CWDPrinter(drake.path_root() / drake.path_build() / self.work_directory):
+      # Patch
+      if self.__patch is not None:
+        patch_path = str(drake.path_root() / self.__patch.path())
+        patch_cmd = ['patch', '-N', '-p', '1', '-i', patch_path],
+        if not self.cmd('Patch %s' % self.work_directory,
+                        patch_cmd,
+                        cwd = self.work_directory):
+          return False
+      # Configure step
+      if self.__configure is not None:
+         if not self.cmd('Configure %s' % self.work_directory,
+                         self.command_configure,
+                         cwd = self.work_directory,
+                         env = env,
+                         leave_stdout = False):
+             return False
+      # Build step
+      if not self.cmd('Build %s' % self.work_directory,
+                      self.command_build,
+                      cwd = self.work_directory,
+                      env = env,
+                      leave_stdout = False):
+        return False
     for target in self.__targets:
       path = target.path().without_prefix(self.work_directory)
       if not isinstance(target, drake.cxx.DynLib):
