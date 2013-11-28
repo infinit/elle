@@ -1,11 +1,9 @@
-#define BOOST_TEST_MODULE Gzip
-#include <boost/test/unit_test.hpp>
-
 #include <sstream>
 
 #include <boost/filesystem.hpp>
 
 #include <elle/format/gzip.hh>
+#include <elle/test.hh>
 
 static
 void
@@ -59,44 +57,60 @@ content()
   return res.str();
 }
 
-BOOST_AUTO_TEST_CASE(data_big_buffer)
+static
+void
+data_big_buffer()
 {
   return data_size(content(), true, 1 << 18);
 }
 
-BOOST_AUTO_TEST_CASE(data_big_buffer_noflush)
+static
+void
+data_big_buffer_noflush()
 {
   return data_size(content(), false, 1 << 18);
 }
 
-BOOST_AUTO_TEST_CASE(data_small_buffer)
+static
+void
+data_small_buffer()
 {
   return data_size(content(), true, 1 << 12);
 }
 
-BOOST_AUTO_TEST_CASE(data_small_buffer_noflush)
+static
+void
+data_small_buffer_noflush()
 {
   return data_size(content(), false, 1 << 12);
 }
 
-BOOST_AUTO_TEST_CASE(data_pico_buffer_noflush)
+static
+void
+data_pico_buffer_noflush()
 {
   // This checks that with honor_flush = false, data is not encoded by chunks of
   // 8 bytes, this yielding a bigger size.
   return data_size(content(), false, 8);
 }
 
-BOOST_AUTO_TEST_CASE(empty_content)
+static
+void
+empty_content()
 {
   return data_size("", true, 1024);
 }
 
-BOOST_AUTO_TEST_CASE(empty_content_noflush)
+static
+void
+empty_content_noflush()
 {
   return data_size("", false, 1024);
 }
 
-BOOST_AUTO_TEST_CASE(flush)
+static
+void
+flush()
 {
   std::stringstream buffer;
   {
@@ -110,4 +124,19 @@ BOOST_AUTO_TEST_CASE(flush)
     filter.flush();
     BOOST_CHECK_GT(buffer.str().size(), size);
   }
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(content));
+  suite.add(BOOST_TEST_CASE(data_big_buffer));
+  suite.add(BOOST_TEST_CASE(data_big_buffer_noflush));
+  suite.add(BOOST_TEST_CASE(data_small_buffer));
+  suite.add(BOOST_TEST_CASE(data_small_buffer_noflush));
+  suite.add(BOOST_TEST_CASE(data_pico_buffer_noflush));
+  suite.add(BOOST_TEST_CASE(empty_content));
+  suite.add(BOOST_TEST_CASE(empty_content_noflush));
+  suite.add(BOOST_TEST_CASE(flush));
 }

@@ -1,11 +1,11 @@
-#define BOOST_TEST_MODULE Lazy
-#include <boost/test/unit_test.hpp>
-
 #include <sstream>
 
 #include <elle/Lazy.hh>
+#include <elle/test.hh>
 
-BOOST_AUTO_TEST_CASE(evaluation)
+static
+void
+evaluation()
 {
   int evaluated = 0;
 
@@ -23,7 +23,9 @@ BOOST_AUTO_TEST_CASE(evaluation)
   BOOST_CHECK_EQUAL(lazy->size(), 4);
 }
 
-BOOST_AUTO_TEST_CASE(print)
+static
+void
+print()
 {
   elle::Lazy<int> lazy([]
                        {
@@ -32,4 +34,12 @@ BOOST_AUTO_TEST_CASE(print)
   std::stringstream stream;
   stream << lazy;
   BOOST_CHECK_EQUAL(stream.str(), "42");
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(evaluation));
+  suite.add(BOOST_TEST_CASE(print));
 }

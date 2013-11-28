@@ -1,7 +1,5 @@
-#define BOOST_TEST_MODULE With
-#include <boost/test/unit_test.hpp>
-
 #include <elle/With.hh>
+#include <elle/test.hh>
 
 class GoodBoy
 {
@@ -67,7 +65,9 @@ private:
   ELLE_ATTRIBUTE(bool&, beacon);
 };
 
-BOOST_AUTO_TEST_CASE(normal)
+static
+void
+normal()
 {
   bool beacon = false;
   elle::With<GoodBoy>(3) << [&] (GoodBoy& g)
@@ -78,7 +78,9 @@ BOOST_AUTO_TEST_CASE(normal)
   BOOST_CHECK(beacon);
 }
 
-BOOST_AUTO_TEST_CASE(exception)
+static
+void
+exception()
 {
   bool beacon = false;
   try
@@ -97,7 +99,9 @@ BOOST_AUTO_TEST_CASE(exception)
   BOOST_FAIL("should have thrown");
 }
 
-BOOST_AUTO_TEST_CASE(double_exception)
+static
+void
+double_exception()
 {
   bool beacon = false;
   try
@@ -118,7 +122,9 @@ BOOST_AUTO_TEST_CASE(double_exception)
   BOOST_FAIL("should have thrown");
 }
 
-BOOST_AUTO_TEST_CASE(value)
+static
+void
+value()
 {
   BOOST_CHECK_EQUAL(
     elle::With<GoodBoy>(1660) << [&] (GoodBoy& g)
@@ -135,7 +141,9 @@ make_with(int i)
   return elle::With<BadBoy>(i);
 }
 
-BOOST_AUTO_TEST_CASE(move)
+static
+void
+move()
 {
   bool beacon = false;
   try
@@ -155,9 +163,23 @@ BOOST_AUTO_TEST_CASE(move)
   BOOST_FAIL("should have thrown");
 }
 
-BOOST_AUTO_TEST_CASE(unused)
+static
+void
+unused()
 {
   bool beacon = false;
   elle::With<CheckDestruct>{beacon};
   BOOST_CHECK(beacon);
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(normal));
+  suite.add(BOOST_TEST_CASE(exception));
+  suite.add(BOOST_TEST_CASE(double_exception));
+  suite.add(BOOST_TEST_CASE(value));
+  suite.add(BOOST_TEST_CASE(move));
+  suite.add(BOOST_TEST_CASE(unused));
 }

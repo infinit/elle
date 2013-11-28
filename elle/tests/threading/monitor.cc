@@ -1,17 +1,17 @@
-#define BOOST_TEST_MODULE monitor
-#include <boost/test/unit_test.hpp>
-
-#include <elle/threading/Monitor.hh>
-#include <elle/print.hh>
-
 #include <random>
 #include <string>
 #include <thread>
 #include <vector>
 
+#include <elle/threading/Monitor.hh>
+#include <elle/print.hh>
+#include <elle/test.hh>
+
 static const int max_threads = 32;
 
-BOOST_AUTO_TEST_CASE(monitor_ctor)
+static
+void
+monitor_ctor()
 {
   typedef elle::threading::Monitor<std::vector<int>> Vector;
   Vector v1{};
@@ -42,7 +42,9 @@ do_concurrently(Callable callable)
     actors[i].join();
 }
 
-BOOST_AUTO_TEST_CASE(monitor_operator_arrow)
+static
+void
+monitor_operator_arrow()
 {
   elle::threading::Monitor<std::vector<int>> vector;
 
@@ -69,7 +71,9 @@ BOOST_AUTO_TEST_CASE(monitor_operator_arrow)
 }
 
 
-BOOST_AUTO_TEST_CASE(monitor_operator_call)
+static
+void
+monitor_operator_call()
 {
   elle::threading::Monitor<std::string> string;
 
@@ -89,7 +93,9 @@ BOOST_AUTO_TEST_CASE(monitor_operator_call)
   });
 }
 
-BOOST_AUTO_TEST_CASE(monitor_operator_call_retval)
+static
+void
+monitor_operator_call_retval()
 {
   elle::threading::Monitor<std::vector<float>> v;
   do_concurrently([&v] {
@@ -103,7 +109,9 @@ BOOST_AUTO_TEST_CASE(monitor_operator_call_retval)
     );
 }
 
-BOOST_AUTO_TEST_CASE(monitor_const_call)
+static
+void
+monitor_const_call()
 {
   elle::threading::Monitor<std::string> string;
 
@@ -116,7 +124,9 @@ BOOST_AUTO_TEST_CASE(monitor_const_call)
   });
 }
 
-BOOST_AUTO_TEST_CASE(monitor_param_scope)
+static
+void
+monitor_param_scope()
 {
   elle::threading::Monitor<std::vector<float>> v;
 
@@ -145,4 +155,16 @@ BOOST_AUTO_TEST_CASE(monitor_param_scope)
 
   thread1.join();
   thread2.join();
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(monitor_ctor));
+  suite.add(BOOST_TEST_CASE(monitor_operator_arrow));
+  suite.add(BOOST_TEST_CASE(monitor_operator_call));
+  suite.add(BOOST_TEST_CASE(monitor_operator_call_retval));
+  suite.add(BOOST_TEST_CASE(monitor_const_call));
+  suite.add(BOOST_TEST_CASE(monitor_param_scope));
 }

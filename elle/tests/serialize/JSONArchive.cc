@@ -1,20 +1,18 @@
-#define BOOST_TEST_MODULE JSONSerialization
-
-#include <elle/format/json/Array.hh>
-#include <elle/serialize/JSONArchive.hh>
-#include <elle/serialize/extract.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/Concrete.hh>
-#include <elle/container/list.hh>
-#include <elle/container/vector.hh>
-
-#include <elle/serialize/ListSerializer.hxx>
-#include <boost/test/unit_test.hpp>
-
+#include <algorithm>
 #include <list>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <algorithm>
+
+#include <elle/container/list.hh>
+#include <elle/container/vector.hh>
+#include <elle/format/json/Array.hh>
+#include <elle/serialize/Concrete.hh>
+#include <elle/serialize/JSONArchive.hh>
+#include <elle/serialize/ListSerializer.hxx>
+#include <elle/serialize/extract.hh>
+#include <elle/serialize/insert.hh>
+#include <elle/test.hh>
 
 using namespace elle::serialize;
 // XXX: What about pointers?
@@ -65,7 +63,9 @@ ELLE_SERIALIZE_SIMPLE(A, ar, value,version)
   ar & named("d", value.d);
 }
 
-BOOST_AUTO_TEST_CASE(SimpleClassSerialization)
+static
+void
+SimpleClassSerialization()
 {
   // XXX: If d has a null fractional part, deserialization failed.
   // XXX: Also failed with double d = 6.7f;
@@ -143,7 +143,9 @@ ELLE_SERIALIZE_SIMPLE(E, ar, value,version)
   ar & named("d", value.d);
 }
 
-BOOST_AUTO_TEST_CASE(AggregatedClassSerialization)
+static
+void
+AggregatedClassSerialization()
 {
   E from{1};
   E to;
@@ -226,7 +228,9 @@ ELLE_SERIALIZE_SIMPLE(C, ar, value,version)
   ar & named("k", value.k);
 }
 
-BOOST_AUTO_TEST_CASE(InheritedClassSerialization)
+static
+void
+InheritedClassSerialization()
 {
   C from{1.0, 1.42f};
   C to;
@@ -331,7 +335,9 @@ ELLE_SERIALIZE_SIMPLE(SContainers, ar, value,version)
   ar & named("vo", value.vo);
 }
 
-BOOST_AUTO_TEST_CASE(ContainersSerialization)
+static
+void
+ContainersSerialization()
 {
   SContainers from{
     {"1", "2"},
@@ -353,4 +359,14 @@ BOOST_AUTO_TEST_CASE(ContainersSerialization)
 
   BOOST_CHECK_EQUAL(serialized, reserialized);
   BOOST_CHECK_EQUAL(from, to);
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(SimpleClassSerialization));
+  suite.add(BOOST_TEST_CASE(AggregatedClassSerialization));
+  suite.add(BOOST_TEST_CASE(InheritedClassSerialization));
+  suite.add(BOOST_TEST_CASE(ContainersSerialization));
 }

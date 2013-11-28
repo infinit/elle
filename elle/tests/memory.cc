@@ -1,10 +1,10 @@
-#define BOOST_TEST_MODULE memory
-
-#include <boost/test/unit_test.hpp>
 #include <elle/memory.hh>
+#include <elle/test.hh>
 #include <tuple>
 
-BOOST_AUTO_TEST_CASE(make_unique)
+static
+void
+make_unique()
 {
   std::unique_ptr<std::tuple<int, char, double>> ptr =
     elle::make_unique<std::tuple<int, char, double>>(1, 'c', 1.0f);
@@ -16,7 +16,9 @@ BOOST_AUTO_TEST_CASE(make_unique)
     elle::make_unique<std::tuple<>>();
 }
 
-BOOST_AUTO_TEST_CASE(generic_unique_ptr)
+static
+void
+generic_unique_ptr()
 {
   elle::generic_unique_ptr<int> empty();
   elle::generic_unique_ptr<int> null(nullptr);
@@ -38,4 +40,12 @@ BOOST_AUTO_TEST_CASE(generic_unique_ptr)
     assign = std::unique_ptr<int[]>(raw);
     BOOST_CHECK_EQUAL(assign.get(), raw);
   }
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(make_unique));
+  suite.add(BOOST_TEST_CASE(generic_unique_ptr));
 }

@@ -1,7 +1,5 @@
-#define BOOST_TEST_MODULE cast
-
-#include <boost/test/unit_test.hpp>
 #include <elle/cast.hh>
+#include <elle/test.hh>
 
 struct A
 {
@@ -10,7 +8,9 @@ struct A
 struct B: A {};
 struct C: B {};
 
-BOOST_AUTO_TEST_CASE(cast_dynamic1)
+static
+void
+cast_dynamic1()
 {
   auto b = std::unique_ptr<B>(new B);
   std::unique_ptr<A> a = elle::cast<A>::runtime(b);
@@ -18,7 +18,9 @@ BOOST_AUTO_TEST_CASE(cast_dynamic1)
   BOOST_CHECK(bool(a) == true);
 }
 
-BOOST_AUTO_TEST_CASE(cast_dynamic2)
+static
+void
+cast_dynamic2()
 {
   std::unique_ptr<B> b = std::unique_ptr<B>(new B);
   std::unique_ptr<A> a = elle::cast<A>::runtime(b); // works because B is a A
@@ -26,4 +28,12 @@ BOOST_AUTO_TEST_CASE(cast_dynamic2)
   BOOST_CHECK(bool(a) == true);
   BOOST_CHECK(bool(b) == false);
   BOOST_CHECK(bool(c) == false);
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(cast_dynamic1));
+  suite.add(BOOST_TEST_CASE(cast_dynamic2));
 }

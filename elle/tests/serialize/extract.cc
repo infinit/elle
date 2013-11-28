@@ -1,13 +1,10 @@
-#define BOOST_TEST_MODULE extract
-#include <boost/test/unit_test.hpp>
-
+#include <elle/Exception.hh>
 #include <elle/concept/Uniquable.hh>
+#include <elle/serialize/BinaryArchive.hh>
 #include <elle/serialize/extract.hh>
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/construct.hh>
-#include <elle/serialize/BinaryArchive.hh>
-
-#include <elle/Exception.hh>
+#include <elle/test.hh>
 
 using elle::serialize::to_string;
 using elle::serialize::from_string;
@@ -31,7 +28,9 @@ ELLE_SERIALIZE_SIMPLE(A, archive, value, format)
   archive & value.data;
 }
 
-BOOST_AUTO_TEST_CASE(extract)
+static
+void
+extract()
 {
   // Generated this way
   std::string uniq;
@@ -45,7 +44,9 @@ BOOST_AUTO_TEST_CASE(extract)
 }
 
 
-BOOST_AUTO_TEST_CASE(extract_error)
+static
+void
+extract_error()
 {
   // Generated this way
   std::string uniq = "toto==";
@@ -53,4 +54,12 @@ BOOST_AUTO_TEST_CASE(extract_error)
   A a;
   BOOST_CHECK_THROW(a = A{from_string<InputBase64Archive>(uniq)},
                     elle::Exception);
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
+  suite.add(BOOST_TEST_CASE(extract));
+  suite.add(BOOST_TEST_CASE(extract_error));
 }
