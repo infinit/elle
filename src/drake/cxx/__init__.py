@@ -500,7 +500,7 @@ class GccToolkit(Toolkit):
              values = ['gcc', 'clang']):
     pass
 
-  def __init__(self, compiler = 'g++', compiler_c = 'gcc', os = None):
+  def __init__(self, compiler = 'g++', compiler_c = None, os = None):
     Toolkit.__init__(self)
     self.arch = arch.x86
     self.os = os
@@ -510,7 +510,7 @@ class GccToolkit(Toolkit):
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
     self.cxx = compiler
-    self.c = compiler_c
+    self.c = compiler_c or '%sgcc' % self.prefix
     apple, win32, linux, clang = self.preprocess_isdef(
       ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
     if self.os is None:
@@ -759,6 +759,10 @@ class GccToolkit(Toolkit):
         return drake.Path('$ORIGIN') / path
     else:
       return path
+
+  @property
+  def prefix(self):
+    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+)?)?$', '', self.cxx)
 
 
 class VisualToolkit(Toolkit):
