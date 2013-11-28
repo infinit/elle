@@ -4,7 +4,7 @@
 # include <boost/asio.hpp>
 # include <boost/optional.hpp>
 # ifndef Q_MOC_RUN
-#  include <boost/signal.hpp>
+#  include <boost/signals2.hpp>
 # endif
 # include <boost/system/error_code.hpp>
 
@@ -47,7 +47,7 @@ namespace reactor
     | Tracking |
     `---------*/
     public:
-      typedef boost::signal<void ()> Tracker;
+      typedef boost::signals2::signal<void ()> Tracker;
       Tracker& destructed();
     private:
       Tracker _destructed;
