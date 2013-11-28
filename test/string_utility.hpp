@@ -4,8 +4,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 
-#ifndef __URI_TEST_STRING_UTILITY_INC__
-#define __URI_TEST_STRING_UTILITY_INC__
+#ifndef URI_TEST_STRING_UTILITY_INC
+#define URI_TEST_STRING_UTILITY_INC
 
 #include <boost/utility/string_ref.hpp>
 #include <cstring>
@@ -17,4 +17,4 @@ namespace boost {
   }
 } // namespace boost
 
-#endif // __URI_TEST_STRING_UTILITY_INC__
+#endif // URI_TEST_STRING_UTILITY_INC
