@@ -8,14 +8,14 @@
 
 import collections
 import drake
+import os
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
 
-_OS = __import__('os')
-from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, os, cmd, command_add, debug, Expander, FileExpander
+from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
 from .. import sched
 
@@ -768,7 +768,7 @@ class GccToolkit(Toolkit):
 class VisualToolkit(Toolkit):
 
   arch = arch.x86
-  os = os.windows
+  os = drake.os.windows
 
   def __init__(self,
                version = 11,
@@ -805,11 +805,11 @@ class VisualToolkit(Toolkit):
     include = [res[-1]]
     if override_path is not None:
       path = [override_path] + path
-    _OS.environ['PATH'] = ';'.join(path)
-    _OS.environ['LIB'] = lib
+    os.environ['PATH'] = ';'.join(path)
+    os.environ['LIB'] = lib
     if override_include is not None:
       include = [override_include] + include
-    _OS.environ['INCLUDE'] = ';'.join(include)
+    os.environ['INCLUDE'] = ';'.join(include)
     shutil.rmtree(str(tmp))
     self.flags = []
 
@@ -817,7 +817,7 @@ class VisualToolkit(Toolkit):
 
     fd, path = tempfile.mkstemp()
     try:
-      with _OS.fdopen(fd, 'w') as f:
+      with os.fdopen(fd, 'w') as f:
         print(code, file = f)
       cmd = ['cl.exe', '/E', path] + self.cppflags(config)
       p = subprocess.Popen(cmd,
@@ -832,7 +832,7 @@ class VisualToolkit(Toolkit):
           (p.returncode, code, stderr))
       return stdout.decode("utf-8")
     finally:
-      _OS.remove(path)
+      os.remove(path)
 
   def warning_disable(self, n):
       self.flags.append('/wd%s' % n)
