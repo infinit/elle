@@ -8,7 +8,9 @@
 
 import collections
 import drake
+import io
 import os
+import os.path
 import re
 import shutil
 import subprocess
@@ -621,11 +623,32 @@ class GccToolkit(Toolkit):
         self.cppflags(cfg) + self.cflags(cfg) + \
         extraflags + ['-c', str(src), '-o', str(obj)]
 
-  def archive(self, cfg, objs, lib):
-      # FIXME: ;
-      return (['ar', 'crs', str(lib.path())] + \
-                  list(map(lambda n: str(n.path()), objs)),
-              ['ranlib', str(lib.path())])
+  def archive(self, builder, cfg, objs, lib):
+    # FIXME: ;
+    commands = []
+    objects = []
+    for o in objs:
+      if isinstance(o, StaticLib):
+        path = os.path.abspath(str(o.path()))
+        try:
+          # print('%s: %s' % (lib, o))
+          for line in subprocess.check_output(
+            ['ar', 'xv', path],
+            cwd = str(builder.path_tmp)).decode().split('\n'):
+            if line == '':
+              continue
+            assert line.startswith('x - ')
+            line = line[4:]
+            objects.append(builder.path_tmp / line)
+          # print('%s:   alrighty' % lib)
+        except subprocess.CalledProcessError as e:
+          raise Exception('unable to extract %s: %s' % (o, e))
+      else:
+        objects.append(o.path())
+    lib = str(lib.path())
+    return (['ar', 'crs', lib] +
+            list(map(lambda n: str(n), objects)),
+            ['ranlib', lib])
 
   def __libraries_flags(self, cfg, libraries, cmd):
     if self.__recursive_linkage:
@@ -759,6 +782,10 @@ class GccToolkit(Toolkit):
         return drake.Path('$ORIGIN') / path
     else:
       return path
+
+  @property
+  def prefix(self):
+    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+)?)?$', '', self.cxx)
 
   @property
   def prefix(self):
@@ -1159,9 +1186,10 @@ class StaticLibLinker(ShellCommand):
     @property
     def command(self):
         return self.toolkit.archive(
-            self.config,
-            self.objs + list(self.sources_dynamic()),
-            self.__library)
+          self,
+          self.config,
+          self.objs + list(self.sources_dynamic()),
+          self.__library)
 
     @property
     def library(self):
