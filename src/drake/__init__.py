@@ -12,6 +12,7 @@ import drake.debug
 import hashlib
 import inspect
 import itertools
+import os.path
 import platform
 import re
 import shutil
@@ -1521,6 +1522,12 @@ class Builder:
     def path_stdout(self):
       return self.cachedir() / 'stdout'
 
+    @property
+    def path_tmp(self):
+      res = self.cachedir() / 'tmp'
+      res.mkpath()
+      return res
+
     def cmd(self, pretty, cmd, cwd = None, leave_stdout = False, env = None):
         """Run a shell command.
 
@@ -1657,6 +1664,8 @@ class Builder:
                 # Reload dynamic dependencies
                 if not execute:
                   for f in _OS.listdir(str(self.cachedir())):
+                    if _OS.path.isdir(f):
+                      continue
                     if f in ['drake', 'drake.Builder', 'stdout']:
                       continue
                     debug.debug(
