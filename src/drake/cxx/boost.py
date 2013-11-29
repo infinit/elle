@@ -195,7 +195,7 @@ for prop, library in Boost._Boost__libraries.items():
         c.define('%s_%s_LINK' % (
             library.upper(), static and 'STATIC' or 'DYN'
         ), 1)
-        if library == 'boost_unit_test_framework' and not static:
+        if library == 'unit_test_framework' and not static:
           c.define('BOOST_TEST_DYN_LINK', 1)
 
         setattr(self, pname, c)
