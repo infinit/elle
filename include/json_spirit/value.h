@@ -86,7 +86,20 @@ namespace json_spirit {
         BasicValue( unsigned int value );
         BasicValue( long value );
         BasicValue( unsigned long value );
-        BasicValue( unsigned long long value );
+        // NOTE: We do not provide long long and unsigned long long
+        // overrides here. They are only valid in C++ as of C++11 (and
+        // C as of C99). We provide int64/uint64 overrides if they are
+        // available with the size specified in the type because it is
+        // the only safe way to get the correct value out since JSON
+        // integers can be that large (although some implementations
+        // will only provide 48-bit).
+        //
+        // If you get a type error relating to long longs, then either
+        // a) the issue is with the #defines below that determine
+        // whether to include the int64_t overrides or b) long and
+        // long long are both 64-bit on your platform and you should
+        // be able to cast to get the right behavior.
+
 // Handling 64-bit is tricky, this is similar to the rules for 64-bit typedefs
 // in boost's cstdint.
 #ifdef BOOST_HAS_STDINT_H
@@ -100,7 +113,7 @@ namespace json_spirit {
 #      else
 #        define JSON_SPIRIT_USE_BOOST_INT64
 #      endif
-#    else // probably long long
+#    else // probably long long, unclear based on the stdint.h code
 #      define JSON_SPIRIT_USE_BOOST_INT64
 #    endif
 #  elif JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_MAC
@@ -505,12 +518,6 @@ namespace json_spirit {
 
     template< class Config >
     BasicValue< Config >::BasicValue( unsigned long value )
-    :   v_( static_cast< boost::uint64_t >( value ) )
-    {
-    }
-
-    template< class Config >
-    BasicValue< Config >::BasicValue( unsigned long long value )
     :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
