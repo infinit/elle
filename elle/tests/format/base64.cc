@@ -1,13 +1,10 @@
-#define BOOST_TEST_MODULE Base64Format
+#include <string>
 
 #include <elle/Buffer.hh>
 #include <elle/format/base64.hh>
 #include <elle/format/base64url.hh>
 #include <elle/log.hh>
-
-#include <boost/test/unit_test.hpp>
-
-#include <string>
+#include <elle/test.hh>
 
 ELLE_LOG_COMPONENT("elle.format.base64.test");
 
@@ -23,7 +20,9 @@ static std::string read_string(std::istream& input)
   return res;
 }
 
-BOOST_AUTO_TEST_CASE(streams)
+static
+void
+streams()
 {
   std::string quote =
     "If my calculations are correct, when this baby hits 88 "
@@ -96,19 +95,25 @@ encode_to_and_decode_from_base64_impl()
   }
 }
 
-BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64)
+static
+void
+encode_to_and_decode_from_base64()
 {
   encode_to_and_decode_from_base64_impl<elle::format::base64::encode,
                                         elle::format::base64::decode>();
 }
 
-BOOST_AUTO_TEST_CASE(encode_to_and_decode_from_base64url)
+static
+void
+encode_to_and_decode_from_base64url()
 {
   encode_to_and_decode_from_base64_impl<elle::format::base64url::encode,
                                         elle::format::base64url::decode>();
 }
 
-BOOST_AUTO_TEST_CASE(values)
+static
+void
+values()
 {
   auto base64 = elle::format::base64::encode(
     elle::ConstWeakBuffer("\xF3\xDF\xBF", 3));
@@ -119,3 +124,13 @@ BOOST_AUTO_TEST_CASE(values)
   BOOST_CHECK_EQUAL(elle::WeakBuffer(base64url),
                     elle::WeakBuffer((void*)"89-_", 4));
 }
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(encode_to_and_decode_from_base64));
+  suite.add(BOOST_TEST_CASE(streams));
+  suite.add(BOOST_TEST_CASE(values));
+  suite.add(BOOST_TEST_CASE(encode_to_and_decode_from_base64url));
+}
+

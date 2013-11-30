@@ -2,16 +2,13 @@
 #include <iostream>
 #include <sstream>
 
-#define BOOST_TEST_MODULE AllArchive
-#include <boost/test/unit_test.hpp>
-
+#include <elle/Buffer.hh>
 #include <elle/Exception.hh>
-
 #include <elle/serialize/Base64Archive.hh>
 #include <elle/serialize/BinaryArchive.hh>
 #include <elle/serialize/HexadecimalArchive.hh>
 #include <elle/serialize/JSONArchive.hxx>
-#include <elle/Buffer.hh>
+#include <elle/test.hh>
 
 using namespace elle::serialize;
 
@@ -174,7 +171,9 @@ testJSON()
 
 #include <elle/format/hexadecimal.hh>
 
-BOOST_AUTO_TEST_CASE(all_archive)
+static
+void
+all_archive()
 {
   /* XXX
   testLinear<BinaryArchive>();
@@ -205,4 +204,10 @@ BOOST_AUTO_TEST_CASE(all_archive)
     BOOST_CHECK_THROW(arinput >> sinput, elle::Exception);
   }
   // XXX
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(all_archive));
 }

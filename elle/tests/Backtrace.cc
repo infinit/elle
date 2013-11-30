@@ -1,8 +1,9 @@
+#include <elle/Backtrace.hh>
 #include <elle/test.hh>
 
-#include <elle/Backtrace.hh>
-
 using elle::Backtrace;
+
+#ifndef INFINIT_WINDOWS
 
 static
 void
@@ -73,17 +74,25 @@ test_strip_base()
   BOOST_CHECK_EQUAL(bt.front().symbol, "quux()");
 }
 
-ELLE_TEST_SUITE()
-{
-  boost::unit_test::test_suite* bt = BOOST_TEST_SUITE("Backtrace");
-#ifndef INFINIT_WINDOWS
-  boost::unit_test::framework::master_test_suite().add(bt);
-  bt->add(BOOST_TEST_CASE(test_backtrace_empty));
-  bt->add(BOOST_TEST_CASE(test_backtrace));
-  bt->add(BOOST_TEST_CASE(test_strip_base));
 #else
-  struct dummy { static void f() {} };
-  bt->add(BOOST_TEST_CASE(dummy::f));
-#endif
+
+static
+void
+dummy()
+{
+  BOOST_CHECK(true);
 }
 
+#endif
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+#ifndef INFINIT_WINDOWS
+  suite.add(BOOST_TEST_CASE(test_backtrace_empty));
+  suite.add(BOOST_TEST_CASE(test_backtrace));
+  suite.add(BOOST_TEST_CASE(test_strip_base));
+#else
+  suite.add(BOOST_TEST_CASE(dummy));
+#endif
+}

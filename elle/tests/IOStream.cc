@@ -1,5 +1,4 @@
 #include <elle/test.hh>
-
 #include <elle/Buffer.hh>
 #include <elle/IOStream.hh>
 

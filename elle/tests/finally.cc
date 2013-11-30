@@ -1,9 +1,6 @@
-#define BOOST_TEST_MODULE finally
-
-#include <elle/finally.hh>
 #include <elle/With.hh>
-
-#include <boost/test/unit_test.hpp>
+#include <elle/finally.hh>
+#include <elle/test.hh>
 
 class TestObject
 {
@@ -24,7 +21,9 @@ public:
 
 int TestObject::i = 0;
 
-BOOST_AUTO_TEST_CASE(test_lambda)
+static
+void
+test_lambda()
 {
   int* test = new int(5);
   elle::With<elle::Finally>([&] { ++*test; }) << [&]
@@ -35,7 +34,9 @@ BOOST_AUTO_TEST_CASE(test_lambda)
   delete test;
 }
 
-BOOST_AUTO_TEST_CASE(test_delete)
+static
+void
+test_delete()
 {
   TestObject* obj = new TestObject;
   elle::With<elle::Finally>([&] { delete obj; }) << [&]
@@ -45,7 +46,9 @@ BOOST_AUTO_TEST_CASE(test_delete)
   BOOST_CHECK(TestObject::i == 0);
 }
 
-BOOST_AUTO_TEST_CASE(test_abort)
+static
+void
+test_abort()
 {
   TestObject* obj = new TestObject;
   elle::With<elle::Finally>([&] { delete obj; }) << [&] (elle::Finally& f)
@@ -57,3 +60,12 @@ BOOST_AUTO_TEST_CASE(test_abort)
   delete obj;
   BOOST_CHECK(TestObject::i == 0);
 }
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(test_lambda));
+  suite.add(BOOST_TEST_CASE(test_delete));
+  suite.add(BOOST_TEST_CASE(test_abort));
+}
+

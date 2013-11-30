@@ -1,30 +1,39 @@
-#define BOOST_TEST_MODULE prinft
-#include <boost/test/unit_test.hpp>
-
-#include <elle/printf.hh>
 #include <ostream>
 
-BOOST_AUTO_TEST_CASE(test_empty)
+#include <elle/printf.hh>
+#include <elle/test.hh>
+
+static
+void
+test_empty()
 {
   BOOST_CHECK_EQUAL(elle::sprintf(""), "");
 }
 
-BOOST_AUTO_TEST_CASE(test_no_param)
+static
+void
+test_no_param()
 {
   BOOST_CHECK_EQUAL(elle::sprintf(" foo bar "), " foo bar ");
 }
 
-BOOST_AUTO_TEST_CASE(test_string)
+static
+void
+test_string()
 {
   BOOST_CHECK_EQUAL(elle::sprintf("foo%sbaz", "bar"), "foobarbaz");
 }
 
-BOOST_AUTO_TEST_CASE(test_too_many)
+static
+void
+test_too_many()
 {
   BOOST_CHECK_THROW(elle::sprintf("%s", "foo", "bar"), std::exception);
 }
 
-BOOST_AUTO_TEST_CASE(test_too_few)
+static
+void
+test_too_few()
 {
   BOOST_CHECK_THROW(elle::sprintf("%s%s", "foo"), std::exception);
 }
@@ -46,9 +55,22 @@ namespace detail
   }
 }
 
-
-BOOST_AUTO_TEST_CASE(scoped)
+static
+void
+scoped()
 {
   std::string str = elle::sprintf("%s", detail::foo{5});
   BOOST_CHECK_EQUAL(str, "foo(i = 5)");
 }
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(test_string));
+  suite.add(BOOST_TEST_CASE(scoped));
+  suite.add(BOOST_TEST_CASE(test_too_few));
+  suite.add(BOOST_TEST_CASE(test_empty));
+  suite.add(BOOST_TEST_CASE(test_too_many));
+  suite.add(BOOST_TEST_CASE(test_no_param));
+}
+

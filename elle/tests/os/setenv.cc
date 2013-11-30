@@ -1,11 +1,11 @@
-#define BOOST_TEST_MODULE setenv
-
-#include <boost/test/unit_test.hpp>
+#include <elle/Exception.hh>
 #include <elle/os/getenv.hh>
 #include <elle/os/setenv.hh>
-#include <elle/Exception.hh>
+#include <elle/test.hh>
 
-BOOST_AUTO_TEST_CASE(setenv1)
+static
+void
+setenv1()
 {
   std::string key = "hello";
   std::string val = "world";
@@ -15,7 +15,9 @@ BOOST_AUTO_TEST_CASE(setenv1)
   BOOST_CHECK(res == val);
 }
 
-BOOST_AUTO_TEST_CASE(setenv2)
+static
+void
+setenv2()
 {
   std::string key = "hello";
   std::string val = "world";
@@ -25,3 +27,11 @@ BOOST_AUTO_TEST_CASE(setenv2)
   std::string res = elle::os::getenv(key);
   BOOST_CHECK(res == val);
 }
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(setenv1));
+  suite.add(BOOST_TEST_CASE(setenv2));
+}
+
