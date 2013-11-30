@@ -1,7 +1,7 @@
 #ifndef INFINIT_REACTOR_BARRIER_HH
 # define INFINIT_REACTOR_BARRIER_HH
 
-#include <boost/signals2/signal.hpp>
+# include <reactor/signals.hh>
 
 # include <reactor/waitable.hh>
 

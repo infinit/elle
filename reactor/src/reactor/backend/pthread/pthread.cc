@@ -1,4 +1,3 @@
-#include <boost/format.hpp>
 #include <boost/function.hpp>
 
 #include <reactor/backend/thread.hh>

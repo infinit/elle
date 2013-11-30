@@ -29,13 +29,13 @@
 #  define BOOST_TEST_NO_MAIN
 # endif
 
-# define BOOST_TEST_ALTERNATIVE_INIT_API 1
-# ifdef INFINIT_WINDOWS
-// Only if found to avoid unit_test_main symbol not found.
-#  include <boost/test/included/unit_test.hpp>
-# else
-#  include <boost/test/unit_test.hpp>
+# ifndef BOOST_TEST_ALTERNATIVE_INIT_API
+#  define BOOST_TEST_ALTERNATIVE_INIT_API 1
 # endif
+# ifdef INFINIT_WINDOWS
+#  include <winsock2.h>
+# endif
+# include <boost/test/unit_test.hpp>
 
 
 # define ELLE_TEST_SUITE()                                                    \

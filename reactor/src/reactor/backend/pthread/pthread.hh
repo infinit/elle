@@ -1,6 +1,9 @@
 #ifndef INFINIT_REACTOR_BACKEND_PTHREAD_PTHREAD_HH
 # define INFINIT_REACTOR_BACKEND_PTHREAD_PTHREAD_HH
 
+# ifdef INFINIT_WINDOWS
+#  include <winsock2.h>
+# endif
 # include <boost/thread.hpp>
 
 namespace reactor

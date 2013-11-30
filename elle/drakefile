@@ -217,6 +217,7 @@ def configure(zlib_lib,
     'src/elle/system/getpid.hh',
     'src/elle/system/getpid.cc',
     'src/elle/system/home_directory.cc',
+    'src/elle/time.hh',
     'src/elle/types.hh',
     )
 

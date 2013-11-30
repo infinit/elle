@@ -7,11 +7,11 @@
 # include <unordered_map>
 # include <vector>
 
-# include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/noncopyable.hpp>
 
 # include <elle/attribute.hh>
 # include <elle/memory.hh>
+# include <elle/time.hh>
 
 namespace elle
 {

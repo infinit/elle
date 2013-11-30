@@ -377,6 +377,7 @@ def configure(cxx_toolkit = None,
     cxx_config.define('INFINIT_MACOSX')
   elif cxx_toolkit.os == drake.os.windows:
     cxx_config.define('INFINIT_WINDOWS')
+    cxx_config.define('BOOST_USE_WINDOWS_H')
     cxx_config.lib('shlwapi')
     cxx_config.lib('ws2_32')
     cxx_config.lib('gdi32')

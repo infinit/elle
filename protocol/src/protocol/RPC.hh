@@ -10,8 +10,9 @@
 
 # include <elle/Printable.hh>
 
-# include <protocol/fwd.hh>
 # include <reactor/thread.hh>
+
+# include <protocol/fwd.hh>
 
 namespace infinit
 {

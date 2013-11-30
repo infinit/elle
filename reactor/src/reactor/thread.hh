@@ -1,18 +1,16 @@
 #ifndef INFINIT_REACTOR_THREAD_HH
 # define INFINIT_REACTOR_THREAD_HH
 
-# include <boost/asio.hpp>
 # include <boost/optional.hpp>
-# ifndef Q_MOC_RUN
-#  include <boost/signals2.hpp>
-# endif
 # include <boost/system/error_code.hpp>
 
 # include <elle/Backtrace.hh>
 
+# include <reactor/asio.hh>
 # include <reactor/backend/thread.hh>
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
+# include <reactor/signals.hh>
 # include <reactor/waitable.hh>
 
 namespace reactor

@@ -1,5 +1,5 @@
 #ifdef INFINIT_WINDOWS
-# include <Winsock2.h>
+# include <winsock2.h>
 #else
 # include <arpa/inet.h>
 #endif

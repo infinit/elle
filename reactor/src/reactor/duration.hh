@@ -1,8 +1,9 @@
 #ifndef REACTOR_DURATION_HH
 # define REACTOR_DURATION_HH
 
-# include <boost/date_time/posix_time/posix_time_types.hpp>
 # include <boost/optional.hpp>
+
+# include <elle/time.hh>
 
 namespace reactor
 {

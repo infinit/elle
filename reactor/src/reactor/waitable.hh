@@ -5,13 +5,13 @@
 
 # include <boost/function.hpp>
 # include <boost/noncopyable.hpp>
-# include <boost/signals2.hpp>
 
 # include <elle/Exception.hh>
 # include <elle/Printable.hh>
 
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
+# include <reactor/signals.hh>
 
 namespace reactor
 {

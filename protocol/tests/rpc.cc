@@ -1,6 +1,6 @@
 #include <protocol/ChanneledStream.hh>
-#include <protocol/Serializer.hh>
 #include <protocol/RPC.hh>
+#include <protocol/Serializer.hh>
 
 #include <reactor/asio.hh>
 #include <reactor/network/exception.hh>
