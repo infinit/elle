@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <elle/With.hh>
+#include <elle/test.hh>
 #include <elle/utility/Move.hh>
 
 #include <reactor/Barrier.hh>
@@ -859,9 +860,7 @@ HTTP_TEST(interrupted)
   }
 }
 
-static
-bool
-test_suite()
+ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(simple));
@@ -882,11 +881,4 @@ test_suite()
   suite.add(BOOST_TEST_CASE(cookies));
   suite.add(BOOST_TEST_CASE(request_move));
   suite.add(BOOST_TEST_CASE(interrupted));
-  return true;
-}
-
-int
-main(int argc, char** argv)
-{
-  return ::boost::unit_test::unit_test_main(test_suite, argc, argv);
 }

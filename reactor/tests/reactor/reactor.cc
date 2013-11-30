@@ -1896,6 +1896,7 @@ namespace background
 | Signals |
 `--------*/
 
+#ifndef INFINIT_WINDOWS
 namespace system_signals
 {
   static
@@ -1912,6 +1913,7 @@ namespace system_signals
     sched.run();
   }
 }
+#endif
 
 /*-----.
 | Main |
@@ -2042,6 +2044,7 @@ test_suite()
     background->add(BOOST_TEST_CASE(aborted_throw));
   }
 
+#ifndef INFINIT_WINDOWS
   {
     boost::unit_test::test_suite* system_signals =
       BOOST_TEST_SUITE("system_signals");
@@ -2049,6 +2052,7 @@ test_suite()
     auto terminate = system_signals::terminate;
     system_signals->add(BOOST_TEST_CASE(terminate), 0, 1);
   }
+#endif
 
   return true;
 }
