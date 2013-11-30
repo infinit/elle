@@ -363,6 +363,8 @@ def configure(cxx_toolkit = None,
     curl_lib.dependency_add(lib)
   curl_config = drake.cxx.Config()
   curl_config.add_local_include_path(curl_prefix / 'include')
+  if cxx_toolkit.os is drake.os.windows:
+    curl_config.define('CURL_STATICLIB', '1')
 
   ## ------------- ##
   ## Configuration ##
