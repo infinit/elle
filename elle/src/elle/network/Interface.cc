@@ -47,38 +47,50 @@ namespace elle
 {
   namespace network
   {
-
-
 #ifdef INFINIT_WINDOWS
+
     std::map<std::string, Interface>
     Interface::get_map(Filter filter)
     {
+      static bool wsa_started = false;
+      if (!wsa_started)
+      {
+        WSAData data;
+        auto res = WSAStartup(MAKEWORD(2, 2), &data);
+        if (res != 0)
+        {
+          int errnum = WSAGetLastError();
+          throw elle::Exception{
+            elle::sprintf("WSAStartup failed: %d", errnum)};
+        }
+        wsa_started = true;
+      }
+
       std::map<std::string, Interface> addresses;
       char local_hostname[512] = "";
-      int res;
-
-      res = gethostname(local_hostname, sizeof(local_hostname));
-      if (res != 0) // error
-      {
-        int errnum = WSAGetLastError();
-        if  (errnum == WSANOTINITIALISED)
-        {
-          WSAData data;
-          res = WSAStartup(MAKEWORD(2, 2), &data);
-          if (res != 0) // error
-          {
-            int errnum = WSAGetLastError();
-            throw elle::Exception{
-              elle::sprintf("WSAStartup failed: %d", errnum)};
-          }
-        }
-      }
 
       struct hostent* host = gethostbyname(local_hostname);
       if (host == nullptr)
       {
         int errnum = WSAGetLastError();
-        throw elle::Exception{elle::sprintf("gethostbyname failed with %d", errnum)};
+        std::string error;
+        switch (errnum)
+        {
+          case WSANOTINITIALISED:
+            error = "WSAStartup was not called";
+            break;
+          case WSAENETDOWN:
+            error = "network subsystem failed";
+            break;
+          case WSAHOST_NOT_FOUND:
+            error = "host not found";
+            break;
+          default:
+            error = elle::sprintf("unkown error: %s", errnum);
+            break;
+        }
+        throw elle::Exception(elle::sprintf(
+                                "gethostbyname failed: %s", error));
       }
       for (int i = 0; host->h_addr_list[i] != 0; i++)
       {
