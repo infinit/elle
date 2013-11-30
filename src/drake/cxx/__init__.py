@@ -610,10 +610,15 @@ class GccToolkit(Toolkit):
       return res
 
   def ldflags(self, cfg):
-      res = []
-      if cfg.export_dynamic and self.os not in (drake.os.macos, drake.os.windows):
-          res.append('-rdynamic')
-      return res
+    res = []
+    if cfg.export_dynamic and self.os not in (drake.os.macos, drake.os.windows):
+      res.append('-rdynamic')
+    if self.os is drake.os.windows:
+      # Assume this is mingw. Assume nobody wants to ship those DLL
+      # manually. Right ?
+      res.append('-static-libgcc')
+      res.append('-static-libstdc++')
+    return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
     extraflags = []
