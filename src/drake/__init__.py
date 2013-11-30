@@ -1664,7 +1664,7 @@ class Builder:
                 # Reload dynamic dependencies
                 if not execute:
                   for f in _OS.listdir(str(self.cachedir())):
-                    if _OS.path.isdir(f):
+                    if not _OS.path.isfile(str(self.cachedir() / f)):
                       continue
                     if f in ['drake', 'drake.Builder', 'stdout']:
                       continue
