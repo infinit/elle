@@ -1,0 +1,13 @@
+# Build by-products
+CMakeCache.txt
+CMakeFiles
+MakeFile
+cmake_install.cmake
+
+# Build output
+json_headers_demo
+json_simple_demo
+json_test
+libjson_spirit.dylib
+libjson_spirit.so
+libjson_spirit.a
