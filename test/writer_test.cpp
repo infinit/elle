@@ -36,15 +36,6 @@ namespace
             return ::to_str< String_type >( c_str );
         }
 
-        String_type zero_str()
-        {
-#if JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_WINDOWS
-            return to_str( "0.00000000000000000" );
-#else
-            return to_str( "0.0000000000000000" );
-#endif
-        }
-
         void add_value( Object_type& obj, const char* c_name, const ValueType& value )
         {
             Config_type::add( obj, to_str( c_name ), value );
@@ -244,10 +235,10 @@ namespace
             add_value( obj, "name_3", -1234567890.123456789 );
             add_value( obj, "name_4", -1.2e-126 );
 
-            check_eq( obj, to_str( "{\"name_1\":" ) + zero_str() + to_str( ","
+            check_eq( obj, to_str( "{\"name_1\":0,"
                            "\"name_2\":1.2345678901234567e-108,"
                            "\"name_3\":-1234567890.1234567,"
-                           "\"name_4\":-1.2000000000000000e-126}" ) );
+                           "\"name_4\":-1.2e-126}" ) );
         }
 
         void test_objs_with_null_pairs()
@@ -308,16 +299,16 @@ namespace
             arr.push_back( false );
             arr.push_back( ValueType() );
 
-            check_eq       ( arr, "[\"value_1\",123,123.45600000000000,true,false,null]" );
+            check_eq       ( arr, "[\"value_1\",123,123.456,true,false,null]" );
             check_eq_pretty( arr, "[\n"
                                   "    \"value_1\",\n"
                                   "    123,\n"
-                                  "    123.45600000000000,\n"
+                                  "    123.456,\n"
                                   "    true,\n"
                                   "    false,\n"
                                   "    null\n"
                                   "]" );
-            check_eq_single_line_arrays( arr, "[ \"value_1\", 123, 123.45600000000000, true, false, null ]" );
+            check_eq_single_line_arrays( arr, "[ \"value_1\", 123, 123.456, true, false, null ]" );
         }
 
         void test_array_with_one_empty_child_array()
@@ -575,7 +566,7 @@ namespace
         void test_values()
         {
             check_eq( 123, "123" );
-            check_eq( 1.234, "1.2340000000000000" );
+            check_eq( 1.234, "1.234" );
             check_eq( to_str( "abc" ), "\"abc\"" );
             check_eq( false, "false" );
             check_eq( ValueType::null, "null" );
@@ -615,33 +606,16 @@ namespace
             os << 0.123456789;
 
             assert_eq( os.str(), to_str( "0.123457"
-                                         "[0.12345678900000000]"
+                                         "[0.123456789]"
                                          "0.123457" ) );
         }
 
-        void check_remove_trailing_zeros( const double value, const String_type& expected_str_with, const String_type& expected_str_without )
+        void test_double_precision()
         {
-            check_eq( value, expected_str_with, 0 );
-            check_eq( value, expected_str_without, remove_trailing_zeros );
-        }
-
-        void check_remove_trailing_zeros( const double value, const char* expected_str_with, const char* expected_str_without )
-        {
-            check_remove_trailing_zeros( value, to_str( expected_str_with ), to_str( expected_str_without ) );
-        }
-
-        void test_remove_trailing_zeros()
-        {
-#if JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_WINDOWS
-            const String_type exp = to_str( "099" );
-#else
-            const String_type exp = to_str( "99" );
-#endif
-            check_remove_trailing_zeros( 0.0,           zero_str(),  to_str( "0.0" ) );
-            check_remove_trailing_zeros( 1.2,           "1.2000000000000000",  "1.2" );
-            check_remove_trailing_zeros( 0.123456789,   "0.12345678900000000",  "0.123456789" );
-            check_remove_trailing_zeros( 1.2e-99,       to_str( "1.2000000000000000e-" ) + exp,  to_str( "1.2e-" ) + exp );
-            check_remove_trailing_zeros( 1.23456789e99, to_str( "1.2345678900000001e+" ) + exp,  to_str( "1.23456789e+" ) + exp );
+            // This value has more precision than a double can represent, so we
+            // expect it to remove the .1 part, leaving just the integer
+            double value = 25328325904629212.1;
+            check_eq( ValueType(value), "25328325904629212" );
         }
 
         void run_tests()
@@ -672,7 +646,7 @@ namespace
             test_values();
             test_uint64();
             test_ios_state_saved();
-            test_remove_trailing_zeros();
+            test_double_precision();
         }
     };
 

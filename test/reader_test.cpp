@@ -183,7 +183,7 @@ namespace
             test_read( to_str( c_str ), value );
         }
 
-        void check_reading( const char* c_str )
+        void check_reading( const char* c_str, bool same_rewritten = true)
         {
             ValueType value;
 
@@ -191,9 +191,13 @@ namespace
 
             test_read( in_s, value );
 
-            const String_type result = write_formatted( value );
-
-            assert_eq( in_s, result );
+            // We need to exempt some because the reencoding is different
+            // (e.g. because the input has more precision than necessary to
+            // store a double value, so the reencoded version is shorter)
+            if (same_rewritten) {
+                const String_type result = write_formatted( value );
+                assert_eq( in_s, result );
+            }
         }
 
         template< typename Int >
@@ -352,7 +356,9 @@ namespace
                            "    true,\n"
                            "    false,\n"
                            "    null\n"
-                           "]" );
+                           "]",
+                false // double precision changes
+            );
 
             check_reading( "[\n"
                            "    1,\n"
