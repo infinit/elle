@@ -1,7 +1,11 @@
-language: python
+language: cpp
 
-before_script:
-  - sudo apt-get install cmake libboost-all-dev
+compiler:
+  - gcc
+  - clang
+
+install:
+  - sudo apt-get install libboost-system-dev libboost-thread-dev
 
 script:
   - cd build
