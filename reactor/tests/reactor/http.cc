@@ -98,7 +98,7 @@ public:
   _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
           boost::asio::streambuf* buffer,
           boost::system::error_code const& e,
-          size_t size)
+          size_t)
   {
     auto& socket = *_socket;
     auto peer = socket.remote_endpoint();
@@ -145,7 +145,7 @@ public:
   _answered(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
             std::string* answer,
             boost::system::error_code const& e,
-            size_t size)
+            size_t)
   {
     delete answer;
     auto& socket = *_socket;
@@ -235,8 +235,9 @@ class SilentHttpServer:
   _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
           boost::asio::streambuf* buffer,
           boost::system::error_code const& e,
-          size_t size)
+          size_t)
   {
+    BOOST_CHECK(!e);
     delete buffer;
     _socket->close();
   }
@@ -258,8 +259,9 @@ class PartialHttpServer:
   _answer(std::unique_ptr<boost::asio::ip::tcp::socket> socket,
           boost::asio::streambuf* buffer,
           boost::system::error_code const& e,
-          size_t size)
+          size_t)
   {
+    BOOST_CHECK(!e);
     delete buffer;
     auto answer = new std::string(
       "HTTP/1.1 200 OK\r\n"
@@ -839,7 +841,7 @@ class ScheduledSilentHttpServer:
 protected:
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) override
+  _serve(std::unique_ptr<reactor::network::TCPSocket>) override
   {
     reactor::sleep(3_sec);
   }
