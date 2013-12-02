@@ -158,6 +158,7 @@ class Scheduler:
   def __step(self, coro):
     if (coro.done):
       return
+    assert not coro.frozen
     with self.debug('%s: schedule %s' % (self, coro)):
       triggered = None
       try:
