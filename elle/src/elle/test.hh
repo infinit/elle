@@ -25,47 +25,39 @@
 #  define BOOST_TEST_MODULE ELLE_TEST_MODULE
 # endif
 
-# ifndef BOOST_TEST_MODULE
-#  define BOOST_TEST_NO_MAIN
-# endif
-
-# ifndef BOOST_TEST_ALTERNATIVE_INIT_API
-#  define BOOST_TEST_ALTERNATIVE_INIT_API 1
-# endif
 # ifdef INFINIT_WINDOWS
 #  include <winsock2.h>
 # endif
 # include <boost/test/unit_test.hpp>
 
 
-# define ELLE_TEST_SUITE()                                                    \
-static                                                                        \
-void                                                                          \
-_test_suite();                                                                \
-                                                                              \
-static                                                                        \
-bool                                                                          \
-test_suite()                                                                  \
-{                                                                             \
-  try { _test_suite(); }                                                      \
-  catch (...) {                                                               \
-    std::cerr << "Couldn't prepare the test suite in "                        \
-              << __FILE__ << ": " << elle::exception_string() << std::endl;   \
-    return false;                                                             \
-  }                                                                           \
-  return true;                                                                \
-}                                                                             \
-                                                                              \
-int                                                                           \
-main(int ac, char** av)                                                       \
-{                                                                             \
-  return ::boost::unit_test::unit_test_main(&test_suite, ac, av);             \
-}                                                                             \
-                                                                              \
-static                                                                        \
-void                                                                          \
-_test_suite()                                                                 \
-/**/
+# define ELLE_TEST_SUITE()                              \
+static                                                  \
+void                                                    \
+_test_suite();                                          \
+                                                        \
+boost::unit_test::test_suite*                           \
+init_unit_test_suite(int argc, char** argv);            \
+boost::unit_test::test_suite*                           \
+init_unit_test_suite(int argc, char** argv)             \
+{                                                       \
+  try                                                   \
+  {                                                     \
+    _test_suite();                                      \
+  }                                                     \
+  catch (...)                                           \
+  {                                                     \
+    throw boost::unit_test::framework::setup_error      \
+      (elle::exception_string());                       \
+  }                                                     \
+  return nullptr;                                       \
+}                                                       \
+                                                        \
+static                                                  \
+void                                                    \
+_test_suite()                                           \
+
+
 
 #define ELLE_TEST_SCHEDULED(Name)                       \
 static                                                  \
