@@ -107,9 +107,12 @@ class Boost(drake.Configuration):
                     (version, self._format_search(prefixes),
                      ', '.join(map(str, miss))))
 
-  def __find_lib(self, lib, lib_path, cxx_toolkit):
+  def __find_lib(self, lib, lib_path, cxx_toolkit, static):
     # Suffixes
     suffixes = ['-mt', '']
+    if static:
+      suffixes.append('-mt-s')
+      suffixes.append('-s')
     if isinstance(cxx_toolkit, drake.cxx.VisualToolkit):
       suffix = '-vc%s0-mt-%s_%s' % (cxx_toolkit.version,
                                     self.version.major,
@@ -123,31 +126,18 @@ class Boost(drake.Configuration):
       variants.append('_win32')
     for suffix, variant in itertools.product(suffixes, variants):
       libname = 'boost_%s%s%s' % (lib, variant, suffix)
-      filename = cxx_toolkit.libname_dyn(self.__cfg, libname)
-      filename_st = cxx_toolkit.libname_static(self.__cfg, libname)
-      test_plain = lib_path / filename
-      test_plain_st = lib_path / filename_st
-      test_versioned = lib_path / ('%s.%s' % (filename, self.__version))
-      test_versioned_st = lib_path / ('%s.%s' % (filename_st, self.__version))
-      tests_dyn = [
-          test_plain,
-          test_versioned,
-
-      ]
-      tests_st = [
-          test_plain_st,
-          test_versioned_st,
-      ]
-      if self.__prefer_shared:
-          tests = tests_dyn + tests_st
+      tests = []
+      if static:
+        filename = cxx_toolkit.libname_static(self.__cfg, libname)
+        tests.append(lib_path / filename)
       else:
-          tests = tests_st + tests_dyn
-      if cxx_toolkit.os == drake.os.windows:
-        test_windows = lib_path / ('lib%s.a' % (libname)) # Force .a on windows
-        tests.append(test_windows)
+        filename = cxx_toolkit.libname_dyn(self.__cfg, libname)
+        tests.append(lib_path / filename)
+        tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
       for test in  tests:
+        print(test)
         if test.exists():
-          return libname
+          return test
     raise Exception('Unable to find boost library %s '
                     'in %s' % (lib, lib_path))
 
@@ -186,18 +176,19 @@ for prop, library in Boost._Boost__libraries.items():
       pname = '_Boost__cfg_%s%s' % (prop, static and '_static' or '')
 
       if getattr(self, pname) is None:
-        name = self._Boost__find_lib(library,
-                                     self._Boost__lib_path,
-                                     self._Boost__cxx_toolkit)
+        lib = self._Boost__find_lib(library,
+                                    self._Boost__lib_path,
+                                    self._Boost__cxx_toolkit,
+                                    static = static)
         c = Config()
-        c.lib(name, static = static)
+        c.library_add(lib)
 
-        c.define('%s_%s_LINK' % (
-            library.upper(), static and 'STATIC' or 'DYN'
-        ), 1)
-        if library == 'unit_test_framework' and not static:
-          c.define('BOOST_TEST_DYN_LINK', 1)
-
+        if library == 'unit_test_framework':
+          macro = 'TEST'
+        else:
+          macro = library.upper()
+        macro += static and '_STATIC' or '_DYN'
+        c.define('BOOST_%s_LINK' % macro, 1)
         setattr(self, pname, c)
       return getattr(self, pname)
     setattr(Boost, 'config_%s' % prop, m)
