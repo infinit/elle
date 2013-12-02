@@ -2567,16 +2567,19 @@ class Copy(Builder):
     try:
       Builder.__init__(self, [self.__source], [self.__target])
     except BuilderRedefinition:
-      original = self.__original(self.__target.builder.source)
-      if original is self.__original(source):
-        if self.__class__ is self.__target.builder.__class__:
-          return
-        else:
-          drake.warn('%s is copied twice to %s '
-                     'but with different builder types (%s and %s), '
-                     'which is thus not considere equivalent' % (
-                       original, self.__target,
-                       self.__target.builder.name, self.name))
+      if isinstance(self, Copy):
+        previous = self.__target.builder
+        if isinstance(previous, Copy):
+          original = self.__original(previous.source)
+          if original is self.__original(source):
+            if self.__class__ is self.__target.builder.__class__:
+              return
+            else:
+              drake.warn('%s is copied twice to %s '
+                         'but with different builder types (%s and %s), '
+                         'which is thus not considere equivalent' % (
+                           original, self.__target,
+                           self.__target.builder.name, self.name))
       raise
 
   @property
