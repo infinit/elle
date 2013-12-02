@@ -46,7 +46,6 @@ def configure(curl_config,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   local_cxx_config = drake.cxx.Config(cxx_config)
   local_cxx_config += config
-  local_cxx_config += openssl_config # For SSL sockets.
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
 
@@ -71,6 +70,12 @@ def configure(curl_config,
   # Curl
   local_cxx_config += curl_config
   curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
+
+  # OpenSSL (for SSL sockets)
+  local_cxx_config += openssl_config
+  openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
+                            'lib', strip_prefix = True)
+
 
   # Zlib
   local_cxx_config += zlib_config
@@ -208,10 +213,7 @@ def configure(curl_config,
   sub_libraries = [
     elle_lib,
     curl_lib,
-    libcoroutine,
-    openssl_lib_ssl,
-    openssl_lib_crypto,
-    ]
+    libcoroutine] + openssl_libs
   lib_static = drake.cxx.StaticLib('lib/reactor',
                                    sources + sub_libraries,
                                    cxx_toolkit, lib_cxx_config)
