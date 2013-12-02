@@ -790,11 +790,7 @@ class GccToolkit(Toolkit):
 
   @property
   def prefix(self):
-    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+)?)?$', '', self.cxx)
-
-  @property
-  def prefix(self):
-    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+)?)?$', '', self.cxx)
+    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$', '', self.cxx)
 
 
 class VisualToolkit(Toolkit):
