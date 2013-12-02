@@ -618,6 +618,9 @@ class GccToolkit(Toolkit):
       # manually. Right ?
       res.append('-static-libgcc')
       res.append('-static-libstdc++')
+      res.append('-static')
+      res.append('-lwinpthread')
+      res.append('-dynamic')
     return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
