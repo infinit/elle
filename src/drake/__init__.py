@@ -2561,6 +2561,9 @@ class Copy(Builder):
     """
     self.__source = source
     self.__target = source.clone(to.canonize())
+    if self.__source is self.__target:
+      raise Exception('source and destination are the same: %s' %
+                      self.__source)
     try:
       Builder.__init__(self, [self.__source], [self.__target])
     except BuilderRedefinition:
