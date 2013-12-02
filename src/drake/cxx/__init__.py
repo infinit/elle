@@ -51,6 +51,7 @@ class Config:
             self.__system_includes = sched.OrderedSet()
             self.__lib_paths = sched.OrderedSet()
             self.__libs = sched.OrderedSet()
+            self.__libraries = sched.OrderedSet()
             self.flags = []
             self._framework = {}
             self.__defines = collections.OrderedDict()
@@ -66,6 +67,7 @@ class Config:
             self.__system_includes = sched.OrderedSet(model.__system_includes)
             self.__lib_paths = sched.OrderedSet(model.__lib_paths)
             self.__libs = sched.OrderedSet(model.__libs)
+            self.__libraries = sched.OrderedSet(model.__libraries)
             self.flags = model.flags[:]
             self._framework = dict(model._framework)
             self.__defines = collections.OrderedDict(model.__defines)
@@ -319,6 +321,11 @@ class Config:
         self.__libs.add(Config.Library(lib, static))
 
 
+    def library_add(self, library):
+      if not isinstance(library, drake.BaseNode):
+        library = drake.node(drake.Path(library))
+      self.__libraries.add(library)
+
     def __add__(self, rhs):
         """Combine two C++ configurations.
 
@@ -381,6 +388,7 @@ class Config:
         res._framework.update(rhs._framework)
         res.__lib_paths.update(rhs.__lib_paths)
         res.__libs.update(rhs.__libs)
+        res.__libraries.update(rhs.__libraries)
         res.flags += rhs.flags
         std_s = self.__standard
         std_o = rhs.__standard
@@ -440,6 +448,10 @@ class Config:
 
     def __libs_filter(self, f):
       return list(lib.name for lib in self.__libs if lib.static is f)
+
+    @property
+    def libraries(self):
+      return tuple(self.__libraries)
 
 # FIXME: Factor node and builder for executable and staticlib
 
@@ -659,6 +671,8 @@ class GccToolkit(Toolkit):
             ['ranlib', lib])
 
   def __libraries_flags(self, cfg, libraries, cmd):
+    for lib in cfg.libraries:
+      cmd.append(lib.path())
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
