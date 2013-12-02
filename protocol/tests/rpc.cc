@@ -295,7 +295,7 @@ test_parallel(bool sync)
 static
 void
 disconnection_caller(reactor::Semaphore& lock,
-                       bool sync,
+                       bool,
                        int& port)
 {
   auto& sched = *reactor::Scheduler::scheduler();
