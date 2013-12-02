@@ -254,7 +254,7 @@ def configure(curl_config,
     ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos))
+  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos) or None)
   cxx_config_tests += boost.config_test()
 
   for test, libraries in tests:
