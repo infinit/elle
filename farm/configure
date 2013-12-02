@@ -8,7 +8,7 @@ import platform
 arch, osyst, comp = os.environ['BUILDFARM_NAME'].split('-')
 
 template = ""
-if osyst == 'OSX':
+if osyst == 'osx':
   template = '''\
 import os, sys
 sys.path.insert(
