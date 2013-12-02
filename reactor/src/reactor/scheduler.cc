@@ -618,7 +618,7 @@ namespace reactor
   signal_callback(boost::asio::signal_set& set,
                   std::function<void ()> const& handler,
                   boost::system::error_code const& error,
-                  int signal_number)
+                  int)
   {
     if (error == boost::asio::error::operation_aborted)
       return;
