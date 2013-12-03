@@ -31,7 +31,6 @@ cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
 cxx_config.flag('-ftemplate-depth=512')
-cxx_config.flag('-std=c++11')
 cxx_config.flag('-stdlib=libc++')
 cxx_config.warnings.overloaded_virtual = False
 
@@ -64,8 +63,6 @@ cxx_toolkit = drake.cxx.GccToolkit(compiler = 'x86_64-w64-mingw32-g++')
 cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
-cxx_config.flag('-ftemplate-depth=512')
-cxx_config.flag('-std=c++11')
 
 boost = drake.cxx.boost.Boost(prefix = '/usr/local',
                               cxx_toolkit = cxx_toolkit)
@@ -95,10 +92,6 @@ import drake.cxx.boost
 cxx_toolkit = drake.cxx.GccToolkit()
 cxx_config = drake.cxx.Config()
 
-cxx_config.flag('-fPIC')
-cxx_config.flag('-Wall')
-cxx_config.flag('-W')
-cxx_config.flag('-m64')
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
 
