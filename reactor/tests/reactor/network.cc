@@ -539,18 +539,18 @@ underflow()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(test_destroy_socket));
+  suite.add(BOOST_TEST_CASE(test_destroy_socket), 0, 10);
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \
   suite.add(BOOST_TEST_CASE((test_timeout_read                          \
-                                <Proto##Server, Proto##Socket>)));      \
+                             <Proto##Server, Proto##Socket>)), 0, 10); \
   suite.add(BOOST_TEST_CASE((test_echo_server                           \
-                                <Proto##Server, Proto##Socket>)));      \
+                             <Proto##Server, Proto##Socket>)), 0, 10); \
 
   INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
-  suite.add(BOOST_TEST_CASE(test_socket_destruction));
-  suite.add(BOOST_TEST_CASE(test_socket_close));
-  suite.add(BOOST_TEST_CASE(resolution_failure));
-  suite.add(BOOST_TEST_CASE(read_until));
-  suite.add(BOOST_TEST_CASE(underflow));
+  suite.add(BOOST_TEST_CASE(test_socket_destruction), 0, 10);
+  suite.add(BOOST_TEST_CASE(test_socket_close), 0, 10);
+  suite.add(BOOST_TEST_CASE(resolution_failure), 0, 10);
+  suite.add(BOOST_TEST_CASE(read_until), 0, 10);
+  suite.add(BOOST_TEST_CASE(underflow), 0, 10);
 }

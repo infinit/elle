@@ -865,22 +865,22 @@ HTTP_TEST(interrupted)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(simple));
-  suite.add(BOOST_TEST_CASE(complex));
-  suite.add(BOOST_TEST_CASE(no_answer));
-  suite.add(BOOST_TEST_CASE(partial_answer));
-  suite.add(BOOST_TEST_CASE(connection_reset));
-  suite.add(BOOST_TEST_CASE(concurrent));
-  suite.add(BOOST_TEST_CASE(timeout));
-  suite.add(BOOST_TEST_CASE(post_no_body));
-  suite.add(BOOST_TEST_CASE(post_10));
-  suite.add(BOOST_TEST_CASE(post_11));
-  suite.add(BOOST_TEST_CASE(post_11_chunked));
-  suite.add(BOOST_TEST_CASE(put_no_body));
-  suite.add(BOOST_TEST_CASE(put_10));
-  suite.add(BOOST_TEST_CASE(put_11));
-  suite.add(BOOST_TEST_CASE(put_11_chunked));
-  suite.add(BOOST_TEST_CASE(cookies));
-  suite.add(BOOST_TEST_CASE(request_move));
-  suite.add(BOOST_TEST_CASE(interrupted));
+  suite.add(BOOST_TEST_CASE(simple), 0, 10);
+  suite.add(BOOST_TEST_CASE(complex), 0, 10);
+  suite.add(BOOST_TEST_CASE(no_answer), 0, 10);
+  suite.add(BOOST_TEST_CASE(partial_answer), 0, 10);
+  suite.add(BOOST_TEST_CASE(connection_reset), 0, 10);
+  suite.add(BOOST_TEST_CASE(concurrent), 0, 30);
+  suite.add(BOOST_TEST_CASE(timeout), 0, 10);
+  suite.add(BOOST_TEST_CASE(post_no_body), 0, 10);
+  suite.add(BOOST_TEST_CASE(post_10), 0, 10);
+  suite.add(BOOST_TEST_CASE(post_11), 0, 10);
+  suite.add(BOOST_TEST_CASE(post_11_chunked), 0, 10);
+  suite.add(BOOST_TEST_CASE(put_no_body), 0, 10);
+  suite.add(BOOST_TEST_CASE(put_10), 0, 10);
+  suite.add(BOOST_TEST_CASE(put_11), 0, 10);
+  suite.add(BOOST_TEST_CASE(put_11_chunked), 0, 10);
+  suite.add(BOOST_TEST_CASE(cookies), 0, 10);
+  suite.add(BOOST_TEST_CASE(request_move), 0, 10);
+  suite.add(BOOST_TEST_CASE(interrupted), 0, 10);
 }

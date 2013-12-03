@@ -103,8 +103,8 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
   boost::unit_test::framework::master_test_suite().add(backend);
-  backend->add(BOOST_TEST_CASE(test_die));
-  backend->add(BOOST_TEST_CASE(test_deadlock_creation));
-  backend->add(BOOST_TEST_CASE(test_deadlock_switch));
-  backend->add(BOOST_TEST_CASE(test_status));
+  backend->add(BOOST_TEST_CASE(test_die), 0, 10);
+  backend->add(BOOST_TEST_CASE(test_deadlock_creation), 0, 10);
+  backend->add(BOOST_TEST_CASE(test_deadlock_switch), 0, 10);
+  backend->add(BOOST_TEST_CASE(test_status), 0, 10);
 }

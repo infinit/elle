@@ -128,6 +128,6 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* sched_log = BOOST_TEST_SUITE("Sched Logger");
   boost::unit_test::framework::master_test_suite().add(sched_log);
-  sched_log->add(BOOST_TEST_CASE(scheduler_log_test));
-  sched_log->add(BOOST_TEST_CASE(parallel_write));
+  sched_log->add(BOOST_TEST_CASE(scheduler_log_test), 0, 10);
+  sched_log->add(BOOST_TEST_CASE(parallel_write), 0, 10);
 }
