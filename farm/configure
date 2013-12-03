@@ -7,105 +7,78 @@ import platform
 
 arch, osyst, comp = os.environ['BUILDFARM_NAME'].split('-')
 
-template = ""
-if osyst == 'osx':
-  template = '''\
+template = '''\
 #!/usr/bin/env python3
 
-import os, sys
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '../source/drake/src')
-    )
-)
+import os
+import os.path
+import sys
+
+# Add drake in the Python path.
+sys.path.insert(0, os.path.realpath(%(dir_source)r '/drake/src'))
 
 import drake
 import drake.cxx
 import drake.cxx.boost
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler = 'clang++')
-os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
-cxx_config = drake.cxx.Config()
+os.environ.update(%(environ)r)
 
+cxx_toolkit = drake.cxx.GccToolkit(compiler = %(compiler)r)
+cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(False)
-cxx_config.flag('-ftemplate-depth=512')
-cxx_config.flag('-stdlib=libc++')
-cxx_config.warnings.overloaded_virtual = False
+# Needed on OSX ?
+# cxx_config.warnings.overloaded_virtual = False
 
-boost = drake.cxx.boost.Boost(prefix = '/usr/local')
-python3 = '/usr/local/Frameworks/Python.framework/Versions/3.2'
+for f in %(flags)r:
+  cxx_config.flag(f)
 
-drake.run('../%s',
+boost = drake.cxx.boost.Boost(prefix = %(boost)r,
+                              cxx_toolkit = cxx_toolkit,
+                              prefer_shared = %(boost_shared)r)
+python = %(python)r
+import drake.valgrind
+if %(valgrind)r:
+  valgrind = drake.valgrind.Valgrind()
+else:
+  valgrind = None
+
+drake.run('%(dir_source)s',
           cxx_toolkit,
           cxx_config,
           boost = boost,
-          python3 = python3)
+          python3 = python,
+          valgrind = valgrind)
 '''
+
+
+parameters = {
+  'compiler': None,
+  'environ': {},
+  'flags': (),
+  'boost': None,
+  'boost_shared': True,
+  'python': None,
+  'valgrind': False,
+}
+
+if osyst == 'linux':
+#  parameters['boost'] = '/home/buildslave/local'
+  parameters['valgrind'] = True
+elif osyst == 'osx':
+  parameters['compiler'] = 'clang++'
+  parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
+  parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
+  parameters['boost'] = '/usr/local'
 elif osyst == 'win64':
-  template = '''\
-#!/usr/bin/env python3
-
-import os, sys
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '../source/drake/src')
-    )
-)
-
-import drake
-import drake.cxx
-import drake.cxx.boost
-
-cxx_toolkit = drake.cxx.GccToolkit(compiler = 'x86_64-w64-mingw32-g++')
-cxx_config = drake.cxx.Config()
-cxx_config.enable_debug_symbols()
-cxx_config.enable_optimization(False)
-
-boost = drake.cxx.boost.Boost(prefix = '/usr/local',
-                              cxx_toolkit = cxx_toolkit,
-                              prefer_shared = False)
-
-drake.run('../%s',
-          cxx_toolkit = cxx_toolkit,
-          cxx_config = cxx_config,
-          boost = boost,
-)
-'''
+  parameters['compiler'] = 'x86_64-w64-mingw32-g++'
+  parameters['boost'] = '/usr/local'
+  parameters['boost_shared'] = False
+  parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.2'
 else:
-  template = """\
-#!/usr/bin/env python3
+  raise Exception('invalid OS: %s' % osyst)
 
-import os, sys
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '../source/drake/src')
-    )
-)
-
-import drake
-import drake.cxx
-import drake.cxx.boost
-
-cxx_toolkit = drake.cxx.GccToolkit()
-cxx_config = drake.cxx.Config()
-
-cxx_config.enable_debug_symbols()
-cxx_config.enable_optimization(False)
-
-import drake.valgrind
-valgrind = drake.valgrind.Valgrind()
-
-boost = drake.cxx.boost.Boost(prefix='%%s/local' %% os.environ['HOME'])
-
-drake.run('../%s', cxx_toolkit, cxx_config, boost = boost, valgrind = valgrind)
-"""
-
-
-arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
 
 with open('%s/drake' % os.environ['DIR_BUILD'], 'w') as drake:
-  print(template % os.environ['DIR_SOURCE'], file = drake)
+  parameters['dir_source'] = os.path.abspath(os.environ['DIR_SOURCE'])
+  print(template % parameters, file = drake)
