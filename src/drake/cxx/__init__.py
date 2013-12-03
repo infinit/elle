@@ -514,16 +514,16 @@ class GccToolkit(Toolkit):
              values = ['gcc', 'clang']):
     pass
 
-  def __init__(self, compiler = 'g++', compiler_c = None, os = None):
+  def __init__(self, compiler = None, compiler_c = None, os = None):
     Toolkit.__init__(self)
     self.arch = arch.x86
     self.os = os
     self.__recursive_linkage = False
+    self.cxx = compiler or 'g++'
     try:
-      version = subprocess.check_output([compiler, '--version'])
+      version = subprocess.check_output([self.cxx, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
-    self.cxx = compiler
     self.c = compiler_c or '%sgcc' % self.prefix
     apple, win32, linux, clang = self.preprocess_isdef(
       ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
