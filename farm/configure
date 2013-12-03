@@ -70,11 +70,11 @@ elif osyst == 'osx':
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['boost'] = '/usr/local'
+  parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.2'
 elif osyst == 'win64':
   parameters['compiler'] = 'x86_64-w64-mingw32-g++'
   parameters['boost'] = '/usr/local'
   parameters['boost_shared'] = False
-  parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.2'
 else:
   raise Exception('invalid OS: %s' % osyst)
 
