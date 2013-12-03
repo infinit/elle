@@ -10,6 +10,8 @@ arch, osyst, comp = os.environ['BUILDFARM_NAME'].split('-')
 template = ""
 if osyst == 'osx':
   template = '''\
+#!/usr/bin/env python3
+
 import os, sys
 sys.path.insert(
     0,
@@ -44,6 +46,8 @@ drake.run('../%s',
 '''
 elif osyst == 'win64':
   template = '''\
+#!/usr/bin/env python3
+
 import os, sys
 sys.path.insert(
     0,
@@ -74,6 +78,8 @@ drake.run('../%s',
 '''
 else:
   template = """\
+#!/usr/bin/env python3
+
 import os, sys
 sys.path.insert(
     0,
