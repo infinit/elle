@@ -62,7 +62,7 @@ parameters = {
   'valgrind': False,
 }
 
-if osyst == 'linux':
+if osyst.startswith('linux'):
 #  parameters['boost'] = '/home/buildslave/local'
   parameters['valgrind'] = True
 elif osyst == 'osx':
