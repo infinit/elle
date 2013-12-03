@@ -63,7 +63,7 @@ parameters = {
 }
 
 if osyst.startswith('linux'):
-#  parameters['boost'] = '/home/buildslave/local'
+  parameters['boost'] = '/home/buildslave/local'
   parameters['valgrind'] = True
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
