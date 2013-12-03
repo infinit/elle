@@ -422,10 +422,10 @@ namespace reactor
         auto& service = self._curl.get_io_service();
         auto socket =
           std::make_shared<Service::Socket>(service, proto);
-        Service::Socket::_sockets.insert(
-          std::make_pair(socket->native_handle(), socket));
         auto fd = socket->native_handle();
         ELLE_TRACE_SCOPE("%s: open socket %s for %s", self._curl, fd, self);
+        Service::Socket::_sockets.insert(
+          std::make_pair(fd, socket));
         ELLE_ASSERT_NCONTAINS(self._curl._sockets, fd);
         self._curl._sockets.insert(std::make_pair(fd, socket));
         return fd;

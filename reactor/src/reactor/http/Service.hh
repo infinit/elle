@@ -50,19 +50,21 @@ namespace reactor
         Socket(T&& ... args):
           boost::asio::ip::tcp::socket(std::forward<T>(args)...),
           reading(false),
-          writing(false)
-        {
-          // Socket::_sockets.insert(std::make_pair(this->native_handle(), this));
-        }
+          writing(false),
+          _fd(this->native_handle())
+        {}
 
         ~Socket()
         {
-          Socket::_sockets.erase(this->native_handle());
+          Socket::_sockets.erase(this->_fd);
         }
 
         bool reading;
         bool writing;
       private:
+        // On windows, when the Asio socket is closed the filed descriptor is
+        // lost. Save it.
+        int _fd;
         friend class Request;
         friend class Service;
         static std::unordered_map<int, std::weak_ptr<Socket> > _sockets;
