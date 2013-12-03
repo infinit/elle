@@ -17,11 +17,15 @@ namespace reactor
     {
     public:
       SSLCertif();
-      SSLCertif(const SSLCertif& other);
-      SSLCertif(std::string const& pem,
+      SSLCertif(std::string const& cert,
+                std::string const& key,
                 std::string const& dhfile,
                 boost::asio::ssl::context::method meth =
                   boost::asio::ssl::context::sslv23);
+      SSLCertif(std::string const& ca,
+                boost::asio::ssl::context::method meth =
+                  boost::asio::ssl::context::sslv23);
+      SSLCertif(const SSLCertif& other);
 
       void
       release();

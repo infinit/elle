@@ -8,14 +8,22 @@ namespace reactor
       _ctx(nullptr)
     {}
 
-    SSLCertif::SSLCertif(std::string const& pem,
+    SSLCertif::SSLCertif(std::string const& cert,
+                         std::string const& key,
                          std::string const& dhfile,
                          boost::asio::ssl::context::method meth):
       _ctx(new boost::asio::ssl::context(meth))
     {
-      _ctx->use_certificate_chain_file(pem);
-      _ctx->use_private_key_file(pem, boost::asio::ssl::context::pem);
+      _ctx->use_certificate_file(cert, boost::asio::ssl::context::pem);
+      _ctx->use_private_key_file(key, boost::asio::ssl::context::pem);
       _ctx->use_tmp_dh_file(dhfile);
+    }
+
+    SSLCertif::SSLCertif(std::string const& ca,
+                         boost::asio::ssl::context::method meth):
+      _ctx(new boost::asio::ssl::context(meth))
+    {
+      _ctx->load_verify_file(ca);
     }
 
     SSLCertif::SSLCertif(const SSLCertif& other):
