@@ -255,6 +255,7 @@ def configure(curl_config,
     ('reactor/logger', []),
     ('reactor/network', []),
     ('reactor/reactor', []),
+    ('reactor/ssl', openssl_libs),
     # 'reactor/file',
     ]
 
