@@ -247,30 +247,7 @@ operator <<(std::ostream& output, ScheduledHttpServer const& server)
   return output;
 }
 
-#define HTTP_TEST(Name)                         \
-static                                          \
-void                                            \
-Name##_impl();                                  \
-                                                \
-static                                          \
-void                                            \
-Name()                                          \
-{                                               \
-  reactor::Scheduler sched;                     \
-  reactor::Thread main(                         \
-    sched, "main",                              \
-    [&]                                         \
-    {                                           \
-      Name##_impl();                            \
-    });                                         \
-  sched.run();                                  \
-}                                               \
-                                                \
-static                                          \
-void                                            \
-Name##_impl()                                   \
-
-HTTP_TEST(simple)
+ELLE_TEST_SCHEDULED(simple)
 {
   ScheduledHttpServer server;
   auto url = server.url("simple");
@@ -279,7 +256,7 @@ HTTP_TEST(simple)
   BOOST_CHECK_EQUAL(page, elle::ConstWeakBuffer("/simple"));
 }
 
-HTTP_TEST(complex)
+ELLE_TEST_SCHEDULED(complex)
 {
   ScheduledHttpServer server;
   auto url = server.url("complex");
@@ -304,7 +281,7 @@ class SilentHttpServer:
   {}
 };
 
-HTTP_TEST(no_answer)
+ELLE_TEST_SCHEDULED(no_answer)
 {
   SilentHttpServer server;
   auto url = server.url("no_answer");
@@ -332,7 +309,7 @@ class PartialHttpServer:
   }
 };
 
-HTTP_TEST(partial_answer)
+ELLE_TEST_SCHEDULED(partial_answer)
 {
   PartialHttpServer server;
   auto url = server.url("partial");
@@ -348,7 +325,7 @@ class FuckOffHttpServer:
   {}
 };
 
-HTTP_TEST(connection_reset)
+ELLE_TEST_SCHEDULED(connection_reset)
 {
   FuckOffHttpServer server;
   auto url = server.url("connection_reset");
@@ -544,61 +521,61 @@ post(reactor::http::Request::Configuration conf,
   }
 }
 
-HTTP_TEST(post_no_body)
+ELLE_TEST_SCHEDULED(post_no_body)
 {
   reactor::http::Request::Configuration conf;
   conf.version(reactor::http::Version::v10);
   post(conf, "HTTP/1.0", reactor::http::Method::POST, false, false, false);
 }
 
-HTTP_TEST(post_10)
+ELLE_TEST_SCHEDULED(post_10)
 {
   reactor::http::Request::Configuration conf;
   conf.version(reactor::http::Version::v10);
   post(conf, "HTTP/1.0", reactor::http::Method::POST, false, false);
 }
 
-HTTP_TEST(post_11)
+ELLE_TEST_SCHEDULED(post_11)
 {
   reactor::http::Request::Configuration conf;
   post(conf, "HTTP/1.1", reactor::http::Method::POST, true, false);
 }
 
-HTTP_TEST(post_11_chunked)
+ELLE_TEST_SCHEDULED(post_11_chunked)
 {
   reactor::http::Request::Configuration conf;
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", reactor::http::Method::POST, true, true);
 }
 
-HTTP_TEST(put_no_body)
+ELLE_TEST_SCHEDULED(put_no_body)
 {
   reactor::http::Request::Configuration conf;
   conf.version(reactor::http::Version::v10);
   post(conf, "HTTP/1.0", reactor::http::Method::PUT, false, false, false);
 }
 
-HTTP_TEST(put_10)
+ELLE_TEST_SCHEDULED(put_10)
 {
   reactor::http::Request::Configuration conf;
   conf.version(reactor::http::Version::v10);
   post(conf, "HTTP/1.0", reactor::http::Method::PUT, false, false);
 }
 
-HTTP_TEST(put_11)
+ELLE_TEST_SCHEDULED(put_11)
 {
   reactor::http::Request::Configuration conf;
   post(conf, "HTTP/1.1", reactor::http::Method::PUT, true, false);
 }
 
-HTTP_TEST(put_11_chunked)
+ELLE_TEST_SCHEDULED(put_11_chunked)
 {
   reactor::http::Request::Configuration conf;
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", reactor::http::Method::PUT, true, true);
 }
 
-HTTP_TEST(cookies)
+ELLE_TEST_SCHEDULED(cookies)
 {
   ScheduledHttpServer server;
   server.headers()["Set-Cookie"] = "we=got";
@@ -637,7 +614,7 @@ HTTP_TEST(cookies)
   }
 }
 
-HTTP_TEST(request_move)
+ELLE_TEST_SCHEDULED(request_move)
 {
   ScheduledHttpServer server;
 
@@ -665,7 +642,7 @@ protected:
   }
 };
 
-HTTP_TEST(interrupted)
+ELLE_TEST_SCHEDULED(interrupted)
 {
   ScheduledSilentHttpServer server;
 
