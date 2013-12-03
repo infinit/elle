@@ -19,430 +19,6 @@
 
 ELLE_LOG_COMPONENT("reactor.http.test");
 
-// XXX: these tests were integrated from curly, they should all be written using
-// the scheduled http server like the latest test.
-
-class HttpServer
-{
-public:
-  HttpServer():
-    _io_service(),
-    _server(this->_io_service),
-    _thread(nullptr)
-  {
-    boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), 0);
-    this->_server.open(endpoint.protocol());
-    this->_server.bind(endpoint);
-    this->_server.listen();
-    ELLE_LOG("%s: listen on port %s", *this, this->port());
-    this->_accept();
-    auto run = [this] () { this->_io_service.run(); };
-    this->_thread.reset(new std::thread(run));
-  }
-
-  virtual
-  ~HttpServer()
-  {
-    this->_server.close();
-    this->_thread->join();
-  }
-
-  void
-  _accept()
-  {
-    assert(!this->_accepted_socket);
-    this->_accepted_socket.reset(
-      new boost::asio::ip::tcp::socket(this->_io_service));
-    auto cb = std::bind(&HttpServer::_accepted, this, std::placeholders::_1);
-    this->_server.async_accept(*this->_accepted_socket,
-                               this->_accepted_endpoint,
-                               cb);
-  }
-
-  void
-  _accepted(boost::system::error_code const& e)
-  {
-    if (e)
-    {
-      if (e == boost::system::errc::operation_canceled)
-        return;
-      ELLE_ERR("%s: accept error: %s", *this, e.message());
-      std::abort();
-    }
-    ELLE_LOG("%s: accepted connection from %s",
-             *this, this->_accepted_endpoint);
-    assert(this->_accepted_socket);
-    this->_serve(std::move(this->_accepted_socket));
-    this->_accept();
-  }
-
-  virtual
-  void
-  _serve(std::unique_ptr<boost::asio::ip::tcp::socket> _socket)
-  {
-    auto buffer = new boost::asio::streambuf;
-    auto& socket = *_socket;
-    auto cb = std::bind(&HttpServer::_answer,
-                        this,
-                        elle::utility::move_on_copy(_socket),
-                        buffer,
-                        std::placeholders::_1,
-                        std::placeholders::_2
-      );
-    boost::asio::async_read_until(socket, *buffer,
-                                  std::string("\r\n\r\n"), cb);
-  }
-
-  virtual
-  void
-  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
-          boost::asio::streambuf* buffer,
-          boost::system::error_code const& e,
-          size_t)
-  {
-    auto& socket = *_socket;
-    auto peer = socket.remote_endpoint();
-    if (e)
-    {
-      ELLE_ERR("%s: read error on %s: %s", *this, peer, e);
-      std::abort();
-    }
-    std::string path;
-    {
-      std::istream s(buffer);
-      char line[1024];
-      s.getline(line, sizeof(line));
-      ELLE_LOG("%s: read on %s: %s", *this, peer, line);
-      std::vector<std::string> words;
-      boost::algorithm::split(words, line,
-                              boost::algorithm::is_any_of(" "));
-      BOOST_CHECK_EQUAL(words[0], "GET");
-      BOOST_CHECK_EQUAL(words[2], "HTTP/1.1\r");
-      path = words[1];
-    }
-    delete buffer;
-    auto answer = new std::string(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/plain; charset=UTF-8\r\n"
-      "Connection: Close\r\n");
-    // *answer += elle::sprintf("Content-length: %s\r\n", path.size());
-    *answer += "\r\n";
-    *answer += path;
-    auto answer_buffer = boost::asio::buffer(answer->c_str(),
-                                             answer->size());
-    ELLE_LOG("%s: write to %s: %s", *this, peer, *answer);
-    auto cb = std::bind(&HttpServer::_answered,
-                        this,
-                        elle::utility::move_on_copy(_socket),
-                        answer,
-                        std::placeholders::_1,
-                        std::placeholders::_2);
-    boost::asio::async_write(socket, answer_buffer, cb);
-  }
-
-  virtual
-  void
-  _answered(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
-            std::string* answer,
-            boost::system::error_code const& e,
-            size_t)
-  {
-    delete answer;
-    auto& socket = *_socket;
-    auto peer = socket.remote_endpoint();
-    if (e)
-    {
-      ELLE_ERR("%s: write error on %s: %s", *this, peer, e);
-      std::abort();
-    }
-    ELLE_LOG("%s: close connection to %s", *this, peer);
-    socket.close();
-  }
-
-  int port()
-  {
-    return this->_server.local_endpoint().port();
-  }
-
-  std::string
-  root_url()
-  {
-    // For some reason, resolution sometimes times out under valgrind, hence the
-    // IP instead of localhost. This is unrelated to curly since the simplest
-    // Curl request yields the same behavior.
-    return elle::sprintf("http://127.0.0.1:%s/", this->port());
-  }
-
-private:
-  boost::asio::io_service _io_service;
-  boost::asio::ip::tcp::acceptor _server;
-  std::unique_ptr<boost::asio::ip::tcp::socket> _accepted_socket;
-  boost::asio::ip::tcp::endpoint _accepted_endpoint;
-  std::unique_ptr<std::thread> _thread;
-};
-
-#define HTTP_TEST(Name)                         \
-static                                          \
-void                                            \
-Name##_impl();                                  \
-                                                \
-static                                          \
-void                                            \
-Name()                                          \
-{                                               \
-  reactor::Scheduler sched;                     \
-  reactor::Thread main(                         \
-    sched, "main",                              \
-    [&]                                         \
-    {                                           \
-      Name##_impl();                            \
-    });                                         \
-  sched.run();                                  \
-}                                               \
-                                                \
-static                                          \
-void                                            \
-Name##_impl()                                   \
-
-HTTP_TEST(simple)
-{
-  HttpServer server;
-  auto url = server.root_url() + "simple";
-  ELLE_LOG("Get %s", url);
-  auto page = reactor::http::get(url);
-  BOOST_CHECK_EQUAL(page, elle::ConstWeakBuffer("/simple"));
-}
-
-HTTP_TEST(complex)
-{
-  HttpServer server;
-  auto url = server.root_url() + "complex";
-  ELLE_LOG("Get %s", url);
-  reactor::http::Request r(url);
-  r.wait();
-  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::OK);
-  std::string content;
-  r >> content;
-  BOOST_CHECK_EQUAL(content, "/complex");
-  BOOST_CHECK(r.eof());
-}
-
-class SilentHttpServer:
-  public HttpServer
-{
-  virtual
-  void
-  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> _socket,
-          boost::asio::streambuf* buffer,
-          boost::system::error_code const& e,
-          size_t)
-  {
-    BOOST_CHECK(!e);
-    delete buffer;
-    _socket->close();
-  }
-};
-
-HTTP_TEST(no_answer)
-{
-  SilentHttpServer server;
-  auto url = server.root_url() + "no_answer";
-  ELLE_LOG("Get %s", url);
-  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::EmptyResponse);
-}
-
-class PartialHttpServer:
-  public HttpServer
-{
-  virtual
-  void
-  _answer(std::unique_ptr<boost::asio::ip::tcp::socket> socket,
-          boost::asio::streambuf* buffer,
-          boost::system::error_code const& e,
-          size_t)
-  {
-    BOOST_CHECK(!e);
-    delete buffer;
-    auto answer = new std::string(
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/plain; charset=UTF-8\r\n"
-      "Content-Length: 42"
-      "Connection: Close\r\n"
-      "\r\n"
-      "crap");
-    auto answer_buffer = boost::asio::buffer(answer->c_str(),
-                                             answer->size());
-    auto peer = socket->remote_endpoint();
-    ELLE_LOG("%s: write to %s: %s", *this, peer, *answer);
-    auto& s = *socket;
-    auto cb = std::bind(&HttpServer::_answered,
-                        this,
-                        elle::utility::move_on_copy(socket),
-                        answer,
-                        std::placeholders::_1,
-                        std::placeholders::_2);
-    boost::asio::async_write(s, answer_buffer, cb);
-  }
-};
-
-HTTP_TEST(partial_answer)
-{
-  PartialHttpServer server;
-  auto url = server.root_url() + "partial";
-  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
-}
-
-class FuckOffHttpServer:
-  public HttpServer
-{
-  virtual
-  void
-  _serve(std::unique_ptr<boost::asio::ip::tcp::socket> socket)
-  {
-    socket->close();
-  }
-};
-
-HTTP_TEST(connection_reset)
-{
-  FuckOffHttpServer server;
-  auto url = server.root_url() + "connection_reset";
-  ELLE_LOG("Get %s", url);
-  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
-}
-
-static
-void
-concurrent()
-{
-  static int const concurrent = 8;
-  static size_t const message_size = 2000;
-  reactor::Scheduler sched;
-
-  int port;
-  reactor::Barrier served;
-
-  reactor::Thread server(
-    sched, "server",
-    [&]
-    {
-      auto& sched = *reactor::Scheduler::scheduler();
-      reactor::network::TCPServer server(sched);
-      server.listen();
-      port = server.port();
-      ELLE_LOG("listen on port %s", port);
-      served.open();
-
-      int clients = 0;
-      reactor::Barrier everybody_is_there;
-      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-      {
-        while (true)
-        {
-          std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
-          ELLE_LOG("accept connection from %s", socket->peer());
-          scope.run_background(
-            elle::sprintf("request %s", socket->peer()),
-            [&, socket]
-            {
-              char buffer[1024];
-              socket->getline(buffer, sizeof(buffer), '\n');
-              buffer[socket->gcount()] = 0;
-              ELLE_LOG("got request: %s", buffer);
-              BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
-              while (std::string(buffer) != "\r")
-              {
-                ELLE_LOG("got header from: %s", buffer);
-                socket->getline(buffer, sizeof(buffer), '\n');
-                buffer[socket->gcount()] = 0;
-              }
-              if (++clients == concurrent)
-                everybody_is_there.open();
-              // Wait until every client made the request, to check they are done
-              // concurrently.
-              sched.current()->wait(everybody_is_there);
-              std::string answer(
-                "HTTP/1.1 200 OK\r\n"
-                "Server: Custom HTTP of doom\r\n"
-                "Content-Length: " + std::to_string(message_size) + "\r\n"
-                "\r\n");
-              ELLE_LOG("send response: %s", answer);
-              socket->write(elle::ConstWeakBuffer(answer));
-              std::string chunk = "lol\n";
-              assert(message_size % chunk.size() == 0);
-              size_t sent = 0;
-              while (sent + chunk.size() <= message_size)
-              {
-                socket->write(elle::ConstWeakBuffer(chunk));
-                sent += chunk.size();
-              }
-              assert(sent == message_size);
-            });
-        }
-      };
-    });
-
-  auto run_test = [&]
-  {
-    auto& sched = *reactor::Scheduler::scheduler();
-
-    reactor::Thread* current = sched.current();
-    auto fn = [&]
-    {
-      auto url = elle::sprintf("http://127.0.0.1:%s/some/path", port);
-      auto res = reactor::http::get(url);
-      BOOST_CHECK_EQUAL(res.string().substr(0, 4), "lol\n");
-    };
-
-    sched.current()->wait(served);
-    std::vector<reactor::Thread*> threads;
-    for (int i = 0; i < concurrent; ++i)
-      threads.push_back(
-        new reactor::Thread(sched, elle::sprintf("client %s", i), fn));
-    current->wait(reactor::Waitables(begin(threads), end(threads)));
-    for (auto thread: threads)
-      delete thread;
-    server.terminate();
-  };
-  reactor::Thread main(sched, "main", run_test);
-  sched.run();
-}
-
-static
-void
-timeout()
-{
-  reactor::Scheduler sched;
-  reactor::Signal sig;
-  reactor::Signal go;
-  int port;
-  auto tcp_serv = [&]
-  {
-    reactor::network::TCPServer serv(sched);
-    auto* current = sched.current();
-    current->wait(go);
-    serv.listen(0);
-    port = serv.port();
-    sig.signal();
-    std::unique_ptr<reactor::network::TCPSocket> socket(serv.accept());
-    while (1)
-      reactor::sleep(1_sec);
-  };
-  reactor::Thread tcp(sched, "tcp", tcp_serv);
-  auto run_test = [&]
-  {
-    go.signal();
-    auto* current = sched.current();
-    current->wait(sig);
-    auto url = elle::sprintf("http://127.0.0.1:%d/", port);
-    reactor::http::Request::Configuration conf(500_ms);
-    BOOST_CHECK_THROW(reactor::http::get(url, conf), reactor::http::Timeout);
-    tcp.terminate_now();
-  };
-  reactor::Thread main(sched, "main", run_test);
-  sched.run();
-}
-
 class ScheduledHttpServer
 {
 public:
@@ -620,6 +196,7 @@ private:
     ELLE_LOG("%s: close connection with %s", *this, socket->peer());
   }
 
+  virtual
   void
   response(reactor::network::TCPSocket& socket,
            elle::ConstWeakBuffer content,
@@ -668,6 +245,247 @@ operator <<(std::ostream& output, ScheduledHttpServer const& server)
 {
   output << "HttpServer(" << server.port() << ")";
   return output;
+}
+
+#define HTTP_TEST(Name)                         \
+static                                          \
+void                                            \
+Name##_impl();                                  \
+                                                \
+static                                          \
+void                                            \
+Name()                                          \
+{                                               \
+  reactor::Scheduler sched;                     \
+  reactor::Thread main(                         \
+    sched, "main",                              \
+    [&]                                         \
+    {                                           \
+      Name##_impl();                            \
+    });                                         \
+  sched.run();                                  \
+}                                               \
+                                                \
+static                                          \
+void                                            \
+Name##_impl()                                   \
+
+HTTP_TEST(simple)
+{
+  ScheduledHttpServer server;
+  auto url = server.url("simple");
+  ELLE_LOG("Get %s", url);
+  auto page = reactor::http::get(url);
+  BOOST_CHECK_EQUAL(page, elle::ConstWeakBuffer("/simple"));
+}
+
+HTTP_TEST(complex)
+{
+  ScheduledHttpServer server;
+  auto url = server.url("complex");
+  ELLE_LOG("Get %s", url);
+  reactor::http::Request r(url);
+  r.wait();
+  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::OK);
+  std::string content;
+  r >> content;
+  BOOST_CHECK_EQUAL(content, "/complex");
+  BOOST_CHECK(r.eof());
+}
+
+class SilentHttpServer:
+  public ScheduledHttpServer
+{
+  virtual
+  void
+  response(reactor::network::TCPSocket&,
+           elle::ConstWeakBuffer,
+           std::unordered_map<std::string, std::string> const&) override
+  {}
+};
+
+HTTP_TEST(no_answer)
+{
+  SilentHttpServer server;
+  auto url = server.url("no_answer");
+  ELLE_LOG("Get %s", url);
+  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::EmptyResponse);
+}
+
+class PartialHttpServer:
+  public ScheduledHttpServer
+{
+  virtual
+  void
+  response(reactor::network::TCPSocket& socket,
+           elle::ConstWeakBuffer,
+           std::unordered_map<std::string, std::string> const&) override
+  {
+    std::string answer(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
+      "Content-Length: 42"
+      "Connection: Close\r\n"
+      "\r\n"
+      "crap");
+    socket.write(elle::ConstWeakBuffer(answer));
+  }
+};
+
+HTTP_TEST(partial_answer)
+{
+  PartialHttpServer server;
+  auto url = server.url("partial");
+  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
+}
+
+class FuckOffHttpServer:
+  public ScheduledHttpServer
+{
+  virtual
+  void
+  _serve(std::unique_ptr<reactor::network::TCPSocket>) override
+  {}
+};
+
+HTTP_TEST(connection_reset)
+{
+  FuckOffHttpServer server;
+  auto url = server.url("connection_reset");
+  ELLE_LOG("Get %s", url);
+  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
+}
+
+static
+void
+concurrent()
+{
+  static int const concurrent = 8;
+  static size_t const message_size = 2000;
+  reactor::Scheduler sched;
+
+  int port;
+  reactor::Barrier served;
+
+  reactor::Thread server(
+    sched, "server",
+    [&]
+    {
+      auto& sched = *reactor::Scheduler::scheduler();
+      reactor::network::TCPServer server(sched);
+      server.listen();
+      port = server.port();
+      ELLE_LOG("listen on port %s", port);
+      served.open();
+
+      int clients = 0;
+      reactor::Barrier everybody_is_there;
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+      {
+        while (true)
+        {
+          std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
+          ELLE_LOG("accept connection from %s", socket->peer());
+          scope.run_background(
+            elle::sprintf("request %s", socket->peer()),
+            [&, socket]
+            {
+              char buffer[1024];
+              socket->getline(buffer, sizeof(buffer), '\n');
+              buffer[socket->gcount()] = 0;
+              ELLE_LOG("got request: %s", buffer);
+              BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
+              while (std::string(buffer) != "\r")
+              {
+                ELLE_LOG("got header from: %s", buffer);
+                socket->getline(buffer, sizeof(buffer), '\n');
+                buffer[socket->gcount()] = 0;
+              }
+              if (++clients == concurrent)
+                everybody_is_there.open();
+              // Wait until every client made the request, to check they are done
+              // concurrently.
+              sched.current()->wait(everybody_is_there);
+              std::string answer(
+                "HTTP/1.1 200 OK\r\n"
+                "Server: Custom HTTP of doom\r\n"
+                "Content-Length: " + std::to_string(message_size) + "\r\n"
+                "\r\n");
+              ELLE_LOG("send response: %s", answer);
+              socket->write(elle::ConstWeakBuffer(answer));
+              std::string chunk = "lol\n";
+              assert(message_size % chunk.size() == 0);
+              size_t sent = 0;
+              while (sent + chunk.size() <= message_size)
+              {
+                socket->write(elle::ConstWeakBuffer(chunk));
+                sent += chunk.size();
+              }
+              assert(sent == message_size);
+            });
+        }
+      };
+    });
+
+  auto run_test = [&]
+  {
+    auto& sched = *reactor::Scheduler::scheduler();
+
+    reactor::Thread* current = sched.current();
+    auto fn = [&]
+    {
+      auto url = elle::sprintf("http://127.0.0.1:%s/some/path", port);
+      auto res = reactor::http::get(url);
+      BOOST_CHECK_EQUAL(res.string().substr(0, 4), "lol\n");
+    };
+
+    sched.current()->wait(served);
+    std::vector<reactor::Thread*> threads;
+    for (int i = 0; i < concurrent; ++i)
+      threads.push_back(
+        new reactor::Thread(sched, elle::sprintf("client %s", i), fn));
+    current->wait(reactor::Waitables(begin(threads), end(threads)));
+    for (auto thread: threads)
+      delete thread;
+    server.terminate();
+  };
+  reactor::Thread main(sched, "main", run_test);
+  sched.run();
+}
+
+static
+void
+timeout()
+{
+  reactor::Scheduler sched;
+  reactor::Signal sig;
+  reactor::Signal go;
+  int port;
+  auto tcp_serv = [&]
+  {
+    reactor::network::TCPServer serv(sched);
+    auto* current = sched.current();
+    current->wait(go);
+    serv.listen(0);
+    port = serv.port();
+    sig.signal();
+    std::unique_ptr<reactor::network::TCPSocket> socket(serv.accept());
+    while (1)
+      reactor::sleep(1_sec);
+  };
+  reactor::Thread tcp(sched, "tcp", tcp_serv);
+  auto run_test = [&]
+  {
+    go.signal();
+    auto* current = sched.current();
+    current->wait(sig);
+    auto url = elle::sprintf("http://127.0.0.1:%d/", port);
+    reactor::http::Request::Configuration conf(500_ms);
+    BOOST_CHECK_THROW(reactor::http::get(url, conf), reactor::http::Timeout);
+    tcp.terminate_now();
+  };
+  reactor::Thread main(sched, "main", run_test);
+  sched.run();
 }
 
 static
