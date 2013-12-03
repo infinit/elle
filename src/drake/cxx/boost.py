@@ -135,7 +135,6 @@ class Boost(drake.Configuration):
         tests.append(lib_path / filename)
         tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
       for test in  tests:
-        print(test)
         if test.exists():
           return test
     raise Exception('Unable to find boost library %s '
