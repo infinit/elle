@@ -16,13 +16,11 @@ namespace reactor
     class SSLCertif
     {
     public:
-      SSLCertif();
+      SSLCertif(boost::asio::ssl::context::method meth =
+                  boost::asio::ssl::context::sslv23);
       SSLCertif(std::string const& cert,
                 std::string const& key,
                 std::string const& dhfile,
-                boost::asio::ssl::context::method meth =
-                  boost::asio::ssl::context::sslv23);
-      SSLCertif(std::string const& ca,
                 boost::asio::ssl::context::method meth =
                   boost::asio::ssl::context::sslv23);
       SSLCertif(const SSLCertif& other);
@@ -61,11 +59,11 @@ namespace reactor
                 DurationOpt timeout = DurationOpt());
       ~SSLSocket();
 
+      bool
+      handshake();
+
       void
-      handshake(boost::asio::ssl::stream<
-        boost::asio::ip::tcp::socket>::handshake_type type =
-          boost::asio::ssl::stream<
-          boost::asio::ip::tcp::socket>::handshake_type::client);
+      server_handshake();
 
     private:
       SSLSocket(Scheduler& sched,

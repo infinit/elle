@@ -1,12 +1,18 @@
 #include <reactor/network/ssl-socket.hh>
 
+#include <openssl/ssl.h>
+#include <openssl/x509.h>
+#include <openssl/evp.h>
+
 namespace reactor
 {
   namespace network
   {
-    SSLCertif::SSLCertif():
-      _ctx(nullptr)
-    {}
+    SSLCertif::SSLCertif(boost::asio::ssl::context::method meth):
+      _ctx(new boost::asio::ssl::context(meth))
+    {
+      _ctx->set_verify_mode(boost::asio::ssl::verify_none);
+    }
 
     SSLCertif::SSLCertif(std::string const& cert,
                          std::string const& key,
@@ -17,13 +23,6 @@ namespace reactor
       _ctx->use_certificate_file(cert, boost::asio::ssl::context::pem);
       _ctx->use_private_key_file(key, boost::asio::ssl::context::pem);
       _ctx->use_tmp_dh_file(dhfile);
-    }
-
-    SSLCertif::SSLCertif(std::string const& ca,
-                         boost::asio::ssl::context::method meth):
-      _ctx(new boost::asio::ssl::context(meth))
-    {
-      _ctx->load_verify_file(ca);
     }
 
     SSLCertif::SSLCertif(const SSLCertif& other):
@@ -68,11 +67,34 @@ namespace reactor
     SSLSocket::~SSLSocket()
     {}
 
-    void
-    SSLSocket::handshake(boost::asio::ssl::stream<
-      boost::asio::ip::tcp::socket>::handshake_type type)
+    bool
+    SSLSocket::handshake()
     {
-      _socket->handshake(type);
+      _socket->handshake(boost::asio::ssl::stream<
+        boost::asio::ip::tcp::socket>::handshake_type::client);
+
+      char const* loc_sha1 = "hello";
+      unsigned int loc_sha1_size = 5;
+
+      SSL *ssl = _socket->native_handle();
+      X509 *cert = SSL_get_peer_certificate(ssl);
+
+      // Get fingerprint of peer certificate in sha1.
+      unsigned int peer_sha1_size;
+      unsigned char peer_sha1[EVP_MAX_MD_SIZE];
+      X509_digest(cert, EVP_sha1(), peer_sha1, &peer_sha1_size);
+      X509_free(cert);
+
+      if (peer_sha1_size == loc_sha1_size)
+        return !!memcmp(peer_sha1, loc_sha1, peer_sha1_size);
+      return !!(peer_sha1_size - loc_sha1_size);
+    }
+
+    void
+    SSLSocket::server_handshake()
+    {
+      _socket->handshake(boost::asio::ssl::stream<
+        boost::asio::ip::tcp::socket>::handshake_type::server);
     }
 
     boost::asio::ip::tcp::socket&

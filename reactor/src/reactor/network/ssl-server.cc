@@ -115,9 +115,7 @@ namespace reactor
       ELLE_ASSERT_NEQ(_acceptor, nullptr);
       SSLAccept accept(scheduler(), *_acceptor, _cert);
       accept.run();
-      accept.socket()->handshake(
-        boost::asio::ssl::stream<
-        boost::asio::ip::tcp::socket>::handshake_type::server);
+      accept.socket()->server_handshake();
       return accept.socket();
     }
 
