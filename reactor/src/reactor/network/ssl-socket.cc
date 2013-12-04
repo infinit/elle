@@ -55,6 +55,16 @@ namespace reactor
 
     SSLSocket::SSLSocket(reactor::Scheduler& sched,
                          boost::asio::ip::tcp::endpoint const& endpoint,
+                         SSLCertif& cert):
+      Super(sched,
+            elle::make_unique<boost::asio::ssl::stream<
+              boost::asio::ip::tcp::socket>>(sched.io_service(), *cert.ctx()),
+            endpoint),
+      _cert(cert)
+    {}
+
+    SSLSocket::SSLSocket(reactor::Scheduler& sched,
+                         boost::asio::ip::tcp::endpoint const& endpoint,
                          SSLCertif& cert,
                          DurationOpt timeout):
       Super(sched,

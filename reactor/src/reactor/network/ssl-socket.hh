@@ -56,7 +56,10 @@ namespace reactor
       SSLSocket(reactor::Scheduler& sched,
                 boost::asio::ip::tcp::endpoint const& endpoint,
                 SSLCertif& cert,
-                DurationOpt timeout = DurationOpt());
+                DurationOpt timeout);
+      SSLSocket(reactor::Scheduler& sched,
+                boost::asio::ip::tcp::endpoint const& endpoint,
+                SSLCertif& cert);
       ~SSLSocket();
 
       bool
