@@ -2,6 +2,7 @@
 # define ELLE_MEMORY_HH
 
 # include <cstddef>
+# include <functional>
 # include <memory>
 
 namespace elle
