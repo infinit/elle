@@ -524,7 +524,6 @@ class GccToolkit(Toolkit):
       version = subprocess.check_output([self.cxx, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
-    self.c = compiler_c or '%sgcc' % self.prefix
     apple, win32, linux, clang = self.preprocess_isdef(
       ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
     if self.os is None:
@@ -540,6 +539,7 @@ class GccToolkit(Toolkit):
       self.__kind = GccToolkit.Kind.clang
     else:
       self.__kind = GccToolkit.Kind.gcc
+    self.c = compiler_c or '%sgcc' % self.prefix
 
   def preprocess_isdef(self, vars, config = Config()):
     content = '\n'.join(reversed(vars))
@@ -807,7 +807,14 @@ class GccToolkit(Toolkit):
 
   @property
   def prefix(self):
-    return re.sub(r'g\+\+(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$', '', self.cxx)
+    if self.__kind is GccToolkit.Kind.gcc:
+      name = 'g\+\+'
+    elif self.__kind is GccToolkit.Kind.clang:
+      name = 'clang\+\+'
+    else:
+      raise Exception('unkown gcc toolkit kind: %s' % self.__kind)
+    return re.sub(r'%s(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$' % name,
+                  '', self.cxx)
 
 
 class VisualToolkit(Toolkit):
