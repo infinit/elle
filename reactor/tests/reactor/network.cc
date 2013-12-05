@@ -68,6 +68,8 @@ silent_server()
 | Destroy socket |
 `---------------*/
 
+// Connection refused entails infinite wait on wine.
+#ifndef INFINIT_WINDOWS
 // Find a free port. Of course there's a race condition, but it's better than an
 // hardcoded one.
 static
@@ -100,12 +102,13 @@ test_destroy_socket_non_connected()
 
 static
 void
-test_destroy_socket()
+destroy_socket()
 {
   reactor::Scheduler sched;
   Thread t(sched, "thread", &test_destroy_socket_non_connected);
   sched.run();
 }
+#endif
 
 /*---------.
 | Timeouts |
@@ -292,7 +295,7 @@ test_echo_server()
 
 static
 void
-test_socket_destruction()
+socket_destruction()
 {
   reactor::Scheduler sched;
 
@@ -323,7 +326,7 @@ test_socket_destruction()
 
 static
 void
-test_socket_close()
+socket_close()
 {
   reactor::Scheduler sched;
 
@@ -539,17 +542,25 @@ underflow()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(test_destroy_socket), 0, 10);
+#ifndef INFINIT_WINDOWS
+  suite.add(BOOST_TEST_CASE(destroy_socket), 0, 10);
+#endif
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \
-  suite.add(BOOST_TEST_CASE((test_timeout_read                          \
-                             <Proto##Server, Proto##Socket>)), 0, 10); \
-  suite.add(BOOST_TEST_CASE((test_echo_server                           \
-                             <Proto##Server, Proto##Socket>)), 0, 10); \
+  {                                                                     \
+    auto subsuite = BOOST_TEST_SUITE(#Proto);                           \
+    suite.add(subsuite);                                                \
+    auto timeout_read =                                                 \
+      &test_timeout_read<Proto##Server, Proto##Socket>;                 \
+    subsuite->add(BOOST_TEST_CASE(timeout_read), 0, 10);                \
+    auto echo_server =                                                  \
+      &test_echo_server<Proto##Server, Proto##Socket>;                  \
+    subsuite->add(BOOST_TEST_CASE(echo_server), 0, 10);                 \
+  }                                                                     \
 
   INFINIT_REACTOR_NETWORK_TEST(TCP);
 #undef INFINIT_REACTOR_NETWORK_TEST
-  suite.add(BOOST_TEST_CASE(test_socket_destruction), 0, 10);
-  suite.add(BOOST_TEST_CASE(test_socket_close), 0, 10);
+  suite.add(BOOST_TEST_CASE(socket_destruction), 0, 10);
+  suite.add(BOOST_TEST_CASE(socket_close), 0, 10);
   suite.add(BOOST_TEST_CASE(resolution_failure), 0, 10);
   suite.add(BOOST_TEST_CASE(read_until), 0, 10);
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
