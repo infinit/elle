@@ -252,7 +252,9 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: close", *this);
       typedef SocketSpecialization<AsioSocket> Spe;
-      Spe::socket(*this->socket()).close();
+      auto& socket = Spe::socket(*this->socket());
+      socket.cancel();
+      socket.close();
     }
 
     template <typename AsioSocket, typename EndPoint>
