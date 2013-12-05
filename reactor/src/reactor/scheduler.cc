@@ -181,7 +181,8 @@ namespace reactor
       try
       {
         _io_service.reset();
-        _io_service.poll();
+        auto n = _io_service.poll();
+        ELLE_DEBUG("%s: %s callback called", *this, n);
       }
       catch (std::exception const& e)
       {
@@ -207,11 +208,12 @@ namespace reactor
       else
         while (_running.empty() && _starting.empty())
         {
-          ELLE_TRACE("%s: nothing to do, "
+          ELLE_TRACE_SCOPE("%s: nothing to do, "
                      "polling asio in a blocking fashion", *this);
           _io_service.reset();
           boost::system::error_code err;
           std::size_t run = _io_service.run_one(err);
+          ELLE_DEBUG("%s: %s callback called", *this, run);
           if (err)
           {
             std::cerr << "fatal ASIO error: " << err << std::endl;
