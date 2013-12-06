@@ -805,12 +805,12 @@ test_timeout_threw()
   reactor::Semaphore sem(0);
 
   reactor::Thread thrower(sched, "thrower", [&] {
-      thrower.wait(sem);
+      reactor::wait(sem);
       throw BeaconException();
     });
   reactor::Thread waiter(sched, "waiter", [&] {
       sem.release();
-      waiter.wait(thrower, 100_ms);
+      reactor::wait(thrower, 100_ms);
     });
 
   try
@@ -1910,7 +1910,7 @@ namespace system_signals
     reactor::Thread t(sched, "main", [&t] ()
                       {
                         ::kill(::getpid(), SIGINT);
-                        t.reactor::Waitable::wait();
+                        reactor::wait(t);
                       });
     sched.signal_handle(SIGINT, [&sched] { sched.terminate(); });
     sched.run();
