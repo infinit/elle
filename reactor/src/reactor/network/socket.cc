@@ -253,7 +253,16 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: close", *this);
       typedef SocketSpecialization<AsioSocket> Spe;
       auto& socket = Spe::socket(*this->socket());
-      socket.cancel();
+      try
+      {
+        socket.cancel();
+      }
+      catch (boost::system::system_error const& e)
+      {
+        // If the socket was already closed, ignore.
+        if (e.code() != boost::asio::error::bad_descriptor)
+          throw;
+      }
       socket.close();
     }
 
