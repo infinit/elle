@@ -7,3 +7,6 @@
 [submodule "reactor/asio-fs"]
 	path = reactor/asio-fs
 	url = git@git.infinit.io:asio-fs
+[submodule "elle/src/elle/json/json-spirit"]
+	path = elle/src/elle/json/json-spirit
+	url = https://github.com/sirikata/json-spirit.git

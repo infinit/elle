@@ -50,6 +50,7 @@ def configure(zlib_lib,
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('src')
+  config.add_local_include_path('src/elle/json/json-spirit')
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
@@ -220,6 +221,30 @@ def configure(zlib_lib,
     'src/elle/time.hh',
     'src/elle/types.hh',
     )
+
+  # JSON Spirit
+  sources += drake.nodes(
+    'src/elle/json/json-spirit/json_spirit/json_spirit_error_position.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_reader_template.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_reader.cpp',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_reader.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_stream_reader.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_utils.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_value.cpp',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_value.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_writer_template.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_writer.cpp',
+    'src/elle/json/json-spirit/json_spirit/json_spirit_writer.h',
+    'src/elle/json/json-spirit/json_spirit/json_spirit.h',
+  )
+
+  # JSON Wrapper
+  sources += drake.nodes(
+    'src/elle/json/exceptions.cc',
+    'src/elle/json/exceptions.hh',
+    'src/elle/json/utils.cc',
+    'src/elle/json/utils.hh',
+  )
 
   sources += drake.nodes(
     'src/elle/serialize/ArchiveMode.cc',
