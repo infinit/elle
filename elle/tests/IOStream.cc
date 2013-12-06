@@ -30,7 +30,7 @@ class ReadStreamBuffer: public elle::StreamBuffer
 
     virtual
     void
-    flush(elle::Size)
+    flush(Size)
     {}
 
     virtual
