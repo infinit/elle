@@ -148,15 +148,16 @@ class Boost(drake.Configuration):
       self.__cfg_python = Config()
       # FIXME: do something smart here
       try:
-        self.__cfg_python.lib(self.__find_lib('python-3.2',
-                                              self.__lib_path,
-                                              self.__cxx_toolkit,
-                                              static))
+        lib = self.__find_lib('python-3.2',
+                              self.__lib_path,
+                              self.__cxx_toolkit,
+                              static)
       except:
-        self.__cfg_python.lib(self.__find_lib('python3',
-                                              self.__lib_path,
-                                              self.__cxx_toolkit,
-                                              static))
+        lib = self.__find_lib('python3',
+                              self.__lib_path,
+                              self.__cxx_toolkit,
+                              static)
+      self.__cfg_python.library_add(lib)
     return self.__cfg_python
 
   def __repr__(self):
