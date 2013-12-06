@@ -12,11 +12,17 @@
 #include <elle/log/TextLogger.hh>
 #include <elle/os/setenv.hh>
 
+#include <reactor/logger.hh>
 #include <reactor/thread.hh>
 
 reactor::Scheduler* sched = 0;
 elle::log::TextLogger* logger;
 std::stringstream ss, res;
+
+elle::PluginLoad load_reactor_logger_plugins(
+  reactor::plugins::logger_indentation,
+  reactor::plugins::logger_tags
+  );
 
 static void yield()
 {
