@@ -673,7 +673,8 @@ namespace reactor
         if (error == boost::asio::error::eof ||
             error == boost::asio::error::operation_aborted ||
             error == boost::asio::error::broken_pipe ||
-            error == boost::asio::error::connection_aborted)
+            error == boost::asio::error::connection_aborted ||
+            error == boost::asio::error::connection_reset)
           this->template _raise<ConnectionClosed>();
         else if (error)
           this->template _raise<Exception>(error.message());
