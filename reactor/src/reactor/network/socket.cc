@@ -281,12 +281,17 @@ namespace reactor
           if (error == boost::asio::error::not_connected
 #ifdef INFINIT_WINDOWS
               || error == boost::asio::error::bad_descriptor
+              // A request to send or receive data was disallowed because the
+              // socket had already been shut down in that direction with a
+              // previous shutdown call.
+              || error.value() == WSAESHUTDOWN
 #endif
             )
             ; // It's ok to try to disconnect a non-connected socket.
           else
           {
-            ELLE_TRACE("%s: disconnection error: %s", *this, error.message());
+            ELLE_TRACE("%s: disconnection error: %s ()",
+                       *this, error.message(), error);
             throw Exception(error.message());
           }
         }
