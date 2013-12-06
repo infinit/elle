@@ -1,13 +1,16 @@
+#include <elle/Plugin.hh>
 #include <elle/log/Logger.hh>
 
 #include <reactor/storage.hh>
 
 namespace reactor
 {
-  class LoggerIndentation: public elle::log::Indentation
+  class Indentation:
+    public elle::log::Indentation
   {
   public:
-    LoggerIndentation(std::function<std::unique_ptr<Indentation> ()> const& factory)
+    typedef elle::log::Indenter::Factory Factory;
+    Indentation(Factory const& factory)
       : _factory(factory)
       , _indentations()
     {}
@@ -34,21 +37,36 @@ namespace reactor
     }
 
   private:
-    std::unique_ptr<Indentation>&
+    std::unique_ptr<elle::log::Indentation>&
     _indentation()
     {
-      std::unique_ptr<Indentation>& idt = _indentations.Get();
+      std::unique_ptr<elle::log::Indentation>& idt = _indentations.Get();
       if (!idt)
-        idt = std::move(this->_factory());
+        idt = this->_factory();
       return idt;
     }
-    std::function<std::unique_ptr<Indentation> ()> _factory;
-    ::reactor::LocalStorage<std::unique_ptr<Indentation>> _indentations;
+    ELLE_ATTRIBUTE(Factory, factory);
+    typedef LocalStorage<std::unique_ptr<elle::log::Indentation>> Indentations;
+    ELLE_ATTRIBUTE(Indentations, indentations);
   };
 
-  elle::log::RegisterIndenter<LoggerIndentation> register_indenter;
+  class Indenter:
+    public elle::log::Indenter
+  {
+  public:
+    virtual
+    std::unique_ptr<elle::log::Indentation>
+    indentation(Factory const& factory) override
+    {
+      return elle::make_unique<Indentation>(factory);
+    }
+  };
 
-  class ThreadTag: public elle::log::Tag
+  elle::Plugin<elle::log::Indenter>::Register<Indenter>
+  register_indentation;
+
+  class ThreadTag:
+    public elle::log::Tag
   {
   public:
     virtual
@@ -69,5 +87,12 @@ namespace reactor
     }
   };
 
-  elle::log::RegisterTag<ThreadTag> register_tag;
+  elle::Plugin<elle::log::Tag>::Register<ThreadTag>
+  register_tag;
+
+  namespace plugins
+  {
+    elle::Plugin<elle::log::Indenter> logger_indentation(register_indentation);
+    elle::Plugin<elle::log::Tag> logger_tags(register_tag);
+  }
 }

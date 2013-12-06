@@ -38,11 +38,13 @@ namespace elle
       unindent() = 0;
     };
 
-    template <typename I>
-    class RegisterIndenter
+    class Indenter
     {
     public:
-      RegisterIndenter();
+      typedef std::function<std::unique_ptr<Indentation> ()> Factory;
+      virtual
+      std::unique_ptr<Indentation>
+      indentation(Factory const& factory) = 0;
     };
 
     class Tag
@@ -54,13 +56,6 @@ namespace elle
       virtual
       std::string
       content() = 0;
-    };
-
-    template <typename I>
-    class RegisterTag
-    {
-    public:
-      RegisterTag();
     };
 
     class Logger
@@ -114,16 +109,6 @@ namespace elle
       unindent();
       std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
-      template <typename I>
-      friend class RegisterIndenter;
-      static
-      std::function<std::unique_ptr<Indentation> ()>&
-      _factory();
-      template <typename I>
-      friend class RegisterTag;
-      static
-      std::vector<std::unique_ptr<Tag>>&
-      _tags();
       ELLE_ATTRIBUTE_R(bool, time_universal);
 
     /*----------.

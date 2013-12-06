@@ -1,20 +1,23 @@
-#include <elle/Exception.hh>
-#include <elle/log/Logger.hh>
-#include <elle/os/getenv.hh>
-#include <elle/system/getpid.hh>
-#include <elle/printf.hh>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/thread/tss.hpp>
-
 #ifdef INFINIT_WINDOWS
 # include <shlwapi.h>
 #else
 # include <fnmatch.h>
 #endif
 
+#include <functional>
+#include <memory>
 #include <thread>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/thread/tss.hpp>
+
+#include <elle/Exception.hh>
+#include <elle/Plugin.hh>
+#include <elle/log/Logger.hh>
+#include <elle/os/getenv.hh>
+#include <elle/system/getpid.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
@@ -27,7 +30,8 @@ namespace elle
     Indentation::~Indentation()
     {}
 
-    class PlainIndentation: public Indentation
+    class PlainIndentation:
+      public Indentation
     {
     public:
       PlainIndentation()
@@ -62,14 +66,6 @@ namespace elle
       boost::thread_specific_ptr<unsigned int> _indentation;
     };
 
-    std::function<std::unique_ptr<Indentation> ()>&
-    Logger::_factory()
-    {
-      static std::function<std::unique_ptr<Indentation> ()> res =
-        [] () { return std::unique_ptr<Indentation>(new PlainIndentation()); };
-      return res;
-    }
-
     unsigned int&
     Logger::indentation()
     {
@@ -86,17 +82,6 @@ namespace elle
     Logger::unindent()
     {
       this->_indentation->unindent();
-    }
-
-    /*----.
-    | Tag |
-    `----*/
-
-    std::vector<std::unique_ptr<Tag>>&
-    Logger::_tags()
-    {
-      static std::vector<std::unique_ptr<Tag>> res;
-      return res;
     }
 
     /*-------------.
@@ -123,12 +108,25 @@ namespace elle
   }
 
     Logger::Logger()
-      : _indentation(this->_factory()())
+      : _indentation(new PlainIndentation)
       , _time_universal(::getenv("ELLE_LOG_TIME_UNIVERSAL"))
       , _component_patterns()
       , _component_levels()
       , _component_max_size(0)
     {
+      std::function<std::unique_ptr<Indentation> ()> factory =
+        [] () -> std::unique_ptr<Indentation>
+        {
+          return elle::make_unique<PlainIndentation>();
+        };
+      for (auto const& indenter: elle::Plugin<Indenter>::plugins())
+      {
+        factory = [&indenter, factory] ()  -> std::unique_ptr<Indentation>
+          {
+            return indenter.second->indentation(factory);
+          };
+      }
+      this->_indentation = factory();
       std::string levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
       if (!levels_str.empty())
       {
@@ -181,11 +179,11 @@ namespace elle
       ELLE_ASSERT_GTE(indent, 1);
 
       std::vector<std::pair<std::string, std::string>> tags;
-      for (auto const& tag: this->_tags())
+      for (auto const& tag: elle::Plugin<Tag>::plugins())
       {
-        std::string content = tag->content();
+        std::string content = tag.second->content();
         if (!content.empty())
-          tags.push_back(std::make_pair(tag->name(), content));
+          tags.push_back(std::make_pair(tag.second->name(), content));
       }
 
 
@@ -279,8 +277,7 @@ namespace elle
       }                                                         \
     };                                                          \
                                                                 \
-    static                                                      \
-    elle::log::RegisterTag<Name##Tag> register_tag_##Name;      \
+    elle::Plugin<Tag>::Register<Name##Tag> register_tag_##Name; \
 
     ELLE_LOGGER_TAG(
       PID, boost::lexical_cast<std::string>(elle::system::getpid()));
