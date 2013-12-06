@@ -115,7 +115,7 @@ namespace reactor
       ELLE_ASSERT_NEQ(_acceptor, nullptr);
       SSLAccept accept(scheduler(), *_acceptor, _cert);
       accept.run();
-      //accept.socket()->server_handshake();
+      accept.socket()->server_handshake();
       return accept.socket();
     }
 

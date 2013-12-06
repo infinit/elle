@@ -1,13 +1,28 @@
 #include <reactor/network/ssl-socket.hh>
+#include <reactor/network/exception.hh>
+#include <reactor/operation.hh>
 
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/evp.h>
 
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("reactor.network.SSLSocket");
+
 namespace reactor
 {
   namespace network
   {
+
+    // Local fingerprint in sha1.
+    static unsigned int loc_sha1_size = 20;
+    static unsigned char loc_sha1[20] =
+    {
+      0x66, 0x84, 0x68, 0xEB, 0xBE, 0x83, 0xA0, 0x5C, 0x6A, 0x32,
+      0xAD, 0xD2, 0x58, 0x62, 0x01, 0x31, 0x79, 0x96, 0x78, 0xB8
+    };
+
     SSLCertif::SSLCertif(boost::asio::ssl::context::method meth):
       _ctx(new boost::asio::ssl::context(meth))
     {
@@ -20,6 +35,7 @@ namespace reactor
                          boost::asio::ssl::context::method meth):
       _ctx(new boost::asio::ssl::context(meth))
     {
+      _ctx->set_verify_mode(boost::asio::ssl::verify_none);
       _ctx->use_certificate_file(cert, boost::asio::ssl::context::pem);
       _ctx->use_private_key_file(key, boost::asio::ssl::context::pem);
       _ctx->use_tmp_dh_file(dhfile);
@@ -77,17 +93,71 @@ namespace reactor
     SSLSocket::~SSLSocket()
     {}
 
+    class SSLHandshake: public Operation
+    {
+    public:
+      SSLHandshake(Scheduler& scheduler,
+          boost::asio::ssl::stream<boost::asio::ip::tcp::socket>& socket,
+          boost::asio::ssl::stream<
+            boost::asio::ip::tcp::socket>::handshake_type&& type):
+        Operation(scheduler),
+        _socket(socket),
+        _type(type)
+      {}
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "socket handshake";
+      }
+
+    protected:
+      virtual void _abort()
+      {
+        //TODO
+        _signal();
+      }
+
+      virtual void _start()
+      {
+      _socket.async_handshake(this->_type,
+        boost::bind(&SSLHandshake::_wakeup, this,
+        boost::asio::placeholders::error));
+      }
+
+    private:
+      void _wakeup(const boost::system::error_code& error)
+      {
+        if (error == boost::system::errc::operation_canceled)
+          return;
+        if (error)
+          _raise<Exception>(error.message());
+        _signal();
+      }
+
+      ELLE_ATTRIBUTE(boost::asio::ssl::stream<boost::asio::ip::tcp::socket>&,
+        socket);
+      ELLE_ATTRIBUTE(boost::asio::ssl::stream<
+        boost::asio::ip::tcp::socket>::handshake_type, type);
+    };
+
     bool
     SSLSocket::handshake()
     {
-      _socket->handshake(boost::asio::ssl::stream<
-        boost::asio::ip::tcp::socket>::handshake_type::client);
+      ELLE_DEBUG("start client handshake");
+      SSLHandshake handshaker(scheduler(), *_socket,
+        boost::asio::ssl::stream<
+          boost::asio::ip::tcp::socket>::handshake_type::client);
+      handshaker.run();
+      ELLE_DEBUG("client handshake done");
 
-      char const* loc_sha1 = "hello";
-      unsigned int loc_sha1_size = 5;
-
+      ELLE_DEBUG("certificate verification");
       SSL *ssl = _socket->native_handle();
       X509 *cert = SSL_get_peer_certificate(ssl);
+
+      ELLE_DEBUG("ssl obj is %s", ssl);
+      ELLE_DEBUG("cert is %s", cert);
 
       // Get fingerprint of peer certificate in sha1.
       unsigned int peer_sha1_size;
@@ -95,16 +165,34 @@ namespace reactor
       X509_digest(cert, EVP_sha1(), peer_sha1, &peer_sha1_size);
       X509_free(cert);
 
-      if (peer_sha1_size == loc_sha1_size)
-        return !!memcmp(peer_sha1, loc_sha1, peer_sha1_size);
-      return !!(peer_sha1_size - loc_sha1_size);
+      // Comparison of both fingerprints.
+      if (peer_sha1_size != loc_sha1_size)
+        return 1;
+      return !!memcmp(peer_sha1, loc_sha1, peer_sha1_size);
     }
 
     void
     SSLSocket::server_handshake()
     {
-      _socket->handshake(boost::asio::ssl::stream<
-        boost::asio::ip::tcp::socket>::handshake_type::server);
+      ELLE_DEBUG("start server handshake");
+      SSLHandshake handshaker(scheduler(), *_socket,
+        boost::asio::ssl::stream<
+          boost::asio::ip::tcp::socket>::handshake_type::server);
+      handshaker.run();
+      ELLE_DEBUG("server handshake done");
+    }
+
+    void
+    SSLSocket::_shutdown(const boost::system::error_code& error)
+    {
+      ELLE_DEBUG("failure to handshake: %s", error.message());
+
+      _socket->shutdown();
+
+      typedef SocketSpecialization<
+        boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> Spe;
+      boost::asio::ip::tcp::socket& sock(Spe::socket(*_socket));
+      sock.close();
     }
 
     boost::asio::ip::tcp::socket&

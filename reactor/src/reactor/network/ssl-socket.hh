@@ -75,6 +75,9 @@ namespace reactor
                 boost::asio::ip::tcp::socket::endpoint_type const& peer);
 
     private:
+      void
+      _shutdown(const boost::system::error_code& error);
+
       boost::asio::ip::tcp::socket&
       asio_socket();
 
