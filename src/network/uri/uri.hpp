@@ -8,6 +8,11 @@
 #ifndef NETWORK_URI_INC
 #define NETWORK_URI_INC
 
+/**
+ * \file
+ * \brief Contains the uri the class.
+ */
+
 #include <iterator>
 #include <algorithm>
 #include <functional>
@@ -41,18 +46,53 @@ namespace network {
   }  // namespace detail
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+  /**
+   * \enum uri_comparison_level
+   * \brief Defines the steps on the URI comparison ladder.
+   */
   enum class uri_comparison_level {
     string_comparison,
     syntax_based,
     scheme_based,
   };
 
+  /**
+   * \ingroup uri
+   * \class uri_builder network/uri/uri_builder.hpp network/uri.hpp
+   * \brief A class that allows complex uri objects to be constructed.
+   * \sa uri
+   */
   class uri_builder;
 
   /**
    * \ingroup uri
    * \class uri network/uri/uri.hpp network/uri.hpp
-   * \brief A class that parses a URI string into its component parts.
+   * \brief A class that parses a URI (Uniform Resource Identifier)
+   *        into its component parts.
+   *
+   * This class conforms to a URI as defined by RFC 3986, RFC 3987 and
+   * RFC 2732, including scoped IDs. It provides member functions for
+   * normalizing, comparing and resolving URIs.
+   *
+   * A URI has the syntax:
+   *
+   * \code
+   * [scheme:][user_info@][host][:port][path][?query][#fragment]
+   * \endcode
+   *
+   * Example:
+   *
+   * \code
+   * network::uri instance("http://cpp-netlib.org/");
+   * assert(instance.is_absolute());
+   * assert(!instance.is_opaque());
+   * assert(instance.scheme());
+   * assert("http" == *instance.scheme());
+   * assert(instance.host());
+   * assert("cpp-netlib.org" == *instance.host());
+   * assert(instance.path());
+   * assert("/" == *instance.path());
+   * \endcode
    */
   class NETWORK_URI_DECL uri {
 
@@ -198,33 +238,32 @@ namespace network {
      * \brief Returns the URI scheme.
      * \return The scheme, if it exists, or boost::none.
      */
-    boost::optional<string_view> scheme() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> scheme() const;
 
     /**
      * \brief Returns the URI user info.
      * \return The user info, if it exists, or boost::none.
      */
-    boost::optional<string_view> user_info() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> user_info() const;
 
     /**
      * \brief Returns the URI host.
      * \return The host, if it exists, or boost::none.
      */
-    boost::optional<string_view> host() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> host() const;
 
     /**
      * \brief Returns the URI port.
      * \return The port, if it exists, or boost::none.
      */
-    boost::optional<string_view> port() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> port() const;
 
     /**
      * \brief Returns the URI port as an integer.
      * \return The port, if it exists, or boost::none.
      */
     template <typename IntT>
-    boost::optional<IntT> port(typename std::is_integral<IntT>::type * =
-                                   0) const NETWORK_URI_NOEXCEPT {
+    boost::optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const {
       if (auto p = port()) {
         try {
           return static_cast<IntT>(
@@ -241,25 +280,25 @@ namespace network {
      * \brief Returns the URI path.
      * \return The path, if it exists, or boost::none.
      */
-    boost::optional<string_view> path() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> path() const;
 
     /**
      * \brief Returns the URI query.
      * \return The query, if it exists, or boost::none.
      */
-    boost::optional<string_view> query() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> query() const;
 
     /**
      * \brief Returns the URI fragment.
      * \return The fragment, if it exists, or boost::none.
      */
-    boost::optional<string_view> fragment() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> fragment() const;
 
     /**
      * \brief Returns the URI authority.
      * \return The authority, if it exists, or boost::none.
      */
-    boost::optional<string_view> authority() const NETWORK_URI_NOEXCEPT;
+    boost::optional<string_view> authority() const;
 
 #if !defined(_MSC_VER)
     /**
@@ -332,14 +371,14 @@ namespace network {
      * \brief Checks if the uri is absolute, i.e. it has a scheme.
      * \returns \c true if it is absolute, \c false if it is relative.
      */
-    bool is_absolute() const NETWORK_URI_NOEXCEPT;
+    bool is_absolute() const;
 
     /**
      * \brief Checks if the uri is opaque, i.e. if it doesn't have an
      *        authority.
      * \returns \c true if it is opaque, \c false if it is hierarchical.
      */
-    bool is_opaque() const NETWORK_URI_NOEXCEPT;
+    bool is_opaque() const;
 
     /**
      * \brief Normalizes a uri object at a given level in the
@@ -357,7 +396,7 @@ namespace network {
      * \returns A relative reference of this URI against the base.
      * \throws std::bad_alloc
      */
-    uri make_relative(const uri &other) const;
+    uri make_relative(const uri &base) const;
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     uri make_reference(const uri &base) const { return make_relative(base); }
@@ -508,39 +547,81 @@ namespace network {
     detail::uri_parts<string_type::iterator> uri_parts_;
   };
 
-  template <class Source>
-  inline uri make_uri(const Source &source,
-                      std::error_code &ec) NETWORK_URI_NOEXCEPT {
-    return uri(source, ec);
-  }
-
+  /**
+   * \brief \c uri factory function.
+   * \param first The first element in a string sequence.
+   * \param last The end + 1th element in a string sequence.
+   * \param ec Error code set if the sequence is not a valid URI.
+   */
   template <class InputIter>
   inline uri make_uri(InputIter first, InputIter last,
-                      std::error_code &ec) NETWORK_URI_NOEXCEPT {
+                      std::error_code &ec) {
     return uri(first, last, ec);
   }
 
-  void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
+  /**
+   * \brief \c uri factory function.
+   * \param source A source string that is to be parsed as a URI.
+   * \param ec Error code set if the source is not a valid URI.
+   */
+  template <class Source>
+  inline uri make_uri(const Source &source,
+                      std::error_code &ec) {
+    return uri(source, ec);
+  }
 
-  bool operator==(const uri &lhs, const uri &rhs);
+  /**
+   * \brief Swaps one uri object with another.
+   */
+   void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
 
-  bool operator==(const uri &lhs, const char *rhs);
+   /**
+   * \brief Equality operator for the \c uri.
+   */
+  bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT;
 
-  inline bool operator==(const char *lhs, const uri &rhs) { return rhs == lhs; }
+  /**
+   * \brief Equality operator for the \c uri.
+   */
+  bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT;
 
-  inline bool operator!=(const uri &lhs, const uri &rhs) {
+  /**
+   * \brief Equality operator for the \c uri.
+   */
+  inline bool operator==(const char *lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+    return rhs == lhs;
+  }
+
+  /**
+   * \brief Inequality operator for the \c uri.
+   */
+  inline bool operator!=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return !(lhs == rhs);
   }
 
-  bool operator<(const uri &lhs, const uri &rhs);
+  /**
+   * \brief Less-than operator for the \c uri.
+   */
+  bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT ;
 
-  inline bool operator>(const uri &lhs, const uri &rhs) { return rhs < lhs; }
+  /**
+   * \brief Greater-than operator for the \c uri.
+   */
+  inline bool operator>(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+    return rhs < lhs;
+  }
 
-  inline bool operator<=(const uri &lhs, const uri &rhs) {
+  /**
+   * \brief Less-than-or-equal-to operator for the \c uri.
+   */
+  inline bool operator<=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return !(rhs < lhs);
   }
 
-  inline bool operator>=(const uri &lhs, const uri &rhs) {
+  /**
+   * \brief Greater-than-or-equal-to operator for the \c uri.
+   */
+  inline bool operator>=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return !(lhs < rhs);
   }
 }  // namespace network

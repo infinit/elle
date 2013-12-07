@@ -10,6 +10,13 @@
 
 /**
  * \defgroup uri URI
+ *
+ * This module contains a class encapsulating a URI, a URI builder and
+ * percent encoding and decoding functions.
+ *
+ * \file
+ * \brief Contains the uri, uri_builder classes and functions
+ *        for percent encoding and decoding.
  */
 
 #include <network/uri/uri.hpp>

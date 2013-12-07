@@ -260,49 +260,47 @@ namespace network {
 
   }  // namespace
 
-  boost::optional<boost::string_ref> uri::scheme() const NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::scheme() const {
     return uri_parts_.scheme ? to_string_ref(uri_, *uri_parts_.scheme)
                              : boost::optional<boost::string_ref>();
   }
 
   boost::optional<boost::string_ref> uri::user_info() const
-      NETWORK_URI_NOEXCEPT {
+      {
     return uri_parts_.hier_part.user_info
                ? to_string_ref(uri_, *uri_parts_.hier_part.user_info)
                : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::host() const NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::host() const {
     return uri_parts_.hier_part.host
                ? to_string_ref(uri_, *uri_parts_.hier_part.host)
                : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::port() const NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::port() const {
     return uri_parts_.hier_part.port
                ? to_string_ref(uri_, *uri_parts_.hier_part.port)
                : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::path() const NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::path() const {
     return uri_parts_.hier_part.path
                ? to_string_ref(uri_, *uri_parts_.hier_part.path)
                : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::query() const NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::query() const {
     return uri_parts_.query ? to_string_ref(uri_, *uri_parts_.query)
                             : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::fragment() const
-      NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::fragment() const {
     return uri_parts_.fragment ? to_string_ref(uri_, *uri_parts_.fragment)
                                : boost::optional<boost::string_ref>();
   }
 
-  boost::optional<boost::string_ref> uri::authority() const
-      NETWORK_URI_NOEXCEPT {
+  boost::optional<boost::string_ref> uri::authority() const {
     auto host = this->host();
     if (!host) {
       return boost::optional<boost::string_ref>();
@@ -338,11 +336,11 @@ namespace network {
 
   bool uri::empty() const NETWORK_URI_NOEXCEPT { return uri_.empty(); }
 
-  bool uri::is_absolute() const NETWORK_URI_NOEXCEPT {
+  bool uri::is_absolute() const {
     return static_cast<bool>(scheme());
   }
 
-  bool uri::is_opaque() const NETWORK_URI_NOEXCEPT {
+  bool uri::is_opaque() const {
     return (is_absolute() && !authority());
   }
 
@@ -527,8 +525,8 @@ namespace network {
     return std::move(result);
   }
 
-  int uri::compare(const uri &other, uri_comparison_level level) const
-      NETWORK_URI_NOEXCEPT {
+  int uri::compare(const uri &other,
+                   uri_comparison_level level) const NETWORK_URI_NOEXCEPT {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (empty() && other.empty()) {
@@ -558,11 +556,11 @@ namespace network {
 
   void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT { lhs.swap(rhs); }
 
-  bool operator==(const uri &lhs, const uri &rhs) {
+  bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return lhs.compare(rhs, uri_comparison_level::syntax_based) == 0;
   }
 
-  bool operator==(const uri &lhs, const char *rhs) {
+  bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT {
     if (std::strlen(rhs) !=
         std::size_t(std::distance(std::begin(lhs), std::end(lhs)))) {
       return false;
@@ -570,7 +568,7 @@ namespace network {
     return std::equal(std::begin(lhs), std::end(lhs), rhs);
   }
 
-  bool operator<(const uri &lhs, const uri &rhs) {
+  bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return lhs.compare(rhs, uri_comparison_level::syntax_based) < 0;
   }
 }  // namespace network
