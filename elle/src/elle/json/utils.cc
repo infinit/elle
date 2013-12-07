@@ -4,9 +4,9 @@
 #include <elle/json/exceptions.hh>
 #include <elle/printf.hh>
 
-#include <json_spirit/json_spirit_reader.h>
-#include <json_spirit/json_spirit_value.h>
-#include <json_spirit/json_spirit_writer.h>
+#include <json_spirit/reader.h>
+#include <json_spirit/value.h>
+#include <json_spirit/writer.h>
 
 ELLE_LOG_COMPONENT("elle.json");
 
@@ -14,7 +14,7 @@ namespace elle
 {
   namespace json
   {
-    typedef json_spirit::Config_vector<std::string> Config;
+    typedef json_spirit::Config_map<std::string> Config;
 
     static
     boost::any
@@ -22,10 +22,10 @@ namespace elle
     {
       switch (value.type())
       {
-        case json_spirit::obj_type:
+        case json_spirit::Value::OBJECT_TYPE:
         {
           Object res;
-          for (auto const& element: value.get_obj())
+          for (auto const& element: value.getObject())
           {
             auto key = Config::get_name(element);
             auto value = from_spirit(Config::get_value(element));
@@ -33,24 +33,24 @@ namespace elle
           }
           return res;
         }
-        case json_spirit::array_type:
+        case json_spirit::Value::ARRAY_TYPE:
         {
           Array res;
-          for (auto const& element: value.get_array())
+          for (auto const& element: value.getArray())
           {
             res.push_back(from_spirit(element));
           }
           return res;
         }
-        case json_spirit::str_type:
-          return value.get_str();
-        case json_spirit::bool_type:
-          return value.get_bool();
-        case json_spirit::int_type:
-          return value.get_int();
-        case json_spirit::real_type:
-          return value.get_real();
-        case json_spirit::null_type:
+        case json_spirit::Value::STRING_TYPE:
+          return value.getString();
+        case json_spirit::Value::BOOL_TYPE:
+          return value.getBool();
+        case json_spirit::Value::INT_TYPE:
+          return value.getInt();
+        case json_spirit::Value::REAL_TYPE:
+          return value.getReal();
+        case json_spirit::Value::NULL_TYPE:
           return NullType();
 
         default:
@@ -70,7 +70,7 @@ namespace elle
         {
           auto key = element.first;
           auto value = to_spirit(element.second);
-          res.push_back(Config::Pair_type(key, value));
+          res.insert(Config::Pair_type(key, value));
         }
         return res;
       }
@@ -94,7 +94,7 @@ namespace elle
       if (any.type() == typeid(double))
         return boost::any_cast<double>(any);
       if (any.type() == typeid(NullType))
-        return json_spirit::null_type;
+        return json_spirit::Value::NULL_TYPE;
 
       ELLE_ABORT("unable to make JSON from type: %s", any.type().name());
     }
@@ -107,7 +107,7 @@ namespace elle
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
         throw ParserError(elle::sprintf("JSON error"));
-      auto res = from_spirit(value.get_obj());
+      auto res = from_spirit(value.getObject());
       if (res.type() != typeid(Object))
         throw ParserError("JSON is not an object");
       return boost::any_cast<Object>(res);

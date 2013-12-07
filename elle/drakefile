@@ -50,7 +50,7 @@ def configure(zlib_lib,
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('src')
-  config.add_local_include_path('src/elle/json/json-spirit')
+  config.add_local_include_path('src/elle/json/json-spirit/include')
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
@@ -224,18 +224,20 @@ def configure(zlib_lib,
 
   # JSON Spirit
   sources += drake.nodes(
-    'src/elle/json/json-spirit/json_spirit/json_spirit_error_position.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_reader_template.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_reader.cpp',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_reader.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_stream_reader.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_utils.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_value.cpp',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_value.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_writer_template.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_writer.cpp',
-    'src/elle/json/json-spirit/json_spirit/json_spirit_writer.h',
-    'src/elle/json/json-spirit/json_spirit/json_spirit.h',
+    'src/elle/json/json-spirit/include/json_spirit/json_spirit.h',
+    'src/elle/json/json-spirit/include/json_spirit/parse_error.h',
+    'src/elle/json/json-spirit/include/json_spirit/path_error.h',
+    'src/elle/json/json-spirit/include/json_spirit/platform.h',
+    'src/elle/json/json-spirit/include/json_spirit/reader.h',
+    'src/elle/json/json-spirit/include/json_spirit/reader_template.h',
+    'src/elle/json/json-spirit/include/json_spirit/stream_reader.h',
+    'src/elle/json/json-spirit/include/json_spirit/value.h',
+    'src/elle/json/json-spirit/include/json_spirit/writer.h',
+    'src/elle/json/json-spirit/include/json_spirit/writer_options.h',
+    'src/elle/json/json-spirit/include/json_spirit/writer_template.h',
+    'src/elle/json/json-spirit/src/reader.cpp',
+    'src/elle/json/json-spirit/src/value.cpp',
+    'src/elle/json/json-spirit/src/writer.cpp',
   )
 
   # JSON Wrapper
