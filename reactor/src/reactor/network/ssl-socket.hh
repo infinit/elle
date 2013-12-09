@@ -42,50 +42,44 @@ namespace reactor
         boost::asio::ip::tcp::socket>,
         boost::asio::ip::tcp::socket::endpoint_type> Super;
       typedef SSLSocket Self;
+      typedef boost::asio::ssl::stream<
+        boost::asio::ip::tcp::socket>::handshake_type Handshake_type;
 
     public:
       SSLSocket(const std::string& hostname,
                 const std::string& port,
                 SSLCertif& cert,
+                Handshake_type type = Handshake_type::client,
                 DurationOpt timeout = DurationOpt());
       SSLSocket(reactor::Scheduler& sched,
                 const std::string& hostname,
                 const std::string& port,
                 SSLCertif& cert,
+                Handshake_type type = Handshake_type::client,
                 DurationOpt timeout = DurationOpt());
       SSLSocket(reactor::Scheduler& sched,
                 boost::asio::ip::tcp::endpoint const& endpoint,
                 SSLCertif& cert,
+                Handshake_type type,
                 DurationOpt timeout);
       SSLSocket(reactor::Scheduler& sched,
                 boost::asio::ip::tcp::endpoint const& endpoint,
-                SSLCertif& cert);
+                SSLCertif& cert,
+                Handshake_type type);
       ~SSLSocket();
 
-      bool
-      handshake();
-
-      void
-      server_handshake();
-
     private:
-      SSLSocket(Scheduler& sched,
-                std::unique_ptr<boost::asio::ssl::stream<
-                  boost::asio::ip::tcp::socket>> socket,
-                boost::asio::ip::tcp::socket::endpoint_type const& peer);
-
-    private:
-      void
-      _shutdown(const boost::system::error_code& error);
-
-      boost::asio::ip::tcp::socket&
-      asio_socket();
-
       friend class SSLServer;
-      friend class SSLAccept;
+
+      bool
+      _handshake();
+
+      void
+      _server_handshake();
 
     private:
       ELLE_ATTRIBUTE(SSLCertif, cert);
+      ELLE_ATTRIBUTE(Handshake_type, type);
     };
   }
 }

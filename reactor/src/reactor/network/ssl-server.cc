@@ -62,7 +62,8 @@ namespace reactor
           _socket = nullptr;
         }
 
-        _socket = new SSLSocket(scheduler(), _peer, _cert);
+        _socket = new SSLSocket(scheduler(), _peer, _cert,
+          SSLSocket::Handshake_type::server);
         _acceptor.async_accept(Spe::socket(*_socket->socket()), _peer,
                                boost::bind(&SSLAccept::_wakeup, this, _1));
       }
@@ -115,7 +116,7 @@ namespace reactor
       ELLE_ASSERT_NEQ(_acceptor, nullptr);
       SSLAccept accept(scheduler(), *_acceptor, _cert);
       accept.run();
-      accept.socket()->server_handshake();
+      accept.socket()->_server_handshake();
       return accept.socket();
     }
 

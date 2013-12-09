@@ -56,39 +56,49 @@ namespace reactor
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
                          SSLCertif& cert,
+                         Handshake_type type,
                          DurationOpt timeout):
       SSLSocket(*reactor::Scheduler::scheduler(),
-                hostname, port, cert, timeout)
+                hostname, port, cert, type, timeout)
     {}
 
     SSLSocket::SSLSocket(reactor::Scheduler& sched,
                          const std::string& hostname,
                          const std::string& port,
                          SSLCertif& cert,
+                         Handshake_type type,
                          DurationOpt timeout):
-      SSLSocket(sched, resolve_tcp(sched, hostname, port), cert, timeout)
-    {}
-
-    SSLSocket::SSLSocket(reactor::Scheduler& sched,
-                         boost::asio::ip::tcp::endpoint const& endpoint,
-                         SSLCertif& cert):
-      Super(sched,
-            elle::make_unique<boost::asio::ssl::stream<
-              boost::asio::ip::tcp::socket>>(sched.io_service(), *cert.ctx()),
-            endpoint),
-      _cert(cert)
+      SSLSocket(sched, resolve_tcp(sched, hostname, port), cert, type, timeout)
     {}
 
     SSLSocket::SSLSocket(reactor::Scheduler& sched,
                          boost::asio::ip::tcp::endpoint const& endpoint,
                          SSLCertif& cert,
+                         Handshake_type type,
                          DurationOpt timeout):
       Super(sched,
             elle::make_unique<boost::asio::ssl::stream<
               boost::asio::ip::tcp::socket>>(sched.io_service(), *cert.ctx()),
             endpoint, timeout),
       _cert(cert)
-    {}
+    {
+      if (type == Handshake_type::client)
+        _handshake();
+    }
+
+    SSLSocket::SSLSocket(reactor::Scheduler& sched,
+                         boost::asio::ip::tcp::endpoint const& endpoint,
+                         SSLCertif& cert,
+                         Handshake_type type):
+      Super(sched,
+            elle::make_unique<boost::asio::ssl::stream<
+              boost::asio::ip::tcp::socket>>(sched.io_service(), *cert.ctx()),
+            endpoint),
+      _cert(cert)
+    {
+      if (type == Handshake_type::client)
+        _handshake();
+    }
 
     SSLSocket::~SSLSocket()
     {}
@@ -143,7 +153,7 @@ namespace reactor
     };
 
     bool
-    SSLSocket::handshake()
+    SSLSocket::_handshake()
     {
       ELLE_DEBUG("start client handshake");
       SSLHandshake handshaker(scheduler(), *_socket,
@@ -172,7 +182,7 @@ namespace reactor
     }
 
     void
-    SSLSocket::server_handshake()
+    SSLSocket::_server_handshake()
     {
       ELLE_DEBUG("start server handshake");
       SSLHandshake handshaker(scheduler(), *_socket,
@@ -181,34 +191,5 @@ namespace reactor
       handshaker.run();
       ELLE_DEBUG("server handshake done");
     }
-
-    void
-    SSLSocket::_shutdown(const boost::system::error_code& error)
-    {
-      ELLE_DEBUG("failure to handshake: %s", error.message());
-
-      _socket->shutdown();
-
-      typedef SocketSpecialization<
-        boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> Spe;
-      boost::asio::ip::tcp::socket& sock(Spe::socket(*_socket));
-      sock.close();
-    }
-
-    boost::asio::ip::tcp::socket&
-    SSLSocket::asio_socket()
-    {
-      typedef SocketSpecialization<
-        boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> Spe;
-
-      return Spe::socket(*_socket);
-    }
-
-    SSLSocket::SSLSocket(Scheduler& sched,
-                         std::unique_ptr<boost::asio::ssl::stream<
-                          boost::asio::ip::tcp::socket>> socket,
-                         boost::asio::ip::tcp::socket::endpoint_type const& peer):
-      Super(sched, std::move(socket), peer)
-    {}
   }
 }
