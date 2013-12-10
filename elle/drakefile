@@ -47,6 +47,7 @@ def configure(zlib_lib,
   cxx_config += boost.config_chrono()
   cxx_config += zlib_config
   cxx_config.add_local_include_path('src/elle/json/json-spirit/include')
+  cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_11
