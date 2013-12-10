@@ -2,27 +2,23 @@
 # define BOOST_TEST_DYN_LINK
 #endif
 
-#define BOOST_TEST_MODULE SSL_Socket
+#include <elle/os/getenv.hh>
+#include <elle/test.hh>
 
-#include <reactor/scheduler.hh>
-#include <reactor/Scope.hh>
 #include <reactor/Barrier.hh>
-#include <reactor/thread.hh>
-#include <reactor/network/ssl-socket.hh>
+#include <reactor/Scope.hh>
 #include <reactor/network/ssl-server.hh>
-#include <boost/test/unit_test.hpp>
-
-#define OPENSSLFOLDER   "/home/manny/infinit-backup/elle/reactor/tests/reactor/certifs/"
-#define SERVCERT        OPENSSLFOLDER "server-cert.pem"
-#define SERVKEY         OPENSSLFOLDER "private/server-key.pem"
-#define DHFILE          OPENSSLFOLDER "dh1024.pem"
-#define CERTAUTH        OPENSSLFOLDER "cacert.pem"
+#include <reactor/network/ssl-socket.hh>
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 using reactor::network::SSLCertif;
 using reactor::network::SSLSocket;
 using reactor::network::SSLServer;
 
-BOOST_AUTO_TEST_CASE(basic)
+static
+void
+basics()
 {
   reactor::Scheduler sched;
   reactor::Barrier listening;
@@ -37,7 +33,12 @@ BOOST_AUTO_TEST_CASE(basic)
           "server",
           [&]
           {
-            SSLCertif certif(SERVCERT, SERVKEY, DHFILE);
+
+            auto root = boost::filesystem::path(elle::os::getenv("DIR_SOURCE"))
+              / test_binary.parent_path() / "certifs";
+            SSLCertif certif((root / "server-cert.pem").native(),
+                             (root / "private/server-key.pem").native(),
+                             (root / "dh1024.pem").native());
               reactor::network::SSLServer server(certif);
               server.listen(0);
               port = server.port();
@@ -70,4 +71,10 @@ BOOST_AUTO_TEST_CASE(basic)
       };
     });
   sched.run();
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(basics), 0, 3);
 }

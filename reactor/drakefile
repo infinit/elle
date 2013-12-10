@@ -275,11 +275,16 @@ def configure(curl_config,
                                 sources,
                                 cxx_toolkit, tests_config)
     rule_tests << test
+    env = {
+      'DIR_BUILD':  str(drake.path_build()),
+      'DIR_SOURCE': str(drake.path_source()),
+    }
     if valgrind is not None:
       runner = drake.valgrind.ValgrindRunner(exe = test,
-                                             valgrind = valgrind)
+                                             valgrind = valgrind,
+                                             env = env)
     else:
-      runner = drake.Runner(exe = test)
+      runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
