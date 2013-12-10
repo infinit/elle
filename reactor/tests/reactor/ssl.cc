@@ -58,7 +58,6 @@ BOOST_AUTO_TEST_CASE(basic)
             SSLCertif certif;
               reactor::wait(listening);
               reactor::network::SSLSocket socket("127.0.0.1", std::to_string(port), certif);
-              BOOST_CHECK(not socket.handshake());
               socket.write(std::string("lulz"));
               static char clientdata[5] = { 0 };
               socket.std::iostream::read(clientdata, 3);
