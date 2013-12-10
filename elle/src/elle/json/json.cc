@@ -1,12 +1,11 @@
-#include <elle/json/utils.hh>
-
-#include <elle/IOStream.hh>
-#include <elle/json/exceptions.hh>
-#include <elle/printf.hh>
-
 #include <json_spirit/reader.h>
 #include <json_spirit/value.h>
 #include <json_spirit/writer.h>
+
+#include <elle/IOStream.hh>
+#include <elle/json/exceptions.hh>
+#include <elle/json/json.hh>
+#include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.json");
 
@@ -100,7 +99,7 @@ namespace elle
     }
 
     Object
-    read_json(std::istream& stream)
+    read(std::istream& stream)
     {
       ELLE_DEBUG("read json from stream: %s", stream);
       elle::IOStreamClear clearer(stream);
@@ -114,8 +113,8 @@ namespace elle
     }
 
     void
-    write_json(std::ostream& stream,
-               boost::any const& any)
+    write(std::ostream& stream,
+          boost::any const& any)
     {
       ELLE_DEBUG("write json to stream: %s", stream);
       auto spirit = to_spirit(any);
@@ -126,7 +125,7 @@ namespace elle
     }
 
     std::string
-    pretty_print_json(boost::any const& any)
+    pretty_print(boost::any const& any)
     {
       auto spirit = to_spirit(any);
       return json_spirit::write_formatted(spirit);

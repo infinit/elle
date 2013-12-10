@@ -245,8 +245,8 @@ def configure(zlib_lib,
   sources += drake.nodes(
     'src/elle/json/exceptions.cc',
     'src/elle/json/exceptions.hh',
-    'src/elle/json/utils.cc',
-    'src/elle/json/utils.hh',
+    'src/elle/json/json.cc',
+    'src/elle/json/json.hh',
   )
 
   sources += drake.nodes(
