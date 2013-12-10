@@ -81,7 +81,7 @@ _test_suite();                                          \
 boost::unit_test::test_suite*                           \
 init_unit_test_suite(int, char**);                      \
 boost::unit_test::test_suite*                           \
-init_unit_test_suite(int, char**)                       \
+init_unit_test_suite(int ac, char** av)                 \
 {                                                       \
   test_binary = av[0];                                  \
   try                                                   \
