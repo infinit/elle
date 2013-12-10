@@ -3140,11 +3140,14 @@ class Runner(Builder):
          open(str(self.__status.path()), 'w') as rv:
       self.output(' '.join(self.command),
                   'Run %s' % self.__exe)
+      env = dict(_OS.environ)
+      if self.__env is not None:
+        env.update(self.__env)
       try:
         p = subprocess.Popen(self.command,
                              stdout = out,
                              stderr = err,
-                             env = self.__env)
+                             env = env)
         p.wait()
         status = p.returncode
         print(status, file = rv)
