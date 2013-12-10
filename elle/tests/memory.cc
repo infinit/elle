@@ -20,7 +20,7 @@ static
 void
 generic_unique_ptr()
 {
-  elle::generic_unique_ptr<int> empty();
+  elle::generic_unique_ptr<int> empty;
   elle::generic_unique_ptr<int> null(nullptr);
   elle::generic_unique_ptr<int> simple(new int);
   elle::generic_unique_ptr<int> array(new int[10],
