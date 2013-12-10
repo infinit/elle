@@ -30,9 +30,9 @@
 # endif
 # include <boost/test/unit_test.hpp>
 
-# if defined(BOOST_TEST_DYN_LINK)
-
 static std::string test_binary;
+
+# if defined(BOOST_TEST_DYN_LINK)
 
 #  define ELLE_TEST_SUITE()                             \
 static                                                  \
