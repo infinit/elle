@@ -1,7 +1,6 @@
-#ifndef BOOST_TEST_DYN_LINK
-# define BOOST_TEST_DYN_LINK
+#ifdef INFINIT_WINDOWS
+# include <winsock2.h>
 #endif
-
 #include <boost/filesystem.hpp>
 
 #include <elle/os/getenv.hh>
@@ -35,12 +34,13 @@ basics()
           "server",
           [&]
           {
-
-            auto root = boost::filesystem::path(elle::os::getenv("DIR_SOURCE"))
-              / boost::filesystem::path(test_binary).parent_path() / "certifs";
-            SSLCertif certif((root / "server-cert.pem").native(),
-                             (root / "private/server-key.pem").native(),
-                             (root / "dh1024.pem").native());
+            auto root = boost::filesystem::path(elle::os::getenv("DIR_SOURCE"));
+            root /= boost::filesystem::path(elle::os::getenv("DIR_BUILD"));
+            root /= "tests/reactor/certifs";
+            std::cerr << (root / "server-cert.pem").string() << std::endl;
+            SSLCertif certif((root / "server-cert.pem").string(),
+                             (root / "private/server-key.pem").string(),
+                             (root / "dh1024.pem").string());
               reactor::network::SSLServer server(certif);
               server.listen(0);
               port = server.port();
