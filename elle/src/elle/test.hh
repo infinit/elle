@@ -19,6 +19,8 @@
 /// }}}
 ///
 
+# include <boost/filesystem.hpp>
+
 # include <elle/Exception.hh>
 
 # ifdef ELLE_TEST_MODULE
@@ -31,6 +33,8 @@
 # include <boost/test/unit_test.hpp>
 
 # if defined(BOOST_TEST_DYN_LINK)
+
+static boost::filesystem::path test_binary;
 
 #  define ELLE_TEST_SUITE()                             \
 static                                                  \
@@ -57,6 +61,7 @@ init_unit_test_suite()                                  \
 int                                                     \
 main(int ac, char** av)                                 \
 {                                                       \
+  test_binary = av[0];                                  \
   return ::boost::unit_test::unit_test_main(            \
     &init_unit_test_suite, ac, av);                     \
 }                                                       \
@@ -78,6 +83,7 @@ init_unit_test_suite(int, char**);                      \
 boost::unit_test::test_suite*                           \
 init_unit_test_suite(int, char**)                       \
 {                                                       \
+  test_binary = av[0];                                  \
   try                                                   \
   {                                                     \
     _test_suite();                                      \
