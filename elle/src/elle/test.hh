@@ -19,8 +19,6 @@
 /// }}}
 ///
 
-# include <boost/filesystem.hpp>
-
 # include <elle/Exception.hh>
 
 # ifdef ELLE_TEST_MODULE
@@ -34,7 +32,7 @@
 
 # if defined(BOOST_TEST_DYN_LINK)
 
-static boost::filesystem::path test_binary;
+static std::string test_binary;
 
 #  define ELLE_TEST_SUITE()                             \
 static                                                  \

@@ -2,6 +2,8 @@
 # define BOOST_TEST_DYN_LINK
 #endif
 
+#include <boost/filesystem.hpp>
+
 #include <elle/os/getenv.hh>
 #include <elle/test.hh>
 
@@ -35,7 +37,7 @@ basics()
           {
 
             auto root = boost::filesystem::path(elle::os::getenv("DIR_SOURCE"))
-              / test_binary.parent_path() / "certifs";
+              / boost::filesystem::path(test_binary).parent_path() / "certifs";
             SSLCertif certif((root / "server-cert.pem").native(),
                              (root / "private/server-key.pem").native(),
                              (root / "dh1024.pem").native());
