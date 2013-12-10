@@ -1,3 +1,4 @@
+#include <boost/asio/ssl.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -20,6 +21,35 @@ namespace reactor
 {
   namespace network
   {
+    template <typename Socket_>
+    struct SocketSpecialization
+    {
+      typedef Socket_ Socket;
+      typedef Socket_ Stream;
+
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s;
+      }
+    };
+
+    template <>
+    struct SocketSpecialization<
+      boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>
+    {
+      typedef boost::asio::ip::tcp::socket Socket;
+      typedef boost::asio::ssl::stream<Socket> Stream;
+
+      static
+      Socket&
+      socket(Stream& s)
+      {
+        return s.next_layer();
+      }
+    };
+
     size_t const Socket::buffer_size = 1 << 16;
 
     namespace

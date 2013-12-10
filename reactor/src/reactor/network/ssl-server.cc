@@ -53,9 +53,6 @@ namespace reactor
 
       virtual void _start()
       {
-        typedef SocketSpecialization<
-          boost::asio::ssl::stream<boost::asio::ip::tcp::socket>> Spe;
-
         if (_socket != nullptr)
         {
           delete _socket;
@@ -64,7 +61,7 @@ namespace reactor
 
         _socket = new SSLSocket(scheduler(), _peer, _cert,
           SSLSocket::Handshake_type::server);
-        _acceptor.async_accept(Spe::socket(*_socket->socket()), _peer,
+        _acceptor.async_accept(_socket->socket()->next_layer(), _peer,
                                boost::bind(&SSLAccept::_wakeup, this, _1));
       }
 
