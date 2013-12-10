@@ -27,9 +27,12 @@
 
 #include "path_error.h"
 
-// comment out the value types you don't need to reduce build times and intermediate file sizes
-#define JSON_SPIRIT_VALUE_ENABLED
-#define JSON_SPIRIT_WVALUE_ENABLED
+#if !defined(JSON_SPIRIT_VALUE_DISABLED) && !defined(JSON_SPIRIT_VALUE_ENABLED)
+# define JSON_SPIRIT_VALUE_ENABLED
+#endif
+#if !defined(JSON_SPIRIT_WVALUE_DISABLED) && !defined(JSON_SPIRIT_WVALUE_ENABLED)
+# define JSON_SPIRIT_WVALUE_ENABLED
+#endif
 
 namespace json_spirit {
 
