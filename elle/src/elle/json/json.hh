@@ -16,7 +16,7 @@ namespace elle
     class NullType
     {};
 
-    Object
+    boost::any
     read(std::istream& stream);
 
     void

@@ -98,7 +98,7 @@ namespace elle
       ELLE_ABORT("unable to make JSON from type: %s", any.type().name());
     }
 
-    Object
+    boost::any
     read(std::istream& stream)
     {
       ELLE_DEBUG("read json from stream: %s", stream);
@@ -106,10 +106,8 @@ namespace elle
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
         throw ParserError(elle::sprintf("JSON error"));
-      auto res = from_spirit(value.getObject());
-      if (res.type() != typeid(Object))
-        throw ParserError("JSON is not an object");
-      return boost::any_cast<Object>(res);
+      auto res = from_spirit(value);
+      return res;
     }
 
     void
