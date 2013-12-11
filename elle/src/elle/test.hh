@@ -126,4 +126,27 @@ static                                                  \
 void                                                    \
 Name##_impl()                                           \
 
+#define ELLE_TEST_SCHEDULED_THROWS(Name, _exception_type_) \
+static                                                     \
+void                                                       \
+Name##_impl();                                             \
+                                                           \
+static                                                     \
+void                                                       \
+Name()                                                     \
+{                                                          \
+  reactor::Scheduler sched;                                \
+  reactor::Thread main(                                    \
+    sched, "main",                                         \
+    [&]                                                    \
+    {                                                      \
+      Name##_impl();                                       \
+    });                                                    \
+  BOOST_CHECK_THROW(sched.run(), _exception_type_);        \
+}                                                          \
+                                                           \
+static                                                     \
+void                                                       \
+Name##_impl()                                              \
+
 #endif
