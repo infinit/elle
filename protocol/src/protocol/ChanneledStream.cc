@@ -30,13 +30,15 @@ namespace infinit
         char his;
         {
           Packet p;
-          p << mine;
+          p.write(&mine, 1);
           backend.write(p);
           ELLE_DEBUG("%s: my roll: %d", *this, (int)mine);
         }
         {
           Packet p(backend.read());
-          p >> his;
+          ELLE_ASSERT(p.good());
+          p.read(&his, 1);
+          ELLE_ASSERT(p.good());
           ELLE_DEBUG("%s: his roll: %d", *this, (int)his);
         }
         if (mine != his)
