@@ -290,7 +290,8 @@ def configure(curl_config,
 
   # Install
   rule_install = drake.Rule('install')
-  rule_install << drake.install(lib_dynamic, prefix)
+  if cxx_toolkit.os != drake.os.windows:
+    rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
   rule_install << drake.install(
     list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
