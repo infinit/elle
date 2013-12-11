@@ -58,7 +58,7 @@ count()
   ++global_counter;
   // This gives 100ms to the rpc to "synchronize".
   reactor::Scheduler::scheduler()->current()->sleep(
-    boost::posix_time::milliseconds(100));
+    boost::posix_time::milliseconds(1000));
   return global_counter;
 }
 
