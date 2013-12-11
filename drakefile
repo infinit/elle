@@ -11,7 +11,6 @@ elle = None
 cryptography = None
 protocol = None
 reactor = None
-curly = None
 asio_udt = None
 rule_check = None
 rule_tests = None
@@ -44,7 +43,6 @@ def configure(cxx_toolkit = None,
   global protocol
   global reactor
   global asio_udt
-  global curly
 
   global curl_config, curl_lib
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
@@ -439,18 +437,6 @@ def configure(cxx_toolkit = None,
     prefix = prefix,
     valgrind = valgrind,
   )
-  curly = drake.include(
-    'curly',
-    curl_config = curl_config,
-    curl_lib = curl_lib,
-    cxx_toolkit = cxx_toolkit,
-    cxx_config = cxx_config,
-    boost = boost,
-    elle = elle,
-    reactor = reactor,
-    prefix = prefix,
-    valgrind = valgrind,
-  )
   protocol = drake.include(
     'protocol',
     cxx_toolkit = cxx_toolkit,
@@ -465,7 +451,6 @@ def configure(cxx_toolkit = None,
 
   config = drake.cxx.Config()
   config += cryptography.config
-  config += curly.config
   config += elle.config
   config += protocol.config
   config += reactor.config
@@ -476,7 +461,6 @@ def configure(cxx_toolkit = None,
   build << elle.rule_build
   build << cryptography.rule_build
   build << reactor.rule_build
-  build << curly.rule_build
   build << protocol.rule_build
 
   global rule_tests
@@ -484,7 +468,6 @@ def configure(cxx_toolkit = None,
   rule_tests << elle.rule_tests
   rule_tests << cryptography.rule_tests
   rule_tests << reactor.rule_tests
-  rule_tests << curly.rule_tests
   rule_tests << protocol.rule_tests
 
   global rule_check
@@ -492,12 +475,10 @@ def configure(cxx_toolkit = None,
   rule_check << elle.rule_check
   rule_check << cryptography.rule_check
   rule_check << reactor.rule_check
-  rule_check << curly.rule_check
   rule_check << protocol.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
   install << cryptography.rule_install
   install << reactor.rule_install
-  install << curly.rule_install
   install << protocol.rule_install
