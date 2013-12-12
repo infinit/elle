@@ -150,6 +150,15 @@ namespace reactor
       _exception_thrown = std::make_exception_ptr(PythonException());
     }
 #endif
+    catch (elle::Exception const& e)
+    {
+      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string())
+      {
+        ELLE_DUMP("exception type: %s", elle::demangle(typeid(e).name()));
+        ELLE_DUMP("backtrace:\n%s", e.backtrace());
+      }
+      _exception_thrown = std::current_exception();
+    }
     catch (...)
     {
       ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string());
