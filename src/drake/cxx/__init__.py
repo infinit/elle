@@ -671,6 +671,11 @@ class GccToolkit(Toolkit):
             ['ranlib', lib])
 
   def __libraries_flags(self, cfg, libraries, cmd):
+    for lib in libraries:
+      if isinstance(lib, (StaticLib, DynLib)):
+        cmd.append(lib.path())
+      else:
+        raise Exception("cannot link an object of type %s" % type(lib))
     for lib in cfg.libraries:
       cmd.append(lib.path())
     if self.__recursive_linkage:
@@ -699,11 +704,6 @@ class GccToolkit(Toolkit):
                 break
           if not found:
             raise Exception('can\'t find static version of %s' % lib)
-    for lib in libraries:
-      if isinstance(lib, (StaticLib, DynLib)):
-        cmd.append(lib.path())
-      else:
-        raise Exception("cannot link an object of type %s" % type(lib))
     if self.__recursive_linkage:
       cmd.append('-Wl,-)')
 
