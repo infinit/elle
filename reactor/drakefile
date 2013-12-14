@@ -73,7 +73,7 @@ def configure(curl_config,
 
   # OpenSSL (for SSL sockets)
   local_cxx_config += openssl_config
-  openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
+  openssl_libs = drake.copy([openssl_lib_ssl, openssl_lib_crypto],
                             'lib', strip_prefix = True)
 
 
@@ -216,8 +216,8 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
   sub_libraries = [
-    elle_lib,
     curl_lib,
+    elle_lib,
     libcoroutine] + openssl_libs
   lib_static = drake.cxx.StaticLib('lib/reactor',
                                    sources + sub_libraries,
