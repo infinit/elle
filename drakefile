@@ -48,6 +48,8 @@ def configure(cxx_toolkit = None,
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
 
+  config = drake.cxx.Config()
+
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   boost = boost or drake.cxx.boost.Boost(cxx_toolkit = cxx_toolkit)
@@ -371,10 +373,13 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.linux:
+    config.define('INFINIT_LINUX')
     cxx_config.define('INFINIT_LINUX')
   elif cxx_toolkit.os == drake.os.macos:
+    config.define('INFINIT_MACOSX')
     cxx_config.define('INFINIT_MACOSX')
   elif cxx_toolkit.os == drake.os.windows:
+    config.define('INFINIT_WINDOWS')
     cxx_config.define('INFINIT_WINDOWS')
     cxx_config.define('BOOST_USE_WINDOWS_H')
     cxx_config.lib('shlwapi')
@@ -449,7 +454,6 @@ def configure(cxx_toolkit = None,
     valgrind = valgrind,
   )
 
-  config = drake.cxx.Config()
   config += cryptography.config
   config += elle.config
   config += protocol.config
