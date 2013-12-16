@@ -1412,6 +1412,9 @@ class StaticLib(Library):
       StaticLibLinker(self.sources, self, self.tk, self.cfg)
 
 
+Node.extensions['a'] = StaticLib
+
+
 class Executable(Binary):
 
   def __init__(self, path, sources = None, tk = None, cfg = None):
