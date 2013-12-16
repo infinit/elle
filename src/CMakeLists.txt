@@ -14,16 +14,16 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_resolve.cpp
   )
 if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
-  add_library(cppnetlib-uri ${Uri_SRCS})
-  target_link_libraries(cppnetlib-uri ${Boost_LIBRARIES})
+  add_library(network-uri ${Uri_SRCS})
+  target_link_libraries(network-uri ${Boost_LIBRARIES})
   if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
     if (NOT CPP-NETLIB_DISABLE_LIBCXX)
-      target_link_libraries(cppnetlib-uri "c++")
+      target_link_libraries(network-uri "c++")
     endif()
   endif()
   install(
     TARGETS
-    cppnetlib-uri
+    network-uri
     DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
     )
 

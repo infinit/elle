@@ -7,12 +7,19 @@
 #ifndef NETWORK_URI_ERRORS_INC
 #define NETWORK_URI_ERRORS_INC
 
+/**
+ * \file
+ * \brief Contains functions and exceptions for URI error handling.
+ */
+
 #include <system_error>
 #include <network/uri/config.hpp>
 
 namespace network {
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   enum class uri_error {
+
     // parser errors
     invalid_syntax = 1,
 
@@ -35,10 +42,12 @@ namespace network {
   const std::error_category &uri_category();
 
   std::error_code make_error_code(uri_error e);
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   /**
    * \class uri_syntax_error uri.hpp network/uri.hpp
-   * \brief An exception thrown when a URI cannot be parsed.
+   * \brief An exception thrown by the \c uri constructor when a URI
+   *        cannot be parsed.
    */
   class uri_syntax_error : public std::system_error {
 

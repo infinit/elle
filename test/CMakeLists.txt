@@ -17,17 +17,11 @@ set(
   uri_builder_test
   uri_stream_test
   )
-if(CPP-NETLIB_BUILD_SINGLE_LIB)
-  set(link_cppnetlib_lib cppnetlib)
-  set(dependencies cppnetlib)
-else()
-  set(link_cppnetlib_lib cppnetlib-uri)
-  set(dependencies cppnetlib-uri)
-endif()
+
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
-  add_dependencies(${test} ${dependencies})
-  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${link_cppnetlib_lib})
+  add_dependencies(${test} network-uri)
+  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} network-uri)
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()
