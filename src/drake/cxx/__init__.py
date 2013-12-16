@@ -9,6 +9,7 @@
 import collections
 import drake
 import io
+import itertools
 import os
 import os.path
 import re
@@ -647,24 +648,27 @@ class GccToolkit(Toolkit):
     # FIXME: ;
     commands = []
     objects = []
-    for o in objs:
-      if isinstance(o, StaticLib):
-        path = os.path.abspath(str(o.path()))
-        try:
-          # print('%s: %s' % (lib, o))
-          for line in subprocess.check_output(
-            ['ar', 'xv', path],
-            cwd = str(builder.path_tmp)).decode().split('\n'):
-            if line == '':
-              continue
-            assert line.startswith('x - ')
-            line = line[4:]
-            objects.append(builder.path_tmp / line)
-          # print('%s:   alrighty' % lib)
-        except subprocess.CalledProcessError as e:
-          raise Exception('unable to extract %s: %s' % (o, e))
-      else:
-        objects.append(o.path())
+    libs = (l for l in cfg.libraries if isinstance(l, StaticLib))
+    sources = (l for l in objs if isinstance(l, StaticLib))
+
+    for o in itertools.chain(libs, sources):
+      print('extract %s' % o)
+      path = os.path.abspath(str(o.path()))
+      try:
+        for line in subprocess.check_output(
+          ['ar', 'xv', path],
+          cwd = str(builder.path_tmp)).decode().split('\n'):
+          if line == '':
+            continue
+          print(line)
+          assert line.startswith('x - ')
+          line = line[4:]
+          objects.append(builder.path_tmp / line)
+        # print('%s:   alrighty' % lib)
+      except subprocess.CalledProcessError as e:
+        raise Exception('unable to extract %s: %s' % (o, e))
+    for o in (o for o in objs if not isinstance(o, StaticLib)):
+      objects.append(o.path())
     lib = str(lib.path())
     return (['ar', 'crs', lib] +
             list(map(lambda n: str(n), objects)),
