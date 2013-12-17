@@ -1,6 +1,6 @@
 #include "getenv.hh"
 
-#include <elle/Exception.hh>
+#include <elle/os/exceptions.hh>
 
 #include <cstdlib>
 
@@ -8,16 +8,6 @@ namespace elle
 {
   namespace os
   {
-
-    class KeyError:
-      public elle::Exception
-    {
-    public:
-      KeyError(std::string const& key):
-        elle::Exception("KeyError '" + key + "'")
-      {}
-    };
-
     std::string getenv(std::string const& key)
     {
       char const* val = ::getenv(key.c_str());
