@@ -652,7 +652,6 @@ class GccToolkit(Toolkit):
     sources = (l for l in objs if isinstance(l, StaticLib))
 
     for o in itertools.chain(libs, sources):
-      print('extract %s' % o)
       path = os.path.abspath(str(o.path()))
       try:
         for line in subprocess.check_output(
@@ -660,11 +659,9 @@ class GccToolkit(Toolkit):
           cwd = str(builder.path_tmp)).decode().split('\n'):
           if line == '':
             continue
-          print(line)
           assert line.startswith('x - ')
           line = line[4:]
           objects.append(builder.path_tmp / line)
-        # print('%s:   alrighty' % lib)
       except subprocess.CalledProcessError as e:
         raise Exception('unable to extract %s: %s' % (o, e))
     for o in (o for o in objs if not isinstance(o, StaticLib)):
