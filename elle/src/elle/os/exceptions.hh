@@ -1,7 +1,7 @@
 #ifndef ELLE_OS_EXCEPTIONS_HH
 # define ELLE_OS_EXCEPTIONS_HH
 
-# include <elle/exception.hh>
+# include <elle/Exception.hh>
 
 namespace elle
 {
