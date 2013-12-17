@@ -89,52 +89,48 @@ namespace json_spirit {
         BasicValue( unsigned int value );
         BasicValue( long value );
         BasicValue( unsigned long value );
-        // NOTE: We do not provide long long and unsigned long long
-        // overrides here. They are only valid in C++ as of C++11 (and
-        // C as of C99). We provide int64/uint64 overrides if they are
-        // available with the size specified in the type because it is
-        // the only safe way to get the correct value out since JSON
-        // integers can be that large (although some implementations
-        // will only provide 48-bit).
-        //
-        // If you get a type error relating to long longs, then either
-        // a) the issue is with the #defines below that determine
-        // whether to include the int64_t overrides or b) long and
-        // long long are both 64-bit on your platform and you should
-        // be able to cast to get the right behavior.
 
+#if __cplusplus == 201103L
+#  define JSON_SPIRIT_USE_LONG_LONG
+#else
 // Handling 64-bit is tricky, this is similar to the rules for 64-bit typedefs
 // in boost's cstdint.
-#ifdef BOOST_HAS_STDINT_H
-#  // Apparently different platforms seem to disagree on whether the 64-bit type
-#  // is the same as long...
-#  if JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_LINUX
-#    // If we have 64-bit longs then we don't need to do anything since long == int64_t
-#    if ULONG_MAX != 0xffffffff
-#      if ULONG_MAX == 18446744073709551615U // 2**64 - 1
-#        // Do nothing
-#      else
+#  ifdef BOOST_HAS_STDINT_H
+#    // Apparently different platforms seem to disagree on whether the 64-bit type
+#    // is the same as long...
+#    if JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_LINUX
+#      // If we have 64-bit longs then we don't need to do anything since long == int64_t
+#      if ULONG_MAX != 0xffffffff
+#        if ULONG_MAX == 18446744073709551615U // 2**64 - 1
+#          // Do nothing
+#        else
+#          define JSON_SPIRIT_USE_BOOST_INT64
+#        endif
+#      else // probably long long, unclear based on the stdint.h code
 #        define JSON_SPIRIT_USE_BOOST_INT64
 #      endif
-#    else // probably long long, unclear based on the stdint.h code
+#    elif JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_MAC
+#      // Mac seems to not make the int64_t equivalent, even with 64-bit
+#      define JSON_SPIRIT_USE_BOOST_INT64
+#    else // Hope this is right?
 #      define JSON_SPIRIT_USE_BOOST_INT64
 #    endif
-#  elif JSON_SPIRIT_PLATFORM == JSON_SPIRIT_PLATFORM_MAC
-#    // Mac seems to not make the int64_t equivalent, even with 64-bit
-#    define JSON_SPIRIT_USE_BOOST_INT64
-#  else // Hope this is right?
-#    define JSON_SPIRIT_USE_BOOST_INT64
-#  endif
-#else
-# if ULONG_MAX != 0xffffffff
-#    if ULONG_MAX == 18446744073709551615U // 2**64 - 1
-#      // Nothing to do here: long is 64-bit, so we've already got 64-bit coverage.
+#  else
+#    if ULONG_MAX != 0xffffffff
+#       if ULONG_MAX == 18446744073709551615U // 2**64 - 1
+#         // Nothing to do here: long is 64-bit, so we've already got 64-bit coverage.
+#       else
+#          error unsupported sizeof(long); you must modify json_spirit/json.h
+#       endif
 #    else
-#       error unsupported sizeof(long); you must modify json_spirit/json.h
+#      define JSON_SPIRIT_USE_BOOST_INT64
 #    endif
-# else
-#   define JSON_SPIRIT_USE_BOOST_INT64
-# endif
+#  endif
+#endif
+
+#if defined(JSON_SPIRIT_USE_LONG_LONG)
+        BasicValue( long long value );
+        BasicValue( unsigned long long value );
 #endif
 
 #if defined(JSON_SPIRIT_USE_BOOST_INT64)
@@ -524,6 +520,20 @@ namespace json_spirit {
     :   v_( static_cast< boost::uint64_t >( value ) )
     {
     }
+
+#if defined(JSON_SPIRIT_USE_LONG_LONG)
+    template< class Config >
+    BasicValue< Config >::BasicValue( long long value )
+    :   v_( static_cast< boost::int64_t >( value ) )
+    {
+    }
+
+    template< class Config >
+    BasicValue< Config >::BasicValue( unsigned long long value )
+    :   v_( static_cast< boost::uint64_t >( value ) )
+    {
+    }
+#endif
 
 #if defined(JSON_SPIRIT_USE_BOOST_INT64)
     template< class Config >
