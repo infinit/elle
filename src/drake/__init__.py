@@ -252,7 +252,7 @@ class ProfileInstance:
         t = time.time() - self.__time
         self.__parent._Profile__time  += t
 
-
+_Exception = Exception
 class Exception(Exception):
     """Base type for any exception thrown within drake."""
     pass
@@ -1801,8 +1801,12 @@ class Builder:
                         for node in self.__dynsrc.values():
                             # FIXME: parallelize
                             node.build()
-
-                    if not self.execute():
+                    try:
+                      success = self.execute()
+                    except _Exception as e:
+                      print('%s: %s' % (self, e), file = sys.stderr)
+                      success = False
+                    if not success:
                       self.__executed = True
                       self.__executed_exception = \
                         Builder.Failed(self)
