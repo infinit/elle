@@ -24,11 +24,11 @@ if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
   install(
     TARGETS
     network-uri
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    DESTINATION lib
     )
 
   install(DIRECTORY network
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+    DESTINATION include
     )
 endif()
 
