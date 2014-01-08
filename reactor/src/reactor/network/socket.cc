@@ -290,7 +290,7 @@ namespace reactor
             ; // It's ok to try to disconnect a non-connected socket.
           else
           {
-            ELLE_TRACE("%s: disconnection error: %s ()",
+            ELLE_TRACE("%s: disconnection error: %s (%s)",
                        *this, error.message(), error);
             throw Exception(error.message());
           }
@@ -500,7 +500,7 @@ namespace reactor
           return size;
         }
         else if (size)
-          ELLE_TRACE("%s: read %s cached bytes, carrying on", *this);
+          ELLE_TRACE("%s: read %s cached bytes, carrying on", *this, size);
         buf = Buffer(buf.data() + size, buf.size() - size);
       }
       typedef SocketSpecialization<AsioSocket> Spe;
