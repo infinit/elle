@@ -1274,7 +1274,7 @@ class Object(Node):
         c = path.extension == 'c'
         path = path.without_last_extension()
         if len(path.extension):
-          path.with_extension('%s.%s' % (path.extension, tk.object_extension()))
+          path = path.with_extension('%s.%s' % (path.extension, tk.object_extension()))
         else:
           path = path.with_extension(tk.object_extension())
         Node.__init__(self, path)
