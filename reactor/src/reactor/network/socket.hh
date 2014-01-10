@@ -19,7 +19,8 @@ namespace reactor
     template <typename AsioSocket>
     class SocketOperation;
 
-    class Socket: public elle::IOStream
+    class Socket:
+      public elle::IOStream
     {
       /*---------.
       | Typedefs |
@@ -28,12 +29,11 @@ namespace reactor
         /// Self type.
         typedef Socket Self;
 
-    /*----------.
-    | Constants |
-    `----------*/
-    public:
-      static size_t const buffer_size;
-
+      /*----------.
+      | Constants |
+      `----------*/
+      public:
+        static size_t const buffer_size;
 
       /*-------------.
       | Construction |
@@ -54,24 +54,40 @@ namespace reactor
                const std::string& hostname,
                int port,
                DurationOpt connection_timeout);
-      protected:
         void
         _pacify_streambuffer();
+
+      /*-----------.
+      | Properties |
+      `-----------*/
+      public:
+        virtual
+        boost::asio::ip::tcp::endpoint
+        peer() const = 0;
+
+        virtual
+        boost::asio::ip::tcp::endpoint
+        local_endpoint() const = 0;
 
       /*------.
       | Write |
       `------*/
       public:
-        virtual void write(elle::ConstWeakBuffer buffer) = 0;
+        virtual
+        void
+        write(elle::ConstWeakBuffer buffer) = 0;
 
       /*-----.
       | Read |
       `-----*/
       public:
-        virtual void read(Buffer buffer,
-                          DurationOpt timeout = DurationOpt());
-        virtual Size read_some(Buffer buffer,
-                               DurationOpt timeout = DurationOpt()) = 0;
+        virtual
+        void
+        read(Buffer buffer, DurationOpt timeout = DurationOpt());
+
+        virtual
+        Size
+        read_some(Buffer buffer, DurationOpt timeout = DurationOpt()) = 0;
 
       /*-----------.
       | Scheduling |
@@ -85,13 +101,16 @@ namespace reactor
      | Pretty printing |
      `----------------*/
       public:
-        virtual void print(std::ostream& s) const = 0;
+        virtual
+        void
+        print(std::ostream& s) const = 0;
     };
     std::ostream& operator << (std::ostream& s, const Socket& socket);
 
     template <typename AsioSocket_,
               typename EndPoint_ = typename AsioSocket_::endpoint_type>
-    class PlainSocket: public Socket
+    class PlainSocket:
+      public Socket
     {
     /*---------.
     | Typedefs |
@@ -126,7 +145,8 @@ namespace reactor
     | Connection |
     `-----------*/
     public:
-      void close();
+      void
+      close();
     private:
       void
       _connect(EndPoint const& peer, DurationOpt timeout);
@@ -137,25 +157,29 @@ namespace reactor
     | Properties |
     `-----------*/
     public:
-      EndPoint peer() const;
-      EndPoint local_endpoint() const;
+      EndPoint
+      peer() const;
+
+      EndPoint
+      local_endpoint() const;
 
     /*----------------.
     | Pretty printing |
     `----------------*/
     public:
-      virtual void print(std::ostream& s) const;
+      virtual
+      void
+      print(std::ostream& s) const;
 
     /*------------.
     | Asio socket |
     `------------*/
     protected:
+      friend class FingerprintedSocket;
       friend class SSLSocket;
       friend class SSLServer;
       friend class TCPServer;
       friend class TCPSocket;
-      friend class UDPServer;
-      friend class UDPSocket;
       template <typename AsioSocket>
       friend class SocketOperation;
       ELLE_ATTRIBUTE_R(std::unique_ptr<AsioSocket>, socket);
@@ -204,26 +228,30 @@ namespace reactor
     public:
       virtual
       void
-      read(Buffer buffer,
-           DurationOpt timeout = DurationOpt());
+      read(Buffer buffer, DurationOpt timeout = DurationOpt());
+
       virtual
       Size
-      read_some(Buffer buffer,
-                DurationOpt timeout = DurationOpt());
+      read_some(Buffer buffer, DurationOpt timeout = DurationOpt());
+
       elle::Buffer
-      read_until(std::string const& delimiter,
-                 DurationOpt opt = DurationOpt());
+      read_until(std::string const& delimiter, DurationOpt opt = DurationOpt());
+
     private:
-      virtual Size _read(Buffer buffer,
-                         DurationOpt timeout,
-                         bool some);
+      virtual
+      Size
+      _read(Buffer buffer, DurationOpt timeout, bool some);
+
       ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 
     /*------.
     | Write |
     `------*/
     public:
-      virtual void write(elle::ConstWeakBuffer buffer);
+      virtual
+      void
+      write(elle::ConstWeakBuffer buffer);
+
     private:
       Mutex _write_mutex;
 
@@ -233,8 +261,8 @@ namespace reactor
     protected:
       friend class TCPServer;
       friend class TCPSocket;
-      friend class UDPServer;
-      friend class UDPSocket;
+      // friend class UDPServer;
+      // friend class UDPSocket;
     };
   }
 }

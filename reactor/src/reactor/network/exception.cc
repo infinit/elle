@@ -20,6 +20,13 @@ namespace reactor
       _host(host)
     {}
 
+    SSLCertificateError::SSLCertificateError(std::string const& message):
+      Super(elle::sprintf("SSL certificate error: %s", message))
+    {}
+
+    SSLHandshakeError::SSLHandshakeError(std::string const& message):
+      Super(elle::sprintf("SSL handshake error: %s", message))
+    {}
 
     TimeOut::TimeOut():
       Super("network operation timed out")

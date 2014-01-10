@@ -10,12 +10,24 @@
 #include <reactor/Scope.hh>
 #include <reactor/network/ssl-server.hh>
 #include <reactor/network/ssl-socket.hh>
+#include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-using reactor::network::SSLCertif;
+ELLE_LOG_COMPONENT("reactor.network.SSL.test");
+
+using reactor::network::FingerprintedSocket;
+using reactor::network::SSLCertificate;
 using reactor::network::SSLSocket;
 using reactor::network::SSLServer;
+
+// Local fingerprint in sha1.
+
+static const std::vector<unsigned char> fingerprint =
+{
+  0x66, 0x84, 0x68, 0xEB, 0xBE, 0x83, 0xA0, 0x5C, 0x6A, 0x32,
+  0xAD, 0xD2, 0x58, 0x62, 0x01, 0x31, 0x79, 0x96, 0x78, 0xB8
+};
 
 static
 void
@@ -38,36 +50,42 @@ basics()
             root /= boost::filesystem::path(elle::os::getenv("DIR_BUILD"));
             root /= "tests/reactor/certifs";
             std::cerr << (root / "server-cert.pem").string() << std::endl;
-            SSLCertif certif((root / "server-cert.pem").string(),
-                             (root / "private/server-key.pem").string(),
-                             (root / "dh1024.pem").string());
-              reactor::network::SSLServer server(certif);
-              server.listen(0);
-              port = server.port();
-              listening.open();
-              std::unique_ptr<reactor::network::SSLSocket> socket(
-                server.accept());
-              static char servdata[5] = { 0 };
-              socket->std::iostream::read(servdata, 4);
-              BOOST_CHECK(std::string(servdata) == std::string("lulz"));
-              socket->write(std::string("lol"));
-              socket->write(std::string("lulz"));
-            certif.release();
+            SSLCertificate certificate(
+              (root / "server-cert.pem").string(),
+              (root / "private/server-key.pem").string(),
+              (root / "dh1024.pem").string());
+            ELLE_DEBUG("./read certificate from disk");
+            SSLServer server(certificate);
+            server.listen(0);
+            port = server.port();
+            listening.open();
+            std::unique_ptr<SSLSocket> socket(server.accept());
+            static char servdata[5] = { 0 };
+            socket->std::iostream::read(servdata, 4);
+            BOOST_CHECK(std::string(servdata) == std::string("lulz"));
+            socket->write(std::string("lol"));
+            socket->write(std::string("lulz"));
           });
         scope.run_background(
           "client",
           [&]
           {
-            SSLCertif certif;
-              reactor::wait(listening);
-              reactor::network::SSLSocket socket("127.0.0.1", std::to_string(port), certif);
-              socket.write(std::string("lulz"));
-              static char clientdata[5] = { 0 };
-              socket.std::iostream::read(clientdata, 3);
-              BOOST_CHECK(std::string(clientdata) == std::string("lol"));
-              socket.std::iostream::read(clientdata, 4);
-              BOOST_CHECK(std::string(clientdata) == std::string("lulz"));
-            certif.release();
+            SSLCertificate certificate;
+            reactor::wait(listening);
+            auto endpoint = reactor::network::resolve_tcp(
+              *reactor::Scheduler::scheduler(),
+              "127.0.0.1",
+              boost::lexical_cast<std::string>(port));
+            FingerprintedSocket socket(*reactor::Scheduler::scheduler(),
+                                       endpoint,
+                                       certificate,
+                                       fingerprint);
+            socket.write(std::string("lulz"));
+            static char clientdata[5] = { 0 };
+            socket.std::iostream::read(clientdata, 3);
+            BOOST_CHECK(std::string(clientdata) == std::string("lol"));
+            socket.std::iostream::read(clientdata, 4);
+            BOOST_CHECK(std::string(clientdata) == std::string("lulz"));
           });
         reactor::wait(scope);
       };

@@ -6,6 +6,8 @@
 # include <reactor/asio.hh>
 # include <reactor/network/fwd.hh>
 # include <reactor/network/Protocol.hh>
+# include <reactor/network/tcp-socket.hh>
+# include <reactor/scheduler.hh>
 
 namespace reactor
 {
@@ -18,6 +20,8 @@ namespace reactor
       `---------*/
       public:
         typedef Server Self;
+        typedef boost::asio::ip::tcp::acceptor TCPAcceptor;
+        typedef boost::asio::ip::tcp::endpoint EndPoint;
 
       /*-------------.
       | Construction |
@@ -26,32 +30,37 @@ namespace reactor
         /** Create a server.
          *  @param sched The underlying scheduler.
          */
-        Server(Scheduler& sched);
-        virtual ~Server();
-        /** Create a server for the given protocol.
-         *  @param protocol The transport protocl to use.
-         *  @param sched The underlying scheduler.
-         */
-        static
-        std::unique_ptr<Server>
-        create(Protocol protocol, Scheduler& sched);
+        Server();
+        Server(Scheduler& scheduler);
+
+        virtual
+        ~Server();
 
       /*----------.
       | Accepting |
       `----------*/
       public:
-        virtual void listen(int port) = 0;
-        virtual Socket* accept() = 0;
-        virtual void accept(std::string const& addr, int port);
-        virtual int port() const = 0;
+        void
+        listen(const EndPoint& end_point);
 
-      /*-----------.
-      | Scheduling |
-      `-----------*/
-      public:
-        Scheduler& scheduler();
+        void
+        listen(int port = 0);
+
+        EndPoint
+        local_endpoint() const;
+
+        int
+        port() const;
+
+      protected:
+        void
+        _accept(TCPSocket::AsioSocket& socket, EndPoint& peer);
+
+      protected:
+        Scheduler& _scheduler;
+
       private:
-        Scheduler& _sched;
+        ELLE_ATTRIBUTE_X(std::unique_ptr<TCPAcceptor>, acceptor);
     };
 
     template <typename Socket>
@@ -59,7 +68,6 @@ namespace reactor
     {
       public:
         typedef typename Socket::AsioSocket AsioSocket;
-        typedef typename Socket::EndPoint EndPoint;
     };
   }
 }

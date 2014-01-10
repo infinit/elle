@@ -2,43 +2,35 @@
 # define INFINIT_REACTOR_NETWORK_TCP_SERVER_HH
 
 # include <reactor/network/server.hh>
-# include <reactor/network/tcp-socket.hh>
+# include <reactor/scheduler.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class TCPServer: public Server, public ProtoServer<TCPSocket>
+    class TCPServer:
+      public Server,
+      public ProtoServer<TCPSocket>
     {
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
         typedef Server Super;
         TCPServer();
-        TCPServer(Scheduler& sched);
-        virtual ~TCPServer();
+        TCPServer(Scheduler& scheduler);
 
-      /*----------.
-      | Listening |
-      `----------*/
-      public:
-        void listen(int port = 0);
-        void listen(const EndPoint& end_point);
-
-      public:
-        /// The locally bound port.
-        virtual int port() const;
-        /// The locally bound endpoint.
-        EndPoint local_endpoint() const;
+        virtual
+        ~TCPServer();
 
       /*----------.
       | Accepting |
       `----------*/
       public:
-        TCPSocket* accept();
-
-      private:
-        std::unique_ptr<boost::asio::ip::tcp::acceptor> _acceptor;
+        TCPSocket*
+        accept();
     };
   }
 }
 
-#endif
+#endif // INFINIT_REACTOR_NETWORK_TCP_SERVER_HH

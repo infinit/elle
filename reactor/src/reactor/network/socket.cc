@@ -740,8 +740,8 @@ namespace reactor
     class StreamSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
                        boost::asio::ip::tcp::socket::endpoint_type>;
     // UDP
-    template
-    class PlainSocket<boost::asio::ip::udp::socket>;
+    // template
+    // class PlainSocket<boost::asio::ip::udp::socket>;
     // UDT
     // template
     // class PlainSocket<boost::asio::ip::udt::socket>;

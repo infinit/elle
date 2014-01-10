@@ -9,7 +9,8 @@ namespace reactor
 {
   namespace network
   {
-    class Exception: public reactor::Exception
+    class Exception:
+      public reactor::Exception
     {
     public:
       typedef reactor::Exception Super;
@@ -24,7 +25,7 @@ namespace reactor
     };
 
     class ResolutionError:
-        public Exception
+      public Exception
     {
     public:
       typedef Exception Super;
@@ -33,6 +34,22 @@ namespace reactor
 
     private:
       ELLE_ATTRIBUTE_R(std::string, host);
+    };
+
+    class SSLCertificateError:
+      public Exception
+    {
+    public:
+      typedef Exception Super;
+      SSLCertificateError(std::string const& message);
+    };
+
+    class SSLHandshakeError:
+      public Exception
+    {
+    public:
+      typedef Exception Super;
+      SSLHandshakeError(std::string const& message);
     };
 
     class TimeOut: public Exception

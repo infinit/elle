@@ -62,8 +62,8 @@ namespace reactor
 
     TCPSocket::TCPSocket(Scheduler& sched,
                          std::unique_ptr<AsioSocket> socket,
-                         AsioSocket::endpoint_type const& peer):
-      Super(sched, std::move(socket), peer)
+                         AsioSocket::endpoint_type const& endpoint):
+      Super(sched, std::move(socket), endpoint)
     {}
 
     /*----------------.

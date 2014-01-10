@@ -43,7 +43,7 @@ namespace reactor
       friend class TCPServer;
       TCPSocket(Scheduler& sched,
                 std::unique_ptr<AsioSocket> socket,
-                AsioSocket::endpoint_type const& peer);
+                AsioSocket::endpoint_type const& endpoint);
 
     /*----------------.
     | Pretty printing |
