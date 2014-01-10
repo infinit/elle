@@ -1126,20 +1126,17 @@ class Linker(Builder):
     self.toolkit = tk
     self.config = drake.cxx.Config(cfg)
     Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
-    self.__command = None
 
   def execute(self):
     return self.cmd('Link %s' % self.exe, self.command)
 
   @property
   def command(self):
-    if self.__command is None:
-      objects = self.exe.sources + self.exe.dynamic_libraries
-      self.__command = self.toolkit.link(
-        self.config,
-        objects + list(self.sources_dynamic()),
-        self.exe)
-    return self.__command
+    objects = self.exe.sources + self.exe.dynamic_libraries
+    return self.toolkit.link(
+      self.config,
+      objects + list(self.sources_dynamic()),
+      self.exe)
 
   def __repr__(self):
     return 'Linker(%s)' % self.exe
