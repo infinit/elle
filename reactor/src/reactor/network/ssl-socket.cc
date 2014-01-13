@@ -113,14 +113,6 @@ namespace reactor
       }
 
     protected:
-      // virtual
-      // void
-      // _abort()
-      // {
-      //   this->_socket.shutdown();
-      //   this->_signal();
-      // }
-
       virtual
       void
       _start()
