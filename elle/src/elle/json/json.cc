@@ -105,7 +105,7 @@ namespace elle
     boost::any
     read(std::istream& stream)
     {
-      ELLE_DEBUG("read json from stream: %s", stream);
+      ELLE_TRACE_SCOPE("read json from stream");
       elle::IOStreamClear clearer(stream);
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
@@ -118,7 +118,7 @@ namespace elle
     write(std::ostream& stream,
           boost::any const& any)
     {
-      ELLE_DEBUG("write json to stream: %s", stream);
+      ELLE_TRACE_SCOPE("write json to stream");
       auto spirit = to_spirit(any);
       elle::IOStreamClear clearer(stream);
       json_spirit::write(spirit, stream);
