@@ -8,9 +8,11 @@
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
+#include <reactor/network/exception.hh>
+#include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/network/ssl-server.hh>
 #include <reactor/network/ssl-socket.hh>
-#include <reactor/network/fingerprinted-socket.hh>
+#include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
@@ -47,7 +49,6 @@ basics()
           [&]
           {
             auto root = boost::filesystem::path(elle::os::getenv("DIR_SOURCE"));
-            root /= boost::filesystem::path(elle::os::getenv("DIR_BUILD"));
             root /= "tests/reactor/certifs";
             std::cerr << (root / "server-cert.pem").string() << std::endl;
             SSLCertificate certificate(
@@ -93,8 +94,48 @@ basics()
   sched.run();
 }
 
+ELLE_TEST_SCHEDULED(handshake_timeout)
+{
+  reactor::Barrier listening;
+  reactor::Barrier timed_out;
+  int port = 0;
+
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::TCPServer server;
+        server.listen();
+        port = server.port();
+        listening.open();
+        std::unique_ptr<reactor::network::TCPSocket> socket(server.accept());
+        reactor::wait(timed_out);
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        SSLCertificate certificate;
+        reactor::wait(listening);
+        BOOST_CHECK_THROW(
+          SSLSocket("127.0.0.1",
+                    boost::lexical_cast<std::string>(port),
+                    certificate,
+                    reactor::network::SSLSocket::Handshake_type::client,
+                    1_sec),
+          reactor::network::TimeOut);
+        timed_out.open();
+      });
+    reactor::wait(scope);
+  };
+
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(basics), 0, 10);
+  suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
 }
