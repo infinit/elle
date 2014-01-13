@@ -709,6 +709,16 @@ namespace reactor
     current->sleep(d);
   }
 
+  void
+  sleep()
+  {
+    auto* sched = Scheduler::scheduler();
+    ELLE_ASSERT(sched);
+    auto* current = sched->current();
+    ELLE_ASSERT(current);
+    reactor::wait(*current);
+  }
+
   bool
   wait(Waitable& waitable, DurationOpt timeout)
   {

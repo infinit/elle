@@ -216,6 +216,9 @@ namespace reactor
   /// Yield for \a duration.
   void
   sleep(Duration duration);
+  /// Yield forever.
+  void
+  sleep();
   /// Wait for \a waitable.
   bool
   wait(Waitable& waitable, DurationOpt timeout = DurationOpt());
