@@ -125,12 +125,28 @@ namespace reactor
                       boost::asio::placeholders::error));
       }
 
+      virtual
+      void
+      _abort() override
+      {
+        boost::system::error_code ec;
+        this->_socket.next_layer().cancel(ec);
+        // Cancel may fail if for instance the socket was closed manually. If
+        // cancel fails, assume the operation is de facto cancelled and we can
+        // carry on. I know of no case were we "were not actually able to
+        // cancel the operation".
+        (void) ec;
+      }
+
     private:
       void
       _wakeup(const boost::system::error_code& error)
       {
         if (error == boost::system::errc::operation_canceled)
+        {
+          this->_signal();
           return;
+        }
         if (error)
         {
           ELLE_ERR("error (%s): %s", *this, error.message());
@@ -151,7 +167,13 @@ namespace reactor
                               *this->_socket,
                               SSLStream::handshake_type::client);
       if (!handshaker.run(this->_timeout))
+      {
+        // Unlike all other sockets type, deleting the socket while the
+        // handshake has been cancelled is an error. Wait for the handler to get
+        // called.
+        reactor::wait(handshaker);
         throw TimeOut();
+      }
       ELLE_DEBUG("client handshake done");
     }
 
@@ -163,7 +185,13 @@ namespace reactor
                               *this->_socket,
                               SSLStream::handshake_type::server);
       if (!handshaker.run(this->_timeout))
+      {
+        // Unlike all other sockets type, deleting the socket while the
+        // handshake has been cancelled is an error. Wait for the handler to get
+        // called.
+        reactor::wait(handshaker);
         throw TimeOut();
+      }
       ELLE_DEBUG("server handshake done");
     }
   }
