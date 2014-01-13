@@ -104,5 +104,19 @@ namespace reactor
       return resolve<boost::asio::ip::udp::resolver>
         (scheduler, hostname, service);
     }
+
+    boost::asio::ip::tcp::endpoint
+    resolve_tcp(const std::string& hostname,
+                const std::string& service)
+    {
+      return resolve_tcp(*reactor::Scheduler::scheduler(), hostname, service);
+    }
+
+    boost::asio::ip::udp::endpoint
+    resolve_udp(const std::string& hostname,
+                const std::string& service)
+    {
+      return resolve_udp(*reactor::Scheduler::scheduler(), hostname, service);
+    }
   }
 }
