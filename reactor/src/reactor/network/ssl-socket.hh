@@ -57,10 +57,21 @@ namespace reactor
       typedef boost::asio::ip::tcp::endpoint SSLEndPoint;
 
     public:
+      /// Create a client socket.
       SSLSocket(const std::string& hostname,
                 const std::string& port,
                 DurationOpt timeout = DurationOpt());
+      /// Create a client socket.
       SSLSocket(SSLEndPoint const& endpoint,
+                DurationOpt timeout = DurationOpt());
+      /// Create a server socket.
+      SSLSocket(const std::string& hostname,
+                const std::string& port,
+                SSLCertificate const& certificate,
+                DurationOpt timeout = DurationOpt());
+      /// Create a server socket.
+      SSLSocket(SSLEndPoint const& endpoint,
+                SSLCertificate const& certificate,
                 DurationOpt timeout = DurationOpt());
       ~SSLSocket();
 

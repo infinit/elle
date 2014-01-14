@@ -62,6 +62,29 @@ namespace reactor
       this->_client_handshake();
     }
 
+    SSLSocket::SSLSocket(const std::string& hostname,
+                         const std::string& port,
+                         SSLCertificate const& certificate,
+                         DurationOpt timeout):
+      SSLSocket(resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
+                certificate,
+                timeout)
+    {}
+
+    SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
+                         SSLCertificate const& certificate,
+                         DurationOpt timeout):
+      SSLCertificateOwner(),
+      Super(*reactor::Scheduler::scheduler(),
+            elle::make_unique<SSLStream>(
+              reactor::Scheduler::scheduler()->io_service(),
+              *certificate.context()),
+            endpoint, timeout),
+      _timeout(timeout)
+    {
+      this->_server_handshake();
+    }
+
     SSLSocket::~SSLSocket()
     {}
 
