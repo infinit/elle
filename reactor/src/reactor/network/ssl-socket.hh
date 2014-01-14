@@ -19,12 +19,12 @@ namespace reactor
       typedef boost::asio::ssl::context::method SSLCertificateMethod;
 
       SSLCertificate(SSLCertificateMethod meth =
-                       boost::asio::ssl::context::sslv23);
+                       boost::asio::ssl::context::tlsv1_client);
       SSLCertificate(std::string const& certificate,
                      std::string const& key,
                      std::string const& dhfile,
                      SSLCertificateMethod meth =
-                       boost::asio::ssl::context::sslv23);
+                       boost::asio::ssl::context::tlsv1_server);
       SSLCertificate(const SSLCertificate& other);
 
     private:

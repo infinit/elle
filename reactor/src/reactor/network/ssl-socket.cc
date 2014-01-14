@@ -14,9 +14,7 @@ namespace reactor
     SSLCertificate::SSLCertificate(SSLCertificateMethod meth):
       _context(new boost::asio::ssl::context(meth))
     {
-      this->_context->set_options(
-        boost::asio::ssl::verify_none |
-        boost::asio::ssl::context::default_workarounds);
+      this->_context->set_options(boost::asio::ssl::verify_none);
     }
 
     SSLCertificate::SSLCertificate(std::string const& certificate,
@@ -25,11 +23,8 @@ namespace reactor
                                    SSLCertificateMethod meth):
       _context(new boost::asio::ssl::context(meth))
     {
-      this->_context->set_options(
-        boost::asio::ssl::verify_none |
-        boost::asio::ssl::context::default_workarounds);
-      this->_context->use_certificate_file(certificate,
-                                           boost::asio::ssl::context::pem);
+      this->_context->set_options(boost::asio::ssl::verify_none);
+      this->_context->use_certificate_chain_file(certificate);
       this->_context->use_private_key_file(key, boost::asio::ssl::context::pem);
       this->_context->use_tmp_dh_file(dhfile);
     }
