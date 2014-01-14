@@ -18,8 +18,6 @@ namespace reactor
     public:
       typedef Server Super;
       SSLServer(std::unique_ptr<SSLCertificate> certificate);
-      SSLServer(Scheduler& scheduler,
-                std::unique_ptr<SSLCertificate> certificate);
 
       virtual
       ~SSLServer();

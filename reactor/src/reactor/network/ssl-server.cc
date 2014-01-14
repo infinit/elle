@@ -10,12 +10,7 @@ namespace reactor
     | Construction |
     `-------------*/
     SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate):
-      SSLServer(*reactor::Scheduler::scheduler(), std::move(certificate))
-    {}
-
-    SSLServer::SSLServer(Scheduler& scheduler,
-                         std::unique_ptr<SSLCertificate> certificate):
-      Super(scheduler),
+      Super(*reactor::Scheduler::scheduler()),
       _certificate(std::move(certificate))
     {}
 
@@ -30,7 +25,8 @@ namespace reactor
     {
       // Open a new SSL Socket.
       auto ssl_stream = elle::make_unique<SSLStream>(
-        this->_scheduler.io_service(), *this->_certificate->context());
+        reactor::Scheduler::scheduler()->io_service(),
+        *this->_certificate->context());
       ELLE_DUMP("%s: opened underlying TCP socket", *this);
       EndPoint peer;
       this->_accept(ssl_stream->next_layer(), peer);
