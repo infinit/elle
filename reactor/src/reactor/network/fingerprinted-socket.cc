@@ -15,44 +15,24 @@ namespace reactor
     | Construction |
     `-------------*/
     FingerprintedSocket::FingerprintedSocket(
-      reactor::Scheduler& sched,
       SSLEndPoint const& endpoint,
-      SSLCertificate const& certificate,
       std::vector<unsigned char> const& fingerprint,
-      Handshake_type type,
       DurationOpt timeout):
-        SSLSocket(sched, endpoint, certificate, type, timeout),
+        SSLSocket(endpoint, timeout),
         _fingerprint(fingerprint)
     {
       this->_check_certificate();
     }
-
-    FingerprintedSocket::FingerprintedSocket(
-      SSLEndPoint const& endpoint,
-      SSLCertificate const& certificate,
-      std::vector<unsigned char> const& fingerprint,
-      DurationOpt timeout,
-      Handshake_type type):
-        FingerprintedSocket(*reactor::Scheduler::scheduler(),
-                            endpoint,
-                            certificate,
-                            fingerprint,
-                            type,
-                            timeout)
-    {}
 
     FingerprintedSocket::FingerprintedSocket(
       const std::string& hostname,
       const std::string& port,
-      SSLCertificate const& certificate,
       std::vector<unsigned char> const& fingerprint,
-      Handshake_type type,
       DurationOpt timeout):
-        SSLSocket(hostname, port, certificate, type, timeout),
-        _fingerprint(fingerprint)
-    {
-      this->_check_certificate();
-    }
+        FingerprintedSocket(
+          resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
+          fingerprint, timeout)
+    {}
 
 
     FingerprintedSocket::~FingerprintedSocket()

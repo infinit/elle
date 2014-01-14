@@ -14,24 +14,13 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
-      FingerprintedSocket(reactor::Scheduler& sched,
-                          SSLEndPoint const& endpoint,
-                          SSLCertificate const& certificate,
-                          std::vector<unsigned char> const& fingerprint,
-                          Handshake_type type = Handshake_type::client,
-                          DurationOpt timeout = DurationOpt());
-
       FingerprintedSocket(SSLEndPoint const& endpoint,
-                          SSLCertificate const& certificate,
                           std::vector<unsigned char> const& fingerprint,
-                          DurationOpt timeout = DurationOpt(),
-                          Handshake_type type = Handshake_type::client);
+                          DurationOpt timeout = DurationOpt());
 
       FingerprintedSocket(const std::string& hostname,
                           const std::string& port,
-                          SSLCertificate const& certificate,
                           std::vector<unsigned char> const& fingerprint,
-                          Handshake_type type = Handshake_type::client,
                           DurationOpt timeout = DurationOpt());
 
       ~FingerprintedSocket();
