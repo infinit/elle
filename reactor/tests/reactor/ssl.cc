@@ -12,6 +12,7 @@
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
+#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/network/ssl-server.hh>
@@ -112,6 +113,98 @@ ELLE_TEST_SCHEDULED(transfer)
   };
 }
 
+class Sniffer
+{
+public:
+  Sniffer(std::string const& secret):
+    _thread("sniffer", std::bind(&Sniffer::_run, this)),
+    _secret(secret),
+    _server()
+  {
+    this->_server.listen();
+  }
+
+  ~Sniffer()
+  {
+    this->_thread.terminate_now();
+  }
+
+private:
+  void
+  _run()
+  {
+    using reactor::network::TCPSocket;
+    std::unique_ptr<TCPSocket> a(this->_server.accept());
+    std::unique_ptr<TCPSocket> b(this->_server.accept());
+
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      auto route = [this] (TCPSocket& from, TCPSocket& to)
+        {
+          try
+          {
+            while (true)
+            {
+              char data[BUFSIZ];
+              auto read = from.read_some(reactor::network::Buffer(data, BUFSIZ));
+              for (unsigned i = 0; i < read - this->_secret.size(); ++i)
+              {
+                BOOST_CHECK_NE(std::string(data + i, this->_secret.size()),
+                               this->_secret);
+              }
+              to.write(elle::WeakBuffer(data, read));
+            }
+          }
+          catch (reactor::network::ConnectionClosed const&)
+          { /* Nothing */ }
+        };
+      scope.run_background(
+        elle::sprintf("%s: a to b", *this),
+        std::bind(route, std::ref(*a), std::ref(*b)));
+      scope.run_background(
+        elle::sprintf("%s: b to a", *this),
+        std::bind(route, std::ref(*b), std::ref(*a)));
+      reactor::wait(scope);
+    };
+  }
+
+  ELLE_ATTRIBUTE(reactor::Thread, thread);
+  ELLE_ATTRIBUTE_R(std::string, secret);
+  ELLE_ATTRIBUTE_R(reactor::network::TCPServer, server);
+};
+
+ELLE_TEST_SCHEDULED(encryption)
+{
+  Sniffer sniffer("lulz");
+
+  auto certificate = load_certificate();
+  auto port = boost::lexical_cast<std::string>(sniffer.server().port());
+
+  std::string question = "lulz why do that ?";
+  std::string answer = "well for the lulz !";
+
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "question",
+      [&]
+      {
+        SSLSocket a("127.0.0.1", port);
+        a.write(elle::ConstWeakBuffer(question));
+        BOOST_CHECK_EQUAL(a.read(answer.size()).string(), answer);
+      });
+    scope.run_background(
+      "answer",
+      [&]
+      {
+        SSLSocket b("127.0.0.1", port, *certificate);
+        BOOST_CHECK_EQUAL(b.read(question.size()).string(), question);
+        b.write(elle::ConstWeakBuffer(answer));
+      });
+    reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SCHEDULED(handshake_timeout)
 {
   reactor::Barrier listening;
@@ -152,6 +245,7 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(transfer), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
+  suite.add(BOOST_TEST_CASE(encryption), 0, 10);
 }
 
 const std::vector<unsigned char> fingerprint =
