@@ -17,9 +17,9 @@ namespace reactor
     `-------------*/
     public:
       typedef Server Super;
-      SSLServer(SSLCertificate const& certificate);
+      SSLServer(std::unique_ptr<SSLCertificate> certificate);
       SSLServer(Scheduler& scheduler,
-                SSLCertificate const& certificate);
+                std::unique_ptr<SSLCertificate> certificate);
 
       virtual
       ~SSLServer();
@@ -32,7 +32,7 @@ namespace reactor
       accept();
 
     private:
-      ELLE_ATTRIBUTE(SSLCertificate const&, certificate);
+      ELLE_ATTRIBUTE(std::shared_ptr<SSLCertificate>, certificate);
     };
   }
 }
