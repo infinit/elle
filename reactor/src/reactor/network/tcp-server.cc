@@ -24,7 +24,7 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
-    TCPSocket*
+    std::unique_ptr<TCPSocket>
     TCPServer::accept()
     {
       // Open a new raw socket.
@@ -33,9 +33,8 @@ namespace reactor
       EndPoint peer;
       this->_accept(*new_socket, peer);
       // Socket is now connected so make it into a TCPSocket.
-      TCPSocket* res = new TCPSocket(this->_scheduler,
-                                     std::move(new_socket),
-                                     peer);
+      std::unique_ptr<TCPSocket> res(
+        new TCPSocket(this->_scheduler, std::move(new_socket), peer));
       ELLE_TRACE("%s: got connection: %s", *this, *res);
       return res;
     }

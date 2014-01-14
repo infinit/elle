@@ -26,7 +26,7 @@ namespace reactor
     | Accepting |
     `----------*/
     public:
-      SSLSocket*
+      std::unique_ptr<SSLSocket>
       accept();
 
     private:

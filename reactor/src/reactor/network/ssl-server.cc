@@ -20,7 +20,7 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
-    SSLSocket*
+    std::unique_ptr<SSLSocket>
     SSLServer::accept()
     {
       // Open a new SSL Socket.
@@ -32,9 +32,8 @@ namespace reactor
       this->_accept(ssl_stream->next_layer(), peer);
       ELLE_DUMP("%s: got socket end point", *this);
       // SSL stream now has end point so we can make it an SSLSocket.
-      SSLSocket* new_socket = new SSLSocket(std::move(ssl_stream),
-                                            peer,
-                                            this->_certificate);
+      std::unique_ptr<SSLSocket> new_socket(
+        new SSLSocket(std::move(ssl_stream), peer, this->_certificate));
       // Socket is now connected so we can do a handshake.
       new_socket->_server_handshake();
       ELLE_TRACE("%s: got connection: %s", *this, *new_socket);

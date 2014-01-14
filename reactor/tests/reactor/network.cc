@@ -168,7 +168,7 @@ void
 server();
 
 void
-serve(reactor::network::Socket* socket);
+serve(std::unique_ptr<reactor::network::TCPSocket> socket);
 
 template <typename Server, typename Socket>
 void
@@ -184,9 +184,11 @@ server()
   std::vector<reactor::Thread*> clients;
   while (nclients--)
   {
-    reactor::network::Socket* socket = server.accept();
-    clients.push_back(new reactor::Thread(*sched, "serve",
-                                          boost::bind(serve, socket)));
+    auto socket = server.accept();
+    clients.push_back(
+      new reactor::Thread(*sched, "serve",
+                          boost::bind(serve,
+                                      elle::utility::move_on_copy(socket))));
   }
   sched->current()->wait(reactor::Waitables(begin(clients), end(clients)));
   BOOST_FOREACH(auto* thread, clients)
@@ -194,7 +196,7 @@ server()
 }
 
 void
-serve(reactor::network::Socket* socket)
+serve(std::unique_ptr<reactor::network::TCPSocket> socket)
 {
   std::string received;
   Byte buffer[512];
@@ -208,13 +210,11 @@ serve(reactor::network::Socket* socket)
     }
     catch (reactor::network::ConnectionClosed&)
     {
-      delete socket;
-      return;
+      break;
     }
     catch (reactor::network::TimeOut&)
     {
-      delete socket;
-      return;
+      break;
     }
     buffer[read] = 0;
     received += reinterpret_cast<char*>(buffer);

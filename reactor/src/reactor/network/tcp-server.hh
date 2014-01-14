@@ -23,12 +23,12 @@ namespace reactor
         virtual
         ~TCPServer();
 
-      /*----------.
-      | Accepting |
-      `----------*/
-      public:
-        TCPSocket*
-        accept();
+    /*----------.
+    | Accepting |
+    `----------*/
+    public:
+      std::unique_ptr<TCPSocket>
+      accept();
     };
   }
 }
