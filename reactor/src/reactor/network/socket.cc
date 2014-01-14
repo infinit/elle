@@ -401,7 +401,7 @@ namespace reactor
 
     template <typename PlainSocket, typename AsioSocket>
     class Read:
-      public SocketOperation<AsioSocket>
+      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
       Read(Scheduler& scheduler,
@@ -436,12 +436,12 @@ namespace reactor
       {
         // FIXME: be synchronous if enough bytes are available
         if (_some)
-          this->socket().async_read_some(
+          this->_socket.socket()->async_read_some(
             boost::asio::buffer(_buffer.data(), _buffer.size()),
             boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
         else
           boost::asio::async_read(
-            this->socket(),
+            *this->_socket.socket(),
             boost::asio::buffer(_buffer.data(), _buffer.size()),
             boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
       }
@@ -655,14 +655,16 @@ namespace reactor
 
     template <typename PlainSocket, typename AsioSocket>
     class Write:
-      public SocketOperation<AsioSocket>
+      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
-      typedef SocketOperation<AsioSocket> Super;
+      typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
+      typedef SocketOperation<Socket> Super;
+      typedef SocketSpecialization<AsioSocket> Spe;
       Write(PlainSocket& plain,
             AsioSocket& socket,
             elle::ConstWeakBuffer buffer):
-        Super(*Scheduler::scheduler(), socket),
+        Super(*Scheduler::scheduler(), Spe::socket(socket)),
         _socket(plain),
         _buffer(buffer),
         _written(0)
@@ -672,7 +674,7 @@ namespace reactor
       virtual void _start()
       {
         boost::asio::async_write(
-          this->socket(),
+          *this->_socket.socket(),
           boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
           boost::bind(&Write::_wakeup, this, this->canceled(), _1, _2));
       }
@@ -728,10 +730,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
       try
       {
-        typedef SocketSpecialization<AsioSocket> Spe;
-        Write<Self, typename Spe::Socket> write(*this,
-                                                Spe::socket(*this->socket()),
-                                                buffer);
+        Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
         write.run();
       }
       catch (...)
