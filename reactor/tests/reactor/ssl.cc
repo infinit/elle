@@ -75,10 +75,11 @@ basics()
           [&]
           {
             ELLE_DEBUG("read certificate from disk");
-            SSLCertificate certificate(cert.string(),
-                                       key.string(),
-                                       dh1024.string());
-            SSLServer server(certificate);
+            auto certificate = elle::make_unique<SSLCertificate>(
+              cert.string(),
+              key.string(),
+              dh1024.string());
+            SSLServer server(std::move(certificate));
             server.listen(0);
             port = server.port();
             listening.open();
@@ -99,9 +100,7 @@ basics()
               *reactor::Scheduler::scheduler(),
               "127.0.0.1",
               boost::lexical_cast<std::string>(port));
-            FingerprintedSocket socket(*reactor::Scheduler::scheduler(),
-                                       endpoint,
-                                       certificate,
+            FingerprintedSocket socket(endpoint,
                                        fingerprint);
             socket.write(std::string("lulz"));
             static char clientdata[5] = { 0 };
@@ -139,13 +138,10 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
       "client",
       [&]
       {
-        SSLCertificate certificate;
         reactor::wait(listening);
         BOOST_CHECK_THROW(
           SSLSocket("127.0.0.1",
                     boost::lexical_cast<std::string>(port),
-                    certificate,
-                    reactor::network::SSLSocket::Handshake_type::client,
                     1_sec),
           reactor::network::TimeOut);
         timed_out.open();
