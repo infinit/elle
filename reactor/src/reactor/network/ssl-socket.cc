@@ -1,6 +1,7 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/SocketOperation.hh>
 #include <reactor/network/ssl-socket.hh>
+#include <reactor/scheduler.hh>
 
 #include <elle/log.hh>
 

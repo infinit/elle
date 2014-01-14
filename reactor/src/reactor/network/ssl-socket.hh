@@ -3,7 +3,6 @@
 
 # include <reactor/network/socket.hh>
 
-# include <reactor/scheduler.hh>
 # include <reactor/network/resolve.hh>
 # include <reactor/network/tcp-socket.hh>
 
@@ -55,7 +54,6 @@ namespace reactor
     public:
       typedef StreamSocket<SSLStream, SSLEndPointType> Super;
       typedef SSLSocket Self;
-      typedef SSLStream::handshake_type Handshake_type;
       typedef boost::asio::ip::tcp::endpoint SSLEndPoint;
 
     public:
@@ -87,7 +85,6 @@ namespace reactor
 
     private:
       ELLE_ATTRIBUTE(DurationOpt, timeout);
-      ELLE_ATTRIBUTE(Handshake_type, type);
     };
   }
 }
