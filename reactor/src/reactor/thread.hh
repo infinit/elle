@@ -31,6 +31,9 @@ namespace reactor
              const std::string& name,
              const Action& action,
              bool dispose = false);
+      Thread(const std::string& name,
+             const Action& action,
+             bool dispose = false);
       virtual
       ~Thread();
     protected:

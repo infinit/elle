@@ -42,6 +42,12 @@ namespace reactor
     _scheduler._thread_register(*this);
   }
 
+  Thread::Thread(std::string const& name,
+                 Action const& action,
+                 bool dispose):
+    Thread(*reactor::Scheduler::scheduler(), name, action, dispose)
+  {}
+
   Thread::~Thread()
   {
     ELLE_ASSERT_EQ(state(), state::done);
