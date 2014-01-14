@@ -46,6 +46,10 @@ suicide()
   suicide_thread = nullptr;
   reactor::Scheduler::scheduler()->current()->yield();
   reactor::Scheduler::scheduler()->current()->yield();
+  reactor::Scheduler::scheduler()->current()->yield();
+  reactor::Scheduler::scheduler()->current()->yield();
+  reactor::Scheduler::scheduler()->current()->yield();
+  reactor::Scheduler::scheduler()->current()->yield();
   BOOST_CHECK(false);
 }
 

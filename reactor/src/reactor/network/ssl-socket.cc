@@ -144,6 +144,7 @@ namespace reactor
         // carry on. I know of no case were we "were not actually able to
         // cancel the operation".
         (void) ec;
+        reactor::wait(*this);
       }
 
     private:
@@ -175,13 +176,7 @@ namespace reactor
                               *this->_socket,
                               SSLStream::handshake_type::client);
       if (!handshaker.run(this->_timeout))
-      {
-        // Unlike all other sockets type, deleting the socket while the
-        // handshake has been cancelled is an error. Wait for the handler to get
-        // called.
-        reactor::wait(handshaker);
         throw TimeOut();
-      }
       ELLE_DEBUG("client handshake done");
     }
 
@@ -193,13 +188,7 @@ namespace reactor
                               *this->_socket,
                               SSLStream::handshake_type::server);
       if (!handshaker.run(this->_timeout))
-      {
-        // Unlike all other sockets type, deleting the socket while the
-        // handshake has been cancelled is an error. Wait for the handler to get
-        // called.
-        reactor::wait(handshaker);
         throw TimeOut();
-      }
       ELLE_DEBUG("server handshake done");
     }
   }

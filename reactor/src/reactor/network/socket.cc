@@ -452,7 +452,10 @@ namespace reactor
                    std::size_t read)
       {
         if (*canceled)
+        {
+          this->_signal();
           return;
+        }
         if (error)
           ELLE_TRACE("%s: read error: %s (%s)",
                      this->_socket, error.message(), read);
@@ -592,7 +595,10 @@ namespace reactor
                    std::size_t read)
       {
         if (*canceled)
+        {
+          this->_signal();
           return;
+        }
         if (error)
           ELLE_TRACE("%s: read until error: %s",
                      this->_socket, error.message());
