@@ -26,7 +26,7 @@ namespace reactor
       // Open a new SSL Socket.
       auto ssl_stream = elle::make_unique<SSLStream>(
         reactor::Scheduler::scheduler()->io_service(),
-        *this->_certificate->context());
+        this->_certificate->context());
       ELLE_DUMP("%s: opened underlying TCP socket", *this);
       EndPoint peer;
       this->_accept(ssl_stream->next_layer(), peer);

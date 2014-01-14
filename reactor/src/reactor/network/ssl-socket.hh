@@ -25,10 +25,9 @@ namespace reactor
                      std::string const& dhfile,
                      SSLCertificateMethod meth =
                        boost::asio::ssl::context::tlsv1_server);
-      SSLCertificate(const SSLCertificate& other);
 
     private:
-      ELLE_ATTRIBUTE_R(boost::asio::ssl::context*, context);
+      ELLE_ATTRIBUTE_RX(boost::asio::ssl::context, context);
     };
 
     typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket>
@@ -67,11 +66,11 @@ namespace reactor
       /// Create a server socket.
       SSLSocket(const std::string& hostname,
                 const std::string& port,
-                SSLCertificate const& certificate,
+                SSLCertificate& certificate,
                 DurationOpt timeout = DurationOpt());
       /// Create a server socket.
       SSLSocket(SSLEndPoint const& endpoint,
-                SSLCertificate const& certificate,
+                SSLCertificate& certificate,
                 DurationOpt timeout = DurationOpt());
       ~SSLSocket();
 

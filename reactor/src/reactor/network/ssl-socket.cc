@@ -12,26 +12,22 @@ namespace reactor
   namespace network
   {
     SSLCertificate::SSLCertificate(SSLCertificateMethod meth):
-      _context(new boost::asio::ssl::context(meth))
+      _context(meth)
     {
-      this->_context->set_options(boost::asio::ssl::verify_none);
+      this->_context.set_options(boost::asio::ssl::verify_none);
     }
 
     SSLCertificate::SSLCertificate(std::string const& certificate,
                                    std::string const& key,
                                    std::string const& dhfile,
                                    SSLCertificateMethod meth):
-      _context(new boost::asio::ssl::context(meth))
+      _context(meth)
     {
-      this->_context->set_options(boost::asio::ssl::verify_none);
-      this->_context->use_certificate_chain_file(certificate);
-      this->_context->use_private_key_file(key, boost::asio::ssl::context::pem);
-      this->_context->use_tmp_dh_file(dhfile);
+      this->_context.set_options(boost::asio::ssl::verify_none);
+      this->_context.use_certificate_chain_file(certificate);
+      this->_context.use_private_key_file(key, boost::asio::ssl::context::pem);
+      this->_context.use_tmp_dh_file(dhfile);
     }
-
-    SSLCertificate::SSLCertificate(const SSLCertificate& other):
-      _context(other._context)
-    {}
 
     SSLCertificateOwner::SSLCertificateOwner(
       std::shared_ptr<SSLCertificate> certificate):
@@ -55,7 +51,7 @@ namespace reactor
       Super(*reactor::Scheduler::scheduler(),
             elle::make_unique<SSLStream>(
               reactor::Scheduler::scheduler()->io_service(),
-              *this->certificate()->context()),
+              this->certificate()->context()),
             endpoint, timeout),
       _timeout(timeout)
     {
@@ -64,7 +60,7 @@ namespace reactor
 
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
-                         SSLCertificate const& certificate,
+                         SSLCertificate& certificate,
                          DurationOpt timeout):
       SSLSocket(resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
                 certificate,
@@ -72,13 +68,13 @@ namespace reactor
     {}
 
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
-                         SSLCertificate const& certificate,
+                         SSLCertificate& certificate,
                          DurationOpt timeout):
       SSLCertificateOwner(),
       Super(*reactor::Scheduler::scheduler(),
             elle::make_unique<SSLStream>(
               reactor::Scheduler::scheduler()->io_service(),
-              *certificate.context()),
+              certificate.context()),
             endpoint, timeout),
       _timeout(timeout)
     {
