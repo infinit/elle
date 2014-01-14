@@ -34,7 +34,9 @@ extern const std::vector<char> server_cert;
 extern const std::vector<char> server_key;
 extern const std::vector<char> server_dh1024;
 
-ELLE_TEST_SCHEDULED(transfer)
+static
+std::unique_ptr<SSLCertificate>
+load_certificate()
 {
   boost::filesystem::path tmp;
   while (true)
@@ -59,6 +61,13 @@ ELLE_TEST_SCHEDULED(transfer)
     std::ofstream dh1024_f(dh1024.native(), std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
+  return elle::make_unique<SSLCertificate>(cert.string(),
+                                             key.string(),
+                                             dh1024.string());
+}
+
+ELLE_TEST_SCHEDULED(transfer)
+{
   reactor::Barrier listening;
   int port = 0;
   elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
@@ -68,10 +77,7 @@ ELLE_TEST_SCHEDULED(transfer)
       [&]
       {
         ELLE_DEBUG("read certificate from disk");
-        auto certificate = elle::make_unique<SSLCertificate>(
-          cert.string(),
-          key.string(),
-          dh1024.string());
+        auto certificate = load_certificate();
         SSLServer server(std::move(certificate));
         server.listen(0);
         port = server.port();
