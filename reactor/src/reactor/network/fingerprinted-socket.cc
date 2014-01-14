@@ -1,11 +1,12 @@
 #include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/network/exception.hh>
+#include <reactor/scheduler.hh>
 
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
 #include <openssl/evp.h>
 
-ELLE_LOG_COMPONENT("reactor.network.FingerPrintedSocket");
+ELLE_LOG_COMPONENT("reactor.network.FingerprintedSocket");
 
 namespace reactor
 {
