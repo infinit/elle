@@ -36,7 +36,20 @@ namespace reactor
       SSLStream;
     typedef boost::asio::ip::tcp::socket::endpoint_type SSLEndPointType;
 
+    class SSLCertificateOwner
+    {
+    public:
+      SSLCertificateOwner(
+        std::shared_ptr<SSLCertificate> certificate = nullptr);
+
+      ~SSLCertificateOwner() = default;
+
+    private:
+      ELLE_ATTRIBUTE_R(std::shared_ptr<SSLCertificate>, certificate);
+    };
+
     class SSLSocket:
+      public SSLCertificateOwner,
       public StreamSocket <SSLStream, SSLEndPointType>
     {
     public:
@@ -48,19 +61,8 @@ namespace reactor
     public:
       SSLSocket(const std::string& hostname,
                 const std::string& port,
-                SSLCertificate const& certificate,
-                Handshake_type type = Handshake_type::client,
                 DurationOpt timeout = DurationOpt());
-      SSLSocket(reactor::Scheduler& sched,
-                const std::string& hostname,
-                const std::string& port,
-                SSLCertificate const& certificate,
-                Handshake_type type = Handshake_type::client,
-                DurationOpt timeout = DurationOpt());
-      SSLSocket(reactor::Scheduler& sched,
-                SSLEndPoint const& endpoint,
-                SSLCertificate const& certificate,
-                Handshake_type type = Handshake_type::client,
+      SSLSocket(SSLEndPoint const& endpoint,
                 DurationOpt timeout = DurationOpt());
       ~SSLSocket();
 
@@ -72,20 +74,18 @@ namespace reactor
 
     private:
       friend class SSLServer;
-      SSLSocket(Scheduler& scheduler,
-                std::unique_ptr<SSLStream> socket,
+      SSLSocket(std::unique_ptr<SSLStream> socket,
                 SSLEndPoint const& endpoint,
-                SSLCertificate const& certificate);
+                std::shared_ptr<SSLCertificate> certificate);
 
       /// No check of certificate is done by default
       void
-      _handshake();
+      _client_handshake();
 
       void
       _server_handshake();
 
     private:
-      ELLE_ATTRIBUTE(SSLCertificate const&, certificate);
       ELLE_ATTRIBUTE(DurationOpt, timeout);
       ELLE_ATTRIBUTE(Handshake_type, type);
     };

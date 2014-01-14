@@ -37,50 +37,43 @@ namespace reactor
       _context(other._context)
     {}
 
+    SSLCertificateOwner::SSLCertificateOwner(
+      std::shared_ptr<SSLCertificate> certificate):
+        _certificate(certificate)
+    {
+      if (this->_certificate == nullptr)
+        this->_certificate.reset(new SSLCertificate());
+      ELLE_ASSERT(this->_certificate != nullptr);
+    }
+
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
-                         SSLCertificate const& certificate,
-                         Handshake_type type,
                          DurationOpt timeout):
-      SSLSocket(*reactor::Scheduler::scheduler(),
-                hostname, port, certificate, type, timeout)
+      SSLSocket(resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
+                timeout)
     {}
 
-    SSLSocket::SSLSocket(reactor::Scheduler& sched,
-                         const std::string& hostname,
-                         const std::string& port,
-                         SSLCertificate const& certificate,
-                         Handshake_type type,
+    SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout):
-      SSLSocket(sched, resolve_tcp(sched, hostname, port),
-                certificate, type, timeout)
-    {}
-
-    SSLSocket::SSLSocket(reactor::Scheduler& sched,
-                         boost::asio::ip::tcp::endpoint const& endpoint,
-                         SSLCertificate const& certificate,
-                         Handshake_type type,
-                         DurationOpt timeout):
-      Super(sched,
-            elle::make_unique<SSLStream>(sched.io_service(),
-                                         *certificate.context()),
+      SSLCertificateOwner(),
+      Super(*reactor::Scheduler::scheduler(),
+            elle::make_unique<SSLStream>(
+              reactor::Scheduler::scheduler()->io_service(),
+              *this->certificate()->context()),
             endpoint, timeout),
-      _certificate(certificate),
       _timeout(timeout)
     {
-      if (type == Handshake_type::client)
-        this->_handshake();
+      this->_client_handshake();
     }
 
     SSLSocket::~SSLSocket()
     {}
 
-    SSLSocket::SSLSocket(Scheduler& scheduler,
-                         std::unique_ptr<SSLStream> socket,
+    SSLSocket::SSLSocket(std::unique_ptr<SSLStream> socket,
                          SSLEndPoint const& endpoint,
-                         SSLCertificate const& certificate):
-      Super(scheduler, std::move(socket), endpoint),
-      _certificate(certificate),
+                         std::shared_ptr<SSLCertificate> certificate):
+      SSLCertificateOwner(certificate),
+      Super(*reactor::Scheduler::scheduler(), std::move(socket), endpoint),
       _timeout(DurationOpt())
     {}
 
@@ -160,7 +153,7 @@ namespace reactor
     };
 
     void
-    SSLSocket::_handshake()
+    SSLSocket::_client_handshake()
     {
       ELLE_DEBUG("start client handshake");
       SSLHandshake handshaker(scheduler(),
