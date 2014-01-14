@@ -77,17 +77,20 @@ namespace reactor
         void
         write(elle::ConstWeakBuffer buffer) = 0;
 
-      /*-----.
-      | Read |
-      `-----*/
-      public:
-        virtual
-        void
-        read(Buffer buffer, DurationOpt timeout = DurationOpt());
-
-        virtual
-        Size
-        read_some(Buffer buffer, DurationOpt timeout = DurationOpt()) = 0;
+    /*-----.
+    | Read |
+    `-----*/
+    public:
+      virtual
+      void
+      read(Buffer buffer, DurationOpt timeout = DurationOpt());
+      virtual
+      Size
+      read_some(Buffer buffer, DurationOpt timeout = DurationOpt()) = 0;
+      elle::Buffer
+      read(Size size, DurationOpt timeout = DurationOpt());
+      elle::Buffer
+      read_some(Size size, DurationOpt timeout = DurationOpt());
 
       /*-----------.
       | Scheduling |
@@ -226,10 +229,11 @@ namespace reactor
     | Read |
     `-----*/
     public:
+      using Super::read;
       virtual
       void
       read(Buffer buffer, DurationOpt timeout = DurationOpt());
-
+      using Super::read_some;
       virtual
       Size
       read_some(Buffer buffer, DurationOpt timeout = DurationOpt());

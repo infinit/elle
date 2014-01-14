@@ -322,6 +322,25 @@ namespace reactor
       // read_some(buffer);
     }
 
+    elle::Buffer
+    Socket::read(Size size,
+                 DurationOpt timeout)
+    {
+      elle::Buffer res(size);
+      this->read(network::Buffer(res.mutable_contents(), size));
+      return res;
+    }
+
+    elle::Buffer
+    Socket::read_some(Size size,
+                      DurationOpt timeout)
+    {
+      elle::Buffer res(size);
+      auto r = this->read_some(network::Buffer(res.mutable_contents(), size));
+      res.size(r);
+      return res;
+    }
+
     /*-----------.
     | Properties |
     `-----------*/
