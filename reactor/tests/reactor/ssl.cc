@@ -34,9 +34,7 @@ extern const std::vector<char> server_cert;
 extern const std::vector<char> server_key;
 extern const std::vector<char> server_dh1024;
 
-static
-void
-basics()
+ELLE_TEST_SCHEDULED(transfer)
 {
   boost::filesystem::path tmp;
   while (true)
@@ -61,58 +59,51 @@ basics()
     std::ofstream dh1024_f(dh1024.native(), std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
-  reactor::Scheduler sched;
   reactor::Barrier listening;
   int port = 0;
-  reactor::Thread t(
-    sched, "main",
-    [&]
-    {
-      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
       {
-        scope.run_background(
-          "server",
-          [&]
-          {
-            ELLE_DEBUG("read certificate from disk");
-            auto certificate = elle::make_unique<SSLCertificate>(
-              cert.string(),
-              key.string(),
-              dh1024.string());
-            SSLServer server(std::move(certificate));
-            server.listen(0);
-            port = server.port();
-            listening.open();
-            std::unique_ptr<SSLSocket> socket(server.accept());
-            static char servdata[5] = { 0 };
-            socket->std::iostream::read(servdata, 4);
-            BOOST_CHECK(std::string(servdata) == std::string("lulz"));
-            socket->write(std::string("lol"));
-            socket->write(std::string("lulz"));
-          });
-        scope.run_background(
-          "client",
-          [&]
-          {
-            SSLCertificate certificate;
-            reactor::wait(listening);
-            auto endpoint = reactor::network::resolve_tcp(
-              *reactor::Scheduler::scheduler(),
-              "127.0.0.1",
-              boost::lexical_cast<std::string>(port));
-            FingerprintedSocket socket(endpoint,
-                                       fingerprint);
-            socket.write(std::string("lulz"));
-            static char clientdata[5] = { 0 };
-            socket.std::iostream::read(clientdata, 3);
-            BOOST_CHECK(std::string(clientdata) == std::string("lol"));
-            socket.std::iostream::read(clientdata, 4);
-            BOOST_CHECK(std::string(clientdata) == std::string("lulz"));
-          });
-        reactor::wait(scope);
-      };
-    });
-  sched.run();
+        ELLE_DEBUG("read certificate from disk");
+        auto certificate = elle::make_unique<SSLCertificate>(
+          cert.string(),
+          key.string(),
+          dh1024.string());
+        SSLServer server(std::move(certificate));
+        server.listen(0);
+        port = server.port();
+        listening.open();
+        std::unique_ptr<SSLSocket> socket(server.accept());
+        static char servdata[5] = { 0 };
+        socket->std::iostream::read(servdata, 4);
+        BOOST_CHECK(std::string(servdata) == std::string("lulz"));
+        socket->write(std::string("lol"));
+        socket->write(std::string("lulz"));
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        SSLCertificate certificate;
+        reactor::wait(listening);
+        auto endpoint = reactor::network::resolve_tcp(
+          *reactor::Scheduler::scheduler(),
+          "127.0.0.1",
+          boost::lexical_cast<std::string>(port));
+        FingerprintedSocket socket(endpoint,
+                                   fingerprint);
+        socket.write(std::string("lulz"));
+        static char clientdata[5] = { 0 };
+        socket.std::iostream::read(clientdata, 3);
+        BOOST_CHECK(std::string(clientdata) == std::string("lol"));
+        socket.std::iostream::read(clientdata, 4);
+        BOOST_CHECK(std::string(clientdata) == std::string("lulz"));
+      });
+    reactor::wait(scope);
+  };
 }
 
 ELLE_TEST_SCHEDULED(handshake_timeout)
@@ -120,7 +111,6 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
   reactor::Barrier listening;
   reactor::Barrier timed_out;
   int port = 0;
-
   elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
   {
     scope.run_background(
@@ -154,7 +144,7 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(basics), 0, 10);
+  suite.add(BOOST_TEST_CASE(transfer), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
 }
 
