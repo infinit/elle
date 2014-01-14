@@ -160,7 +160,7 @@ runner(reactor::Semaphore& lock,
 
 static
 int
-test(bool sync)
+rpc(bool sync)
 {
   reactor::Scheduler sched;
   reactor::Semaphore lock;
@@ -203,7 +203,7 @@ pacify(reactor::Semaphore& lock,
 
 static
 int
-test_terminate(bool sync)
+terminate(bool sync)
 {
   reactor::Scheduler sched{};
   reactor::Semaphore lock;
@@ -269,7 +269,7 @@ counter(reactor::Semaphore& lock,
 
 static
 int
-test_parallel(bool sync)
+parallel(bool sync)
 {
   reactor::Scheduler sched;
   reactor::Semaphore lock;
@@ -317,7 +317,7 @@ disconnection_caller(reactor::Semaphore& lock,
 
 static
 int
-test_disconnection(bool sync)
+disconnection(bool sync)
 {
   reactor::Scheduler sched;
   reactor::Semaphore lock;
@@ -352,14 +352,14 @@ test_disconnection(bool sync)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(std::bind(test, true)));
-  suite.add(BOOST_TEST_CASE(std::bind(test, false)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_terminate, true)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_terminate, false)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_parallel, true)));
-  suite.add(BOOST_TEST_CASE(std::bind(test_parallel, false)));
-  suite.add(ELLE_TEST_NAMED_CASE(std::bind(test_disconnection, true),
-                                 "disconnection_sync"));
-  suite.add(ELLE_TEST_NAMED_CASE(std::bind(test_disconnection, false),
-                                 "disconnection_async"));
+#define TEST(Name)                                                      \
+  auto BOOST_PP_CAT(Name, _sync) = std::bind(Name, true);               \
+  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)), 0, 5);          \
+  auto BOOST_PP_CAT(Name, _async) = std::bind(Name, false);             \
+  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)), 0, 5);         \
+
+  TEST(rpc);
+  TEST(terminate);
+  TEST(parallel);
+  TEST(disconnection);
 }
