@@ -104,7 +104,7 @@ class Boost(drake.Configuration):
 
     raise Exception('no matching boost for the requested version '
                     '(%s) in %s. Found versions: %s.' % \
-                    (version, self._format_search(prefixes),
+                    (version, self._format_search([path for path, include_subdir in prefixes]),
                      ', '.join(map(str, miss))))
 
   def __find_lib(self, lib, lib_path, cxx_toolkit, static):
