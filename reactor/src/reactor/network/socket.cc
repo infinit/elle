@@ -418,15 +418,7 @@ namespace reactor
       void
       print(std::ostream& stream) const override
       {
-        stream << "read on ";
-        try
-        {
-          stream << this->socket().local_endpoint();
-        }
-        catch (std::exception const&)
-        {
-          stream << "an invalid socket (" << elle::exception_string() << ")";
-        }
+        stream << "read on " << this->_socket;
       }
 
     protected:
@@ -708,15 +700,7 @@ namespace reactor
       void
       print(std::ostream& stream) const override
       {
-        stream << "write on ";
-        try
-        {
-          stream << this->socket().local_endpoint();
-        }
-        catch (std::exception const&)
-        {
-          stream << "an invalid socket (" << elle::exception_string() << ")";
-        }
+        stream << "write on " << this->_socket;
       }
 
       ELLE_ATTRIBUTE(PlainSocket const&, socket);
