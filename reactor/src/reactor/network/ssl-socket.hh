@@ -20,6 +20,11 @@ namespace reactor
 
       SSLCertificate(SSLCertificateMethod meth =
                        boost::asio::ssl::context::tlsv1_client);
+      SSLCertificate(std::vector<char> const& certificate,
+                     std::vector<char> const& key,
+                     std::vector<char> const& dh,
+                     SSLCertificateMethod meth =
+                       boost::asio::ssl::context::tlsv1_server);
       SSLCertificate(std::string const& certificate,
                      std::string const& key,
                      std::string const& dhfile,

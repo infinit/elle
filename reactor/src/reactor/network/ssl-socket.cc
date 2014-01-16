@@ -17,6 +17,22 @@ namespace reactor
       this->_context.set_options(boost::asio::ssl::verify_none);
     }
 
+    SSLCertificate::SSLCertificate(std::vector<char> const& certificate,
+                                   std::vector<char> const& key,
+                                   std::vector<char> const& dh,
+                                   SSLCertificateMethod meth):
+    _context(meth)
+    {
+      using boost::asio::const_buffer;
+      this->_context.set_options(boost::asio::ssl::verify_none);
+      this->_context.use_certificate(const_buffer(certificate.data(),
+                                                  certificate.size()),
+                                     boost::asio::ssl::context::pem);
+      this->_context.use_private_key(const_buffer(key.data(), key.size()),
+                                     boost::asio::ssl::context::pem);
+      this->_context.use_tmp_dh(const_buffer(dh.data(), dh.size()));
+    }
+
     SSLCertificate::SSLCertificate(std::string const& certificate,
                                    std::string const& key,
                                    std::string const& dhfile,
@@ -24,7 +40,8 @@ namespace reactor
       _context(meth)
     {
       this->_context.set_options(boost::asio::ssl::verify_none);
-      this->_context.use_certificate_chain_file(certificate);
+      this->_context.use_certificate_file(certificate,
+                                          boost::asio::ssl::context::pem);
       this->_context.use_private_key_file(key, boost::asio::ssl::context::pem);
       this->_context.use_tmp_dh_file(dhfile);
     }
