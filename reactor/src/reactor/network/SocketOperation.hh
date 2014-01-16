@@ -22,10 +22,9 @@ namespace reactor
       void
       _abort();
       void
-      _wakeup(std::shared_ptr<bool> canceled,
-              const boost::system::error_code& error);
+      _wakeup(const boost::system::error_code& error);
       ELLE_ATTRIBUTE_R(AsioSocket&, socket);
-      ELLE_ATTRIBUTE_R(std::shared_ptr<bool>, canceled);
+      ELLE_ATTRIBUTE_R(bool, canceled);
     };
   }
 }

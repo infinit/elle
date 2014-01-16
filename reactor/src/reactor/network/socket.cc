@@ -216,8 +216,7 @@ namespace reactor
         virtual void _start()
         {
           this->socket().async_connect(
-            _endpoint, boost::bind(&Connection::_wakeup,
-                                   this, this->canceled(), _1));
+            _endpoint, boost::bind(&Connection::_wakeup, this, _1));
         }
 
       private:
@@ -438,20 +437,19 @@ namespace reactor
         if (_some)
           this->_socket.socket()->async_read_some(
             boost::asio::buffer(_buffer.data(), _buffer.size()),
-            boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
+            boost::bind(&Read::_wakeup, this, _1, _2));
         else
           boost::asio::async_read(
             *this->_socket.socket(),
             boost::asio::buffer(_buffer.data(), _buffer.size()),
-            boost::bind(&Read::_wakeup, this, this->canceled(), _1, _2));
+            boost::bind(&Read::_wakeup, this, _1, _2));
       }
 
     private:
-      void _wakeup(std::shared_ptr<bool> canceled,
-                   const boost::system::error_code& error,
+      void _wakeup(const boost::system::error_code& error,
                    std::size_t read)
       {
-        if (*canceled)
+        if (this->canceled())
         {
           this->_signal();
           return;
@@ -591,16 +589,14 @@ namespace reactor
           this->_delimiter,
           std::bind(&ReadUntil::_wakeup,
                     std::ref(*this),
-                    this->canceled(),
                     std::placeholders::_1,
                     std::placeholders::_2));
       }
 
-      void _wakeup(std::shared_ptr<bool> canceled,
-                   const boost::system::error_code& error,
+      void _wakeup(const boost::system::error_code& error,
                    std::size_t read)
       {
-        if (*canceled)
+        if (this->canceled())
         {
           this->_signal();
           return;
@@ -688,15 +684,14 @@ namespace reactor
         boost::asio::async_write(
           *this->_socket.socket(),
           boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
-          boost::bind(&Write::_wakeup, this, this->canceled(), _1, _2));
+          boost::bind(&Write::_wakeup, this, _1, _2));
       }
 
     private:
-      void _wakeup(std::shared_ptr<bool> canceled,
-                   const boost::system::error_code& error,
+      void _wakeup(const boost::system::error_code& error,
                    std::size_t written)
       {
-        if (*canceled)
+        if (this->canceled())
           return;
         if (error)
           ELLE_TRACE("%s: write error: %s", this->_socket, error.message());

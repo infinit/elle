@@ -15,7 +15,7 @@ namespace reactor
       AsioSocket& socket):
       Operation(scheduler),
       _socket(socket),
-      _canceled(new bool(false))
+      _canceled(false)
     {}
 
     template <typename AsioSocket>
@@ -23,7 +23,7 @@ namespace reactor
     SocketOperation<AsioSocket>::_abort()
     {
       ELLE_TRACE_SCOPE("%s: abort", *this);
-      *this->_canceled = true;
+      this->_canceled = true;
       boost::system::error_code ec;
       this->_socket.cancel(ec);
       // Cancel may fail if for instance the socket was closed manually. If
@@ -37,10 +37,9 @@ namespace reactor
     template <typename AsioSocket>
     void
     SocketOperation<AsioSocket>::_wakeup(
-      std::shared_ptr<bool> canceled,
       const boost::system::error_code& error)
     {
-      if (*canceled)
+      if (this->_canceled)
       {
         ELLE_TRACE_SCOPE("%s: ended: cancelled", *this);
         this->_signal();
