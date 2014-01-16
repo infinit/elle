@@ -473,6 +473,12 @@ namespace reactor
 #endif
           )
           this->template _raise<reactor::network::ConnectionClosed>();
+        // SSL yields short read if the underlying TCP connection is closed.
+        else if (error.category() == boost::asio::error::get_ssl_category() &&
+                 error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
+        {
+          this->template _raise<reactor::network::ConnectionClosed>();
+        }
         else if (error)
           this->template _raise<Exception>(error.message());
         this->_signal();

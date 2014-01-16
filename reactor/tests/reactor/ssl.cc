@@ -237,7 +237,39 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
       });
     reactor::wait(scope);
   };
+}
 
+ELLE_TEST_SCHEDULED(connection_closed)
+{
+  reactor::Barrier listening;
+  reactor::Barrier read;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate());
+        server.listen();
+        port = server.port();
+        listening.open();
+        std::unique_ptr<reactor::network::SSLSocket> socket(server.accept());
+        socket->write(elle::ConstWeakBuffer("data"));
+        reactor::wait(read);
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        reactor::wait(listening);
+        SSLSocket s("127.0.0.1", boost::lexical_cast<std::string>(port));
+        BOOST_CHECK_EQUAL(s.read(4).string(), "data");
+        read.open();
+        BOOST_CHECK_THROW(s.read(4), reactor::network::ConnectionClosed);
+      });
+    reactor::wait(scope);
+  };
 }
 
 ELLE_TEST_SUITE()
@@ -246,6 +278,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(transfer), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
   suite.add(BOOST_TEST_CASE(encryption), 0, 10);
+  suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);
 }
 
 const std::vector<unsigned char> fingerprint =
