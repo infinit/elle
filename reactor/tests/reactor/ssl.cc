@@ -190,16 +190,20 @@ ELLE_TEST_SCHEDULED(encryption)
       [&]
       {
         SSLSocket a("127.0.0.1", port);
-        a.write(elle::ConstWeakBuffer(question));
-        BOOST_CHECK_EQUAL(a.read(answer.size()).string(), answer);
+        ELLE_LOG("send question")
+          a.write(elle::ConstWeakBuffer(question));
+        ELLE_LOG("read answer")
+          BOOST_CHECK_EQUAL(a.read(answer.size()).string(), answer);
       });
     scope.run_background(
       "answer",
       [&]
       {
         SSLSocket b("127.0.0.1", port, *certificate);
-        BOOST_CHECK_EQUAL(b.read(question.size()).string(), question);
-        b.write(elle::ConstWeakBuffer(answer));
+        ELLE_LOG("read question")
+          BOOST_CHECK_EQUAL(b.read(question.size()).string(), question);
+        ELLE_LOG("send answer")
+          b.write(elle::ConstWeakBuffer(answer));
       });
     reactor::wait(scope);
   };
