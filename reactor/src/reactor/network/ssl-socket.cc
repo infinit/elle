@@ -150,20 +150,6 @@ namespace reactor
                       boost::asio::placeholders::error));
       }
 
-      virtual
-      void
-      _abort() override
-      {
-        boost::system::error_code ec;
-        this->_socket.next_layer().cancel(ec);
-        // Cancel may fail if for instance the socket was closed manually. If
-        // cancel fails, assume the operation is de facto cancelled and we can
-        // carry on. I know of no case were we "were not actually able to
-        // cancel the operation".
-        (void) ec;
-        reactor::wait(*this);
-      }
-
     private:
       void
       _wakeup(const boost::system::error_code& error)
