@@ -189,21 +189,16 @@ namespace reactor
     template <typename AsioSocket>
     class Connection: public SocketOperation<AsioSocket>
     {
-      public:
-        typedef typename AsioSocket::endpoint_type EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
-        Connection(Scheduler& scheduler,
-                   AsioSocket& socket,
-                   const EndPoint& endpoint):
-          Super(scheduler, socket),
-          _endpoint(endpoint)
-        {}
+    public:
+      typedef typename AsioSocket::endpoint_type EndPoint;
+      typedef SocketOperation<AsioSocket> Super;
+      Connection(Scheduler& scheduler,
+                 AsioSocket& socket,
+                 const EndPoint& endpoint):
+        Super(scheduler, socket),
+        _endpoint(endpoint)
+      {}
 
-        virtual const char* type_name() const
-        {
-          static const char* name = "socket connect";
-          return name;
-        }
 
       virtual
       void
@@ -212,15 +207,17 @@ namespace reactor
         stream << "connection to " << this->_endpoint;
       }
 
-      protected:
-        virtual void _start()
-        {
-          this->socket().async_connect(
-            _endpoint, boost::bind(&Connection::_wakeup, this, _1));
-        }
+    protected:
+      virtual
+      void
+      _start()
+      {
+        this->socket().async_connect(
+          _endpoint, boost::bind(&Connection::_wakeup, this, _1));
+      }
 
-      private:
-        EndPoint _endpoint;
+    private:
+      ELLE_ATTRIBUTE(EndPoint, endpoint);
     };
 
     template <typename AsioSocket, typename EndPoint>
@@ -403,6 +400,8 @@ namespace reactor
       public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
+      typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
+      typedef SocketOperation<Socket> Super;
       Read(Scheduler& scheduler,
            PlainSocket& plain,
            AsioSocket& socket,
@@ -431,7 +430,9 @@ namespace reactor
       }
 
     protected:
-      virtual void _start()
+      virtual
+      void
+      _start()
       {
         // FIXME: be synchronous if enough bytes are available
         if (_some)
@@ -446,21 +447,17 @@ namespace reactor
       }
 
     private:
-      void _wakeup(const boost::system::error_code& error,
-                   std::size_t read)
+      void
+      _wakeup(const boost::system::error_code& error,
+              std::size_t read)
       {
-        if (this->canceled())
-        {
-          this->_signal();
-          return;
-        }
-        if (error)
-          ELLE_TRACE("%s: read error: %s (%s)",
-                     this->_socket, error.message(), read);
-        else
-          ELLE_TRACE("%s: read completed: %s bytes",
-                     this->_socket, read);
-        _read = read;
+        this->_read = read;
+        Super::_wakeup(error);
+      }
+
+      void
+      _handle_error(boost::system::error_code const& error) override
+      {
         if (error == boost::asio::error::eof
             || error == boost::asio::error::operation_aborted
             || error == boost::asio::error::connection_aborted
@@ -477,9 +474,8 @@ namespace reactor
         {
           this->template _raise<reactor::network::ConnectionClosed>();
         }
-        else if (error)
-          this->template _raise<Exception>(error.message());
-        this->_signal();
+        else
+          Super::_handle_error(error);
       }
 
       ELLE_ATTRIBUTE(Buffer&, buffer);
@@ -691,22 +687,21 @@ namespace reactor
       void _wakeup(const boost::system::error_code& error,
                    std::size_t written)
       {
-        if (this->canceled())
-          return;
-        if (error)
-          ELLE_TRACE("%s: write error: %s", this->_socket, error.message());
-        else
-          ELLE_TRACE("%s: write completed: %s bytes", this->_socket, written);
-        _written = written;
+        this->_written = written;
+        Super::_wakeup(error);
+      }
+
+      void
+      _handle_error(boost::system::error_code const& error) override
+      {
         if (error == boost::asio::error::eof ||
             error == boost::asio::error::operation_aborted ||
             error == boost::asio::error::broken_pipe ||
             error == boost::asio::error::connection_aborted ||
             error == boost::asio::error::connection_reset)
           this->template _raise<ConnectionClosed>();
-        else if (error)
-          this->template _raise<Exception>(error.message());
-        this->_signal();
+        else
+          Super::_handle_error(error);
       }
 
       virtual

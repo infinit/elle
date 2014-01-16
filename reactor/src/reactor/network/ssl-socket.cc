@@ -145,26 +145,17 @@ namespace reactor
         ELLE_DUMP("%s: start async handshake", *this);
         this->_socket.async_handshake(
           this->_type,
-          boost::bind(&SSLHandshake::_wakeup,
-                      this,
-                      boost::asio::placeholders::error));
+          std::bind(&SSLHandshake::_wakeup,
+                    this,
+                    std::placeholders::_1));
       }
 
     private:
+      virtual
       void
-      _wakeup(const boost::system::error_code& error)
+      _handle_error(boost::system::error_code const& error) override
       {
-        if (error == boost::system::errc::operation_canceled)
-        {
-          this->_signal();
-          return;
-        }
-        if (error)
-        {
-          ELLE_ERR("error (%s): %s", *this, error.message());
-          this->_raise<SSLHandshakeError>(error.message());
-        }
-        this->_signal();
+        this->_raise<SSLHandshakeError>(error.message());
       }
 
       ELLE_ATTRIBUTE(SSLStream&, socket);

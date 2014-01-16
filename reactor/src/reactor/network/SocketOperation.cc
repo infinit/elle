@@ -40,20 +40,23 @@ namespace reactor
       const boost::system::error_code& error)
     {
       if (this->_canceled)
-      {
         ELLE_TRACE_SCOPE("%s: ended: cancelled", *this);
-        this->_signal();
-        return;
-      }
-      if (error)
+      else if (error)
       {
         ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
-        this->_raise<Exception>(error.message());
-        this->_signal();
-        return;
+        this->_handle_error(error);
       }
-      ELLE_TRACE_SCOPE("%s: ended", *this);
+      else
+        ELLE_TRACE_SCOPE("%s: ended", *this);
       this->_signal();
+    }
+
+    template <typename AsioSocket>
+    void
+    SocketOperation<AsioSocket>::_handle_error(
+      const boost::system::error_code& error)
+    {
+      this->_raise<Exception>(error.message());
     }
 
     template class SocketOperation<boost::asio::ip::tcp::socket>;
