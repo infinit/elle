@@ -23,6 +23,7 @@ def find(prefix = None,
       raise Exception('given Boost %s does not fit '
                       'the requested version %s' %
                       (prefix.version, version))
+    return prefix
   else:
     return Boost(prefix = prefix,
                  cxx_toolkit = cxx_toolkit,
