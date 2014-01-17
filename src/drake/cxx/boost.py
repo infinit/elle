@@ -14,6 +14,20 @@ import sys
 from .. import Exception, Path, Version
 from .  import Config, StaticLib
 
+def find(prefix = None,
+         cxx_toolkit = None,
+         version = Version(),
+         prefer_shared = True):
+  if isinstance(prefix, Boost):
+    if prefix.version not in version:
+      raise Exception('given Boost %s does not fit '
+                      'the requested version %s' %
+                      (prefix.version, version))
+  else:
+    return Boost(prefix = prefix,
+                 cxx_toolkit = cxx_toolkit,
+                 version = version,
+                 prefix_shared = prefer_shared)
 
 class Boost(drake.Configuration):
 
