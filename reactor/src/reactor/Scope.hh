@@ -44,7 +44,7 @@ namespace reactor
     ///
     /// \param name The name of the managed thread.
     /// \param a    The action run by the managed thread.
-    void
+    Thread&
     run_background(std::string const& name,
                    Thread::Action const& a);
     void

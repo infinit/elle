@@ -29,7 +29,7 @@ namespace reactor
   | Threads |
   `--------*/
 
-  void
+  Thread&
   Scope::run_background(std::string const& name,
                         Thread::Action const& a)
   {
@@ -87,6 +87,7 @@ namespace reactor
       else
         ++it;
     }
+    return *thread;
   }
 
   void
