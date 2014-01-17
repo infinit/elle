@@ -48,7 +48,7 @@ namespace reactor
       }
       else
         ELLE_TRACE_SCOPE("%s: ended", *this);
-      this->_signal();
+      this->done();
     }
 
     template <typename AsioSocket>

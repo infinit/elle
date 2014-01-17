@@ -8,22 +8,25 @@ namespace reactor
 {
   class Operation: public Waitable
   {
-    public:
-      typedef Operation Self;
-      typedef Waitable Super;
-      Operation();
-      Operation(Scheduler& scheduler);
-      void abort();
-      void start();
-      Scheduler& scheduler();
-      bool run(DurationOpt timeout = DurationOpt());
+  public:
+    typedef Operation Self;
+    typedef Waitable Super;
+    Operation();
+    Operation(Scheduler& scheduler);
+    Scheduler& scheduler();
+    bool run(DurationOpt timeout = DurationOpt());
+    void start();
 
-    protected:
-      virtual void _abort() = 0;
-      virtual void _start() = 0;
+    ELLE_ATTRIBUTE_R(bool, running);
 
-    private:
-      Scheduler& _sched;
+  protected:
+    void abort();
+    void done();
+    virtual void _abort() = 0;
+    virtual void _start() = 0;
+
+  private:
+    Scheduler& _sched;
   };
 }
 

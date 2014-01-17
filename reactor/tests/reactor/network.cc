@@ -535,6 +535,65 @@ underflow()
   sched.run();
 }
 
+/*------------------------.
+| Read / write cancelling |
+`------------------------*/
+
+ELLE_TEST_SCHEDULED(read_write_cancel)
+{
+  reactor::Barrier listening;
+  int port;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::TCPServer server;
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+        reactor::sleep();
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        reactor::wait(listening);
+        reactor::network::TCPSocket socket("127.0.0.1", port);
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+        {
+          scope.run_background(
+            "reader",
+            [&]
+            {
+              BOOST_CHECK_THROW(socket.read(1, 1_sec),
+                                reactor::network::TimeOut);
+            });
+          auto& writer = scope.run_background(
+            "writer",
+            [&]
+            {
+              socket.write(elle::ConstWeakBuffer("1"));
+            });
+          scope.run_background(
+            "",
+            [&]
+            {
+              // Check that terminating the write, that is done but has not yet
+              // given back control to its fiber, does not cancel the read
+              // operation on the socket.
+              writer.terminate();
+            });
+          reactor::wait(scope);
+          server.terminate();
+        };
+      });
+    reactor::wait(scope);
+  };
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -564,4 +623,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(resolution_failure), 0, 10);
   suite.add(BOOST_TEST_CASE(read_until), 0, 10);
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
+  suite.add(BOOST_TEST_CASE(read_write_cancel), 0, 10);
 }

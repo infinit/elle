@@ -126,5 +126,19 @@ namespace reactor
         throw Exception("The server is not listening.");
       return this->_acceptor->local_endpoint();
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Server::print(std::ostream& stream) const
+    {
+      stream << "Server";
+      if (this->_acceptor)
+      {
+        stream << "(" << this->_acceptor->local_endpoint() << ")";
+      }
+    }
   }
 }

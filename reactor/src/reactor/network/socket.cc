@@ -556,6 +556,7 @@ namespace reactor
       public SocketOperation<boost::asio::ip::tcp::socket>
     {
     public:
+      typedef SocketOperation<boost::asio::ip::tcp::socket> Super;
       ReadUntil(PlainSocket& plain,
                 AsioSocket& socket,
                 boost::asio::streambuf& buffer,
@@ -584,22 +585,7 @@ namespace reactor
       void _wakeup(const boost::system::error_code& error,
                    std::size_t read)
       {
-        if (this->canceled())
-        {
-          this->_signal();
-          return;
-        }
-        if (error)
-          ELLE_TRACE("%s: read until error: %s",
-                     this->_socket, error.message());
-        else
-          ELLE_TRACE("%s: read until completed: %s bytes",
-                     this->_socket, read);
-        if (error == boost::asio::error::eof || \
-            error == boost::system::errc::operation_canceled)
-          this->_raise<ConnectionClosed>();
-        else if (error)
-          this->_raise<Exception>(error.message());
+        if (!this->canceled())
         {
           std::istream s(&this->_streambuffer);
           this->_buffer.size(read);
@@ -607,7 +593,7 @@ namespace reactor
           ELLE_ASSERT(!s.fail());
           ELLE_ASSERT_EQ(s.gcount(), static_cast<signed>(read));
         }
-        this->_signal();
+        Super::_wakeup(error);
       }
 
     private:

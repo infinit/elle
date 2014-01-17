@@ -15,6 +15,7 @@ namespace reactor
 
   Operation::Operation(Scheduler& sched):
     Super(),
+    _running(false),
     _sched(sched)
   {}
 
@@ -23,38 +24,47 @@ namespace reactor
   {
     Thread* current = _sched.current();
     ELLE_ASSERT(current);
-    start();
+    this->start();
     try
+    {
+      if (!current->wait(*this, timeout))
       {
-        if (!current->wait(*this, timeout))
-          {
-            abort();
-            return false;
-          }
+        this->abort();
+        return false;
       }
+    }
     catch (const Terminate&)
-      {
-        abort();
-        throw;
-      }
+    {
+      this->abort();
+      throw;
+    }
     return true;
   }
 
   void
   Operation::abort()
   {
-    _abort();
+    if (this->running())
+      this->_abort();
   }
 
   void
   Operation::start()
   {
-    _start();
+    this->_running = true;
+    this->_start();
+  }
+
+  void
+  Operation::done()
+  {
+    this->_running = false;
+    this->_signal();
   }
 
   Scheduler&
   Operation::scheduler()
   {
-    return _sched;
+    return this->_sched;
   }
 }

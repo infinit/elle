@@ -13,7 +13,8 @@ namespace reactor
 {
   namespace network
   {
-    class Server
+    class Server:
+      public elle::Printable
     {
       /*---------.
       | Typedefs |
@@ -61,6 +62,15 @@ namespace reactor
 
       private:
         ELLE_ATTRIBUTE_X(std::unique_ptr<TCPAcceptor>, acceptor);
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      /// Print pretty representation to \a stream.
+      virtual
+      void
+      print(std::ostream& stream) const override;
     };
 
     template <typename Socket>
