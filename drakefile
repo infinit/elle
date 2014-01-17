@@ -52,7 +52,10 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
-  boost = boost or drake.cxx.boost.Boost(cxx_toolkit = cxx_toolkit)
+  boost = drake.cxx.boost.find(
+    boost,
+    cxx_toolkit = cxx_toolkit,
+    version = drake.Version(1, drake.Range(54, None)))
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
