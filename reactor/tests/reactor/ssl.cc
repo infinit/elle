@@ -2,9 +2,8 @@
 # include <winsock2.h>
 #endif
 
-#include <fstream>
-
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 #include <elle/finally.hh>
 #include <elle/os/getenv.hh>
@@ -49,15 +48,15 @@ load_certificate()
   auto key = tmp / "server-key.pem";
   auto dh1024 = tmp / "dh1024.pem";
   {
-    std::ofstream cert_f(cert.native(), std::ios_base::binary);
+    boost::filesystem::ofstream cert_f(cert, std::ios::binary);
     cert_f.write(server_cert.data(), server_cert.size());
   }
   {
-    std::ofstream key_f(key.native(), std::ios_base::binary);
+    boost::filesystem::ofstream key_f(key, std::ios::binary);
     key_f.write(server_key.data(), server_key.size());
   }
   {
-    std::ofstream dh1024_f(dh1024.native(), std::ios_base::binary);
+    boost::filesystem::ofstream dh1024_f(dh1024, std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
   return elle::make_unique<SSLCertificate>(cert.string(),
