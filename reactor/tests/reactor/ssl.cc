@@ -28,8 +28,6 @@ using reactor::network::SSLCertificate;
 using reactor::network::SSLSocket;
 using reactor::network::SSLServer;
 
-// Local fingerprint in sha1.
-
 extern const std::vector<unsigned char> fingerprint;
 extern const std::vector<char> server_cert;
 extern const std::vector<char> server_key;
@@ -51,20 +49,20 @@ load_certificate()
   auto key = tmp / "server-key.pem";
   auto dh1024 = tmp / "dh1024.pem";
   {
-    std::ofstream cert_f(cert.native(), std::ios::binary);
+    std::ofstream cert_f(cert.native(), std::ios_base::binary);
     cert_f.write(server_cert.data(), server_cert.size());
   }
   {
-    std::ofstream key_f(key.native(), std::ios::binary);
+    std::ofstream key_f(key.native(), std::ios_base::binary);
     key_f.write(server_key.data(), server_key.size());
   }
   {
-    std::ofstream dh1024_f(dh1024.native(), std::ios::binary);
+    std::ofstream dh1024_f(dh1024.native(), std::ios_base::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
   return elle::make_unique<SSLCertificate>(cert.string(),
-                                             key.string(),
-                                             dh1024.string());
+                                           key.string(),
+                                           dh1024.string());
 }
 
 ELLE_TEST_SCHEDULED(transfer)
