@@ -10,14 +10,6 @@ namespace reactor
   namespace network
   {
     boost::asio::ip::tcp::endpoint
-    resolve_tcp(Scheduler& scheduler,
-                const std::string& hostname,
-                const std::string& service);
-    boost::asio::ip::udp::endpoint
-    resolve_udp(Scheduler& scheduler,
-                const std::string& hostname,
-                const std::string& service);
-    boost::asio::ip::tcp::endpoint
     resolve_tcp(const std::string& hostname,
                 const std::string& service);
     boost::asio::ip::udp::endpoint
