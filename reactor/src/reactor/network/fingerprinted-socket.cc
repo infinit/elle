@@ -30,9 +30,7 @@ namespace reactor
       const std::string& port,
       std::vector<unsigned char> const& fingerprint,
       DurationOpt timeout):
-        FingerprintedSocket(
-          resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
-          fingerprint, timeout)
+        FingerprintedSocket(resolve_tcp(hostname, port), fingerprint, timeout)
     {}
 
 

@@ -24,25 +24,16 @@ namespace reactor
       TCPSocket(const std::string& hostname,
                 const std::string& port,
                 DurationOpt timeout = DurationOpt());
-      TCPSocket(Scheduler& sched,
-                const std::string& hostname,
-                const std::string& port,
-                DurationOpt timeout = DurationOpt());
       TCPSocket(const std::string& hostname,
                 int port,
                 DurationOpt timeout = DurationOpt());
-      TCPSocket(Scheduler& sched,
-                const std::string& hostname,
-                int port,
+      TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                 DurationOpt timeout = DurationOpt());
-      TCPSocket(Scheduler& sched,
-                boost::asio::ip::tcp::endpoint const& endpoint,
-                DurationOpt timeout = DurationOpt());
-      virtual ~TCPSocket();
+      virtual
+      ~TCPSocket();
     private:
       friend class TCPServer;
-      TCPSocket(Scheduler& sched,
-                std::unique_ptr<AsioSocket> socket,
+      TCPSocket(std::unique_ptr<AsioSocket> socket,
                 AsioSocket::endpoint_type const& endpoint);
 
     /*----------------.

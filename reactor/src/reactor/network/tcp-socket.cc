@@ -23,47 +23,28 @@ namespace reactor
     TCPSocket::TCPSocket(const std::string& hostname,
                          const std::string& port,
                          DurationOpt timeout):
-      TCPSocket(*reactor::Scheduler::scheduler(), hostname, port, timeout)
-    {}
-
-    TCPSocket::TCPSocket(Scheduler& sched,
-                         const std::string& hostname,
-                         const std::string& port,
-                         DurationOpt timeout):
-      TCPSocket(sched, resolve_tcp(sched, hostname, port), timeout)
+      TCPSocket(resolve_tcp(hostname, port), timeout)
     {}
 
     TCPSocket::TCPSocket(const std::string& hostname,
                          int port,
                          DurationOpt timeout):
-      TCPSocket(*reactor::Scheduler::scheduler(), hostname, port, timeout)
+      TCPSocket(hostname, boost::lexical_cast<std::string>(port), timeout)
     {}
 
-    TCPSocket::TCPSocket(Scheduler& sched,
-                         const std::string& hostname,
-                         int port,
+    TCPSocket::TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout):
-      TCPSocket(sched, resolve_tcp(sched,
-                                   hostname,
-                                   boost::lexical_cast<std::string>(port)),
-                timeout)
-    {}
-
-    TCPSocket::TCPSocket(Scheduler& sched,
-                         boost::asio::ip::tcp::endpoint const& endpoint,
-                         DurationOpt timeout):
-      Super(sched,
-            elle::make_unique<boost::asio::ip::tcp::socket>(sched.io_service()),
+      Super(elle::make_unique<boost::asio::ip::tcp::socket>(
+              reactor::Scheduler::scheduler()->io_service()),
             endpoint, timeout)
     {}
 
     TCPSocket::~TCPSocket()
     {}
 
-    TCPSocket::TCPSocket(Scheduler& sched,
-                         std::unique_ptr<AsioSocket> socket,
+    TCPSocket::TCPSocket(std::unique_ptr<AsioSocket> socket,
                          AsioSocket::endpoint_type const& endpoint):
-      Super(sched, std::move(socket), endpoint)
+      Super(std::move(socket), endpoint)
     {}
 
     /*----------------.

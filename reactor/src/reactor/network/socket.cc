@@ -54,7 +54,8 @@ namespace reactor
 
     namespace
     {
-      class StreamBuffer: public elle::DynamicStreamBuffer
+      class StreamBuffer:
+        public elle::DynamicStreamBuffer
       {
       public:
         typedef elle::DynamicStreamBuffer Super;
@@ -65,22 +66,26 @@ namespace reactor
           _pacified(false)
         {}
 
-        virtual Size read(char* buffer, Size size)
+        virtual
+        Size
+        read(char* buffer, Size size)
         {
-          if (!_pacified)
-            return _socket->read_some(network::Buffer(buffer, size));
+          if (!this->_pacified)
+            return this->_socket->read_some(network::Buffer(buffer, size));
           else
             return 0;
         }
 
-        virtual void write(char* buffer, Size size)
+        virtual
+        void
+        write(char* buffer, Size size)
         {
-          if (!_pacified)
-            _socket->write(elle::ConstWeakBuffer(buffer, size));
+          if (!this->_pacified)
+            this->_socket->write(elle::ConstWeakBuffer(buffer, size));
         }
 
-        Socket* _socket;
-        bool _pacified;
+        ELLE_ATTRIBUTE(Socket*, socket);
+        ELLE_ATTRIBUTE_RW(bool, pacified);
       };
     }
 
@@ -89,9 +94,8 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    Socket::Socket(Scheduler& sched)
-      : elle::IOStream(new StreamBuffer(this))
-      , _sched(sched)
+    Socket::Socket():
+      elle::IOStream(new StreamBuffer(this))
     {}
 
     Socket::~Socket()
@@ -99,28 +103,27 @@ namespace reactor
 
     std::unique_ptr<Socket>
     Socket::create(Protocol protocol,
-                   Scheduler& sched,
                    const std::string& hostname,
                    int port,
                    DurationOpt timeout)
     {
       switch (protocol)
-        {
-          case Protocol::tcp:
-            return std::unique_ptr<Socket>
-              (new TCPSocket(sched, hostname, port, timeout));
-          // case Protocol::udt:
-          //   return std::unique_ptr<Socket>
-          //     (new UDTSocket(sched, hostname, port, timeout));
-          default:
-            elle::unreachable();
-        }
+      {
+        case Protocol::tcp:
+          return std::unique_ptr<Socket>(
+            new TCPSocket(hostname, port, timeout));
+        // case Protocol::udt:
+        //   return std::unique_ptr<Socket>
+        //     (new UDTSocket(sched, hostname, port, timeout));
+        default:
+          elle::unreachable();
+      }
     }
 
     void
     Socket::_pacify_streambuffer()
     {
-      static_cast<StreamBuffer*>(this->rdbuf())->_pacified = true;
+      static_cast<StreamBuffer*>(this->rdbuf())->pacified(true);
     }
 
     /*----------------.
@@ -146,25 +149,23 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
-      Scheduler& sched,
       std::unique_ptr<AsioSocket> socket,
       const EndPoint& peer,
       DurationOpt timeout):
-      Super(sched),
-      _socket(std::move(socket)),
-      _peer(peer)
+        Super(),
+        _socket(std::move(socket)),
+        _peer(peer)
     {
       this->_connect(peer, timeout);
     }
 
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
-      Scheduler& sched,
       std::unique_ptr<AsioSocket> socket,
       EndPoint const& peer):
-      Super(sched),
-      _socket(std::move(socket)),
-      _peer(peer)
+        Super(),
+        _socket(std::move(socket)),
+        _peer(peer)
     {}
 
     template <typename AsioSocket, typename EndPoint>
@@ -172,7 +173,7 @@ namespace reactor
     {
       try
       {
-        _disconnect();
+        this->_disconnect();
       }
       catch (elle::Exception const&)
       {
@@ -187,15 +188,15 @@ namespace reactor
     `-----------*/
 
     template <typename AsioSocket>
-    class Connection: public SocketOperation<AsioSocket>
+    class Connection:
+      public SocketOperation<AsioSocket>
     {
     public:
       typedef typename AsioSocket::endpoint_type EndPoint;
       typedef SocketOperation<AsioSocket> Super;
-      Connection(Scheduler& scheduler,
-                 AsioSocket& socket,
+      Connection(AsioSocket& socket,
                  const EndPoint& endpoint):
-        Super(scheduler, socket),
+        Super(socket),
         _endpoint(endpoint)
       {}
 
@@ -213,7 +214,7 @@ namespace reactor
       _start()
       {
         this->socket().async_connect(
-          _endpoint, boost::bind(&Connection::_wakeup, this, _1));
+          this->_endpoint, boost::bind(&Connection::_wakeup, this, _1));
       }
 
     private:
@@ -230,7 +231,7 @@ namespace reactor
       try
       {
         Connection<typename Spe::Socket> connection(
-          this->scheduler(), Spe::socket(*this->_socket), peer);
+          Spe::socket(*this->_socket), peer);
         if (!connection.run(timeout))
           throw TimeOut();
       }
@@ -293,16 +294,6 @@ namespace reactor
         }
         Spe::socket(*this->_socket).close();
       }
-    }
-
-    /*-----------.
-    | Scheduling |
-    `-----------*/
-
-    Scheduler&
-    Socket::scheduler()
-    {
-      return _sched;
     }
 
     /*-----.
@@ -402,12 +393,11 @@ namespace reactor
     public:
       typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
       typedef SocketOperation<Socket> Super;
-      Read(Scheduler& scheduler,
-           PlainSocket& plain,
+      Read(PlainSocket& plain,
            AsioSocket& socket,
            Buffer& buffer,
            bool some):
-        SocketOperation<AsioSocket>(scheduler, socket),
+        SocketOperation<AsioSocket>(socket),
         _buffer(buffer),
         _read(0),
         _some(some),
@@ -427,14 +417,14 @@ namespace reactor
       _start()
       {
         // FIXME: be synchronous if enough bytes are available
-        if (_some)
+        if (this->_some)
           this->_socket.socket()->async_read_some(
-            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::asio::buffer(this->_buffer.data(), this->_buffer.size()),
             boost::bind(&Read::_wakeup, this, _1, _2));
         else
           boost::asio::async_read(
             *this->_socket.socket(),
-            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::asio::buffer(this->_buffer.data(), this->_buffer.size()),
             boost::bind(&Read::_wakeup, this, _1, _2));
       }
 
@@ -481,7 +471,7 @@ namespace reactor
     StreamSocket<AsioSocket, EndPoint>::read(Buffer buf,
                                              DurationOpt timeout)
     {
-      _read(buf, timeout, false);
+      this->_read(buf, timeout, false);
     }
 
     template <typename AsioSocket, typename EndPoint>
@@ -489,7 +479,7 @@ namespace reactor
     StreamSocket<AsioSocket, EndPoint>::read_some(Buffer buf,
                                                   DurationOpt timeout)
     {
-      return _read(buf, timeout, true);
+      return this->_read(buf, timeout, true);
     }
 
     template <typename AsioSocket, typename EndPoint>
@@ -518,8 +508,7 @@ namespace reactor
         buf = Buffer(buf.data() + size, buf.size() - size);
       }
       typedef SocketSpecialization<AsioSocket> Spe;
-      Read<Self, typename Spe::Socket> read(this->scheduler(),
-                                            *this,
+      Read<Self, typename Spe::Socket> read(*this,
                                             Spe::socket(*this->socket()),
                                             buf, some);
       bool finished;
@@ -561,8 +550,7 @@ namespace reactor
                 AsioSocket& socket,
                 boost::asio::streambuf& buffer,
                 std::string const& delimiter):
-        SocketOperation<AsioSocket>(
-          *reactor::Scheduler::scheduler(), socket),
+        SocketOperation<AsioSocket>(socket),
         _socket(plain),
         _streambuffer(buffer),
         _delimiter(delimiter),
@@ -570,7 +558,9 @@ namespace reactor
       {}
 
     protected:
-      virtual void _start()
+      virtual
+      void
+      _start()
       {
         boost::asio::async_read_until(
           this->socket(),
@@ -582,8 +572,8 @@ namespace reactor
                     std::placeholders::_2));
       }
 
-      void _wakeup(const boost::system::error_code& error,
-                   std::size_t read)
+      void
+      _wakeup(const boost::system::error_code& error, std::size_t read)
       {
         if (!this->canceled())
         {
@@ -646,14 +636,16 @@ namespace reactor
       Write(PlainSocket& plain,
             AsioSocket& socket,
             elle::ConstWeakBuffer buffer):
-        Super(*Scheduler::scheduler(), Spe::socket(socket)),
+        Super(Spe::socket(socket)),
         _socket(plain),
         _buffer(buffer),
         _written(0)
       {}
 
     protected:
-      virtual void _start()
+      virtual
+      void
+      _start()
       {
         boost::asio::async_write(
           *this->_socket.socket(),
@@ -662,8 +654,8 @@ namespace reactor
       }
 
     private:
-      void _wakeup(const boost::system::error_code& error,
-                   std::size_t written)
+      void
+      _wakeup(const boost::system::error_code& error, std::size_t written)
       {
         this->_written = written;
         Super::_wakeup(error);
@@ -707,10 +699,10 @@ namespace reactor
       }
       catch (...)
       {
-        _write_mutex.release();
+        this->_write_mutex.release();
         throw;
       }
-      _write_mutex.release();
+      this->_write_mutex.release();
     }
 
     /*------------------------.

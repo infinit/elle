@@ -58,15 +58,13 @@ namespace reactor
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
                          DurationOpt timeout):
-      SSLSocket(resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
-                timeout)
+      SSLSocket(resolve_tcp(hostname, port), timeout)
     {}
 
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout):
       SSLCertificateOwner(),
-      Super(*reactor::Scheduler::scheduler(),
-            elle::make_unique<SSLStream>(
+      Super(elle::make_unique<SSLStream>(
               reactor::Scheduler::scheduler()->io_service(),
               this->certificate()->context()),
             endpoint, timeout),
@@ -79,17 +77,14 @@ namespace reactor
                          const std::string& port,
                          SSLCertificate& certificate,
                          DurationOpt timeout):
-      SSLSocket(resolve_tcp(*reactor::Scheduler::scheduler(), hostname, port),
-                certificate,
-                timeout)
+      SSLSocket(resolve_tcp(hostname, port), certificate, timeout)
     {}
 
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          SSLCertificate& certificate,
                          DurationOpt timeout):
       SSLCertificateOwner(),
-      Super(*reactor::Scheduler::scheduler(),
-            elle::make_unique<SSLStream>(
+      Super(elle::make_unique<SSLStream>(
               reactor::Scheduler::scheduler()->io_service(),
               certificate.context()),
             endpoint, timeout),
@@ -105,7 +100,7 @@ namespace reactor
                          SSLEndPoint const& endpoint,
                          std::shared_ptr<SSLCertificate> certificate):
       SSLCertificateOwner(certificate),
-      Super(*reactor::Scheduler::scheduler(), std::move(socket), endpoint),
+      Super(std::move(socket), endpoint),
       _timeout(DurationOpt())
     {}
 
@@ -122,10 +117,9 @@ namespace reactor
       public SocketOperation<boost::asio::ip::tcp::socket>
     {
     public:
-      SSLHandshake(Scheduler& scheduler,
-                   SSLStream& socket,
+      SSLHandshake(SSLStream& socket,
                    SSLStream::handshake_type const& type):
-        SocketOperation(scheduler, socket.next_layer()),
+        SocketOperation(socket.next_layer()),
         _socket(socket),
         _type(type)
       {}
@@ -166,8 +160,7 @@ namespace reactor
     SSLSocket::_client_handshake()
     {
       ELLE_DEBUG("start client handshake");
-      SSLHandshake handshaker(scheduler(),
-                              *this->_socket,
+      SSLHandshake handshaker(*this->_socket,
                               SSLStream::handshake_type::client);
       if (!handshaker.run(this->_timeout))
         throw TimeOut();
@@ -178,8 +171,7 @@ namespace reactor
     SSLSocket::_server_handshake()
     {
       ELLE_DEBUG("start server handshake");
-      SSLHandshake handshaker(scheduler(),
-                              *this->_socket,
+      SSLHandshake handshaker(*this->_socket,
                               SSLStream::handshake_type::server);
       if (!handshaker.run(this->_timeout))
         throw TimeOut();

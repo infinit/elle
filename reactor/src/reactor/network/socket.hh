@@ -40,17 +40,16 @@ namespace reactor
       `-------------*/
       public:
         /// Create an unbound socket.
-        Socket(Scheduler& sched);
+        Socket();
         /// Destroy a socket.
-        virtual ~Socket();
+        virtual
+        ~Socket();
         /** Create a socket for the given protocol.
          *  @param protocol The transport protocl to use.
-         *  @param sched The underlying scheduler.
          */
         static
         std::unique_ptr<Socket>
         create(Protocol protocol,
-               Scheduler& sched,
                const std::string& hostname,
                int port,
                DurationOpt connection_timeout);
@@ -84,21 +83,16 @@ namespace reactor
       virtual
       void
       read(Buffer buffer, DurationOpt timeout = DurationOpt());
+
       virtual
       Size
       read_some(Buffer buffer, DurationOpt timeout = DurationOpt()) = 0;
+
       elle::Buffer
       read(Size size, DurationOpt timeout = DurationOpt());
+
       elle::Buffer
       read_some(Size size, DurationOpt timeout = DurationOpt());
-
-      /*-----------.
-      | Scheduling |
-      `-----------*/
-      public:
-        Scheduler& scheduler();
-      private:
-        Scheduler& _sched;
 
      /*----------------.
      | Pretty printing |
@@ -133,16 +127,15 @@ namespace reactor
     `-------------*/
     protected:
       /// Create and connect socket.
-      PlainSocket(Scheduler& sched,
-                  std::unique_ptr<AsioSocket> socket,
+      PlainSocket(std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer,
                   DurationOpt timeout);
       /// Create wrapping socket.
-      PlainSocket(Scheduler& sched,
-                  std::unique_ptr<AsioSocket> socket,
+      PlainSocket(std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer);
       /// Destroy a socket.
-      virtual ~PlainSocket();
+      virtual
+      ~PlainSocket();
 
     /*-----------.
     | Connection |
@@ -208,18 +201,16 @@ namespace reactor
     `-------------*/
     public:
       // XXX: gcc 4.7 can't use parent's constructor.
-      StreamSocket(Scheduler& sched,
-                   std::unique_ptr<AsioSocket> socket,
+      StreamSocket(std::unique_ptr<AsioSocket> socket,
                    EndPoint const& peer,
                    DurationOpt timeout):
-        Super(sched, std::move(socket), peer, timeout)
+        Super(std::move(socket), peer, timeout)
       {}
 
       // XXX: gcc 4.7 can't use parent's constructor.
-      StreamSocket(Scheduler& sched,
-                   std::unique_ptr<AsioSocket> socket,
+      StreamSocket(std::unique_ptr<AsioSocket> socket,
                    EndPoint const& peer):
-        Super(sched, std::move(socket), peer)
+        Super(std::move(socket), peer)
       {}
 
       virtual
@@ -257,7 +248,7 @@ namespace reactor
       write(elle::ConstWeakBuffer buffer);
 
     private:
-      Mutex _write_mutex;
+      ELLE_ATTRIBUTE(Mutex, write_mutex);
 
     /*-----------------.
     | Concrete sockets |
