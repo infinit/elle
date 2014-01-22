@@ -11,9 +11,8 @@ namespace reactor
   {
     template <typename AsioSocket>
     SocketOperation<AsioSocket>::SocketOperation(
-      Scheduler& scheduler,
       AsioSocket& socket):
-      Operation(scheduler),
+      Operation(*reactor::Scheduler::scheduler()),
       _socket(socket),
       _canceled(false)
     {}
