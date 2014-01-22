@@ -17,7 +17,6 @@
 #include <reactor/network/ssl-server.hh>
 #include <reactor/network/ssl-socket.hh>
 #include <reactor/network/tcp-server.hh>
-#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.SSL.test");
@@ -94,7 +93,6 @@ ELLE_TEST_SCHEDULED(transfer)
         SSLCertificate certificate;
         reactor::wait(listening);
         auto endpoint = reactor::network::resolve_tcp(
-          *reactor::Scheduler::scheduler(),
           "127.0.0.1",
           boost::lexical_cast<std::string>(port));
         FingerprintedSocket socket(endpoint,

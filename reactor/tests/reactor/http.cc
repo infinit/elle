@@ -349,7 +349,7 @@ concurrent()
     [&]
     {
       auto& sched = *reactor::Scheduler::scheduler();
-      reactor::network::TCPServer server(sched);
+      reactor::network::TCPServer server{};
       server.listen();
       port = server.port();
       ELLE_LOG("listen on port %s", port);
@@ -440,7 +440,7 @@ timeout()
   int port;
   auto tcp_serv = [&]
   {
-    reactor::network::TCPServer serv(sched);
+    reactor::network::TCPServer serv{};
     auto* current = sched.current();
     current->wait(go);
     serv.listen(0);

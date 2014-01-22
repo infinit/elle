@@ -47,7 +47,7 @@ template <typename Server, typename Socket>
 void
 silent_server()
 {
-  Server server(*reactor::Scheduler::scheduler());
+  Server server{};
   server.listen(4242);
   std::unique_ptr<reactor::network::Socket> socket(server.accept());
   while (true)
@@ -76,7 +76,7 @@ static
 int
 free_port()
 {
-  TCPServer s(*reactor::Scheduler::scheduler());
+  TCPServer s{};
   s.listen();
   return s.port();
 }
@@ -85,12 +85,11 @@ static
 void
 test_destroy_socket_non_connected()
 {
-  auto& sched = *reactor::Scheduler::scheduler();
   // Used to fail because shuting down a socket whose connection
   // failed used to raise.
   try
   {
-    TCPSocket socket(sched, "127.0.0.1", free_port());
+    TCPSocket socket("127.0.0.1", free_port());
   }
   catch (...)
   {
@@ -118,7 +117,7 @@ template <typename Server, typename Socket>
 void
 slowpoke_server()
 {
-  Server server(*sched);
+  Server server{};
   server.listen(4242);
   std::unique_ptr<reactor::network::Socket> socket(server.accept());
   sched->current()->sleep(boost::posix_time::seconds(2));
@@ -129,7 +128,7 @@ template <typename Server, typename Socket>
 void
 timeout_read()
 {
-  Socket socket(*sched, "127.0.0.1", 4242);
+  Socket socket("127.0.0.1", 4242);
   // Poke the server to establish the pseudo connection in the UDP case.
   socket.write(elle::ConstWeakBuffer("poke"));
   Byte b;
@@ -178,7 +177,7 @@ template <typename Server, typename Socket>
 void
 server()
 {
-  Server server(*sched);
+  Server server{};
   server.listen(4242);
   int nclients = 2;
   std::vector<reactor::Thread*> clients;
@@ -231,7 +230,7 @@ template <typename Server, typename Socket>
 void
 client(std::vector<std::string> messages, unsigned& check)
 {
-  Socket s(*sched, "127.0.0.1", 4242);
+  Socket s("127.0.0.1", 4242);
   BOOST_FOREACH (const std::string& message, messages)
   {
     s.write(elle::ConstWeakBuffer(message));
@@ -304,8 +303,8 @@ socket_destruction()
 
   auto action = [&] ()
     {
-      auto socket = elle::make_unique<reactor::network::TCPSocket>(
-        sched, "127.0.0.1", 4242);
+      auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
+                                                                   4242);
       *socket << "foo";
       socket->socket()->close();
       // Check the IOStream doesn't try to flush the buffer if the TCPSocket
@@ -334,8 +333,8 @@ socket_close()
 
   auto action = [&] ()
     {
-      auto socket = elle::make_unique<reactor::network::TCPSocket>(
-        sched, "127.0.0.1", 4242);
+      auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
+                                                                   4242);
       elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
         scope.run_background(
@@ -375,10 +374,10 @@ resolution_failure()
     [&]
     {
       BOOST_CHECK_THROW(
-        reactor::network::resolve_tcp(sched, "does.not.exist", "http"),
+        reactor::network::resolve_tcp("does.not.exist", "http"),
         reactor::network::ResolutionError);
       BOOST_CHECK_THROW(
-        reactor::network::TCPSocket(sched, "does.not.exist", "http"),
+        reactor::network::TCPSocket("does.not.exist", "http"),
         reactor::network::ResolutionError);
     });
   sched.run();
