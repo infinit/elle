@@ -116,7 +116,7 @@ caller(reactor::Semaphore& lock, int& port)
 {
   auto& sched = *reactor::Scheduler::scheduler();
   sched.current()->wait(lock);
-  reactor::network::TCPSocket socket(sched, "127.0.0.1", port);
+  reactor::network::TCPSocket socket("127.0.0.1", port);
   infinit::protocol::Serializer s(sched, socket);
   infinit::protocol::ChanneledStream channels(sched, s);
 
@@ -134,7 +134,7 @@ runner(reactor::Semaphore& lock,
        int& port)
 {
   auto& sched = *reactor::Scheduler::scheduler();
-  reactor::network::TCPServer server(sched);
+  reactor::network::TCPServer server{};
   server.listen();
   port = server.port();
   lock.release();
@@ -196,7 +196,7 @@ pacify(reactor::Semaphore& lock,
 {
   auto& sched = *reactor::Scheduler::scheduler();
   sched.current()->wait(lock);
-  reactor::network::TCPSocket socket(sched, "127.0.0.1", port);
+  reactor::network::TCPSocket socket("127.0.0.1", port);
   infinit::protocol::Serializer s(sched, socket);
   infinit::protocol::ChanneledStream channels(sched, s);
 
@@ -238,7 +238,7 @@ counter(reactor::Semaphore& lock,
 {
   auto& sched = *reactor::Scheduler::scheduler();
   sched.current()->wait(lock);
-  reactor::network::TCPSocket socket(sched, "127.0.0.1", port);
+  reactor::network::TCPSocket socket("127.0.0.1", port);
   infinit::protocol::Serializer s(sched, socket);
   infinit::protocol::ChanneledStream channels(sched, s);
 
@@ -304,7 +304,7 @@ disconnection_caller(reactor::Semaphore& lock,
 {
   auto& sched = *reactor::Scheduler::scheduler();
   sched.current()->wait(lock);
-  reactor::network::TCPSocket socket(sched, "127.0.0.1", port);
+  reactor::network::TCPSocket socket("127.0.0.1", port);
   infinit::protocol::Serializer s(sched, socket);
   infinit::protocol::ChanneledStream channels(sched, s);
 
