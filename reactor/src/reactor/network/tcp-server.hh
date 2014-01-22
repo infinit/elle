@@ -2,7 +2,6 @@
 # define INFINIT_REACTOR_NETWORK_TCP_SERVER_HH
 
 # include <reactor/network/server.hh>
-# include <reactor/scheduler.hh>
 
 namespace reactor
 {
@@ -18,7 +17,6 @@ namespace reactor
       public:
         typedef Server Super;
         TCPServer();
-        TCPServer(Scheduler& scheduler);
 
         virtual
         ~TCPServer();

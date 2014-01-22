@@ -14,10 +14,6 @@ namespace reactor
       Super()
     {}
 
-    TCPServer::TCPServer(Scheduler& scheduler):
-      Super(scheduler)
-    {}
-
     TCPServer::~TCPServer()
     {}
 
@@ -29,12 +25,12 @@ namespace reactor
     {
       // Open a new raw socket.
       auto new_socket = elle::make_unique<TCPSocket::AsioSocket>(
-        this->_scheduler.io_service());
+        reactor::Scheduler::scheduler()->io_service());
       EndPoint peer;
       this->_accept(*new_socket, peer);
       // Socket is now connected so make it into a TCPSocket.
       std::unique_ptr<TCPSocket> res(
-        new TCPSocket(this->_scheduler, std::move(new_socket), peer));
+        new TCPSocket(std::move(new_socket), peer));
       ELLE_TRACE("%s: got connection: %s", *this, *res);
       return res;
     }

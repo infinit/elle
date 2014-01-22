@@ -10,7 +10,7 @@ namespace reactor
     | Construction |
     `-------------*/
     SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate):
-      Super(*reactor::Scheduler::scheduler()),
+      Super(),
       _certificate(std::move(certificate))
     {}
 
