@@ -17,6 +17,8 @@ rule_check = None
 rule_install = None
 rule_tests = None
 
+dpkg_preload = None
+
 # XXX
 with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
@@ -384,6 +386,11 @@ def configure(zlib_lib,
     library = lib_dynamic
   else:
     library = lib_static
+
+  global dpkg_preload
+  dpkg_preload = drake.cxx.Module('dpkg_preload',
+                                  drake.nodes('dpkg_preload.cc'),
+                                  cxx_toolkit, drake.cxx.Config())
 
   # Tests
 
