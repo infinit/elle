@@ -89,3 +89,9 @@ class Renderer(drake.Converter):
   @property
   def rendered(self):
     return self.__target
+
+  def hash(self):
+    return repr({
+      'content': self.__content,
+      'pythonpath': self.__pythonpath,
+    })
