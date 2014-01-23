@@ -254,7 +254,6 @@ namespace elle
     boost::asio::io_service   io_service;
     std::string               server;
     uint16_t                  port;
-    bool                      check_errors;
     std::string               user_agent;
 
     /*-------------.
@@ -266,7 +265,6 @@ namespace elle
       : io_service{}
       , server{server}
       , port{port}
-      , check_errors{check_errors}
       , user_agent{user_agent}
     {}
   };
