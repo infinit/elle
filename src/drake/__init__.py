@@ -2670,10 +2670,16 @@ def __copy_stripped(source, to, strip_prefix, builder):
   path = source.name_absolute()
   if strip_prefix is not None:
     path = path.without_prefix(strip_prefix)
-  path = to / path
+  path = (to / path).canonize()
+  # Break install loops
+  if path in drake.Drake.current.nodes:
+    if Copy._Copy__original(source) is drake.node(path):
+      return None
   res = builder(source, path).target()
   for dep in source.dependencies:
-    res.dependency_add(__copy_stripped(dep, to, strip_prefix, builder))
+    node = __copy_stripped(dep, to, strip_prefix, builder)
+    if node is not None:
+      res.dependency_add(node)
   return res
 
 def copy(sources, to, strip_prefix = None):
