@@ -40,11 +40,12 @@ class Boost(drake.Configuration):
     'system': 'system',
     'filesystem': 'filesystem',
     'signals': 'signals',
-    'date': 'date_time',
+    'date_time': 'date_time',
     'regex': 'regex',
-    'program': 'program_options',
+    'program_options': 'program_options',
     'chrono': 'chrono',
     'iostreams': 'iostreams',
+    'python': ('python3', 'python-3.2')
     }
 
   def __init__(self,
@@ -111,9 +112,12 @@ class Boost(drake.Configuration):
       self.__prefix = path
       self.__cfg = cfg
       for prop in self.__libraries:
-        setattr(self, '_Boost__cfg_%s' % prop, None)
-        setattr(self, '_Boost__cfg_%s_static' % prop, None)
-      self.__cfg_python = None
+        setattr(self, '_Boost__config_%s_dynamic' % prop, None)
+        setattr(self, '_Boost__config_%s_static' % prop, None)
+        setattr(self, '_Boost__config_%s_dynamic_header' % prop, None)
+        setattr(self, '_Boost__config_%s_static_header' % prop, None)
+        setattr(self, '_Boost__%s_dynamic' % prop, None)
+        setattr(self, '_Boost__%s_static' % prop, None)
       self.__version = version_eff
       return
 
@@ -139,7 +143,9 @@ class Boost(drake.Configuration):
     variants = ['']
     if lib == 'thread' and cxx_toolkit.os is drake.os.windows:
       variants.append('_win32')
-    for suffix, variant in itertools.product(suffixes, variants):
+    if isinstance(lib, str):
+      lib = (lib,)
+    for lib, suffix, variant in itertools.product(lib, suffixes, variants):
       libname = 'boost_%s%s%s' % (lib, variant, suffix)
       tests = []
       if static:
@@ -152,28 +158,12 @@ class Boost(drake.Configuration):
       for test in  tests:
         if test.exists():
           return test
-    raise Exception('Unable to find boost library %s '
-                    'in %s' % (lib, lib_path))
+    raise Exception(
+      'Unable to find %s Boost %s library in %s' % \
+      ('static' if static else 'dynamic', lib, lib_path))
 
   def config(self):
       return self.__cfg
-
-  def config_python(self, static = False):
-    if self.__cfg_python is None:
-      self.__cfg_python = Config()
-      # FIXME: do something smart here
-      try:
-        lib = self.__find_lib('python-3.2',
-                              self.__lib_path,
-                              self.__cxx_toolkit,
-                              static)
-      except:
-        lib = self.__find_lib('python3',
-                              self.__lib_path,
-                              self.__cxx_toolkit,
-                              static)
-      self.__cfg_python.library_add(lib)
-    return self.__cfg_python
 
   def __repr__(self):
     return 'Boost(prefix = %s)' % repr(self.__prefix)
@@ -185,26 +175,34 @@ class Boost(drake.Configuration):
 
 for prop, library in Boost._Boost__libraries.items():
   def unclosure(prop, library):
-    def m(self, static = None):
-      if static is None:
-          static = not self._Boost__prefer_shared
-      pname = '_Boost__cfg_%s%s' % (prop, static and '_static' or '')
-
-      if getattr(self, pname) is None:
+    def library_getter(self, static):
+      name = '_Boost__%s_%s' % (prop,
+                                'static' if static else 'dynamic')
+      if getattr(self, name) is None:
         lib = self._Boost__find_lib(library,
                                     self._Boost__lib_path,
                                     self._Boost__cxx_toolkit,
                                     static = static)
+        setattr(self, name, drake.node(lib))
+      return getattr(self, name)
+    setattr(Boost, '%s_dynamic' % prop,
+            property(lambda self: library_getter(self, False)))
+    setattr(Boost, '%s_static' % prop,
+            property(lambda self: library_getter(self, True)))
+    def config_getter(self, static = None, link = True):
+      if static is None:
+        static = not self._Boost__prefer_shared
+      name = '_Boost__config_%s_%s' % \
+             (prop, 'static' if static else 'dynamic')
+      if getattr(self, name) is None:
+        lib = library_getter(self, static)
         c = Config()
-        c.library_add(lib)
-
-        if library == 'unit_test_framework':
-          macro = 'TEST'
-        else:
-          macro = library.upper()
+        macro = prop.upper()
         macro += static and '_STATIC' or '_DYN'
         c.define('BOOST_%s_LINK' % macro, 1)
-        setattr(self, pname, c)
-      return getattr(self, pname)
-    setattr(Boost, 'config_%s' % prop, m)
+        setattr(self, name + '_header', Config(c))
+        c.library_add(lib)
+        setattr(self, name, Config(c))
+      return getattr(self, name + ('_header' if not link else ''))
+    setattr(Boost, 'config_%s' % prop, config_getter)
   unclosure(prop, library)
