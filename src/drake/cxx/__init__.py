@@ -454,6 +454,19 @@ class Config:
     def libraries(self):
       return tuple(self.__libraries)
 
+    def __repr__(self):
+      content = {}
+      if self._includes:
+        content['includes'] = self._includes.keys()
+      if self.__defines:
+        content['defines'] = self.__defines.keys()
+      if self.libraries:
+        content['libraries'] = self.libraries
+      content_str = map(
+        lambda k: '%s = [%s]' % (k, ', '.join(map(repr, content[k]))),
+        sorted(content.keys()))
+      return 'drake.cxx.Config(%s)' % ', '.join(content_str)
+
 # FIXME: Factor node and builder for executable and staticlib
 
 class _ToolkitType(type):
