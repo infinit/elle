@@ -2,7 +2,7 @@
 #include <cryptography/Exception.hh>
 
 #include <elle/system/platform.hh>
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 #include <elle/log.hh>
 
 #include <system_error>
