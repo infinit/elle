@@ -39,10 +39,6 @@ namespace elle
         Stream(std::ostream& underlying,
                bool honor_flush,
                Buffer::Size buffer_size = 1 << 16);
-
-      private:
-        /// The underlying stream to write to.
-        std::ostream& _underlying;
       };
     }
   }

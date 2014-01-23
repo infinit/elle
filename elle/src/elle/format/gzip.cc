@@ -141,8 +141,7 @@ namespace elle
       Stream::Stream(std::ostream& underlying,
                      bool honor_flush,
                      Buffer::Size buffer_size):
-        IOStream(new StreamBuffer(underlying, honor_flush, buffer_size)),
-        _underlying(underlying)
+        IOStream(new StreamBuffer(underlying, honor_flush, buffer_size))
       {}
     }
   }
