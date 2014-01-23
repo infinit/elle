@@ -144,30 +144,30 @@ template<template <ArchiveMode> class Archive> void testClass()
     }
 }
 
-static
-void
-testJSON()
-{
-  A el1{"salut", "pif", "paf", 42.3f, 32, 3000};
-  A el2{"1", "2", "3", 77.5f, 24, 3001};
-  B el3{12, 13, A{"4", "5", "6", 32.5f, 2000000000, 443}};
-  std::stringstream ss;
-    {
-      OutputJSONArchive(ss, el1);
-      OutputJSONArchive(ss, el2);
-      OutputJSONArchive(ss, el3);
-    }
-    {
-      A a;
-      InputJSONArchive(ss, a);
-      assert(a == el1);
-      InputJSONArchive(ss, a);
-      assert(a == el2);
-      B b;
-      InputJSONArchive(ss, b);
-      assert(b == el3);
-    }
-}
+// static
+// void
+// testJSON()
+// {
+//   A el1{"salut", "pif", "paf", 42.3f, 32, 3000};
+//   A el2{"1", "2", "3", 77.5f, 24, 3001};
+//   B el3{12, 13, A{"4", "5", "6", 32.5f, 2000000000, 443}};
+//   std::stringstream ss;
+//     {
+//       OutputJSONArchive(ss, el1);
+//       OutputJSONArchive(ss, el2);
+//       OutputJSONArchive(ss, el3);
+//     }
+//     {
+//       A a;
+//       InputJSONArchive(ss, a);
+//       assert(a == el1);
+//       InputJSONArchive(ss, a);
+//       assert(a == el2);
+//       B b;
+//       InputJSONArchive(ss, b);
+//       assert(b == el3);
+//     }
+// }
 
 #include <elle/format/hexadecimal.hh>
 
