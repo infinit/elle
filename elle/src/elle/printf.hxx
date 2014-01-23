@@ -21,9 +21,14 @@ namespace elle
     // Select the right feeder.
     // Feeder for "printable" objects.
     template<bool __b>
-    struct FeedItSwissMotherFuckingCheese
+    // Used to be FeedItSwissMotherFuckingCheese. This comment honours that
+    // legacy but stops people from finding foul language in their crash logs.
+    struct PrintFeed
     {
-      template<size_t> struct Helper{};
+      template<size_t>
+      struct
+      Helper
+      {};
 
       // Default overload :
       // - the dummy int parameter make call unambiguous
@@ -56,7 +61,7 @@ namespace elle
 
     // Feeder for "non printable" objects.
     template <>
-    struct FeedItSwissMotherFuckingCheese<false>
+    struct PrintFeed<false>
     {
       template <typename T>
       static
@@ -80,9 +85,8 @@ namespace elle
     void
     format_feed(boost::format& fmt, T&& front, K&&... tail)
     {
-      FeedItSwissMotherFuckingCheese<
-        IsPrintable<std::ostream, T>::value
-        >::feed_it(fmt, std::forward<T>(front), 42);
+      PrintFeed<IsPrintable<std::ostream, T>::value>::feed_it(
+        fmt, std::forward<T>(front), 42);
       format_feed(fmt, std::forward<K>(tail)...);
     }
 
