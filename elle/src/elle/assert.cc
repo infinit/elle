@@ -1,7 +1,7 @@
 #include <elle/assert.hh>
 #include <elle/Backtrace.hh>
 #include <elle/log.hh>
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 
 #include <iostream>
 #include <sstream>
@@ -39,7 +39,7 @@ namespace elle
                message, file, line, elle::exception_string());
     }
 
-    if (elle::os::in_env("ELLE_REAL_ASSERT"))
+    if (elle::os::inenv("ELLE_REAL_ASSERT"))
     {
       ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
       std::abort();

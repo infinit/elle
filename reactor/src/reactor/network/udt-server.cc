@@ -20,7 +20,7 @@
 #include <elle/printf.hh>
 #include <elle/log.hh>
 #include <reactor/network/nat.hh>
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 
 //ELLE_LOG_COMPONENT("reactor.network.UDTServer");
 

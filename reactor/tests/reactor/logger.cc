@@ -1,6 +1,6 @@
 #include "reactor.hh"
 
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 #include <elle/test.hh>
 
 #ifdef VALGRIND
@@ -11,7 +11,7 @@
 
 #include <elle/log.hh>
 #include <elle/log/TextLogger.hh>
-#include <elle/os/setenv.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/logger.hh>
 #include <reactor/thread.hh>
@@ -136,6 +136,6 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(scheduler_log_test), 0, 10);
   // FIXME: threads deadlock under wine.
-  if (elle::os::in_env("RUNNING_ON_WINE"))
+  if (elle::os::inenv("RUNNING_ON_WINE"))
     suite.add(BOOST_TEST_CASE(parallel_write), 0, 30);
 }

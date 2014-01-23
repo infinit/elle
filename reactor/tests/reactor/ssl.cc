@@ -6,7 +6,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 #include <elle/finally.hh>
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 #include <elle/test.hh>
 
 #include <reactor/Barrier.hh>

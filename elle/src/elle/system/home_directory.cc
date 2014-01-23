@@ -1,6 +1,6 @@
 #include "home_directory.hh"
 
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 
 #ifdef INFINIT_WINDOWS
 # include <shlobj.h>

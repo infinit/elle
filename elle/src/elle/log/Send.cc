@@ -7,7 +7,7 @@
 #include <fstream>
 #include <mutex>
 
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 
 namespace elle
 {

@@ -6,7 +6,7 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/log.hh>
-#include <elle/os/getenv.hh>
+#include <elle/os/environ.hh>
 #include <elle/os/path.hh>
 #include <elle/os/environ.hh>
 #include <elle/print.hh>

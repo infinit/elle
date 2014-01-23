@@ -5,9 +5,9 @@
 #include <elle/log/Logger.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
-#include <elle/os/getenv.hh>
-#include <elle/os/setenv.hh>
-#include <elle/os/unsetenv.hh>
+#include <elle/os/environ.hh>
+#include <elle/os/environ.hh>
+#include <elle/os/environ.hh>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
