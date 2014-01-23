@@ -26,8 +26,7 @@ namespace elle
     struct PrintFeed
     {
       template<size_t>
-      struct
-      Helper
+      struct Helper
       {};
 
       // Default overload :
