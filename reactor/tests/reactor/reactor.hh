@@ -6,7 +6,6 @@
 
 #include <boost/foreach.hpp>
 
-extern reactor::Scheduler* sched;
 
 class Fixture
 {

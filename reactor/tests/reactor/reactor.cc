@@ -20,32 +20,6 @@
 | Global shortcuts |
 `-----------------*/
 
-reactor::Scheduler* sched = 0;
-
-Fixture::Fixture()
-{
-  sched = new reactor::Scheduler;
-}
-
-Fixture::~Fixture()
-{
-  delete sched;
-  sched = 0;
-}
-
-static
-void
-yield()
-{
-  reactor::Scheduler::scheduler()->current()->yield();
-}
-
-static
-void
-sleep(reactor::Duration d)
-{
-  return reactor::Scheduler::scheduler()->current()->sleep(d);
-}
 
 class BeaconException:
   public elle::Exception
@@ -105,13 +79,13 @@ coro1(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK(step == 2 || step == 3);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK(step == 4);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK(step == 5);
 }
 
@@ -121,7 +95,7 @@ coro2(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK(step == 2 || step == 3);
   ++step;
 }
@@ -130,12 +104,12 @@ static
 void
 test_basics_interleave()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int step = 0;
-  reactor::Thread c1(*sched, "1", boost::bind(coro1, boost::ref(step)));
-  reactor::Thread c2(*sched, "2", boost::bind(coro2, boost::ref(step)));
-  sched->run();
+  reactor::Thread c1(sched, "1", boost::bind(coro1, boost::ref(step)));
+  reactor::Thread c2(sched, "2", boost::bind(coro2, boost::ref(step)));
+  sched.run();
   BOOST_CHECK_EQUAL(step, 5);
 }
 
@@ -149,7 +123,7 @@ waiter(int& step,
        reactor::Waitables& waitables)
 {
   BOOST_CHECK_EQUAL(step, 0);
-  sched->current()->wait(waitables);
+  reactor::wait(waitables);
   ++step;
 }
 
@@ -159,14 +133,14 @@ sender_one(int& step,
            reactor::Signal& s, int expect)
 {
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
   s.signal();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
-  yield();
+  reactor::yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, expect);
 }
 
@@ -177,20 +151,20 @@ sender_two(int& step,
            reactor::Signal& s2)
 {
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
   s1.signal();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 0);
-  yield();
+  reactor::yield();
   s2.signal();
-  yield();
-  yield();
+  reactor::yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 1);
 }
 
@@ -198,18 +172,18 @@ static
 void
 test_signals_one_on_one()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int step = 0;
   reactor::Signal signal;
   reactor::Waitables signals;
   signals << signal;
-  reactor::Thread w(*sched, "waiter",
+  reactor::Thread w(sched, "waiter",
                     boost::bind(waiter, boost::ref(step), signals));
-  reactor::Thread s(*sched, "sender",
+  reactor::Thread s(sched, "sender",
                     boost::bind(sender_one, boost::ref(step),
                                 boost::ref(signal), 1));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(step, 1);
 }
 
@@ -217,19 +191,19 @@ static
 void
 test_signals_one_on_two()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int step = 0;
   reactor::Signal signal1;
   reactor::Signal signal2;
   reactor::Waitables signals;
   signals << signal1 << signal2;
-  reactor::Thread w(*sched, "waiter",
+  reactor::Thread w(sched, "waiter",
                     boost::bind(waiter, boost::ref(step), signals));
-  reactor::Thread s(*sched, "sender",
+  reactor::Thread s(sched, "sender",
                     boost::bind(sender_two, boost::ref(step),
                                 boost::ref(signal1), boost::ref(signal2)));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(step, 1);
 }
 
@@ -237,20 +211,20 @@ static
 void
 test_signals_two_on_one()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int step = 0;
   reactor::Signal signal;
   reactor::Waitables signals;
   signals << signal;
-  reactor::Thread w1(*sched, "waiter1",
+  reactor::Thread w1(sched, "waiter1",
                      boost::bind(waiter, boost::ref(step), signals));
-  reactor::Thread w2(*sched, "waiter2",
+  reactor::Thread w2(sched, "waiter2",
                      boost::bind(waiter, boost::ref(step), signals));
-  reactor::Thread s(*sched, "sender",
+  reactor::Thread s(sched, "sender",
                     boost::bind(sender_one, boost::ref(step),
                                 boost::ref(signal), 2));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(step, 2);
 }
 
@@ -268,10 +242,10 @@ static
 void
 test_signals_timeout()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
-  reactor::Thread t(*sched, "waiter", waiter_timeout);
-  sched->run();
+  reactor::Thread t(sched, "waiter", waiter_timeout);
+  sched.run();
 }
 
 /*--------.
@@ -293,9 +267,9 @@ barrier_closed()
       beacon = true;
     });
   reactor::Thread opener(sched, "opener", [&] {
-      yield();
-      yield();
-      yield();
+      reactor::yield();
+      reactor::yield();
+      reactor::yield();
       BOOST_CHECK(!beacon);
       barrier.open();
     });
@@ -526,7 +500,7 @@ namespace scope
                 reactor::yield();
             });
 
-          s.terminate_now();
+          sched.terminate_now();
         };
       });
     sched.run();
@@ -543,7 +517,7 @@ sleeper1(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  sleep(boost::posix_time::milliseconds(400));
+  reactor::sleep(boost::posix_time::milliseconds(400));
   BOOST_CHECK_EQUAL(step, 3);
   ++step;
 }
@@ -554,7 +528,7 @@ sleeper2(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  sleep(boost::posix_time::milliseconds(200));
+  reactor::sleep(boost::posix_time::milliseconds(200));
   BOOST_CHECK_EQUAL(step, 2);
   ++step;
 }
@@ -563,14 +537,14 @@ static
 void
 test_sleep_interleave()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int step = 0;
-  reactor::Thread s1(*sched, "sleeper1",
+  reactor::Thread s1(sched, "sleeper1",
                      boost::bind(sleeper1, boost::ref(step)));
-  reactor::Thread s2(*sched, "sleeper2",
+  reactor::Thread s2(sched, "sleeper2",
                      boost::bind(sleeper2, boost::ref(step)));
-  sched->run();
+  sched.run();
 }
 
 static
@@ -589,7 +563,7 @@ sleep_timer(int& iterations)
   while (--iterations)
   {
     boost::posix_time::ptime start(now());
-    sleep(delay);
+    reactor::sleep(delay);
     double elapsed = (now() - start).total_milliseconds();
     double expected =  delay.total_milliseconds();
     BOOST_CHECK_CLOSE(elapsed, expected, double(15));
@@ -600,12 +574,12 @@ static
 void
 test_sleep_timing()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int iterations = 8;
-  reactor::Thread t(*sched, "sleeper",
+  reactor::Thread t(sched, "sleeper",
                     boost::bind(sleep_timer, boost::ref(iterations)));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(iterations, 0);
 }
 
@@ -618,10 +592,10 @@ void
 joined(int& count)
 {
   BOOST_CHECK_EQUAL(count, 0);
-  yield();
+  reactor::yield();
   ++count;
-  yield();
-  yield();
+  reactor::yield();
+  reactor::yield();
   ++count;
 }
 
@@ -639,15 +613,15 @@ static
 void
 test_join()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int count = 0;
-  reactor::Thread j(*sched, "joined",
+  reactor::Thread j(sched, "joined",
                     boost::bind(joined, boost::ref(count)));
-  reactor::Thread w(*sched, "waiter",
+  reactor::Thread w(sched, "waiter",
                     boost::bind(join_waiter,
                                 boost::ref(j), boost::ref(count)));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(count, 3);
 }
 
@@ -656,7 +630,7 @@ void
 join_waiter_multiple(reactor::Thread& thread,
                      int& count)
 {
-  yield();
+  reactor::yield();
   BOOST_CHECK(thread.state() == reactor::Thread::state::done);
   reactor::wait(thread);
   reactor::wait(thread);
@@ -667,14 +641,14 @@ static
 void
 test_join_multiple()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   int count = 0;
-  reactor::Thread e(*sched, "empty", [] {});
-  reactor::Thread w(*sched, "waiter",
+  reactor::Thread e(sched, "empty", [] {});
+  reactor::Thread w(sched, "waiter",
                     boost::bind(join_waiter_multiple,
                                 boost::ref(e), boost::ref(count)));
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(count, 1);
 }
 
@@ -682,7 +656,7 @@ static
 void
 sleeping_beauty()
 {
-  sleep(boost::posix_time::milliseconds(200));
+  reactor::sleep(boost::posix_time::milliseconds(200));
 }
 
 static
@@ -701,12 +675,12 @@ static
 void
 test_join_timeout()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
-  reactor::Thread sb(*sched, "sleeping beauty", sleeping_beauty);
-  reactor::Thread pc(*sched, "prince charming",
+  reactor::Thread sb(sched, "sleeping beauty", sleeping_beauty);
+  reactor::Thread pc(sched, "prince charming",
                      boost::bind(prince_charming, boost::ref(sb)));
-  sched->run();
+  sched.run();
 }
 
 /*--------.
@@ -727,7 +701,7 @@ static
 void
 timeout_send(reactor::Signal& s)
 {
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(s.waiters().size(), 1);
   s.signal();
 }
@@ -736,26 +710,26 @@ static
 void
 test_timeout_do()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   reactor::Signal s;
-  reactor::Thread t(*sched, "timeout",
+  reactor::Thread t(sched, "timeout",
                     boost::bind(timeout, boost::ref(s), false));
-  sched->run();
+  sched.run();
 }
 
 static
 void
 test_timeout_dont()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
   reactor::Signal s;
-  reactor::Thread t(*sched, "timeout",
+  reactor::Thread t(sched, "timeout",
                     boost::bind(timeout, boost::ref(s), true));
-  reactor::Thread p(*sched, "poker",
+  reactor::Thread p(sched, "poker",
                     boost::bind(timeout_send, boost::ref(s)));
-  sched->run();
+  sched.run();
 }
 
 /*----------------.
@@ -857,11 +831,11 @@ static
 void
 test_vthread()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
-  reactor::VThread<int> t(*sched, "return value", answer);
+  reactor::VThread<int> t(sched, "return value", answer);
   BOOST_CHECK_THROW(t.result(), elle::Exception);
-  sched->run();
+  sched.run();
   BOOST_CHECK_EQUAL(t.result(), 42);
 }
 
@@ -871,32 +845,28 @@ test_vthread()
 
 static
 void
-waker(reactor::Signal& s)
+waker(reactor::Signal& s, reactor::Scheduler& sched)
 {
-  // FIXME: sleeps suck
 
   // Make sure the scheduler is sleeping.
-  sleep(1);
-  reactor::Thread w(*sched, "waker",
+  ::sleep(1);
+  reactor::Thread w(sched, "waker",
                     boost::bind(&reactor::Signal::signal, &s));
   // Make sure the scheduler is done.
   while (!w.done())
-    sleep(1);
+    ::sleep(1);
 }
 
 static
 void
 test_multithread_spawn_wake()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::Signal sig;
-  typedef bool (reactor::Thread::*F)(reactor::Waitable&, reactor::DurationOpt);
-  reactor::Thread keeper(*sched, "keeper",
-                         boost::bind(static_cast<F>(&reactor::Thread::wait),
-                                     &keeper, boost::ref(sig),
-                                     reactor::DurationOpt()));
-  boost::thread s(boost::bind(waker, boost::ref(sig)));
-  sched->run();
+
+  reactor::Thread keeper(sched, "keeper", [&sig] { reactor::wait(sig); });
+  boost::thread s(boost::bind(waker, boost::ref(sig), boost::ref(sched)));
+  sched.run();
   s.join();
 }
 
@@ -911,9 +881,9 @@ spawned(reactor::Signal& s)
 static
 void
 spawn(reactor::Signal& s,
-      int& res)
+      int& res, reactor::Scheduler& sched)
 {
-  res = sched->mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
+  res = sched.mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
 }
 
 static
@@ -921,8 +891,9 @@ void
 spawner()
 {
   reactor::Signal s;
+  reactor::Scheduler& sched = *reactor::Scheduler::scheduler();
   int res = 0;
-  boost::thread spawner(boost::bind(spawn, boost::ref(s), boost::ref(res)));
+  boost::thread spawner(boost::bind(spawn, boost::ref(s), boost::ref(res), std::ref(sched)));
   reactor::wait(s);
   spawner.join();
   BOOST_CHECK_EQUAL(res, 42);
@@ -932,10 +903,10 @@ static
 void
 test_multithread_run()
 {
-  Fixture f;
+  reactor::Scheduler sched;
 
-  reactor::Thread t(*sched, "spawner", spawner);
-  sched->run();
+  reactor::Thread t(sched, "spawner", spawner);
+  sched.run();
 }
 
 static
@@ -992,11 +963,11 @@ static
 void
 test_semaphore_noblock()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::Semaphore s(2);
-  reactor::Thread wait(*sched, "wait",
+  reactor::Thread wait(sched, "wait",
                        boost::bind(&semaphore_noblock_wait, boost::ref(s)));
-  sched->run();
+  sched.run();
 }
 
 static
@@ -1012,9 +983,9 @@ static
 void
 semaphore_block_post(reactor::Semaphore& s)
 {
-  yield();
-  yield();
-  yield();
+  reactor::yield();
+  reactor::yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(s.count(), -1);
   s.release();
   BOOST_CHECK_EQUAL(s.count(), 0);
@@ -1024,13 +995,13 @@ static
 void
 test_semaphore_block()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::Semaphore s;
-  reactor::Thread wait(*sched, "wait",
+  reactor::Thread wait(sched, "wait",
                        boost::bind(&semaphore_block_wait, boost::ref(s)));
-  reactor::Thread post(*sched, "post",
+  reactor::Thread post(sched, "post",
                        boost::bind(&semaphore_block_post, boost::ref(s)));
-  sched->run();
+  sched.run();
 }
 
 static
@@ -1046,19 +1017,19 @@ test_semaphore_multi()
   reactor::Thread wait1(sched, "wait1", multi_wait);
   reactor::Thread wait2(sched, "wait2", multi_wait);
   reactor::Thread post(sched, "post", [&] {
-      yield();
-      yield();
-      yield();
+      reactor::yield();
+      reactor::yield();
+      reactor::yield();
       BOOST_CHECK_EQUAL(s.count(), -2);
       BOOST_CHECK_EQUAL(step, 0);
       s.release();
-      yield();
-      yield();
+      reactor::yield();
+      reactor::yield();
       BOOST_CHECK_EQUAL(s.count(), -1);
       BOOST_CHECK_EQUAL(step, 1);
       s.release();
-      yield();
-      yield();
+      reactor::yield();
+      reactor::yield();
       BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 2);
     });
@@ -1091,12 +1062,12 @@ mutex_count(int& i,
       for (int c = 0; c < yields; ++c)
       {
         ++count;
-        yield();
+        reactor::yield();
       }
       ++i;
       prev = i;
     }
-    yield();
+    reactor::yield();
   }
 }
 
@@ -1104,19 +1075,19 @@ static
 void
 test_mutex()
 {
-  Fixture f;
+  reactor::Scheduler sched;
   reactor::Mutex mutex;
   int step = 0;
-  reactor::Thread c1(*sched, "counter1",
+  reactor::Thread c1(sched, "counter1",
                      boost::bind(&mutex_count,
                                  boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c2(*sched, "counter2",
+  reactor::Thread c2(sched, "counter2",
                      boost::bind(&mutex_count,
                                  boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c3(*sched, "counter3",
+  reactor::Thread c3(sched, "counter3",
                      boost::bind(&mutex_count,
                                  boost::ref(step), boost::ref(mutex), 1));
-  sched->run();
+  sched.run();
 }
 
 /*--------.
@@ -1130,7 +1101,7 @@ rw_mutex_read(reactor::RWMutex& mutex,
 {
   reactor::Lock lock(mutex);
   ++step;
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, 3);
 }
 
@@ -1161,7 +1132,7 @@ rw_mutex_write(reactor::RWMutex& mutex,
   reactor::Lock lock(mutex.write());
   ++step;
   int prev = step;
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, prev);
 }
 
@@ -1193,9 +1164,9 @@ rw_mutex_both_read(reactor::RWMutex& mutex,
   int v = step;
   BOOST_CHECK_EQUAL(v % 2, 0);
   BOOST_CHECK_EQUAL(step, v);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, v);
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(step, v);
 }
 
@@ -1206,8 +1177,8 @@ rw_mutex_both_write(reactor::RWMutex& mutex,
 {
   reactor::Lock lock(mutex.write());
   ++step;
-  yield();
-  yield();
+  reactor::yield();
+  reactor::yield();
   ++step;
   BOOST_CHECK_EQUAL(step % 2, 0);
 }
@@ -1273,10 +1244,10 @@ storage(reactor::LocalStorage<int>& val,
         int start)
 {
   val.Get() = start;
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(val.Get(), start);
   val.Get()++;
-  yield();
+  reactor::yield();
   BOOST_CHECK_EQUAL(val.Get(), start + 1);
 }
 
@@ -1351,7 +1322,7 @@ test_multithread()
   auto action = [&]()
   {
     for (int i = 0; i < 64; ++i)
-      reactor::Scheduler::scheduler()->current()->yield();
+      reactor::yield();
   };
 
   reactor::Thread thread1(sched1, "Thread 1", action);
@@ -1382,13 +1353,13 @@ static
 void
 thread_exception_test()
 {
-  Fixture f;
-  reactor::Thread thread(*sched, "Exception Tester", &except_gen);
+  reactor::Scheduler sched;
+  reactor::Thread thread(sched, "Exception Tester", &except_gen);
   bool exception_thrown = false;
 
   try
   {
-    sched->run();
+    sched.run();
   }
   catch (const BeaconException& e)
   {
@@ -1401,32 +1372,30 @@ thread_exception_test()
 }
 
 /*----------------.
-| Terminate yield |
+| Terminate reactor::yield |
 `----------------*/
 
 static
 void
 terminate_scheduler()
 {
-  auto& sched = *reactor::Scheduler::scheduler();
+  reactor::Scheduler& sched = *reactor::Scheduler::scheduler();
 
   sched.terminate();
 }
 
 static
 void
-terminate_yield_thread(bool& beacon)
+terminate_reactor_yield_thread(bool& beacon)
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  auto& self = *sched.current();
-
+  
   try
   {
-    self.yield();
+    reactor::yield();
   }
   catch (...)
   {
-    self.yield();
+    reactor::yield();
     beacon = true;
     throw;
   }
@@ -1440,7 +1409,7 @@ test_terminate_yield()
   reactor::Scheduler sched;
 
   bool beacon = false;
-  reactor::Thread t(sched, "Thread", std::bind(&terminate_yield_thread,
+  reactor::Thread t(sched, "Thread", std::bind(&terminate_reactor_yield_thread,
                                                std::ref(beacon)));
   reactor::Thread term(sched, "Terminate", &terminate_scheduler);
 
@@ -1457,21 +1426,19 @@ static
 void
 terminated(bool& terminated)
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  auto& self = *sched.current();
 
   terminated = false;
   try
   {
     while (true)
     {
-      self.yield();
+      reactor::yield();
     }
   }
   catch (...)
   {
     terminated = true;
-    self.sleep(boost::posix_time::milliseconds(10));
+    reactor::sleep(boost::posix_time::milliseconds(10));
     throw;
   }
 }
@@ -1507,20 +1474,18 @@ static
 void
 terminate_now_destroyed_t1(void)
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  auto& self = *sched.current();
 
   // Ignore the first Terminate (sent by t2) and catch the second one (by t4).
   try
   {
     while (true)
-      self.yield();
+      reactor::yield();
   }
   catch (...)
   {}
 
   while (true)
-    self.yield();
+    reactor::yield();
 }
 
 static
@@ -1544,8 +1509,6 @@ terminate_now_destroyed_t4(reactor::Thread& t1,
                            reactor::Thread& t2,
                            reactor::Thread& t3)
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  auto& self = *sched.current();
 
   while (true)
   {
@@ -1563,7 +1526,7 @@ terminate_now_destroyed_t4(reactor::Thread& t1,
       break;
     }
 
-    self.yield();
+    reactor::yield();
   }
 }
 
@@ -1702,18 +1665,16 @@ static
 void
 exception_escape_collateral(int& beacon)
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  auto& current = *sched.current();
 
   ++beacon;
   try
   {
-    current.yield();
+    reactor::yield();
   }
   catch (...)
   {
     ++beacon;
-    current.yield();
+    reactor::yield();
     ++beacon;
   }
 }
@@ -1744,7 +1705,7 @@ poster(bool& beacon)
 {
   auto& sched = *reactor::Scheduler::scheduler();
   sched.io_service().post(&except_gen);
-  sched.current()->yield();
+  reactor::yield();
   beacon = true;
 }
 
@@ -1783,9 +1744,9 @@ namespace background
       [&]
       {
         ++i;
-        yield();
+        reactor::yield();
         ++i;
-        yield();
+        reactor::yield();
         ++i;
       });
     sched.run();
