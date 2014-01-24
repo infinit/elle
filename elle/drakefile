@@ -40,14 +40,29 @@ def configure(zlib_lib,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
 
+  # Boost
   boost = boost or drake.cxx.boost.Boost()
-
   cxx_config += boost.config()
-  cxx_config += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos or None))
-  cxx_config += boost.config_system()
-  cxx_config += boost.config_thread()
-  cxx_config += boost.config_chrono()
+  if cxx_toolkit.os is drake.os.macos:
+    cxx_config += boost.config_filesystem(static = True, link = False)
+    cxx_config.library_add(drake.copy(boost.filesystem_static,
+                              'lib', strip_prefix = True))
+  else:
+    cxx_config += boost.config_filesystem(link = False)
+    cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
+                                      'lib', strip_prefix = True))
+  cxx_config += boost.config_system(link = False)
+  cxx_config.library_add(drake.copy(boost.system_dynamic,
+                                    'lib', strip_prefix = True))
+  cxx_config += boost.config_thread(link = False)
+  cxx_config.library_add(drake.copy(boost.thread_dynamic,
+                                    'lib', strip_prefix = True))
+  cxx_config += boost.config_chrono(link = False)
+  cxx_config.library_add(drake.copy(boost.chrono_dynamic,
+                                    'lib', strip_prefix = True))
   cxx_config += zlib_config
+
+  # JSON spirit
   cxx_config.add_local_include_path('src/elle/json/json-spirit/include')
   cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
 
