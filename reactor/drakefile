@@ -61,9 +61,15 @@ def configure(curl_config,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
-  local_cxx_config += boost.config_signals()
-  local_cxx_config += boost.config_system()
-  local_cxx_config += boost.config_thread()
+  local_cxx_config += boost.config_signals(link = False)
+  local_cxx_config.library_add(
+    drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True))
+  local_cxx_config += boost.config_system(link = False)
+  local_cxx_config.library_add(
+    drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+  local_cxx_config += boost.config_thread(link = False)
+  local_cxx_config.library_add(
+    drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
   if enable_python_bindings:
     local_cxx_config += boost.config_python()
     local_cxx_config += python3
