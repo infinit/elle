@@ -9,6 +9,7 @@
 import drake
 import drake.cxx
 import itertools
+import os.path
 import sys
 
 from .. import Exception, Path, Version
@@ -157,7 +158,11 @@ class Boost(drake.Configuration):
         tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
       for test in  tests:
         if test.exists():
-          return test
+          path = os.path.realpath(str(test))
+          if static:
+            return drake.cxx.StaticLib(path)
+          else:
+            return drake.cxx.DynLib(path)
     raise Exception(
       'Unable to find %s Boost %s library in %s' % \
       ('static' if static else 'dynamic', lib, lib_path))
@@ -183,7 +188,7 @@ for prop, library in Boost._Boost__libraries.items():
                                     self._Boost__lib_path,
                                     self._Boost__cxx_toolkit,
                                     static = static)
-        setattr(self, name, drake.node(lib))
+        setattr(self, name, lib)
       return getattr(self, name)
     setattr(Boost, '%s_dynamic' % prop,
             property(lambda self: library_getter(self, False)))
