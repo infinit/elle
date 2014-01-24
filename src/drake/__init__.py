@@ -2643,43 +2643,54 @@ class Install(Copy):
 
 import collections
 def __copy(sources, to, strip_prefix, builder):
-  to = drake.Path(to)
-  multiple = isinstance(sources, collections.Iterable)
-  if strip_prefix is not None:
-    if strip_prefix is True:
-      if multiple:
-        strip_prefix = sources[0].name().dirname()
+  with sched.logger.log(
+    'drake.copy',
+    'copy %s to %s (strip: %s)' % (sources, to, strip_prefix),
+    drake.log.LogLevel.trace):
+    to = drake.Path(to)
+    multiple = isinstance(sources, collections.Iterable)
+    if strip_prefix is not None:
+      if strip_prefix is True:
+        if multiple:
+          strip_prefix = sources[0].name().dirname()
+        else:
+          strip_prefix = sources.name().dirname()
       else:
-        strip_prefix = sources.name().dirname()
+        strip_prefix = drake.Path(strip_prefix)
+      if not strip_prefix.absolute():
+        strip_prefix = drake.path_build(strip_prefix)
     else:
-      strip_prefix = drake.Path(strip_prefix)
-    if not strip_prefix.absolute():
-      strip_prefix = drake.path_build(strip_prefix)
-  else:
-    strip_prefix = drake.path_build()
-  if multiple:
-    res = []
-    for node in sources:
-      res.append(__copy_stripped(node, to, strip_prefix, builder))
-    return res
-  else:
-    return __copy_stripped(sources, to, strip_prefix, builder)
+      strip_prefix = drake.path_build()
+    if multiple:
+      res = []
+      for node in sources:
+        res.append(__copy_stripped(node, to, strip_prefix, builder))
+      return res
+    else:
+      return __copy_stripped(sources, to, strip_prefix, builder)
 
 def __copy_stripped(source, to, strip_prefix, builder):
-  path = source.name_absolute()
-  if strip_prefix is not None:
-    path = path.without_prefix(strip_prefix)
-  path = (to / path).canonize()
-  # Break install loops
-  if path in drake.Drake.current.nodes:
-    if Copy._Copy__original(source) is drake.node(path):
-      return None
-  res = builder(source, path).target()
-  for dep in source.dependencies:
-    node = __copy_stripped(dep, to, strip_prefix, builder)
-    if node is not None:
-      res.dependency_add(node)
-  return res
+  with sched.logger.log(
+    'drake.copy',
+    'stripped copy %s to %s (strip: %s)' % (source, to, strip_prefix),
+    drake.log.LogLevel.debug):
+    path = source.name_absolute()
+    if strip_prefix is not None:
+      path = path.without_prefix(strip_prefix)
+    path = (to / path).canonize()
+    path_abs = drake.path_build(path)
+    # Break install loops
+    if path_abs in drake.Drake.current.nodes:
+      res = drake.Drake.current.nodes[path_abs]
+      if Copy._Copy__original(source) is res:
+        return res
+    res = builder(source, path).target()
+    for dep in source.dependencies:
+      if not dep.path().absolute():
+        node = __copy_stripped(dep, to, strip_prefix, builder)
+        if node is not None:
+          res.dependency_add(node)
+    return res
 
 def copy(sources, to, strip_prefix = None):
   """Convenience function to create Copy builders.

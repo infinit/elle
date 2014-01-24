@@ -690,8 +690,6 @@ class GccToolkit(Toolkit):
         cmd.append(lib.path())
       else:
         raise Exception("cannot link an object of type %s" % type(lib))
-    for lib in cfg.libraries:
-      cmd.append(lib.path())
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
@@ -1309,6 +1307,8 @@ class Binary(Node):
       self.sources = []
       for source in sources:
         self.src_add(source, self.tk, self.cfg)
+      for lib in cfg.libraries:
+        self.src_add(lib, self.tk, self.cfg)
 
   def clone(self, path):
     return self.__class__(path)
