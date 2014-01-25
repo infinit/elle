@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2011, 2012, 2013.
+// Copyright (c) Glyn Matthews 2011, 2012, 2013, 2014.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
