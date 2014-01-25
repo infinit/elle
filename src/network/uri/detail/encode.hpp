@@ -53,7 +53,7 @@ namespace network {
 	}
 	else {
 	  out++ = '%';
-	  out++ = hex_to_letter(in >> 4);
+	  out++ = hex_to_letter((in >> 4) & 0x0f);
 	  out++ = hex_to_letter(in & 0x0f);
 	}
       }
