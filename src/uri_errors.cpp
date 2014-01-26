@@ -1,9 +1,9 @@
-// Copyright 2013 Glyn Matthews.
+// Copyright 2013, 2014 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <string> // std::string
+#include <string>
 #include <network/uri/uri_errors.hpp>
 
 namespace network {
@@ -33,7 +33,13 @@ namespace network {
     switch (uri_error(ev)) {
       case uri_error::invalid_syntax:
         return "Unable to parse URI string.";
-      default:
+      case uri_error::not_enough_input:
+        return "Percent decoding: Not enough input.";
+      case uri_error::non_hex_input:
+        return "Percent decoding: Non-hex input.";
+      case uri_error::conversion_failed:
+        return "Percent decoding: Conversion failed.";
+    default:
         break;
     }
     return "Unknown URI error.";

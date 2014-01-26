@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012, 2013.
+// Copyright (c) Glyn Matthews 2012, 2013, 2014.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -678,4 +678,14 @@ TEST(builder_test, build_from_existing_uri) {
   network::uri_builder builder(instance);
   builder.query("a", "1").query("b", "2").fragment("fragment");
   ASSERT_EQ("http://www.example.com/?a=1&b=2#fragment", network::uri(builder));
+}
+
+TEST(uri_test, authority_port_test) {
+
+  network::uri_builder builder;
+  builder
+    .scheme("https")
+    .authority("www.example.com")
+    ;
+  ASSERT_EQ("www.example.com", *network::uri(builder).authority());
 }
