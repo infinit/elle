@@ -75,13 +75,13 @@ private:
   {
     using reactor::network::Buffer;
 
-    std::unique_ptr<reactor::network::TCPSocket> a(this->_a_server.accept());
-    std::unique_ptr<reactor::network::TCPSocket> b(this->_b_server.accept());
+    std::unique_ptr<reactor::network::Socket> a(this->_a_server.accept());
+    std::unique_ptr<reactor::network::Socket> b(this->_b_server.accept());
 
     elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
     {
-      auto route = [&] (reactor::network::TCPSocket* a,
-                        reactor::network::TCPSocket* b,
+      auto route = [&] (reactor::network::Socket* a,
+                        reactor::network::Socket* b,
                         Conf& conf)
         {
           try

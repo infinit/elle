@@ -139,7 +139,7 @@ runner(reactor::Semaphore& lock,
   port = server.port();
   lock.release();
   lock.release();
-  std::unique_ptr<reactor::network::TCPSocket> socket(server.accept());
+  std::unique_ptr<reactor::network::Socket> socket(server.accept());
   infinit::protocol::Serializer s(sched, *socket);
   infinit::protocol::ChanneledStream channels(sched, s);
 
