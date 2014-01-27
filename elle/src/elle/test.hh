@@ -1,6 +1,12 @@
 #ifndef ELLE_TEST_HH
 # define ELLE_TEST_HH
 
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/punctuation/comma_if.hpp>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <boost/preprocessor/tuple/elem.hpp>
+#include <boost/preprocessor/variadic/to_seq.hpp>
+
 /// This header includes boost Unit Test Framework and provides a simple macro
 /// to customize the creation of your test suite.
 ///
@@ -100,31 +106,51 @@ _test_suite()                                           \
 
 # else
 #  error "please define BOOST_TEST_DYN_LINK or BOOST_TEST_STATIC_LINK"
-#endif
+# endif
 
+# define ELLE_TEST_PROTOTYPE_HELPER(R, Data, I, Elem)                   \
+  BOOST_PP_COMMA_IF(I)                                                  \
+  BOOST_PP_TUPLE_ELEM(0, Elem) BOOST_PP_TUPLE_ELEM(1, Elem)             \
 
-#define ELLE_TEST_SCHEDULED(Name)                       \
-static                                                  \
-void                                                    \
-Name##_impl();                                          \
-                                                        \
-static                                                  \
-void                                                    \
-Name()                                                  \
-{                                                       \
-  reactor::Scheduler sched;                             \
-  reactor::Thread main(                                 \
-    sched, "main",                                      \
-    [&]                                                 \
-    {                                                   \
-      Name##_impl();                                    \
-    });                                                 \
-  sched.run();                                          \
-}                                                       \
-                                                        \
-static                                                  \
-void                                                    \
-Name##_impl()                                           \
+# define ELLE_TEST_PROTOTYPE(Args)                                      \
+  BOOST_PP_SEQ_FOR_EACH_I(ELLE_PP_PROTOTYPE_HELPER, _, Args)            \
+
+# define ELLE_TEST_CALL_HELPER(R, Data, I, Elem)                        \
+  BOOST_PP_COMMA_IF(I)                                                  \
+  BOOST_PP_TUPLE_ELEM(1, Elem)                                          \
+
+# define ELLE_TEST_CALL(Args)                                           \
+  BOOST_PP_SEQ_FOR_EACH_I(ELLE_PP_CALL_HELPER, _, Args)                 \
+
+# define ELLE_TEST_SCHEDULED(...)                                       \
+  ELLE_TEST_SCHEDULED_SEQ(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))        \
+
+# define ELLE_TEST_SCHEDULED_SEQ(Seq)                                   \
+  ELLE_TEST_SCHEDULED_HELPER(BOOST_PP_SEQ_HEAD(Seq),                    \
+                             BOOST_PP_SEQ_TAIL(Seq))                    \
+
+# define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                       \
+static                                                                \
+void                                                                  \
+BOOST_PP_CAT(Name,_impl)(ELLE_TEST_PROTOTYPE(Args));                  \
+                                                                      \
+static                                                                \
+void                                                                  \
+Name(ELLE_TEST_PROTOTYPE(Args))                                       \
+{                                                                     \
+  reactor::Scheduler sched;                                           \
+  reactor::Thread main(                                               \
+    sched, "main",                                                    \
+    [&]                                                               \
+    {                                                                 \
+      BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));                 \
+    });                                                               \
+  sched.run();                                                        \
+}                                                                     \
+                                                                      \
+static                                                                \
+void                                                                  \
+BOOST_PP_CAT(Name, _impl)(ELLE_TEST_PROTOTYPE(Args))                  \
 
 #define ELLE_TEST_SCHEDULED_THROWS(Name, _exception_type_) \
 static                                                     \
