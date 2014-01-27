@@ -26,7 +26,7 @@ namespace reactor
     | Accepting |
     `----------*/
     public:
-      std::unique_ptr<SSLSocket>
+      std::unique_ptr<Socket>
       accept();
 
     private:
