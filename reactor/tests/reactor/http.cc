@@ -70,7 +70,7 @@ private:
     {
       while (true)
       {
-        std::unique_ptr<reactor::network::TCPSocket> socket(
+        std::unique_ptr<reactor::network::Socket> socket(
           this->_server.accept());
         ELLE_LOG("accept connection from %s", socket->peer());
         auto name = elle::sprintf("request %s", socket->peer());
@@ -84,7 +84,7 @@ private:
 
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket> socket)
+  _serve(std::unique_ptr<reactor::network::Socket> socket)
   {
     auto peer = socket->peer();
     std::string method;
@@ -198,7 +198,7 @@ private:
 
   virtual
   void
-  response(reactor::network::TCPSocket& socket,
+  response(reactor::network::Socket& socket,
            elle::ConstWeakBuffer content,
            std::unordered_map<std::string, std::string> const& cookies)
   {
@@ -221,7 +221,7 @@ private:
   }
 
   elle::Buffer
-  read_sized_content(reactor::network::TCPSocket& socket, int length)
+  read_sized_content(reactor::network::Socket& socket, int length)
   {
     elle::Buffer content(length);
     BOOST_CHECK_GE(length, 0);
@@ -275,7 +275,7 @@ class SilentHttpServer:
 {
   virtual
   void
-  response(reactor::network::TCPSocket&,
+  response(reactor::network::Socket&,
            elle::ConstWeakBuffer,
            std::unordered_map<std::string, std::string> const&) override
   {}
@@ -294,7 +294,7 @@ class PartialHttpServer:
 {
   virtual
   void
-  response(reactor::network::TCPSocket& socket,
+  response(reactor::network::Socket& socket,
            elle::ConstWeakBuffer,
            std::unordered_map<std::string, std::string> const&) override
   {
@@ -321,7 +321,7 @@ class FuckOffHttpServer:
 {
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket>) override
+  _serve(std::unique_ptr<reactor::network::Socket>) override
   {}
 };
 
@@ -361,7 +361,7 @@ concurrent()
       {
         while (true)
         {
-          std::shared_ptr<reactor::network::TCPSocket> socket(server.accept());
+          std::shared_ptr<reactor::network::Socket> socket(server.accept());
           ELLE_LOG("accept connection from %s", socket->peer());
           scope.run_background(
             elle::sprintf("request %s", socket->peer()),
@@ -446,7 +446,7 @@ timeout()
     serv.listen(0);
     port = serv.port();
     sig.signal();
-    std::unique_ptr<reactor::network::TCPSocket> socket(serv.accept());
+    std::unique_ptr<reactor::network::Socket> socket(serv.accept());
     while (1)
       reactor::sleep(1_sec);
   };
@@ -636,7 +636,7 @@ class ScheduledSilentHttpServer:
 protected:
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket>) override
+  _serve(std::unique_ptr<reactor::network::Socket>) override
   {
     reactor::sleep(3_sec);
   }

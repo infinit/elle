@@ -23,6 +23,7 @@ ELLE_LOG_COMPONENT("reactor.network.SSL.test");
 
 using reactor::network::FingerprintedSocket;
 using reactor::network::SSLCertificate;
+using reactor::network::Socket;
 using reactor::network::SSLSocket;
 using reactor::network::SSLServer;
 
@@ -79,7 +80,7 @@ ELLE_TEST_SCHEDULED(transfer)
         server.listen(0);
         port = server.port();
         listening.open();
-        std::unique_ptr<SSLSocket> socket(server.accept());
+        std::unique_ptr<Socket> socket(server.accept());
         static char servdata[5] = { 0 };
         socket->std::iostream::read(servdata, 4);
         BOOST_CHECK(std::string(servdata) == std::string("lulz"));
@@ -128,13 +129,13 @@ private:
   void
   _run()
   {
-    using reactor::network::TCPSocket;
-    std::unique_ptr<TCPSocket> a(this->_server.accept());
-    std::unique_ptr<TCPSocket> b(this->_server.accept());
+    using reactor::network::Socket;
+    std::unique_ptr<Socket> a(this->_server.accept());
+    std::unique_ptr<Socket> b(this->_server.accept());
 
     elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
     {
-      auto route = [this] (TCPSocket& from, TCPSocket& to)
+      auto route = [this] (Socket& from, Socket& to)
         {
           try
           {
@@ -219,7 +220,7 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
         server.listen();
         port = server.port();
         listening.open();
-        std::unique_ptr<reactor::network::TCPSocket> socket(server.accept());
+        std::unique_ptr<reactor::network::Socket> socket(server.accept());
         reactor::wait(timed_out);
       });
     scope.run_background(
@@ -253,7 +254,7 @@ ELLE_TEST_SCHEDULED(connection_closed)
         server.listen();
         port = server.port();
         listening.open();
-        std::unique_ptr<reactor::network::SSLSocket> socket(server.accept());
+        std::unique_ptr<reactor::network::Socket> socket(server.accept());
         socket->write(elle::ConstWeakBuffer("data"));
         reactor::wait(read);
       });

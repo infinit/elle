@@ -167,7 +167,7 @@ void
 server();
 
 void
-serve(std::unique_ptr<reactor::network::TCPSocket> socket);
+serve(std::unique_ptr<reactor::network::Socket> socket);
 
 template <typename Server, typename Socket>
 void
@@ -195,7 +195,7 @@ server()
 }
 
 void
-serve(std::unique_ptr<reactor::network::TCPSocket> socket)
+serve(std::unique_ptr<reactor::network::Socket> socket)
 {
   std::string received;
   Byte buffer[512];
@@ -422,7 +422,7 @@ private:
     {
       while (true)
       {
-        std::unique_ptr<reactor::network::TCPSocket> socket(
+        std::unique_ptr<reactor::network::Socket> socket(
           this->_server.accept());
         ELLE_LOG("accept connection from %s", socket->peer());
         auto name = elle::sprintf("request %s", socket->peer());
@@ -436,7 +436,7 @@ private:
 
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) = 0;
+  _serve(std::unique_ptr<reactor::network::Socket> socket) = 0;
 };
 
 class ContentServer:
@@ -450,7 +450,7 @@ public:
 
   virtual
   void
-  _serve(std::unique_ptr<reactor::network::TCPSocket> socket) override
+  _serve(std::unique_ptr<reactor::network::Socket> socket) override
   {
     socket->write(this->_content);
   }
@@ -510,7 +510,7 @@ underflow()
             server.listen(0);
             port = server.port();
             listening.open();
-            std::unique_ptr<reactor::network::TCPSocket> socket(
+            std::unique_ptr<reactor::network::Socket> socket(
               server.accept());
             socket->write(std::string("lulz"));
             socket->write(std::string("lol"));
