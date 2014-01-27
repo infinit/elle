@@ -25,7 +25,7 @@ namespace reactor
     | Accepting |
     `----------*/
     public:
-      std::unique_ptr<TCPSocket>
+      std::unique_ptr<Socket>
       accept();
     };
   }

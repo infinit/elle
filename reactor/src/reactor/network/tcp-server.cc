@@ -20,7 +20,7 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
-    std::unique_ptr<TCPSocket>
+    std::unique_ptr<Socket>
     TCPServer::accept()
     {
       // Open a new raw socket.
@@ -32,7 +32,7 @@ namespace reactor
       std::unique_ptr<TCPSocket> res(
         new TCPSocket(std::move(new_socket), peer));
       ELLE_TRACE("%s: got connection: %s", *this, *res);
-      return res;
+      return std::unique_ptr<Socket>(res.release());
     }
   }
 }
