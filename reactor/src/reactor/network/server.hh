@@ -41,6 +41,10 @@ namespace reactor
       | Accepting |
       `----------*/
       public:
+        virtual
+        std::unique_ptr<Socket>
+        accept() = 0;
+
         void
         listen(const EndPoint& end_point);
 
