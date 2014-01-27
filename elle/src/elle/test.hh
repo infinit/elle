@@ -113,14 +113,14 @@ _test_suite()                                           \
   BOOST_PP_TUPLE_ELEM(0, Elem) BOOST_PP_TUPLE_ELEM(1, Elem)             \
 
 # define ELLE_TEST_PROTOTYPE(Args)                                      \
-  BOOST_PP_SEQ_FOR_EACH_I(ELLE_PP_PROTOTYPE_HELPER, _, Args)            \
+  BOOST_PP_SEQ_FOR_EACH_I(ELLE_TEST_PROTOTYPE_HELPER, _, Args)          \
 
 # define ELLE_TEST_CALL_HELPER(R, Data, I, Elem)                        \
   BOOST_PP_COMMA_IF(I)                                                  \
   BOOST_PP_TUPLE_ELEM(1, Elem)                                          \
 
 # define ELLE_TEST_CALL(Args)                                           \
-  BOOST_PP_SEQ_FOR_EACH_I(ELLE_PP_CALL_HELPER, _, Args)                 \
+  BOOST_PP_SEQ_FOR_EACH_I(ELLE_TEST_CALL_HELPER, _, Args)               \
 
 # define ELLE_TEST_SCHEDULED(...)                                       \
   ELLE_TEST_SCHEDULED_SEQ(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))        \
