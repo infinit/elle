@@ -593,6 +593,27 @@ ELLE_TEST_SCHEDULED(read_write_cancel)
   };
 }
 
+/*-----------------.
+| Resolution abort |
+`-----------------*/
+
+ELLE_TEST_SCHEDULED(resolution_abort)
+{
+  reactor::Thread resolve(
+    "resolve",
+    []
+    {
+      reactor::network::resolve_tcp("bertier.lacogip.fr", "80");
+    });
+  reactor::Thread kill(
+    "kill",
+    [&]
+    {
+      resolve.terminate_now();
+    });
+  reactor::wait(kill);
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -623,4 +644,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_until), 0, 10);
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
   suite.add(BOOST_TEST_CASE(read_write_cancel), 0, 10);
+  suite.add(BOOST_TEST_CASE(resolution_abort), 0, 1);
 }
