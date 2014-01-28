@@ -81,7 +81,7 @@ namespace reactor
           ELLE_TRACE_SCOPE("%s: ended", *this);
           this->_end_point = *it;
         }
-        this->_signal();
+        this->done();
       }
 
       ELLE_ATTRIBUTE(Resolver, resolver);
