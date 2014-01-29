@@ -1389,7 +1389,6 @@ static
 void
 terminate_reactor_yield_thread(bool& beacon)
 {
-
   try
   {
     reactor::yield();
@@ -1880,12 +1879,6 @@ namespace system_signals
 }
 #endif
 
-
-
-
-
-
-
 ELLE_TEST_SCHEDULED(test_simple_channel)
 {
 
@@ -1904,12 +1897,10 @@ ELLE_TEST_SCHEDULED(test_simple_channel)
   };
 }
 
-
 ELLE_TEST_SCHEDULED(test_multiple_channel)
 {
   reactor::Channel<int> channel;
   reactor::Barrier sleep_authorization;
-
 
   elle::With<reactor::Scope>() << [&](reactor::Scope &s)
   {
@@ -1930,11 +1921,7 @@ ELLE_TEST_SCHEDULED(test_multiple_channel)
    }
    );
   };
-
 }
-
-
-
 
 /*-----.
 | Main |
