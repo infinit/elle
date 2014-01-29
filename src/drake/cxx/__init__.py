@@ -532,6 +532,7 @@ class GccToolkit(Toolkit):
     Toolkit.__init__(self)
     self.arch = arch.x86
     self.os = os
+    self.__include_path = None
     self.__recursive_linkage = False
     self.cxx = compiler or 'g++'
     try:
@@ -828,6 +829,31 @@ class GccToolkit(Toolkit):
     return re.sub(r'%s(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$' % name,
                   '', self.cxx)
 
+  @property
+  def include_path(self):
+    if self.__include_path is None:
+      cmd = [self.cxx, '-v', '-x', 'c++', '-E', '-']
+      p = subprocess.Popen(cmd,
+                           stdin = subprocess.PIPE,
+                           stdout = subprocess.PIPE,
+                           stderr = subprocess.PIPE)
+      stdout, stderr = p.communicate()
+      if p.returncode != 0:
+        raise Exception(
+              'Could not determine C++ toolkit include path.'
+              '\nStderr:\n%s\n' % stderr)
+      store = False
+      self.__include_path = []
+      for line in stderr.split(b'\n'):
+        if store:
+          if line == b'End of search list.':
+            break
+          self.__include_path.append(
+            drake.Path(line[1:].decode('latin-1')))
+        elif line == b'#include <...> search starts here:':
+          store = True
+    return self.__include_path
+
 
 class VisualToolkit(Toolkit):
 
@@ -975,15 +1001,15 @@ def deps_handler(builder, path, t, data):
     return node(path, t)
 
 
-def mkdeps(res, n, lvl, config, marks,
+def mkdeps(res, n, lvl, toolkit, config, marks,
            f_submarks, f_init, f_add):
-  include_re = re.compile('\\s*#\\s*include\\s*(<|")(.*)(>|")')
+  include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
   idt = ' ' * lvl * 2
   if str(path) in marks:
     return
   marks[str(path)] = True
-  # debug.debug('%smkdeps: %s' % (idt, path))
+  #print('%smkdeps: %s' % (idt, path))
 
   f_init(res, n)
 
@@ -1002,49 +1028,57 @@ def mkdeps(res, n, lvl, config, marks,
     return new, new_via
 
   # FIXME: is building a node during dependencies ok ?
-  n.build()
+  # n.build()
   matches = []
-  with open(str(path), 'rb') as include_file:
-    for line in include_file:
-      line = line.strip()
-      match = include_re.match(line.decode('utf-8'))
-      if match:
-        matches.append(match)
+  try:
+    with open(str(path), 'rb') as include_file:
+      for line in include_file:
+        line = line.strip()
+        match = include_re.match(line)
+        if match:
+          matches.append(match)
+  except IOError:
+    pass
 
   for match in matches:
-    include = match.group(2)
-    search = set(config.local_include_path)
-    if match.group(1) == '"':
-      search.add(n.name().dirname())
+    include = match.group(2).decode('latin-1')
+    search = []
+    if match.group(1) == b'"':
+      current_path = n.name_absolute().dirname()
+      search.append((current_path, True))
+    for path in config.local_include_path:
+      search.append((path, True))
+      search.append((drake.path_source() / path, False))
+    search += [(path, False) for path in toolkit.include_path]
     found = None
     via = None
-    for include_path in search:
+    for include_path, test_node in search:
       name = include_path / include
       test = name
-      registered = drake.Drake.current.nodes.get(test, None)
-      if registered is not None:
-        # Check this is not an old cached dependency from
-        # cxx.inclusions. Not sure of myself though.
-        if test.is_file() or registered.builder is not None:
+      if test_node:
+        registered = drake.Drake.current.nodes.get(test, None)
+        if registered is not None:
+          # Check this is not an old cached dependency from
+          # cxx.inclusions. Not sure of myself though.
+          # if test.is_file() or registered.builder is not None:
           found, via = unique(path, include, via, found, include_path,
                               node(test))
+          break
       # Check if such a file doesn't exist, unregistered, in the
       # source path.
-      if not found or drake.path_source() != Path('.'):
+      if not found:# or drake.path_source() != Path('.'):
         test = drake.path_source() / test
         if test.is_file():
-          if registered and found:
-            unique_fail(path, include, via, found, include_path, test)
           found, via = unique(path, include, via, found, include_path,
                               node(name, Header))
+          break
     if found is not None:
       rec = []
-      mkdeps(rec, found, lvl + 1, config,
+      mkdeps(rec, found, lvl + 1, toolkit, config,
              f_submarks(marks), f_submarks, f_init, f_add)
       f_add(res, found, rec)
-    else:
-      debug.debug('%sinclusion not found: %s (search path: %s)'\
-                  % (idt, include, ', '.join(map(str, search))))
+    # else:
+    #   print('%sinclusion not found: %s' % (idt, include))
 
 class Compiler(Builder):
 
@@ -1064,7 +1098,7 @@ class Compiler(Builder):
 
   def dependencies(self):
     deps = []
-    mkdeps(deps, self.src, 0, self.config, {},
+    mkdeps(deps, self.src, 0, self.toolkit, self.config, {},
            f_init = lambda res, n: res.append(n),
            f_submarks = lambda d: d,
            f_add = lambda res, node, sub: res.extend(sub))
