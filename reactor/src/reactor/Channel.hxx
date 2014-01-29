@@ -22,7 +22,13 @@ namespace reactor
   T
   Channel<T>::get()
   {
-    wait(this->_barrier);
+    /// In case of the barrier was opened
+    /// with a last element, and closed immediatly
+    /// Be sure the barrier is clearly opened before
+    /// get element.
+    while(!this->_barrier.opened())
+      reactor::wait(this->_barrier);
+    ELLE_ASSERT(!this->_queue.empty());
     T res = this->_queue.front();
     this->_queue.pop();
     if (this->_queue.empty())

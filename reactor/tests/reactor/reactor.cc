@@ -1910,7 +1910,8 @@ ELLE_TEST_SCHEDULED(test_multiple_channel)
        std::list<int>::iterator it = list.begin();
        for (; it != list.end(); ++it)
          BOOST_CHECK_EQUAL(channel.get(), *it);
-      });
+      }
+    );
 
     s.run_background("producer", [&]() {
       reactor::wait(sleep_authorization);
@@ -1918,11 +1919,36 @@ ELLE_TEST_SCHEDULED(test_multiple_channel)
       std::list<int>::iterator it = list.begin();
       for (;it != list.end(); ++it)
         channel.put(*it);
-   }
-   );
+   });
+   reactor::wait(s);
   };
 }
 
+
+ELLE_TEST_SCHEDULED(test_multiple_consumers)
+{
+  reactor::Channel<int> channel;
+
+  elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+  {
+    reactor::Thread* consumer2 = nullptr;
+
+    s.run_background("consumer", [&]() {
+               channel.get();
+               reactor::yield();
+               consumer2->terminate();
+            });
+
+    consumer2 = &s.run_background("consumer2", [&]() {
+               channel.get();
+               BOOST_FAIL("consumer has to wait.");
+            });
+
+    s.run_background("producer", [&]() { channel.put(42); });
+
+    reactor::wait(s);
+  };
+}
 /*-----.
 | Main |
 `-----*/
@@ -1933,6 +1959,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(channels);
   channels->add(BOOST_TEST_CASE(test_simple_channel), 0, 10);
   channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, 10);
+  channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, 10);
 
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);
