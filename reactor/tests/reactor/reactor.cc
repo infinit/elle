@@ -5,6 +5,7 @@
 
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/Channel.hh>
 #include <reactor/Scope.hh>
 #include <reactor/duration.hh>
 #include <reactor/exception.hh>
@@ -1388,7 +1389,7 @@ static
 void
 terminate_reactor_yield_thread(bool& beacon)
 {
-  
+
   try
   {
     reactor::yield();
@@ -1879,12 +1880,73 @@ namespace system_signals
 }
 #endif
 
+
+
+
+
+
+
+ELLE_TEST_SCHEDULED(test_simple_channel)
+{
+
+  reactor::Channel<int> channel;
+
+  elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+  {
+    s.run_background("producer", [&]() { channel.put(42); });
+
+    s.run_background("consumer", [&]() {
+               int final = channel.get();
+               BOOST_CHECK_EQUAL(final, 42);
+            });
+
+    reactor::wait(s);
+  };
+}
+
+
+ELLE_TEST_SCHEDULED(test_multiple_channel)
+{
+  reactor::Channel<int> channel;
+  reactor::Barrier sleep_authorization;
+
+
+  elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+  {
+    std::list<int> list ({1, 2, 3, 4, 5});
+    s.run_background("consumer", [&](){
+       sleep_authorization.open();
+       std::list<int>::iterator it = list.begin();
+       for (; it != list.end(); ++it)
+         BOOST_CHECK_EQUAL(channel.get(), *it);
+      });
+
+    s.run_background("producer", [&]() {
+      reactor::wait(sleep_authorization);
+      reactor::sleep(1_sec);
+      std::list<int>::iterator it = list.begin();
+      for (;it != list.end(); ++it)
+        channel.put(*it);
+   }
+   );
+  };
+
+}
+
+
+
+
 /*-----.
 | Main |
 `-----*/
 
 ELLE_TEST_SUITE()
 {
+  boost::unit_test::test_suite* channels = BOOST_TEST_SUITE("Channels");
+  boost::unit_test::framework::master_test_suite().add(channels);
+  channels->add(BOOST_TEST_CASE(test_simple_channel), 0, 10);
+  channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, 10);
+
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);
   basics->add(BOOST_TEST_CASE(test_basics_one), 0, 10);

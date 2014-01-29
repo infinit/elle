@@ -131,6 +131,7 @@ def configure(curl_config,
   sources = drake.nodes(
     'src/reactor/Barrier.cc',
     'src/reactor/Barrier.hh',
+    'src/reactor/Channel.hh',
     'src/reactor/Scope.cc',
     'src/reactor/Scope.hh',
     'src/reactor/asio.hh',
