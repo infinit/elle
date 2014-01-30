@@ -1928,27 +1928,29 @@ ELLE_TEST_SCHEDULED(test_multiple_channel)
 ELLE_TEST_SCHEDULED(test_multiple_consumers)
 {
   reactor::Channel<int> channel;
-
+  bool got = false;
   elle::With<reactor::Scope>() << [&](reactor::Scope &s)
   {
-    reactor::Thread* consumer2 = nullptr;
-
-    s.run_background("consumer", [&]() {
+    auto action = [&]
+      {
         BOOST_CHECK_EQUAL(channel.get(), 42);
-        reactor::yield();
-        consumer2->terminate();
-      });
-
-    consumer2 = &s.run_background("consumer2", [&]() {
-               channel.get();
-               BOOST_FAIL("consumer has to wait.");
-            });
-
-    s.run_background("producer", [&]() { channel.put(42); });
-
+        if (!got)
+        {
+          got = true;
+          reactor::yield();
+          reactor::yield();
+          reactor::Scheduler::scheduler()->terminate();
+        }
+        else
+          BOOST_FAIL("value was read twice");
+      };
+    s.run_background("consumer 1", action);
+    s.run_background("consumer 2", action);
+    s.run_background("producer", [&] { channel.put(42); });
     reactor::wait(s);
   };
 }
+
 /*-----.
 | Main |
 `-----*/
