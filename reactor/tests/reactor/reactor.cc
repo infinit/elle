@@ -1934,10 +1934,10 @@ ELLE_TEST_SCHEDULED(test_multiple_consumers)
     reactor::Thread* consumer2 = nullptr;
 
     s.run_background("consumer", [&]() {
-               channel.get();
-               reactor::yield();
-               consumer2->terminate();
-            });
+        BOOST_CHECK_EQUAL(channel.get(), 42);
+        reactor::yield();
+        consumer2->terminate();
+      });
 
     consumer2 = &s.run_background("consumer2", [&]() {
                channel.get();
