@@ -43,6 +43,13 @@ namespace elle
     }
 
     template <typename T>
+    T&
+    Move<T>::operator -> () const
+    {
+      return this->value;
+    }
+
+    template <typename T>
     Move<typename std::remove_reference<T>::type>
     move_on_copy(T&& v)
     {

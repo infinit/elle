@@ -21,6 +21,8 @@ namespace elle
       Move&
       operator =(Move&& other);
       operator T () const;
+      T&
+      operator -> () const;
     public:
       mutable T value;
     };
