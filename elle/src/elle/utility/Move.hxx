@@ -37,7 +37,7 @@ namespace elle
     }
 
     template <typename T>
-    Move<T>::operator T ()
+    Move<T>::operator T () const
     {
       return std::move(this->value);
     }

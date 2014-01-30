@@ -20,6 +20,37 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
+
+    std::unique_ptr<Socket>
+    SSLServer::_handshake()
+    {
+      elle::With<reactor::Scope>() << [this] (reactor::Scope& scope)
+      {
+        while (true)
+        {
+          auto& io_service = reactor::Scheduler::scheduler()->io_service();
+          auto ssl_stream =
+            elle::make_unique<SSLStream>(io_service,
+                                         this->_certificate->context());
+          EndPoint peer;
+          this->_accept(ssl_stream->next_layer(), peer);
+          ELLE_TRACE("%s: got TCP connection", *this);
+          std::unique_ptr<SSLSocket> new_socket(
+            new SSLSocket(std::move(ssl_stream), peer, this->_certificate));
+          // Socket is now connected so we can do a handshake.
+          scope.run_background(
+            elle::sprintf("%s: handshake %s", *this, *new_socket),
+            []
+            {
+              ELLE_TRACE_SCOPE("%s: handshake %s", *this, *new_socket);
+              new_socket->_server_handshake();
+
+              return std::unique_ptr<Socket>(new_socket.release());
+            })
+        }
+      }
+    }
+
     std::unique_ptr<Socket>
     SSLServer::accept()
     {

@@ -1,6 +1,7 @@
 #ifndef INFINIT_REACTOR_NETWORK_SSL_SERVER_HH
 # define INFINIT_REACTOR_NETWORK_SSL_SERVER_HH
 
+# include <reactor/Channel.hh>
 # include <reactor/network/server.hh>
 # include <reactor/network/ssl-socket.hh>
 
@@ -31,6 +32,7 @@ namespace reactor
 
     private:
       ELLE_ATTRIBUTE(std::shared_ptr<SSLCertificate>, certificate);
+      ELLE_ATTRIBUTE(reactor::Channel, sockets);
     };
   }
 }
