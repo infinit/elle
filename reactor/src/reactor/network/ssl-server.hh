@@ -1,6 +1,8 @@
 #ifndef INFINIT_REACTOR_NETWORK_SSL_SERVER_HH
 # define INFINIT_REACTOR_NETWORK_SSL_SERVER_HH
 
+# include <elle/utility/Duration.hh>
+
 # include <reactor/Channel.hh>
 # include <reactor/network/server.hh>
 # include <reactor/network/ssl-socket.hh>
@@ -18,7 +20,8 @@ namespace reactor
     `-------------*/
     public:
       typedef Server Super;
-      SSLServer(std::unique_ptr<SSLCertificate> certificate);
+      SSLServer(std::unique_ptr<SSLCertificate> certificate,
+                reactor::Duration const& handshake_timeout = 30_sec);
 
       virtual
       ~SSLServer();
@@ -31,8 +34,12 @@ namespace reactor
       accept();
 
     private:
+      void
+      _handshake();
       ELLE_ATTRIBUTE(std::shared_ptr<SSLCertificate>, certificate);
-      ELLE_ATTRIBUTE(reactor::Channel, sockets);
+      ELLE_ATTRIBUTE(reactor::Duration, handshake_timeout);
+      ELLE_ATTRIBUTE(reactor::Channel<std::unique_ptr<SSLSocket>>, sockets);
+      ELLE_ATTRIBUTE(reactor::Thread, handshake_thread);
     };
   }
 }

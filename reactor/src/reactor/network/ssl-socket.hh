@@ -90,13 +90,11 @@ namespace reactor
       SSLSocket(std::unique_ptr<SSLStream> socket,
                 SSLEndPoint const& endpoint,
                 std::shared_ptr<SSLCertificate> certificate);
-
       /// No check of certificate is done by default
       void
       _client_handshake();
-
       void
-      _server_handshake();
+      _server_handshake(reactor::DurationOpt const& timeout);
 
     private:
       ELLE_ATTRIBUTE(DurationOpt, timeout);

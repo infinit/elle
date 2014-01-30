@@ -90,7 +90,7 @@ namespace reactor
             endpoint, timeout),
       _timeout(timeout)
     {
-      this->_server_handshake();
+      this->_server_handshake(this->_timeout);
     }
 
     SSLSocket::~SSLSocket()
@@ -168,12 +168,12 @@ namespace reactor
     }
 
     void
-    SSLSocket::_server_handshake()
+    SSLSocket::_server_handshake(reactor::DurationOpt const& timeout)
     {
       ELLE_DEBUG("start server handshake");
       SSLHandshake handshaker(*this->_socket,
                               SSLStream::handshake_type::server);
-      if (!handshaker.run(this->_timeout))
+      if (!handshaker.run(timeout))
         throw TimeOut();
       ELLE_DEBUG("server handshake done");
     }

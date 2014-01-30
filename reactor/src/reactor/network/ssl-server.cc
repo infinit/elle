@@ -1,3 +1,8 @@
+#include <elle/utility/Move.hh>
+#include <elle/With.hh>
+
+#include <reactor/Scope.hh>
+#include <reactor/network/exception.hh>
 #include <reactor/network/ssl-server.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.SSLServer");
@@ -9,19 +14,28 @@ namespace reactor
     /*-------------.
     | Construction |
     `-------------*/
-    SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate):
+
+    SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate,
+                         reactor::Duration const& handshake_timeout):
       Super(),
-      _certificate(std::move(certificate))
+      _certificate(std::move(certificate)),
+      _handshake_timeout(handshake_timeout),
+      _sockets(),
+      _handshake_thread(elle::sprintf("%s handshake", *this),
+                        std::bind(&SSLServer::_handshake,
+                                  std::ref(*this)))
     {}
 
     SSLServer::~SSLServer()
-    {}
+    {
+      this->_handshake_thread.terminate_now();
+    }
 
     /*----------.
     | Accepting |
     `----------*/
 
-    std::unique_ptr<Socket>
+    void
     SSLServer::_handshake()
     {
       elle::With<reactor::Scope>() << [this] (reactor::Scope& scope)
@@ -29,46 +43,39 @@ namespace reactor
         while (true)
         {
           auto& io_service = reactor::Scheduler::scheduler()->io_service();
-          auto ssl_stream =
+          auto ssl =
             elle::make_unique<SSLStream>(io_service,
                                          this->_certificate->context());
           EndPoint peer;
-          this->_accept(ssl_stream->next_layer(), peer);
+          this->_accept(ssl->next_layer(), peer);
           ELLE_TRACE("%s: got TCP connection", *this);
-          std::unique_ptr<SSLSocket> new_socket(
-            new SSLSocket(std::move(ssl_stream), peer, this->_certificate));
-          // Socket is now connected so we can do a handshake.
+          auto naked = new SSLSocket(std::move(ssl), peer, this->_certificate);
+          auto socket =
+            elle::utility::move_on_copy(std::unique_ptr<SSLSocket>(naked));
           scope.run_background(
-            elle::sprintf("%s: handshake %s", *this, *new_socket),
-            []
+            elle::sprintf("%s: handshake %s", *this, *naked),
+            [this, socket]
             {
-              ELLE_TRACE_SCOPE("%s: handshake %s", *this, *new_socket);
-              new_socket->_server_handshake();
-
-              return std::unique_ptr<Socket>(new_socket.release());
-            })
+              ELLE_TRACE_SCOPE("%s: handshake %s", *this, *socket.value);
+              try
+              {
+                socket->_server_handshake(this->_handshake_timeout);
+                this->_sockets.put(socket);
+              }
+              catch (reactor::network::TimeOut const&)
+              {
+                ELLE_TRACE("%s: SSL handshake timed out for %s",
+                           *this, *socket.value);
+              }
+            });
         }
-      }
+      };
     }
 
     std::unique_ptr<Socket>
     SSLServer::accept()
     {
-      // Open a new SSL Socket.
-      auto ssl_stream = elle::make_unique<SSLStream>(
-        reactor::Scheduler::scheduler()->io_service(),
-        this->_certificate->context());
-      ELLE_DUMP("%s: opened underlying TCP socket", *this);
-      EndPoint peer;
-      this->_accept(ssl_stream->next_layer(), peer);
-      ELLE_DUMP("%s: got socket end point", *this);
-      // SSL stream now has end point so we can make it an SSLSocket.
-      std::unique_ptr<SSLSocket> new_socket(
-        new SSLSocket(std::move(ssl_stream), peer, this->_certificate));
-      // Socket is now connected so we can do a handshake.
-      new_socket->_server_handshake();
-      ELLE_TRACE("%s: got connection: %s", *this, *new_socket);
-      return std::unique_ptr<Socket>(new_socket.release());
+      return this->_sockets.get();
     }
   }
 }

@@ -272,6 +272,57 @@ ELLE_TEST_SCHEDULED(connection_closed)
   };
 }
 
+// Check a long or infinite handshake does not block subsequent ones.
+ELLE_TEST_SCHEDULED(handshake_stuck)
+{
+  reactor::Barrier closed;
+  reactor::Barrier listening;
+  reactor::Barrier stuck;
+  bool not_stuck = false;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        server.listen();
+        port = server.port();
+        listening.open();
+        std::unique_ptr<reactor::network::Socket> socket(server.accept());
+        socket->write(elle::ConstWeakBuffer("not stuck"));
+        reactor::wait(closed);
+      });
+    scope.run_background(
+      "stuck client",
+      [&]
+      {
+        reactor::wait(listening);
+        reactor::network::TCPSocket s("127.0.0.1",
+                                      boost::lexical_cast<std::string>(port));
+        stuck.open();
+        ELLE_LOG("HELLO");
+        BOOST_CHECK_THROW(s.read(4), reactor::network::ConnectionClosed);
+        ELLE_LOG("BYE");
+        closed.open();
+        BOOST_CHECK(not_stuck);
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        reactor::wait(listening);
+        reactor::wait(stuck);
+        SSLSocket s("127.0.0.1", boost::lexical_cast<std::string>(port));
+        BOOST_CHECK_EQUAL(s.read(9).string(), "not stuck");
+        not_stuck = true;
+      });
+    reactor::wait(scope);
+  };
+
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -279,6 +330,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
   suite.add(BOOST_TEST_CASE(encryption), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);
+  suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =
