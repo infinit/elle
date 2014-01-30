@@ -6,6 +6,9 @@
  C++ Network URI
 ################
 
+.. image:: https://travis-ci.org/cpp-netlib/uri.png?branch=master
+  :target: https://travis-ci.org/cpp-netlib/uri
+
 This project contains the source code that will track the proposal for
 a C++ URI at
 http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3420.html.
