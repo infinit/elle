@@ -542,15 +542,18 @@ namespace reactor
 
     template <typename PlainSocket, typename AsioSocket>
     class ReadUntil:
-      public SocketOperation<boost::asio::ip::tcp::socket>
+      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
-      typedef SocketOperation<boost::asio::ip::tcp::socket> Super;
+      typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
+      typedef ReadUntil<PlainSocket, AsioSocket> Self;
+      typedef SocketSpecialization<AsioSocket> Spe;
+      typedef SocketOperation<Socket> Super;
       ReadUntil(PlainSocket& plain,
                 AsioSocket& socket,
                 boost::asio::streambuf& buffer,
                 std::string const& delimiter):
-        SocketOperation<AsioSocket>(socket),
+        Super(Spe::socket(socket)),
         _socket(plain),
         _streambuffer(buffer),
         _delimiter(delimiter),
@@ -563,10 +566,10 @@ namespace reactor
       _start()
       {
         boost::asio::async_read_until(
-          this->socket(),
+          *this->_socket.socket(),
           this->_streambuffer,
           this->_delimiter,
-          std::bind(&ReadUntil::_wakeup,
+          std::bind(&Self::_wakeup,
                     std::ref(*this),
                     std::placeholders::_1,
                     std::placeholders::_2));
@@ -586,6 +589,27 @@ namespace reactor
         Super::_wakeup(error);
       }
 
+      void
+      _handle_error(boost::system::error_code const& error) override
+      {
+        if (error == boost::asio::error::eof ||
+            error == boost::asio::error::operation_aborted ||
+            error == boost::asio::error::broken_pipe ||
+            error == boost::asio::error::connection_aborted ||
+            error == boost::asio::error::connection_reset)
+          this->template _raise<ConnectionClosed>();
+        else
+          Super::_handle_error(error);
+      }
+
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        stream << "read until on " << this->_socket;
+      }
+
     private:
       ELLE_ATTRIBUTE(PlainSocket&, socket);
       ELLE_ATTRIBUTE(boost::asio::streambuf&, streambuffer);
@@ -599,10 +623,8 @@ namespace reactor
                                                    DurationOpt timeout)
     {
       ELLE_TRACE_SCOPE("%s: read until %s", *this, delimiter);
-      typedef SocketSpecialization<AsioSocket> Spe;
-      ReadUntil<Self, typename Spe::Socket> read(
-        *this, Spe::socket(*this->socket()),
-        this->_streambuffer, delimiter);
+      ReadUntil<Self, AsioSocket> read(*this, *this->socket(),
+                                       this->_streambuffer, delimiter);
       bool finished;
       try
       {
