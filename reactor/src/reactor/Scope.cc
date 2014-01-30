@@ -42,9 +42,15 @@ namespace reactor
                  {
                    try
                    {
+                     // Make sure the action is deleted as soon as it's done,
+                     // and not when finished thread are garbage collected. It
+                     // may hold objects that are expected to be destroyed - a
+                     // captured unique_ptr to a socket for instance, and one
+                     // would expect a disconnection when the thread is done.
+                     auto action = std::move(a);
                      ELLE_TRACE("%s: background job %s starts",
                                 *this, name)
-                       a();
+                       action();
                      ELLE_TRACE("%s: background job %s finished",
                                 *this, name);
                    }
