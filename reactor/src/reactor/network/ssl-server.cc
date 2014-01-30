@@ -67,6 +67,11 @@ namespace reactor
                 ELLE_TRACE("%s: SSL handshake timed out for %s",
                            *this, *socket.value);
               }
+              catch (reactor::network::SSLHandshakeError const& e)
+              {
+                ELLE_TRACE("%s: SSL handshake failed for %s: %s",
+                           *this, *socket.value, e);
+              }
             });
         }
       };

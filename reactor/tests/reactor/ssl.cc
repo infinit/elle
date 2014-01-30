@@ -320,7 +320,45 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
       });
     reactor::wait(scope);
   };
+}
 
+ELLE_TEST_SCHEDULED(handshake_error)
+{
+  reactor::Barrier listening;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        server.listen();
+        port = server.port();
+        listening.open();
+        for (int i = 0; i < 2; ++i)
+          server.accept()->write(elle::ConstWeakBuffer("snafu"));
+      });
+    reactor::wait(listening);
+    auto valid = [&]
+      {
+        reactor::network::SSLSocket valid(
+          "127.0.0.1", boost::lexical_cast<std::string>(port));
+        BOOST_CHECK_EQUAL(valid.read(5).string(), "snafu");
+      };
+    scope.run_background("valid client 1", valid);
+    scope.run_background(
+      "invalid client",
+      [&]
+      {
+        reactor::network::TCPSocket invalid(
+          "127.0.0.1", boost::lexical_cast<std::string>(port));
+        invalid.write(elle::ConstWeakBuffer("fubar\n"));
+        BOOST_CHECK_THROW(invalid.read(1), reactor::network::ConnectionClosed);
+      });
+    scope.run_background("valid client 2", valid);
+    reactor::wait(scope);
+  };
 }
 
 ELLE_TEST_SUITE()
@@ -331,6 +369,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(encryption), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
+  suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =
