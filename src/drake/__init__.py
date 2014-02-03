@@ -1765,13 +1765,16 @@ class Builder:
                   if self._builder_hash is not None:
                     if depfile_builder.exists():
                       with open(str(depfile_builder), 'r') as f:
-                        if self._builder_hash != f.read():
-                          explain(self,
-                                  'hash for the builder is outdated')
+                        try:
+                          stored_hash = eval(f.read())
+                        except:
+                          explain(self, 'the builder hash is invalid')
                           execute = True
+                      if not execute and self._builder_hash != stored_hash:
+                        explain(self, 'hash for the builder is outdated')
+                        execute = True
                     else:
-                      explain(self,
-                              'the builder hash is missing')
+                      explain(self, 'the builder hash is missing')
                       execute = True
 
                 # Check if we are up to date wrt all dependencies
@@ -1835,7 +1838,8 @@ class Builder:
                                   % depfile_builder,
                                   debug.DEBUG_TRACE_PLUS)
                       with open(str(depfile_builder), 'w') as f:
-                        print(self._builder_hash, file = f, end = '')
+                        print(repr(self._builder_hash),
+                              file = f, end = '')
                     # FIXME: BUG: remove dynamic dependencies files
                     # that are no longer present, otherwise this will
                     # be rebuilt forever.
