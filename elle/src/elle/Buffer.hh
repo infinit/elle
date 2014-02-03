@@ -120,6 +120,8 @@ namespace elle
     bool
     operator ==(std::string const& other) const;
     bool
+    operator ==(char const* other) const;
+    bool
     operator <(Buffer const& other) const;
 
   /*-----------.
@@ -199,6 +201,8 @@ namespace elle
     ConstWeakBuffer(const void* data, size_t size);
     /// WeakBuffer with \a data content.
     ConstWeakBuffer(std::string const& data) /* implicit */;
+    /// WeakBuffer with \a data content.
+    ConstWeakBuffer(char const* data) /* implicit */;
     /// ConstWeakBuffer for the given Buffer content.
     ConstWeakBuffer(Buffer const& buffer) /* implicit */;
     /// ConstWeakBuffer copy.
@@ -213,6 +217,13 @@ namespace elle
   | Content |
   `--------*/
   public:
+    /// Get byte at position \a i.
+    Byte&
+    operator[] (unsigned i);
+
+    /// Get byte at position \a i.
+    Byte
+    operator[] (unsigned i) const;
     /// Size of the buffer.
     ELLE_ATTRIBUTE_R(size_t, size);
     /// Buffer constant data.

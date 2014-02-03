@@ -276,6 +276,12 @@ namespace elle
   }
 
   bool
+  Buffer::operator ==(char const* other) const
+  {
+    return *this == ConstWeakBuffer(other);
+  }
+
+  bool
   Buffer::operator <(Buffer const& ot) const
   {
     return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
@@ -377,6 +383,20 @@ namespace elle
 
         std::cout << std::endl;
       }
+  }
+
+  Byte&
+  ConstWeakBuffer::operator[] (unsigned i)
+  {
+    ELLE_ASSERT_LT(i, this->_size);
+    return const_cast<Byte&>(this->_contents[i]);
+  }
+
+  Byte
+  ConstWeakBuffer::operator[] (unsigned i) const
+  {
+    ELLE_ASSERT_LT(i, this->_size);
+    return this->_contents[i];
   }
 
   bool
