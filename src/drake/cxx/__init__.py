@@ -1149,7 +1149,7 @@ class Compiler(Builder):
                              f_add = add)}
 
   def __str__(self):
-    return 'Compiler(%s)' % self.obj
+    return 'compilation of %s' % self.obj
 
   def __repr__(self):
     return 'Compiler(%s)' % self.obj
