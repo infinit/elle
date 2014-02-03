@@ -102,8 +102,6 @@ namespace elle
   void
   Buffer::capacity(size_t capacity)
   {
-    if (capacity < ELLE_BUFFER_INITIAL_SIZE)
-      capacity = ELLE_BUFFER_INITIAL_SIZE;
     void* tmp = ::realloc(this->_contents, capacity);
     if (tmp == nullptr)
       throw std::bad_alloc();
