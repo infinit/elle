@@ -24,6 +24,7 @@ import time
 import types
 from drake.sched import Coroutine, Scheduler
 from drake.enumeration import Enumerated
+from itertools import chain
 
 def _scheduled():
   return Coroutine.current and \
@@ -1241,7 +1242,7 @@ class Node(BaseNode):
     """Digest of the file as a string."""
     if self.__hash is None:
       hasher = hashlib.sha1()
-      for node in sorted(itertools.chain((self,), self.dependencies)):
+      for node in sorted(chain((self,), self.dependencies)):
         path = node.path()
         with open(str(path), 'rb') as f:
           while True:
@@ -1454,470 +1455,434 @@ def _can_skip_node(node):
 
 class Builder:
 
-    """Produces a set of BaseNodes from an other set of BaseNodes."""
+  """Produces a set of BaseNodes from an other set of BaseNodes."""
 
-    builders = []
-    uid = 0
+  builders = []
+  uid = 0
 
-    name = 'build'
-    _deps_handlers = {}
+  name = 'build'
+  _deps_handlers = {}
 
-    class Failed(Exception):
+  class Failed(Exception):
 
-      def __init__(self, builder):
-        self._builder = builder
-
-      def __str__(self):
-          return '%s failed' % self._builder
-
-    @classmethod
-    def register_deps_handler(self, name, f):
-        """Add a dependency handler."""
-        self._deps_handlers[name] = f
-
-    def __init__(self, srcs, dsts):
-        """Create a builder.
-
-        srcs -- List of source nodes, or source node if there is
-                only one.
-        dsts -- List of target nodes, or target node if there is
-                only one.
-        """
-        self.__sources = {}
-        self.__vsrcs = {}
-        for src in srcs:
-          self.add_src(src)
-        self.__targets = []
-        for dst in dsts:
-          if dst.builder is not None:
-            raise BuilderRedefinition(dst, dst.builder, self)
-          self.__targets.append(dst)
-          dst.builder = self
-
-        self.uid = Builder.uid
-        Builder.uid += 1
-        Builder.builders.append(self)
-
-        self._depfiles = {}
-        self._depfile = DepFile(self, 'drake')
-        self.__depfile_builder = DepFile(self, 'drake.Builder')
-        self.__executed = False
-        self.__executed_exception = None
-        self.__executed_signal = None
-        self.__dynsrc = {}
-
-    def sources_dynamic(self):
-        """The list of dynamic source nodes."""
-        return self.__dynsrc.values()
-
-    def sources(self):
-        """The list of source nodes."""
-        return self.__sources
-
-    def targets(self):
-        """The list of target nodes."""
-        return self.__targets
-
-    @property
-    def path_stdout(self):
-      return self.cachedir() / 'stdout'
-
-    @property
-    def path_tmp(self):
-      res = self.cachedir() / 'tmp'
-      res.mkpath()
-      return res
-
-    def cmd(self, pretty, cmd, cwd = None, leave_stdout = False, env = None):
-        """Run a shell command.
-
-        pretty  -- A pretty version for output.
-        command -- The command.
-
-        The expansion handles shell escaping. The pretty version is
-        printed, except if drake is in raw mode, in which case the
-        actual command is printed.
-        """
-        if not isinstance(cmd, tuple):
-          cmd = (cmd,)
-        with open(str(self.path_stdout), 'w') as f:
-            def fun():
-                for c in cmd:
-                    c = list(map(str, c))
-                    if pretty is not None:
-                      self.output(' '.join(c), pretty)
-                    stdout = None
-                    if not leave_stdout:
-                        stdout = f
-                    if not command(c, cwd = cwd, stdout = stdout, env = env):
-                        return False
-                return True
-            if Drake.current.jobs_lock is not None:
-                with Drake.current.jobs_lock:
-                    return sched.background(fun)
-            else:
-                return fun()
-
-    def output(self, raw, pretty = None):
-        """Output pretty, or raw if drake is in raw mode."""
-        if not _SILENT:
-            print((not _RAW and pretty) or raw)
-
-
-    def cachedir(self):
-        """The cachedir that stores dependency files."""
-        path = self.__targets[0].name()
-        if path.virtual:
-          path = drake.Path(path._Path__path, False, False)
-        res = path.dirname() / _CACHEDIR / path.basename()
-        if not res.absolute():
-          res = drake.Drake.current.prefix / res
-        res.mkpath()
-        return res
-
-
-    def hash(self):
-        """A hash for this builder"""
-        return None
-
-    def dependencies(self):
-        """Recompute dynamic dependencies list and return them.
-
-        Reimplemented by subclasses. This implementation returns an
-        empty list.
-        """
-        pass
-
-
-    def depfile(self, name):
-        """The depfile for this node for static dependencies."""
-        if name not in self._depfiles:
-            self._depfiles[name] = DepFile(self, name)
-        return self._depfiles[name]
-
-
-    def add_dynsrc(self, name, node, data = None):
-        """Add a dynamic source node."""
-        self.depfile(name).register(node)
-        self.__dynsrc[str(node.path())] = node
-
-
-    def get_type(self, tname):
-        """Return the node type with the given name."""
-        return _BaseNodeTypeType.node_types[tname]
-
-    def report_dependencies(self, dependencies):
-        """Called when dependencies have been built.
-
-        This hook is always called no matter whether the nodes
-        were successfully built or not.
-        """
-        pass
-
-    def __report_dependencies(self, dependencies):
-        self.report_dependencies(dependencies)
-        for target in self.__targets:
-            target.report_dependencies(dependencies)
-
-    @property
-    def build_status(self):
-      if not self.__executed:
-        return None
-      else:
-        return self.__executed_exception is None
-
-    def run(self):
-        """Build sources recursively, check if our target are up to
-        date, and executed if needed."""
-
-        debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
-        with debug.indentation():
-
-            if not self.__executed:
-                # If someone is already executing this builder, wait.
-                if self.__executed_signal is not None:
-                    debug.debug('Already being built, waiting.',
-                                debug.DEBUG_TRACE_PLUS)
-                    sched.coro_wait(self.__executed_signal)
-                # Otherwise, build it ourselves
-                else:
-                    self.__executed_signal = sched.Signal()
-
-            # If we were already executed, just skip
-            if self.__executed:
-              if self.__executed_exception is not None:
-                debug.debug(
-                    'Already built in this run, with an exception.',
-                    debug.DEBUG_TRACE_PLUS)
-                raise self.__executed_exception
-              debug.debug('Already built in this run.',
-                          debug.DEBUG_TRACE_PLUS)
-              return
-            try:
-                # The list of static dependencies is now fixed
-                for path in self.__sources:
-                    self._depfile.register(self.__sources[path])
-
-                # See Whether we need to execute or not
-                execute = False
-
-                # Reload dynamic dependencies
-                if not execute:
-                  for f in _OS.listdir(str(self.cachedir())):
-                    if not _OS.path.isfile(str(self.cachedir() / f)):
-                      continue
-                    if f in ['drake', 'drake.Builder', 'stdout']:
-                      continue
-                    debug.debug(
-                      'Considering dependencies file %s' % f,
-                      debug.DEBUG_DEPS)
-                    depfile = self.depfile(f)
-                    depfile.read()
-                    handler = self._deps_handlers[f]
-                    with debug.indentation():
-                      for path in depfile.sha1s():
-                        if path in self.__sources or path in self.__dynsrc:
-                          debug.debug(
-                              '%s is already in our sources.' % path,
-                              debug.DEBUG_DEPS)
-                          continue
-                        if path in Drake.current.nodes:
-                          node = Drake.current.nodes[path]
-                        else:
-                          debug.debug('%s is unknown, calling handler.' % path,
-                                      debug.DEBUG_DEPS)
-                          node = handler(self,
-                                         path,
-                                         self.get_type(depfile.sha1s()[path][1]),
-                                         None)
-                        debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
-                        self.add_dynsrc(f, node, None)
-
-
-                coroutines_static = []
-                coroutines_dynamic = []
-
-                # FIXME: symetric of can_skip_node: if a node is a
-                # plain file and does not exist, err immediately (or
-                # execute = True).
-
-                # Build static dependencies
-                debug.debug('Build static dependencies')
-                with debug.indentation():
-                    for node in list(self.__sources.values()) + \
-                        list(self.__vsrcs.values()):
-                        if _can_skip_node(node):
-                            continue
-                        coroutines_static.append(
-                            Coroutine(node.build,
-                                      str(node),
-                                      Drake.current.scheduler,
-                                      sched.Coroutine.current))
-                try:
-                  sched.coro_wait(coroutines_static)
-                finally:
-                  self.__report_dependencies(self.__sources.values())
-
-                # Build dynamic dependencies
-                debug.debug('Build dynamic dependencies')
-                with debug.indentation():
-                    for path in self.__dynsrc:
-                        node = self.__dynsrc[path]
-                        if _can_skip_node(node):
-                            continue
-                        coroutines_dynamic.append(
-                            Coroutine(node.build,
-                                      str(node),
-                                      Drake.current.scheduler,
-                                      sched.Coroutine.current))
-
-                try:
-                  sched.coro_wait(coroutines_dynamic)
-                except Exception as e:
-                  explain(
-                    self,
-                    'some dynamic dependency couldn\'t be built')
-                  execute = True
-
-                # If any non-virtual target is missing, we must rebuild.
-                if not execute:
-                  for dst in self.__targets:
-                    if dst.missing():
-                      explain(self, 'target %s is missing' % dst)
-                      execute = True
-
-                # Load static dependencies
-                self._depfile.read()
-
-                # If a new dependency appeared, we must rebuild.
-                if not execute:
-                  for p in self.__sources:
-                    path = self.__sources[p].name_absolute()
-                    if path not in self._depfile.sha1s():
-                      explain(self, 'of new dependency %s' % path)
-                      execute = True
-                      break
-
-                # Check if we are up to date wrt to the builder itself
-                self._builder_hash = self.hash()
-                depfile_builder = self.cachedir() / _DEPFILE_BUILDER
-                if not execute:
-                  if self._builder_hash is not None:
-                    if depfile_builder.exists():
-                      with open(str(depfile_builder), 'r') as f:
-                        try:
-                          stored_hash = eval(f.read())
-                        except:
-                          explain(self, 'the builder hash is invalid')
-                          execute = True
-                      if not execute and self._builder_hash != stored_hash:
-                        explain(self, 'hash for the builder is outdated')
-                        execute = True
-                    else:
-                      explain(self, 'the builder hash is missing')
-                      execute = True
-
-                # Check if we are up to date wrt all dependencies
-                if not execute:
-                    if not self._depfile.up_to_date():
-                        execute = True
-                    for f in self._depfiles:
-                        if not self._depfiles[f].up_to_date():
-                            execute = True
-
-
-                if execute:
-                    debug.debug('Executing builder %s' % self,
-                                debug.DEBUG_TRACE)
-
-                    # Regenerate dynamic dependencies
-                    self.__dynsrc = {}
-                    self._depfiles = {}
-                    debug.debug('Recomputing dependencies',
-                                debug.DEBUG_TRACE_PLUS)
-                    with debug.indentation():
-                        self.dependencies()
-
-                    debug.debug('Rebuilding new dynamic dependencies',
-                                debug.DEBUG_TRACE_PLUS)
-                    with debug.indentation():
-                        for node in self.__dynsrc.values():
-                            # FIXME: parallelize
-                            node.build()
-                    try:
-                      success = self.execute()
-                    except _Exception as e:
-                      print('%s: %s' % (self, e), file = sys.stderr)
-                      success = False
-                    if not success:
-                      self.__executed = True
-                      self.__executed_exception = \
-                        Builder.Failed(self)
-                      raise self.__executed_exception
-
-                    # Check every non-virtual target was built.
-                    for dst in self.__targets:
-                      if isinstance(dst, Node):
-                        if dst.missing():
-                          raise Exception('%s wasn\'t created by %s' \
-                                          % (dst, self))
-                        dst._Node__hash = None
-
-                    # Update depfiles
-                    self._depfile.update()
-                    debug.debug('Write dependencies file %s' % \
-                                self._depfile,
-                                debug.DEBUG_TRACE_PLUS)
-                    if self._builder_hash is None:
-                      debug.debug('Remove builder dependency file %s'\
-                                  % depfile_builder,
-                                  debug.DEBUG_TRACE_PLUS)
-                      depfile_builder.remove()
-                    else:
-                      debug.debug('Write builder dependency file %s'\
-                                  % depfile_builder,
-                                  debug.DEBUG_TRACE_PLUS)
-                      with open(str(depfile_builder), 'w') as f:
-                        print(repr(self._builder_hash),
-                              file = f, end = '')
-                    # FIXME: BUG: remove dynamic dependencies files
-                    # that are no longer present, otherwise this will
-                    # be rebuilt forever.
-                    for name in self._depfiles:
-                      debug.debug('Write dependencies file %s' % name,
-                                  debug.DEBUG_TRACE_PLUS)
-                      self._depfiles[name].update()
-                    self.__executed = True
-                else:
-                    self.__executed = True
-                    debug.debug('Everything is up to date.',
-                                debug.DEBUG_TRACE_PLUS)
-            except Exception as e:
-              self.__executed_exception = e
-              raise
-            finally:
-              self.__executed = True
-              self.__executed_signal.signal()
-
-
-    def execute(self):
-        """Generate target nodes from source node.
-
-        Must be reimplemented by subclasses.
-        """
-        raise Exception('execute is not implemented for %s' % self)
-
-
-    def clean(self):
-        """Clean source nodes recursively."""
-        for node in list(self.__sources.values()) + \
-            list(self.__vsrcs.values()):
-            node.clean()
-
+    def __init__(self, builder):
+      self._builder = builder
 
     def __str__(self):
-        """String representation."""
-        return self.__class__.__name__
+      return '%s failed' % self._builder
 
+  @classmethod
+  def register_deps_handler(self, name, f):
+    """Add a dependency handler."""
+    self._deps_handlers[name] = f
 
-    def add_src(self, src):
-        """Add a static source."""
-        self.__sources[str(src._BaseNode__name)] = src
-        src.consumers.append(self)
+  def __init__(self, srcs, dsts):
+    """Create a builder.
 
+    srcs -- List of source nodes, or source node if there is
+            only one.
+    dsts -- List of target nodes, or target node if there is
+            only one.
+    """
+    self.__sources = {}
+    self.__vsrcs = {}
+    for src in srcs:
+      self.add_src(src)
+    self.__targets = []
+    for dst in dsts:
+      if dst.builder is not None:
+        raise BuilderRedefinition(dst, dst.builder, self)
+      self.__targets.append(dst)
+      dst.builder = self
+    self.uid = Builder.uid
+    Builder.uid += 1
+    Builder.builders.append(self)
+    self._depfiles = {}
+    self._depfile = DepFile(self, 'drake')
+    self.__depfile_builder = DepFile(self, 'drake.Builder')
+    self.__executed = False
+    self.__executed_exception = None
+    self.__executed_signal = None
+    self.__dynsrc = {}
 
-    def add_virtual_src(self, src):
-        """Add a virtual source.
+  def sources_dynamic(self):
+    """The list of dynamic source nodes."""
+    return self.__dynsrc.values()
 
-        Virtual sources are built when the builder is runned, but are
-        not taken in account when determining if this builder must be
-        executed.
-        """
-        self.__vsrcs[str(src.path())] = src
+  def sources(self):
+    """The list of source nodes."""
+    return self.__sources
 
+  def targets(self):
+    """The list of target nodes."""
+    return self.__targets
 
-    def all_srcs(self):
-        """All sources, recursively."""
-        res = []
-        for src in self.__sources.values() + self.__dynsrc.values():
-            res.append(src)
-            if src.builder is not None:
-                res += src.builder.all_srcs()
-        return res
+  @property
+  def path_stdout(self):
+    return self.cachedir() / 'stdout'
 
-    def dot(self, marks):
-        """Print a dot representation of the build graph."""
-        if (self in marks):
-            return True
-        marks[self] = None
+  @property
+  def path_tmp(self):
+    res = self.cachedir() / 'tmp'
+    res.mkpath()
+    return res
 
-        print('  builder_%s [label="%s", shape=rect]' % \
-              (self.uid, self.__class__))
-        for node in itertools.chain(self.__sources.values(),
-                                    self.__dynsrc.values()):
-            if node.dot(marks):
-                print('  node_%s -> builder_%s' % (node.uid, self.uid))
+  def cmd(self, pretty, cmd, cwd = None, leave_stdout = False, env = None):
+    """Run a shell command.
+
+    pretty  -- A pretty version for output.
+    command -- The command.
+
+    The expansion handles shell escaping. The pretty version is
+    printed, except if drake is in raw mode, in which case the
+    actual command is printed.
+    """
+    if not isinstance(cmd, tuple):
+      cmd = (cmd,)
+    with open(str(self.path_stdout), 'w') as f:
+      def fun():
+        for c in cmd:
+          c = list(map(str, c))
+          if pretty is not None:
+            self.output(' '.join(c), pretty)
+          stdout = None
+          if not leave_stdout:
+            stdout = f
+          if not command(c, cwd = cwd, stdout = stdout, env = env):
+            return False
         return True
+      if Drake.current.jobs_lock is not None:
+        with Drake.current.jobs_lock:
+          return sched.background(fun)
+      else:
+        return fun()
+
+  def output(self, raw, pretty = None):
+    """Output pretty, or raw if drake is in raw mode."""
+    if not _SILENT:
+      print((not _RAW and pretty) or raw)
+
+  def cachedir(self):
+    """The cachedir that stores dependency files."""
+    path = self.__targets[0].name()
+    if path.virtual:
+      path = drake.Path(path._Path__path, False, False)
+    res = path.dirname() / _CACHEDIR / path.basename()
+    if not res.absolute():
+      res = drake.Drake.current.prefix / res
+    res.mkpath()
+    return res
+
+  def hash(self):
+    """A hash for this builder"""
+    return None
+
+  def dependencies(self):
+    """Recompute dynamic dependencies list and return them.
+
+    Reimplemented by subclasses. This implementation returns an
+    empty list.
+    """
+    pass
+
+  def depfile(self, name):
+    """The depfile for this node for static dependencies."""
+    if name not in self._depfiles:
+      self._depfiles[name] = DepFile(self, name)
+    return self._depfiles[name]
+
+  def add_dynsrc(self, name, node, data = None):
+    """Add a dynamic source node."""
+    self.depfile(name).register(node)
+    self.__dynsrc[str(node.path())] = node
+
+  def get_type(self, tname):
+    """Return the node type with the given name."""
+    return _BaseNodeTypeType.node_types[tname]
+
+  def report_dependencies(self, dependencies):
+    """Called when dependencies have been built.
+
+    This hook is always called no matter whether the nodes
+    were successfully built or not.
+    """
+    pass
+
+  def __report_dependencies(self, dependencies):
+    self.report_dependencies(dependencies)
+    for target in self.__targets:
+      target.report_dependencies(dependencies)
+
+  @property
+  def build_status(self):
+    if not self.__executed:
+      return None
+    else:
+      return self.__executed_exception is None
+
+  def run(self):
+    """Build sources recursively, check if our target are up to
+    date, and executed if needed."""
+    debug.debug('Running %s.' % self, debug.DEBUG_TRACE_PLUS)
+    with debug.indentation():
+        if not self.__executed:
+            # If someone is already executing this builder, wait.
+            if self.__executed_signal is not None:
+                debug.debug('Already being built, waiting.',
+                            debug.DEBUG_TRACE_PLUS)
+                sched.coro_wait(self.__executed_signal)
+            # Otherwise, build it ourselves
+            else:
+                self.__executed_signal = sched.Signal()
+        # If we were already executed, just skip
+        if self.__executed:
+          if self.__executed_exception is not None:
+            debug.debug(
+                'Already built in this run, with an exception.',
+                debug.DEBUG_TRACE_PLUS)
+            raise self.__executed_exception
+          debug.debug('Already built in this run.',
+                      debug.DEBUG_TRACE_PLUS)
+          return
+        try:
+            # The list of static dependencies is now fixed
+            for path in self.__sources:
+                self._depfile.register(self.__sources[path])
+            # See Whether we need to execute or not
+            execute = False
+            # Reload dynamic dependencies
+            if not execute:
+              for f in _OS.listdir(str(self.cachedir())):
+                if not _OS.path.isfile(str(self.cachedir() / f)):
+                  continue
+                if f in ['drake', 'drake.Builder', 'stdout']:
+                  continue
+                debug.debug(
+                  'Considering dependencies file %s' % f,
+                  debug.DEBUG_DEPS)
+                depfile = self.depfile(f)
+                depfile.read()
+                handler = self._deps_handlers[f]
+                with debug.indentation():
+                  for path in depfile.sha1s():
+                    if path in self.__sources or path in self.__dynsrc:
+                      debug.debug(
+                          '%s is already in our sources.' % path,
+                          debug.DEBUG_DEPS)
+                      continue
+                    if path in Drake.current.nodes:
+                      node = Drake.current.nodes[path]
+                    else:
+                      debug.debug('%s is unknown, calling handler.' % path,
+                                  debug.DEBUG_DEPS)
+                      node = handler(self,
+                                     path,
+                                     self.get_type(depfile.sha1s()[path][1]),
+                                     None)
+                    debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
+                    self.add_dynsrc(f, node, None)
+            coroutines_static = []
+            coroutines_dynamic = []
+            # FIXME: symetric of can_skip_node: if a node is a
+            # plain file and does not exist, err immediately (or
+            # execute = True).
+            # Build static dependencies
+            debug.debug('Build static dependencies')
+            with debug.indentation():
+                for node in list(self.__sources.values()) + \
+                    list(self.__vsrcs.values()):
+                    if _can_skip_node(node):
+                        continue
+                    coroutines_static.append(
+                        Coroutine(node.build,
+                                  str(node),
+                                  Drake.current.scheduler,
+                                  sched.Coroutine.current))
+            try:
+              sched.coro_wait(coroutines_static)
+            finally:
+              self.__report_dependencies(self.__sources.values())
+            # Build dynamic dependencies
+            debug.debug('Build dynamic dependencies')
+            with debug.indentation():
+                for path in self.__dynsrc:
+                    node = self.__dynsrc[path]
+                    if _can_skip_node(node):
+                        continue
+                    coroutines_dynamic.append(
+                        Coroutine(node.build,
+                                  str(node),
+                                  Drake.current.scheduler,
+                                  sched.Coroutine.current))
+            try:
+              sched.coro_wait(coroutines_dynamic)
+            except Exception as e:
+              explain(
+                self,
+                'some dynamic dependency couldn\'t be built')
+              execute = True
+            # If any non-virtual target is missing, we must rebuild.
+            if not execute:
+              for dst in self.__targets:
+                if dst.missing():
+                  explain(self, 'target %s is missing' % dst)
+                  execute = True
+            # Load static dependencies
+            self._depfile.read()
+            # If a new dependency appeared, we must rebuild.
+            if not execute:
+              for p in self.__sources:
+                path = self.__sources[p].name_absolute()
+                if path not in self._depfile.sha1s():
+                  explain(self, 'of new dependency %s' % path)
+                  execute = True
+                  break
+            # Check if we are up to date wrt to the builder itself
+            self._builder_hash = self.hash()
+            depfile_builder = self.cachedir() / _DEPFILE_BUILDER
+            if not execute:
+              if self._builder_hash is not None:
+                if depfile_builder.exists():
+                  with open(str(depfile_builder), 'r') as f:
+                    try:
+                      stored_hash = eval(f.read())
+                    except:
+                      explain(self, 'the builder hash is invalid')
+                      execute = True
+                  if not execute and self._builder_hash != stored_hash:
+                    explain(self, 'hash for the builder is outdated')
+                    execute = True
+                else:
+                  explain(self, 'the builder hash is missing')
+                  execute = True
+            # Check if we are up to date wrt all dependencies
+            if not execute:
+                if not self._depfile.up_to_date():
+                    execute = True
+                for f in self._depfiles:
+                    if not self._depfiles[f].up_to_date():
+                        execute = True
+            if execute:
+                debug.debug('Executing builder %s' % self,
+                            debug.DEBUG_TRACE)
+                # Regenerate dynamic dependencies
+                self.__dynsrc = {}
+                self._depfiles = {}
+                debug.debug('Recomputing dependencies',
+                            debug.DEBUG_TRACE_PLUS)
+                with debug.indentation():
+                    self.dependencies()
+                debug.debug('Rebuilding new dynamic dependencies',
+                            debug.DEBUG_TRACE_PLUS)
+                with debug.indentation():
+                    for node in self.__dynsrc.values():
+                        # FIXME: parallelize
+                        node.build()
+                try:
+                  success = self.execute()
+                except _Exception as e:
+                  print('%s: %s' % (self, e), file = sys.stderr)
+                  success = False
+                if not success:
+                  self.__executed = True
+                  self.__executed_exception = \
+                    Builder.Failed(self)
+                  raise self.__executed_exception
+                # Check every non-virtual target was built.
+                for dst in self.__targets:
+                  if isinstance(dst, Node):
+                    if dst.missing():
+                      raise Exception('%s wasn\'t created by %s' \
+                                      % (dst, self))
+                    dst._Node__hash = None
+                # Update depfiles
+                self._depfile.update()
+                debug.debug('Write dependencies file %s' % \
+                            self._depfile,
+                            debug.DEBUG_TRACE_PLUS)
+                if self._builder_hash is None:
+                  debug.debug('Remove builder dependency file %s'\
+                              % depfile_builder,
+                              debug.DEBUG_TRACE_PLUS)
+                  depfile_builder.remove()
+                else:
+                  debug.debug('Write builder dependency file %s'\
+                              % depfile_builder,
+                              debug.DEBUG_TRACE_PLUS)
+                  with open(str(depfile_builder), 'w') as f:
+                    print(repr(self._builder_hash),
+                          file = f, end = '')
+                # FIXME: BUG: remove dynamic dependencies files
+                # that are no longer present, otherwise this will
+                # be rebuilt forever.
+                for name in self._depfiles:
+                  debug.debug('Write dependencies file %s' % name,
+                              debug.DEBUG_TRACE_PLUS)
+                  self._depfiles[name].update()
+                self.__executed = True
+            else:
+                self.__executed = True
+                debug.debug('Everything is up to date.',
+                            debug.DEBUG_TRACE_PLUS)
+        except Exception as e:
+          self.__executed_exception = e
+          raise
+        finally:
+          self.__executed = True
+          self.__executed_signal.signal()
+
+  def execute(self):
+    """Generate target nodes from source node.
+
+    Must be reimplemented by subclasses.
+    """
+    raise Exception('execute is not implemented for %s' % self)
+
+  def clean(self):
+    """Clean source nodes recursively."""
+    for node in chain(self.__sources.values(), self.__vsrcs.values()):
+      node.clean()
+
+  def __str__(self):
+    """String representation."""
+    return self.__class__.__name__
+
+  def add_src(self, src):
+    """Add a static source."""
+    self.__sources[str(src._BaseNode__name)] = src
+    src.consumers.append(self)
+
+  def add_virtual_src(self, src):
+    """Add a virtual source.
+
+    Virtual sources are built when the builder is runned, but are
+    not taken in account when determining if this builder must be
+    executed.
+    """
+    self.__vsrcs[str(src.path())] = src
+
+  def all_srcs(self):
+    """All sources, recursively."""
+    res = []
+    for src in self.__sources.values() + self.__dynsrc.values():
+        res.append(src)
+        if src.builder is not None:
+            res += src.builder.all_srcs()
+    return res
+
+  def dot(self, marks):
+    """Print a dot representation of the build graph."""
+    if (self in marks):
+        return True
+    marks[self] = None
+
+    print('  builder_%s [label="%s", shape=rect]' % \
+          (self.uid, self.__class__))
+    for node in itertools.chain(self.__sources.values(),
+                                self.__dynsrc.values()):
+        if node.dot(marks):
+            print('  node_%s -> builder_%s' % (node.uid, self.uid))
+    return True
 
 
 class ShellCommand(Builder):
