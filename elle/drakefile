@@ -237,6 +237,14 @@ def configure(zlib_lib,
     'src/elle/types.hh',
     )
 
+  # Streams
+  sources += drake.nodes(
+    'src/elle/OStream.cc',
+    'src/elle/OStream.hh',
+    'src/elle/stream/Buffer.cc',
+    'src/elle/stream/Buffer.hh',
+  )
+
   # JSON Spirit
   sources += drake.nodes(
     'src/elle/json/json-spirit/include/json_spirit/json_spirit.h',
@@ -455,6 +463,7 @@ def configure(zlib_lib,
     "serialize/version_change.cc",
     "serialize/footprint.cc",
     "serialize/extract.cc",
+    'stream.cc',
     "system/home_directory.cc",
     "threading/monitor.cc",
     "utility/Suffixes.cc",
