@@ -14,8 +14,10 @@ class Context:
   current = None
 
   def __init__(self,
+               target = None,
                resources = []):
     self.resources = resources
+    self.target = target
 
   def __enter__(self):
     self.__previous = Context.current
@@ -34,6 +36,7 @@ class Script(drake.Node):
     context = Context.current
     if context is not None:
       Compiler(self,
+               target = context.target,
                resources = context.resources)
 
   @property
