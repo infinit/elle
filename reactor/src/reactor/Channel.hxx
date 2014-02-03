@@ -35,7 +35,7 @@ namespace reactor
     this->_queue.pop();
     if (this->_queue.empty())
       this->_barrier.close();
-    return std::move(res);
+    return res;
   }
 
 }
