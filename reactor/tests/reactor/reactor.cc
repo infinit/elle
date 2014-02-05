@@ -114,6 +114,32 @@ test_basics_interleave()
   BOOST_CHECK_EQUAL(step, 5);
 }
 
+static
+void
+nested_schedulers()
+{
+  reactor::Scheduler outer;
+
+  reactor::Thread t(
+    outer, "outer",
+    [&]
+    {
+      BOOST_CHECK(reactor::Scheduler::scheduler() == &outer);
+      reactor::Scheduler inner;
+      reactor::Thread t(
+        inner, "inner",
+        [&]
+        {
+          BOOST_CHECK(reactor::Scheduler::scheduler() == &inner);
+        });
+      inner.run();
+      BOOST_CHECK(reactor::Scheduler::scheduler() == &outer);
+    });
+  BOOST_CHECK(reactor::Scheduler::scheduler() == 0);
+  outer.run();
+  BOOST_CHECK(reactor::Scheduler::scheduler() == 0);
+}
+
 /*--------.
 | Signals |
 `--------*/
@@ -1967,6 +1993,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(basics);
   basics->add(BOOST_TEST_CASE(test_basics_one), 0, 10);
   basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, 10);
+  basics->add(BOOST_TEST_CASE(nested_schedulers), 0, 1);
 
   boost::unit_test::test_suite* multithread = BOOST_TEST_SUITE("Multithread");
   multithread->add(BOOST_TEST_CASE(test_multithread));

@@ -85,13 +85,30 @@ namespace reactor
   | Run |
   `----*/
 
+  class PushScheduler
+  {
+  public:
+    PushScheduler(Scheduler* sched):
+      _previous(Scheduler::scheduler())
+    {
+      reactor::scheduler(sched);
+    }
+
+    ~PushScheduler()
+    {
+      reactor::scheduler(this->_previous);
+    }
+
+    ELLE_ATTRIBUTE(Scheduler*, previous);
+  };
+
   void
   Scheduler::run()
   {
-    reactor::scheduler(this);
-    ELLE_TRACE_SCOPE("%s: run", *this);
-    reactor::scheduler(nullptr);
-    ELLE_ASSERT(!scheduler());
+    {
+      PushScheduler p(this);
+      ELLE_TRACE_SCOPE("%s: run", *this);
+    }
     this->_running_thread = std::this_thread::get_id();
     while (step())
       /* nothing */;
@@ -105,10 +122,11 @@ namespace reactor
     // Cancel all pending signal handlers.
     this->_signal_handlers.clear();
     _io_service.run();
-    reactor::scheduler(this);
     _done = true;
-    ELLE_TRACE("%s: done", *this);
-    reactor::scheduler(nullptr);
+    {
+      PushScheduler p(this);
+      ELLE_TRACE("%s: done", *this);
+    }
     ELLE_ASSERT(_frozen.empty());
     if (_eptr != nullptr)
     {
@@ -148,9 +166,7 @@ namespace reactor
   bool
   Scheduler::step()
   {
-    reactor::scheduler(this);
-    elle::SafeFinally pop([] { reactor::scheduler(nullptr); });
-
+    PushScheduler p(this);
     // Could avoid locking if no jobs are pending with a boolean.
     {
       boost::unique_lock<boost::mutex> lock(_starting_mtx);
