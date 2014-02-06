@@ -163,13 +163,9 @@ class Moc(Builder):
     self.tgt = tgt
 
   def execute(self):
-    # By default, moc file refers the file containing the Q_OBJECT
-    # macro using relativ include path.
-    # Drake policy is to avoid relativ path, that why -f option is set.
     return self.cmd(
       'Moc %s' % self.tgt.path(),
       ['%s/bin/moc' % self.qt.prefix,
-       '-f<%s>' % self.src.name(),
        str(self.src.path()),
        '-o', str(self.tgt.path())])
 
