@@ -1778,6 +1778,7 @@ class Builder:
                     for node in self.__dynsrc.values():
                         # FIXME: parallelize
                         node.build()
+                self._builder_hash = self.hash()
                 try:
                   success = self.execute()
                 except _Exception as e:
