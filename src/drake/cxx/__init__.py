@@ -1148,6 +1148,10 @@ class Compiler(Builder):
                              f_submarks = lambda d: dict(d),
                              f_add = add)}
 
+  @property
+  def object(self):
+    return self.obj
+
   def __str__(self):
     return 'compilation of %s' % self.obj
 
