@@ -2,17 +2,7 @@
 
 #include "test.hh"
 
-Test::Test()
-{}
-
-void
-Test::trigger()
+void test()
 {
-  emit signal();
-}
-
-void
-Test::slot()
-{
-  std::cerr << "slot" << std::endl;
+  std::cout << MESSAGE << "!" << std::endl;
 }

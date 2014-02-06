@@ -9,6 +9,9 @@
 import drake
 import platform
 import re
+
+from itertools import chain
+
 from .. import Builder, Exception, Node, Path, node, _CACHEDIR, debug
 from .  import Config, StaticLib, Header, Object, Source
 
@@ -18,8 +21,9 @@ deps_handler_name = 'drake.cxx.qt.moc'
 
 class Qt:
   def __init__(self, prefix = None, gui = False):
-
     self.files = {}
+    self.__moc_cache = {}
+    self.__dependencies = {}
     if prefix is None:
       test = ['/usr', '/usr/local']
     else:
@@ -81,42 +85,16 @@ class Qt:
     return self.__cfg_webkit
 
   def plug(self, tk):
+    # When an object is compiled, search Q_OBJECT in all included
+    # headers and remember created moc files.
+    tk.hook_object_deps_add(self.hook_object_deps)
+    # When a binary is compiled, add all relevant moc files.
     tk.hook_bin_deps_add(self.hook_bin_deps)
+    # Handle ui and rc files.
     tk.hook_bin_src_add(self.hook_bin_src)
     tk.qt = self
 
-  moc_re = re.compile('Q_OBJECT')
-
-  # Find any header in our dependency that contains a Q_OBJECT, run
-  # it through the Moc and add the result to our sources.
-  def hook_bin_deps(self, linker, current = None):
-    def find_moc_sources(builder, take, reject, where = True):
-      for source in list(builder.sources().values()) + list(builder.sources_dynamic()):
-        with debug.indentation():
-          if isinstance(source, StaticLib):
-            find_moc_sources(source.builder, take, reject, False)
-            continue
-          if isinstance(source, Header):
-            found = False
-            for line in open(str(source.path()), 'rb'):
-              line = line.decode('utf-8')
-              if re.search(self.moc_re, line):
-                found = True
-                break
-            if found:
-              if where:
-                take.add(source)
-              else:
-                reject.add(source)
-          if source.builder is not None:
-            find_moc_sources(source.builder, take, reject, where)
-
-    take = set()
-    reject = set()
-    find_moc_sources(linker, take, reject)
-    for source in take - reject:
-      o = self.moc_file(linker, source)
-      linker.add_dynsrc(deps_handler_name, o)
+  moc_re = re.compile(b'Q_OBJECT')
 
   def hook_bin_src(self, src):
     if isinstance(src, Ui):
@@ -138,6 +116,30 @@ class Qt:
     if src.builder is None:
       Moc(self, header, src)
     return Object(src, linker.toolkit, linker.config)
+
+  def hook_object_deps(self, compiler):
+    for source in chain(compiler.sources().values(),
+                        compiler.sources_dynamic()):
+      if source in self.__moc_cache:
+        res = self.__moc_cache[source]
+      else:
+        res = None
+        for line in open(str(source.path()), 'rb'):
+          if re.search(self.moc_re, line):
+            res = self.moc_file(compiler, source)
+            break
+        self.__moc_cache[source] = res
+      if res is not None:
+        o = compiler.object
+        self.__dependencies.setdefault(o, [])
+        self.__dependencies[o].append(res)
+
+  def hook_bin_deps(self, compiler):
+    for source in chain(compiler.sources().values(),
+                        compiler.sources_dynamic()):
+      for dep in self.__dependencies.get(source, ()):
+        compiler.add_dynsrc(deps_handler_name, dep)
+
 
 def deps_handler(builder, path_obj, t, data):
   if path_obj in drake.Drake.current.nodes:

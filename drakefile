@@ -72,6 +72,7 @@ def configure(prefix = '.'):
     'cxx/headers-deps',
     'cxx/generated-headers-deps',
     'cxx/pkg-config',
+    'cxx/qt/moc',
     'sched/exceptions',
     'sched/thread-concurrency',
     ]

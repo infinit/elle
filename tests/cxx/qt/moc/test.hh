@@ -1,22 +1,8 @@
 #ifndef TEST_HH
 # define TEST_HH
 
-# include <QObject>
+# define MESSAGE "test"
 
-class Test: public QObject
-{
-public:
-  Test();
-  void trigger();
-
-signals:
-  void signal();
-
-private slots:
-  void slot();
-
-private:
-  Q_OBJECT;
-};
+void test();
 
 #endif

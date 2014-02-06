@@ -1,6 +1,6 @@
 #include "widget.hh"
 
-int main()
+Widget::Widget()
 {
-  Widget w;
+
 }
