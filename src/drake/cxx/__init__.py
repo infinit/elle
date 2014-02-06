@@ -1138,7 +1138,7 @@ class Compiler(Builder):
     return pic_rec(self.obj)
 
   def hash(self):
-    return str(self.command)
+    return self.command
 
   def mkdeps(self):
     def add(res, node, sub):
@@ -1159,7 +1159,7 @@ class Linker(Builder):
   name = 'executable linkage'
 
   def hash(self):
-    return str(self.command)
+    return self.command
 
   def dependencies(self):
     for hook in self.toolkit.hook_bin_deps():
@@ -1225,7 +1225,7 @@ class DynLibLinker(Builder):
     return 'Linker for %s' % self.lib
 
   def hash(self):
-    return repr(self.command)
+    return self.command
 
   def __str__(self):
     return 'dynamic linkage of %s' % self.lib
@@ -1264,7 +1264,7 @@ class StaticLibLinker(ShellCommand):
       return self.__library
 
     def hash(self):
-        return str(self.command)
+        return self.command
 
 
 class Source(Node):
