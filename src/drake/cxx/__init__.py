@@ -257,22 +257,23 @@ class Config:
         return self._framework.keys()
 
     def add_local_include_path(self, path):
-
-        path = drake.Drake.current.prefix / path
-        self.__local_includes.add(path)
-        self._includes[path] = None
+      path = drake.Drake.current.prefix / path
+      path = path.canonize()
+      self.__local_includes.add(path)
+      self._includes[path] = None
 
 
     def add_system_include_path(self, path):
-        path = Path(path)
-        # Never include those.
-        # FIXME: Unix only
-        if path == Path('/include') or path == Path('/usr/include'):
-            return
-        if not path.absolute():
-            path = drake.path_source() / drake.Drake.current.prefix / path
-        self.__system_includes.add(path)
-        self._includes[path] = None
+      path = Path(path)
+      # Never include those.
+      # FIXME: Unix only
+      if path == Path('/include') or path == Path('/usr/include'):
+        return
+      if not path.absolute():
+        path = drake.path_source() / drake.Drake.current.prefix / path
+      path = path.canonize()
+      self.__system_includes.add(path)
+      self._includes[path] = None
 
 
 
