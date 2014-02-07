@@ -22,6 +22,8 @@ from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, cmd, co
 from .. import utils
 from .. import sched
 
+from drake.sched import logger
+
 def chain(*collections):
   for collection in collections:
     if collection is not None:
@@ -1009,76 +1011,75 @@ def mkdeps(res, n, lvl, toolkit, config, marks,
   if str(path) in marks:
     return
   marks[str(path)] = True
-  #print('%smkdeps: %s' % (idt, path))
-
-  f_init(res, n)
-
-  def unique_fail(path, include, prev_via, prev, new_via, new):
-    raise Exception('in %s, two nodes match inclusion %s: '\
-                    '%s via %s and %s via %s' % \
-                    (path, include,
-                     prev, prev_via,
-                     new, new_via))
-
-  def unique(path, include, prev_via, prev, new_via, new):
-    if prev is not None:
-      unique_fail(path, include,
-                  prev_via, prev.path(),
-                  new_via, new.path())
-    return new, new_via
-
-  # FIXME: is building a node during dependencies ok ?
-  # n.build()
-  matches = []
-  try:
-    with open(str(path), 'rb') as include_file:
-      for line in include_file:
-        line = line.strip()
-        match = include_re.match(line)
-        if match:
-          matches.append(match)
-  except IOError:
-    pass
-
-  for match in matches:
-    include = match.group(2).decode('latin-1')
-    search = []
-    if match.group(1) == b'"':
-      current_path = n.name_absolute().dirname()
-      search.append((current_path, True))
-    for path in config.local_include_path:
-      search.append((path, True))
-      search.append((drake.path_source() / path, False))
-    search += [(path, False) for path in toolkit.include_path]
-    found = None
-    via = None
-    for include_path, test_node in search:
-      name = include_path / include
-      test = name
-      if test_node:
-        registered = drake.Drake.current.nodes.get(test, None)
-        if registered is not None:
-          # Check this is not an old cached dependency from
-          # cxx.inclusions. Not sure of myself though.
-          # if test.is_file() or registered.builder is not None:
-          found, via = unique(path, include, via, found, include_path,
-                              node(test))
-          break
-      # Check if such a file doesn't exist, unregistered, in the
-      # source path.
-      if not found:# or drake.path_source() != Path('.'):
-        test = drake.path_source() / test
-        if test.is_file():
-          found, via = unique(path, include, via, found, include_path,
-                              node(name, Header))
-          break
-    if found is not None:
-      rec = []
-      mkdeps(rec, found, lvl + 1, toolkit, config,
-             f_submarks(marks), f_submarks, f_init, f_add)
-      f_add(res, found, rec)
-    # else:
-    #   print('%sinclusion not found: %s' % (idt, include))
+  with logger.log('drake.cxx.dependencies',
+                  'explore dependencies of %s' % path,
+                  drake.log.LogLevel.trace):
+    f_init(res, n)
+    def unique_fail(path, include, prev_via, prev, new_via, new):
+      raise Exception('in %s, two nodes match inclusion %s: '\
+                      '%s via %s and %s via %s' % \
+                      (path, include,
+                       prev, prev_via,
+                       new, new_via))
+    def unique(path, include, prev_via, prev, new_via, new):
+      if prev is not None:
+        unique_fail(path, include,
+                    prev_via, prev.path(),
+                    new_via, new.path())
+      return new, new_via
+    # FIXME: is building a node during dependencies ok ?
+    # n.build()
+    matches = []
+    try:
+      with open(str(path), 'rb') as include_file:
+        for line in include_file:
+          line = line.strip()
+          match = include_re.match(line)
+          if match:
+            matches.append(match)
+    except IOError:
+      pass
+    for match in matches:
+      include = match.group(2).decode('latin-1')
+      search = []
+      if match.group(1) == b'"':
+        current_path = n.name_absolute().dirname()
+        search.append((current_path, True))
+      for path in config.local_include_path:
+        search.append((path, True))
+        search.append((drake.path_source() / path, False))
+      search += [(path, False) for path in toolkit.include_path]
+      found = None
+      via = None
+      for include_path, test_node in search:
+        name = include_path / include
+        test = name
+        if test_node:
+          registered = drake.Drake.current.nodes.get(test, None)
+          if registered is not None:
+            # Check this is not an old cached dependency from
+            # cxx.inclusions. Not sure of myself though.
+            # if test.is_file() or registered.builder is not None:
+            found, via = unique(path, include, via, found, include_path,
+                                node(test))
+            break
+        # Check if such a file doesn't exist, unregistered, in the
+        # source path.
+        if not found:# or drake.path_source() != Path('.'):
+          test = drake.path_source() / test
+          if test.is_file():
+            found, via = unique(path, include, via, found, include_path,
+                                node(name, Header))
+            break
+      if found is not None:
+        rec = []
+        mkdeps(rec, found, lvl + 1, toolkit, config,
+               f_submarks(marks), f_submarks, f_init, f_add)
+        f_add(res, found, rec)
+      else:
+        logger.log('drake.cxx.dependencies',
+                   'file not found: %s' % include,
+                   drake.log.LogLevel.trace)
 
 class Compiler(Builder):
 
