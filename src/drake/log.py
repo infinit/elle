@@ -37,14 +37,18 @@ class Logger:
 
   class Indentation:
 
-    def __init__(self, logger):
-      self.__logger = logger
+    def __init__(self):
+      self.__indentation = 0
 
     def __enter__(self):
-      self.__logger._Logger__indentation += 1
+      self.__indentation += 1
 
     def __exit__(self, type, value, traceback):
-      self.__logger._Logger__indentation -= 1
+      self.__indentation -= 1
+
+    @property
+    def indentation(self):
+      return self.__indentation
 
 
   class NoOp:
@@ -59,8 +63,8 @@ class Logger:
       pass
 
 
-  def __init__(self, configuration_string = None):
-    self.__indentation = 0
+  def __init__(self, configuration_string = None, indentation = None):
+    self.__indentation = indentation or Logger.Indentation()
     def parse_log_level(string):
       string = string.lower()
       if string == 'log':
@@ -92,9 +96,9 @@ class Logger:
     if component not in self.__components:
       self.__components[component] = LogLevel.log
     if level <= self.__components[component]:
-      print('%s%s' % ('  ' * self.__indentation, message),
+      print('%s%s' % ('  ' * self.__indentation.indentation, message),
             file = sys.stderr)
-      return Logger.Indentation(self)
+      return self.__indentation
     else:
       return Logger.NoOp(self)
 

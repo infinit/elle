@@ -19,10 +19,34 @@ import drake.threadpool
 import drake.log
 
 
+class Indentation:
+
+  def __init__(self):
+    self.__indentation = {}
+
+  def __enter__(self):
+    self.__indentation[Coroutine.current] += 1
+
+  def __exit__(self, type, value, traceback):
+    self.__indentation[Coroutine.current] -= 1
+
+  @property
+  def indentation(self):
+    coroutine = Coroutine.current
+    if coroutine not in self.__indentation:
+      parent = coroutine.parent
+      initial = self.__indentation[parent] if parent is not None else 0
+      self.__indentation[coroutine] = initial
+      return initial
+    else:
+      return self.__indentation[Coroutine.current]
+
+
 conf = None
 if 'DRAKE_LOG_LEVEL' in os.environ:
   conf = os.environ['DRAKE_LOG_LEVEL']
-logger = drake.log.Logger(configuration_string = conf)
+logger = drake.log.Logger(configuration_string = conf,
+                          indentation = Indentation())
 
 class Frozen:
   pass
@@ -129,26 +153,25 @@ class Scheduler:
           e = self.__exception
           self.__exception = None
           raise e
-        if self.__coroutines:
+        if not self.__coroutines:
+          if not self.__coroutines_frozen:
+            self.debug('no more coroutine, dying')
+            break
+          else:
+            while not self.__coroutines:
+              with self.__lock:
+                if not self.__scheduled:
+                  self.__lock.wait()
+                assert self.__scheduled
+                for f in self.__scheduled:
+                  f()
+                self.__scheduled = []
+        running = list(self.__coroutines)
+        for coro in running:
           with self.__lock:
             for f in self.__scheduled:
               f()
             self.__scheduled = []
-        elif not self.__coroutines_frozen:
-          self.debug('no more coroutine, dying')
-          break
-        else:
-          while not self.__coroutines:
-            with self.__lock:
-              if not self.__scheduled:
-                self.__lock.wait()
-              assert self.__scheduled
-              for f in self.__scheduled:
-                f()
-              self.__scheduled = []
-
-        running = list(self.__coroutines)
-        for coro in running:
           self.__step(coro)
     finally:
       Scheduler.__pool.stop()
