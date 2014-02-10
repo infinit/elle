@@ -903,7 +903,7 @@ class DepFile:
 
     def files(self):
         """List of hashed files."""
-        return self.__files.values()
+        return (node for node, source in self.__files.values())
 
 
     def sha1s(self):
@@ -911,9 +911,9 @@ class DepFile:
         return self.__sha1
 
 
-    def register(self, node):
+    def register(self, node, source = True):
         """Add the node to the hashed files."""
-        self.__files[str(node.name())] = node
+        self.__files[str(node.name())] = (node, source)
 
 
     def path(self):
@@ -937,11 +937,14 @@ class DepFile:
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
       for path in list(self.__sha1.keys()):
+        old_hash = self.__sha1[path][0]
+        if old_hash == 'None': # FIXME: python values
+          continue
         if path not in Drake.current.nodes:
           del self.__sha1[path]
           continue
         h = node(path).hash()
-        if self.__sha1[path][0] != h:
+        if h != old_hash:
           explain(self._builder, '%s has changed' % path)
           return False
       return True
@@ -950,10 +953,12 @@ class DepFile:
     def update(self):
       """Rehash all files and write to the store file."""
       with open(str(self.path()), 'w') as f:
-        for path in self.__files:
-          h = self.__files[path].hash()
-          print('%s %s %s' % (h, self.__files[path].name_absolute(),
-                              self.__files[path].drake_type()),
+        for node, source in self.__files.values():
+          if source:
+            h = node.hash()
+          else:
+            h = None
+          print('%s %s %s' % (h, node.name_absolute(), node.drake_type()),
                 file = f)
 
     def __repr__(self):
@@ -1591,10 +1596,11 @@ class Builder:
       self._depfiles[name] = DepFile(self, name)
     return self._depfiles[name]
 
-  def add_dynsrc(self, name, node, data = None):
+  def add_dynsrc(self, name, node, data = None, source = True):
     """Add a dynamic source node."""
-    self.depfile(name).register(node)
-    self.__dynsrc[str(node.path())] = node
+    self.depfile(name).register(node, source = source)
+    if source:
+      self.__dynsrc[str(node.path())] = node
 
   def get_type(self, tname):
     """Return the node type with the given name."""
@@ -1670,17 +1676,16 @@ class Builder:
                           '%s is already in our sources.' % path,
                           debug.DEBUG_DEPS)
                       continue
-                    if path in Drake.current.nodes:
-                      node = Drake.current.nodes[path]
-                    else:
-                      debug.debug('%s is unknown, calling handler.' % path,
-                                  debug.DEBUG_DEPS)
-                      node = handler(self,
-                                     path,
-                                     self.get_type(depfile.sha1s()[path][1]),
-                                     None)
-                    debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
-                    self.add_dynsrc(f, node, None)
+                    debug.debug('%s is unknown, calling handler.' % path,
+                                debug.DEBUG_DEPS)
+                    node = handler(self,
+                                   path,
+                                   self.get_type(depfile.sha1s()[path][1]),
+                                   None)
+                    if node is not None:
+                      debug.debug('Adding %s to our sources.' % node, debug.DEBUG_DEPS)
+                      self.add_dynsrc(f, node)
+
             coroutines_static = []
             coroutines_dynamic = []
             # FIXME: symetric of can_skip_node: if a node is a
