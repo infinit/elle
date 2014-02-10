@@ -29,7 +29,7 @@ def find(prefix = None,
     return Boost(prefix = prefix,
                  cxx_toolkit = cxx_toolkit,
                  version = version,
-                 prefix_shared = prefer_shared)
+                 prefer_shared = prefer_shared)
 
 class Boost(drake.Configuration):
 
