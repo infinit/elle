@@ -894,11 +894,12 @@ class DepFile:
     """
 
     def __init__(self, builder, name):
-        """Construct a dependency file for builder with given name."""
-        self._builder = builder
-        self.name = name
-        self.__files = {}
-        self.__sha1 = {}
+      """Construct a dependency file for builder with given name."""
+      self._builder = builder
+      self.name = name
+      self.__files = {}
+      self.__invalid = False
+      self.__sha1 = {}
 
 
     def files(self):
@@ -927,15 +928,18 @@ class DepFile:
       self.path().touch()
       with open(str(self.path()), 'r') as f:
         for line in f:
-          chunks = line[:-1].split(' ')
-          sha1 = chunks[0]
-          name = ' '.join(chunks[1:-1])
-          data = chunks[-1]
-          src = Path(name)
-          self.__sha1[src] = (sha1, data)
+          try:
+            sha1, name, data = eval(line)
+            src = Path(name)
+            self.__sha1[src] = (sha1, data)
+          except SyntaxError:
+            self.__invalid = True
+            return
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
+      if self.__invalid:
+        return False
       for path in list(self.__sha1.keys()):
         old_hash = self.__sha1[path][0]
         if old_hash == 'None': # FIXME: python values
@@ -949,7 +953,6 @@ class DepFile:
           return False
       return True
 
-
     def update(self):
       """Rehash all files and write to the store file."""
       with open(str(self.path()), 'w') as f:
@@ -958,7 +961,7 @@ class DepFile:
             h = node.hash()
           else:
             h = None
-          print('%s %s %s' % (h, node.name_absolute(), node.drake_type()),
+          print(repr((h, node.name_absolute(), node.drake_type())),
                 file = f)
 
     def __repr__(self):
