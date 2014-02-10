@@ -15,9 +15,17 @@ from itertools import chain
 from .. import Builder, Exception, Node, Path, node, _CACHEDIR, debug
 from .  import Config, StaticLib, Header, Object, Source
 
-#class MocBuilder:
+import drake.cxx
 
 deps_handler_name = 'drake.cxx.qt.moc'
+
+
+def moc_file(linker, header):
+  path = Path(header.name()).with_extension('moc.cc')
+  src = node(path)
+  if src.builder is None:
+    Moc(linker.toolkit.qt, header, src)
+  return Object(src, linker.toolkit, linker.config)
 
 class Qt:
   def __init__(self, prefix = None, gui = False):
@@ -110,29 +118,25 @@ class Qt:
       Rcc(self, src, res)
       return res
 
-  def moc_file(self, linker, header):
-    path = Path(header.name()).with_extension('moc.cc')
-    src = node(path)
-    if src.builder is None:
-      Moc(self, header, src)
-    return Object(src, linker.toolkit, linker.config)
-
   def hook_object_deps(self, compiler):
-    for source in chain(compiler.sources().values(),
-                        compiler.sources_dynamic()):
+    obj = compiler.object
+    if obj in self.__dependencies:
+      self.__dependencies[obj] = []
+    for source in list(chain(compiler.sources().values(),
+                             compiler.sources_dynamic())):
       if source in self.__moc_cache:
         res = self.__moc_cache[source]
       else:
         res = None
         for line in open(str(source.path()), 'rb'):
           if re.search(self.moc_re, line):
-            res = self.moc_file(compiler, source)
+            res = moc_file(compiler, source)
             break
         self.__moc_cache[source] = res
       if res is not None:
-        o = compiler.object
-        self.__dependencies.setdefault(o, [])
-        self.__dependencies[o].append(res)
+        self.__dependencies.setdefault(obj, [])
+        self.__dependencies[obj].append(res)
+        compiler.add_dynsrc(deps_handler_name, res, source = False)
 
   def hook_bin_deps(self, compiler):
     for source in chain(compiler.sources().values(),
@@ -140,17 +144,29 @@ class Qt:
       for dep in self.__dependencies.get(source, ()):
         compiler.add_dynsrc(deps_handler_name, dep)
 
-
 def deps_handler(builder, path_obj, t, data):
-  if path_obj in drake.Drake.current.nodes:
-    return node(path_obj)
-  path_src = Path(path_obj).with_extension('moc.cc')
-  src = node(path_src)
-  path_header = Path(path_obj).with_extension('hh')
-  header = node(path_header)
-  Moc(builder.toolkit.qt, header, src)
-  obj = Object(src, builder.toolkit, builder.config)
-  return obj
+  if isinstance(builder, (drake.cxx.Linker, drake.cxx.DynLibLinker)):
+    if path_obj in drake.Drake.current.nodes:
+      return node(path_obj)
+    path_src = Path(path_obj).with_extension('moc.cc')
+    src = node(path_src)
+    path_header = Path(path_obj).with_extension('hh')
+    header = node(path_header)
+    Moc(builder.toolkit.qt, header, src)
+    obj = Object(src, builder.toolkit, builder.config)
+    return obj
+  elif isinstance(builder, drake.cxx.Compiler):
+    print(builder, path_obj, t, data)
+    source = builder.source
+    # FIXME: factor filling of __moc_cache
+    res = moc_file(builder, t(path_obj))
+    qt = builder.toolkit.qt
+    qt._Qt__moc_cache[source] = res
+    o = builder.object
+    qt._Qt__dependencies.setdefault(o, [])
+    qt._Qt__dependencies[o].append(res)
+  else:
+    raise Exception('unexpected Moc dependency for %s' % builder)
 
 Builder.register_deps_handler(deps_handler_name, deps_handler)
 Node.extensions['moc.cc'] = Source

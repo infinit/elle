@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
-import drake, sys
+import drake
+import os
+import sys
 
 with drake.Drake('.') as d:
   sys.argv = ['main']
   d.run()
 
+with drake.Drake('.') as d:
+  sys.argv = ['main']
+  d.run()
+
+os.remove('main')
 with drake.Drake('.') as d:
   sys.argv = ['main']
   d.run()
