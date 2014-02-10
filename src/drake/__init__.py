@@ -2589,6 +2589,9 @@ class Copy(Builder):
   def command(self):
     return ['cp', self.__source.path(), self.__target.path()]
 
+  def __str__(self):
+    return 'copy of %s' % self.target()
+
 
 class Install(Copy):
   """Builder to install files.
