@@ -1694,19 +1694,19 @@ class Builder:
             # Build static dependencies
             debug.debug('Build static dependencies')
             with debug.indentation():
-                for node in list(self.__sources.values()) + \
-                    list(self.__vsrcs.values()):
-                    if _can_skip_node(node):
-                        continue
-                    coroutines_static.append(
-                        Coroutine(node.build,
-                                  str(node),
-                                  Drake.current.scheduler,
-                                  sched.Coroutine.current))
-            try:
-              sched.coro_wait(coroutines_static)
-            finally:
-              self.__report_dependencies(self.__sources.values())
+              for node in list(self.__sources.values()) + \
+                list(self.__vsrcs.values()):
+                if _can_skip_node(node):
+                  continue
+                coroutines_static.append(
+                  Coroutine(node.build,
+                            str(node),
+                            Drake.current.scheduler,
+                            sched.Coroutine.current))
+              try:
+                sched.coro_wait(coroutines_static)
+              finally:
+                self.__report_dependencies(self.__sources.values())
             # Build dynamic dependencies
             debug.debug('Build dynamic dependencies')
             with debug.indentation():
