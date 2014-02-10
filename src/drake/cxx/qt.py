@@ -156,7 +156,6 @@ def deps_handler(builder, path_obj, t, data):
     obj = Object(src, builder.toolkit, builder.config)
     return obj
   elif isinstance(builder, drake.cxx.Compiler):
-    print(builder, path_obj, t, data)
     source = builder.source
     # FIXME: factor filling of __moc_cache
     res = moc_file(builder, t(path_obj))
