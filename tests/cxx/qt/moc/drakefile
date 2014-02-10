@@ -1,6 +1,10 @@
-import drake, drake.cxx
+import drake, drake.cxx, drake.cxx.qt
 
-def configure(cxx_toolkit, qt):
+def configure(cxx_toolkit = None, qt = None):
+  if cxx_toolkit is None:
+    cxx_toolkit = drake.cxx.Toolkit()
+  if qt is None:
+    qt = drake.cxx.qt.Qt()
   cfg = drake.cxx.Config()
   cfg += qt.config
   qt.plug(cxx_toolkit)

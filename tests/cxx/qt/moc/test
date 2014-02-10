@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- python -*-
 
-import drake, drake.cxx, drake.cxx.qt, subprocess, sys
+import drake, sys
 
 with drake.Drake('.') as d:
   sys.argv = ['main']
-  qt = drake.cxx.qt.Qt()
-  d.run(cxx_toolkit = drake.cxx.Toolkit(), qt = qt)
+  d.run()
 
 with drake.Drake('.') as d:
   sys.argv = ['main']
-  qt = drake.cxx.qt.Qt()
-  d.run(cxx_toolkit = drake.cxx.Toolkit(), qt = qt)
+  d.run()
