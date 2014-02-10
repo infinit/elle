@@ -1154,6 +1154,10 @@ class Compiler(Builder):
   def object(self):
     return self.obj
 
+  @property
+  def source(self):
+    return self.src
+
   def __str__(self):
     return 'compilation of %s' % self.obj
 
