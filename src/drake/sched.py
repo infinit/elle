@@ -34,8 +34,9 @@ class Indentation:
   def indentation(self):
     coroutine = Coroutine.current
     if coroutine not in self.__indentation:
-      parent = coroutine.parent
-      initial = self.__indentation[parent] if parent is not None else 0
+      initial = 0
+      if coroutine is not None and coroutine.parent is not None:
+        initial = self.__indentation[coroutine.parent]
       self.__indentation[coroutine] = initial
       return initial
     else:
