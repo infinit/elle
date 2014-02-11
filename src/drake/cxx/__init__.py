@@ -1014,10 +1014,10 @@ def inclusion_dependencies(res, n, toolkit, config,
   return mkdeps(res, n, search_path, set(), f_submarks, f_init, f_add)
 
 __dependencies_includes = {}
+__include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
 def mkdeps(res, n, search, marks,
            f_submarks, f_init, f_add):
-  include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
   if path in marks:
     return
@@ -1047,7 +1047,7 @@ def mkdeps(res, n, search, marks,
         with open(str(path), 'rb') as include_file:
           for line in include_file:
             line = line.strip()
-            match = include_re.match(line)
+            match = __include_re.match(line)
             if match:
               include = match.group(2).decode('latin-1')
               local = match.group(1) == b'"'
