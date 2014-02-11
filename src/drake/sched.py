@@ -191,7 +191,7 @@ class Scheduler:
         self.debug('%s: %s threw %s' % (self, coro, e))
         parent = coro._Coroutine__parent
         if parent is not None:
-          self.debug('%s: forward exception to parent :%s' % (self, parent))
+          self.debug('%s: forward exception to parent: %s' % (self, parent))
           parent.throw(e, coro._Coroutine__traceback)
           triggered = parent
         else:
