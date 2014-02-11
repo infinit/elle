@@ -1004,28 +1004,26 @@ class VisualToolkit(Toolkit):
 def deps_handler(builder, path, t, data):
     return node(path, t)
 
-def inclusion_dependencies(res, n, toolkit, config,
-                           f_submarks, f_init, f_add):
+def inclusion_dependencies(n, toolkit, config):
   search_path = []
   for path in config.local_include_path:
     search_path.append((path, True))
     search_path.append((drake.path_source() / path, False))
   search_path += [(path, False) for path in toolkit.include_path]
-  return mkdeps(res, n, search_path, set(), f_submarks, f_init, f_add)
+  return mkdeps(n, search_path, set())
 
 __dependencies_includes = {}
 __include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
-def mkdeps(res, n, search, marks,
-           f_submarks, f_init, f_add):
-  path = n.path()
+def mkdeps(explored_node, search, marks):
+  path = explored_node.path()
   if path in marks:
     return
   marks.add(path)
   with logger.log('drake.cxx.dependencies',
                   'explore dependencies of %s' % path,
                   drake.log.LogLevel.trace):
-    f_init(res, n)
+    yield explored_node
     def unique_fail(path, include, prev_via, prev, new_via, new):
       raise Exception('in %s, two nodes match inclusion %s: '\
                       '%s via %s and %s via %s' % \
@@ -1039,7 +1037,7 @@ def mkdeps(res, n, search, marks,
                     new_via, new.path())
       return new, new_via
     # FIXME: is building a node during dependencies ok ?
-    # n.build()
+    # explored_node.build()
     matches = __dependencies_includes.get(path, None)
     if matches is None:
       matches = []
@@ -1057,7 +1055,7 @@ def mkdeps(res, n, search, marks,
       __dependencies_includes[path] = matches
     for include, local in matches:
       if local:
-        current_path = n.name_absolute().dirname()
+        current_path = explored_node.name_absolute().dirname()
         local_path = ((current_path, True),)
       else:
         local_path = ()
@@ -1073,7 +1071,7 @@ def mkdeps(res, n, search, marks,
             # cxx.inclusions. Not sure of myself though.
             # if test.is_file() or registered.builder is not None:
             found, via = unique(path, include, via, found, include_path,
-                                node(test))
+                                drake.node(test))
             break
         # Check if such a file doesn't exist, unregistered, in the
         # source path.
@@ -1081,13 +1079,11 @@ def mkdeps(res, n, search, marks,
           test = drake.path_source() / test
           if test.is_file():
             found, via = unique(path, include, via, found, include_path,
-                                node(name, Header))
+                                drake.node(name, Header))
             break
       if found is not None:
-        rec = []
-        mkdeps(rec, found, search,
-               f_submarks(marks), f_submarks, f_init, f_add)
-        f_add(res, found, rec)
+        for dep in mkdeps(found, search, marks):
+          yield dep
       else:
         logger.log('drake.cxx.dependencies',
                    'file not found: %s' % include,
@@ -1110,13 +1106,8 @@ class Compiler(Builder):
 
 
   def dependencies(self):
-    deps = []
-    inclusion_dependencies(deps, self.src, self.toolkit, self.config,
-           f_init = lambda res, n: res.append(n),
-           f_submarks = lambda d: d,
-           f_add = lambda res, node, sub: res.extend(sub))
-
-    for dep in deps:
+    for dep in inclusion_dependencies(self.src,
+                                      self.toolkit, self.config):
       if dep != self.src:
         self.add_dynsrc(self.deps, dep)
     for hook in self.toolkit.hook_object_deps():
@@ -1157,10 +1148,7 @@ class Compiler(Builder):
     def add(res, node, sub):
       res[node] = sub
     return {self.src:
-            inclusion_dependencies(self.src, self.config,
-                                   f_init = lambda n: {},
-                                   f_submarks = lambda d: set(d),
-                                   f_add = add)}
+            inclusion_dependencies(self.src, self.config)}
 
   @property
   def object(self):
