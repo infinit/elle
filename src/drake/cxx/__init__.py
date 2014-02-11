@@ -1011,7 +1011,7 @@ def inclusion_dependencies(res, n, toolkit, config,
     search_path.append((path, True))
     search_path.append((drake.path_source() / path, False))
   search_path += [(path, False) for path in toolkit.include_path]
-  return mkdeps(res, n, search_path, {}, f_submarks, f_init, f_add)
+  return mkdeps(res, n, search_path, set(), f_submarks, f_init, f_add)
 
 __dependencies_includes = {}
 
@@ -1019,9 +1019,9 @@ def mkdeps(res, n, search, marks,
            f_submarks, f_init, f_add):
   include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
-  if str(path) in marks:
+  if path in marks:
     return
-  marks[str(path)] = True
+  marks.add(path)
   with logger.log('drake.cxx.dependencies',
                   'explore dependencies of %s' % path,
                   drake.log.LogLevel.trace):
@@ -1159,7 +1159,7 @@ class Compiler(Builder):
     return {self.src:
             inclusion_dependencies(self.src, self.config,
                                    f_init = lambda n: {},
-                                   f_submarks = lambda d: dict(d),
+                                   f_submarks = lambda d: set(d),
                                    f_add = add)}
 
   @property
