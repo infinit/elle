@@ -1004,22 +1004,21 @@ class VisualToolkit(Toolkit):
 def deps_handler(builder, path, t, data):
     return node(path, t)
 
-__dependencies_includes = {}
-
-def inclusion_dependencies(res, n, lvl, toolkit, config,
+def inclusion_dependencies(res, n, toolkit, config,
                            f_submarks, f_init, f_add):
   search_path = []
   for path in config.local_include_path:
     search_path.append((path, True))
     search_path.append((drake.path_source() / path, False))
   search_path += [(path, False) for path in toolkit.include_path]
-  return mkdeps(res, n, lvl, search_path, {}, f_submarks, f_init, f_add)
+  return mkdeps(res, n, search_path, {}, f_submarks, f_init, f_add)
 
-def mkdeps(res, n, lvl, search, marks,
+__dependencies_includes = {}
+
+def mkdeps(res, n, search, marks,
            f_submarks, f_init, f_add):
   include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
-  idt = ' ' * lvl * 2
   if str(path) in marks:
     return
   marks[str(path)] = True
@@ -1086,7 +1085,7 @@ def mkdeps(res, n, lvl, search, marks,
             break
       if found is not None:
         rec = []
-        mkdeps(rec, found, lvl + 1, search,
+        mkdeps(rec, found, search,
                f_submarks(marks), f_submarks, f_init, f_add)
         f_add(res, found, rec)
       else:
@@ -1112,7 +1111,7 @@ class Compiler(Builder):
 
   def dependencies(self):
     deps = []
-    inclusion_dependencies(deps, self.src, 0, self.toolkit, self.config,
+    inclusion_dependencies(deps, self.src, self.toolkit, self.config,
            f_init = lambda res, n: res.append(n),
            f_submarks = lambda d: d,
            f_add = lambda res, node, sub: res.extend(sub))
@@ -1157,10 +1156,11 @@ class Compiler(Builder):
   def mkdeps(self):
     def add(res, node, sub):
       res[node] = sub
-    return {self.src: inclusion_dependencies(self.src, 0, self.config,
-                             f_init = lambda n: {},
-                             f_submarks = lambda d: dict(d),
-                             f_add = add)}
+    return {self.src:
+            inclusion_dependencies(self.src, self.config,
+                                   f_init = lambda n: {},
+                                   f_submarks = lambda d: dict(d),
+                                   f_add = add)}
 
   @property
   def object(self):
