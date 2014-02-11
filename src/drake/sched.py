@@ -73,26 +73,31 @@ class Scope:
     return self
 
   def __exit__(self, type, value, traceback):
-    try:
-      self.__coroutine.wait(self.__coroutines)
-    except:
-      for coro in self.__coroutines:
-        coro.terminate()
-      while True:
-        try:
-          self.__coroutine.wait(self.__coroutines)
-        except:
-          pass
-        else:
-          break
-      raise
-
-    del Scope.__scopes[Coroutine.current][-1]
+    if value is not None:
+      self.terminate()
+    else:
+      try:
+        self.__coroutine.wait(self.__coroutines)
+      except:
+        self.terminate()
+        raise
+      del Scope.__scopes[Coroutine.current][-1]
 
   def run(self, routine, name):
     coro = Coroutine(routine, name, self.__scheduler)
     coro._Coroutine__parent = self.__coroutine
     self.__coroutines.append(coro)
+
+  def terminate(self):
+    for coro in self.__coroutines:
+      coro.terminate()
+    while True:
+      try:
+        self.__coroutine.wait(self.__coroutines)
+      except:
+        pass
+      else:
+        break
 
 class OrderedSet:
 
