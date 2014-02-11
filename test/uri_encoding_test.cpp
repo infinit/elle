@@ -136,6 +136,7 @@ TEST(uri_encoding_test, decode_iterator_error_7) {
 	       network::percent_decoding_error);
 }
 
+#if defined(_MSVC)
 TEST(uri_encoding_test, encode_euro) {
   const std::string unencoded(u8"€");
   std::string instance;
@@ -143,7 +144,8 @@ TEST(uri_encoding_test, encode_euro) {
 			    std::back_inserter(instance));
   ASSERT_EQ("%E2%82%AC", instance);
 }
-//
+#endif
+
 // TEST(uri_encoding_test, decode_euro) {
 //   const std::string encoded("%E2%82%AC");
 //   std::string instance;

@@ -12,7 +12,7 @@ namespace network {
 
   public:
 
-    uri_category_impl() NETWORK_URI_DEFAULTED_FUNCTION;
+    uri_category_impl() = default;
 
     virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
 

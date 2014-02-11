@@ -101,8 +101,8 @@ namespace network {
     friend class uri;
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
-    uri_builder(const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
-    uri_builder &operator = (const uri_builder &) NETWORK_URI_DELETED_FUNCTION;
+    uri_builder(const uri_builder &) = delete;
+    uri_builder &operator = (const uri_builder &) = delete;
 
   public:
 
@@ -114,7 +114,7 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    uri_builder() NETWORK_URI_DEFAULTED_FUNCTION;
+    uri_builder() = default;
 
     /**
      * \brief Constructor.
