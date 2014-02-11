@@ -9,7 +9,6 @@
 import collections
 import drake
 import io
-import itertools
 import os
 import os.path
 import re
@@ -17,6 +16,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+
+from itertools import chain
 
 from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
@@ -668,7 +669,7 @@ class GccToolkit(Toolkit):
     libs = (l for l in cfg.libraries if isinstance(l, StaticLib))
     sources = (l for l in objs if isinstance(l, StaticLib))
 
-    for o in itertools.chain(libs, sources):
+    for o in chain(libs, sources):
       path = os.path.abspath(str(o.path()))
       try:
         for line in subprocess.check_output(
@@ -1003,8 +1004,18 @@ class VisualToolkit(Toolkit):
 def deps_handler(builder, path, t, data):
     return node(path, t)
 
+__dependencies_includes = {}
 
-def mkdeps(res, n, lvl, toolkit, config, marks,
+def inclusion_dependencies(res, n, lvl, toolkit, config,
+                           f_submarks, f_init, f_add):
+  search_path = []
+  for path in config.local_include_path:
+    search_path.append((path, True))
+    search_path.append((drake.path_source() / path, False))
+  search_path += [(path, False) for path in toolkit.include_path]
+  return mkdeps(res, n, lvl, search_path, {}, f_submarks, f_init, f_add)
+
+def mkdeps(res, n, lvl, search, marks,
            f_submarks, f_init, f_add):
   include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
   path = n.path()
@@ -1030,29 +1041,30 @@ def mkdeps(res, n, lvl, toolkit, config, marks,
       return new, new_via
     # FIXME: is building a node during dependencies ok ?
     # n.build()
-    matches = []
-    try:
-      with open(str(path), 'rb') as include_file:
-        for line in include_file:
-          line = line.strip()
-          match = include_re.match(line)
-          if match:
-            matches.append(match)
-    except IOError:
-      pass
-    for match in matches:
-      include = match.group(2).decode('latin-1')
-      search = []
-      if match.group(1) == b'"':
+    matches = __dependencies_includes.get(path, None)
+    if matches is None:
+      matches = []
+      try:
+        with open(str(path), 'rb') as include_file:
+          for line in include_file:
+            line = line.strip()
+            match = include_re.match(line)
+            if match:
+              include = match.group(2).decode('latin-1')
+              local = match.group(1) == b'"'
+              matches.append((include, local))
+      except IOError:
+        pass
+      __dependencies_includes[path] = matches
+    for include, local in matches:
+      if local:
         current_path = n.name_absolute().dirname()
-        search.append((current_path, True))
-      for path in config.local_include_path:
-        search.append((path, True))
-        search.append((drake.path_source() / path, False))
-      search += [(path, False) for path in toolkit.include_path]
+        local_path = ((current_path, True),)
+      else:
+        local_path = ()
       found = None
       via = None
-      for include_path, test_node in search:
+      for include_path, test_node in chain(local_path, search):
         name = include_path / include
         test = name
         if test_node:
@@ -1074,7 +1086,7 @@ def mkdeps(res, n, lvl, toolkit, config, marks,
             break
       if found is not None:
         rec = []
-        mkdeps(rec, found, lvl + 1, toolkit, config,
+        mkdeps(rec, found, lvl + 1, search,
                f_submarks(marks), f_submarks, f_init, f_add)
         f_add(res, found, rec)
       else:
@@ -1100,7 +1112,7 @@ class Compiler(Builder):
 
   def dependencies(self):
     deps = []
-    mkdeps(deps, self.src, 0, self.toolkit, self.config, {},
+    inclusion_dependencies(deps, self.src, 0, self.toolkit, self.config,
            f_init = lambda res, n: res.append(n),
            f_submarks = lambda d: d,
            f_add = lambda res, node, sub: res.extend(sub))
@@ -1145,7 +1157,7 @@ class Compiler(Builder):
   def mkdeps(self):
     def add(res, node, sub):
       res[node] = sub
-    return {self.src: mkdeps(self.src, 0, self.config, {},
+    return {self.src: inclusion_dependencies(self.src, 0, self.config,
                              f_init = lambda n: {},
                              f_submarks = lambda d: dict(d),
                              f_add = add)}
