@@ -139,6 +139,35 @@ class OrderedSet:
   def __repr__(self):
     return 'OrderedSet(%r)' % self.__list
 
+class SchedulingPolicy:
+
+  pass
+
+class RoundRobin(SchedulingPolicy):
+
+  def __init__(self):
+    self.__coroutines = OrderedSet()
+
+  @property
+  def busy(self):
+    return bool(self.__coroutines)
+
+  def add(self, coroutine, parent):
+    self.__coroutines.add(coroutine)
+
+  def remove(self, coroutine):
+    self.__coroutines.remove(coroutine)
+
+  def freeze(self, coroutine):
+    self.__coroutines.remove(coroutine)
+
+  def unfreeze(self, coroutine):
+    self.__coroutines.add(coroutine)
+
+  def round(self):
+    for coro in list(self.__coroutines):
+      yield coro
+
 
 class Scheduler:
 
@@ -154,12 +183,12 @@ class Scheduler:
     Scheduler.__instance = self
     self.__lock = threading.Condition()
     self.__scheduled = []
+    self.__policy = RoundRobin()
 
   def __str__(self):
     return 'Scheduler'
 
   def reset(self):
-    self.__coroutines = OrderedSet()
     self.__coroutines_frozen = set()
     self.__running = False
     self.__exception = None
@@ -173,7 +202,7 @@ class Scheduler:
 
   def add(self, coro):
     self.debug('%s: new coroutine: %s' % (self, coro.name))
-    self.__coroutines.add(coro)
+    self.__policy.add(coro, None)
 
   def run(self):
 
@@ -192,12 +221,12 @@ class Scheduler:
           e = self.__exception
           self.__exception = None
           raise e
-        if not self.__coroutines:
+        if not self.__policy.busy:
           if not self.__coroutines_frozen:
             self.debug('no more coroutine, dying')
             break
           else:
-            while not self.__coroutines:
+            while not self.__policy.busy:
               with self.__lock:
                 if not self.__scheduled:
                   self.__lock.wait()
@@ -205,8 +234,7 @@ class Scheduler:
                 for f in self.__scheduled:
                   f()
                 self.__scheduled = []
-        running = list(self.__coroutines)
-        for coro in running:
+        for coro in self.__policy.round():
           with self.__lock:
             for f in self.__scheduled:
               f()
@@ -232,27 +260,16 @@ class Scheduler:
           self.__exception = e.with_traceback(coro._Coroutine__traceback)
       if coro.done:
         self.debug('%s ended' % coro)
-        self.__coroutines.remove(coro)
+        self.__policy.remove(coro)
       elif coro.frozen:
         self.debug('%s froze' % coro)
         self.__coroutines_frozen.add(coro)
-        self.__coroutines.remove(coro)
+        self.__policy.freeze(coro)
 
   def unfreeze(self, coro):
     self.debug('%s wakes up' % coro)
-    self.__coroutines.add(coro)
+    self.__policy.unfreeze(coro)
     self.__coroutines_frozen.remove(coro)
-
-  def run_one(self, coro):
-    assert not self.running()
-    self.reset()
-    try:
-      prev = self.__local.coroutine
-      self.__local.coroutine = coro
-      while coro.routine:
-        coro._Coroutine__step()
-    finally:
-      self.__local.coroutine = prev
 
   def schedule(self, f):
     with self.__lock:
