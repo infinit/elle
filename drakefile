@@ -73,8 +73,6 @@ def configure(prefix = '.'):
     'cxx/generated-headers-deps',
     'cxx/pkg-config',
     'cxx/qt/moc',
-    'sched/exceptions',
-    'sched/thread-concurrency',
     ]
 
   class Tester(drake.Builder):

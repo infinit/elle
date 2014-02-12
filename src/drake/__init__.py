@@ -1644,7 +1644,7 @@ class Builder:
           sched.logger.log('drake.Builder',
                            '%s: already being built, waiting' % self,
                            drake.log.LogLevel.trace)
-          sched.coro_wait(self.__executed_signal)
+          sched.wait(self.__executed_signal)
         # Otherwise, build it ourselves
         else:
           self.__executed_signal = sched.Signal()
@@ -1711,33 +1711,23 @@ class Builder:
         with logger.log('drake.Builder',
                         '%s: build static dependencies' % self,
                         drake.log.LogLevel.debug):
-          for node in list(self.__sources.values()) + \
-            list(self.__vsrcs.values()):
-            if _can_skip_node(node):
-              continue
-            coroutines_static.append(
-              Coroutine(node.build,
-                        str(node),
-                        Drake.current.scheduler,
-                        sched.Coroutine.current))
-          try:
-            sched.coro_wait(coroutines_static)
-          finally:
-            self.__report_dependencies(self.__sources.values())
+          with sched.Scope() as scope:
+            for node in list(self.__sources.values()) + \
+              list(self.__vsrcs.values()):
+              if _can_skip_node(node):
+                continue
+              scope.run(node.build, str(node))
         # Build dynamic dependencies
         with logger.log('drake.Builder',
                         '%s: build dynamic dependencies' % self,
                         drake.log.LogLevel.debug):
-          for path in self.__dynsrc:
-            node = self.__dynsrc[path]
-            if _can_skip_node(node):
-              continue
-            coroutines_dynamic.append(
-              Coroutine(node.build, str(node),
-                        Drake.current.scheduler,
-                        sched.Coroutine.current))
           try:
-            sched.coro_wait(coroutines_dynamic)
+            with sched.Scope() as scope:
+              for path in self.__dynsrc:
+                node = self.__dynsrc[path]
+                if _can_skip_node(node):
+                  continue
+                scope.run(node.build, str(node))
           except Exception as e:
             logger.log(
               'drake.Builder',

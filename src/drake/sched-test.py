@@ -135,6 +135,7 @@ class TestStandaloneCoroutine(unittest.TestCase):
       self.r.step()
     self.assertTrue(self.r.done)
 
+
 class Sleep(sched.ThreadedOperation):
   def __init__(self, duration):
     sched.ThreadedOperation.__init__(self)
@@ -204,11 +205,11 @@ class TestScheduler(unittest.TestCase):
       def subcoro():
         def raiser():
           raise BeaconException()
-        r = sched.Coroutine(raiser, 'raiser', self.scheduler, sched.Coroutine.current)
-        sched.coro_wait(r)
-      sc = sched.Coroutine(subcoro, 'subcoro', self.scheduler, sched.Coroutine.current)
+        with sched.Scope() as scope:
+          scope.run(raiser, 'raiser')
       with self.assertRaises(BeaconException):
-        sched.coro_wait(sc)
+        with sched.Scope() as scope:
+          scope.run(subcoro, 'subcoro')
 
     c = sched.Coroutine(coro, 'coro', self.scheduler)
     self.scheduler.run()
@@ -255,22 +256,19 @@ class TestScheduler(unittest.TestCase):
       raise BeaconException()
 
     def waiter(beacon):
-      s = Sleep(1)
-      s.start()
-      sched.coro_wait(s)
+      sched.coro_yield()
+      sched.coro_yield()
+      sched.coro_yield()
       beacon[0] += 1
 
     def main():
       beacon = [0]
-      t = sched.Coroutine(thrower, 'thrower', self.scheduler,
-                          parent = sched.Coroutine.current)
-      w = sched.Coroutine(lambda: waiter(beacon),
-                          'waiter', self.scheduler,
-                          parent = sched.Coroutine.current)
       try:
-        sched.coro_wait([t, w])
+        with sched.Scope() as scope:
+          scope.run(thrower, 'thrower')
+          scope.run(lambda: waiter(beacon), 'waiter')
       finally:
-        assert beacon[0] == 1
+        assert beacon[0] == 0
 
     sched.Coroutine(main, 'main', self.scheduler)
     try:
