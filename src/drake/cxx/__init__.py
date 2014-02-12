@@ -1010,12 +1010,25 @@ def inclusion_dependencies(n, toolkit, config):
     search_path.append((path, True))
     search_path.append((drake.path_source() / path, False))
   search_path += [(path, False) for path in toolkit.include_path]
-  return mkdeps(n, search_path, set())
+  yield n
+  for subnode in mkdeps(n, tuple(search_path), set()):
+    yield subnode
 
 __dependencies_includes = {}
+__dependencies_result = {}
 __include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
 def mkdeps(explored_node, search, marks):
+  key = (search, explored_node)
+  res = __dependencies_result.get(key, None)
+  if res is None:
+    res = set(_mkdeps(explored_node, search, marks))
+    __dependencies_result[key] = res
+  return res
+
+  return res
+
+def _mkdeps(explored_node, search, marks):
   path = explored_node.path()
   if path in marks:
     return
