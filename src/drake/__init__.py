@@ -115,7 +115,7 @@ class Drake:
     self.__jobs = 1
     self.__jobs_lock = None
     self.__source = drake.Path(root)
-    self.__scheduler = Scheduler()
+    self.__scheduler = Scheduler(policy = sched.DepthFirst())
     self.__prefix = drake.Path('.')
     self.__nodes = {}
 
