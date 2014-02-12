@@ -1677,9 +1677,9 @@ class Builder:
             depfile.read()
             handler = self._deps_handlers[f]
             with sched.logger.log(
-              'drake.Builder',
-              '%s: consider dependencies file %s' % (self, f),
-              drake.log.LogLevel.debug):
+                'drake.Builder',
+                '%s: consider dependencies file %s' % (self, f),
+                drake.log.LogLevel.dump):
               for path in depfile.sha1s():
                 if path in self.__sources or path in self.__dynsrc:
                   sched.logger.log(
@@ -1688,9 +1688,9 @@ class Builder:
                     drake.log.LogLevel.debug)
                   continue
                 with sched.logger.log(
-                  'drake.Builder',
-                  '%s: %s is unkown, calling handler' % (self, path),
-                  drake.log.LogLevel.debug):
+                    'drake.Builder',
+                    '%s: %s is unkown, calling handler' % (self, path),
+                    drake.log.LogLevel.dump):
                   node = handler(self,
                                  path,
                                  self.get_type(depfile.sha1s()[path][1]),
@@ -1699,7 +1699,7 @@ class Builder:
                     sched.logger.log(
                       'drake.Builder',
                       '%s: add %s to sources' % (self, path),
-                      drake.log.LogLevel.debug)
+                      drake.log.LogLevel.dump)
                     self.add_dynsrc(f, node)
 
         coroutines_static = []
