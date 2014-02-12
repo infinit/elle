@@ -288,6 +288,7 @@ class TestScheduler(unittest.TestCase):
       with sched.Scope() as scope:
         scope.run(lambda: incrementer(beacon), 'incrementer')
         sched.coro_yield()
+        sched.coro_yield()
         raise BeaconException()
     scheduler = sched.Scheduler()
     sched.Coroutine(main, 'main', scheduler)
@@ -295,6 +296,23 @@ class TestScheduler(unittest.TestCase):
       scheduler.run()
     except BeaconException:
       assert beacon[0] == 1
+    else:
+      assert False
+
+  def test_terminate_starting(self):
+    beacon = [0]
+    def incrementer(beacon):
+      beacon[0] += 1
+    def main():
+      with sched.Scope() as scope:
+        scope.run(lambda: incrementer(beacon), 'incrementer')
+        raise BeaconException()
+    scheduler = sched.Scheduler()
+    sched.Coroutine(main, 'main', scheduler)
+    try:
+      scheduler.run()
+    except BeaconException:
+      assert beacon[0] == 0
     else:
       assert False
 

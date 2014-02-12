@@ -84,8 +84,8 @@ class Scope:
       del Scope.__scopes[Coroutine.current][-1]
 
   def run(self, routine, name):
-    coro = Coroutine(routine, name, self.__scheduler)
-    coro._Coroutine__parent = self.__coroutine
+    coro = Coroutine(routine, name, self.__scheduler,
+                     parent = self.__coroutine)
     self.__coroutines.append(coro)
 
   def terminate(self):
@@ -152,7 +152,7 @@ class RoundRobin(SchedulingPolicy):
   def busy(self):
     return bool(self.__coroutines)
 
-  def add(self, coroutine, parent):
+  def add(self, coroutine):
     self.__coroutines.add(coroutine)
 
   def remove(self, coroutine):
@@ -169,6 +169,45 @@ class RoundRobin(SchedulingPolicy):
       yield coro
 
 
+class DepthFirst(SchedulingPolicy):
+
+  def __init__(self):
+    self.__coroutines = OrderedSet()
+    self.__hierarchy = {}
+
+  @property
+  def busy(self):
+    return bool(self.__coroutines)
+
+  def add(self, coroutine):
+    parent = coroutine.parent
+    self.__coroutines.add(coroutine)
+    self.__hierarchy.setdefault(parent, OrderedSet()).add(coroutine)
+
+  def remove(self, coroutine):
+    self.__coroutines.remove(coroutine)
+    self.__hierarchy.get(coroutine.parent).remove(coroutine)
+
+  def freeze(self, coroutine):
+    self.__coroutines.remove(coroutine)
+
+  def unfreeze(self, coroutine):
+    self.__coroutines.add(coroutine)
+
+  def round(self):
+    return (self.__round(self.__hierarchy.get(None, ())),)
+
+  def __round(self, coroutines):
+    for coroutine in coroutines:
+      active = coroutine in self.__coroutines
+      if active and coroutine.exception:
+        return coroutine
+      sub = self.__round(self.__hierarchy.get(coroutine, ()))
+      if sub is not None:
+        return sub
+      if active:
+        return coroutine
+
 class Scheduler:
 
   __instance = None
@@ -178,12 +217,12 @@ class Scheduler:
   def scheduler(self):
     return Scheduler.__instance
 
-  def __init__(self):
+  def __init__(self, jobs = None, policy = None):
     self.reset()
     Scheduler.__instance = self
     self.__lock = threading.Condition()
+    self.__policy = policy or RoundRobin()
     self.__scheduled = []
-    self.__policy = RoundRobin()
 
   def __str__(self):
     return 'Scheduler'
@@ -202,7 +241,7 @@ class Scheduler:
 
   def add(self, coro):
     self.debug('%s: new coroutine: %s' % (self, coro.name))
-    self.__policy.add(coro, None)
+    self.__policy.add(coro)
 
   def run(self):
 
@@ -235,6 +274,7 @@ class Scheduler:
                   f()
                 self.__scheduled = []
         for coro in self.__policy.round():
+          assert coro is not None
           with self.__lock:
             for f in self.__scheduled:
               f()
@@ -318,7 +358,7 @@ class Coroutine(Waitable):
 
   __current = None
 
-  def __init__(self, routine, name, scheduler = None):
+  def __init__(self, routine, name, scheduler = None, parent = None):
     Waitable.__init__(self)
     self.__coro = greenlet.greenlet(routine)
     self.__done = False
@@ -327,8 +367,9 @@ class Coroutine(Waitable):
     self.__frozen = False
     self.__joined = False
     self.__name = name
-    self.__parent = None
+    self.__parent = parent
     self.__scheduler = scheduler
+    self.__started = False
     self.__traceback = None
     self.__waited = set()
     if scheduler is not None:
@@ -373,6 +414,10 @@ class Coroutine(Waitable):
       return Coroutine.__current
     else:
       return self is Coroutine.__current
+
+  @property
+  def exception(self):
+    return self.__exception
 
   def _Waitable__wait(self, coro):
     if self.done:
@@ -443,6 +488,7 @@ class Coroutine(Waitable):
       raise CoroutineDone()
     if self.frozen:
       raise CoroutineFrozen()
+    self.__started = True
     self.__coro.parent = greenlet.getcurrent()
     prev = Coroutine.__current
     try:
@@ -476,6 +522,9 @@ class Coroutine(Waitable):
   def terminate(self):
     if self.done:
       return
+    if not self.started:
+      self.__done_set()
+      self.scheduler._Scheduler__policy.remove(self)
     if self.current:
       raise Terminate()
     else:
@@ -489,6 +538,11 @@ class Coroutine(Waitable):
       return 'frozen'
     else:
       return 'running'
+
+  @property
+  def started(self):
+    return self.__started
+
 
 class ThreadedOperation(Signal):
 
