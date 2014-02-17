@@ -940,14 +940,14 @@ class DepFile:
       """Read the hashes from the store file."""
       res = []
       if self.path().exists():
-        with open(str(self.path()), 'r') as f:
-          try:
-            for sha1, name, data in eval(f.read()):
-              src = Path(name)
-              self.__sha1[src] = (sha1, data)
-          except:
-            self.__invalid = True
-            return
+        try:
+          with open(str(self.path()), 'rb') as f:
+            value = drake.Path.Unpickler(f).load()
+          for sha1, name, data in value:
+            src = Path(name)
+            self.__sha1[src] = (sha1, data)
+        except:
+          self.__invalid = True
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
@@ -968,12 +968,11 @@ class DepFile:
 
     def update(self):
       """Rehash all files and write to the store file."""
-      with open(str(self.path()), 'w') as f:
-        print(
-          repr([(node.hash() if source else None,
-                 node.name_absolute(), node.drake_type())
-                for node, source in self.__files.values()]),
-          file = f)
+      value = [(node.hash() if source else None,
+                node.name_absolute(), node.drake_type())
+               for node, source in self.__files.values()]
+      with open(str(self.path()), 'wb') as f:
+        drake.Path.Pickler(f).dump(value)
 
     def __repr__(self):
         """Python representation."""
