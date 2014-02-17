@@ -13,6 +13,7 @@ import hashlib
 import inspect
 import itertools
 import os.path
+import pickle
 import platform
 import re
 import shutil
@@ -869,6 +870,17 @@ class Path(metaclass = PathType):
 
     def list(self):
         return _OS.listdir(str(self))
+
+    class Pickler(pickle.Pickler):
+      def persistent_id(self, obj):
+        if isinstance(obj, drake.Path):
+          return str(obj)
+        else:
+          return None
+
+    class Unpickler(pickle.Unpickler):
+      def persistent_load(self, obj):
+        return drake.Path(obj)
 
 
 Path.dot = Path('.')
