@@ -955,7 +955,7 @@ class DepFile:
         return False
       for path in list(self.__sha1.keys()):
         old_hash = self.__sha1[path][0]
-        if old_hash == 'None': # FIXME: python values
+        if old_hash is None:
           continue
         if path not in Drake.current.nodes:
           del self.__sha1[path]
