@@ -9,7 +9,16 @@ read_int()
 {
   std::stringstream input("42");
   auto json = elle::json::read(input);
-  BOOST_CHECK_EQUAL(boost::any_cast<int>(json), 42);
+  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 42);
+}
+
+static
+void
+read_long()
+{
+  std::stringstream input("9437196296");
+  auto json = elle::json::read(input);
+  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 9437196296);
 }
 
 static
@@ -21,7 +30,7 @@ read_object()
   BOOST_CHECK_EQUAL(object.size(), 2);
   BOOST_CHECK(object.find("pastis") != object.end());
   BOOST_CHECK(object.find("Paul") != object.end());
-  BOOST_CHECK_EQUAL(boost::any_cast<int>(object["pastis"]), 51);
+  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(object["pastis"]), 51);
   BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["Paul"]), "Ricard");
 }
 
@@ -30,5 +39,6 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
 
   suite.add(BOOST_TEST_CASE(read_int), 0, 3);
+  suite.add(BOOST_TEST_CASE(read_long), 0, 3);
   suite.add(BOOST_TEST_CASE(read_object), 0, 3);
 }
