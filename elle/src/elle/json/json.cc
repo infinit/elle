@@ -88,6 +88,10 @@ namespace elle
         return boost::any_cast<bool>(any);
       if (any.type() == typeid(int))
         return boost::any_cast<int>(any);
+      if (any.type() == typeid(long))
+        return boost::any_cast<long>(any);
+      if (any.type() == typeid(long long))
+        return boost::any_cast<long long>(any);
       if (any.type() == typeid(unsigned int))
         return boost::any_cast<unsigned int>(any);
       if (any.type() == typeid(unsigned long))
