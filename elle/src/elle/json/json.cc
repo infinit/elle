@@ -46,7 +46,7 @@ namespace elle
         case json_spirit::Value::BOOL_TYPE:
           return value.getBool();
         case json_spirit::Value::INT_TYPE:
-          return value.getInt();
+          return value.getInt64();
         case json_spirit::Value::REAL_TYPE:
           return value.getReal();
         case json_spirit::Value::NULL_TYPE:
