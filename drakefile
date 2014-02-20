@@ -67,6 +67,7 @@ def configure(prefix = '.'):
     'base/path',
     'base/runner',
     'cxx/boost',
+    'cxx/cyclic-dependencies',
     'cxx/dependency-directory-clash',
     'cxx/find_library',
     'cxx/headers-deps',

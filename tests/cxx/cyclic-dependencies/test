@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import drake, drake.cxx, drake.cxx.qt, subprocess, sys
+
+#                     +-------+       +--------+
+#                     |root.hh|+----->|root1.hh|
+#                     +-------+       +--------+
+#                         +
+#                         |
+#                         |
+#                         v
+#   +-----------+     +-------+
+#   |branch-2.hh|     |one.hh |<---------+
+#   +-----------+     +-------+          |
+#        ^                +              |
+#        |                |              |
+#        |                |              |
+#        +                v              +
+#   +-----------+     +-------+      +--------+
+#   |branch-1.hh|<---+|two.hh |+---->|three.hh|
+#   +-----------+     +-------+      +--------+
+
+with drake.Drake():
+  tk = drake.cxx.Toolkit()
+  cfg = drake.cxx.Config()
+  root = drake.node('root.hh')
+  root1 = drake.node('root-1.hh')
+  one = drake.node('one.hh')
+  two = drake.node('two.hh')
+  three = drake.node('three.hh')
+  b1 = drake.node('branch-1.hh')
+  b2 = drake.node('branch-2.hh')
+  def deps(n):
+    return drake.cxx.inclusion_dependencies(n, tk, cfg)
+  assert deps(root) == set((root, root1, one, two, three, b1, b2))
+  assert deps(root1) == set((root1,))
+  assert deps(one) == set((one, two, three, b1, b2))
+  assert deps(two) == set((one, two, three, b1, b2))
+  assert deps(three) == set((one, two, three, b1, b2))
+  assert deps(b1) == set((b1, b2))
+  assert deps(b2) == set((b2,))

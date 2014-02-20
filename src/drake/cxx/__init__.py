@@ -1010,33 +1010,84 @@ def inclusion_dependencies(n, toolkit, config):
     search_path.append((path, True))
     search_path.append((drake.path_source() / path, False))
   search_path += [(path, False) for path in toolkit.include_path]
-  yield n
-  for subnode in mkdeps(n, tuple(search_path), set()):
-    yield subnode
+  cycles_map = dict()
+  owner_map = dict()
+  cycles, deps = mkdeps(n, tuple(search_path),
+                        set(), cycles_map, owner_map)
+  assert not cycles
+  assert not cycles_map
+  assert not owner_map
+  return deps
 
 __dependencies_includes = {}
 __dependencies_result = {}
 __include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
-def mkdeps(explored_node, search, marks):
+def mkdeps(explored_node, search, marks, cycles_map, owner_map):
+  # Fetch cached result
   key = (search, explored_node)
   res = __dependencies_result.get(key, None)
-  if res is None:
-    res = set(_mkdeps(explored_node, search, marks))
-    __dependencies_result[key] = res
-  return res
-
-  return res
-
-def _mkdeps(explored_node, search, marks):
+  # Check if this node was explored
   path = explored_node.path()
+  # If we've been explored ...
   if path in marks:
-    return
-  marks.add(path)
+    # ... if we have no result yet, this is a cycle.
+    if res is None:
+      cycle = explored_node
+      while True:
+        logger.log('drake.cxx.dependencies',
+                   'detected cycle on %s' % cycle,
+                   drake.log.LogLevel.trace)
+        new_owner = owner_map.get(cycle, None)
+        if new_owner is None or new_owner is cycle:
+          break
+        cycle = new_owner
+      return (set((cycle,)), set())
+  else:
+    marks.add(path)
+  if res is None:
+    cycles, deps = _mkdeps(explored_node, search,
+                           marks, cycles_map, owner_map)
+    if cycles:
+      try:
+        cycles.remove(explored_node)
+      except KeyError:
+        pass
+      else:
+        if cycles:
+          new_cycle = next(iter(cycles))
+          logger.log('drake.cxx.dependencies',
+                     'merge cycle on %s to %s' % (explored_node,
+                                                  new_cycle),
+                     drake.log.LogLevel.trace)
+          cycles_map[new_cycle].update(cycles_map[explored_node])
+          for node in cycles_map[explored_node]:
+            owner_map[node] = new_cycle
+        else:
+          logger.log('drake.cxx.dependencies',
+                     'finalize cycle %s' % explored_node,
+                     drake.log.LogLevel.trace)
+          for dependency in cycles_map[explored_node]:
+            __dependencies_result[(search, dependency)] = deps
+            del owner_map[dependency]
+        del cycles_map[explored_node]
+    else:
+      __dependencies_result[key] = deps
+    return (cycles, deps)
+  else:
+    if explored_node.path() == drake.Path('../../elle/cryptography/sources/cryptography/Input.hh'):
+      logger.log('drake.cxx.dependencies',
+                 'pull dependencies for %s from the cache' % explored_node,
+                 drake.log.LogLevel.trace)
+    return (set(), res)
+
+def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
+  path = explored_node.path()
   with logger.log('drake.cxx.dependencies',
                   'explore dependencies of %s' % path,
                   drake.log.LogLevel.trace):
-    yield explored_node
+    cycles = set()
+    deps = set((explored_node,))
     def unique_fail(path, include, prev_via, prev, new_via, new):
       raise Exception('in %s, two nodes match inclusion %s: '\
                       '%s via %s and %s via %s' % \
@@ -1094,13 +1145,20 @@ def _mkdeps(explored_node, search, marks):
             found, via = unique(path, include, via, found, include_path,
                                 drake.node(name, Header))
             break
-      if found is not None:
-        for dep in mkdeps(found, search, marks):
-          yield dep
+      if found is not None and not found.path().absolute():
+        subcycles, subdeps = mkdeps(found, search,
+                                    marks, cycles_map, owner_map)
+        if not cycles and subcycles:
+          my_cycle = next(iter(subcycles))
+          cycles_map.setdefault(my_cycle, set()).add(explored_node)
+          owner_map[explored_node] = my_cycle
+        deps.update(subdeps)
+        cycles = cycles.union(subcycles)
       else:
         logger.log('drake.cxx.dependencies',
                    'file not found: %s' % include,
                    drake.log.LogLevel.trace)
+    return (cycles, deps)
 
 class Compiler(Builder):
 

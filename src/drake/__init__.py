@@ -882,6 +882,8 @@ class Path(metaclass = PathType):
       def persistent_load(self, obj):
         return drake.Path(obj)
 
+    def __iter__(self):
+      return self.__path.__iter__()
 
 Path.dot = Path('.')
 Path.dotdot = Path('..')
@@ -1653,6 +1655,9 @@ class Builder:
                            '%s: already being built, waiting' % self,
                            drake.log.LogLevel.trace)
           sched.wait(self.__executed_signal)
+          sched.logger.log('drake.Builder',
+                           '%s: was built, resuming' % self,
+                           drake.log.LogLevel.trace)
         # Otherwise, build it ourselves
         else:
           self.__executed_signal = sched.Signal()
@@ -1806,14 +1811,17 @@ class Builder:
                 node.build()
             self._builder_hash = self.hash()
             try:
-              success = self.execute()
+              with logger.log(
+                  'drake.Builder',
+                  '%s: execute' % self,
+                  drake.log.LogLevel.debug):
+                success = self.execute()
             except _Exception as e:
               print('%s: %s' % (self, e), file = sys.stderr)
               success = False
             if not success:
               self.__executed = True
-              self.__executed_exception = \
-                Builder.Failed(self)
+              self.__executed_exception = Builder.Failed(self)
               raise self.__executed_exception
             # Check every non-virtual target was built.
             for dst in self.__targets:
