@@ -20,7 +20,7 @@ namespace elle
       TCHAR path[MAX_PATH];
 
       if (SUCCEEDED(SHGetFolderPath(NULL,
-                                    CSIDL_PERSONAL | CSIDL_FLAG_CREATE,
+                                    CSIDL_PROFILE,
                                     nullptr,
                                     0,
                                     path)))
