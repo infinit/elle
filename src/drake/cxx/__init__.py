@@ -1042,6 +1042,7 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
         if new_owner is None or new_owner is cycle:
           break
         cycle = new_owner
+      cycles_map.setdefault(cycle, set())
       return (set((cycle,)), set())
   else:
     marks.add(path)
@@ -1145,7 +1146,7 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
             found, via = unique(path, include, via, found, include_path,
                                 drake.node(name, Header))
             break
-      if found is not None and not found.path().absolute():
+      if found is not None:
         subcycles, subdeps = mkdeps(found, search,
                                     marks, cycles_map, owner_map)
         if not cycles and subcycles:
