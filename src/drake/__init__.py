@@ -1792,7 +1792,7 @@ class Builder:
                 if not self._depfiles[f].up_to_date():
                     execute = True
         if execute:
-          with logger.log('drake.Builder', '%s: execute' % self,
+          with logger.log('drake.Builder', '%s: needs execution' % self,
                           drake.log.LogLevel.trace):
             # Regenerate dynamic dependencies
             self.__dynsrc = {}
@@ -1811,31 +1811,40 @@ class Builder:
                 node.build()
             self._builder_hash = self.hash()
             try:
-              with logger.log(
-                  'drake.Builder',
-                  '%s: execute' % self,
-                  drake.log.LogLevel.debug):
+              with logger.log('drake.Builder', '%s: execute' % self,
+                              drake.log.LogLevel.trace):
                 success = self.execute()
+                logger.log('drake.Builder', '%s: executed' % self,
+                           drake.log.LogLevel.trace)
+            except sched.Terminate:
+              raise
             except _Exception as e:
-              print('%s: %s' % (self, e), file = sys.stderr)
-              success = False
+              e_pretty = str(e)
+              if not e_pretty:
+                e_pretty = repr(e)
+              print('%s: %s' % (self, e_pretty), file = sys.stderr)
+              import traceback
+              traceback.print_exception(e)
+              raise Builder.Failed(self) from e
             if not success:
-              self.__executed = True
-              self.__executed_exception = Builder.Failed(self)
-              raise self.__executed_exception
+              raise Builder.Failed(self)
             # Check every non-virtual target was built.
-            for dst in self.__targets:
-              if isinstance(dst, Node):
-                if dst.missing():
-                  raise Exception('%s wasn\'t created by %s' \
-                                  % (dst, self))
-                dst._Node__hash = None
+            with logger.log(
+                'drake.Builder',
+                '%s: check all targets were built' % self,
+                drake.log.LogLevel.trace):
+              for dst in self.__targets:
+                if isinstance(dst, Node):
+                  if dst.missing():
+                    raise Exception('%s wasn\'t created by %s' \
+                                    % (dst, self))
+                  dst._Node__hash = None
             # Update depfiles
-            self._depfile.update()
-            logger.log('drake.Builder',
-                       '%s: write dependencies file %s' % \
-                       (self, self._depfile),
-                       drake.log.LogLevel.debug)
+            with logger.log('drake.Builder',
+                            '%s: write dependencies file %s (%s)' % \
+                            (self, self._depfile, list(self._depfile._DepFile__files.items())),
+                            drake.log.LogLevel.debug):
+              self._depfile.update()
             if self._builder_hash is None:
               logger.log('drake.Builder',
                          '%s: remove builder dependency file %s'\
@@ -1865,12 +1874,16 @@ class Builder:
             logger.log('drake.Builder',
                        '%s: everything is up to date' % self,
                        drake.log.LogLevel.debug)
-      except Exception as e:
+      except _Exception as e:
         logger.log('drake.Builder',
                    '%s: exception: %s' % (self, e),
                    drake.log.LogLevel.trace)
         self.__executed_exception = e
         raise
+      else:
+        logger.log('drake.Builder',
+                   '%s: done' % self,
+                   drake.log.LogLevel.debug)
       finally:
         self.__executed = True
         self.__executed_signal.signal()
