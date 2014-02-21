@@ -1467,11 +1467,12 @@ def _can_skip_node(node):
     if isinstance(node, Node):
       if node.missing():
         return False
-      return all(_can_skip_node(dep) for dep in node.dependencies)
     else:
       return True
   else:
-    return node.builder._Builder__executed
+    if not node.builder._Builder__executed:
+      return False
+  return all(_can_skip_node(dep) for dep in node.dependencies)
 
 class Builder:
 
