@@ -13,24 +13,10 @@ import drake
 import drake.enumeration
 
 class LogLevel(drake.enumeration.Enumerated,
-               values = ['log', 'trace', 'debug', 'dump']):
+               values = ['log', 'trace', 'debug', 'dump'],
+               orderable = True):
+  pass
 
-  def __lt__(self, other):
-    order = [LogLevel.log,
-             LogLevel.trace,
-             LogLevel.debug,
-             LogLevel.dump]
-    return order.index(self) < order.index(other)
-
-  def __eq__(self, other):
-    return self is other
-
-  def __le__(self, other):
-    order = [LogLevel.log,
-             LogLevel.trace,
-             LogLevel.debug,
-             LogLevel.dump]
-    return order.index(self) <= order.index(other)
 
 class Logger:
 
