@@ -8,16 +8,21 @@
 
 class Enumeration(type):
 
-  def __new__(self, name, bases, dct, values = []):
+  def __new__(self, name, bases, dct,
+              values = [], orderable = False):
     return super(Enumeration, self).__new__(self, name, bases, dct)
 
-  def __init__(self, name, bases, dct, values = []):
+  def __init__(self, name, bases, dct,
+               values = [], orderable = False):
+    super(Enumeration, self).__init__(name, bases, dct)
     self.__instances = {}
+    self.__orderable = orderable
     for value in values:
       self(name = value)
-    super(Enumeration, self).__init__(name, bases, dct)
 
   def __register(self, instance):
+    if self.__orderable:
+      instance.index = len(self.__instances)
     self.__instances[instance.name] = instance
 
   def __iter__(self):
@@ -41,3 +46,12 @@ class Enumerated(metaclass = Enumeration):
   @property
   def name(self):
     return self.__name
+
+  def __eq__(self, other):
+    return self is other
+
+  def __lt__(self, other):
+    return self.index < other.index
+
+  def __le__(self, other):
+    return self.index <= other.index
