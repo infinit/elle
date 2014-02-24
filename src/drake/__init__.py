@@ -1677,8 +1677,8 @@ class Builder:
                            '%s: already being built, waiting', self)
           sched.wait(self.__executed_signal)
           sched.logger.log('drake.Builder',
-                           '%s: was built, resuming' % self,
-                           drake.log.LogLevel.trace)
+                           drake.log.LogLevel.trace,
+                           '%s: was built, resuming', self)
         # Otherwise, build it ourselves
         else:
           self.__executed_signal = sched.Signal()
