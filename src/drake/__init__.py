@@ -1406,17 +1406,21 @@ def node(path, type = None):
     is constructed with the path as argument.
   * A simple Node with that path is constructed.
   """
-  if path.__class__ != Path:
+  if path.__class__ is not Path:
     path = Path(path)
-  if path in Drake.current.nodes:
-    return Drake.current.nodes[path]
+  existing = Drake.current.nodes.get(path, None)
+  if existing is not None:
+    return existing
   if type is not None:
     return type(path)
-  if path.extension in Node.extensions:
-    return Node.extensions[path.extension](path)
-  last = path.extension.split('.')[-1]
-  if last in Node.extensions:
-    return Node.extensions[last](path)
+  extension = path.extension
+  extension_type = Node.extensions.get(extension, None)
+  if extension_type is not None:
+    return extension_type(path)
+  last_extension = extension.split('.')[-1]
+  last_extension_type = Node.extensions.get(last_extension, None)
+  if last_extension_type is not None:
+    return last_extension_type(path)
   return Node(path)
 
 
