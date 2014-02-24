@@ -1284,7 +1284,7 @@ class Node(BaseNode):
               if not chunk:
                 break
               hasher.update(chunk)
-        self.__hash = hasher.hexdigest()
+        self.__hash = hasher.digest()
     return self.__hash
 
   def clean(self):
