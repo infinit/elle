@@ -1847,8 +1847,6 @@ class Builder:
               if not e_pretty:
                 e_pretty = repr(e)
               print('%s: %s' % (self, e_pretty), file = sys.stderr)
-              import traceback
-              traceback.print_exception(e)
               raise Builder.Failed(self) from e
             if not success:
               raise Builder.Failed(self)
