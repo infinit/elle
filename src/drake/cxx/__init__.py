@@ -1004,20 +1004,23 @@ class VisualToolkit(Toolkit):
 def deps_handler(builder, path, t, data):
     return node(path, t)
 
+profile_deps = drake.Profile('C++ dependencies exploration')
+
 def inclusion_dependencies(n, toolkit, config):
-  search_path = []
-  for path in config.local_include_path:
-    search_path.append((path, True))
-    search_path.append((drake.path_source() / path, False))
-  search_path += [(path, False) for path in toolkit.include_path]
-  cycles_map = dict()
-  owner_map = dict()
-  cycles, deps = mkdeps(n, tuple(search_path),
-                        set(), cycles_map, owner_map)
-  assert not cycles
-  assert not cycles_map
-  assert not owner_map
-  return deps
+  with profile_deps():
+    search_path = []
+    for path in config.local_include_path:
+      search_path.append((path, True))
+      search_path.append((drake.path_source() / path, False))
+    search_path += [(path, False) for path in toolkit.include_path]
+    cycles_map = dict()
+    owner_map = dict()
+    cycles, deps = mkdeps(n, tuple(search_path),
+                          set(), cycles_map, owner_map)
+    assert not cycles
+    assert not cycles_map
+    assert not owner_map
+    return deps
 
 __dependencies_includes = {}
 __dependencies_result = {}

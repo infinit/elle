@@ -230,7 +230,7 @@ class Profile:
         self.__time = 0
         atexit.register(self.show)
 
-    def profile(self):
+    def __call__(self):
         return ProfileInstance(self)
 
     def show(self):
@@ -255,6 +255,11 @@ class ProfileInstance:
         self.__parent._Profile__calls += 1
         t = time.time() - self.__time
         self.__parent._Profile__time  += t
+
+
+profile_hashing = Profile('files hashing')
+profile_unpickling = Profile('dependencies files reading')
+profile_pickling = Profile('dependencies files writing')
 
 _Exception = Exception
 class Exception(Exception):
@@ -942,14 +947,15 @@ class DepFile:
       """Read the hashes from the store file."""
       res = []
       if self.path().exists():
-        try:
-          with open(str(self.path()), 'rb') as f:
-            value = drake.Path.Unpickler(f).load()
-          for sha1, name, data in value:
-            src = Path(name)
-            self.__sha1[src] = (sha1, data)
-        except:
-          self.__invalid = True
+        with profile_unpickling():
+          try:
+            with open(str(self.path()), 'rb') as f:
+              value = drake.Path.Unpickler(f).load()
+            for sha1, name, data in value:
+              src = Path(name)
+              self.__sha1[src] = (sha1, data)
+          except:
+            self.__invalid = True
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
@@ -973,8 +979,9 @@ class DepFile:
       value = [(node.hash() if source else None,
                 node.name_absolute(), node.drake_type())
                for node, source in self.__files.values()]
-      with open(str(self.path()), 'wb') as f:
-        drake.Path.Pickler(f).dump(value)
+      with profile_pickling():
+        with open(str(self.path()), 'wb') as f:
+          drake.Path.Pickler(f).dump(value)
 
     def __repr__(self):
         """Python representation."""
@@ -1261,16 +1268,17 @@ class Node(BaseNode):
   def hash(self):
     """Digest of the file as a string."""
     if self.__hash is None:
-      hasher = hashlib.sha1()
-      for node in sorted(chain((self,), self.dependencies)):
-        path = node.path()
-        with open(str(path), 'rb') as f:
-          while True:
-            chunk = f.read(8192)
-            if not chunk:
-              break
-            hasher.update(chunk)
-      self.__hash = hasher.hexdigest()
+      with profile_hashing():
+        hasher = hashlib.sha1()
+        for node in sorted(chain((self,), self.dependencies)):
+          path = node.path()
+          with open(str(path), 'rb') as f:
+            while True:
+              chunk = f.read(8192)
+              if not chunk:
+                break
+              hasher.update(chunk)
+        self.__hash = hasher.hexdigest()
     return self.__hash
 
   def clean(self):
