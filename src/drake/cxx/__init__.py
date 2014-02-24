@@ -1106,21 +1106,18 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
                     new_via, new.path())
       return new, new_via
     # FIXME: is building a node during dependencies ok ?
-    # explored_node.build()
+    explored_node.build()
     matches = __dependencies_includes.get(path, None)
     if matches is None:
       matches = []
-      try:
-        with open(str(path), 'rb') as include_file:
-          for line in include_file:
-            line = line.strip()
-            match = __include_re.match(line)
-            if match:
-              include = match.group(2).decode('latin-1')
-              local = match.group(1) == b'"'
-              matches.append((include, local))
-      except IOError:
-        pass
+      with open(str(path), 'rb') as include_file:
+        for line in include_file:
+          line = line.strip()
+          match = __include_re.match(line)
+          if match:
+            include = match.group(2).decode('latin-1')
+            local = match.group(1) == b'"'
+            matches.append((include, local))
       __dependencies_includes[path] = matches
     for include, local in matches:
       if local:
