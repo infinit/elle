@@ -1260,6 +1260,7 @@ class Node(BaseNode):
     BaseNode.__init__(self, path)
     self.__dependencies = set()
     self.__hash = None
+    self.__exists = False
 
   def clone(self, path):
         """Clone of this node, with an other path."""
@@ -1317,8 +1318,9 @@ class Node(BaseNode):
 
     Nodes are built if their file does not exist.
     """
-    return not self.path().exists() or \
-      any(map(BaseNode.missing, self.dependencies))
+    if not self.__exists:
+      self.__exists = self.path().exists()
+    return not self.__exists
 
   def build(self):
     """Builds this node.
@@ -1342,6 +1344,7 @@ class Node(BaseNode):
     If a Node needs to be built and its builder is executed, it
     must create the Node's associated file.
 
+    >>> n = node('/tmp/.drake.othernode')
     >>> n.path().remove()
     >>> class EmptyBuilder(Builder):
     ...   def execute(self):
@@ -1350,7 +1353,7 @@ class Node(BaseNode):
     >>> n.build()
     Traceback (most recent call last):
         ...
-    drake.Exception: /tmp/.drake.node wasn't created by EmptyBuilder
+    drake.Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
     """
     if not _scheduled():
       Coroutine(self.build, str(self), Drake.current.scheduler)
