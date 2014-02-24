@@ -42,6 +42,8 @@ def path_source(path = None):
   else:
     return Drake.current.path_source / Drake.current.prefix / path
 
+PROFILE = 'DRAKE_PROFILE' in os.environ
+
 class Drake:
 
   current = None
@@ -224,37 +226,40 @@ def warn(msg):
 
 class Profile:
 
-    def __init__(self, name):
-        self.__calls = 0
-        self.__name = name
-        self.__time = 0
-        atexit.register(self.show)
+  def __init__(self, name):
+    self.__calls = 0
+    self.__name = name
+    self.__time = 0
+    if PROFILE:
+      atexit.register(self.show)
 
-    def __call__(self):
-        return ProfileInstance(self)
+  def __call__(self):
+    if PROFILE:
+      return ProfileInstance(self)
+    else:
+      return drake.log.Logger.NoOp()
 
-    def show(self):
-        print(self)
+  def show(self):
+    print(self)
 
-    def __str__(self):
-        return '%s: called %s time, %s seconds.' % (self.__name,
-                                                    self.__calls,
-                                                    self.__time)
+  def __str__(self):
+    return '%s: called %s time, %s seconds.' % (
+      self.__name, self.__calls, self.__time)
 
 class ProfileInstance:
 
-    def __init__(self, parent):
-        self.__parent = parent
-        self.__time  = 0
-        self.__time  = None
+  def __init__(self, parent):
+    self.__parent = parent
+    self.__time  = 0
+    self.__time  = None
 
-    def __enter__(self):
-        self.__time = time.time()
+  def __enter__(self):
+    self.__time = time.time()
 
-    def __exit__(self, *args):
-        self.__parent._Profile__calls += 1
-        t = time.time() - self.__time
-        self.__parent._Profile__time  += t
+  def __exit__(self, *args):
+    self.__parent._Profile__calls += 1
+    t = time.time() - self.__time
+    self.__parent._Profile__time  += t
 
 
 profile_hashing = Profile('files hashing')

@@ -39,8 +39,8 @@ class Logger:
 
   class NoOp:
 
-    def __init__(self, logger):
-      self.__logger = logger
+    def __init__(self):
+      pass
 
     def __enter__(self):
       pass
@@ -85,7 +85,7 @@ class Logger:
             file = sys.stderr)
       return self.__indentation
     else:
-      return Logger.NoOp(self)
+      return Logger.NoOp()
 
 # DEBUG_TRACE = 1
 # DEBUG_TRACE_PLUS = 2
