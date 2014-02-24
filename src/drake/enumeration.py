@@ -24,15 +24,10 @@ class Enumeration(type):
     if self.__orderable:
       instance.index = len(self.__instances)
     self.__instances[instance.name] = instance
+    setattr(self, instance.name, instance)
 
   def __iter__(self):
     return iter(self.__instances.values())
-
-  def __getattr__(self, name):
-    if name in self.__instances:
-      return self.__instances[name]
-    else:
-      return super(Enumeration, self).__getattr__(self, name)
 
 class Enumerated(metaclass = Enumeration):
 
