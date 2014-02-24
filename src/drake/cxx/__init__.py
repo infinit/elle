@@ -1039,8 +1039,8 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
       cycle = explored_node
       while True:
         logger.log('drake.cxx.dependencies',
-                   'detected cycle on %s' % cycle,
-                   drake.log.LogLevel.trace)
+                   drake.log.LogLevel.trace,
+                   'detected cycle on %s', cycle)
         new_owner = owner_map.get(cycle, None)
         if new_owner is None or new_owner is cycle:
           break
@@ -1061,16 +1061,16 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
         if cycles:
           new_cycle = next(iter(cycles))
           logger.log('drake.cxx.dependencies',
-                     'merge cycle on %s to %s' % (explored_node,
-                                                  new_cycle),
-                     drake.log.LogLevel.trace)
+                     drake.log.LogLevel.trace,
+                     'merge cycle on %s to %s',
+                     explored_node, new_cycle)
           cycles_map[new_cycle].update(cycles_map[explored_node])
           for node in cycles_map[explored_node]:
             owner_map[node] = new_cycle
         else:
           logger.log('drake.cxx.dependencies',
-                     'finalize cycle %s' % explored_node,
-                     drake.log.LogLevel.trace)
+                     drake.log.LogLevel.trace,
+                     'finalize cycle %s', explored_node)
           for dependency in cycles_map[explored_node]:
             __dependencies_result[(search, dependency)] = deps
             del owner_map[dependency]
@@ -1081,15 +1081,16 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
   else:
     if explored_node.path() == drake.Path('../../elle/cryptography/sources/cryptography/Input.hh'):
       logger.log('drake.cxx.dependencies',
-                 'pull dependencies for %s from the cache' % explored_node,
-                 drake.log.LogLevel.trace)
+                 drake.log.LogLevel.trace,
+                 'pull dependencies for %s from the cache',
+                 explored_node)
     return (set(), res)
 
 def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
   path = explored_node.path()
   with logger.log('drake.cxx.dependencies',
-                  'explore dependencies of %s' % path,
-                  drake.log.LogLevel.trace):
+                  drake.log.LogLevel.trace,
+                  'explore dependencies of %s', path):
     cycles = set()
     deps = set((explored_node,))
     def unique_fail(path, include, prev_via, prev, new_via, new):
@@ -1160,8 +1161,8 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
         cycles = cycles.union(subcycles)
       else:
         logger.log('drake.cxx.dependencies',
-                   'file not found: %s' % include,
-                   drake.log.LogLevel.trace)
+                   drake.log.LogLevel.trace,
+                   'file not found: %s', include)
     return (cycles, deps)
 
 class Compiler(Builder):

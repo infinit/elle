@@ -237,7 +237,7 @@ class Scheduler:
     return self.__running
 
   def debug(self, msg):
-    return logger.log('drake.scheduler', msg, drake.log.LogLevel.trace)
+    return logger.log('drake.scheduler', drake.log.LogLevel.trace, msg)
 
   def add(self, coro):
     self.debug('%s: new coroutine: %s' % (self, coro.name))
@@ -439,16 +439,16 @@ class Coroutine(Waitable):
       return self.wait([waitables], handle_exceptions)
     else:
       with logger.log('drake.scheduler',
-                      '%s: wait %s' % (self, waitables),
-                      drake.log.LogLevel.trace):
+                      drake.log.LogLevel.trace,
+                      '%s: wait %s', self, waitables):
         freeze = False
         for waitable in waitables:
           if waitable._Waitable__wait(self):
             self.__waited.add(waitable)
             freeze = True
         logger.log('drake.scheduler',
-                   '%s: block on %s' % (self, self.__waited),
-                   drake.log.LogLevel.debug)
+                   drake.log.LogLevel.debug,
+                   '%s: block on %s', self, self.__waited)
         if freeze:
           self.__frozen = True
           if self.current:
@@ -458,16 +458,16 @@ class Coroutine(Waitable):
     assert waitable in self.__waited
     if exception is None:
       with logger.log('drake.scheduler',
-                      '%s: unwait %s' % (self, waitable),
-                      drake.log.LogLevel.debug):
+                      drake.log.LogLevel.debug,
+                      '%s: unwait %s', self, waitable):
         self.__waited.remove(waitable)
         if not self.__waited:
           self.__unfreeze()
     else:
       with logger.log(
           'drake.scheduler',
-          '%s: wait on %s threw %s' % (self, waitable, exception),
-          drake.log.LogLevel.debug):
+          drake.log.LogLevel.debug,
+          '%s: wait on %s threw %s', self, waitable, exception):
         self.__exception = exception
         for w in self.__waited:
           if w is not waitable:

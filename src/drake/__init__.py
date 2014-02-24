@@ -1655,14 +1655,14 @@ class Builder:
     date, and executed if needed."""
     with sched.logger.log(
         'drake.Builder',
-        '%s: run' % self,
-        drake.log.LogLevel.trace):
+        drake.log.LogLevel.trace,
+        '%s: run', self):
       if not self.__executed:
         # If someone is already executing this builder, wait.
         if self.__executed_signal is not None:
           sched.logger.log('drake.Builder',
-                           '%s: already being built, waiting' % self,
-                           drake.log.LogLevel.trace)
+                           drake.log.LogLevel.trace,
+                           '%s: already being built, waiting', self)
           sched.wait(self.__executed_signal)
           sched.logger.log('drake.Builder',
                            '%s: was built, resuming' % self,
@@ -1675,12 +1675,12 @@ class Builder:
         if self.__executed_exception is not None:
           sched.logger.log(
             'drake.Builder',
-            '%s: already built in this run with an exception' % self,
-            drake.log.LogLevel.trace)
+            drake.log.LogLevel.trace,
+            '%s: already built in this run with an exception', self)
           raise self.__executed_exception
         sched.logger.log('drake.Builder',
-                         '%s: already built in this run' % self,
-                         drake.log.LogLevel.trace)
+                         drake.log.LogLevel.trace,
+                         '%s: already built in this run', self)
         return
       try:
         # The list of static dependencies is now fixed
@@ -1700,19 +1700,19 @@ class Builder:
             handler = self._deps_handlers[f]
             with sched.logger.log(
                 'drake.Builder',
-                '%s: consider dependencies file %s' % (self, f),
-                drake.log.LogLevel.dump):
+                drake.log.LogLevel.dump,
+                '%s: consider dependencies file %s', self, f):
               for path in depfile.sha1s():
                 if path in self.__sources or path in self.__dynsrc:
                   sched.logger.log(
                     'drake.Builder',
-                    '%s: already in our sources: %s' % (self, path),
-                    drake.log.LogLevel.debug)
+                    drake.log.LogLevel.debug,
+                    '%s: already in our sources: %s', self, path)
                   continue
                 with sched.logger.log(
                     'drake.Builder',
-                    '%s: %s is unkown, calling handler' % (self, path),
-                    drake.log.LogLevel.dump):
+                    drake.log.LogLevel.dump,
+                    '%s: %s is unkown, calling handler', self, path):
                   node = handler(self,
                                  path,
                                  self.get_type(depfile.sha1s()[path][1]),
@@ -1720,8 +1720,8 @@ class Builder:
                   if node is not None:
                     sched.logger.log(
                       'drake.Builder',
-                      '%s: add %s to sources' % (self, path),
-                      drake.log.LogLevel.dump)
+                      drake.log.LogLevel.dump,
+                      '%s: add %s to sources', self, path)
                     self.add_dynsrc(f, node)
 
         coroutines_static = []
@@ -1731,8 +1731,8 @@ class Builder:
         # execute = True).
         # Build static dependencies
         with logger.log('drake.Builder',
-                        '%s: build static dependencies' % self,
-                        drake.log.LogLevel.debug):
+                        drake.log.LogLevel.debug,
+                        '%s: build static dependencies', self):
           with sched.Scope() as scope:
             for node in list(self.__sources.values()) + \
               list(self.__vsrcs.values()):
@@ -1741,8 +1741,8 @@ class Builder:
               scope.run(node.build, str(node))
         # Build dynamic dependencies
         with logger.log('drake.Builder',
-                        '%s: build dynamic dependencies' % self,
-                        drake.log.LogLevel.debug):
+                        drake.log.LogLevel.debug,
+                        '%s: build dynamic dependencies', self):
           try:
             with sched.Scope() as scope:
               for path in self.__dynsrc:
@@ -1753,8 +1753,8 @@ class Builder:
           except Exception as e:
             logger.log(
               'drake.Builder',
-              '%s: error building dynamic dependency: %s' % (self, e),
-              drake.log.LogLevel.trace)
+              drake.log.LogLevel.trace,
+              '%s: error building dynamic dependency: %s', self, e)
             explain(
               self,
               'some dynamic dependency couldn\'t be built')
@@ -1801,30 +1801,33 @@ class Builder:
                 if not self._depfiles[f].up_to_date():
                     execute = True
         if execute:
-          with logger.log('drake.Builder', '%s: needs execution' % self,
-                          drake.log.LogLevel.trace):
+          with logger.log('drake.Builder',
+                          drake.log.LogLevel.trace,
+                          '%s: needs execution', self):
             # Regenerate dynamic dependencies
             self.__dynsrc = {}
             self._depfiles = {}
             with logger.log(
                 'drake.Builder',
-                '%s: recompute dynamic dependencies' % self,
-                drake.log.LogLevel.debug):
+                drake.log.LogLevel.debug,
+                '%s: recompute dynamic dependencies', self):
               self.dependencies()
             with logger.log(
                 'drake.Builder',
-                '%s: build dynamic dependencies' % self,
-                drake.log.LogLevel.debug):
+                drake.log.LogLevel.debug,
+                '%s: build dynamic dependencies', self):
               for node in self.__dynsrc.values():
                 # FIXME: parallelize
                 node.build()
             self._builder_hash = self.hash()
             try:
-              with logger.log('drake.Builder', '%s: execute' % self,
-                              drake.log.LogLevel.trace):
+              with logger.log('drake.Builder',
+                              drake.log.LogLevel.trace,
+                              '%s: execute', self):
                 success = self.execute()
-                logger.log('drake.Builder', '%s: executed' % self,
-                           drake.log.LogLevel.trace)
+                logger.log('drake.Builder',
+                           drake.log.LogLevel.trace,
+                           '%s: executed', self)
             except sched.Terminate:
               raise
             except _Exception as e:
@@ -1840,8 +1843,8 @@ class Builder:
             # Check every non-virtual target was built.
             with logger.log(
                 'drake.Builder',
-                '%s: check all targets were built' % self,
-                drake.log.LogLevel.trace):
+                drake.log.LogLevel.trace,
+                '%s: check all targets were built', self):
               for dst in self.__targets:
                 if isinstance(dst, Node):
                   if dst.missing():
@@ -1850,21 +1853,22 @@ class Builder:
                   dst._Node__hash = None
             # Update depfiles
             with logger.log('drake.Builder',
-                            '%s: write dependencies file %s (%s)' % \
-                            (self, self._depfile, list(self._depfile._DepFile__files.items())),
-                            drake.log.LogLevel.debug):
+                            drake.log.LogLevel.debug,
+                            '%s: write dependencies file %s (%s)',
+                            self, self._depfile,
+                            list(self._depfile._DepFile__files.items())):
               self._depfile.update()
             if self._builder_hash is None:
               logger.log('drake.Builder',
-                         '%s: remove builder dependency file %s'\
-                         % (self, depfile_builder),
-                         drake.log.LogLevel.debug)
+                         drake.log.LogLevel.debug,
+                         '%s: remove builder dependency file %s',
+                         self, depfile_builder)
               depfile_builder.remove()
             else:
               logger.log('drake.Builder',
-                         '%s: write builder dependency file %s'\
-                         % (self, depfile_builder),
-                         drake.log.LogLevel.debug)
+                         drake.log.LogLevel.debug,
+                         '%s: write builder dependency file %s',
+                         self, depfile_builder)
               with open(str(depfile_builder), 'w') as f:
                 print(repr(self._builder_hash),
                       file = f, end = '')
@@ -1873,26 +1877,26 @@ class Builder:
             # be rebuilt forever.
             for name in self._depfiles:
               logger.log('drake.Builder',
-                         '%s: write dependencies file %s'\
-                         % (self, name),
-                         drake.log.LogLevel.debug)
+                         drake.log.LogLevel.debug,
+                         '%s: write dependencies file %s',
+                         self, name)
               self._depfiles[name].update()
             self.__executed = True
         else:
             self.__executed = True
             logger.log('drake.Builder',
-                       '%s: everything is up to date' % self,
-                       drake.log.LogLevel.debug)
+                       drake.log.LogLevel.debug,
+                       '%s: everything is up to date', self)
       except _Exception as e:
         logger.log('drake.Builder',
-                   '%s: exception: %s' % (self, e),
-                   drake.log.LogLevel.trace)
+                   drake.log.LogLevel.trace,
+                   '%s: exception: %s', self, e)
         self.__executed_exception = e
         raise
       else:
         logger.log('drake.Builder',
-                   '%s: done' % self,
-                   drake.log.LogLevel.debug)
+                   drake.log.LogLevel.debug,
+                   '%s: done', self)
       finally:
         self.__executed = True
         self.__executed_signal.signal()
@@ -2682,9 +2686,9 @@ class Install(Copy):
 import collections
 def __copy(sources, to, strip_prefix, builder):
   with sched.logger.log(
-    'drake.copy',
-    'copy %s to %s (strip: %s)' % (sources, to, strip_prefix),
-    drake.log.LogLevel.trace):
+      'drake.copy',
+      drake.log.LogLevel.trace,
+      'copy %s to %s (strip: %s)', sources, to, strip_prefix):
     to = drake.Path(to)
     multiple = isinstance(sources, collections.Iterable)
     if strip_prefix is not None:
@@ -2709,9 +2713,9 @@ def __copy(sources, to, strip_prefix, builder):
 
 def __copy_stripped(source, to, strip_prefix, builder):
   with sched.logger.log(
-    'drake.copy',
-    'stripped copy %s to %s (strip: %s)' % (source, to, strip_prefix),
-    drake.log.LogLevel.debug):
+      'drake.copy',
+      drake.log.LogLevel.debug,
+      'stripped copy %s to %s (strip: %s)', source, to, strip_prefix):
     path = source.name_absolute()
     if strip_prefix is not None:
       path = path.without_prefix(strip_prefix)

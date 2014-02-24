@@ -78,11 +78,10 @@ class Logger:
         if component is not None:
           self.__components[component] = level
 
-  def log(self, component, message, level = LogLevel.log):
-    if component not in self.__components:
-      self.__components[component] = LogLevel.log
-    if level <= self.__components[component]:
-      print('%s%s' % ('  ' * self.__indentation.indentation, message),
+  def log(self, component, level, message, *args):
+    if level <= self.__components.setdefault(component, LogLevel.log):
+      print('%s%s' % ('  ' * self.__indentation.indentation,
+                      message % args),
             file = sys.stderr)
       return self.__indentation
     else:
