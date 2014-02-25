@@ -11,9 +11,10 @@
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <openssl/engine.h>
 #include <openssl/crypto.h>
+#include <openssl/engine.h>
 #include <openssl/err.h>
+#include <openssl/hmac.h>
 #include <openssl/rand.h>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.evp");
@@ -614,6 +615,65 @@ namespace infinit
             throw Exception(
               elle::sprintf("unable to clean the digest context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+          return (digest);
+        }
+
+        Digest
+        hmac(Plain const& plain,
+             Digest const& key,
+             ::EVP_MD const* function)
+        {
+          ELLE_TRACE_FUNCTION(plain, function);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          Digest digest(EVP_MD_size(function));
+
+          // Initialise the context.
+          ::HMAC_CTX context;
+
+          ::HMAC_CTX_init(&context);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_HMAC_DIGEST_CONTEXT(
+            context);
+
+          // Initialise the digest.
+          if (::HMAC_Init_ex(&context, key.buffer().contents(),
+                             key.buffer().size(), function, nullptr) <= 0)
+            throw Exception(
+              elle::sprintf("unable to initialize the digest process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
+
+          // Update the digest with the given plain's data.
+          if (::HMAC_Update(&context,
+                            plain.buffer().contents(),
+                            plain.buffer().size()) <= 0)
+            throw Exception(
+              elle::sprintf("unable to apply the digest process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Finalise the digest.
+          unsigned int size;
+
+          if (::HMAC_Final(&context,
+                           digest.buffer().mutable_contents(),
+                           &size) <=0)
+            throw Exception(
+              elle::sprintf("unable to finalize the digest process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Update the digest final size.
+          digest.buffer().size(size);
+          digest.buffer().shrink_to_fit();
+
+          // Clean the context.
+          ::HMAC_CTX_cleanup(&context);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 

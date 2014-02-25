@@ -131,6 +131,12 @@ namespace infinit
         Digest
         hash(Plain const& plain,
              ::EVP_MD const* function);
+
+        /// HMAC the given plain text using a key with the hmac digest function.
+        Digest
+        hmac(Plain const& plain,
+             Digest const& key,
+             ::EVP_MD const* function);
       }
     }
   }
