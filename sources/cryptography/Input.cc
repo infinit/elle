@@ -8,10 +8,9 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Input::Input(elle::WeakBuffer const& buffer):
+    Input::Input(elle::ConstWeakBuffer const& buffer):
       _buffer(buffer)
-    {
-    }
+    {}
 
     /*----------.
     | Operators |
