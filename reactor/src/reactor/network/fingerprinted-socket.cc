@@ -67,7 +67,7 @@ namespace reactor
                  this->_fingerprint.data(),
                  this->_fingerprint.size()) == 0)
       {
-        ELLE_LOG("certificate verified");
+        ELLE_TRACE("certificate verified");
       }
       else
       {
