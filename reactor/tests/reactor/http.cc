@@ -10,6 +10,7 @@
 #include <reactor/Scope.hh>
 #include <reactor/signal.hh>
 #include <reactor/http/Client.hh>
+#include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/http/exceptions.hh>
 #include <reactor/network/buffer.hh>
@@ -657,6 +658,14 @@ ELLE_TEST_SCHEDULED(interrupted)
   }
 }
 
+ELLE_TEST_SCHEDULED(escaped_string)
+{
+  std::string request_str("Action=GetFederationToken&DurationSeconds=3600&Name=52fa46dbe9a23c0716e77249&Policy={\"Statement\": [{\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::cloud_buffer/5307257ce9a23c1bb5e7724d/*\",\"Action\": [\"s3:PutObject\"]}],\"Version\": \"2012-10-17\"}&Version=2011-06-15&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIPTEKRYOSJORHQMA/20140224/us-east-1/sts/aws4_request&X-Amz-Date=20140224T171359Z&X-Amz-SignedHeaders=content-type;host;x-amz-date&X-Amz-Signature=dc39af31663a25fc09e01f777e1907ef1405e2c94d3dd7c46dcf1022de08b9b6");
+  std::string correst_res("Action%3DGetFederationToken%26DurationSeconds%3D3600%26Name%3D52fa46dbe9a23c0716e77249%26Policy%3D%7B%22Statement%22%3A%20%5B%7B%22Effect%22%3A%20%22Allow%22%2C%22Resource%22%3A%20%22arn%3Aaws%3As3%3A%3A%3Acloud_buffer%2F5307257ce9a23c1bb5e7724d%2F%2A%22%2C%22Action%22%3A%20%5B%22s3%3APutObject%22%5D%7D%5D%2C%22Version%22%3A%20%222012-10-17%22%7D%26Version%3D2011-06-15%26X-Amz-Algorithm%3DAWS4-HMAC-SHA256%26X-Amz-Credential%3DAKIAIPTEKRYOSJORHQMA%2F20140224%2Fus-east-1%2Fsts%2Faws4_request%26X-Amz-Date%3D20140224T171359Z%26X-Amz-SignedHeaders%3Dcontent-type%3Bhost%3Bx-amz-date%26X-Amz-Signature%3Ddc39af31663a25fc09e01f777e1907ef1405e2c94d3dd7c46dcf1022de08b9b6");
+  reactor::http::EscapedString request_res(request_str);
+  BOOST_CHECK_EQUAL(request_res.escaped_string(), correst_res);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -678,4 +687,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(cookies), 0, 10);
   suite.add(BOOST_TEST_CASE(request_move), 0, 10);
   suite.add(BOOST_TEST_CASE(interrupted), 0, 10);
+  suite.add(BOOST_TEST_CASE(escaped_string), 0, 3);
 }
