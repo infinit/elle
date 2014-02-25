@@ -62,6 +62,17 @@ namespace elle
     to_spirit(boost::any const& any)
     {
       ELLE_DUMP("to_spirit of type: %s", any.type().name());
+      if (any.type() == typeid(OrderedObject))
+      {
+        Config::Object_type res;
+        for (auto const& element: boost::any_cast<OrderedObject>(any))
+        {
+          auto key = element.first;
+          auto value = to_spirit(element.second);
+          res.insert(Config::Pair_type(key, value));
+        }
+        return res;
+      }
       if (any.type() == typeid(Object))
       {
         Config::Object_type res;

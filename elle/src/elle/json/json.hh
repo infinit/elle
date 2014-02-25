@@ -1,6 +1,7 @@
 #ifndef ELLE_JSON_JSON_HH
 # define ELLE_JSON_JSON_HH
 
+# include <map>
 # include <unordered_map>
 # include <vector>
 
@@ -12,6 +13,7 @@ namespace elle
   {
     typedef std::vector<boost::any> Array;
     typedef std::unordered_map<std::string, boost::any> Object;
+    typedef std::map<std::string, boost::any> OrderedObject;
 
     class NullType
     {};
