@@ -49,6 +49,17 @@ namespace infinit
       Digest
       hash(T const& value,
            Algorithm algorithm);
+      /// HMAC plain text using a key and return a digest.
+      Digest
+      hmac(Plain const& plain,
+           Digest const& key,
+           Algorithm algorithm);
+      /// HMAC anything serializable using a key and return a digest.
+      template <typename T>
+      Digest
+      hmac(T const& plain,
+           Digest const& key,
+           Algorithm algorithm);
 
       /*----------.
       | Operators |

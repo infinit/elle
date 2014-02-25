@@ -59,6 +59,18 @@ namespace infinit
         return (evp::digest::hash(plain, function));
       }
 
+      Digest
+      hmac(Plain const& plain,
+           Digest const& key,
+           Algorithm algorithm)
+      {
+        ELLE_TRACE_FUNCTION(plain, algorithm);
+
+        ::EVP_MD const* function = resolve(algorithm);
+
+        return (evp::digest::hmac(plain, key, function));
+      }
+
       /*----------.
       | Operators |
       `----------*/
