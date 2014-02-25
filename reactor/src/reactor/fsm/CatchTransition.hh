@@ -21,6 +21,14 @@ namespace reactor
       CatchTransition(State& start,
                       State& end);
       friend class Machine;
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& stream) const override;
     };
   }
 }

@@ -1,6 +1,7 @@
 #include <elle/log.hh>
 #include <elle/memory.hh>
 
+#include <reactor/fsm/State.hh>
 #include <reactor/fsm/WaitableTransition.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
@@ -72,7 +73,8 @@ namespace reactor
     void
     WaitableTransition::print(std::ostream& stream) const
     {
-      stream << "transition on " << this->trigger();
+      stream << "transition on " << this->trigger() << " "
+             << "from " << this->start() << " to " << this->end();
     }
   }
 }

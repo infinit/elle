@@ -26,15 +26,5 @@ namespace reactor
       start._transitions_out.insert(this);
       end._transitions_in.insert(this);
     }
-
-    /*----------.
-    | Printable |
-    `----------*/
-
-    void
-    Transition::print(std::ostream& stream) const
-    {
-      stream << "transition " << this;
-    }
   }
 }

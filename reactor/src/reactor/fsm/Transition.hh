@@ -32,14 +32,6 @@ namespace reactor
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);
       ELLE_ATTRIBUTE_RW(std::function<void()>, action);
-
-    /*----------.
-    | Printable |
-    `----------*/
-    public:
-      virtual
-      void
-      print(std::ostream& stream) const;
     };
   }
 }

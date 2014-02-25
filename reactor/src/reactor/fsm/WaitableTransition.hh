@@ -35,7 +35,7 @@ namespace reactor
     public:
       virtual
       void
-      print(std::ostream& stream) const;
+      print(std::ostream& stream) const override;
     };
   }
 }

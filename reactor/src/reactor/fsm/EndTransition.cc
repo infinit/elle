@@ -23,5 +23,16 @@ namespace reactor
         trigger = this;
       }
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    EndTransition::print(std::ostream& stream) const
+    {
+      stream << "transition on state end "
+             << "from " << this->start() << " to " << this->end();
+    }
   }
 }

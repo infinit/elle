@@ -1,6 +1,7 @@
 #include <elle/log.hh>
 
 #include <reactor/fsm/CatchTransition.hh>
+#include <reactor/fsm/State.hh>
 
 ELLE_LOG_COMPONENT("reactor.fsm.Transition")
 
@@ -19,10 +20,22 @@ namespace reactor
       if (exn)
         if (!this->condition() || this->condition()(exn))
         {
-          ELLE_TRACE("%s: trigger", *this);
+          ELLE_TRACE("%s: trigger: %s", *this, elle::exception_string(exn));
           trigger = this;
           exn = std::exception_ptr();
         }
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    CatchTransition::print(std::ostream& stream) const
+    {
+      stream << "transition on exception "
+             << "from " << this->start() << " to " << this->end();
+    }
+
   }
 }
