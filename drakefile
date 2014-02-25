@@ -456,11 +456,23 @@ def configure(cxx_toolkit = None,
     prefix = prefix,
     valgrind = valgrind,
   )
+  aws = drake.include(
+    'aws',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    boost = boost,
+    cryptography = cryptography,
+    elle = elle,
+    reactor = reactor,
+    prefix = prefix,
+    valgrind = valgrind,
+  )
 
   config += cryptography.config
   config += elle.config
   config += protocol.config
   config += reactor.config
+  config += aws.config
 
   asio_udt = reactor.asio_udt_lib
 
@@ -469,6 +481,7 @@ def configure(cxx_toolkit = None,
   build << cryptography.rule_build
   build << reactor.rule_build
   build << protocol.rule_build
+  build << aws.rule_build
 
   global rule_tests
   rule_tests = drake.Rule('tests')
@@ -476,6 +489,7 @@ def configure(cxx_toolkit = None,
   rule_tests << cryptography.rule_tests
   rule_tests << reactor.rule_tests
   rule_tests << protocol.rule_tests
+  rule_tests << aws.rule_tests
 
   global rule_check
   rule_check = drake.Rule('check')
@@ -483,9 +497,11 @@ def configure(cxx_toolkit = None,
   rule_check << cryptography.rule_check
   rule_check << reactor.rule_check
   rule_check << protocol.rule_check
+  rule_check << aws.rule_check
 
   install = drake.Rule('install')
   install << elle.rule_install
   install << cryptography.rule_install
   install << reactor.rule_install
   install << protocol.rule_install
+  install << aws.rule_install
