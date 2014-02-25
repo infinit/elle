@@ -9,7 +9,7 @@
 #include <elle/json/json.hh>
 #include <elle/test.hh>
 
-#include <reactor/Scheduler.hh>
+#include <reactor/scheduler.hh>
 #include <reactor/Thread.hh>
 
 #include <cryptography/oneway.hh>
@@ -76,7 +76,8 @@ _make_string_to_sign()
   );
   aws::CanonicalRequest canonical_request = _make_canonical_request();
   aws::CredentialScope credential_scope(request_time, "iam");
-  aws::StringToSign string_to_sign(request_time, credential_scope, canonical_request.sha256_hash());
+  aws::StringToSign string_to_sign(request_time, credential_scope,
+                                   canonical_request.sha256_hash());
   ELLE_DEBUG("string to sign: %s", string_to_sign);
   return string_to_sign;
 }
