@@ -224,12 +224,14 @@ def configure(curl_config,
   sources += drake.nodes(
     'src/reactor/http/Client.cc',
     'src/reactor/http/Client.hh',
+    'src/reactor/http/EscapedString.cc',
+    'src/reactor/http/EscapedString.hh',
+    'src/reactor/http/exceptions.cc',
+    'src/reactor/http/exceptions.hh',
     'src/reactor/http/Request.cc',
     'src/reactor/http/Request.hh',
     'src/reactor/http/Service.cc',
     'src/reactor/http/Service.hh',
-    'src/reactor/http/exceptions.cc',
-    'src/reactor/http/exceptions.hh',
   )
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
