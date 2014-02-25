@@ -10,7 +10,7 @@
 #include <elle/test.hh>
 
 #include <reactor/scheduler.hh>
-#include <reactor/Thread.hh>
+#include <reactor/thread.hh>
 
 #include <cryptography/oneway.hh>
 
