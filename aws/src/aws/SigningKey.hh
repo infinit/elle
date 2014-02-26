@@ -10,6 +10,8 @@
 
 # include <cryptography/Digest.hh>
 
+# include <aws/Keys.hh>
+
 namespace aws
 {
   class SigningKey:
@@ -20,9 +22,12 @@ namespace aws
     `-------------*/
   public:
     SigningKey(std::string const& aws_secret,
-               boost::posix_time::ptime const& date,
-               std::string const& aws_region,
-               std::string const& aws_service);
+               RequestTime const& request_time,
+               Region const& aws_region,
+               Service const& aws_service);
+
+    std::string
+    sign_message(std::string const& message);
 
     ELLE_ATTRIBUTE_R(infinit::cryptography::Digest, key);
 
