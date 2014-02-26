@@ -20,6 +20,23 @@ namespace infinit
     | Construction |
     `-------------*/
 
+    ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
+                                     Stream& backend)
+      : Super(scheduler)
+      , _master(this->_handshake(backend))
+      , _id_current(0)
+      , _reading(false)
+      , _backend(backend)
+      , _channels()
+      , _channels_new()
+      , _channel_available()
+      , _default(*this)
+    {}
+
+    ChanneledStream::ChanneledStream(Stream& backend)
+      : ChanneledStream(*reactor::Scheduler::scheduler(), backend)
+    {}
+
     bool
     ChanneledStream::_handshake(Stream& backend)
     {
@@ -51,19 +68,6 @@ namespace infinit
           ELLE_DEBUG("rolls are equal, restart handshake");
       }
     }
-
-    ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
-                                     Stream& backend)
-      : Super(scheduler)
-      , _master(this->_handshake(backend))
-      , _id_current(0)
-      , _reading(false)
-      , _backend(backend)
-      , _channels()
-      , _channels_new()
-      , _channel_available()
-      , _default(*this)
-    {}
 
     /*----.
     | IDs |
