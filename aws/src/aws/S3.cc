@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include <elle/format/hexadecimal.hh>
 #include <elle/log.hh>
 
@@ -35,10 +37,12 @@ namespace aws
 
   void
   S3::put_object(elle::ConstWeakBuffer const& object,
-                 std::string const& object_name,
-                 RequestTime const& request_time)
+                 std::string const& object_name)
   {
     ELLE_TRACE_SCOPE("%s: PUT block: %s", *this, object_name);
+
+    RequestTime request_time =
+      boost::posix_time::second_clock::universal_time();
 
     // Make headers.
     RequestHeaders headers(this->_make_put_headers(object, request_time));

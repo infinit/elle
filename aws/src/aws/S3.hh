@@ -30,8 +30,7 @@ namespace aws
   public:
     void
     put_object(elle::ConstWeakBuffer const& object,
-               std::string const& object_name,
-               RequestTime const& request_time);
+               std::string const& object_name);
 
     /*-----------.
     | Attributes |
