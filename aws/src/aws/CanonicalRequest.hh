@@ -9,6 +9,8 @@
 
 # include <reactor/http/Request.hh>
 
+# include <aws/Keys.hh>
+
 namespace aws
 {
   class CanonicalRequest:
@@ -23,7 +25,7 @@ namespace aws
       reactor::http::Method http_method,
       std::string const& canonical_uri,
       std::map<std::string, std::string> const& query,
-      std::map<std::string, std::string> const& headers,
+      RequestHeaders const& headers,
       std::vector<std::string> const& signed_headers,
       std::string const& payload_sha256);
 
@@ -37,8 +39,7 @@ namespace aws
     _canonical_query_string(std::map<std::string, std::string> const& query);
 
     std::string
-    _canonical_headers_string(
-      std::map<std::string, std::string> const& headers);
+    _canonical_headers_string(RequestHeaders const& headers);
 
     std::string
     _signed_headers_string(std::vector<std::string> const& header_keys);

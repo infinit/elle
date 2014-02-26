@@ -16,7 +16,7 @@ namespace aws
     reactor::http::Method http_method,
     std::string const& canonical_uri,
     std::map<std::string, std::string> const& query,
-    std::map<std::string, std::string> const& headers,
+    RequestHeaders const& headers,
     std::vector<std::string> const& signed_headers,
     std::string const& payload_sha256)
   {
@@ -59,8 +59,7 @@ namespace aws
   }
 
   std::string
-  CanonicalRequest::_canonical_headers_string(
-    std::map<std::string, std::string> const& headers)
+  CanonicalRequest::_canonical_headers_string(RequestHeaders const& headers)
   {
     if (headers.empty())
       return "";
