@@ -145,9 +145,7 @@ ELLE_TEST_SCHEDULED(put_test)
 
   elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
 
-  s3_handler.put_object(object,
-                        "test_object",
-                        boost::posix_time::second_clock::universal_time());
+  s3_handler.put_object(object, "test_object");
 }
 
 ELLE_TEST_SUITE()
