@@ -11,13 +11,21 @@ namespace reactor
   {
     EndTransition::EndTransition(State& start,
                                  State& end):
-      Transition(start, end)
+      Transition(start, end),
+      _condition()
+    {}
+
+    EndTransition::EndTransition(State& start,
+                                 State& end,
+                                 std::function<bool ()> const& condition):
+      Transition(start, end),
+      _condition(condition)
     {}
 
     void
     EndTransition::done(Transition*& trigger, std::exception_ptr& exn)
     {
-      if (!trigger && !exn)
+      if (!trigger && !exn && (!this->_condition || this->_condition.get()()))
       {
         ELLE_TRACE("%s: trigger", *this);
         trigger = this;

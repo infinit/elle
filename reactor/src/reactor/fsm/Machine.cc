@@ -72,6 +72,18 @@ namespace reactor
     }
 
     Transition&
+    Machine::transition_add(State& start,
+                            State& end,
+                            std::function<void ()> const& condition)
+    {
+      std::unique_ptr<Transition> transition(
+        new EndTransition(start, end));
+      Transition& res = *transition.get();
+      this->_transitions.insert(std::move(transition));
+      return res;
+    }
+
+    Transition&
     Machine::transition_add_catch(State& start,
                                   State& end)
     {

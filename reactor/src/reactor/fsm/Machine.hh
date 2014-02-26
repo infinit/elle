@@ -56,6 +56,10 @@ namespace reactor
       Transition&
       transition_add(State& start,
                      State& end);
+      Transition&
+      transition_add(State& start,
+                     State& end,
+                     std::function<void ()> const& condition);
       /// Add a transition upon exception.
       ///
       /// Add a transition that will switch execution to state \a end if an

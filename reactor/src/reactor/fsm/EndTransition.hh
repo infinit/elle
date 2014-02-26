@@ -18,7 +18,11 @@ namespace reactor
     protected:
       EndTransition(State& start,
                     State& end);
+      EndTransition(State& start,
+                    State& end,
+                    std::function<bool ()> const& condition);
       friend class Machine;
+      ELLE_ATTRIBUTE(boost::optional<std::function<bool ()>>, condition);
 
     /*----------.
     | Printable |
