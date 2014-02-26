@@ -7,6 +7,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/log.hh>
 
+#include <reactor/http/exceptions.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/scheduler.hh>
 
@@ -14,6 +15,7 @@
 
 #include <aws/SigningKey.hh>
 #include <aws/Keys.hh>
+#include <aws/Exceptions.hh>
 
 ELLE_LOG_COMPONENT("aws.S3");
 
@@ -99,12 +101,25 @@ namespace aws
     );
     ELLE_DUMP("url: %s", url);
 
-    reactor::http::Request request(url, reactor::http::Method::PUT, cfg);
-    ELLE_DUMP("%s: add body to request: %s", *this, object);
-    request.write(
-      reinterpret_cast<char const*>(object.contents()), object.size());
-    reactor::wait(request);
-    ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+    try
+    {
+      reactor::http::Request request(url, reactor::http::Method::PUT, cfg);
+      ELLE_DUMP("%s: add body to request: %s", *this, object);
+      request.write(
+        reinterpret_cast<char const*>(object.contents()), object.size());
+      reactor::wait(request);
+      ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+      if (request.status() != reactor::http::StatusCode::OK)
+      {
+        throw aws::RequestError(elle::sprintf("unable to PUT on S3: %s",
+                                request.response().string()));
+      }
+    }
+    catch (reactor::http::RequestError const& e)
+    {
+      throw aws::RequestError(elle::sprintf("unable to PUT on S3: %s",
+                              e.error()));
+    }
   }
 
 
