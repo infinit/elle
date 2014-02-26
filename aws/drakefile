@@ -60,15 +60,21 @@ def configure(cryptography,
     local_cxx_config.library_add(drake.copy(boost.date_time_dynamic,
                                             'lib', strip_prefix = True))
 
-  # AWS Base
   sources = drake.nodes(
     'src/aws/CanonicalRequest.cc',
     'src/aws/CanonicalRequest.hh',
+    'src/aws/Credentials.cc',
+    'src/aws/Credentials.hh',
+    'src/aws/Keys.cc',
+    'src/aws/Keys.hh',
+    'src/aws/S3.cc',
+    'src/aws/S3.hh',
     'src/aws/SigningKey.cc',
     'src/aws/SigningKey.hh',
     'src/aws/StringToSign.cc',
     'src/aws/StringToSign.hh',
   )
+
   global lib_static, lib_dynamic, library
   from itertools import chain
   lib_static = drake.cxx.StaticLib(
