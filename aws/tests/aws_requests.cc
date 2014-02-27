@@ -147,7 +147,7 @@ ELLE_TEST_SCHEDULED(s3_put)
 
   elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
 
-  s3_handler.put_object(object, "test_object");
+  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object_2"));
 }
 
 // Should only be run manually with generated credentials.
@@ -180,6 +180,21 @@ ELLE_TEST_SCHEDULED(s3_get)
   s3_handler.get_object("test_object");
 }
 
+// Should only be run manually with generated credentials.
+ELLE_TEST_SCHEDULED(s3_delete)
+{
+  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
+  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
+  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
+  std::string expiry("2014-02-27T21:18:45Z");
+  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
+
+  aws::S3 s3_handler("io.infinit.buffer.us0",
+                     "testing",
+                     credentials);
+  s3_handler.delete_object("test_object");
+}
+
 ELLE_TEST_SUITE()
 {
   auto timeout = 3;
@@ -194,6 +209,7 @@ ELLE_TEST_SUITE()
   // suite.add(BOOST_TEST_CASE(s3_put), 0, timeout * 3);
   // suite.add(BOOST_TEST_CASE(s3_list), 0, timeout * 3);
   // suite.add(BOOST_TEST_CASE(s3_get), 0, timeout * 3);
+  // suite.add(BOOST_TEST_CASE(s3_delete), 0, timeout * 3);
 }
 
 // Python code for testing signing:
