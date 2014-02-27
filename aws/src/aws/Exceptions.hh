@@ -23,6 +23,14 @@ namespace aws
   public:
     RequestError(std::string const& error);
   };
+
+  /// Credentials invalid.
+  class CredentialsError:
+    public AWSException
+  {
+  public:
+    CredentialsError(std::string const& error);
+  };
 }
 
 #endif

@@ -12,4 +12,8 @@ namespace aws
   RequestError::RequestError(std::string const& error):
     AWSException(error)
   {}
+
+  CredentialsError::CredentialsError(std::string const& error):
+    AWSException(error)
+  {}
 }
