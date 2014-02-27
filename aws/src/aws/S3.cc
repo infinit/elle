@@ -8,6 +8,7 @@
 #include <elle/log.hh>
 
 #include <reactor/http/exceptions.hh>
+#include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/scheduler.hh>
 
@@ -29,7 +30,8 @@ namespace aws
          aws::Credentials const& credentials):
     _bucket_name(bucket_name),
     _remote_folder(remote_folder),
-    _credentials(credentials)
+    _credentials(credentials),
+    _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
   {}
 
 
@@ -132,6 +134,201 @@ namespace aws
     }
   }
 
+  void
+  S3::list_remote_folder()
+  {
+    ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
+
+    if (!this->_credentials.valid())
+    {
+      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
+                             *this, this->_credentials));
+    }
+
+    RequestTime request_time =
+      boost::posix_time::second_clock::universal_time();
+
+    // Make headers (LIST makes a GET call).
+    RequestHeaders headers(this->_make_get_headers(request_time));
+
+    // Make canonical request.
+    RequestQuery query;
+    query["prefix"] = elle::sprintf("%s/", this->_remote_folder);
+    query["delimiter"] = "/";
+    CanonicalRequest canonical_request(
+      this->_make_list_canonical_request(headers, query));
+
+    // Make string to sign.
+    StringToSign string_to_sign(this->_make_string_to_sign(
+                                request_time, canonical_request.sha256_hash()));
+
+    // Make Authorization header.
+    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+    aws::SigningKey key(this->_credentials.secret_access_key(),
+                        request_time,
+                        Region::us_east_1,
+                        Service::s3);
+    std::map<std::string, std::string> auth;
+
+    // Make credential string.
+    auth["AWS4-HMAC-SHA256 Credential"] =
+      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
+                                           aws::Service::s3);
+
+    // Make signed headers string.
+    std::string signed_headers_str;
+    for (auto header: headers)
+      signed_headers_str += elle::sprintf("%s;", header.first);
+    signed_headers_str =
+      signed_headers_str.substr(0, signed_headers_str.size() - 1);
+    auth["SignedHeaders"] = signed_headers_str;
+    // Make signature string.
+    auth["Signature"] =
+      key.sign_message(string_to_sign.string());
+    // Make authorization header string.
+    std::string auth_str;
+    for (auto item: auth)
+      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
+    auth_str = auth_str.substr(0, auth_str.size() - 2);
+    headers["Authorization"] = auth_str;
+
+    // Add headers to request.
+    reactor::http::Request::Configuration cfg(10_sec,
+                                              reactor::http::Version::v11);
+    for (auto header: headers)
+      cfg.header_add(header.first, header.second);
+
+    // Make query string.
+    using reactor::http::EscapedString;
+    std::string query_str;
+    for (auto parameter: query)
+    {
+      query_str += elle::sprintf("%s=%s&", EscapedString(parameter.first),
+                                 EscapedString(parameter.second));
+    }
+    query_str = query_str.substr(0, query_str.size() - 1);
+
+    auto url = elle::sprintf(
+      "http://%s?%s",
+      headers["Host"],
+      query_str
+    );
+    ELLE_DUMP("url: %s", url);
+
+    try
+    {
+      reactor::http::Request request(url, reactor::http::Method::GET, cfg);
+      reactor::wait(request);
+      ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+      if (request.status() != reactor::http::StatusCode::OK)
+      {
+        // XXX would be nice to write out the AWS response here but the logger
+        // doesn't seem to want to.
+        throw aws::RequestError(
+          elle::sprintf("%s: unable to LIST on S3, got HTTP status: %s",
+                        *this, request.status()));
+      }
+    }
+    catch (reactor::http::RequestError const& e)
+    {
+      throw aws::RequestError(
+        elle::sprintf("%s: unable to LIST on S3, unable to perform HTTP request: %s",
+                      *this, e.error()));
+    }
+  }
+
+  elle::Buffer
+  S3::get_object(std::string const& object_name)
+  {
+    ELLE_TRACE_SCOPE("%s: GET remote folder", *this);
+
+    if (!this->_credentials.valid())
+    {
+      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
+                             *this, this->_credentials));
+    }
+
+    RequestTime request_time =
+      boost::posix_time::second_clock::universal_time();
+
+    // Make headers.
+    RequestHeaders headers(this->_make_get_headers(request_time));
+
+    // Make canonical request.
+    CanonicalRequest canonical_request(
+      this->_make_get_canonical_request(headers, object_name));
+
+    // Make string to sign.
+    StringToSign string_to_sign(this->_make_string_to_sign(
+                                request_time, canonical_request.sha256_hash()));
+
+    // Make Authorization header.
+    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+    aws::SigningKey key(this->_credentials.secret_access_key(),
+                        request_time,
+                        Region::us_east_1,
+                        Service::s3);
+    std::map<std::string, std::string> auth;
+
+    // Make credential string.
+    auth["AWS4-HMAC-SHA256 Credential"] =
+      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
+                                           aws::Service::s3);
+
+    // Make signed headers string.
+    std::string signed_headers_str;
+    for (auto header: headers)
+      signed_headers_str += elle::sprintf("%s;", header.first);
+    signed_headers_str =
+      signed_headers_str.substr(0, signed_headers_str.size() - 1);
+    auth["SignedHeaders"] = signed_headers_str;
+    // Make signature string.
+    auth["Signature"] =
+      key.sign_message(string_to_sign.string());
+    // Make authorization header string.
+    std::string auth_str;
+    for (auto item: auth)
+      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
+    auth_str = auth_str.substr(0, auth_str.size() - 2);
+    headers["Authorization"] = auth_str;
+
+    // Add headers to request.
+    reactor::http::Request::Configuration cfg(300_sec,
+                                              reactor::http::Version::v11);
+    for (auto header: headers)
+      cfg.header_add(header.first, header.second);
+
+    auto url = elle::sprintf(
+      "http://%s/%s/%s",
+      headers["Host"],
+      this->_remote_folder,
+      object_name
+    );
+    ELLE_DUMP("url: %s", url);
+
+    try
+    {
+      reactor::http::Request request(url, reactor::http::Method::GET, cfg);
+      reactor::wait(request);
+      ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+      if (request.status() != reactor::http::StatusCode::OK)
+      {
+        // XXX would be nice to write out the AWS response here but the logger
+        // doesn't seem to want to.
+        throw aws::RequestError(
+          elle::sprintf("%s: unable to GET on S3, got HTTP status: %s",
+                        *this, request.status()));
+      }
+      return request.response();
+    }
+    catch (reactor::http::RequestError const& e)
+    {
+      throw aws::RequestError(
+        elle::sprintf("%s: unable to GET on S3, unable to perform HTTP request: %s",
+                      *this, e.error()));
+    }
+  }
+
 
   /*--------.
   | Helpers |
@@ -147,47 +344,22 @@ namespace aws
     return res;
   }
 
-  RequestHeaders
-  S3::_make_put_headers(elle::ConstWeakBuffer const& object,
-                        RequestTime const& request_time)
+  std::string
+  S3::_amz_date(RequestTime const& request_time)
   {
-    ELLE_DUMP("%s: generate headers", *this);
-    std::map<std::string, std::string> headers;
-    headers["Content-Type"] = std::string("binary/octet-stream");
-    headers["Host"] = elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name);
     std::string date = boost::posix_time::to_iso_string(request_time);
     date = date.substr(0, 15);
     date += "Z";
-    headers["x-amz-date"] = date;
-    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(object);
-    // XXX We can look at using REDUCED_REDUNDANCY to save money.
-    headers["x-amz-storage-class"] = std::string("STANDARD");
-    headers["x-amz-security-token"] = this->_credentials.security_token();
-    return headers;
+    return date;
   }
 
-  aws::CanonicalRequest
-  S3::_make_put_canonical_request(elle::ConstWeakBuffer const& object,
-                                  std::string const& object_name,
-                                  RequestHeaders const& headers)
+  std::vector<std::string>
+  S3::_signed_headers(RequestHeaders const& headers)
   {
     std::vector<std::string> signed_headers;
     for (auto header: headers)
       signed_headers.push_back(header.first);
-
-    std::map<std::string, std::string> empty_query;
-
-    aws::CanonicalRequest res(
-      reactor::http::Method::PUT,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      empty_query,
-      headers,
-      signed_headers,
-      _sha256_hexdigest(object)
-    );
-    ELLE_DUMP("%s: generated canonical request: %s",
-              *this, res.canonical_request());
-    return res;
+    return signed_headers;
   }
 
   aws::StringToSign
@@ -202,6 +374,95 @@ namespace aws
                           SigningMethod::aws4_hmac_sha256);
 
     ELLE_DUMP("%s: generated string to sign: %s", *this, res.string());
+    return res;
+  }
+
+  RequestHeaders
+  S3::_make_put_headers(elle::ConstWeakBuffer const& object,
+                        RequestTime const& request_time)
+  {
+    ELLE_DUMP("%s: generate PUT headers", *this);
+    RequestHeaders headers;
+    headers["Content-Type"] = std::string("binary/octet-stream");
+    headers["Host"] = this->_host_name;
+    headers["x-amz-date"] = this->_amz_date(request_time);
+    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(object);
+    // XXX We can look at using REDUCED_REDUNDANCY to save money.
+    headers["x-amz-storage-class"] = std::string("STANDARD");
+    headers["x-amz-security-token"] = this->_credentials.security_token();
+    return headers;
+  }
+
+  RequestHeaders
+  S3::_make_get_headers(RequestTime const& request_time)
+  {
+    ELLE_DUMP("%s: generate LIST or GET headers", *this);
+    RequestHeaders headers;
+    headers["Host"] = this->_host_name;
+    headers["Content-Type"] = std::string("application/json");
+    elle::ConstWeakBuffer empty_object("");
+    headers["x-amz-date"] = this->_amz_date(request_time);
+    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(empty_object);
+    headers["x-amz-security-token"] = this->_credentials.security_token();
+    return headers;
+  }
+
+  aws::CanonicalRequest
+  S3::_make_put_canonical_request(elle::ConstWeakBuffer const& object,
+                                  std::string const& object_name,
+                                  RequestHeaders const& headers)
+  {
+    RequestQuery empty_query;
+
+    aws::CanonicalRequest res(
+      reactor::http::Method::PUT,
+      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
+      empty_query,
+      headers,
+      this->_signed_headers(headers),
+      _sha256_hexdigest(object)
+    );
+    ELLE_DUMP("%s: generated PUT canonical request: %s",
+              *this, res.canonical_request());
+    return res;
+  }
+
+  aws::CanonicalRequest
+  S3::_make_list_canonical_request(RequestHeaders const& headers,
+                                   RequestQuery const& query)
+  {
+    elle::ConstWeakBuffer empty_object("");
+
+    aws::CanonicalRequest res(
+      reactor::http::Method::GET,
+      "/",
+      query,
+      headers,
+      this->_signed_headers(headers),
+      _sha256_hexdigest(empty_object)
+    );
+    ELLE_DUMP("%s: generated LIST canonical request: %s",
+              *this, res.canonical_request());
+    return res;
+  }
+
+  aws::CanonicalRequest
+  S3::_make_get_canonical_request(RequestHeaders const& headers,
+                                  std::string const& object_name)
+  {
+    RequestQuery empty_query;
+    elle::ConstWeakBuffer empty_object("");
+
+    aws::CanonicalRequest res(
+      reactor::http::Method::GET,
+      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
+      empty_query,
+      headers,
+      this->_signed_headers(headers),
+      _sha256_hexdigest(empty_object)
+    );
+    ELLE_DUMP("%s: generated GET canonical request: %s",
+              *this, res.canonical_request());
     return res;
   }
 
