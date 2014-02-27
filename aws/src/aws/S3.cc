@@ -43,6 +43,12 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: PUT block: %s", *this, object_name);
 
+    if (!this->_credentials.valid())
+    {
+      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
+                             *this, this->_credentials));
+    }
+
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
 
@@ -68,7 +74,7 @@ namespace aws
     // Make credential string.
     auth["AWS4-HMAC-SHA256 Credential"] =
       this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                          aws::Service::s3);
+                                           aws::Service::s3);
 
     // Make signed headers string.
     std::string signed_headers_str;
