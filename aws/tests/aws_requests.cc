@@ -159,7 +159,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(signing_key), 0, timeout);
   suite.add(BOOST_TEST_CASE(sign_request), 0, timeout);
   // Should only be run manually with generated crendentials.
-  suite.add(BOOST_TEST_CASE(put_test), 0, timeout * 3);
+  // suite.add(BOOST_TEST_CASE(put_test), 0, timeout * 3);
 }
 
 // Python code for testing signing:
