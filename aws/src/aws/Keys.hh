@@ -9,6 +9,7 @@ namespace aws
 {
   typedef boost::posix_time::ptime RequestTime;
   typedef std::map<std::string, std::string> RequestHeaders;
+  typedef std::map<std::string, std::string> RequestQuery;
 
   /// AWS request type.
   enum class RequestType
