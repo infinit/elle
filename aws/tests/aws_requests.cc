@@ -1,5 +1,6 @@
 #include <aws/CanonicalRequest.hh>
 #include <aws/Credentials.hh>
+#include <aws/Exceptions.hh>
 #include <aws/Keys.hh>
 #include <aws/S3.hh>
 #include <aws/SigningKey.hh>
@@ -137,7 +138,8 @@ ELLE_TEST_SCHEDULED(put_test)
   std::string access_id("ASIAID7KDNRBNQQWRGDA");
   std::string token("AQoDYXdzEJH//////////wEa0AKpXQs5PQ9iufDGSVW1pgO5OPGoRHlHiXiO7JhbG2VT86Sg5JbichPDfuaFT6EXN3Jwn97BqoVsLLwgkPElEtJEruQjLwU32f5h8VWumKX8/Biui1RQQh8c5mqClPFZ9kp+fOQsBvWVT84htHrPPoTgE/wjJksW9PlY3h2CRWYPRAH9W16VmpY8JODLNuAuJvU4PfITKk7xqm8u/r5+7F1GArQUI9mjs9mLuExcrwMrvEN26dXCGDjEPz3STlFBGq9+TJMwiBIfYJ4oR90p9i6Mj+53VIRMSfrvkhxV+3DCG/A58ecpScu1WYGX+qW+U0to1QYhMlQvwSymhm6xPndl+mCZ2zLZhqz4hSr8y3TbRnutfG944yhfdBHXqED3D8NNMWnrbXb6KVnhFt4Gyx/GashXehQGzwCz5VEEjmTjnBV32Nx7DSF3AcM0lmIzdoQg+5K4mAU=");
   std::string secret_access_key("45qs0xvA7kP+Car9Sb48hTmYy4AZRrgLB2tIkRQ7");
-  aws::Credentials credentials(access_id, secret_access_key, token);
+  std::string expiry("2014-02-26T23:34:19Z");
+  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
 
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
@@ -157,7 +159,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(signing_key), 0, timeout);
   suite.add(BOOST_TEST_CASE(sign_request), 0, timeout);
   // Should only be run manually with generated crendentials.
-  // suite.add(BOOST_TEST_CASE(put_test), 0, timeout);
+  suite.add(BOOST_TEST_CASE(put_test), 0, timeout * 3);
 }
 
 // Python code for testing signing:
