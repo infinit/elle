@@ -105,20 +105,24 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::PUT, cfg);
       ELLE_DUMP("%s: add body to request: %s", *this, object);
-      request.write(
-        reinterpret_cast<char const*>(object.contents()), object.size());
+      request.write(reinterpret_cast<char const*>(object.contents()),
+                    object.size());
       reactor::wait(request);
       ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
       if (request.status() != reactor::http::StatusCode::OK)
       {
-        throw aws::RequestError(elle::sprintf("unable to PUT on S3: %s",
-                                request.response().string()));
+        // XXX would be nice to write out the AWS response here but the logger
+        // doesn't seem to want to.
+        throw aws::RequestError(
+          elle::sprintf("%s: unable to PUT on S3, got HTTP status: %s",
+                        *this, request.status()));
       }
     }
     catch (reactor::http::RequestError const& e)
     {
-      throw aws::RequestError(elle::sprintf("unable to PUT on S3: %s",
-                              e.error()));
+      throw aws::RequestError(
+        elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: %s",
+                      *this, e.error()));
     }
   }
 
