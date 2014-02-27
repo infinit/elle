@@ -1,8 +1,6 @@
 #include <aws/StringToSign.hh>
 
-#include <elle/log.hh>
-
-ELLE_LOG_COMPONENT("aws.StringToSign");
+#include <elle/printf.hh>
 
 namespace aws
 {
