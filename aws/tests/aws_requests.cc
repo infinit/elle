@@ -133,12 +133,12 @@ ELLE_TEST_SCHEDULED(sign_request)
 }
 
 // Should only be run manually with generated crendentials.
-ELLE_TEST_SCHEDULED(put_test)
+ELLE_TEST_SCHEDULED(s3_put)
 {
-  std::string access_id("ASIAID7KDNRBNQQWRGDA");
-  std::string token("AQoDYXdzEJH//////////wEa0AKpXQs5PQ9iufDGSVW1pgO5OPGoRHlHiXiO7JhbG2VT86Sg5JbichPDfuaFT6EXN3Jwn97BqoVsLLwgkPElEtJEruQjLwU32f5h8VWumKX8/Biui1RQQh8c5mqClPFZ9kp+fOQsBvWVT84htHrPPoTgE/wjJksW9PlY3h2CRWYPRAH9W16VmpY8JODLNuAuJvU4PfITKk7xqm8u/r5+7F1GArQUI9mjs9mLuExcrwMrvEN26dXCGDjEPz3STlFBGq9+TJMwiBIfYJ4oR90p9i6Mj+53VIRMSfrvkhxV+3DCG/A58ecpScu1WYGX+qW+U0to1QYhMlQvwSymhm6xPndl+mCZ2zLZhqz4hSr8y3TbRnutfG944yhfdBHXqED3D8NNMWnrbXb6KVnhFt4Gyx/GashXehQGzwCz5VEEjmTjnBV32Nx7DSF3AcM0lmIzdoQg+5K4mAU=");
-  std::string secret_access_key("45qs0xvA7kP+Car9Sb48hTmYy4AZRrgLB2tIkRQ7");
-  std::string expiry("2014-02-26T23:34:19Z");
+  std::string access_id("ASIAJHJ4PCAIXB42AIMA");
+  std::string token("AQoDYXdzEKf//////////wEa0AJJQynCMikZmOjHgf8Xs7vCNkuGBFPXehVPsWODFvwEkfyNL98mMY+xai965DEWw4nENPdiHiH/v6E8+qcL6Fgsnp+UyzkngsrZmbtZtkXzJ8DJlqTxQnqku1O3Z6PIJ2YajIeY/+ISduuAUTQeOxug6knRBubHTqNH3no+La8apxdKkLo1wEiu+fOjpHPbbH9Q9Nf68z/zF2R+oPb+ZQ5ouhM6StpKTShFDe9CdGLi6VLrbGsJgLrmIHGyvqPVbYOIsHHlG3qBoghnw3yAoQjQ24Ez2mla0hYVFNWJe19iBSMPH3/8f+jo3a35oWslZPvNqY0Og2SMsay6OuGkeEI9+qxi0v2qcO51nSwQsuIq0f6md4Udxcf3wGK1l7QYcQDAX7q2wJWzOplApDHjNpTJ3SnBHNUDl69etUNIU81vv50IizAQfBBRnSdRJujo/JEg+/i8mAU=");
+  std::string secret_access_key("MqWkQTVezR0TbFODL6SPQt6dn/1WDGK7R52gemlV");
+  std::string expiry("2014-02-27T21:24:11Z");
   aws::Credentials credentials(access_id, secret_access_key, token, expiry);
 
   aws::S3 s3_handler("io.infinit.buffer.us0",
@@ -150,6 +150,36 @@ ELLE_TEST_SCHEDULED(put_test)
   s3_handler.put_object(object, "test_object");
 }
 
+// Should only be run manually with generated credentials.
+ELLE_TEST_SCHEDULED(s3_list)
+{
+  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
+  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
+  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
+  std::string expiry("2014-02-27T21:18:45Z");
+  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
+
+  aws::S3 s3_handler("io.infinit.buffer.us0",
+                     "testing",
+                     credentials);
+  s3_handler.list_remote_folder();
+}
+
+// Should only be run manually with generated credentials.
+ELLE_TEST_SCHEDULED(s3_get)
+{
+  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
+  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
+  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
+  std::string expiry("2014-02-27T21:18:45Z");
+  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
+
+  aws::S3 s3_handler("io.infinit.buffer.us0",
+                     "testing",
+                     credentials);
+  s3_handler.get_object("test_object");
+}
+
 ELLE_TEST_SUITE()
 {
   auto timeout = 3;
@@ -158,8 +188,12 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(string_to_sign), 0, timeout);
   suite.add(BOOST_TEST_CASE(signing_key), 0, timeout);
   suite.add(BOOST_TEST_CASE(sign_request), 0, timeout);
+
+
   // Should only be run manually with generated crendentials.
-  // suite.add(BOOST_TEST_CASE(put_test), 0, timeout * 3);
+  // suite.add(BOOST_TEST_CASE(s3_put), 0, timeout * 3);
+  // suite.add(BOOST_TEST_CASE(s3_list), 0, timeout * 3);
+  // suite.add(BOOST_TEST_CASE(s3_get), 0, timeout * 3);
 }
 
 // Python code for testing signing:
