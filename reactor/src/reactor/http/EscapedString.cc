@@ -13,8 +13,8 @@ namespace reactor
     EscapedString::EscapedString(std::string const& str)
     {
       ELLE_DEBUG("%s: given string: %s", *this, str);
-      this->_escaped_string = this->_curl_format(str);
-      ELLE_DEBUG("%s: escaped string: %s", *this, this->_escaped_string);
+      this->_string = this->_curl_format(str);
+      ELLE_DEBUG("%s: escaped string: %s", *this, this->_string);
     }
 
     std::string
@@ -30,7 +30,7 @@ namespace reactor
     void
     EscapedString::print(std::ostream& stream) const
     {
-      stream << this->_escaped_string;
+      stream << this->_string;
     }
   }
 }

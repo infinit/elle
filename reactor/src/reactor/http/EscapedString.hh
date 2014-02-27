@@ -19,7 +19,7 @@ namespace reactor
     public:
       EscapedString(std::string const& str);
 
-      ELLE_ATTRIBUTE_R(std::string, escaped_string);
+      ELLE_ATTRIBUTE_R(std::string, string);
 
     private:
       std::string
