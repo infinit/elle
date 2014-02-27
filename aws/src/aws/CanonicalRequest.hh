@@ -24,7 +24,7 @@ namespace aws
     CanonicalRequest(
       reactor::http::Method http_method,
       std::string const& canonical_uri,
-      std::map<std::string, std::string> const& query,
+      RequestQuery const& query,
       RequestHeaders const& headers,
       std::vector<std::string> const& signed_headers,
       std::string const& payload_sha256);
