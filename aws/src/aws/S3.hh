@@ -33,11 +33,14 @@ namespace aws
     put_object(elle::ConstWeakBuffer const& object,
                std::string const& object_name);
 
-    void
+    std::vector<std::string>
     list_remote_folder();
 
     elle::Buffer
     get_object(std::string const& object_name);
+
+    void
+    delete_object(std::string const& object_name);
 
     /*-----------.
     | Attributes |
@@ -65,15 +68,19 @@ namespace aws
     _make_string_to_sign(RequestTime const& request_time,
                          std::string const& canonical_request_sha256);
 
+    std::vector<std::string>
+    _parse_list_xml(std::istream& stream);
+
+    bool
+    _check_object(elle::ConstWeakBuffer const& buffer,
+                  std::string const& md5_sum);
+
     RequestHeaders
     _make_put_headers(elle::ConstWeakBuffer const& object,
                       RequestTime const& request_time);
 
     RequestHeaders
-    _make_get_headers(RequestTime const& request_time);
-
-    RequestHeaders
-    _make_list_get_headers(RequestTime const& request_time);
+    _make_generic_headers(RequestTime const& request_time);
 
     CanonicalRequest
     _make_put_canonical_request(elle::ConstWeakBuffer const& object,
@@ -86,7 +93,11 @@ namespace aws
 
     CanonicalRequest
     _make_get_canonical_request(RequestHeaders const& headers,
-                                    std::string const& object_name);
+                                std::string const& object_name);
+
+    CanonicalRequest
+    _make_delete_canonical_request(RequestHeaders const& headers,
+                                   std::string const& object_name);
 
     /*----------.
     | Printable |
