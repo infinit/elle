@@ -1,6 +1,7 @@
 #include <aws/SigningKey.hh>
 
 #include <elle/format/hexadecimal.hh>
+#include <elle/printf.hh>
 
 #include <cryptography/oneway.hh>
 
