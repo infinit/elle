@@ -20,6 +20,28 @@
 
 ELLE_LOG_COMPONENT("aws.test");
 
+// Credentials:
+// AccessKeyId
+// SecretAccessKey
+// SessionToken
+// Expiration
+
+static
+aws::Credentials _GET_credentials(
+  "ASIAI3S2HUSGMYYKIXNA",
+  "fFyTQ93zfoeT9V2Tce0xOYVVZvZZPF5LxQ/xN2c3",
+  "AQoDYXdzELr//////////wEagAN4Ioo5grlNOuR5EWJdAuXaXsNlwCgTDnDeSwARS+faqekCzYS25jgJ6DQObLig5p79JEXlXHv2KkQWWzjDJE1x3SwDNCUD96t8XWsJAaINIA4ao/D7/LRykDwX/6ULsh3cvtQsLO+ni3mDDQrR6JdZk8PRRmtRsakJDRJDXwAxqM6/LwE9KV9wFHazNBu9RTMEjE+5HRdO2yeJRcnfuuk5cIT30aTGfOVxlHHiH3ZzV4FSbTPnfuUE7X85TSlG7wo2rgSIReQ7FOCz4DmpkYg8u6dd/BAEV2z5MF4g8jwCUIFth5S9P+VnWFtLDcqycPhCkT7rRGRf3hKlVRwg8mjKb6SKCrFHZWrhoA1U/5UQdxOlwokjxMVi012G36iB6Ny4T7k8YZa20QdO6LrGSxQbW7Dmjc35ta8CgxnUKNkPHCcmYRSQHRhDEPqtVODv/6pZvc7ePTmcgHFYp0YtGK1NjbNpVSM94DkXal2oZx2gSElVRswS0bEefEKkeQDztR4gxZrBmAU=",
+  "2014-02-28T16:48:05Z"
+);
+
+static
+aws::Credentials _PUT_credentials(
+  "ASIAIQ45O4K6WILCNHOA",
+  "mV9S3Esf1f+jpai01mh+fWI5/BzoKc3PNEV5ka3s",
+  "AQoDYXdzELr//////////wEa0AKXhMvRNlk6XOUByPrdRDGFRI7sHCXeNCZNO5oa7yVE3R+ZytbuoBTfE2CY32fGsCTMX9+qdo8fiddO7GqNJF7A5eutEcphbPfB3PyHqF8s6mBO0KIgCSlegmIXqWKcGRIL59DPrFa+6IPOtdJlJA7UjdGC47iVnl14uHVLi0uQds+6nwiwDklUc80S6WfcFhQOgrDpxiteiTyf27gX+vlxfD2UDAqsgTqvJOVQgazhFzZuM+Rtd/kt1TzThXEI1P6x/xoNrt6OBQbtiDQSTBDa+kmqmFYkTRTml7z89mGp6066ojLVKo4pmyjZLb2lf67yy+jbBSJ1CqcLbOsHwNwsKLu3U37u66lU8uE+XlJjip0N3LY4U07Wp+q9AFAvCLchkwEPJ3VNu8CpC/aKyvG754ESer+AgqeCSm4qJOxEyGLgkqZK0uoLblAoh9D3EJAgiZzBmAU=",
+  "2014-02-28T16:51:21Z"
+);
+
 // Test derived from link below with their query string instead of none.
 // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 static
@@ -135,64 +157,56 @@ ELLE_TEST_SCHEDULED(sign_request)
 // Should only be run manually with generated crendentials.
 ELLE_TEST_SCHEDULED(s3_put)
 {
-  std::string access_id("ASIAJHJ4PCAIXB42AIMA");
-  std::string token("AQoDYXdzEKf//////////wEa0AJJQynCMikZmOjHgf8Xs7vCNkuGBFPXehVPsWODFvwEkfyNL98mMY+xai965DEWw4nENPdiHiH/v6E8+qcL6Fgsnp+UyzkngsrZmbtZtkXzJ8DJlqTxQnqku1O3Z6PIJ2YajIeY/+ISduuAUTQeOxug6knRBubHTqNH3no+La8apxdKkLo1wEiu+fOjpHPbbH9Q9Nf68z/zF2R+oPb+ZQ5ouhM6StpKTShFDe9CdGLi6VLrbGsJgLrmIHGyvqPVbYOIsHHlG3qBoghnw3yAoQjQ24Ez2mla0hYVFNWJe19iBSMPH3/8f+jo3a35oWslZPvNqY0Og2SMsay6OuGkeEI9+qxi0v2qcO51nSwQsuIq0f6md4Udxcf3wGK1l7QYcQDAX7q2wJWzOplApDHjNpTJ3SnBHNUDl69etUNIU81vv50IizAQfBBRnSdRJujo/JEg+/i8mAU=");
-  std::string secret_access_key("MqWkQTVezR0TbFODL6SPQt6dn/1WDGK7R52gemlV");
-  std::string expiry("2014-02-27T21:24:11Z");
-  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
-
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
-                     credentials);
+                     _PUT_credentials);
 
   elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
 
-  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object_2"));
+  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object"));
+  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object_1"));
+  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different"));
+  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different_1"));
 }
 
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_list)
 {
-  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
-  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
-  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
-  std::string expiry("2014-02-27T21:18:45Z");
-  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
-
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
-                     credentials);
-  s3_handler.list_remote_folder();
+                     _GET_credentials);
+  std::vector<std::string> all_filenames = s3_handler.list_remote_folder();
+  BOOST_CHECK_EQUAL(all_filenames.size(), 4);
+  for (auto const& fname: all_filenames)
+  {
+    ELLE_LOG("ALL filename: %s", fname);
+  }
+
+  std::vector<std::string> some_filenames = s3_handler.list_remote_folder("x");
+    BOOST_CHECK_EQUAL(some_filenames.size(), 2);
+  for (auto const& fname: some_filenames)
+  {
+    ELLE_LOG("SOME filename: %s", fname);
+  }
 }
 
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_get)
 {
-  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
-  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
-  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
-  std::string expiry("2014-02-27T21:18:45Z");
-  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
-
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
-                     credentials);
-  s3_handler.get_object("test_object");
+                     _GET_credentials);
+  elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
+  BOOST_CHECK_EQUAL(s3_handler.get_object("test_object"), expected);
 }
 
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_delete)
 {
-  std::string access_id("ASIAJ23NEQTXMXM77WVQ");
-  std::string token("AQoDYXdzEKb//////////wEakAPlkxDjjFF/MqgWDvevi4PVBVY1PeC8/cbTDruW67E9ocSf5/R1wA8cYamBSDYjKlFR0fxlBP+OxHY81mtTkoiHSZW3VMz9faWRq9X8+5PF8YxaFQk29d8puvxPmI6Hxd2oJKsw+ZHU1lotEabzs6b8bGn4h4KxAM9/bi4CrgOAj85Y32uoOIWlhGv4q3kwJRhZkLJZnDxYaRfYfxGe8z6SKzRX7yt0dwraPkCKdB1Gq8rVmPzkX+7/DSe7ItkS2IScik6xsVfbXDyJcf9cTdQQP/8QZzBR1aqH8DOuaOAMnSS7mLLcwA/bJjsNRnKjOZMYnMgM1JoOXpFP8mSMe9YuMr337coaEbN3pmVHF3SMgYvMdiFnF2zqBynuNA5RL8AP0vbQ6t1u5Y1PjYL21p4ZDgt9GYFFE2l19Tc8WvgT5nDyMdv312E3dkyb5rWkKZI/N04CP/CJz7oAVp89Zmq3mmfTR7fXtl233/qJ/ZudD3MWAdgL/xoiAuZzC5F6WM8r+5QINOoGvrvN4eMw3VRXILX2vJgF");
-  std::string secret_access_key("UnUcvi/b2fXhmsx3rvGnPFcIQfDMiEYCnvJTFg9g");
-  std::string expiry("2014-02-27T21:18:45Z");
-  aws::Credentials credentials(access_id, secret_access_key, token, expiry);
-
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
-                     credentials);
-  s3_handler.delete_object("test_object");
+                     _GET_credentials);
+  BOOST_CHECK_NO_THROW(s3_handler.delete_object("test_object"));
 }
 
 ELLE_TEST_SUITE()
