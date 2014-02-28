@@ -74,10 +74,10 @@ namespace reactor
     Transition&
     Machine::transition_add(State& start,
                             State& end,
-                            std::function<void ()> const& condition)
+                            std::function<bool ()> const& condition)
     {
       std::unique_ptr<Transition> transition(
-        new EndTransition(start, end));
+        new EndTransition(start, end, condition));
       Transition& res = *transition.get();
       this->_transitions.insert(std::move(transition));
       return res;
