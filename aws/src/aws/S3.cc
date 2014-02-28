@@ -132,7 +132,7 @@ namespace aws
     }
   }
 
-  std::vector<std::string>
+  std::vector<std::pair<std::string, S3::FileSize>>
   S3::list_remote_folder(std::string const& marker)
   {
     ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
@@ -314,8 +314,18 @@ namespace aws
           elle::sprintf("%s: unable to GET on S3, got HTTP status: %s",
                         *this, request.status()));
       }
-      // XXX Check MD5 sum from response header, otherwise throw
-      return request.response();
+      auto response = request.response();
+      std::string calcd_md5(this->_md5_digest(response));
+      std::string aws_md5(request.headers().at("ETag"));
+      // Remove quotes around MD5 sum from AWS.
+      aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
+      if (calcd_md5 != aws_md5)
+      {
+        throw aws::RequestError(
+          elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
+                        aws_md5));
+      }
+      return response;
     }
     catch (reactor::http::RequestError const& e)
     {
@@ -420,6 +430,17 @@ namespace aws
   | Helpers |
   `--------*/
   std::string
+  S3::_md5_digest(elle::ConstWeakBuffer const& buffer)
+  {
+    std::string res = elle::format::hexadecimal::encode(
+      infinit::cryptography::oneway::hash(
+        infinit::cryptography::Plain(buffer),
+        infinit::cryptography::oneway::Algorithm::md5).buffer()
+    );
+    return res;
+  }
+
+  std::string
   S3::_sha256_hexdigest(elle::ConstWeakBuffer const& buffer)
   {
     std::string res = elle::format::hexadecimal::encode(
@@ -463,10 +484,10 @@ namespace aws
     return res;
   }
 
-  std::vector<std::string>
+  std::vector<std::pair<std::string, S3::FileSize>>
   S3::_parse_list_xml(std::istream& stream)
   {
-    std::vector<std::string> res;
+    std::vector<std::pair<std::string, FileSize>> res;
     using boost::property_tree::ptree;
     ptree file_list;
     read_xml(stream, file_list);
@@ -477,27 +498,16 @@ namespace aws
         std::string fname = base_element.second.get<std::string>("Key");
         if (fname != elle::sprintf("%s/", this->_remote_folder))
         {
-          fname = fname.substr(this->_remote_folder.size() + 1, fname.size());
-          res.push_back(fname);
+          int pos = fname.size() - this->_remote_folder.size();
+          fname = fname.substr(this->_remote_folder.size() + 1, fname.size() -
+                               (pos + 1));
+          FileSize fsize = base_element.second.get<FileSize>("Size");
+          std::pair<std::string, S3::FileSize> file_pair(fname, fsize);
+          res.push_back(file_pair);
         }
       }
     }
     return res;
-  }
-
-  bool
-  S3::_check_object(elle::ConstWeakBuffer const& buffer,
-                    std::string const& md5_sum)
-  {
-    std::string res = elle::format::hexadecimal::encode(
-      infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain(buffer),
-        infinit::cryptography::oneway::Algorithm::md5).buffer()
-    );
-    if (res == md5_sum)
-      return true;
-    else
-      return false;
   }
 
   RequestHeaders

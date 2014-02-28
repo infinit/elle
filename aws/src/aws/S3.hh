@@ -17,12 +17,21 @@ namespace aws
   class S3:
     public elle::Printable
   {
+    /*------.
+    | Types |
+    `------*/
+  public:
+    typedef uint64_t FileSize;
+    typedef std::vector<std::pair<std::string, FileSize>> List;
+
     /*-------------.
     | Construction |
     `-------------*/
   public:
     /// Create a new S3 handler.
     /// This requires a bucket name, remote folder and set of credentials.
+    /// Use of this should be optimised based on S3 pricing:
+    /// http://aws.amazon.com/s3/pricing/
     S3(std::string const& bucket_name,
        std::string const& remote_folder,
        Credentials const& credentials);
@@ -38,10 +47,12 @@ namespace aws
     put_object(elle::ConstWeakBuffer const& object,
                std::string const& object_name);
 
-    /// Returns a list of all files names inside the remote folder.
+    /// Returns a list of all files names and their respective sizes inside the
+    /// remote folder.
     /// This is limited to 1000 results but a starting offset (marker) can be
-    /// used if more are required.
-    std::vector<std::string>
+    /// used if more are required. It is important to note that the files are
+    /// listed in alphabetical order.
+    std::vector<std::pair<std::string, FileSize>>
     list_remote_folder(std::string const& marker = "");
 
     /// Fetch an object from the remote folder.
@@ -69,6 +80,9 @@ namespace aws
     `--------*/
   private:
     std::string
+    _md5_digest(elle::ConstWeakBuffer const& buffer);
+
+    std::string
     _sha256_hexdigest(elle::ConstWeakBuffer const& buffer);
 
     std::string
@@ -81,12 +95,8 @@ namespace aws
     _make_string_to_sign(RequestTime const& request_time,
                          std::string const& canonical_request_sha256);
 
-    std::vector<std::string>
+    std::vector<std::pair<std::string, FileSize>>
     _parse_list_xml(std::istream& stream);
-
-    bool
-    _check_object(elle::ConstWeakBuffer const& buffer,
-                  std::string const& md5_sum);
 
     RequestHeaders
     _make_put_headers(elle::ConstWeakBuffer const& object,
