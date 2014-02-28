@@ -41,6 +41,11 @@ namespace reactor
       header_add(std::string const& header, std::string const& content);
       void
       header_remove(std::string const& header);
+      static
+      size_t
+      header_callback(void *ptr, size_t size, size_t nmemb, void* userdata);
+      void
+      read_header(elle::ConstWeakBuffer const& data);
 
     /*-------.
     | Socket |

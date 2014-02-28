@@ -269,6 +269,7 @@ ELLE_TEST_SCHEDULED(complex)
   r >> content;
   BOOST_CHECK_EQUAL(content, "/complex");
   BOOST_CHECK(r.eof());
+  BOOST_CHECK_EQUAL(r.headers().at("Server"), "Custom HTTP of doom");
 }
 
 class SilentHttpServer:

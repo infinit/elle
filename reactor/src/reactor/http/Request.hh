@@ -308,6 +308,15 @@ namespace reactor
       ELLE_attribute_r(int, pause_count);
 
     /*--------.
+    | Headers |
+    `--------*/
+    public:
+      /// The response headers.
+      ///
+      /// Headers are filled on the fly once the request has been started.
+      ELLE_ATTRIBUTE_R(Configuration::Headers, headers);
+
+    /*--------.
     | Cookies |
     `--------*/
     public:

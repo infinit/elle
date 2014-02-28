@@ -1,6 +1,7 @@
 #include <curl/curl.h>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/find_iterator.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/log.hh>
@@ -316,6 +317,9 @@ namespace reactor
       setopt(this->_handle, CURLOPT_WRITEDATA, this);
       setopt(this->_handle, CURLOPT_READFUNCTION, &Impl::read_callback);
       setopt(this->_handle, CURLOPT_READDATA, this);
+      // Set header callbacks
+      setopt(this->_handle, CURLOPT_HEADERFUNCTION, &Impl::header_callback);
+      setopt(this->_handle, CURLOPT_WRITEHEADER, this);
     }
 
     Request::Impl::~Impl()
@@ -384,6 +388,7 @@ namespace reactor
     /*--------.
     | Headers |
     `--------*/
+
     void
     Request::Impl::header_add(std::string const& header,
                               std::string const& content)
@@ -401,6 +406,31 @@ namespace reactor
       auto line = elle::sprintf("%s:", header);
       this->_headers.reset(curl_slist_append(this->_headers.release(),
                                              line.c_str()));
+    }
+
+    size_t
+    Request::Impl::header_callback(void *ptr,
+                                   size_t chunks,
+                                   size_t count,
+                                   void* userdata)
+    {
+      Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+      auto size = chunks * count;
+      self.read_header(elle::WeakBuffer(ptr, size));
+      return size;
+    }
+
+    void
+    Request::Impl::read_header(elle::ConstWeakBuffer const& data)
+    {
+      auto separator =
+        boost::algorithm::find_first(data, elle::ConstWeakBuffer(":"));
+      if (separator.begin() != data.end())
+        this->_request->_headers.insert(
+          std::make_pair(
+            std::string(data.begin(), separator.begin()),
+            boost::algorithm::trim_copy(
+              std::string(separator.end(), data.end()))));
     }
 
     /*-------.
