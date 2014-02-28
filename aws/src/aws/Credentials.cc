@@ -7,19 +7,19 @@ ELLE_LOG_COMPONENT("aws.Credentials");
 
 namespace aws
 {
-  Credentials::Credentials(std::string const& access_id,
+  Credentials::Credentials(std::string const& access_key_id,
                            std::string const& secret_access_key,
-                           std::string const& security_token,
-                           std::string const& expiry):
-    _access_id(access_id),
+                           std::string const& session_token,
+                           std::string const& expiration):
+    _access_key_id(access_key_id),
     _secret_access_key(secret_access_key),
-    _security_token(security_token),
-    _expiry_str(expiry)
+    _session_token(session_token),
+    _expiration_str(expiration)
   {
     // Take the AWS server response and convert it to a ptime.
     // eg: 2014-02-26T23:34:19Z -> 20140226T233419
     std::string time_str;
-    for (auto c: this->_expiry_str)
+    for (auto c: this->_expiration_str)
     {
       if (c != '-' && c != ':' && c != 'Z')
       {
@@ -38,7 +38,7 @@ namespace aws
     date_str = date_str.substr(0, 8);
     std::string res = elle::sprintf(
       "%s/%s/%s/%s/aws4_request",
-      this->_access_id,
+      this->_access_key_id,
       date_str,
       aws_region,
       aws_service
@@ -68,7 +68,7 @@ namespace aws
   void
   Credentials::print(std::ostream& stream) const
   {
-    stream << "AWS credentials: access_id=" << this->_access_id
-           << "expiry=" << this->_expiry;
+    stream << "AWS credentials: access_id=" << this->_access_key_id
+           << "expiry=" << this->_expiration_str;
   }
 }
