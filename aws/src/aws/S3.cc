@@ -1,7 +1,5 @@
 #include <aws/S3.hh>
 
-#include <vector>
-
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -135,7 +133,7 @@ namespace aws
   }
 
   std::vector<std::string>
-  S3::list_remote_folder()
+  S3::list_remote_folder(std::string const& marker)
   {
     ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
 
@@ -148,13 +146,15 @@ namespace aws
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
 
-    // Make headers (LIST makes a GET call).
+    // Make headers.
     RequestHeaders headers(this->_make_generic_headers(request_time));
 
     // Make canonical request.
     RequestQuery query;
     query["prefix"] = elle::sprintf("%s/", this->_remote_folder);
     query["delimiter"] = "/";
+    if (marker.size() > 0)
+      query["marker"] = elle::sprintf("%s/%s", this->_remote_folder, marker);
     CanonicalRequest canonical_request(
       this->_make_list_canonical_request(headers, query));
 
@@ -512,7 +512,7 @@ namespace aws
     headers["x-amz-content-sha256"] = this->_sha256_hexdigest(object);
     // XXX We can look at using REDUCED_REDUNDANCY to save money.
     headers["x-amz-storage-class"] = std::string("STANDARD");
-    headers["x-amz-security-token"] = this->_credentials.security_token();
+    headers["x-amz-security-token"] = this->_credentials.session_token();
     return headers;
   }
 
@@ -526,7 +526,7 @@ namespace aws
     elle::ConstWeakBuffer empty_object("");
     headers["x-amz-date"] = this->_amz_date(request_time);
     headers["x-amz-content-sha256"] = this->_sha256_hexdigest(empty_object);
-    headers["x-amz-security-token"] = this->_credentials.security_token();
+    headers["x-amz-security-token"] = this->_credentials.session_token();
     return headers;
   }
 

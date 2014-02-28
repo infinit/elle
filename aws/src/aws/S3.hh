@@ -21,6 +21,8 @@ namespace aws
     | Construction |
     `-------------*/
   public:
+    /// Create a new S3 handler.
+    /// This requires a bucket name, remote folder and set of credentials.
     S3(std::string const& bucket_name,
        std::string const& remote_folder,
        Credentials const& credentials);
@@ -29,16 +31,27 @@ namespace aws
     | Operations |
     `-----------*/
   public:
+    /// Put a block (as a file) into the remote folder.
+    /// This function does a single PUT call, so block size should be something
+    /// reasonable for an HTTP request.
     void
     put_object(elle::ConstWeakBuffer const& object,
                std::string const& object_name);
 
+    /// Returns a list of all files names inside the remote folder.
+    /// This is limited to 1000 results but a starting offset (marker) can be
+    /// used if more are required.
     std::vector<std::string>
-    list_remote_folder();
+    list_remote_folder(std::string const& marker = "");
 
+    /// Fetch an object from the remote folder.
+    /// The fetch is done in a single GET.
     elle::Buffer
     get_object(std::string const& object_name);
 
+    /// Delete an object in the remote folder.
+    /// The folder itself can be deleted only once it is empty. This can be done
+    /// by setting the object_name to an empty string.
     void
     delete_object(std::string const& object_name);
 
