@@ -175,18 +175,20 @@ ELLE_TEST_SCHEDULED(s3_list)
   aws::S3 s3_handler("io.infinit.buffer.us0",
                      "testing",
                      _GET_credentials);
-  std::vector<std::string> all_filenames = s3_handler.list_remote_folder();
-  BOOST_CHECK_EQUAL(all_filenames.size(), 4);
-  for (auto const& fname: all_filenames)
+  std::vector<std::pair<std::string, aws::S3::FileSize>> all =
+    s3_handler.list_remote_folder();
+  BOOST_CHECK_EQUAL(all.size(), 4);
+  for (auto const& item: all)
   {
-    ELLE_LOG("ALL filename: %s", fname);
+    ELLE_LOG("ALL filename: %s (%s)", item.first, item.second);
   }
 
-  std::vector<std::string> some_filenames = s3_handler.list_remote_folder("x");
-    BOOST_CHECK_EQUAL(some_filenames.size(), 2);
-  for (auto const& fname: some_filenames)
+  std::vector<std::pair<std::string, aws::S3::FileSize>> some =
+    s3_handler.list_remote_folder("x");
+  BOOST_CHECK_EQUAL(some.size(), 2);
+  for (auto const& item: some)
   {
-    ELLE_LOG("SOME filename: %s", fname);
+    ELLE_LOG("SOME filename: %s (%s)", item.first, item.second);
   }
 }
 

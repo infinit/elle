@@ -3,6 +3,8 @@
 #include <elle/printf.hh>
 #include <elle/log.hh>
 
+#include <aws/Exceptions.hh>
+
 ELLE_LOG_COMPONENT("aws.Credentials");
 
 namespace aws
@@ -27,6 +29,10 @@ namespace aws
       }
     }
     this->_expiry = boost::posix_time::from_iso_string(time_str);
+    if (!this->valid())
+    {
+      throw CredentialsError("credentials have expired");
+    }
   }
 
   std::string
