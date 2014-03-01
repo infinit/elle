@@ -1696,8 +1696,8 @@ class Builder:
         return
       try:
         # The list of static dependencies is now fixed
-        for path in self.__sources:
-          self._depfile.register(self.__sources[path])
+        for source in self.__sources.values():
+          self._depfile.register(source)
         # See Whether we need to execute or not
         execute = False
         # Reload dynamic dependencies
@@ -1757,8 +1757,7 @@ class Builder:
                         '%s: build dynamic dependencies', self):
           try:
             with sched.Scope() as scope:
-              for path in self.__dynsrc:
-                node = self.__dynsrc[path]
+              for node in self.__dynsrc.values():
                 if _can_skip_node(node):
                   continue
                 scope.run(node.build, str(node))
@@ -1781,8 +1780,8 @@ class Builder:
         self._depfile.read()
         # If a new dependency appeared, we must rebuild.
         if not execute:
-          for p in self.__sources:
-            path = self.__sources[p].name_absolute()
+          for source in self.__sources.values():
+            path = source.name_absolute()
             if path not in self._depfile.sha1s():
               explain(self, 'of new dependency %s' % path)
               execute = True
