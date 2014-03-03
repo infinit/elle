@@ -1307,9 +1307,9 @@ class Node(BaseNode):
     source/tree/file
     file
     """
-    if self.name().absolute() or self.name().virtual:
-      # assert self._builder is None
-      return drake.Path(self.name())
+    name = self.name()
+    if name.absolute() or name.virtual:
+      return name
     if self._builder is None:
       path = drake.path_source() / self._BaseNode__name
     else:
