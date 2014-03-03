@@ -237,7 +237,7 @@ class Profile:
     if PROFILE:
       return ProfileInstance(self)
     else:
-      return drake.log.Logger.NoOp()
+      return drake.log.NOOP
 
   def show(self):
     print(self)

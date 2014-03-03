@@ -18,8 +18,34 @@ class LogLevel(drake.enumeration.Enumerated,
   pass
 
 
+class Noop:
+
+  def __init__(self):
+    pass
+
+  def __enter__(self):
+    pass
+
+  def __exit__(self, type, value, traceback):
+    pass
+
+
+NOOP = Noop()
+
+
+class NoopLogger:
+
+  def log(self, component, level, message, *args):
+    return NOOP
+
+
 class Logger:
 
+  def __new__(self, configuration_string = None, indentation = None):
+    if configuration_string is None:
+      return NoopLogger()
+    else:
+      return object.__new__(self, *args, **kwargs)
 
   class Indentation:
 
@@ -35,19 +61,6 @@ class Logger:
     @property
     def indentation(self):
       return self.__indentation
-
-
-  class NoOp:
-
-    def __init__(self):
-      pass
-
-    def __enter__(self):
-      pass
-
-    def __exit__(self, type, value, traceback):
-      pass
-
 
   def __init__(self, configuration_string = None, indentation = None):
     self.__indentation = indentation or Logger.Indentation()
@@ -85,7 +98,8 @@ class Logger:
             file = sys.stderr)
       return self.__indentation
     else:
-      return Logger.NoOp()
+      return NOOP
+
 
 # DEBUG_TRACE = 1
 # DEBUG_TRACE_PLUS = 2
