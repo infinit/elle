@@ -520,8 +520,7 @@ namespace aws
     headers["Host"] = this->_host_name;
     headers["x-amz-date"] = this->_amz_date(request_time);
     headers["x-amz-content-sha256"] = this->_sha256_hexdigest(object);
-    // XXX We can look at using REDUCED_REDUNDANCY to save money.
-    headers["x-amz-storage-class"] = std::string("STANDARD");
+    headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
     headers["x-amz-security-token"] = this->_credentials.session_token();
     return headers;
   }
