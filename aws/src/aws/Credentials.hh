@@ -22,7 +22,7 @@ namespace aws
       Credentials(std::string const& access_key_id,
                   std::string const& secret_access_key,
                   std::string const& session_token,
-                  std::string const& expiration);
+                  std::string const& expiration = "never");
 
       std::string
       credential_string(RequestTime const& request_time,

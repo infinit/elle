@@ -18,6 +18,10 @@ namespace aws
     _session_token(session_token),
     _expiration_str(expiration)
   {
+    // For debugging.
+    if (this->_expiration_str == "never")
+      return;
+
     // Take the AWS server response and convert it to a ptime.
     // eg: 2014-02-26T23:34:19Z -> 20140226T233419
     std::string time_str;
@@ -55,6 +59,10 @@ namespace aws
   bool
   Credentials::valid()
   {
+    // For debugging.
+    if (this->_expiration_str == "never")
+      return true;
+
     using namespace boost::posix_time;
     ptime now = second_clock::universal_time();
     bool res;
