@@ -12,6 +12,7 @@ cryptography = None
 protocol = None
 reactor = None
 asio_udt = None
+aws = None
 rule_check = None
 rule_tests = None
 
@@ -43,6 +44,7 @@ def configure(cxx_toolkit = None,
   global protocol
   global reactor
   global asio_udt
+  global aws
 
   global curl_config, curl_lib
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
