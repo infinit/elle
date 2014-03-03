@@ -31,7 +31,7 @@ aws::Credentials _GET_credentials(
   "ASIAI3S2HUSGMYYKIXNA",
   "fFyTQ93zfoeT9V2Tce0xOYVVZvZZPF5LxQ/xN2c3",
   "AQoDYXdzELr//////////wEagAN4Ioo5grlNOuR5EWJdAuXaXsNlwCgTDnDeSwARS+faqekCzYS25jgJ6DQObLig5p79JEXlXHv2KkQWWzjDJE1x3SwDNCUD96t8XWsJAaINIA4ao/D7/LRykDwX/6ULsh3cvtQsLO+ni3mDDQrR6JdZk8PRRmtRsakJDRJDXwAxqM6/LwE9KV9wFHazNBu9RTMEjE+5HRdO2yeJRcnfuuk5cIT30aTGfOVxlHHiH3ZzV4FSbTPnfuUE7X85TSlG7wo2rgSIReQ7FOCz4DmpkYg8u6dd/BAEV2z5MF4g8jwCUIFth5S9P+VnWFtLDcqycPhCkT7rRGRf3hKlVRwg8mjKb6SKCrFHZWrhoA1U/5UQdxOlwokjxMVi012G36iB6Ny4T7k8YZa20QdO6LrGSxQbW7Dmjc35ta8CgxnUKNkPHCcmYRSQHRhDEPqtVODv/6pZvc7ePTmcgHFYp0YtGK1NjbNpVSM94DkXal2oZx2gSElVRswS0bEefEKkeQDztR4gxZrBmAU=",
-  "2014-02-28T16:48:05Z"
+  "never"
 );
 
 static
@@ -39,7 +39,7 @@ aws::Credentials _PUT_credentials(
   "ASIAIQ45O4K6WILCNHOA",
   "mV9S3Esf1f+jpai01mh+fWI5/BzoKc3PNEV5ka3s",
   "AQoDYXdzELr//////////wEa0AKXhMvRNlk6XOUByPrdRDGFRI7sHCXeNCZNO5oa7yVE3R+ZytbuoBTfE2CY32fGsCTMX9+qdo8fiddO7GqNJF7A5eutEcphbPfB3PyHqF8s6mBO0KIgCSlegmIXqWKcGRIL59DPrFa+6IPOtdJlJA7UjdGC47iVnl14uHVLi0uQds+6nwiwDklUc80S6WfcFhQOgrDpxiteiTyf27gX+vlxfD2UDAqsgTqvJOVQgazhFzZuM+Rtd/kt1TzThXEI1P6x/xoNrt6OBQbtiDQSTBDa+kmqmFYkTRTml7z89mGp6066ojLVKo4pmyjZLb2lf67yy+jbBSJ1CqcLbOsHwNwsKLu3U37u66lU8uE+XlJjip0N3LY4U07Wp+q9AFAvCLchkwEPJ3VNu8CpC/aKyvG754ESer+AgqeCSm4qJOxEyGLgkqZK0uoLblAoh9D3EJAgiZzBmAU=",
-  "2014-02-28T16:51:21Z"
+  "never"
 );
 
 // Test derived from link below with their query string instead of none.
