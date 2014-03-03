@@ -966,13 +966,13 @@ class DepFile:
       """Whether all registered files match the stored hash."""
       if self.__invalid:
         return False
-      for path in list(self.__sha1.keys()):
-        old_hash = self.__sha1[path][0]
+      for path, (old_hash, data) in self.__sha1.items():
         if old_hash is None:
           continue
-        if path not in Drake.current.nodes:
-          del self.__sha1[path]
-          continue
+        # FIXME: needed ?
+        # if path not in Drake.current.nodes:
+        #   del self.__sha1[path]
+        #   continue
         h = node(path).hash()
         if h != old_hash:
           explain(self._builder, '%s has changed' % path)
