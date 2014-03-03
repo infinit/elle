@@ -24,12 +24,12 @@ namespace aws
     RequestError(std::string const& error);
   };
 
-  /// Credentials invalid.
-  class CredentialsError:
+  /// Credentials have expired.
+  class CredentialsExpired:
     public AWSException
   {
   public:
-    CredentialsError(std::string const& error);
+    CredentialsExpired(std::string const& error);
   };
 }
 

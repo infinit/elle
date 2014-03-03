@@ -35,7 +35,8 @@ namespace aws
     this->_expiry = boost::posix_time::from_iso_string(time_str);
     if (!this->valid())
     {
-      throw CredentialsError("credentials have expired");
+      throw CredentialsExpired(elle::sprintf("%s: credentials have expired",
+                               *this));
     }
   }
 
@@ -68,7 +69,7 @@ namespace aws
     bool res;
     if (this->_expiry < now)
     {
-      ELLE_DEBUG("%s: credentials are have expired", *this);
+      ELLE_DEBUG("%s: credentials have expired", *this);
       res = false;
     }
     else

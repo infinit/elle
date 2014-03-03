@@ -47,8 +47,8 @@ namespace aws
 
     if (!this->_credentials.valid())
     {
-      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
-                             *this, this->_credentials));
+      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
     }
 
     RequestTime request_time =
@@ -139,8 +139,8 @@ namespace aws
 
     if (!this->_credentials.valid())
     {
-      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
-                             *this, this->_credentials));
+      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
     }
 
     RequestTime request_time =
@@ -242,8 +242,8 @@ namespace aws
 
     if (!this->_credentials.valid())
     {
-      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
-                             *this, this->_credentials));
+      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
     }
 
     RequestTime request_time =
@@ -342,8 +342,8 @@ namespace aws
 
     if (!this->_credentials.valid())
     {
-      throw CredentialsError(elle::sprintf("%s: credentials expired: %s",
-                             *this, this->_credentials));
+      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
     }
 
     RequestTime request_time =
