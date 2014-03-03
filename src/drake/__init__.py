@@ -1863,9 +1863,8 @@ class Builder:
             # Update depfiles
             with logger.log('drake.Builder',
                             drake.log.LogLevel.debug,
-                            '%s: write dependencies file %s (%s)',
-                            self, self._depfile,
-                            list(self._depfile._DepFile__files.items())):
+                            '%s: write dependencies file %s',
+                            self, self._depfile):
               self._depfile.update()
             if self._builder_hash is None:
               logger.log('drake.Builder',
