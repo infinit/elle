@@ -102,8 +102,9 @@ namespace aws
       cfg.header_add(header.first, header.second);
 
     auto url = elle::sprintf(
-      "http://%s/%s/%s",
+      "https://%s:%s/%s/%s",
       headers["Host"],
+      "443",
       this->_remote_folder,
       object_name
     );
@@ -209,8 +210,9 @@ namespace aws
     query_str = query_str.substr(0, query_str.size() - 1);
 
     auto url = elle::sprintf(
-      "http://%s?%s",
+      "https://%s:%s?%s",
       headers["Host"],
+      "443",
       query_str
     );
     ELLE_DUMP("url: %s", url);
@@ -297,8 +299,9 @@ namespace aws
       cfg.header_add(header.first, header.second);
 
     auto url = elle::sprintf(
-      "http://%s/%s/%s",
+      "https://%s:%s/%s/%s",
       headers["Host"],
+      "443",
       this->_remote_folder,
       object_name
     );
@@ -397,8 +400,9 @@ namespace aws
       cfg.header_add(header.first, header.second);
 
     auto url = elle::sprintf(
-      "http://%s/%s/%s",
+      "https://%s:%s/%s/%s",
       headers["Host"],
+      "443",
       this->_remote_folder,
       object_name
     );
