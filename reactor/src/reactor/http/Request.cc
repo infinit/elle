@@ -320,7 +320,8 @@ namespace reactor
       // Set header callbacks
       setopt(this->_handle, CURLOPT_HEADERFUNCTION, &Impl::header_callback);
       setopt(this->_handle, CURLOPT_WRITEHEADER, this);
-      // Don't check SSL peer until we find a solution for managing trusted CAs.
+      // XXX: Don't check SSL peer until we find a solution for managing trusted
+      // CAs.
       // http://bugs.python.org/issue17128
       setopt(this->_handle, CURLOPT_SSL_VERIFYPEER, 0L);
     }
