@@ -42,6 +42,9 @@ aws::Credentials _PUT_credentials(
   "never"
 );
 
+static
+std::string _bucket_name("us-east-1-buffer-infinit-io");
+
 // Test derived from link below with their query string instead of none.
 // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
 static
@@ -157,7 +160,7 @@ ELLE_TEST_SCHEDULED(sign_request)
 // Should only be run manually with generated crendentials.
 ELLE_TEST_SCHEDULED(s3_put)
 {
-  aws::S3 s3_handler("io.infinit.buffer.us0",
+  aws::S3 s3_handler(_bucket_name,
                      "testing",
                      _PUT_credentials);
 
@@ -172,7 +175,7 @@ ELLE_TEST_SCHEDULED(s3_put)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_list)
 {
-  aws::S3 s3_handler("io.infinit.buffer.us0",
+  aws::S3 s3_handler(_bucket_name,
                      "testing",
                      _GET_credentials);
   std::vector<std::pair<std::string, aws::S3::FileSize>> all =
@@ -195,7 +198,7 @@ ELLE_TEST_SCHEDULED(s3_list)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_get)
 {
-  aws::S3 s3_handler("io.infinit.buffer.us0",
+  aws::S3 s3_handler(_bucket_name,
                      "testing",
                      _GET_credentials);
   elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
@@ -205,7 +208,7 @@ ELLE_TEST_SCHEDULED(s3_get)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_delete)
 {
-  aws::S3 s3_handler("io.infinit.buffer.us0",
+  aws::S3 s3_handler(_bucket_name,
                      "testing",
                      _GET_credentials);
   BOOST_CHECK_NO_THROW(s3_handler.delete_object("test_object"));
