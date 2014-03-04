@@ -80,6 +80,9 @@ namespace infinit
       class RemoteProcedure
       {
       public:
+        typedef R ReturnType;
+
+      public:
         RemoteProcedure(std::string const& name,
                         RPC<ISerializer, OSerializer>& owner);
         R operator() (Args ...);
