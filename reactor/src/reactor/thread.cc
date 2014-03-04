@@ -259,6 +259,14 @@ namespace reactor
         freeze = true;
         _waited.insert(s);
       }
+      else if (s->_exception)
+      {
+        for (Waitable* waitable: this->_waited)
+          waitable->_unwait(this);
+        ELLE_ASSERT(this->_waited.empty());
+        std::rethrow_exception(s->_exception);
+      }
+
     if (freeze)
     {
       if (timeout)

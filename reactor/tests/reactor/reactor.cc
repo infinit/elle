@@ -140,6 +140,36 @@ nested_schedulers()
   BOOST_CHECK(reactor::Scheduler::scheduler() == 0);
 }
 
+/*-----.
+| Wait |
+`-----*/
+
+namespace waitable
+{
+  class ExceptionNoWait:
+    public reactor::Waitable
+  {
+  public:
+    ExceptionNoWait()
+    {
+      this->_raise<BeaconException>();
+    }
+
+    virtual
+    bool
+    _wait(reactor::Thread*) override
+    {
+      return false;
+    }
+  };
+
+  ELLE_TEST_SCHEDULED(exception_no_wait)
+  {
+    ExceptionNoWait waitable;
+    BOOST_CHECK_THROW(reactor::wait(waitable), BeaconException);
+  }
+}
+
 /*--------.
 | Signals |
 `--------*/
@@ -1997,6 +2027,13 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::test_suite* multithread = BOOST_TEST_SUITE("Multithread");
   multithread->add(BOOST_TEST_CASE(test_multithread));
+
+  {
+    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
+    boost::unit_test::framework::master_test_suite().add(subsuite);
+    auto exception_no_wait = &waitable::exception_no_wait;
+    subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, 1);
+  }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
   boost::unit_test::framework::master_test_suite().add(signals);
