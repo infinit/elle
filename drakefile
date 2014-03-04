@@ -267,6 +267,7 @@ def configure(cxx_toolkit = None,
         'PERL': 'perl',
         'CC': cxx_toolkit.c,
     },
+    patch = drake.node('openssl.patch'),
   )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
