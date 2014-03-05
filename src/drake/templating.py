@@ -91,10 +91,10 @@ class Renderer(drake.Converter):
     return self.__target
 
   def hash(self):
-    return repr({
+    return {
       'content': self.__content,
       'pythonpath': self.__pythonpath,
-    })
+    }
 
   def __str__(self):
     return 'rendering of %s' % self.__target
