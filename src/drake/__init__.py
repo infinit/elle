@@ -1808,8 +1808,8 @@ class Builder:
         if not execute:
             if not self._depfile.up_to_date():
                 execute = True
-            for f in self._depfiles:
-                if not self._depfiles[f].up_to_date():
+            for f in self._depfiles.values():
+                if not f.up_to_date():
                     execute = True
         if execute:
           with logger.log('drake.Builder',
@@ -1883,12 +1883,12 @@ class Builder:
             # FIXME: BUG: remove dynamic dependencies files
             # that are no longer present, otherwise this will
             # be rebuilt forever.
-            for name in self._depfiles:
+            for f in self._depfiles.values():
               logger.log('drake.Builder',
                          drake.log.LogLevel.debug,
                          '%s: write dependencies file %s',
-                         self, name)
-              self._depfiles[name].update()
+                         self, f)
+              f.update()
             self.__executed = True
         else:
             self.__executed = True
