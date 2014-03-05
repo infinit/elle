@@ -1636,7 +1636,7 @@ class Builder:
     """Add a dynamic source node."""
     self.depfile(name).register(node, source = source)
     if source:
-      self.__dynsrc[str(node.path())] = node
+      self.__dynsrc[node.path()] = node
 
   def get_type(self, tname):
     """Return the node type with the given name."""
@@ -1746,8 +1746,8 @@ class Builder:
                         drake.log.LogLevel.debug,
                         '%s: build static dependencies', self):
           with sched.Scope() as scope:
-            for node in list(self.__sources.values()) + \
-              list(self.__vsrcs.values()):
+            for node in chain(self.__sources.values(),
+                              self.__vsrcs.values()):
               if _can_skip_node(node):
                 continue
               scope.run(node.build, str(node))
@@ -1928,7 +1928,7 @@ class Builder:
 
   def add_src(self, src):
     """Add a static source."""
-    self.__sources[str(src._BaseNode__name)] = src
+    self.__sources[src._BaseNode__name] = src
     src.consumers.append(self)
 
   def add_virtual_src(self, src):
@@ -2801,8 +2801,8 @@ class Rule(VirtualNode):
     ...     target.path().remove()
     >>> rule = Rule('install', targets)
     >>> rule.build()
-    Copy /tmp/.drake.rule.dest/.drake.rule2
     Copy /tmp/.drake.rule.dest/.drake.rule1
+    Copy /tmp/.drake.rule.dest/.drake.rule2
     """
 
     def __init__(self, name, nodes = []):
