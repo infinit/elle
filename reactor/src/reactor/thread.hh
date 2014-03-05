@@ -143,6 +143,9 @@ namespace reactor
        *
        */
       void terminate();
+      /** Terminate thread and wait for termination to be effective.
+      * @param suicide: if true, terminate_now is a noop if this thread is the current one
+      */
       void terminate_now(bool suicide = true);
     protected:
       virtual bool _wait(Thread* thread);
