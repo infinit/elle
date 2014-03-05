@@ -1792,12 +1792,12 @@ class Builder:
         if not execute:
           if self._builder_hash is not None:
             if depfile_builder.exists():
-              with open(str(depfile_builder), 'r') as f:
-                try:
-                  stored_hash = eval(f.read())
-                except:
-                  explain(self, 'the builder hash is invalid')
-                  execute = True
+              try:
+                with open(str(depfile_builder), 'rb') as f:
+                  stored_hash = drake.Path.Unpickler(f).load()
+              except:
+                explain(self, 'the builder hash is invalid')
+                execute = True
               if not execute and self._builder_hash != stored_hash:
                 explain(self, 'hash for the builder is outdated')
                 execute = True
@@ -1877,9 +1877,8 @@ class Builder:
                          drake.log.LogLevel.debug,
                          '%s: write builder dependency file %s',
                          self, depfile_builder)
-              with open(str(depfile_builder), 'w') as f:
-                print(repr(self._builder_hash),
-                      file = f, end = '')
+              with open(str(depfile_builder), 'wb') as f:
+                drake.Path.Pickler(f).dump(self._builder_hash)
             # FIXME: BUG: remove dynamic dependencies files
             # that are no longer present, otherwise this will
             # be rebuilt forever.
