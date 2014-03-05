@@ -323,7 +323,8 @@ namespace reactor
                       DurationOpt timeout)
     {
       elle::Buffer res(size);
-      auto r = this->read_some(network::Buffer(res.mutable_contents(), size));
+      auto r = this->read_some(network::Buffer(res.mutable_contents(), size),
+                               timeout);
       res.size(r);
       return res;
     }
