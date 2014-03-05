@@ -20,6 +20,8 @@ namespace reactor
   template <typename R = void>
   class VThread;
   class Waitable;
+  class Semaphore;
+  class Barrier;
 
   typedef std::vector<Signal*> Signals;
   typedef std::vector<Waitable*> Waitables;

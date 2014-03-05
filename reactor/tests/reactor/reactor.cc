@@ -16,6 +16,7 @@
 #include <reactor/sleep.hh>
 #include <reactor/storage.hh>
 #include <reactor/thread.hh>
+#include <reactor/timer.hh>
 
 /*-----------------.
 | Global shortcuts |
@@ -2007,6 +2008,95 @@ ELLE_TEST_SCHEDULED(test_multiple_consumers)
   };
 }
 
+ELLE_TEST_SCHEDULED(test_timer)
+{
+  using reactor::Timer;
+  { // wait
+    int v = 0;
+    Timer t("myTimer1", 200_ms, std::bind(&coro, std::ref(v)));
+    BOOST_CHECK_EQUAL(v, 0);
+    t.wait();
+    BOOST_CHECK_EQUAL(v, 2);
+  }
+  { // destructor
+    int v = 0;
+    {
+      Timer t("myTimer2", 0_ms, std::bind(&coro, std::ref(v)));
+      reactor::yield();reactor::yield();
+    }
+    BOOST_CHECK_EQUAL(v, 2);
+  }
+  { // basic cancel
+    int v = 0;
+    Timer t("myTimer3", 100_ms, std::bind(&coro, std::ref(v)));
+    BOOST_CHECK_EQUAL(v, 0);
+    t.cancel();
+    reactor::sleep(200_ms);
+    BOOST_CHECK_EQUAL(v, 0);
+  }
+  { // cancel after start
+    reactor::Barrier b;
+    reactor::Barrier b2;
+    int v = 0;
+    Timer t("myTimer4", 0_ms, [&] { b.open(); v = 1; b2.wait(); v=2;});
+    b.wait();
+    BOOST_CHECK_EQUAL(v, 1);
+    t.cancel();
+    b2.open();
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK_EQUAL(v, 2);
+  }
+  { // cancel_now after start
+    reactor::Barrier b;
+    int v = 0;
+    Timer t("myTimer5", 0_ms, [&] { b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;});
+    b.wait();
+    t.cancel_now(); // waits
+    BOOST_CHECK_EQUAL(v, 2);
+  }
+  { // terminate after start
+    int v = 0;
+    reactor::Barrier b;
+    Timer t("myTimer6", 0_ms, [&]
+      {
+        try {
+          b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
+        }
+        catch (...)
+        { // check we were interrupted
+          v = 3;
+          throw;
+        }
+      });
+
+    b.wait();
+    t.terminate();
+    BOOST_CHECK_EQUAL(v, 1);
+    reactor::yield(); reactor::yield();
+    BOOST_CHECK_EQUAL(v, 3);
+  }
+  { // terminate_now after start
+    int v = 0;
+    reactor::Barrier b;
+    Timer t("myTimer7", 0_ms, [&]
+      {
+        try {
+          b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
+        }
+        catch (...)
+        {
+          v = 3;
+          throw;
+        }
+      });
+
+    b.wait();
+    t.terminate_now();
+    BOOST_CHECK_EQUAL(v, 3);
+  }
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -2046,7 +2136,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(barrier);
   barrier->add(BOOST_TEST_CASE(barrier_closed), 0, 10);
   barrier->add(BOOST_TEST_CASE(barrier_opened), 0, 10);
-
+  barrier->add(BOOST_TEST_CASE(test_timer), 0, 10);
   // Scope
   {
     boost::unit_test::test_suite* scope = BOOST_TEST_SUITE("scope");
