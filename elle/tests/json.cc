@@ -34,11 +34,37 @@ read_object()
   BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["Paul"]), "Ricard");
 }
 
+static
+void
+read_utf_8()
+{
+  std::stringstream input("{\"utf-8\": \"Средня Азиdoc\"}");
+  auto object = boost::any_cast<elle::json::Object>(elle::json::read(input));
+  BOOST_CHECK_EQUAL(object.size(), 1);
+  BOOST_CHECK(object.find("utf-8") != object.end());
+  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["utf-8"]),
+                    "Средня Азиdoc");
+}
+
+static
+void
+write_utf_8()
+{
+  std::stringstream output;
+  elle::json::Object input;
+  input["utf-8"] = std::string("Средня Азиdoc");
+  elle::json::write(output, input);
+  BOOST_CHECK_EQUAL(output.str(), "{\"utf-8\":\"Средня Азиdoc\"}\n");
+}
+
 ELLE_TEST_SUITE()
 {
+  auto timeout = 3;
   auto& suite = boost::unit_test::framework::master_test_suite();
 
-  suite.add(BOOST_TEST_CASE(read_int), 0, 3);
-  suite.add(BOOST_TEST_CASE(read_long), 0, 3);
-  suite.add(BOOST_TEST_CASE(read_object), 0, 3);
+  suite.add(BOOST_TEST_CASE(read_int), 0, timeout);
+  suite.add(BOOST_TEST_CASE(read_long), 0, timeout);
+  suite.add(BOOST_TEST_CASE(read_object), 0, timeout);
+  suite.add(BOOST_TEST_CASE(read_utf_8), 0, timeout);
+  suite.add(BOOST_TEST_CASE(write_utf_8), 0, timeout);
 }
