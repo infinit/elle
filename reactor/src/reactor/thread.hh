@@ -162,7 +162,7 @@ namespace reactor
     /*--------.
     | Backend |
     `--------*/
-  protected:
+  public:
     Scheduler& scheduler();
   private:
     friend class Scheduler;
