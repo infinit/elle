@@ -362,6 +362,7 @@ namespace reactor
   Scheduler::terminate_now()
   {
     auto threads = this->terminate();
+    ELLE_ASSERT(this->current());
     this->current()->wait(Waitables(threads.begin(), threads.end()));
   }
 
