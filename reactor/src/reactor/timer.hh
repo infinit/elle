@@ -16,7 +16,7 @@ namespace reactor
   /** Timer will execute given action after delay has elapsed.
   */
   class Timer:
-    public Barrier
+    public Waitable
   {
   public:
     typedef backend::Action Action;
@@ -38,6 +38,8 @@ namespace reactor
     void terminate_now(bool suicide=true);
     /// Cancel timer if possible or wait for action termination
     ~Timer();
+  protected:
+    virtual bool _wait(Thread* thread) override;
   private:
     void _on_timer(const boost::system::error_code& erc);
     Scheduler& _scheduler;
@@ -45,6 +47,7 @@ namespace reactor
     Action _action;
     std::unique_ptr<Thread> _thread;
     boost::asio::deadline_timer _timer;
+    Barrier _barrier;
   };
 }
 #endif
