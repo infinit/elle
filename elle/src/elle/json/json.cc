@@ -138,7 +138,7 @@ namespace elle
       ELLE_TRACE_SCOPE("write json to stream");
       auto spirit = to_spirit(any);
       elle::IOStreamClear clearer(stream);
-      json_spirit::write(spirit, stream);
+      json_spirit::write(spirit, stream, json_spirit::raw_utf8);
       stream << "\n";
       stream.flush();
     }
