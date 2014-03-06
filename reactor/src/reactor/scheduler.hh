@@ -79,7 +79,7 @@ namespace reactor
     void _thread_register(Thread& thread);
     void _unfreeze(Thread& thread);
   private:
-    void _terminate(Thread* thread);
+    bool _terminate(Thread* thread); // return true if terminate_now or wait will noop
     void _terminate_now(Thread* thread,
                         bool suicide);
     Thread* _current;

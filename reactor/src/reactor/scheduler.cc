@@ -365,7 +365,7 @@ namespace reactor
     this->current()->wait(Waitables(threads.begin(), threads.end()));
   }
 
-  void
+  bool
   Scheduler::_terminate(Thread* thread)
   {
     ELLE_TRACE_SCOPE("%s: terminate %s", *this, *thread);
@@ -380,7 +380,7 @@ namespace reactor
     {
       ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
       thread->_state = Thread::state::done;
-      return;
+      return true;
     }
     switch (thread->state())
       {
@@ -393,8 +393,10 @@ namespace reactor
           ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
           break;
         case Thread::state::done:
+          return true;
           break;
       }
+    return false;
   }
 
   void
@@ -404,7 +406,9 @@ namespace reactor
     if (!suicide && this->current() == thread)
       return;
 
-    _terminate(thread);
+    bool ready = _terminate(thread);
+    if (ready)
+      return;
 
     // Wait on the thread object and ignore exceptions until the wait is done.
     std::exception_ptr saved_exception(nullptr);
