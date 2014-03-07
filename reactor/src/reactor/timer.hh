@@ -47,7 +47,7 @@ namespace reactor
     Action _action;
     std::unique_ptr<Thread> _thread;
     boost::asio::deadline_timer _timer;
-    Barrier _barrier;
+    bool _finished;
   };
 }
 #endif

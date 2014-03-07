@@ -29,6 +29,7 @@ namespace reactor
   , _name(name)
   , _action(action)
   , _timer(s.io_service())
+  , _finished(false)
   {
     _timer.expires_from_now(d);
     _timer.async_wait(std::bind(&Timer::_on_timer, this, std::placeholders::_1));
@@ -52,27 +53,31 @@ namespace reactor
           elle::SafeFinally s([this]
             {
               ELLE_TRACE("%s timer interrupted or finished, notifying", *this);
-              this->_barrier.open();
+              this->_finished = true;
+              this->_signal();
             });
           ELLE_TRACE("%s timer invoking callback", *this);
           this->_action();
         }));
     }
     else
-      this->_barrier.open();
+    {
+      this->_finished = true;
+      this->_signal();
+    }
   }
 
   void Timer::cancel()
   {
-    _timer.cancel();
+    this->_timer.cancel();
   }
 
   void Timer::cancel_now()
   {
     this->cancel();
     ELLE_DUMP("%s waiting...", *this);
-    if (!this->_barrier)
-      this->_barrier.wait();
+    if (!this->_finished)
+      this->wait();
     // Waiting on the barrier is not enough as it gets opened from
     // the thread. We must wait for the thread itself.
     if (this->_thread && !this->_thread->done())
@@ -83,23 +88,23 @@ namespace reactor
   void Timer::terminate()
   {
     this->cancel();
-    if (_thread)
-      _thread->terminate();
+    if (this->_thread)
+      this->_thread->terminate();
   }
 
   void Timer::terminate_now(bool suicide)
   {
     this->cancel();
-    if (_thread)
-      _thread->terminate_now(suicide);
+    if (this->_thread)
+      this->_thread->terminate_now(suicide);
   }
 
   // waitable interface
   bool Timer::_wait(Thread* thread)
   {
-    ELLE_DUMP("%s wait called, forwarding", *this);
-    thread->wait(_barrier);
-    ELLE_DUMP("%s wait returned", *this);
-    return false;
+    if (this->_finished)
+      return false;
+    else
+      return Waitable::_wait(thread);
   }
 }
