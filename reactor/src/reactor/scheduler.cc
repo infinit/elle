@@ -372,7 +372,7 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: terminate %s", *this, *thread);
     if (current() == thread)
     {
-      ELLE_DEBUG("%s: terminating the current thread, throwing directly",
+      ELLE_DEBUG("%s: terminating the current thread %s, throwing directly",
                  *this, *thread);
       throw Terminate(thread->name());
     }
