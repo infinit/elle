@@ -66,7 +66,6 @@ namespace elle
 
       } // !anonymous
 
-      template class Parser<std::string>;
       template<> std::string const Parser<std::string>::_whitespaces = " \r\n\t";
       template<> std::string const Parser<std::string>::_nullString  = "null";
       template<> std::string const Parser<std::string>::_trueString  = "true";
@@ -490,6 +489,8 @@ namespace elle
       std::unique_ptr<Object>
       parse(std::basic_string<std::string::value_type> const& in,
             ParserOption flags);
+
+      template class Parser<std::string>;
 
       //template class Parser<std::wstring>;
       //template<> std::wstring const Parser<std::wstring>::_whitespaces = L" \r\n\t";
