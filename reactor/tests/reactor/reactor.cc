@@ -1630,6 +1630,12 @@ test_terminate_now_disposed()
 | Terminate now starting |
 `-----------------------*/
 
+ELLE_TEST_SCHEDULED(test_terminate_now_starting_dispose)
+{
+  auto t = new reactor::Thread("starting", [] {}, true);
+  t->terminate_now();
+}
+
 static
 void
 test_terminate_now_starting()
@@ -2173,6 +2179,7 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_terminate_now_destroyed), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_now_starting), 0, 10);
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting_dispose), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_now_started), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, 10);
