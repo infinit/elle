@@ -535,6 +535,13 @@ namespace elle
     throw Exception("the buffer is in input mode");
   }
 
+ template
+ class InputStreamBuffer<Buffer>;
+ template
+ class InputStreamBuffer<ConstWeakBuffer>;
+ template
+ class InputStreamBuffer<WeakBuffer>;
+
   ///////////////////////////////////////////////////////////////////////////
 
   InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer):
