@@ -74,6 +74,10 @@ namespace reactor
   void
   Thread::_scheduler_release()
   {
+    ELLE_DUMP("%s: scheduler_release, dispose=%s", *this, this->_dispose);
+    this->_released();
+    this->_released.disconnect_all_slots();
+    this->_released();
     if (this->_dispose)
       delete this;
     else /* the else is not an option*/
@@ -88,6 +92,12 @@ namespace reactor
   Thread::destructed()
   {
     return _destructed;
+  }
+
+  Thread::Tracker&
+  Thread::released()
+  {
+    return _released;
   }
 
   /*-------.

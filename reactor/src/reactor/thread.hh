@@ -64,9 +64,13 @@ namespace reactor
     `---------*/
     public:
       typedef boost::signals2::signal<void ()> Tracker;
+      // signal invoked when Thread object is being destroyed
       Tracker& destructed();
+      // signal invoked when Thread is released by scheduler
+      Tracker& released();
     private:
       Tracker _destructed;
+      Tracker _released;
 
     /*-------.
     | Status |

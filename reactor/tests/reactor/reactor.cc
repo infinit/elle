@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "reactor.hh"
 
 #include <elle/finally.hh>
@@ -17,6 +19,8 @@
 #include <reactor/storage.hh>
 #include <reactor/thread.hh>
 #include <reactor/timer.hh>
+
+ELLE_LOG_COMPONENT("Test");
 
 /*-----------------.
 | Global shortcuts |
@@ -2014,6 +2018,44 @@ ELLE_TEST_SCHEDULED(test_multiple_consumers)
   };
 }
 
+ELLE_TEST_SCHEDULED(test_released_signal)
+{
+  using reactor::Thread;
+  {
+    bool b = false, f=false;
+    Thread t("test", [&] { reactor::sleep(200_ms); b = true;});
+    t.released().connect([&] { f = true;});
+    BOOST_CHECK_EQUAL(b, false);
+    BOOST_CHECK_EQUAL(f, false);
+    reactor::sleep(300_ms);
+    BOOST_CHECK_EQUAL(b, true);
+    BOOST_CHECK_EQUAL(f, true);
+  }
+  { // terminate_now from thread
+    bool f=false;
+    Thread t("test", [&] { reactor::sleep(200_ms); t.terminate_now(true);});
+    t.released().connect([&] { ELLE_TRACE("release"); f = true;});
+    BOOST_CHECK_EQUAL(f, false);
+    reactor::sleep(300_ms);
+    BOOST_CHECK_EQUAL(f, true);
+  }
+  { // terminate_now
+    ELLE_TRACE("*****start*****");
+    bool b = false, f=false;
+    Thread t("test", [&] { reactor::sleep(200_ms); b = true;});
+    t.released().connect([&] {  ELLE_TRACE("release"); f = true;});
+    BOOST_CHECK_EQUAL(b, false);
+    BOOST_CHECK_EQUAL(f, false);
+    ELLE_TRACE("terminate_now");
+    t.terminate_now();
+    ELLE_TRACE("sleep")
+    reactor::sleep(50_ms);
+    ELLE_TRACE("check");
+    BOOST_CHECK_EQUAL(b, false);
+    BOOST_CHECK_EQUAL(f, true);
+  }
+
+}
 
 // A class owning a thread, with various destruction configurations
 class Foo
@@ -2306,6 +2348,10 @@ ELLE_TEST_SUITE()
     background->add(BOOST_TEST_CASE(aborted), 0, 10);
     background->add(BOOST_TEST_CASE(aborted_throw), 0, 10);
   }
+
+  boost::unit_test::test_suite* released = BOOST_TEST_SUITE("released");
+  boost::unit_test::framework::master_test_suite().add(released);
+  released->add(BOOST_TEST_CASE(test_released_signal), 0, 10);
 
   boost::unit_test::test_suite* tracked = BOOST_TEST_SUITE("tracked");
   boost::unit_test::framework::master_test_suite().add(tracked);
