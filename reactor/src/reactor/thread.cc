@@ -48,6 +48,23 @@ namespace reactor
     Thread(*reactor::Scheduler::scheduler(), name, action, dispose)
   {}
 
+  ThreadPtr
+  Thread::make_tracked(const std::string& name,
+                       const Action& action)
+  {
+    return make_tracked(*reactor::Scheduler::scheduler(), name, action);
+  }
+
+  ThreadPtr
+  Thread::make_tracked(Scheduler& scheduler,
+                       const std::string& name,
+                       const Action& action)
+  {
+    ThreadPtr res = std::make_shared<Thread>(scheduler, name, action);
+    res->_self = res;
+    return res;
+  }
+
   Thread::~Thread()
   {
     ELLE_ASSERT_EQ(state(), state::done);
@@ -59,6 +76,8 @@ namespace reactor
   {
     if (this->_dispose)
       delete this;
+    else /* the else is not an option*/
+      this->_self.reset();
   }
 
   /*---------.

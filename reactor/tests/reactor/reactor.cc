@@ -2014,6 +2014,66 @@ ELLE_TEST_SCHEDULED(test_multiple_consumers)
   };
 }
 
+
+// A class owning a thread, with various destruction configurations
+class Foo
+{
+public:
+  reactor::ThreadPtr op;
+  Foo();
+  ~Foo();
+};
+
+static std::map<Foo*, std::unique_ptr<Foo>> foos;
+
+Foo::~Foo()
+{
+  op->terminate_now(false);
+}
+
+
+Foo::Foo()
+: op(reactor::Thread::make_tracked("superthread", [this] {
+    // simulate a delete from the thread
+    elle::SafeFinally exitit( [this]
+      {
+        foos.erase(this); // test delete from thread
+      });
+    reactor::sleep(200_ms);
+  }))
+{
+}
+
+ELLE_TEST_SCHEDULED(test_tracked)
+{
+  using reactor::Thread;
+  using reactor::ThreadPtr;
+  { // atomic delete from inside
+    ThreadPtr t = Thread::make_tracked("test", [] {});
+    t.reset();
+    reactor::yield();reactor::yield();reactor::yield();
+  }
+  { // atomic delete from outside
+    ThreadPtr t = Thread::make_tracked("test", [] {});
+    reactor::yield();reactor::yield();reactor::yield();
+    t.reset();
+  }
+  std::unique_ptr<Foo> f1(new Foo());
+  foos[f1.get()] = std::move(f1);
+  std::unique_ptr<Foo> f2(new Foo());
+  foos[f2.get()] = std::move(f2);
+  std::unique_ptr<Foo> f3(new Foo());
+  reactor::yield(); reactor::yield();
+  f3.reset();
+  reactor::sleep(300_ms);
+
+  std::unique_ptr<Foo> f4(new Foo());
+  reactor::yield(); reactor::yield();
+  reactor::sleep(300_ms);
+  reactor::yield(); reactor::yield();
+  f4.reset();
+}
+
 ELLE_TEST_SCHEDULED(test_timer)
 {
   using reactor::Timer;
@@ -2246,6 +2306,10 @@ ELLE_TEST_SUITE()
     background->add(BOOST_TEST_CASE(aborted), 0, 10);
     background->add(BOOST_TEST_CASE(aborted_throw), 0, 10);
   }
+
+  boost::unit_test::test_suite* tracked = BOOST_TEST_SUITE("tracked");
+  boost::unit_test::framework::master_test_suite().add(tracked);
+  tracked->add(BOOST_TEST_CASE(test_tracked), 0, 10);
 
 #ifndef INFINIT_WINDOWS
   {

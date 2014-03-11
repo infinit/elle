@@ -15,6 +15,9 @@
 
 namespace reactor
 {
+
+  typedef std::shared_ptr<Thread> ThreadPtr;
+
   class Thread: public Waitable
   {
     /*---------.
@@ -34,6 +37,17 @@ namespace reactor
       Thread(const std::string& name,
              const Action& action,
              bool dispose = false);
+      // Returned shared ptr will be kept live until action finished
+      static
+      ThreadPtr
+      make_tracked(Scheduler& scheduler,
+                   const std::string& name,
+                   const Action& action);
+      // Returned shared ptr will be kept live until action finished
+      static
+      ThreadPtr
+      make_tracked(const std::string& name,
+                   const Action& action);
       virtual
       ~Thread();
     protected:
@@ -42,6 +56,7 @@ namespace reactor
       void
       _scheduler_release();
     private:
+      ThreadPtr _self;
       bool _dispose;
 
     /*---------.
