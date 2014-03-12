@@ -15,10 +15,13 @@ class Context:
   def __init__(self,
                content = {},
                sources = [],
-               pythonpath = ()):
+               pythonpath = (),
+               hooks = {},
+             ):
     self.content = content
     self.sources = sources
     self.pythonpath = pythonpath
+    self.hooks = hooks
 
   def __enter__(self):
     self.__previous = Context.current
@@ -26,7 +29,6 @@ class Context:
 
   def __exit__(self, *args, **kwargs):
     Context.current = self.__previous
-
 
 class Template(drake.Node):
 
@@ -38,6 +40,7 @@ class Template(drake.Node):
                content = context.content,
                sources = context.sources,
                pythonpath = context.pythonpath,
+               hooks = context.hooks
              )
 
 drake.Node.extensions['tmpl'] = Template
@@ -49,8 +52,10 @@ class Renderer(drake.Converter):
                template,
                content = {},
                sources = [],
-               pythonpath = ()):
+               pythonpath = (),
+               hooks = {}):
     self.__template = template
+    self.__hooks = hooks
     dst = template.name().without_last_extension()
     self.__target = drake.node(dst)
     super().__init__(self.__template,
@@ -71,6 +76,9 @@ class Renderer(drake.Converter):
     previous = sys.path
     sys.path = sys.path[:]
     modules = set(sys.modules)
+    for source in self.__hooks.keys():
+      for hook in self.__hooks[source]:
+        hook(self.__content, source)
     try:
       sys.path = [str(path) for path in  self.__pythonpath] + sys.path
       tpl = mako.template.Template(filename = tpl)
