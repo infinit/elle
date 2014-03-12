@@ -50,15 +50,16 @@ namespace reactor
       _thread.reset(new Thread(_scheduler, _name,
         [this]
         {
-          elle::SafeFinally s([this]
-            {
-              ELLE_TRACE("%s timer interrupted or finished, notifying", *this);
-              this->_finished = true;
-              this->_signal();
-            });
           ELLE_TRACE("%s timer invoking callback", *this);
           this->_action();
         }));
+      _thread->released().connect([this]
+        {
+          ELLE_TRACE("%s timer interrupted or finished, notifying", *this);
+          this->_finished = true;
+          this->_signal();
+        });
+      ELLE_TRACE("%s started thread %s", *this, *_thread);
     }
     else
     {
@@ -75,7 +76,7 @@ namespace reactor
   void Timer::cancel_now()
   {
     this->cancel();
-    ELLE_DUMP("%s waiting...", *this);
+    ELLE_DUMP("%s waiting..., finished=%s, thread=%s", *this, this->_finished, !!this->_thread);
     if (!this->_finished)
       this->wait();
     // Waiting on the barrier is not enough as it gets opened from
@@ -102,6 +103,7 @@ namespace reactor
   // waitable interface
   bool Timer::_wait(Thread* thread)
   {
+    ELLE_DUMP("%s timer wait, finished=%s", *this, this->_finished);
     if (this->_finished)
       return false;
     else
