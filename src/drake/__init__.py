@@ -1608,9 +1608,11 @@ class Builder:
     path = self.__targets[0].name()
     if path.virtual:
       path = drake.Path(path._Path__path, False, False)
-    res = path.dirname() / _CACHEDIR / path.basename()
-    if not res.absolute():
-      res = drake.Drake.current.prefix / res
+    path.dirname().mkpath()
+    if path.absolute():
+      res = path.dirname() / _CACHEDIR / path.basename()
+    else:
+      res = drake.Drake.current.prefix / _CACHEDIR / path
     res.mkpath()
     return res
 
