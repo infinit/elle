@@ -60,6 +60,7 @@ void uri_builder::set_user_info(string_type user_info) {
 
 uri_builder &uri_builder::clear_user_info() {
   user_info_.reset();
+  return *this;
 }
 
 void uri_builder::set_host(string_type host) {
@@ -78,6 +79,7 @@ void uri_builder::set_port(string_type port) {
 
 uri_builder &uri_builder::clear_port() {
   port_.reset();
+  return *this;
 }
 
 void uri_builder::set_authority(string_type authority) {
@@ -106,6 +108,7 @@ void uri_builder::set_path(string_type path) {
 
 uri_builder &uri_builder::clear_path() {
   path_.reset();
+  return *this;
 }
 
 void uri_builder::set_query(string_type query) {
@@ -116,6 +119,7 @@ void uri_builder::set_query(string_type query) {
 
 uri_builder &uri_builder::clear_query() {
   query_.reset();
+  return *this;
 }
 
 void uri_builder::set_fragment(string_type fragment) {
@@ -126,5 +130,6 @@ void uri_builder::set_fragment(string_type fragment) {
 
 uri_builder &uri_builder::clear_fragment() {
   fragment_.reset();
+  return *this;
 }
 }  // namespace network
