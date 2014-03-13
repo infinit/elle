@@ -1465,7 +1465,7 @@ class Binary(Node):
         if res is not None:
           self.src_add(res, tk, cfg)
           return
-      raise Exception('invalid source for a library: %s' % source)
+      raise Exception('invalid source for %s: %s' % (self, source))
 
   def dependency_add(self, dependency):
     if dependency not in self.dependencies:
