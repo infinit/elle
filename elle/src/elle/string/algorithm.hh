@@ -2,6 +2,7 @@
 #define ELLE_STRING_ALGORTIHM
 
 #include <string>
+#include <sstream>
 
 namespace elle
 {
