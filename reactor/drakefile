@@ -269,13 +269,13 @@ def configure(curl_config,
   rule_tests = drake.Rule('tests')
 
   tests = [
-    ('reactor/backend', []),
-    ('reactor/fsm', []),
-    ('reactor/http', [curl_lib]),
-    ('reactor/logger', []),
-    ('reactor/network', []),
-    ('reactor/reactor', []),
-    ('reactor/ssl', openssl_libs),
+    ('backend', []),
+    ('fsm', []),
+    ('http', [curl_lib]),
+    ('logger', []),
+    ('network', []),
+    ('reactor', []),
+    ('ssl', openssl_libs),
     # 'reactor/file',
     ]
 
