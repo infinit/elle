@@ -1449,7 +1449,7 @@ class Binary(Node):
       self.sources.append(o)
     elif source.__class__ == Header:
       pass
-    elif isinstance(source, DynLib):
+    elif isinstance(source, (DynLib, Module)):
       self.__dynamic_libraries.append(source)
     else:
       for consumer in source.consumers:
