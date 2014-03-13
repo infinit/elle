@@ -63,6 +63,16 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
+  if python3 is not None:
+    python3 = drake.cxx.find_library(
+      'pyconfig.h',
+      prefix = python3,
+      include_dir = ['include',
+                     'include/python3.2',
+                     'include/python3.2m',
+                     'include/python3.3m'])
+
+
   ## ---- ##
   ## Zlib ##
   ## ---- ##
