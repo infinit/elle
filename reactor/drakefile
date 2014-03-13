@@ -27,7 +27,6 @@ def configure(curl_config,
               openssl_config,
               openssl_lib_crypto,
               openssl_lib_ssl,
-              enable_python_bindings = False,
               python3 = None,
               elle = None,
               prefix = '/usr',
@@ -51,13 +50,15 @@ def configure(curl_config,
   local_cxx_config.enable_debug_symbols()
 
   # Python
-  if enable_python_bindings:
-    python3 = drake.cxx.find_library(
-      token = 'pyconfig.h',
-      prefix = python3,
-      include_dir = 'include/python3.2')
+  if python3 is not None:
     local_cxx_config.define('REACTOR_PYTHON_BINDING')
     local_cxx_config += python3
+    if cxx_toolkit.os is drake.os.windows:
+      local_cxx_config += boost.config_python(static = True)
+    else:
+      local_cxx_config += boost.config_python(link = False)
+      local_cxx_config.library_add(
+        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
@@ -66,8 +67,6 @@ def configure(curl_config,
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
-    if enable_python_bindings:
-      local_cxx_config += boost.config_python(static = True)
   else:
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
@@ -78,10 +77,6 @@ def configure(curl_config,
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
-    if enable_python_bindings:
-      local_cxx_config += boost.config_python(link = False)
-      local_cxx_config.library_add(
-        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
 
   # Curl
   local_cxx_config += curl_config
@@ -101,6 +96,9 @@ def configure(curl_config,
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
   elle_lib = drake.copy(elle.library, 'lib', elle.library.name().dirname())
+
+  # Build
+  rule_build = drake.Rule('build')
 
   # UDT
   #asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
@@ -248,16 +246,16 @@ def configure(curl_config,
                                  sources + sub_libraries,
                                  cxx_toolkit, lib_cxx_config)
 
-  if enable_python_bindings:
-    python_sources = drake.nodes('src/reactor/python.cc')
+  if python3 is not None:
     python_cxx_config = drake.cxx.Config(local_cxx_config)
     python_cxx_config.lib_path_runtime('..')
+    python_sources = drake.nodes('src/reactor/python.cc')
     python_lib = drake.cxx.Module('lib/python/reactor',
                                   python_sources + [lib_dynamic],
                                   cxx_toolkit, python_cxx_config)
+    drake.Rule('python') << python_lib
+    rule_build << python_lib
 
-  # Build
-  rule_build = drake.Rule('build')
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
     rule_build << lib_dynamic

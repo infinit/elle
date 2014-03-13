@@ -9,7 +9,12 @@ sys.path.insert(
 )
 
 import drake
+import drake.cxx
 import drake.valgrind
 
 with drake.Drake('../..') as d:
-  d.run(valgrind = drake.valgrind.Valgrind())
+  python3 = drake.cxx.find_library(
+    token = 'pyconfig.h',
+    include_dir = 'include/python3.2')
+  d.run(python3 = python3,
+        valgrind = drake.valgrind.Valgrind())
