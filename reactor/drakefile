@@ -263,7 +263,10 @@ def configure(curl_config,
   else:
     library = lib_static
 
-  # Tests
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
@@ -309,6 +312,16 @@ def configure(curl_config,
       runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+
+  if python3 is not None:
+    python_test = drake.node('tests/python')
+    python_test.dependency_add(python_lib)
+    python_runner = drake.Runner(
+      exe = python_test,
+      env = {
+        'PYTHONPATH': str(drake.path_build('lib/python')),
+      })
+    rule_check << python_runner.status
 
   # Install
   rule_install = drake.Rule('install')
