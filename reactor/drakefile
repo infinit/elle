@@ -7,6 +7,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
+python_lib = None
 
 library_coroutine = None
 
@@ -35,6 +36,7 @@ def configure(curl_config,
   global asio_udt_lib
   global config, lib_static, lib_dynamic, library, library_coroutine
   global rule_build, rule_install
+  global python_lib
 
   # Public C++ configuration
   config = drake.cxx.Config()
