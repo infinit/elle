@@ -2131,13 +2131,22 @@ namespace timer
 
   ELLE_TEST_SCHEDULED(destructor)
   {
-    int v = 0;
+    bool v = false;
+    reactor::Barrier started;
     {
-      Timer t("myTimer2", 0_ms, std::bind(&coro, std::ref(v)));
-      reactor::yield();
-      reactor::yield();
+      Timer t("myTimer2", 0_ms,
+              [&]
+              {
+                started.open();
+                reactor::yield();
+                reactor::yield();
+                reactor::yield();
+                reactor::yield();
+                ++v;
+              });
+      reactor::wait(started);
     }
-    BOOST_CHECK_EQUAL(v, 2);
+    BOOST_CHECK(v);
   }
 
   ELLE_TEST_SCHEDULED(basic_cancel)
