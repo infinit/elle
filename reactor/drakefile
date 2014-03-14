@@ -65,6 +65,7 @@ def configure(curl_config,
       # link with the python library (ubuntu&default build of boost_python does not)
       libpython3 = drake.cxx.find_library(
         token = 'pyconfig.h',
+        prefix = python3,
         include_dir = ['include/python3.2', 'include/python3.3'],
         name = 'python3', # will search using pkg-config
         )
