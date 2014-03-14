@@ -35,7 +35,7 @@ class Indentation:
     coroutine = Coroutine.current
     if coroutine not in self.__indentation:
       initial = 0
-      if coroutine is not None and coroutine.parent is not None:
+      if coroutine is not None and coroutine.parent is not None and coroutine.parent in self.__indentation:
         initial = self.__indentation[coroutine.parent]
       self.__indentation[coroutine] = initial
       return initial
