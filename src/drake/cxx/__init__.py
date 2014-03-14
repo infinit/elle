@@ -1643,6 +1643,7 @@ class PkgConfig():
         self.__package = package
         self.__include_path = None
         self.__library_path = None
+        self.__library = None
         self.__exists = None
 
     @property
@@ -1683,7 +1684,13 @@ class PkgConfig():
             for path in self.__flags(['--libs-only-L'], '-L'):
                 self.__library_path.append(drake.Path(path))
         return self.__library_path
-
+    @property
+    def library(self):
+        if self.__library is None:
+            self.__library = []
+            for path in self.__flags(['--libs-only-l'], '-l'):
+                self.__library.append(drake.Path(path))
+        return self.__library
 class LibraryConfiguration(drake.Configuration):
 
   """Configuration for a classical C/C++ library."""
@@ -1704,9 +1711,12 @@ class LibraryConfiguration(drake.Configuration):
           self.__config.add_system_include_path(include_path)
           self.__prefix_symbolic = include_path / '..'
           self.__prefix = self.__prefix_symbolic
+        self.__libraries_path = []
         for library_path in pkg_config.library_path:
           self.__config.lib_path(library_path)
-          self.__libraries_path = library_path
+          self.__libraries_path.append(library_path)
+        for library in pkg_config.library:
+          self.__config.lib(library)
     # Search the library manually.
     if token is not None:
       include_dir = include_dir or 'include'
