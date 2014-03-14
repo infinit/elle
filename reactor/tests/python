@@ -17,6 +17,7 @@ class Beacon:
   @property
   def value(self):
     return self.__value
+sched = reactor.Scheduler()
 
 class TestReactor(unittest.TestCase):
 
@@ -28,20 +29,24 @@ class TestReactor(unittest.TestCase):
     sched.run()
     beacon.check(1)
 
-  # def test_yields(self):
-  #   beacon = Beacon()
-  #   def thread(expect, n):
-  #     beacon.check(expect + 0)
-  #     beacon.increment()
-  #     beacon.check(expect + 1)
-  #     reactor.yield_()
-  #     beacon.check(expect + n)
-  #     beacon.increment()
-  #   sched = reactor.Scheduler()
-  #   thread1 = reactor.Thread(sched, 'thread 1', lambda: thread(0, 3))
-  #   thread2 = reactor.Thread(sched, 'thread 2', lambda: thread(1, 3))
-  #   thread3 = reactor.Thread(sched, 'thread 3', lambda: thread(2, 3))
-  #   sched.run()
-  #   beacon.check(6)
+  def test_yields(self):
+    beacon = Beacon()
+    def thread(expect, n):
+      beacon.check(expect + 0)
+      beacon.increment()
+      beacon.check(expect + 1)
+      reactor.yield_()
+      beacon.check(expect + n)
+      beacon.increment()
+    thread1 = reactor.Thread(sched, 'thread 1', lambda: thread(0, 3))
+    thread2 = reactor.Thread(sched, 'thread 2', lambda: thread(1, 3))
+    thread3 = reactor.Thread(sched, 'thread 3', lambda: thread(2, 3))
+    print("wait")
+    thread1.wait()
+    thread2.wait()
+    thread3.wait()
+    print("beacon " + str(beacon.value))
+    beacon.check(6)
 
-unittest.main()
+reactor.Thread(sched, "init", lambda: unittest.main())
+sched.run()
