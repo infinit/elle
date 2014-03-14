@@ -1079,11 +1079,6 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
       __dependencies_result[key] = deps
     return (cycles, deps)
   else:
-    if explored_node.path() == drake.Path('../../elle/cryptography/sources/cryptography/Input.hh'):
-      logger.log('drake.cxx.dependencies',
-                 drake.log.LogLevel.trace,
-                 'pull dependencies for %s from the cache',
-                 explored_node)
     return (set(), res)
 
 def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
