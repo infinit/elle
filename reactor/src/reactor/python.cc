@@ -122,6 +122,11 @@ create_exception_class(const char* name,
   return typeObj;
 }
 
+static void wait_wrap(reactor::Thread* t)
+{
+  t->Waitable::wait();
+}
+
 BOOST_PYTHON_MODULE(reactor)
 {
   terminate_exception = create_exception_class("Terminate");
@@ -136,7 +141,7 @@ BOOST_PYTHON_MODULE(reactor)
     ("Thread", boost::python::init<reactor::Scheduler&,
                                    std::string const&,
                                    boost::python::object>())
-    .def("wait", &reactor::Waitable::wait)
+    .def("wait", &wait_wrap)
     ;
   boost::python::def("yield_", reactor::yield);
 
