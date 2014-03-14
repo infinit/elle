@@ -1,3 +1,4 @@
+#include <boost/function.hpp>
 #include <boost/python.hpp>
 
 #include <reactor/exception.hh>
@@ -80,7 +81,7 @@ public:
   Thread(PyObject* instance,
          reactor::Scheduler& s,
          std::string const& name,
-         reactor::Thread::Action const& action):
+         boost::function<void ()> const& action):
     reactor::Thread(s, name, [action] { wrap(action); }, false),
     _self(instance)
   {
