@@ -1624,7 +1624,7 @@ def find_library(token = None, name = None, prefix = None,
                  include_dir = None):
   if prefix is None or isinstance(prefix, (str, Path)):
     conf = LibraryConfiguration(token = token,
-                                name = None,
+                                name = name,
                                 prefix = prefix,
                                 include_dir = include_dir)
     return conf.config()
