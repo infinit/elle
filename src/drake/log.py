@@ -45,7 +45,10 @@ class Logger:
     if configuration_string is None:
       return NoopLogger()
     else:
-      return object.__new__(self, *args, **kwargs)
+      return object.__new__(
+        self,
+        configuration_string = configuration_string,
+        indentation = indentation)
 
   class Indentation:
 
