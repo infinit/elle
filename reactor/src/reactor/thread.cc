@@ -8,6 +8,7 @@
 #include <elle/log.hh>
 #include <elle/container/set.hh>
 
+#include <reactor/backend/backend.hh>
 #include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
@@ -22,10 +23,10 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  Thread::Thread(Scheduler&             scheduler,
-                 std::string const&     name,
-                 Action const&          action,
-                 bool                   dispose)
+  Thread::Thread(Scheduler& scheduler,
+                 std::string const& name,
+                 Action const& action,
+                 bool dispose)
     : _dispose(dispose)
     , _state(state::running)
     , _injection()
@@ -34,11 +35,11 @@ namespace reactor
     , _waited()
     , _timeout(false)
     , _timeout_timer(scheduler.io_service())
-    , _thread(scheduler._manager, name, boost::bind(&Thread::_action_wrapper,
-                                                    this, action))
+    , _thread(scheduler._manager->make_thread(
+                name,
+                boost::bind(&Thread::_action_wrapper, this, action)))
     , _scheduler(scheduler)
   {
-    ELLE_ASSERT(action);
     _scheduler._thread_register(*this);
   }
 
@@ -119,7 +120,7 @@ namespace reactor
   std::string
   Thread::name() const
   {
-    return _thread.name();
+    return _thread->name();
   }
 
   void
@@ -173,7 +174,6 @@ namespace reactor
         std::rethrow_exception(tmp);
       }
       _backtrace_root = elle::Backtrace::current();
-      ELLE_ASSERT(action);
       action();
     }
     catch (const Terminate&)
@@ -204,8 +204,8 @@ namespace reactor
   void
   Thread::_step()
   {
-    _thread.step();
-    if (_thread.status() == backend::status::done)
+    this->_thread->step();
+    if (this->_thread->status() == backend::Thread::Status::done)
     {
       ELLE_TRACE_SCOPE("%s: done", *this);
       _state = Thread::state::done;
@@ -224,7 +224,7 @@ namespace reactor
   {
     ELLE_TRACE("%s: yield", *this)
     {
-      _thread.yield();
+      this->_thread->yield();
       ELLE_TRACE_SCOPE("%s: back from yield", *this);
       if (_injection)
       {

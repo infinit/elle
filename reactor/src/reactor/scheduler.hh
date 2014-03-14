@@ -21,7 +21,7 @@
 # include <reactor/asio.hh>
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
-# include <reactor/backend/thread.hh>
+# include <reactor/backend/fwd.hh>
 
 namespace reactor
 {
@@ -36,7 +36,8 @@ namespace reactor
   `-------------*/
   public:
     Scheduler();
-    virtual ~Scheduler() = default;
+    virtual
+    ~Scheduler();
 
   /*------------------.
   | Current scheduler |
@@ -199,7 +200,7 @@ namespace reactor
     `--------*/
     private:
       friend class Thread;
-      backend::Manager _manager;
+      std::unique_ptr<backend::Backend> _manager;
       std::thread::id _running_thread;
   };
 

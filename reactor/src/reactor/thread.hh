@@ -7,7 +7,7 @@
 # include <elle/Backtrace.hh>
 
 # include <reactor/asio.hh>
-# include <reactor/backend/thread.hh>
+# include <reactor/backend/fwd.hh>
 # include <reactor/duration.hh>
 # include <reactor/fwd.hh>
 # include <reactor/signals.hh>
@@ -15,16 +15,16 @@
 
 namespace reactor
 {
-
   typedef std::shared_ptr<Thread> ThreadPtr;
 
-  class Thread: public Waitable
+  class Thread:
+    public Waitable
   {
-    /*---------.
-    | Typedefs |
-    `---------*/
-    public:
-      typedef backend::Action Action;
+  /*---------.
+  | Typedefs |
+  `---------*/
+  public:
+    typedef backend::Action Action;
 
     /*-------------.
     | Construction |
@@ -185,8 +185,8 @@ namespace reactor
     Scheduler& scheduler();
   private:
     friend class Scheduler;
-    backend::Thread _thread;
-    Scheduler& _scheduler;
+    ELLE_ATTRIBUTE(std::unique_ptr<backend::Thread>, thread);
+    ELLE_ATTRIBUTE(Scheduler&, scheduler);
   };
 
   template <typename R>

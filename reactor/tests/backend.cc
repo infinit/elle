@@ -1,13 +1,13 @@
 #include <elle/test.hh>
 
-#include <reactor/backend/thread.hh>
+#include <reactor/backend/backend.hh>
+#include <reactor/backend/coro_io/thread.hh>
 
 #include <boost/bind.hpp>
 
-using reactor::backend::Manager;
 using reactor::backend::Thread;
 
-Manager* m = 0;
+reactor::backend::Backend* m = 0;
 
 static
 void
@@ -28,74 +28,74 @@ inc(int* i)
   ++*i;
 }
 
+template <typename Backend>
 static
 void
 test_die()
 {
-  m = new Manager;
+  m = new Backend;
   int i = 0;
   {
-    Thread t(*m, "test_die", boost::bind(inc, &i));
-    t.step();
+    auto t = m->make_thread("test_die", boost::bind(inc, &i));
+    t->step();
     BOOST_CHECK_EQUAL(i, 1);
-    BOOST_CHECK(t.done());
+    BOOST_CHECK(t->status() == Thread::Status::done);
   }
   {
-    Thread t(*m, "test_die", boost::bind(inc, &i));
-    t.step();
+    auto t = m->make_thread("test_die", boost::bind(inc, &i));
+    t->step();
     BOOST_CHECK_EQUAL(i, 2);
-    BOOST_CHECK(t.done());
+    BOOST_CHECK(t->status() == Thread::Status::done);
   }
   delete m;
 }
 
+template <typename Backend>
 static
 void
 test_deadlock_creation()
 {
-  m = new Manager;
-
-  Thread t(*m, "test_deadlock_creation", empty);
-  t.step();
-  BOOST_CHECK(t.done());
+  m = new Backend;
+  auto t = m->make_thread("test_deadlock_creation", empty);
+  t->step();
+  BOOST_CHECK(t->status() == Thread::Status::done);
   delete m;
 }
 
+template <typename Backend>
 static
 void
 test_deadlock_switch()
 {
-  m = new Manager;
-  Thread t(*m, "test_deadlock_switch", one_yield);
-  t.step();
-  t.step();
-  BOOST_CHECK(t.done());
+  m = new Backend;
+  auto t = m->make_thread("test_deadlock_switch", one_yield);
+  t->step();
+  t->step();
+  BOOST_CHECK(t->status() == Thread::Status::done);
   delete m;
 }
-
-using namespace reactor::backend::status;
 
 static
 void
 status_coro()
 {
-  BOOST_CHECK(m->current()->status() == running);
+  BOOST_CHECK(m->current()->status() == Thread::Status::running);
   m->current()->yield();
-  BOOST_CHECK(m->current()->status() == running);
+  BOOST_CHECK(m->current()->status() == Thread::Status::running);
 }
 
+template <typename Backend>
 static
 void
 test_status()
 {
-  m = new Manager;
-  Thread t(*m, "status", status_coro);
-  BOOST_CHECK(t.status() == starting);
-  t.step();
-  BOOST_CHECK(t.status() == waiting);
-  t.step();
-  BOOST_CHECK(t.status() == done);
-  BOOST_CHECK(t.done());
+  m = new Backend;
+  auto t = m->make_thread("status", &status_coro);
+  BOOST_CHECK(t->status() == Thread::Status::starting);
+  t->step();
+  BOOST_CHECK(t->status() == Thread::Status::waiting);
+  t->step();
+  BOOST_CHECK(t->status() == Thread::Status::done);
   delete m;
 }
 
@@ -103,8 +103,15 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
   boost::unit_test::framework::master_test_suite().add(backend);
-  backend->add(BOOST_TEST_CASE(test_die), 0, 10);
-  backend->add(BOOST_TEST_CASE(test_deadlock_creation), 0, 10);
-  backend->add(BOOST_TEST_CASE(test_deadlock_switch), 0, 10);
-  backend->add(BOOST_TEST_CASE(test_status), 0, 10);
+#define TEST(Name)                                                      \
+  {                                                                     \
+    backend->add(                                                       \
+      BOOST_TEST_CASE(Name<reactor::backend::coro_io::Backend>),        \
+      0, 10);                                                           \
+  }                                                                     \
+
+  TEST(test_die);
+  TEST(test_deadlock_creation);
+  TEST(test_deadlock_switch);
+  TEST(test_status);
 }

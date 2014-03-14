@@ -9,7 +9,6 @@
 # include <reactor/duration.hh>
 # include <reactor/thread.hh>
 # include <reactor/Barrier.hh>
-# include <reactor/backend/thread.hh>
 
 namespace reactor
 {
@@ -19,7 +18,7 @@ namespace reactor
     public Waitable
   {
   public:
-    typedef backend::Action Action;
+    typedef Thread::Action Action;
     Timer(const Timer& b) = delete;
     Timer(Scheduler& s,
       const std::string& name,

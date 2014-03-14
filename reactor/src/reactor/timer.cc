@@ -32,34 +32,34 @@ namespace reactor
   , _finished(false)
   {
     _timer.expires_from_now(d);
+    ELLE_TRACE_SCOPE("%s: trigger in %s", *this, d);
     _timer.async_wait(std::bind(&Timer::_on_timer, this, std::placeholders::_1));
   }
 
   Timer::~Timer()
   {
-    ELLE_TRACE("%s destructor", *this);
     cancel_now();
   }
 
   void Timer::_on_timer(const boost::system::error_code& erc)
   {
-    ELLE_TRACE("%s timer reached, canceled=%s", *this, !!erc);
+    ELLE_TRACE_SCOPE("%s: timer reached, canceled: %s", *this, !!erc);
     // Warning, we are not in a Thread!
     if (!erc)
     {
+      ELLE_TRACE("%s: start thread", *this);
       _thread.reset(new Thread(_scheduler, _name,
         [this]
         {
-          ELLE_TRACE("%s timer invoking callback", *this);
-          this->_action();
+          ELLE_TRACE("%s: invoke callback", *this)
+            this->_action();
         }));
       _thread->released().connect([this]
         {
-          ELLE_TRACE("%s timer interrupted or finished, notifying", *this);
+          ELLE_TRACE("%s: interrupted or finished, notify", *this);
           this->_finished = true;
           this->_signal();
         });
-      ELLE_TRACE("%s started thread %s", *this, *_thread);
     }
     else
     {
@@ -75,19 +75,22 @@ namespace reactor
 
   void Timer::cancel_now()
   {
+    ELLE_TRACE_SCOPE("%s: cancel now", *this);
     this->cancel();
-    ELLE_DUMP("%s waiting..., finished=%s, thread=%s", *this, this->_finished, !!this->_thread);
     if (!this->_finished)
+    {
+      ELLE_TRACE("%s: wait", *this);
       this->wait();
+    }
     // Waiting on the barrier is not enough as it gets opened from
     // the thread. We must wait for the thread itself.
     if (this->_thread && !this->_thread->done())
       reactor::wait(*this->_thread);
-    ELLE_DUMP("%s waiting done", *this);
   }
 
   void Timer::terminate()
   {
+    ELLE_TRACE_SCOPE("%s: terminate", *this);
     this->cancel();
     if (this->_thread)
       this->_thread->terminate();
@@ -95,6 +98,7 @@ namespace reactor
 
   void Timer::terminate_now(bool suicide)
   {
+    ELLE_TRACE_SCOPE("%s: terminate now", *this);
     this->cancel();
     if (this->_thread)
       this->_thread->terminate_now(suicide);
@@ -103,7 +107,6 @@ namespace reactor
   // waitable interface
   bool Timer::_wait(Thread* thread)
   {
-    ELLE_DUMP("%s timer wait, finished=%s", *this, this->_finished);
     if (this->_finished)
       return false;
     else

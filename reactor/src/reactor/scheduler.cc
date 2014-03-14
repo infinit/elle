@@ -10,6 +10,8 @@
 #include <elle/log.hh>
 #include <elle/memory.hh>
 
+#include <reactor/backend/backend.hh>
+#include <reactor/backend/coro_io/thread.hh>
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
@@ -40,11 +42,14 @@ namespace reactor
     _background_pool_free(0),
     _io_service(),
     _io_service_work(new boost::asio::io_service::work(this->_io_service)),
-    _manager(),
+    _manager(new backend::coro_io::Backend()),
     _running_thread()
   {
     this->_eptr = nullptr;
   }
+
+  Scheduler::~Scheduler()
+  {}
 
   /*------------------.
   | Current Scheduler |
