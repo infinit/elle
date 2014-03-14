@@ -297,7 +297,7 @@ class Scheduler:
         self.debug('%s: %s threw %s' % (self, coro, e))
         parent = coro._Coroutine__parent
         if parent is None:
-          self.__exception = e.with_traceback(coro._Coroutine__traceback)
+          self.__exception = e#.with_traceback(coro._Coroutine__traceback)
       if coro.done:
         self.debug('%s ended' % coro)
         self.__policy.remove(coro)
@@ -559,7 +559,7 @@ def coro_yield(handle_exceptions = True):
     exception = Coroutine.current._Coroutine__exception
     if exception is not None:
       Coroutine.current._Coroutine__exception = None
-      raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
+      raise exception#.with_traceback(Coroutine.current._Coroutine__traceback)
 
 def coro_wait(waitable):
   done = False
@@ -575,7 +575,7 @@ def coro_wait(waitable):
         current_exception.__context__ = exception
       exception = current_exception
   if exception is not None:
-    raise exception.with_traceback(Coroutine.current._Coroutine__traceback)
+    raise exception#.with_traceback(Coroutine.current._Coroutine__traceback)
 
 def wait(waitable):
   return Coroutine.current.wait(waitable)
