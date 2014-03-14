@@ -3,7 +3,7 @@
 #include <elle/log.hh>
 
 #include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
-#include <reactor/backend/coro_io/thread.hh>
+#include <reactor/backend/coro_io/backend.hh>
 #include <reactor/exception.hh>
 
 ELLE_LOG_COMPONENT("reactor.backend");

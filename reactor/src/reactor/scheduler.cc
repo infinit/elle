@@ -11,7 +11,7 @@
 #include <elle/memory.hh>
 
 #include <reactor/backend/backend.hh>
-#include <reactor/backend/coro_io/thread.hh>
+#include <reactor/backend/coro_io/backend.hh>
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>

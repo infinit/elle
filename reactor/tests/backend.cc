@@ -1,7 +1,7 @@
 #include <elle/test.hh>
 
 #include <reactor/backend/backend.hh>
-#include <reactor/backend/coro_io/thread.hh>
+#include <reactor/backend/coro_io/backend.hh>
 
 #include <boost/bind.hpp>
 
