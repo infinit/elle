@@ -61,6 +61,14 @@ def configure(curl_config,
       local_cxx_config += boost.config_python(link = False)
       local_cxx_config.library_add(
         drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+      # we are building binaries that will link to us, so we need to
+      # link with the python library (ubuntu&default build of boost_python does not)
+      libpython3 = drake.cxx.find_library(
+        token = 'pyconfig.h',
+        include_dir = ['include/python3.2', 'include/python3.3'],
+        name = 'python3', # will search using pkg-config
+        )
+      local_cxx_config += libpython3
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
