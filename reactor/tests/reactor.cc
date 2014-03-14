@@ -2116,25 +2116,32 @@ ELLE_TEST_SCHEDULED(test_tracked)
   f4.reset();
 }
 
-ELLE_TEST_SCHEDULED(test_timer)
+namespace timer
 {
   using reactor::Timer;
-  { // wait
+
+  ELLE_TEST_SCHEDULED(wait)
+  {
     int v = 0;
     Timer t("myTimer1", 200_ms, std::bind(&coro, std::ref(v)));
     BOOST_CHECK_EQUAL(v, 0);
     t.wait();
     BOOST_CHECK_EQUAL(v, 2);
   }
-  { // destructor
+
+  ELLE_TEST_SCHEDULED(destructor)
+  {
     int v = 0;
     {
       Timer t("myTimer2", 0_ms, std::bind(&coro, std::ref(v)));
-      reactor::yield();reactor::yield();
+      reactor::yield();
+      reactor::yield();
     }
     BOOST_CHECK_EQUAL(v, 2);
   }
-  { // basic cancel
+
+  ELLE_TEST_SCHEDULED(basic_cancel)
+  {
     int v = 0;
     Timer t("myTimer3", 100_ms, std::bind(&coro, std::ref(v)));
     BOOST_CHECK_EQUAL(v, 0);
@@ -2142,7 +2149,9 @@ ELLE_TEST_SCHEDULED(test_timer)
     reactor::sleep(200_ms);
     BOOST_CHECK_EQUAL(v, 0);
   }
-  { // cancel after start
+
+  ELLE_TEST_SCHEDULED(cancel_after_start)
+  {
     reactor::Barrier b;
     reactor::Barrier b2;
     int v = 0;
@@ -2155,50 +2164,55 @@ ELLE_TEST_SCHEDULED(test_timer)
     reactor::yield();
     BOOST_CHECK_EQUAL(v, 2);
   }
-  { // cancel_now after start
+
+  ELLE_TEST_SCHEDULED(cancel_now_after_start)
+  {
     reactor::Barrier b;
     int v = 0;
     Timer t("myTimer5", 0_ms, [&] { b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;});
     b.wait();
-    t.cancel_now(); // waits
+    t.cancel_now(); // Waits.
     BOOST_CHECK_EQUAL(v, 2);
   }
-  { // terminate after start
+
+  ELLE_TEST_SCHEDULED(terminate_after_start)
+  {
     int v = 0;
     reactor::Barrier b;
     Timer t("myTimer6", 0_ms, [&]
-      {
-        try {
-          b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
-        }
-        catch (...)
-        { // check we were interrupted
-          v = 3;
-          throw;
-        }
-      });
-
+            {
+              try {
+                b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
+              }
+              catch (...)
+              {
+                // Check we were interrupted.
+                v = 3;
+                throw;
+              }
+            });
     b.wait();
     t.terminate();
     BOOST_CHECK_EQUAL(v, 1);
     reactor::yield(); reactor::yield();
     BOOST_CHECK_EQUAL(v, 3);
   }
-  { // terminate_now after start
+
+  ELLE_TEST_SCHEDULED(terminate_now_after_start)
+  {
     int v = 0;
     reactor::Barrier b;
     Timer t("myTimer7", 0_ms, [&]
-      {
-        try {
-          b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
-        }
-        catch (...)
-        {
-          v = 3;
-          throw;
-        }
-      });
-
+            {
+              try {
+                b.open(); v = 1; reactor::yield(); reactor::yield(); v=2;
+              }
+              catch (...)
+              {
+                v = 3;
+                throw;
+              }
+            });
     b.wait();
     t.terminate_now();
     BOOST_CHECK_EQUAL(v, 3);
@@ -2244,7 +2258,27 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(barrier);
   barrier->add(BOOST_TEST_CASE(barrier_closed), 0, 10);
   barrier->add(BOOST_TEST_CASE(barrier_opened), 0, 10);
-  barrier->add(BOOST_TEST_CASE(test_timer), 0, 10);
+
+  // Timer
+  {
+    boost::unit_test::test_suite* timer = BOOST_TEST_SUITE("timer");
+    boost::unit_test::framework::master_test_suite().add(timer);
+    auto wait = &timer::wait;
+    timer->add(BOOST_TEST_CASE(wait), 0, 10);
+    auto destructor = &timer::destructor;
+    timer->add(BOOST_TEST_CASE(destructor), 0, 10);
+    auto basic_cancel = &timer::basic_cancel;
+    timer->add(BOOST_TEST_CASE(basic_cancel), 0, 10);
+    auto cancel_after_start = &timer::cancel_after_start;
+    timer->add(BOOST_TEST_CASE(cancel_after_start), 0, 10);
+    auto cancel_now_after_start = &timer::cancel_now_after_start;
+    timer->add(BOOST_TEST_CASE(cancel_now_after_start), 0, 10);
+    auto terminate_after_start = &timer::terminate_after_start;
+    timer->add(BOOST_TEST_CASE(terminate_after_start), 0, 10);
+    auto terminate_now_after_start = &timer::terminate_now_after_start;
+    timer->add(BOOST_TEST_CASE(terminate_now_after_start), 0, 10);
+  }
+
   // Scope
   {
     boost::unit_test::test_suite* scope = BOOST_TEST_SUITE("scope");
