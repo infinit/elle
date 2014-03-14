@@ -42,14 +42,15 @@ namespace reactor
           Super(name, action),
           _backend(backend),
           _coro(Coro_new()),
-          _caller(nullptr)
+          _caller(nullptr),
+          _root(false)
         {}
 
         ~Thread()
         {
-          ELLE_ASSERT(status() == Status::done ||
-                      status() == Status::starting ||
-                      this == _backend._self.get());
+          ELLE_ASSERT(this->status() == Status::done ||
+                      this->status() == Status::starting ||
+                      this->_root);
           ELLE_TRACE("%s: die", *this);
           if (_coro)
           {
@@ -62,6 +63,7 @@ namespace reactor
         Thread(Backend& backend):
           Thread(backend, "<root>", Action())
         {
+          this->_root = true;
           this->status(Status::running);
           ELLE_ASSERT(_coro);
           Coro_initializeMainCoro(_coro);
@@ -168,6 +170,7 @@ namespace reactor
         Thread* _caller;
         /// Let libcoroutine callback invoke our _run.
         friend void starter(void* arg);
+        ELLE_ATTRIBUTE(bool, root);
       };
 
       static
