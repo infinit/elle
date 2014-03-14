@@ -1,6 +1,12 @@
 #include <boost/function.hpp>
 #include <boost/python.hpp>
 
+// Retarded CPython defines a tolower macro.
+#ifdef tolower
+# undef tolower
+#endif
+
+
 #include <reactor/exception.hh>
 #include <reactor/scheduler.hh>
 
