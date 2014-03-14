@@ -1100,8 +1100,14 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
                     prev_via, prev.path(),
                     new_via, new.path())
       return new, new_via
-    # FIXME: is building a node during dependencies ok ?
-    explored_node.build()
+    try:
+      # FIXME: is building a node during dependencies ok ?
+      explored_node.build()
+    except drake.NoBuilder:
+      # If a node is found but cannot be built, it must be an obsolete
+      # file pulled from the on-disk dependencies. Discard it and let
+      # the compiler err because it can't find the include.
+      return (set(), set())
     matches = __dependencies_includes.get(path, None)
     if matches is None:
       matches = []
