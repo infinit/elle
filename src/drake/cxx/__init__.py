@@ -1133,6 +1133,9 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
             # if test.is_file() or registered.builder is not None:
             found, via = unique(path, include, via, found, include_path,
                                 drake.node(test))
+            logger.log('drake.cxx.dependencies',
+                       drake.log.LogLevel.debug,
+                       'found %s in the nodes', found)
             break
         # Check if such a file doesn't exist, unregistered, in the
         # source path.
@@ -1141,6 +1144,9 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
           if test.is_file():
             found, via = unique(path, include, via, found, include_path,
                                 drake.node(name, Header))
+            logger.log('drake.cxx.dependencies',
+                       drake.log.LogLevel.debug,
+                       'found %s in sources', found)
             break
       if found is not None:
         subcycles, subdeps = mkdeps(found, search,
