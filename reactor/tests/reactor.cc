@@ -912,8 +912,7 @@ waker(reactor::Signal& s, reactor::Scheduler& sched)
 
   // Make sure the scheduler is sleeping.
   ::sleep(1);
-  reactor::Thread w(sched, "waker",
-                    boost::bind(&reactor::Signal::signal, &s));
+  reactor::Thread w(sched, "waker", [&s] { s.signal(); });
   // Make sure the scheduler is done.
   while (!w.done())
     ::sleep(1);
