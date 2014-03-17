@@ -41,11 +41,11 @@ class NoopLogger:
 
 class Logger:
 
-  def __new__(self, configuration_string = None, indentation = None):
+  def __call__(self, configuration_string = None, indentation = None):
     if configuration_string is None:
       return NoopLogger()
     else:
-      return object.__new__(
+      return object.__call__(
         self,
         configuration_string = configuration_string,
         indentation = indentation)
