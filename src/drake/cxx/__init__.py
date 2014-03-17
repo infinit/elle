@@ -1010,13 +1010,14 @@ def inclusion_dependencies(n, toolkit, config):
   with profile_deps():
     search_path = []
     for path in config.local_include_path:
-      search_path.append((path, True))
-      search_path.append((drake.path_source() / path, False))
-    search_path += [(path, False) for path in toolkit.include_path]
+      search_path.append((path, True, True))
+      search_path.append((drake.path_source() / path, False, True))
+    search_path += [(path, False, False) for path in toolkit.include_path]
     cycles_map = dict()
     owner_map = dict()
     cycles, deps = mkdeps(n, tuple(search_path),
                           set(), cycles_map, owner_map)
+    deps.add((n, True))
     assert not cycles
     assert not cycles_map
     assert not owner_map
@@ -1026,7 +1027,8 @@ __dependencies_includes = {}
 __dependencies_result = {}
 __include_re = re.compile(b'\\s*#\\s*include\\s*(<|")(.*)(>|")')
 
-def mkdeps(explored_node, search, marks, cycles_map, owner_map):
+def mkdeps(explored_node, search, marks, cycles_map, owner_map,
+           user = True):
   # Fetch cached result
   key = (search, explored_node)
   res = __dependencies_result.get(key, None)
@@ -1051,7 +1053,7 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
     marks.add(path)
   if res is None:
     cycles, deps = _mkdeps(explored_node, search,
-                           marks, cycles_map, owner_map)
+                           marks, cycles_map, owner_map, user = user)
     if cycles:
       try:
         cycles.remove(explored_node)
@@ -1081,13 +1083,13 @@ def mkdeps(explored_node, search, marks, cycles_map, owner_map):
   else:
     return (set(), res)
 
-def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
+def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
   path = explored_node.path()
   with logger.log('drake.cxx.dependencies',
                   drake.log.LogLevel.trace,
                   'explore dependencies of %s', path):
     cycles = set()
-    deps = set((explored_node,))
+    deps = set()
     def unique_fail(path, include, prev_via, prev, new_via, new):
       raise Exception('in %s, two nodes match inclusion %s: '\
                       '%s via %s and %s via %s' % \
@@ -1123,12 +1125,12 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
     for include, local in matches:
       if local:
         current_path = explored_node.name_absolute().dirname()
-        local_path = ((current_path, True),)
+        local_path = ((current_path, True, user),)
       else:
         local_path = ()
       found = None
       via = None
-      for include_path, test_node in chain(local_path, search):
+      for include_path, test_node, user in chain(local_path, search):
         name = include_path / include
         test = name
         if test_node:
@@ -1155,8 +1157,10 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map):
                        'found %s in sources', found)
             break
       if found is not None:
+        deps.add((found, user))
         subcycles, subdeps = mkdeps(found, search,
-                                    marks, cycles_map, owner_map)
+                                    marks, cycles_map, owner_map,
+                                    user = user)
         if not cycles and subcycles:
           my_cycle = next(iter(subcycles))
           cycles_map.setdefault(my_cycle, set()).add(explored_node)
@@ -1182,16 +1186,22 @@ class Compiler(Builder):
     self.config = cfg
     self.toolkit = tk
     self.__c = c
+    self.__header_dependencies = set()
     Builder.__init__(self, [src], [obj])
 
 
   def dependencies(self):
-    for dep in inclusion_dependencies(self.src,
-                                      self.toolkit, self.config):
+    for dep, local in inclusion_dependencies(
+        self.src, self.toolkit, self.config):
       if dep != self.src:
         self.add_dynsrc(self.deps, dep)
+        self.__header_dependencies.add((dep, local))
     for hook in self.toolkit.hook_object_deps():
       hook(self)
+
+  @property
+  def header_dependencies(self):
+    return self.__header_dependencies
 
   def execute(self):
     # FIXME: handle this in the toolkit itself.

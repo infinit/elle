@@ -32,7 +32,7 @@ with drake.Drake():
   b1 = drake.node('branch-1.hh')
   b2 = drake.node('branch-2.hh')
   def deps(n):
-    return drake.cxx.inclusion_dependencies(n, tk, cfg)
+    return set(node for node, user in drake.cxx.inclusion_dependencies(n, tk, cfg))
   assert deps(root) == set((root, root1, one, two, three, b1, b2))
   assert deps(root1) == set((root1,))
   assert deps(one) == set((one, two, three, b1, b2))
