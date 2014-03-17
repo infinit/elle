@@ -122,8 +122,9 @@ class Qt:
     obj = compiler.object
     if obj in self.__dependencies:
       self.__dependencies[obj] = []
-    for source in list(chain(compiler.sources().values(),
-                             compiler.sources_dynamic())):
+    for source in chain(
+        compiler.sources().values(),
+        (h for h, local in compiler.header_dependencies if local)):
       if source in self.__moc_cache:
         res = self.__moc_cache[source]
       else:
