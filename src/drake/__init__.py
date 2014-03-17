@@ -985,7 +985,8 @@ class DepFile:
                 node.name_absolute(), node.drake_type())
                for node, source in self.__files.values()]
       with profile_pickling():
-        with open(str(self.path()), 'wb') as f:
+        path = self.path()
+        with open(str(path), 'wb') as f:
           drake.Path.Pickler(f).dump(value)
 
     def __repr__(self):
@@ -1608,12 +1609,10 @@ class Builder:
     path = self.__targets[0].name()
     if path.virtual:
       path = drake.Path(path._Path__path, False, False)
-    path.dirname().mkpath()
     if path.absolute():
       res = path.dirname() / _CACHEDIR / path.basename()
     else:
       res = drake.Drake.current.prefix / _CACHEDIR / path
-    res.mkpath()
     return res
 
   def hash(self):
@@ -1704,39 +1703,41 @@ class Builder:
         execute = False
         # Reload dynamic dependencies
         if not execute:
-          for f in _OS.listdir(str(self.cachedir())):
-            if not _OS.path.isfile(str(self.cachedir() / f)):
-              continue
-            if f in ['drake', 'drake.Builder', 'stdout']:
-              continue
-            depfile = self.depfile(f)
-            depfile.read()
-            handler = self._deps_handlers[f]
-            with sched.logger.log(
-                'drake.Builder',
-                drake.log.LogLevel.dump,
-                '%s: consider dependencies file %s', self, f):
-              for path in depfile.sha1s():
-                if path in self.__sources or path in self.__dynsrc:
-                  sched.logger.log(
-                    'drake.Builder',
-                    drake.log.LogLevel.debug,
-                    '%s: already in our sources: %s', self, path)
-                  continue
-                with sched.logger.log(
-                    'drake.Builder',
-                    drake.log.LogLevel.dump,
-                    '%s: %s is unkown, calling handler', self, path):
-                  node = handler(self,
-                                 path,
-                                 self.get_type(depfile.sha1s()[path][1]),
-                                 None)
-                  if node is not None:
+          cachedir = self.cachedir()
+          if _OS.path.exists(str(cachedir)):
+            for f in _OS.listdir(str(cachedir)):
+              if not _OS.path.isfile(str(cachedir / f)):
+                continue
+              if f in ['drake', 'drake.Builder', 'stdout']:
+                continue
+              depfile = self.depfile(f)
+              depfile.read()
+              handler = self._deps_handlers[f]
+              with sched.logger.log(
+                  'drake.Builder',
+                  drake.log.LogLevel.dump,
+                  '%s: consider dependencies file %s', self, f):
+                for path in depfile.sha1s():
+                  if path in self.__sources or path in self.__dynsrc:
                     sched.logger.log(
                       'drake.Builder',
+                      drake.log.LogLevel.debug,
+                      '%s: already in our sources: %s', self, path)
+                    continue
+                  with sched.logger.log(
+                      'drake.Builder',
                       drake.log.LogLevel.dump,
-                      '%s: add %s to sources', self, path)
-                    self.add_dynsrc(f, node)
+                      '%s: %s is unkown, calling handler', self, path):
+                    node = handler(self,
+                                   path,
+                                   self.get_type(depfile.sha1s()[path][1]),
+                                   None)
+                    if node is not None:
+                      sched.logger.log(
+                        'drake.Builder',
+                        drake.log.LogLevel.dump,
+                        '%s: add %s to sources', self, path)
+                      self.add_dynsrc(f, node)
 
         coroutines_static = []
         coroutines_dynamic = []
@@ -1814,6 +1815,11 @@ class Builder:
                 if not f.up_to_date():
                     execute = True
         if execute:
+          try:
+            self.cachedir().mkpath()
+          except:
+            print(self, file = sys.stderr)
+            raise
           with logger.log('drake.Builder',
                           drake.log.LogLevel.trace,
                           '%s: needs execution', self):
