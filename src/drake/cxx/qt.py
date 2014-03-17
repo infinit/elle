@@ -171,7 +171,6 @@ Builder.register_deps_handler(deps_handler_name, deps_handler)
 Node.extensions['moc.cc'] = Source
 
 class Moc(Builder):
-  name = 'MetaObject compilation'
 
   def __init__(self, qt, src, tgt):
     Builder.__init__(self, [src], [tgt])
@@ -185,6 +184,9 @@ class Moc(Builder):
       ['%s/bin/moc' % self.qt.prefix,
        str(self.src.path()),
        '-o', str(self.tgt.path())])
+
+  def __str__(self):
+    return 'Moc of %s' % self.src
 
 class Ui(Node):
 
