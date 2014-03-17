@@ -1815,11 +1815,10 @@ class Builder:
                 if not f.up_to_date():
                     execute = True
         if execute:
-          try:
-            self.cachedir().mkpath()
-          except:
-            print(self, file = sys.stderr)
-            raise
+          self.cachedir().mkpath()
+          for target in self.__targets:
+            if isinstance(target, Node):
+              target.path().dirname().mkpath()
           with logger.log('drake.Builder',
                           drake.log.LogLevel.trace,
                           '%s: needs execution', self):
