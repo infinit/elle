@@ -540,8 +540,9 @@ namespace reactor
       if (!this->_input.empty())
       {
         this->_input_current = std::move(this->_input.front());
-        ELLE_DEBUG_SCOPE("%s: input: fetch data: %s",
+        ELLE_DEBUG_SCOPE("%s: input: fetch data: %f",
                          *this->_request, this->_input_current);
+        ELLE_DUMP("%s", this->_input_current);
         this->_input.pop();
         if (this->_input.empty() && !this->_input_done)
           this->_input_available.close();
