@@ -1,19 +1,20 @@
 #ifndef INFINIT_CRYPTOGRAPHY_PUBLICKEY_HH
 # define INFINIT_CRYPTOGRAPHY_PUBLICKEY_HH
 
-# include <cryptography/Plain.hh>
-# include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
+# include <cryptography/Code.hh>
+# include <cryptography/Cryptosystem.hh>
+# include <cryptography/Plain.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
 # include <cryptography/fwd.hh>
 
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
 # include <elle/Printable.hh>
-# include <elle/serialize/construct.hh>
+# include <elle/attribute.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/operator.hh>
+# include <elle/serialize/construct.hh>
+# include <elle/types.hh>
 # include <elle/utility/fwd.hh>
 
 # include <utility>

@@ -4,6 +4,8 @@
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
+# include <cryptography/Plain.hh>
+
 namespace infinit
 {
   namespace cryptography

@@ -1,11 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HH
 # define INFINIT_CRYPTOGRAPHY_PRIVATEKEY_HH
 
-# include <cryptography/fwd.hh>
-# include <cryptography/Seed.hh>
-# include <cryptography/Signature.hh>
-# include <cryptography/oneway.hh>
-# include <cryptography/fwd.hh>
+# include <utility>
 
 # include <elle/types.hh>
 # include <elle/operator.hh>
@@ -14,7 +10,13 @@
 # include <elle/concept/Uniquable.hh>
 # include <elle/utility/fwd.hh>
 
-# include <utility>
+# include <cryptography/Clear.hh>
+# include <cryptography/Cryptosystem.hh>
+# include <cryptography/Seed.hh>
+# include <cryptography/Signature.hh>
+# include <cryptography/fwd.hh>
+# include <cryptography/oneway.hh>
+
 ELLE_OPERATOR_RELATIONALS();
 
 //

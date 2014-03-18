@@ -1,3 +1,4 @@
+#include <cryptography/Input.hh>
 #include <cryptography/Output.hh>
 
 namespace infinit
