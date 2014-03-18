@@ -8,7 +8,7 @@
 
 #include <cryptography/oneway.hh>
 
-ELLE_LOG_COMPONENT("aws.CanonicalRequest");
+// ELLE_LOG_COMPONENT("aws.CanonicalRequest");
 
 namespace aws
 {
