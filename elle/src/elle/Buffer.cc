@@ -467,27 +467,36 @@ namespace elle
   | Operators |
   `----------*/
 
+  static
+  void
+  put(std::ostream& stream,
+      ConstWeakBuffer const& buffer,
+      bool hex)
+  {
+    if (hex)
+      stream << format::hexadecimal::encode(buffer);
+    else
+      stream.write(reinterpret_cast<const char*>(buffer.contents()),
+                   buffer.size());
+  }
+
   std::ostream&
   operator <<(std::ostream& stream,
               ConstWeakBuffer const& buffer)
   {
-    static size_t const max_length = 20;
-
-    // Display the string, depending on its length.
-    if (buffer.size() == 0)
-      stream << "empty";
-    else if (buffer.size() <= max_length)
-      stream << "0x" << format::hexadecimal::encode(buffer);
+    static int const max_length = 20;
+    bool hex = stream.flags() & std::ios::hex;
+    bool fixed = stream.flags() & std::ios::fixed;
+    if (hex)
+      stream << "0x";
+    if (fixed)
+    {
+      put(stream, buffer.range(0, max_length / 2), hex);
+      stream << "...";
+      put(stream, buffer.range(-max_length / 2), hex);
+    }
     else
-      // Otherwise chop it and display the begining and the end only.
-      stream << "0x"
-             << format::hexadecimal::encode(
-                 ConstWeakBuffer{buffer.contents(), max_length / 2})
-             << "..." << std::dec << buffer.size() << " bytes" << "..."
-             << format::hexadecimal::encode(
-                 ConstWeakBuffer{
-                   buffer.contents() + buffer.size() - max_length / 2,
-                   max_length / 2});
+      put(stream, buffer, hex);
     return stream;
   }
 

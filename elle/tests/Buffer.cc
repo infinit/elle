@@ -237,11 +237,44 @@ delete_array(elle::Byte* p)
   delete [] p;
 }
 
+namespace print
+{
+  static const std::string data("somedata somedata somedata");
+
+  static
+  void
+  string()
+  {
+    elle::ConstWeakBuffer buffer(data);
+    BOOST_CHECK_EQUAL(elle::sprintf("%s", buffer), data);
+  }
+
+  static
+  void
+  string_fixed()
+  {
+    elle::ConstWeakBuffer buffer(data);
+    BOOST_CHECK_EQUAL(elle::sprintf("%f", buffer), "somedata s... somedata");
+  }
+
+  static
+  void
+  hexadecimal()
+  {
+    elle::ConstWeakBuffer buffer(data);
+    BOOST_CHECK_EQUAL(elle::sprintf("%x", buffer),
+                      "0x736f6d656461746120736f6d656461746120736f6d6564617461");
+    boost::format fmt("%s");
+  }
+}
+
 ELLE_TEST_SUITE()
 {
+  auto& master = boost::unit_test::framework::master_test_suite();
+
   // Buffer
   boost::unit_test::test_suite* buffer = BOOST_TEST_SUITE("Buffer");
-  boost::unit_test::framework::master_test_suite().add(buffer);
+  master.add(buffer);
 
   boost::unit_test::test_suite* ctor = BOOST_TEST_SUITE("Construction");
   buffer->add(ctor);
@@ -273,7 +306,7 @@ ELLE_TEST_SUITE()
 
   // WeakBuffer
   boost::unit_test::test_suite* weakbuffer = BOOST_TEST_SUITE("WeakBuffer");
-  boost::unit_test::framework::master_test_suite().add(weakbuffer);
+  master.add(weakbuffer);
 
   boost::unit_test::test_suite* ctor_weak = BOOST_TEST_SUITE("Construction");
   weakbuffer->add(ctor_weak);
@@ -284,4 +317,13 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* cmp_weak = BOOST_TEST_SUITE("Comparisons");
   weakbuffer->add(cmp_weak);
   cmp_weak->add(BOOST_TEST_CASE((&test_cmp<elle::WeakBuffer, delete_array>)));
+
+  {
+    using namespace print;
+    boost::unit_test::test_suite* print = BOOST_TEST_SUITE("print");
+    master.add(print);
+    print->add(BOOST_TEST_CASE(string));
+    print->add(BOOST_TEST_CASE(string_fixed));
+    print->add(BOOST_TEST_CASE(hexadecimal));
+  }
 }
