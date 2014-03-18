@@ -6,6 +6,7 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/rsa/keypair.hh>
 
+#include <elle/printf.hh>
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
@@ -277,4 +278,3 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }
-
