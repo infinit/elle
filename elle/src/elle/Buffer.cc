@@ -399,6 +399,20 @@ namespace elle
     return this->_contents[i];
   }
 
+  /// A subset of this buffer.
+  ConstWeakBuffer
+  ConstWeakBuffer::range(int start, int end) const
+  {
+    if (start < 0)
+      start = this->size() + start + 1;
+    if (end < 0)
+      end = this->size() + end + 1;
+    ELLE_ASSERT_LTE(start, end);
+    ELLE_ASSERT_LTE(end, this->size());
+    return ConstWeakBuffer(this->contents() + start, end - start);
+  }
+
+
   bool
   ConstWeakBuffer::operator ==(ConstWeakBuffer const& other) const
   {

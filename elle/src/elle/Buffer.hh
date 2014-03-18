@@ -220,10 +220,12 @@ namespace elle
     /// Get byte at position \a i.
     Byte&
     operator[] (unsigned i);
-
     /// Get byte at position \a i.
     Byte
     operator[] (unsigned i) const;
+    /// A subset of this buffer.
+    ConstWeakBuffer
+    range(int start, int end = -1) const;
     /// Size of the buffer.
     ELLE_ATTRIBUTE_R(size_t, size);
     /// Buffer constant data.
