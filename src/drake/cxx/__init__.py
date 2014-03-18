@@ -1726,7 +1726,7 @@ class LibraryConfiguration(drake.Configuration):
   """Configuration for a classical C/C++ library."""
 
   def __init__(self, token = None, name = None, prefix = None,
-               include_dir = None, libs = [],
+               include_dir = None, libs = None,
                toolkit = None):
     """Find and create a configuration for the library.
 
@@ -1778,6 +1778,8 @@ class LibraryConfiguration(drake.Configuration):
       self.__prefix_symbolic = prefix_symbolic or self.__prefix
       self.__libraries_path = self.__prefix_symbolic / 'lib'
       self.__config.lib_path(self.__prefix / 'lib')
+    if libs is None:
+      libs = ()
     for choices in libs:
       if not isinstance(choices, tuple):
         choices = (choices,)
