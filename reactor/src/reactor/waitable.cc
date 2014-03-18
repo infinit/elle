@@ -91,7 +91,7 @@ namespace reactor
     }
     Thread* thread = *_threads.begin();
     thread->_wake(this);
-    _threads.erase(thread);
+    _threads.get<1>().erase(thread);
     _exception = std::exception_ptr{}; // An empty one.
     if (this->_threads.empty())
       this->on_signaled()();
@@ -102,8 +102,8 @@ namespace reactor
   Waitable::_wait(Thread* t)
   {
     ELLE_TRACE("%s: wait %s", *t, *this);
-    ELLE_ASSERT_EQ(_threads.find(t), _threads.end());
-    _threads.insert(t);
+    ELLE_ASSERT_EQ(_threads.get<1>().find(t), _threads.get<1>().end());
+    _threads.get<1>().insert(t);
     return true;
   }
 
@@ -111,8 +111,8 @@ namespace reactor
   Waitable::_unwait(Thread* t)
   {
     ELLE_TRACE("%s: unwait %s", *t, *this);
-    ELLE_ASSERT_NEQ(_threads.find(t), _threads.end());
-    _threads.erase(t);
+    ELLE_ASSERT_NEQ(_threads.get<1>().find(t), _threads.get<1>().end());
+    _threads.get<1>().erase(t);
   }
 
   void

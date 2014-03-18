@@ -290,6 +290,41 @@ test_signals_two_on_one()
   BOOST_CHECK_EQUAL(step, 2);
 }
 
+ELLE_TEST_SCHEDULED(test_signals_order)
+{
+  // check that waiters are signaled in order.
+  // try very hard to not pass by cheer luck
+  int seq = -1;
+  reactor::Signal s;
+  reactor::Barrier b;
+  auto thread = [&](int id) { b.open(); s.wait(); seq = id;};
+  reactor::Thread t1("t1", std::bind(thread, 1));
+  b.wait();b.close();
+  reactor::Thread t2("t2", std::bind(thread, 2));
+  b.wait();b.close();
+  reactor::Thread t3("t3", std::bind(thread, 3));
+  b.wait();b.close();
+  for (unsigned int i = 4; i < 8; ++i)
+  {
+    new reactor::Thread(elle::sprintf("t%s", i), std::bind(thread, i), true);
+    b.wait();b.close();
+  }
+  reactor::Thread t8("t8", std::bind(thread, 8));
+  b.wait();b.close();
+  reactor::Thread t9("t9", std::bind(thread, 9));
+  b.wait();b.close();
+  for (unsigned i=1; i<10; ++i)
+  {
+    BOOST_CHECK_EQUAL(seq, -1);
+    s.signal_one();reactor::yield();reactor::yield();
+    BOOST_CHECK_EQUAL(seq, i);
+    seq = -1;
+    reactor::yield();reactor::yield();
+  }
+  for (unsigned i=0; i<10; ++i)
+    reactor::yield();
+}
+
 static
 void
 waiter_timeout()
@@ -2261,6 +2296,7 @@ ELLE_TEST_SUITE()
   signals->add(BOOST_TEST_CASE(test_signals_one_on_two), 0, 10);
   signals->add(BOOST_TEST_CASE(test_signals_two_on_one), 0, 10);
   signals->add(BOOST_TEST_CASE(test_signals_timeout), 0, 10);
+  signals->add(BOOST_TEST_CASE(test_signals_order), 0, 10);
 
   boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
   boost::unit_test::framework::master_test_suite().add(barrier);

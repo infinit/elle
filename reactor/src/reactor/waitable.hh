@@ -6,6 +6,13 @@
 # include <boost/function.hpp>
 # include <boost/noncopyable.hpp>
 
+# include <boost/multi_index_container.hpp>
+# include <boost/multi_index/composite_key.hpp>
+# include <boost/multi_index/mem_fun.hpp>
+# include <boost/multi_index/identity.hpp>
+# include <boost/multi_index/sequenced_index.hpp>
+# include <boost/multi_index/hashed_index.hpp>
+
 # include <elle/Exception.hh>
 # include <elle/Printable.hh>
 
@@ -25,7 +32,14 @@ namespace reactor
       /// Self type.
       typedef Waitable Self;
       /// Collection of threads blocked on this.
-      typedef std::set<Thread*> Waiters;
+      //typedef std::set<Thread*> Waiters;
+      typedef boost::multi_index_container<
+           Thread*,
+           boost::multi_index::indexed_by<
+             boost::multi_index::sequenced<>,
+             boost::multi_index::hashed_unique<boost::multi_index::identity<Thread*>>
+           >
+         > Waiters;
 
   /*-------------.
   | Construction |

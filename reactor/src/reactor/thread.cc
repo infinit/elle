@@ -129,6 +129,17 @@ namespace reactor
     s << "thread " << name();
   }
 
+  static
+  std::ostream&
+  operator <<(std::ostream& s, const Waitable::Waiters& w)
+  {
+    s << '[';
+    for (auto const& t: w.get<0>())
+      s << t << ", ";
+    s << ']';
+    return s;
+  }
+
   void
   Thread::Dump(std::ostream& s) const
   {
