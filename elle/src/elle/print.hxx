@@ -164,7 +164,6 @@ namespace elle
   fprint(std::ostream&      out,
          T&&...             values)
   {
-    out << std::dec;
     elle::detail::PrintFlags flags;
     return ::elle::detail::fprint(out, flags, true, std::forward<T>(values)...);
   }

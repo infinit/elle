@@ -7,6 +7,7 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/random.hh>
 
+#include <elle/printf.hh>
 #include <elle/types.hh>
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>

@@ -7,12 +7,12 @@
 namespace elle
 {
   template <typename F, typename... T>
-  size_t
+  void
   printf(F&& fmt,
          T&&... values);
 
   template <typename F, typename... T>
-  size_t
+  void
   fprintf(std::ostream& out,
           F&& fmt,
           T&&... values);
