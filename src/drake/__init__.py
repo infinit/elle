@@ -2919,6 +2919,21 @@ class Configuration:
   def _search(self, what, where):
     return self._search_all(what, where)[0]
 
+  def _search_any(self, whats, wheres):
+    for what in whats:
+      if not isinstance(what, tuple):
+        res, path = (what, what)
+      else:
+        res, path = what
+      for where in wheres:
+        if (where / path).exists():
+          return where, res
+
+    raise Exception('unable to find %s in %s.' % \
+                    (self._format_search(whats),
+                     self._format_search(where)))
+    return res
+
   def _search_all(self, what, where):
     what = Path(what)
     res = []
