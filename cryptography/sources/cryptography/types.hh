@@ -1,6 +1,8 @@
 #ifndef INFINIT_CRYPTOGRAPHY_TYPES_HH
 # define INFINIT_CRYPTOGRAPHY_TYPES_HH
 
+# include <memory>
+
 # include <cryptography/deleter.hh>
 
 # include <openssl/bn.h>

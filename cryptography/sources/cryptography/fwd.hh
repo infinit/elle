@@ -5,6 +5,7 @@ namespace infinit
 {
   namespace cryptography
   {
+    enum class Cryptosystem;
     class Exception;
     class Input;
     class KeyPair;
@@ -27,18 +28,20 @@ namespace infinit
     }
     class Seed;
 # endif
+    /// Represent a plain text for cryptographic operations.
+    typedef Input Plain;
+    /// Represent a decrypted text, both trought symmetric and asymmetric
+    /// cryptosystems.
+    typedef Output Clear;
+    /// Represent an encrypted text, asymmetrically or symmetrically.
+    typedef Output Code;
+    /// Represent an asymmetrically encrypted text.
+    typedef Output Digest;
+    /// Represent a cryptographic signature.
+    typedef Output Signature;
   }
 }
 
-# include <cryptography/Code.hh>
-# include <cryptography/cipher.hh>
-# include <cryptography/Clear.hh>
-# include <cryptography/Cryptosystem.hh>
-# include <cryptography/deleter.hh>
-# include <cryptography/Digest.hh>
-# include <cryptography/Plain.hh>
-# include <cryptography/Signature.hh>
 # include <cryptography/rsa/fwd.hh>
-# include <cryptography/types.hh>
 
 #endif
