@@ -2944,7 +2944,7 @@ class Configuration:
     return res
 
   def _format_search(self, where):
-    if not isinstance(where, list):
+    if not isinstance(where, (list, tuple)):
       return str(where)
     elif len(where) <= 1:
       return str(where[0])
