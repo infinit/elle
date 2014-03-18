@@ -2919,20 +2919,23 @@ class Configuration:
   def _search(self, what, where):
     return self._search_all(what, where)[0]
 
+  def __split(self, pair):
+    if isinstance(pair, tuple):
+      return pair
+    else:
+      return pair, pair
+
   def _search_any(self, whats, wheres):
     for what in whats:
-      if not isinstance(what, tuple):
-        res, path = (what, what)
-      else:
-        res, path = what
+      res, path = self.__split(what)
       for where in wheres:
         if (where / path).exists():
           return where, res
-
-    raise Exception('unable to find %s in %s.' % \
-                    (self._format_search(whats),
-                     self._format_search(where)))
-    return res
+    raise Exception(
+      'unable to find %s in %s.' % \
+        (self._format_search((self.__split(what)[1]
+                              for what in whats)),
+         self._format_search(where)))
 
   def _search_all(self, what, where):
     what = Path(what)
@@ -2959,13 +2962,15 @@ class Configuration:
     return res
 
   def _format_search(self, where):
-    if not isinstance(where, (list, tuple)):
+    import types
+    if isinstance(where, types.GeneratorType):
+      where = list(where)
+    elif not isinstance(where, (list, tuple)):
       return str(where)
-    elif len(where) <= 1:
+    if len(where) == 1:
       return str(where[0])
-    else:
-      return 'any of %s and %s' % (', '.join(map(str, where[:-1])),
-                                   where[-1])
+    return 'any of %s and %s' % (', '.join(map(str, where[:-1])),
+                                 where[-1])
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
