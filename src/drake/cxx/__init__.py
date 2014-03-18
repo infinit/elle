@@ -777,7 +777,7 @@ class GccToolkit(Toolkit):
       path = Path(path)
       return path.dirname() / ('lib%s.a' % str(path.basename()))
 
-  def libname_dyn(self, cfg, path):
+  def libname_dyn(self, path, cfg = None):
 
       path = Path(path)
       if self.os == drake.os.linux:
@@ -984,7 +984,7 @@ class VisualToolkit(Toolkit):
       path = Path(path)
       return path.dirname() / ('%s.lib' % str(path.basename()))
 
-  def libname_dyn(self, cfg, path):
+  def libname_dyn(self, path, cfg = None):
       path = Path(path)
       return path.dirname() / ('%s.dll' % str(path.basename()))
 
@@ -1502,7 +1502,7 @@ class DynLib(Library):
                preserve_filename = False):
     path = Path(path)
     if not preserve_filename and tk is not None:
-      path = tk.libname_dyn(cfg, path)
+      path = tk.libname_dyn(path, cfg)
     Binary.__init__(self, path, sources, tk, cfg)
     for lib in self.dynamic_libraries:
       self.dependency_add(lib)
@@ -1641,13 +1641,19 @@ def dot_spread(nodes):
 command_add('cxx-deps-dot-merge', dot_merge)
 command_add('cxx-deps-dot', dot_spread)
 
-def find_library(token = None, name = None, prefix = None,
-                 include_dir = None):
+def find_library(token = None,
+                 name = None,
+                 prefix = None,
+                 include_dir = None,
+                 libs = None,
+                 toolkit = None):
   if prefix is None or isinstance(prefix, (str, Path)):
     conf = LibraryConfiguration(token = token,
                                 name = name,
                                 prefix = prefix,
-                                include_dir = include_dir)
+                                include_dir = include_dir,
+                                libs = libs,
+                                toolkit = toolkit)
     return conf.config()
   else:
     return prefix
@@ -1705,6 +1711,7 @@ class PkgConfig():
             for path in self.__flags(['--libs-only-L'], '-L'):
                 self.__library_path.append(drake.Path(path))
         return self.__library_path
+
     @property
     def library(self):
         if self.__library is None:
@@ -1712,12 +1719,15 @@ class PkgConfig():
             for path in self.__flags(['--libs-only-l'], '-l'):
                 self.__library.append(drake.Path(path))
         return self.__library
+
+
 class LibraryConfiguration(drake.Configuration):
 
   """Configuration for a classical C/C++ library."""
 
   def __init__(self, token = None, name = None, prefix = None,
-               include_dir = None, libs = []):
+               include_dir = None, libs = [],
+               toolkit = None):
     """Find and create a configuration for the library.
 
     prefix -- Where to find the library.
@@ -1738,6 +1748,7 @@ class LibraryConfiguration(drake.Configuration):
           self.__libraries_path.append(library_path)
         for library in pkg_config.library:
           self.__config.lib(library)
+        return
     # Search the library manually.
     if token is not None:
       include_dir = include_dir or 'include'
@@ -1767,7 +1778,12 @@ class LibraryConfiguration(drake.Configuration):
       self.__prefix_symbolic = prefix_symbolic or self.__prefix
       self.__libraries_path = self.__prefix_symbolic / 'lib'
       self.__config.lib_path(self.__prefix / 'lib')
-    for lib in libs:
+    for choices in libs:
+      if not isinstance(choices, tuple):
+        choices = (choices,)
+      where, lib = self._search_any(
+        [(choice, toolkit.libname_dyn(choice)) for choice in choices],
+        (prefix / 'lib',))
       self.__config.lib(lib)
 
   def config(self):
