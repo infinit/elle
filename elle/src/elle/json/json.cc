@@ -2,6 +2,7 @@
 #include <json_spirit/value.h>
 #include <json_spirit/writer.h>
 
+#include <elle/Backtrace.hh>
 #include <elle/IOStream.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/json/json.hh>
@@ -116,7 +117,8 @@ namespace elle
       if (any.type() == typeid(NullType))
         return json_spirit::Value::NULL_TYPE;
 
-      ELLE_ABORT("unable to make JSON from type: %s", any.type().name());
+      ELLE_ABORT("unable to make JSON from type: %s",
+                 elle::demangle(any.type().name()));
     }
 
     boost::any
