@@ -2176,7 +2176,7 @@ namespace timer
                 reactor::yield();
                 reactor::yield();
                 reactor::yield();
-                ++v;
+                v = true;
               });
       reactor::wait(started);
     }
