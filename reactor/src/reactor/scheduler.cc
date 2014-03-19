@@ -708,6 +708,14 @@ namespace reactor
   | Free functions |
   `---------------*/
 
+  reactor::Scheduler&
+  scheduler()
+  {
+    auto res = reactor::Scheduler::scheduler();
+    ELLE_ASSERT(res);
+    return *res;
+  }
+
   void
   background(std::function<void()> const& action)
   {

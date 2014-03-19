@@ -208,6 +208,9 @@ namespace reactor
   | Free functions |
   `---------------*/
 
+  /// The current scheduler.
+  reactor::Scheduler&
+  scheduler();
   /// Run \a action in a thread and yield until completion.
   void
   background(std::function<void()> const& action);
