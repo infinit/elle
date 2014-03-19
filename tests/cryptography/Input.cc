@@ -1,6 +1,7 @@
 #include "cryptography.hh"
 
 #include <cryptography/Input.hh>
+#include <cryptography/Output.hh>
 #include <cryptography/random.hh>
 
 /*-------------.
