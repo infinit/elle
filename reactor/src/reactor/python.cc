@@ -151,6 +151,8 @@ BOOST_PYTHON_MODULE(reactor)
     .def("wait", &wait_wrap)
     ;
   boost::python::def("yield_", reactor::yield);
+  boost::python::def("sleep",
+                     static_cast<void (*)(reactor::Duration)>(reactor::sleep));
 
   boost::python::register_exception_translator<reactor::Terminate>(translator);
 }
