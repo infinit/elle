@@ -46,7 +46,7 @@ namespace reactor
   Thread::Thread(std::string const& name,
                  Action const& action,
                  bool dispose):
-    Thread(*reactor::Scheduler::scheduler(), name, action, dispose)
+    Thread(reactor::scheduler(), name, action, dispose)
   {}
 
   ThreadPtr
