@@ -570,7 +570,7 @@ namespace reactor
     void
     Request::Impl::enqueue_data(elle::Buffer buffer)
     {
-      ELLE_DEBUG_SCOPE("%s: input: got data: %s", *this->_request, buffer);
+      ELLE_DEBUG_SCOPE("%s: input: got data: %f", *this->_request, buffer);
       this->_input.push(std::move(buffer));
       this->_input_available.open();
     }
