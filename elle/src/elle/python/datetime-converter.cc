@@ -1,14 +1,15 @@
+// Python
+#include <Python.h>
+#include <datetime.h>
+
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/python.hpp>
 
-#include <datetime.h> // This is the Python include
-
-/* Python bindings for commonly used C++ classes
-*/
+#include <elle/python/datetime-converter.hh>
 
 // Time duration Python conversion shamelessly stolen from the internet:
-// http://code.activestate.com/recipes/576395-convert-datetimedatetime-objects-tofrom-boostpytho/
+// http://code.activestate.com/recipes/576395-convert-datetimedatetime-objects-tofrom-boostpytho/static
 static
 long
 get_usecs(boost::posix_time::time_duration const& d)
@@ -152,29 +153,27 @@ struct tduration_from_python_delta
   }
 };
 
-static
-void
-bind_datetime()
+namespace elle
 {
-  PyDateTime_IMPORT;
+  namespace python
+  {
+    DatetimeConverter::DatetimeConverter()
+    {
+      PyDateTime_IMPORT;
+      ptime_from_python_datetime();
+      boost::python::to_python_converter<
+        const boost::posix_time::ptime
+        , ptime_to_python_datetime
+        >();
+      tduration_from_python_delta();
+      boost::python::to_python_converter<
+        const boost::posix_time::time_duration
+        , tduration_to_python_delta
+        >();
+    }
 
-  ptime_from_python_datetime();
-
-  boost::python::to_python_converter<
-    const boost::posix_time::ptime
-    , ptime_to_python_datetime
-    >();
-
-  tduration_from_python_delta();
-
-  boost::python::to_python_converter<
-    const boost::posix_time::time_duration
-    , tduration_to_python_delta
-    >();
+    elle::Plugin<ConverterPlugin>::Register<DatetimeConverter>
+    register_datetime_plugin;
+    elle::Plugin<ConverterPlugin> datetime_converter(register_datetime_plugin);
+  }
 }
-
-static int elle_python_init = []
-{
-  bind_datetime();
-  return 0;
-}();

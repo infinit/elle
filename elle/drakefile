@@ -17,6 +17,8 @@ rule_check = None
 rule_install = None
 rule_tests = None
 
+python_plugin_datetime = None
+
 dpkg_preload = None
 
 # XXX
@@ -36,6 +38,7 @@ def configure(zlib_lib,
   global config, lib_static, lib_dynamic, library, library_zlib
   global python
   global rule_build, rule_check, rule_install, rule_tests
+  global python_plugin_datetime
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = cxx_config or drake.cxx.Config()
@@ -388,6 +391,12 @@ def configure(zlib_lib,
     python += drake.copy(python_sources, 'lib/python', 'src')
     python_rule << python
 
+    python_plugin_datetime = drake.cxx.Module(
+      'lib/python-datetime-bindings',
+      drake.nodes('src/elle/python/datetime-converter.cc'),
+      cxx_toolkit,
+      python_cxx_config)
+
   rule_build = drake.Rule('build')
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
@@ -400,6 +409,7 @@ def configure(zlib_lib,
   dpkg_preload = drake.cxx.Module('dpkg_preload',
                                   drake.nodes('dpkg_preload.cc'),
                                   cxx_toolkit, drake.cxx.Config())
+
 
   # Tests
 
