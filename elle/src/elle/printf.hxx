@@ -33,7 +33,7 @@ namespace elle
     {
       static boost::format parsed("%s(%x)");
       boost::format format(parsed);
-      fmt % str(format % demangle(typeid(T).name()) % &value);
+      fmt % str(format % demangle(typeid(T).name()) % reinterpret_cast<const void*>(&value));
     }
 
     template <typename ... T>
