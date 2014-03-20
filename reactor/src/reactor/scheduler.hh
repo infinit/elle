@@ -54,6 +54,9 @@ namespace reactor
     void run();
     bool step();
   private:
+    virtual
+    void
+    _rethrow_exception(std::exception_ptr e) const;
     void _step(Thread* t);
     ELLE_ATTRIBUTE_R(bool, done);
 
@@ -99,7 +102,7 @@ namespace reactor
   /*-------------------------.
   | Thread Exception Handler |
   `-------------------------*/
-  private:
+  protected:
     std::exception_ptr _eptr;
 
   /*----------------.

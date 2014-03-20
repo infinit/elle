@@ -1,8 +1,4 @@
 #include <boost/foreach.hpp>
-#ifdef REACTOR_PYTHON_BINDING
-# include <boost/python.hpp>
-# include <reactor/python.hh>
-#endif
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
@@ -153,24 +149,6 @@ namespace reactor
   | Run |
   `----*/
 
-#ifdef REACTOR_PYTHON_BINDING
-  PythonException::PythonException():
-    elle::Exception("python error"), // XXX: pretty print the python value
-    type(nullptr),
-    value(nullptr),
-    traceback(nullptr)
-  {
-    PyErr_Fetch(&this->type, &this->value, &this->traceback);
-  }
-
-  void
-  PythonException::restore() const
-  {
-    PyErr_Restore(this->type, this->value, this->traceback);
-    throw boost::python::error_already_set();
-  }
-#endif
-
   void
   Thread::_action_wrapper(const Thread::Action& action)
   {
@@ -189,13 +167,6 @@ namespace reactor
     }
     catch (const Terminate&)
     {}
-#ifdef REACTOR_PYTHON_BINDING
-    catch (boost::python::error_already_set const&)
-    {
-      ELLE_WARN("%s: python exception escaped", *this);
-      _exception_thrown = std::make_exception_ptr(PythonException());
-    }
-#endif
     catch (elle::Exception const& e)
     {
       ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string())

@@ -6,8 +6,8 @@
 # undef tolower
 #endif
 
-
 #include <reactor/exception.hh>
+#include <reactor/python.hh>
 #include <reactor/scheduler.hh>
 
 using boost::python::class_;
@@ -79,6 +79,25 @@ wrap(reactor::Thread::Action const& action)
   }
 }
 
+namespace reactor
+{
+  PythonException::PythonException():
+    elle::Exception("python error"), // XXX: pretty print the python value
+    type(nullptr),
+    value(nullptr),
+    traceback(nullptr)
+  {
+    PyErr_Fetch(&this->type, &this->value, &this->traceback);
+  }
+
+  void
+  PythonException::restore() const
+  {
+    PyErr_Restore(this->type, this->value, this->traceback);
+    throw boost::python::error_already_set();
+  }
+}
+
 class Thread:
   public reactor::Thread,
   public boost::python::wrapper<reactor::Thread>
@@ -103,6 +122,49 @@ public:
   _scheduler_release() override
   {
     boost::python::decref(this->_self);
+  }
+
+protected:
+  // FIXME: factor with parent method
+  virtual
+  void
+  _action_wrapper(const Thread::Action& action) override
+  {
+    ELLE_LOG_COMPONENT("reactor.Thread");
+    try
+    {
+      if (this->_exception)
+      {
+        ELLE_TRACE("%s: re-raise exception: %s",
+                   *this, elle::exception_string(this->_exception));
+        std::exception_ptr tmp = this->_exception;
+        this->_exception = std::exception_ptr{};
+        std::rethrow_exception(tmp);
+      }
+      _backtrace_root = elle::Backtrace::current();
+      action();
+    }
+    catch (reactor::Terminate const&)
+    {}
+    catch (boost::python::error_already_set const&)
+    {
+      ELLE_WARN("%s: python exception escaped", *this);
+      _exception_thrown = std::make_exception_ptr(reactor::PythonException());
+    }
+    catch (elle::Exception const& e)
+    {
+      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string())
+      {
+        ELLE_DUMP("exception type: %s", elle::demangle(typeid(e).name()));
+        ELLE_DUMP("backtrace:\n%s", e.backtrace());
+      }
+      _exception_thrown = std::current_exception();
+    }
+    catch (...)
+    {
+      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string());
+      _exception_thrown = std::current_exception();
+    }
   }
 
 private:
@@ -134,10 +196,34 @@ static void wait_wrap(reactor::Thread* t)
   t->Waitable::wait();
 }
 
+class Scheduler:
+  public reactor::Scheduler,
+  public boost::python::wrapper<reactor::Scheduler>
+{
+public:
+  typedef reactor::Scheduler Super;
+  using Super::Super;
+
+private:
+  virtual
+  void
+  _rethrow_exception(std::exception_ptr e) const override
+  {
+    try
+    {
+      std::rethrow_exception(_eptr);
+    }
+    catch (reactor::PythonException const& e)
+    {
+      e.restore();
+    }
+  }
+};
+
 BOOST_PYTHON_MODULE(reactor)
 {
   terminate_exception = create_exception_class("Terminate");
-  class_<reactor::Scheduler,
+  class_<Scheduler,
          boost::noncopyable>
     ("Scheduler", boost::python::init<>())
     .def("run", &reactor::Scheduler::run)
