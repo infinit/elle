@@ -242,6 +242,13 @@ def configure(curl_config,
     python_cxx_config = drake.cxx.Config(local_cxx_config)
     python_cxx_config.lib_path_runtime('..')
     python_cxx_config += python3
+    if cxx_toolkit.os is drake.os.windows:
+      python_cxx_config += boost.config_python(static = True)
+    else:
+      python_cxx_config += boost.config_python(link = False)
+      python_cxx_config.library_add(
+        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+
     python_sources = drake.nodes('src/reactor/python.cc')
     python_lib = drake.cxx.Module('lib/python/reactor',
                                   python_sources + [lib_dynamic],
