@@ -5,7 +5,6 @@
 
 namespace reactor
 {
-
   template <typename T>
   Channel<T>::Channel():
     _barrier(Barrier()),
@@ -37,7 +36,6 @@ namespace reactor
       this->_barrier.close();
     return res;
   }
-
 }
 
 #endif

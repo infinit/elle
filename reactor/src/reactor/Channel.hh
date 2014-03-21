@@ -9,24 +9,22 @@
 
 namespace reactor
 {
-
   template <class T>
   class Channel
   {
+  public:
+    Channel();
+    void
+    put(T data);
+    T
+    get();
 
-    public:
-      Channel();
-      void  put(T data);
-      T     get();
-
-    private:
-      ELLE_ATTRIBUTE(Barrier, barrier);
-      ELLE_ATTRIBUTE(std::queue<T>, queue);
-
+  private:
+    ELLE_ATTRIBUTE(Barrier, barrier);
+    ELLE_ATTRIBUTE(std::queue<T>, queue);
   };
-
 }
 
 # include <reactor/Channel.hxx>
 
-# endif /* INFINIT_REACTOR_CHANNEL_HH */
+# endif
