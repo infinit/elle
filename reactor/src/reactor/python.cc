@@ -202,7 +202,6 @@ class Scheduler:
 {
 public:
   typedef reactor::Scheduler Super;
-  using Super::Super;
 
 private:
   virtual
