@@ -26,7 +26,7 @@ os.environ.update(%(environ)r)
 cxx_toolkit = drake.cxx.GccToolkit(compiler = %(compiler)r)
 cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
-cxx_config.enable_optimization(False)
+cxx_config.enable_optimization(True)
 # Needed on OSX ?
 # cxx_config.warnings.overloaded_virtual = False
 
