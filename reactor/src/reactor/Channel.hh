@@ -18,6 +18,8 @@ namespace reactor
     put(T data);
     T
     get();
+    unsigned int
+    size() const;
 
   private:
     ELLE_ATTRIBUTE(Barrier, barrier);

@@ -36,6 +36,13 @@ namespace reactor
       this->_barrier.close();
     return res;
   }
+
+  template <typename T>
+  unsigned int
+  Channel<T>::size() const
+  {
+    return this->_queue.size();
+  }
 }
 
 #endif
