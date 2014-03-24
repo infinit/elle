@@ -205,6 +205,9 @@ namespace reactor
         /// default.  AFAICT we never upload massive bodies anyway, but this
         /// should be looked upon at some point.
         ELLE_ATTRIBUTE_RW(bool, chunked_transfers);
+        /// The HTTP status to expect. Any different status will throw an
+        /// exception upon waiting.
+        ELLE_ATTRIBUTE_RW(boost::optional<StatusCode>, expected_status);
       };
 
 

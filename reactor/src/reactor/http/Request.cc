@@ -749,19 +749,30 @@ namespace reactor
           else
             this->_raise<RequestError>(this->_url, message);
         };
+      bool exception = false;
       if (code != CURLE_OK)
       {
+        exception = true;
         message = elle::sprintf("%s: %s",
                                 curl_easy_strerror(CURLcode(code)),
                                 this->_impl->_error);
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
+      else if (this->_impl->_conf.expected_status() &&
+               this->_impl->_conf.expected_status().get() != this->_status)
+      {
+        exception = true;
+        message = elle::sprintf("got unexpected status %s instead of %s",
+                                this->_status,
+                                this->_impl->_conf.expected_status().get());
+        set_exception();
+      }
       else
         ELLE_TRACE_SCOPE("%s: done with status %s", *this, this->_status);
       this->_signal();
       // Waitables consume their exception once signaled, restore it.
-      if (code != CURLE_OK)
+      if (exception)
         set_exception();
       this->_impl->_complete();
     }
