@@ -394,8 +394,7 @@ def configure(cxx_toolkit = None,
                   )
   drake.HTTPDownload(python_url,
                      python_tarball,
-                     fingerprint = 'b2a4df195d934e5b229e8328ca864960',
-                     disable_ssl_certificate_validation = True)
+                     fingerprint = 'b2a4df195d934e5b229e8328ca864960')
 
   python_headers = [
     'Include/abstract.h',
