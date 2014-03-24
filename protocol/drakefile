@@ -36,6 +36,10 @@ def configure(cryptography,
   config += elle.config
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
 
+  # Elle
+  config += elle.config
+  elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
+
   # Reactor
   config += reactor.config
   reactor_library = drake.copy(reactor.library, 'lib',

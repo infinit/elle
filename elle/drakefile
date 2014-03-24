@@ -5,7 +5,6 @@ import drake.valgrind
 import sys
 import os
 
-
 config = None
 lib_static = None
 lib_dynamic = None
@@ -30,7 +29,8 @@ def configure(zlib_lib,
               cxx_toolkit = None,
               cxx_config = None,
               boost = None,
-              python3 = None,
+              python_lib = None,
+              python_config = None,
               enable_tests = True,
               prefix = '/usr',
               valgrind = None):
@@ -361,23 +361,14 @@ def configure(zlib_lib,
   ## ------ ##
   ## Python ##
   ## ------ ##
-
-
-  if python3 is not None:
+  if python_lib is not None:
+    python_lib = drake.copy(python_lib, 'lib', strip_prefix = True)
     python = []
     python_rule = drake.Rule('python')
-    python3 = drake.cxx.find_library(
-      'pyconfig.h',
-      prefix = python3,
-      include_dir = ['include',
-                     'include/python3.2',
-                     'include/python3.2m',
-                     'include/python3.3m'])
     python_cxx_config = drake.cxx.Config(cxx_config)
-    python_cxx_config += python3
-    python_cxx_config += boost.config_python()
+    python_cxx_config.library_add(python_lib)
+    python_cxx_config += python_config
     python_cxx_config.lib_path_runtime('../..')
-
     python_log_lib = drake.cxx.Module(
       'lib/python/elle/_log',
       [drake.node('src/elle/log/python.cc'), lib_dynamic],
@@ -410,9 +401,7 @@ def configure(zlib_lib,
                                   drake.nodes('dpkg_preload.cc'),
                                   cxx_toolkit, drake.cxx.Config())
 
-
   # Tests
-
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
 

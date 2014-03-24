@@ -26,13 +26,15 @@ openssl_lib_crypto = None
 zlib_config = None
 zlib_lib = None
 
+python_config = None
+python_lib = None
+
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
               boost = None,
-              python3 = None,
               enable_rotation = False,
               dopenssl = None,
               prefix = '/usr',
@@ -49,6 +51,7 @@ def configure(cxx_toolkit = None,
   global curl_config, curl_lib
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
+  global python_config, python_lib
 
   config = drake.cxx.Config()
 
@@ -62,16 +65,6 @@ def configure(cxx_toolkit = None,
   prefix = drake.Path(prefix)
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
-
-  if python3 is not None:
-    python3 = drake.cxx.find_library(
-      'pyconfig.h',
-      prefix = python3,
-      include_dir = ['include',
-                     'include/python3.2',
-                     'include/python3.2m',
-                     'include/python3.3m'])
-
 
   ## ---- ##
   ## Zlib ##
@@ -354,7 +347,7 @@ def configure(cxx_toolkit = None,
     curl_environment[key] = str(path)
   elif cxx_toolkit.os is drake.os.windows:
     curl_environment['CC'] = cxx_toolkit.c
-    curl_configure_args.append('--host=x86_64-w64-mingw32')
+    curl_configure_args.append('--host=%s' % cxx_toolkit.prefix)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   GNUBuilder(
     cxx_toolkit,
@@ -381,6 +374,161 @@ def configure(cxx_toolkit = None,
   curl_config.add_local_include_path(curl_prefix / 'include')
   if cxx_toolkit.os is drake.os.windows:
     curl_config.define('CURL_STATICLIB', '1')
+
+  ## ------ ##
+  ## Python ##
+  ## ------ ##
+  python_version = '3.3.5'
+  python_basename = 'Python-%s' % python_version
+  python_tarball_extension = 'tar.xz'
+  python_tarball = drake.node('python/%s.%s' % (python_basename,
+                                                 python_tarball_extension))
+  python_prefix = drake.Path('python')
+  python_build = python_prefix / python_basename
+  # XXX: Use legacy.python.org because python.org is on https.
+  python_url = 'http://legacy.python.org/ftp/python/%s/%s.%s' % \
+                  (
+                    python_version,
+                    python_basename.capitalize(),
+                    python_tarball_extension
+                  )
+  drake.HTTPDownload(python_url,
+                     python_tarball,
+                     fingerprint = 'b2a4df195d934e5b229e8328ca864960',
+                     disable_ssl_certificate_validation = False)
+
+  python_headers = [
+    'Include/abstract.h',
+    'Include/accu.h',
+    'Include/asdl.h',
+    'Include/ast.h',
+    'Include/bitset.h',
+    'Include/bltinmodule.h',
+    'Include/boolobject.h',
+    'Include/bytearrayobject.h',
+    'Include/bytes_methods.h',
+    'Include/bytesobject.h',
+    'Include/cellobject.h',
+    'Include/ceval.h',
+    'Include/classobject.h',
+    'Include/codecs.h',
+    'Include/code.h',
+    'Include/compile.h',
+    'Include/complexobject.h',
+    'Include/datetime.h',
+    'Include/descrobject.h',
+    'Include/dictobject.h',
+    'Include/dtoa.h',
+    'Include/dynamic_annotations.h',
+    'Include/enumobject.h',
+    'Include/errcode.h',
+    'Include/eval.h',
+    'Include/fileobject.h',
+    'Include/fileutils.h',
+    'Include/floatobject.h',
+    'Include/frameobject.h',
+    'Include/funcobject.h',
+    'Include/genobject.h',
+    'Include/graminit.h',
+    'Include/grammar.h',
+    'Include/import.h',
+    'Include/intrcheck.h',
+    'Include/iterobject.h',
+    'Include/listobject.h',
+    'Include/longintrepr.h',
+    'Include/longobject.h',
+    'Include/marshal.h',
+    'Include/memoryobject.h',
+    'Include/metagrammar.h',
+    'Include/methodobject.h',
+    'Include/modsupport.h',
+    'Include/moduleobject.h',
+    'Include/namespaceobject.h',
+    'Include/node.h',
+    'Include/object.h',
+    'Include/objimpl.h',
+    'Include/opcode.h',
+    'Include/osdefs.h',
+    'Include/parsetok.h',
+    'Include/patchlevel.h',
+    'Include/pgen.h',
+    'Include/pgenheaders.h',
+    'Include/pyarena.h',
+    'Include/pyatomic.h',
+    'Include/pycapsule.h',
+    'Include/pyctype.h',
+    'Include/py_curses.h',
+    'Include/pydebug.h',
+    'Include/pyerrors.h',
+    'Include/pyexpat.h',
+    'Include/pyfpe.h',
+    'Include/pygetopt.h',
+    'Include/pymacconfig.h',
+    'Include/pymacro.h',
+    'Include/pymath.h',
+    'Include/pymem.h',
+    'Include/pyport.h',
+    'Include/pystate.h',
+    'Include/pystrcmp.h',
+    'Include/pystrtod.h',
+    'Include/Python-ast.h',
+    'Include/Python.h',
+    'Include/pythonrun.h',
+    'Include/pythread.h',
+    'Include/pytime.h',
+    'Include/rangeobject.h',
+    'Include/setobject.h',
+    'Include/sliceobject.h',
+    'Include/structmember.h',
+    'Include/structseq.h',
+    'Include/symtable.h',
+    'Include/sysmodule.h',
+    'Include/token.h',
+    'Include/traceback.h',
+    'Include/tupleobject.h',
+    'Include/typeslots.h',
+    'Include/ucnhash.h',
+    'Include/unicodeobject.h',
+    'Include/warnings.h',
+    'Include/weakrefobject.h',
+  ]
+
+  drake.TarballExtractor(
+    python_tarball,
+    targets = ['%s/%s' % (python_basename, f) for f in ['configure'] + python_headers])
+
+  python_configure = drake.node(python_build / 'configure')
+  from drake.cxx import DynLib, StaticLib
+  if cxx_toolkit.os is drake.os.linux:
+    python_lib = DynLib(python_prefix / 'lib/libpython3.so')
+  elif cxx_toolkit.os is drake.os.macos:
+    python_lib = DynLib(python_prefix / 'lib/libpython3.dylib')
+  elif cxx_toolkit.os is drake.os.windows:
+    python_lib = DynLib(python_prefix / 'lib/libpython3.dll')
+  else:
+    raise Exception('Unknown OS')
+  python_configure_args = [
+    '--prefix=%s' % drake.path_build(python_prefix, absolute = True),
+    '--enable-shared',
+  ]
+  python_environment = {}
+  python_include_dir = 'include/python3.3m'
+  GNUBuilder(
+    cxx_toolkit,
+    configure = python_configure,
+    working_directory = drake.path_build(python_build),
+    targets = chain([python_lib],
+                    (drake.node(python_prefix / p.replace('Include', python_include_dir))
+                                for p in python_headers),
+                    [drake.node(python_prefix / python_include_dir / 'pyconfig.h')]),
+    configure_args = python_configure_args,
+    sources = [python_configure],
+    build_args = ['install',],
+    additional_env = python_environment,
+  )
+
+  python_config = drake.cxx.Config()
+  python_config.add_local_include_path(python_prefix / python_include_dir)
 
   ## ------------- ##
   ## Configuration ##
@@ -422,7 +570,8 @@ def configure(cxx_toolkit = None,
     zlib_config = zlib_config,
     zlib_lib = zlib_lib,
     boost = boost,
-    python3 = python3,
+    python_config = python_config,
+    python_lib = python_lib,
     prefix = prefix,
     valgrind = valgrind,
   )
@@ -452,7 +601,8 @@ def configure(cxx_toolkit = None,
     openssl_config = openssl_config,
     openssl_lib_crypto = openssl_lib_crypto,
     openssl_lib_ssl = openssl_lib_ssl,
-    python3 = python3,
+    python_config = python_config,
+    python_lib = python_lib,
     elle = elle,
     prefix = prefix,
     valgrind = valgrind,

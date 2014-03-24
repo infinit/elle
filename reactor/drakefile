@@ -7,7 +7,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
-python_lib = None
+python_module = None
 
 library_coroutine = None
 
@@ -28,7 +28,8 @@ def configure(curl_config,
               openssl_config,
               openssl_lib_crypto,
               openssl_lib_ssl,
-              python3 = None,
+              python_config = None,
+              python_lib = None,
               elle = None,
               prefix = '/usr',
               valgrind = None):
@@ -36,7 +37,7 @@ def configure(curl_config,
   global asio_udt_lib
   global config, lib_static, lib_dynamic, library, library_coroutine
   global rule_build, rule_install
-  global python_lib
+  global python_module
 
   # Public C++ configuration
   config = drake.cxx.Config()
@@ -50,6 +51,20 @@ def configure(curl_config,
   local_cxx_config += config
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
+
+  # Python
+  if python_lib is not None:
+    local_cxx_config.define('REACTOR_PYTHON_BINDING')
+    if cxx_toolkit.os is drake.os.windows:
+      local_cxx_config += boost.config_python(static = True)
+    else:
+      local_cxx_config += boost.config_python(link = False)
+      local_cxx_config.library_add(
+        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+      # we are building binaries that will link to us, so we need to
+      # link with the python library (ubuntu&default build of boost_python does not)
+      local_cxx_config += python_config
+      local_cxx_config.library_add(python_lib)
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
@@ -77,7 +92,6 @@ def configure(curl_config,
   local_cxx_config += openssl_config
   openssl_libs = drake.copy([openssl_lib_ssl, openssl_lib_crypto],
                             'lib', strip_prefix = True)
-
 
   # Zlib
   local_cxx_config += zlib_config
@@ -227,6 +241,15 @@ def configure(curl_config,
   )
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
+
+  if python_lib is not None:
+    python_cxx_config = drake.cxx.Config(lib_cxx_config)
+    python_cxx_config.lib_path_runtime('..')
+    python_cxx_config += python_config
+    python_cxx_config.library_add(
+      drake.copy(python_lib, 'lib', strip_prefix = True))
+    lib_cxx_config += python_cxx_config
+
   sub_libraries = [
     curl_lib,
     elle_lib,
@@ -238,10 +261,7 @@ def configure(curl_config,
                                  sources + sub_libraries,
                                  cxx_toolkit, lib_cxx_config)
 
-  if python3 is not None:
-    python_cxx_config = drake.cxx.Config(local_cxx_config)
-    python_cxx_config.lib_path_runtime('..')
-    python_cxx_config += python3
+  if python_lib is not None:
     if cxx_toolkit.os is drake.os.windows:
       python_cxx_config += boost.config_python(static = True)
     else:
@@ -250,11 +270,12 @@ def configure(curl_config,
         drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
 
     python_sources = drake.nodes('src/reactor/python.cc')
-    python_lib = drake.cxx.Module('lib/python/reactor',
-                                  python_sources + [lib_dynamic],
-                                  cxx_toolkit, python_cxx_config)
-    drake.Rule('python') << python_lib
-    rule_build << python_lib
+    python_module = drake.cxx.Module('lib/python/reactor',
+                                     python_sources + [lib_dynamic],
+                                     cxx_toolkit, python_cxx_config)
+    drake.Rule('python') << python_module
+    rule_build << python_module
+    lib_cxx_config += python_cxx_config
 
   rule_build << lib_static
   if cxx_toolkit.os != drake.os.windows:
@@ -313,9 +334,9 @@ def configure(curl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
-  if python3 is not None:
+  if python_lib is not None:
     python_test = drake.node('tests/python')
-    python_test.dependency_add(python_lib)
+    python_test.dependency_add(python_module)
     python_runner = drake.Runner(
       exe = python_test,
       env = {
