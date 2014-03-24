@@ -36,7 +36,6 @@ for f in %(flags)r:
 boost = drake.cxx.boost.Boost(prefix = %(boost)r,
                               cxx_toolkit = cxx_toolkit,
                               prefer_shared = %(boost_shared)r)
-python = %(python)r
 import drake.valgrind
 if %(valgrind)r:
   valgrind = drake.valgrind.Valgrind()
@@ -47,7 +46,6 @@ drake.run('%(dir_source)s',
           cxx_toolkit,
           cxx_config,
           boost = boost,
-          python3 = python,
           valgrind = valgrind)
 '''
 
@@ -58,7 +56,6 @@ parameters = {
   'flags': (),
   'boost': None,
   'boost_shared': True,
-  'python': None,
   'valgrind': False,
 }
 
@@ -70,7 +67,6 @@ elif osyst == 'osx':
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['boost'] = '/usr/local'
-  parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.3'
 elif osyst == 'win64':
   parameters['compiler'] = 'x86_64-w64-mingw32-g++'
   parameters['boost'] = '/usr/local'
