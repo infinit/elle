@@ -3308,18 +3308,18 @@ class TestSuite(Rule):
 
 class HTTPDownload(Builder):
 
-  def __init__(self, url, dest, fingerprint = None):
+  def __init__(self, url, dest, fingerprint = None, **kwargs):
     self.__url = url
     self.__dest = dest
     self.__fingerprint = fingerprint
     Builder.__init__(self, [], [self.__dest])
+    import httplib2
+    self.__http = httplib2.Http(**kwargs)
 
   def execute(self):
     self.output('Download %s to %s' % (self.__url, self.__dest),
                 'Download %s' % self.__dest)
-    import httplib2
-    h = httplib2.Http()
-    resp, content = h.request(self.__url, "GET")
+    resp, content = self.__http.request(self.__url, "GET")
     status = resp['status']
     if status != '200':
       print('download failed with status %s' % status,
