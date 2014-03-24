@@ -149,7 +149,7 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      stream << this->_cipher << "(" << this->_password << ")";
+      elle::fprintf(stream, "SecretKey(%s, %x)", this->_cipher, this->_password);
     }
   }
 }
