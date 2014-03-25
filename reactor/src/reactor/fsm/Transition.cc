@@ -26,5 +26,14 @@ namespace reactor
       start._transitions_out.insert(this);
       end._transitions_in.insert(this);
     }
+
+    void
+    Transition::_run_action(std::exception_ptr e)
+    {
+      if (this->action())
+        this->action()();
+      if (this->action_exception())
+        this->action_exception()(e);
+    }
   }
 }

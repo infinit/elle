@@ -11,6 +11,16 @@ namespace reactor
     class CatchTransition:
       public Transition
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef CatchTransition Self;
+      typedef Transition Super;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       virtual
       void

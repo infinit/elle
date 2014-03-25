@@ -15,9 +15,12 @@ class BeaconException:
   public elle::Exception
 {
 public:
-  BeaconException():
-    elle::Exception("beacon")
+  BeaconException(int value = 0):
+    elle::Exception("beacon"),
+    _value(value)
   {}
+private:
+  ELLE_ATTRIBUTE_R(int, value);
 };
 
 class OtherException:
@@ -486,10 +489,11 @@ transition_catch()
   bool beacon1 = false;
   bool beacon2 = false;
   bool beacon3 = false;
+  int caught = -1;
 
   State& s1 = m.state_make([&] () {
       beacon1 = true;
-      throw BeaconException();
+      throw BeaconException(42);
     });
   State& s2 = m.state_make([&] () {
       beacon2 = true;
@@ -498,7 +502,18 @@ transition_catch()
       beacon3 = true;
     });
   m.transition_add(s1, s2);
-  m.transition_add_catch(s1, s3);
+  m.transition_add_catch(s1, s3).action_exception(
+    [&caught] (std::exception_ptr e)
+    {
+      try
+      {
+        std::rethrow_exception(e);
+      }
+      catch (BeaconException const& e)
+      {
+        caught = e.value();
+      }
+    });
 
   reactor::Scheduler sched;
   reactor::Thread run(sched, "run", [&] { m.run(); });
@@ -506,6 +521,7 @@ transition_catch()
   BOOST_CHECK(beacon1);
   BOOST_CHECK(!beacon2);
   BOOST_CHECK(beacon3);
+  BOOST_CHECK_EQUAL(caught, 42);
 }
 
 static

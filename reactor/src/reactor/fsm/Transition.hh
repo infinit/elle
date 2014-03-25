@@ -32,6 +32,12 @@ namespace reactor
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);
       ELLE_ATTRIBUTE_RW(std::function<void()>, action);
+      ELLE_ATTRIBUTE_RW(std::function<void(std::exception_ptr)>,
+                        action_exception);
+    protected:
+      virtual
+      void
+      _run_action(std::exception_ptr e);
     };
   }
 }

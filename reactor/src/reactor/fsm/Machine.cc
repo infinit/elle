@@ -160,6 +160,7 @@ namespace reactor
         while (true)
         {
           // Ordered by insertion order.
+          auto saved_exn = this->_exception;
           for (auto transition: state->transitions_out().get<1>())
             transition->done(trigger, this->_exception);
           if (this->_exception)
@@ -178,16 +179,15 @@ namespace reactor
             ELLE_DEBUG("%s: waiting for transition", *this);
             sched.current()->wait(triggered);
           }
-          if (trigger->action())
-            try
-            {
-              trigger->action()();
-            }
-            catch (...)
-            {
-              this->_exception = std::current_exception();
-              continue;
-            }
+          try
+          {
+            trigger->_run_action(saved_exn);
+          }
+          catch (...)
+          {
+            this->_exception = std::current_exception();
+            continue;
+          }
           return &trigger->end();
         }
       };
