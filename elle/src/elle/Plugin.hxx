@@ -49,12 +49,6 @@ namespace elle
   }
 
   template <typename T>
-  ELLE_COMPILER_ATTRIBUTE_NO_INLINE
-  void
-  Plugin<T>::load() const
-  {}
-
-  template <typename T>
   void
   Plugin<T>::register_plugin(std::unique_ptr<T> plugin)
   {

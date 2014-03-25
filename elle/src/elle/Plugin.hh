@@ -7,8 +7,16 @@
 
 namespace elle
 {
+  class BasePlugin
+  {
+  public:
+    void
+    load() const;
+  };
+
   template <typename T>
-  class Plugin
+  class Plugin:
+    public BasePlugin
   {
   public:
     template <typename I>
@@ -21,8 +29,6 @@ namespace elle
     };
     template <typename ... Args>
     Plugin(Args const& ... args);
-    void
-    load() const;
     static
     void
     register_plugin(std::unique_ptr<T> plugin);
