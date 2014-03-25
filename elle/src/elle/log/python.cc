@@ -1,3 +1,7 @@
+#ifdef INFINIT_WINDOWS // Fix missing ::hypot.
+# include <cmath>
+#endif
+
 #include <boost/python.hpp>
 
 #include <elle/log/Logger.hh>

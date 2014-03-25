@@ -378,12 +378,19 @@ def configure(zlib_lib,
                      'include/python3.3m'])
     python_cxx_config = drake.cxx.Config(cxx_config)
     python_cxx_config += python3
-    python_cxx_config += boost.config_python()
     python_cxx_config.lib_path_runtime('../..')
-
+    python_lib_sources = [drake.node('src/elle/log/python.cc')]
+    if cxx_toolkit.os == drake.os.windows:
+      python_cxx_config += boost.config_python(static = True)
+      python_cxx_config.define('BOOST_PYTHON_STATIC_LIB')
+      python_cxx_config.flag('-Wl,-Bdynamic')
+      python_lib_sources.append(lib_static)
+    else:
+      python_cxx_config += boost.config_python(static = False)
+      python_lib_sources.append(lib_dynamic)
     python_log_lib = drake.cxx.Module(
       'lib/python/elle/_log',
-      [drake.node('src/elle/log/python.cc'), lib_dynamic],
+      python_lib_sources,
       cxx_toolkit, python_cxx_config)
     python.append(python_log_lib)
 
