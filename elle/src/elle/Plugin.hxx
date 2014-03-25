@@ -1,6 +1,8 @@
 #ifndef ELLE_PLUGIN_HXX
 # define ELLE_PLUGIN_HXX
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   template <typename T>
@@ -47,6 +49,7 @@ namespace elle
   }
 
   template <typename T>
+  ELLE_COMPILER_ATTRIBUTE_NO_INLINE
   void
   Plugin<T>::load() const
   {}
