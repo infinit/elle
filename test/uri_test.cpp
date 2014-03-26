@@ -802,3 +802,10 @@ TEST(uri_test, move_empty_uri_check_fragment) {
   network::uri instance = std::move(origin);
   ASSERT_FALSE(origin.fragment());
 }
+
+TEST(uri_test, empty_username_in_user_info) {
+  network::uri instance("ftp://:@localhost");
+  ASSERT_TRUE(instance.user_info());
+  ASSERT_EQ(":", *instance.user_info());
+  ASSERT_EQ("localhost", *instance.host());
+}

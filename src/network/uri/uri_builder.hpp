@@ -150,6 +150,12 @@ namespace network {
     }
 
     /**
+     * \brief Clears the URI user_info part.
+     * \returns \c *this
+     */
+    uri_builder &clear_user_info();
+
+    /**
      * \brief Adds a new host to the uri_builder.
      * \param host The host.
      * \returns \c *this
@@ -172,6 +178,12 @@ namespace network {
       set_port(convert(port));
       return *this;
     }
+
+    /**
+     * \brief Clears the URI port part.
+     * \returns \c *this
+     */
+    uri_builder &clear_port();
 
     /**
      * \brief Adds a new authority to the uri_builder.
@@ -197,6 +209,12 @@ namespace network {
     }
 
     /**
+     * \brief Clears the URI path part.
+     * \returns \c *this
+     */
+    uri_builder &clear_path();
+
+    /**
      * \brief Adds a new query to the uri_builder.
      * \param query The query.
      * \returns \c *this
@@ -206,6 +224,12 @@ namespace network {
       set_query(detail::translate(query));
       return *this;
     }
+
+    /**
+     * \brief Clears the URI query part.
+     * \returns \c *this
+     */
+    uri_builder &clear_query();
 
     /**
      * \brief Adds a new query to the uri_builder.
@@ -237,6 +261,12 @@ namespace network {
       set_fragment(detail::translate(fragment));
       return *this;
     }
+
+    /**
+     * \brief Clears the URI fragment part.
+     * \returns \c *this
+     */
+    uri_builder &clear_fragment();
 
     /**
      * \brief Builds a new uri object.
