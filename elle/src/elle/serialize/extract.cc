@@ -1,8 +1,11 @@
 #include "extract.hh"
 
+
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+
+#include <boost/filesystem/operations.hpp>
 
 namespace elle
 {
@@ -16,7 +19,10 @@ namespace elle
       {
         std::unique_ptr<std::istream> res(new std::ifstream(path));
         if (!res->good())
-          throw std::runtime_error("Cannot open file '" + path + "'");
+          throw boost::filesystem::filesystem_error(
+            "Cannot open file '" + path + "'",
+            boost::system::errc::make_error_code(
+              boost::system::errc::no_such_file_or_directory));
         return res;
       }
 
