@@ -16,4 +16,12 @@ namespace aws
   CredentialsExpired::CredentialsExpired(std::string const& error):
     AWSException(error)
   {}
+
+  CorruptedData::CorruptedData(std::string const& error):
+    AWSException(error)
+  {}
+
+  FileNotFound::FileNotFound(std::string const& error):
+    AWSException(error)
+  {}
 }

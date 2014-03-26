@@ -31,6 +31,22 @@ namespace aws
   public:
     CredentialsExpired(std::string const& error);
   };
+
+  /// S3 data corrupted.
+  class CorruptedData:
+    public AWSException
+  {
+  public:
+    CorruptedData(std::string const& error);
+  };
+
+  // S3 file not found.
+  class FileNotFound:
+    public AWSException
+  {
+  public:
+    FileNotFound(std::string const& error);
+  };
 }
 
 #endif
