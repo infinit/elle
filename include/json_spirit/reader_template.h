@@ -72,17 +72,70 @@ namespace json_spirit
     }
 
     template< class Char_type, class Iter_type >
-    Char_type unicode_str_to_char( Iter_type& begin )
+    std::basic_string<Char_type> unicode_str_to_char( Iter_type& begin )
     {
         const Char_type c1( *( ++begin ) );
         const Char_type c2( *( ++begin ) );
         const Char_type c3( *( ++begin ) );
         const Char_type c4( *( ++begin ) );
+        Char_type res[2];
+        res[0] = ( hex_to_num( c1 ) << 12 ) +
+                 ( hex_to_num( c2 ) <<  8 ) +
+                 ( hex_to_num( c3 ) <<  4 ) +
+                 hex_to_num( c4 );
+        res[1] = 0;
+        return res;
+    }
 
-        return ( hex_to_num( c1 ) << 12 ) +
-               ( hex_to_num( c2 ) <<  8 ) +
-               ( hex_to_num( c3 ) <<  4 ) +
-               hex_to_num( c4 );
+    // Samelessly stolen from the internet:
+    // https://stackoverflow.com/questions/4607413/c-library-to-convert-unicode-code-points-to-utf8
+    static
+    std::string
+    codepoint_to_utf8(int c)
+    {
+      char res[5] = {0, 0, 0, 0, 0};
+      if (c < 0x80)
+      {
+        res[0] = c;
+      }
+      else if (c < 0x800)
+      {
+        res[0] = 192 + c / 64;
+        res[1] = 128 + c % 64;
+      }
+      else if (c - 0xd800u < 0x800)
+        throw std::runtime_error("invalid unicode codepoint: " + std::to_string(c));
+      else if (c<0x10000)
+      {
+        res[0] = 224 + c / 4096;
+        res[1] = 128 + c / 64 % 64;
+        res[2] = 128 + c % 64;
+      }
+      else if (c<0x110000)
+      {
+        res[0] = 240 + c / 262144;
+        res[1] = 128 + c / 4096 % 64;
+        res[2] = 128 + c / 64 % 64;
+        res[3] = 128 + c % 64;
+      }
+      else
+        throw std::runtime_error("invalid unicode codepoint: " + std::to_string(c));
+      return res;
+    }
+
+    template<>
+    std::string unicode_str_to_char<char, std::string::const_iterator>( std::string::const_iterator& begin )
+    {
+        const char c1( *( ++begin ) );
+        const char c2( *( ++begin ) );
+        const char c3( *( ++begin ) );
+        const char c4( *( ++begin ) );
+        int codepoint =
+          (hex_to_num( c1 ) << 12) +
+          (hex_to_num( c2 ) <<  8) +
+          (hex_to_num( c3 ) <<  4) +
+          (hex_to_num( c4 ) <<  0);
+        return codepoint_to_utf8(codepoint);
     }
 
     template< class String_type >
