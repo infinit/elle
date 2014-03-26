@@ -28,17 +28,17 @@ ELLE_LOG_COMPONENT("aws.test");
 
 static
 aws::Credentials _GET_credentials(
-  "ASIAI3S2HUSGMYYKIXNA",
-  "fFyTQ93zfoeT9V2Tce0xOYVVZvZZPF5LxQ/xN2c3",
-  "AQoDYXdzELr//////////wEagAN4Ioo5grlNOuR5EWJdAuXaXsNlwCgTDnDeSwARS+faqekCzYS25jgJ6DQObLig5p79JEXlXHv2KkQWWzjDJE1x3SwDNCUD96t8XWsJAaINIA4ao/D7/LRykDwX/6ULsh3cvtQsLO+ni3mDDQrR6JdZk8PRRmtRsakJDRJDXwAxqM6/LwE9KV9wFHazNBu9RTMEjE+5HRdO2yeJRcnfuuk5cIT30aTGfOVxlHHiH3ZzV4FSbTPnfuUE7X85TSlG7wo2rgSIReQ7FOCz4DmpkYg8u6dd/BAEV2z5MF4g8jwCUIFth5S9P+VnWFtLDcqycPhCkT7rRGRf3hKlVRwg8mjKb6SKCrFHZWrhoA1U/5UQdxOlwokjxMVi012G36iB6Ny4T7k8YZa20QdO6LrGSxQbW7Dmjc35ta8CgxnUKNkPHCcmYRSQHRhDEPqtVODv/6pZvc7ePTmcgHFYp0YtGK1NjbNpVSM94DkXal2oZx2gSElVRswS0bEefEKkeQDztR4gxZrBmAU=",
+  "ASIAJOU5RQKL2N6YKOXQ",
+  "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
+  "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
   "never"
 );
 
 static
 aws::Credentials _PUT_credentials(
-  "ASIAIQ45O4K6WILCNHOA",
-  "mV9S3Esf1f+jpai01mh+fWI5/BzoKc3PNEV5ka3s",
-  "AQoDYXdzELr//////////wEa0AKXhMvRNlk6XOUByPrdRDGFRI7sHCXeNCZNO5oa7yVE3R+ZytbuoBTfE2CY32fGsCTMX9+qdo8fiddO7GqNJF7A5eutEcphbPfB3PyHqF8s6mBO0KIgCSlegmIXqWKcGRIL59DPrFa+6IPOtdJlJA7UjdGC47iVnl14uHVLi0uQds+6nwiwDklUc80S6WfcFhQOgrDpxiteiTyf27gX+vlxfD2UDAqsgTqvJOVQgazhFzZuM+Rtd/kt1TzThXEI1P6x/xoNrt6OBQbtiDQSTBDa+kmqmFYkTRTml7z89mGp6066ojLVKo4pmyjZLb2lf67yy+jbBSJ1CqcLbOsHwNwsKLu3U37u66lU8uE+XlJjip0N3LY4U07Wp+q9AFAvCLchkwEPJ3VNu8CpC/aKyvG754ESer+AgqeCSm4qJOxEyGLgkqZK0uoLblAoh9D3EJAgiZzBmAU=",
+  "ASIAJAGQUOJVE3HO46ZA",
+  "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
+  "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
   "never"
 );
 
@@ -203,6 +203,7 @@ ELLE_TEST_SCHEDULED(s3_get)
                      _GET_credentials);
   elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
   BOOST_CHECK_EQUAL(s3_handler.get_object("test_object"), expected);
+  BOOST_CHECK_THROW(s3_handler.get_object("doesnt_exist"), aws::FileNotFound);
 }
 
 // Should only be run manually with generated credentials.
@@ -231,7 +232,20 @@ ELLE_TEST_SUITE()
   // suite.add(BOOST_TEST_CASE(s3_delete), 0, timeout * 3);
 }
 
+// -----------------------
+// Generate a token script
+// -----------------------
+// #!/usr/bin/env python3
+
+// # Launch command:
+// # ELLE_LOG_LEVEL=infinit.oracles.meta.CloudBufferToken:DEBUG PYTHONPATH=~/sandbox/infinit/_build/macosx64/oracles/meta/server/lib/python:~/sandbox/infinit/oracles:~/sandbox/infinit/oracles/meta/server/src/infinit/oracles/meta/server ./make_token.py
+
+// from cloud_buffer_token import CloudBufferToken
+// token_maker = CloudBufferToken('test_user', 'testing', 'GET')
+
+// --------------------------------
 // Python code for testing signing:
+// --------------------------------
 // import hashlib
 // import hmac
 // import binascii
