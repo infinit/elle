@@ -311,7 +311,12 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      if (request.status() != reactor::http::StatusCode::OK)
+      if (request.status() == reactor::http::StatusCode::Not_Found)
+      {
+        throw aws::FileNotFound(
+          elle::sprintf("%s: object not found: %s", *this, object_name));
+      }
+      else if (request.status() != reactor::http::StatusCode::OK)
       {
         throw aws::RequestError(
           elle::sprintf("%s: unable to GET on S3, got HTTP status: %s",
@@ -324,7 +329,7 @@ namespace aws
       aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
       if (calcd_md5 != aws_md5)
       {
-        throw aws::RequestError(
+        throw aws::CorruptedData(
           elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
                         aws_md5));
       }
@@ -394,7 +399,7 @@ namespace aws
     headers["Authorization"] = auth_str;
 
     // Add headers to request.
-    reactor::http::Request::Configuration cfg(300_sec,
+    reactor::http::Request::Configuration cfg(15_sec,
                                               reactor::http::Version::v11);
     for (auto header: headers)
       cfg.header_add(header.first, header.second);
