@@ -48,6 +48,19 @@ read_utf_8()
 
 static
 void
+read_escaped_utf_8()
+{
+  std::stringstream input(
+    "{\"utf-8\": \"\\u0421\\u0440\\u0435\\u0434\\u043d\\u044f \\u0410\\u0437\\u0438doc\"}");
+  auto object = boost::any_cast<elle::json::Object>(elle::json::read(input));
+  BOOST_CHECK_EQUAL(object.size(), 1);
+  BOOST_CHECK(object.find("utf-8") != object.end());
+  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["utf-8"]),
+                    "Средня Азиdoc");
+}
+
+static
+void
 write_utf_8()
 {
   std::stringstream output;
@@ -66,5 +79,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_long), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_object), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_utf_8), 0, timeout);
+  suite.add(BOOST_TEST_CASE(read_escaped_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(write_utf_8), 0, timeout);
 }
