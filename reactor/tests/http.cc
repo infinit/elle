@@ -209,11 +209,15 @@ private:
       auto line = elle::sprintf("%s: %s\n", cookie.first, cookie.second);
       response += line;
     }
+    auto status = "200 OK";
+    if (content == std::string("/404"))
+      status = "404 Not Found";
     response += content.string();
-    std::string answer(
-      "HTTP/1.1 200 OK\r\n"
+    std::string answer = elle::sprintf(
+      "HTTP/1.1 %s\r\n"
       "Server: Custom HTTP of doom\r\n"
-      "Content-Length: " + std::to_string(response.size()) + "\r\n");
+      "Content-Length: %s\r\n",
+      status, std::to_string(response.size()));
     for (auto const& value: this->_headers)
       answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
     answer += "\r\n" + response;
@@ -270,6 +274,15 @@ ELLE_TEST_SCHEDULED(complex)
   BOOST_CHECK_EQUAL(content, "/complex");
   BOOST_CHECK(r.eof());
   BOOST_CHECK_EQUAL(r.headers().at("Server"), "Custom HTTP of doom");
+}
+
+ELLE_TEST_SCHEDULED(not_found)
+{
+  ScheduledHttpServer server;
+  auto url = server.url("404");
+  reactor::http::Request r(url);
+  ELLE_LOG("Get %s", url);
+  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Not_Found);
 }
 
 class SilentHttpServer:
@@ -672,6 +685,7 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(simple), 0, 10);
   suite.add(BOOST_TEST_CASE(complex), 0, 10);
+  suite.add(BOOST_TEST_CASE(not_found), 0, 10);
   suite.add(BOOST_TEST_CASE(no_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(partial_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_reset), 0, 10);
