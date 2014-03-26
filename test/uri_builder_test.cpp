@@ -724,3 +724,9 @@ TEST(builder_test, clear_fragment_test) {
   ASSERT_EQ("http://user:password@www.example.com:80/path?query", builder.uri());
 }
 
+TEST(builder_test, empty_username) {
+  static const std::string user_info(":");
+  network::uri_builder builder;
+  builder.scheme("ftp").host("127.0.0.1").user_info(user_info);
+  ASSERT_EQ("ftp://:@127.0.0.1", builder.uri());
+}
