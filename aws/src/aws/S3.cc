@@ -118,7 +118,12 @@ namespace aws
                     object.size());
       reactor::wait(request);
       ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
-      if (request.status() != reactor::http::StatusCode::OK)
+      if (request.status() == reactor::http::StatusCode::Forbidden)
+      {
+        throw aws::CredentialsNotValid(
+          elle::sprintf("%s: unable to PUT on S3, forbidden", *this));
+      }
+      else if (request.status() != reactor::http::StatusCode::OK)
       {
         throw aws::RequestError(
           elle::sprintf("%s: unable to PUT on S3, got HTTP status: %s",
@@ -221,7 +226,12 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      if (request.status() != reactor::http::StatusCode::OK)
+      if (request.status() == reactor::http::StatusCode::Forbidden)
+      {
+        throw aws::CredentialsNotValid(
+          elle::sprintf("%s: unable to LIST on S3, forbidden", *this));
+      }
+      else if (request.status() != reactor::http::StatusCode::OK)
       {
         throw aws::RequestError(
           elle::sprintf("%s: unable to LIST on S3, got HTTP status: %s",
@@ -315,6 +325,11 @@ namespace aws
       {
         throw aws::FileNotFound(
           elle::sprintf("%s: object not found: %s", *this, object_name));
+      }
+      else if (request.status() == reactor::http::StatusCode::Forbidden)
+      {
+        throw aws::CredentialsNotValid(
+          elle::sprintf("%s: unable to GET on S3, forbidden", *this));
       }
       else if (request.status() != reactor::http::StatusCode::OK)
       {
@@ -418,8 +433,13 @@ namespace aws
       reactor::http::Request request(url, reactor::http::Method::DELETE, cfg);
       reactor::wait(request);
       ELLE_DUMP("%s: response: %s", *this, request.response().string());
-      if (request.status() != reactor::http::StatusCode::OK &&
-          request.status() != reactor::http::StatusCode::No_Content)
+      if (request.status() == reactor::http::StatusCode::Forbidden)
+      {
+        throw aws::CredentialsNotValid(
+          elle::sprintf("%s: unable to DELETE on S3, forbidden", *this));
+      }
+      else if (request.status() != reactor::http::StatusCode::OK &&
+               request.status() != reactor::http::StatusCode::No_Content)
       {
         throw aws::RequestError(
           elle::sprintf("%s: unable to DELETE on S3, got HTTP status: %s",
