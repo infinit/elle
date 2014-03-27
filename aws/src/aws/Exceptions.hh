@@ -32,6 +32,14 @@ namespace aws
     CredentialsExpired(std::string const& error);
   };
 
+  /// Credentials not valid for action.
+  class CredentialsNotValid:
+    public AWSException
+  {
+  public:
+    CredentialsNotValid(std::string const& error);
+  };
+
   /// S3 data corrupted.
   class CorruptedData:
     public AWSException

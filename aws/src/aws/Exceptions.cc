@@ -17,6 +17,10 @@ namespace aws
     AWSException(error)
   {}
 
+  CredentialsNotValid::CredentialsNotValid(std::string const& error):
+    AWSException(error)
+  {}
+
   CorruptedData::CorruptedData(std::string const& error):
     AWSException(error)
   {}
