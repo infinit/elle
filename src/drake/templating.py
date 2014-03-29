@@ -7,6 +7,9 @@
 # See the LICENSE file for more information.
 
 import drake
+import io
+import re
+import tempfile
 
 class Context:
 
@@ -67,12 +70,14 @@ class Renderer(drake.Converter):
       self.__pythonpath.append(drake.path_source(path))
       self.__pythonpath.append(drake.path_build(path))
 
+  mako_re = re.compile('%endfor')
+
   def execute(self):
     self.output('Render %s' % self.__target)
     import mako.template
     import mako.runtime
     import sys
-    tpl = str(self.__template.path(absolute = True))
+    path = str(self.__template.path(absolute = True))
     previous = sys.path
     sys.path = sys.path[:]
     modules = set(sys.modules)
@@ -81,12 +86,23 @@ class Renderer(drake.Converter):
         hook(self.__content, source)
     try:
       sys.path = [str(path) for path in  self.__pythonpath] + sys.path
-      tpl = mako.template.Template(filename = tpl)
-      with drake.WritePermissions(self.__target):
-        with open(str(self.__target.path()), 'w') as f:
-          ctx = mako.runtime.Context(f, **self.__content)
-          tpl.render_context(ctx)
-      return True
+      with open(path, 'r') as tpl, \
+           tempfile.NamedTemporaryFile(mode = 'w') as content:
+        line_number = 1
+        def print_line_number():
+          print('# %d "%s"' % (line_number, path), file = content)
+        print_line_number()
+        for line in tpl:
+          print(line, file = content, end = '')
+          if Renderer.mako_re.search(line): print_line_number()
+          line_number += 1
+        content.flush()
+        tpl = mako.template.Template(filename = content.name)
+        with drake.WritePermissions(self.__target):
+          with open(str(self.__target.path()), 'w') as f:
+            ctx = mako.runtime.Context(f, **self.__content)
+            tpl.render_context(ctx)
+        return True
     finally:
       # Restore path.
       sys.path = previous
