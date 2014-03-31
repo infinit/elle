@@ -98,18 +98,18 @@ namespace elle
         return boost::any_cast<std::string>(any);
       if (any.type() == typeid(bool))
         return boost::any_cast<bool>(any);
-      if (any.type() == typeid(int))
-        return boost::any_cast<int>(any);
-      if (any.type() == typeid(long))
-        return boost::any_cast<long>(any);
-      if (any.type() == typeid(long long))
-        return boost::any_cast<long long>(any);
-      if (any.type() == typeid(unsigned int))
-        return boost::any_cast<unsigned int>(any);
-      if (any.type() == typeid(unsigned long))
-          return boost::any_cast<unsigned long>(any);
-      if (any.type() == typeid(unsigned long long))
-          return boost::any_cast<unsigned long long>(any);
+      if (any.type() == typeid(int16_t))
+        return boost::any_cast<int16_t>(any);
+      if (any.type() == typeid(int32_t))
+        return boost::any_cast<int32_t>(any);
+      if (any.type() == typeid(int64_t))
+        return boost::any_cast<int64_t>(any);
+      if (any.type() == typeid(uint16_t))
+        return boost::any_cast<uint16_t>(any);
+      if (any.type() == typeid(uint32_t))
+        return boost::any_cast<uint32_t>(any);
+      if (any.type() == typeid(uint64_t))
+        return boost::any_cast<uint64_t>(any);
       if (any.type() == typeid(float))
         return boost::any_cast<float>(any);
       if (any.type() == typeid(double))
