@@ -445,7 +445,9 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_FUNCTION(code, secret, function_cipher, function_oneway);
+          ELLE_TRACE_SCOPE("decrypt asymmetrically");
+          ELLE_DUMP("code: %x", code);
+          ELLE_DUMP("secret: %x", secret);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -543,6 +545,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
+          ELLE_DUMP("result: %x", clear);
           return (clear);
         }
       }
