@@ -547,9 +547,17 @@ class GccToolkit(Toolkit):
       ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
     if self.os is None:
       if apple:
-        self.os = drake.os.macos
+        mac_os, iphone, iphone_simulator = self.preprocess_istrue(
+          ('TARGET_OS_MAC', 'TARGET_OS_IPHONE', 'TARGET_IPHONE_SIMULATOR'),
+          preamble = '#include "TargetConditionals.h"')
+        if iphone and iphone_simulator:
+          self.os = drake.os.ios_simulator
+        elif iphone:
+          self.os = drake.os.ios
+        else:
+          self.os = drake.os.macos
       elif win32:
-        self.os = drake.os.windows
+        self.os = drake.onfini.windows
       elif linux:
         self.os = drake.os.linux
       else:
@@ -560,8 +568,21 @@ class GccToolkit(Toolkit):
       self.__kind = GccToolkit.Kind.gcc
     self.c = compiler_c or '%sgcc' % self.prefix
 
-  def preprocess_isdef(self, vars, config = Config()):
-    content = '\n'.join(reversed(vars))
+  def preprocess_istrue(self, vars, config = Config(), preamble = None):
+    if preamble:
+      content = preamble + '\n'
+    else:
+      content = ''
+    content += '\n'.join(reversed(vars))
+    content = self.preprocess(content, config).strip().split('\n')
+    return map(bool, map(int, (reversed(content[-len(vars):]))))
+
+  def preprocess_isdef(self, vars, config = Config(), preamble = None):
+    if preamble:
+      content = preamble + '\n'
+    else:
+      content = ''
+    content += '\n'.join(reversed(vars))
     content = self.preprocess(content, config).strip().split('\n')
     return map(lambda e: e[0] != e[1], zip(vars, reversed(content)))
 
@@ -642,7 +663,7 @@ class GccToolkit(Toolkit):
 
   def ldflags(self, cfg):
     res = []
-    if cfg.export_dynamic and self.os not in (drake.os.macos, drake.os.windows):
+    if cfg.export_dynamic and self.os not in (drake.os.macos, drake.os.windows, drake.os.ios, drake.os.ios_simulator):
       res.append('-rdynamic')
     if self.os is drake.os.windows:
       # Assume this is mingw. Assume nobody wants to ship those DLL
@@ -652,6 +673,8 @@ class GccToolkit(Toolkit):
       res.append('-static')
       res.append('-lwinpthread')
       res.append('-dynamic')
+    elif self.os in (drake.os.ios, drake.os.ios_simulator):
+      res.append('-static')
     return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
@@ -701,7 +724,7 @@ class GccToolkit(Toolkit):
       cmd.append('-l%s' % lib)
     # XXX Should refer to libraries with path on MacOS.
     if cfg.libs_static:
-      if self.os not in (drake.os.macos, drake.os.windows):
+      if self.os not in (drake.os.macos, drake.os.windows, drake.os.ios, drake.ios_simulator):
         cmd.append('-Wl,-Bstatic')
         for lib in cfg.libs_static:
           cmd.append('-l%s' % lib)
@@ -782,7 +805,7 @@ class GccToolkit(Toolkit):
       path = Path(path)
       if self.os == drake.os.linux:
           ext = 'so'
-      elif self.os == drake.os.macos:
+      elif self.os in (drake.os.macos, drake.os.ios, drake.os.ios_simulator):
           ext = 'dylib'
       elif self.os == drake.os.windows:
           ext = 'dll'
