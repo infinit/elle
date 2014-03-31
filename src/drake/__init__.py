@@ -2894,6 +2894,7 @@ class arch:
     """Architectures enum."""
 
     x86 = 0
+    arm7 = 1
 
 # OSes
 class os:
@@ -2904,6 +2905,8 @@ class os:
     linux = 1
     macos = 2
     windows = 3
+    ios = 4
+    ios_simulator = 5
 
 
 def reset():
