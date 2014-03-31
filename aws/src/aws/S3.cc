@@ -113,7 +113,7 @@ namespace aws
     try
     {
       reactor::http::Request request(url, reactor::http::Method::PUT, cfg);
-      ELLE_DUMP("%s: add body to request: %s", *this, object);
+      ELLE_DUMP("%s: add body to request: %x", *this, object);
       request.write(reinterpret_cast<char const*>(object.contents()),
                     object.size());
       reactor::wait(request);
