@@ -32,7 +32,7 @@ namespace aws
     ELLE_ATTRIBUTE_R(std::string, canonical_request);
 
     std::string
-    sha256_hash();
+    sha256_hash() const;
 
   private:
     std::string

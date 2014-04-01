@@ -31,7 +31,7 @@ namespace aws
   }
 
   std::string
-  CanonicalRequest::sha256_hash()
+  CanonicalRequest::sha256_hash() const
   {
     using namespace infinit::cryptography;
     Digest digest = oneway::hash(
