@@ -22,12 +22,20 @@ namespace elle
     read(std::istream& stream);
 
     void
-    write(std::ostream& stream,
-          boost::any const& any);
+    write(std::ostream& stream, boost::any const& any);
 
     std::string
     pretty_print(boost::any const& any);
   }
+}
+
+namespace std
+{
+  std::ostream&
+  operator <<(std::ostream& stream, elle::json::Object const& obj);
+
+  std::ostream&
+  operator <<(std::ostream& stream, elle::json::OrderedObject const& obj);
 }
 
 #endif

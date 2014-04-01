@@ -134,8 +134,7 @@ namespace elle
     }
 
     void
-    write(std::ostream& stream,
-          boost::any const& any)
+    write(std::ostream& stream, boost::any const& any)
     {
       ELLE_TRACE_SCOPE("write json to stream");
       auto spirit = to_spirit(any);
@@ -151,5 +150,22 @@ namespace elle
       auto spirit = to_spirit(any);
       return json_spirit::write_formatted(spirit);
     }
+  }
+}
+
+namespace std
+{
+  std::ostream&
+  operator <<(std::ostream& stream, elle::json::Object const& obj)
+  {
+    elle::json::write(stream, obj);
+    return stream;
+  }
+
+  std::ostream&
+  operator <<(std::ostream& stream, elle::json::OrderedObject const& obj)
+  {
+    elle::json::write(stream, obj);
+    return stream;
   }
 }
