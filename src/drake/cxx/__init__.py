@@ -1117,18 +1117,6 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
                   'explore dependencies of %s', path):
     cycles = set()
     deps = set()
-    def unique_fail(path, include, prev_via, prev, new_via, new):
-      raise Exception('in %s, two nodes match inclusion %s: '\
-                      '%s via %s and %s via %s' % \
-                      (path, include,
-                       prev, prev_via,
-                       new, new_via))
-    def unique(path, include, prev_via, prev, new_via, new):
-      if prev is not None:
-        unique_fail(path, include,
-                    prev_via, prev.path(),
-                    new_via, new.path())
-      return new, new_via
     try:
       # FIXME: is building a node during dependencies ok ?
       explored_node.build()
@@ -1156,7 +1144,6 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
       else:
         local_path = ()
       found = None
-      via = None
       for include_path, test_node, user in chain(local_path, search):
         name = include_path / include
         test = name
@@ -1166,8 +1153,7 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
             # Check this is not an old cached dependency from
             # cxx.inclusions. Not sure of myself though.
             # if test.is_file() or registered.builder is not None:
-            found, via = unique(path, include, via, found, include_path,
-                                drake.node(test))
+            found = drake.node(test)
             logger.log('drake.cxx.dependencies',
                        drake.log.LogLevel.debug,
                        'found %s in the nodes', found)
@@ -1177,8 +1163,7 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
         if not found:# or drake.path_source() != Path('.'):
           test = drake.path_source() / test
           if test.is_file():
-            found, via = unique(path, include, via, found, include_path,
-                                drake.node(name, Header))
+            found = drake.node(name, Header)
             logger.log('drake.cxx.dependencies',
                        drake.log.LogLevel.debug,
                        'found %s in sources', found)
