@@ -61,45 +61,9 @@ namespace aws
     CanonicalRequest canonical_request(
       this->_make_put_canonical_request(object, object_name, headers));
 
-    // Make string to sign.
-    StringToSign string_to_sign(this->_make_string_to_sign(
-                                request_time, canonical_request.sha256_hash()));
-
-    // Make Authorization header.
-    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-    aws::SigningKey key(this->_credentials.secret_access_key(),
-                        request_time,
-                        Region::us_east_1,
-                        Service::s3);
-    std::map<std::string, std::string> auth;
-
-    // Make credential string.
-    auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                           aws::Service::s3);
-
-    // Make signed headers string.
-    std::string signed_headers_str;
-    for (auto header: headers)
-      signed_headers_str += elle::sprintf("%s;", header.first);
-    signed_headers_str =
-      signed_headers_str.substr(0, signed_headers_str.size() - 1);
-    auth["SignedHeaders"] = signed_headers_str;
-    // Make signature string.
-    auth["Signature"] =
-      key.sign_message(string_to_sign.string());
-    // Make authorization header string.
-    std::string auth_str;
-    for (auto item: auth)
-      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
-    auth_str = auth_str.substr(0, auth_str.size() - 2);
-    headers["Authorization"] = auth_str;
-
-    // Add headers to request.
-    reactor::http::Request::Configuration cfg(300_sec,
-                                              reactor::http::Version::v11);
-    for (auto header: headers)
-      cfg.header_add(header.first, header.second);
+    reactor::http::Request::Configuration cfg(
+      this->_initialize_request(
+        request_time, canonical_request, headers, 300_sec));
 
     auto url = elle::sprintf(
       "https://%s:%s/%s/%s",
@@ -143,71 +107,28 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
 
-    if (!this->_credentials.valid())
-    {
-      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
-                               *this, this->_credentials));
-    }
-
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
 
     // Make headers.
     RequestHeaders headers(this->_make_generic_headers(request_time));
-
-    // Make canonical request.
     RequestQuery query;
     query["prefix"] = elle::sprintf("%s/", this->_remote_folder);
     query["delimiter"] = "/";
     if (marker.size() > 0)
       query["marker"] = elle::sprintf("%s/%s", this->_remote_folder, marker);
+
     CanonicalRequest canonical_request(
       this->_make_list_canonical_request(headers, query));
 
-    // Make string to sign.
-    StringToSign string_to_sign(this->_make_string_to_sign(
-                                request_time, canonical_request.sha256_hash()));
+    reactor::http::Request::Configuration cfg(
+      this->_initialize_request(request_time, canonical_request, headers, 10_sec));
 
-    // Make Authorization header.
-    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-    aws::SigningKey key(this->_credentials.secret_access_key(),
-                        request_time,
-                        Region::us_east_1,
-                        Service::s3);
-    std::map<std::string, std::string> auth;
-
-    // Make credential string.
-    auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                           aws::Service::s3);
-
-    // Make signed headers string.
-    std::string signed_headers_str;
-    for (auto header: headers)
-      signed_headers_str += elle::sprintf("%s;", header.first);
-    signed_headers_str =
-      signed_headers_str.substr(0, signed_headers_str.size() - 1);
-    auth["SignedHeaders"] = signed_headers_str;
-    // Make signature string.
-    auth["Signature"] =
-      key.sign_message(string_to_sign.string());
-    // Make authorization header string.
-    std::string auth_str;
-    for (auto item: auth)
-      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
-    auth_str = auth_str.substr(0, auth_str.size() - 2);
-    headers["Authorization"] = auth_str;
-
-    // Add headers to request.
-    reactor::http::Request::Configuration cfg(10_sec,
-                                              reactor::http::Version::v11);
-    for (auto header: headers)
-      cfg.header_add(header.first, header.second);
 
     // Make query string.
     using reactor::http::EscapedString;
     std::string query_str;
-    for (auto parameter: query)
+    for (auto const& parameter: query)
     {
       query_str += elle::sprintf("%s=%s&", EscapedString(parameter.first),
                                  EscapedString(parameter.second));
@@ -252,61 +173,13 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: GET remote object", *this);
 
-    if (!this->_credentials.valid())
-    {
-      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
-                               *this, this->_credentials));
-    }
-
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
-
-    // Make headers.
     RequestHeaders headers(this->_make_generic_headers(request_time));
+    CanonicalRequest canonical_request(this->_make_get_canonical_request(headers, object_name));
 
-    // Make canonical request.
-    CanonicalRequest canonical_request(
-      this->_make_get_canonical_request(headers, object_name));
-
-    // Make string to sign.
-    StringToSign string_to_sign(this->_make_string_to_sign(
-                                request_time, canonical_request.sha256_hash()));
-
-    // Make Authorization header.
-    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-    aws::SigningKey key(this->_credentials.secret_access_key(),
-                        request_time,
-                        Region::us_east_1,
-                        Service::s3);
-    std::map<std::string, std::string> auth;
-
-    // Make credential string.
-    auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                           aws::Service::s3);
-
-    // Make signed headers string.
-    std::string signed_headers_str;
-    for (auto header: headers)
-      signed_headers_str += elle::sprintf("%s;", header.first);
-    signed_headers_str =
-      signed_headers_str.substr(0, signed_headers_str.size() - 1);
-    auth["SignedHeaders"] = signed_headers_str;
-    // Make signature string.
-    auth["Signature"] =
-      key.sign_message(string_to_sign.string());
-    // Make authorization header string.
-    std::string auth_str;
-    for (auto item: auth)
-      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
-    auth_str = auth_str.substr(0, auth_str.size() - 2);
-    headers["Authorization"] = auth_str;
-
-    // Add headers to request.
-    reactor::http::Request::Configuration cfg(300_sec,
-                                              reactor::http::Version::v11);
-    for (auto header: headers)
-      cfg.header_add(header.first, header.second);
+    reactor::http::Request::Configuration cfg(
+      this->_initialize_request(request_time, canonical_request, headers, 300_sec));
 
     auto url = elle::sprintf(
       "https://%s:%s/%s/%s",
@@ -363,61 +236,15 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: DELETE remote object", *this);
 
-    if (!this->_credentials.valid())
-    {
-      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
-                               *this, this->_credentials));
-    }
-
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
-
-    // Make headers.
     RequestHeaders headers(this->_make_generic_headers(request_time));
-
-    // Make canonical request.
-    CanonicalRequest canonical_request(
-      this->_make_delete_canonical_request(headers, object_name));
-
-    // Make string to sign.
-    StringToSign string_to_sign(this->_make_string_to_sign(
-                                request_time, canonical_request.sha256_hash()));
-
-    // Make Authorization header.
-    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-    aws::SigningKey key(this->_credentials.secret_access_key(),
-                        request_time,
-                        Region::us_east_1,
-                        Service::s3);
-    std::map<std::string, std::string> auth;
-
-    // Make credential string.
-    auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                           aws::Service::s3);
-
-    // Make signed headers string.
-    std::string signed_headers_str;
-    for (auto header: headers)
-      signed_headers_str += elle::sprintf("%s;", header.first);
-    signed_headers_str =
-      signed_headers_str.substr(0, signed_headers_str.size() - 1);
-    auth["SignedHeaders"] = signed_headers_str;
-    // Make signature string.
-    auth["Signature"] =
-      key.sign_message(string_to_sign.string());
-    // Make authorization header string.
-    std::string auth_str;
-    for (auto item: auth)
-      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
-    auth_str = auth_str.substr(0, auth_str.size() - 2);
-    headers["Authorization"] = auth_str;
-
-    // Add headers to request.
-    reactor::http::Request::Configuration cfg(15_sec,
-                                              reactor::http::Version::v11);
-    for (auto header: headers)
-      cfg.header_add(header.first, header.second);
+    reactor::http::Request::Configuration cfg(
+      this->_initialize_request(
+        request_time,
+        this->_make_delete_canonical_request(headers, object_name),
+        this->_make_generic_headers(request_time),
+        15_sec));
 
     auto url = elle::sprintf(
       "https://%s:%s/%s/%s",
@@ -645,6 +472,58 @@ namespace aws
     ELLE_DUMP("%s: generated DELETE canonical request: %s",
               *this, res.canonical_request());
     return res;
+  }
+
+  reactor::http::Request::Configuration
+  S3::_initialize_request(RequestTime request_time,
+                          CanonicalRequest const& canonical_request,
+                          const RequestHeaders& initial_headers,
+                          boost::posix_time::time_duration timeout)
+  {
+    if (!this->_credentials.valid())
+    {
+      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
+    }
+
+    // Make headers.
+    RequestHeaders headers(initial_headers);
+    StringToSign string_to_sign(this->_make_string_to_sign(
+                                request_time, canonical_request.sha256_hash()));
+    // Make Authorization header.
+    // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+    aws::SigningKey key(this->_credentials.secret_access_key(),
+                        request_time,
+                        Region::us_east_1,
+                        Service::s3);
+    std::map<std::string, std::string> auth;
+    // Make credential string.
+    auth["AWS4-HMAC-SHA256 Credential"] =
+      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
+                                           aws::Service::s3);
+    // Make signed headers string.
+    std::string signed_headers_str;
+    for (auto const& header: headers)
+      signed_headers_str += elle::sprintf("%s;", header.first);
+    signed_headers_str =
+      signed_headers_str.substr(0, signed_headers_str.size() - 1);
+    auth["SignedHeaders"] = signed_headers_str;
+    // Make signature string.
+    auth["Signature"] =
+      key.sign_message(string_to_sign.string());
+    // Make authorization header string.
+    std::string auth_str;
+    for (auto const& item: auth)
+      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
+    auth_str = auth_str.substr(0, auth_str.size() - 2);
+    headers["Authorization"] = auth_str;
+
+    // Add headers to request.
+    reactor::http::Request::Configuration cfg(timeout,
+                                              reactor::http::Version::v11);
+    for (auto header: headers)
+      cfg.header_add(header.first, header.second);
+    return cfg;
   }
 
   /*----------.

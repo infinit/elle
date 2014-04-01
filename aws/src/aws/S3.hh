@@ -121,7 +121,11 @@ namespace aws
     CanonicalRequest
     _make_delete_canonical_request(RequestHeaders const& headers,
                                    std::string const& object_name);
-
+    reactor::http::Request::Configuration
+    _initialize_request(RequestTime request_time,
+                        CanonicalRequest const& canonical_request,
+                        const RequestHeaders& initial_headers,
+                        boost::posix_time::time_duration timeout);
     /*----------.
     | Printable |
     `----------*/
