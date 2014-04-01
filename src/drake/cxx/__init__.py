@@ -1117,14 +1117,6 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
                   'explore dependencies of %s', path):
     cycles = set()
     deps = set()
-    try:
-      # FIXME: is building a node during dependencies ok ?
-      explored_node.build()
-    except drake.NoBuilder:
-      # If a node is found but cannot be built, it must be an obsolete
-      # file pulled from the on-disk dependencies. Discard it and let
-      # the compiler err because it can't find the include.
-      return (set(), set())
     matches = __dependencies_includes.get(path, None)
     if matches is None:
       matches = []
@@ -1169,6 +1161,14 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
                        'found %s in sources', found)
             break
       if found is not None:
+        try:
+          # FIXME: is building a node during dependencies ok ?
+          found.build()
+        except drake.NoBuilder:
+          # If a node is found but cannot be built, it must be an obsolete
+          # file pulled from the on-disk dependencies. Discard it and let
+          # the compiler err because it can't find the include.
+          continue
         deps.add((found, user))
         subcycles, subdeps = mkdeps(found, search,
                                     marks, cycles_map, owner_map,
