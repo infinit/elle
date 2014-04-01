@@ -115,8 +115,7 @@ namespace elle
       if (any.type() == typeid(double))
         return boost::any_cast<double>(any);
       if (any.type() == typeid(NullType))
-        return json_spirit::Value::NULL_TYPE;
-
+        return json_spirit::Value();
       ELLE_ABORT("unable to make JSON from type: %s",
                  elle::demangle(any.type().name()));
     }

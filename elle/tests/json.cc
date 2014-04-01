@@ -36,6 +36,16 @@ read_object()
 
 static
 void
+null()
+{
+  std::stringstream input("null");
+  auto json = elle::json::read(input);
+  boost::any_cast<elle::json::NullType>(json);
+  BOOST_CHECK_EQUAL(elle::json::pretty_print(json), "null");
+}
+
+static
+void
 read_utf_8()
 {
   std::stringstream input("{\"utf-8\": \"Средня Азиdoc\"}");
@@ -78,6 +88,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_int), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_long), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_object), 0, timeout);
+  suite.add(BOOST_TEST_CASE(null), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_escaped_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(write_utf_8), 0, timeout);
