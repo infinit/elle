@@ -557,7 +557,7 @@ class GccToolkit(Toolkit):
         else:
           self.os = drake.os.macos
       elif win32:
-        self.os = drake.onfini.windows
+        self.os = drake.os.windows
       elif linux:
         self.os = drake.os.linux
       else:
