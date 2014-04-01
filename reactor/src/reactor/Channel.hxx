@@ -20,7 +20,10 @@ namespace reactor
     this->_queue.push(std::move(data));
     this->_read_barrier.open();
     while (this->_queue.size() >= this->_max_size)
+    {
+      this->_write_barrier.close();
       reactor::wait(this->_write_barrier);
+    }
   }
 
   namespace details
