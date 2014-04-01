@@ -82,17 +82,7 @@ namespace aws
                     object.size());
       reactor::wait(request);
       ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
-      if (request.status() == reactor::http::StatusCode::Forbidden)
-      {
-        throw aws::CredentialsNotValid(
-          elle::sprintf("%s: unable to PUT on S3, forbidden", *this));
-      }
-      else if (request.status() != reactor::http::StatusCode::OK)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to PUT on S3, got HTTP status: %s",
-                        *this, request.status()));
-      }
+      _check_request_status(request.status(), "PUT", object_name);
     }
     catch (reactor::http::RequestError const& e)
     {
@@ -147,17 +137,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      if (request.status() == reactor::http::StatusCode::Forbidden)
-      {
-        throw aws::CredentialsNotValid(
-          elle::sprintf("%s: unable to LIST on S3, forbidden", *this));
-      }
-      else if (request.status() != reactor::http::StatusCode::OK)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to LIST on S3, got HTTP status: %s",
-                        *this, request.status()));
-      }
+      _check_request_status(request.status(), "LIST", "");
       return this->_parse_list_xml(request);
     }
     catch (reactor::http::RequestError const& e)
@@ -194,22 +174,8 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      if (request.status() == reactor::http::StatusCode::Not_Found)
-      {
-        throw aws::FileNotFound(
-          elle::sprintf("%s: object not found: %s", *this, object_name));
-      }
-      else if (request.status() == reactor::http::StatusCode::Forbidden)
-      {
-        throw aws::CredentialsNotValid(
-          elle::sprintf("%s: unable to GET on S3, forbidden", *this));
-      }
-      else if (request.status() != reactor::http::StatusCode::OK)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to GET on S3, got HTTP status: %s",
-                        *this, request.status()));
-      }
+      _check_request_status(request.status(), "GET", object_name);
+
       auto response = request.response();
       std::string calcd_md5(this->_md5_digest(response));
       std::string aws_md5(request.headers().at("ETag"));
@@ -260,18 +226,7 @@ namespace aws
       reactor::http::Request request(url, reactor::http::Method::DELETE, cfg);
       reactor::wait(request);
       ELLE_DUMP("%s: response: %s", *this, request.response().string());
-      if (request.status() == reactor::http::StatusCode::Forbidden)
-      {
-        throw aws::CredentialsNotValid(
-          elle::sprintf("%s: unable to DELETE on S3, forbidden", *this));
-      }
-      else if (request.status() != reactor::http::StatusCode::OK &&
-               request.status() != reactor::http::StatusCode::No_Content)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to DELETE on S3, got HTTP status: %s",
-                        *this, request.status()));
-      }
+      _check_request_status(request.status(), "GET", object_name);
     }
     catch (reactor::http::RequestError const& e)
     {
@@ -524,6 +479,32 @@ namespace aws
     for (auto header: headers)
       cfg.header_add(header.first, header.second);
     return cfg;
+  }
+
+  void
+  S3::_check_request_status(reactor::http::StatusCode status,
+                            std::string const& operation,
+                            std::string const& object_name)
+  {
+    if (status == reactor::http::StatusCode::Not_Found)
+    {
+      throw aws::FileNotFound(
+        elle::sprintf("%s: during S3 %s on %s: object not found",
+          *this, operation, object_name));
+    }
+    else if (status == reactor::http::StatusCode::Forbidden)
+    {
+       throw aws::CredentialsNotValid(
+          elle::sprintf("%s: during S3 %s on %s:, forbidden",
+            *this, operation, object_name));
+    }
+    else if (status != reactor::http::StatusCode::OK
+        && status != reactor::http::StatusCode::No_Content)
+    {
+      throw aws::RequestError(
+          elle::sprintf("%s: during S3 %s on %s: error %s",
+                        *this, operation, object_name, status));
+    }
   }
 
   /*----------.

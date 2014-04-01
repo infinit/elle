@@ -126,6 +126,11 @@ namespace aws
                         CanonicalRequest const& canonical_request,
                         const RequestHeaders& initial_headers,
                         boost::posix_time::time_duration timeout);
+    /// Check return code and throw appropriate exception if error
+    void
+    _check_request_status(reactor::http::StatusCode status,
+                          std::string const& operation,
+                          std::string const& object);
     /*----------.
     | Printable |
     `----------*/
