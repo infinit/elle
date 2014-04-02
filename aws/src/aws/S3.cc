@@ -360,10 +360,6 @@ namespace aws
       ptree response;
 
       read_xml(request, response);
-      for (auto const& n: response)
-      {
-        std::cerr << "BLIIP " << n.first << std::endl;
-      }
       if (response.find("Error") != response.not_found()
         || response.find("CompleteMultipartUploadResult") == response.not_found())
       {
