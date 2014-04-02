@@ -4,6 +4,8 @@
 # include <map>
 # include <vector>
 
+#include <boost/property_tree/ptree.hpp>
+
 # include <elle/Printable.hh>
 # include <elle/Buffer.hh>
 # include <elle/attribute.hh>
@@ -43,9 +45,12 @@ namespace aws
     /// Put a block (as a file) into the remote folder.
     /// This function does a single PUT call, so block size should be something
     /// reasonable for an HTTP request.
-    void
+    /// @return the object ETag.
+    std::string
     put_object(elle::ConstWeakBuffer const& object,
-               std::string const& object_name);
+               std::string const& object_name,
+               RequestQuery const& query = RequestQuery(),
+               bool ommit_redundancy = false);
 
     /// Returns a list of all files names and their respective sizes inside the
     /// remote folder.
@@ -65,6 +70,36 @@ namespace aws
     /// by setting the object_name to an empty string.
     void
     delete_object(std::string const& object_name);
+
+
+    /// Initialize multipart upload for given object
+    /// @return an upload key needed by further operations
+    std::string
+    multipart_initialize(std::string const& object_name);
+
+    typedef std::pair<int, std::string> MultiPartChunk;
+    /// Upload one part of a multipart upload
+    /// @return id for chunk information that needs to be passed to multipart_finalize
+    std::string
+    multipart_upload(std::string const& object_name,
+                     std::string const& upload_key,
+                     elle::ConstWeakBuffer const& object,
+                     int chunk);
+
+    /// Finalize a multipart by joining all parts together
+    void
+    multipart_finalize(std::string const& object_name,
+                       std::string const& upload_key,
+                       std::vector<MultiPartChunk> const& chunks);
+
+    /// Abort a multipart transfer, delete all chunks
+    void
+    multipart_abort(std::string const& object_name,
+                    std::string const& upload_key);
+
+    std::vector<MultiPartChunk>
+    multipart_list(std::string const& object_name,
+                   std::string const& upload_key);
 
     /*-----------.
     | Attributes |
@@ -100,7 +135,8 @@ namespace aws
 
     RequestHeaders
     _make_put_headers(elle::ConstWeakBuffer const& object,
-                      RequestTime const& request_time);
+                      RequestTime const& request_time,
+                      bool ommit_redundancy);
 
     RequestHeaders
     _make_generic_headers(RequestTime const& request_time);
@@ -108,7 +144,8 @@ namespace aws
     CanonicalRequest
     _make_put_canonical_request(elle::ConstWeakBuffer const& object,
                                 std::string const& object_name,
-                                RequestHeaders const& headers);
+                                RequestHeaders const& headers,
+                                RequestQuery const& query=RequestQuery());
 
     CanonicalRequest
     _make_list_canonical_request(RequestHeaders const& headers,
@@ -121,16 +158,19 @@ namespace aws
     CanonicalRequest
     _make_delete_canonical_request(RequestHeaders const& headers,
                                    std::string const& object_name);
+
     reactor::http::Request::Configuration
     _initialize_request(RequestTime request_time,
                         CanonicalRequest const& canonical_request,
                         const RequestHeaders& initial_headers,
                         boost::posix_time::time_duration timeout);
+
     /// Check return code and throw appropriate exception if error
     void
     _check_request_status(reactor::http::StatusCode status,
                           std::string const& operation,
                           std::string const& object);
+
     /*----------.
     | Printable |
     `----------*/
