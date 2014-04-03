@@ -167,10 +167,13 @@ namespace aws
                         boost::posix_time::time_duration timeout);
 
     /// Check return code and throw appropriate exception if error
+    /// ELLE_WARN the request response in case of error
+    /// Dumps it if dump_response is true, which eats the stream content.
     void
-    _check_request_status(reactor::http::StatusCode status,
+    _check_request_status(reactor::http::Request& request,
                           std::string const& operation,
-                          std::string const& object);
+                          std::string const& object,
+                          bool dump_response = false);
 
     /*----------.
     | Printable |

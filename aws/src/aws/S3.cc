@@ -91,8 +91,7 @@ namespace aws
       request.write(reinterpret_cast<char const*>(object.contents()),
                     object.size());
       reactor::wait(request);
-      ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
-      _check_request_status(request.status(), "PUT " + url, object_name);
+      _check_request_status(request, "PUT " + url, object_name);
       auto const& response = request.headers();
       auto etag = response.find("ETag");
       if (etag == response.end())
@@ -147,7 +146,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      _check_request_status(request.status(), "LIST", "");
+      _check_request_status(request, "LIST", "");
       return this->_parse_list_xml(request);
     }
     catch (reactor::http::RequestError const& e)
@@ -184,7 +183,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::GET, cfg);
       reactor::wait(request);
-      _check_request_status(request.status(), "GET", object_name);
+      _check_request_status(request, "GET", object_name);
 
       auto response = request.response();
       std::string calcd_md5(this->_md5_digest(response));
@@ -235,8 +234,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::DELETE, cfg);
       reactor::wait(request);
-      ELLE_DUMP("%s: response: %s", *this, request.response().string());
-      _check_request_status(request.status(), "GET", object_name);
+      _check_request_status(request, "GET", object_name, true);
     }
     catch (reactor::http::RequestError const& e)
     {
@@ -280,7 +278,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::POST, cfg);
       reactor::wait(request);
-      _check_request_status(request.status(), "POST", "");
+      _check_request_status(request, "POST", "");
       using boost::property_tree::ptree;
       ptree response;
       read_xml(request, response);
@@ -357,7 +355,7 @@ namespace aws
         // DO NOT ENABLE OUTSIDE ERR CASE OR RESPONSE WILL NOT BE READABLE AGAIN
         ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
       }
-      _check_request_status(request.status(), "multipart_finalize", "");
+      _check_request_status(request, "multipart_finalize", "");
       // This request can 200 OK and still return an error in XML
       using boost::property_tree::ptree;
       ptree response;
@@ -425,7 +423,7 @@ namespace aws
       {
         reactor::http::Request request(url, reactor::http::Method::GET, cfg);
         reactor::wait(request);
-        _check_request_status(request.status(), "LIST", "");
+        _check_request_status(request, "LIST", "");
         using boost::property_tree::ptree;
         ptree response;
         read_xml(request, response);
@@ -702,10 +700,29 @@ namespace aws
   }
 
   void
-  S3::_check_request_status(reactor::http::StatusCode status,
+  S3::_check_request_status(reactor::http::Request& request,
                             std::string const& operation,
-                            std::string const& object_name)
+                            std::string const& object_name,
+                            bool dump_response)
   {
+    auto status = request.status();
+    // Log response in case of error
+    if (status != reactor::http::StatusCode::OK
+        && status != reactor::http::StatusCode::No_Content)
+    {
+      ELLE_WARN("%s: AWS error on %s on %s/%s: %s",
+                *this, operation,
+                this->_remote_folder, object_name,
+                request.response());
+    }
+    // Dump response if asked to
+    else if (dump_response)
+    {
+      ELLE_DUMP("%s: AWS reply on %s on %s/%s: %s",
+                *this, operation,
+                this->_remote_folder, object_name,
+                request.response());
+    }
     if (status == reactor::http::StatusCode::Not_Found)
     {
       ELLE_TRACE("%s: error status: not found", *this);
