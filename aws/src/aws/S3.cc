@@ -128,7 +128,7 @@ namespace aws
       this->_make_list_canonical_request(headers, query));
 
     reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 10_sec));
+      this->_initialize_request(request_time, canonical_request, headers, 20_sec));
 
 
     // Make query string.
@@ -352,8 +352,11 @@ namespace aws
       reactor::http::Request request(url, reactor::http::Method::POST, cfg);
       request.write(xchunks.data(), xchunks.size());
       reactor::wait(request);
-      // DO NOT ENABLE THAT OR RESPONSE WILL NOT BE READABLE AGAIN
-      //ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+      if (request.status()  != reactor::http::StatusCode::OK)
+      {
+        // DO NOT ENABLE OUTSIDE ERR CASE OR RESPONSE WILL NOT BE READABLE AGAIN
+        ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
+      }
       _check_request_status(request.status(), "multipart_finalize", "");
       // This request can 200 OK and still return an error in XML
       using boost::property_tree::ptree;
@@ -393,21 +396,30 @@ namespace aws
 
     // Make headers.
     RequestHeaders headers(this->_make_generic_headers(request_time));
-    CanonicalRequest canonical_request(
-      this->_make_get_canonical_request(headers, object_name));
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 10_sec));
+
     std::vector<S3::MultiPartChunk> res;
     int max_id = -1;
     while (true)
     {
       std::string marker;
+      RequestQuery query;
+       query["uploadId"] = upload_key;
       if (max_id != -1)
+      {
         marker = elle::sprintf("&part-number-marker=%s", max_id);
-      auto url = elle::sprintf("https://%s:%s?uploadId=%s%s",
+        query["part-number-marker"] = boost::lexical_cast<std::string>(max_id);
+      }
+      auto url = elle::sprintf("https://%s:%s/%s/%s?uploadId=%s%s",
                                headers["Host"],
                                "443",
+                               this->_remote_folder,
+                               object_name,
                                upload_key, marker);
+
+      CanonicalRequest canonical_request(
+        this->_make_get_canonical_request(headers, object_name, query));
+      reactor::http::Request::Configuration cfg(
+        this->_initialize_request(request_time, canonical_request, headers, 30_sec));
       ELLE_DUMP("url: %s", url);
       try
       {
@@ -598,15 +610,15 @@ namespace aws
 
   aws::CanonicalRequest
   S3::_make_get_canonical_request(RequestHeaders const& headers,
-                                  std::string const& object_name)
+                                  std::string const& object_name,
+                                  RequestQuery const& query)
   {
-    RequestQuery empty_query;
     elle::ConstWeakBuffer empty_object("");
 
     aws::CanonicalRequest res(
       reactor::http::Method::GET,
       elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      empty_query,
+      query,
       headers,
       this->_signed_headers(headers),
       _sha256_hexdigest(empty_object)

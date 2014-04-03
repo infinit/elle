@@ -153,7 +153,8 @@ namespace aws
 
     CanonicalRequest
     _make_get_canonical_request(RequestHeaders const& headers,
-                                std::string const& object_name);
+                                std::string const& object_name,
+                                RequestQuery const& query = RequestQuery());
 
     CanonicalRequest
     _make_delete_canonical_request(RequestHeaders const& headers,
