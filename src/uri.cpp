@@ -145,6 +145,11 @@ namespace network {
     }
 
     if (path) {
+      // if the URI is hierarchical and the path is not already
+      // prefixed with a '/', add one.
+      if (host && (path->empty() || path->front() != '/')) {
+        uri_.append("/");
+      }
       uri_.append(*path);
     }
 
