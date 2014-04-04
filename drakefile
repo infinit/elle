@@ -26,6 +26,9 @@ openssl_lib_crypto = None
 zlib_config = None
 zlib_lib = None
 
+libarchive_config = None
+libarchive_lib = None
+
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
@@ -49,6 +52,7 @@ def configure(cxx_toolkit = None,
   global curl_config, curl_lib
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
+  global libarchive_config, libarchive_lib
 
   config = drake.cxx.Config()
 
@@ -255,6 +259,8 @@ def configure(cxx_toolkit = None,
     os_string = 'mingw64'
   elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
+  openssl_prefix_absolute = \
+    drake.path_build(openssl_prefix, absolute = True)
   GNUBuilder(
     cxx_toolkit,
     configure = openssl_configure,
@@ -263,8 +269,7 @@ def configure(cxx_toolkit = None,
                     (drake.node(openssl_prefix / p)
                      for p in openssl_headers)),
     configure_args = [
-      '--prefix=%s' % drake.path_build(openssl_prefix,
-                                       absolute = True),
+      '--prefix=%s' % openssl_prefix_absolute,
       openssl_shared and 'shared' or 'no-shared',
       'no-asm',
       '-DPURIFY',
@@ -381,6 +386,68 @@ def configure(cxx_toolkit = None,
   curl_config.add_local_include_path(curl_prefix / 'include')
   if cxx_toolkit.os is drake.os.windows:
     curl_config.define('CURL_STATICLIB', '1')
+
+  ## ---------- ##
+  ## LibArchive ##
+  ## ---------- ##
+
+  libarchive_version = '3.1.2'
+  libarchive_basename = 'libarchive-%s' % libarchive_version
+  libarchive_tarball = \
+    drake.node('libarchive/%s.tar.gz' % libarchive_basename)
+  libarchive_prefix = drake.Path('libarchive')
+  libarchive_build = libarchive_prefix / libarchive_basename
+  libarchive_configure = drake.node(libarchive_build / 'configure')
+  libarchive_url = \
+    'http://libarchive.org/downloads/%s.tar.gz' % libarchive_basename
+  drake.HTTPDownload(
+    libarchive_url,
+    libarchive_tarball,
+    fingerprint = 'efad5a503f66329bb9d2f4308b5de98a',
+  )
+  drake.TarballExtractor(
+    libarchive_tarball,
+    targets = ['libarchive-%s/configure' % libarchive_version],
+  )
+  libarchive_lib = drake.node(libarchive_prefix / 'lib/libarchive.so')
+  libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
+                                                absolute = True)
+  libarchive_openssl_libs = \
+    drake.copy(openssl_libs, libarchive_prefix / 'lib',
+               strip_prefix = True)
+  libarchive_zlib_libs = \
+    drake.copy(zlib_libs, libarchive_prefix / 'lib',
+               strip_prefix = True)
+  libarchive_dependency_libs = libarchive_openssl_libs + libarchive_zlib_libs
+  GNUBuilder(
+    cxx_toolkit,
+    configure = libarchive_configure,
+    configure_args = [
+      '--prefix=%s' % libarchive_prefix_absolute,
+      '--disable-acl',
+      '--disable-xattr',
+      'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
+                                              zlib_prefix_absolute),
+      'LDFLAGS=-L%s/lib -L%s/lib' % (openssl_prefix_absolute,
+                                     zlib_prefix_absolute),
+      '--without-bz2lib',
+      '--without-expat',
+      '--without-lzma',
+      '--without-lzo2',
+      '--without-nettle',
+      '--without-xml2',
+    ],
+    working_directory = drake.path_build(libarchive_build),
+    targets = [libarchive_lib] + drake.nodes(
+      'libarchive/include/archive.h',
+      'libarchive/include/archive_entry.h',
+    ),
+    sources = [libarchive_configure] + libarchive_dependency_libs,
+  )
+  for lib in libarchive_dependency_libs:
+    libarchive_lib.dependency_add(lib)
+  libarchive_config = drake.cxx.Config()
+  libarchive_config.add_local_include_path('libarchive/include')
 
   ## ------------- ##
   ## Configuration ##
