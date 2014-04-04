@@ -409,7 +409,8 @@ def configure(cxx_toolkit = None,
     libarchive_tarball,
     targets = ['libarchive-%s/configure' % libarchive_version],
   )
-  libarchive_lib = drake.node(libarchive_prefix / 'lib/libarchive.so')
+  libarchive_lib = drake.cxx.DynLib(libarchive_prefix /
+                                    'lib/libarchive.so.13')
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
   libarchive_openssl_libs = \
@@ -488,6 +489,8 @@ def configure(cxx_toolkit = None,
     cxx_config = cxx_config,
     zlib_config = zlib_config,
     zlib_lib = zlib_lib,
+    libarchive_config = libarchive_config,
+    libarchive_lib = libarchive_lib,
     boost = boost,
     python3 = python3,
     prefix = prefix,
