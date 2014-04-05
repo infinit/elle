@@ -1,8 +1,10 @@
-#include <boost/filesystem/fstream.hpp>
+#include <unordered_set>
 
-#include <elle/system/Process.hh>
 #include <elle/archive/zip.hh>
+#include <elle/attribute.hh>
+#include <elle/filesystem.hh>
 #include <elle/finally.hh>
+#include <elle/system/Process.hh>
 #include <elle/test.hh>
 
 class DummyHierarchy
@@ -37,6 +39,62 @@ private:
   boost::filesystem::path _root;
 };
 
+class TemporaryDirectory
+{
+public:
+  TemporaryDirectory(std::string const& name)
+  {
+    auto output_pattern =
+      boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
+    auto output = boost::filesystem::unique_path(output_pattern);
+    this->_path = output / name;
+    boost::filesystem::create_directories(this->_path);
+  }
+
+  ~TemporaryDirectory()
+  {
+    boost::filesystem::remove_all(this->_path.parent_path());
+  }
+
+private:
+  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+};
+
+class TemporaryFile
+{
+public:
+  TemporaryFile(std::string const& name)
+    : _directory(name)
+  {
+    this->_path = this->_directory.path() / name;
+    boost::filesystem::ofstream(this->_path);
+  }
+
+private:
+  ELLE_ATTRIBUTE_R(TemporaryDirectory, directory);
+  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+};
+
+class ChangeDirectory
+{
+public:
+  ChangeDirectory(boost::filesystem::path const& path)
+    : _path(path)
+    , _previous(boost::filesystem::current_path())
+  {
+    boost::filesystem::current_path(path);
+  }
+
+  ~ChangeDirectory()
+  {
+    boost::filesystem::current_path(this->_previous);
+  }
+
+private:
+  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+  ELLE_ATTRIBUTE_R(boost::filesystem::path, previous);
+};
+
 static
 void
 check_file_content(boost::filesystem::path const& path,
@@ -50,6 +108,14 @@ check_file_content(boost::filesystem::path const& path,
 }
 
 static
+boost::filesystem::path
+renamer_forbid(boost::filesystem::path const& input)
+{
+  BOOST_FAIL("no file renaming needed");
+  return input;
+}
+
+static
 void
 zip()
 {
@@ -58,7 +124,7 @@ zip()
     boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%.zip";
   auto path = boost::filesystem::unique_path(pattern);
   elle::SafeFinally clean([&] { boost::filesystem::remove(path); });
-  elle::archive::zip({dummy.root()}, path);
+  elle::archive::zip({dummy.root()}, path, renamer_forbid);
   {
     auto output_pattern =
       boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
@@ -97,9 +163,58 @@ zip()
   }
 }
 
+static
+boost::filesystem::path
+renamer(boost::filesystem::path const& input)
+{
+  return input.string() + " bis";
+}
+
+static
+void
+zip_duplicate()
+{
+  TemporaryDirectory d1("same");
+  boost::filesystem::ofstream(d1.path() / "beacon");
+  TemporaryDirectory d2("same");
+  boost::filesystem::ofstream(d2.path() / "beacon");
+  TemporaryFile f("same");
+  TemporaryDirectory output("output");
+  auto path = output.path() / "output.zip";
+  elle::archive::zip({d1.path(), d2.path(), f.path()},
+                     path,
+                     renamer);
+  {
+    TemporaryDirectory decompress("decompress");
+    ChangeDirectory chdir(decompress.path());
+    elle::system::Process p(
+      (chdir.previous() / "libarchive/bin/bsdcpio").native(),
+      {"--extract", "--make-directories", "-I", path.native()});
+    BOOST_CHECK_EQUAL(p.wait_status(), 0);
+    int count = 0;
+    std::unordered_set<boost::filesystem::path> accepted({
+        "./same",
+        "./same/beacon",
+        "./same bis",
+        "./same bis/beacon",
+        "./same bis bis",
+          });
+    for (auto it = boost::filesystem::recursive_directory_iterator(".");
+         it != boost::filesystem::recursive_directory_iterator();
+         ++it)
+    {
+      ++count;
+      if (accepted.find(*it) == accepted.end())
+        BOOST_FAIL(*it);
+    }
+    BOOST_CHECK_EQUAL(count, accepted.size());
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
 
   master.add(BOOST_TEST_CASE(zip));
+  master.add(BOOST_TEST_CASE(zip_duplicate));
 }

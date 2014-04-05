@@ -1,5 +1,7 @@
 #include <elle/archive/zip.hh>
 
+#include <unordered_set>
+
 #include <archive.h>
 #include <archive_entry.h>
 
@@ -7,7 +9,11 @@
 #include <boost/filesystem/fstream.hpp>
 
 #include <elle/Exception.hh>
+#include <elle/container/vector.hh>
+#include <elle/log.hh>
 #include <elle/printf.hh>
+
+ELLE_LOG_COMPONENT("elle.archive.zip");
 
 namespace elle
 {
@@ -46,6 +52,7 @@ namespace elle
               boost::filesystem::path const& file,
               boost::filesystem::path const& relative_path)
     {
+      ELLE_DEBUG_SCOPE("add %s as %s", file, relative_path);
       std::unique_ptr<archive_entry, archive_entry_deleter> entry
         (archive_entry_new());
       archive_entry_set_pathname(entry.get(), relative_path.string().c_str());
@@ -67,14 +74,22 @@ namespace elle
 
     void
     zip(std::vector<boost::filesystem::path> const& files,
-        boost::filesystem::path const& path)
+        boost::filesystem::path const& path,
+        Renamer const& renamer)
     {
+      ELLE_TRACE_SCOPE("zip %s", path);
+      ELLE_DEBUG("files: %s", files);
+      std::unordered_set<std::string> root_entries;
       std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
       check_call(archive.get(), archive_write_set_format_zip(archive.get()));
       check_call(archive.get(),
                  archive_write_open_filename(archive.get(), path.native().c_str()));
       for (auto const& path: files)
       {
+        auto root = path.filename();
+        while (root_entries.find(root.string()) != root_entries.end())
+          root = renamer(root);
+        root_entries.insert(root.string());
         if (boost::filesystem::is_directory(path))
           for (auto it = boost::filesystem::recursive_directory_iterator(path);
                it != boost::filesystem::recursive_directory_iterator();
@@ -83,10 +98,12 @@ namespace elle
             boost::filesystem::path absolute(*it);
             if (boost::filesystem::is_directory(absolute))
               continue;
-            boost::filesystem::path relative;
+            boost::filesystem::path relative = root;
             {
               auto start = std::begin(absolute);
-              for (auto count = std::begin(path); ++count != std::end(path);)
+              for (auto count = std::begin(path);
+                   count != std::end(path);
+                   ++count)
                 ++start;
               for (; start != std::end(absolute); ++start)
                 relative /= *start;
@@ -94,7 +111,7 @@ namespace elle
             _zip_file(archive.get(), absolute, relative);
           }
         else
-          _zip_file(archive.get(), path, path.filename());
+          _zip_file(archive.get(), path, root);
       }
     }
   }

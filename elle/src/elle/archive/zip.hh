@@ -7,9 +7,13 @@ namespace elle
 {
   namespace archive
   {
+    typedef
+      std::function<boost::filesystem::path(boost::filesystem::path const&)>
+      Renamer;
     void
     zip(std::vector<boost::filesystem::path> const& files,
-        boost::filesystem::path const& path);
+        boost::filesystem::path const& path,
+        Renamer const& renamer);
   }
 }
 
