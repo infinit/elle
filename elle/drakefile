@@ -328,7 +328,9 @@ def configure(zlib_lib,
     'src/elle/system/platform.hh',
     'src/elle/system/Process.cc',
     'src/elle/system/Process.hh',
+    'src/elle/system/system.cc',
     'src/elle/system/system.hh',
+
     )
 
   sources += drake.nodes(
