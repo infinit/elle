@@ -69,7 +69,7 @@ namespace elle
     zip(std::vector<boost::filesystem::path> const& files,
         boost::filesystem::path const& path)
     {
-      std::unique_ptr<::archive, archive_deleter> archive(archive_write_new());
+      std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
       check_call(archive.get(), archive_write_set_format_zip(archive.get()));
       check_call(archive.get(),
                  archive_write_open_filename(archive.get(), path.native().c_str()));
