@@ -409,8 +409,11 @@ def configure(cxx_toolkit = None,
     libarchive_tarball,
     targets = ['libarchive-%s/configure' % libarchive_version],
   )
-  libarchive_lib = drake.cxx.DynLib(libarchive_prefix /
-                                    'lib/libarchive.so.13')
+  if cxx_toolkit.os is drake.os.macos:
+    libarchive_lib = libarchive_prefix / 'lib/libarchive.13.dylib'
+  elif cxx_toolkit.os is drake.os.linux:
+    libarchive_lib = libarchive_prefix / 'lib/libarchive.so.13'
+  libarchive_lib = drake.cxx.DynLib(libarchive_lib)
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
   libarchive_openssl_libs = \
@@ -438,6 +441,7 @@ def configure(cxx_toolkit = None,
       '--without-nettle',
       '--without-xml2',
     ],
+    additional_env = {'DYLD_INSERT_LIBRARIES': ':'.join(str(drake.path_root() / n.path()) for n in libarchive_dependency_libs)},
     working_directory = drake.path_build(libarchive_build),
     targets = [libarchive_lib] + drake.nodes(
       'libarchive/include/archive.h',
