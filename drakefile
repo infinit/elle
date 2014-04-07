@@ -410,10 +410,11 @@ def configure(cxx_toolkit = None,
     targets = ['libarchive-%s/configure' % libarchive_version],
   )
   if cxx_toolkit.os is drake.os.macos:
-    libarchive_lib = libarchive_prefix / 'lib/libarchive.13.dylib'
+    libarchive_lib = drake.cxx.DynLib(libarchive_prefix / 'lib/libarchive.13.dylib')
   elif cxx_toolkit.os is drake.os.linux:
-    libarchive_lib = libarchive_prefix / 'lib/libarchive.so.13'
-  libarchive_lib = drake.cxx.DynLib(libarchive_lib)
+    libarchive_lib = drake.cxx.DynLib(libarchive_prefix / 'lib/libarchive.so.13')
+  elif cxx_toolkit.os is drake.os.windows:
+    libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
   libarchive_openssl_libs = \

@@ -1,11 +1,10 @@
 #if defined(INFINIT_MACOSX)
 # include <mach-o/dyld.h>
-#elif defined(INFINIT_WINDOWS)
-# include <windows.h>
 #endif
 
 #include <elle/assert.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
+#include <elle/windows.h>
 
 static boost::filesystem::path executable_path()
 {
@@ -14,7 +13,9 @@ static boost::filesystem::path executable_path()
 #elif defined(INFINIT_MACOSX)
   return _NSGetExecutablePath();
 #elif defined(INFINIT_WINDOWS)
-  return GetModuleFileName(0);
+  char result[1024];
+  auto size = GetModuleFileName(0, result, sizeof(result));
+  return std::string(result, size);
 #else
   throw elle::Exception("unable to get executable path");
 #endif

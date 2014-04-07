@@ -57,7 +57,7 @@ namespace elle
         (archive_entry_new());
       archive_entry_set_pathname(entry.get(), relative_path.string().c_str());
       struct stat st;
-      ::stat(file.native().c_str(), &st);
+      ::stat(file.string().c_str(), &st);
       archive_entry_copy_stat(entry.get(), &st);
       check_call(archive, archive_write_header(archive, entry.get()));
       boost::filesystem::ifstream input(file);
@@ -83,7 +83,7 @@ namespace elle
       std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
       check_call(archive.get(), archive_write_set_format_zip(archive.get()));
       check_call(archive.get(),
-                 archive_write_open_filename(archive.get(), path.native().c_str()));
+                 archive_write_open_filename(archive.get(), path.string().c_str()));
       for (auto const& path: files)
       {
         auto root = path.filename();

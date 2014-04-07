@@ -98,9 +98,9 @@ class GNUBuilder(drake.Builder):
         continue
       with drake.WritePermissions(target):
         cmd = self.__toolkit.rpath_set_command(target.path(), rpath)
-        if not self.cmd('Fix rpath for %s' % target.path(),
-                        cmd):
-          return False
+        if self.__toolkit.os is not drake.os.windows:
+          if not self.cmd('Fix rpath for %s' % target.path(), cmd):
+            return False
         if self.__toolkit.os is drake.os.macos:
           cmd = ['install_name_tool',
                  '-id', '@rpath/%s' % target.name().basename(),
