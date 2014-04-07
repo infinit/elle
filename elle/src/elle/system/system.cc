@@ -19,8 +19,8 @@ namespace elle
       static const size_t MAX_buffer{elle::Buffer::max_size};
 
       if (size > MAX_buffer)
-      throw elle::Exception(
-        elle::sprintf("buffer that big (%s) can't be addressed", size));
+        throw elle::Exception(
+          elle::sprintf("buffer that big (%s) can't be addressed", size));
 
       if (!file.good())
         throw elle::Exception("file is broken");
