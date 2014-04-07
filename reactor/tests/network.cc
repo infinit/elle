@@ -96,7 +96,8 @@ test_destroy_socket_non_connected()
     BOOST_CHECK(true);
     return;
   }
-  BOOST_FAIL("Socket shouldn't have connected");
+  BOOST_FAIL("Socket shouldn't have connected. "
+             "Boost 1.54 has this bug, check your install.");
 }
 
 static
