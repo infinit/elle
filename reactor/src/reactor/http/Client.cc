@@ -44,8 +44,9 @@ namespace reactor
       ELLE_ATTRIBUTE(elle::generic_unique_ptr<CURLSH>, share);
     };
 
-    Client::Client():
-      _impl(new Impl)
+    Client::Client(std::string const& user_agent):
+      _impl(new Impl),
+      _user_agent(user_agent)
     {}
 
     Client::~Client()
@@ -65,12 +66,24 @@ namespace reactor
     Client::_register(Request const& request)
     {
       ELLE_TRACE_SCOPE("%s: register %s", *this, request);
-      auto res = curl_easy_setopt(request._impl->_handle,
-                                  CURLOPT_SHARE, this->_impl->_share.get());
-      if (res != CURLE_OK)
-        throw RequestError(request.url(),
-                           elle::sprintf("unable to set cookie jar: %s",
-                                         curl_easy_strerror(res)));
+      {
+        auto res = curl_easy_setopt(request._impl->_handle,
+                                    CURLOPT_SHARE, this->_impl->_share.get());
+        if (res != CURLE_OK)
+          throw RequestError(request.url(),
+                             elle::sprintf("unable to set cookie jar: %s",
+                                           curl_easy_strerror(res)));
+      }
+
+      {
+        auto res = curl_easy_setopt(request._impl->_handle,
+                                    CURLOPT_USERAGENT,
+                                    this->_user_agent.c_str());
+        if (res != CURLE_OK)
+          throw RequestError(request.url(),
+                             elle::sprintf("unable to set user agent: %s",
+                                           curl_easy_strerror(res)));
+      }
     }
 
     /*--------.

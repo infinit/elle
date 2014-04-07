@@ -16,7 +16,7 @@ namespace reactor
     {
     public:
       /// Create a Client.
-      Client();
+      Client(std::string const& user_agent = "Elle");
       /// Dispose of a Client.
       ~Client();
       /// Create a request and register it with this client.
@@ -54,6 +54,8 @@ namespace reactor
       class Impl;
       /// The actual implementation.
       Impl* _impl;
+      /// The user agent for every request fired by this client.
+      ELLE_ATTRIBUTE(std::string, user_agent);
     };
   }
 }
