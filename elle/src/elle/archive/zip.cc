@@ -90,6 +90,9 @@ namespace elle
         while (root_entries.find(root.string()) != root_entries.end())
           root = renamer(root);
         root_entries.insert(root.string());
+        ELLE_DEBUG("Renamed %s to %s", path, root);
+        if (!boost::filesystem::exists(path))
+          throw elle::Exception(elle::sprintf("Path %s does not exist", path));
         if (boost::filesystem::is_directory(path))
           for (auto it = boost::filesystem::recursive_directory_iterator(path);
                it != boost::filesystem::recursive_directory_iterator();
@@ -108,10 +111,14 @@ namespace elle
               for (; start != std::end(absolute); ++start)
                 relative /= *start;
             }
+            ELLE_DEBUG("zipping from directory %s as %s", absolute, relative);
             _zip_file(archive.get(), absolute, relative);
           }
         else
+        {
+          ELLE_DEBUG("zipping %s as %s", path, root);
           _zip_file(archive.get(), path, root);
+        }
       }
     }
   }
