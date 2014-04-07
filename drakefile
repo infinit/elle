@@ -443,7 +443,9 @@ def configure(cxx_toolkit = None,
     ],
     additional_env = {'DYLD_INSERT_LIBRARIES': ':'.join(str(drake.path_root() / n.path()) for n in libarchive_dependency_libs)},
     working_directory = drake.path_build(libarchive_build),
-    targets = [libarchive_lib] + drake.nodes(
+    targets = [
+      libarchive_lib,
+      drake.cxx.Executable('libarchive/bin/bsdcpio')] + drake.nodes(
       'libarchive/include/archive.h',
       'libarchive/include/archive_entry.h',
     ),

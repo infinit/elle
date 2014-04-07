@@ -90,10 +90,14 @@ class GNUBuilder(drake.Builder):
         return False
     for target in self.__targets:
       path = target.path().without_prefix(self.work_directory)
-      if not isinstance(target, drake.cxx.DynLib):
+      if isinstance(target, drake.cxx.DynLib):
+        rpath = '.'
+      elif isinstance(target, drake.cxx.Executable):
+        rpath = '../lib'
+      else:
         continue
       with drake.WritePermissions(target):
-        cmd = self.__toolkit.rpath_set_command(target.path(), '.')
+        cmd = self.__toolkit.rpath_set_command(target.path(), rpath)
         if not self.cmd('Fix rpath for %s' % target.path(),
                         cmd):
           return False
