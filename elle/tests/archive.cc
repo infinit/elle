@@ -3,9 +3,12 @@
 #include <elle/archive/zip.hh>
 #include <elle/attribute.hh>
 #include <elle/filesystem.hh>
+#include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/finally.hh>
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
+
+using elle::filesystem::TemporaryDirectory;
 
 class DummyHierarchy
 {
@@ -37,27 +40,6 @@ public:
 
 private:
   boost::filesystem::path _root;
-};
-
-class TemporaryDirectory
-{
-public:
-  TemporaryDirectory(std::string const& name)
-  {
-    auto output_pattern =
-      boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
-    auto output = boost::filesystem::unique_path(output_pattern);
-    this->_path = output / name;
-    boost::filesystem::create_directories(this->_path);
-  }
-
-  ~TemporaryDirectory()
-  {
-    boost::filesystem::remove_all(this->_path.parent_path());
-  }
-
-private:
-  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
 };
 
 class TemporaryFile
