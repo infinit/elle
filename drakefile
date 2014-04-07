@@ -74,7 +74,8 @@ def configure(cxx_toolkit = None,
       include_dir = ['include',
                      'include/python3.2',
                      'include/python3.2m',
-                     'include/python3.3m'])
+                     'include/python3.3m',
+                     'include/python3.4m'])
 
 
   ## ---- ##
