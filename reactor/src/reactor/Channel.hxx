@@ -14,6 +14,13 @@ namespace reactor
   {}
 
   template <typename T, typename Container>
+  bool
+  Channel<T, Container>::empty() const
+  {
+    return this->_queue.empty();
+  }
+
+  template <typename T, typename Container>
   void
   Channel<T, Container>::put(T data)
   {
@@ -84,7 +91,20 @@ namespace reactor
   const T&
   Channel<T, Container>::peek()
   {
+    while(!this->_read_barrier.opened())
+    reactor::wait(this->_read_barrier);
+    ELLE_ASSERT(!this->_queue.empty());
     return details::queue_front(this->_queue);
+  }
+
+  template <typename T, typename Container>
+  void
+  Channel<T, Container>::clear()
+  {
+    this->_queue = Container(); // priority_queue has no clear
+    if (this->_max_size < this->_queue.size())
+      this->_write_barrier.open();
+    this->_read_barrier.close();
   }
 }
 

@@ -23,7 +23,10 @@ namespace reactor
     peek();
     unsigned int
     size() const;
-
+    bool
+    empty() const;
+    void
+    clear();
   private:
     ELLE_ATTRIBUTE(Barrier, read_barrier);
     ELLE_ATTRIBUTE(Barrier, write_barrier);
