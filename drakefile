@@ -422,6 +422,7 @@ def configure(cxx_toolkit = None,
     libarchive_configure_args = ['--host=x86_64-w64-mingw32']
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
+    libarchive_env = {}
   else:
     libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
