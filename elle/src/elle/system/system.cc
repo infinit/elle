@@ -9,13 +9,13 @@ namespace elle
   namespace system
   {
     Buffer read_file_chunk(boost::filesystem::path path,
-      int64_t offset,
-      int64_t size)
+                           uint64_t offset,
+                           uint64_t size)
     {
       boost::filesystem::ifstream file{path, std::ios::binary};
       // streamsize is garanteed signed, so this fits
-      static const int64_t MAX_offset{
-      std::numeric_limits<std::streamsize>::max()};
+      static const uint64_t MAX_offset{
+        std::numeric_limits<std::streamsize>::max()};
       static const size_t MAX_buffer{elle::Buffer::max_size};
 
       if (size > MAX_buffer)

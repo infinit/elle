@@ -43,8 +43,8 @@ namespace elle
     };
     // Read a part of a file, from file_offset to either size bytes or EOF
     Buffer read_file_chunk(boost::filesystem::path file_name,
-                           int64_t file_offset,
-                           int64_t size);
+                           uint64_t file_offset,
+                           uint64_t size);
   }
 }
 
