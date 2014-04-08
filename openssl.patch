@@ -1,7 +1,8 @@
-diff -ru openssl-1.0.1f/doc/apps/cms.pod ../../openssl2/doc/apps/cms.pod
---- openssl-1.0.1f/doc/apps/cms.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/apps/cms.pod	2014-03-04 16:41:22.691325620 +0100
-@@ -450,28 +450,28 @@
+diff --git openssl-1.0.1g/doc/apps/cms.pod b/openssl-1.0.1g/doc/apps/cms.pod
+index a09588a..2de3c5c 100644
+--- openssl-1.0.1g/doc/apps/cms.pod
++++ b/openssl-1.0.1g/doc/apps/cms.pod
+@@ -450,28 +450,28 @@ remains DER.
  
  =over 4
  
@@ -36,10 +37,11 @@ diff -ru openssl-1.0.1f/doc/apps/cms.pod ../../openssl2/doc/apps/cms.pod
  
  the message was verified correctly but an error occurred writing out
  the signers certificates.
-diff -ru openssl-1.0.1f/doc/apps/smime.pod ../../openssl2/doc/apps/smime.pod
---- openssl-1.0.1f/doc/apps/smime.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/apps/smime.pod	2014-03-04 16:41:22.687325620 +0100
-@@ -308,28 +308,28 @@
+diff --git openssl-1.0.1g/doc/apps/smime.pod b/openssl-1.0.1g/doc/apps/smime.pod
+index e4e89af..ee70654 100644
+--- openssl-1.0.1g/doc/apps/smime.pod
++++ b/openssl-1.0.1g/doc/apps/smime.pod
+@@ -308,28 +308,28 @@ remains DER.
  
  =over 4
  
@@ -74,10 +76,11 @@ diff -ru openssl-1.0.1f/doc/apps/smime.pod ../../openssl2/doc/apps/smime.pod
  
  the message was verified correctly but an error occurred writing out
  the signers certificates.
-diff -ru openssl-1.0.1f/doc/crypto/rand.pod ../../openssl2/doc/crypto/rand.pod
---- openssl-1.0.1f/doc/crypto/rand.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/crypto/rand.pod	2014-03-04 16:41:22.623325622 +0100
-@@ -74,16 +74,16 @@
+diff --git openssl-1.0.1g/doc/crypto/rand.pod b/openssl-1.0.1g/doc/crypto/rand.pod
+index 1c068c8..15c5b62 100644
+--- openssl-1.0.1g/doc/crypto/rand.pod
++++ b/openssl-1.0.1g/doc/crypto/rand.pod
+@@ -74,16 +74,16 @@ First up I will state the things I believe I need for a good RNG.
  
  =over 4
  
@@ -97,7 +100,7 @@ diff -ru openssl-1.0.1f/doc/crypto/rand.pod ../../openssl2/doc/crypto/rand.pod
  
  The state should be very large.  If the RNG is being used to generate
  4096 bit RSA keys, 2 2048 bit random strings are required (at a minimum).
-@@ -93,13 +93,13 @@
+@@ -93,13 +93,13 @@ carried away on this last point but it does indicate that it may not be
  a bad idea to keep quite a lot of RNG state.  It should be easier to
  break a cipher than guess the RNG seed data.
  
@@ -113,7 +116,7 @@ diff -ru openssl-1.0.1f/doc/crypto/rand.pod ../../openssl2/doc/crypto/rand.pod
  
  When using data to seed the RNG state, the data used should not be
  extractable from the RNG state.  I believe this should be a
-@@ -108,12 +108,12 @@
+@@ -108,12 +108,12 @@ data would be a private key or a password.  This data must
  not be disclosed by either subsequent random numbers or a
  'core' dump left by a program crash.
  
@@ -128,47 +131,11 @@ diff -ru openssl-1.0.1f/doc/crypto/rand.pod ../../openssl2/doc/crypto/rand.pod
  
  Given the random number output stream, it should not be possible to determine
  the RNG state or the next random number.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_accept.pod ../../openssl2/doc/ssl/SSL_accept.pod
---- openssl-1.0.1f/doc/ssl/SSL_accept.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_accept.pod	2014-03-04 16:41:22.627325622 +0100
-@@ -44,13 +44,13 @@
- 
- =over 4
- 
--=item 0
-+=item B<lol>
- 
- The TLS/SSL handshake was not successful but was shut down controlled and
- by the specifications of the TLS/SSL protocol. Call SSL_get_error() with the
- return value B<ret> to find out the reason.
- 
--=item 1
-+=item B<lol>
- 
- The TLS/SSL handshake was successfully completed, a TLS/SSL connection has been
- established.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_clear.pod ../../openssl2/doc/ssl/SSL_clear.pod
---- openssl-1.0.1f/doc/ssl/SSL_clear.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_clear.pod	2014-03-04 16:41:22.631325622 +0100
-@@ -56,12 +56,12 @@
- 
- =over 4
- 
--=item 0
-+=item B<lol>
- 
- The SSL_clear() operation could not be performed. Check the error stack to
- find out the reason.
- 
--=item 1
-+=item B<lol>
- 
- The SSL_clear() operation was successful.
- 
-diff -ru openssl-1.0.1f/doc/ssl/SSL_COMP_add_compression_method.pod ../../openssl2/doc/ssl/SSL_COMP_add_compression_method.pod
---- openssl-1.0.1f/doc/ssl/SSL_COMP_add_compression_method.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_COMP_add_compression_method.pod	2014-03-04 16:41:22.635325622 +0100
-@@ -53,11 +53,11 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_COMP_add_compression_method.pod b/openssl-1.0.1g/doc/ssl/SSL_COMP_add_compression_method.pod
+index 42fa66b..019dbb4 100644
+--- openssl-1.0.1g/doc/ssl/SSL_COMP_add_compression_method.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_COMP_add_compression_method.pod
+@@ -53,11 +53,11 @@ SSL_COMP_add_compression_method() may return the following values:
  
  =over 4
  
@@ -182,29 +149,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_COMP_add_compression_method.pod ../../openss
  
  The operation failed. Check the error queue to find out the reason.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_connect.pod ../../openssl2/doc/ssl/SSL_connect.pod
---- openssl-1.0.1f/doc/ssl/SSL_connect.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_connect.pod	2014-03-04 16:41:22.647325621 +0100
-@@ -41,13 +41,13 @@
- 
- =over 4
- 
--=item 0
-+=item B<lol>
- 
- The TLS/SSL handshake was not successful but was shut down controlled and
- by the specifications of the TLS/SSL protocol. Call SSL_get_error() with the
- return value B<ret> to find out the reason.
- 
--=item 1
-+=item B<lol>
- 
- The TLS/SSL handshake was successfully completed, a TLS/SSL connection has been
- established.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_add_session.pod ../../openssl2/doc/ssl/SSL_CTX_add_session.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_add_session.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_add_session.pod	2014-03-04 16:41:22.675325620 +0100
-@@ -52,13 +52,13 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_add_session.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_add_session.pod
+index 82676b2..4415c9e 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_add_session.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_add_session.pod
+@@ -52,13 +52,13 @@ The following values are returned by all functions:
  
  =over 4
  
@@ -220,10 +169,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_add_session.pod ../../openssl2/doc/ssl/S
   
   The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_load_verify_locations.pod ../../openssl2/doc/ssl/SSL_CTX_load_verify_locations.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_load_verify_locations.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_load_verify_locations.pod	2014-03-04 16:41:22.683325620 +0100
-@@ -100,13 +100,13 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_load_verify_locations.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_load_verify_locations.pod
+index 84a799f..3563456 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_load_verify_locations.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_load_verify_locations.pod
+@@ -100,13 +100,13 @@ The following return values can occur:
  
  =over 4
  
@@ -239,10 +189,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_load_verify_locations.pod ../../openssl2
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_client_CA_list.pod ../../openssl2/doc/ssl/SSL_CTX_set_client_CA_list.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_set_client_CA_list.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_set_client_CA_list.pod	2014-03-04 16:41:22.643325622 +0100
-@@ -66,13 +66,13 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_set_client_CA_list.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_client_CA_list.pod
+index 5e66133..ba17c30 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_set_client_CA_list.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_client_CA_list.pod
+@@ -66,13 +66,13 @@ values:
  
  =over 4
  
@@ -258,10 +209,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_client_CA_list.pod ../../openssl2/do
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_session_id_context.pod ../../openssl2/doc/ssl/SSL_CTX_set_session_id_context.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_set_session_id_context.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_set_session_id_context.pod	2014-03-04 16:41:22.639325622 +0100
-@@ -64,13 +64,13 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_set_session_id_context.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_session_id_context.pod
+index 58fc685..b23edde 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_set_session_id_context.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_session_id_context.pod
+@@ -64,13 +64,13 @@ return the following values:
  
  =over 4
  
@@ -277,10 +229,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_session_id_context.pod ../../openssl
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_ssl_version.pod ../../openssl2/doc/ssl/SSL_CTX_set_ssl_version.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_set_ssl_version.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_set_ssl_version.pod	2014-03-04 16:41:22.627325622 +0100
-@@ -42,11 +42,11 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_set_ssl_version.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_ssl_version.pod
+index 254f2b4..a4640db 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_set_ssl_version.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_set_ssl_version.pod
+@@ -42,11 +42,11 @@ and SSL_set_ssl_method():
  
  =over 4
  
@@ -294,10 +247,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_set_ssl_version.pod ../../openssl2/doc/s
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_use_psk_identity_hint.pod ../../openssl2/doc/ssl/SSL_CTX_use_psk_identity_hint.pod
---- openssl-1.0.1f/doc/ssl/SSL_CTX_use_psk_identity_hint.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_CTX_use_psk_identity_hint.pod	2014-03-04 16:41:22.651325621 +0100
-@@ -96,7 +96,7 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_CTX_use_psk_identity_hint.pod b/openssl-1.0.1g/doc/ssl/SSL_CTX_use_psk_identity_hint.pod
+index 7e60df5..59fd6ea 100644
+--- openssl-1.0.1g/doc/ssl/SSL_CTX_use_psk_identity_hint.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_CTX_use_psk_identity_hint.pod
+@@ -96,7 +96,7 @@ data to B<psk> and return the length of the random data, so the
  connection will fail with decryption_error before it will be finished
  completely.
  
@@ -306,10 +260,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_CTX_use_psk_identity_hint.pod ../../openssl2
  
  PSK identity was not found. An "unknown_psk_identity" alert message
  will be sent and the connection setup fails.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_do_handshake.pod ../../openssl2/doc/ssl/SSL_do_handshake.pod
---- openssl-1.0.1f/doc/ssl/SSL_do_handshake.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_do_handshake.pod	2014-03-04 16:41:22.659325621 +0100
-@@ -45,13 +45,13 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_accept.pod b/openssl-1.0.1g/doc/ssl/SSL_accept.pod
+index b1c34d1..2ff2f2c 100644
+--- openssl-1.0.1g/doc/ssl/SSL_accept.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_accept.pod
+@@ -44,13 +44,13 @@ The following return values can occur:
  
  =over 4
  
@@ -325,10 +280,70 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_do_handshake.pod ../../openssl2/doc/ssl/SSL_
  
  The TLS/SSL handshake was successfully completed, a TLS/SSL connection has been
  established.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_read.pod ../../openssl2/doc/ssl/SSL_read.pod
---- openssl-1.0.1f/doc/ssl/SSL_read.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_read.pod	2014-03-04 16:41:22.667325621 +0100
-@@ -86,7 +86,7 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_clear.pod b/openssl-1.0.1g/doc/ssl/SSL_clear.pod
+index d4df1bf..83f8062 100644
+--- openssl-1.0.1g/doc/ssl/SSL_clear.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_clear.pod
+@@ -56,12 +56,12 @@ The following return values can occur:
+ 
+ =over 4
+ 
+-=item 0
++=item B<lol>
+ 
+ The SSL_clear() operation could not be performed. Check the error stack to
+ find out the reason.
+ 
+-=item 1
++=item B<lol>
+ 
+ The SSL_clear() operation was successful.
+ 
+diff --git openssl-1.0.1g/doc/ssl/SSL_connect.pod b/openssl-1.0.1g/doc/ssl/SSL_connect.pod
+index 946ca89..555370a 100644
+--- openssl-1.0.1g/doc/ssl/SSL_connect.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_connect.pod
+@@ -41,13 +41,13 @@ The following return values can occur:
+ 
+ =over 4
+ 
+-=item 0
++=item B<lol>
+ 
+ The TLS/SSL handshake was not successful but was shut down controlled and
+ by the specifications of the TLS/SSL protocol. Call SSL_get_error() with the
+ return value B<ret> to find out the reason.
+ 
+-=item 1
++=item B<lol>
+ 
+ The TLS/SSL handshake was successfully completed, a TLS/SSL connection has been
+ established.
+diff --git openssl-1.0.1g/doc/ssl/SSL_do_handshake.pod b/openssl-1.0.1g/doc/ssl/SSL_do_handshake.pod
+index 7f8cf24..2b94968 100644
+--- openssl-1.0.1g/doc/ssl/SSL_do_handshake.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_do_handshake.pod
+@@ -45,13 +45,13 @@ The following return values can occur:
+ 
+ =over 4
+ 
+-=item 0
++=item B<lol>
+ 
+ The TLS/SSL handshake was not successful but was shut down controlled and
+ by the specifications of the TLS/SSL protocol. Call SSL_get_error() with the
+ return value B<ret> to find out the reason.
+ 
+-=item 1
++=item B<lol>
+ 
+ The TLS/SSL handshake was successfully completed, a TLS/SSL connection has been
+ established.
+diff --git openssl-1.0.1g/doc/ssl/SSL_read.pod b/openssl-1.0.1g/doc/ssl/SSL_read.pod
+index 7038cd2..f8fd197 100644
+--- openssl-1.0.1g/doc/ssl/SSL_read.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_read.pod
+@@ -86,7 +86,7 @@ The following return values can occur:
  The read operation was successful; the return value is the number of
  bytes actually read from the TLS/SSL connection.
  
@@ -337,10 +352,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_read.pod ../../openssl2/doc/ssl/SSL_read.pod
  
  The read operation was not successful. The reason may either be a clean
  shutdown due to a "close notify" alert sent by the peer (in which case
-diff -ru openssl-1.0.1f/doc/ssl/SSL_session_reused.pod ../../openssl2/doc/ssl/SSL_session_reused.pod
---- openssl-1.0.1f/doc/ssl/SSL_session_reused.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_session_reused.pod	2014-03-04 16:41:22.655325621 +0100
-@@ -27,11 +27,11 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_session_reused.pod b/openssl-1.0.1g/doc/ssl/SSL_session_reused.pod
+index da7d062..9e0d22d 100644
+--- openssl-1.0.1g/doc/ssl/SSL_session_reused.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_session_reused.pod
+@@ -27,11 +27,11 @@ The following return values can occur:
  
  =over 4
  
@@ -354,10 +370,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_session_reused.pod ../../openssl2/doc/ssl/SS
  
  A session was reused.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_set_fd.pod ../../openssl2/doc/ssl/SSL_set_fd.pod
---- openssl-1.0.1f/doc/ssl/SSL_set_fd.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_set_fd.pod	2014-03-04 16:41:22.663325621 +0100
-@@ -35,11 +35,11 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_set_fd.pod b/openssl-1.0.1g/doc/ssl/SSL_set_fd.pod
+index 7029112..db2557f 100644
+--- openssl-1.0.1g/doc/ssl/SSL_set_fd.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_set_fd.pod
+@@ -35,11 +35,11 @@ The following return values can occur:
  
  =over 4
  
@@ -371,10 +388,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_set_fd.pod ../../openssl2/doc/ssl/SSL_set_fd
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_set_session.pod ../../openssl2/doc/ssl/SSL_set_session.pod
---- openssl-1.0.1f/doc/ssl/SSL_set_session.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_set_session.pod	2014-03-04 16:41:22.679325620 +0100
-@@ -37,11 +37,11 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_set_session.pod b/openssl-1.0.1g/doc/ssl/SSL_set_session.pod
+index 5f54714..c60eae8 100644
+--- openssl-1.0.1g/doc/ssl/SSL_set_session.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_set_session.pod
+@@ -37,11 +37,11 @@ The following return values can occur:
  
  =over 4
  
@@ -388,22 +406,11 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_set_session.pod ../../openssl2/doc/ssl/SSL_s
  
  The operation succeeded.
  
-diff -ru openssl-1.0.1f/doc/ssl/SSL_set_shutdown.pod ../../openssl2/doc/ssl/SSL_set_shutdown.pod
---- openssl-1.0.1f/doc/ssl/SSL_set_shutdown.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_set_shutdown.pod	2014-03-04 16:41:22.659325621 +0100
-@@ -24,7 +24,7 @@
- 
- =over 4
- 
--=item 0
-+=item B<lol>
- 
- No shutdown setting, yet.
- 
-diff -ru openssl-1.0.1f/doc/ssl/SSL_shutdown.pod ../../openssl2/doc/ssl/SSL_shutdown.pod
---- openssl-1.0.1f/doc/ssl/SSL_shutdown.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_shutdown.pod	2014-03-04 16:41:22.671325620 +0100
-@@ -92,14 +92,14 @@
+diff --git openssl-1.0.1g/doc/ssl/SSL_shutdown.pod b/openssl-1.0.1g/doc/ssl/SSL_shutdown.pod
+index 42a89b7..3db74b9 100644
+--- openssl-1.0.1g/doc/ssl/SSL_shutdown.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_shutdown.pod
+@@ -92,19 +92,19 @@ The following return values can occur:
  
  =over 4
  
@@ -420,10 +427,17 @@ diff -ru openssl-1.0.1f/doc/ssl/SSL_shutdown.pod ../../openssl2/doc/ssl/SSL_shut
  
  The shutdown was successfully completed. The "close notify" alert was sent
  and the peer's "close notify" alert was received.
-diff -ru openssl-1.0.1f/doc/ssl/SSL_write.pod ../../openssl2/doc/ssl/SSL_write.pod
---- openssl-1.0.1f/doc/ssl/SSL_write.pod	2014-01-06 14:47:42.000000000 +0100
-+++ ../../openssl2/doc/ssl/SSL_write.pod	2014-03-04 16:41:22.647325621 +0100
-@@ -79,7 +79,7 @@
+ 
+-=item -1
++=item B<lol>
+ 
+ The shutdown was not successful because a fatal error occurred either
+ at the protocol level or a connection failure occurred. It can also occur if
+diff --git openssl-1.0.1g/doc/ssl/SSL_write.pod b/openssl-1.0.1g/doc/ssl/SSL_write.pod
+index e013c12..f783371 100644
+--- openssl-1.0.1g/doc/ssl/SSL_write.pod
++++ b/openssl-1.0.1g/doc/ssl/SSL_write.pod
+@@ -79,7 +79,7 @@ The following return values can occur:
  The write operation was successful, the return value is the number of
  bytes actually written to the TLS/SSL connection.
  
