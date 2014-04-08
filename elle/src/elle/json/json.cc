@@ -96,6 +96,8 @@ namespace elle
       }
       if (any.type() == typeid(std::string))
         return boost::any_cast<std::string>(any);
+      if (any.type() == typeid(char const*))
+        return std::string(boost::any_cast<char const*>(any));
       if (any.type() == typeid(bool))
         return boost::any_cast<bool>(any);
       if (any.type() == typeid(int16_t))
