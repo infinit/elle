@@ -411,10 +411,13 @@ def configure(cxx_toolkit = None,
     targets = ['libarchive-%s/configure' % libarchive_version],
   )
   if cxx_toolkit.os is drake.os.macos:
+    libarchive_configure_args = []
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / 'lib/libarchive.13.dylib')
   elif cxx_toolkit.os is drake.os.linux:
+    libarchive_configure_args = []
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / 'lib/libarchive.so.13')
   elif cxx_toolkit.os is drake.os.windows:
+    libarchive_configure_args = ['--host=x86_64-w64-mingw32']
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
@@ -425,24 +428,25 @@ def configure(cxx_toolkit = None,
     drake.copy(zlib_libs, libarchive_prefix / 'lib',
                strip_prefix = True)
   libarchive_dependency_libs = libarchive_openssl_libs + libarchive_zlib_libs
+  libarchive_configure_args += [
+    '--prefix=%s' % libarchive_prefix_absolute,
+    '--disable-acl',
+    '--disable-xattr',
+    'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
+                                            zlib_prefix_absolute),
+    'LDFLAGS=-L%s/lib -L%s/lib' % (openssl_prefix_absolute,
+                                   zlib_prefix_absolute),
+    '--without-bz2lib',
+    '--without-expat',
+    '--without-lzma',
+    '--without-lzo2',
+    '--without-nettle',
+    '--without-xml2',
+  ]
   GNUBuilder(
     cxx_toolkit,
     configure = libarchive_configure,
-    configure_args = [
-      '--prefix=%s' % libarchive_prefix_absolute,
-      '--disable-acl',
-      '--disable-xattr',
-      'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
-                                              zlib_prefix_absolute),
-      'LDFLAGS=-L%s/lib -L%s/lib' % (openssl_prefix_absolute,
-                                     zlib_prefix_absolute),
-      '--without-bz2lib',
-      '--without-expat',
-      '--without-lzma',
-      '--without-lzo2',
-      '--without-nettle',
-      '--without-xml2',
-    ],
+    configure_args = libarchive_configure_args,
     additional_env = {'DYLD_INSERT_LIBRARIES': ':'.join(str(drake.path_root() / n.path()) for n in libarchive_dependency_libs)},
     working_directory = drake.path_build(libarchive_build),
     targets = [
