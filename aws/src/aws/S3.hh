@@ -75,7 +75,8 @@ namespace aws
     /// Initialize multipart upload for given object
     /// @return an upload key needed by further operations
     std::string
-    multipart_initialize(std::string const& object_name);
+    multipart_initialize(std::string const& object_name,
+      std::string const& mime_type = "binary/octet-stream");
 
     typedef std::pair<int, std::string> MultiPartChunk;
     /// Upload one part of a multipart upload

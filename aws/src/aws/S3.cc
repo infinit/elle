@@ -246,14 +246,15 @@ namespace aws
 
 
   std::string
-  S3::multipart_initialize(std::string const& object_name)
+  S3::multipart_initialize(std::string const& object_name,
+                           std::string const& mime_type)
   {
     ELLE_TRACE_SCOPE("%s: initialize multipart: %s", *this, object_name);
 
     RequestTime request_time =
       boost::posix_time::second_clock::universal_time();
     RequestHeaders headers(this->_make_generic_headers(request_time));
-
+    headers["Content-Type"] = mime_type;
     RequestQuery query;
     query["uploads"] = "";
     CanonicalRequest canonical_request(reactor::http::Method::POST,
