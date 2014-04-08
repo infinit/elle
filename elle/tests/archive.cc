@@ -118,8 +118,8 @@ zip()
     elle::SafeFinally go_back(
       [&] { boost::filesystem::current_path(current); });
     elle::system::Process p(
-      (current / "libarchive/bin/bsdcpio").native(),
-      {"--extract", "--make-directories", "-I", path.native()});
+      (current / "libarchive/bin/bsdcpio").string(),
+      {"--extract", "--make-directories", "-I", path.string()});
     BOOST_CHECK_EQUAL(p.wait_status(), 0);
     int count = 0;
     for (auto it = boost::filesystem::recursive_directory_iterator(".");
@@ -170,8 +170,8 @@ zip_duplicate()
     TemporaryDirectory decompress("decompress");
     ChangeDirectory chdir(decompress.path());
     elle::system::Process p(
-      (chdir.previous() / "libarchive/bin/bsdcpio").native(),
-      {"--extract", "--make-directories", "-I", path.native()});
+      (chdir.previous() / "libarchive/bin/bsdcpio").string(),
+      {"--extract", "--make-directories", "-I", path.string()});
     BOOST_CHECK_EQUAL(p.wait_status(), 0);
     int count = 0;
     std::unordered_set<boost::filesystem::path> accepted({
