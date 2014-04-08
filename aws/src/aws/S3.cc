@@ -279,7 +279,7 @@ namespace aws
     {
       reactor::http::Request request(url, reactor::http::Method::POST, cfg);
       reactor::wait(request);
-      _check_request_status(request, "POST", "");
+      _check_request_status(request, "POST", object_name);
       using boost::property_tree::ptree;
       ptree response;
       read_xml(request, response);
@@ -711,7 +711,8 @@ namespace aws
     if (status != reactor::http::StatusCode::OK
         && status != reactor::http::StatusCode::No_Content)
     {
-      ELLE_WARN("%s: AWS error on %s on %s/%s: %s",
+      ELLE_WARN("%s: AWS error %s on %s on %s/%s: %s",
+                status,
                 *this, operation,
                 this->_remote_folder, object_name,
                 request.response());
