@@ -1987,7 +1987,9 @@ class ShellCommand(Builder):
     True
     """
 
-    def __init__(self, sources, targets, command, pretty = None):
+    def __init__(self, sources, targets, command,
+                 pretty = None,
+                 cwd = None):
         """Create a builder that runs command.
 
         sources -- List of source nodes, or source source node if
@@ -2000,11 +2002,13 @@ class ShellCommand(Builder):
         Builder.__init__(self, sources, targets)
         self.__command = command
         self.__pretty = pretty
+        self.__cwd = cwd
 
     def execute(self):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.__command),
-                        self.__command)
+                        self.__command,
+                        cwd = self.__cwd)
 
     @property
     def command(self):
