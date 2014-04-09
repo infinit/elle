@@ -123,8 +123,7 @@ namespace reactor
     Machine::_run_state(State* state)
     {
       ELLE_TRACE_SCOPE("%s: run %s", *this, *state);
-      ELLE_ASSERT(Scheduler::scheduler());
-      auto& sched = *Scheduler::scheduler();
+      auto& sched = reactor::scheduler();
       auto action = [&] () {
         try
         {
