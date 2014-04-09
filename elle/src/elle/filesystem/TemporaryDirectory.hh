@@ -18,6 +18,7 @@ namespace elle
       ~TemporaryDirectory();
     private:
       ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+      ELLE_ATTRIBUTE(boost::filesystem::path, root);
     };
   }
 }

@@ -33,6 +33,7 @@ namespace elle
   {
     TemporaryDirectory::TemporaryDirectory()
       : _path()
+      , _root()
     {
       std::string file_pattern = "%%%%-%%%%-%%%%-%%%%";
       try
@@ -47,9 +48,10 @@ namespace elle
       auto pattern = boost::filesystem::temp_directory_path() / file_pattern;
       do
       {
-        this->_path = boost::filesystem::unique_path(pattern);
+        this->_root = boost::filesystem::unique_path(pattern);
       }
-      while (!boost::filesystem::create_directories(this->_path));
+      while (!boost::filesystem::create_directories(this->_root));
+      this->_path = this->_root;
     }
 
     TemporaryDirectory::TemporaryDirectory(std::string const& name)
@@ -61,7 +63,7 @@ namespace elle
 
     TemporaryDirectory::~TemporaryDirectory()
     {
-      boost::filesystem::remove_all(this->_path.parent_path());
+      boost::filesystem::remove_all(this->_root);
     }
   }
 }
