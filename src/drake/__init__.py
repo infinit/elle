@@ -2944,8 +2944,18 @@ class Configuration:
     what = Path(what)
     res = []
     for root in where:
-      if (root / what).exists():
+      path = root / what
+      if path.exists():
         res.append(root)
+      else:
+        if path.absolute():
+          drake_path = path.without_prefix(drake.path_root())
+        else:
+          drake_path = path
+        node = drake.Drake.current.nodes.get(drake_path, None)
+        if node is not None:
+          res.append(root)
+
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
