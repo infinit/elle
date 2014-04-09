@@ -12,9 +12,14 @@ import drake
 import drake.cxx
 import drake.valgrind
 
+try:
+  valgrind = drake.valgrind.Valgrind()
+except:
+  valgrind = None
+
 with drake.Drake('../..') as d:
   python3 = drake.cxx.find_library(
     token = 'pyconfig.h',
     include_dir = 'include/python3.2')
   d.run(python3 = python3,
-        valgrind = drake.valgrind.Valgrind())
+        valgrind = valgrind)
