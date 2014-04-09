@@ -107,6 +107,8 @@ extract(elle::archive::Format fmt,
   switch (fmt)
   {
     case elle::archive::Format::tar:
+    case elle::archive::Format::tar_bzip2:
+    case elle::archive::Format::tar_gzip:
     {
       elle::system::Process p(
         (cd.previous() / "libarchive/bin/bsdtar").string(),
@@ -233,22 +235,23 @@ archive_duplicate(elle::archive::Format fmt)
 
 FORMAT(zip)
 FORMAT(tar)
+FORMAT(tar_gzip)
+#undef FORMAT
 
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
-  {
-    using namespace zip;
-    auto suite = BOOST_TEST_SUITE("zip");
-    master.add(suite);
-    suite->add(BOOST_TEST_CASE(simple));
-    suite->add(BOOST_TEST_CASE(duplicate));
-  }
-  {
-    using namespace tar;
-    auto suite = BOOST_TEST_SUITE("tar");
-    master.add(suite);
-    suite->add(BOOST_TEST_CASE(simple));
-    suite->add(BOOST_TEST_CASE(duplicate));
-  }
+#define FORMAT(Fmt)                             \
+  {                                             \
+    using namespace Fmt;                        \
+    auto suite = BOOST_TEST_SUITE(#Fmt);        \
+    master.add(suite);                          \
+    suite->add(BOOST_TEST_CASE(simple));        \
+    suite->add(BOOST_TEST_CASE(duplicate));     \
+  }                                             \
+
+  FORMAT(zip);
+  FORMAT(tar);
+  FORMAT(tar_gzip);
+#undef FORMAT
 }
