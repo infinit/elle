@@ -738,7 +738,6 @@ namespace reactor
     {
       curl_easy_getinfo(this->_impl->_handle,
                         CURLINFO_RESPONSE_CODE, &this->_status);
-      ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
       std::string message;
       auto set_exception = [&]
         {
@@ -771,6 +770,7 @@ namespace reactor
       }
       else
         ELLE_TRACE_SCOPE("%s: done with status %s", *this, this->_status);
+      ELLE_ASSERT(exception || this->_status != static_cast<StatusCode>(0));
       this->_signal();
       // Waitables consume their exception once signaled, restore it.
       if (exception)
