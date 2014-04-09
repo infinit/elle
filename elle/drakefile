@@ -360,13 +360,16 @@ def configure(zlib_lib,
     sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
 
   # Archive
-  sources += drake.nodes(
-    'src/elle/archive/zip.hh',
-  )
   cxx_archive_config = cxx_config + libarchive_config
-  sources.append(
-    drake.cxx.Object(drake.node('src/elle/archive/zip.cc'),
-                     cxx_toolkit, cxx_archive_config))
+  for f in (
+      'archive',
+      'tar',
+      'zip',
+  ):
+    sources.append(drake.node('src/elle/archive/%s.hh' % f))
+    sources.append(
+      drake.cxx.Object(drake.node('src/elle/archive/%s.cc' % f),
+                       cxx_toolkit, cxx_archive_config))
 
   lib_static = drake.cxx.StaticLib(
     'lib/elle',

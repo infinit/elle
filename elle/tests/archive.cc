@@ -99,29 +99,51 @@ renamer_forbid(boost::filesystem::path const& input)
 
 static
 void
-zip()
+extract(elle::archive::Format fmt,
+        boost::filesystem::path const& path,
+        boost::filesystem::path const& where)
+{
+  ChangeDirectory cd(where);
+  switch (fmt)
+  {
+    case elle::archive::Format::tar:
+    {
+      elle::system::Process p(
+        (cd.previous() / "libarchive/bin/bsdtar").string(),
+        {"-x", "-f", path.string()});
+      BOOST_CHECK_EQUAL(p.wait_status(), 0);
+      break;
+    }
+    case elle::archive::Format::zip:
+    {
+      elle::system::Process p(
+        (cd.previous() / "libarchive/bin/bsdcpio").string(),
+        {"--extract", "--make-directories", "-I", path.string()});
+      BOOST_CHECK_EQUAL(p.wait_status(), 0);
+      break;
+    }
+  }
+}
+
+static
+void
+archive(elle::archive::Format fmt)
 {
   DummyHierarchy dummy;
   auto pattern =
     boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%.zip";
   auto path = boost::filesystem::unique_path(pattern);
   elle::SafeFinally clean([&] { boost::filesystem::remove(path); });
-  elle::archive::zip({dummy.root()}, path, renamer_forbid);
+  elle::archive::archive(fmt, {dummy.root()}, path, renamer_forbid);
   {
     auto output_pattern =
       boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
     auto output = boost::filesystem::unique_path(output_pattern);
     boost::filesystem::create_directory(output);
     elle::SafeFinally clean([&] { boost::filesystem::remove_all(output); });
-    auto current = boost::filesystem::current_path();
-    boost::filesystem::current_path(output);
-    elle::SafeFinally go_back(
-      [&] { boost::filesystem::current_path(current); });
-    elle::system::Process p(
-      (current / "libarchive/bin/bsdcpio").string(),
-      {"--extract", "--make-directories", "-I", path.string()});
-    BOOST_CHECK_EQUAL(p.wait_status(), 0);
+    extract(fmt, path, output);
     int count = 0;
+    ChangeDirectory cd(output);
     for (auto it = boost::filesystem::recursive_directory_iterator(".");
          it != boost::filesystem::recursive_directory_iterator();
          ++it)
@@ -154,7 +176,7 @@ renamer(boost::filesystem::path const& input)
 
 static
 void
-zip_duplicate()
+archive_duplicate(elle::archive::Format fmt)
 {
   TemporaryDirectory d1("same");
   boost::filesystem::ofstream(d1.path() / "beacon");
@@ -163,16 +185,13 @@ zip_duplicate()
   TemporaryFile f("same");
   TemporaryDirectory output("output");
   auto path = output.path() / "output.zip";
-  elle::archive::zip({d1.path(), d2.path(), f.path()},
-                     path,
-                     renamer);
+  elle::archive::archive(fmt,
+                         {d1.path(), d2.path(), f.path()},
+                         path,
+                         renamer);
   {
     TemporaryDirectory decompress("decompress");
-    ChangeDirectory chdir(decompress.path());
-    elle::system::Process p(
-      (chdir.previous() / "libarchive/bin/bsdcpio").string(),
-      {"--extract", "--make-directories", "-I", path.string()});
-    BOOST_CHECK_EQUAL(p.wait_status(), 0);
+    extract(fmt, path, decompress.path());
     int count = 0;
     std::unordered_set<boost::filesystem::path> accepted({
         "./same",
@@ -181,6 +200,7 @@ zip_duplicate()
         "./same bis/beacon",
         "./same bis bis",
           });
+    ChangeDirectory cd(decompress.path());
     for (auto it = boost::filesystem::recursive_directory_iterator(".");
          it != boost::filesystem::recursive_directory_iterator();
          ++it)
@@ -193,10 +213,42 @@ zip_duplicate()
   }
 }
 
+#define FORMAT(Fmt)                                     \
+  namespace Fmt                                         \
+  {                                                     \
+    static                                              \
+    void                                                \
+    simple()                                            \
+    {                                                   \
+      archive(elle::archive::Format::Fmt);              \
+    }                                                   \
+                                                        \
+    static                                              \
+    void                                                \
+    duplicate()                                         \
+    {                                                   \
+      archive_duplicate(elle::archive::Format::Fmt);    \
+    }                                                   \
+  }                                                     \
+
+FORMAT(zip)
+FORMAT(tar)
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
-
-  master.add(BOOST_TEST_CASE(zip));
-  master.add(BOOST_TEST_CASE(zip_duplicate));
+  {
+    using namespace zip;
+    auto suite = BOOST_TEST_SUITE("zip");
+    master.add(suite);
+    suite->add(BOOST_TEST_CASE(simple));
+    suite->add(BOOST_TEST_CASE(duplicate));
+  }
+  {
+    using namespace tar;
+    auto suite = BOOST_TEST_SUITE("tar");
+    master.add(suite);
+    suite->add(BOOST_TEST_CASE(simple));
+    suite->add(BOOST_TEST_CASE(duplicate));
+  }
 }
