@@ -59,7 +59,9 @@ namespace aws
     /// listed in alphabetical order.
     std::vector<std::pair<std::string, FileSize>>
     list_remote_folder(std::string const& marker = "");
-
+    /// List the full folder content.
+    std::vector<std::pair<std::string, FileSize>>
+    list_remote_folder_full();
     /// Fetch an object from the remote folder.
     /// The fetch is done in a single GET.
     elle::Buffer
@@ -70,7 +72,9 @@ namespace aws
     /// by setting the object_name to an empty string.
     void
     delete_object(std::string const& object_name);
-
+    /// Delete folder and all its content
+    void
+    delete_folder();
 
     /// Initialize multipart upload for given object
     /// @return an upload key needed by further operations

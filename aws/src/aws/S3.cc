@@ -5,6 +5,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include <elle/format/hexadecimal.hh>
+#include <elle/format/base64.hh>
 #include <elle/log.hh>
 
 #include <reactor/http/exceptions.hh>
@@ -157,6 +158,25 @@ namespace aws
     }
   }
 
+  std::vector<std::pair<std::string, S3::FileSize>>
+  S3::list_remote_folder_full()
+  {
+    std::string marker;
+    bool first = true;
+    std::vector<std::pair<std::string, S3::FileSize>> result;
+    std::vector<std::pair<std::string, S3::FileSize>> chunk;
+    do
+    {
+      chunk = list_remote_folder(marker);
+      marker = chunk.back().first;
+        result.insert(result.end(),
+                      first ? chunk.begin():chunk.begin()+1, chunk.end());
+      first = false;
+    }
+    while (chunk.size() >= 1000);
+    return result;
+  }
+
   elle::Buffer
   S3::get_object(std::string const& object_name)
   {
@@ -204,6 +224,68 @@ namespace aws
         elle::sprintf("%s: unable to GET on S3, unable to perform HTTP request: %s",
                       *this, e.error()));
     }
+  }
+
+
+  void
+  S3::delete_folder()
+  {
+    ELLE_DEBUG("%s: fetching folder content", *this);
+    std::vector<std::pair<std::string, S3::FileSize>> content =
+    list_remote_folder_full();
+    ELLE_DEBUG("%s: deleting %s objects", *this, content.size());
+    // multi-delete has a limit at 1000 items...in theory. But passing 1000
+    // objects asplode the AWS xml parser.
+    int block_size = 200;
+    for (int i = 0; i < (int)content.size(); i+= block_size)
+    {    // build delete request payload
+      std::string xml;
+      xml += "<Delete><Quiet>true</Quiet>";
+      for (int j=i; j < (int)content.size() && j-i <= block_size; ++j)
+      {
+        xml += "<Object><Key>"
+          + _remote_folder + "/" + content[j].first + "</Key></Object>";
+      }
+      xml += "</Delete>";
+      elle::ConstWeakBuffer payload(xml);
+      // build the request
+      RequestTime time = boost::posix_time::second_clock::universal_time();
+      RequestHeaders headers = _make_put_headers(payload, time, true);
+      headers["Content-Type"] = "text/xml";
+      headers["Content-MD5"] = elle::format::base64::encode(
+          infinit::cryptography::oneway::hash(
+          infinit::cryptography::Plain(payload),
+          infinit::cryptography::oneway::Algorithm::md5).buffer()).string();
+
+      RequestQuery query;
+      query["delete"] = "";
+      CanonicalRequest canonical_request(
+        reactor::http::Method::POST, "/", query, headers,
+        this->_signed_headers(headers), _sha256_hexdigest(payload));
+      reactor::http::Request::Configuration cfg(
+        this->_initialize_request(time, canonical_request, headers, 300_sec));
+      auto url =  elle::sprintf(
+        "https://%s:%s/?delete=",
+        headers["Host"],
+        "443"
+      );
+      ELLE_DUMP("url: %s", url);
+      try
+      {
+        reactor::http::Request request(url, reactor::http::Method::POST, cfg);
+        request.write(reinterpret_cast<char const*>(payload.contents()),
+                      payload.size());
+        reactor::wait(request);
+        _check_request_status(request, "DELETE", "");
+      }
+      catch (reactor::http::RequestError const& e)
+      {
+        throw aws::RequestError(
+          elle::sprintf("%s: unable to GET on DELETE, unable to perform HTTP request: %s",
+            *this, e.error()));
+      }
+    }
+    delete_object(_remote_folder);
   }
 
   void
