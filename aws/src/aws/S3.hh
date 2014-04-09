@@ -37,7 +37,10 @@ namespace aws
     S3(std::string const& bucket_name,
        std::string const& remote_folder,
        Credentials const& credentials);
-
+    /// Version taking a function able to refresh credentials
+    S3(std::string const& bucket_name,
+       std::string const& remote_folder,
+       std::function<Credentials()> query_credentials);
     /*-----------.
     | Operations |
     `-----------*/
@@ -71,7 +74,8 @@ namespace aws
     /// The folder itself can be deleted only once it is empty. This can be done
     /// by setting the object_name to an empty string.
     void
-    delete_object(std::string const& object_name);
+    delete_object(std::string const& object_name,
+      RequestQuery const& query = RequestQuery());
     /// Delete folder and all its content
     void
     delete_folder();
@@ -114,6 +118,7 @@ namespace aws
     ELLE_ATTRIBUTE(std::string, remote_folder);
     ELLE_ATTRIBUTE(Credentials, credentials);
     ELLE_ATTRIBUTE(std::string, host_name);
+    ELLE_ATTRIBUTE(std::function<Credentials()>, query_credentials);
 
     /*--------.
     | Helpers |
@@ -138,33 +143,6 @@ namespace aws
     std::vector<std::pair<std::string, FileSize>>
     _parse_list_xml(std::istream& stream);
 
-    RequestHeaders
-    _make_put_headers(elle::ConstWeakBuffer const& object,
-                      RequestTime const& request_time,
-                      bool ommit_redundancy);
-
-    RequestHeaders
-    _make_generic_headers(RequestTime const& request_time);
-
-    CanonicalRequest
-    _make_put_canonical_request(elle::ConstWeakBuffer const& object,
-                                std::string const& object_name,
-                                RequestHeaders const& headers,
-                                RequestQuery const& query=RequestQuery());
-
-    CanonicalRequest
-    _make_list_canonical_request(RequestHeaders const& headers,
-                                 RequestQuery const& query);
-
-    CanonicalRequest
-    _make_get_canonical_request(RequestHeaders const& headers,
-                                std::string const& object_name,
-                                RequestQuery const& query = RequestQuery());
-
-    CanonicalRequest
-    _make_delete_canonical_request(RequestHeaders const& headers,
-                                   std::string const& object_name);
-
     reactor::http::Request::Configuration
     _initialize_request(RequestTime request_time,
                         CanonicalRequest const& canonical_request,
@@ -179,6 +157,17 @@ namespace aws
                           std::string const& operation,
                           std::string const& object,
                           bool dump_response = false);
+
+    // build and emit request, retries in case of credentials expiry
+    std::unique_ptr<reactor::http::Request>
+    _build_send_request(
+      std::string const& url,
+      reactor::http::Method method,
+      RequestQuery const& query = RequestQuery(),
+      RequestHeaders const& extra_headers = RequestHeaders(),
+      boost::posix_time::time_duration timeout = 30_sec,
+      std::string const& content_type = "application/json",
+      elle::ConstWeakBuffer const& payload = elle::ConstWeakBuffer());
 
     /*----------.
     | Printable |

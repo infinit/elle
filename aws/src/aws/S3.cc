@@ -35,6 +35,15 @@ namespace aws
     _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
   {}
 
+  S3::S3(std::string const& bucket_name,
+         std::string const& remote_folder,
+         std::function<Credentials()> query_credentials)
+    : _bucket_name(bucket_name)
+    , _remote_folder(remote_folder)
+    ,  _credentials(query_credentials())
+    , _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
+    , _query_credentials(query_credentials)
+  {}
 
   static std::string query_parameters(RequestQuery const& query)
   {
@@ -62,50 +71,30 @@ namespace aws
 
     ELLE_TRACE_SCOPE("%s: PUT block: %s", *this, object_name);
 
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-
     // Make headers.
-    RequestHeaders headers(this->_make_put_headers(object, request_time, ommit_redundancy));
-
-    // Make canonical request.
-    CanonicalRequest canonical_request(
-      this->_make_put_canonical_request(object, object_name, headers, query));
-
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(
-        request_time, canonical_request, headers, 300_sec));
+    RequestHeaders headers;
+    if (!ommit_redundancy)
+      headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
 
     auto url = elle::sprintf(
-      "https://%s:%s/%s/%s%s",
-      headers["Host"],
-      "443",
+      "/%s/%s",
       this->_remote_folder,
-      object_name,
-      query_parameters(query)
+      object_name
     );
     ELLE_DEBUG("url: %s", url);
 
-    try
-    {
-      reactor::http::Request request(url, reactor::http::Method::PUT, cfg);
-      request.write(reinterpret_cast<char const*>(object.contents()),
-                    object.size());
-      reactor::wait(request);
-      _check_request_status(request, "PUT " + url, object_name);
-      auto const& response = request.headers();
-      auto etag = response.find("ETag");
-      if (etag == response.end())
-        return "";
-      else
-        return etag->second;
-    }
-    catch (reactor::http::RequestError const& e)
-    {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: %s",
-                      *this, e.error()));
-    }
+    auto request = _build_send_request(
+      url, reactor::http::Method::PUT,
+      query, headers,
+      20_sec,
+      "binary/octet-stream",
+      object);
+    auto const& response = request->headers();
+    auto etag = response.find("ETag");
+    if (etag == response.end())
+      return "";
+    else
+      return etag->second;
   }
 
   std::vector<std::pair<std::string, S3::FileSize>>
@@ -113,50 +102,15 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
 
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-
-    // Make headers.
-    RequestHeaders headers(this->_make_generic_headers(request_time));
     RequestQuery query;
     query["prefix"] = elle::sprintf("%s/", this->_remote_folder);
     query["delimiter"] = "/";
     if (marker.size() > 0)
       query["marker"] = elle::sprintf("%s/%s", this->_remote_folder, marker);
 
-    CanonicalRequest canonical_request(
-      this->_make_list_canonical_request(headers, query));
-
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 20_sec));
-
-
-    // Make query string.
-    using reactor::http::EscapedString;
-    std::string query_str = query_parameters(query);
-
-    auto url = elle::sprintf(
-      "https://%s:%s%s",
-      headers["Host"],
-      "443",
-      query_str
-    );
-    ELLE_DUMP("url: %s", url);
-
-    try
-    {
-      reactor::http::Request request(url, reactor::http::Method::GET, cfg);
-      reactor::wait(request);
-      _check_request_status(request, "LIST", "");
-      return this->_parse_list_xml(request);
-    }
-    catch (reactor::http::RequestError const& e)
-    {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable to LIST on S3, unable to perform HTTP request: %s",
-                      *this, e.error()));
-    }
-  }
+    auto request = _build_send_request("/", reactor::http::Method::GET, query);
+    return this->_parse_list_xml(*request);
+   }
 
   std::vector<std::pair<std::string, S3::FileSize>>
   S3::list_remote_folder_full()
@@ -182,48 +136,26 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: GET remote object", *this);
 
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-    RequestHeaders headers(this->_make_generic_headers(request_time));
-    CanonicalRequest canonical_request(this->_make_get_canonical_request(headers, object_name));
-
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 300_sec));
-
     auto url = elle::sprintf(
-      "https://%s:%s/%s/%s",
-      headers["Host"],
-      "443",
+      "/%s/%s",
       this->_remote_folder,
       object_name
     );
     ELLE_DEBUG("url: %s", url);
 
-    try
+    auto request = _build_send_request(url, reactor::http::Method::GET);
+    auto response = request->response();
+    std::string calcd_md5(this->_md5_digest(response));
+    std::string aws_md5(request->headers().at("ETag"));
+    // Remove quotes around MD5 sum from AWS.
+    aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
+    if (calcd_md5 != aws_md5)
     {
-      reactor::http::Request request(url, reactor::http::Method::GET, cfg);
-      reactor::wait(request);
-      _check_request_status(request, "GET", object_name);
-
-      auto response = request.response();
-      std::string calcd_md5(this->_md5_digest(response));
-      std::string aws_md5(request.headers().at("ETag"));
-      // Remove quotes around MD5 sum from AWS.
-      aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
-      if (calcd_md5 != aws_md5)
-      {
-        throw aws::CorruptedData(
-          elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
-                        aws_md5));
-      }
-      return response;
+      throw aws::CorruptedData(
+        elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
+                      aws_md5));
     }
-    catch (reactor::http::RequestError const& e)
-    {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable to GET on S3, unable to perform HTTP request: %s",
-                      *this, e.error()));
-    }
+    return response;
   }
 
 
@@ -232,7 +164,7 @@ namespace aws
   {
     ELLE_DEBUG("%s: fetching folder content", *this);
     std::vector<std::pair<std::string, S3::FileSize>> content =
-    list_remote_folder_full();
+      list_remote_folder_full();
     ELLE_DEBUG("%s: deleting %s objects", *this, content.size());
     // multi-delete has a limit at 1000 items...in theory. But passing 1000
     // objects asplode the AWS xml parser.
@@ -249,9 +181,7 @@ namespace aws
       xml += "</Delete>";
       elle::ConstWeakBuffer payload(xml);
       // build the request
-      RequestTime time = boost::posix_time::second_clock::universal_time();
-      RequestHeaders headers = _make_put_headers(payload, time, true);
-      headers["Content-Type"] = "text/xml";
+      RequestHeaders headers;
       headers["Content-MD5"] = elle::format::base64::encode(
           infinit::cryptography::oneway::hash(
           infinit::cryptography::Plain(payload),
@@ -259,120 +189,54 @@ namespace aws
 
       RequestQuery query;
       query["delete"] = "";
-      CanonicalRequest canonical_request(
-        reactor::http::Method::POST, "/", query, headers,
-        this->_signed_headers(headers), _sha256_hexdigest(payload));
-      reactor::http::Request::Configuration cfg(
-        this->_initialize_request(time, canonical_request, headers, 300_sec));
-      auto url =  elle::sprintf(
-        "https://%s:%s/?delete=",
-        headers["Host"],
-        "443"
-      );
-      ELLE_DUMP("url: %s", url);
-      try
-      {
-        reactor::http::Request request(url, reactor::http::Method::POST, cfg);
-        request.write(reinterpret_cast<char const*>(payload.contents()),
-                      payload.size());
-        reactor::wait(request);
-        _check_request_status(request, "DELETE", "");
-      }
-      catch (reactor::http::RequestError const& e)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to GET on DELETE, unable to perform HTTP request: %s",
-            *this, e.error()));
-      }
+
+      _build_send_request("/", reactor::http::Method::POST,
+        query, headers,
+        300_sec, "text/xml", payload);
     }
     delete_object(_remote_folder);
   }
 
   void
-  S3::delete_object(std::string const& object_name)
+  S3::delete_object(std::string const& object_name, RequestQuery const& query)
   {
     ELLE_TRACE_SCOPE("%s: DELETE remote object", *this);
 
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-    RequestHeaders headers(this->_make_generic_headers(request_time));
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(
-        request_time,
-        this->_make_delete_canonical_request(headers, object_name),
-        this->_make_generic_headers(request_time),
-        15_sec));
-
     auto url = elle::sprintf(
-      "https://%s:%s/%s/%s",
-      headers["Host"],
-      "443",
+      "/%s/%s",
       this->_remote_folder,
       object_name
     );
     ELLE_DEBUG("url: %s", url);
 
-    try
-    {
-      reactor::http::Request request(url, reactor::http::Method::DELETE, cfg);
-      reactor::wait(request);
-      _check_request_status(request, "GET", object_name, true);
-    }
-    catch (reactor::http::RequestError const& e)
-    {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable to GET on DELETE, unable to perform HTTP request: %s",
-                      *this, e.error()));
-    }
-  }
+    _build_send_request(url, reactor::http::Method::DELETE, query);
 
+  }
 
   std::string
   S3::multipart_initialize(std::string const& object_name,
                            std::string const& mime_type)
   {
     ELLE_TRACE_SCOPE("%s: initialize multipart: %s", *this, object_name);
-
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-    RequestHeaders headers(this->_make_generic_headers(request_time));
-    headers["Content-Type"] = mime_type;
+    RequestHeaders headers;
+    headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
     RequestQuery query;
     query["uploads"] = "";
-    CanonicalRequest canonical_request(reactor::http::Method::POST,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(""));
-
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 300_sec));
-
     auto url = elle::sprintf(
-      "https://%s:%s/%s/%s?uploads=",
-      headers["Host"],
-      "443",
+      "/%s/%s",
       this->_remote_folder,
       object_name
     );
     ELLE_DUMP("url: %s", url);
-    try
-    {
-      reactor::http::Request request(url, reactor::http::Method::POST, cfg);
-      reactor::wait(request);
-      _check_request_status(request, "POST", object_name);
-      using boost::property_tree::ptree;
-      ptree response;
-      read_xml(request, response);
-      return response.get<std::string>("InitiateMultipartUploadResult.UploadId");
-    }
-    catch (reactor::http::RequestError const& e)
-    {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable to GET on DELETE, unable to perform HTTP request: %s",
-                      *this, e.error()));
-    }
+
+    auto request = _build_send_request(
+      url, reactor::http::Method::POST,
+      query, headers,
+      300_sec, mime_type);
+    using boost::property_tree::ptree;
+    ptree response;
+    read_xml(*request, response);
+    return response.get<std::string>("InitiateMultipartUploadResult.UploadId");
   }
 
   std::string
@@ -403,59 +267,28 @@ namespace aws
                                 chunk.first+1, chunk.second);
     }
     xchunks += "</CompleteMultipartUpload>";
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-    RequestHeaders headers(this->_make_generic_headers(request_time));
-    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(xchunks);
     RequestQuery query;
     query["uploadId"] = upload_key;
-    CanonicalRequest canonical_request(reactor::http::Method::POST,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(xchunks));
-
-    reactor::http::Request::Configuration cfg(
-      this->_initialize_request(request_time, canonical_request, headers, 300_sec));
 
     auto url = elle::sprintf(
-      "https://%s:%s/%s/%s?uploadId=%s",
-      headers["Host"],
-      "443",
+      "/%s/%s",
       this->_remote_folder,
-      object_name,
-      upload_key
+      object_name
     );
-    ELLE_DUMP("url: %s", url);
-    try
-    {
-      reactor::http::Request request(url, reactor::http::Method::POST, cfg);
-      request.write(xchunks.data(), xchunks.size());
-      reactor::wait(request);
-      if (request.status()  != reactor::http::StatusCode::OK)
-      {
-        // DO NOT ENABLE OUTSIDE ERR CASE OR RESPONSE WILL NOT BE READABLE AGAIN
-        ELLE_DUMP("%s: AWS response: %s", *this, request.response().string());
-      }
-      _check_request_status(request, "multipart_finalize", "");
-      // This request can 200 OK and still return an error in XML
-      using boost::property_tree::ptree;
-      ptree response;
 
-      read_xml(request, response);
-      if (response.find("Error") != response.not_found()
-        || response.find("CompleteMultipartUploadResult") == response.not_found())
-      {
-        throw aws::RequestError(elle::sprintf("%s: during S3 finalize on %s:%s",
-                                              *this, object_name, request.response()));
-      }
-    }
-    catch (reactor::http::RequestError const& e)
+    auto request = _build_send_request(url, reactor::http::Method::POST,
+      query, RequestHeaders(),
+      300_sec, "text/xml", xchunks);
+    // This request can 200 OK and still return an error in XML
+    using boost::property_tree::ptree;
+    ptree response;
+
+    read_xml(*request, response);
+    if (response.find("Error") != response.not_found()
+      || response.find("CompleteMultipartUploadResult") == response.not_found())
     {
-      throw aws::RequestError(
-        elle::sprintf("%s: unable finalize multipart, unable to perform HTTP request: %s",
-                      *this, e.error()));
+      throw aws::RequestError(elle::sprintf("%s: during S3 finalize on %s:%s",
+                                            *this, object_name, request->response()));
     }
   }
 
@@ -463,7 +296,9 @@ namespace aws
   S3::multipart_abort(std::string const& object_name,
                       std::string const& upload_key)
   {
-    delete_object(elle::sprintf("%s?uploadId=%s", object_name, upload_key));
+    RequestQuery query;
+    query["uploadId"] = upload_key;
+    delete_object(object_name, query);
   }
 
   std::vector<S3::MultiPartChunk>
@@ -472,67 +307,40 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: LIST multipart chunks", *this);
 
-    RequestTime request_time =
-      boost::posix_time::second_clock::universal_time();
-
-    // Make headers.
-    RequestHeaders headers(this->_make_generic_headers(request_time));
-
     std::vector<S3::MultiPartChunk> res;
     int max_id = -1;
     while (true)
     {
-      std::string marker;
       RequestQuery query;
        query["uploadId"] = upload_key;
       if (max_id != -1)
-      {
-        marker = elle::sprintf("&part-number-marker=%s", max_id);
         query["part-number-marker"] = boost::lexical_cast<std::string>(max_id);
-      }
-      auto url = elle::sprintf("https://%s:%s/%s/%s?uploadId=%s%s",
-                               headers["Host"],
-                               "443",
+      auto url = elle::sprintf("/%s/%s",
                                this->_remote_folder,
-                               object_name,
-                               upload_key, marker);
+                               object_name);
 
-      CanonicalRequest canonical_request(
-        this->_make_get_canonical_request(headers, object_name, query));
-      reactor::http::Request::Configuration cfg(
-        this->_initialize_request(request_time, canonical_request, headers, 30_sec));
-      ELLE_DUMP("url: %s", url);
-      try
+      auto request = _build_send_request(url, reactor::http::Method::GET, query);
+
+      using boost::property_tree::ptree;
+      ptree response;
+      read_xml(*request, response);
+      for (auto const& part: response.get_child("ListPartsResult"))
       {
-        reactor::http::Request request(url, reactor::http::Method::GET, cfg);
-        reactor::wait(request);
-        _check_request_status(request, "LIST", "");
-        using boost::property_tree::ptree;
-        ptree response;
-        read_xml(request, response);
-        for (auto const& part: response.get_child("ListPartsResult"))
-        {
-          if (part.first != "Part")
-            continue;
-          MultiPartChunk chunk(part.second.get<int>("PartNumber") -1,
-                               part.second.get<std::string>("ETag"));
-          ELLE_DUMP("listed chunk %s %s", chunk.first, chunk.second);
-          res.push_back(chunk);
-        }
-        if (!response.get<bool>("ListPartsResult.IsTruncated", false))
-          return res;
-        // recompute max_id for next request
-        max_id = std::max_element(res.begin(), res.end(),
-          [](MultiPartChunk const& a, MultiPartChunk const& b)
-            { return a.first < b.first;})->first + 1;
-        ELLE_DUMP("Marker for next iteration is %s", max_id);
+        if (part.first != "Part")
+          continue;
+        MultiPartChunk chunk(part.second.get<int>("PartNumber") -1,
+                             part.second.get<std::string>("ETag"));
+        ELLE_DUMP("listed chunk %s %s", chunk.first, chunk.second);
+        res.push_back(chunk);
       }
-      catch (reactor::http::RequestError const& e)
-      {
-        throw aws::RequestError(
-          elle::sprintf("%s: unable to LIST on S3, unable to perform HTTP request: %s",
-                        *this, e.error()));
-      }
+      if (!response.get<bool>("ListPartsResult.IsTruncated", false))
+        return res;
+      // recompute max_id for next request
+      max_id = std::max_element(res.begin(), res.end(),
+        [](MultiPartChunk const& a, MultiPartChunk const& b)
+          { return a.first < b.first;})->first + 1;
+      ELLE_DUMP("Marker for next iteration is %s", max_id);
+
     }
   }
 
@@ -620,126 +428,12 @@ namespace aws
     return res;
   }
 
-  RequestHeaders
-  S3::_make_put_headers(elle::ConstWeakBuffer const& object,
-                        RequestTime const& request_time,
-                        bool ommit_redundancy)
-  {
-    ELLE_DEBUG("%s: generate PUT headers", *this);
-    RequestHeaders headers;
-    headers["Content-Type"] = std::string("binary/octet-stream");
-    headers["Host"] = this->_host_name;
-    headers["x-amz-date"] = this->_amz_date(request_time);
-    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(object);
-    if (!ommit_redundancy)
-      headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
-    headers["x-amz-security-token"] = this->_credentials.session_token();
-    return headers;
-  }
-
-  RequestHeaders
-  S3::_make_generic_headers(RequestTime const& request_time)
-  {
-    ELLE_DEBUG("%s: generate LIST or GET headers", *this);
-    RequestHeaders headers;
-    headers["Host"] = this->_host_name;
-    headers["Content-Type"] = std::string("application/json");
-    elle::ConstWeakBuffer empty_object("");
-    headers["x-amz-date"] = this->_amz_date(request_time);
-    headers["x-amz-content-sha256"] = this->_sha256_hexdigest(empty_object);
-    headers["x-amz-security-token"] = this->_credentials.session_token();
-    return headers;
-  }
-
-  aws::CanonicalRequest
-  S3::_make_put_canonical_request(elle::ConstWeakBuffer const& object,
-                                  std::string const& object_name,
-                                  RequestHeaders const& headers,
-                                  RequestQuery const& query)
-  {
-    aws::CanonicalRequest res(
-      reactor::http::Method::PUT,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(object)
-    );
-    ELLE_DEBUG("%s: generated PUT canonical request: %s",
-              *this, res.canonical_request());
-    return res;
-  }
-
-  aws::CanonicalRequest
-  S3::_make_list_canonical_request(RequestHeaders const& headers,
-                                   RequestQuery const& query)
-  {
-    elle::ConstWeakBuffer empty_object("");
-
-    aws::CanonicalRequest res(
-      reactor::http::Method::GET,
-      "/",
-      query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(empty_object)
-    );
-    ELLE_DEBUG("%s: generated LIST canonical request: %s",
-              *this, res.canonical_request());
-    return res;
-  }
-
-  aws::CanonicalRequest
-  S3::_make_get_canonical_request(RequestHeaders const& headers,
-                                  std::string const& object_name,
-                                  RequestQuery const& query)
-  {
-    elle::ConstWeakBuffer empty_object("");
-
-    aws::CanonicalRequest res(
-      reactor::http::Method::GET,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(empty_object)
-    );
-    ELLE_DUMP("%s: generated GET canonical request: %s",
-              *this, res.canonical_request());
-    return res;
-  }
-
-  aws::CanonicalRequest
-  S3::_make_delete_canonical_request(RequestHeaders const& headers,
-                                     std::string const& object_name)
-  {
-    RequestQuery empty_query;
-    elle::ConstWeakBuffer empty_object("");
-
-    aws::CanonicalRequest res(
-      reactor::http::Method::DELETE,
-      elle::sprintf("/%s/%s", this->_remote_folder, object_name),
-      empty_query,
-      headers,
-      this->_signed_headers(headers),
-      _sha256_hexdigest(empty_object)
-    );
-    ELLE_DEBUG("%s: generated DELETE canonical request: %s",
-              *this, res.canonical_request());
-    return res;
-  }
-
   reactor::http::Request::Configuration
   S3::_initialize_request(RequestTime request_time,
                           CanonicalRequest const& canonical_request,
                           const RequestHeaders& initial_headers,
                           boost::posix_time::time_duration timeout)
   {
-    if (!this->_credentials.valid())
-    {
-      throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
-                               *this, this->_credentials));
-    }
 
     // Make headers.
     RequestHeaders headers(initial_headers);
@@ -790,6 +484,25 @@ namespace aws
   {
     auto status = request.status();
     // Log response in case of error
+    if (status == reactor::http::StatusCode::Bad_Request)
+    {
+      // creds expired is a bad request with xml payload
+      // <Error><Code>ExpiredToken</Code> ...
+      // we need to distinguish that case
+      using boost::property_tree::ptree;
+      ptree response;
+      read_xml(request, response);
+      std::string code = response.get<std::string>("Error.Code", "");
+      ELLE_DEBUG("S3: Bad request reply with error code: %s", code);
+      if (code == "ExpiredToken")
+        throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
+                               *this, this->_credentials));
+      else // we read the response!
+        ELLE_TRACE("%s: error status: %s", *this, status);
+      throw aws::RequestError(
+          elle::sprintf("%s: during S3 %s on %s: error %s %s",
+                        *this, operation, object_name, status, code));
+    }
     if (status != reactor::http::StatusCode::OK
         && status != reactor::http::StatusCode::No_Content)
     {
@@ -826,8 +539,8 @@ namespace aws
     {
       ELLE_TRACE("%s: error status: %s", *this, status);
       throw aws::RequestError(
-          elle::sprintf("%s: during S3 %s on %s: error %s",
-                        *this, operation, object_name, status));
+          elle::sprintf("%s: during S3 %s on %s: error %s %s",
+                        *this, operation, object_name, status, request.response()));
     }
   }
 
@@ -841,4 +554,64 @@ namespace aws
            <<    " remote_folder=" << this->_remote_folder;
   }
 
+  std::unique_ptr<reactor::http::Request>
+  S3::_build_send_request(
+    std::string const& url,
+    reactor::http::Method method,
+    RequestQuery const& query,
+    RequestHeaders const& extra_headers,
+    boost::posix_time::time_duration timeout,
+    std::string const& content_type,
+    elle::ConstWeakBuffer const& payload)
+  {
+    while (true)
+    {
+      RequestTime request_time =
+        boost::posix_time::second_clock::universal_time();
+      RequestHeaders headers(extra_headers);
+      headers["x-amz-date"] = this->_amz_date(request_time);
+      headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
+      headers["x-amz-security-token"] = this->_credentials.session_token();
+      headers["Host"] = this->_host_name;
+      if (!content_type.empty())
+        headers["Content-Type"] = content_type;
+
+      CanonicalRequest canonical_request(
+        method, url,  query, headers,
+        _signed_headers(headers), _sha256_hexdigest(payload)
+      );
+      reactor::http::Request::Configuration cfg(
+        _initialize_request(request_time, canonical_request, headers, timeout));
+      std::string full_url = elle::sprintf(
+        "https://%s:%s%s%s",
+        _host_name,
+        "443",
+        url,
+        query_parameters(query)
+        );
+      ELLE_DEBUG("Full url: %s", full_url);
+      std::unique_ptr<reactor::http::Request> request
+        = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
+      if (payload.size())
+        request->write(reinterpret_cast<char const*>(payload.contents()),
+          payload.size());
+      reactor::wait(*request);
+      try
+      {
+        _check_request_status(*request, url, "");
+      }
+      catch(CredentialsExpired const&)
+      {
+        ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
+          *this, _credentials.expiration_str(), !!_query_credentials);
+        if (!_query_credentials)
+          throw;
+        _credentials = _query_credentials();
+        ELLE_TRACE("%s: acquired new credentials expiring %s",
+          *this,  _credentials.expiration_str());
+        continue;
+      }
+      return std::move(request);
+    }
+  }
 }
