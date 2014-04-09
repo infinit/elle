@@ -2014,6 +2014,9 @@ class ShellCommand(Builder):
     def command(self):
         return self.__command
 
+    def hash(self):
+      return self.__command
+
 class Dictionary(VirtualNode):
 
     """A virtual node that represents a dictionary.
