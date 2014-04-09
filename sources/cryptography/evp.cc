@@ -589,12 +589,20 @@ namespace infinit
               elle::sprintf("unable to initialize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
+          // Normalize behavior between no data and data of size 0.
+          // by always forcing it into the second
+          const elle::Byte* data = reinterpret_cast<const elle::Byte*>("");
+          elle::Buffer::Size length = 0;
+          if (plain.buffer().contents() != nullptr)
+          {
+            data = plain.buffer().contents();
+            length = plain.buffer().size();
+          }
 
           // Update the digest with the given plain's data.
           if (::EVP_DigestUpdate(&context,
-                                 plain.buffer().contents(),
-                                 plain.buffer().size()) <= 0)
+                                 data,
+                                 length) <= 0)
             throw Exception(
               elle::sprintf("unable to apply the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
