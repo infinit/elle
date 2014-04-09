@@ -22,9 +22,13 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    Machine::Machine():
+    Machine::Machine(std::string const& name):
       _states(),
-      _start(nullptr)
+      _start(nullptr),
+      _transitions(),
+      _running(false),
+      _exception(nullptr),
+      _name(name)
     {}
 
     /*-------.
@@ -200,7 +204,10 @@ namespace reactor
     void
     Machine::print(std::ostream& stream) const
     {
-      stream << "FSM " << this;
+      if (!this->_name.empty())
+        stream << this->_name;
+      else
+        stream << "FSM " << this;
     }
   }
 }

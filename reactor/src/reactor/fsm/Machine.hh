@@ -27,7 +27,7 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
-      Machine();
+      Machine(std::string const& name = "");
 
     /*-------.
     | States |
@@ -105,6 +105,7 @@ namespace reactor
     /*----------.
     | Printable |
     `----------*/
+      ELLE_ATTRIBUTE_R(std::string, name);
     public:
       virtual
       void
