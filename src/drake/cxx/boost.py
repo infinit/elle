@@ -157,6 +157,15 @@ class Boost(drake.Configuration):
         tests.append(lib_path / filename)
         tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
       for test in  tests:
+        # Look for a node if we build our own boost.
+        if test.absolute():
+          drake_path = test.without_prefix(drake.path_root())
+        else:
+          drake_path = test
+        node = drake.Drake.current.nodes.get(drake_path, None)
+        if node is not None:
+          return node
+        # Otherwise look on the filesystem.
         if test.exists():
           path = os.path.realpath(str(test))
           if static:
