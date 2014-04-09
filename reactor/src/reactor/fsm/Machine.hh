@@ -103,10 +103,10 @@ namespace reactor
       _run_state(State* state);
       ELLE_ATTRIBUTE_R(bool, running);
       ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
-      ELLE_ATTRIBUTE_R(boost::signals2::signal<void (State&)>,
-                       state_changed);
-      ELLE_ATTRIBUTE_R(boost::signals2::signal<void (Transition&)>,
-                       transition_triggered);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (State&)>,
+                        state_changed);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Transition&)>,
+                        transition_triggered);
 
     /*----------.
     | Printable |
