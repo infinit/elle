@@ -422,10 +422,12 @@ def configure(cxx_toolkit = None,
     libarchive_configure_args = ['--host=x86_64-w64-mingw32']
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
+    bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
     libarchive_env = {}
   else:
     libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
+    bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
     libarchive_preload = ':'.join(str(drake.path_root() / n.path())
                                   for n in libarchive_dependency_libs)
     if cxx_toolkit.os is drake.os.macos:
@@ -461,6 +463,7 @@ def configure(cxx_toolkit = None,
     targets = [
       libarchive_lib,
       bsdcpio,
+      bsdtar,
     ] + drake.nodes(
       'libarchive/include/archive.h',
       'libarchive/include/archive_entry.h',
