@@ -34,7 +34,6 @@ with open(str(drake.path_source('drake-utils.py')), 'r') as f:
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
-              boost = None,
               python3 = None,
               enable_rotation = False,
               dopenssl = None,
@@ -58,10 +57,6 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
-  boost = drake.cxx.boost.find(
-    boost,
-    cxx_toolkit = cxx_toolkit,
-    version = drake.Version(1, drake.Range(54, None)))
 
   prefix = drake.Path(prefix)
   if not prefix.absolute():
@@ -474,6 +469,111 @@ def configure(cxx_toolkit = None,
     libarchive_lib.dependency_add(lib)
   libarchive_config = drake.cxx.Config()
   libarchive_config.add_local_include_path('libarchive/include')
+
+  ## ----- ##
+  ## Boost ##
+  ## ----- ##
+
+  boost_version = drake.Version(1, 55, 0)
+  boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
+  boost_tarball = \
+    drake.node('boost/%s.tar.bz2' % boost_basename)
+  # boost_prefix = drake.Path('boost')
+  # boost_build = boost_prefix / boost_basename
+  boost_url = \
+    'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
+  drake.HTTPDownload(
+    boost_url,
+    boost_tarball,
+    fingerprint = 'd6eef4b4cacb2183f2bf265a5a03a354',
+  )
+  drake.TarballExtractor(
+    boost_tarball,
+    targets = ['%s/bootstrap.sh' % boost_basename],
+  )
+  boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
+  boost_prefix = drake.path_root() / drake.path_build('boost')
+  boost_bootstrap_command = [
+    './bootstrap.sh',
+    '--prefix=%s' % boost_prefix,
+    '--with-libraries=%s' % ','.join((
+      'chrono',
+      'date_time',
+      'filesystem',
+      'program_options',
+      'python',
+      'signals',
+      'system',
+      'test',
+      'thread',
+    ))
+  ]
+  boost_bjam = drake.node('boost/%s/b2' % boost_basename)
+  boost_libraries_names = (
+    'chrono',
+    'date_time',
+    'filesystem',
+    'program_options',
+    'python',
+    'signals',
+    'system',
+    'thread',
+    'unit_test_framework',
+  )
+  boost_libraries = ((
+    drake.cxx.StaticLib('boost/lib/libboost_%s.a' % name),
+    drake.cxx.DynLib('boost/lib/libboost_%s.so' % name),
+    drake.cxx.DynLib('boost/lib/libboost_%s.so.1.55.0' % name),
+  ) for name in boost_libraries_names)
+  boost_libraries = list(chain(*boost_libraries))
+
+  class BoostUserConfigGenerator(drake.Builder):
+
+    def __init__(self, destination, cxx_toolkit):
+      self.__destination = destination
+      self.__toolkit = cxx_toolkit
+      self.__user_config = drake.node(self.__destination)
+      super().__init__([], [self.__user_config])
+
+    def execute(self):
+      self.output('Generate Boost user configuration',
+                  'generate %s' % self.__destination)
+      with open(str(self.__destination), 'w') as f:
+        print('using gcc : : %s ;' % self.__toolkit.cxx,
+              file = f)
+      return True
+
+    @property
+    def user_config(self):
+      return self.__user_config
+
+    def hash(self):
+      return self.__toolkit.cxx
+
+  boost_user_config = BoostUserConfigGenerator(
+    'boost/%s/user-config.jam' % boost_basename,
+    cxx_toolkit).user_config
+  boost_attributes = {}
+  exec(open(str(drake.path_source('boost.py')), 'r').read(),
+       boost_attributes)
+  boost_headers = drake.nodes(*boost_attributes['headers'])
+  drake.ShellCommand(
+    sources = [boost_bootstrap],
+    targets = [boost_bjam],
+    command = boost_bootstrap_command,
+    pretty = 'Bootstrap boost',
+    cwd = 'boost/%s' % boost_basename)
+  drake.ShellCommand(
+    sources = [boost_bjam, boost_user_config],
+    targets = boost_libraries + boost_headers,
+    command = ['./b2', 'install'],
+    pretty = 'Build boost',
+    cwd = 'boost/%s' % boost_basename)
+  boost = drake.cxx.boost.Boost(
+    cxx_toolkit = cxx_toolkit,
+    prefix = boost_prefix,
+    version_effective = boost_version,
+  )
 
   ## ------------- ##
   ## Configuration ##
