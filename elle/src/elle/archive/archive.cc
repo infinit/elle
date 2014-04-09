@@ -83,10 +83,19 @@ namespace elle
       std::unordered_set<std::string> root_entries;
       std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
       int (*format_setter)(::archive*) = nullptr;
+      int (*compression_setter)(::archive*) = nullptr;
       switch (format)
       {
         case Format::tar:
           format_setter = archive_write_set_format_gnutar;
+          break;
+        case Format::tar_bzip2:
+          format_setter = archive_write_set_format_gnutar;
+          compression_setter = archive_write_add_filter_bzip2;
+          break;
+        case Format::tar_gzip:
+          format_setter = archive_write_set_format_gnutar;
+          compression_setter = archive_write_add_filter_gzip;
           break;
         case Format::zip:
           format_setter = archive_write_set_format_zip;
@@ -95,6 +104,8 @@ namespace elle
           elle::unreachable();
       }
       check_call(archive.get(), format_setter(archive.get()));
+      if (compression_setter)
+        check_call(archive.get(), compression_setter(archive.get()));
       check_call(archive.get(),
                  archive_write_open_filename(archive.get(),
                                              path.string().c_str()));

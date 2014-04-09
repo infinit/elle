@@ -14,6 +14,8 @@ namespace elle
     {
       zip,
       tar,
+      tar_gzip,
+      tar_bzip2,
     };
 
     typedef
@@ -23,7 +25,7 @@ namespace elle
     archive(Format format,
             std::vector<boost::filesystem::path> const& files,
             boost::filesystem::path const& path,
-            Renamer const& renamer);
+            Renamer const& renamer = Renamer());
   }
 }
 
