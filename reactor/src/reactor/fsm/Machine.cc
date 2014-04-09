@@ -123,6 +123,7 @@ namespace reactor
     Machine::_run_state(State* state)
     {
       ELLE_TRACE_SCOPE("%s: run %s", *this, *state);
+      this->_state_changed(*state);
       auto& sched = reactor::scheduler();
       auto action = [&] () {
         try
@@ -182,6 +183,7 @@ namespace reactor
             ELLE_DEBUG("%s: waiting for transition", *this);
             sched.current()->wait(triggered);
           }
+          this->_transition_triggered(*trigger);
           try
           {
             trigger->_run_action(saved_exn);

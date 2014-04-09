@@ -5,6 +5,8 @@
 # include <unordered_set>
 # include <vector>
 
+# include <boost/signals2.hpp>
+
 # include <elle/Printable.hh>
 
 # include <reactor/fsm/State.hh>
@@ -101,6 +103,10 @@ namespace reactor
       _run_state(State* state);
       ELLE_ATTRIBUTE_R(bool, running);
       ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
+      ELLE_ATTRIBUTE_R(boost::signals2::signal<void (State&)>,
+                       state_changed);
+      ELLE_ATTRIBUTE_R(boost::signals2::signal<void (Transition&)>,
+                       transition_triggered);
 
     /*----------.
     | Printable |
