@@ -202,7 +202,7 @@ namespace infinit
           // FIXME: only protocol error should throw this, not remote
           // exceptions.
           RPCError e
-            (elle::sprintf("remote procedure '%s' failed", this->_name));
+            (elle::sprintf("remote procedure '%s' failed with '%s'", this->_name, error));
           e.inner_exception(elle::make_unique<elle::Exception>(bt, error));
           throw e;
         }
