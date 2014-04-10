@@ -271,7 +271,7 @@ class Config:
       if path == Path('/include') or path == Path('/usr/include'):
         return
       if not path.absolute():
-        path = drake.path_source() / drake.Drake.current.prefix / path
+        path = drake.path_build() / drake.Drake.current.prefix / path
       path = path.canonize()
       self.__system_includes.add(path)
       self._includes[path] = None
@@ -619,6 +619,8 @@ class GccToolkit(Toolkit):
       for include in cfg.system_include_path:
           res.append('-isystem')
           res.append(utils.shell_escape(include))
+          res.append('-isystem')
+          res.append(utils.shell_escape(drake.path_source() / include))
       for include in cfg.local_include_path:
           res.append('-I')
           res.append(utils.shell_escape(drake.path_source() / include))

@@ -8,4 +8,4 @@ def configure():
     prefix = 'deps',
     )
 
-  assert '../deps/include' in cfg.config().system_include_path
+  assert 'deps/include' in cfg.config().system_include_path
