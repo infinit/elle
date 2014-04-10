@@ -3380,6 +3380,8 @@ class TarballExtractor(Builder):
   def execute(self):
     import tarfile
     self.output('Extract %s' % self.__tarball)
-    with tarfile.open(str(self.__tarball.path()), 'r') as f:
-      f.extractall(str(self.__tarball.path().dirname()))
+    def extract():
+      with tarfile.open(str(self.__tarball.path()), 'r') as f:
+        f.extractall(str(self.__tarball.path().dirname()))
+    self._run_job(extract)
     return True
