@@ -1593,11 +1593,7 @@ class Builder:
           if not command(c, cwd = cwd, stdout = stdout, env = env):
             return False
         return True
-      if Drake.current.jobs_lock is not None:
-        with Drake.current.jobs_lock:
-          return sched.background(fun)
-      else:
-        return fun()
+      return self._run_job(fun)
 
   def output(self, raw, pretty = None):
     """Output pretty, or raw if drake is in raw mode."""
@@ -1967,6 +1963,13 @@ class Builder:
         if node.dot(marks):
             print('  node_%s -> builder_%s' % (node.uid, self.uid))
     return True
+
+  def _run_job(self, job):
+    if Drake.current.jobs_lock is not None:
+      with Drake.current.jobs_lock:
+        return sched.background(job)
+    else:
+      return job()
 
 
 class ShellCommand(Builder):
@@ -3339,7 +3342,7 @@ class HTTPDownload(Builder):
   def execute(self):
     self.output('Download %s to %s' % (self.__url, self.__dest),
                 'Download %s' % self.__dest)
-    resp, content = self.__http.request(self.__url, "GET")
+    resp, content = self._run_job(lambda: self.__http.request(self.__url, "GET"))
     status = resp['status']
     if status != '200':
       print('download failed with status %s' % status,
