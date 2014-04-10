@@ -35,7 +35,7 @@ namespace reactor
         return nullptr;
       }
 
-      ELLE_DEBUG("%s: start on %s", *this, this->trigger());
+      ELLE_DEBUG("Initializing %s", *this);
       return std::function<void ()>(
         [this,
          &sched,
@@ -73,8 +73,8 @@ namespace reactor
     void
     WaitableTransition::print(std::ostream& stream) const
     {
-      stream << "transition on " << this->trigger() << " "
-             << "from " << this->start() << " to " << this->end();
+      stream << "Transition(" << this->start().name() << " , "
+             << this->end().name() << " , " << this->trigger() << ')';
     }
   }
 }

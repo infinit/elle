@@ -160,7 +160,7 @@ namespace reactor
           throw;
         }
         state->_done.signal();
-        ELLE_DEBUG("%s: state action finished", *this);
+        ELLE_DEBUG("%s: %s action finished", *this, *state);
         while (true)
         {
           // Ordered by insertion order.

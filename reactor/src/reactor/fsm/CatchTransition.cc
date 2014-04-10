@@ -33,8 +33,8 @@ namespace reactor
     void
     CatchTransition::print(std::ostream& stream) const
     {
-      stream << "transition on exception "
-             << "from " << this->start() << " to " << this->end();
+      stream << "Transition(" << this->start().name() << " , "
+             << this->end().name() << " , EXCEPTION)";
     }
 
   }

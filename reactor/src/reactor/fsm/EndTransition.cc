@@ -39,8 +39,8 @@ namespace reactor
     void
     EndTransition::print(std::ostream& stream) const
     {
-      stream << "transition on state end "
-             << "from " << this->start() << " to " << this->end();
+      stream << "Transition(" << this->start().name() << " , "
+             << this->end().name() << " , END)";
     }
   }
 }
