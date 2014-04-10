@@ -539,6 +539,7 @@ class GccToolkit(Toolkit):
     self.__include_path = None
     self.__recursive_linkage = False
     self.cxx = compiler or 'g++'
+    self.__patchelf = drake.Path('patchelf')
     try:
       version = subprocess.check_output([self.cxx, '--version'])
     except:
@@ -833,9 +834,20 @@ class GccToolkit(Toolkit):
               '-add_rpath', str(path),
               str(binary)]
     else:
-      return ['patchelf',
+      return [str(self.__patchelf),
               '--set-rpath', str(path),
               str(binary)]
+
+  @property
+  def patchelf(self):
+    return self.__patchelf
+
+  @patchelf.setter
+  def patchelf(self, value):
+    if isinstance(value, drake.Node):
+      self.__patchelf = value.path()
+    else:
+      self.__patchelf = value
 
   def rpath(self, path):
     path = drake.Path(path)
