@@ -2961,7 +2961,7 @@ class Configuration:
           drake_path = path
         node = drake.Drake.current.nodes.get(drake_path, None)
         if node is not None:
-          res.append(root)
+          res.append(root.without_prefix(drake.path_root()))
 
     if len(res) > 0:
       return res
