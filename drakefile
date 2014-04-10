@@ -364,6 +364,7 @@ def configure(cxx_toolkit = None,
     '--enable-threaded-resolver',
     '--disable-ldap',
     '--disable-ldaps',
+    '--disable-manual',
     '--disable-rtmp',
     '--disable-sspi',
     '--disable-ssh',
@@ -412,6 +413,7 @@ def configure(cxx_toolkit = None,
     sources = curl_dependency_libs + [curl_configure],
     build_args = ['all', 'install',],
     additional_env = curl_environment,
+    patch = drake.node('curl.patch'),
   )
   for lib in curl_dependency_libs:
     curl_lib.dependency_add(lib)
