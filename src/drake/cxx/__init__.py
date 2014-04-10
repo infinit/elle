@@ -834,9 +834,11 @@ class GccToolkit(Toolkit):
               '-add_rpath', str(path),
               str(binary)]
     else:
-      return [str(self.__patchelf),
-              '--set-rpath', str(path),
-              str(binary)]
+      if isinstance(self.__patchelf, drake.Node):
+        patchelf = self.__patchelf.path()
+      else:
+        patchelf = self.__patchelf
+      return [str(patchelf), '--set-rpath', str(path), str(binary)]
 
   @property
   def patchelf(self):
@@ -844,10 +846,7 @@ class GccToolkit(Toolkit):
 
   @patchelf.setter
   def patchelf(self, value):
-    if isinstance(value, drake.Node):
-      self.__patchelf = value.path()
-    else:
-      self.__patchelf = value
+    self.__patchelf = value
 
   def rpath(self, path):
     path = drake.Path(path)
