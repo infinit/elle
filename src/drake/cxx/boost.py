@@ -53,6 +53,7 @@ class Boost(drake.Configuration):
                cxx_toolkit = None,
                prefix = None,
                version = Version(),
+               version_effective = None,
                prefer_shared = True):
     """Find and create a configuration for Boost.
 
@@ -69,10 +70,8 @@ class Boost(drake.Configuration):
     self.__prefer_shared = prefer_shared
     # Compute the search path.
     if prefix is None:
-      if cxx_toolkit.os == drake.os.windows:
-        test = [Path('C:\\Boost')]
-      else:
-        test = [Path('/usr'), Path('/usr/local')]
+      test = [path.dirname() for path in cxx_toolkit.include_path
+              if path.basename() == 'include']
     else:
       test = [Path(prefix)]
     for i in range(len(test)):
@@ -90,6 +89,8 @@ class Boost(drake.Configuration):
     tokens = map(lambda p: p / token, include_subdirs)
     prefixes = self._search_many_all(list(tokens), test)
     miss = []
+    if version_effective is not None:
+      assert prefix is not None
     # Try every search path
     for path, include_subdir in prefixes:
       include_subdir = include_subdir.without_suffix(token)
@@ -99,13 +100,16 @@ class Boost(drake.Configuration):
       self.__lib_path = path / 'lib'
       cfg.lib_path(self.__lib_path)
       # Check the version.
-      version_eff = cxx_toolkit.preprocess(
-          '#include <boost/version.hpp>\nBOOST_VERSION',
-          config = cfg)
-      version_eff = int(version_eff.split('\n')[-2].strip())
-      version_eff = Version(version_eff // 100000,
-                            version_eff // 100 % 1000,
-                            version_eff % 100)
+      if version_effective is None:
+        version_eff = cxx_toolkit.preprocess(
+            '#include <boost/version.hpp>\nBOOST_VERSION',
+            config = cfg)
+        version_eff = int(version_eff.split('\n')[-2].strip())
+        version_eff = Version(version_eff // 100000,
+                              version_eff // 100 % 1000,
+                              version_eff % 100)
+      else:
+        version_eff = version_effective
       if version_eff not in version:
         miss.append(version_eff)
         continue
