@@ -94,6 +94,8 @@ namespace elle
       std::string msg = lines[0];
 
       // Indentation
+      static bool const display_indentation = !::getenv("ELLE_LOG_NO_INDENTATION");
+      if (display_indentation)
       {
         std::string align = std::string(indentation * 2, ' ');
         msg = align + msg;
@@ -108,18 +110,24 @@ namespace elle
       if (this->_display_type && type != elle::log::Logger::Type::info)
         msg = elle::sprintf("[%s] ", _type_to_string(type)) + msg;
 
+      static bool display_tags = !::getenv("ELLE_LOG_NO_TAGS");
       // Tags
-      for (auto const& tag: tags)
+      if (display_tags)
       {
-        if (tag.first == "PID" && !this->_enable_pid)
-          continue;
-        if (tag.first == "TID" && !this->_enable_tid)
-          continue;
-        msg = elle::sprintf("[%s] %s", tag.second, msg);
+        for (auto const& tag: tags)
+        {
+          if (tag.first == "PID" && !this->_enable_pid)
+            continue;
+          if (tag.first == "TID" && !this->_enable_tid)
+            continue;
+          msg = elle::sprintf("[%s] %s", tag.second, msg);
+        }
       }
 
+      static bool show_component = !::getenv("ELLE_LOG_NO_COMPONENT");
       // Component
       std::string comp;
+      if (show_component)
       {
         unsigned int size = component.size();
         ELLE_ASSERT_LTE(size, this->component_max_size());
@@ -156,7 +164,7 @@ namespace elle
       _output << msg << std::endl;
       if (lines.size() > 1)
       {
-          ELLE_ASSERT_GT(msg.size(), lines[0].size());
+          ELLE_ASSERT_GTE(msg.size(), lines[0].size());
           std::string indent(msg.size() - lines[0].size(), ' ');
           for (elle::Size i = 1; i < lines.size(); i++)
               _output << indent << lines[i] << std::endl;
