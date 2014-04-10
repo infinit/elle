@@ -73,6 +73,43 @@ def configure(cxx_toolkit = None,
                      'include/python3.4m'])
 
 
+  ## -------- ##
+  ## Patchelf ##
+  ## -------- ##
+
+  patchelf_version = drake.Version(0, 8)
+  patchelf_basename = 'patchelf-%s' % patchelf_version
+  patchelf_url = \
+    'http://releases.nixos.org/patchelf/%s/%s.tar.bz2' % \
+    (patchelf_basename, patchelf_basename)
+  patchelf_tarball = \
+    drake.node('patchelf/%s.tar.bz2' % patchelf_basename)
+  patchelf_configure = \
+    drake.node('patchelf/%s/configure' % patchelf_basename)
+  patchelf_prefix = drake.path_build('patchelf')
+  patchelf_prefix_absolute = drake.path_root() / patchelf_prefix
+  patchelf = drake.node(patchelf_prefix / 'bin/patchelf')
+  drake.HTTPDownload(
+    patchelf_url,
+    patchelf_tarball,
+    fingerprint = '5b151e3c83b31f5931b4a9fc01635bfd',
+  )
+  drake.TarballExtractor(
+    patchelf_tarball,
+    targets = ['%s/configure' % patchelf_basename],
+  )
+  GNUBuilder(
+    cxx_toolkit,
+    configure = patchelf_configure,
+    configure_args = [
+      '--prefix=%s' % patchelf_prefix_absolute,
+      'CXX=%s' % cxx_toolkit.cxx,
+    ],
+    targets = [patchelf],
+    sources = [],
+  )
+  cxx_toolkit.patchelf = patchelf
+
   ## ---- ##
   ## Zlib ##
   ## ---- ##
