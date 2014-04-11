@@ -23,6 +23,27 @@ ELLE_LOG_COMPONENT("aws.S3");
 
 namespace aws
 {
+  // Stay as close as possible to reference java implementation from amazon
+  // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
+  static std::string uri_encode(std::string const& input, bool encodeSlash)
+  {
+    const char* syms = "0123456789ABCDEF";
+    std::string result;
+    for (int i=0; i < input.length() ; ++i)
+    {
+      char ch = input[i];
+      if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' || ch == '~' || ch == '.') {
+        result+= ch;
+      }
+      else if (ch == '/') {
+        result += (encodeSlash ? "%2F" : "/");
+      }
+      else
+        result += std::string("%") + syms[((unsigned char)ch)>>4] + syms[((unsigned char)ch)&0x0F];
+    }
+    return result;
+  }
+
   /*-------------.
   | Construction |
   `-------------*/
@@ -576,8 +597,11 @@ namespace aws
       if (!content_type.empty())
         headers["Content-Type"] = content_type;
 
+      std::string url_encoded = uri_encode(url, false);
+      // ... except slashes
+      // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
       CanonicalRequest canonical_request(
-        method, url,  query, headers,
+        method, url_encoded,  query, headers,
         _signed_headers(headers), _sha256_hexdigest(payload)
       );
       reactor::http::Request::Configuration cfg(
@@ -586,7 +610,7 @@ namespace aws
         "https://%s:%s%s%s",
         _host_name,
         "443",
-        url,
+        url_encoded,
         query_parameters(query)
         );
       ELLE_DEBUG("Full url: %s", full_url);
