@@ -158,8 +158,8 @@ class Boost(drake.Configuration):
         tests.append(lib_path / filename)
       else:
         filename = cxx_toolkit.libname_dyn(libname, self.__cfg)
-        tests.append(lib_path / filename)
         tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
+        tests.append(lib_path / filename)
       for test in  tests:
         # Look for a node if we build our own boost.
         if test.absolute():
