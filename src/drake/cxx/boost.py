@@ -46,7 +46,7 @@ class Boost(drake.Configuration):
     'program_options': 'program_options',
     'chrono': 'chrono',
     'iostreams': 'iostreams',
-    'python': ('python3', 'python-3.2', 'python-3.3')
+    'python': ( 'python-3.3', 'python-3.2', 'python3', 'python')
     }
 
   def __init__(self,
