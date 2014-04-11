@@ -71,7 +71,12 @@ def configure(cxx_toolkit = None,
                      'include/python3.2m',
                      'include/python3.3m',
                      'include/python3.4m'])
-
+  python_version = cxx_toolkit.preprocess('''\
+#include <patchlevel.h>
+PY_MAJOR_VERSION
+PY_MINOR_VERSION''', config = python3)
+  python_version = python_version.split('\n')[-3:-1]
+  python_version = drake.Version(*map(int, python_version))
 
   ## -------- ##
   ## Patchelf ##
@@ -545,7 +550,8 @@ def configure(cxx_toolkit = None,
       'system',
       'test',
       'thread',
-    ))
+    )),
+    '--with-python-version=%s' % python_version,
   ]
   boost_bjam = drake.node('boost/%s/b2' % boost_basename)
   boost_libraries_names = (
