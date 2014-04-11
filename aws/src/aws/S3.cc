@@ -7,6 +7,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/format/base64.hh>
 #include <elle/log.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/http/exceptions.hh>
 #include <reactor/http/EscapedString.hh>
@@ -23,6 +24,18 @@ ELLE_LOG_COMPONENT("aws.S3");
 
 namespace aws
 {
+  static boost::posix_time::time_duration default_timeout()
+  {
+    static boost::optional<boost::posix_time::time_duration> v;
+    if (!v)
+    {
+      v = 500_sec;
+      std::string opt = elle::os::getenv("INFINIT_S3_TIMEOUT", "");
+      if (!opt.empty())
+        v = boost::posix_time::seconds(boost::lexical_cast<int>(opt));
+    }
+    return v.get();
+  }
   // Stay as close as possible to reference java implementation from amazon
   // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
   static std::string uri_encode(std::string const& input, bool encodeSlash)
@@ -107,7 +120,6 @@ namespace aws
     auto request = _build_send_request(
       url, reactor::http::Method::PUT,
       query, headers,
-      20_sec,
       "binary/octet-stream",
       object);
     auto const& response = request->headers();
@@ -213,7 +225,7 @@ namespace aws
 
       _build_send_request("/", reactor::http::Method::POST,
         query, headers,
-        300_sec, "text/xml", payload);
+        "text/xml", payload);
     }
     delete_object(_remote_folder);
   }
@@ -253,7 +265,7 @@ namespace aws
     auto request = _build_send_request(
       url, reactor::http::Method::POST,
       query, headers,
-      300_sec, mime_type);
+      mime_type);
     using boost::property_tree::ptree;
     ptree response;
     read_xml(*request, response);
@@ -299,7 +311,7 @@ namespace aws
 
     auto request = _build_send_request(url, reactor::http::Method::POST,
       query, RequestHeaders(),
-      300_sec, "text/xml", xchunks);
+      "text/xml", xchunks);
     // This request can 200 OK and still return an error in XML
     using boost::property_tree::ptree;
     ptree response;
@@ -581,10 +593,24 @@ namespace aws
     reactor::http::Method method,
     RequestQuery const& query,
     RequestHeaders const& extra_headers,
-    boost::posix_time::time_duration timeout,
     std::string const& content_type,
-    elle::ConstWeakBuffer const& payload)
+    elle::ConstWeakBuffer const& payload,
+    boost::optional<boost::posix_time::time_duration> timeout_opt
+    )
   {
+    boost::posix_time::time_duration timeout = default_timeout();
+    if (timeout_opt)
+      timeout = timeout_opt.get();
+    // Transient errors on requests is perfectly reasonable
+    int attempt = 0;
+    static int max_attempts = -1;
+    if (max_attempts == -1)
+    {
+      max_attempts = 0;
+      std::string opt = elle::os::getenv("INFINIT_S3_MAX_ATTEMPTS", "");
+      if (!opt.empty())
+        max_attempts = boost::lexical_cast<int>(opt);
+    }
     while (true)
     {
       RequestTime request_time =
@@ -614,12 +640,30 @@ namespace aws
         query_parameters(query)
         );
       ELLE_DEBUG("Full url: %s", full_url);
-      std::unique_ptr<reactor::http::Request> request
-        = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
-      if (payload.size())
-        request->write(reinterpret_cast<char const*>(payload.contents()),
-          payload.size());
-      reactor::wait(*request);
+
+      std::unique_ptr<reactor::http::Request> request;
+      try
+      {
+
+        request = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
+        if (payload.size())
+          request->write(reinterpret_cast<char const*>(payload.contents()),
+            payload.size());
+        reactor::wait(*request);
+      }
+      catch (reactor::http::RequestError const& e)
+      {
+        ++attempt;
+        // we have nothing better to do, so keep retrying
+        ELLE_LOG("S3 request error: %s (attempt %s)", e.error(), attempt);
+        if (max_attempts && attempt >= max_attempts)
+          throw aws::RequestError(
+            elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: %s",
+                        *this, e.error()));
+        else
+          continue;
+      }
+
       try
       {
         _check_request_status(*request, url, "");

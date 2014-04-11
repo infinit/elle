@@ -165,9 +165,11 @@ namespace aws
       reactor::http::Method method,
       RequestQuery const& query = RequestQuery(),
       RequestHeaders const& extra_headers = RequestHeaders(),
-      boost::posix_time::time_duration timeout = 30_sec,
       std::string const& content_type = "application/json",
-      elle::ConstWeakBuffer const& payload = elle::ConstWeakBuffer());
+      elle::ConstWeakBuffer const& payload = elle::ConstWeakBuffer(),
+      boost::optional<boost::posix_time::time_duration> timeout =
+        boost::optional<boost::posix_time::time_duration>()
+      );
 
     /*----------.
     | Printable |
