@@ -32,7 +32,7 @@ namespace reactor
     ELLE_ATTRIBUTE(Barrier, write_barrier);
     ELLE_ATTRIBUTE(Container, queue);
     /// Maximum size, will block writers *after* insertion if reached
-    ELLE_ATTRIBUTE_Rw(int, max_size);
+    ELLE_ATTRIBUTE_Rw(unsigned int, max_size);
     enum
     {
       SizeUnlimited = std::numeric_limits<int>::max()

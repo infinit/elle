@@ -79,7 +79,7 @@ namespace reactor
 
   template <typename T, typename Container>
   void
-  Channel<T, Container>::max_size(int ms)
+  Channel<T, Container>::max_size(unsigned int ms)
   {
     this->_max_size = ms;
     if (this->_max_size < this->_queue.size())
