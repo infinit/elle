@@ -34,9 +34,6 @@ for f in %(flags)r:
   cxx_config.flag(f)
 
 with drake.Drake(%(dir_source)r) as d:
-  boost = drake.cxx.boost.Boost(prefix = %(boost)r,
-                                cxx_toolkit = cxx_toolkit,
-                                prefer_shared = %(boost_shared)r)
   python = %(python)r
   import drake.valgrind
   if %(valgrind)r:
@@ -46,7 +43,6 @@ with drake.Drake(%(dir_source)r) as d:
 
   d.run(cxx_toolkit,
         cxx_config,
-        boost = boost,
         python3 = python,
         valgrind = valgrind)
 '''
