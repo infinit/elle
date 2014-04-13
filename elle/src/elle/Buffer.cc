@@ -408,7 +408,7 @@ namespace elle
     if (end < 0)
       end = this->size() + end + 1;
     ELLE_ASSERT_LTE(start, end);
-    ELLE_ASSERT_LTE(end, this->size());
+    ELLE_ASSERT_LTE(end, signed(this->size()));
     return ConstWeakBuffer(this->contents() + start, end - start);
   }
 
