@@ -225,7 +225,10 @@ namespace elle
     operator[] (unsigned i) const;
     /// A subset of this buffer.
     ConstWeakBuffer
-    range(int start, int end = -1) const;
+    range(int start) const;
+    /// A subset of this buffer.
+    ConstWeakBuffer
+    range(int start, int end) const;
     /// Size of the buffer.
     ELLE_ATTRIBUTE_R(size_t, size);
     /// Buffer constant data.
@@ -240,7 +243,9 @@ namespace elle
     bool
     operator <(ConstWeakBuffer const& other) const;
     bool
-    operator ==(std::string const& other) const;
+    operator ==(std::string const& data) const;
+    bool
+    operator ==(char const* data) const;
 
   /*-----------.
   | Properties |

@@ -398,15 +398,21 @@ namespace elle
     ELLE_ASSERT_LT(i, this->_size);
     return this->_contents[i];
   }
+  /// A subset of this buffer.
+  ConstWeakBuffer
+  ConstWeakBuffer::range(int start) const
+  {
+    return this->range(start, this->size());
+  }
 
   /// A subset of this buffer.
   ConstWeakBuffer
   ConstWeakBuffer::range(int start, int end) const
   {
     if (start < 0)
-      start = this->size() + start + 1;
+      start = this->size() + start;
     if (end < 0)
-      end = this->size() + end + 1;
+      end = this->size() + end;
     ELLE_ASSERT_LTE(start, end);
     ELLE_ASSERT_LTE(end, signed(this->size()));
     return ConstWeakBuffer(this->contents() + start, end - start);
@@ -430,9 +436,15 @@ namespace elle
   }
 
   bool
-  ConstWeakBuffer::operator ==(std::string const& other) const
+  ConstWeakBuffer::operator ==(std::string const& data) const
   {
-    return *this == ConstWeakBuffer(other);
+    return *this == ConstWeakBuffer(data);
+  }
+
+  bool
+  ConstWeakBuffer::operator ==(char const* data) const
+  {
+    return *this == ConstWeakBuffer(data);
   }
 
   /*---------.

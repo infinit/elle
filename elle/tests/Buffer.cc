@@ -254,7 +254,7 @@ namespace print
   string_fixed()
   {
     elle::ConstWeakBuffer buffer(data);
-    BOOST_CHECK_EQUAL(elle::sprintf("%f", buffer), "somedata s... somedata");
+    BOOST_CHECK_EQUAL(elle::sprintf("%f", buffer), "somedata s...a somedata");
   }
 
   static
@@ -273,7 +273,6 @@ void
 hash()
 {
   std::hash<elle::ConstWeakBuffer> hash;
-
   BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("")),
                     hash(elle::ConstWeakBuffer("")));
   BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("aeouidhtns")),
@@ -282,6 +281,17 @@ hash()
                  hash(elle::ConstWeakBuffer("aeouidhtns-")));
   BOOST_CHECK_NE(hash(elle::ConstWeakBuffer("aeouidhtns")),
                  hash(elle::ConstWeakBuffer("snthdiueoa")));
+}
+
+static
+void
+range()
+{
+  elle::ConstWeakBuffer buffer("0123456789");
+  BOOST_CHECK_EQUAL(buffer.range(3), "3456789");
+  BOOST_CHECK_EQUAL(buffer.range(1, 6), "12345");
+  BOOST_CHECK_EQUAL(buffer.range(5, -1), "5678");
+  BOOST_CHECK_EQUAL(buffer.range(-5, -3), "56");
 }
 
 ELLE_TEST_SUITE()
@@ -343,5 +353,9 @@ ELLE_TEST_SUITE()
     print->add(BOOST_TEST_CASE(hexadecimal));
   }
 
+<<<<<<< HEAD
   master.add(BOOST_TEST_CASE(hash), 0, 1);
+=======
+  master.add(BOOST_TEST_CASE(range), 0, 1);
+>>>>>>> d0d7af3... elle.Buffer: Fix and test the range method.
 }
