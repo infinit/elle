@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2013, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2014, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -28,6 +28,7 @@ from drake.enumeration import Enumerated
 from itertools import chain
 
 from drake.sched import logger
+from drake.utils import property_memoize
 
 def _scheduled():
   return Coroutine.current and \
@@ -898,8 +899,6 @@ class Path(metaclass = PathType):
 Path.dot = Path('.')
 Path.dotdot = Path('..')
 
-_CACHEDIR = Path('.drake')
-
 _DEPFILE_BUILDER = Path('drake.Builder')
 
 class DepFile:
@@ -945,7 +944,7 @@ class DepFile:
 
     def path(self):
         """Path to the file storing the hashes."""
-        return self._builder.cachedir() / self.name
+        return self._builder.cachedir / self.name
 
 
     def read(self):
@@ -1561,11 +1560,11 @@ class Builder:
 
   @property
   def path_stdout(self):
-    return self.cachedir() / 'stdout'
+    return self.cachedir / 'stdout'
 
   @property
   def path_tmp(self):
-    res = self.cachedir() / 'tmp'
+    res = self.cachedir / 'tmp'
     res.mkpath()
     return res
 
@@ -1600,16 +1599,22 @@ class Builder:
     if not _SILENT:
       print((not _RAW and pretty) or raw)
 
+
+  CACHEDIR = Path('.drake')
+
+  @property_memoize
   def cachedir(self):
     """The cachedir that stores dependency files."""
     path = self.__targets[0].name()
     if path.virtual:
       path = drake.Path(path._Path__path, False, False)
     if path.absolute():
-      res = path.dirname() / _CACHEDIR / path.basename()
+      rel = drake.Path(path._Path__path, False, False)
+      return Builder.CACHEDIR / rel
     else:
-      res = drake.Drake.current.prefix / _CACHEDIR / path
-    return res
+      rel = drake.Path(drake.path_build(absolute = True)._Path__path,
+                       False, False)
+      return Builder.CACHEDIR / rel / path
 
   def hash(self):
     """A hash for this builder"""
@@ -1699,7 +1704,7 @@ class Builder:
         execute = False
         # Reload dynamic dependencies
         if not execute:
-          cachedir = self.cachedir()
+          cachedir = self.cachedir
           if _OS.path.exists(str(cachedir)):
             for f in _OS.listdir(str(cachedir)):
               if not _OS.path.isfile(str(cachedir / f)):
@@ -1787,7 +1792,7 @@ class Builder:
               break
         # Check if we are up to date wrt to the builder itself
         self._builder_hash = self.hash()
-        depfile_builder = self.cachedir() / _DEPFILE_BUILDER
+        depfile_builder = self.cachedir / _DEPFILE_BUILDER
         if not execute:
           if self._builder_hash is not None:
             if depfile_builder.exists():
@@ -1811,7 +1816,7 @@ class Builder:
                 if not f.up_to_date():
                     execute = True
         if execute:
-          self.cachedir().mkpath()
+          self.cachedir.mkpath()
           for target in self.__targets:
             if isinstance(target, Node):
               target.path().dirname().mkpath()
@@ -3382,6 +3387,7 @@ class TarballExtractor(Builder):
     self.output('Extract %s' % self.__tarball)
     def extract():
       with tarfile.open(str(self.__tarball.path()), 'r') as f:
+        print(str(self.__tarball.path().dirname()))
         f.extractall(str(self.__tarball.path().dirname()))
     self._run_job(extract)
     return True

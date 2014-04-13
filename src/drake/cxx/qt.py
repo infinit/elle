@@ -12,7 +12,7 @@ import re
 
 from itertools import chain
 
-from .. import Builder, Exception, Node, Path, node, _CACHEDIR, debug
+from .. import Builder, Exception, Node, Path, node, debug
 from .  import Config, StaticLib, Header, Object, Source
 
 import drake.cxx

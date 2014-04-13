@@ -1,4 +1,4 @@
-# Copyright (C) 2011, Quentin "mefyl" Hocquet
+# Copyright (C) 2011-2014, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -66,3 +66,11 @@ def shell_escape(s):
             s = "'%s'" % s
             break
     return s
+
+def property_memoize(f):
+  def result(self):
+    prop = '_%s__value' % self.__class__.__name__
+    if not hasattr(self, prop):
+      setattr(self, prop, f(self))
+    return getattr(self, prop)
+  return property(result)
