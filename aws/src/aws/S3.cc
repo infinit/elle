@@ -24,7 +24,9 @@ ELLE_LOG_COMPONENT("aws.S3");
 
 namespace aws
 {
-  static boost::posix_time::time_duration default_timeout()
+  static
+  boost::posix_time::time_duration
+  default_timeout()
   {
     static boost::optional<boost::posix_time::time_duration> v;
     if (!v)
@@ -36,13 +38,16 @@ namespace aws
     }
     return v.get();
   }
+
   // Stay as close as possible to reference java implementation from amazon
   // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-  static std::string uri_encode(std::string const& input, bool encodeSlash)
+  static
+  std::string
+  uri_encode(std::string const& input, bool encodeSlash)
   {
     const char* syms = "0123456789ABCDEF";
     std::string result;
-    for (int i=0; i < input.length() ; ++i)
+    for (unsigned i = 0; i < input.length() ; ++i)
     {
       char ch = input[i];
       if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' || ch == '~' || ch == '.') {
