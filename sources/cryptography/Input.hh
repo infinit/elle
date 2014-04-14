@@ -24,6 +24,8 @@ namespace infinit
       `-------------*/
     public:
       Input(elle::ConstWeakBuffer const& buffer);
+      virtual
+      ~Input() = default;
     private:
       Input(Input const&);
       Input(Input&);
