@@ -45,6 +45,8 @@ namespace elle
     Buffer read_file_chunk(boost::filesystem::path file_name,
                            uint64_t file_offset,
                            uint64_t size);
+    void truncate(boost::filesystem::path file_name,
+                  uint64_t new_size);
   }
 }
 

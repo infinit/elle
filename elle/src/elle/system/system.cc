@@ -1,3 +1,8 @@
+#ifndef INFINIT_WINDOWS
+# include <unistd.h>
+# include <sys/types.h>
+#endif
+
 #include <elle/system/system.hh>
 
 #include <boost/filesystem/fstream.hpp>
@@ -8,6 +13,34 @@ namespace elle
 {
   namespace system
   {
+    void truncate(boost::filesystem::path path,
+                  uint64_t size)
+    {
+#ifdef INFINIT_WINDOWS
+      HANDLE h = CreateFile(
+        path.string(),
+        GENERIC_WRITE,
+        0, 0,
+        OPEN_EXISTING
+        FILE_ATTRIBUTE_NORMAL,
+        0);
+      if (h == INVALID_HANDLE_VALUE)
+        throw elle::Exception("CreateFile: %s", GetLastError());
+      LONG offsetHigh = size >> 32;
+      SetFilePointer(h,
+                     static_cast<DWORD>(size),
+                     &offsetHigh,
+                     FILE_BEGIN);
+      SetEndOfFile(h);
+      CloseHandle(h);
+#else
+      int err = ::truncate(path.string().c_str(), size);
+      if (err)
+        throw elle::Exception(elle::sprintf("truncate(): error %s:%s",
+                                            err, strerror(err)));
+#endif
+    }
+
     Buffer read_file_chunk(boost::filesystem::path path,
                            uint64_t offset,
                            uint64_t size)
