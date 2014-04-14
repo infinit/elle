@@ -503,6 +503,8 @@ def configure(cxx_toolkit = None,
     drake.cxx.Config.Warnings.Error
   cxx_config.warnings.return_type = \
     drake.cxx.Config.Warnings.Error
+  cxx_config.warnings.delete_virtual_dtor = \
+    drake.cxx.Config.Warnings.Error
 
   ## -------------- ##
   ## Subdirectories ##
