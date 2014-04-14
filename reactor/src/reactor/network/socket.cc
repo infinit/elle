@@ -333,16 +333,6 @@ namespace reactor
     | Properties |
     `-----------*/
 
-
-    template <typename AsioSocket>
-    static elle::network::Locus
-    locus_from_endpoint(typename AsioSocket::endpoint_type const& endpoint)
-    {
-      auto host = boost::lexical_cast<std::string>(endpoint.address());
-      auto port = endpoint.port();
-      return elle::network::Locus(host, port);
-    }
-
     template <typename AsioSocket, typename EndPoint>
     EndPoint
     PlainSocket<AsioSocket, EndPoint>::peer() const

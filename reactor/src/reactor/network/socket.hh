@@ -4,7 +4,6 @@
 # include <elle/Buffer.hh>
 # include <elle/IOStream.hh>
 # include <elle/attribute.hh>
-# include <elle/network/Locus.hh>
 
 # include <reactor/asio.hh>
 # include <reactor/duration.hh>
