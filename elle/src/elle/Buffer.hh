@@ -385,6 +385,20 @@ namespace elle
 
 }
 
+/*-----.
+| Hash |
+`-----*/
+
+namespace std
+{
+  template<>
+  struct hash<elle::ConstWeakBuffer>
+  {
+  public:
+    std::size_t operator()(elle::ConstWeakBuffer const& buffer) const;
+  };
+}
+
 # include <elle/Buffer.hxx>
 
 #endif

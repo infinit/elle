@@ -652,3 +652,16 @@ namespace elle
   }
 
 }
+
+/*-----.
+| Hash |
+`-----*/
+
+namespace std
+{
+  std::size_t
+  hash<elle::ConstWeakBuffer>::operator()(elle::ConstWeakBuffer const& buffer) const
+  {
+    return std::hash<std::string>()(buffer.string());
+  }
+}

@@ -268,6 +268,22 @@ namespace print
   }
 }
 
+static
+void
+hash()
+{
+  std::hash<elle::ConstWeakBuffer> hash;
+
+  BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("")),
+                    hash(elle::ConstWeakBuffer("")));
+  BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("aeouidhtns")),
+                    hash(elle::ConstWeakBuffer("aeouidhtns")));
+  BOOST_CHECK_NE(hash(elle::ConstWeakBuffer("aeouidhtns")),
+                 hash(elle::ConstWeakBuffer("aeouidhtns-")));
+  BOOST_CHECK_NE(hash(elle::ConstWeakBuffer("aeouidhtns")),
+                 hash(elle::ConstWeakBuffer("snthdiueoa")));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -326,4 +342,6 @@ ELLE_TEST_SUITE()
     print->add(BOOST_TEST_CASE(string_fixed));
     print->add(BOOST_TEST_CASE(hexadecimal));
   }
+
+  master.add(BOOST_TEST_CASE(hash), 0, 1);
 }
