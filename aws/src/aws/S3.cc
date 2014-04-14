@@ -71,10 +71,10 @@ namespace aws
 
   S3::S3(std::string const& bucket_name,
          std::string const& remote_folder,
-         std::function<Credentials()> query_credentials)
+         std::function<Credentials(bool)> query_credentials)
     : _bucket_name(bucket_name)
     , _remote_folder(remote_folder)
-    ,  _credentials(query_credentials())
+    ,  _credentials(query_credentials(true))
     , _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
     , _query_credentials(query_credentials)
   {}
@@ -674,7 +674,7 @@ namespace aws
           *this, _credentials.expiration_str(), !!_query_credentials);
         if (!_query_credentials)
           throw;
-        _credentials = _query_credentials();
+        _credentials = _query_credentials(false);
         ELLE_TRACE("%s: acquired new credentials expiring %s",
           *this,  _credentials.expiration_str());
         continue;

@@ -37,10 +37,12 @@ namespace aws
     S3(std::string const& bucket_name,
        std::string const& remote_folder,
        Credentials const& credentials);
-    /// Version taking a function able to refresh credentials
+    /// Version taking a function able to refresh credentials.
+    /// Bool argument is true on the first call, false on call caused by
+    /// expiration of current cached creds.
     S3(std::string const& bucket_name,
        std::string const& remote_folder,
-       std::function<Credentials()> query_credentials);
+       std::function<Credentials(bool)> query_credentials);
     /*-----------.
     | Operations |
     `-----------*/
@@ -118,7 +120,7 @@ namespace aws
     ELLE_ATTRIBUTE(std::string, remote_folder);
     ELLE_ATTRIBUTE(Credentials, credentials);
     ELLE_ATTRIBUTE(std::string, host_name);
-    ELLE_ATTRIBUTE(std::function<Credentials()>, query_credentials);
+    ELLE_ATTRIBUTE(std::function<Credentials(bool)>, query_credentials);
 
     /*--------.
     | Helpers |
