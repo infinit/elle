@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2013, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2014, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
