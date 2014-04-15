@@ -230,7 +230,9 @@ namespace reactor
       _timeout(timeout),
       _headers(),
       // XXX: not supported by wsgiref and <=nginx-1.2 ...
-      _chunked_transfers(false)
+      _chunked_transfers(false),
+      _expected_status(),
+      _ssl_verify_host(true)
     {}
 
     Request::Configuration::~Configuration()
@@ -289,6 +291,12 @@ namespace reactor
       auto timeout_seconds = timeout ?
         std::max(timeout->total_seconds(), 1) : 0;
       setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
+      // Set SSL options.
+      if (!this->_conf.ssl_verify_host())
+      {
+        std::cerr << "MOTHAFUCKA" << std::endl;
+        setopt(this->_handle, CURLOPT_SSL_VERIFYHOST, 0);
+      }
       // Set URL.
       setopt(this->_handle, CURLOPT_URL, url.c_str());
       // Set method.

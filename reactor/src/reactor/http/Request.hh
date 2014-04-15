@@ -208,6 +208,14 @@ namespace reactor
         /// The HTTP status to expect. Any different status will throw an
         /// exception upon waiting.
         ELLE_ATTRIBUTE_RW(boost::optional<StatusCode>, expected_status);
+
+      /*----.
+      | SSL |
+      `----*/
+      public:
+        /// Whether to check if the FQDN of the server matches the one stated in
+        /// his certificate.
+        ELLE_ATTRIBUTE_RW(bool, ssl_verify_host);
       };
 
 
