@@ -293,10 +293,7 @@ namespace reactor
       setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
       // Set SSL options.
       if (!this->_conf.ssl_verify_host())
-      {
-        std::cerr << "MOTHAFUCKA" << std::endl;
         setopt(this->_handle, CURLOPT_SSL_VERIFYHOST, 0);
-      }
       // Set URL.
       setopt(this->_handle, CURLOPT_URL, url.c_str());
       // Set method.
