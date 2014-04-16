@@ -582,15 +582,14 @@ PY_MINOR_VERSION''', config = python3)
     class BoostUserConfigGenerator(drake.Builder):
 
       def __init__(self, destination, cxx_toolkit):
-        self.__destination = destination
         self.__toolkit = cxx_toolkit
-        self.__user_config = drake.node(self.__destination)
+        self.__user_config = destination
         super().__init__([], [self.__user_config])
 
       def execute(self):
-        self.output('Generate Boost user configuration',
-                    'generate %s' % self.__destination)
-        with open(str(self.__destination), 'w') as f:
+        self.output('generate %s' % self.__user_config,
+                    'Generate Boost user configuration')
+        with open(str(self.__user_config.path()), 'w') as f:
           print('using gcc : : %s ;' % self.__toolkit.cxx,
                 file = f)
         return True
@@ -603,7 +602,7 @@ PY_MINOR_VERSION''', config = python3)
         return self.__toolkit.cxx
 
     boost_user_config = BoostUserConfigGenerator(
-      'boost/%s/user-config.jam' % boost_basename,
+      drake.node('boost/%s/user-config.jam' % boost_basename),
       cxx_toolkit).user_config
     boost_attributes = {}
     exec(open(str(drake.path_source('boost.py')), 'r').read(),
@@ -614,13 +613,13 @@ PY_MINOR_VERSION''', config = python3)
       targets = [boost_bjam],
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
-      cwd = 'boost/%s' % boost_basename)
+      cwd = drake.path_build('boost/%s' % boost_basename))
     drake.ShellCommand(
       sources = [boost_bjam, boost_user_config],
       targets = boost_libraries + boost_headers,
       command = ['./b2', 'install'],
       pretty = 'Build boost',
-      cwd = 'boost/%s' % boost_basename)
+      cwd = drake.path_build('boost/%s' % boost_basename))
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
