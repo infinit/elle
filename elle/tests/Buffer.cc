@@ -353,9 +353,6 @@ ELLE_TEST_SUITE()
     print->add(BOOST_TEST_CASE(hexadecimal));
   }
 
-<<<<<<< HEAD
   master.add(BOOST_TEST_CASE(hash), 0, 1);
-=======
   master.add(BOOST_TEST_CASE(range), 0, 1);
->>>>>>> d0d7af3... elle.Buffer: Fix and test the range method.
 }
