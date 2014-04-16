@@ -60,6 +60,8 @@ class GNUBuilder(drake.Builder):
       self,
       (configure is not None and [configure] or []) + sources,
       self.__targets)
+    if isinstance(cxx_toolkit.patchelf, drake.BaseNode):
+      self.add_src(cxx_toolkit.patchelf)
 
   def execute(self):
     env = dict(self.__env)

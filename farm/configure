@@ -33,22 +33,18 @@ cxx_config.enable_optimization(True)
 for f in %(flags)r:
   cxx_config.flag(f)
 
-boost = drake.cxx.boost.Boost(prefix = %(boost)r,
-                              cxx_toolkit = cxx_toolkit,
-                              prefer_shared = %(boost_shared)r)
-python = %(python)r
-import drake.valgrind
-if %(valgrind)r:
-  valgrind = drake.valgrind.Valgrind()
-else:
-  valgrind = None
+with drake.Drake(%(dir_source)r) as d:
+  python = %(python)r
+  import drake.valgrind
+  if %(valgrind)r:
+    valgrind = drake.valgrind.Valgrind()
+  else:
+    valgrind = None
 
-drake.run('%(dir_source)s',
-          cxx_toolkit,
-          cxx_config,
-          boost = boost,
-          python3 = python,
-          valgrind = valgrind)
+  d.run(cxx_toolkit,
+        cxx_config,
+        python3 = python,
+        valgrind = valgrind)
 '''
 
 

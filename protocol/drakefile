@@ -108,10 +108,24 @@ def configure(cryptography,
     ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-  cxx_config_tests += boost.config_test()
-  cxx_config_tests += boost.config_system()
-  cxx_config_tests += boost.config_thread()
-  cxx_config_tests += boost.config_signals()
+  if cxx_toolkit.os is drake.os.windows:
+    cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_system(static = True)
+    cxx_config_tests += boost.config_thread(static = True)
+    cxx_config_tests += boost.config_signals(static = True)
+  else:
+    cxx_config_tests += boost.config_test(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_system(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_thread(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_signals(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True))
   cxx_config_tests.lib_path_runtime('../lib')
 
   for name in tests:
