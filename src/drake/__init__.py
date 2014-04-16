@@ -3387,6 +3387,20 @@ class TarballExtractor(Builder):
     self.output('Extract %s' % self.__tarball)
     def extract():
       with tarfile.open(str(self.__tarball.path()), 'r') as f:
-        f.extractall(str(self.__tarball.path().dirname()))
+        # Remove all target directories because tarfile will miserably
+        # fail at overwriting some existing files such as symlinks.
+        paths = set()
+        for member in f.getnames():
+          root = member.split('/')[0]
+          # Just some securities
+          assert root != '.'
+          assert root != '..'
+          assert not root.startswith('/')
+          paths.add(root)
+        destination = self.__tarball.path().dirname()
+        import shutil
+        for path in paths:
+          shutil.rmtree(str(drake.path_build(destination / path)))
+        f.extractall(str(destination))
     self._run_job(extract)
     return True
