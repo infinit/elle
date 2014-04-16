@@ -16,6 +16,8 @@ aws = None
 rule_check = None
 rule_tests = None
 
+boost = None
+
 curl_config = None
 curl_lib = None
 
@@ -31,6 +33,10 @@ libarchive_lib = None
 
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
+
+def set_boost(value):
+  global boost
+  boost = value
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
@@ -620,6 +626,7 @@ PY_MINOR_VERSION''', config = python3)
       prefix = boost_prefix,
       version_effective = boost_version,
     )
+  set_boost(boost)
 
   ## ------------- ##
   ## Configuration ##
