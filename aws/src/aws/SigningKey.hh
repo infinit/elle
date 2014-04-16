@@ -23,7 +23,7 @@ namespace aws
   public:
     SigningKey(std::string const& aws_secret,
                RequestTime const& request_time,
-               Region const& aws_region,
+               std::string const& aws_region,
                Service const& aws_service);
 
     std::string

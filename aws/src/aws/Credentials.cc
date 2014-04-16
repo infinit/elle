@@ -12,10 +12,16 @@ namespace aws
   Credentials::Credentials(std::string const& access_key_id,
                            std::string const& secret_access_key,
                            std::string const& session_token,
+                           std::string const& region,
+                           std::string const& bucket,
+                           std::string const& folder,
                            std::string const& expiration):
     _access_key_id(access_key_id),
     _secret_access_key(secret_access_key),
     _session_token(session_token),
+    _region(region),
+    _bucket(bucket),
+    _folder(folder),
     _expiration_str(expiration)
   {
     // For debugging.
@@ -42,7 +48,6 @@ namespace aws
 
   std::string
   Credentials::credential_string(RequestTime const& request_time,
-                                 Region const& aws_region,
                                  Service const& aws_service)
   {
     std::string date_str = boost::posix_time::to_iso_string(request_time);
@@ -51,7 +56,7 @@ namespace aws
       "%s/%s/%s/%s/aws4_request",
       this->_access_key_id,
       date_str,
-      aws_region,
+      this->_region,
       aws_service
     );
     return res;

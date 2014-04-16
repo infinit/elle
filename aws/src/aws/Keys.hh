@@ -31,15 +31,6 @@ namespace aws
   std::ostream&
   operator << (std::ostream& stream, Service service);
 
-  /// AWS regions.
-  enum class Region
-  {
-    us_east_1,
-  };
-
-  std::ostream&
-  operator << (std::ostream& stream, Region region);
-
   /// AWS signing method.
   enum class SigningMethod
   {

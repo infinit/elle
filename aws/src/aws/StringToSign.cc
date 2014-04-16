@@ -6,7 +6,7 @@ namespace aws
 {
   CredentialScope::CredentialScope(RequestTime const& request_time,
                                    Service const& aws_service,
-                                   Region const& aws_region)
+                                   std::string const& aws_region)
   {
     std::string date = boost::posix_time::to_iso_string(request_time);
     date = date.substr(0, 8);

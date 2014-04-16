@@ -65,22 +65,14 @@ namespace aws
   /*-------------.
   | Construction |
   `-------------*/
-  S3::S3(std::string const& bucket_name,
-         std::string const& remote_folder,
-         aws::Credentials const& credentials):
-    _bucket_name(bucket_name),
-    _remote_folder(remote_folder),
+  S3::S3(aws::Credentials const& credentials):
     _credentials(credentials),
-    _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
+    _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
   {}
 
-  S3::S3(std::string const& bucket_name,
-         std::string const& remote_folder,
-         std::function<Credentials(bool)> query_credentials)
-    : _bucket_name(bucket_name)
-    , _remote_folder(remote_folder)
-    ,  _credentials(query_credentials(true))
-    , _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_bucket_name))
+  S3::S3(std::function<Credentials(bool)> query_credentials)
+    : _credentials(query_credentials(true))
+    , _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
     , _query_credentials(query_credentials)
   {}
 
@@ -117,7 +109,7 @@ namespace aws
 
     auto url = elle::sprintf(
       "/%s/%s",
-      this->_remote_folder,
+      this->_credentials.folder(),
       object_name
     );
     ELLE_DEBUG("url: %s", url);
@@ -141,10 +133,10 @@ namespace aws
     ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
 
     RequestQuery query;
-    query["prefix"] = elle::sprintf("%s/", this->_remote_folder);
+    query["prefix"] = elle::sprintf("%s/", this->_credentials.folder());
     query["delimiter"] = "/";
     if (marker.size() > 0)
-      query["marker"] = elle::sprintf("%s/%s", this->_remote_folder, marker);
+      query["marker"] = elle::sprintf("%s/%s", this->_credentials.folder(), marker);
 
     auto request = _build_send_request("/", reactor::http::Method::GET, query);
     return this->_parse_list_xml(*request);
@@ -176,7 +168,7 @@ namespace aws
 
     auto url = elle::sprintf(
       "/%s/%s",
-      this->_remote_folder,
+      this->_credentials.folder(),
       object_name
     );
     ELLE_DEBUG("url: %s", url);
@@ -214,7 +206,7 @@ namespace aws
       for (int j=i; j < (int)content.size() && j-i <= block_size; ++j)
       {
         xml += "<Object><Key>"
-          + _remote_folder + "/" + content[j].first + "</Key></Object>";
+          + _credentials.folder() + "/" + content[j].first + "</Key></Object>";
       }
       xml += "</Delete>";
       elle::ConstWeakBuffer payload(xml);
@@ -232,7 +224,7 @@ namespace aws
         query, headers,
         "text/xml", payload);
     }
-    delete_object(_remote_folder);
+    delete_object(_credentials.folder());
   }
 
   void
@@ -242,7 +234,7 @@ namespace aws
 
     auto url = elle::sprintf(
       "/%s/%s",
-      this->_remote_folder,
+      this->_credentials.folder(),
       object_name
     );
     ELLE_DEBUG("url: %s", url);
@@ -262,7 +254,7 @@ namespace aws
     query["uploads"] = "";
     auto url = elle::sprintf(
       "/%s/%s",
-      this->_remote_folder,
+      this->_credentials.folder(),
       object_name
     );
     ELLE_DUMP("url: %s", url);
@@ -310,7 +302,7 @@ namespace aws
 
     auto url = elle::sprintf(
       "/%s/%s",
-      this->_remote_folder,
+      this->_credentials.folder(),
       object_name
     );
 
@@ -354,7 +346,7 @@ namespace aws
       if (max_id != -1)
         query["part-number-marker"] = boost::lexical_cast<std::string>(max_id);
       auto url = elle::sprintf("/%s/%s",
-                               this->_remote_folder,
+                               this->_credentials.folder(),
                                object_name);
 
       auto request = _build_send_request(url, reactor::http::Method::GET, query);
@@ -430,7 +422,7 @@ namespace aws
                            std::string const& canonical_request_sha256)
   {
     aws::CredentialScope credential_scope(request_time,
-                                          Service::s3, Region::us_east_1);
+                                          Service::s3, _credentials.region());
 
     aws::StringToSign res(request_time, credential_scope,
                           canonical_request_sha256,
@@ -452,10 +444,10 @@ namespace aws
       if (base_element.first == "Contents")
       {
         std::string fname = base_element.second.get<std::string>("Key");
-        if (fname != elle::sprintf("%s/", this->_remote_folder))
+        if (fname != elle::sprintf("%s/", this->_credentials.folder()))
         {
-          int pos = fname.size() - this->_remote_folder.size();
-          fname = fname.substr(this->_remote_folder.size() + 1, fname.size() -
+          int pos = fname.size() - this->_credentials.folder().size();
+          fname = fname.substr(this->_credentials.folder().size() + 1, fname.size() -
                                (pos + 1));
           FileSize fsize = base_element.second.get<FileSize>("Size");
           std::pair<std::string, S3::FileSize> file_pair(fname, fsize);
@@ -481,13 +473,12 @@ namespace aws
     // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
     aws::SigningKey key(this->_credentials.secret_access_key(),
                         request_time,
-                        Region::us_east_1,
+                        _credentials.region(),
                         Service::s3);
     std::map<std::string, std::string> auth;
     // Make credential string.
     auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Region::us_east_1,
-                                           aws::Service::s3);
+      this->_credentials.credential_string(request_time, aws::Service::s3);
     // Make signed headers string.
     std::string signed_headers_str;
     for (auto const& header: headers)
@@ -547,7 +538,7 @@ namespace aws
       ELLE_WARN("%s: AWS error %s on %s on %s/%s: %s",
                 status,
                 *this, operation,
-                this->_remote_folder, object_name,
+                this->_credentials.folder(), object_name,
                 request.response());
     }
     // Dump response if asked to
@@ -555,7 +546,7 @@ namespace aws
     {
       ELLE_DUMP("%s: AWS reply on %s on %s/%s: %s",
                 *this, operation,
-                this->_remote_folder, object_name,
+                this->_credentials.folder(), object_name,
                 request.response());
     }
     if (status == reactor::http::StatusCode::Not_Found)
@@ -588,8 +579,8 @@ namespace aws
   void
   S3::print(std::ostream& stream) const
   {
-    stream << "S3: bucket=" << this->_bucket_name
-           <<    " remote_folder=" << this->_remote_folder;
+    stream << "S3: bucket=" << this->_credentials.bucket()
+           <<    " remote_folder=" << this->_credentials.folder();
   }
 
   std::unique_ptr<reactor::http::Request>
@@ -655,6 +646,7 @@ namespace aws
           request->write(reinterpret_cast<char const*>(payload.contents()),
             payload.size());
         reactor::wait(*request);
+        _check_request_status(*request, url, "");
       }
       catch (reactor::http::RequestError const& e)
       {
@@ -668,11 +660,6 @@ namespace aws
         else
           continue;
       }
-
-      try
-      {
-        _check_request_status(*request, url, "");
-      }
       catch(CredentialsExpired const&)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
@@ -680,6 +667,8 @@ namespace aws
         if (!_query_credentials)
           throw;
         _credentials = _query_credentials(false);
+        _host_name = elle::sprintf("%s.s3.amazonaws.com",
+                                   this->_credentials.bucket());
         ELLE_TRACE("%s: acquired new credentials expiring %s",
           *this,  _credentials.expiration_str());
         continue;

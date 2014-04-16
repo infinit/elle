@@ -22,7 +22,7 @@ namespace aws
   infinit::cryptography::Digest
   _create_digest(std::string const& aws_secret,
                  RequestTime const& request_time,
-                 Region const& aws_region,
+                 std::string const& aws_region,
                  Service const& aws_service)
   {
     std::string date_str = boost::posix_time::to_iso_string(request_time);
@@ -40,7 +40,7 @@ namespace aws
 
   SigningKey::SigningKey(std::string const& aws_secret,
                          RequestTime const& request_time,
-                         Region const& aws_region,
+                         std::string const& aws_region,
                          Service const& aws_service):
     _key(_create_digest(aws_secret, request_time, aws_region, aws_service))
   {}

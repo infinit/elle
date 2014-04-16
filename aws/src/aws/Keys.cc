@@ -44,22 +44,6 @@ namespace aws
   }
 
   std::ostream&
-  operator << (std::ostream& stream, Region region)
-  {
-    switch (region)
-    {
-      case Region::us_east_1:
-        stream << "us-east-1";
-        break;
-
-      default:
-        stream << "unknown AWS region";
-        elle::unreachable();
-    }
-    return stream;
-  }
-
-  std::ostream&
   operator << (std::ostream& stream, SigningMethod signing_method)
   {
     switch (signing_method)

@@ -18,7 +18,7 @@ namespace aws
   public:
     CredentialScope(RequestTime const& request_time,
                     Service const& aws_service,
-                    Region const& aws_region);
+                    std::string const& aws_region);
 
     ELLE_ATTRIBUTE_R(std::string, credential_scope_str);
 
