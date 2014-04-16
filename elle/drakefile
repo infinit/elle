@@ -347,6 +347,7 @@ def configure(zlib_lib,
    )
 
   sources += drake.nodes(
+    'src/elle/serialization/Error.cc',
     'src/elle/serialization/Error.hh',
     'src/elle/serialization/Serializer.cc',
     'src/elle/serialization/Serializer.hh',

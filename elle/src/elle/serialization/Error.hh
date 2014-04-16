@@ -11,7 +11,7 @@ namespace elle
       public elle::Exception
     {
     public:
-      using elle::Exception::Exception;
+      Error(std::string const& message);
     };
   }
 }
