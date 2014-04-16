@@ -5,6 +5,7 @@
 #include <elle/attribute.hh>
 #include <elle/container/list.hh>
 #include <elle/serialization/json.hh>
+#include <elle/serialization/json/TypeError.hh>
 #include <elle/test.hh>
 
 template <typename Format>
@@ -187,6 +188,32 @@ array()
   BOOST_CHECK_EQUAL(l.strings, (std::list<std::string>{"foo", "bar", "baz"}));
 }
 
+
+static
+void
+json_type_error()
+{
+  std::stringstream stream(
+    "{"
+    "  \"int\": true"
+    "}"
+    );
+  typename elle::serialization::json::SerializerIn input(stream);
+  int v;
+  try
+  {
+    input.serialize("int", v);
+  }
+  catch (elle::serialization::TypeError const& e)
+  {
+    BOOST_CHECK_EQUAL(e.field(), "int");
+    BOOST_CHECK(*e.expected() == typeid(int64_t));
+    BOOST_CHECK(*e.effective() == typeid(bool));
+    return;
+  }
+  BOOST_FAIL("type error expected");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -194,4 +221,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(object<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(array<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(json_type_error));
 }

@@ -6,6 +6,7 @@
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
 #include <elle/serialization/json/SerializerIn.hh>
+#include <elle/serialization/json/TypeError.hh>
 
 namespace elle
 {
@@ -26,10 +27,6 @@ namespace elle
         {
           this->_json = elle::json::read(input);
           this->_current.push_back(&this->_json);
-        }
-        catch (boost::bad_any_cast const&)
-        {
-          throw Error("invalid root json value: not an object");
         }
         catch (elle::json::ParserError const& e)
         {
@@ -81,12 +78,7 @@ namespace elle
       void
       SerializerIn::_enter(std::string const& name)
       {
-        auto& current = *this->_current.back();
-        if (current.type() != typeid(elle::json::Object))
-          throw Error(elle::sprintf(
-                        "invalid type for key \"%s\", "
-                        "expected an object", name));
-        auto& object = boost::any_cast<elle::json::Object&>(current);
+        auto& object = this->_check_type<elle::json::Object>(name);
         auto it = object.find(name);
         if (it == object.end())
           throw Error(elle::sprintf(
@@ -120,11 +112,7 @@ namespace elle
       {
         auto& current = *this->_current.back();
         if (current.type() != typeid(T))
-          throw Error(
-            elle::sprintf("invalid type for key \"%s\", expected a %s got a %s",
-                          name,
-                          elle::demangle(typeid(T).name()),
-                          elle::demangle(current.type().name())));
+          throw TypeError(name, typeid(T), current.type());
         return boost::any_cast<T&>(current);
       }
     }
