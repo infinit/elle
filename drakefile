@@ -92,7 +92,7 @@ PY_MINOR_VERSION''', config = python3)
     drake.node('patchelf/%s/configure' % patchelf_basename)
   patchelf_prefix = drake.path_build('patchelf')
   patchelf_prefix_absolute = drake.path_root() / patchelf_prefix
-  patchelf = drake.node(patchelf_prefix / 'bin/patchelf')
+  patchelf = drake.node('patchelf/bin/patchelf')
   drake.HTTPDownload(
     patchelf_url,
     patchelf_tarball,
