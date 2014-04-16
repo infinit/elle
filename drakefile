@@ -650,13 +650,11 @@ PY_MINOR_VERSION''', config = python3)
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
   # Clang/GCC disagree on std::hash struct versus class.
+  Warnings = drake.cxx.Config.Warnings
   cxx_config.warnings.mismatched_tags = False
-  cxx_config.warnings.missing_declarations = \
-    drake.cxx.Config.Warnings.Error
-  cxx_config.warnings.return_type = \
-    drake.cxx.Config.Warnings.Error
-  cxx_config.warnings.delete_virtual_dtor = \
-    drake.cxx.Config.Warnings.Error
+  cxx_config.warnings.missing_declarations = Warnings.Error
+  cxx_config.warnings.return_type = Warnings.Error
+  cxx_config.warnings.delete_virtual_dtor = Warnings.Error
 
   ## -------------- ##
   ## Subdirectories ##
