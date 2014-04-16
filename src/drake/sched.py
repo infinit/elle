@@ -583,11 +583,17 @@ def wait(waitable):
 def background(f):
   class Background(ThreadedOperation):
     def run(self):
-      self.result = f()
+      try:
+        self.result = f()
+      except BaseException as e:
+        self.exception = e
   op = Background()
   op.start()
   coro_wait(op)
-  return op.result
+  if hasattr(op, 'exception'):
+    raise op.exception
+  else:
+    return op.result
 
 class Lockable:
 
