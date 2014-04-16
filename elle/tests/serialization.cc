@@ -5,6 +5,7 @@
 #include <elle/attribute.hh>
 #include <elle/container/list.hh>
 #include <elle/serialization/json.hh>
+#include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/TypeError.hh>
 #include <elle/test.hh>
 
@@ -214,6 +215,30 @@ json_type_error()
   BOOST_FAIL("type error expected");
 }
 
+static
+void
+json_missing_key()
+{
+  std::stringstream stream(
+    "{"
+    "  \"a\": 0,"
+    "  \"c\": 2"
+    "}"
+    );
+  typename elle::serialization::json::SerializerIn input(stream);
+  int v;
+  try
+  {
+    input.serialize("b", v);
+  }
+  catch (elle::serialization::MissingKey const& e)
+  {
+    BOOST_CHECK_EQUAL(e.field(), "b");
+    return;
+  }
+  BOOST_FAIL("type error expected");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -222,4 +247,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(array<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
+  suite.add(BOOST_TEST_CASE(json_missing_key));
 }

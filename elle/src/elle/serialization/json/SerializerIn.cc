@@ -5,6 +5,7 @@
 #include <elle/memory.hh>
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
+#include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/SerializerIn.hh>
 #include <elle/serialization/json/TypeError.hh>
 
@@ -81,8 +82,7 @@ namespace elle
         auto& object = this->_check_type<elle::json::Object>(name);
         auto it = object.find(name);
         if (it == object.end())
-          throw Error(elle::sprintf(
-                        "missing mandatory key: \"%s\"", name));
+          throw MissingKey(name);
         this->_current.push_back(&it->second);
       }
 
