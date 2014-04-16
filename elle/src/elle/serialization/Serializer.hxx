@@ -80,11 +80,9 @@ namespace elle
         name,
         [&] ()
         {
-          std::cerr << "elt" << std::endl;
           // FIXME: Use array.emplace_back(*this) if possible.
           array.emplace_back();
           this->_serialize_anonymous(name, array.back());
-          std::cerr << "/elt" << std::endl;
         });
     }
   }
