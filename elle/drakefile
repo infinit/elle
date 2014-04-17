@@ -554,7 +554,7 @@ def configure(zlib_lib,
         cxx_toolkit, config_test)
       rule_tests << test
       env = {
-        'BUILD_DIR': drake.path_build(),
+        'BUILD_DIR': str(drake.path_build()),
       }
       if valgrind is not None:
         runner = drake.valgrind.ValgrindRunner(exe = test,
