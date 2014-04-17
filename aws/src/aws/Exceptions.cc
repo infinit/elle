@@ -13,6 +13,10 @@ namespace aws
     AWSException(error)
   {}
 
+  TransientError::TransientError(std::string const& error):
+    AWSException(error)
+  {}
+
   CredentialsExpired::CredentialsExpired(std::string const& error):
     AWSException(error)
   {}

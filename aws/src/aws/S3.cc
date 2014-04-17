@@ -4,6 +4,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <elle/finally.hh>
 #include <elle/format/hexadecimal.hh>
 #include <elle/format/base64.hh>
 #include <elle/log.hh>
@@ -507,70 +508,81 @@ namespace aws
 
   void
   S3::_check_request_status(reactor::http::Request& request,
-                            std::string const& operation,
-                            std::string const& object_name,
+                            std::string const& url,
                             bool dump_response)
   {
+    typedef reactor::http::StatusCode StatusCode;
     auto status = request.status();
-    // Log response in case of error
-    if (status == reactor::http::StatusCode::Bad_Request)
+    bool ok = false;
+    bool fatal = false;
+    elle::SafeFinally log_result([&]
+      {
+        using namespace elle::log;
+        // response can only be read once, so don't touch it unless
+        // allowed to. And we assume an error cond allows us to.
+        if (dump_response || !ok)
+          detail::Send(ok ? Logger::Level::dump : Logger::Level::log,
+                       ok ? Logger::Type::info :
+                           (fatal ? Logger::Type::warning : Logger::Type::info),
+                       true, _trace_component_,
+                       __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,
+                       "AWS S3 error '%s' on %s: %s",
+                       status, url, request.response());
+      });
+    switch(status)
     {
-      // creds expired is a bad request with xml payload
-      // <Error><Code>ExpiredToken</Code> ...
-      // we need to distinguish that case
-      using boost::property_tree::ptree;
-      ptree response;
-      read_xml(request, response);
-      std::string code = response.get<std::string>("Error.Code", "");
-      ELLE_DEBUG("S3: Bad request reply with error code: %s", code);
-      if (code == "ExpiredToken")
-        throw CredentialsExpired(elle::sprintf("%s: credentials expired: %s",
-                               *this, this->_credentials));
-      else // we read the response!
-        ELLE_TRACE("%s: error status: %s", *this, status);
-      throw aws::RequestError(
-          elle::sprintf("%s: during S3 %s on %s: error %s %s",
-                        *this, operation, object_name, status, code));
+      // Log response in case of error
+      // http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
+      case StatusCode::Internal_Server_Error:
+        throw TransientError("Internal Server Error");
+      case StatusCode::Conflict:
+        throw TransientError("Conflict");
+      case StatusCode::Service_Unavailable:
+        throw TransientError("Service Unavailable"); // SlowDown, Service Unavailable
+      case StatusCode::Bad_Request:
+      {
+        // creds expired is a bad request with xml payload
+        // <Error><Code>ExpiredToken</Code> ...
+        // we need to distinguish that case
+        using boost::property_tree::ptree;
+        ptree response;
+        // reading the response stream, nobody else will get it
+        read_xml(request, response);
+        std::string code = response.get<std::string>("Error.Code", "");
+        ELLE_DEBUG("S3: Bad request reply with error code: %s", code);
+        if (code == "ExpiredToken" || code == "TokenRefreshRequired")
+          throw CredentialsExpired(elle::sprintf(
+            "%s: credentials expired with '%s': %s",
+            *this, code, this->_credentials));
+        else if (code == "RequestTimeout") // yes aws can do that, it happens for real.
+          throw TransientError("Request timed out");
+        ELLE_TRACE("%s: assuming fatal error code: %s", *this, code);
+        fatal = true;
+        throw RequestError(
+          elle::sprintf("%s: error on %s status '%s' code '%s'",
+                        *this, url, status, code));
+      }
+      case reactor::http::StatusCode::Not_Found:
+        fatal = true;
+        throw aws::FileNotFound(
+          elle::sprintf("%s: error on %s: object not found",
+                        *this, url));
+      case reactor::http::StatusCode::Forbidden:
+        ELLE_TRACE("%s: error status: invalid credentials", *this);
+        throw aws::CredentialsNotValid(
+           elle::sprintf("%s: error on %s:, forbidden",
+                         *this, url));
+      case reactor::http::StatusCode::OK:
+      case reactor::http::StatusCode::No_Content:
+        ok = true;
+        break;
+      default:
+        fatal = true;
+        throw aws::RequestError(
+          elle::sprintf("%s: on %s status '%s' payload '%s'",
+                        *this, url, status, request.response()));
     }
-    if (status != reactor::http::StatusCode::OK
-        && status != reactor::http::StatusCode::No_Content)
-    {
-      ELLE_WARN("%s: AWS error %s on %s on %s/%s: %s",
-                status,
-                *this, operation,
-                this->_credentials.folder(), object_name,
-                request.response());
-    }
-    // Dump response if asked to
-    else if (dump_response)
-    {
-      ELLE_DUMP("%s: AWS reply on %s on %s/%s: %s",
-                *this, operation,
-                this->_credentials.folder(), object_name,
-                request.response());
-    }
-    if (status == reactor::http::StatusCode::Not_Found)
-    {
-      ELLE_TRACE("%s: error status: not found", *this);
-      throw aws::FileNotFound(
-        elle::sprintf("%s: during S3 %s on %s: object not found",
-          *this, operation, object_name));
-    }
-    else if (status == reactor::http::StatusCode::Forbidden)
-    {
-      ELLE_TRACE("%s: error status: invalid credentials", *this);
-       throw aws::CredentialsNotValid(
-          elle::sprintf("%s: during S3 %s on %s:, forbidden",
-            *this, operation, object_name));
-    }
-    else if (status != reactor::http::StatusCode::OK
-        && status != reactor::http::StatusCode::No_Content)
-    {
-      ELLE_TRACE("%s: error status: %s", *this, status);
-      throw aws::RequestError(
-          elle::sprintf("%s: during S3 %s on %s: error %s %s",
-                        *this, operation, object_name, status, request.response()));
-    }
+    // ok case returns here, all other cases throw
   }
 
   /*----------.
@@ -620,7 +632,7 @@ namespace aws
         headers["Content-Type"] = content_type;
 
       std::string url_encoded = uri_encode(url, false);
-      // ... except slashes
+      // false means no encoding the slashes, see:
       // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
       CanonicalRequest canonical_request(
         method, url_encoded,  query, headers,
@@ -640,7 +652,6 @@ namespace aws
       std::unique_ptr<reactor::http::Request> request;
       try
       {
-
         request = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
         if (payload.size())
           request->write(reinterpret_cast<char const*>(payload.contents()),
@@ -662,7 +673,7 @@ namespace aws
 
       try
       {
-        _check_request_status(*request, url, "");
+        _check_request_status(*request, url);
       }
       catch(CredentialsExpired const&)
       {
@@ -677,6 +688,19 @@ namespace aws
           *this,  _credentials.expiration_str());
         continue;
       }
+      catch(TransientError const& err)
+      {
+        ++attempt;
+        // we have nothing better to do, so keep retrying
+        ELLE_LOG("S3 transient error '%s' (attempt %s)", err.what(), attempt);
+        if (max_attempts && attempt >= max_attempts)
+          throw aws::RequestError(
+            elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: timeout",
+                        *this));
+        else
+          continue;
+      }
+      // Consider all other failures as fatal errors
       return std::move(request);
     }
   }

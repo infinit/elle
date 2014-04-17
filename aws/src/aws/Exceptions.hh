@@ -32,6 +32,14 @@ namespace aws
     CredentialsExpired(std::string const& error);
   };
 
+  /// Request timeout (reported in response payload)
+  class TransientError:
+    public AWSException
+  {
+  public:
+    TransientError(std::string const& error);
+  };
+
   /// Credentials not valid for action.
   class CredentialsNotValid:
     public AWSException

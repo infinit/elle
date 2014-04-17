@@ -151,7 +151,6 @@ namespace aws
     void
     _check_request_status(reactor::http::Request& request,
                           std::string const& operation,
-                          std::string const& object,
                           bool dump_response = false);
 
     // build and emit request, retries in case of credentials expiry
