@@ -553,11 +553,15 @@ def configure(zlib_lib,
         drake.nodes('tests/%s' % test) + [library, zlib_lib, libarchive_lib],
         cxx_toolkit, config_test)
       rule_tests << test
+      env = {
+        'BUILD_DIR': drake.path_build(),
+      }
       if valgrind is not None:
         runner = drake.valgrind.ValgrindRunner(exe = test,
-                                               valgrind = valgrind)
+                                               valgrind = valgrind,
+                                               env = env)
       else:
-        runner = drake.Runner(exe = test)
+        runner = drake.Runner(exe = test, env = env)
       runner.reporting = drake.Runner.Reporting.on_failure
       rule_check << runner.status
 

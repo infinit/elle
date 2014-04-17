@@ -5,6 +5,7 @@
 #include <elle/filesystem.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/finally.hh>
+#include <elle/os/environ.hh>
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
 
@@ -111,7 +112,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::tar_gzip:
     {
       elle::system::Process p(
-        (cd.previous() / "libarchive/bin/bsdtar").string(),
+        (cd.previous() / elle::os::getenv("BUILD_DIR") / "libarchive/bin/bsdtar").string(),
         {"-x", "-f", path.string()});
       BOOST_CHECK_EQUAL(p.wait_status(), 0);
       break;
@@ -119,7 +120,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::zip:
     {
       elle::system::Process p(
-        (cd.previous() / "libarchive/bin/bsdcpio").string(),
+        (cd.previous() / elle::os::getenv("BUILD_DIR") / "libarchive/bin/bsdcpio").string(),
         {"--extract", "--make-directories", "-I", path.string()});
       BOOST_CHECK_EQUAL(p.wait_status(), 0);
       break;
