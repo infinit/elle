@@ -17,15 +17,19 @@ namespace elle
                   uint64_t size)
     {
 #ifdef INFINIT_WINDOWS
-      HANDLE h = CreateFile(
-        path.string(),
+      HANDLE h = CreateFileW(
+        std::wstring(path.string().begin(), path.string().end()).c_str(),
         GENERIC_WRITE,
         0, 0,
-        OPEN_EXISTING
+        OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         0);
       if (h == INVALID_HANDLE_VALUE)
-        throw elle::Exception("CreateFile: %s", GetLastError());
+      {
+        throw elle::Exception(
+          elle::sprintf("unable to create or open file %s: %s",
+                        path.string(), GetLastError()));
+      }
       LONG offsetHigh = size >> 32;
       SetFilePointer(h,
                      static_cast<DWORD>(size),
