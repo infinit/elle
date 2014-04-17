@@ -3277,7 +3277,7 @@ class Runner(Builder):
         print(status, file = rv)
       except:
         import traceback
-        traceback.print_exception(*sys.exc_info(), file = err)
+        traceback.print_exc()
         return False
     if self.__must_report(self.stdout_reporting, status):
       self.__report(self.__out)
