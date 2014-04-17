@@ -646,7 +646,6 @@ namespace aws
           request->write(reinterpret_cast<char const*>(payload.contents()),
             payload.size());
         reactor::wait(*request);
-        _check_request_status(*request, url, "");
       }
       catch (reactor::http::RequestError const& e)
       {
@@ -659,6 +658,11 @@ namespace aws
                         *this, e.error()));
         else
           continue;
+      }
+
+      try
+      {
+        _check_request_status(*request, url, "");
       }
       catch(CredentialsExpired const&)
       {
