@@ -544,6 +544,8 @@ def configure(zlib_lib,
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+  if valgrind is not None:
+    cxx_config_tests.define('VALGRIND')
   if enable_tests:
     for test in tests:
       config_test = drake.cxx.Config(cxx_config_tests)

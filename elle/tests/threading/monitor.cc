@@ -3,11 +3,22 @@
 #include <thread>
 #include <vector>
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#else
+# define RUNNING_ON_VALGRIND 0
+#endif
+
 #include <elle/threading/Monitor.hh>
 #include <elle/print.hh>
 #include <elle/test.hh>
 
-static const int max_threads = 32;
+static
+int
+max_threads()
+{
+  return RUNNING_ON_VALGRIND ? 8 : 32;
+}
 
 static
 void
@@ -35,10 +46,10 @@ void
 do_concurrently(Callable callable)
 {
   std::vector<std::thread> actors;
-  for (int i = 0; i < max_threads; i++)
+  for (int i = 0; i < max_threads(); i++)
     actors.push_back(std::thread{callable});
 
-  for (int i = 0; i < max_threads; i++)
+  for (int i = 0; i < max_threads(); i++)
     actors[i].join();
 }
 
@@ -58,7 +69,7 @@ monitor_operator_arrow()
   vector->clear();
 
   auto lambda = [&] {
-    for (int i = 0; i < max_threads; ++i)
+    for (int i = 0; i < max_threads(); ++i)
     {
       vector->push_back(i);
       vector->pop_back();
@@ -102,7 +113,7 @@ monitor_operator_call_retval()
     v->push_back(42.0f);
   });
 
-  for (int i = 0; i < max_threads; ++i)
+  for (int i = 0; i < max_threads(); ++i)
     BOOST_CHECK_EQUAL(
         v([i] (std::vector<float>& v) { return v[i]; }),
         42.0f
@@ -129,6 +140,9 @@ void
 monitor_param_scope()
 {
   elle::threading::Monitor<std::vector<float>> v;
+
+  std::cerr << RUNNING_ON_VALGRIND << std::endl;
+  std::cerr << max_threads() << std::endl;
 
   std::thread thread1{[&v] () {
       do_concurrently([&v] {
