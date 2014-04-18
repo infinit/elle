@@ -562,6 +562,7 @@ PY_MINOR_VERSION''', config = python3)
     boost_bootstrap_command = [
       './bootstrap.sh',
       '--prefix=%s' % boost_prefix,
+      '--with-python=%s' % python_version,
       '--with-libraries=%s' % ','.join((
         'chrono',
         'date_time',
@@ -583,23 +584,25 @@ PY_MINOR_VERSION''', config = python3)
       'python',
       'signals',
       'system',
-      'thread',
+      cxx_toolkit.os is drake.os.windows and 'thread_win32' or 'thread',
       'unit_test_framework',
     )
-    boost_static_format = 'boost/lib/libboost_%s.a'
     if cxx_toolkit.os is drake.os.macos:
+      boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.55.0.dylib'
     elif cxx_toolkit.os is drake.os.windows:
-      boost_dynamic_format = 'boost/lib/libboost_%s.dll'
-      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.55.0.dll'
+      boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
+      boost_dynamic_format = None
+      boost_dynamic_versioned_format = None
     else:
+      boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.so'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.55.0'
-    boost_libraries = ((
-      drake.cxx.StaticLib(boost_static_format % name),
-      drake.cxx.DynLib(boost_dynamic_format % name),
-    ) for name in boost_libraries_names)
+    boost_libraries = ([t(fmt % name) for t, fmt in ((drake.cxx.StaticLib, boost_static_format),
+                                                     (drake.cxx.DynLib, boost_dynamic_format))
+                        if fmt is not None]
+                       for name in boost_libraries_names)
     boost_libraries = list(chain(*boost_libraries))
 
     class BoostUserConfigGenerator(drake.Builder):
@@ -675,7 +678,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'runtime-link=static',
             '--layout=tagged',
             '--prefix=%s' % boost_prefix,
-            '--user-config=user-config.jam'
+            '--user-config=user-config.jam',
+            '-sBUILD=<define>BOOST_USE_WINDOWS_H=1',
           ]
         if not self.cmd('Build Boost',
                         command,
@@ -696,6 +700,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
       version_effective = boost_version,
+      prefer_shared = False,
     )
   set_boost(boost)
   boost_rule = drake.Rule('boost')
