@@ -1808,6 +1808,8 @@ class LibraryConfiguration(drake.Configuration):
         [(choice, toolkit.libname_dyn(choice)) for choice in choices],
         (prefix / 'lib',))
       self.__config.lib(lib)
+    self.__config.prefix = self.__prefix
+    self.__config.include_dir = include_dir
 
   def config(self):
     return self.__config
