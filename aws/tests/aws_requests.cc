@@ -26,11 +26,19 @@ ELLE_LOG_COMPONENT("aws.test");
 // SessionToken
 // Expiration
 
+
+static
+std::string _bucket_name("us-east-1-buffer-dev-infinit-io");
+
+
 static
 aws::Credentials _GET_credentials(
   "ASIAJOU5RQKL2N6YKOXQ",
   "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
   "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
+  "us-east-1",
+  _bucket_name,
+  "testing",
   "never"
 );
 
@@ -39,11 +47,13 @@ aws::Credentials _PUT_credentials(
   "ASIAJAGQUOJVE3HO46ZA",
   "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
   "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
+  "us-east-1",
+  "none",
+  "/",
   "never"
 );
 
-static
-std::string _bucket_name("us-east-1-buffer-infinit-io");
+
 
 // Test derived from link below with their query string instead of none.
 // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
@@ -105,7 +115,7 @@ _make_string_to_sign()
   );
   aws::CanonicalRequest canonical_request = _make_canonical_request();
   aws::CredentialScope credential_scope(request_time, aws::Service::iam,
-                                        aws::Region::us_east_1);
+                                        "us-east-1");
   aws::StringToSign string_to_sign(request_time, credential_scope,
                                    canonical_request.sha256_hash(),
                                    aws::SigningMethod::aws4_hmac_sha256);
@@ -136,7 +146,8 @@ ELLE_TEST_SCHEDULED(signing_key)
   boost::posix_time::ptime request_time(
     boost::gregorian::date(2012, boost::gregorian::Feb,15));
   aws::SigningKey signing_key(aws_secret, request_time,
-                              aws::Region::us_east_1, aws::Service::iam);
+                              "us-east-1",
+                              aws::Service::iam);
   BOOST_CHECK_EQUAL(
     elle::format::hexadecimal::encode(signing_key.key().buffer()),
     "f4780e2d9f65fa895f9c67b32ce1baf0b0d8a43505a000a1a9e090d414db404d");
@@ -151,7 +162,8 @@ ELLE_TEST_SCHEDULED(sign_request)
     boost::posix_time::hours(23) + boost::posix_time::minutes(36)
   );
   aws::SigningKey signing_key(aws_secret, request_time,
-                              aws::Region::us_east_1, aws::Service::iam);
+                              "us-east-1",
+                              aws::Service::iam);
   BOOST_CHECK_EQUAL(
     signing_key.sign_message(string_to_sign.string()),
     "c9d1c4e90e9f0b65ae4020a33bada35341ee2f8188c70b2a976e6e767414ed1f");
@@ -160,9 +172,7 @@ ELLE_TEST_SCHEDULED(sign_request)
 // Should only be run manually with generated crendentials.
 ELLE_TEST_SCHEDULED(s3_put)
 {
-  aws::S3 s3_handler(_bucket_name,
-                     "testing",
-                     _PUT_credentials);
+  aws::S3 s3_handler(_PUT_credentials);
 
   elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
 
@@ -175,9 +185,7 @@ ELLE_TEST_SCHEDULED(s3_put)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_list)
 {
-  aws::S3 s3_handler(_bucket_name,
-                     "testing",
-                     _GET_credentials);
+  aws::S3 s3_handler(_GET_credentials);
   std::vector<std::pair<std::string, aws::S3::FileSize>> all =
     s3_handler.list_remote_folder();
   BOOST_CHECK_EQUAL(all.size(), 4);
@@ -198,9 +206,7 @@ ELLE_TEST_SCHEDULED(s3_list)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_get)
 {
-  aws::S3 s3_handler(_bucket_name,
-                     "testing",
-                     _GET_credentials);
+  aws::S3 s3_handler(_GET_credentials);
   elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
   BOOST_CHECK_EQUAL(s3_handler.get_object("test_object"), expected);
   BOOST_CHECK_THROW(s3_handler.get_object("doesnt_exist"), aws::FileNotFound);
@@ -209,9 +215,7 @@ ELLE_TEST_SCHEDULED(s3_get)
 // Should only be run manually with generated credentials.
 ELLE_TEST_SCHEDULED(s3_delete)
 {
-  aws::S3 s3_handler(_bucket_name,
-                     "testing",
-                     _GET_credentials);
+  aws::S3 s3_handler(_GET_credentials);
   BOOST_CHECK_NO_THROW(s3_handler.delete_object("test_object"));
 }
 
