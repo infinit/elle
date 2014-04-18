@@ -3155,6 +3155,21 @@ class Version:
         else:
             return 'any version'
 
+    def __repr__(self):
+      if self.__major is not None:
+        if self.__minor is not None:
+          if self.__subminor is not None:
+            return 'Version(%s, %s, %s)' % (self.__major,
+                                            self.__minor,
+                                            self.__subminor)
+          else:
+            return 'Version(%s, %s)' % (self.__major, self.__minor)
+        else:
+          return 'Version(%s)' % (self.__major)
+      else:
+        return 'Version()'
+
+
     def __contains__(self, other):
       """Whether a version includes another.
 
@@ -3215,6 +3230,8 @@ class Version:
                 return minor > rhs_minor
         else:
             return self.__major > rhs.__major
+    def __eq__(self, rhs):
+      return all(getattr(self, a) == getattr(rhs, a) for a in ('major', 'minor', 'subminor'))
 
 
 class Runner(Builder):
