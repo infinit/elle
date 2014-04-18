@@ -112,7 +112,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::tar_gzip:
     {
       elle::system::Process p(
-        (cd.previous() / elle::os::getenv("BUILD_DIR") / "libarchive/bin/bsdtar").string(),
+        (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar").string(),
         {"-x", "-f", path.string()});
       BOOST_CHECK_EQUAL(p.wait_status(), 0);
       break;
@@ -120,7 +120,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::zip:
     {
       elle::system::Process p(
-        (cd.previous() / elle::os::getenv("BUILD_DIR") / "libarchive/bin/bsdcpio").string(),
+        (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio").string(),
         {"--extract", "--make-directories", "-I", path.string()});
       BOOST_CHECK_EQUAL(p.wait_status(), 0);
       break;
