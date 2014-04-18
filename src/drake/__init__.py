@@ -3396,8 +3396,12 @@ def download(url,
 
 class TarballExtractor(Builder):
 
-  def __init__(self, tarball, targets = []):
+  def __init__(self, tarball, targets = [],
+               patches = (), patch_strip = 1, patch_dir = drake.Path('.')):
     self.__tarball = tarball
+    self.__patches = patches
+    self.__patch_strip = patch_strip
+    self.__patch_dir = drake.Path(patch_dir)
     import tarfile
     directory = self.__tarball.name().dirname()
     self.__targets = [node(self.__tarball.name().dirname() / target)
@@ -3414,6 +3418,7 @@ class TarballExtractor(Builder):
   def execute(self):
     import tarfile
     self.output('Extract %s' % self.__tarball)
+    destination = self.__tarball.path().dirname()
     def extract():
       with tarfile.open(str(self.__tarball.path()), 'r') as f:
         # Remove all target directories because tarfile will miserably
@@ -3426,10 +3431,18 @@ class TarballExtractor(Builder):
           assert root != '..'
           assert not root.startswith('/')
           paths.add(root)
-        destination = self.__tarball.path().dirname()
         import shutil
         for path in paths:
           shutil.rmtree(str(drake.path_build(destination / path)))
         f.extractall(str(destination))
     self._run_job(extract)
+    for patch in self.__patches:
+      if not self.cmd(
+          'Apply %s' % patch,
+          [
+            'patch', '-N', '-p', str(self.__patch_strip),
+            '-d', str(destination / self.__patch_dir),
+            '-i', patch.path(absolute = True)
+          ]):
+        return False
     return True
