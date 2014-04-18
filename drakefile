@@ -647,12 +647,26 @@ using python : %(python_version)s : %(python_prefix)s/bin/python%(python_version
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
       cwd = drake.path_build('boost/%s' % boost_basename))
-    drake.ShellCommand(
-      sources = [boost_bjam, boost_user_config],
-      targets = boost_libraries + boost_headers,
-      command = ['./b2', 'install'],
-      pretty = 'Build boost',
-      cwd = drake.path_build('boost/%s' % boost_basename))
+    class BoostBuilder(drake.Builder):
+      def __init__(self, sources, targets):
+        self.__targets = targets
+        super().__init__(srcs = sources, dsts = targets)
+      def execute(self):
+        if not self.cmd('Build Boost',
+                        ['./b2', 'install'],
+                        cwd = drake.path_build('boost/%s' % boost_basename)):
+          return False
+        if cxx_toolkit.os is drake.os.macos:
+          for target in self.__targets:
+            if isinstance(target, drake.cxx.DynLib):
+              cmd = ['install_name_tool',
+                     '-id', '@rpath/%s' % target.name().basename(),
+                      str(target.path())]
+              if not self.cmd('Fix rpath for %s' % target.path(), cmd):
+                return False
+        return True
+    BoostBuilder(sources = [boost_bjam, boost_user_config],
+                 targets = boost_libraries + boost_headers)
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
