@@ -120,7 +120,8 @@ PY_MINOR_VERSION''', config = python3)
     targets = [patchelf],
     sources = [],
   )
-  cxx_toolkit.patchelf = patchelf
+  if cxx_toolkit.os is not drake.os.windows:
+    cxx_toolkit.patchelf = patchelf
 
   ## ---- ##
   ## Zlib ##
@@ -544,7 +545,6 @@ PY_MINOR_VERSION''', config = python3)
       boost_patches = [
             ('http://github.com/boostorg/atomic/commit/6bb71fdd.diff', 'ad340a11a0fb3be086bf26f1ef5fe6cd'),
             ('http://github.com/boostorg/atomic/commit/e4bde20f.diff', '54f082130659fde1fb04b59e10a34071'),
-
       ]
     boost_patches = [
       drake.download(url, fingerprint, where = 'boost',
@@ -590,6 +590,9 @@ PY_MINOR_VERSION''', config = python3)
     if cxx_toolkit.os is drake.os.macos:
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.55.0.dylib'
+    elif cxx_toolkit.os is drake.os.windows:
+      boost_dynamic_format = 'boost/lib/libboost_%s.dll'
+      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.55.0.dll'
     else:
       boost_dynamic_format = 'boost/lib/libboost_%s.so'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.55.0'
@@ -621,13 +624,22 @@ PY_MINOR_VERSION''', config = python3)
       def format(self):
         return '''\
 using gcc : : %(cxx)s ;
-using python : %(python_version)s : %(python_prefix)s/bin/python%(python_version)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib ;
+using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib %(extra)s;
 '''
       @property
       def params(self):
+        if cxx_toolkit.os is drake.os.windows:
+          extra = ': <target-os>windows ';
+          python_bin = 'python.exe'
+        else:
+          extra = ''
+          python_bin = 'bin/python%s' % python_version
+
         return {
           'cxx': self.__toolkit.cxx,
+          'extra': extra,
           'python_version': python_version,
+          'python_bin': python_bin,
           'python_prefix': python3.prefix,
           'python_include': python3.include_dir,
         }
@@ -652,8 +664,21 @@ using python : %(python_version)s : %(python_prefix)s/bin/python%(python_version
         self.__targets = targets
         super().__init__(srcs = sources, dsts = targets)
       def execute(self):
+        command = ['./b2', 'install']
+        if cxx_toolkit.os is drake.os.windows:
+          command += [
+            'toolset=gcc',
+            'target-os=windows',
+            'threading=multi,single',
+            'threadapi=win32',
+            'link=static',
+            'runtime-link=static',
+            '--layout=tagged',
+            '--prefix=%s' % boost_prefix,
+            '--user-config=user-config.jam'
+          ]
         if not self.cmd('Build Boost',
-                        ['./b2', 'install'],
+                        command,
                         cwd = drake.path_build('boost/%s' % boost_basename)):
           return False
         if cxx_toolkit.os is drake.os.macos:
