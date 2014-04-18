@@ -1,3 +1,4 @@
+import collections
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -538,9 +539,23 @@ PY_MINOR_VERSION''', config = python3)
       boost_tarball,
       fingerprint = 'd6eef4b4cacb2183f2bf265a5a03a354',
     )
+    boost_patches = []
+    if cxx_toolkit.os is drake.os.macos:
+      boost_patches = [
+            ('http://github.com/boostorg/atomic/commit/6bb71fdd.diff', 'ad340a11a0fb3be086bf26f1ef5fe6cd'),
+            ('http://github.com/boostorg/atomic/commit/e4bde20f.diff', '54f082130659fde1fb04b59e10a34071'),
+
+      ]
+    boost_patches = [
+      drake.download(url, fingerprint, where = 'boost',
+                     disable_ssl_certificate_validation = True)
+      for url, fingerprint in boost_patches]
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
+      patches = boost_patches,
+      patch_strip = 2,
+      patch_dir = boost_basename,
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
     boost_prefix = drake.path_root() / drake.path_build('boost')
@@ -558,7 +573,6 @@ PY_MINOR_VERSION''', config = python3)
         'test',
         'thread',
       )),
-      '--with-python-version=%s' % python_version,
     ]
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
     boost_libraries_names = (
@@ -582,7 +596,6 @@ PY_MINOR_VERSION''', config = python3)
     boost_libraries = ((
       drake.cxx.StaticLib(boost_static_format % name),
       drake.cxx.DynLib(boost_dynamic_format % name),
-      drake.cxx.DynLib(boost_dynamic_versioned_format % name),
     ) for name in boost_libraries_names)
     boost_libraries = list(chain(*boost_libraries))
 
@@ -597,16 +610,29 @@ PY_MINOR_VERSION''', config = python3)
         self.output('generate %s' % self.__user_config,
                     'Generate Boost user configuration')
         with open(str(self.__user_config.path()), 'w') as f:
-          print('using gcc : : %s ;' % self.__toolkit.cxx,
-                file = f)
+          print(self.format % self.params, file = f)
         return True
-
       @property
       def user_config(self):
         return self.__user_config
-
       def hash(self):
         return self.__toolkit.cxx
+      @property
+      def format(self):
+        return '''\
+using gcc : : %(cxx)s ;
+using python : %(python_version)s : %(python_prefix)s/bin/python%(python_version)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib ;
+'''
+      @property
+      def params(self):
+        return {
+          'cxx': self.__toolkit.cxx,
+          'python_version': python_version,
+          'python_prefix': python3.prefix,
+          'python_include': python3.include_dir,
+        }
+      def hash(self):
+        return self.params
 
     boost_user_config = BoostUserConfigGenerator(
       drake.node('boost/%s/user-config.jam' % boost_basename),
@@ -616,7 +642,7 @@ PY_MINOR_VERSION''', config = python3)
          boost_attributes)
     boost_headers = drake.nodes(*boost_attributes['headers'])
     drake.ShellCommand(
-      sources = [boost_bootstrap],
+      sources = [boost_bootstrap, boost_user_config],
       targets = [boost_bjam],
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
@@ -633,6 +659,9 @@ PY_MINOR_VERSION''', config = python3)
       version_effective = boost_version,
     )
   set_boost(boost)
+  boost_rule = drake.Rule('boost')
+  boost_rule << boost_headers
+  boost_rule << boost_libraries
 
   ## ------------- ##
   ## Configuration ##
