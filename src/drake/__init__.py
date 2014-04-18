@@ -3374,6 +3374,26 @@ class HTTPDownload(Builder):
     return True
 
 
+def download(url,
+             fingerprint,
+             where = drake.Path('.'),
+             name = None,
+             disable_ssl_certificate_validation = False,
+           ):
+  where = drake.Path(where)
+  if name is None:
+    from urllib.parse import urlparse
+    name = drake.Path(urlparse(url).path).basename()
+    target = drake.node(where / name)
+    downloader = drake.HTTPDownload(
+      url,
+      target,
+      fingerprint = fingerprint,
+      disable_ssl_certificate_validation = disable_ssl_certificate_validation,
+    )
+  return target
+
+
 class TarballExtractor(Builder):
 
   def __init__(self, tarball, targets = []):
