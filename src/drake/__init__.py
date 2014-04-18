@@ -1821,6 +1821,7 @@ class Builder:
                     execute = True
         if execute:
           self.cachedir.mkpath()
+          self._depfile.remove()
           for target in self.__targets:
             if isinstance(target, Node):
               target.path().dirname().mkpath()
