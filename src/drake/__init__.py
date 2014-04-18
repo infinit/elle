@@ -988,6 +988,10 @@ class DepFile:
         with open(str(path), 'wb') as f:
           drake.Path.Pickler(f).dump(value)
 
+    def remove(self):
+      """Rehash all files and write to the store file."""
+      self.path().remove()
+
     def __repr__(self):
         """Python representation."""
         return 'DepFile(%s)' % repr(self._builder)
