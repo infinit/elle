@@ -3341,13 +3341,17 @@ class TestSuite(Rule):
 
 class HTTPDownload(Builder):
 
-  def __init__(self, url, dest, fingerprint = None, **kwargs):
+  def __init__(self, url, dest, fingerprint = None,
+               disable_ssl_certificate_validation = False,
+               **kwargs):
     self.__url = url
     self.__dest = dest
     self.__fingerprint = fingerprint
     Builder.__init__(self, [], [self.__dest])
     import httplib2
-    self.__http = httplib2.Http(**kwargs)
+    self.__http = httplib2.Http(
+      disable_ssl_certificate_validation = disable_ssl_certificate_validation,
+      **kwargs)
 
   def execute(self):
     self.output('Download %s to %s' % (self.__url, self.__dest),
