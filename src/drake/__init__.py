@@ -3430,7 +3430,7 @@ class TarballExtractor(Builder):
     # for target in targets:
     #   print(target)
     # self.__targets = nodes(*targets)
-    Builder.__init__(self, [tarball], self.__targets)
+    Builder.__init__(self, list(chain((tarball,), patches)), self.__targets)
 
   def execute(self):
     import tarfile
