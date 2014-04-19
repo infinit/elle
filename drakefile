@@ -284,7 +284,10 @@ PY_MINOR_VERSION''', config = python3)
   drake.TarballExtractor(
     openssl_tarball,
     targets = ['%s/%s' % (openssl_basename, f)
-               for f in ['Configure'] + openssl_headers])
+               for f in ['Configure'] + openssl_headers],
+    patches = (drake.node('openssl.patch'),),
+    patch_dir = openssl_basename,
+  )
   openssl_configure = drake.node(openssl_build / 'Configure')
   from drake.cxx import DynLib, StaticLib
   openssl_shared = True
@@ -328,7 +331,6 @@ PY_MINOR_VERSION''', config = python3)
         'PERL': 'perl',
         'CC': cxx_toolkit.c,
     },
-    patch = drake.node('openssl.patch'),
   )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
@@ -348,7 +350,9 @@ PY_MINOR_VERSION''', config = python3)
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
       'configure',
-    )]
+    )],
+    patches = (drake.node('curl.patch'),),
+    patch_dir = curl_basename,
   )
   curl_configure = drake.node(curl_build / 'configure')
   from drake.cxx import DynLib, StaticLib
@@ -426,7 +430,6 @@ PY_MINOR_VERSION''', config = python3)
     sources = curl_dependency_libs + [curl_configure],
     build_args = ['all', 'install',],
     additional_env = curl_environment,
-    patch = drake.node('curl.patch'),
   )
   for lib in curl_dependency_libs:
     curl_lib.dependency_add(lib)
