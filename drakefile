@@ -610,7 +610,10 @@ PY_MINOR_VERSION''', config = python3)
       def __init__(self, destination, cxx_toolkit):
         self.__toolkit = cxx_toolkit
         self.__user_config = destination
-        super().__init__([], [self.__user_config])
+        # Depend on boost_bootstrap because the configuration is in
+        # the tarball extraction path and would be erased if
+        # extraction occurs after.
+        super().__init__([boost_bootstrap], [self.__user_config])
 
       def execute(self):
         self.output('generate %s' % self.__user_config,
