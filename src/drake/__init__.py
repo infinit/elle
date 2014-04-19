@@ -3463,3 +3463,6 @@ class TarballExtractor(Builder):
           ]):
         return False
     return True
+
+  def __str__(self):
+    return 'Extraction of %s' % self.__tarball
