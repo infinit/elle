@@ -706,7 +706,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
       version_effective = boost_version,
-      prefer_shared = False,
+      prefer_shared = cxx_toolkit.os is not drake.os.windows,
     )
   set_boost(boost)
   boost_rule = drake.Rule('boost')
