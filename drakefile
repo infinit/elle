@@ -679,7 +679,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       def execute(self):
         command = [
           './b2', 'install',
-          'toolset=%s' % cxx_toolkit.os is drake.os.macos and 'clang' or 'gcc',
+          'toolset=%s' % (cxx_toolkit.os is drake.os.macos and 'clang' or 'gcc'),
           '--user-config=user-config.jam',
         ]
         if cxx_toolkit.os is drake.os.windows:
