@@ -69,7 +69,7 @@ def shell_escape(s):
 
 def property_memoize(f):
   def result(self):
-    prop = '_%s__value' % self.__class__.__name__
+    prop = '_%s__%s' % (self.__class__.__name__, f.__name__)
     if not hasattr(self, prop):
       setattr(self, prop, f(self))
     return getattr(self, prop)
