@@ -80,17 +80,17 @@ def configure(cxx_toolkit = None,
                    'include/python3.4m'],
     toolkit = cxx_toolkit,
     libs = (('python3', 'python'),))
-  if cxx_toolkit.os is drake.os.windows:
-    python_bin = 'python.exe'
-  else:
-    python_bin = 'bin/python%s' % python_version
-  python3.python_interpreter = python3.prefix / python_bin
   python_version = cxx_toolkit.preprocess('''\
 #include <patchlevel.h>
 PY_MAJOR_VERSION
 PY_MINOR_VERSION''', config = python3)
   python_version = python_version.split('\n')[-3:-1]
   python_version = drake.Version(*map(int, python_version))
+  if cxx_toolkit.os is drake.os.windows:
+    python_bin = 'python.exe'
+  else:
+    python_bin = 'bin/python%s' % python_version
+  python3.python_interpreter = python3.prefix / python_bin
 
   ## -------- ##
   ## Patchelf ##
