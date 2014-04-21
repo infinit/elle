@@ -520,19 +520,16 @@ def configure(zlib_lib,
   if cxx_toolkit.os != drake.os.windows:
     tests.extend([
       'AtomicFile.cc',
-      'system/process.cc',
-      'system/process-args.cc',
-      'system/process-fail.cc',
-      'system/process-sleep.cc',
-      'system/process-kill.cc',
-      'system/process-unknow.cc',
-      'system/process-unknonw-wait.cc',
-      'system/process-output-config.cc',
-      'system/process-pipe.cc',
-      'system/process-checkoutput.cc',
-      'system/process-pipe2.cc',
-      'system/process-shortcuts.cc',
-      'system/process-pipe-to-file.cc',
+      ])
+  if cxx_toolkit.os != drake.os.windows:
+    process_helpers = [
+      drake.cxx.Executable('tests/system/%s' % name,
+                           drake.nodes('tests/system/%s.cc' % name),
+                           cxx_toolkit, cxx_config)
+      for name in ('true', 'false')]
+    tests.extend([
+      ('system/process.cc', process_helpers),
+      ('system/process-fail.cc', process_helpers),
     ])
 
   cxx_config_tests = cxx_config + config
@@ -548,12 +545,18 @@ def configure(zlib_lib,
     cxx_config_tests.define('VALGRIND')
   if enable_tests:
     for test in tests:
+      if isinstance(test, tuple):
+        test, dependencies = test
+      else:
+        dependencies = ()
       config_test = drake.cxx.Config(cxx_config_tests)
       config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
       test = drake.cxx.Executable(
         'tests/%s' % os.path.splitext(test)[0],
         drake.nodes('tests/%s' % test) + [library, zlib_lib, libarchive_lib],
         cxx_toolkit, config_test)
+      for dep in dependencies:
+        test.dependency_add(dep)
       rule_tests << test
       env = {
         'BUILD_DIR': str(drake.path_build()),
