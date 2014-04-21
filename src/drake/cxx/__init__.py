@@ -773,7 +773,7 @@ class GccToolkit(Toolkit):
           cmd.append('-Wl,-rpath-link,%s' % path)
       if self.os == drake.os.macos:
           cmd += ['-undefined', 'dynamic_lookup']
-      for obj in objs:
+      for obj in (obj for obj in objs if not isinstance(obj, Library)):
         cmd.append(obj.path())
       cmd += ['-o', exe.path()]
       libraries = (obj for obj in objs if isinstance(obj, Library))
