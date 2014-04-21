@@ -104,6 +104,9 @@ class Renderer(drake.Converter):
           with open(str(self.__target.path()), 'w') as f:
             ctx = mako.runtime.Context(f, **self.__content)
             tpl.render_context(ctx)
+          import shutil
+          shutil.copymode(str(self.__template.path()),
+                          str(self.__target.path()))
         return True
     finally:
       # Restore path.
