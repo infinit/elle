@@ -525,7 +525,7 @@ def configure(zlib_lib,
     process_helpers = [
       drake.cxx.Executable('tests/system/%s' % name,
                            drake.nodes('tests/system/%s.cc' % name),
-                           cxx_toolkit, cxx_config)
+                           cxx_toolkit, drake.cxx.Config())
       for name in ('true', 'false')]
     tests.extend([
       ('system/process.cc', process_helpers),
