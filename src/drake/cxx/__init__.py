@@ -693,24 +693,29 @@ class GccToolkit(Toolkit):
     # FIXME: ;
     commands = []
     objects = []
-    libs = (l for l in cfg.libraries if isinstance(l, StaticLib))
-    sources = (l for l in objs if isinstance(l, StaticLib))
-
-    for o in chain(libs, sources):
+    sources = set(l for l in objs if isinstance(l, StaticLib))
+    sources.update(l for l in cfg.libraries if isinstance(l, StaticLib))
+    for o in sorted(sources, key = lambda a: a.path().basename()):
       path = os.path.abspath(str(o.path()))
+      tmp = builder.path_tmp / o.path()
+      tmp.mkpath()
       try:
         for line in subprocess.check_output(
           ['ar', 'xv', path],
-          cwd = str(builder.path_tmp)).decode().split('\n'):
+          cwd = str(tmp)).decode().split('\n'):
           if line == '':
             continue
           assert line.startswith('x - ')
           line = line[4:]
-          objects.append(builder.path_tmp / line)
+          mitigated = '%s-%s' % (o.path().basename(), line)
+          os.rename(str(tmp / line), str(tmp / mitigated))
+          objects.append(tmp / mitigated)
       except subprocess.CalledProcessError as e:
         raise Exception('unable to extract %s: %s' % (o, e))
     for o in (o for o in objs if not isinstance(o, StaticLib)):
-      objects.append(o.path())
+      flat_name = builder.path_tmp / str(o.path()).replace('/', '_')
+      shutil.copyfile(str(o.path()), str(flat_name))
+      objects.append(flat_name)
     lib = str(lib.path())
     return (['ar', 'crs', lib] +
             list(map(lambda n: str(n), objects)),
