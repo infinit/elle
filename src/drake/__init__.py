@@ -972,7 +972,11 @@ class DepFile:
         # if path not in Drake.current.nodes:
         #   del self.__sha1[path]
         #   continue
-        h = node(path).hash()
+        try:
+          h = node(path).hash()
+        except:
+          explain(self._builder, '%s cannot be hashed' % path)
+          return False
         if h != old_hash:
           explain(self._builder, '%s has changed' % path)
           return False
