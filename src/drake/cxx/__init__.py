@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 
+from drake.utils import property_memoize
 from itertools import chain
 
 from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, cmd, command_add, debug, Expander, FileExpander
@@ -1376,13 +1377,13 @@ class StaticLibLinker(ShellCommand):
     def execute(self):
         return self.cmd('Link %s' % self.__library, self.command)
 
-    @property
+    @property_memoize
     def command(self):
-        return self.toolkit.archive(
-          self,
-          self.config,
-          self.objs + list(self.sources_dynamic()),
-          self.__library)
+      return self.toolkit.archive(
+        self,
+        self.config,
+        self.objs + list(self.sources_dynamic()),
+        self.__library)
 
     @property
     def library(self):
