@@ -818,9 +818,11 @@ class GccToolkit(Toolkit):
       return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
 
   def libname_module(self, cfg, path):
-
-      path = Path(path)
-      return path.dirname() / ('%s.so' % str(path.basename()))
+    if self.os == drake.os.windows:
+      ext = 'dll'
+    else:
+      ext = 'so'
+    return Path(path).with_extension(ext)
 
   def exename(self, cfg, path):
       path = Path(path)
