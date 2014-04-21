@@ -1,6 +1,7 @@
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.templating
 import sys
 
 config = None
@@ -321,14 +322,24 @@ def configure(curl_config,
     rule_check << runner.status
 
   if python3 is not None:
-    python_test = drake.node('tests/python')
-    python_test.dependency_add(python_lib)
-    python_runner = drake.Runner(
-      exe = python_test,
-      env = {
-        'PYTHONPATH': str(drake.path_build('lib/python')),
-      })
-    rule_check << python_runner.status
+    python_tests = (
+      'tests/python',
+      )
+    with drake.templating.Context(content = {
+        'python_interpreter': str(python3.python_interpreter),
+    }):
+      for test in python_tests:
+        drake.node('%s.tmpl' % python_tests)
+    for test in python_tests:
+      test = drake.node(test)
+      test.dependency_add(python_lib)
+      python_runner = drake.Runner(
+        exe = test,
+        env = {
+          'PYTHONPATH': str(drake.path_build('lib/python')),
+        },
+        )
+      rule_check << python_runner.status
 
   # Install
   rule_install = drake.Rule('install')
