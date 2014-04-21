@@ -90,7 +90,9 @@ class Renderer(drake.Converter):
            tempfile.NamedTemporaryFile(mode = 'w') as content:
         line_number = 1
         def print_line_number():
-          print('# %d "%s"' % (line_number, path), file = content)
+          if isinstance(self.__target, (drake.cxx.Source,
+                                        drake.cxx.Header)):
+            print('# %d "%s"' % (line_number, path), file = content)
         print_line_number()
         for line in tpl:
           print(line, file = content, end = '')
