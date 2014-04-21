@@ -689,44 +689,21 @@ class GccToolkit(Toolkit):
         self.cppflags(cfg) + self.cflags(cfg) + \
         extraflags + ['-c', str(src), '-o', str(obj)]
 
-  def archive(self, builder, cfg, objs, lib):
-    # FIXME: ;
-    commands = []
-    objects = []
-    sources = set(l for l in objs if isinstance(l, StaticLib))
-    sources.update(l for l in cfg.libraries if isinstance(l, StaticLib))
-    for o in sorted(sources, key = lambda a: a.path().basename()):
-      path = os.path.abspath(str(o.path()))
-      tmp = builder.path_tmp / o.path()
-      tmp.mkpath()
-      try:
-        for line in subprocess.check_output(
-          ['ar', 'xv', path],
-          cwd = str(tmp)).decode().split('\n'):
-          if line == '':
-            continue
-          assert line.startswith('x - ')
-          line = line[4:]
-          mitigated = '%s-%s' % (o.path().basename(), line)
-          os.rename(str(tmp / line), str(tmp / mitigated))
-          objects.append(tmp / mitigated)
-      except subprocess.CalledProcessError as e:
-        raise Exception('unable to extract %s: %s' % (o, e))
-    for o in (o for o in objs if not isinstance(o, StaticLib)):
-      flat_name = builder.path_tmp / str(o.path()).replace('/', '_')
-      shutil.copyfile(str(o.path()), str(flat_name))
-      objects.append(flat_name)
-    lib = str(lib.path())
-    return (['ar', 'crs', lib] +
-            list(map(lambda n: str(n), objects)),
-            ['ranlib', lib])
+  def archive(self, objs, lib):
+    objects = [str(n.path()) for n in objs
+               if isinstance(n, drake.cxx.Object)]
+    return (['ar', 'crs', str(lib.path())] + objects,
+            ['ranlib', str(lib.path())])
 
   def __libraries_flags(self, cfg, libraries, cmd):
     for lib in libraries:
       if isinstance(lib, (StaticLib, DynLib)):
         cmd.append(lib.path())
       else:
-        raise Exception("cannot link an object of type %s" % type(lib))
+        raise Exception('cannot link a %s' % type(lib))
+      if isinstance(lib, StaticLib):
+        cmd += [d for d in lib.dependencies_recursive
+                if isinstance(d, StaticLib)]
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
@@ -1370,35 +1347,33 @@ class StaticLibLinker(ShellCommand):
     name = 'static library archiving'
 
     def dependencies(self):
-
-        for hook in self.toolkit.hook_bin_deps():
-            hook(self)
+      for hook in self.toolkit.hook_bin_deps():
+        hook(self)
 
     def __init__(self, objs, lib, tk, cfg):
-
-        self.objs = objs
-        self.__library = lib
-        self.toolkit = tk
-        self.config = cfg
-        Builder.__init__(self, objs, [lib])
+      self.objs = objs
+      self.__library = lib
+      for o in self.objs:
+        if isinstance(o, StaticLib):
+          lib.dependency_add(o)
+      self.toolkit = tk
+      self.config = cfg
+      Builder.__init__(self, objs, [lib])
 
     def execute(self):
-        return self.cmd('Link %s' % self.__library, self.command)
+      return self.cmd('Archive %s' % self.__library, self.command)
 
     @property_memoize
     def command(self):
       return self.toolkit.archive(
-        self,
-        self.config,
-        self.objs + list(self.sources_dynamic()),
-        self.__library)
+        self.objs + list(self.sources_dynamic()), self.__library)
 
     @property
     def library(self):
       return self.__library
 
     def hash(self):
-        return self.command
+      return self.command
 
 
 class Source(Node):

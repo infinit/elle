@@ -1271,7 +1271,7 @@ class Node(BaseNode):
     """Construct a Node with the given path."""
     path = drake.Drake.current.prefix / path
     BaseNode.__init__(self, path)
-    self.__dependencies = set()
+    self.__dependencies = sched.OrderedSet()
     self.__hash = None
     self.__exists = False
 
@@ -1399,6 +1399,13 @@ class Node(BaseNode):
   @property
   def dependencies(self):
       return self.__dependencies
+
+  @property
+  def dependencies_recursive(self):
+    for dep in self.__dependencies:
+      yield dep
+      for sub in dep.dependencies_recursive:
+        yield sub
 
   def dependency_add(self, dep):
       self.__dependencies.add(dep)
