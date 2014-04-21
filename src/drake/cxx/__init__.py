@@ -1303,14 +1303,15 @@ class Linker(Builder):
     self.exe = exe
     self.toolkit = tk
     self.config = drake.cxx.Config(cfg)
-    Builder.__init__(self, exe.sources + exe.dynamic_libraries, [exe])
+    Builder.__init__(self, chain(exe.sources, exe.dynamic_libraries),
+                     [exe])
 
   def execute(self):
     return self.cmd('Link %s' % self.exe, self.command)
 
   @property
   def command(self):
-    objects = self.exe.sources + self.exe.dynamic_libraries
+    objects = self.exe.sources + list(self.exe.dynamic_libraries)
     return self.toolkit.link(
       self.config,
       objects + list(self.sources_dynamic()),
@@ -1340,7 +1341,7 @@ class DynLibLinker(Builder):
     self.__objects = lib.sources
     self.__dynamic_libraries = lib.dynamic_libraries
     Builder.__init__(self,
-                     self.__objects + lib.dynamic_libraries,
+                     chain(self.__objects, lib.dynamic_libraries),
                      [lib])
 
   def execute(self):
@@ -1348,7 +1349,7 @@ class DynLibLinker(Builder):
 
   @property
   def command(self):
-    objects = self.__objects + self.__dynamic_libraries
+    objects = self.__objects + list(self.__dynamic_libraries)
     return self.toolkit.dynlink(
         self.config,
         objects + list(self.sources_dynamic()),
@@ -1468,7 +1469,7 @@ class Binary(Node):
     self.tk = tk
     self.cfg = cfg
     Node.__init__(self, path)
-    self.__dynamic_libraries = []
+    self.__dynamic_libraries = sched.OrderedSet()
     self.sources = None
     if sources is not None:
       self.sources = []
@@ -1500,7 +1501,7 @@ class Binary(Node):
     elif source.__class__ == Header:
       pass
     elif isinstance(source, (DynLib, Module)):
-      self.__dynamic_libraries.append(source)
+      self.__dynamic_libraries.add(source)
     else:
       for consumer in source.consumers:
         if isinstance(consumer, drake.Converter) \
@@ -1520,7 +1521,7 @@ class Binary(Node):
   def dependency_add(self, dependency):
     if dependency not in self.dependencies:
       if isinstance(dependency, DynLib):
-        self.__dynamic_libraries.append(dependency)
+        self.__dynamic_libraries.add(dependency)
       super().dependency_add(dependency)
 
 class Library(Binary):
