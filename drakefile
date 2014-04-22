@@ -718,8 +718,18 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
               cmd = ['install_name_tool',
                      '-id', '@rpath/%s' % target.name().basename(),
                       str(target.path())]
-              if not self.cmd('Fix rpath for %s' % target.path(), cmd):
+              if not self.cmd('Fix id of %s' % target.path(), cmd):
                 return False
+              for dep in (t for t in self.__targets if isinstance(t, drake.cxx.DynLib)):
+                cmd = [
+                  'install_name_tool',
+                  '-change',
+                  '%s' % dep.name().basename(),
+                  '@rpath/%s' % dep.name().basename(),
+                  str(target.path()),
+                ]
+                if not self.cmd('Fix %s path for %s' % (target, dep), cmd):
+                  return False
         return True
     BoostBuilder(sources = [boost_bjam, boost_user_config],
                  targets = boost_libraries + boost_headers)
