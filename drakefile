@@ -572,6 +572,7 @@ PY_MINOR_VERSION''', config = python3)
       '--prefix=%s' % boost_prefix,
       '--with-python=%s' % python_version,
       '--with-libraries=%s' % ','.join((
+        'atomic',
         'chrono',
         'date_time',
         'filesystem',
@@ -585,6 +586,7 @@ PY_MINOR_VERSION''', config = python3)
     ]
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
     boost_libraries_names = (
+      'atomic',
       'chrono',
       'date_time',
       'filesystem',
