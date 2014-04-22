@@ -58,10 +58,10 @@ parameters = {
   'valgrind': False,
 }
 
-if osyst == 'linux-Ubuntu-14':
+if osyst == 'linux_ubuntu_14':
   parameters['boost'] = '/home/buildslave/local'
   parameters['valgrind'] = True
-elif osyst == 'linux-Debian-squeeze':
+elif osyst == 'linux_debian_squeeze':
   raise Exception('no Debian squeeze environment for now')
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
