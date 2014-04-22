@@ -1,4 +1,6 @@
+#include <condition_variable>
 #include <memory>
+#include <mutex>
 
 #include "reactor.hh"
 
@@ -1831,24 +1833,44 @@ namespace background
   void
   operation()
   {
+    std::mutex mutex;
+    std::condition_variable cv;
+    bool backgrounded = false;
     reactor::Scheduler sched;
     int i = 0;
     reactor::Thread thread(
       sched, "main",
-      [&i]
+      [&]
       {
-        reactor::background([] { ::sleep(1); });
+        reactor::background([&]
+                            {
+                              std::unique_lock<std::mutex> lock(mutex);
+                              backgrounded = true;
+                              cv.wait(lock);
+                              backgrounded = false;
+                            });
         BOOST_CHECK_EQUAL(i, 3);
       });
     reactor::Thread counter(
       sched, "counter",
       [&]
       {
+        do
+        {
+          std::unique_lock<std::mutex> lock(mutex);
+          if (backgrounded)
+            break;
+          reactor::yield();
+        }
+        while (true);
         ++i;
         reactor::yield();
         ++i;
         reactor::yield();
         ++i;
+        BOOST_CHECK(backgrounded);
+        std::unique_lock<std::mutex> lock(mutex);
+        cv.notify_one();
       });
     sched.run();
   }
