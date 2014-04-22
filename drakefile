@@ -613,6 +613,8 @@ PY_MINOR_VERSION''', config = python3)
                                                      (drake.cxx.DynLib, boost_dynamic_format))
                         if fmt is not None]
                        for name in boost_libraries_names)
+    if cxx_toolkit.os is drake.os.macos:
+      drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
     boost_libraries = list(chain(*boost_libraries))
 
     class BoostUserConfigGenerator(drake.Builder):
