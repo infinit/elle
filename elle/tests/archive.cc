@@ -9,6 +9,12 @@
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
 
+#ifndef INFINIT_WINDOWS
+# define EXTENSION ""
+#else
+# define EXTENSION ".exe"
+#endif
+
 using elle::filesystem::TemporaryDirectory;
 
 class DummyHierarchy
@@ -112,7 +118,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::tar_gzip:
     {
       elle::system::Process p({
-          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar").string(),
+          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar" EXTENSION).string(),
           "-x", "-f", path.string()});
       BOOST_CHECK_EQUAL(p.wait(), 0);
       break;
@@ -120,7 +126,7 @@ extract(elle::archive::Format fmt,
     case elle::archive::Format::zip:
     {
       elle::system::Process p({
-          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio").string(),
+          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio" EXTENSION).string(),
           "--extract", "--make-directories", "-I", path.string()});
       BOOST_CHECK_EQUAL(p.wait(), 0);
       break;

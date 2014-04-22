@@ -521,16 +521,15 @@ def configure(zlib_lib,
     tests.extend([
       'AtomicFile.cc',
       ])
-  if cxx_toolkit.os != drake.os.windows:
-    process_helpers = [
-      drake.cxx.Executable('tests/system/%s' % name,
-                           drake.nodes('tests/system/%s.cc' % name),
-                           cxx_toolkit, drake.cxx.Config())
-      for name in ('true', 'false')]
-    tests.extend([
-      ('system/process.cc', process_helpers),
-      ('system/process-fail.cc', process_helpers),
-    ])
+  process_helpers = [
+    drake.cxx.Executable('tests/system/%s' % name,
+                         drake.nodes('tests/system/%s.cc' % name),
+                         cxx_toolkit, drake.cxx.Config())
+    for name in ('true', 'false')]
+  tests.extend([
+    ('system/process.cc', process_helpers),
+    ('system/process-fail.cc', process_helpers),
+  ])
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests.enable_debug_symbols()
