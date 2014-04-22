@@ -6,5 +6,6 @@ import sys
 
 arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
 os.chdir(os.environ['DIR_BUILD'])
-if subprocess.call(['python3', 'drake', '//check']) != 0:
+if subprocess.call(['python3', 'drake',
+                    os.environ['JOBS'], '//check']) != 0:
   exit(1)
