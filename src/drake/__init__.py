@@ -934,7 +934,7 @@ class DepFile:
       """Construct a dependency file for builder with given name."""
       self.__builder = builder
       self.name = name
-      self.__files = {}
+      self.__files = []
       self.__invalid = False
       self.__hashes = None
 
@@ -945,7 +945,7 @@ class DepFile:
 
     def register(self, node, source = True):
         """Add the node to the hashed files."""
-        self.__files[str(node.name())] = (node, source)
+        self.__files.append((node, source))
 
     def path(self):
         """Path to the file storing the hashes."""
@@ -992,7 +992,7 @@ class DepFile:
       """Rehash all files and write to the store file."""
       value = [(node.hash() if source else None,
                 node.name_absolute(), node.drake_type())
-               for node, source in self.__files.values()]
+               for node, source in self.__files]
       with profile_pickling():
         path = self.path()
         with open(str(path), 'wb') as f:
