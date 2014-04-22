@@ -932,36 +932,29 @@ class DepFile:
 
     def __init__(self, builder, name):
       """Construct a dependency file for builder with given name."""
-      self._builder = builder
+      self.__builder = builder
       self.name = name
       self.__files = {}
       self.__invalid = False
-      self.__sha1 = {}
+      self.__hashes = None
 
-
-    def files(self):
-        """List of hashed files."""
-        return (node for node, source in self.__files.values())
-
-
-    def sha1s(self):
-        """Dictonary associating sha1s to files."""
-        return self.__sha1
-
+    @property
+    def hashes(self):
+      """The file hashes loaded from the disk."""
+      return self.__hashes
 
     def register(self, node, source = True):
         """Add the node to the hashed files."""
         self.__files[str(node.name())] = (node, source)
 
-
     def path(self):
         """Path to the file storing the hashes."""
-        return self._builder.cachedir / self.name
-
+        return self.__builder.cachedir / self.name
 
     def read(self):
       """Read the hashes from the store file."""
       res = []
+      self.__hashes = {}
       if self.path().exists():
         with profile_unpickling():
           try:
@@ -969,28 +962,29 @@ class DepFile:
               value = drake.Path.Unpickler(f).load()
             for sha1, name, data in value:
               src = Path(name)
-              self.__sha1[src] = (sha1, data)
+              self.__hashes[src] = (sha1, data)
           except:
+            self.__hashes = None
             self.__invalid = True
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
       if self.__invalid:
         return False
-      for path, (old_hash, data) in self.__sha1.items():
+      for path, (old_hash, data) in self.__hashes.items():
         if old_hash is None:
           continue
         # FIXME: needed ?
         # if path not in Drake.current.nodes:
-        #   del self.__sha1[path]
+        #   del self.__hashes[path]
         #   continue
         try:
           h = node(path).hash()
         except:
-          explain(self._builder, '%s cannot be hashed' % path)
+          explain(self.__builder, '%s cannot be hashed' % path)
           return False
         if h != old_hash:
-          explain(self._builder, '%s has changed' % path)
+          explain(self.__builder, '%s has changed' % path)
           return False
       return True
 
@@ -1010,11 +1004,11 @@ class DepFile:
 
     def __repr__(self):
         """Python representation."""
-        return 'DepFile(%s)' % repr(self._builder)
+        return 'DepFile(%s)' % repr(self.__builder)
 
     def __str__(self):
         """String representation."""
-        return 'DepFile(%s)' % self._builder
+        return 'DepFile(%s)' % self.__builder
 
 def path_build(path = None, absolute = False):
   """Return path as found in the build directory.
@@ -1768,7 +1762,7 @@ class Builder:
                   'drake.Builder',
                   drake.log.LogLevel.dump,
                   '%s: consider dependencies file %s', self, f):
-                for path in depfile.sha1s():
+                for path, (hash, data) in depfile.hashes.items():
                   if path in self.__sources or path in self.__dynsrc:
                     sched.logger.log(
                       'drake.Builder',
@@ -1781,7 +1775,7 @@ class Builder:
                       '%s: %s is unkown, calling handler', self, path):
                     node = handler(self,
                                    path,
-                                   self.get_type(depfile.sha1s()[path][1]),
+                                   self.get_type(data),
                                    None)
                     if node is not None:
                       sched.logger.log(
@@ -1859,7 +1853,7 @@ class Builder:
         if not execute:
           for source in self.__sources.values():
             path = source.name_absolute()
-            if path not in self._depfile.sha1s():
+            if path not in self._depfile.hashes:
               explain(self, 'of new dependency %s' % path)
               execute = True
               break
