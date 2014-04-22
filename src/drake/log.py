@@ -39,16 +39,17 @@ class NoopLogger:
     return NOOP
 
 
-class Logger:
+
+class LoggerType(type):
 
   def __call__(self, configuration_string = None, indentation = None):
     if configuration_string is None:
       return NoopLogger()
-    else:
-      return object.__call__(
-        self,
-        configuration_string = configuration_string,
-        indentation = indentation)
+    return type.__call__(self,
+                         configuration_string = configuration_string,
+                         indentation = indentation)
+
+class Logger(metaclass = LoggerType):
 
   class Indentation:
 
