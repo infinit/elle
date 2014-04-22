@@ -58,9 +58,11 @@ parameters = {
   'valgrind': False,
 }
 
-if osyst.startswith('linux'):
+if osyst == 'linux-Ubuntu-14':
   parameters['boost'] = '/home/buildslave/local'
   parameters['valgrind'] = True
+elif osyst == 'linux-Debian-squeeze':
+  raise Exception('no Debian squeeze environment for now')
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
