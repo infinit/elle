@@ -961,8 +961,7 @@ class DepFile:
             with open(str(self.path()), 'rb') as f:
               value = drake.Path.Unpickler(f).load()
             for sha1, name, data in value:
-              src = Path(name)
-              self.__hashes[src] = (sha1, data)
+              self.__hashes[name] = (sha1, data)
           except:
             self.__hashes = None
             self.__invalid = True
