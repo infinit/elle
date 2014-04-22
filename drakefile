@@ -474,7 +474,7 @@ PY_MINOR_VERSION''', config = python3)
   libarchive_dependency_libs = \
     libarchive_openssl_libs + libarchive_zlib_libs
   if cxx_toolkit.os is drake.os.windows:
-    libarchive_configure_args = ['--host=x86_64-w64-mingw32']
+    libarchive_configure_args = ['--host=%s' % cxx_toolkit.prefix[:-1]]
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
