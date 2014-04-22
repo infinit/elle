@@ -1795,6 +1795,7 @@ class Builder:
             if dst.missing():
               explain(self, 'target %s is missing' % dst)
               execute = True
+              break
         # Load static dependencies
         self._depfile.read()
         # If a new dependency appeared, we must rebuild.
