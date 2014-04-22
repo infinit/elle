@@ -702,7 +702,7 @@ class GccToolkit(Toolkit):
       else:
         raise Exception('cannot link a %s' % type(lib))
       if isinstance(lib, StaticLib):
-        cmd += [d for d in lib.dependencies_recursive
+        cmd += [str(d.path()) for d in lib.dependencies_recursive
                 if isinstance(d, StaticLib)]
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
