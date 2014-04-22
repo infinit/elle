@@ -37,7 +37,7 @@ static
 void
 getenv1()
 {
-  std::string prog = elle::os::getenv("_");
+  std::string prog = elle::os::getenv("PATH");
   BOOST_CHECK(!prog.empty());
 }
 
