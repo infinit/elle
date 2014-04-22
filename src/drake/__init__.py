@@ -3293,30 +3293,36 @@ class Runner(Builder):
 
   def execute(self):
     import subprocess
-    with open(str(self.__out.path()), 'w') as out, \
-         open(str(self.__err.path()), 'w') as err, \
-         open(str(self.__status.path()), 'w') as rv:
-      self.output(' '.join(self.command),
-                  'Run %s' % self.__exe)
-      env = dict(_OS.environ)
-      if self.__env is not None:
-        env.update(self.__env)
-      try:
-        p = subprocess.Popen(self.command,
-                             stdout = out,
-                             stderr = err,
-                             env = env)
-        p.wait()
-        status = p.returncode
-        print(status, file = rv)
-      except:
-        import traceback
-        traceback.print_exc()
-        return False
+    def run():
+      with open(str(self.__out.path()), 'w') as out, \
+           open(str(self.__err.path()), 'w') as err, \
+           open(str(self.__status.path()), 'w') as rv:
+        self.output(' '.join(self.command),
+                    'Run %s' % self.__exe)
+        env = dict(_OS.environ)
+        if self.__env is not None:
+          env.update(self.__env)
+        try:
+          p = subprocess.Popen(self.command,
+                               stdout = out,
+                               stderr = err,
+                               env = env)
+          p.wait()
+          status = p.returncode
+          print(status, file = rv)
+        except:
+          import traceback
+          traceback.print_exc()
+          return False
+        return status
+    status = self._run_job(run)
+    if status is False:
+      return False
     if self.__must_report(self.stdout_reporting, status):
       self.__report(self.__out)
     if self.__must_report(self.stderr_reporting, status):
       self.__report(self.__err)
+    assert status is not None
     return status == 0
 
   @property
