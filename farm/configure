@@ -67,11 +67,8 @@ elif osyst == 'osx':
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['boost'] = '/usr/local'
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
-elif osyst in ('win32', 'win64'):
-  if osyst == 'win32':
-    parameters['compiler'] = 'x86_64-w64-mingw32-g++'
-  else:
-    parameters['compiler'] = 'i686-w64-mingw32-g++'
+elif osyst is 'win':
+  parameters['compiler'] = '%s-w64-mingw32-g++' % arch
   parameters['boost'] = '/usr/local'
   parameters['boost_shared'] = False
   parameters['python'] = '/home/buildslave/local/python-mingw'
