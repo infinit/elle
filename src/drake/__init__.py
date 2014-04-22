@@ -954,17 +954,15 @@ class DepFile:
     def read(self):
       """Read the hashes from the store file."""
       res = []
-      self.__hashes = {}
       if self.path().exists():
         with profile_unpickling():
           try:
             with open(str(self.path()), 'rb') as f:
-              value = drake.Path.Unpickler(f).load()
-            for sha1, name, data in value:
-              self.__hashes[name] = (sha1, data)
+              self.__hashes = drake.Path.Unpickler(f).load()
           except:
-            self.__hashes = None
             self.__invalid = True
+      else:
+        self.__hashes = {}
 
     def up_to_date(self):
       """Whether all registered files match the stored hash."""
@@ -989,9 +987,10 @@ class DepFile:
 
     def update(self):
       """Rehash all files and write to the store file."""
-      value = [(node.hash() if source else None,
-                node.name_absolute(), node.drake_type())
-               for node, source in self.__files]
+      value = dict(
+        (node.name_absolute(), (node.hash() if source else None,
+                                node.drake_type()))
+        for node, source in self.__files)
       with profile_pickling():
         path = self.path()
         with open(str(path), 'wb') as f:
