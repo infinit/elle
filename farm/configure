@@ -67,7 +67,7 @@ elif osyst == 'osx':
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['boost'] = '/usr/local'
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
-elif osyst is 'win':
+elif osyst == 'win':
   parameters['compiler'] = '%s-w64-mingw32-g++' % arch
   parameters['boost'] = '/usr/local'
   parameters['boost_shared'] = False
