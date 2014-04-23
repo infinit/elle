@@ -96,9 +96,9 @@ class Boost(drake.Configuration):
       include_subdir = include_subdir.without_suffix(token)
       # Create basic configuration for version checking.
       cfg = Config()
-      cfg.add_system_include_path(path / include_subdir)
+      cfg.add_system_include_path(path.without_prefix(drake.path_build()) / include_subdir)
       self.__lib_path = path / 'lib'
-      cfg.lib_path(self.__lib_path)
+      cfg.lib_path(path.without_prefix(drake.path_build()) / 'lib')
       # Check the version.
       if version_effective is None:
         version_eff = cxx_toolkit.preprocess(
