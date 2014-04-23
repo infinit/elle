@@ -467,6 +467,8 @@ class Config:
         content['defines'] = self.__defines.keys()
       if self.libraries:
         content['libraries'] = self.libraries
+      if self.__lib_paths:
+        content['libraries path'] = self.__lib_paths
       content_str = map(
         lambda k: '%s = [%s]' % (k, ', '.join(map(repr, content[k]))),
         sorted(content.keys()))
