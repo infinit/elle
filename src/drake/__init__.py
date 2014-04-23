@@ -801,7 +801,7 @@ class Path(metaclass = PathType):
                         virtual = self.__virtual,
                         volume = self.__volume)
 
-    def without_prefix(self, rhs):
+    def without_prefix(self, rhs, force = True):
         """Remove rhs prefix from self.
 
         rhs -- the prefix to strip, as a Path or a string.
@@ -835,6 +835,8 @@ class Path(metaclass = PathType):
         while len(rhs) and len(path) and path[0] == rhs[0]:
           rhs = rhs[1:]
           path = path[1:]
+        if not force and len(rhs) > 0:
+          return self
         # FIXME: naive if rhs contains some '..'
         assert '..' not in rhs
         path = ('..',) * len(rhs) + path
@@ -2980,7 +2982,8 @@ class Configuration:
     for root in where:
       path = root / what
       if path.exists():
-        res.append(root)
+        rel = root.without_prefix(drake.path_root(), force = False)
+        res.append(rel)
       else:
         if path.absolute():
           drake_path = path.without_prefix(drake.path_root())
@@ -2989,7 +2992,6 @@ class Configuration:
         node = drake.Drake.current.nodes.get(drake_path, None)
         if node is not None:
           res.append(root.without_prefix(drake.path_root()))
-
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
