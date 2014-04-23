@@ -272,7 +272,7 @@ class Config:
       if path == Path('/include') or path == Path('/usr/include'):
         return
       if not path.absolute():
-        path = drake.path_build() / drake.Drake.current.prefix / path
+        path = drake.path_build() / path
       path = path.canonize()
       self.__system_includes.add(path)
       self._includes[path] = None
