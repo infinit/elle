@@ -571,6 +571,7 @@ class GccToolkit(Toolkit):
     else:
       self.__kind = GccToolkit.Kind.gcc
     self.c = compiler_c or '%sgcc' % self.prefix
+    self.ar = '%sar' % self.prefix
 
   def preprocess_istrue(self, vars, config = Config(), preamble = None):
     if preamble:
@@ -694,7 +695,7 @@ class GccToolkit(Toolkit):
   def archive(self, objs, lib):
     objects = [str(n.path()) for n in objs
                if isinstance(n, drake.cxx.Object)]
-    return (['ar', 'crs', str(lib.path())] + objects,
+    return ([self.ar, 'crs', str(lib.path())] + objects,
             ['ranlib', str(lib.path())])
 
   def __libraries_flags(self, cfg, libraries, cmd):
