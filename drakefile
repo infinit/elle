@@ -689,6 +689,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     class BoostBuilder(drake.Builder):
       def __init__(self, sources, targets):
         self.__targets = targets
+        self.__cwd = drake.path_build('boost/%s' % boost_basename)
         super().__init__(srcs = sources, dsts = targets)
       def execute(self):
         command = [
@@ -724,7 +725,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           ]
         if not self.cmd('Build Boost',
                         command,
-                        cwd = drake.path_build('boost/%s' % boost_basename)):
+                        self.__cwd):
           return False
         if cxx_toolkit.os is drake.os.macos:
           for target in self.__targets:
