@@ -212,6 +212,8 @@ private:
     auto status = "200 OK";
     if (content == std::string("/404"))
       status = "404 Not Found";
+    else if (content == std::string("/400"))
+      status = "400 Bad Request";
     response += content.string();
     std::string answer = elle::sprintf(
       "HTTP/1.1 %s\r\n"
@@ -283,6 +285,15 @@ ELLE_TEST_SCHEDULED(not_found)
   reactor::http::Request r(url);
   ELLE_LOG("Get %s", url);
   BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Not_Found);
+}
+
+ELLE_TEST_SCHEDULED(bad_request)
+{
+  ScheduledHttpServer server;
+  auto url = server.url("400");
+  reactor::http::Request r(url);
+  ELLE_LOG("Get %s", url);
+  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Bad_Request);
 }
 
 class SilentHttpServer:
@@ -709,6 +720,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(simple), 0, 10);
   suite.add(BOOST_TEST_CASE(complex), 0, 10);
   suite.add(BOOST_TEST_CASE(not_found), 0, 10);
+  suite.add(BOOST_TEST_CASE(bad_request), 0, 10);
   suite.add(BOOST_TEST_CASE(no_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(partial_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_reset), 0, 10);
