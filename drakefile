@@ -18,6 +18,7 @@ rule_check = None
 rule_tests = None
 
 boost = None
+python3 = None
 
 curl_config = None
 curl_lib = None
@@ -38,6 +39,10 @@ with open(str(drake.path_source('drake-utils.py')), 'r') as f:
 def set_boost(value):
   global boost
   boost = value
+
+def set_python3(value):
+  global python3
+  python3 = value
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
@@ -89,6 +94,7 @@ PY_MINOR_VERSION''', config = python3)
   else:
     python_bin = 'bin/python%s' % python_version
   python3.python_interpreter = python3.prefix / python_bin
+  set_python3(python3)
 
   ## -------- ##
   ## Patchelf ##
