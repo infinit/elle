@@ -14,6 +14,7 @@ import inspect
 import itertools
 import os.path
 import pickle
+import pipes
 import platform
 import re
 import shutil
@@ -23,6 +24,7 @@ import sys
 import threading
 import time
 import types
+
 from drake.sched import Coroutine, Scheduler
 from drake.enumeration import Enumerated
 from itertools import chain
@@ -3297,7 +3299,13 @@ class Runner(Builder):
       with open(str(self.__out.path()), 'w') as out, \
            open(str(self.__err.path()), 'w') as err, \
            open(str(self.__status.path()), 'w') as rv:
-        self.output(' '.join(self.command),
+        if self.__env is not None:
+          output_env = ('%s=%s ' % (var, pipes.quote(value))
+                        for var, value in self.__env.items())
+        else:
+          output_env = ()
+        output_cmd = map(pipes.quote, self.command)
+        self.output(' '.join(chain(output_env, output_cmd)),
                     'Run %s' % self.__exe)
         env = dict(_OS.environ)
         if self.__env is not None:
