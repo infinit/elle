@@ -680,6 +680,29 @@ ELLE_TEST_SCHEDULED(escaped_string)
   BOOST_CHECK_EQUAL(request_res.string(), correst_res);
 }
 
+class NoHeaderHttpServer:
+  public ScheduledHttpServer
+{
+  virtual
+  void
+  response(reactor::network::Socket& socket,
+           elle::ConstWeakBuffer,
+           std::unordered_map<std::string, std::string> const&) override
+  {
+    std::string answer(
+      "<!DOCTYPE HTML>\n"
+      );
+    socket.write(elle::ConstWeakBuffer(answer));
+  }
+};
+
+ELLE_TEST_SCHEDULED(no_header_answer)
+{
+  NoHeaderHttpServer server;
+  auto url = server.url("no_header");
+  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -703,4 +726,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(request_move), 0, 10);
   suite.add(BOOST_TEST_CASE(interrupted), 0, 10);
   suite.add(BOOST_TEST_CASE(escaped_string), 0, 3);
+  suite.add(BOOST_TEST_CASE(no_header_answer), 0, 3);
 }

@@ -775,7 +775,12 @@ namespace reactor
       }
       else
         ELLE_TRACE_SCOPE("%s: done with status %s", *this, this->_status);
-      ELLE_ASSERT(exception || this->_status != static_cast<StatusCode>(0));
+      if (!exception && this->_status == static_cast<StatusCode>(0))
+      {
+        exception = true;
+        message = "server response has no status";
+        set_exception();
+      }
       this->_signal();
       // Waitables consume their exception once signaled, restore it.
       if (exception)
