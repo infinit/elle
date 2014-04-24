@@ -402,7 +402,7 @@ def configure(zlib_lib,
   ## ------ ##
 
 
-  if python3 is not None and cxx_toolkit.os is not drake.os.windows:
+  if python3 is not None:
     python = []
     python_rule = drake.Rule('python')
     python3 = drake.cxx.find_library(

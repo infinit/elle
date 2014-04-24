@@ -620,8 +620,6 @@ PY_MINOR_VERSION''', config = python3)
                                                      (drake.cxx.DynLib, boost_dynamic_format))
                         if fmt is not None]
                        for name in boost_libraries_names)
-    if cxx_toolkit.os is drake.os.macos:
-      drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
     boost_libraries = list(chain(*boost_libraries))
 
     class BoostUserConfigGenerator(drake.Builder):
@@ -748,6 +746,13 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         return True
     BoostBuilder(sources = [boost_bjam, boost_user_config],
                  targets = boost_libraries + boost_headers)
+    if cxx_toolkit.os is drake.os.macos:
+      drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
+    if cxx_toolkit.os is drake.os.windows:
+      python_dll = drake.node('%s/Lib/python%s%s.dll' % (python3.prefix, python_version.major, python_version.minor))
+      print(python_dll)
+      boost_fs = drake.node('boost/lib/libboost_python3-mt-s.a')
+      boost_fs.dependency_add(python_dll)
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
