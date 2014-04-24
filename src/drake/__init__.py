@@ -3393,17 +3393,16 @@ class HTTPDownload(Builder):
     self.__dest = dest
     self.__fingerprint = fingerprint
     Builder.__init__(self, [], [self.__dest])
-    import httplib2
-    self.__http = httplib2.Http(
-      disable_ssl_certificate_validation = disable_ssl_certificate_validation,
-      **kwargs)
 
   def execute(self):
     self.output('Download %s to %s' % (self.__url, self.__dest),
                 'Download %s' % self.__dest)
-    resp, content = self._run_job(lambda: self.__http.request(self.__url, "GET"))
-    status = resp['status']
-    if status != '200':
+    def job():
+      import urllib.request
+      response = urllib.request.urlopen(self.__url)
+      return response.status, response.read()
+    status, content = self._run_job(job)
+    if status != 200:
       print('download failed with status %s' % status,
             file = sys.stderr)
       return False
