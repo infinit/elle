@@ -1,0 +1,22 @@
+diff --git a/include/boost/asio/ssl/impl/rfc2818_verification.ipp b/include/boost/asio/ssl/impl/rfc2818_verification.ipp
+index 769762e..4e9521b 100644
+--- a/include/boost/asio/ssl/impl/rfc2818_verification.ipp
++++ b/include/boost/asio/ssl/impl/rfc2818_verification.ipp
+@@ -128,8 +128,6 @@ bool rfc2818_verification::operator()(
+ bool rfc2818_verification::match_pattern(const char* pattern,
+     std::size_t pattern_length, const char* host)
+ {
+-  using namespace std; // For tolower.
+-
+   const char* p = pattern;
+   const char* p_end = p + pattern_length;
+   const char* h = host;
+@@ -143,7 +141,7 @@ bool rfc2818_verification::match_pattern(const char* pattern,
+         if (match_pattern(p, p_end - p, h++))
+           return true;
+     }
+-    else if (tolower(*p) == tolower(*h))
++    else if (std::tolower(*p) == std::tolower(*h))
+     {
+       ++p;
+       ++h;

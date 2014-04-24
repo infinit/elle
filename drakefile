@@ -563,7 +563,7 @@ PY_MINOR_VERSION''', config = python3)
     boost_patches = [
       drake.download(url, fingerprint, where = 'boost',
                      disable_ssl_certificate_validation = True)
-      for url, fingerprint in boost_patches]
+      for url, fingerprint in boost_patches] + drake.nodes('boost.patch')
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
