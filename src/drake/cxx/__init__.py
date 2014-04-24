@@ -1528,8 +1528,9 @@ class DynLib(Library):
     if platform.system() == 'Darwin':
       return ['install_name_tool', '-id', self.path(), self.path()]
 
-Node.extensions['so'] = DynLib
+Node.extensions['dll'] = DynLib
 Node.extensions['dylib'] = DynLib
+Node.extensions['so'] = DynLib
 
 
 class Module(Library):
