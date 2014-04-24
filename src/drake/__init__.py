@@ -3461,6 +3461,11 @@ class TarballExtractor(Builder):
 
   def execute(self):
     import tarfile
+    # Make TarFile withable on python <= 3.1
+    if not hasattr(tarfile.TarFile, '__enter__'):
+      tarfile.TarFile.__enter__ = lambda self: self
+    if not hasattr(tarfile.TarFile, '__exit__'):
+      tarfile.TarFile.__exit__ = lambda self, v, tb, t: self.close()
     self.output('Extract %s' % self.__tarball)
     destination = self.__tarball.path().dirname()
     def extract():
