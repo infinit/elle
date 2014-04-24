@@ -706,7 +706,7 @@ class GccToolkit(Toolkit):
         raise Exception('cannot link a %s' % type(lib))
       if isinstance(lib, StaticLib):
         cmd += [str(d.path()) for d in lib.dependencies_recursive
-                if isinstance(d, StaticLib)]
+                if isinstance(d, (StaticLib, DynLib))]
     if self.__recursive_linkage:
       cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
