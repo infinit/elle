@@ -20,6 +20,8 @@
 # include <process.h>
 # include <windows.h>
 # include <wincrypt.h>
+#elif defined(INFINIT_IOS)
+# include <Security/Security.h>
 #endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.random");
@@ -65,6 +67,14 @@ namespace infinit
           // Read random data.
           random_source_file.read(reinterpret_cast<char *>(temporary),
                                   sizeof (temporary));
+        }
+#elif defined(INFINIT_IOS)
+        {
+          int res = SecRandomCopyBytes(kSecRandomDefault, 256, temporary);
+          if (res != 0)
+          {
+            throw Exception("unable to get 256 bytes of random data");
+          }
         }
 #elif defined(INFINIT_WINDOWS)
         {
