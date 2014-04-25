@@ -2028,7 +2028,8 @@ class ShellCommand(Builder):
 
     def __init__(self, sources, targets, command,
                  pretty = None,
-                 cwd = None):
+                 cwd = None,
+                 environment = None):
         """Create a builder that runs command.
 
         sources -- List of source nodes, or source source node if
@@ -2042,12 +2043,14 @@ class ShellCommand(Builder):
         self.__command = command
         self.__pretty = pretty
         self.__cwd = cwd
+        self.__environment = environment
 
     def execute(self):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.__command),
                         self.__command,
-                        cwd = self.__cwd)
+                        cwd = self.__cwd,
+                        env = self.__environment)
 
     @property
     def command(self):
