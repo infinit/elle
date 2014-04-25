@@ -51,7 +51,8 @@ def configure(cxx_toolkit = None,
               enable_rotation = False,
               dopenssl = None,
               prefix = '/usr',
-              valgrind = None):
+              valgrind = None,
+              python_enabled = True):
 
   global config
   global elle
@@ -75,26 +76,28 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
-  python3 = drake.cxx.find_library(
-    'pyconfig.h',
-    prefix = python3,
-    include_dir = ['include',
-                   'include/python3.2',
-                   'include/python3.2m',
-                   'include/python3.3m',
-                   'include/python3.4m'])
-  python_version = cxx_toolkit.preprocess('''\
+  if python_enabled:
+    python3 = drake.cxx.find_library(
+      'pyconfig.h',
+      prefix = python3,
+      include_dir = ['include',
+                     'include/python3.2',
+                     'include/python3.2m',
+                     'include/python3.3m',
+                     'include/python3.4m'])
+    python_version = cxx_toolkit.preprocess('''\
 #include <patchlevel.h>
 PY_MAJOR_VERSION
 PY_MINOR_VERSION''', config = python3)
-  python_version = python_version.split('\n')[-3:-1]
-  python_version = drake.Version(*map(int, python_version))
-  if cxx_toolkit.os is drake.os.windows:
-    python_bin = 'python.exe'
-  else:
-    python_bin = 'bin/python%s' % python_version
-  python3.python_interpreter = python3.prefix / python_bin
-  set_python3(python3)
+    python_version = python_version.split('\n')[-3:-1]
+    python_version = drake.Version(*map(int, python_version))
+    if cxx_toolkit.os is drake.os.windows:
+      python_bin = 'python.exe'
+    else:
+      python_bin = 'bin/python%s' % python_version
+    python3.python_interpreter = python3.prefix / python_bin
+    set_python3(python3)
+
 
   ## -------- ##
   ## Patchelf ##
@@ -131,7 +134,7 @@ PY_MINOR_VERSION''', config = python3)
     targets = [patchelf],
     sources = [],
   )
-  if cxx_toolkit.os is not drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     cxx_toolkit.patchelf = patchelf
 
   ## ---- ##
@@ -161,6 +164,9 @@ PY_MINOR_VERSION''', config = python3)
     targets = ['%s/%s' % (zlib_basename, 'configure')],
   )
 
+  zlib_additional_env = {
+    'CFLAGS': '-fPIC',
+  }
   if cxx_toolkit.os is drake.os.windows:
     # XXX only for mingw
     zlib_makefile = 'win32/Makefile.gcc'
@@ -173,6 +179,13 @@ PY_MINOR_VERSION''', config = python3)
     zlib_configure_args = []
     if cxx_toolkit.os is drake.os.macos:
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
+    elif cxx_toolkit.os is drake.os.ios:
+      zlib_configure_args = ['--static']
+      zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
+      zlib_additional_env = {
+        'CC': 'clang -arch armv7 -mios-version-min=7.0',
+        'CFLAGS': '-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk',
+      }
     elif cxx_toolkit.os is drake.os.linux:
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
   zlib_libs = [zlib_lib,]
@@ -185,9 +198,7 @@ PY_MINOR_VERSION''', config = python3)
     configure_args = [
       '--prefix=%s' % zlib_prefix_absolute,
     ] + zlib_configure_args,
-    additional_env = {
-      'CFLAGS': '-fPIC',
-    },
+    additional_env = zlib_additional_env,
     working_directory = drake.path_build(zlib_build),
     targets = zlib_libs + drake.nodes('zlib/include/zlib.h',
                                       'zlib/include/zconf.h'),
@@ -302,13 +313,18 @@ PY_MINOR_VERSION''', config = python3)
   openssl_configure = drake.node(openssl_build / 'Configure')
   from drake.cxx import DynLib, StaticLib
   openssl_shared = True
+  openssl_after_configure = []
+  openssl_additional_env = {
+    'CC': cxx_toolkit.c,
+    'PERL': 'perl',
+  }
   if cxx_toolkit.os is drake.os.linux:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
     openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.so.1.0.0')
   elif cxx_toolkit.os is drake.os.macos:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.1.0.0.dylib')
     openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.1.0.0.dylib')
-  elif cxx_toolkit.os is drake.os.windows:
+  elif cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     openssl_lib_ssl = StaticLib(openssl_prefix / 'lib/libssl.a')
     openssl_lib_crypto = StaticLib(openssl_prefix / 'lib/libcrypto.a')
     openssl_shared = False
@@ -319,6 +335,15 @@ PY_MINOR_VERSION''', config = python3)
     os_string = 'mingw64'
   elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
+  elif cxx_toolkit.os is drake.os.ios:
+    os_string = 'BSD-generic32'
+    openssl_after_configure = [
+      ['perl', '-i', '-pe', '"s|static volatile sig_atomic_t intr_signal|static volatile int intr_signal|"', 'crypto/ui/ui_openssl.c'],
+      ['perl', '-i', '-pe', '"s|^CFLAG= (.*)|CFLAG= -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk|g"', 'Makefile'],
+    ]
+    openssl_additional_env = {
+      'CC': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/%(compiler)s -arch %(arch)s -mios-version-min=7.0' % {'compiler': cxx_toolkit.c, 'arch': 'armv7'},
+    }
   openssl_prefix_absolute = \
     drake.path_build(openssl_prefix, absolute = True)
   GNUBuilder(
@@ -338,10 +363,8 @@ PY_MINOR_VERSION''', config = python3)
     build_args = [
     'all', 'install',
     ],
-    additional_env = {
-        'PERL': 'perl',
-        'CC': cxx_toolkit.c,
-    },
+    additional_env = openssl_additional_env,
+    after_configure = openssl_after_configure,
   )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
@@ -371,7 +394,7 @@ PY_MINOR_VERSION''', config = python3)
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.4')
   elif cxx_toolkit.os is drake.os.macos:
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.4.dylib')
-  elif cxx_toolkit.os is drake.os.windows:
+  elif cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
   else:
     raise Exception('Unknown OS')
@@ -419,6 +442,11 @@ PY_MINOR_VERSION''', config = python3)
     key = 'DYLD_FALLBACK_LIBRARY_PATH'
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_environment[key] = str(path)
+  elif cxx_toolkit.os is drake.os.ios:
+    curl_environment = {
+      'CC': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/%(compiler)s -arch %(arch)s -mios-version-min=7.0' % {'compiler': cxx_toolkit.c, 'arch': 'armv7'},
+    }
+    curl_configure_args.append('--host=armv7-apple-darwin')
   elif cxx_toolkit.os is drake.os.windows:
     curl_environment['CC'] = cxx_toolkit.c
     curl_configure_args.append('--host=%s' % cxx_toolkit.prefix[:-1])
@@ -446,7 +474,7 @@ PY_MINOR_VERSION''', config = python3)
     curl_lib.dependency_add(lib)
   curl_config = drake.cxx.Config()
   curl_config.add_local_include_path(curl_prefix / 'include')
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     curl_config.define('CURL_STATICLIB', '1')
 
   ## ---------- ##
@@ -485,6 +513,15 @@ PY_MINOR_VERSION''', config = python3)
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
     libarchive_env = {}
+  elif cxx_toolkit.os is drake.os.ios:
+    libarchive_configure_args = ['--host=armv7-apple-darwin']
+    libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
+    bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
+    bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
+    libarchive_env = {
+      'CC': '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/%(compiler)s -arch %(arch)s -mios-version-min=7.0' % {'compiler': cxx_toolkit.c, 'arch': 'armv7'},
+      'CFLAGS': '-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk',
+    }
   else:
     libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
@@ -555,7 +592,7 @@ PY_MINOR_VERSION''', config = python3)
       fingerprint = 'd6eef4b4cacb2183f2bf265a5a03a354',
     )
     boost_patches = []
-    if cxx_toolkit.os is drake.os.macos:
+    if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
       boost_patches = [
             ('http://github.com/boostorg/atomic/commit/6bb71fdd.diff', 'ad340a11a0fb3be086bf26f1ef5fe6cd'),
             ('http://github.com/boostorg/atomic/commit/e4bde20f.diff', '54f082130659fde1fb04b59e10a34071'),
@@ -573,41 +610,56 @@ PY_MINOR_VERSION''', config = python3)
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
     boost_prefix = drake.path_root() / drake.path_build('boost')
-    boost_bootstrap_command = [
-      './bootstrap.sh',
-      '--prefix=%s' % boost_prefix,
-      '--with-python=%s' % python_version,
-      '--with-libraries=%s' % ','.join((
-        'atomic',
-        'chrono',
-        'date_time',
-        'filesystem',
-        'program_options',
-        'python',
-        'signals',
-        'system',
-        'test',
-        'thread',
-      )),
-    ]
-    boost_bjam = drake.node('boost/%s/b2' % boost_basename)
-    boost_libraries_names = (
+    boost_bootstrap_libraries = [
       'atomic',
       'chrono',
       'date_time',
       'filesystem',
       'program_options',
       'python',
-      'python3',
+      'signals',
+      'system',
+      'test',
+      'thread',
+    ]
+    if python_enabled:
+      boost_bootstrap_libraries.extend([
+        'python',
+      ])
+    boost_bootstrap_command = [
+      './bootstrap.sh',
+      '--prefix=%s' % boost_prefix,
+      '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
+    ]
+    if python_enabled:
+      boost_bootstrap_command.extend([
+        '--with-python=%s' % python_version,
+      ])
+    boost_bjam = drake.node('boost/%s/b2' % boost_basename)
+    boost_libraries_names = [
+      'atomic',
+      'chrono',
+      'date_time',
+      'filesystem',
+      'program_options',
       'signals',
       'system',
       cxx_toolkit.os is drake.os.windows and 'thread_win32' or 'thread',
       'unit_test_framework',
-    )
+    ]
+    if python_enabled:
+      boost_libraries_names.extend([
+        'python',
+        'python3',
+      ])
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.55.0.dylib'
+    elif cxx_toolkit.os is drake.os.ios:
+      boost_static_format = 'boost/lib/libboost_%s.a'
+      boost_dynamic_format = None
+      boost_dynamic_versioned_format = None
     elif cxx_toolkit.os is drake.os.windows:
       boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
@@ -645,29 +697,45 @@ PY_MINOR_VERSION''', config = python3)
         return self.__toolkit.cxx
       @property
       def format(self):
-        return '''\
+        if cxx_toolkit.os is drake.os.ios:
+          return '''\
+using darwin : 7.1~iphone
+: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden -DBOOST_AC_USE_PTHREADS -DBOOST_SP_USE_PTHREADS -std=c++11 -stdlib=libc++
+: <striper> <root>/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer
+: <architecture>arm <target-os>iphone
+;
+'''
+        else:
+          return '''\
 using %(compiler)s : : %(cxx)s ;
 using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib %(extra)s;
 '''
       @property
       def params(self):
         if cxx_toolkit.os is drake.os.windows:
-          extra = ': <target-os>windows ';
+          extra = ': <target-os>windows '
         else:
           extra = ''
         if cxx_toolkit.os is drake.os.macos:
           compiler = 'clang'
+        if cxx_toolkit.os is drake.os.ios:
+          compiler = 'darwin'
+          extra = ': <target-os>iphone : <architecture>arm'
         else:
           compiler = 'gcc'
-        return {
+        parameters = {
           'compiler': compiler,
           'cxx': self.__toolkit.cxx,
           'extra': extra,
-          'python_version': python_version,
-          'python_bin': python_bin,
-          'python_prefix': python3.prefix,
-          'python_include': python3.include_dir,
         }
+        if python_enabled:
+          parameters.update({
+            'python_version': python_version,
+            'python_bin': python_bin,
+            'python_prefix': python3.prefix,
+            'python_include': python3.include_dir,
+          })
+        return parameters
       def hash(self):
         return self.params
 
@@ -683,6 +751,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       targets = [boost_bjam],
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
+      environment = {},
       cwd = drake.path_build('boost/%s' % boost_basename))
     class BoostBuilder(drake.Builder):
       def __init__(self, sources, targets):
@@ -692,7 +761,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       def execute(self):
         command = [
           './b2', 'install',
-          'toolset=%s' % (cxx_toolkit.os is drake.os.macos and 'clang' or 'gcc'),
+          'toolset=%s' % (cxx_toolkit.os in [drake.os.macos, drake.os.ios] and 'darwin' or 'gcc'),
           '--user-config=user-config.jam',
         ]
         if cxx_toolkit.os is drake.os.windows:
@@ -710,6 +779,17 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           command += [
             'cxxflags=-stdlib=libc++ -std=c++11',
             'linkflags=-stdlib=libc++ -std=c++11',
+          ]
+        if cxx_toolkit.os is drake.os.ios:
+          command += [
+            'cxxflags=-stdlib=libc++ -std=c++11 -DBOOST_AC_USE_PTHREADS -DBOOST_SP_USE_PTHREADS',
+            'linkflags=-stdlib=libc++ -std=c++11',
+            'link=static',
+            'macosx-version=iphone-7.1',
+            'define=_LITTLE_ENDIAN',
+            'architecture=arm',
+            'target-os=iphone',
+            'architecture=arm',
           ]
         if cxx_toolkit.os is drake.os.windows:
           command += [
@@ -774,6 +854,9 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   elif cxx_toolkit.os == drake.os.macos:
     config.define('INFINIT_MACOSX')
     cxx_config.define('INFINIT_MACOSX')
+  elif cxx_toolkit.os is drake.os.ios:
+    config.define('INFINIT_IOS')
+    cxx_config.define('INFINIT_IOS')
   elif cxx_toolkit.os == drake.os.windows:
     config.define('INFINIT_WINDOWS')
     cxx_config.define('INFINIT_WINDOWS')
