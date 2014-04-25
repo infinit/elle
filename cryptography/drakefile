@@ -31,6 +31,11 @@ def configure(openssl_config,
   global lib_static, lib_dynamic, library
   global rule_build, rule_install
 
+  if cxx_toolkit.os is drake.os.ios:
+    boost_static_link = True
+  else:
+    boost_static_link = False;
+
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config)
@@ -60,9 +65,11 @@ def configure(openssl_config,
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += config
   cxx_config += boost.config()
-  cxx_config += boost.config_system()
+  cxx_config += boost.config_system(static = boost_static_link)
   cxx_config += elle.config
   cxx_config += openssl_config
+  if cxx_toolkit.os is drake.os.ios:
+    cxx_config.framework_add('Security')
 
   # Sources
   sources = drake.nodes(
@@ -159,7 +166,7 @@ def configure(openssl_config,
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -184,8 +191,8 @@ def configure(openssl_config,
   tests_cxx_config = drake.cxx.Config(cxx_config)
   tests_cxx_config += config
   tests_cxx_config += boost.config()
-  tests_cxx_config += boost.config_test()
-  tests_cxx_config += boost.config_thread()
+  tests_cxx_config += boost.config_test(static = boost_static_link)
+  tests_cxx_config += boost.config_thread(static = boost_static_link)
   tests_cxx_config += openssl_config
   if enable_rotation:
     tests_cxx_config += dopenssl
@@ -219,7 +226,7 @@ def configure(openssl_config,
   # Install
   rule_install = drake.Rule('install')
   prefix = drake.Path(prefix)
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
   rule_install << drake.install(
