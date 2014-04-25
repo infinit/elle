@@ -817,7 +817,7 @@ class GccToolkit(Toolkit):
 
   def rpath_set_command(self, binary, path):
     path = self.rpath(path)
-    if self.os is drake.os.macos:
+    if self.os in [drake.os.macos, drake.os.ios]:
       return ['install_name_tool',
               '-add_rpath', str(path),
               str(binary)]
