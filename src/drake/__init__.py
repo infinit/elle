@@ -1604,7 +1604,14 @@ class Builder:
         for c in cmd:
           c = list(map(str, c))
           if pretty is not None:
-            self.output(' '.join(c), pretty)
+            if env is not None:
+              output_env = ('%s=%s ' % (var, pipes.quote(value))
+                            for var, value in env.items())
+            else:
+              output_env = ()
+            output_cmd = map(pipes.quote, c)
+            self.output(' '.join(chain(output_env, output_cmd)),
+                        pretty)
           stdout = None
           if not leave_stdout:
             stdout = f
