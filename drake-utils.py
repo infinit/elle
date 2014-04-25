@@ -34,7 +34,8 @@ class GNUBuilder(drake.Builder):
                build_args: "Additional arguments for the make command" = ['install'],
                additional_env: "Additional environment variables" = {},
                configure_interpreter = None,
-               patch = None):
+               patch = None,
+               after_configure = []):
     self.__toolkit = cxx_toolkit
     self.__configure = configure
     self.__configure_interpreter = configure_interpreter
@@ -46,6 +47,7 @@ class GNUBuilder(drake.Builder):
     self.__env = {}
     self.__env.update(additional_env)
     self.__patch = patch
+    self.__after_configure = after_configure
     if make_binary is not None:
         self.__env.setdefault('MAKE', make_binary.replace('\\', '/'))
     if working_directory is not None:
@@ -83,6 +85,14 @@ class GNUBuilder(drake.Builder):
                          env = env,
                          leave_stdout = False):
              return False
+      # Step for modifying files after Configure has been called.
+      for line in self.__after_configure:
+        if not self.cmd('After Configure: %s' % self.work_directory,
+                        cwd = self.work_directory,
+                        cmd = line,
+                        env = env,
+                        leave_stdout = False):
+          return False
       # Build step
       if not self.cmd('Build %s' % self.work_directory,
                       self.command_build,
