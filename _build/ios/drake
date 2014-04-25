@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+# https://code.google.com/p/ios-static-libraries/
+
+import os
+import sys
+import subprocess
+root = os.path.dirname(__file__)
+drake = os.path.abspath(os.path.join(root, '../../drake/src'))
+sys.path.insert(0, drake)
+
+import resource
+resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
+
+import drake
+import drake.cxx
+
+os.environ['XCODE_DEVELOPER_USR_PATH'] = ''
+os.environ['SDKROOT'] = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk'
+os.environ['TOOLCHAINS'] = ''
+os.environ['DEVELOPER_DIR'] = '/Applications/Xcode.app/Contents/Developer'
+
+with drake.Drake('../..') as d:
+  cxx_compiler = os.getenv('CXX', 'clang++')
+  c_compiler = os.getenv('CC', 'clang')
+  cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler,
+                                     compiler_c = c_compiler)
+
+  cxx_config = drake.cxx.Config()
+  cxx_config.enable_debug_symbols()
+  cxx_config.enable_optimization(False)
+  cxx_config.flag('-arch')
+  cxx_config.flag('armv7')
+
+  # cxx_config.flag('-arch')
+  # cxx_config.flag('armv7s')
+
+  # cxx_config.flag('-arch')
+  # cxx_config.flag('arm64')
+
+  cxx_config.flag('-ftemplate-depth=512')
+  cxx_config.flag('-std=c++11')
+  cxx_config.flag('-fvisibility=hidden')
+  cxx_config.flag('-fvisibility-inlines-hidden')
+
+  cxx_config.flag('-isysroot')
+  cxx_config.flag('/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk')
+
+  cxx_config.flag('-stdlib=libc++')
+  cxx_config.flag('-mios-version-min=7.0')
+  cxx_config.warnings.overloaded_virtual = False
+
+  ios_build_variables = {
+    'min_version': '7.0',
+    'max_version': '7.1',
+    'SDKROOT': '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.1.sdk',
+  }
+
+  d.run(cxx_toolkit,
+        cxx_config,
+        python_enabled = False)
