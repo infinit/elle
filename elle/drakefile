@@ -58,7 +58,11 @@ def configure(zlib_lib,
     cxx_config += boost.config_system(static = True)
     cxx_config += boost.config_thread(static = True)
     cxx_config += boost.config_chrono(static = True)
+    boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
+    boost_python = drake.cxx.Config(boost.config_system(link = False))
+    boost_python.library_add(drake.copy(boost.python_dynamic,
+                                        'lib', strip_prefix = True))
     cxx_config += boost.config_system(link = False)
     cxx_config.library_add(drake.copy(boost.system_dynamic,
                                       'lib', strip_prefix = True))
@@ -416,18 +420,17 @@ def configure(zlib_lib,
     python_cxx_config += python3
     python_cxx_config.lib_path_runtime('../..')
     python_lib_sources = [drake.node('src/elle/log/python.cc')]
-    if cxx_toolkit.os == drake.os.windows:
-      python_cxx_config += boost.config_python(static = True)
-      python_cxx_config.define('BOOST_PYTHON_STATIC_LIB')
-      python_cxx_config.flag('-Wl,-Bdynamic')
-      python_lib_sources.append(lib_static)
+    python_cxx_config += boost_python
+    if cxx_toolkit.os is drake.os.windows:
+      python_log_lib = drake.cxx.StaticLib(
+        'lib/python/elle/_log',
+        python_lib_sources,
+        cxx_toolkit, python_cxx_config)
     else:
-      python_cxx_config += boost.config_python(static = False)
-      python_lib_sources.append(lib_dynamic)
-    python_log_lib = drake.cxx.Module(
-      'lib/python/elle/_log',
-      python_lib_sources,
-      cxx_toolkit, python_cxx_config)
+      python_log_lib = drake.cxx.Module(
+        'lib/python/elle/_log',
+        python_lib_sources,
+        cxx_toolkit, python_cxx_config)
     python.append(python_log_lib)
 
     python_sources = drake.nodes(
@@ -437,11 +440,18 @@ def configure(zlib_lib,
     python += drake.copy(python_sources, 'lib/python', 'src')
     python_rule << python
 
-    python_plugin_datetime = drake.cxx.Module(
-      'lib/python-datetime-bindings',
-      drake.nodes('src/elle/python/datetime-converter.cc'),
-      cxx_toolkit,
-      python_cxx_config)
+    if cxx_toolkit.os is drake.os.windows:
+      python_plugin_datetime = drake.cxx.StaticLib(
+        'lib/python-datetime-bindings',
+        drake.nodes('src/elle/python/datetime-converter.cc'),
+        cxx_toolkit,
+        python_cxx_config)
+    else:
+      python_plugin_datetime = drake.cxx.Module(
+        'lib/python-datetime-bindings',
+        drake.nodes('src/elle/python/datetime-converter.cc'),
+        cxx_toolkit,
+        python_cxx_config)
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
