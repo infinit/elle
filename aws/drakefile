@@ -53,7 +53,7 @@ def configure(cryptography,
   local_cxx_config.enable_debug_symbols()
   local_cxx_config += config
 
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     local_cxx_config += boost.config_date_time(static = True)
   else:
     local_cxx_config += boost.config_date_time(link = False)
@@ -92,7 +92,7 @@ def configure(cryptography,
   global rule_build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -108,9 +108,9 @@ def configure(cryptography,
   ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-  if cxx_toolkit.os is drake.os.windows:
-    cxx_config_tests += boost.config_test()
-    cxx_config_tests += boost.config_system()
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+    cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_system(static = True)
   else:
     cxx_config_tests += boost.config_system(link = False)
     cxx_config_tests.library_add(
