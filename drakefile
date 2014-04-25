@@ -612,6 +612,8 @@ PY_MINOR_VERSION''', config = python3)
     boost_prefix = drake.path_root() / drake.path_build('boost')
     boost_bootstrap_libraries = [
       'atomic',
+      'context',
+      'coroutine',
       'chrono',
       'date_time',
       'filesystem',
