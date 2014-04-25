@@ -1768,12 +1768,22 @@ class Builder:
         with logger.log('drake.Builder',
                         drake.log.LogLevel.debug,
                         '%s: build static dependencies', self):
+          run_builders = set()
+          built_dependencies = set()
           with sched.Scope() as scope:
             for node in chain(self.__sources.values(),
                               self.__vsrcs.values()):
               if _can_skip_node(node):
                 continue
-              scope.run(node.build, str(node))
+              skip = True
+              if node.builder not in run_builders:
+                skip = False
+                run_builders.add(node.builder)
+              for dep in node.dependencies:
+                skip = False
+                built_dependencies.add(dep)
+              if not skip:
+                scope.run(node.build, str(node))
         # Build dynamic dependencies
         with logger.log('drake.Builder',
                         drake.log.LogLevel.debug,
