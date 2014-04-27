@@ -218,6 +218,8 @@ for prop, library in Boost._Boost__libraries.items():
         macro = prop.upper()
         macro += static and '_STATIC' or '_DYN'
         c.define('BOOST_%s_LINK' % macro, 1)
+        if prop.startswith('python') and static:
+          c.define('BOOST_PYTHON_STATIC_LIB')
         setattr(self, name + '_header', Config(c))
         c.library_add(lib)
         setattr(self, name, Config(c))
