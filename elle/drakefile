@@ -401,6 +401,14 @@ def configure(zlib_lib,
     cxx_config,
   )
 
+  rule_build = drake.Rule('build')
+  rule_build << lib_static
+  if cxx_toolkit.os != drake.os.windows:
+    rule_build << lib_dynamic
+    library = lib_dynamic
+  else:
+    library = lib_static
+
   ## ------ ##
   ## Python ##
   ## ------ ##
@@ -423,7 +431,7 @@ def configure(zlib_lib,
     python_cxx_config += boost_python
     python_log_lib = drake.cxx.Module(
       'lib/python/elle/_log',
-      python_lib_sources + [lib_dynamic],
+      python_lib_sources + [library],
       cxx_toolkit, python_cxx_config)
     python.append(python_log_lib)
 
@@ -446,14 +454,6 @@ def configure(zlib_lib,
         drake.nodes('src/elle/python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
-
-  rule_build = drake.Rule('build')
-  rule_build << lib_static
-  if cxx_toolkit.os != drake.os.windows:
-    rule_build << lib_dynamic
-    library = lib_dynamic
-  else:
-    library = lib_static
 
   global dpkg_preload
   dpkg_preload = drake.cxx.Module('dpkg_preload',
