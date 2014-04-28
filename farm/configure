@@ -61,7 +61,7 @@ parameters = {
 if osyst == 'linux_ubuntu_14':
   parameters['valgrind'] = True
 elif osyst == 'linux_debian_squeeze':
-  raise Exception('no Debian squeeze environment for now')
+  pass
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
