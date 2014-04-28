@@ -59,7 +59,6 @@ parameters = {
 }
 
 if osyst == 'linux_ubuntu_14':
-  parameters['boost'] = '/home/buildslave/local'
   parameters['valgrind'] = True
 elif osyst == 'linux_debian_squeeze':
   raise Exception('no Debian squeeze environment for now')
@@ -67,11 +66,9 @@ elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
-  parameters['boost'] = '/usr/local'
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
 elif osyst == 'win':
   parameters['compiler'] = '%s-w64-mingw32-g++' % arch
-  parameters['boost'] = '/usr/local'
   parameters['boost_shared'] = False
   if arch == 'x86_64':
     parameters['python'] = '/home/buildslave/local/python-mingw-64'
