@@ -73,7 +73,10 @@ elif osyst == 'win':
   parameters['compiler'] = '%s-w64-mingw32-g++' % arch
   parameters['boost'] = '/usr/local'
   parameters['boost_shared'] = False
-  parameters['python'] = '/home/buildslave/local/python-mingw'
+  if arch == 'x86_64':
+    parameters['python'] = '/home/buildslave/local/python-mingw-64'
+  else:
+    parameters['python'] = '/home/buildslave/local/python-mingw-32'
 else:
   raise Exception('invalid OS: %s' % osyst)
 
