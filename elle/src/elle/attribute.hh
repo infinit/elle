@@ -6,6 +6,22 @@
 # include <boost/call_traits.hpp>
 # include <boost/preprocessor/seq/cat.hpp>
 
+namespace elle
+{
+  namespace _detail
+  {
+    template <typename T>
+    struct attribute_r_type
+    {
+      typedef typename std::conditional<
+        std::is_fundamental<T>::value ||
+        std::is_enum<T>::value ||
+        std::is_pointer<T>::value,
+        T, T const&>::type type;
+    };
+  }
+}
+
 /// Define a private attribute.
 # define ELLE_ATTRIBUTE(_type_, _name_)                                 \
   private:                                                              \
@@ -14,8 +30,7 @@
 /// Define an accessor returning a const reference on the attribute.
 # define ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)                      \
   public:                                                               \
-  typename std::remove_const<                                           \
-    typename boost::call_traits<_type_>::param_type>::type              \
+  typename ::elle::_detail::attribute_r_type<_type_>::type              \
   _name_() const
 
 /// Define and implement an accessor returning a const reference

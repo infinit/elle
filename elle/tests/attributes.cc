@@ -89,12 +89,50 @@ test_x()
   BOOST_CHECK_EQUAL(t.x().copy, 2);
 }
 
+enum class dummy_enum
+{};
+
+class Object
+{};
+
+class Types
+{
+public:
+  static int i;
+  Types()
+    : _integer_ref(i)
+  {}
+
+  ELLE_ATTRIBUTE_RWX(int, integer);
+  ELLE_ATTRIBUTE_RWX(dummy_enum, enumeration);
+  ELLE_ATTRIBUTE_RWX(int*, pointer);
+  ELLE_ATTRIBUTE_RWX(int&, integer_ref);
+  ELLE_ATTRIBUTE_RWX(Object, object);
+};
+int Types::i;
+
+
+static
+void
+types()
+{
+  Types t;
+  Types const& ct = t;
+  BOOST_CHECK((std::is_same<decltype(ct.integer()), int>::value));
+  BOOST_CHECK((std::is_same<decltype(t.integer()), int&>::value));
+  BOOST_CHECK((std::is_same<decltype(ct.enumeration()), dummy_enum>::value));
+  BOOST_CHECK((std::is_same<decltype(t.enumeration()), dummy_enum&>::value));
+  BOOST_CHECK((std::is_same<decltype(ct.pointer()), int*>::value));
+  BOOST_CHECK((std::is_same<decltype(t.pointer()), int*&>::value));
+  BOOST_CHECK((std::is_same<decltype(ct.object()), Object const&>::value));
+  BOOST_CHECK((std::is_same<decltype(t.object()), Object&>::value));
+};
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* exn = BOOST_TEST_SUITE("attributes");
-  boost::unit_test::framework::master_test_suite().add(exn);
-  exn->add(BOOST_TEST_CASE(test_r));
-  exn->add(BOOST_TEST_CASE(test_w));
-  exn->add(BOOST_TEST_CASE(test_x));
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(test_r));
+  suite.add(BOOST_TEST_CASE(test_w));
+  suite.add(BOOST_TEST_CASE(test_x));
+  suite.add(BOOST_TEST_CASE(types));
 }
