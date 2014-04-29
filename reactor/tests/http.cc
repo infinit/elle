@@ -438,7 +438,8 @@ concurrent()
     auto fn = [&]
     {
       auto url = elle::sprintf("http://127.0.0.1:%s/some/path", port);
-      auto res = reactor::http::get(url);
+      auto res = reactor::http::get(
+        url, reactor::http::Request::Configuration(100_sec));
       BOOST_CHECK_EQUAL(res.string().substr(0, 4), "lol\n");
     };
 
@@ -724,7 +725,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(no_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(partial_answer), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_reset), 0, 10);
-  suite.add(BOOST_TEST_CASE(concurrent), 0, 30);
+  suite.add(BOOST_TEST_CASE(concurrent), 0, 100);
   suite.add(BOOST_TEST_CASE(timeout), 0, 10);
   suite.add(BOOST_TEST_CASE(post_no_body), 0, 10);
   suite.add(BOOST_TEST_CASE(post_10), 0, 10);
