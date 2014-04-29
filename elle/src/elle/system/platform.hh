@@ -1,6 +1,8 @@
 #ifndef ELLE_SYSTEM_PLATFORM_HH
 # define ELLE_SYSTEM_PLATFORM_HH
 
+# include <string>
+
 namespace elle
 {
   namespace system
@@ -13,6 +15,11 @@ namespace elle
 # undef linux
 #endif
 
+    namespace platform
+    {
+      std::string
+      name();
+    }
   }
 }
 
