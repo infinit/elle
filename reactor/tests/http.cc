@@ -364,7 +364,7 @@ void
 concurrent()
 {
   static int const concurrent = 8;
-  static size_t const message_size = 2000;
+  static size_t const message_size = 1000;
   reactor::Scheduler sched;
 
   int port;
