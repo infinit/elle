@@ -85,7 +85,7 @@ elif osyst == 'win':
   else:
     parameters['python'] = '/home/buildslave/local/python-mingw-32'
     if os.environ['PROJECT'] == 'Infinit':
-      parameters['qt'] = '/home/buildslave/local/qt-mingw-32'
+      parameters['qt'] = '/home/buildslave/local/Qt-mingw-32'
 else:
   raise Exception('invalid OS: %s' % osyst)
 
