@@ -140,8 +140,8 @@ class Qt:
         compiler.add_dynsrc(deps_handler_name, res, source = False)
 
   def hook_bin_deps(self, compiler):
-    for source in chain(compiler.sources().values(),
-                        compiler.sources_dynamic()):
+    for source in list(chain(compiler.sources().values(),
+                             compiler.sources_dynamic())):
       for dep in self.__dependencies.get(source, ()):
         compiler.add_dynsrc(deps_handler_name, dep)
 
