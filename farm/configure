@@ -33,6 +33,14 @@ cxx_config.enable_optimization(True)
 for f in %(flags)r:
   cxx_config.flag(f)
 
+extra_args = {}
+
+qt = %(qt)r
+if qt is not None:
+  import drake.cxx.qt
+  qt = drake.cxx.qt.Qt(qt)
+  extra_args['qt'] = qt
+
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
   import drake.valgrind
@@ -44,7 +52,8 @@ with drake.Drake(%(dir_source)r) as d:
   d.run(cxx_toolkit,
         cxx_config,
         python3 = python,
-        valgrind = valgrind)
+        valgrind = valgrind,
+        **extra_args)
 '''
 
 
@@ -56,12 +65,14 @@ parameters = {
   'boost_shared': True,
   'python': None,
   'valgrind': False,
+  'qt': None,
 }
 
 if osyst == 'linux_ubuntu_14':
   parameters['valgrind'] = True
 elif osyst == 'linux_debian_squeeze':
-  pass
+  if os.environ['PROJECT'] == 'Infinit':
+    parameters['qt'] = '/home/buildslave/local/qt-mingw-32'
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
