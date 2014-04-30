@@ -20,7 +20,7 @@ import tempfile
 from drake.utils import property_memoize
 from itertools import chain
 
-from .. import ShellCommand, Builder, Node, Path, node, Exception, arch, cmd, command_add, debug, Expander, FileExpander
+from .. import ShellCommand, Builder, Node, Path, node, Exception, cmd, command_add, debug, Expander, FileExpander
 from .. import utils
 from .. import sched
 
@@ -537,7 +537,6 @@ class GccToolkit(Toolkit):
 
   def __init__(self, compiler = None, compiler_c = None, os = None):
     Toolkit.__init__(self)
-    self.arch = arch.x86
     self.os = os
     self.__include_path = None
     self.__recursive_linkage = False
@@ -547,9 +546,13 @@ class GccToolkit(Toolkit):
       version = subprocess.check_output([self.cxx, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
-    apple, win32, linux, clang = self.preprocess_isdef(
-      ('__APPLE__', '_WIN32', '__linux__', '__clang__'))
+    apple, win32, win64, linux, clang, x86_64 = self.preprocess_isdef(
+      ('__APPLE__', '_WIN32', '_WIN64', '__linux__', '__clang__', '__x86_64__'))
     if self.os is None:
+      if x86_64:
+        self.architecture = drake.architecture.x86_64
+      else:
+        self.architecture = drake.architecture.x86
       if apple:
         mac_os, iphone, iphone_simulator = self.preprocess_istrue(
           ('TARGET_OS_MAC', 'TARGET_OS_IPHONE', 'TARGET_IPHONE_SIMULATOR'),
@@ -560,8 +563,12 @@ class GccToolkit(Toolkit):
           self.os = drake.os.ios
         else:
           self.os = drake.os.macos
-      elif win32:
+      elif win32 or win64:
         self.os = drake.os.windows
+        if win64:
+          self.architecture = drake.architecture.x86_64
+        else:
+          self.architecture = drake.architecture.x86
       elif linux:
         self.os = drake.os.linux
       else:
@@ -885,7 +892,6 @@ class GccToolkit(Toolkit):
 
 class VisualToolkit(Toolkit):
 
-  arch = arch.x86
   os = drake.os.windows
 
   def __init__(self,

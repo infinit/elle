@@ -2957,12 +2957,9 @@ def touch(path):
   return res
 
 # Architectures
-class arch:
-
-    """Architectures enum."""
-
-    x86 = 0
-    arm7 = 1
+class architecture(Enumerated,
+                   values = ['x86', 'x86_64', 'arm7']):
+  pass
 
 # OSes
 class os:
