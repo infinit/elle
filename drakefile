@@ -46,9 +46,9 @@ def configure(openssl_config,
     boost_test = boost.config_test(static = True)
     boost_thread = boost.config_thread(static = True)
   else:
-    boost_test = boost.config_test(link = False)
+    boost_test = drake.cxx.Config(boost.config_test(link = False))
     boost_test.library_add(drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    boost_thread = boost.config_thread(link = False)
+    boost_thread = drake.cxx.Config(boost.config_thread(link = False))
     boost_thread.library_add(drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
 
   elle_lib_static = elle.lib_static
