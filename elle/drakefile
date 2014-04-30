@@ -43,7 +43,7 @@ def configure(zlib_lib,
   global python_plugin_datetime
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
-  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
