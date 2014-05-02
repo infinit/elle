@@ -12,7 +12,7 @@ namespace elle
   Backtrace::current(unsigned skip)
   {
 # ifdef INFINIT_WINDOWS
-    return Backtrace();
+    return Backtrace::_current();
 # else
     static const size_t size = 128;
     void* callstack[size];

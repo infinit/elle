@@ -32,10 +32,14 @@ namespace elle
     void
     strip_base(const Backtrace& base);
   private:
-# ifndef _MSC_VER
+# ifndef INFINIT_WINDOWS
     static
     Backtrace
     _current(void** callstack, size_t frames, unsigned skip);
+# else
+    static
+    Backtrace
+    _current();
 # endif
   };
 

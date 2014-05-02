@@ -783,6 +783,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     cxx_config.define('INFINIT_WINDOWS')
     cxx_config.define('BOOST_USE_WINDOWS_H')
     cxx_config.define('WIN32_LEAN_AND_MEAN')
+    cxx_config.lib('dbghelp')
     cxx_config.lib('shlwapi')
     cxx_config.lib('ws2_32')
     cxx_config.lib('gdi32')
