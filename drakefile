@@ -46,6 +46,7 @@ def set_python3(value):
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
+              production_build = False,
               boost = None,
               python3 = None,
               enable_rotation = False,
