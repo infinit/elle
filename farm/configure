@@ -53,7 +53,7 @@ with drake.Drake(%(dir_source)r) as d:
         cxx_config,
         python3 = python,
         valgrind = valgrind,
-        fist_production_build = $(fist_production_build)r,
+        fist_production_build = %(fist_production_build)r,
         **extra_args)
 '''
 
