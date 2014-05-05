@@ -76,14 +76,29 @@ namespace elle
     Serializer::_serialize(std::string const& name,
                            std::list<T>& array)
     {
-      this->_serialize_array(
-        name,
-        [&] ()
-        {
-          // FIXME: Use array.emplace_back(*this) if possible.
-          array.emplace_back();
-          this->_serialize_anonymous(name, array.back());
-        });
+      if (!array.empty())
+      {
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            for (auto& elt: array)
+            {
+              this->_serialize_anonymous(name, elt);
+            }
+          });
+      }
+      else
+      {
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            // FIXME: Use array.emplace_back(*this) if possible.
+            array.emplace_back();
+            this->_serialize_anonymous(name, array.back());
+          });
+      }
     }
   }
 }

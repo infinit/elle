@@ -368,6 +368,8 @@ def configure(zlib_lib,
     'src/elle/serialization/json/MissingKey.hh',
     'src/elle/serialization/json/SerializerIn.cc',
     'src/elle/serialization/json/SerializerIn.hh',
+    'src/elle/serialization/json/SerializerOut.cc',
+    'src/elle/serialization/json/SerializerOut.hh',
     'src/elle/serialization/json/TypeError.cc',
     'src/elle/serialization/json/TypeError.hh',
   )

@@ -14,14 +14,18 @@ static
 void
 integer()
 {
-  std::stringstream stream(
-    "{"
-    "  \"int\": 42"
-    "}");
-  typename Format::SerializerIn input(stream);
-  int i = 0;
-  input.serialize("int", i);
-  BOOST_CHECK_EQUAL(i, 42);
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    int i = 42;
+    output.serialize("int", i);
+  }
+  {
+    typename Format::SerializerIn input(stream);
+    int i = 0;
+    input.serialize("int", i);
+    BOOST_CHECK_EQUAL(i, 42);
+  }
 }
 
 class Point
@@ -73,14 +77,17 @@ static
 void
 object()
 {
-  std::stringstream stream(
-    "{"
-    "  \"x\": 42,"
-    "  \"y\": 51"
-    "}");
-  typename Format::SerializerIn input(stream);
-  Point p(input);
-  BOOST_CHECK_EQUAL(p, Point(42, 51));
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    Point p(42, 51);
+    p.serialize(output);
+  }
+  {
+    typename Format::SerializerIn input(stream);
+    Point p(input);
+    BOOST_CHECK_EQUAL(p, Point(42, 51));
+  }
 }
 
 class Line
@@ -132,28 +139,27 @@ static
 void
 object_composite()
 {
-  std::stringstream stream(
-    "{"
-    "  \"start\":"
-    "  {"
-    "    \"x\": 42,"
-    "    \"y\": 51"
-    "  },"
-    "  \"end\":"
-    "  {"
-    "    \"x\": 69,"
-    "    \"y\": 86"
-    "  }"
-    "}"
-    );
-  typename Format::SerializerIn input(stream);
-  Line l(input);
-  BOOST_CHECK_EQUAL(l, Line(Point(42, 51), Point(69, 86)));
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    Line l(Point(42, 51), Point(69, 86));
+    l.serialize(output);
+  }
+  {
+    typename Format::SerializerIn input(stream);
+    Line l(input);
+    BOOST_CHECK_EQUAL(l, Line(Point(42, 51), Point(69, 86)));
+  }
 }
 
 class Lists
 {
 public:
+  Lists()
+    : ints()
+    , strings()
+  {}
+
   Lists(elle::serialization::Serializer& s)
     : ints()
     , strings()
@@ -177,16 +183,20 @@ static
 void
 array()
 {
-  std::stringstream stream(
-    "{"
-    "  \"ints\": [0, 1, 2],"
-    "  \"strings\": [\"foo\", \"bar\", \"baz\"]"
-    "}"
-    );
-  typename Format::SerializerIn input(stream);
-  Lists l(input);
-  BOOST_CHECK_EQUAL(l.ints, (std::list<int>{0, 1, 2}));
-  BOOST_CHECK_EQUAL(l.strings, (std::list<std::string>{"foo", "bar", "baz"}));
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    Lists l;
+    l.ints = {0, 1, 2};
+    l.strings = {"foo", "bar", "baz"};
+    l.serialize(output);
+  }
+  {
+    typename Format::SerializerIn input(stream);
+    Lists l(input);
+    BOOST_CHECK_EQUAL(l.ints, (std::list<int>{0, 1, 2}));
+    BOOST_CHECK_EQUAL(l.strings, (std::list<std::string>{"foo", "bar", "baz"}));
+  }
 }
 
 

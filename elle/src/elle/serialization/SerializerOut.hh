@@ -17,6 +17,8 @@ namespace elle
       SerializerOut(std::ostream& output);
 
     protected:
+      std::ostream&
+      output();
       ELLE_ATTRIBUTE(std::ostream&, output);
     };
   }
