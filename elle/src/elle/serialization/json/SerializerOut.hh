@@ -1,6 +1,8 @@
 #ifndef ELLE_SERIALIZATION_JSON_SERIALIZEROUT_HH
 # define ELLE_SERIALIZATION_JSON_SERIALIZEROUT_HH
 
+# include <vector>
+
 # include <boost/any.hpp>
 
 # include <elle/attribute.hh>
