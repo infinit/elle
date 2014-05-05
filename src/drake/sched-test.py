@@ -30,7 +30,7 @@ class TestStandaloneCoroutine(unittest.TestCase):
     self.beacon = n + 3
 
   def coroutine_wait(self, coro, n):
-    sched.coro_wait(coro)
+    sched.wait(coro)
     self.beacon = n
 
   def coroutine_raise(self):
@@ -187,14 +187,14 @@ class TestScheduler(unittest.TestCase):
 
   def test_wait(self):
     c1 = sched.Coroutine(self.coroutine1, 'coro1', self.scheduler)
-    cw = sched.Coroutine(lambda: self.coroutine_wait(c1), 'coro_wait',
+    cw = sched.Coroutine(lambda: self.coroutine_wait(c1), 'wait',
                    self.scheduler)
     self.scheduler.run()
 
   def test_reactor(self):
 
     s = Sleep(1)
-    cw = sched.Coroutine(lambda: self.coroutine_wait(s), 'coro_wait',
+    cw = sched.Coroutine(lambda: self.coroutine_wait(s), 'wait',
                    self.scheduler)
     sleeper = sched.Coroutine(s.start, 'coro_sleep', self.scheduler)
     self.scheduler.run()

@@ -591,7 +591,7 @@ def background(f):
         self.exception = e
   op = Background()
   op.start()
-  coro_wait(op)
+  wait(op)
   if hasattr(op, 'exception'):
     raise op.exception
   else:
