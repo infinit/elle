@@ -107,15 +107,16 @@ namespace reactor
                         state_changed);
       ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Transition&)>,
                         transition_triggered);
+      ELLE_ATTRIBUTE_R(State*, current_state);
 
     /*----------.
     | Printable |
     `----------*/
-      ELLE_ATTRIBUTE_R(std::string, name);
     public:
       virtual
       void
       print(std::ostream& stream) const;
+      ELLE_ATTRIBUTE_R(std::string, name);
     };
   }
 }

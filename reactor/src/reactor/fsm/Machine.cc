@@ -28,6 +28,7 @@ namespace reactor
       _transitions(),
       _running(false),
       _exception(nullptr),
+      _current_state(nullptr),
       _name(name)
     {}
 
@@ -114,8 +115,8 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: run", *this);
       this->_running = true;
       elle::SafeFinally finally([&] { this->_running = false; });
-      State* current = &start;
-      while (current = this->_run_state(current))
+      this->_current_state = &start;
+      while (this->_current_state = this->_run_state(this->_current_state))
         /* nothing */;
     }
 
