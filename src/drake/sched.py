@@ -550,8 +550,10 @@ class ThreadedOperation(Signal):
     Scheduler._Scheduler__pool.run(self.__run)
 
   def __run(self):
-    self.run()
-    Scheduler.scheduler().schedule(self.signal)
+    try:
+      self.run()
+    finally:
+      Scheduler.scheduler().schedule(self.signal)
 
 def coro_yield(handle_exceptions = True):
   Coroutine.current._Coroutine__yield()
