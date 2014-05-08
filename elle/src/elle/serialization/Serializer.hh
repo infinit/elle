@@ -75,6 +75,8 @@ namespace elle
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
+      bool
+      _out() const;
     };
 
     template <typename T>

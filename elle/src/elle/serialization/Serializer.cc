@@ -1,3 +1,4 @@
+#include <elle/serialization/SerializerOut.hh>
 #include <elle/serialization/Serializer.hh>
 
 namespace elle
@@ -11,5 +12,11 @@ namespace elle
     void
     Serializer::_leave(std::string const&)
     {}
+
+    bool
+    Serializer::_out() const
+    {
+      return dynamic_cast<SerializerOut const*>(this);
+    }
   }
 }

@@ -106,7 +106,7 @@ namespace elle
     void
     Serializer::_serialize(std::string const& name, std::pair<T1, T2>& pair)
     {
-      if (dynamic_cast<SerializerOut*>(this))
+      if (this->_out())
       {
         this->_serialize_array(
           name,
