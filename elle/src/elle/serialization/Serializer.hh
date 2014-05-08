@@ -65,9 +65,9 @@ namespace elle
       virtual
       void
       _serialize(std::string const& name, std::string& v) = 0;
-      template <typename T>
+      template <template <typename, typename> class C, typename T, typename A>
       void
-      _serialize(std::string const& name, std::list<T>& array);
+      _serialize(std::string const& name, C<T, A>& collection);
     private:
       template <typename T>
       void

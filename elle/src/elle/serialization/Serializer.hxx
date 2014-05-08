@@ -71,18 +71,18 @@ namespace elle
       _detail::_serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
-    template <typename T>
+    template <template <typename, typename> class C, typename T, typename A>
     void
     Serializer::_serialize(std::string const& name,
-                           std::list<T>& array)
+                           C<T, A>& collection)
     {
-      if (!array.empty())
+      if (!collection.empty())
       {
         this->_serialize_array(
           name,
           [&] ()
           {
-            for (auto& elt: array)
+            for (auto& elt: collection)
             {
               this->_serialize_anonymous(name, elt);
             }
@@ -95,8 +95,8 @@ namespace elle
           [&] ()
           {
             // FIXME: Use array.emplace_back(*this) if possible.
-            array.emplace_back();
-            this->_serialize_anonymous(name, array.back());
+            collection.emplace_back();
+            this->_serialize_anonymous(name, collection.back());
           });
       }
     }

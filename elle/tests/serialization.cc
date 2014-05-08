@@ -1,9 +1,14 @@
+#include <deque>
 #include <list>
 #include <sstream>
 #include <string>
+#include <unordered_set>
+#include <vector>
 
 #include <elle/attribute.hh>
+#include <elle/container/deque.hh>
 #include <elle/container/list.hh>
+#include <elle/container/vector.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/TypeError.hh>
@@ -152,6 +157,7 @@ object_composite()
   }
 }
 
+template <template <typename, typename> class Container>
 class Lists
 {
 public:
@@ -174,11 +180,11 @@ public:
     s.serialize("strings", this->strings);
   }
 
-  std::list<int> ints;
-  std::list<std::string> strings;
+  Container<int, std::allocator<int>> ints;
+  Container<std::string, std::allocator<std::string>> strings;
 };
 
-template <typename Format>
+template <typename Format, template <typename, typename> class Container>
 static
 void
 array()
@@ -186,16 +192,19 @@ array()
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
-    Lists l;
+    Lists<Container> l;
     l.ints = {0, 1, 2};
     l.strings = {"foo", "bar", "baz"};
     l.serialize(output);
   }
   {
     typename Format::SerializerIn input(stream);
-    Lists l(input);
-    BOOST_CHECK_EQUAL(l.ints, (std::list<int>{0, 1, 2}));
-    BOOST_CHECK_EQUAL(l.strings, (std::list<std::string>{"foo", "bar", "baz"}));
+    Lists<Container> l(input);
+    BOOST_CHECK_EQUAL(l.ints,
+                      (Container<int, std::allocator<int>>{0, 1, 2}));
+    BOOST_CHECK_EQUAL(l.strings,
+                      (Container<std::string, std::allocator<std::string>>
+                      {"foo", "bar", "baz"}));
   }
 }
 
@@ -255,7 +264,12 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(integer<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(object<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(array<elle::serialization::Json>));
+  auto list = &array<elle::serialization::Json, std::list>;
+  suite.add(BOOST_TEST_CASE(list));
+  auto deque = &array<elle::serialization::Json, std::deque>;
+  suite.add(BOOST_TEST_CASE(deque));
+  auto vector = &array<elle::serialization::Json, std::vector>;
+  suite.add(BOOST_TEST_CASE(vector));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }
