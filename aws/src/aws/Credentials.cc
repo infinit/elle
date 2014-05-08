@@ -1,7 +1,9 @@
 #include <aws/Credentials.hh>
 
-#include <elle/printf.hh>
 #include <elle/log.hh>
+#include <elle/printf.hh>
+#include <elle/serialization/Serializer.hh>
+#include <elle/serialization/SerializerIn.hh>
 
 #include <aws/Exceptions.hh>
 
@@ -84,6 +86,23 @@ namespace aws
       res = true;
     }
     return res;
+  }
+
+  Credentials::Credentials(elle::serialization::SerializerIn& s)
+  {
+    this->serialize(s);
+  }
+
+  void
+  Credentials::serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("access_keys_id", this->_access_key_id);
+    s.serialize("secret_access_key", this->_secret_access_key);
+    s.serialize("session_token", this->_session_token);
+    s.serialize("region", this->_region);
+    s.serialize("bucket", this->_bucket);
+    s.serialize("folder", this->_folder);
+    s.serialize("expiration", this->_expiration_str);
   }
 
   void

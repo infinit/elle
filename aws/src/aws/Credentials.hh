@@ -7,6 +7,7 @@
 
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
+# include <elle/serialization/fwd.hh>
 
 # include <aws/Keys.hh>
 
@@ -19,6 +20,7 @@ namespace aws
       | Construction |
       `-------------*/
     public:
+      Credentials() = default;
       Credentials(std::string const& access_key_id,
                   std::string const& secret_access_key,
                   std::string const& session_token,
@@ -44,11 +46,18 @@ namespace aws
 
       ELLE_ATTRIBUTE_R(boost::posix_time::ptime, expiry);
 
+      /*--------------.
+      | Serialization |
+      `--------------*/
+    public:
+      Credentials(elle::serialization::SerializerIn& s);
+      void
+      serialize(elle::serialization::Serializer& s);
+
       /*----------.
       | Printable |
       `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const;
   };
