@@ -1,6 +1,7 @@
-#include <iostream>
 #ifndef ELLE_SERIALIZATION_SERIALIZER_HXX
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
+
+# include <elle/serialization/Error.hh>
 
 namespace elle
 {
@@ -97,6 +98,38 @@ namespace elle
             // FIXME: Use array.emplace_back(*this) if possible.
             collection.emplace_back();
             this->_serialize_anonymous(name, collection.back());
+          });
+      }
+    }
+
+    template <typename T1, typename T2>
+    void
+    Serializer::_serialize(std::string const& name, std::pair<T1, T2>& pair)
+    {
+      if (dynamic_cast<SerializerOut*>(this))
+      {
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            this->_serialize_anonymous(name, pair.first);
+            this->_serialize_anonymous(name, pair.second);
+          });
+      }
+      else
+      {
+        int i = 0;
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            if (i == 0)
+              this->_serialize_anonymous(name, pair.first);
+            else if (i == 1)
+              this->_serialize_anonymous(name, pair.second);
+            else
+              throw Error("too many values to unpack for a pair");
+            ++i;
           });
       }
     }

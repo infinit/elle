@@ -8,6 +8,7 @@
 #include <elle/attribute.hh>
 #include <elle/container/deque.hh>
 #include <elle/container/list.hh>
+#include <elle/container/map.hh>
 #include <elle/container/vector.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
@@ -208,6 +209,26 @@ array()
   }
 }
 
+template <typename Format>
+static
+void
+pair()
+{
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    std::pair<int, std::string> p(4, "foo");
+    output.serialize("pair", p);
+  }
+  std::cerr << stream.str() << std::endl;
+  {
+    typename Format::SerializerIn input(stream);
+    std::pair<int, std::string> p;
+    input.serialize("pair", p);
+    BOOST_CHECK_EQUAL(p, (std::pair<int, std::string>(4, "foo")));
+  }
+}
+
 
 static
 void
@@ -270,6 +291,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(deque));
   auto vector = &array<elle::serialization::Json, std::vector>;
   suite.add(BOOST_TEST_CASE(vector));
+  suite.add(BOOST_TEST_CASE(pair<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }

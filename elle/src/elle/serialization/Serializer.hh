@@ -68,6 +68,9 @@ namespace elle
       template <template <typename, typename> class C, typename T, typename A>
       void
       _serialize(std::string const& name, C<T, A>& collection);
+      template <typename T1, typename T2>
+      void
+      _serialize(std::string const& name, std::pair<T1, T2>& collection);
     private:
       template <typename T>
       void
