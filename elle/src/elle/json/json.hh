@@ -11,6 +11,7 @@ namespace elle
 {
   namespace json
   {
+    typedef boost::any Json;
     typedef std::vector<boost::any> Array;
     typedef std::unordered_map<std::string, boost::any> Object;
     typedef std::map<std::string, boost::any> OrderedObject;
