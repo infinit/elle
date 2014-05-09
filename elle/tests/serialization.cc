@@ -220,12 +220,35 @@ pair()
     std::pair<int, std::string> p(4, "foo");
     output.serialize("pair", p);
   }
-  std::cerr << stream.str() << std::endl;
   {
     typename Format::SerializerIn input(stream);
     std::pair<int, std::string> p;
     input.serialize("pair", p);
     BOOST_CHECK_EQUAL(p, (std::pair<int, std::string>(4, "foo")));
+  }
+}
+
+template <typename Format>
+static
+void
+option()
+{
+  std::stringstream stream;
+  {
+    boost::optional<int> empty;
+    boost::optional<int> filled(42);
+    typename Format::SerializerOut output(stream);
+    output.serialize("empty", empty);
+    output.serialize("filled", filled);
+  }
+  {
+    boost::optional<int> empty;
+    boost::optional<int> filled;
+    typename Format::SerializerIn input(stream);
+    input.serialize("empty", empty);
+    input.serialize("filled", filled);
+    BOOST_CHECK(!empty);
+    BOOST_CHECK_EQUAL(filled.get(), 42);
   }
 }
 
@@ -292,6 +315,7 @@ ELLE_TEST_SUITE()
   auto vector = &array<elle::serialization::Json, std::vector>;
   suite.add(BOOST_TEST_CASE(vector));
   suite.add(BOOST_TEST_CASE(pair<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(option<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }

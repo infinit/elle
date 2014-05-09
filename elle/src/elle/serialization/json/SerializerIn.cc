@@ -71,6 +71,16 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize_option(std::string const& name,
+                                      bool,
+                                      std::function<void ()> const& f)
+      {
+        auto& object = this->_check_type<elle::json::Object>(name);
+        if (object.find(name) != object.end())
+          f();
+      }
+
+      void
       SerializerIn::_serialize(std::string const& name, std::string& v)
       {
         v = this->_check_type<std::string>(name);

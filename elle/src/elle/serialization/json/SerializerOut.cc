@@ -104,6 +104,15 @@ namespace elle
         current = v;
       }
 
+      void
+      SerializerOut::_serialize_option(std::string const& name,
+                                       bool filled,
+                                       std::function<void ()> const& f)
+      {
+        if (filled)
+          f();
+      }
+
       boost::any&
       SerializerOut::_get_current()
       {

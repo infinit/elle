@@ -40,6 +40,30 @@ namespace elle
       this->_leave(name);
     }
 
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, boost::optional<T>& opt)
+    {
+      if (this->_out())
+        this->_serialize_option(name,
+                                bool(opt),
+                                [&]
+                                {
+                                  this->serialize(name, opt.get());
+                                });
+      else
+        this->_serialize_option(name,
+                                bool(opt),
+                                [&]
+                                {
+                                  // FIXME: no emplace in optional.
+                                  T value;
+                                  this->serialize(name, value);
+                                  opt = value;
+                                });
+
+    }
+
     template <typename T, typename A>
     void
     Serializer::serialize(std::string const& name, T& v, as<A>)
