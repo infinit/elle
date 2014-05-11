@@ -742,5 +742,5 @@ TEST(builder_test, path_should_be_prefixed_with_slash_2) {
   network::uri_builder builder;
   builder
     .scheme("ftp").host("127.0.0.1").path("noleadingslash/foo.txt");
-  ASSERT_EQ("/noleadingslash/foo.txt", builder.uri().path()->to_string());
+  ASSERT_EQ("/noleadingslash/foo.txt", *builder.uri().path());
 }
