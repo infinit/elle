@@ -37,18 +37,23 @@ namespace elle
         auto& current = *this->_current.back();
         if (current.empty())
           current = elle::json::Object();
-        elle::json::Object* object;
-        try
+        if (current.type() == typeid(elle::json::Object))
         {
-          object = &boost::any_cast<elle::json::Object&>(current);
+          auto& object = boost::any_cast<elle::json::Object&>(current);
+          auto it = object.insert(std::make_pair(name, boost::any()));
+          this->_current.push_back(&it.first->second);
         }
-        catch (boost::bad_any_cast const&)
+        else if (current.type() == typeid(elle::json::Array))
+        {
+          auto& array = boost::any_cast<elle::json::Array&>(current);
+          array.emplace_back();
+          this->_current.push_back(&array.back());
+        }
+        else
         {
           ELLE_ABORT("cannot serialize a composite and a fundamental object "
                      "in key %s", name);
         }
-        auto it = object->insert(std::make_pair(name, boost::any()));
-        this->_current.push_back(&it.first->second);
       }
 
       void
@@ -118,12 +123,6 @@ namespace elle
       {
         ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
-        if (current.type() == typeid(elle::json::Array))
-        {
-          auto& array = boost::any_cast<elle::json::Array&>(current);
-          array.emplace_back();
-          return array.back();
-        }
         ELLE_ASSERT(current.empty());
         return current;
       }

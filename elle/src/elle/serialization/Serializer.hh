@@ -5,6 +5,7 @@
 # include <list>
 # include <memory>
 # include <string>
+# include <unordered_map>
 
 # include <boost/optional.hpp>
 
@@ -48,6 +49,7 @@ namespace elle
       template <typename T>
       void
       serialize_pod(std::string const& name, T& v);
+
     protected:
       virtual
       void
@@ -85,6 +87,10 @@ namespace elle
       template <typename T1, typename T2>
       void
       _serialize(std::string const& name, std::pair<T1, T2>& collection);
+      template <typename K, typename V, typename ... Rest>
+      void
+      _serialize(std::string const& name,
+                std::unordered_map<K, V, Rest...>& map);
     private:
       template <typename T>
       void

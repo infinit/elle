@@ -85,6 +85,40 @@ namespace elle
                                 });
     }
 
+    template <typename K, typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::unordered_map<K, V, Rest...>& map)
+    {
+      if (this->_out())
+      {
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            for (std::pair<K, V> pair: map)
+            {
+              this->_enter(name);
+              this->_serialize_anonymous(name, pair);
+              this->_leave(name);
+            }
+          });
+      }
+      else
+      {
+        this->_serialize_array(
+          name,
+          [&] ()
+          {
+            // FIXME: Use emplace if possible.
+            std::pair<K, V> p;
+            this->_serialize_anonymous(name, p);
+            map.insert(p);
+          });
+      }
+
+    }
+
     template <typename T, typename A>
     void
     Serializer::serialize(std::string const& name, T& v, as<A>)
@@ -130,7 +164,9 @@ namespace elle
           {
             for (auto& elt: collection)
             {
+              this->_enter(name);
               this->_serialize_anonymous(name, elt);
+              this->_leave(name);
             }
           });
       }
@@ -157,8 +193,12 @@ namespace elle
           name,
           [&] ()
           {
+            this->_enter(name);
             this->_serialize_anonymous(name, pair.first);
+            this->_leave(name);
+            this->_enter(name);
             this->_serialize_anonymous(name, pair.second);
+            this->_leave(name);
           });
       }
       else
