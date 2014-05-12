@@ -53,6 +53,9 @@ namespace elle
         _serialize(std::string const& name, std::string& v) override;
         virtual
         void
+        _serialize(std::string const& name, elle::Buffer& v) override;
+        virtual
+        void
         _serialize_option(std::string const& name,
                           bool,
                           std::function<void ()> const& f);

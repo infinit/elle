@@ -213,7 +213,6 @@ array()
     l.strings = {"foo", "bar", "baz"};
     l.serialize(output);
   }
-  std::cerr << stream.str() << std::endl;
   {
     typename Format::SerializerIn input(stream);
     Lists<Container> l(input);
@@ -304,12 +303,31 @@ unordered_map()
     typename Format::SerializerOut output(stream);
     output.serialize("map", map);
   }
-  std::cerr << stream.str() << std::endl;
   {
     std::unordered_map<int, std::string> res;
     typename Format::SerializerIn input(stream);
     input.serialize("map", res);
     BOOST_CHECK_EQUAL(map, res);
+  }
+}
+
+template <typename Format>
+static
+void
+buffer()
+{
+  elle::Buffer buffer("\x00\x01\x02\x03\x04", 5);
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("buffer", buffer);
+  }
+  std::cerr << stream.str() << std::endl;
+  {
+    elle::Buffer res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("buffer", res);
+    BOOST_CHECK_EQUAL(buffer, res);
   }
 }
 
@@ -378,6 +396,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(option<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }

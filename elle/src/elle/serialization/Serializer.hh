@@ -9,6 +9,7 @@
 
 # include <boost/optional.hpp>
 
+# include <elle/Buffer.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
 
@@ -26,6 +27,18 @@ namespace elle
     `------*/
     public:
       typedef Serializer Self;
+
+    /*-----------.
+    | Properties |
+    `-----------*/
+    public:
+      bool
+      in() const;
+      bool
+      out() const;
+    private:
+      bool
+      _out() const;
 
     /*--------------.
     | Serialization |
@@ -84,6 +97,9 @@ namespace elle
       _serialize(std::string const& name, std::string& v) = 0;
       virtual
       void
+      _serialize(std::string const& name, elle::Buffer& v) = 0;
+      virtual
+      void
       _serialize_option(std::string const& name,
                         bool present,
                         std::function<void ()> const& f) = 0;
@@ -101,8 +117,6 @@ namespace elle
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
-      bool
-      _out() const;
     };
 
     template <typename T>

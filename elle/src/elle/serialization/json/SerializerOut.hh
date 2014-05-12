@@ -68,9 +68,12 @@ namespace elle
         _serialize(std::string const& name, std::string& v) override;
         virtual
         void
+        _serialize(std::string const& name, elle::Buffer& v) override;
+        virtual
+        void
         _serialize_option(std::string const& name,
                           bool filled,
-                          std::function<void ()> const& f);
+                          std::function<void ()> const& f) override;
       private:
         boost::any&
         _get_current();

@@ -14,6 +14,18 @@ namespace elle
     {}
 
     bool
+    Serializer::in() const
+    {
+      return !this->_out();
+    }
+
+    bool
+    Serializer::out() const
+    {
+      return this->_out();
+    }
+
+    bool
     Serializer::_out() const
     {
       return dynamic_cast<SerializerOut const*>(this);

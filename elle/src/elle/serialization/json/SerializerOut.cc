@@ -1,6 +1,7 @@
 #include <elle/serialization/json/SerializerOut.hh>
 
 #include <elle/assert.hh>
+#include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 
 namespace elle
@@ -121,6 +122,19 @@ namespace elle
       {
         auto& current = this->_get_current();
         current = v;
+      }
+
+      void
+      SerializerOut::_serialize(std::string const& name, elle::Buffer& buffer)
+      {
+        std::stringstream encoded;
+        {
+          elle::format::base64::Stream base64(encoded);
+          base64.write(reinterpret_cast<char*>(buffer.contents()),
+                       buffer.size());
+        }
+        auto& current = this->_get_current();
+        current = encoded.str();
       }
 
       void

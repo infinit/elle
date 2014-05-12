@@ -1,12 +1,14 @@
+#include <elle/serialization/json/SerializerIn.hh>
+
 #include <limits>
 
 #include <elle/Backtrace.hh>
+#include <elle/format/base64.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/memory.hh>
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
 #include <elle/serialization/json/MissingKey.hh>
-#include <elle/serialization/json/SerializerIn.hh>
 #include <elle/serialization/json/TypeError.hh>
 
 namespace elle
@@ -106,6 +108,17 @@ namespace elle
       SerializerIn::_serialize(std::string const& name, std::string& v)
       {
         v = this->_check_type<std::string>(name);
+      }
+
+      void
+      SerializerIn::_serialize(std::string const& name, elle::Buffer& buffer)
+      {
+        std::stringstream encoded(this->_check_type<std::string>(name));
+        elle::format::base64::Stream base64(encoded);
+        elle::IOStream output(new elle::OutputStreamBuffer(buffer));
+        std::copy(std::istream_iterator<char>(base64),
+                  std::istream_iterator<char>(),
+                  std::ostream_iterator<char>(output));
       }
 
       void
