@@ -1,5 +1,9 @@
-#include <cryptography/Input.hh>
 #include <cryptography/Output.hh>
+
+#include <elle/serialization/SerializerIn.hh>
+#include <elle/serialization/SerializerOut.hh>
+
+#include <cryptography/Input.hh>
 
 namespace infinit
 {
@@ -96,6 +100,21 @@ namespace infinit
     Output::print(std::ostream& stream) const
     {
       stream << this->_buffer;
+    }
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    Output::Output(elle::serialization::SerializerIn& input)
+    {
+      this->serialize(input);
+    }
+
+    void
+    Output::serialize(elle::serialization::Serializer& s)
+    {
+      s.serialize("data", this->_buffer);
     }
   }
 }
