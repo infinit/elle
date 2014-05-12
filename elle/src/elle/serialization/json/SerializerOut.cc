@@ -82,7 +82,21 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize(std::string const& name, uint64_t& v)
+      {
+        auto& current = this->_get_current();
+        current = v;
+      }
+
+      void
       SerializerOut::_serialize(std::string const& name, int32_t& v)
+      {
+        auto& current = this->_get_current();
+        current = v;
+      }
+
+      void
+      SerializerOut::_serialize(std::string const& name, uint32_t& v)
       {
         auto& current = this->_get_current();
         current = v;

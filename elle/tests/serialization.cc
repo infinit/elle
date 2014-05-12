@@ -23,8 +23,10 @@ fundamentals()
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
-    int i = 42;
+    int i = -42;
     output.serialize("int", i);
+    unsigned int ui = 42;
+    output.serialize("unsigned int", ui);
     double d = 51.51;
     output.serialize("double", d);
     double round = 51.;
@@ -34,7 +36,10 @@ fundamentals()
     typename Format::SerializerIn input(stream);
     int i = 0;
     input.serialize("int", i);
-    BOOST_CHECK_EQUAL(i, 42);
+    BOOST_CHECK_EQUAL(i, -42);
+    int ui = 0;
+    input.serialize("unsigned int", ui);
+    BOOST_CHECK_EQUAL(ui, 42);
     double d = 0;
     input.serialize("double", d);
     BOOST_CHECK_EQUAL(d, 51.51);

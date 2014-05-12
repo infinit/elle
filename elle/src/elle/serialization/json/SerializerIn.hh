@@ -35,7 +35,13 @@ namespace elle
         _serialize(std::string const& name, int64_t& v) override;
         virtual
         void
+        _serialize(std::string const& name, uint64_t& v) override;
+        virtual
+        void
         _serialize(std::string const& name, int32_t& v) override;
+        virtual
+        void
+        _serialize(std::string const& name, uint32_t& v) override;
         virtual
         void
         _serialize(std::string const& name, double& v) override;

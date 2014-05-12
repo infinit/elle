@@ -45,6 +45,17 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize(std::string const& name, uint64_t& v)
+      {
+        int64_t value;
+        this->_serialize(name, value);
+        if (value < 0)
+          throw Error(elle::sprintf(
+                        "64-bits unsigned underflow on key \"%s\"", name));
+        v = value;
+      }
+
+      void
       SerializerIn::_serialize(std::string const& name, int32_t& v)
       {
         int64_t value;
@@ -55,6 +66,17 @@ namespace elle
         if (value < std::numeric_limits<int32_t>::min())
           throw Error(elle::sprintf(
                         "32-bits underflow on key \"%s\"", name));
+        v = value;
+      }
+
+      void
+      SerializerIn::_serialize(std::string const& name, uint32_t& v)
+      {
+        int32_t value;
+        this->_serialize(name, value);
+        if (value < 0)
+          throw Error(elle::sprintf(
+                        "32-bits unsigned underflow on key \"%s\"", name));
         v = value;
       }
 
