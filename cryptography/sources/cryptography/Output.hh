@@ -6,6 +6,7 @@
 # include <elle/operator.hh>
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
+# include <elle/serialization/fwd.hh>
 # include <elle/serialize/construct.hh>
 
 # include <cryptography/fwd.hh>
@@ -69,14 +70,27 @@ namespace infinit
     public:
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
-      // printable
+
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
       virtual
       void
       print(std::ostream& stream) const;
 
-      /*-----------.
-      | Attributes |
-      `-----------*/
+    /*--------------.
+    | Serialization |
+    `--------------*/
+    public:
+      Output(elle::serialization::SerializerIn& input);
+      void
+      serialize(elle::serialization::Serializer& serializer);
+
+    /*-----------.
+    | Attributes |
+    `-----------*/
     private:
       ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
     };
