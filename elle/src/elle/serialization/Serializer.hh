@@ -3,6 +3,7 @@
 
 # include <functional>
 # include <list>
+# include <memory>
 # include <string>
 
 # include <boost/optional.hpp>
@@ -35,6 +36,9 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, boost::optional<T>& opt);
+      template <typename T>
+      void
+      serialize(std::string const& name, std::unique_ptr<T>& opt);
       template <typename T, typename A>
       void
       serialize(std::string const& name, T& v, as<A>);

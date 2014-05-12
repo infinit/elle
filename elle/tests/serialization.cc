@@ -262,6 +262,30 @@ option()
   }
 }
 
+template <typename Format>
+static
+void
+unique_ptr()
+{
+  std::stringstream stream;
+  {
+    std::unique_ptr<int> empty;
+    std::unique_ptr<int> filled(new int(42));
+    typename Format::SerializerOut output(stream);
+    output.serialize("empty", empty);
+    output.serialize("filled", filled);
+  }
+  {
+    std::unique_ptr<int> empty;
+    std::unique_ptr<int> filled;
+    typename Format::SerializerIn input(stream);
+    input.serialize("empty", empty);
+    input.serialize("filled", filled);
+    BOOST_CHECK(!empty);
+    BOOST_CHECK_EQUAL(*filled, 42);
+  }
+}
+
 
 static
 void
@@ -326,6 +350,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(vector));
   suite.add(BOOST_TEST_CASE(pair<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(option<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }

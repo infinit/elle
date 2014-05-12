@@ -61,7 +61,28 @@ namespace elle
                                   this->serialize(name, value);
                                   opt = value;
                                 });
+    }
 
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt)
+    {
+      if (this->_out())
+        this->_serialize_option(name,
+                                bool(opt),
+                                [&]
+                                {
+                                  this->serialize(name, *opt);
+                                });
+      else
+        this->_serialize_option(name,
+                                bool(opt),
+                                [&]
+                                {
+                                  // FIXME: use in place constructor if available.
+                                  opt.reset(new T);
+                                  this->serialize(name, *opt);
+                                });
     }
 
     template <typename T, typename A>
