@@ -64,7 +64,7 @@ namespace elle
         ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
 
       private:
-        template <typename T>
+        template <typename T, typename ... Alternatives>
         T&
         _check_type(std::string const& name);
       };

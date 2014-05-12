@@ -61,7 +61,7 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, double& v)
       {
-        v = this->_check_type<double>(name);
+        v = this->_check_type<double, int64_t>(name);
       }
 
       void
@@ -116,14 +116,44 @@ namespace elle
         }
       }
 
-      template <typename T>
+      template <typename T, typename ... Types>
+      struct
+      any_casts
+      {
+        static
+        T&
+        cast(std::string const& name, boost::any& value)
+        {
+          throw TypeError(name, typeid(T), value.type());
+        }
+      };
+
+      template <typename T, typename First, typename ... Tail>
+      struct
+      any_casts<T, First, Tail ...>
+      {
+        static
+        T&
+        cast(std::string const& name, boost::any& value)
+        {
+          if (value.type() == typeid(First))
+          {
+            value = T(boost::any_cast<First&>(value));
+            return boost::any_cast<T&>(value);
+          }
+          else
+            return any_casts<T, Tail ...>::cast(name, value);
+        }
+      };
+
+      template <typename T, typename ... Alternatives>
       T&
       SerializerIn::_check_type(std::string const& name)
       {
         auto& current = *this->_current.back();
-        if (current.type() != typeid(T))
-          throw TypeError(name, typeid(T), current.type());
-        return boost::any_cast<T&>(current);
+        if (current.type() == typeid(T))
+          return boost::any_cast<T&>(current);
+        return any_casts<T, Alternatives ...>::cast(name, current);
       }
     }
   }

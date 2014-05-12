@@ -18,19 +18,29 @@
 template <typename Format>
 static
 void
-integer()
+fundamentals()
 {
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
     int i = 42;
     output.serialize("int", i);
+    double d = 51.51;
+    output.serialize("double", d);
+    double round = 51.;
+    output.serialize("round", round);
   }
   {
     typename Format::SerializerIn input(stream);
     int i = 0;
     input.serialize("int", i);
     BOOST_CHECK_EQUAL(i, 42);
+    double d = 0;
+    input.serialize("double", d);
+    BOOST_CHECK_EQUAL(d, 51.51);
+    double round = 0;
+    input.serialize("round", round);
+    BOOST_CHECK_EQUAL(round, 51.);
   }
 }
 
@@ -305,7 +315,7 @@ json_missing_key()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(integer<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(fundamentals<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(object<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Json>));
   auto list = &array<elle::serialization::Json, std::list>;
