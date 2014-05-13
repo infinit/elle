@@ -85,6 +85,59 @@ namespace elle
                                 });
     }
 
+    class Serializer::Details
+    {
+    public:
+      template <typename T>
+      static
+      void
+      _emplace_shared_switch(
+        Serializer& s,
+        std::string const& name,
+        std::shared_ptr<T>& ptr,
+        ELLE_SFINAE_IF_WORKS(new T(ELLE_SFINAE_INSTANCE(SerializerIn))))
+      {
+        s._enter(name);
+        ptr.reset(new T(static_cast<SerializerIn&>(s)));
+        s._leave(name);
+      }
+
+      template <typename T>
+      static
+      void
+      _emplace_shared_switch(Serializer& s,
+                             std::string const& name,
+                             std::shared_ptr<T>& ptr,
+                             ELLE_SFINAE_OTHERWISE())
+      {
+        ptr.reset(new T);
+        s.serialize(name, *ptr);
+      }
+    };
+
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt)
+    {
+      if (this->_out())
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            this->serialize(name, *opt);
+          });
+      else
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            Details::_emplace_shared_switch<T>(*this, name, opt,
+                                               ELLE_SFINAE_TRY());
+          });
+    }
+
     template <typename K, typename V, typename ... Rest>
     void
     Serializer::_serialize(std::string const& name,

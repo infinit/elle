@@ -53,6 +53,9 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, std::unique_ptr<T>& opt);
+      template <typename T>
+      void
+      serialize(std::string const& name, std::shared_ptr<T>& opt);
       template <typename T, typename A>
       void
       serialize(std::string const& name, T& v, as<A>);
@@ -117,6 +120,8 @@ namespace elle
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
+      class Details;
+      friend class Details;
     };
 
     template <typename T>
