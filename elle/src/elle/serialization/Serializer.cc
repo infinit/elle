@@ -30,5 +30,16 @@ namespace elle
     {
       return dynamic_cast<SerializerOut const*>(this);
     }
+
+    void
+    Serializer::serialize_virtual_object(std::string const& name,
+                                 VirtuallySerializable& object)
+    {
+      if (this->out())
+      {
+        std::string type_name = demangle(typeid(object).name());
+        this->serialize(".type", type_name);
+      }
+    }
   }
 }

@@ -20,6 +20,18 @@ namespace elle
     template <typename T>
     class as;
 
+    class VirtuallySerializable
+    {
+    public:
+      virtual
+      ~VirtuallySerializable()
+      {}
+
+      virtual
+      void
+      serialize(Serializer& s) = 0;
+    };
+
     class Serializer
     {
     /*------.
@@ -62,6 +74,8 @@ namespace elle
       template <typename T>
       void
       serialize_object(std::string const& name, T& v);
+      void
+      serialize_virtual_object(std::string const& name, VirtuallySerializable& v);
       template <typename T>
       void
       serialize_pod(std::string const& name, T& v);
@@ -127,6 +141,9 @@ namespace elle
     template <typename T>
     class as
     {};
+
+    template <typename T>
+    class Hierarchy;
   }
 }
 

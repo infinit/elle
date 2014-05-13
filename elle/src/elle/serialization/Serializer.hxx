@@ -1,6 +1,7 @@
 #ifndef ELLE_SERIALIZATION_SERIALIZER_HXX
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
+# include <elle/Backtrace.hh>
 # include <elle/serialization/Error.hh>
 
 namespace elle
@@ -10,7 +11,19 @@ namespace elle
     namespace _detail
     {
       template <typename T>
-      void
+      typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& obj,
+        ELLE_SFINAE_IF_WORKS(obj.serialize(ELLE_SFINAE_INSTANCE(Serializer))))
+      {
+        s.serialize_object(name, obj);
+        s.serialize_virtual_object(name, obj);
+      }
+
+      template <typename T>
+      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
       _serialize_switch(
         Serializer& s,
         std::string const& name,
@@ -90,7 +103,27 @@ namespace elle
     public:
       template <typename T>
       static
-      void
+      typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      _emplace_shared_switch(
+        Serializer& s,
+        std::string const& name,
+        std::shared_ptr<T>& ptr,
+        ELLE_SFINAE_IF_WORKS(new T(ELLE_SFINAE_INSTANCE(SerializerIn))))
+      {
+        s._enter(name);
+        auto const& map = Hierarchy<T>::_map();
+        std::string type_name;
+        s.serialize(".type", type_name);
+        auto it = map.find(type_name);
+        if (it == map.end())
+          throw Error(elle::sprintf("unable to deserialize type %s", type_name));
+        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
+        s._leave(name);
+      }
+
+      template <typename T>
+      static
+      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
       _emplace_shared_switch(
         Serializer& s,
         std::string const& name,
@@ -271,6 +304,30 @@ namespace elle
           });
       }
     }
+
+    template <typename T>
+    class Hierarchy
+    {
+    public:
+      template <typename U>
+      class Register
+      {
+      public:
+        Register()
+        {
+          Hierarchy<T>::_map()[demangle(typeid(U).name())] =
+            [] (SerializerIn& s) { return elle::make_unique<U>(s); };
+        }
+      };
+
+      static
+      std::unordered_map<std::string, std::function<std::unique_ptr<T>(SerializerIn&)>>&
+      _map()
+      {
+        static std::unordered_map<std::string, std::function<std::unique_ptr<T>(SerializerIn&)>> res;
+        return res;
+      }
+    };
   }
 }
 

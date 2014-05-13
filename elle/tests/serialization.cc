@@ -322,12 +322,151 @@ buffer()
     typename Format::SerializerOut output(stream);
     output.serialize("buffer", buffer);
   }
-  std::cerr << stream.str() << std::endl;
   {
     elle::Buffer res;
     typename Format::SerializerIn input(stream);
     input.serialize("buffer", res);
     BOOST_CHECK_EQUAL(buffer, res);
+  }
+}
+
+class Super
+  : public elle::serialization::VirtuallySerializable
+{
+public:
+  Super(int i)
+    : _i(i)
+  {}
+
+  Super(elle::serialization::SerializerIn& s)
+  {
+    this->serialize(s);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("super", this->_i);
+  }
+
+  virtual
+  int
+  type()
+  {
+    return this->_i;
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super>::Register<Super> _register_Super;
+
+class Sub1
+  : public Super
+{
+public:
+  Sub1(int i)
+    : Super(i - 1)
+    , _i(i)
+  {}
+
+  Sub1(elle::serialization::SerializerIn& s)
+    : Super(s)
+    , _i(-1)
+  {
+    this->_serialize(s);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s) override
+  {
+    Super::serialize(s);
+    this->_serialize(s);
+  }
+
+  void
+  _serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("sub1", this->_i);
+  }
+
+  virtual
+  int
+  type() override
+  {
+    return this->_i;
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super>::Register<Sub1> _register_Sub1;
+
+class Sub2
+  : public Super
+{
+public:
+  Sub2(int i)
+    : Super(i - 1)
+    , _i(i)
+  {}
+
+  Sub2(elle::serialization::SerializerIn& s)
+    : Super(s)
+    , _i(-1)
+  {
+    this->_serialize(s);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s) override
+  {
+    Super::serialize(s);
+    this->_serialize(s);
+  }
+
+  void
+  _serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("sub2", this->_i);
+  }
+
+  virtual
+  int
+  type() override
+  {
+    return this->_i;
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super>::Register<Sub2> _register_Sub2;
+
+template <typename Format>
+static
+void
+hierarchy()
+{
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    auto super = std::make_shared<Super>(0);
+    auto s1 = std::make_shared<Sub1>(2);
+    auto s2 = std::make_shared<Sub2>(3);
+    output.serialize("super", super);
+    output.serialize("sub1", s1);
+    output.serialize("sub2", s2);
+  }
+  {
+    typename Format::SerializerIn output(stream);
+    std::shared_ptr<Super> ptr;
+    output.serialize("super", ptr);
+    BOOST_CHECK_EQUAL(ptr->type(), 0);
+    output.serialize("sub1", ptr);
+    BOOST_CHECK_EQUAL(ptr->type(), 2);
+    output.serialize("sub2", ptr);
+    BOOST_CHECK_EQUAL(ptr->type(), 3);
   }
 }
 
@@ -397,6 +536,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }
