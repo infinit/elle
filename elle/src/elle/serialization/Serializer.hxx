@@ -3,6 +3,8 @@
 
 # include <elle/Backtrace.hh>
 # include <elle/serialization/Error.hh>
+# include <elle/serialization/SerializerIn.hh>
+# include <elle/serialization/SerializerOut.hh>
 
 namespace elle
 {

@@ -1,5 +1,5 @@
-#ifndef ELLE_SERIALIZATION_SERIALIZEROUT_HH
-# define ELLE_SERIALIZATION_SERIALIZEROUT_HH
+#ifndef ELLE_SERIALIZATION_SERIALIZER_OUT_HH
+# define ELLE_SERIALIZATION_SERIALIZER_OUT_HH
 
 # include <iosfwd>
 
@@ -24,5 +24,6 @@ namespace elle
   }
 }
 
+# include <elle/serialization/Serializer.hxx>
 
 #endif

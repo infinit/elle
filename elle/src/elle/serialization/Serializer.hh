@@ -147,6 +147,8 @@ namespace elle
   }
 }
 
-# include <elle/serialization/Serializer.hxx>
+# if !defined(ELLE_SERIALIZATION_SERIALIZER_IN_HH) && !defined(ELLE_SERIALIZATION_SERIALIZER_OUT_HH)
+#  include <elle/serialization/Serializer.hxx>
+# endif
 
 #endif
