@@ -98,17 +98,43 @@ namespace elle
                                 });
     }
 
+    template <typename T>
+    constexpr
+    typename std::enable_if<sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
+    _is_unserializable_inplace(int)
+    {
+      return true;
+    };
+
+    template <typename T>
+    constexpr
+    bool
+    _is_unserializable_inplace(unsigned int)
+    {
+      return false;
+    };
+
+    template <typename T>
+    constexpr
+    bool
+    is_unserializable_inplace()
+    {
+      return _is_unserializable_inplace<T>(42);
+    };
+
     class Serializer::Details
     {
     public:
       template <typename T>
       static
-      typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      typename std::enable_if<
+        std::is_base_of<VirtuallySerializable, T>::value,
+        void
+      >::type
       _emplace_shared_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr,
-        ELLE_SFINAE_IF_WORKS(new T(ELLE_SFINAE_INSTANCE(SerializerIn))))
+        std::shared_ptr<T>& ptr)
       {
         s._enter(name);
         auto const& map = Hierarchy<T>::_map();
@@ -123,12 +149,15 @@ namespace elle
 
       template <typename T>
       static
-      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      typename std::enable_if<
+        !std::is_base_of<VirtuallySerializable, T>::value &&
+        is_unserializable_inplace<T>(),
+        void
+      >::type
       _emplace_shared_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr,
-        ELLE_SFINAE_IF_WORKS(new T(ELLE_SFINAE_INSTANCE(SerializerIn))))
+        std::shared_ptr<T>& ptr)
       {
         s._enter(name);
         ptr.reset(new T(static_cast<SerializerIn&>(s)));
@@ -137,11 +166,14 @@ namespace elle
 
       template <typename T>
       static
-      void
+      typename std::enable_if<
+        !std::is_base_of<VirtuallySerializable, T>::value &&
+        !is_unserializable_inplace<T>(),
+        void
+      >::type
       _emplace_shared_switch(Serializer& s,
                              std::string const& name,
-                             std::shared_ptr<T>& ptr,
-                             ELLE_SFINAE_OTHERWISE())
+                             std::shared_ptr<T>& ptr)
       {
         ptr.reset(new T);
         s.serialize(name, *ptr);
@@ -166,8 +198,7 @@ namespace elle
           bool(opt),
           [&]
           {
-            Details::_emplace_shared_switch<T>(*this, name, opt,
-                                               ELLE_SFINAE_TRY());
+            Details::_emplace_shared_switch<T>(*this, name, opt);
           });
     }
 

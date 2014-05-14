@@ -470,6 +470,40 @@ hierarchy()
   }
 }
 
+class InPlace
+{
+public:
+  InPlace(elle::serialization::SerializerIn&)
+  {}
+
+  InPlace(InPlace const&) = delete;
+
+  void serialize(elle::serialization::Serializer&)
+  {}
+};
+
+class OutPlace
+{
+public:
+  OutPlace(OutPlace const&) = delete;
+
+  void serialize(elle::serialization::Serializer&)
+  {}
+};
+
+static
+void
+in_place()
+{
+  std::stringstream stream("{}");
+  elle::serialization::json::SerializerIn input(stream);
+
+  std::shared_ptr<InPlace> in;
+  std::shared_ptr<InPlace> out;
+  input.serialize("in", in);
+  input.serialize("out", out);
+}
+
 static
 void
 json_type_error()
@@ -537,6 +571,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
 }
