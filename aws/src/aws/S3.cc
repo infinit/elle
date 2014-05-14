@@ -163,7 +163,16 @@ namespace aws
   }
 
   elle::Buffer
-  S3::get_object(std::string const& object_name)
+  S3::get_object_chunk(std::string const& object_name,
+                       FileSize offset, FileSize size)
+  {
+    RequestHeaders headers;
+    headers["Range"] = elle::sprintf("bytes=%s-%s", offset, offset+size-1);
+    return get_object(object_name, headers);
+  }
+
+  elle::Buffer
+  S3::get_object(std::string const& object_name, RequestHeaders headers)
   {
     ELLE_TRACE_SCOPE("%s: GET remote object", *this);
 
@@ -174,13 +183,15 @@ namespace aws
     );
     ELLE_DEBUG("url: %s", url);
 
-    auto request = _build_send_request(url, reactor::http::Method::GET);
+    auto request = _build_send_request(url, reactor::http::Method::GET,
+                                       RequestQuery(), headers);
     auto response = request->response();
     std::string calcd_md5(this->_md5_digest(response));
     std::string aws_md5(request->headers().at("ETag"));
     // Remove quotes around MD5 sum from AWS.
     aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
-    if (calcd_md5 != aws_md5)
+    // AWS sends as ETAG for ranged get FULLMD5-CHUNK, we cannot validate it.
+    if (aws_md5.find('-') == std::string::npos && calcd_md5 != aws_md5)
     {
       throw aws::CorruptedData(
         elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
@@ -574,6 +585,7 @@ namespace aws
                          *this, url));
       case reactor::http::StatusCode::OK:
       case reactor::http::StatusCode::No_Content:
+      case reactor::http::StatusCode::Partial_Content:
         ok = true;
         break;
       default:
@@ -648,7 +660,8 @@ namespace aws
         query_parameters(query)
         );
       ELLE_DEBUG("Full url: %s", full_url);
-
+      for (auto const& h: headers)
+        ELLE_DUMP("header %s: %s", h.first, h.second);
       std::unique_ptr<reactor::http::Request> request;
       try
       {

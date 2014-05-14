@@ -66,8 +66,12 @@ namespace aws
     /// Fetch an object from the remote folder.
     /// The fetch is done in a single GET.
     elle::Buffer
-    get_object(std::string const& object_name);
-
+    get_object(std::string const& object_name,
+               RequestHeaders headers = RequestHeaders());
+    /// Fetch one chunk of an object
+    elle::Buffer
+    get_object_chunk(std::string const& object_name,
+                     FileSize offset, FileSize size);
     /// Delete an object in the remote folder.
     /// The folder itself can be deleted only once it is empty. This can be done
     /// by setting the object_name to an empty string.
