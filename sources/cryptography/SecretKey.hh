@@ -102,8 +102,10 @@ namespace infinit
     public:
       elle::Boolean
       operator ==(SecretKey const&) const;
-      ELLE_OPERATOR_NO_ASSIGNMENT(SecretKey);
-
+      void
+      operator = (const SecretKey&) = delete;
+      SecretKey&
+      operator = (SecretKey&&) = default;
       /*-----------.
       | Interfaces |
       `-----------*/
