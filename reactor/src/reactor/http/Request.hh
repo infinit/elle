@@ -109,6 +109,19 @@ namespace reactor
     operator <<(std::ostream& output,
                 StatusCode method);
 
+    struct Progress
+    { // Do not reorder, there are initializer list ctors out there!
+      bool operator == (Progress const& b) const;
+      int64_t download_current;
+      int64_t download_total;
+      int64_t upload_current;
+      int64_t upload_total; // set to -1 if total unknown
+    };
+
+    std::ostream&
+    operator <<(std::ostream& output,
+                Progress const& progress);
+
     /*--------.
     | Request |
     `--------*/
@@ -334,6 +347,8 @@ namespace reactor
       /// Get the query cookies.
       Request::Configuration::Cookies
       cookies() const;
+
+      Progress progress() const;
 
     /*----------.
     | Printable |

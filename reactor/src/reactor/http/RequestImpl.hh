@@ -114,6 +114,21 @@ namespace reactor
       /// XXX: For HTTP 1.0 servers. See comment in Request constructor.
       std::unique_ptr<std::stringstream> _input_buffer;
 
+    /*---------.
+    | Progress |
+    `---------*/
+    private:
+      static
+      int
+      progress_callback(void* userdata,
+                        curl_off_t dltotal, curl_off_t dlnow,
+                        curl_off_t ultotal, curl_off_t ulnow);
+      int
+      progress_set(curl_off_t dltotal, curl_off_t dlnow,
+                   curl_off_t ultotal, curl_off_t ulnow);
+    public:
+      ELLE_ATTRIBUTE_R(Progress, progress);
+
     private:
       friend class Client;
       friend class Request;

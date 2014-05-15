@@ -8,6 +8,7 @@
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
+#include <reactor/semaphore.hh>
 #include <reactor/signal.hh>
 #include <reactor/http/Client.hh>
 #include <reactor/http/EscapedString.hh>
@@ -276,6 +277,7 @@ ELLE_TEST_SCHEDULED(complex)
   BOOST_CHECK_EQUAL(content, "/complex");
   BOOST_CHECK(r.eof());
   BOOST_CHECK_EQUAL(r.headers().at("Server"), "Custom HTTP of doom");
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{8,8,0,0}));
 }
 
 ELLE_TEST_SCHEDULED(not_found)
@@ -285,6 +287,8 @@ ELLE_TEST_SCHEDULED(not_found)
   reactor::http::Request r(url);
   ELLE_LOG("Get %s", url);
   BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Not_Found);
+  // 404 error can have payload, which counts as downloaded data.
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{4,4,0,0}));
 }
 
 ELLE_TEST_SCHEDULED(bad_request)
@@ -339,7 +343,9 @@ ELLE_TEST_SCHEDULED(partial_answer)
 {
   PartialHttpServer server;
   auto url = server.url("partial");
-  BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
+  reactor::http::Request r(url);
+  BOOST_CHECK_THROW(reactor::wait(r), reactor::http::RequestError);
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{4,42,0,0}));
 }
 
 class FuckOffHttpServer:
@@ -536,6 +542,13 @@ post(reactor::http::Request::Configuration conf,
     r << json;
     BOOST_CHECK_EQUAL(r.response(), json);
     BOOST_CHECK_EQUAL(r.pause_count(), 0);
+    int64_t l = json.length();
+    int64_t lup = l;
+    if (chunked)
+      lup += 11;
+    // Request announce an upload content length, but curl seems to ignore it.
+    BOOST_CHECK_EQUAL(r.progress(),
+                      (reactor::http::Progress{l,l,lup, -1LL}));
   }
   else
   {
@@ -655,6 +668,7 @@ ELLE_TEST_SCHEDULED(request_move)
   c.finalize();
   reactor::http::Request d(std::move(c));
   BOOST_CHECK_EQUAL(d.response(), "{}");
+  BOOST_CHECK_EQUAL(d.progress(), (reactor::http::Progress{2,2,2,-1LL}));
 }
 
 class ScheduledSilentHttpServer:
@@ -715,6 +729,73 @@ ELLE_TEST_SCHEDULED(no_header_answer)
   BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
 }
 
+
+/// Wait on a barrier between each send of a reply chunk
+class SlowHttpServer:
+  public ScheduledHttpServer
+{
+public:
+  SlowHttpServer(std::string reply, int chunk)
+  : _reply(reply)
+  , _chunk(chunk)
+  {}
+  reactor::Semaphore sem;
+  std::string _reply;
+  int _chunk;
+protected:
+  virtual
+  void
+  _serve(std::unique_ptr<reactor::network::Socket> s) override
+  {
+    unsigned int p = 0;
+    do
+    {
+      sem.wait();
+      s->write(_reply.substr(p, _chunk));
+      p += _chunk;
+    }
+    while (p <  _reply.size());
+  }
+};
+
+ELLE_TEST_SCHEDULED(download_progress)
+{
+  using reactor::http::Progress;
+  auto delay = []
+  { // Lets not make too strong hypothesis about sched implementation details.
+    for (unsigned i=0; i<10; ++i)
+      reactor::yield();
+    reactor::sleep(boost::posix_time::milliseconds(100));
+    for (unsigned i=0; i<10; ++i)
+      reactor::yield();
+  };
+  const int payload_length = 12;
+  std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
+                     + boost::lexical_cast<std::string>(payload_length)
+                     + "\r\n\r\n");
+  std::string payload(payload_length, 'a');
+  SlowHttpServer server(header + payload, 1);
+  reactor::http::Request r(server.url("whatever"));
+  r.finalize();
+  reactor::Thread t("progress", [&]
+    {
+      for (unsigned i=0; i< header.size(); ++i)
+        server.sem.release();
+      delay();
+      BOOST_CHECK_EQUAL(r.progress(), (Progress{0,payload_length,0,0}));
+      for (unsigned i=0; i < payload_length; ++i)
+      {
+        server.sem.release();
+        delay();
+        BOOST_CHECK_EQUAL(r.progress(), (Progress{i+1, payload_length,0,0}));
+      }
+    });
+  reactor::wait(r);
+  BOOST_CHECK_EQUAL(r.progress(), (Progress{payload_length, payload_length,0,0}));
+  reactor::wait(t);
+}
+
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -740,4 +821,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(interrupted), 0, 10);
   suite.add(BOOST_TEST_CASE(escaped_string), 0, 3);
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, 3);
+  suite.add(BOOST_TEST_CASE(download_progress), 0, 5);
 }

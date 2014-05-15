@@ -220,6 +220,23 @@ namespace reactor
       return output;
     }
 
+    std::ostream&
+    operator << (std::ostream& output, Progress const& progress)
+    {
+      return output << elle::sprintf("(DL %s/%s  UL %s/%s)",
+        progress.download_current, progress.download_total,
+        progress.upload_current, progress.upload_total);
+    }
+
+    bool
+    Progress::operator == (Progress const& b) const
+    {
+      return download_current == b.download_current
+        && download_total == b.download_total
+        && upload_current == b.upload_current
+        && upload_total == b.upload_total;
+    }
+
     /*--------------.
     | Configuration |
     `--------------*/
@@ -325,6 +342,10 @@ namespace reactor
       // Set header callbacks
       setopt(this->_handle, CURLOPT_HEADERFUNCTION, &Impl::header_callback);
       setopt(this->_handle, CURLOPT_WRITEHEADER, this);
+      // Progress callback
+      setopt(this->_handle, CURLOPT_NOPROGRESS, 0);
+      setopt(this->_handle, CURLOPT_XFERINFOFUNCTION, &Impl::progress_callback);
+      setopt(this->_handle, CURLOPT_XFERINFODATA, this);
       // XXX: Don't check SSL peer until we find a solution for managing trusted
       // CAs.
       // http://bugs.python.org/issue17128
@@ -647,6 +668,26 @@ namespace reactor
     }
 
     /*---------.
+    | Progress |
+    `---------*/
+    int
+    Request::Impl::progress_callback(void* userdata,
+                                     curl_off_t dltotal, curl_off_t dlnow,
+                                     curl_off_t ultotal, curl_off_t ulnow)
+    {
+      Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+      return self.progress_set(dltotal, dlnow, ultotal, ulnow);
+    }
+
+    int
+    Request::Impl::progress_set(curl_off_t dltotal, curl_off_t dlnow,
+                                curl_off_t ultotal, curl_off_t ulnow)
+    {
+      _progress = Progress {dlnow, dltotal, ulnow, ultotal};
+      return 0;
+    }
+
+    /*---------.
     | Printing |
     `---------*/
 
@@ -856,6 +897,12 @@ namespace reactor
     Request::print(std::ostream& stream) const
     {
       stream << *this->_impl;
+    }
+
+    Progress
+    Request::progress() const
+    {
+      return this->_impl->progress();
     }
 
     /*----------.
