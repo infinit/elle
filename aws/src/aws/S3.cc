@@ -511,6 +511,7 @@ namespace aws
 
     // Add headers to request.
     reactor::http::Request::Configuration cfg(timeout,
+                                              reactor::DurationOpt(),
                                               reactor::http::Version::v11);
     for (auto header: headers)
       cfg.header_add(header.first, header.second);

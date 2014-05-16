@@ -242,9 +242,11 @@ namespace reactor
     `--------------*/
 
     Request::Configuration::Configuration(DurationOpt timeout,
+                                          DurationOpt stall_timeout,
                                           Version version):
       _version(version),
       _timeout(timeout),
+      _stall_timeout(stall_timeout),
       _headers(),
       // XXX: not supported by wsgiref and <=nginx-1.2 ...
       _chunked_transfers(false),
@@ -308,6 +310,17 @@ namespace reactor
       auto timeout_seconds = timeout ?
         std::max(timeout->total_seconds(), 1) : 0;
       setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
+      // Set stall timeout
+      auto const& stall_timeout = this->_conf.stall_timeout();
+      if (stall_timeout)
+      {
+        // Timeout if bandwith is below 1 byte/second for given duration.
+        // Note: CURL seems to wait for the test to fail some amount of
+        // successive times to actually abort the operation (observed: 3, 6).
+        setopt(this->_handle, CURLOPT_LOW_SPEED_TIME,
+               (long)std::max(stall_timeout->total_seconds(), 1));
+        setopt(this->_handle, CURLOPT_LOW_SPEED_LIMIT, (long)1);
+      }
       // Set SSL options.
       if (!this->_conf.ssl_verify_host())
         setopt(this->_handle, CURLOPT_SSL_VERIFYHOST, 0);
@@ -684,6 +697,7 @@ namespace reactor
                                 curl_off_t ultotal, curl_off_t ulnow)
     {
       _progress = Progress {dlnow, dltotal, ulnow, ultotal};
+      ELLE_DEBUG("%s: progress set to %s", *this->_request, _progress);
       return 0;
     }
 
@@ -785,13 +799,23 @@ namespace reactor
       curl_easy_getinfo(this->_impl->_handle,
                         CURLINFO_RESPONSE_CODE, &this->_status);
       std::string message;
+      // Distinguishing stall timeout and 'total time limit' timeouts
+      // is tricky and requires parsing the error string.
+      // Be robust to detection failure
+      bool is_stall = false;
       auto set_exception = [&]
         {
           if (code == CURLE_GOT_NOTHING)
             this->_raise<EmptyResponse>(this->_url);
           else if (code == CURLE_OPERATION_TIMEDOUT)
-            this->_raise<Timeout>(this->_url,
-                                  this->_impl->_conf.timeout().get());
+          {
+            auto const& timeout = this->_impl->_conf.timeout();
+            auto const& stall_timeout = this->_impl->_conf.stall_timeout();
+            auto value = is_stall?
+              (stall_timeout ? stall_timeout.get() : timeout.get())
+              : (timeout ? timeout.get() : stall_timeout.get());
+            this->_raise<Timeout>(this->_url, value);
+          }
           else
             this->_raise<RequestError>(this->_url, message);
         };
@@ -802,6 +826,7 @@ namespace reactor
         message = elle::sprintf("%s: %s",
                                 curl_easy_strerror(CURLcode(code)),
                                 this->_impl->_error);
+        is_stall = (message.find("too slow") != message.npos);
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }

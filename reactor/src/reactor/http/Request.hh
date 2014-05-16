@@ -171,6 +171,7 @@ namespace reactor
         /// \param timeout Initial value of the timeout attribute.
         /// \param version Initial value of the version attribute.
         Configuration(DurationOpt timeout = 30_sec,
+                      DurationOpt stall_timeout = DurationOpt(),
                       Version version = Version::v11);
         /// Configuration are not copiable.
         Configuration(Configuration const&) = default;
@@ -202,6 +203,8 @@ namespace reactor
         ELLE_ATTRIBUTE_RW(Version, version);
         /// The potential request timeout.
         ELLE_ATTRIBUTE_RW(DurationOpt, timeout);
+        /// Abort the request if both upload/download stall for given duration.
+        ELLE_ATTRIBUTE_RW(DurationOpt, stall_timeout);
         typedef std::unordered_map<std::string, std::string> Headers;
         /// The additional HTTP headers to include in the request.
         ELLE_ATTRIBUTE_R(Headers, headers);

@@ -735,13 +735,18 @@ class SlowHttpServer:
   public ScheduledHttpServer
 {
 public:
-  SlowHttpServer(std::string reply, int chunk)
+  SlowHttpServer(std::string reply, int chunk,
+                 bool wait_sem = true, reactor::DurationOpt delay=reactor::DurationOpt())
   : _reply(reply)
   , _chunk(chunk)
+  , _wait_sem(wait_sem)
+  , _delay(delay)
   {}
   reactor::Semaphore sem;
   std::string _reply;
   int _chunk;
+  bool _wait_sem;
+  reactor::DurationOpt _delay;
 protected:
   virtual
   void
@@ -750,7 +755,10 @@ protected:
     unsigned int p = 0;
     do
     {
-      sem.wait();
+      if (_wait_sem)
+        sem.wait();
+      if (_delay)
+        reactor::sleep(*_delay);
       s->write(_reply.substr(p, _chunk));
       p += _chunk;
     }
@@ -795,6 +803,29 @@ ELLE_TEST_SCHEDULED(download_progress)
   reactor::wait(t);
 }
 
+ELLE_TEST_SCHEDULED(download_stall)
+{
+  const int payload_length = 2000;
+  std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
+                     + boost::lexical_cast<std::string>(payload_length)
+                     + "\r\n\r\n");
+  std::string payload(payload_length, 'a');
+  SlowHttpServer server(header + payload, 10);
+  for (unsigned i=0; i<100 + header.size() / 10; ++i)
+    server.sem.release();
+  // Careful, stall timeout has only second resolution.
+  reactor::http::Request::Configuration conf(reactor::DurationOpt(), 1_sec);
+  reactor::http::Request r(server.url("whatever"), reactor::http::Method::GET,
+                           conf);
+  r.finalize();
+  // CURL takes some time to trigger the stall detection timeout, take margins.
+  BOOST_CHECK_THROW(reactor::wait(r, 20_sec), reactor::http::Timeout);
+  // magic 999 is because we did not take header length into consideration.
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{999, 2000, 0, 0}));
+  // unstuck the server. Request disconnected so it will terminate fast.
+  server.sem.release();
+  server.sem.release();
+}
 
 ELLE_TEST_SUITE()
 {
@@ -822,4 +853,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(escaped_string), 0, 3);
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, 3);
   suite.add(BOOST_TEST_CASE(download_progress), 0, 5);
+  suite.add(BOOST_TEST_CASE(download_stall), 0, 40);
 }
