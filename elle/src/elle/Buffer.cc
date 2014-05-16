@@ -501,7 +501,7 @@ namespace elle
     bool fixed = stream.flags() & std::ios::fixed;
     if (hex)
       stream << "0x";
-    if (fixed)
+    if (fixed && buffer.size() > max_length)
     {
       put(stream, buffer.range(0, max_length / 2), hex);
       stream << "...";
