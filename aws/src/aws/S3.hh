@@ -124,6 +124,12 @@ namespace aws
     | Helpers |
     `--------*/
   private:
+    enum class RequestKind
+    {
+      control, // Expected a small amount of data in/out
+      data // expected to transfer some amount of data in our out
+    };
+
     std::string
     _md5_digest(elle::ConstWeakBuffer const& buffer);
 
@@ -144,7 +150,8 @@ namespace aws
     _parse_list_xml(std::istream& stream);
 
     reactor::http::Request::Configuration
-    _initialize_request(RequestTime request_time,
+    _initialize_request(RequestKind kind,
+                        RequestTime request_time,
                         CanonicalRequest const& canonical_request,
                         const RequestHeaders& initial_headers,
                         boost::posix_time::time_duration timeout);
@@ -158,8 +165,10 @@ namespace aws
                           bool dump_response = false);
 
     // build and emit request, retries in case of credentials expiry
+    // kind is used to switch between global duration timeout and stall timeout
     std::unique_ptr<reactor::http::Request>
     _build_send_request(
+      RequestKind kind,
       std::string const& url,
       reactor::http::Method method,
       RequestQuery const& query = RequestQuery(),

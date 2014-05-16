@@ -40,6 +40,21 @@ namespace aws
     return v.get();
   }
 
+  static
+  boost::posix_time::time_duration
+  default_stall_timeout()
+  {
+    static boost::optional<boost::posix_time::time_duration> v;
+    if (!v)
+    {
+      v = 300_sec;
+      std::string opt = elle::os::getenv("INFINIT_S3_STALL_TIMEOUT", "");
+      if (!opt.empty())
+        v = boost::posix_time::seconds(boost::lexical_cast<int>(opt));
+    }
+    return v.get();
+  }
+
   // Stay as close as possible to reference java implementation from amazon
   // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
   static
@@ -116,7 +131,7 @@ namespace aws
     ELLE_DEBUG("url: %s", url);
 
     auto request = _build_send_request(
-      url, reactor::http::Method::PUT,
+      RequestKind::data, url, reactor::http::Method::PUT,
       query, headers,
       "binary/octet-stream",
       object);
@@ -139,7 +154,8 @@ namespace aws
     if (marker.size() > 0)
       query["marker"] = elle::sprintf("%s/%s", this->_credentials.folder(), marker);
 
-    auto request = _build_send_request("/", reactor::http::Method::GET, query);
+    auto request = _build_send_request(RequestKind::data,
+                                       "/", reactor::http::Method::GET, query);
     return this->_parse_list_xml(*request);
    }
 
@@ -183,7 +199,8 @@ namespace aws
     );
     ELLE_DEBUG("url: %s", url);
 
-    auto request = _build_send_request(url, reactor::http::Method::GET,
+    auto request = _build_send_request(RequestKind::data, url,
+                                       reactor::http::Method::GET,
                                        RequestQuery(), headers);
     auto response = request->response();
     std::string calcd_md5(this->_md5_digest(response));
@@ -232,9 +249,9 @@ namespace aws
       RequestQuery query;
       query["delete"] = "";
 
-      _build_send_request("/", reactor::http::Method::POST,
-        query, headers,
-        "text/xml", payload);
+      _build_send_request(RequestKind::control, "/", reactor::http::Method::POST,
+                          query, headers,
+                          "text/xml", payload);
     }
     delete_object(_credentials.folder());
   }
@@ -251,7 +268,8 @@ namespace aws
     );
     ELLE_DEBUG("url: %s", url);
 
-    _build_send_request(url, reactor::http::Method::DELETE, query);
+    _build_send_request(RequestKind::control, url,
+                        reactor::http::Method::DELETE, query);
 
   }
 
@@ -272,6 +290,7 @@ namespace aws
     ELLE_DUMP("url: %s", url);
 
     auto request = _build_send_request(
+      RequestKind::control,
       url, reactor::http::Method::POST,
       query, headers,
       mime_type);
@@ -318,7 +337,9 @@ namespace aws
       object_name
     );
 
-    auto request = _build_send_request(url, reactor::http::Method::POST,
+    auto request = _build_send_request(
+      RequestKind::control,
+      url, reactor::http::Method::POST,
       query, RequestHeaders(),
       "text/xml", xchunks);
     // This request can 200 OK and still return an error in XML
@@ -361,7 +382,8 @@ namespace aws
                                this->_credentials.folder(),
                                object_name);
 
-      auto request = _build_send_request(url, reactor::http::Method::GET, query);
+      auto request = _build_send_request(RequestKind::data,
+                                         url, reactor::http::Method::GET, query);
 
       using boost::property_tree::ptree;
       ptree response;
@@ -471,7 +493,8 @@ namespace aws
   }
 
   reactor::http::Request::Configuration
-  S3::_initialize_request(RequestTime request_time,
+  S3::_initialize_request(RequestKind kind,
+                          RequestTime request_time,
                           CanonicalRequest const& canonical_request,
                           const RequestHeaders& initial_headers,
                           boost::posix_time::time_duration timeout)
@@ -509,10 +532,17 @@ namespace aws
     ELLE_DUMP("Final authorization string: '%s'", auth_str);
     headers["Authorization"] = auth_str;
 
-    // Add headers to request.
-    reactor::http::Request::Configuration cfg(timeout,
-                                              reactor::DurationOpt(),
+    // Set either total or stall timeout based on request kind.
+    reactor::DurationOpt total_timeout, stall_timeout;
+    if (kind == RequestKind::control)
+      total_timeout = timeout;
+    else
+      stall_timeout = timeout;
+
+    reactor::http::Request::Configuration cfg(total_timeout,
+                                              stall_timeout,
                                               reactor::http::Version::v11);
+    // Add headers to request.
     for (auto header: headers)
       cfg.header_add(header.first, header.second);
     return cfg;
@@ -610,6 +640,7 @@ namespace aws
 
   std::unique_ptr<reactor::http::Request>
   S3::_build_send_request(
+    RequestKind kind,
     std::string const& url,
     reactor::http::Method method,
     RequestQuery const& query,
@@ -619,7 +650,8 @@ namespace aws
     boost::optional<boost::posix_time::time_duration> timeout_opt
     )
   {
-    boost::posix_time::time_duration timeout = default_timeout();
+    boost::posix_time::time_duration timeout =
+      (kind == RequestKind::control) ? default_timeout() : default_stall_timeout();
     if (timeout_opt)
       timeout = timeout_opt.get();
     // Transient errors on requests is perfectly reasonable
@@ -652,7 +684,7 @@ namespace aws
         _signed_headers(headers), _sha256_hexdigest(payload)
       );
       reactor::http::Request::Configuration cfg(
-        _initialize_request(request_time, canonical_request, headers, timeout));
+        _initialize_request(kind, request_time, canonical_request, headers, timeout));
       std::string full_url = elle::sprintf(
         "https://%s:%s%s%s",
         _host_name,
