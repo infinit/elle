@@ -202,29 +202,30 @@ namespace infinit
                                 const unsigned char*,
                                 size_t))
         {
-          ELLE_TRACE_FUNCTION(code, context, function);
+          ELLE_TRACE_SCOPE("decrypt RSA");
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
           // 1) Extract the key and ciphered data from the code which
           //    is supposed to be an archive.
+          ELLE_DEBUG("extract symmetric key and message");
           auto extractor = code.buffer().reader();
-
           Code key(extractor);
           Code data(extractor);
 
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
           // Decrypt the key.
+          ELLE_DEBUG("decrypt symmetric key");
           elle::Buffer buffer = apply(elle::WeakBuffer{key.buffer()},
                                       context,
                                       function);
-
           // Finally extract the secret key since decrypted.
           SecretKey secret(buffer.reader());
 
           // 3) Decrypt the data with the secret key.
+          ELLE_DEBUG("decrypt message");
           Clear clear = secret.decrypt(data);
 
           return (clear);
