@@ -1,7 +1,8 @@
-#include <boost/foreach.hpp>
-
-#include <elle/log.hh>
 #include <elle/assert.hh>
+#include <elle/container/vector.hh>
+#include <elle/log.hh>
+#include <elle/string/algorithm.hh>
+#include <elle/Backtrace.hh>
 
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
@@ -29,7 +30,20 @@ namespace reactor
 
   Waitable::~Waitable()
   {
-    ELLE_ASSERT(_threads.empty());
+    this->_assert_destructible();
+  }
+
+  void
+  Waitable::_assert_destructible()
+  {
+    if (!this->_threads.empty())
+    {
+      std::vector<std::string> threads;
+      for (auto thread: this->_threads)
+        threads.push_back(elle::sprintf("%s", *thread));
+      ELLE_ABORT("%s destroyed while waited by %s",
+                 *this, elle::join(threads.begin(), threads.end(), ", "));
+    }
   }
 
   /*-------.
@@ -71,7 +85,7 @@ namespace reactor
       this->on_signaled()();
       return false;
     }
-    BOOST_FOREACH (Thread* thread, _threads)
+    for (Thread* thread: this->_threads)
       thread->_wake(this);
     int res = _threads.size();
     _threads.clear();
@@ -128,7 +142,7 @@ namespace reactor
   void
   Waitable::print(std::ostream& stream) const
   {
-    stream << "waitable " << this;
+    stream << elle::demangle(typeid(*this).name()) << "(" << this << ")";
   }
 
   /*----------.

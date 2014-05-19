@@ -52,17 +52,19 @@ namespace reactor
   protected:
     /// Destroy a Waitable.
     ~Waitable();
+    void
+    _assert_destructible();
 
-    /*-------.
-    | Status |
-    `-------*/
-    public:
-      /// Pretty name.
-      const std::string& name() const;
-      /// Threads blocked on this.
-      const Waiters& waiters() const;
-    private:
-      std::string _name;
+  /*-------.
+  | Status |
+  `-------*/
+  public:
+    /// Pretty name.
+    const std::string& name() const;
+    /// Threads blocked on this.
+    const Waiters& waiters() const;
+  private:
+    std::string _name;
 
   /*--------.
   | Waiting |

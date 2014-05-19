@@ -7,8 +7,8 @@ namespace reactor
 {
   template <typename T, typename Container>
   Channel<T, Container>::Channel()
-    : _read_barrier(Barrier())
-    , _write_barrier(Barrier())
+    : _read_barrier()
+    , _write_barrier()
     , _queue(Container())
     , _max_size(SizeUnlimited)
   {}

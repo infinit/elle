@@ -11,6 +11,11 @@ namespace reactor
     _opened(false)
   {}
 
+  Barrier::~Barrier()
+  {
+    this->_assert_destructible();
+  }
+
   /*---------.
   | Openness |
   `---------*/
