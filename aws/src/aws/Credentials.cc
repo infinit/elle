@@ -96,7 +96,7 @@ namespace aws
   void
   Credentials::serialize(elle::serialization::Serializer& s)
   {
-    s.serialize("access_keys_id", this->_access_key_id);
+    s.serialize("access_key_id", this->_access_key_id);
     s.serialize("secret_access_key", this->_secret_access_key);
     s.serialize("session_token", this->_session_token);
     s.serialize("region", this->_region);
