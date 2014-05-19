@@ -148,7 +148,8 @@ namespace reactor
       {
         for (auto transition: state->transitions_out().get<1>())
           if (auto t = transition->run(triggered, trigger, action_thread))
-            scope.run_background(elle::sprint(*this), t.get());
+            scope.run_background(
+              elle::sprintf("%s %s", *this, *transition), t.get());
         state->_entered.signal();
         elle::SafeFinally exited([&]() { state->_exited.signal(); });
         try
