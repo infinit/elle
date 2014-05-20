@@ -124,39 +124,15 @@ namespace elle
       return _is_unserializable_inplace<T>(42);
     };
 
-    class Serializer::Details
+    struct Serializer::Details
     {
-    public:
       template <typename T>
       static
       typename std::enable_if<
-        std::is_base_of<VirtuallySerializable, T>::value,
-        void
-      >::type
-      _emplace_shared_switch(
-        Serializer& s,
-        std::string const& name,
-        std::shared_ptr<T>& ptr)
-      {
-        s._enter(name);
-        auto const& map = Hierarchy<T>::_map();
-        std::string type_name;
-        s.serialize(".type", type_name);
-        auto it = map.find(type_name);
-        if (it == map.end())
-          throw Error(elle::sprintf("unable to deserialize type %s", type_name));
-        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
-        s._leave(name);
-      }
-
-      template <typename T>
-      static
-      typename std::enable_if<
-        !std::is_base_of<VirtuallySerializable, T>::value &&
         is_unserializable_inplace<T>(),
         void
       >::type
-      _emplace_shared_switch(
+      _shared_emplace_switch(
         Serializer& s,
         std::string const& name,
         std::shared_ptr<T>& ptr)
@@ -169,16 +145,53 @@ namespace elle
       template <typename T>
       static
       typename std::enable_if<
-        !std::is_base_of<VirtuallySerializable, T>::value &&
         !is_unserializable_inplace<T>(),
         void
       >::type
-      _emplace_shared_switch(Serializer& s,
-                             std::string const& name,
-                             std::shared_ptr<T>& ptr)
+      _shared_emplace_switch(
+        Serializer& s,
+        std::string const& name,
+        std::shared_ptr<T>& ptr)
       {
         ptr.reset(new T);
         s.serialize(name, *ptr);
+      }
+
+      template <typename T>
+      static
+      typename std::enable_if<
+        std::is_base_of<VirtuallySerializable, T>::value,
+        void
+      >::type
+      _shared_virtual_switch(
+        Serializer& s,
+        std::string const& name,
+        std::shared_ptr<T>& ptr)
+      {
+        s._enter(name);
+        auto const& map = Hierarchy<T>::_map();
+        std::string type_name;
+        s.serialize(".type", type_name);
+        auto it = map.find(type_name);
+        if (it == map.end())
+          throw Error(elle::sprintf("unable to deserialize type %s",
+                                    type_name));
+        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
+        s._leave(name);
+      }
+
+      template <typename T>
+      static
+      typename std::enable_if<
+        !std::is_base_of<VirtuallySerializable, T>::value,
+        void
+      >::type
+      _shared_virtual_switch(
+        Serializer& s,
+        std::string const& name,
+        std::shared_ptr<T>& ptr)
+      {
+        _shared_emplace_switch<T>(s, name, ptr);
       }
     };
 
@@ -200,7 +213,7 @@ namespace elle
           bool(opt),
           [&]
           {
-            Details::_emplace_shared_switch<T>(*this, name, opt);
+            Details::_shared_virtual_switch<T>(*this, name, opt);
           });
     }
 
