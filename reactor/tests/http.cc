@@ -45,6 +45,12 @@ public:
 
   ~ScheduledHttpServer()
   {
+    this->_finalize();
+  }
+
+  void
+  _finalize()
+  {
     this->_accepter->terminate_now();
   }
 
@@ -57,8 +63,6 @@ public:
   ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
   ELLE_ATTRIBUTE_R(int, port);
   ELLE_ATTRIBUTE(std::unique_ptr<reactor::Thread>, accepter);
-
-protected:
   ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_version);
   ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_method);
   ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_expect_continue);
@@ -737,16 +741,23 @@ class SlowHttpServer:
 public:
   SlowHttpServer(std::string reply, int chunk,
                  bool wait_sem = true, reactor::DurationOpt delay=reactor::DurationOpt())
-  : _reply(reply)
-  , _chunk(chunk)
-  , _wait_sem(wait_sem)
-  , _delay(delay)
+    : _reply(reply)
+    , _chunk(chunk)
+    , _wait_sem(wait_sem)
+    , _delay(delay)
   {}
+
+  ~SlowHttpServer()
+  {
+    this->_finalize();
+  }
+
   reactor::Semaphore sem;
   std::string _reply;
   int _chunk;
   bool _wait_sem;
   reactor::DurationOpt _delay;
+
 protected:
   virtual
   void
