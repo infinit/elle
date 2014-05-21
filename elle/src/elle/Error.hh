@@ -20,7 +20,8 @@ namespace elle
   | Construction |
   `-------------*/
   public:
-    using Super::Super;
+    Error(std::string const& format);
+    Error(elle::Backtrace const& bt, std::string const& format);
   };
 }
 
