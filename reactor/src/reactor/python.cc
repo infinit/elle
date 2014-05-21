@@ -112,7 +112,14 @@ public:
   {
     boost::python::incref(instance);
   }
-
+  Thread(PyObject* instance,
+         std::string const& name,
+         boost::function<void ()> const& action):
+    reactor::Thread(name, [action] { wrap(action); }, false),
+    _self(instance)
+  {
+    boost::python::incref(instance);
+  }
   virtual
   ~Thread()
   {}
@@ -233,11 +240,15 @@ BOOST_PYTHON_MODULE(reactor)
     ("Thread", boost::python::init<reactor::Scheduler&,
                                    std::string const&,
                                    boost::python::object>())
+    .def(boost::python::init<std::string const&,
+                                   boost::python::object>())
     .def("wait", &wait_wrap)
     ;
   boost::python::def("yield_", reactor::yield);
   boost::python::def("sleep",
                      static_cast<void (*)(reactor::Duration)>(reactor::sleep));
+  boost::python::def("scheduler", &reactor::scheduler,
+    boost::python::return_value_policy<boost::python::copy_non_const_reference>());
 
   boost::python::register_exception_translator<reactor::Terminate>(translator);
 }
