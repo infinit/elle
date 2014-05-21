@@ -47,12 +47,12 @@ namespace elle
   /*-------------.
   | Construction |
   `-------------*/
-  private:
+  protected:
     Finally();
     Finally(std::function<void()> const& action);
     ~Finally() noexcept(false);
     /// Let With manage us.
-    friend class elle::With<Finally>;
+    template<typename> friend class elle::With;
 
   /*--------.
   | Methods |
