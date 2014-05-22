@@ -281,6 +281,7 @@ namespace reactor
       _request(&request),
       _conf(std::move(conf)),
       _headers(nullptr, &curl_slist_free_all),
+      _progress_changed(),
       _input_done(false),
       _input(),
       _input_current(),
@@ -700,7 +701,7 @@ namespace reactor
     {
       ELLE_DEBUG("%s: progress set to %s", *this->_request, this->_progress);
       this->_progress = Progress {dlnow, dltotal, ulnow, ultotal};
-      this->_request->_progress_changed(this->_progress);
+      this->_progress_changed(this->_progress);
     }
 
     /*---------.
@@ -930,6 +931,18 @@ namespace reactor
     Request::progress() const
     {
       return this->_impl->progress();
+    }
+
+    boost::signals2::signal<void (Request::Progress const&)>&
+    Request::progress_changed()
+    {
+      return this->_impl->progress_changed();
+    }
+
+    boost::signals2::signal<void (Request::Progress const&)> const&
+    Request::progress_changed() const
+    {
+      return this->_impl->progress_changed();
     }
 
     /*----------.

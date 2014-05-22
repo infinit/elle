@@ -32,6 +32,8 @@ namespace reactor
       ELLE_ATTRIBUTE(Request*, request);
       ELLE_ATTRIBUTE(Configuration, conf);
       ELLE_ATTRIBUTE(elle::generic_unique_ptr<curl_slist>, headers);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Progress const&)>,
+                        progress_changed);
 
     /*--------.
     | Headers |

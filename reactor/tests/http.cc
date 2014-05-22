@@ -281,7 +281,7 @@ ELLE_TEST_SCHEDULED(complex)
   BOOST_CHECK_EQUAL(content, "/complex");
   BOOST_CHECK(r.eof());
   BOOST_CHECK_EQUAL(r.headers().at("Server"), "Custom HTTP of doom");
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{8,8,0,0}));
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{8,8,0,0}));
 }
 
 ELLE_TEST_SCHEDULED(not_found)
@@ -292,7 +292,7 @@ ELLE_TEST_SCHEDULED(not_found)
   ELLE_LOG("Get %s", url);
   BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Not_Found);
   // 404 error can have payload, which counts as downloaded data.
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{4,4,0,0}));
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{4,4,0,0}));
 }
 
 ELLE_TEST_SCHEDULED(bad_request)
@@ -349,7 +349,7 @@ ELLE_TEST_SCHEDULED(partial_answer)
   auto url = server.url("partial");
   reactor::http::Request r(url);
   BOOST_CHECK_THROW(reactor::wait(r), reactor::http::RequestError);
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{4,42,0,0}));
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{4,42,0,0}));
 }
 
 class FuckOffHttpServer:
@@ -552,7 +552,7 @@ post(reactor::http::Request::Configuration conf,
       lup += 11;
     // Request announce an upload content length, but curl seems to ignore it.
     BOOST_CHECK_EQUAL(r.progress(),
-                      (reactor::http::Progress{l,l,lup, -1LL}));
+                      (reactor::http::Request::Progress{l,l,lup, -1LL}));
   }
   else
   {
@@ -672,7 +672,7 @@ ELLE_TEST_SCHEDULED(request_move)
   c.finalize();
   reactor::http::Request d(std::move(c));
   BOOST_CHECK_EQUAL(d.response(), "{}");
-  BOOST_CHECK_EQUAL(d.progress(), (reactor::http::Progress{2,2,2,-1LL}));
+  BOOST_CHECK_EQUAL(d.progress(), (reactor::http::Request::Progress{2,2,2,-1LL}));
 }
 
 class ScheduledSilentHttpServer:
@@ -779,7 +779,7 @@ protected:
 
 ELLE_TEST_SCHEDULED(download_progress)
 {
-  using reactor::http::Progress;
+  using reactor::http::Request;
   auto delay = []
   { // Lets not make too strong hypothesis about sched implementation details.
     for (unsigned i=0; i<10; ++i)
@@ -801,16 +801,16 @@ ELLE_TEST_SCHEDULED(download_progress)
       for (unsigned i=0; i< header.size(); ++i)
         server.sem.release();
       delay();
-      BOOST_CHECK_EQUAL(r.progress(), (Progress{0,payload_length,0,0}));
+      BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{0,payload_length,0,0}));
       for (unsigned i=0; i < payload_length; ++i)
       {
         server.sem.release();
         delay();
-        BOOST_CHECK_EQUAL(r.progress(), (Progress{i+1, payload_length,0,0}));
+        BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{i+1, payload_length,0,0}));
       }
     });
   reactor::wait(r);
-  BOOST_CHECK_EQUAL(r.progress(), (Progress{payload_length, payload_length,0,0}));
+  BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{payload_length, payload_length,0,0}));
   reactor::wait(t);
 }
 
@@ -832,7 +832,7 @@ ELLE_TEST_SCHEDULED(download_stall)
   // CURL takes some time to trigger the stall detection timeout, take margins.
   BOOST_CHECK_THROW(reactor::wait(r, 20_sec), reactor::http::Timeout);
   // magic 999 is because we did not take header length into consideration.
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Progress{999, 2000, 0, 0}));
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{999, 2000, 0, 0}));
   // unstuck the server. Request disconnected so it will terminate fast.
   server.sem.release();
   server.sem.release();

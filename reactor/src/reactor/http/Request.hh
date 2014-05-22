@@ -355,8 +355,10 @@ namespace reactor
       };
       Progress
       progress() const;
-      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Progress const&)>,
-                        progress_changed);
+      boost::signals2::signal<void (Progress const&)>&
+      progress_changed();
+      boost::signals2::signal<void (Progress const&)> const&
+      progress_changed() const;
 
     /*----------.
     | Printable |
