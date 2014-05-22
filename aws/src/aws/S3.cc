@@ -708,7 +708,7 @@ namespace aws
       {
         ++attempt;
         // we have nothing better to do, so keep retrying
-        ELLE_LOG("S3 request error: %s (attempt %s)", e.error(), attempt);
+        ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
         if (max_attempts && attempt >= max_attempts)
           throw aws::RequestError(
             elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: %s",
