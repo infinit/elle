@@ -106,6 +106,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: close for writing", *this->_owner);
       this->_owner->_writing = false;
+      this->_stream.reset();
       this->_owner->_commit();
     }
   }

@@ -537,12 +537,9 @@ def configure(zlib_lib,
     'system/home_directory.cc',
     'threading/monitor.cc',
     'utility/Suffixes.cc',
+    'AtomicFile.cc',
     ]
 
-  if cxx_toolkit.os != drake.os.windows:
-    tests.extend([
-      'AtomicFile.cc',
-      ])
   process_helpers = [
     drake.cxx.Executable('tests/system/%s' % name,
                          drake.nodes('tests/system/%s.cc' % name),
