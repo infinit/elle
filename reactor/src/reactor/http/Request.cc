@@ -221,7 +221,7 @@ namespace reactor
     }
 
     std::ostream&
-    operator << (std::ostream& output, Progress const& progress)
+    operator << (std::ostream& output, Request::Progress const& progress)
     {
       return output << elle::sprintf("(DL %s/%s  UL %s/%s)",
         progress.download_current, progress.download_total,
@@ -229,7 +229,7 @@ namespace reactor
     }
 
     bool
-    Progress::operator == (Progress const& b) const
+    Request::Progress::operator ==(Progress const& b) const
     {
       return download_current == b.download_current
         && download_total == b.download_total
@@ -683,22 +683,23 @@ namespace reactor
     /*---------.
     | Progress |
     `---------*/
+
     int
     Request::Impl::progress_callback(void* userdata,
                                      curl_off_t dltotal, curl_off_t dlnow,
                                      curl_off_t ultotal, curl_off_t ulnow)
     {
       Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
-      return self.progress_set(dltotal, dlnow, ultotal, ulnow);
+      self.progress_set(dltotal, dlnow, ultotal, ulnow);
+      return 0;
     }
 
-    int
+    void
     Request::Impl::progress_set(curl_off_t dltotal, curl_off_t dlnow,
                                 curl_off_t ultotal, curl_off_t ulnow)
     {
-      _progress = Progress {dlnow, dltotal, ulnow, ultotal};
       ELLE_DEBUG("%s: progress set to %s", *this->_request, _progress);
-      return 0;
+      _progress = Progress {dlnow, dltotal, ulnow, ultotal};
     }
 
     /*---------.

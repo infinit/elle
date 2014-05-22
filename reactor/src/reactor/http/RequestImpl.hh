@@ -123,7 +123,7 @@ namespace reactor
       progress_callback(void* userdata,
                         curl_off_t dltotal, curl_off_t dlnow,
                         curl_off_t ultotal, curl_off_t ulnow);
-      int
+      void
       progress_set(curl_off_t dltotal, curl_off_t dlnow,
                    curl_off_t ultotal, curl_off_t ulnow);
     public:
