@@ -110,10 +110,12 @@ namespace aws
   | Operations |
   `-----------*/
 
-  std::string S3::put_object(elle::ConstWeakBuffer const& object,
-                       std::string const& object_name,
-                       RequestQuery const& query,
-                       bool ommit_redundancy)
+  std::string S3::put_object(
+    elle::ConstWeakBuffer const& object,
+    std::string const& object_name,
+    RequestQuery const& query,
+    bool ommit_redundancy,
+    boost::optional<std::function<void (int)>> const& progress_callback)
   {
 
     ELLE_TRACE_SCOPE("%s: PUT block: %s", *this, object_name);
@@ -134,7 +136,9 @@ namespace aws
       RequestKind::data, url, reactor::http::Method::PUT,
       query, headers,
       "binary/octet-stream",
-      object);
+      object,
+      {},
+      progress_callback);
     auto const& response = request->headers();
     auto etag = response.find("ETag");
     if (etag == response.end())
@@ -301,15 +305,18 @@ namespace aws
   }
 
   std::string
-  S3::multipart_upload(std::string const& object_name,
-                       std::string const& upload_key,
-                       elle::ConstWeakBuffer const& object,
-                       int chunk)
+  S3::multipart_upload(
+    std::string const& object_name,
+    std::string const& upload_key,
+    elle::ConstWeakBuffer const& object,
+    int chunk,
+    boost::optional<std::function<void (int)>> const& progress_callback
+    )
   {
     RequestQuery query;
     query["partNumber"] = boost::lexical_cast<std::string>(chunk+1);
     query["uploadId"] = upload_key;
-    return put_object(object, object_name, query, true);
+    return put_object(object, object_name, query, true, progress_callback);
   }
 
   void
@@ -647,7 +654,8 @@ namespace aws
     RequestHeaders const& extra_headers,
     std::string const& content_type,
     elle::ConstWeakBuffer const& payload,
-    boost::optional<boost::posix_time::time_duration> timeout_opt
+    boost::optional<boost::posix_time::time_duration> timeout_opt,
+    boost::optional<std::function<void (int)>> const& progress_callback
     )
   {
     boost::posix_time::time_duration timeout =
@@ -699,6 +707,12 @@ namespace aws
       try
       {
         request = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
+        if (progress_callback)
+          request->progress_changed().connect(
+            [&progress_callback] (reactor::http::Request::Progress const& p)
+            {
+              progress_callback.get()(p.upload_current);
+            });
         if (payload.size())
           request->write(reinterpret_cast<char const*>(payload.contents()),
             payload.size());

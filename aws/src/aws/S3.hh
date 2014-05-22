@@ -26,9 +26,9 @@ namespace aws
     typedef uint64_t FileSize;
     typedef std::vector<std::pair<std::string, FileSize>> List;
 
-    /*-------------.
-    | Construction |
-    `-------------*/
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
     /// Create a new S3 handler.
     /// This requires a bucket name, remote folder and set of credentials.
@@ -48,10 +48,12 @@ namespace aws
     /// reasonable for an HTTP request.
     /// @return the object ETag.
     std::string
-    put_object(elle::ConstWeakBuffer const& object,
-               std::string const& object_name,
-               RequestQuery const& query = RequestQuery(),
-               bool ommit_redundancy = false);
+    put_object(
+      elle::ConstWeakBuffer const& object,
+      std::string const& object_name,
+      RequestQuery const& query = RequestQuery(),
+      bool ommit_redundancy = false,
+      boost::optional<std::function<void (int)>> const& progress_callback = {});
 
     /// Returns a list of all files names and their respective sizes inside the
     /// remote folder.
@@ -92,10 +94,13 @@ namespace aws
     /// Upload one part of a multipart upload
     /// @return id for chunk information that needs to be passed to multipart_finalize
     std::string
-    multipart_upload(std::string const& object_name,
-                     std::string const& upload_key,
-                     elle::ConstWeakBuffer const& object,
-                     int chunk);
+    multipart_upload(
+      std::string const& object_name,
+      std::string const& upload_key,
+      elle::ConstWeakBuffer const& object,
+      int chunk,
+      boost::optional<std::function<void (int)>> const& progress_callback = {}
+      );
 
     /// Finalize a multipart by joining all parts together
     void
@@ -176,7 +181,8 @@ namespace aws
       std::string const& content_type = "application/json",
       elle::ConstWeakBuffer const& payload = elle::ConstWeakBuffer(),
       boost::optional<boost::posix_time::time_duration> timeout =
-        boost::optional<boost::posix_time::time_duration>()
+        boost::optional<boost::posix_time::time_duration>(),
+      boost::optional<std::function<void (int)>> const& progress_callback = {}
       );
 
     /*----------.
