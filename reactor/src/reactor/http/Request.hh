@@ -4,6 +4,7 @@
 # include <string>
 
 # include <boost/asio.hpp>
+# include <boost/signals2.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/IOStream.hh>
@@ -352,7 +353,10 @@ namespace reactor
         int64_t upload_current;
         int64_t upload_total; // Set to -1 if total unknown.
       };
-      Progress progress() const;
+      Progress
+      progress() const;
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Progress const&)>,
+                        progress_changed);
 
     /*----------.
     | Printable |
@@ -366,7 +370,7 @@ namespace reactor
 
     std::ostream&
     operator <<(std::ostream& output,
-                Progress const& progress);
+                Request::Progress const& progress);
 
     /*----------.
     | Shortcuts |
