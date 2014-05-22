@@ -20,6 +20,12 @@
 
 ELLE_LOG_COMPONENT("aws.test");
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#else
+# define RUNNING_ON_VALGRIND 0
+#endif
+
 // Credentials:
 // AccessKeyId
 // SecretAccessKey
@@ -221,7 +227,7 @@ ELLE_TEST_SCHEDULED(s3_delete)
 
 ELLE_TEST_SUITE()
 {
-  auto timeout = 3;
+  auto timeout = RUNNING_ON_VALGRIND ? 10 : 3;
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(canonical_request), 0, timeout);
   suite.add(BOOST_TEST_CASE(string_to_sign), 0, timeout);
