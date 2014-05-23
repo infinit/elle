@@ -50,9 +50,11 @@ namespace elle
     void
     Serializer::serialize(std::string const& name, T& v)
     {
-      this->_enter(name);
-      this->_serialize_anonymous(name, v);
-      this->_leave(name);
+      if (this->_enter(name))
+      {
+        this->_serialize_anonymous(name, v);
+        this->_leave(name);
+      }
     }
 
     template <typename T>
@@ -137,9 +139,11 @@ namespace elle
         std::string const& name,
         std::shared_ptr<T>& ptr)
       {
-        s._enter(name);
-        ptr.reset(new T(static_cast<SerializerIn&>(s)));
-        s._leave(name);
+        if (s._enter(name))
+        {
+          ptr.reset(new T(static_cast<SerializerIn&>(s)));
+          s._leave(name);
+        }
       }
 
       template <typename T>
@@ -168,16 +172,18 @@ namespace elle
         std::string const& name,
         std::shared_ptr<T>& ptr)
       {
-        s._enter(name);
-        auto const& map = Hierarchy<T>::_map();
-        std::string type_name;
-        s.serialize(".type", type_name);
-        auto it = map.find(type_name);
-        if (it == map.end())
-          throw Error(elle::sprintf("unable to deserialize type %s",
-                                    type_name));
-        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
-        s._leave(name);
+        if (s._enter(name))
+        {
+          auto const& map = Hierarchy<T>::_map();
+          std::string type_name;
+          s.serialize(".type", type_name);
+          auto it = map.find(type_name);
+          if (it == map.end())
+            throw Error(elle::sprintf("unable to deserialize type %s",
+                                      type_name));
+          ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
+          s._leave(name);
+        }
       }
 
       template <typename T>
@@ -230,9 +236,11 @@ namespace elle
           {
             for (std::pair<K, V> pair: map)
             {
-              this->_enter(name);
-              this->_serialize_anonymous(name, pair);
-              this->_leave(name);
+              if (this->_enter(name))
+              {
+                this->_serialize_anonymous(name, pair);
+                this->_leave(name);
+              }
             }
           });
       }
@@ -296,9 +304,11 @@ namespace elle
           {
             for (auto& elt: collection)
             {
-              this->_enter(name);
-              this->_serialize_anonymous(name, elt);
-              this->_leave(name);
+              if (this->_enter(name))
+              {
+                this->_serialize_anonymous(name, elt);
+                this->_leave(name);
+              }
             }
           });
       }
@@ -325,12 +335,16 @@ namespace elle
           name,
           [&] ()
           {
-            this->_enter(name);
-            this->_serialize_anonymous(name, pair.first);
-            this->_leave(name);
-            this->_enter(name);
-            this->_serialize_anonymous(name, pair.second);
-            this->_leave(name);
+            if (this->_enter(name))
+            {
+              this->_serialize_anonymous(name, pair.first);
+              this->_leave(name);
+            }
+            if (this->_enter(name))
+            {
+              this->_serialize_anonymous(name, pair.second);
+              this->_leave(name);
+            }
           });
       }
       else

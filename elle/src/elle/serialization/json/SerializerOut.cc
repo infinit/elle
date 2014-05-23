@@ -31,7 +31,7 @@ namespace elle
       | Serialization |
       `--------------*/
 
-      void
+      bool
       SerializerOut::_enter(std::string const& name)
       {
         ELLE_ASSERT(!this->_current.empty());
@@ -55,6 +55,7 @@ namespace elle
           ELLE_ABORT("cannot serialize a composite and a fundamental object "
                      "in key %s", name);
         }
+        return true;
       }
 
       void

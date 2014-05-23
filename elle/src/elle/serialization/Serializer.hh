@@ -82,7 +82,7 @@ namespace elle
 
     protected:
       virtual
-      void
+      bool
       _enter(std::string const& name);
       virtual
       void

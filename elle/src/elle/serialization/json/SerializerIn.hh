@@ -28,6 +28,12 @@ namespace elle
         SerializerIn(elle::json::Json input);
 
       /*--------------.
+      | Configuration |
+      `--------------*/
+      public:
+        ELLE_ATTRIBUTE_RW(bool, partial);
+
+      /*--------------.
       | Serialization |
       `--------------*/
       protected:
@@ -65,7 +71,7 @@ namespace elle
         _serialize_array(std::string const& name,
                          std::function<void ()> const& f) override;
         virtual
-        void
+        bool
         _enter(std::string const& name);
         virtual
         void

@@ -23,6 +23,7 @@ namespace elle
 
       SerializerIn::SerializerIn(std::istream& input)
         : Super(input)
+        , _partial(false)
         , _json()
         , _current()
       {
@@ -130,14 +131,21 @@ namespace elle
                   std::ostream_iterator<char>(output));
       }
 
-      void
+      bool
       SerializerIn::_enter(std::string const& name)
       {
         auto& object = this->_check_type<elle::json::Object>(name);
         auto it = object.find(name);
         if (it == object.end())
-          throw MissingKey(name);
-        this->_current.push_back(&it->second);
+          if (this->_partial)
+            return false;
+          else
+            throw MissingKey(name);
+        else
+        {
+          this->_current.push_back(&it->second);
+          return true;
+        }
       }
 
       void

@@ -5,9 +5,11 @@ namespace elle
 {
   namespace serialization
   {
-    void
+    bool
     Serializer::_enter(std::string const&)
-    {}
+    {
+      return true;
+    }
 
     void
     Serializer::_leave(std::string const&)
