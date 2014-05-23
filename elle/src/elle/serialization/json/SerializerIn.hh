@@ -25,6 +25,7 @@ namespace elle
       `-------------*/
       public:
         SerializerIn(std::istream& input);
+        SerializerIn(elle::json::Json input);
 
       /*--------------.
       | Serialization |

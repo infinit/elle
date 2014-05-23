@@ -40,6 +40,15 @@ namespace elle
         }
       }
 
+      SerializerIn::SerializerIn(elle::json::Json input)
+        : Super(ELLE_SFINAE_INSTANCE(std::istream)) // FIXME
+        , _partial(false)
+        , _json(std::move(input))
+        , _current()
+      {
+        this->_current.push_back(&this->_json);
+      }
+
       void
       SerializerIn::_serialize(std::string const& name, int64_t& v)
       {
