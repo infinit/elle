@@ -725,8 +725,22 @@ TEST(builder_test, clear_fragment_test) {
 }
 
 TEST(builder_test, empty_username) {
-  static const std::string user_info(":");
+  std::string user_info(":");
   network::uri_builder builder;
   builder.scheme("ftp").host("127.0.0.1").user_info(user_info);
   ASSERT_EQ("ftp://:@127.0.0.1", builder.uri());
+}
+
+TEST(builder_test, path_should_be_prefixed_with_slash) {
+  std::string path("relative");
+  network::uri_builder builder;
+  builder.scheme("ftp").host("127.0.0.1").path(path);
+  ASSERT_EQ("ftp://127.0.0.1/relative", builder.uri());
+}
+
+TEST(builder_test, path_should_be_prefixed_with_slash_2) {
+  network::uri_builder builder;
+  builder
+    .scheme("ftp").host("127.0.0.1").path("noleadingslash/foo.txt");
+  ASSERT_EQ("/noleadingslash/foo.txt", *builder.uri().path());
 }
