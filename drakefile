@@ -95,6 +95,7 @@ PY_MINOR_VERSION''', config = python3)
   else:
     python_bin = 'bin/python%s' % python_version
   python3.python_interpreter = python3.prefix / python_bin
+  python3.version = python_version
   set_python3(python3)
 
   ## -------- ##
