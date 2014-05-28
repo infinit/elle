@@ -4,6 +4,7 @@
 #endif
 
 #include <elle/system/system.hh>
+#include <elle/os/locale.hh>
 
 #include <boost/filesystem/fstream.hpp>
 
@@ -49,7 +50,6 @@ namespace elle
                            uint64_t offset,
                            uint64_t size)
     {
-      boost::filesystem::ifstream file{path, std::ios::binary};
       // streamsize is garanteed signed, so this fits
       static const uint64_t MAX_offset{
         std::numeric_limits<std::streamsize>::max()};
@@ -58,6 +58,9 @@ namespace elle
       if (size > MAX_buffer)
         throw elle::Exception(
           elle::sprintf("buffer that big (%s) can't be addressed", size));
+
+      elle::os::locale::DefaultImbuer u;
+      boost::filesystem::ifstream file{path, std::ios::binary};
 
       if (!file.good())
         throw elle::Exception("file is broken");
