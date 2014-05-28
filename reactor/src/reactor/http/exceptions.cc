@@ -24,5 +24,9 @@ namespace reactor
       Super(url, elle::sprintf("timeout with delay %s", timeout)),
       _timeout(timeout)
     {}
+
+    ResolutionFailure::ResolutionFailure(std::string const& url)
+      : Super(url, "resolution failure")
+    {}
   }
 }

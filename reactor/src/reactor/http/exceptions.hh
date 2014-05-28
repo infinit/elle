@@ -41,6 +41,15 @@ namespace reactor
               reactor::Duration const& timeout);
       ELLE_ATTRIBUTE_R(reactor::Duration, timeout);
     };
+
+    // DNS resolution failed.
+    class ResolutionFailure:
+      public RequestError
+    {
+    public:
+      typedef RequestError Super;
+      ResolutionFailure(std::string const& url);
+    };
   }
 }
 

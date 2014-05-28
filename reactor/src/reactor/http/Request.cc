@@ -819,6 +819,10 @@ namespace reactor
               : (timeout ? timeout.get() : stall_timeout.get());
             this->_raise<Timeout>(this->_url, value);
           }
+          else if (code == CURLE_COULDNT_RESOLVE_HOST)
+          {
+            this->_raise<ResolutionFailure>(this->_url);
+          }
           else
             this->_raise<RequestError>(this->_url, message);
         };
