@@ -36,6 +36,7 @@ class Boost(drake.Configuration):
   """Configuration for the Boost C++ library collection"""
 
   __libraries = {
+    'locale': 'locale',
     'test': 'unit_test_framework',
     'thread': 'thread',
     'system': 'system',
