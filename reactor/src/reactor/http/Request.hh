@@ -12,108 +12,18 @@
 # include <elle/attribute.hh>
 
 # include <reactor/http/fwd.hh>
+# include <reactor/http/Method.hh>
+# include <reactor/http/StatusCode.hh>
+# include <reactor/http/Version.hh>
 # include <reactor/operation.hh>
 
 namespace reactor
 {
   namespace http
   {
-    /*-------.
-    | Method |
-    `-------*/
-
-    /// HTTP methods used to perform resquests.
-    enum class Method
-    {
-# ifdef DELETE
-#  undef DELETE
-# endif
-      DELETE,
-      GET,
-      POST,
-      PUT,
-    };
-
-    /// Pretty print a HTTP method.
-    std::ostream&
-    operator <<(std::ostream& output,
-                Method method);
-
-    /*--------.
-    | Version |
-    `--------*/
-
-    /// HTTP protocol versions.
-    enum class Version
-    {
-      v10,
-      v11,
-    };
-
-    /// Pretty print a HTTP version.
-    std::ostream&
-    operator <<(std::ostream& output,
-                Version method);
-
-    /*-----------.
-    | StatusCode |
-    `-----------*/
-
-    /// HTTP status code
-    enum class StatusCode
-    {
-      Continue = 100,
-      Switching_Protocols = 101,
-      OK = 200,
-      Created = 201,
-      Accepted = 202,
-      Non_Authoritative_Information = 203,
-      No_Content = 204,
-      Reset_Content = 205,
-      Partial_Content = 206,
-      Multiple_Choices = 300,
-      Moved_Permanently = 301,
-      Found = 302,
-      See_Other = 303,
-      Not_Modified = 304,
-      Use_Proxy = 305,
-      Unused = 306,
-      Temporary_Redirect = 307,
-      Bad_Request = 400,
-      Unauthorized = 401,
-      Payment_Required = 402,
-      Forbidden = 403,
-      Not_Found = 404,
-      Method_Not_Allowed = 405,
-      Not_Acceptable = 406,
-      Proxy_Authentication_Required = 407,
-      Request_Timeout = 408,
-      Conflict = 409,
-      Gone = 410,
-      Length_Required = 411,
-      Precondition_Failed = 412,
-      Request_Entity_Too_Large = 413,
-      Request_URI_Too_Long = 414,
-      Unsupported_Media_Type = 415,
-      Requested_Range_Not_Satisfiable = 416,
-      Expectation_Failed = 417,
-      Internal_Server_Error = 500,
-      Not_Implemented = 501,
-      Bad_Gateway = 502,
-      Service_Unavailable = 503,
-      Gateway_Timeout = 504,
-      HTTP_Version_Not_Supported = 505,
-    };
-
-    /// Pretty print a HTTP status code.
-    std::ostream&
-    operator <<(std::ostream& output,
-                StatusCode method);
-
     /*--------.
     | Request |
     `--------*/
-
     /// A HTTP request.
     ///
     /// A Request performs a HTTP request according to the configuration it is
