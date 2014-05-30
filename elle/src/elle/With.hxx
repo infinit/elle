@@ -131,6 +131,8 @@ namespace elle
     }
     catch (...)
     {
+      ELLE_TRACE("%s: caught exception with succeeded=%s: %s",
+                 *this, succeeded, elle::exception_string());
       if (succeeded)
         throw;
       auto e = std::current_exception();
@@ -145,7 +147,12 @@ namespace elle
         ELLE_ERR("overriden by: %s", elle::exception_string());
         throw;
       }
-      throw;
+      ELLE_TRACE("%s: rethrowing exception '%s'",
+                 *this, elle::exception_string(e));
+      /* Do not use 'throw;' here! ~T might have yielded and current_exception
+       * might not be coroutine-safe (observed on gcc 4.8.0 linux)
+       */
+      std::rethrow_exception(e);
     }
   }
 }
