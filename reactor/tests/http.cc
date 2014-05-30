@@ -21,6 +21,16 @@
 
 ELLE_LOG_COMPONENT("reactor.http.test");
 
+#define PERSIST_CHECK_EQUAL(a, b)                          \
+  do                                                       \
+  {                                                        \
+  for (unsigned i=0; i<20 && !((a) == (b)); ++i)           \
+    reactor::sleep(boost::posix_time::milliseconds(50));   \
+  BOOST_CHECK_EQUAL(a, b);                                 \
+  }                                                        \
+  while(0)
+
+
 class ScheduledHttpServer
 {
 public:
@@ -777,6 +787,7 @@ protected:
   }
 };
 
+
 ELLE_TEST_SCHEDULED(download_progress)
 {
   using reactor::http::Request;
@@ -801,16 +812,16 @@ ELLE_TEST_SCHEDULED(download_progress)
       for (unsigned i=0; i< header.size(); ++i)
         server.sem.release();
       delay();
-      BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{0,payload_length,0,0}));
+      PERSIST_CHECK_EQUAL(r.progress(), (Request::Progress{0,payload_length,0,0}));
       for (unsigned i=0; i < payload_length; ++i)
       {
         server.sem.release();
         delay();
-        BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{i+1, payload_length,0,0}));
+        PERSIST_CHECK_EQUAL(r.progress(), (Request::Progress{i+1, payload_length,0,0}));
       }
     });
   reactor::wait(r);
-  BOOST_CHECK_EQUAL(r.progress(), (Request::Progress{payload_length, payload_length,0,0}));
+  PERSIST_CHECK_EQUAL(r.progress(), (Request::Progress{payload_length, payload_length,0,0}));
   reactor::wait(t);
 }
 
