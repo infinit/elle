@@ -6,6 +6,7 @@
 #include <elle/system/system.hh>
 #include <elle/os/locale.hh>
 
+#include <boost/system/error_code.hpp>
 #include <boost/filesystem/fstream.hpp>
 
 ELLE_LOG_COMPONENT("elle.system");
@@ -17,6 +18,7 @@ namespace elle
     void truncate(boost::filesystem::path path,
                   uint64_t size)
     {
+      using namespace boost::system::errc; // make_error_code and errors
 #ifdef INFINIT_WINDOWS
       HANDLE h = CreateFileW(
         std::wstring(path.string().begin(), path.string().end()).c_str(),
@@ -27,9 +29,8 @@ namespace elle
         0);
       if (h == INVALID_HANDLE_VALUE)
       {
-        throw elle::Exception(
-          elle::sprintf("unable to create or open file %s: %s",
-                        path.string(), GetLastError()));
+        throw boost::filesystem::filesystem_error(GetLastError(), path,
+          make_error_code(no_such_file_or_directory));
       }
       LONG offsetHigh = size >> 32;
       SetFilePointer(h,
@@ -41,8 +42,8 @@ namespace elle
 #else
       int err = ::truncate(path.string().c_str(), size);
       if (err)
-        throw elle::Exception(elle::sprintf("truncate(): error %s:%s",
-                                            err, strerror(err)));
+        throw boost::filesystem::filesystem_error(strerror(err), path,
+          boost::system::error_code(err, boost::system::system_category()));
 #endif
     }
 
@@ -50,6 +51,7 @@ namespace elle
                            uint64_t offset,
                            uint64_t size)
     {
+      using namespace boost::system::errc; // make_error_code and errors
       // streamsize is garanteed signed, so this fits
       static const uint64_t MAX_offset{
         std::numeric_limits<std::streamsize>::max()};
@@ -63,7 +65,8 @@ namespace elle
       boost::filesystem::ifstream file{path, std::ios::binary};
 
       if (!file.good())
-        throw elle::Exception("file is broken");
+        throw boost::filesystem::filesystem_error("Cannot open file", path,
+          make_error_code(no_such_file_or_directory));
 
       // If the offset is greater than the machine maximum streamsize, seekg n
       // times to reach the right offset.
@@ -82,8 +85,10 @@ namespace elle
       file.seekg(offset, std::ios_base::cur);
 
       if (!file.good())
-      throw elle::Exception(
-        elle::sprintf("unable to seek to pos %s", offset));
+        throw boost::filesystem::filesystem_error(
+          elle::sprintf("unable to seek to pos %s", offset),
+          path,
+          make_error_code(invalid_seek));
 
       elle::Buffer buffer(size);
 
@@ -94,7 +99,10 @@ namespace elle
       ELLE_DEBUG("buffer resized to %s bytes", buffer.size());
 
       if (!file.eof() && file.fail() || file.bad())
-        throw elle::Exception("unable to reathd");
+         throw boost::filesystem::filesystem_error(
+          "Read failed",
+          path,
+          make_error_code(io_error));
 
       ELLE_DUMP("buffer read: %x", buffer);
       return buffer;
