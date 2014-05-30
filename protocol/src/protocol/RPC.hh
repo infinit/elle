@@ -18,6 +18,16 @@ namespace infinit
 {
   namespace protocol
   {
+    /// Thrown by handler to ask the RPC server to exit from run
+    class LastMessageException: public elle::Exception
+    {
+    public:
+      LastMessageException(std::string const& what);
+      virtual ~LastMessageException();
+    };
+
+    typedef std::function<void(std::exception_ptr)> ExceptionHandler;
+
     template <typename ISerializer, typename OSerializer>
     class BaseProcedure: public boost::noncopyable
     {
@@ -58,7 +68,17 @@ namespace infinit
     {
     public:
       BaseRPC(ChanneledStream& channels);
-      virtual void run() = 0;
+      /** Run forever until one of the following:
+      *   - Connection gets closed
+      *   - Thread gets terminated
+      *   - handler throws a LastMessageException.
+      *
+      *   @param handler gets fed with any exception thrown by a RPC procedure.
+      *          handler can throw an exception, in which case that exception gets
+      *          used in place of the one thrown by RPC procedure as base for
+      *          the error reply.
+      */
+      virtual void run(ExceptionHandler handler = {}) = 0;
     protected:
       template <typename ISerializer,
                 typename OSerializer,
@@ -107,7 +127,7 @@ namespace infinit
       RemoteProcedure<R, Args...>
       add(boost::function<R (Args...)> const& f);
       void add(BaseRPC& rpc);
-      virtual void run();
+      virtual void run(ExceptionHandler = {});
       virtual void parallel_run();
     protected:
       typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;

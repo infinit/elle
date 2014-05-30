@@ -22,6 +22,14 @@ namespace infinit
 {
   namespace protocol
   {
+
+    inline LastMessageException::LastMessageException(std::string const& what)
+    : elle::Exception(what)
+    {}
+
+    inline LastMessageException::~LastMessageException()
+    {}
+
     /*--------------.
     | BaseProcedure |
     `--------------*/
@@ -348,24 +356,75 @@ namespace infinit
       BaseRPC(channels)
     {}
 
+    template<typename T> bool handle_exception(ExceptionHandler & handler,
+                                               T& output,
+                                               std::exception_ptr ex)
+    {
+      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+      bool res = false;
+      try
+      {
+        // would be nice if handler could reply a value
+        if (handler)
+          handler(std::current_exception());
+        std::rethrow_exception(ex);
+      }
+      catch (elle::Exception& e)
+      {
+        if (dynamic_cast<LastMessageException*>(&e))
+          res = true;
+        ELLE_TRACE_SCOPE("RPC procedure failed: %s (stop_request = %s)",
+          e.what(), res);
+        output << false;
+        output << std::string(e.what());
+        output << uint16_t(e.backtrace().size());
+        for (auto const& frame: e.backtrace())
+        {
+          output << frame.symbol;
+          output << frame.symbol_mangled;
+          output << frame.symbol_demangled;
+          output << frame.address;
+          output << frame.offset;
+        }
+      }
+      catch (std::exception& e)
+      {
+        ELLE_TRACE_SCOPE("RPC procedure failed: %s", e.what());
+        output << false;
+        output << std::string(e.what());
+        output << uint16_t(0);
+      }
+      catch (...)
+      {
+        ELLE_TRACE_SCOPE("RPC procedure failed: unknown error");
+        output << false;
+        output << std::string("unknown error");
+        output << uint16_t(0);
+      }
+      return res;
+    }
+
     template <typename IS,
               typename OS>
     void
-    RPC<IS, OS>::run()
+    RPC<IS, OS>::run(ExceptionHandler handler)
     {
       ELLE_LOG_COMPONENT("infinit.protocol.RPC");
 
       using elle::sprintf;
       using elle::Exception;
+      bool stop_request = false;
       try
       {
-        while (true)
+        while (!stop_request)
         {
+          ELLE_TRACE_SCOPE("%s: Accepting new request...", *this);
           Channel c(_channels.accept());
           Packet question(c.read());
           IS input(question);
           uint32_t id;
           input >> id;
+          ELLE_TRACE_SCOPE("%s: Processing request for %s...", *this, id);
           auto procedure = _procedures.find(id);
 
           Packet answer;
@@ -392,34 +451,9 @@ namespace infinit
           {
             throw;
           }
-          catch (elle::Exception& e)
-          {
-            ELLE_TRACE_SCOPE("%s: procedure failed: %s", *this, e.what());
-            output << false;
-            output << std::string(e.what());
-            output << uint16_t(e.backtrace().size());
-            for (auto const& frame: e.backtrace())
-            {
-              output << frame.symbol;
-              output << frame.symbol_mangled;
-              output << frame.symbol_demangled;
-              output << frame.address;
-              output << frame.offset;
-            }
-          }
-          catch (std::exception& e)
-          {
-            ELLE_TRACE_SCOPE("%s: procedure failed: %s", *this, e.what());
-            output << false;
-            output << std::string(e.what());
-            output << uint16_t(0);
-          }
           catch (...)
-          {
-            ELLE_TRACE_SCOPE("%s: procedure failed: unknown error", *this);
-            output << false;
-            output << std::string("unknown error");
-            output << uint16_t(0);
+          { // Pass exception through handler if present, reply with an error
+            stop_request = handle_exception(handler, output, std::current_exception());
           }
           c.write(answer);
         }
@@ -429,9 +463,12 @@ namespace infinit
         ELLE_TRACE("%s: end of RPCs: connection closed", *this);
         return;
       }
+      ELLE_TRACE("%s: end of RPCs: normal exit", *this);
     }
 
     // XXX: factor with run().
+    // XXX: unsafe, rpc calls must finish in the order they were started,
+    // there is no mechanism to match a rpc call with associated return
     template <typename IS,
               typename OS>
     void
