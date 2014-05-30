@@ -29,8 +29,11 @@ namespace elle
         0);
       if (h == INVALID_HANDLE_VALUE)
       {
-        throw boost::filesystem::filesystem_error(GetLastError(), path,
-          make_error_code(no_such_file_or_directory));
+        throw boost::filesystem::filesystem_error(
+          "CreateFile",
+          path,
+          boost::system::error_code(::GetLastError(),
+                                    boost::system::system_category()));
       }
       LONG offsetHigh = size >> 32;
       SetFilePointer(h,
