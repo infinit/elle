@@ -27,9 +27,6 @@ namespace infinit
     : elle::Exception(what)
     {}
 
-    inline LastMessageException::~LastMessageException()
-    {}
-
     /*--------------.
     | BaseProcedure |
     `--------------*/

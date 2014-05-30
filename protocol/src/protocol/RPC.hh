@@ -23,7 +23,6 @@ namespace infinit
     {
     public:
       LastMessageException(std::string const& what);
-      virtual ~LastMessageException();
     };
 
     typedef std::function<void(std::exception_ptr)> ExceptionHandler;
