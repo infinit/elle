@@ -634,16 +634,21 @@ namespace reactor
 
   static
   void
-  signal_callback(boost::asio::signal_set& set,
+  signal_callback(reactor::Scheduler& sched,
+                  boost::asio::signal_set& set,
                   std::function<void ()> const& handler,
                   boost::system::error_code const& error,
                   int)
   {
     if (error == boost::asio::error::operation_aborted)
       return;
-    handler();
-    set.async_wait(std::bind(&signal_callback, std::ref(set), handler,
-                             std::placeholders::_1, std::placeholders::_2));
+    new reactor::Thread(sched, "signal handler", handler, true);
+    set.async_wait(std::bind(&signal_callback,
+                             std::ref(sched),
+                             std::ref(set),
+                             handler,
+                             std::placeholders::_1,
+                             std::placeholders::_2));
   };
 
   namespace
@@ -665,8 +670,12 @@ namespace reactor
     ELLE_LOG("%s: handle signal %s", *this, signal_string(signal));
     auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
                                                           signal);
-    set->async_wait(std::bind(&signal_callback, std::ref(*set), handler,
-                              std::placeholders::_1, std::placeholders::_2));
+    set->async_wait(std::bind(&signal_callback,
+                              std::ref(*this),
+                              std::ref(*set),
+                              handler,
+                              std::placeholders::_1,
+                              std::placeholders::_2));
     this->_signal_handlers.emplace_back(std::move(set));
   }
 
