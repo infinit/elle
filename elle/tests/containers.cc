@@ -27,7 +27,7 @@ printable_pair()
 {
   std::pair<std::string, int> p{"toto", 1};
   ELLE_LOG("pair: %s", p);
-  BOOST_CHECK_EQUAL(elle::sprint(p), "toto: 1");
+  BOOST_CHECK_EQUAL(elle::sprint(p), "(toto, 1)");
 }
 
 static
@@ -53,7 +53,7 @@ printable_unordered_map()
   ELLE_LOG("unordered_map: %s", m);
   // unordered_map representation is unpredictable. While it's not test with
   // regex, the best way is to compare representation size to the expected one.
-  size_t size = std::string("{tata: 2, toto: 1}").length();
+  size_t size = std::string("{(tata, 2), (toto, 1)}").length();
   BOOST_CHECK_EQUAL(elle::sprint(m).length(), size);
 }
 
@@ -105,7 +105,7 @@ printable_vectorpair()
     {"tata", 2},
   };
   ELLE_LOG("vector: %s", v);
-  BOOST_CHECK_EQUAL(elle::sprint(v), "[toto: 1, tata: 2]");
+  BOOST_CHECK_EQUAL(elle::sprint(v), "[(toto, 1), (tata, 2)]");
 }
 
 static
@@ -118,7 +118,7 @@ printable_vectorvectorpair()
   };
   ELLE_LOG("vector: %s", v);
 
-  BOOST_CHECK_EQUAL(elle::sprint(v), "[[toto: 1, tata: 2], [titi: 3, tutu: 4]]");
+  BOOST_CHECK_EQUAL(elle::sprint(v), "[[(toto, 1), (tata, 2)], [(titi, 3), (tutu, 4)]]");
 }
 
 ELLE_TEST_SUITE()
@@ -135,4 +135,3 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(printable_vectorvectorpair));
   suite.add(BOOST_TEST_CASE(printable_list));
 }
-
