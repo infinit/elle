@@ -189,5 +189,10 @@ namespace elle
     }
 #endif
 
+    std::ostream&
+    operator <<(std::ostream& stream, Interface const& interface)
+    {
+      return stream << interface.ipv4_address;
+    }
   }
 }

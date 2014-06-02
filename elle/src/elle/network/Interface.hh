@@ -8,7 +8,6 @@ namespace elle
 {
   namespace network
   {
-
     /// Represents a network interface.
     struct Interface
     {
@@ -32,6 +31,9 @@ namespace elle
       get_map(Filter filter = Filter::none);
     };
 
+    std::ostream&
+    operator <<(std::ostream& stream, Interface const& interface);
+
     // Check whether or not a flag is enabled.
     inline
     bool
@@ -43,7 +45,6 @@ namespace elle
     Interface::Filter
     operator |(Interface::Filter const lhs,
                Interface::Filter const rhs);
-
   }
 }
 
