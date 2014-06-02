@@ -1,0 +1,30 @@
+// -*- c++ -*-
+#ifndef ELLE_MAP
+# define ELLE_MAP
+
+# include <ostream>
+# include_next <map>
+
+namespace std
+{
+  template <class K, class V, class ...OTHER>
+  std::ostream&
+  operator <<(ostream& out,
+              map<K, V, OTHER...> const& map)
+  {
+    out << "{";
+    bool first = true;
+    for (auto const& elt: map)
+    {
+      if (first)
+        first = false;
+      else
+        out << ", ";
+      out << elt.first << ": " << elt.second;
+    }
+    out << "}";
+    return out;
+  }
+}
+
+#endif
