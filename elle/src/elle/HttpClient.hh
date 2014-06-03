@@ -21,6 +21,7 @@ namespace elle
       bad_request = 400,
       forbidden = 403,
       not_found = 404,
+      gone = 410,
       im_a_teapot = 418,
 
       // Server error
