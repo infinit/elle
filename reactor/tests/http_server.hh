@@ -131,6 +131,7 @@ namespace reactor
         // Wrapper around the command line.
         // Extract method, path and version.
         struct CommandLine
+          : public elle::Printable
         {
           CommandLine(elle::Buffer const& buffer)
             : _path()
@@ -204,6 +205,15 @@ namespace reactor
               return this->_version.get();
             throw Server::Exception(
               this->_path, reactor::http::StatusCode::Bad_Request, "No version");
+          }
+
+        public:
+          virtual
+          void
+          print(std::ostream& output) const
+          {
+            elle::fprintf(output, "%s %s %s",
+                         this->path(), this->params(), this->method());
           }
         };
 
@@ -418,9 +428,9 @@ namespace reactor
 
         ELLE_ATTRIBUTE_RX(Headers, headers);
 
-        /*----------.
-          | Printable |
-          `----------*/
+      /*----------.
+      | Printable |
+      `----------*/
       public:
         /// Pretty print the request.
         virtual
@@ -429,9 +439,7 @@ namespace reactor
         {
           stream << "HttpServer(port=" << this->_port << ")";
         }
-
       };
-
     }
   }
 }
