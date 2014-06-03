@@ -48,31 +48,24 @@ namespace elle
     throw elle::AssertError(message.c_str(), file, line);
   }
 
-  // XXX should fill a backtrace.
   AssertError::AssertError(char const* condition,
                            char const* file,
                            Size line) throw()
   {
     try
-      {
-        std::stringstream ss;
-        ss << "assertion '" << condition << "' failed at "
-           << file << ':' << line;
-        this->_what = ss.str();
-        ELLE_ERR("%s", this->_what)
-        {
-          for (auto& sf: Backtrace::current())
-            ELLE_ERR("%s", sf);
-        }
-
-      }
+    {
+      this->_what = elle::sprintf("assertion '%s' failed at %s:%s",
+                                  condition, file, line);
+      ELLE_ERR("%s", this->_what)
+        ELLE_ERR("%s", Backtrace::current());
+    }
     catch (...)
-      {
-        ELLE_WARN("could not build the error string for %s at %s:%s",
-                  condition,
-                  file,
-                  line);
-      }
+    {
+      ELLE_WARN("could not build the error string for %s at %s:%s",
+                condition,
+                file,
+                line);
+    }
   }
 
   const char*
