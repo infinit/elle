@@ -235,12 +235,11 @@ namespace reactor
           ELLE_LOG_COMPONENT("reactor.test.http");
           auto peer = socket->peer();
           CommandLine cmd(socket->read_until("\r\n"));
+          ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
           if (this->_routes.find(cmd.path()) == this->_routes.end())
             throw Exception(cmd.path(), reactor::http::StatusCode::Not_Found);
           if (this->_routes.at(cmd.path()).find(cmd.method()) == this->_routes.at(cmd.path()).end())
             throw Exception(cmd.path(), reactor::http::StatusCode::Method_Not_Allowed);
-
-          ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
           Cookies cookies;
           auto headers = this->_headers;
           try
