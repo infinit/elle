@@ -110,7 +110,7 @@ class SilentHttpServer:
   _response(reactor::network::Socket&,
             reactor::http::StatusCode,
             elle::ConstWeakBuffer,
-            std::unordered_map<std::string, std::string> const&) override
+            HTTPServer::Cookies const&) override
   {}
 };
 
@@ -130,7 +130,7 @@ class PartialHttpServer:
   _response(reactor::network::Socket& socket,
             reactor::http::StatusCode,
             elle::ConstWeakBuffer,
-            std::unordered_map<std::string, std::string> const&) override
+            HTTPServer::Cookies const&) override
   {
     std::string answer(
       "HTTP/1.1 200 OK\r\n"
@@ -444,8 +444,6 @@ ELLE_TEST_SCHEDULED(cookies)
   {
     BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
                       "/cookies");
-    BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
-                      "/cookies");
   }
 
   {
@@ -549,8 +547,8 @@ class NoHeaderHttpServer:
   void
   _response(reactor::network::Socket& socket,
            reactor::http::StatusCode,
-           elle::ConstWeakBuffer,
-           std::unordered_map<std::string, std::string> const&) override
+            elle::ConstWeakBuffer,
+            HTTPServer::Cookies const&) override
   {
     std::string answer(
       "<!DOCTYPE HTML>\n"
