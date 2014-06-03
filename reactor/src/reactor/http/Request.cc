@@ -844,6 +844,7 @@ namespace reactor
         message = elle::sprintf("got unexpected status %s instead of %s",
                                 this->_status,
                                 this->_impl->_conf.expected_status().get());
+        ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
       else
@@ -852,6 +853,7 @@ namespace reactor
       {
         exception = true;
         message = "server response has no status";
+        ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
       this->_signal();
@@ -883,8 +885,12 @@ namespace reactor
     Request::status() const
     {
       // XXX: We need not wait for the whole request.
-      const_cast<Request*>(this)->wait();
-      ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
+      reactor::wait(*const_cast<Request*>(this));
+      if (this->_status == static_cast<StatusCode>(0))
+      {
+        ELLE_ERR("%s: awaken with null status", *this);
+        ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
+      }
       return this->_status;
     }
 
