@@ -5,11 +5,10 @@
 #include <elle/With.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
+#include <elle/container/map.hh>
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/semaphore.hh>
-#include <reactor/signal.hh>
 #include <reactor/http/Client.hh>
 #include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
@@ -18,9 +17,14 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
+#include <reactor/semaphore.hh>
+#include <reactor/signal.hh>
+
+#include <http_server.hh>
 
 ELLE_LOG_COMPONENT("reactor.http.test");
 
+typedef reactor::http::tests::Server HTTPServer;
 #define PERSIST_CHECK_EQUAL(a, b)                          \
   do                                                       \
   {                                                        \
@@ -30,248 +34,16 @@ ELLE_LOG_COMPONENT("reactor.http.test");
   }                                                        \
   while(0)
 
-
-class ScheduledHttpServer
-{
-public:
-  ScheduledHttpServer():
-    _server(),
-    _port(0),
-    _accepter(),
-    _check_version([] (std::string const&) {}),
-    _check_method([] (std::string const&) {}),
-    _check_expect_continue([] (bool) {}),
-    _check_chunked([] (bool) {})
-  {
-    this->_server.listen(0);
-    this->_port = this->_server.port();
-    ELLE_LOG("%s: listen on port %s", *this, this->_port);
-    this->_accepter.reset(
-      new reactor::Thread(*reactor::Scheduler::scheduler(),
-                          "accepter",
-                          std::bind(&ScheduledHttpServer::_accept,
-                                    std::ref(*this))));
-  }
-
-  ~ScheduledHttpServer()
-  {
-    this->_finalize();
-  }
-
-  void
-  _finalize()
-  {
-    this->_accepter->terminate_now();
-  }
-
-  std::string
-  url(std::string const& path)
-  {
-    return elle::sprintf("http://127.0.0.1:%s/%s", this->port(), path);
-  }
-
-  ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
-  ELLE_ATTRIBUTE_R(int, port);
-  ELLE_ATTRIBUTE(std::unique_ptr<reactor::Thread>, accepter);
-  ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_version);
-  ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_method);
-  ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_expect_continue);
-  ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_chunked);
-
-private:
-  void
-  _accept()
-  {
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-    {
-      while (true)
-      {
-        std::unique_ptr<reactor::network::Socket> socket(
-          this->_server.accept());
-        ELLE_LOG("accept connection from %s", socket->peer());
-        auto name = elle::sprintf("request %s", socket->peer());
-        scope.run_background(
-          name,
-          std::bind(&ScheduledHttpServer::_serve, std::ref(*this),
-                    elle::utility::move_on_copy(socket)));
-      }
-    };
-  }
-
-  virtual
-  void
-  _serve(std::unique_ptr<reactor::network::Socket> socket)
-  {
-    auto peer = socket->peer();
-    std::string method;
-    std::string path;
-    bool expect = false;
-    bool v1_1 = false;
-    bool chunked = false;
-    int length = -1;
-    {
-      auto request = socket->read_until("\r\n");
-      ELLE_LOG("%s: got request from %s: %s", *this, peer, request.string());
-      std::vector<std::string> words;
-      boost::algorithm::split(words, request,
-                              boost::algorithm::is_any_of(" "));
-      method = words[0];
-      path = words[1];
-      auto version = words[2].substr(0, words[2].size() - 2);
-      this->_check_version(version);
-      if (version == "HTTP/1.1")
-        v1_1 = true;
-      else if (version == "HTTP/1.0")
-        v1_1 = false;
-      else
-        BOOST_ERROR(elle::sprintf("unrecognized HTTP version: %s", version));
-    }
-    std::unordered_map<std::string, std::string> cookies;
-    while (true)
-    {
-      auto buffer = socket->read_until("\r\n");
-      if (buffer == "\r\n")
-        break;
-      buffer.size(buffer.size() - 2);
-      ELLE_LOG("%s: got header from %s: %s", *this, peer, buffer.string());
-      std::vector<std::string> words;
-      boost::algorithm::split(words, buffer,
-                              boost::algorithm::is_any_of(" "));
-      if (words[0] == "Expect:")
-      {
-        BOOST_CHECK_EQUAL(words[1], "100-continue");
-        BOOST_CHECK_EQUAL(words.size(), 2);
-        expect = true;
-      }
-      else if (words[0] == "Content-Length:")
-      {
-        BOOST_CHECK_EQUAL(words.size(), 2);
-        length = boost::lexical_cast<int>(words[1]);
-      }
-      else if (words[0] == "Transfer-Encoding:")
-      {
-        BOOST_CHECK_EQUAL(words[1], "chunked");
-        BOOST_CHECK_EQUAL(words.size(), 2);
-        chunked = true;
-      }
-      else if (words[0] == "Cookie:")
-      {
-        std::vector<std::string> chunks;
-        boost::algorithm::split(chunks, words[1],
-                                boost::algorithm::is_any_of("="));
-        BOOST_CHECK_EQUAL(chunks.size(), 2);
-        cookies[chunks[0]] = chunks[1];
-      }
-    }
-    this->_check_method(method);
-    this->_check_expect_continue(expect);
-    this->_check_chunked(chunked);
-    if (method == "GET")
-    {
-      this->response(*socket, path, cookies);
-    }
-    else if (method == "POST" || method == "PUT")
-    {
-      if (v1_1)
-      {
-        if (expect)
-        {
-          std::string answer(
-            "HTTP/1.1 100 Continue\r\n"
-            "\r\n");
-          ELLE_LOG("send response header: %s", answer);
-          socket->write(elle::ConstWeakBuffer(answer));
-        }
-        elle::Buffer content;
-        if (chunked)
-          while (true)
-          {
-            socket->read_until("\r\n"); // Ignore the chunked header.
-            auto buffer = socket->read_until("\r\n");
-            if (buffer == "\r\n")
-              break;
-            ELLE_LOG("%s: got content chunk from %s: %s",
-                     *this, peer, buffer.string());
-            content.append(buffer.contents(), buffer.size() - 2);
-          }
-        else
-        {
-          content = this->read_sized_content(*socket, length);
-        }
-        ELLE_LOG("%s: got content from %s: %s", *this, peer, content.string());
-        this->response(*socket, content, cookies);
-      }
-      else
-      {
-        auto content = this->read_sized_content(*socket, length);
-        this->response(*socket, content, cookies);
-      }
-    }
-    else
-      BOOST_ERROR(elle::sprintf("unrecognized HTTP method: %s", method));
-    ELLE_LOG("%s: close connection with %s", *this, socket->peer());
-  }
-
-  virtual
-  void
-  response(reactor::network::Socket& socket,
-           elle::ConstWeakBuffer content,
-           std::unordered_map<std::string, std::string> const& cookies)
-  {
-    std::string response;
-    for (auto const& cookie: cookies)
-    {
-      auto line = elle::sprintf("%s: %s\n", cookie.first, cookie.second);
-      response += line;
-    }
-    auto status = "200 OK";
-    if (content == std::string("/404"))
-      status = "404 Not Found";
-    else if (content == std::string("/400"))
-      status = "400 Bad Request";
-    response += content.string();
-    std::string answer = elle::sprintf(
-      "HTTP/1.1 %s\r\n"
-      "Server: Custom HTTP of doom\r\n"
-      "Content-Length: %s\r\n",
-      status, std::to_string(response.size()));
-    for (auto const& value: this->_headers)
-      answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
-    answer += "\r\n" + response;
-    ELLE_LOG("%s: send response to %s: %s", *this, socket.peer(), answer);
-    socket.write(elle::ConstWeakBuffer(answer));
-  }
-
-  elle::Buffer
-  read_sized_content(reactor::network::Socket& socket, int length)
-  {
-    elle::Buffer content(length);
-    BOOST_CHECK_GE(length, 0);
-    content.size(length);
-    socket.read(
-      reactor::network::Buffer(content.mutable_contents(), length));
-    char c;
-    BOOST_CHECK_THROW(
-      socket.read_some(reactor::network::Buffer(&c, 1), 100_ms),
-      reactor::network::TimeOut);
-    return content;
-  }
-
-  typedef std::unordered_map<std::string, std::string> Headers;
-  ELLE_ATTRIBUTE_RX(Headers, headers);
-};
-
-static
-std::ostream&
-operator <<(std::ostream& output, ScheduledHttpServer const& server)
-{
-  output << "HttpServer(" << server.port() << ")";
-  return output;
-}
-
 ELLE_TEST_SCHEDULED(simple)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
+  server.register_route("/simple", reactor::http::Method::GET,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const&) -> std::string
+                          {
+                            return "/simple";
+                          });
   auto url = server.url("simple");
   ELLE_LOG("Get %s", url);
   auto page = reactor::http::get(url);
@@ -280,7 +52,14 @@ ELLE_TEST_SCHEDULED(simple)
 
 ELLE_TEST_SCHEDULED(complex)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
+  server.register_route("/complex", reactor::http::Method::GET,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const&) -> std::string
+                          {
+                            return "/complex";
+                          });
   auto url = server.url("complex");
   ELLE_LOG("Get %s", url);
   reactor::http::Request r(url);
@@ -296,18 +75,27 @@ ELLE_TEST_SCHEDULED(complex)
 
 ELLE_TEST_SCHEDULED(not_found)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
   auto url = server.url("404");
   reactor::http::Request r(url);
   ELLE_LOG("Get %s", url);
   BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::Not_Found);
   // 404 error can have payload, which counts as downloaded data.
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{4,4,0,0}));
+  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{35,35,0,0}));
 }
 
 ELLE_TEST_SCHEDULED(bad_request)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
+  server.register_route("/400", reactor::http::Method::GET,
+                        [] (HTTPServer::Headers const&,
+                            HTTPServer::Cookies const&,
+                            elle::Buffer const&) -> std::string
+                        {
+                          throw reactor::http::tests::Server::Exception(
+                            "", reactor::http::StatusCode::Bad_Request);
+                        });
+
   auto url = server.url("400");
   reactor::http::Request r(url);
   ELLE_LOG("Get %s", url);
@@ -315,13 +103,14 @@ ELLE_TEST_SCHEDULED(bad_request)
 }
 
 class SilentHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
   virtual
   void
-  response(reactor::network::Socket&,
-           elle::ConstWeakBuffer,
-           std::unordered_map<std::string, std::string> const&) override
+  _response(reactor::network::Socket&,
+            reactor::http::StatusCode,
+            elle::ConstWeakBuffer,
+            std::unordered_map<std::string, std::string> const&) override
   {}
 };
 
@@ -334,13 +123,14 @@ ELLE_TEST_SCHEDULED(no_answer)
 }
 
 class PartialHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
   virtual
   void
-  response(reactor::network::Socket& socket,
-           elle::ConstWeakBuffer,
-           std::unordered_map<std::string, std::string> const&) override
+  _response(reactor::network::Socket& socket,
+            reactor::http::StatusCode,
+            elle::ConstWeakBuffer,
+            std::unordered_map<std::string, std::string> const&) override
   {
     std::string answer(
       "HTTP/1.1 200 OK\r\n"
@@ -363,7 +153,7 @@ ELLE_TEST_SCHEDULED(partial_answer)
 }
 
 class FuckOffHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
   virtual
   void
@@ -521,7 +311,16 @@ post(reactor::http::Request::Configuration conf,
      bool chunked,
      bool body = true)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
+  server.register_route(elle::sprintf("/%s", method), method,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const& body) -> std::string
+                        {
+                          ELLE_LOG("body: %s", body);
+                          return body.string();
+                        });
+
   server.check_version(
     [&] (std::string const& v)
     {
@@ -631,7 +430,15 @@ ELLE_TEST_SCHEDULED(put_11_chunked)
 
 ELLE_TEST_SCHEDULED(cookies)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
+  server.register_route("/cookies", reactor::http::Method::GET,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const&) -> std::string
+                          {
+                            return "/cookies";
+                          });
+
   server.headers()["Set-Cookie"] = "we=got";
 
   {
@@ -670,8 +477,15 @@ ELLE_TEST_SCHEDULED(cookies)
 
 ELLE_TEST_SCHEDULED(request_move)
 {
-  ScheduledHttpServer server;
+  HTTPServer server;
 
+  server.register_route("/move", reactor::http::Method::POST,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const& body) -> std::string
+                          {
+                            return body.string();
+                          });
   reactor::http::Request a(
     elle::sprintf("http://127.0.0.1:%s/move", server.port()),
     reactor::http::Method::POST,
@@ -686,7 +500,7 @@ ELLE_TEST_SCHEDULED(request_move)
 }
 
 class ScheduledSilentHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
 protected:
   virtual
@@ -700,6 +514,14 @@ protected:
 ELLE_TEST_SCHEDULED(interrupted)
 {
   ScheduledSilentHttpServer server;
+
+  server.register_route("/move", reactor::http::Method::POST,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const& body) -> std::string
+                          {
+                            return body.string();
+                          });
 
   {
     reactor::http::Request r(
@@ -721,11 +543,12 @@ ELLE_TEST_SCHEDULED(escaped_string)
 }
 
 class NoHeaderHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
   virtual
   void
-  response(reactor::network::Socket& socket,
+  _response(reactor::network::Socket& socket,
+           reactor::http::StatusCode,
            elle::ConstWeakBuffer,
            std::unordered_map<std::string, std::string> const&) override
   {
@@ -739,14 +562,20 @@ class NoHeaderHttpServer:
 ELLE_TEST_SCHEDULED(no_header_answer)
 {
   NoHeaderHttpServer server;
+  server.register_route("/no_header", reactor::http::Method::GET,
+                        [&] (HTTPServer::Headers const&,
+                             HTTPServer::Cookies const&,
+                             elle::Buffer const& body) -> std::string
+                          {
+                            return body.string();
+                          });
   auto url = server.url("no_header");
   BOOST_CHECK_THROW(reactor::http::get(url), reactor::http::RequestError);
 }
 
-
 /// Wait on a barrier between each send of a reply chunk
 class SlowHttpServer:
-  public ScheduledHttpServer
+  public HTTPServer
 {
 public:
   SlowHttpServer(std::string reply, int chunk,

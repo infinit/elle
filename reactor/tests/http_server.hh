@@ -1,0 +1,437 @@
+#ifndef REACTOR_HTTP_SERVER_HH
+# define REACTOR_HTTP_SERVER_HH
+
+# include <functional>
+# include <memory>
+# include <string>
+# include <unordered_map>
+
+# include <boost/algorithm/string.hpp>
+# include <boost/lexical_cast.hpp>
+# include <boost/optional.hpp>
+
+# include <elle/Buffer.hh>
+# include <elle/With.hh>
+# include <elle/attribute.hh>
+# include <elle/container/map.hh>
+# include <elle/container/vector.hh>
+# include <elle/log.hh>
+# include <elle/string/algorithm.hh>
+# include <elle/utility/Move.hh>
+
+# include <reactor/Scope.hh>
+# include <reactor/exception.hh>
+# include <reactor/http/Method.hh>
+# include <reactor/http/StatusCode.hh>
+# include <reactor/http/Version.hh>
+# include <reactor/network/buffer.hh>
+# include <reactor/network/socket.hh>
+# include <reactor/network/tcp-server.hh>
+# include <reactor/thread.hh>
+
+namespace reactor
+{
+  namespace http
+  {
+    namespace tests
+    {
+      class Server
+        : public elle::Printable
+      {
+      public:
+        // Use internally.
+        class Exception:
+          public elle::Exception
+        {
+        public:
+          typedef elle::Exception Super;
+          Exception(std::string const& url,
+                    reactor::http::StatusCode code,
+                    std::string const& detail = "")
+            : Super(elle::sprintf("error requesting %s: %s (%s)", url, code, detail))
+            , _url(url)
+            , _code(code)
+            , _detail(detail)
+          {}
+
+        private:
+          ELLE_ATTRIBUTE_R(std::string, url);
+          ELLE_ATTRIBUTE_R(reactor::http::StatusCode, code);
+          ELLE_ATTRIBUTE_R(std::string, detail);
+        };
+
+      public:
+        Server()
+          : _server()
+          , _port(0)
+          , _accepter()
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          this->_server.listen(0);
+          this->_port = this->_server.port();
+          ELLE_TRACE_SCOPE("%s: listen on port %s", *this, this->_port);
+          this->_accepter.reset(
+            new reactor::Thread(*reactor::Scheduler::scheduler(),
+                                "accepter",
+                                std::bind(&Server::_accept,
+                                          std::ref(*this))));
+        }
+
+        ~Server()
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          ELLE_TRACE_SCOPE("%s: destruction", *this);
+          this->_finalize();
+        }
+
+        void
+        _finalize()
+        {
+          this->_accepter->terminate_now();
+        }
+
+        std::string
+        url(std::string const& path)
+        {
+          return elle::sprintf("http://127.0.0.1:%s/%s", this->port(), path);
+        }
+
+
+        typedef std::unordered_map<std::string, std::string> Headers;
+        typedef std::unordered_map<std::string, std::string> Cookies;
+        typedef std::function<std::string (Headers const&, Cookies const&, elle::Buffer const&)> Function;
+        // Matching a Method to a specific function.
+        // e.g.: {GET -> get_function, POST -> post_function, ...}
+        struct enum_hash
+        {
+          template <typename T>
+          inline
+          typename std::enable_if<std::is_enum<T>::value, std::size_t>::type
+          operator ()(T const value) const
+          {
+            return static_cast<std::size_t>(value);
+          }
+        };
+        // XXX: Find better names.
+        typedef std::unordered_map<reactor::http::Method, Function, enum_hash> MethodFunctions;
+        // Matching a route a MethodFunctions.
+        // e.g.: {"/foo" -> {GET -> get_function, POST -> post_function, ...}}
+        typedef std::unordered_map<std::string, MethodFunctions> Routes;
+
+        ELLE_ATTRIBUTE(Routes, routes);
+        ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
+        ELLE_ATTRIBUTE_R(int, port);
+        ELLE_ATTRIBUTE(std::unique_ptr<reactor::Thread>, accepter);
+        ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_version);
+        ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_method);
+        ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_expect_continue);
+        ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_chunked);
+
+      private:
+        // Wrapper around the command line.
+        // Extract method, path and version.
+        struct CommandLine
+        {
+          CommandLine(elle::Buffer const& buffer)
+            : _path()
+            , _method()
+            , _version()
+          {
+            ELLE_LOG_COMPONENT("reactor.test.http");
+            std::vector<std::string> words;
+            boost::algorithm::split(words, buffer,
+                                    boost::algorithm::is_any_of(" "));
+            if (words.size() != 3)
+              throw Server::Exception(
+                elle::join(words.begin(), words.end(), " "),
+                StatusCode::Bad_Request,
+                "request command line sould have 3 members");
+
+            std::vector<std::string> path_and_args;
+            boost::algorithm::split(path_and_args, words[1],
+                                    boost::algorithm::is_any_of("?"));
+
+            this->_path = path_and_args[0];
+
+            if (path_and_args.size() > 1)
+            {
+              std::vector<std::string> parameters;
+              boost::algorithm::split(parameters, path_and_args[1],
+                                      boost::algorithm::is_any_of("&"));
+              ELLE_LOG("%s", parameters);
+              for (auto const& param: parameters)
+              {
+                std::vector<std::string> key_value;
+                ELLE_LOG("%s", key_value);
+                boost::algorithm::split(key_value, param, boost::algorithm::is_any_of("="));
+                this->_params[key_value[0]] = key_value[1];
+              }
+            }
+            try
+            {
+              this->_method = reactor::http::method::from_string(words[0]);
+              this->_version = reactor::http::version::from_string(words[2].substr(0, words[2].size() - 2));
+            }
+            catch (elle::Exception const& e)
+            {
+              throw Server::Exception(
+                this->_path,
+                reactor::http::StatusCode::Bad_Request,
+                e.what());
+            }
+          }
+
+          ELLE_ATTRIBUTE_R(std::string, path);
+          ELLE_ATTRIBUTE(boost::optional<reactor::http::Method>, method);
+          ELLE_ATTRIBUTE(boost::optional<reactor::http::Version>, version);
+          typedef std::unordered_map<std::string, std::string> Parameters;
+          ELLE_ATTRIBUTE_R(Parameters, params);
+
+        public:
+          Method const&
+          method() const
+          {
+            if (this->_method)
+              return this->_method.get();
+            throw Server::Exception(
+              this->_path, reactor::http::StatusCode::Bad_Request, "No method");
+          }
+
+          Version const&
+          version() const
+          {
+            if (this->_version)
+              return this->_version.get();
+            throw Server::Exception(
+              this->_path, reactor::http::StatusCode::Bad_Request, "No version");
+          }
+        };
+
+        void
+        _accept()
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+          {
+            while (true)
+            {
+              std::unique_ptr<reactor::network::Socket> socket(
+                this->_server.accept());
+              ELLE_LOG("accept connection from %s", socket->peer());
+              auto name = elle::sprintf("request %s", socket->peer());
+              scope.run_background(
+                name,
+                std::bind(&Server::_serve, std::ref(*this),
+                          elle::utility::move_on_copy(socket)));
+            }
+          };
+        }
+
+
+        virtual
+        void
+        _serve(std::unique_ptr<reactor::network::Socket> socket)
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          auto peer = socket->peer();
+          CommandLine cmd(socket->read_until("\r\n"));
+          ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
+          std::unordered_map<std::string, std::string> headers;
+          std::unordered_map<std::string, std::string> cookies;
+
+          try
+          {
+            while (true)
+            {
+              auto buffer = socket->read_until("\r\n");
+              if (buffer == "\r\n")
+                break;
+              buffer.size(buffer.size() - 2);
+              ELLE_LOG("%s: got header from %s: %s", *this, peer, buffer.string());
+              std::vector<std::string> words;
+              boost::algorithm::split(words, buffer,
+                                      boost::algorithm::is_any_of(" "));
+
+              auto expected_length = [&] (unsigned int length) {
+                if (words.size() != length)
+                  throw Exception(cmd.path(),
+                                  reactor::http::StatusCode::Bad_Request,
+                                  elle::sprintf("%s: ill-formed", words));
+              };
+
+              if (words[0] == "Expect:")
+              {
+                expected_length(2);
+                if (words[1] == "100-continue")
+                  headers["Expect"] = "1";
+              }
+              else if (words[0] == "Content-Length:")
+              {
+                expected_length(2);
+                headers["Content-Length"] = words[1];
+              }
+              else if (words[0] == "Content-Type:")
+              {
+                expected_length(2);
+                headers["Content-Type"] = words[1];
+              }
+              else if (words[0] == "Transfer-Encoding:")
+              {
+                expected_length(2);
+                if (words[1] == "chunked")
+                  headers["chunked"] = "1";
+              }
+              else if (words[0] == "Cookie:")
+              {
+                std::vector<std::string> chunks;
+                boost::algorithm::split(chunks, words[1],
+                                        boost::algorithm::is_any_of("="));
+                if (chunks.size() != 2)
+                  throw Exception(cmd.path(),
+                                  reactor::http::StatusCode::Bad_Request,
+                                  elle::sprintf("%s: ill-formed", words));
+                cookies[chunks[0]] = chunks[1];
+              }
+            }
+
+            ELLE_LOG("%s: cookies (%s)", *this, cookies);
+            ELLE_LOG("%s: headers (%s)", *this, headers);
+            ELLE_LOG("%s: parameters (%s)", *this, cmd.params());
+
+            if (this->_routes.find(cmd.path()) == this->_routes.end())
+              throw Exception(cmd.path(), reactor::http::StatusCode::Not_Found);
+            if (this->_routes.at(cmd.path()).find(cmd.method()) == this->_routes.at(cmd.path()).end())
+              throw Exception(cmd.path(), reactor::http::StatusCode::Method_Not_Allowed);
+
+            if (cmd.version() == Version::v11 && headers.find("Expect") != headers.end())
+            {
+              std::string answer(
+                "HTTP/1.1 100 Continue\r\n"
+                "\r\n");
+              ELLE_LOG("send response header: %s", answer);
+              socket->write(elle::ConstWeakBuffer(answer));
+              elle::Buffer content;
+              if (headers.find("chunked") != headers.end())
+                while (true)
+                {
+                  socket->read_until("\r\n"); // Ignore the chunked header.
+                  auto buffer = socket->read_until("\r\n");
+                  if (buffer == "\r\n")
+                    break;
+                  ELLE_LOG("%s: got content chunk from %s: %s",
+                           *this, peer, buffer.string());
+                  content.append(buffer.contents(), buffer.size() - 2);
+                }
+              else
+              {
+                content = this->read_sized_content(
+                  *socket, boost::lexical_cast<unsigned int>(headers.at("Content-Length")));
+              }
+
+              this->_response(
+                *socket,
+                StatusCode::OK,
+                this->_routes.at(cmd.path()).at(cmd.method())(headers, cookies, content),
+                cookies);
+            }
+            else
+            {
+                this->_response(
+                  *socket,
+                  reactor::http::StatusCode::OK,
+                  this->_routes.at(cmd.path()).at(cmd.method())(
+                    headers, cookies,
+                    this->read_sized_content(
+                      *socket, boost::lexical_cast<unsigned int>(headers.at("Content-Length")))),
+                  cookies);
+            }
+          }
+          catch (Exception const& e)
+          {
+            this->_response(*socket, e.code(), e.what(), cookies);
+          }
+          catch (elle::Exception const& e)
+          {
+            this->_response(*socket, reactor::http::StatusCode::Internal_Server_Error, e.what(), cookies);
+          }
+          ELLE_LOG("%s: close connection with %s", *this, socket->peer());
+        }
+
+      public:
+        // Register a fonction for a given route / method.
+        void
+        register_route(std::string const& route,
+                       Method method,
+                       Function const& function)
+        {
+          this->_routes[route][method] = function;
+        }
+
+      protected:
+        virtual
+        void
+        _response(reactor::network::Socket& socket,
+                  StatusCode code,
+                  elle::ConstWeakBuffer content,
+                  std::unordered_map<std::string, std::string> const& cookies)
+
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          if (this->_headers.find("Content-Type") != this->_headers.end() && (this->_headers.at("Content-Type") == "application-json") && code == StatusCode::OK)
+            socket.write(content);
+          else
+          {
+            std::string response;
+            for (auto const& cookie: cookies)
+            {
+              auto line = elle::sprintf("%s: %s\n", cookie.first, cookie.second);
+              response += line;
+            }
+            response += content.string();
+            std::string answer = elle::sprintf(
+              "HTTP/1.1 %s %s\r\n"
+              "Server: Custom HTTP of doom\r\n"
+              "Content-Length: %s\r\n",
+              (int) code, code, std::to_string(response.size()));
+            for (auto const& value: this->_headers)
+              answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
+            answer += "\r\n" + response;
+            ELLE_LOG("%s: send response to %s: %s", *this, socket.peer(), answer)
+              socket.write(elle::ConstWeakBuffer(answer));
+          }
+        }
+
+        elle::Buffer
+        read_sized_content(reactor::network::Socket& socket, unsigned int length)
+        {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          ELLE_LOG_SCOPE("%s: read sized content of size %s", *this, length);
+          elle::Buffer content(length);
+          content.size(length);
+          socket.read(
+            reactor::network::Buffer(content.mutable_contents(), length));
+          return content;
+        }
+
+
+        ELLE_ATTRIBUTE_RX(Headers, headers);
+
+        /*----------.
+          | Printable |
+          `----------*/
+      public:
+        /// Pretty print the request.
+        virtual
+        void
+        print(std::ostream& stream) const
+        {
+          stream << "HttpServer(port=" << this->_port << ")";
+        }
+
+      };
+
+    }
+  }
+}
+
+#endif
