@@ -227,7 +227,6 @@ namespace reactor
           };
         }
 
-
         virtual
         void
         _serve(std::unique_ptr<reactor::network::Socket> socket)
@@ -236,10 +235,12 @@ namespace reactor
           auto peer = socket->peer();
           CommandLine cmd(socket->read_until("\r\n"));
           ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
-          if (this->_routes.find(cmd.path()) == this->_routes.end())
+          auto route = this->_routes.find(cmd.path());
+          if (route == this->_routes.end())
             throw Exception(cmd.path(), reactor::http::StatusCode::Not_Found);
-          if (this->_routes.at(cmd.path()).find(cmd.method()) == this->_routes.at(cmd.path()).end())
-            throw Exception(cmd.path(), reactor::http::StatusCode::Method_Not_Allowed);
+          if (route->second.find(cmd.method()) == route->second.end())
+            throw Exception(cmd.path(),
+                            reactor::http::StatusCode::Method_Not_Allowed);
           Cookies cookies;
           auto headers = this->_headers;
           try
@@ -326,7 +327,7 @@ namespace reactor
               this->_response(
                 *socket,
                 StatusCode::OK,
-                this->_routes.at(cmd.path()).at(cmd.method())(headers, cookies, content),
+                route->second.at(cmd.method())(headers, cookies, content),
                 cookies);
             }
             else
