@@ -53,7 +53,6 @@ namespace reactor
       HTTP_Version_Not_Supported = 505,
     };
 
-    /// Pretty print a HTTP status code.
     std::ostream&
     operator <<(std::ostream& output,
                 StatusCode method);

@@ -1,6 +1,7 @@
 #include <ostream>
 
 #include <elle/assert.hh>
+#include <elle/printf.hh>
 
 #include <reactor/http/Method.hh>
 
@@ -8,6 +9,21 @@ namespace reactor
 {
   namespace http
   {
+    namespace method
+    {
+      Method
+      from_string(std::string const& name)
+      {
+        if (name == "DELETE") return Method::DELETE;
+        if (name == "GET") return Method::GET;
+        if (name == "POST") return Method::POST;
+        if (name == "PUT") return Method::PUT;
+
+        throw elle::Exception(
+          elle::sprintf("unknown method %s", name));
+      }
+    }
+
     std::ostream&
     operator <<(std::ostream& output,
                 Method method)

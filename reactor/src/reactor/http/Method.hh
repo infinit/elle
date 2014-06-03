@@ -19,10 +19,17 @@ namespace reactor
       PUT,
     };
 
+    namespace method
+    {
+      Method
+      from_string(std::string const&);
+    }
+
     /// Pretty print a HTTP method.
     std::ostream&
     operator <<(std::ostream& output,
                 Method method);
   }
 }
+
 #endif
