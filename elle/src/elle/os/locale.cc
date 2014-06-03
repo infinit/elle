@@ -30,11 +30,7 @@ namespace elle
       }
 
       DefaultImbuer::DefaultImbuer()
-#ifdef INFINIT_WINDOWS
-        : Imbuer(std::locale(""))
-#else
         : Imbuer()
-#endif
       {
         ELLE_TRACE_SCOPE("%s: construction", *this);
       }
