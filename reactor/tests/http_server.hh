@@ -242,19 +242,25 @@ namespace reactor
         _serve(std::unique_ptr<reactor::network::Socket> socket)
         {
           ELLE_LOG_COMPONENT("reactor.test.http");
-          auto peer = socket->peer();
-          CommandLine cmd(socket->read_until("\r\n"));
-          ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
-          auto route = this->_routes.find(cmd.path());
-          if (route == this->_routes.end())
-            throw Exception(cmd.path(), reactor::http::StatusCode::Not_Found);
-          if (route->second.find(cmd.method()) == route->second.end())
-            throw Exception(cmd.path(),
-                            reactor::http::StatusCode::Method_Not_Allowed);
-          Cookies cookies;
           auto headers = this->_headers;
+          Cookies cookies;
           try
           {
+            auto peer = socket->peer();
+            CommandLine cmd(socket->read_until("\r\n"));
+            ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
+            auto route = this->_routes.find(cmd.path());
+            if (route == this->_routes.end())
+            {
+              ELLE_TRACE("%s: not found", *this);
+              throw Exception(cmd.path(), reactor::http::StatusCode::Not_Found);
+            }
+            if (route->second.find(cmd.method()) == route->second.end())
+            {
+              ELLE_TRACE("%s: method not allowed", *this);
+              throw Exception(cmd.path(),
+                              reactor::http::StatusCode::Method_Not_Allowed);
+            }
             while (true)
             {
               auto buffer = socket->read_until("\r\n");
