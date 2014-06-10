@@ -129,7 +129,7 @@ namespace elle
        elle::SafeFinally close_file([&] { ::close(fd);});
 #ifdef INFINIT_MACOSX
       // macos has 64 bit lseek because off_t is 64 bits
-      ELLE_ASSERT_GEQ(sizeof(off_t), 8);
+      ELLE_ASSERT_GTE(sizeof(off_t), 8);
       typedef off_t seek_offset_type;
       #define SEEK_FUNC ::lseek
 #else
