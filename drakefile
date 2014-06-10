@@ -352,13 +352,13 @@ PY_MINOR_VERSION''', config = python3)
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.36.0'
+  curl_basename = 'curl-7.37.0'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = '643a7030b27449e76413d501d4b8eb57')
+                     fingerprint = 'c35d0b20a7ef38951da81b6cae7e5c36')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
