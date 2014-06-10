@@ -758,7 +758,11 @@ namespace aws
             elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: timeout",
                         *this));
         else
+        {
+          reactor::sleep(boost::posix_time::milliseconds(
+            std::min(int(500 * pow(2,attempt)), 20000)));
           continue;
+        }
       }
       // Consider all other failures as fatal errors
       return std::move(request);
