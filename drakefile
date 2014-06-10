@@ -209,14 +209,14 @@ PY_MINOR_VERSION''', config = python3)
   ## OpenSSL ##
   ## ------- ##
 
-  openssl_basename = 'openssl-1.0.1g'
+  openssl_basename = 'openssl-1.0.1h'
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
   openssl_build = openssl_prefix / openssl_basename
   openssl_url = \
     'http://www.openssl.org/source/%s.tar.gz' % openssl_basename
   drake.HTTPDownload(openssl_url, openssl_tarball,
-                     fingerprint = 'de62b43dfcd858e66a74bee1c834e959')
+                     fingerprint = '8d6d684a9430d5cc98a62a5d8fbda8cf')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
