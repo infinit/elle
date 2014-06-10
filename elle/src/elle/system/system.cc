@@ -113,7 +113,7 @@ namespace elle
       if (ok != TRUE) // who knows what a WIN32 BOOL realy is?
       {
         throw boost::filesystem::filesystem_error(
-          elle::sprintf("Read error: %s/%s", bytesRead, size)
+          elle::sprintf("Read error: %s/%s", bytesRead, size),
           path,
           boost::system::error_code(::GetLastError(),
                                     boost::system::system_category()));
@@ -121,7 +121,6 @@ namespace elle
       buffer.size(bytesRead);
       return buffer;
 #else // POSIX version
-#endif
       int fd = ::open(path.string().c_str(),/* trust the locale*/
                       O_RDONLY);
       if (fd == -1)
@@ -163,6 +162,7 @@ namespace elle
       ELLE_ASSERT_GTE(size, position);
       buffer.size(position);
       return buffer;
+#endif // INFINIT_WINDOWS
     }
   }
 }
