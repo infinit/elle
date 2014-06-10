@@ -104,7 +104,8 @@ namespace elle
         throw boost::filesystem::filesystem_error(
           elle::sprintf("unable to seek to pos %s", offset),
           path,
-          boost::system::error_code(::GetLastError()));
+          boost::system::error_code(::GetLastError(),
+                                    boost::system::system_category()));
       }
       DWORD bytesRead;
       elle::Buffer buffer(size);
@@ -114,7 +115,8 @@ namespace elle
         throw boost::filesystem::filesystem_error(
           elle::sprintf("Read error: %s/%s", bytesRead, size)
           path,
-          boost::system::error_code(::GetLastError()));
+          boost::system::error_code(::GetLastError(),
+                                    boost::system::system_category()));
       }
       buffer.size(bytesRead);
       return buffer;
@@ -150,7 +152,7 @@ namespace elle
       {
         ssize_t bytes_read = ::read(fd,
                                     buffer.mutable_contents() + position,
-                                    size - bytes_read);
+                                    size - position);
         if (bytes_read < 0)
           throw boost::filesystem::filesystem_error(strerror(errno), path,
             boost::system::error_code(errno, boost::system::system_category()));
