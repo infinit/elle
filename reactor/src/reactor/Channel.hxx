@@ -24,6 +24,8 @@ namespace reactor
   void
   Channel<T, Container>::put(T data)
   {
+    ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: put", *this);
     this->_queue.push(std::move(data));
     this->_read_barrier.open();
     while (this->_queue.size() >= this->_max_size)
@@ -36,12 +38,15 @@ namespace reactor
   namespace details
   {
     template<typename T>
-    typename T::value_type& queue_front(T& container)
+    typename T::value_type&
+    queue_front(T& container)
     {
       return container.front();
     }
+
     template<typename T>
-    typename std::priority_queue<T>::value_type& queue_front(std::priority_queue<T>& container)
+    typename std::priority_queue<T>::value_type&
+    queue_front(std::priority_queue<T>& container)
     {
       // top() returns const& because modifying the object would break the
       // priority_queue invariants.
@@ -54,12 +59,18 @@ namespace reactor
   T
   Channel<T, Container>::get()
   {
+    ELLE_LOG_COMPONENT("reactor.Channel");
     /// In case of the barrier was opened
     /// with a last element, and closed immediatly
     /// Be sure the barrier is clearly opened before
     /// get element.
-    while(!this->_read_barrier.opened())
-      reactor::wait(this->_read_barrier);
+    if (!this->_read_barrier.opened())
+    {
+      ELLE_TRACE_SCOPE("%s: wait for data", *this);
+      while(!this->_read_barrier.opened())
+        reactor::wait(this->_read_barrier);
+    }
+    ELLE_TRACE("%s: get data", *this);
     ELLE_ASSERT(!this->_queue.empty());
     T res(std::move(details::queue_front(this->_queue)));
     this->_queue.pop();
@@ -101,6 +112,8 @@ namespace reactor
   void
   Channel<T, Container>::clear()
   {
+    ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: clear", *this);
     this->_queue = Container(); // priority_queue has no clear
     if (this->_max_size < this->_queue.size())
       this->_write_barrier.open();
