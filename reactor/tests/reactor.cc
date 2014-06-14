@@ -2074,6 +2074,34 @@ ELLE_TEST_SCHEDULED(test_multiple_consumers)
   };
 }
 
+namespace channel
+{
+  ELLE_TEST_SCHEDULED(wake_clear)
+  {
+    reactor::Channel<int> channel;
+    elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+    {
+      s.run_background(
+        "reader",
+        [&]
+        {
+          BOOST_CHECK_EQUAL(channel.get(), 51);
+        });
+      s.run_background(
+        "writer",
+        [&]
+        {
+          channel.put(42);
+          channel.clear();
+          reactor::yield();
+          reactor::yield();
+          channel.put(51);
+        });
+    reactor::wait(s);
+    };
+  }
+}
+
 ELLE_TEST_SCHEDULED(test_released_signal)
 {
   using reactor::Thread;
@@ -2290,11 +2318,15 @@ namespace timer
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* channels = BOOST_TEST_SUITE("Channels");
-  boost::unit_test::framework::master_test_suite().add(channels);
-  channels->add(BOOST_TEST_CASE(test_simple_channel), 0, 10);
-  channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, 10);
-  channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, 10);
+  {
+    boost::unit_test::test_suite* channels = BOOST_TEST_SUITE("channel");
+    boost::unit_test::framework::master_test_suite().add(channels);
+    channels->add(BOOST_TEST_CASE(test_simple_channel), 0, 10);
+    channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, 10);
+    channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, 10);
+    auto wake_clear = &channel::wake_clear;
+    channels->add(BOOST_TEST_CASE(wake_clear), 0, 10);
+  }
 
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);
