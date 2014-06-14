@@ -23,6 +23,8 @@ namespace elle
       operator T () const;
       T&
       operator -> () const;
+      T&
+      operator * () const;
     public:
       mutable T value;
     };
