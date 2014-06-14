@@ -2100,6 +2100,40 @@ namespace channel
     reactor::wait(s);
     };
   }
+
+  ELLE_TEST_SCHEDULED(open_close)
+  {
+    reactor::Channel<int> channel;
+    reactor::Signal gotcha;
+    elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+    {
+      s.run_background(
+        "reader",
+        [&]
+        {
+          BOOST_CHECK_EQUAL(channel.get(), 0);
+          gotcha.signal();
+          BOOST_CHECK_EQUAL(channel.get(), 1);
+          gotcha.signal();
+          BOOST_CHECK_EQUAL(channel.get(), 2);
+          gotcha.signal();
+        });
+      s.run_background(
+        "writer",
+        [&]
+        {
+          channel.put(0);
+          reactor::wait(gotcha);
+          channel.close();
+          channel.put(1);
+          BOOST_CHECK(!reactor::wait(gotcha, 500_ms));
+          channel.open();
+          channel.put(2);
+          reactor::wait(gotcha);
+        });
+    reactor::wait(s);
+    };
+  }
 }
 
 ELLE_TEST_SCHEDULED(test_released_signal)
@@ -2326,6 +2360,8 @@ ELLE_TEST_SUITE()
     channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, 10);
     auto wake_clear = &channel::wake_clear;
     channels->add(BOOST_TEST_CASE(wake_clear), 0, 10);
+    auto open_close = &channel::open_close;
+    channels->add(BOOST_TEST_CASE(open_close), 0, 10);
   }
 
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");

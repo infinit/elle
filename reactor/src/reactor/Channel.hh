@@ -27,10 +27,15 @@ namespace reactor
     empty() const;
     void
     clear();
+    void
+    open();
+    void
+    close();
   private:
     ELLE_ATTRIBUTE(Barrier, read_barrier);
     ELLE_ATTRIBUTE(Barrier, write_barrier);
     ELLE_ATTRIBUTE(Container, queue);
+    ELLE_ATTRIBUTE_R(bool, opened);
     /// Maximum size, will block writers *after* insertion if reached
     ELLE_ATTRIBUTE_Rw(unsigned int, max_size);
     enum

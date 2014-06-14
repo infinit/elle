@@ -27,7 +27,8 @@ namespace reactor
     ELLE_LOG_COMPONENT("reactor.Channel");
     ELLE_TRACE_SCOPE("%s: put", *this);
     this->_queue.push(std::move(data));
-    this->_read_barrier.open();
+    if (this->_opened)
+      this->_read_barrier.open();
     while (this->_queue.size() >= this->_max_size)
     {
       this->_write_barrier.close();
@@ -118,6 +119,29 @@ namespace reactor
     if (this->_max_size < this->_queue.size())
       this->_write_barrier.open();
     this->_read_barrier.close();
+  }
+
+  template <typename T, typename Container>
+  void
+  Channel<T, Container>::open()
+  {
+    ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: open", *this);
+    if (!this->_opened)
+    {
+      this->_opened = true;
+      if (!this->_queue.empty())
+        this->_read_barrier.open();
+    }
+  }
+
+  template <typename T, typename Container>
+  void
+  Channel<T, Container>::close()
+  {
+    ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: close", *this);
+    this->_opened = false;
   }
 }
 
