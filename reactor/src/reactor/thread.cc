@@ -64,7 +64,8 @@ namespace reactor
 
   Thread::~Thread()
   {
-    ELLE_ASSERT_EQ(state(), state::done);
+    if (this->state() != state::done)
+      ELLE_ABORT("%s: destroyed in state %s", *this, this->state());
     _destructed();
   }
 
