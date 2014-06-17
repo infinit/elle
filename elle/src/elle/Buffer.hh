@@ -134,6 +134,12 @@ namespace elle
     /// The content of the buffer as a string.
     std::string
     string() const;
+    /// Get byte at position \a i.
+    Byte&
+    operator [](unsigned i);
+    /// Get byte at position \a i.
+    Byte
+    operator [](unsigned i) const;
 
   /*--------------.
   | Serialization |

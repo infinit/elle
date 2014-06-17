@@ -304,6 +304,20 @@ namespace elle
                        this->size());
   }
 
+  /// Get byte at position \a i.
+  Byte&
+  Buffer::operator [](unsigned i)
+  {
+    ELLE_ASSERT_LT(i, this->_size);
+    return this->_contents[i];
+  }
+
+  Byte
+  Buffer::operator [](unsigned i) const
+  {
+    return const_cast<Buffer*>(this)->operator [](i);
+  }
+
 
   void
   Buffer::shrink_to_fit()
@@ -398,6 +412,7 @@ namespace elle
     ELLE_ASSERT_LT(i, this->_size);
     return this->_contents[i];
   }
+
   /// A subset of this buffer.
   ConstWeakBuffer
   ConstWeakBuffer::range(int start) const
