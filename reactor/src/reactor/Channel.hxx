@@ -10,6 +10,7 @@ namespace reactor
     : _read_barrier()
     , _write_barrier()
     , _queue(Container())
+    , _opened(true)
     , _max_size(SizeUnlimited)
   {}
 
