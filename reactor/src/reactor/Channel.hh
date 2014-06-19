@@ -5,6 +5,7 @@
 #include <limits>
 
 #include <elle/attribute.hh>
+#include <elle/Printable.hh>
 
 #include <reactor/Barrier.hh>
 
@@ -12,7 +13,7 @@ namespace reactor
 {
   template <class T, class Container = std::queue<T>>
   class Channel
-    : public Printable
+    : public elle::Printable
   {
   public:
     Channel();

@@ -145,6 +145,7 @@ namespace reactor
     this->_opened = false;
   }
 
+  template <typename T, typename Container>
   void
   Channel<T, Container>::print(std::ostream& stream) const
   {
