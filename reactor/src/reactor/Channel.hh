@@ -12,6 +12,7 @@ namespace reactor
 {
   template <class T, class Container = std::queue<T>>
   class Channel
+    : public Printable
   {
   public:
     Channel();
@@ -31,6 +32,15 @@ namespace reactor
     open();
     void
     close();
+
+  /*----------.
+  | Printable |
+  `----------*/
+  protected:
+    virtual
+    void
+    print(std::ostream& stream) const override;
+
   private:
     ELLE_ATTRIBUTE(Barrier, read_barrier);
     ELLE_ATTRIBUTE(Barrier, write_barrier);

@@ -144,6 +144,12 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: close", *this);
     this->_opened = false;
   }
+
+  void
+  Channel<T, Container>::print(std::ostream& stream) const
+  {
+    elle::fprintf(stream, "Channel(%x)", this);
+  }
 }
 
 #endif
