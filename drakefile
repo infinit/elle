@@ -559,22 +559,21 @@ PY_MINOR_VERSION''', config = python3)
     boost_patches = []
     if cxx_toolkit.os is drake.os.macos:
       boost_patches = [
-            ('http://github.com/boostorg/atomic/commit/6bb71fdd.diff', 'ad340a11a0fb3be086bf26f1ef5fe6cd'),
-            ('http://github.com/boostorg/atomic/commit/e4bde20f.diff', '54f082130659fde1fb04b59e10a34071'),
+            ('http://github.com/boostorg/atomic/commit/6bb71fdd.diff', 'ad340a11a0fb3be086bf26f1ef5fe6cd', 2),
+            ('http://github.com/boostorg/atomic/commit/e4bde20f.diff', '54f082130659fde1fb04b59e10a34071', 2),
       ]
     if cxx_toolkit.os is drake.os.windows:
       boost_patches = [
-        ('https://svn.boost.org/trac/boost/raw-attachment/ticket/7506/001-unique_path_windows.patch', 'defe8a6582915b4b2f61b763bc237622'),
+        ('https://svn.boost.org/trac/boost/raw-attachment/ticket/7506/001-unique_path_windows.patch', 'defe8a6582915b4b2f61b763bc237622', 0),
       ]
     boost_patches = [
-      drake.download(url, fingerprint, where = 'boost',
-                     disable_ssl_certificate_validation = True)
-      for url, fingerprint in boost_patches] + drake.nodes('boost.patch')
+      (drake.download(url, fingerprint, where = 'boost',
+                     disable_ssl_certificate_validation = True), strip)
+      for url, fingerprint, strip in boost_patches] + drake.nodes('boost.patch')
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
       patches = boost_patches,
-      patch_strip = 2,
       patch_dir = boost_basename,
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
