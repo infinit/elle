@@ -3515,10 +3515,15 @@ class TarballExtractor(Builder):
         f.extractall(str(destination))
     self._run_job(extract)
     for patch in self.__patches:
+      if isinstance(patch, tuple):
+        strip = patch[1]
+        patch = patch[0]
+      else:
+        strip = self.__patch_strip
       if not self.cmd(
           'Apply %s' % patch,
           [
-            'patch', '-N', '-p', str(self.__patch_strip),
+            'patch', '-N', '-p', str(strip),
             '-d', str(destination / self.__patch_dir),
             '-i', patch.path(absolute = True)
           ]):
