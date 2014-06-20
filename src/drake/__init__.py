@@ -3470,10 +3470,12 @@ def download(url,
 class TarballExtractor(Builder):
 
   def __init__(self, tarball, targets = [],
-               patches = (), patch_strip = 1, patch_dir = drake.Path('.')):
+               patches = (), patch_dir = drake.Path('.')):
+    """ Constructor
+        @param patches: list of (patch_node, strip_level)
+    """
     self.__tarball = tarball
     self.__patches = patches
-    self.__patch_strip = patch_strip
     self.__patch_dir = drake.Path(patch_dir)
     import tarfile
     directory = self.__tarball.name().dirname()
@@ -3486,7 +3488,8 @@ class TarballExtractor(Builder):
     # for target in targets:
     #   print(target)
     # self.__targets = nodes(*targets)
-    Builder.__init__(self, list(chain((tarball,), patches)), self.__targets)
+    patch_nodes = map(lambda x: x[0], patches)
+    Builder.__init__(self, list(chain((tarball,), patch_nodes)), self.__targets)
 
   def execute(self):
     import tarfile
@@ -3515,17 +3518,12 @@ class TarballExtractor(Builder):
         f.extractall(str(destination))
     self._run_job(extract)
     for patch in self.__patches:
-      if isinstance(patch, tuple):
-        strip = patch[1]
-        patch = patch[0]
-      else:
-        strip = self.__patch_strip
       if not self.cmd(
-          'Apply %s' % patch,
+          'Apply %s with level %s' % patch,
           [
-            'patch', '-N', '-p', str(strip),
+            'patch', '-N', '-p', str(patch[1]),
             '-d', str(destination / self.__patch_dir),
-            '-i', patch.path(absolute = True)
+            '-i', patch[0].path(absolute = True)
           ]):
         return False
     return True
