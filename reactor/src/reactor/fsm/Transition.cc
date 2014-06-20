@@ -1,6 +1,10 @@
+#include <elle/log.hh>
+
 #include <reactor/fsm/State.hh>
 #include <reactor/fsm/Transition.hh>
 #include <reactor/thread.hh>
+
+ELLE_LOG_COMPONENT("reactor.fsm.Transition")
 
 namespace reactor
 {
@@ -11,6 +15,7 @@ namespace reactor
                     Transition*&,
                     Thread&)
     {
+      ELLE_DEBUG("Initializing %s", *this);
       return boost::optional<std::function<void()>>();
     }
 
