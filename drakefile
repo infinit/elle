@@ -298,7 +298,7 @@ PY_MINOR_VERSION''', config = python3)
     openssl_tarball,
     targets = ['%s/%s' % (openssl_basename, f)
                for f in ['Configure'] + openssl_headers],
-    patches = (drake.node('openssl.patch'),),
+    patches = ((drake.node('openssl.patch'),1),),
     patch_dir = openssl_basename,
   )
   openssl_configure = drake.node(openssl_build / 'Configure')
@@ -364,7 +364,7 @@ PY_MINOR_VERSION''', config = python3)
     targets = ['%s/%s' % (curl_basename, f) for f in (
       'configure',
     )],
-    patches = (drake.node('curl.patch'),),
+    patches = ((drake.node('curl.patch'),1),),
     patch_dir = curl_basename,
   )
   curl_configure = drake.node(curl_build / 'configure')
@@ -569,7 +569,7 @@ PY_MINOR_VERSION''', config = python3)
     boost_patches = [
       (drake.download(url, fingerprint, where = 'boost',
                      disable_ssl_certificate_validation = True), strip)
-      for url, fingerprint, strip in boost_patches] + drake.nodes('boost.patch')
+      for url, fingerprint, strip in boost_patches] + [(drake.Node('boost.patch'), 2)]
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
