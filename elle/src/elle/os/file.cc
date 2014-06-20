@@ -14,20 +14,27 @@ namespace elle
       size_t
       size(std::string const& path)
       {
-        if (!boost::filesystem::exists(path))
-          throw elle::Exception{elle::sprintf("file %s doesn't exist", path)};
-
         boost::system::error_code err;
+        if (!boost::filesystem::exists(path))
+          throw boost::filesystem::filesystem_error(
+            "File does not exist",
+            path,
+            err);
+
         if (!boost::filesystem::is_directory(path, err))
         {
           if (err)
-            throw elle::Exception{elle::sprintf("file %s doesn't exist", path)};
+            throw boost::filesystem::filesystem_error(
+              "File is not accessible",
+              path,
+              err);
 
           auto size = boost::filesystem::file_size(path, err);
-
           if (err)
-            throw elle::Exception{
-              elle::sprintf("unable to retrieve %s size", path)};
+            throw boost::filesystem::filesystem_error(
+              "Unable to retrieve file size",
+              path,
+              err);
 
           return size;
         }
@@ -40,8 +47,10 @@ namespace elle
              ++itr)
         {
           if (err)
-            throw elle::Exception{
-              elle::sprintf("unable to iterate over %s", path)};
+            throw boost::filesystem::filesystem_error(
+                "Unable to iterate over path",
+                path,
+                err);
 
           bool is_dir = boost::filesystem::is_directory(itr->status());
           if (is_dir)
@@ -53,8 +62,10 @@ namespace elle
             size_ += boost::filesystem::file_size(itr->path(), err);
 
             if (err)
-              throw elle::Exception{
-                elle::sprintf("unable to retrieve %s size", path)};
+              throw boost::filesystem::filesystem_error(
+                "Unable to retrieve file size",
+                itr->path(),
+                err);
           }
         }
         return size_;
