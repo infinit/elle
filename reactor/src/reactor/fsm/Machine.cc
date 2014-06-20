@@ -133,7 +133,11 @@ namespace reactor
           sched.current()->yield();
           state->_action();
         }
-        catch (elle::Exception&)
+        catch (reactor::Terminate const&)
+        {
+          throw;
+        }
+        catch (std::exception const&)
         {
           ELLE_DEBUG("%s: forward exception: %s",
                      *this, elle::exception_string());
