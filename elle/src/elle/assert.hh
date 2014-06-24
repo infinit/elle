@@ -79,6 +79,15 @@ namespace elle
 #  define ELLE_ENFORCE_NCONTAINS(C, E)                                        \
   ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
 
+/// Use after the last catch close to enforce no other exception is caught
+# define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                         \
+  catch(...)                                                                     \
+  {                                                                              \
+    ::elle::_assert(false, elle::sprintf("Expected no more exception, got '%s'", \
+                                         elle::exception_string()),              \
+                    __FILE__, __LINE__);                                         \
+  }
+
 # if defined(DEBUG) || !defined(NDEBUG)
 /// Throw if the condition is unmet.
 #  define ELLE_ASSERT(_condition_) ELLE_ENFORCE(_condition_)
@@ -90,6 +99,7 @@ namespace elle
 #  define ELLE_ASSERT_LTE(A, B) ELLE_ENFORCE_LTE(A, B)
 #  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ENFORCE_CONTAINS(C, E)
 #  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ENFORCE_NCONTAINS(C, E)
+#  define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ENFORCE_NO_OTHER_EXCEPTION
 # else
 #  define ELLE_ASSERT(_condition_) ((void) 0)
 #  define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT(true)
@@ -100,6 +110,7 @@ namespace elle
 #  define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT(true)
 #  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ASSERT(true)
 #  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ASSERT(true)
+#  define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ASSERT(true)
 # endif
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
