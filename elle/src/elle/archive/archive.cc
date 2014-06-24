@@ -76,7 +76,8 @@ namespace elle
     archive(Format format,
             std::vector<boost::filesystem::path> const& files,
             boost::filesystem::path const& path,
-            Renamer const& renamer)
+            Renamer const& renamer,
+            Excluder const& excluder)
     {
       ELLE_TRACE_SCOPE("archive %s", path);
       ELLE_DEBUG("files: %s", files);
@@ -136,11 +137,21 @@ namespace elle
               for (; start != std::end(absolute); ++start)
                 relative /= *start;
             }
+            if (excluder && excluder(absolute))
+            {
+              ELLE_DEBUG("Skipping %s", absolute);
+              continue;
+            }
             ELLE_DEBUG("archiving from directory %s as %s", absolute, relative);
             _archive_file(archive.get(), absolute, relative);
           }
         else
         {
+          if (excluder && excluder(path))
+          {
+            ELLE_DEBUG("Skipping %s", path);
+            continue;
+          }
           ELLE_DEBUG("archiving %s as %s", path, root);
           _archive_file(archive.get(), path, root);
         }

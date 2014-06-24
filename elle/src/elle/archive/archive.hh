@@ -21,11 +21,16 @@ namespace elle
     typedef
       std::function<boost::filesystem::path(boost::filesystem::path const&)>
       Renamer;
+    typedef
+      std::function<bool(boost::filesystem::path const&)>
+      Excluder; /// Returns true to exclude the file
+
     void
     archive(Format format,
             std::vector<boost::filesystem::path> const& files,
             boost::filesystem::path const& path,
-            Renamer const& renamer = Renamer());
+            Renamer const& renamer = Renamer(),
+            Excluder const& excluder = Excluder());
   }
 }
 
