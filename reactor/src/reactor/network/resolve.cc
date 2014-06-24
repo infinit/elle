@@ -78,6 +78,10 @@ namespace reactor
         }
         else if (it == typename Resolver::iterator::basic_resolver_iterator())
         {
+          // From the boost documentation:
+          //   A successful resolve operation is guaranteed to pass at least one
+          //   entry to the handler.
+          // This assumption is false on wine.
           ELLE_TRACE_SCOPE(
             "%s: ended with no error but an empty address list", *this);
           this->_raise<ResolutionError>(
