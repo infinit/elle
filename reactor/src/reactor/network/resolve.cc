@@ -76,6 +76,13 @@ namespace reactor
           ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
           this->_raise<ResolutionError>(this->_hostname, error.message());
         }
+        else if (it == typename Resolver::iterator::basic_resolver_iterator())
+        {
+          ELLE_TRACE_SCOPE(
+            "%s: ended with no error but an empty address list", *this);
+          this->_raise<ResolutionError>(
+            this->_hostname, "host not found: address list is empty");
+        }
         else
         {
           ELLE_TRACE_SCOPE("%s: ended", *this);
