@@ -59,6 +59,7 @@ namespace elle
                            uint64_t offset,
                            uint64_t size)
     {
+      ELLE_TRACE_SCOPE("read file %s chunck of size %s at offset %s", path, size, offset);
       // FIXME: accepts offsets >32bits, but size has to be below 1<<31
       // Fix for locale issue
       elle::os::locale::DefaultImbuer u;
@@ -76,11 +77,12 @@ namespace elle
        * Yes, it means C ressource management.
       */
 #ifdef INFINIT_WINDOWS
-      if (size > std::numeric_limits<DWORD>::max ())
+      if (size > std::numeric_limits<DWORD>::max())
         throw elle::Exception(
           elle::sprintf("buffer that big (%s) can't be read", size));
+      ELLE_DEBUG("get HANDLE for file: %s", path);
       HANDLE h = CreateFileW(
-        std::wstring(path.string().begin(), path.string().end()).c_str(),
+        path.native().c_str(),
         GENERIC_READ,
         0, 0,
         OPEN_EXISTING,
