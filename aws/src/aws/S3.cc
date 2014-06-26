@@ -607,9 +607,11 @@ namespace aws
           throw TransientError("Request timed out");
         ELLE_TRACE("%s: assuming fatal error code: %s", *this, code);
         fatal = true;
+        std::stringstream payload;
+        write_xml(payload, response);
         throw RequestError(
-          elle::sprintf("%s: error on %s status '%s' code '%s'",
-                        *this, url, status, code));
+          elle::sprintf("%s: error on %s status '%s' code '%s' payload '%s'",
+                        *this, url, status, code, payload.str()));
       }
       case reactor::http::StatusCode::Not_Found:
         fatal = true;
