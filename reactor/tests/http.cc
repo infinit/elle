@@ -493,8 +493,12 @@ ELLE_TEST_SCHEDULED(request_move)
   reactor::http::Request c(std::move(b));
   c.finalize();
   reactor::http::Request d(std::move(c));
-  BOOST_CHECK_EQUAL(d.response(), "{}");
-  BOOST_CHECK_EQUAL(d.progress(), (reactor::http::Request::Progress{2,2,2,-1LL}));
+  reactor::wait(d);
+  reactor::http::Request e(std::move(d));
+  BOOST_CHECK_EQUAL(e.response(), "{}");
+  BOOST_CHECK_EQUAL(e.status(), reactor::http::StatusCode::OK);
+  BOOST_CHECK_EQUAL(e.progress(),
+                    (reactor::http::Request::Progress{2, 2, 2, -1LL}));
 }
 
 class ScheduledSilentHttpServer:

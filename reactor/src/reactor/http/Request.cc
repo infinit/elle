@@ -184,6 +184,7 @@ namespace reactor
 
     Request::Impl::~Impl()
     {
+      this->_request->_status = static_cast<StatusCode>(0);
       ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
       if (this->_curl._requests.find(this->_handle) != this->_curl._requests.end())
         this->_curl.remove(*this->_request);
@@ -579,7 +580,8 @@ namespace reactor
       elle::IOStream(std::move(source)),
       _method(source._method),
       _url(source._url),
-      _impl(source._impl)
+      _impl(source._impl),
+      _status(source._status)
     {
       source._impl = nullptr;
       this->_impl->_request = this;
