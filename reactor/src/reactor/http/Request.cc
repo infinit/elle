@@ -617,7 +617,6 @@ namespace reactor
     void
     Request::_complete(int code)
     {
-      ELLE_LOG_COMPONENT("reactor.http.Request.bugofdoom");
       ELLE_TRACE_SCOPE("%s: complete with code %s", *this, code);
       curl_easy_getinfo(this->_impl->_handle,
                         CURLINFO_RESPONSE_CODE, &this->_status);
@@ -704,7 +703,6 @@ namespace reactor
     StatusCode
     Request::status() const
     {
-      ELLE_LOG_COMPONENT("reactor.http.Request.bugofdoom");
       ELLE_TRACE_SCOPE("%s: wait status", *this);
       // XXX: We need not wait for the whole request.
       reactor::wait(*const_cast<Request*>(this));
