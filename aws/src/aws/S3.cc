@@ -617,10 +617,26 @@ namespace aws
           elle::sprintf("%s: error on %s: object not found",
                         *this, url));
       case reactor::http::StatusCode::Forbidden:
-        ELLE_TRACE("%s: error status: invalid credentials", *this);
-        throw aws::CredentialsNotValid(
-           elle::sprintf("%s: error on %s:, forbidden",
-                         *this, url));
+        {
+          // Consider a RequestTimeTooSkewed error as a "credentials expired",
+          // Refetching will recompute the time skew.
+          boost::property_tree::ptree response_tree;
+          read_xml(request, response_tree);
+          // reading the response stream, nobody else will get it
+          std::string code = response_tree.get<std::string>("Error.Code", "");
+          if (code == "RequestTimeTooSkewed")
+          {
+            ELLE_TRACE("%s: RequestTimeTooSkewed, treating as CredentialsExpired",
+                       *this);
+            throw CredentialsExpired("RequestTimeTooSkewed");
+          }
+          std::stringstream s;
+          write_xml(s, response_tree);
+          ELLE_TRACE("%s: Forbidden with payload: %s", *this, s.str());
+          throw aws::CredentialsNotValid(
+             elle::sprintf("%s: error on %s: forbidden: %s",
+                         *this, url, s.str()));
+        }
       case reactor::http::StatusCode::OK:
       case reactor::http::StatusCode::No_Content:
       case reactor::http::StatusCode::Partial_Content:
@@ -676,6 +692,14 @@ namespace aws
     {
       RequestTime request_time =
         boost::posix_time::second_clock::universal_time();
+      if (_credentials.skew())
+      {
+        ELLE_TRACE("Applying clock skew: %s - %s = %s",
+                   request_time,
+                   *_credentials.skew(),
+                   request_time - *_credentials.skew());
+        request_time -= *_credentials.skew();
+      }
       RequestHeaders headers(extra_headers);
       headers["x-amz-date"] = this->_amz_date(request_time);
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);

@@ -17,15 +17,39 @@ namespace aws
                            std::string const& region,
                            std::string const& bucket,
                            std::string const& folder,
-                           std::string const& expiration):
-    _access_key_id(access_key_id),
-    _secret_access_key(secret_access_key),
-    _session_token(session_token),
-    _region(region),
-    _bucket(bucket),
-    _folder(folder),
-    _expiration_str(expiration)
+                           std::string const& expiration,
+                           std::string const& server_time)
+    : _access_key_id(access_key_id)
+    , _secret_access_key(secret_access_key)
+    , _session_token(session_token)
+    , _region(region)
+    , _bucket(bucket)
+    , _folder(folder)
+    , _expiration_str(expiration)
+    , _server_time(server_time)
+    , _skew()
   {
+    this->_initialize();
+  }
+
+  void
+  Credentials::_initialize()
+  {
+    if (!this->_server_time.empty())
+    { // Assume creation time is now, and compute skew with local clock
+      ELLE_TRACE("Parsing server time: %s", this->_server_time);
+      std::string time_str;
+      for (auto c: this->_server_time)
+      {
+        if (c != '-' && c != ':' && c != 'Z')
+        {
+          time_str += c;
+        }
+      }
+      auto creation_time = boost::posix_time::from_iso_string(time_str);
+      this->_skew = boost::posix_time::second_clock::universal_time() - creation_time;
+      ELLE_TRACE("Computed clock skew of %s", *this->_skew);
+    }
     // For debugging.
     if (this->_expiration_str == "never")
       return;
@@ -103,6 +127,9 @@ namespace aws
     s.serialize("bucket", this->_bucket);
     s.serialize("folder", this->_folder);
     s.serialize("expiration", this->_expiration_str);
+    s.serialize("current_time", this->_server_time);
+    if (s.in())
+      this->_initialize();
   }
 
   void
