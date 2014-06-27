@@ -174,6 +174,7 @@ namespace infinit
       }
       catch (...)
       {
+        auto e = std::current_exception();
         // Wake another thread so it fails too.
         ELLE_DEBUG_SCOPE("%s: read failed, wake next thread.", *this);
         _reading = false;
@@ -186,7 +187,7 @@ namespace infinit
           }
         if (!woken)
           _channel_available.signal_one();
-        throw;
+        std::rethrow_exception(e);
       }
     }
 

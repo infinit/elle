@@ -260,10 +260,10 @@ namespace reactor
     catch (...)
     {
       _current = previous;
+      this->_eptr = std::current_exception();
       ELLE_WARN("%s: exception escaped, terminating: %s",
                 *this, elle::exception_string())
         this->terminate();
-      this->_eptr = std::current_exception();
     }
     if (thread->state() == Thread::state::done)
     {

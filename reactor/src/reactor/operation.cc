@@ -35,8 +35,9 @@ namespace reactor
     }
     catch (const Terminate&)
     {
+      auto e = std::current_exception();
       this->abort();
-      throw;
+      std::rethrow_exception(e);
     }
     return true;
   }

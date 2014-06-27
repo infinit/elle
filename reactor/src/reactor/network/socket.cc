@@ -712,8 +712,9 @@ namespace reactor
       }
       catch (...)
       {
+        auto e = std::current_exception();
         this->_write_mutex.release();
-        throw;
+        std::rethrow_exception(e);
       }
       this->_write_mutex.release();
     }

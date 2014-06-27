@@ -162,8 +162,9 @@ namespace reactor
         }
         catch (reactor::Terminate&)
         {
+          auto e = std::current_exception();
           action_thread.terminate_now();
-          throw;
+          std::rethrow_exception(e);
         }
         state->_done.signal();
         ELLE_DEBUG("%s: %s action finished", *this, *state);

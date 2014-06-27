@@ -48,6 +48,7 @@ wrap(reactor::Thread::Action const& action)
   }
   catch (const boost::python::error_already_set&)
   {
+    auto python_exception = std::current_exception();
     using namespace boost::python;
 
     PyObject *e, *v, *t;
@@ -75,7 +76,7 @@ wrap(reactor::Thread::Action const& action)
     PyErr_Restore(e, v, t);
 
     // Rethrow the exception.
-    throw;
+    std::rethrow_exception(python_exception);
   }
 }
 
