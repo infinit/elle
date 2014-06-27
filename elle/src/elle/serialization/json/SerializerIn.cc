@@ -93,6 +93,31 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize(std::string const& name, int8_t& v)
+      {
+        int64_t value;
+        this->_serialize(name, value);
+        if (value > std::numeric_limits<int8_t>::max())
+          throw Error(elle::sprintf(
+                        "32-bits overflow on key \"%s\"", name));
+        if (value < std::numeric_limits<int8_t>::min())
+          throw Error(elle::sprintf(
+                        "32-bits underflow on key \"%s\"", name));
+        v = value;
+      }
+
+      void
+      SerializerIn::_serialize(std::string const& name, uint8_t& v)
+      {
+        int8_t value;
+        this->_serialize(name, value);
+        if (value < 0)
+          throw Error(elle::sprintf(
+                        "32-bits unsigned underflow on key \"%s\"", name));
+        v = value;
+      }
+
+      void
       SerializerIn::_serialize(std::string const& name, double& v)
       {
         v = this->_check_type<double, int64_t>(name);

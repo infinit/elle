@@ -105,6 +105,12 @@ namespace elle
       _serialize(std::string const& name, uint32_t& v) = 0;
       virtual
       void
+      _serialize(std::string const& name, int8_t& v) = 0;
+      virtual
+      void
+      _serialize(std::string const& name, uint8_t& v) = 0;
+      virtual
+      void
       _serialize(std::string const& name, double& v) = 0;
       virtual
       void
