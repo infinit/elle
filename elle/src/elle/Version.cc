@@ -1,4 +1,5 @@
 #include <elle/Version.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -66,4 +67,15 @@ namespace elle
     return !((*this == other) || (*this < other));
   }
 
+  /*--------------.
+  | Serialization |
+  `--------------*/
+
+  void
+  Version::serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("major", this->_major);
+    s.serialize("minor", this->_minor);
+    s.serialize("subminor", this->_subminor);
+  }
 }

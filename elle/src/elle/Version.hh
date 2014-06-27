@@ -8,6 +8,8 @@
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
 
+# include <elle/serialization/fwd.hh>
+
 namespace elle
 {
   /// This class represents the version of the Infinit software.
@@ -48,13 +50,20 @@ namespace elle
     ELLE_OPERATOR_LTE(Version);
     ELLE_OPERATOR_GTE(Version);
 
-    /*-----------.
-    | Attributes |
-    `-----------*/
+  /*-----------.
+  | Attributes |
+  `-----------*/
   private:
     ELLE_ATTRIBUTE(elle::Natural8, major);
     ELLE_ATTRIBUTE(elle::Natural8, minor);
     ELLE_ATTRIBUTE(elle::Natural8, subminor);
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    void
+    serialize(elle::serialization::Serializer& s);
   };
 }
 
