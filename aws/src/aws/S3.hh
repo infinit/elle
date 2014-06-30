@@ -12,6 +12,7 @@
 
 # include <aws/CanonicalRequest.hh>
 # include <aws/Credentials.hh>
+# include <aws/Exceptions.hh>
 # include <aws/StringToSign.hh>
 
 namespace aws
@@ -166,8 +167,7 @@ namespace aws
     /// Dumps it if dump_response is true, which eats the stream content.
     void
     _check_request_status(reactor::http::Request& request,
-                          std::string const& operation,
-                          bool dump_response = false);
+                          std::string const& operation);
 
     // build and emit request, retries in case of credentials expiry
     // kind is used to switch between global duration timeout and stall timeout
@@ -192,6 +192,10 @@ namespace aws
     virtual
     void
     print(std::ostream& stream) const;
+    // Callback invoked on all errors, transient or not
+    typedef
+      std::function<void(AWSException const&, bool will_retry)> ErrorCallback;
+    ELLE_ATTRIBUTE_RW(ErrorCallback, on_error);
   };
 }
 

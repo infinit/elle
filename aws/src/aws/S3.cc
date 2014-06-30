@@ -555,39 +555,28 @@ namespace aws
     return cfg;
   }
 
-  void
-  S3::_check_request_status(reactor::http::Request& request,
-                            std::string const& url,
-                            bool dump_response)
+  /* Check request status and eventual error payload.
+   * Throws appropriate RequestError in case of failure. Set fatal to true if
+   * error is not recoverable
+   */
+  inline void
+  check_request_status(reactor::http::Request& request,
+                       std::string const& url,
+                       bool& fatal)
   {
     typedef reactor::http::StatusCode StatusCode;
     auto status = request.status();
-    bool ok = false;
-    bool fatal = false;
-    elle::SafeFinally log_result([&]
-      {
-        using namespace elle::log;
-        // response can only be read once, so don't touch it unless
-        // allowed to. And we assume an error cond allows us to.
-        if (dump_response || !ok)
-          detail::Send(ok ? Logger::Level::dump : Logger::Level::log,
-                       ok ? Logger::Type::info :
-                           (fatal ? Logger::Type::warning : Logger::Type::info),
-                       true, _trace_component_,
-                       __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,
-                       "AWS S3 error '%s' on %s: %s",
-                       status, url, request.response());
-      });
+    fatal = false; // if true, exception is not known to be recoverable
+
     switch(status)
     {
       // Log response in case of error
       // http://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html
       case StatusCode::Internal_Server_Error:
-        throw TransientError("Internal Server Error");
       case StatusCode::Conflict:
-        throw TransientError("Conflict");
-      case StatusCode::Service_Unavailable:
-        throw TransientError("Service Unavailable"); // SlowDown, Service Unavailable
+      case StatusCode::Service_Unavailable:  // SlowDown, Service Unavailable
+        throw TransientError(request.response().string(), status);
+
       case StatusCode::Bad_Request:
       {
         // creds expired is a bad request with xml payload
@@ -601,23 +590,23 @@ namespace aws
         ELLE_DEBUG("S3: Bad request reply with error code: %s", code);
         if (code == "ExpiredToken" || code == "TokenRefreshRequired")
           throw CredentialsExpired(elle::sprintf(
-            "%s: credentials expired with '%s': %s",
-            *this, code, this->_credentials));
-        else if (code == "RequestTimeout") // yes aws can do that, it happens for real.
-          throw TransientError("Request timed out");
-        ELLE_TRACE("%s: assuming fatal error code: %s", *this, code);
-        fatal = true;
+            "credentials expired with %s",
+            code));
         std::stringstream payload;
         write_xml(payload, response);
+        if (code == "RequestTimeout") // yes aws can do that, it happens for real.
+          throw TransientError(payload.str(), status, code);
+        ELLE_TRACE("S3: assuming fatal error code: %s", code);
+        fatal = true;
+
         throw RequestError(
-          elle::sprintf("%s: error on %s status '%s' code '%s' payload '%s'",
-                        *this, url, status, code, payload.str()));
+          payload.str(), status, code);
       }
       case reactor::http::StatusCode::Not_Found:
         fatal = true;
         throw aws::FileNotFound(
-          elle::sprintf("%s: error on %s: object not found",
-                        *this, url));
+          elle::sprintf("error on %s: object not found",
+                        url));
       case reactor::http::StatusCode::Forbidden:
         {
           // Consider a RequestTimeTooSkewed error as a "credentials expired",
@@ -626,31 +615,44 @@ namespace aws
           read_xml(request, response_tree);
           // reading the response stream, nobody else will get it
           std::string code = response_tree.get<std::string>("Error.Code", "");
+          std::stringstream payload;
+          write_xml(payload, response_tree);
           if (code == "RequestTimeTooSkewed")
           {
-            ELLE_TRACE("%s: RequestTimeTooSkewed, treating as CredentialsExpired",
-                       *this);
-            throw CredentialsExpired("RequestTimeTooSkewed");
+            ELLE_TRACE("S3: RequestTimeTooSkewed, treating as CredentialsExpired");
+            throw CredentialsExpired(payload.str(), status, code);
           }
-          std::stringstream s;
-          write_xml(s, response_tree);
-          ELLE_TRACE("%s: Forbidden with payload: %s", *this, s.str());
-          throw aws::CredentialsNotValid(
-             elle::sprintf("%s: error on %s: forbidden: %s",
-                         *this, url, s.str()));
+          ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
+          throw CredentialsNotValid(payload.str(), status, code);
         }
       case reactor::http::StatusCode::OK:
       case reactor::http::StatusCode::No_Content:
       case reactor::http::StatusCode::Partial_Content:
-        ok = true;
         break;
       default:
         fatal = true;
-        throw aws::RequestError(
-          elle::sprintf("%s: on %s status '%s' payload '%s'",
-                        *this, url, status, request.response()));
+        throw aws::RequestError(request.response().string(), status);
     }
     // ok case returns here, all other cases throw
+  }
+
+  void
+  S3::_check_request_status(reactor::http::Request& request,
+                            std::string const& url)
+  {
+    bool fatal;
+    try
+    {
+      check_request_status(request, url, fatal);
+    }
+    catch (RequestError const& e)
+    {
+      if (fatal)
+        ELLE_WARN("AWS fatal error on %s: %s", url, e.what());
+      else
+        ELLE_TRACE("AWS transient error on %s: %s", url, e.what());
+      throw;
+    }
   }
 
   /*----------.
@@ -749,10 +751,14 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
+        if (_on_error)
+          _on_error(AWSException(url, attempt,  elle::make_unique<reactor::http::RequestError>(e)),
+                   !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
-          throw aws::RequestError(
-            elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: %s",
-                        *this, e.error()));
+        {
+          throw aws::AWSException(url, attempt,
+            elle::make_unique<reactor::http::RequestError>(e));
+        }
         else
           continue;
       }
@@ -761,12 +767,16 @@ namespace aws
       {
         _check_request_status(*request, url);
       }
-      catch(CredentialsExpired const&)
+      catch(CredentialsExpired const& e)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
           *this, _credentials.expiration_str(), !!_query_credentials);
+        if (_on_error)
+          _on_error(AWSException(url, 0,elle::make_unique<CredentialsExpired>(e)),
+                   !!_query_credentials);
         if (!_query_credentials)
-          throw;
+          throw AWSException(url, 0,
+            elle::make_unique<CredentialsExpired>(e));
         _credentials = _query_credentials(false);
         _host_name = elle::sprintf("%s.s3.amazonaws.com",
                                    this->_credentials.bucket());
@@ -779,10 +789,12 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_LOG("S3 transient error '%s' (attempt %s)", err.what(), attempt);
+        if (_on_error)
+          _on_error(AWSException(url, attempt,  elle::make_unique<TransientError>(err)),
+                   !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
-          throw aws::RequestError(
-            elle::sprintf("%s: unable to PUT on S3, unable to perform HTTP request: timeout",
-                        *this));
+          throw AWSException(url, attempt,
+            elle::make_unique<TransientError>(err));
         else
         {
           reactor::sleep(boost::posix_time::milliseconds(
