@@ -5,12 +5,14 @@
 namespace aws
 {
   AWSException::AWSException(std::string const& operation,
+                             std::string const& url,
                              unsigned int attempt,
                              std::unique_ptr<elle::Exception> inner)
-    : Super(elle::sprintf("AWS error on '%s' (attempt %s): %s",
-                          operation, attempt, inner->what()))
+    : Super(elle::sprintf("AWS error: '%s' on '%s' (attempt %s): %s",
+                          operation, url, attempt, inner->what()))
     , _attempt(attempt)
     , _operation(operation)
+    , _url(url)
   {
     inner_exception(std::move(inner));
   };

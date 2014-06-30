@@ -757,8 +757,7 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
-        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
-                                   attempt,
+        AWSException aws_exception(operation, url, attempt,
                                    elle::make_unique<reactor::http::RequestError>(e));
         if (_on_error)
           _on_error(aws_exception, !max_attempts || attempt < max_attempts);
@@ -778,8 +777,7 @@ namespace aws
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
                    *this, _credentials.expiration_str(), !!_query_credentials);
-        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
-                                   0,
+        AWSException aws_exception(operation, url, 0,
                                    elle::make_unique<CredentialsExpired>(e));
         if (_on_error)
           _on_error(aws_exception, !!_query_credentials);
@@ -795,8 +793,7 @@ namespace aws
       catch(TransientError const& err)
       {
         ++attempt;
-        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
-                                   attempt,
+        AWSException aws_exception(operation, url, attempt,
                                    elle::make_unique<TransientError>(err));
         // we have nothing better to do, so keep retrying
         ELLE_LOG("S3 transient error '%s' (attempt %s)", err.what(), attempt);

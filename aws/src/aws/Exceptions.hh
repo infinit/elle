@@ -86,6 +86,7 @@ namespace aws
   public:
     typedef elle::Exception Super;
     AWSException(std::string const& operation,
+                 std::string const& url,
                  unsigned int attempt,
                  std::unique_ptr<elle::Exception> inner);
   private:
@@ -93,6 +94,8 @@ namespace aws
     ELLE_ATTRIBUTE_R(unsigned int, attempt);
     // high-level operation associated with this error
     ELLE_ATTRIBUTE_R(std::string, operation);
+    // S3 url of the operation
+    ELLE_ATTRIBUTE_R(std::string, url);
   };
 }
 
