@@ -175,6 +175,7 @@ namespace aws
     _build_send_request(
       RequestKind kind,
       std::string const& url,
+      std::string const& operation, // Used by exception message/log only.
       reactor::http::Method method,
       RequestQuery const& query = RequestQuery(),
       RequestHeaders const& extra_headers = RequestHeaders(),

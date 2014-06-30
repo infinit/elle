@@ -133,7 +133,9 @@ namespace aws
     ELLE_DEBUG("url: %s", url);
 
     auto request = _build_send_request(
-      RequestKind::data, url, reactor::http::Method::PUT,
+      RequestKind::data, url,
+      elle::sprintf("put_object(%s)", query),
+      reactor::http::Method::PUT,
       query, headers,
       "binary/octet-stream",
       object,
@@ -159,7 +161,7 @@ namespace aws
       query["marker"] = elle::sprintf("%s/%s", this->_credentials.folder(), marker);
 
     auto request = _build_send_request(RequestKind::data,
-                                       "/", reactor::http::Method::GET, query);
+                                       "/", "list", reactor::http::Method::GET, query);
     return this->_parse_list_xml(*request);
    }
 
@@ -192,7 +194,8 @@ namespace aws
   }
 
   elle::Buffer
-  S3::get_object(std::string const& object_name, RequestHeaders headers)
+  S3::get_object(std::string const& object_name,
+                 RequestHeaders headers)
   {
     ELLE_TRACE_SCOPE("%s: GET remote object", *this);
 
@@ -204,6 +207,7 @@ namespace aws
     ELLE_DEBUG("url: %s", url);
 
     auto request = _build_send_request(RequestKind::data, url,
+                                       elle::sprintf("get_object(%s)", headers),
                                        reactor::http::Method::GET,
                                        RequestQuery(), headers);
     auto response = request->response();
@@ -253,7 +257,10 @@ namespace aws
       RequestQuery query;
       query["delete"] = "";
 
-      _build_send_request(RequestKind::control, "/", reactor::http::Method::POST,
+      _build_send_request(RequestKind::control,
+                          "/",
+                          "delete_folder",
+                          reactor::http::Method::POST,
                           query, headers,
                           "text/xml", payload);
     }
@@ -265,15 +272,13 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: DELETE remote object", *this);
 
-    auto url = elle::sprintf(
-      "/%s/%s",
-      this->_credentials.folder(),
-      object_name
-    );
+    auto url = elle::sprintf("/%s/%s", this->_credentials.folder(), object_name);
     ELLE_DEBUG("url: %s", url);
 
     _build_send_request(RequestKind::control, url,
-                        reactor::http::Method::DELETE, query);
+                        "delete",
+                        reactor::http::Method::DELETE,
+                        query);
 
   }
 
@@ -295,7 +300,7 @@ namespace aws
 
     auto request = _build_send_request(
       RequestKind::control,
-      url, reactor::http::Method::POST,
+      url, "multipart_initialize", reactor::http::Method::POST,
       query, headers,
       mime_type);
     using boost::property_tree::ptree;
@@ -346,7 +351,7 @@ namespace aws
 
     auto request = _build_send_request(
       RequestKind::control,
-      url, reactor::http::Method::POST,
+      url, "multipart_finalize", reactor::http::Method::POST,
       query, RequestHeaders(),
       "text/xml", xchunks);
     // This request can 200 OK and still return an error in XML
@@ -390,7 +395,7 @@ namespace aws
                                object_name);
 
       auto request = _build_send_request(RequestKind::data,
-                                         url, reactor::http::Method::GET, query);
+                                         url, "multipart_list", reactor::http::Method::GET, query);
 
       using boost::property_tree::ptree;
       ptree response;
@@ -669,6 +674,7 @@ namespace aws
   S3::_build_send_request(
     RequestKind kind,
     std::string const& url,
+    std::string const& operation,
     reactor::http::Method method,
     RequestQuery const& query,
     RequestHeaders const& extra_headers,
@@ -751,13 +757,14 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
+        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
+                                   attempt,
+                                   elle::make_unique<reactor::http::RequestError>(e));
         if (_on_error)
-          _on_error(AWSException(url, attempt,  elle::make_unique<reactor::http::RequestError>(e)),
-                   !max_attempts || attempt < max_attempts);
+          _on_error(aws_exception, !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
         {
-          throw aws::AWSException(url, attempt,
-            elle::make_unique<reactor::http::RequestError>(e));
+          throw aws_exception;
         }
         else
           continue;
@@ -770,31 +777,34 @@ namespace aws
       catch(CredentialsExpired const& e)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
-          *this, _credentials.expiration_str(), !!_query_credentials);
+                   *this, _credentials.expiration_str(), !!_query_credentials);
+        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
+                                   0,
+                                   elle::make_unique<CredentialsExpired>(e));
         if (_on_error)
-          _on_error(AWSException(url, 0,elle::make_unique<CredentialsExpired>(e)),
-                   !!_query_credentials);
+          _on_error(aws_exception, !!_query_credentials);
         if (!_query_credentials)
-          throw AWSException(url, 0,
-            elle::make_unique<CredentialsExpired>(e));
+          throw aws_exception;
         _credentials = _query_credentials(false);
         _host_name = elle::sprintf("%s.s3.amazonaws.com",
                                    this->_credentials.bucket());
         ELLE_TRACE("%s: acquired new credentials expiring %s",
-          *this,  _credentials.expiration_str());
+                   *this,  _credentials.expiration_str());
         continue;
       }
       catch(TransientError const& err)
       {
         ++attempt;
+        AWSException aws_exception(elle::sprintf("%s on %s", operation, url),
+                                   attempt,
+                                   elle::make_unique<TransientError>(err));
         // we have nothing better to do, so keep retrying
         ELLE_LOG("S3 transient error '%s' (attempt %s)", err.what(), attempt);
         if (_on_error)
-          _on_error(AWSException(url, attempt,  elle::make_unique<TransientError>(err)),
-                   !max_attempts || attempt < max_attempts);
+          _on_error(aws_exception,
+                    !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
-          throw AWSException(url, attempt,
-            elle::make_unique<TransientError>(err));
+          throw aws_exception;
         else
         {
           reactor::sleep(boost::posix_time::milliseconds(
