@@ -10,6 +10,7 @@
 #include <elle/log.hh>
 #include <elle/os/environ.hh>
 
+#include <reactor/network/exception.hh>
 #include <reactor/http/exceptions.hh>
 #include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
@@ -752,6 +753,22 @@ namespace aws
             payload.size());
         reactor::wait(*request);
       }
+      catch (reactor::network::Exception const& e)
+      {
+        ++attempt;
+        // we have nothing better to do, so keep retrying
+        ELLE_WARN("S3 request error: %s (attempt %s)", e.what(), attempt);
+        AWSException aws_exception(operation, url, attempt,
+                                   elle::make_unique<reactor::network::Exception>(e));
+        if (_on_error)
+          _on_error(aws_exception, !max_attempts || attempt < max_attempts);
+        if (max_attempts && attempt >= max_attempts)
+        {
+          throw aws_exception;
+        }
+        else
+          continue;
+      }
       catch (reactor::http::RequestError const& e)
       {
         ++attempt;
@@ -808,6 +825,16 @@ namespace aws
             std::min(int(500 * pow(2,attempt)), 20000)));
           continue;
         }
+      }
+      catch(aws::RequestError const& err)
+      { // non-transient RequestError is fatal
+        ++attempt;
+        ELLE_LOG("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
+        AWSException aws_exception(operation, url, attempt,
+                                   elle::make_unique<RequestError>(err));
+        if (_on_error)
+          _on_error(aws_exception, false);
+        throw aws_exception;
       }
       // Consider all other failures as fatal errors
       return std::move(request);
