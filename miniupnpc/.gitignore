@@ -6,7 +6,6 @@ build/
 *.dll
 *.dylib
 Makefile.bak
-miniupnpcstrings.h
 pythonmodule
 upnpc-shared
 upnpc-static
