@@ -299,7 +299,7 @@ def configure(curl_config,
     ('logger', []),
     ('network', []),
     ('reactor', []),
-    ('upnp', []),
+    ('upnp', []), # Not an auto test, just an utility.
     ('ssl', openssl_libs),
     # 'reactor/file',
     ]

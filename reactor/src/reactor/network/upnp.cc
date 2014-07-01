@@ -28,13 +28,25 @@ namespace reactor
       int valid_igd;
     };
 
-    UPNP::UPNP()
+    UPNP::UPNP(PrivateGuard)
     : _available(false)
     , _impl(0)
     {}
 
+    std::shared_ptr<UPNP>
+    UPNP::make()
+    {
+      return std::make_shared<UPNP>(PrivateGuard{});
+    }
+
     UPNP::~UPNP()
     {
+      if (_impl)
+      {
+        FreeUPNPUrls(&_impl->urls);
+        freeUPNPDevlist(_impl->devlist);
+      }
+      delete _impl;
     }
 
     void
@@ -151,6 +163,7 @@ namespace reactor
       if(r!=UPNPCOMMAND_SUCCESS)
         throw std::runtime_error(
           elle::sprintf("GetSpecificPortMappingEntry: %s", strupnperror(r)));
+      res._owner = shared_from_this();
       res.protocol = p;
       res.internal_host = _impl->lanaddr;
       res.internal_port = intPort;
@@ -216,8 +229,7 @@ namespace reactor
     void
     PortRedirection::operator=(PortRedirection&& b)
     {
-      _owner = b._owner;
-      b._owner = 0;
+      std::swap(_owner, b._owner);
       internal_host = b.internal_host;
       internal_port = b.internal_port;
       external_host = b.external_host;

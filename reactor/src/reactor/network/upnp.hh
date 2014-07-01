@@ -2,6 +2,8 @@
 # define REACTOR_NETWORK_UPNP_HH
 
 #include <string>
+#include <memory>
+
 #include <reactor/network/Protocol.hh>
 #include <reactor/mutex.hh>
 
@@ -29,7 +31,7 @@ namespace reactor
       std::string external_host;
       std::string external_port;
       Protocol    protocol;
-      UPNP* _owner;
+      std::shared_ptr<UPNP> _owner;
     };
 
     std::ostream& operator << (std::ostream&, PortRedirection const&);
@@ -39,20 +41,33 @@ namespace reactor
     /** UPNP-IGD client, used to query public IP address and make port
      * redirection requests to a router.
      */
-    class UPNP
+    class UPNP: public std::enable_shared_from_this<UPNP>
     {
     public:
-      UPNP();
+      static
+      std::shared_ptr<UPNP>
+      make();
       ~UPNP();
       /// Must be called only once. Throw if no suitable IGD server is found.
-      void initialize();
-      std::string external_ip();
+      void
+      initialize();
+      /// Return external_ip as returned by the router, or throw.
+      std::string
+      external_ip();
       /// Setup a port redirection for this host.
-      PortRedirection setup_redirect(Protocol p,
-                                     unsigned short port);
+      PortRedirection
+      setup_redirect(Protocol p,
+                     unsigned short port);
+
       /// Whether a suitable router could be contacted through UPNP.
       ELLE_ATTRIBUTE(bool, available);
+
     private:
+      class PrivateGuard{};
+    public:
+      UPNP(PrivateGuard);
+    private:
+
       void _setup_redirect(Protocol p, unsigned short port, PortRedirection& res);
       void _initialize();
       void release(PortRedirection &);

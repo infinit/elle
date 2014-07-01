@@ -26,29 +26,29 @@ int main(int argc, char** argv)
     eport = boost::lexical_cast<int>(argv[3]);
   reactor::Scheduler sched;
   reactor::Thread t(sched, "upnp_start", [&]() {
-      try
-      {
+    try
+    {
       ELLE_LOG("requesting mapping....");
-      reactor::network::UPNP upnp;
-      upnp.initialize();
+      auto upnp = reactor::network::UPNP::make();
+      upnp->initialize();
       try
       {
-        ELLE_LOG("external ip: %s", upnp.external_ip());
+        ELLE_LOG("external ip: %s", upnp->external_ip());
       }
       catch(...)
       {
         ELLE_WARN("External IP unavailable: %s", elle::exception_string());
       }
-      reactor::network::PortRedirection mapping = upnp.setup_redirect(p, lport);
+      reactor::network::PortRedirection mapping = upnp->setup_redirect(p, lport);
       ELLE_LOG("got redirection: %s", mapping);
       ELLE_LOG("Mapping acquired, hit ^c to terminate");
       signal.wait();
       ELLE_LOG("Closing mapping");
-      }
-      catch(std::exception const& e)
-      {
-        ELLE_ERR("Redirect failure: %s", e.what());
-      }
+    }
+    catch(std::exception const& e)
+    {
+      ELLE_ERR("Redirect failure: %s", e.what());
+    }
   });
   sched.signal_handle(SIGTERM, [&]() {std::cerr<<"terminating..."<<std::endl;new reactor::Thread(sched,"signal", [&]() { std::cerr<<"pan"<<std::endl;signal.open();}, true); });
   sched.signal_handle(SIGINT, [&]()  {std::cerr<<"terminating..."<<std::endl;new reactor::Thread(sched,"signal", [&]() { std::cerr<<"pan"<<std::endl;signal.open();}, true); });
