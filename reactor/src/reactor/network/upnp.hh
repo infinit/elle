@@ -13,19 +13,20 @@ namespace reactor
   {
     class UPNP;
     /** Handle for one port redirection provided by a router.
-    * Moveable, non-copyable. Redirection gets released on destruction.
+    * Moveable, non-copyable. Mapping gets released on destruction.
     */
-    class PortRedirection
+    class PortMapping
     {
     public:
-      PortRedirection();
-      PortRedirection(PortRedirection const&) = delete;
-      void operator=(PortRedirection const&) = delete;
-      PortRedirection(PortRedirection && b);
-      void operator=(PortRedirection&& b);
-      ~PortRedirection();
+      PortMapping();
+      PortMapping(PortMapping const&) = delete;
+      void operator=(PortMapping const&) = delete;
+      PortMapping(PortMapping && b);
+      void operator=(PortMapping&& b);
+      ~PortMapping();
       /// Release redirection handle. The redirection will never be unregistered
       void release();
+      operator bool () const;
       std::string internal_host;
       std::string internal_port;
       std::string external_host;
@@ -34,7 +35,7 @@ namespace reactor
       std::shared_ptr<UPNP> _owner;
     };
 
-    std::ostream& operator << (std::ostream&, PortRedirection const&);
+    std::ostream& operator << (std::ostream&, PortMapping const&);
 
     class UPNPImpl;
 
@@ -55,12 +56,12 @@ namespace reactor
       std::string
       external_ip();
       /// Setup a port redirection for this host.
-      PortRedirection
+      PortMapping
       setup_redirect(Protocol p,
                      unsigned short port);
 
       /// Whether a suitable router could be contacted through UPNP.
-      ELLE_ATTRIBUTE(bool, available);
+      ELLE_ATTRIBUTE_R(bool, available);
 
     private:
       class PrivateGuard{};
@@ -68,11 +69,11 @@ namespace reactor
       UPNP(PrivateGuard);
     private:
 
-      void _setup_redirect(Protocol p, unsigned short port, PortRedirection& res);
+      void _setup_redirect(Protocol p, unsigned short port, PortMapping& res);
       void _initialize();
-      void release(PortRedirection &);
-      void _release(PortRedirection&);
-      friend class PortRedirection;
+      void release(PortMapping &);
+      void _release(PortMapping&);
+      friend class PortMapping;
       UPNPImpl* _impl;
       Mutex     _mutex;
     };

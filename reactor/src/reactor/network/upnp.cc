@@ -99,20 +99,20 @@ namespace reactor
         _impl->externalIPAddress = externalIPAddress;
     }
 
-    PortRedirection
+    PortMapping
     UPNP::setup_redirect(Protocol p, unsigned short port)
     {
       reactor::Lock lock(_mutex);
       if (!_impl)
         throw elle::Exception("UPNP not initialized");
-      PortRedirection result;
+      PortMapping result;
       reactor::background(
         std::bind(&UPNP::_setup_redirect, this, p, port, std::ref(result)));
       return result;
     }
 
     void
-    UPNP::_setup_redirect(Protocol p, unsigned short port, PortRedirection& res)
+    UPNP::_setup_redirect(Protocol p, unsigned short port, PortMapping& res)
     { // THREADED
       char effectivePort[6];
       std::string port_string = boost::lexical_cast<std::string>(port);
@@ -184,7 +184,7 @@ namespace reactor
     }
 
     void
-    UPNP::release(PortRedirection & redirect)
+    UPNP::release(PortMapping & redirect)
     {
       reactor::Lock lock(_mutex);
       if (!_impl)
@@ -193,7 +193,7 @@ namespace reactor
     }
 
     void
-    UPNP::_release(PortRedirection & redirect)
+    UPNP::_release(PortMapping & redirect)
     {
       ELLE_TRACE("Releasing redirection %s", redirect);
       int r = UPNP_DeletePortMapping(_impl->urls.controlURL,
@@ -201,43 +201,52 @@ namespace reactor
                                      redirect.external_port.c_str(),
                                      redirect.protocol == Protocol::tcp?"TCP":"UDP",
                                      0);
-      ELLE_TRACE("Redirection %s released with %s", redirect, strupnperror(r));
+      ELLE_TRACE("Mapping %s released with %s", redirect, strupnperror(r));
     }
 
-    PortRedirection::PortRedirection()
+    PortMapping::PortMapping()
     : _owner(0)
     {
     }
 
-    PortRedirection::~PortRedirection()
+    PortMapping::~PortMapping()
     {
       if (_owner)
         _owner->release(*this);
     }
 
     void
-    PortRedirection::release()
+    PortMapping::release()
     {
-      _owner = 0;
+      if (!_owner)
+        return;
+      _owner->release(*this);
+      _owner.reset();
     }
 
-    PortRedirection::PortRedirection(PortRedirection&& b)
+    PortMapping::PortMapping(PortMapping&& b)
     {
       *this = std::move(b);
     }
 
     void
-    PortRedirection::operator=(PortRedirection&& b)
+    PortMapping::operator=(PortMapping&& b)
     {
-      std::swap(_owner, b._owner);
-      internal_host = b.internal_host;
-      internal_port = b.internal_port;
-      external_host = b.external_host;
-      external_port = b.external_port;
+      _owner = b._owner;
+      b._owner.reset();
+      std::swap(internal_host, b.internal_host);
+      std::swap(internal_port, b.internal_port);
+      std::swap(external_host, b.external_host);
+      std::swap(external_port, b.external_port);
+    }
+
+    PortMapping::operator bool () const
+    {
+      return !!_owner;
     }
 
     std::ostream&
-    operator << (std::ostream& os, PortRedirection const& pr)
+    operator << (std::ostream& os, PortMapping const& pr)
     {
       return os << (pr.protocol == Protocol::tcp? "TCP(" : "UDP(")
                 << pr.external_host << ':' << pr.external_port

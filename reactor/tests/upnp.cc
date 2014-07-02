@@ -39,7 +39,7 @@ int main(int argc, char** argv)
       {
         ELLE_WARN("External IP unavailable: %s", elle::exception_string());
       }
-      reactor::network::PortRedirection mapping = upnp->setup_redirect(p, lport);
+      reactor::network::PortMapping mapping = upnp->setup_redirect(p, lport);
       ELLE_LOG("got redirection: %s", mapping);
       ELLE_LOG("Mapping acquired, hit ^c to terminate");
       signal.wait();
