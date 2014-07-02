@@ -116,7 +116,9 @@ namespace reactor
     { // THREADED
       char effectivePort[6];
       std::string port_string = boost::lexical_cast<std::string>(port);
-      ELLE_TRACE("AddAnyPortMapping(%s, %s, %s)",
+      std::string protocol_string = p == Protocol::tcp? "TCP" : "UDP";
+      ELLE_TRACE("AddAnyPortMapping(%s, %s, %s, %s)",
+                 protocol_string,
                  port_string, port_string, _impl->lanaddr);
       int r = UPNP_AddAnyPortMapping(
         _impl->urls.controlURL,
@@ -124,7 +126,7 @@ namespace reactor
         port_string.c_str(), port_string.c_str(),
         _impl->lanaddr,
         "reactor",
-        p == Protocol::tcp? "TCP" : "UDP",
+        protocol_string.c_str(),
         0, // remotehost
         "0", effectivePort);
       if (r != UPNPCOMMAND_SUCCESS)
@@ -138,7 +140,7 @@ namespace reactor
            port_string.c_str(), port_string.c_str(),
            _impl->lanaddr,
            "reactor",
-           p == Protocol::tcp? "TCP" : "UDP",
+           protocol_string.c_str(),
            nullptr, // remotehost
            "0");
         strcpy(effectivePort, port_string.c_str()); // REALY?
@@ -155,7 +157,7 @@ namespace reactor
         _impl->urls.controlURL,
         _impl->data.first.servicetype,
         effectivePort,
-        p == Protocol::tcp? "TCP" : "UDP", NULL/*remoteHost*/,
+        protocol_string.c_str(), NULL/*remoteHost*/,
         intClient, intPort,
         nullptr/*desc*/,
         nullptr/*enabled*/,
@@ -170,6 +172,7 @@ namespace reactor
       if (_impl->externalIPAddress)
         res.external_host = *_impl->externalIPAddress;
       res.external_port = effectivePort;
+      ELLE_TRACE("_setup_redirect succeeded, returning %s", res);
     }
 
     std::string
@@ -234,6 +237,7 @@ namespace reactor
     {
       _owner = b._owner;
       b._owner.reset();
+      protocol = b.protocol;
       std::swap(internal_host, b.internal_host);
       std::swap(internal_port, b.internal_port);
       std::swap(external_host, b.external_host);
