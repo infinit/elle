@@ -45,6 +45,9 @@ def configure(cxx_toolkit = None,
   local_config.enable_debug_symbols()
   local_config.define('_BSD_SOURCE')
   local_config.define('MINIUPNP_STATICLIB')
+  if cxx_toolkit.os == drake.os.windows:
+    local_config.lib('iphlpapi')
+    config.lib('iphlpapi')
   libminiupnp = drake.cxx.StaticLib(
     'lib/miniupnp',
     libminiupnp_sources,
