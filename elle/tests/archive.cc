@@ -64,6 +64,22 @@ private:
   ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
 };
 
+class LargerTemporaryFile
+{
+public:
+  LargerTemporaryFile(std::string const& name, std::string const& content)
+    : _directory(name)
+  {
+    this->_path = this->_directory.path() / name;
+    boost::filesystem::ofstream f(this->_path);
+    f << content;
+    f.close();
+  }
+private:
+  ELLE_ATTRIBUTE_R(TemporaryDirectory, directory);
+  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+};
+
 class ChangeDirectory
 {
 public:
@@ -94,6 +110,18 @@ check_file_content(boost::filesystem::path const& path,
   f.read(result, BUFSIZ);
   BOOST_CHECK_EQUAL(f.gcount(), 1);
   BOOST_CHECK_EQUAL(result[0], content);
+}
+
+static
+void
+check_file_content(boost::filesystem::path const& path,
+                   std::string const& content)
+{
+  boost::filesystem::ifstream f(path);
+  char file_content[content.size()];
+  f.read(file_content, content.size());
+  BOOST_CHECK_EQUAL(f.gcount(), content.size());
+  BOOST_CHECK_EQUAL(std::string(file_content, content.size()), content);
 }
 
 static
@@ -177,6 +205,37 @@ archive(elle::archive::Format fmt)
 }
 
 static
+void
+larger_archive(elle::archive::Format fmt)
+{
+  std::string content;
+  for (int i = 0; i < 10000; i++)
+  {
+    content += "stuffs n ";
+  }
+  LargerTemporaryFile f1("file1", content);
+  LargerTemporaryFile f2("file2", content);
+  TemporaryDirectory output("output");
+  auto archive_path = output.path() / "output.zip";
+  elle::archive::archive(fmt, {f1.path(), f2.path()}, archive_path);
+  {
+    TemporaryDirectory decompress("decompress");
+    extract(fmt, archive_path, decompress.path());
+    ChangeDirectory cd(decompress.path());
+    int count = 0;
+    for (auto it = boost::filesystem::recursive_directory_iterator(".");
+         it != boost::filesystem::recursive_directory_iterator();
+         ++it)
+    {
+      count++;
+      auto path = *it;
+      check_file_content(path, content);
+    }
+    BOOST_CHECK_EQUAL(count, 2);
+  }
+}
+
+static
 boost::filesystem::path
 renamer(boost::filesystem::path const& input)
 {
@@ -234,6 +293,13 @@ archive_duplicate(elle::archive::Format fmt)
                                                         \
     static                                              \
     void                                                \
+    less_simple()                                       \
+    {                                                   \
+      larger_archive(elle::archive::Format::Fmt);       \
+    }                                                   \
+                                                        \
+    static                                              \
+    void                                                \
     duplicate()                                         \
     {                                                   \
       archive_duplicate(elle::archive::Format::Fmt);    \
@@ -254,6 +320,7 @@ ELLE_TEST_SUITE()
     auto suite = BOOST_TEST_SUITE(#Fmt);        \
     master.add(suite);                          \
     suite->add(BOOST_TEST_CASE(simple));        \
+    suite->add(BOOST_TEST_CASE(less_simple));   \
     suite->add(BOOST_TEST_CASE(duplicate));     \
   }                                             \
 
