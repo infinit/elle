@@ -40,9 +40,11 @@ def configure(cxx_toolkit = None,
   config = drake.cxx.Config()
   config.add_local_include_path('.')
   config.lib_path('.')
+  config.define('MINIUPNP_STATICLIB')
   local_config = drake.cxx.Config(cxx_config)
   local_config.enable_debug_symbols()
   local_config.define('_BSD_SOURCE')
+  local_config.define('MINIUPNP_STATICLIB')
   libminiupnp = drake.cxx.StaticLib(
     'lib/miniupnp',
     libminiupnp_sources,
