@@ -795,6 +795,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     cxx_config.lib('ws2_32')
     cxx_config.lib('gdi32')
     cxx_config.lib('mswsock')
+    cxx_config.lib('iphlpapi')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
