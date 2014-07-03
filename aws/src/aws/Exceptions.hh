@@ -20,7 +20,7 @@ namespace aws
     RequestError(std::string const& message,
                  boost::optional<reactor::http::StatusCode> http_status = {},
                  boost::optional<std::string> const& error_code = {});
-
+    ~RequestError() noexcept(true) {}
     ELLE_ATTRIBUTE_R(boost::optional<reactor::http::StatusCode>, http_status);
     ELLE_ATTRIBUTE_R(boost::optional<std::string>, error_code); // aws ErrorCode if available
   };
