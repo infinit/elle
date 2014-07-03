@@ -89,7 +89,7 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      Logger();
+      Logger(std::string const& log_level);
       virtual
       ~Logger();
 
@@ -109,7 +109,7 @@ namespace elle
       unindent();
       std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
-      ELLE_ATTRIBUTE_R(bool, time_universal);
+      ELLE_ATTRIBUTE_RW(bool, time_universal);
 
     /*----------.
     | Messaging |

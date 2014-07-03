@@ -107,9 +107,9 @@ namespace elle
           elle::sprintf("invalid log level: %s", level));
   }
 
-    Logger::Logger()
+    Logger::Logger(std::string const& log_level)
       : _indentation(new PlainIndentation)
-      , _time_universal(::getenv("ELLE_LOG_TIME_UNIVERSAL"))
+      , _time_universal(false)
       , _component_patterns()
       , _component_levels()
       , _component_max_size(0)
@@ -127,7 +127,9 @@ namespace elle
           };
       }
       this->_indentation = factory();
-      std::string levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
+      std::string levels_str(log_level);
+      if (elle::os::inenv("ELLE_LOG_LEVEL"))
+        levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
       if (!levels_str.empty())
       {
         std::vector<std::string> levels;
