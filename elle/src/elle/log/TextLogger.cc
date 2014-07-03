@@ -1,5 +1,6 @@
 #include <elle/Exception.hh>
 #include <elle/log/TextLogger.hh>
+#include <elle/os/environ.hh>
 #include <elle/printf.hh>
 
 #include <boost/algorithm/string/classification.hpp>
@@ -58,14 +59,62 @@ namespace elle
         return true;
     }
 
-    TextLogger::TextLogger(std::ostream& out):
-      _output(out),
-      _display_type(::getenv("ELLE_LOG_DISPLAY_TYPE")),
-      _enable_pid(getenv("ELLE_LOG_PID")),
-      _enable_tid(getenv("ELLE_LOG_TID")),
-      _enable_time(::getenv("ELLE_LOG_TIME")),
-      _universal_time(::getenv("ELLE_LOG_TIME_UNIVERSAL"))
-    {}
+    TextLogger::TextLogger(std::ostream& out,
+                           std::string const& log_level,
+                           bool display_type,
+                           bool enable_pid,
+                           bool enable_tid,
+                           bool enable_time,
+                           bool universal_time):
+      Logger(log_level),
+      _output(out)
+    {
+      if (elle::os::inenv("ELLE_LOG_DISPLAY_TYPE"))
+      {
+        this->_display_type =
+          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"));
+      }
+      else
+      {
+        this->_display_type = display_type;
+      }
+      if (elle::os::inenv("ELLE_LOG_PID"))
+      {
+        this->_enable_pid =
+          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_PID"));
+      }
+      else
+      {
+        this->_enable_pid = enable_pid;
+      }
+      if (elle::os::inenv("ELLE_LOG_TID"))
+      {
+        this->_enable_tid =
+          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_TID"));
+      }
+      else
+      {
+        this->_enable_tid = enable_tid;
+      }
+      if (elle::os::inenv("ELLE_LOG_TIME"))
+      {
+        this->_enable_time =
+          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_TIME"));
+      }
+      else
+      {
+        this->_enable_time = enable_time;
+      }
+      if (elle::os::inenv("ELLE_LOG_TIME_UNIVERSAL"))
+      {
+        this->time_universal(boost::lexical_cast<bool>(
+          elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL")));
+      }
+      else
+      {
+        this->time_universal(universal_time);
+      }
+    }
 
 
     void
