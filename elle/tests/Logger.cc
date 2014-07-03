@@ -17,14 +17,22 @@
 
 static
 void
-message_test()
+_message_test(bool env)
 {
   typedef elle::log::Logger::Level Level;
-  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
-  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
 
   std::stringstream ss;
-  elle::log::TextLogger* logger = new elle::log::TextLogger(ss);
+  elle::log::TextLogger* logger;
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(ss, "DUMP", true);
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::dump);
 
@@ -69,6 +77,14 @@ message_test()
 
 static
 void
+message_test()
+{
+  _message_test(false);
+  _message_test(true);
+}
+
+static
+void
 clear_env()
 {
   elle::os::unsetenv("ELLE_LOG_LEVEL");
@@ -79,7 +95,7 @@ clear_env()
 
 static
 void
-environment_format_test()
+_environment_format_test(bool env)
 {
   ELLE_LOG_COMPONENT("Test");
 
@@ -91,11 +107,26 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      false,  // display_type
+      false,  // enable_pid
+      false,  // enable_tid
+      true,   // enable_time
+      false   // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
@@ -107,12 +138,27 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-  elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      false,  // display_type
+      false,  // enable_pid
+      false,  // enable_tid
+      true,   // enable_time
+      true    // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
@@ -126,11 +172,26 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_PID", "1", 0);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME", ""), "");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_PID", "1", 0);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME", ""), "");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      false,  // display_type
+      true,   // enable_pid
+      false,  // enable_tid
+      false,  // enable_time
+      false   // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
@@ -142,13 +203,28 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-  elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
-  elle::os::setenv("ELLE_LOG_PID", "1", 0);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
+    elle::os::setenv("ELLE_LOG_PID", "1", 0);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      false,  // display_type
+      true,   // enable_pid
+      false,  // enable_tid
+      true,   // enable_time
+      true    // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
@@ -162,12 +238,27 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-  elle::os::setenv("ELLE_LOG_PID", "1", 0);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    elle::os::setenv("ELLE_LOG_PID", "1", 0);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      false,  // display_type
+      true,   // enable_pid
+      false,  // enable_tid
+      true,   // enable_time
+      false   // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
   ELLE_WARN("Test 5");
@@ -180,9 +271,24 @@ environment_format_test()
   ss.str("");
   res.str("");
   clear_env();
-  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
-  BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"), "1");
-  logger = new elle::log::TextLogger(ss);
+  if (env)
+  {
+    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
+    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"), "1");
+    logger = new elle::log::TextLogger(ss);
+  }
+  else
+  {
+    logger = new elle::log::TextLogger(
+      ss,
+      "",     // log_level
+      true,   // display_type
+      false,  // enable_pid
+      false,  // enable_tid
+      false,  // enable_time
+      false   // universal_time
+    );
+  }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
   ELLE_WARN("Test 5");
@@ -195,6 +301,14 @@ environment_format_test()
   elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0", 1);
 
   elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
+}
+
+static
+void
+environment_format_test()
+{
+  _environment_format_test(false);
+  // _environment_format_test(true);
 }
 
 static
