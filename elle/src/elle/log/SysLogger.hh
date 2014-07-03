@@ -10,7 +10,9 @@ namespace elle
     class SysLogger: public Logger
     {
     public:
-      SysLogger(std::string const& name);
+      SysLogger(std::string const& name,
+                std::string const& log_level = "",
+                bool universal_time = false);
     protected:
       virtual
       void

@@ -23,8 +23,12 @@ namespace elle
 {
   namespace log
   {
-    SysLogger::SysLogger(std::string const& name)
+    SysLogger::SysLogger(std::string const& name,
+                         std::string const& log_level,
+                         bool universal_time)
+      : Logger(log_level)
     {
+      this->time_universal(universal_time);
       openlog(strdup(name.c_str()), 0, LOG_DAEMON);
     }
 
