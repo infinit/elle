@@ -400,11 +400,6 @@ namespace reactor
           Headers headers = this->_headers;
           {
             std::string response;
-            for (auto const& cookie: cookies)
-            {
-              auto line = elle::sprintf("%s: %s\n", cookie.first, cookie.second);
-              response += line;
-            }
             response += content.string();
             std::string answer = elle::sprintf(
               "HTTP/1.1 %s %s\r\n"

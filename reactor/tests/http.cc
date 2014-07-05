@@ -431,21 +431,25 @@ ELLE_TEST_SCHEDULED(put_11_chunked)
 ELLE_TEST_SCHEDULED(cookies)
 {
   HTTPServer server;
-  server.register_route("/cookies", reactor::http::Method::GET,
-                        [&] (HTTPServer::Headers const&,
-                             HTTPServer::Cookies const&,
-                             elle::Buffer const&) -> std::string
-                          {
-                            return "/cookies";
-                          });
-
+  server.register_route(
+    "/cookies", reactor::http::Method::GET,
+    [&] (HTTPServer::Headers const&,
+         HTTPServer::Cookies const& cookies,
+         elle::Buffer const&) -> std::string
+    {
+      std::string response;
+      for (auto const& cookie: cookies)
+      {
+        auto line = elle::sprintf("%s: %s\n", cookie.first, cookie.second);
+        response += line;
+      }
+      return response + "/cookies";
+    });
   server.headers()["Set-Cookie"] = "we=got";
-
   {
     BOOST_CHECK_EQUAL(reactor::http::get(server.url("cookies")).string(),
                       "/cookies");
   }
-
   {
     reactor::http::Client client;
     auto r = client.request(server.url("cookies"), reactor::http::Method::GET);
