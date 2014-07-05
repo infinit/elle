@@ -11,7 +11,7 @@ ELLE_LOG_COMPONENT("reactor.Scheduler");
 int main(int argc, char** argv)
 {
   int lport = 0;
-  int eport = 0;
+  int eport;
   if (argc < 3 || argc > 4 || argv[1][0] == '-')
   {
     std::cerr << "Usage: " << argv[0] << " (tcp|udp) local_port [external_port_hint]" << std::endl;
