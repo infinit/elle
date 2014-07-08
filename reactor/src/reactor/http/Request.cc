@@ -690,6 +690,11 @@ namespace reactor
       {
         if (std::exception_ptr exn = this->exception())
           std::rethrow_exception(exn);
+        if (this->_status == static_cast<StatusCode>(0))
+        {
+          ELLE_ERR("%s: input done with null status", *this);
+          ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
+        }
         return false;
       }
       else
