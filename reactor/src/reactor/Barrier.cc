@@ -33,6 +33,7 @@ namespace reactor
   Barrier::open()
   {
     this->_opened = true;
+    this->_changed(this->_opened);
     this->_signal();
   }
 
@@ -40,6 +41,7 @@ namespace reactor
   Barrier::close()
   {
     this->_opened = false;
+    this->_changed(this->_opened);
   }
 
   bool

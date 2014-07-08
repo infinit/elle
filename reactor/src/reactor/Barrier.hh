@@ -58,6 +58,12 @@ namespace reactor
     /// Stop the thread if and only if this is closed.
     virtual bool _wait(Thread* thread);
 
+  /*------.
+  | Hooks |
+  `------*/
+  public:
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (bool)>, changed);
+
   /*----------.
   | Printable |
   `----------*/
