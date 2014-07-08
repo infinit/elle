@@ -539,12 +539,14 @@ namespace reactor
     Request::Request(std::string const& url,
                      Method method,
                      Configuration conf,
-                     bool):
-      elle::IOStream(this->_impl = new Impl(*this, url, method,
-                                            std::move(conf))),
-      _method(method),
-      _url(url),
-      _status(static_cast<StatusCode>(0))
+                     bool)
+      : elle::IOStream(this->_impl = new Impl(*this, url, method,
+                                              std::move(conf)))
+      , _method(method)
+      , _url(url)
+      , _status(static_cast<StatusCode>(0))
+      , _debug(0)
+      , _debug2(0)
     {}
 
     Request::Request(std::string const& url,
@@ -617,6 +619,7 @@ namespace reactor
     void
     Request::_complete(int code)
     {
+      this->_debug2 = 1;
       ELLE_TRACE_SCOPE("%s: complete with code %s", *this, code);
       curl_easy_getinfo(this->_impl->_handle,
                         CURLINFO_RESPONSE_CODE, &this->_status);
@@ -675,21 +678,30 @@ namespace reactor
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
+      this->_debug2 = 2;
       this->_signal();
       // Waitables consume their exception once signaled, restore it.
       if (exception)
+      {
+        this->_debug2 = 3;
         set_exception();
+      }
       this->_impl->_complete();
     }
 
     bool
     Request::_wait(Thread* thread)
     {
+      this->_debug = 1;
       this->finalize();
       if (this->_impl->_input_done)
       {
         if (std::exception_ptr exn = this->exception())
+        {
+          this->_debug = 2;
           std::rethrow_exception(exn);
+        }
+        this->_debug = 3;
         if (this->_status == static_cast<StatusCode>(0))
         {
           ELLE_ERR("%s: input done with null status", *this);
@@ -698,7 +710,10 @@ namespace reactor
         return false;
       }
       else
+      {
+        this->_debug = 4;
         return Waitable::_wait(thread);
+      }
     }
 
     /*-------.
@@ -714,7 +729,8 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: waited", *this);
       if (this->_status == static_cast<StatusCode>(0))
       {
-        ELLE_ERR("%s: awaken with null status", *this);
+        ELLE_ERR("%s: awaken with null status, debug: %s, debug2: %s",
+                 *this, this->_debug, this->_debug2);
         ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
       }
       return this->_status;
