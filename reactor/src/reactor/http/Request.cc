@@ -110,6 +110,7 @@ namespace reactor
               Scheduler::scheduler()->io_service())),
       _url(url),
       _method(method),
+      _query_string(),
       _handle(curl_easy_init()),
       _pause_count(0)
     {
@@ -141,8 +142,6 @@ namespace reactor
       // Set SSL options.
       if (!this->_conf.ssl_verify_host())
         setopt(this->_handle, CURLOPT_SSL_VERIFYHOST, 0);
-      // Set URL.
-      setopt(this->_handle, CURLOPT_URL, url.c_str());
       // Set method.
       switch (this->_method)
       {
@@ -238,6 +237,10 @@ namespace reactor
     void
     Request::Impl::start()
     {
+      // Set URL.
+      if (!this->_query_string.empty())
+        this->_url = elle::sprintf("%s?%s", this->_url, this->_query_string);
+      setopt(this->_handle, CURLOPT_URL, this->_url.c_str());
       for (auto const& cookie: this->_conf.cookies())
         this->cookie_add(cookie.first, cookie.second);
       for (auto const& header: this->_conf.headers())
@@ -544,6 +547,7 @@ namespace reactor
                                               std::move(conf)))
       , _method(method)
       , _url(url)
+      , _query_string()
       , _status(static_cast<StatusCode>(0))
       , _debug(0)
       , _debug2(0)
@@ -583,6 +587,7 @@ namespace reactor
       _method(source._method),
       _url(source._url),
       _impl(source._impl),
+      _query_string(source._query_string),
       _status(source._status)
     {
       source._impl = nullptr;
@@ -592,6 +597,40 @@ namespace reactor
     Request::~Request()
     {
       // The impl is deleted as the StreamBuffer.
+    }
+
+    /*-------------.
+    | Query String |
+    `-------------*/
+    void
+    Request::query_string(Request::QueryDict const& query_dict)
+    {
+      if (query_dict.empty())
+        return;
+      std::string res = "";
+      for (auto pair: query_dict)
+      {
+        char* c_string;
+        c_string = curl_easy_escape(this->_impl->_handle,
+                                    pair.first.c_str(),
+                                    pair.first.length());
+        std::string key(c_string);
+        curl_free(c_string);
+        c_string = curl_easy_escape(this->_impl->_handle,
+                                    pair.second.c_str(),
+                                    pair.second.length());
+        std::string value(c_string);
+        curl_free(c_string);
+        res += elle::sprintf("%s=%s&", key, value);
+      }
+      this->_query_string = res.substr(0, res.length() - 1);
+      this->_impl->_query_string = this->_query_string;
+    }
+
+    std::string const&
+    Request::query_string() const
+    {
+      return this->_impl->_query_string;
     }
 
     /*-----------.

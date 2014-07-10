@@ -141,6 +141,7 @@ namespace reactor
       Service& _curl;
       std::string _url;
       Method _method;
+      std::string _query_string;
       CURL* _handle;
       char _error[CURL_ERROR_SIZE];
       ELLE_ATTRIBUTE_R(int, pause_count);

@@ -190,6 +190,19 @@ namespace reactor
       /// Let client manage our details.
       friend class Client;
 
+    /*-------------.
+    | Query String |
+    `-------------*/
+    public:
+      /// Set the query string of the request.
+      ///
+      /// This should be done after construction, before the request is actually
+      /// run.
+      typedef std::unordered_map<std::string, std::string> QueryDict;
+      ELLE_ATTRIBUTE_r(std::string, query_string);
+      void
+      query_string(QueryDict const& query_dict);
+
     /*-----------.
     | Completion |
     `-----------*/
