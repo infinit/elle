@@ -99,7 +99,8 @@ namespace reactor
 
         typedef std::unordered_map<std::string, std::string> Headers;
         typedef std::unordered_map<std::string, std::string> Cookies;
-        typedef std::function<std::string (Headers const&, Cookies const&, elle::Buffer const&)> Function;
+        typedef std::unordered_map<std::string, std::string> Parameters;
+        typedef std::function<std::string (Headers const&, Cookies const&, std::unordered_map<std::string, std::string> const&, elle::Buffer const&)> Function;
         // Matching a Method to a specific function.
         // e.g.: {GET -> get_function, POST -> post_function, ...}
         struct enum_hash
@@ -185,7 +186,6 @@ namespace reactor
           ELLE_ATTRIBUTE_R(std::string, path);
           ELLE_ATTRIBUTE(boost::optional<reactor::http::Method>, method);
           ELLE_ATTRIBUTE(boost::optional<reactor::http::Version>, version);
-          typedef std::unordered_map<std::string, std::string> Parameters;
           ELLE_ATTRIBUTE_R(Parameters, params);
 
         public:
@@ -343,7 +343,7 @@ namespace reactor
               this->_response(
                 *socket,
                 StatusCode::OK,
-                route->second.at(cmd.method())(headers, cookies, content),
+                route->second.at(cmd.method())(headers, cookies, cmd.params(), content),
                 cookies);
             }
             else
@@ -352,7 +352,7 @@ namespace reactor
                 *socket,
                 reactor::http::StatusCode::OK,
                 this->_routes.at(cmd.path()).at(cmd.method())(
-                  headers, cookies,
+                  headers, cookies, cmd.params(),
                   this->read_sized_content(
                     *socket, boost::lexical_cast<unsigned int>(headers.at("Content-Length")))),
                 cookies);
