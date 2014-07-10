@@ -40,6 +40,7 @@ ELLE_TEST_SCHEDULED(simple)
   server.register_route("/simple", reactor::http::Method::GET,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const&) -> std::string
                           {
                             return "/simple";
@@ -56,6 +57,7 @@ ELLE_TEST_SCHEDULED(complex)
   server.register_route("/complex", reactor::http::Method::GET,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const&) -> std::string
                           {
                             return "/complex";
@@ -90,6 +92,7 @@ ELLE_TEST_SCHEDULED(bad_request)
   server.register_route("/400", reactor::http::Method::GET,
                         [] (HTTPServer::Headers const&,
                             HTTPServer::Cookies const&,
+                            HTTPServer::Parameters const&,
                             elle::Buffer const&) -> std::string
                         {
                           throw reactor::http::tests::Server::Exception(
@@ -315,6 +318,7 @@ post(reactor::http::Request::Configuration conf,
   server.register_route(elle::sprintf("/%s", method), method,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const& body) -> std::string
                         {
                           ELLE_LOG("body: %s", body);
@@ -435,6 +439,7 @@ ELLE_TEST_SCHEDULED(cookies)
     "/cookies", reactor::http::Method::GET,
     [&] (HTTPServer::Headers const&,
          HTTPServer::Cookies const& cookies,
+         HTTPServer::Parameters const&,
          elle::Buffer const&) -> std::string
     {
       std::string response;
@@ -484,6 +489,7 @@ ELLE_TEST_SCHEDULED(request_move)
   server.register_route("/move", reactor::http::Method::POST,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const& body) -> std::string
                           {
                             return body.string();
@@ -524,6 +530,7 @@ ELLE_TEST_SCHEDULED(interrupted)
   server.register_route("/move", reactor::http::Method::POST,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const& body) -> std::string
                           {
                             return body.string();
@@ -571,6 +578,7 @@ ELLE_TEST_SCHEDULED(no_header_answer)
   server.register_route("/no_header", reactor::http::Method::GET,
                         [&] (HTTPServer::Headers const&,
                              HTTPServer::Cookies const&,
+                             HTTPServer::Parameters const&,
                              elle::Buffer const& body) -> std::string
                           {
                             return body.string();
