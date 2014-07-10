@@ -692,6 +692,34 @@ ELLE_TEST_SCHEDULED(download_stall)
   server.sem.release();
 }
 
+ELLE_TEST_SCHEDULED(query_string)
+{
+  HTTPServer server;
+  reactor::Signal hit;
+  server.register_route(
+    "/query",
+    reactor::http::Method::GET,
+    [&] (HTTPServer::Headers const&,
+         HTTPServer::Cookies const&,
+         HTTPServer::Parameters const& params,
+         elle::Buffer const& body) -> std::string
+    {
+      BOOST_CHECK_EQUAL(params.at("string%20space"), "something-dash");
+      BOOST_CHECK_EQUAL(params.at("simple"), "stuffs");
+      hit.signal();
+      return "coucou";
+    });
+  reactor::http::Request r(server.url("query"), reactor::http::Method::GET);
+  std::unordered_map<std::string, std::string> query_dict;
+  query_dict["string space"] = "something-dash";
+  query_dict["simple"] = "stuffs";
+  r.query_string(query_dict);
+  BOOST_CHECK_EQUAL(r.query_string(),
+                    "simple=stuffs&string%20space=something-dash");
+  r.finalize();
+  reactor::wait(hit);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -719,4 +747,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, 3);
   suite.add(BOOST_TEST_CASE(download_progress), 0, 5);
   suite.add(BOOST_TEST_CASE(download_stall), 0, 40);
+  suite.add(BOOST_TEST_CASE(query_string), 0, 3);
 }
