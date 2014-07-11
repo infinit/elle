@@ -4,6 +4,7 @@
 #include <elle/attribute.hh>
 #include <elle/filesystem.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
+#include <elle/filesystem/TemporaryFile.hh>
 #include <elle/finally.hh>
 #include <elle/os/environ.hh>
 #include <elle/system/Process.hh>
@@ -16,6 +17,7 @@
 #endif
 
 using elle::filesystem::TemporaryDirectory;
+using elle::filesystem::TemporaryFile;
 
 class DummyHierarchy
 {
@@ -47,21 +49,6 @@ public:
 
 private:
   boost::filesystem::path _root;
-};
-
-class TemporaryFile
-{
-public:
-  TemporaryFile(std::string const& name)
-    : _directory(name)
-  {
-    this->_path = this->_directory.path() / name;
-    boost::filesystem::ofstream(this->_path);
-  }
-
-private:
-  ELLE_ATTRIBUTE_R(TemporaryDirectory, directory);
-  ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
 };
 
 class LargerTemporaryFile
