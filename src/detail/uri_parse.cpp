@@ -161,9 +161,7 @@ namespace network {
 
         start %=
             ((scheme >> ':') >> hier_part >> -('?' >> query) >>
-             -('#' >> fragment)) |  // relative reference
-            (qi::attr(boost::optional<boost::iterator_range<iterator> >()) >>
-             hier_part >> -('?' >> query) >> -('#' >> fragment));
+             -('#' >> fragment));
       }
 
       qi::rule<iterator, typename boost::iterator_range<iterator>::value_type()>

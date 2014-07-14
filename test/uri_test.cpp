@@ -552,44 +552,6 @@ TEST(uri_test, unnormalized_invalid_path_value) {
   ASSERT_EQ("/..", *instance.path());
 }
 
-
-TEST(uri_test, construct_uri_reference_from_char_array) {
-  ASSERT_NO_THROW(network::uri("relative/path/to/resource.txt"));
-}
-
-TEST(uri_test, uri_reference_scheme_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.scheme()) << *instance.scheme();
-}
-
-TEST(uri_test, uri_reference_host_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.host()) << *instance.host();
-}
-
-TEST(uri_test, uri_reference_authority_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.authority()) << *instance.authority();
-}
-
-TEST(uri_test, uri_reference_path_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_TRUE(instance.path());
-  ASSERT_EQ("relative/path/to/resource.txt", *instance.path());
-}
-
-TEST(uri_test, uri_reference_query_test) {
-  network::uri instance("relative/path/to/resource?query#fragment");
-  ASSERT_TRUE(instance.query());
-  ASSERT_EQ("query", *instance.query());
-}
-
-TEST(uri_test, uri_reference_fragment_test) {
-  network::uri instance("relative/path/to/resource?query#fragment");
-  ASSERT_TRUE(instance.fragment());
-  ASSERT_EQ("fragment", *instance.fragment());
-}
-
 TEST(uri_test, git) {
   network::uri instance("git://github.com/cpp-netlib/cpp-netlib.git");
   ASSERT_EQ("git", *instance.scheme());
@@ -808,4 +770,16 @@ TEST(uri_test, empty_username_in_user_info) {
   ASSERT_TRUE(instance.user_info());
   ASSERT_EQ(":", *instance.user_info());
   ASSERT_EQ("localhost", *instance.host());
+}
+
+TEST(uri_test, uri_begins_with_a_colon) {
+  ASSERT_THROW(network::uri("://example.com"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_begins_with_a_number) {
+  ASSERT_THROW(network::uri("3http://example.com"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_scheme_contains_an_invalid_character) {
+  ASSERT_THROW(network::uri("ht%tp://example.com"), network::uri_syntax_error);
 }
