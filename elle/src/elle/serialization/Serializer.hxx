@@ -2,6 +2,7 @@
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
 # include <elle/Backtrace.hh>
+# include <elle/finally.hh>
 # include <elle/serialization/Error.hh>
 # include <elle/serialization/SerializerIn.hh>
 # include <elle/serialization/SerializerOut.hh>
@@ -52,8 +53,8 @@ namespace elle
     {
       if (this->_enter(name))
       {
+        elle::SafeFinally leave([&] { this->_leave(name); });
         this->_serialize_anonymous(name, v);
-        this->_leave(name);
       }
     }
 
@@ -141,8 +142,8 @@ namespace elle
       {
         if (s._enter(name))
         {
+          elle::SafeFinally leave([&] { s._leave(name); });
           ptr.reset(new T(static_cast<SerializerIn&>(s)));
-          s._leave(name);
         }
       }
 
@@ -174,6 +175,7 @@ namespace elle
       {
         if (s._enter(name))
         {
+          elle::SafeFinally leave([&] { s._leave(name); });
           auto const& map = Hierarchy<T>::_map();
           std::string type_name;
           s.serialize(".type", type_name);
@@ -182,7 +184,6 @@ namespace elle
             throw Error(elle::sprintf("unable to deserialize type %s",
                                       type_name));
           ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
-          s._leave(name);
         }
       }
 
@@ -238,8 +239,8 @@ namespace elle
             {
               if (this->_enter(name))
               {
+                elle::SafeFinally leave([&] { this->_leave(name); });
                 this->_serialize_anonymous(name, pair);
-                this->_leave(name);
               }
             }
           });
@@ -306,8 +307,8 @@ namespace elle
             {
               if (this->_enter(name))
               {
+                elle::SafeFinally leave([&] { this->_leave(name); });
                 this->_serialize_anonymous(name, elt);
-                this->_leave(name);
               }
             }
           });
@@ -337,13 +338,13 @@ namespace elle
           {
             if (this->_enter(name))
             {
+              elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.first);
-              this->_leave(name);
             }
             if (this->_enter(name))
             {
+              elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.second);
-              this->_leave(name);
             }
           });
       }

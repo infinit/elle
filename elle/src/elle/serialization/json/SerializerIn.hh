@@ -89,6 +89,9 @@ namespace elle
         template <typename T, typename ... Alternatives>
         T&
         _check_type(std::string const& name);
+        template <typename T>
+        void
+        _serialize_int(std::string const& name, T& v);
       };
     }
   }

@@ -9,6 +9,7 @@
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
 #include <elle/serialization/json/MissingKey.hh>
+#include <elle/serialization/json/Overflow.hh>
 #include <elle/serialization/json/TypeError.hh>
 
 namespace elle
@@ -70,50 +71,37 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, int32_t& v)
       {
-        int64_t value;
-        this->_serialize(name, value);
-        if (value > std::numeric_limits<int32_t>::max())
-          throw Error(elle::sprintf(
-                        "32-bits overflow on key \"%s\"", name));
-        if (value < std::numeric_limits<int32_t>::min())
-          throw Error(elle::sprintf(
-                        "32-bits underflow on key \"%s\"", name));
-        v = value;
+        this->_serialize_int<int32_t>(name, v);
       }
 
       void
       SerializerIn::_serialize(std::string const& name, uint32_t& v)
       {
-        int32_t value;
-        this->_serialize(name, value);
-        if (value < 0)
-          throw Error(elle::sprintf(
-                        "32-bits unsigned underflow on key \"%s\"", name));
-        v = value;
+        this->_serialize_int<uint32_t>(name, v);
       }
 
       void
       SerializerIn::_serialize(std::string const& name, int8_t& v)
       {
-        int64_t value;
-        this->_serialize(name, value);
-        if (value > std::numeric_limits<int8_t>::max())
-          throw Error(elle::sprintf(
-                        "8-bits overflow on key \"%s\"", name));
-        if (value < std::numeric_limits<int8_t>::min())
-          throw Error(elle::sprintf(
-                        "8-bits underflow on key \"%s\"", name));
-        v = value;
+        this->_serialize_int<int8_t>(name, v);
       }
 
       void
       SerializerIn::_serialize(std::string const& name, uint8_t& v)
       {
-        int8_t value;
+        this->_serialize_int<uint8_t>(name, v);
+      }
+
+      template <typename T>
+      void
+      SerializerIn::_serialize_int(std::string const& name, T& v)
+      {
+        int64_t value;
         this->_serialize(name, value);
-        if (value < 0)
-          throw Error(elle::sprintf(
-                        "8-bits unsigned underflow on key \"%s\"", name));
+        if (value > std::numeric_limits<T>::max())
+          throw Overflow(name, sizeof(T) * 8, true);
+        if (value < std::numeric_limits<T>::min())
+          throw Overflow(name, sizeof(T) * 8, false);
         v = value;
       }
 

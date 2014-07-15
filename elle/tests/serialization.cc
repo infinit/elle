@@ -12,6 +12,7 @@
 #include <elle/container/vector.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
+#include <elle/serialization/json/Overflow.hh>
 #include <elle/serialization/json/TypeError.hh>
 #include <elle/test.hh>
 
@@ -553,6 +554,61 @@ json_missing_key()
   BOOST_FAIL("type error expected");
 }
 
+static
+void
+json_overflows()
+{
+  std::stringstream stream(
+    "{"
+    "  \"8_overflow\": 128,"
+    "  \"8_noverflow\": 127,"
+    "  \"8_underflow\": -129,"
+    "  \"8_nunderflow\": -128,"
+    "  \"8u_overflow\": 256,"
+    "  \"8u_noverflow\": 255,"
+    "  \"8u_underflow\": -1,"
+    "  \"8u_nunderflow\": 0,"
+    "  \"32_overflow\": 2147483648,"
+    "  \"32_noverflow\": 2147483647,"
+    "  \"32_underflow\": -2147483649,"
+    "  \"32_nunderflow\": -2147483648,"
+    "  \"32u_overflow\": 4294967296,"
+    "  \"32u_noverflow\": 4294967295,"
+    "  \"32u_underflow\": -1,"
+    "  \"32u_nunderflow\": 0"
+    "}"
+    );
+  typename elle::serialization::json::SerializerIn input(stream);
+  int8_t i8;
+  uint8_t ui8;
+  BOOST_CHECK_THROW(input.serialize("8_overflow", i8),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("8_underflow", i8),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("8u_overflow", ui8),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("8u_underflow", ui8),
+                    elle::serialization::json::Overflow);
+  input.serialize("8_noverflow", i8);
+  input.serialize("8_nunderflow", i8);
+  input.serialize("8u_noverflow", ui8);
+  input.serialize("8u_nunderflow", ui8);
+  int32_t i32;
+  uint32_t ui32;
+  BOOST_CHECK_THROW(input.serialize("32_overflow", i32),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("32_underflow", i32),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("32u_overflow", ui32),
+                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("32u_underflow", ui32),
+                    elle::serialization::json::Overflow);
+  input.serialize("32_noverflow", i32);
+  input.serialize("32_nunderflow", i32);
+  input.serialize("32u_noverflow", ui32);
+  input.serialize("32u_nunderflow", ui32);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -574,4 +630,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
+  suite.add(BOOST_TEST_CASE(json_overflows));
 }
