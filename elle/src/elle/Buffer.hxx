@@ -1,6 +1,7 @@
 #ifndef  ELLE_BUFFER_HXX
 # define ELLE_BUFFER_HXX
 
+# include <elle/BadAlloc.hh>
 # include <elle/assert.hh>
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/BinaryArchive.hh>
@@ -144,11 +145,18 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Buffer,
   uint64_t size;
   archive >> size;
   if (sizeof(uint64_t) > sizeof(size_t))
-    {
-      if (size >= static_cast<size_t>(-1))
-        throw std::runtime_error("Cannot receive a buffer that large");
-    }
-  value.size(size);
+  {
+    if (size >= static_cast<size_t>(-1))
+      throw std::runtime_error("Cannot receive a buffer that large");
+  }
+  try
+  {
+    value.size(size);
+  }
+  catch (std::bad_alloc const& e)
+  {
+    throw elle::BadAlloc();
+  }
   archive.LoadBinary(value._contents, size);
 }
 
