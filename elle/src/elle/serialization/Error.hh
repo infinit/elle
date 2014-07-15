@@ -1,14 +1,14 @@
 #ifndef ELLE_SERIALIZATION_ERROR_HH
 # define ELLE_SERIALIZATION_ERROR_HH
 
-# include <elle/Exception.hh>
+# include <elle/Error.hh>
 
 namespace elle
 {
   namespace serialization
   {
     class Error:
-      public elle::Exception
+      public elle::Error
     {
     public:
       Error(std::string const& message);

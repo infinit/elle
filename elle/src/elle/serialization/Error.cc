@@ -6,7 +6,7 @@ namespace elle
   namespace serialization
   {
     Error::Error(std::string const& message)
-      : Exception(message)
+      : elle::Error(message)
     {}
   }
 }
