@@ -99,10 +99,10 @@ namespace elle
         this->_serialize(name, value);
         if (value > std::numeric_limits<int8_t>::max())
           throw Error(elle::sprintf(
-                        "32-bits overflow on key \"%s\"", name));
+                        "8-bits overflow on key \"%s\"", name));
         if (value < std::numeric_limits<int8_t>::min())
           throw Error(elle::sprintf(
-                        "32-bits underflow on key \"%s\"", name));
+                        "8-bits underflow on key \"%s\"", name));
         v = value;
       }
 
@@ -113,7 +113,7 @@ namespace elle
         this->_serialize(name, value);
         if (value < 0)
           throw Error(elle::sprintf(
-                        "32-bits unsigned underflow on key \"%s\"", name));
+                        "8-bits unsigned underflow on key \"%s\"", name));
         v = value;
       }
 
