@@ -2,6 +2,7 @@
 # define ELLE_OS_PATH_HH
 
 # include <string>
+# include <boost/filesystem.hpp>
 
 ///
 /// Provides simple manipulators for path.
@@ -59,6 +60,10 @@ namespace elle
       /// Check symbolic link.
       bool
       check_symlink(std::string const& path);
+
+      /// Recursively set write permissions.
+      void
+      force_write_permissions(boost::filesystem::path const& p);
     }
   }
 }

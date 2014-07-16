@@ -3,7 +3,6 @@
 #include <elle/Exception.hh>
 #include <elle/log.hh>
 #include <elle/assert.hh>
-#include <boost/filesystem.hpp>
 
 #include <cassert>
 #include <cstdint>
@@ -117,6 +116,29 @@ namespace elle
                                                                        : "n't");
         return (fs::symlink_status(path).type() != fs::status_error);
       }
+
+      void
+      force_write_permissions(boost::filesystem::path const& p)
+      {
+        ELLE_TRACE("recursively setting write permissions on %s", p);
+        boost::system::error_code erc;
+        auto it = boost::filesystem::recursive_directory_iterator(p);
+        for (;it != boost::filesystem::recursive_directory_iterator(); ++it)
+        {
+          // Construct target filename
+          boost::filesystem::path p(*it);
+          auto prev = boost::filesystem::status(p).permissions();
+          boost::filesystem::permissions(
+            p,
+            boost::filesystem::add_perms | boost::filesystem::owner_write, erc);
+          ELLE_DUMP("setting write permission on %s: %s -> %s", p, prev,
+                    boost::filesystem::status(p).permissions());
+          if (erc)
+            ELLE_WARN(
+              "failed to set write permissions on %s: %s", p, erc.message());
+        }
+      }
+
     }
   }
 }
