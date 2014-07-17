@@ -122,7 +122,9 @@ namespace elle
       {
         ELLE_TRACE("recursively setting write permissions on %s", p);
         boost::system::error_code erc;
-        auto it = boost::filesystem::recursive_directory_iterator(p);
+        auto it = boost::filesystem::recursive_directory_iterator(p, erc);
+        if (erc)
+          return;
         for (;it != boost::filesystem::recursive_directory_iterator(); ++it)
         {
           // Construct target filename
