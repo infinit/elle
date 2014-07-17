@@ -278,8 +278,10 @@ def configure(curl_config,
       python_cxx_config.library_add(
         drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
     python_sources = drake.nodes('src/reactor/python.cc')
+    datetime = drake.copy(elle.python_plugin_datetime,
+                          'lib', True)
     python_lib = drake.cxx.Module('lib/python/reactor',
-                                  python_sources + [library],
+                                  python_sources + [library, datetime],
                                   cxx_toolkit, python_cxx_config)
     drake.Rule('python') << python_lib
     rule_build << python_lib
