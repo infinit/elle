@@ -408,7 +408,14 @@ namespace aws
         MultiPartChunk chunk(part.second.get<int>("PartNumber") -1,
                              part.second.get<std::string>("ETag"));
         ELLE_DUMP("listed chunk %s %s", chunk.first, chunk.second);
-        res.push_back(chunk);
+        int size = part.second.get<int>("Size");
+        if (size < 5 * 1024 * 1024)
+        {
+          ELLE_WARN("Multipart chunk %s/%s is too small: %s, dropping",
+                    chunk.first, chunk.second, size);
+        }
+        else
+          res.push_back(chunk);
       }
       if (!response.get<bool>("ListPartsResult.IsTruncated", false))
         return res;
