@@ -102,11 +102,11 @@ namespace elle
       enforce(bool pred, char const* msg = nullptr)
       {
         if (!pred)
-          throw Exception{
+          throw Exception(
             msg ?
             std::string(msg) :
-            "couldn't (de)serialize '" + std::string{ELLE_PRETTY_TYPE(T)} + "'"
-          };
+            elle::sprintf("couldn't (de)serialize %s", ELLE_PRETTY_TYPE(T))
+            );
       }
 
       ///
