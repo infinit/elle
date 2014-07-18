@@ -10,13 +10,11 @@
 
 /// Returns a nice string for the given type
 # define ELLE_PRETTY_TYPE(T)                                                  \
-  std::string(typeid(T).name())                                               \
-  /**/
+  ::elle::demangle(typeid(T).name())                                          \
 
 /// Returns a nice string of the type of the given object
 # define ELLE_PRETTY_OBJECT_TYPE(object)                                      \
-  std::string(typeid(object).name())                                          \
-  /**/
+  ELLE_PRETTY_TYPE(object)                                                    \
 
 namespace elle
 {
