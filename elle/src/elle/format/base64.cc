@@ -181,7 +181,7 @@ namespace elle
                            *this, size);
           _stream_encode(this->_buffer_write,
                          this->_buffer_write + size,
-                         std::ostream_iterator<char>(_stream));
+                         std::ostreambuf_iterator<char>(_stream));
         }
         if (size && this->_remaining_write > 0)
         {
@@ -204,7 +204,7 @@ namespace elle
           _stream_encode(
             this->_buffer_write,
             this->_buffer_write + this->_remaining_write,
-            std::ostream_iterator<char>(this->_stream));
+            std::ostreambuf_iterator<char>(this->_stream));
           switch (this->_remaining_write)
           {
             case 1:
