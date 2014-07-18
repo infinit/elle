@@ -317,7 +317,9 @@ static
 void
 buffer()
 {
-  elle::Buffer buffer("\x00\x01\x02\x03\x04", 5);
+  elle::Buffer buffer(256);
+  for (int i = 0; i < 256; ++i)
+    buffer[i] = i;
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);

@@ -136,12 +136,15 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, elle::Buffer& buffer)
       {
-        std::stringstream encoded(this->_check_type<std::string>(name));
+        auto& str = this->_check_type<std::string>(name);
+        std::stringstream encoded(str);
         elle::format::base64::Stream base64(encoded);
-        elle::IOStream output(new elle::OutputStreamBuffer(buffer));
-        std::copy(std::istream_iterator<char>(base64),
-                  std::istream_iterator<char>(),
-                  std::ostream_iterator<char>(output));
+        {
+          elle::IOStream output(new elle::OutputStreamBuffer(buffer));
+          std::copy(std::istreambuf_iterator<char>(base64),
+                    std::istreambuf_iterator<char>(),
+                    std::ostreambuf_iterator<char>(output));
+        }
       }
 
       bool
