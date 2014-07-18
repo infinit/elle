@@ -53,6 +53,7 @@
 # include "StaticFormat.hh"
 # include "StoreFormat.hh"
 
+# include <elle/Error.hh>
 # include <elle/types.hh>
 # include <elle/log.hh>
 
@@ -102,7 +103,7 @@ namespace elle
       enforce(bool pred, char const* msg = nullptr)
       {
         if (!pred)
-          throw Exception(
+          throw elle::Error(
             msg ?
             std::string(msg) :
             elle::sprintf("couldn't (de)serialize %s", ELLE_PRETTY_TYPE(T))
