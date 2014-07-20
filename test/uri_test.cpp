@@ -164,11 +164,6 @@ TEST(uri_test, full_uri_range_scheme_test) {
   ASSERT_EQ("http", *instance.scheme());
 }
 
-TEST(uri_test, DISABLED_full_uri_range_scheme_begin_iterator_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  //ASSERT_TRUE(std::begin(instance) == std::begin(*instance.scheme()));
-}
-
 TEST(uri_test, full_uri_range_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.user_info());
@@ -203,11 +198,6 @@ TEST(uri_test, full_uri_range_fragment_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   ASSERT_TRUE(instance.fragment());
   ASSERT_EQ("fragment", *instance.fragment());
-}
-
-TEST(uri_test, DISABLED_full_uri_range_fragment_end_iterator_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  //ASSERT_TRUE(std::end(instance) == std::end(*instance.fragment()));
 }
 
 TEST(uri_test, mailto_test) {
@@ -380,6 +370,27 @@ TEST(uri_test, tel_test) {
   network::uri instance("tel:+1-816-555-1212");
   ASSERT_EQ("tel", *instance.scheme());
   ASSERT_EQ("+1-816-555-1212", *instance.path());
+}
+
+TEST(uri_test, ldap_test) {
+  network::uri instance("ldap://[2001:db8::7]/c=GB?objectClass?one");
+  ASSERT_EQ("ldap", *instance.scheme());
+  ASSERT_EQ("[2001:db8::7]", *instance.host());
+  ASSERT_EQ("/c=GB", *instance.path());
+  ASSERT_EQ("objectClass?one", *instance.query());
+}
+
+TEST(uri_test, urn_test) {
+  network::uri instance("urn:oasis:names:specification:docbook:dtd:xml:4.1.2");
+  ASSERT_EQ("urn", *instance.scheme());
+  ASSERT_EQ("oasis:names:specification:docbook:dtd:xml:4.1.2", *instance.path());
+}
+
+TEST(uri_test, svn_ssh_test) {
+  network::uri instance("svn+ssh://example.com/");
+  ASSERT_EQ("svn+ssh", *instance.scheme());
+  ASSERT_EQ("example.com", *instance.host());
+  ASSERT_EQ("/", *instance.path());
 }
 
 TEST(uri_test, copy_constructor_test) {
