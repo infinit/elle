@@ -144,11 +144,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(elle::Buffer,
   enforce(version == 0);
   uint64_t size;
   archive >> size;
-  if (sizeof(uint64_t) > sizeof(size_t))
-  {
-    if (size >= static_cast<size_t>(-1))
-      throw std::runtime_error("Cannot receive a buffer that large");
-  }
   try
   {
     value.size(size);
