@@ -7,9 +7,11 @@ namespace elle
     void
     zip(std::vector<boost::filesystem::path> const& files,
         boost::filesystem::path const& path,
-        Renamer const& renamer)
+        Renamer const& renamer,
+        bool no_compression)
     {
-      return archive(Format::zip, files, path, renamer);
+      return archive(no_compression ? Format::zip_uncompressed : Format::zip,
+                     files, path, renamer);
     }
   }
 }

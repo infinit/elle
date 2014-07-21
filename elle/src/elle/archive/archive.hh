@@ -16,6 +16,7 @@ namespace elle
       tar,
       tar_gzip,
       tar_bzip2,
+      zip_uncompressed
     };
 
     typedef

@@ -101,6 +101,10 @@ namespace elle
         case Format::zip:
           format_setter = archive_write_set_format_zip;
           break;
+        case Format::zip_uncompressed:
+          format_setter = archive_write_set_format_zip;
+          compression_setter = archive_write_zip_set_compression_store;
+          break;
         default:
           elle::unreachable();
       }
