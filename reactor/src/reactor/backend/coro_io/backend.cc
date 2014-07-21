@@ -43,7 +43,8 @@ namespace reactor
           _backend(backend),
           _coro(Coro_new()),
           _caller(nullptr),
-          _root(false)
+          _root(false),
+          _unwinding(false)
         {}
 
         ~Thread()
@@ -77,13 +78,19 @@ namespace reactor
         void
         step() override
         {
+          // go from current to this
           ELLE_ASSERT(_caller == nullptr);
-          if (this->status() == Status::starting)
+
+          bool starting = this->status() == Status::starting;
+          Thread* current = _backend._current;
+          _caller = current;
+          _backend._current = this;
+          current->_unwinding = std::uncaught_exception();
+          if (current->_unwinding)
+            ELLE_DUMP("step %s with in-flight exception", *current);
+          if (starting)
           {
             this->status(Status::running);
-            Thread* current = _backend._current;
-            _caller = current;
-            _backend._current = this;
             ELLE_ASSERT(_coro);
             ELLE_TRACE("%s: start %s", *current , *this);
             Coro_startCoro_(_caller->_coro, _coro, this, &starter);
@@ -93,12 +100,34 @@ namespace reactor
           {
             ELLE_ASSERT_EQ(this->status(), Status::waiting);
             this->status(Status::running);
-            Thread* current = _backend._current;
-            _caller = current;
-            _backend._current = this;
             ELLE_TRACE("%s: step from %s", *this, *_caller);
-            Coro_switchTo_(current->_coro, _coro);
+            if (this->_exception)
+            {
+              /* The stack we are switching to expects std::current_exception()
+              * to return this->_exception (which contains current_exception()
+              * at the time of yield).
+              * So wrap the switch into a catch clause to trick the compiler
+              * into restoring it.
+              */
+              try
+              {
+                std::rethrow_exception(this->_exception);
+              }
+              catch(...)
+              {
+                Coro_switchTo_(current->_coro, _coro);
+              }
+            }
+            else
+              Coro_switchTo_(current->_coro, _coro);
           }
+          // It is unclear whether an uncaught_exception mismatch has any
+          // consequence if the code does not explicitly depend on its result.
+          // Warn about it just in case.
+          if (_backend._current->_unwinding != std::uncaught_exception())
+            ELLE_WARN("step %s: unwind mismatch, expect %s, got %s",
+              *_backend._current, _backend._current->_unwinding,
+              std::uncaught_exception());
         }
 
 
@@ -106,13 +135,23 @@ namespace reactor
         void
         yield() override
         {
+          // go from this to caller
           ELLE_ASSERT_EQ(_backend._current, this);
           ELLE_ASSERT_EQ(this->status(), Status::running);
           this->status(Status::waiting);
           _backend._current = _caller;
           ELLE_TRACE("%s: yield back to %s", *this, *_backend._current);
           _caller = nullptr;
+          // Store current exception and stack unwinding state
+          this->_unwinding = std::uncaught_exception();
+          this->_exception = std::current_exception();
+          if (this->_unwinding)
+            ELLE_DUMP("yielding %s with in-flight exception", *this);
           Coro_switchTo_(_coro, _backend._current->_coro);
+          if (_backend._current->_unwinding != std::uncaught_exception())
+            ELLE_WARN("yield %s: unwind mismatch, expect %s, got %s",
+              *_backend._current, _backend._current->_unwinding,
+              std::uncaught_exception());
         }
 
 
@@ -171,6 +210,8 @@ namespace reactor
         /// Let libcoroutine callback invoke our _run.
         friend void starter(void* arg);
         ELLE_ATTRIBUTE(bool, root);
+        ELLE_ATTRIBUTE(bool, unwinding);
+        ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
       };
 
       static

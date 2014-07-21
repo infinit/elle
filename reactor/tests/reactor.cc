@@ -1469,6 +1469,110 @@ thread_exception_test()
   BOOST_CHECK_EQUAL(thread.state(), reactor::Thread::state::done);
 }
 
+
+static
+void
+exception_yield_pattern(std::vector<unsigned int> yield_pattern,
+                        std::vector<bool> enable_pattern,
+                        std::vector<unsigned int> no_exception)
+{
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+    {
+      if (enable_pattern[0])
+        s.run_background("t1", [&] {
+            try
+            {
+              throw std::runtime_error("t1");
+            }
+            catch(...)
+            {
+              for (unsigned i=0; i<yield_pattern[0]; ++i)
+                reactor::yield();
+              BOOST_CHECK_EQUAL(elle::exception_string(), "t1");
+            }
+        });
+      if (enable_pattern[1])
+        s.run_background("t2", [&] {
+            try
+            {
+              throw std::runtime_error("t2");
+            }
+            catch(...)
+            {
+              for (unsigned i=0; i<yield_pattern[1]; ++i)
+                reactor::yield();
+              BOOST_CHECK_EQUAL(elle::exception_string(), "t2");
+            }
+        });
+      if (enable_pattern[2])
+        s.run_background("t3", [&] {
+            try
+            {
+              throw std::runtime_error("t3");
+            }
+            catch(...)
+            {
+              for (unsigned i=0; i<yield_pattern[2]; ++i)
+                reactor::yield();
+              try
+              {
+                throw;
+              }
+              catch(...)
+              {
+                BOOST_CHECK_EQUAL(elle::exception_string(), "t3");
+              }
+            }
+        });
+      if (enable_pattern[3])
+        s.run_background("t4", [&] {
+            try
+            {
+              try
+              {
+                throw std::runtime_error("t4");
+              }
+              catch(...)
+              {
+                for (unsigned i=0; i<yield_pattern[3]; ++i)
+                  reactor::yield();
+                throw;
+              }
+            }
+            catch(...)
+            {
+              BOOST_CHECK_EQUAL(elle::exception_string(), "t4");
+            }
+        });
+      // check that current_exception stays empty on non-throwing threads
+      auto no_exception_test = [&](unsigned int count) {
+        BOOST_CHECK(!!std::current_exception());
+        for (unsigned i=0; i<count; ++i)
+        {
+          reactor::yield();
+          BOOST_CHECK(!!std::current_exception());
+        }
+      };
+      for (unsigned i=0; i <no_exception.size(); ++i)
+        s.run_background("tcheck",
+          [&no_exception_test, &no_exception, i] {no_exception_test(no_exception[i]);});
+      s.wait();
+    };
+}
+
+
+ELLE_TEST_SCHEDULED(thread_exception_yield)
+{
+  // Check what happens when we yield in a catch block, and try to
+  // reuse the exception later on.
+  // Said differently, check that the semantic of std::current_exception is
+  // not broken by yielding
+  exception_yield_pattern({ 2, 1, 2, 1}, {true, true, true, true}, {1,3});
+  exception_yield_pattern({ 2, 1, 2, 1}, {true, true, true, true}, {});
+  exception_yield_pattern({ 1, 2, 3, 4}, {true, true, true, true}, {});
+  exception_yield_pattern({ 4, 3, 2, 1}, {true, true, true, true}, {});
+}
+
 /*----------------.
 | Terminate reactor::yield |
 `----------------*/
@@ -2513,6 +2617,7 @@ ELLE_TEST_SUITE()
     background->add(BOOST_TEST_CASE(operation), 0, 10);
     background->add(BOOST_TEST_CASE(operations), 0, 10);
     background->add(BOOST_TEST_CASE(exception), 0, 10);
+    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, 10);
     background->add(BOOST_TEST_CASE(aborted), 0, 10);
     background->add(BOOST_TEST_CASE(aborted_throw), 0, 10);
   }
