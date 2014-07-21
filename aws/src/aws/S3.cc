@@ -337,7 +337,7 @@ namespace aws
     xchunks = "<CompleteMultipartUpload>";
     for (auto const& chunk: chunks)
     {
-      xchunks += elle::sprintf("<Part><PartNumber>%s</PartNumber><ETag>\"%s\"</ETag></Part>",
+      xchunks += elle::sprintf("<Part><PartNumber>%s</PartNumber><ETag>%s</ETag></Part>",
                                 chunk.first+1, chunk.second);
     }
     xchunks += "</CompleteMultipartUpload>";
