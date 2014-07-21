@@ -1480,39 +1480,46 @@ exception_yield_pattern(std::vector<unsigned int> yield_pattern,
     {
       if (enable_pattern[0])
         s.run_background("t1", [&] {
+            /* Workaround compiler bug when using captures in catch(...) block
+             * Symptom: error: '...' handler must be the last handler for its
+             * try block [-fpermissive]
+            */
+            unsigned yield_count = yield_pattern[0];
             try
             {
               throw std::runtime_error("t1");
             }
             catch(...)
             {
-              for (unsigned i=0; i<yield_pattern[0]; ++i)
+              for (unsigned i=0; i < yield_count; ++i)
                 reactor::yield();
               BOOST_CHECK_EQUAL(elle::exception_string(), "t1");
             }
         });
       if (enable_pattern[1])
         s.run_background("t2", [&] {
+            unsigned yield_count = yield_pattern[1];
             try
             {
               throw std::runtime_error("t2");
             }
             catch(...)
             {
-              for (unsigned i=0; i<yield_pattern[1]; ++i)
+              for (unsigned i=0; i < yield_count; ++i)
                 reactor::yield();
               BOOST_CHECK_EQUAL(elle::exception_string(), "t2");
             }
         });
       if (enable_pattern[2])
         s.run_background("t3", [&] {
+            unsigned yield_count = yield_pattern[2];
             try
             {
               throw std::runtime_error("t3");
             }
             catch(...)
             {
-              for (unsigned i=0; i<yield_pattern[2]; ++i)
+              for (unsigned i=0; i < yield_count; ++i)
                 reactor::yield();
               try
               {
@@ -1526,6 +1533,7 @@ exception_yield_pattern(std::vector<unsigned int> yield_pattern,
         });
       if (enable_pattern[3])
         s.run_background("t4", [&] {
+            unsigned yield_count = yield_pattern[3];
             try
             {
               try
@@ -1534,7 +1542,7 @@ exception_yield_pattern(std::vector<unsigned int> yield_pattern,
               }
               catch(...)
               {
-                for (unsigned i=0; i<yield_pattern[3]; ++i)
+                for (unsigned i=0; i<yield_count; ++i)
                   reactor::yield();
                 throw;
               }
