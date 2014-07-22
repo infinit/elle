@@ -176,9 +176,11 @@ namespace aws
     do
     {
       chunk = list_remote_folder(marker);
+      if (chunk.empty())
+        break;
       marker = chunk.back().first;
-        result.insert(result.end(),
-                      first ? chunk.begin():chunk.begin()+1, chunk.end());
+      result.insert(result.end(),
+                    first ? chunk.begin():chunk.begin()+1, chunk.end());
       first = false;
     }
     while (chunk.size() >= 1000);
