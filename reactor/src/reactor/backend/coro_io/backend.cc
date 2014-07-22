@@ -125,7 +125,7 @@ namespace reactor
           // consequence if the code does not explicitly depend on its result.
           // Warn about it just in case.
           if (_backend._current->_unwinding != std::uncaught_exception())
-            ELLE_WARN("step %s: unwind mismatch, expect %s, got %s",
+            ELLE_TRACE("step %s: unwind mismatch, expect %s, got %s",
               *_backend._current, _backend._current->_unwinding,
               std::uncaught_exception());
         }
@@ -149,7 +149,7 @@ namespace reactor
             ELLE_DUMP("yielding %s with in-flight exception", *this);
           Coro_switchTo_(_coro, _backend._current->_coro);
           if (_backend._current->_unwinding != std::uncaught_exception())
-            ELLE_WARN("yield %s: unwind mismatch, expect %s, got %s",
+            ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
               *_backend._current, _backend._current->_unwinding,
               std::uncaught_exception());
         }
