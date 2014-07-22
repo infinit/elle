@@ -153,6 +153,16 @@ namespace reactor
       virtual
       void
       print(std::ostream& stream) const override;
+
+
+    /*----------.
+    | Debugging |
+    `----------*/
+    private:
+      int _debug;
+      int _debug2;
+      elle::Backtrace _bt_frozen;
+      elle::Backtrace _bt_unfrozen;
     };
   }
 }

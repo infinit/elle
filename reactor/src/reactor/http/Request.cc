@@ -93,26 +93,29 @@ namespace reactor
     Request::Impl::Impl(Request& request,
                         std::string const& url,
                         Method method,
-                        Configuration conf):
-      _request(&request),
-      _conf(std::move(conf)),
-      _headers(nullptr, &curl_slist_free_all),
-      _progress_changed(),
-      _input_done(false),
-      _input(),
-      _input_current(),
-      _input_available(),
-      _output_done(false),
-      _output(0),
-      _output_available(false),
-      _output_offset(0),
-      _curl(boost::asio::use_service<Service>(
-              Scheduler::scheduler()->io_service())),
-      _url(url),
-      _method(method),
-      _query_string(),
-      _handle(curl_easy_init()),
-      _pause_count(0)
+                        Configuration conf)
+      : _request(&request)
+      , _conf(std::move(conf))
+      , _headers(nullptr, &curl_slist_free_all)
+      , _progress_changed()
+      , _input_done(false)
+      , _input()
+      , _input_current()
+      , _input_available()
+      , _output_done(false)
+      , _output(0)
+      , _output_available(false)
+      , _output_offset(0)
+      , _curl(boost::asio::use_service<Service>(Scheduler::scheduler()->io_service()))
+      , _url(url)
+      , _method(method)
+      , _query_string()
+      , _handle(curl_easy_init())
+      , _pause_count(0)
+      , _debug(0)
+      , _debug2(0)
+      , _bt_frozen()
+      , _bt_unfrozen()
     {
       if (!this->_handle)
         throw RequestError(url, "unable to initialize request");
@@ -549,8 +552,6 @@ namespace reactor
       , _url(url)
       , _query_string()
       , _status(static_cast<StatusCode>(0))
-      , _debug(0)
-      , _debug2(0)
     {}
 
     Request::Request(std::string const& url,
@@ -658,7 +659,7 @@ namespace reactor
     void
     Request::_complete(int code)
     {
-      this->_debug2 = 1;
+      this->_impl->_debug2 = 1;
       ELLE_TRACE_SCOPE("%s: complete with code %s", *this, code);
       curl_easy_getinfo(this->_impl->_handle,
                         CURLINFO_RESPONSE_CODE, &this->_status);
@@ -717,12 +718,12 @@ namespace reactor
         ELLE_WARN("%s: done with error: %s", *this, message);
         set_exception();
       }
-      this->_debug2 = 2;
+      this->_impl->_debug2 = 2;
       this->_signal();
       // Waitables consume their exception once signaled, restore it.
       if (exception)
       {
-        this->_debug2 = 3;
+        this->_impl->_debug2 = 3;
         set_exception();
       }
       this->_impl->_complete();
@@ -731,16 +732,16 @@ namespace reactor
     bool
     Request::_wait(Thread* thread)
     {
-      this->_debug = 1;
+      this->_impl->_debug = 1;
       this->finalize();
       if (this->_impl->_input_done)
       {
         if (std::exception_ptr exn = this->exception())
         {
-          this->_debug = 2;
+          this->_impl->_debug = 2;
           std::rethrow_exception(exn);
         }
-        this->_debug = 3;
+        this->_impl->_debug = 3;
         if (this->_status == static_cast<StatusCode>(0))
         {
           ELLE_ERR("%s: input done with null status", *this);
@@ -750,7 +751,18 @@ namespace reactor
       }
       else
       {
-        this->_debug = 4;
+        this->_impl->_debug = 4;
+        reactor::scheduler().current()->frozen().connect(
+          [this]
+          {
+            this->_impl->_bt_frozen = elle::Backtrace::current();
+          });
+        reactor::scheduler().current()->unfrozen().connect(
+          [this]
+          {
+            this->_impl->_bt_unfrozen = elle::Backtrace::current();
+          });
+        reactor::scheduler().current()->unfrozen();
         return Waitable::_wait(thread);
       }
     }
@@ -769,7 +781,11 @@ namespace reactor
       if (this->_status == static_cast<StatusCode>(0))
       {
         ELLE_ERR("%s: awaken with null status, debug: %s, debug2: %s",
-                 *this, this->_debug, this->_debug2);
+                 *this, this->_impl->_debug, this->_impl->_debug2);
+        ELLE_ERR("%s: frozen backtrace: %s",
+                 *this, this->_impl->_bt_frozen);
+        ELLE_ERR("%s: unfrozen backtrace: %s",
+                 *this, this->_impl->_bt_unfrozen);
         ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
       }
       return this->_status;

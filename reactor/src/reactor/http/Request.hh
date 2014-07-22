@@ -291,13 +291,6 @@ namespace reactor
       virtual
       void
       print(std::ostream& stream) const;
-
-    /*----------.
-    | Debugging |
-    `----------*/
-    private:
-      int _debug;
-      int _debug2;
     };
 
     std::ostream&
