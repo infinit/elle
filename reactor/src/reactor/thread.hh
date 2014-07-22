@@ -2,6 +2,7 @@
 # define INFINIT_REACTOR_THREAD_HH
 
 # include <boost/optional.hpp>
+# include <boost/signals2.hpp>
 # include <boost/system/error_code.hpp>
 
 # include <elle/Backtrace.hh>
@@ -181,9 +182,16 @@ namespace reactor
       bool _timeout;
     boost::asio::deadline_timer _timeout_timer;
 
-    /*--------.
-    | Backend |
-    `--------*/
+  /*------.
+  | Hooks |
+  `------*/
+  public:
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, frozen);
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, unfrozen);
+
+  /*--------.
+  | Backend |
+  `--------*/
   public:
     Scheduler& scheduler();
   private:

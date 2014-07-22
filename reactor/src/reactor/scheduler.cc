@@ -290,6 +290,7 @@ namespace reactor
     ELLE_ASSERT_NEQ(_running.find(&thread), _running.end());
     _running.erase(&thread);
     _frozen.insert(&thread);
+    thread.frozen()();
   }
 
   static void
@@ -314,6 +315,7 @@ namespace reactor
     ELLE_ASSERT_EQ(thread.state(), Thread::state::frozen);
     _frozen.erase(&thread);
     _running.insert(&thread);
+    thread.unfrozen()();
     if (_running.size() == 1)
       _io_service.post(nothing);
   }
