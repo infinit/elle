@@ -350,21 +350,29 @@ namespace aws
       object_name
     );
 
-    auto request = _build_send_request(
-      RequestKind::control,
-      url, "multipart_finalize", reactor::http::Method::POST,
-      query, RequestHeaders(),
-      "text/xml", xchunks);
-    // This request can 200 OK and still return an error in XML
-    using boost::property_tree::ptree;
-    ptree response;
-
-    read_xml(*request, response);
-    if (response.find("Error") != response.not_found()
-      || response.find("CompleteMultipartUploadResult") == response.not_found())
+    try
     {
-      throw aws::RequestError(elle::sprintf("%s: during S3 finalize on %s:%s",
-                                            *this, object_name, request->response()));
+      auto request = _build_send_request(
+        RequestKind::control,
+        url, "multipart_finalize", reactor::http::Method::POST,
+        query, RequestHeaders(),
+        "text/xml", xchunks);
+      // This request can 200 OK and still return an error in XML
+      using boost::property_tree::ptree;
+      ptree response;
+
+      read_xml(*request, response);
+      if (response.find("Error") != response.not_found()
+        || response.find("CompleteMultipartUploadResult") == response.not_found())
+      {
+        throw aws::RequestError(elle::sprintf("%s: during S3 finalize on %s:%s",
+                                              *this, object_name, request->response()));
+      }
+    }
+    catch(...)
+    {
+      ELLE_WARN("multipart_upload request payload: %s", xchunks);
+      throw;
     }
   }
 
