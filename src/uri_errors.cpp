@@ -14,17 +14,17 @@ namespace network {
 
     uri_category_impl() = default;
 
-    virtual ~uri_category_impl() NETWORK_URI_NOEXCEPT;
+    virtual ~uri_category_impl();
 
-    virtual const char *name() const NETWORK_URI_NOEXCEPT;
+    virtual const char *name() const noexcept;
 
     virtual std::string message(int ev) const;
 
   };
 
-  uri_category_impl::~uri_category_impl() NETWORK_URI_NOEXCEPT {}
+  uri_category_impl::~uri_category_impl() {}
 
-  const char *uri_category_impl::name() const NETWORK_URI_NOEXCEPT {
+  const char *uri_category_impl::name() const noexcept {
     static const char name[] = "uri_error";
     return name;
   }
@@ -57,16 +57,16 @@ namespace network {
   uri_syntax_error::uri_syntax_error()
       : std::system_error(make_error_code(uri_error::invalid_syntax)) {}
 
-  uri_syntax_error::~uri_syntax_error() NETWORK_URI_NOEXCEPT {}
+  uri_syntax_error::~uri_syntax_error() {}
 
   uri_builder_error::uri_builder_error()
       : std::system_error(make_error_code(uri_error::invalid_uri)) {}
 
-  uri_builder_error::~uri_builder_error() NETWORK_URI_NOEXCEPT {}
+  uri_builder_error::~uri_builder_error() {}
 
   percent_decoding_error::percent_decoding_error(uri_error error)
       : std::system_error(make_error_code(error)) {}
 
-  percent_decoding_error::~percent_decoding_error() NETWORK_URI_NOEXCEPT {}
+  percent_decoding_error::~percent_decoding_error() {}
 
 }  // namespace network

@@ -1,5 +1,5 @@
 // Copyright 2009-2010 Jeroen Habraken.
-// Copyright 2009-2013 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2014 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -201,12 +201,12 @@ namespace network {
     /**
      * \brief Move constructor.
      */
-    uri(uri &&other) NETWORK_URI_NOEXCEPT;
+    uri(uri &&other) noexcept;
 
     /**
      * \brief Destructor.
      */
-    ~uri() NETWORK_URI_NOEXCEPT;
+    ~uri();
 
     /**
      * \brief Assignment operator.
@@ -218,7 +218,7 @@ namespace network {
      * \brief Swaps one uri object with another.
      * \param other The other uri object.
      */
-    void swap(uri &other) NETWORK_URI_NOEXCEPT;
+    void swap(uri &other) noexcept;
 
     /**
      * \brief Returns an iterator at the first element in the
@@ -300,7 +300,6 @@ namespace network {
      */
     boost::optional<string_view> authority() const;
 
-#if !defined(_MSC_VER)
     /**
      * \brief Returns the URI as a std::basic_string object.
      * \return A URI string.
@@ -311,31 +310,6 @@ namespace network {
                                                               Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
-
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    template <typename CharT, class CharTraits = std::char_traits<CharT>,
-              class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
-                                                           Alloc()) const {
-      return to_string<CharT, CharTraits, Alloc>(alloc);
-    }
-#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-#else
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    template <typename CharT, class CharTraits, class Alloc>
-    std::basic_string<CharT, CharTraits, Alloc> to_string(const Alloc &alloc =
-                                                              Alloc()) const {
-      return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
-    }
-
-    template <typename CharT, class CharTraits = std::char_traits<CharT>,
-              class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
-                                                           Alloc()) const {
-      return to_string<CharT, CharTraits, Alloc>(alloc);
-    }
-#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-#endif // !/defined(_MSC_VER)
 
     /**
      * \brief Returns the URI as a std::string object.
@@ -365,7 +339,7 @@ namespace network {
      * \brief Checks if the uri object is empty, i.e. it has no parts.
      * \returns \c true if there are no parts, \c false otherwise.
      */
-    bool empty() const NETWORK_URI_NOEXCEPT;
+    bool empty() const noexcept;
 
     /**
      * \brief Checks if the uri is absolute, i.e. it has a scheme.
@@ -398,10 +372,6 @@ namespace network {
      */
     uri make_relative(const uri &base) const;
 
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    uri make_reference(const uri &base) const { return make_relative(base); }
-#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-
     /**
      * \brief Resolves a relative reference against the given URI.
      * \param base The base URI to resolve against.
@@ -419,7 +389,7 @@ namespace network {
      *         less than other and and 1 if this is greater than
      *         other.
      */
-    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
+    int compare(const uri &other, uri_comparison_level level) const noexcept;
 
     /**
      * \brief Encodes a sequence according to the rules for encoding a
@@ -573,55 +543,55 @@ namespace network {
   /**
    * \brief Swaps one uri object with another.
    */
-   void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
+   void swap(uri &lhs, uri &rhs) noexcept;
 
    /**
    * \brief Equality operator for the \c uri.
    */
-  bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT;
+  bool operator==(const uri &lhs, const uri &rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT;
+  bool operator==(const uri &lhs, const char *rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  inline bool operator==(const char *lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator==(const char *lhs, const uri &rhs) noexcept {
     return rhs == lhs;
   }
 
   /**
    * \brief Inequality operator for the \c uri.
    */
-  inline bool operator!=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator!=(const uri &lhs, const uri &rhs) noexcept {
     return !(lhs == rhs);
   }
 
   /**
    * \brief Less-than operator for the \c uri.
    */
-  bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT ;
+  bool operator<(const uri &lhs, const uri &rhs) noexcept ;
 
   /**
    * \brief Greater-than operator for the \c uri.
    */
-  inline bool operator>(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator>(const uri &lhs, const uri &rhs) noexcept {
     return rhs < lhs;
   }
 
   /**
    * \brief Less-than-or-equal-to operator for the \c uri.
    */
-  inline bool operator<=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator<=(const uri &lhs, const uri &rhs) noexcept {
     return !(rhs < lhs);
   }
 
   /**
    * \brief Greater-than-or-equal-to operator for the \c uri.
    */
-  inline bool operator>=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator>=(const uri &lhs, const uri &rhs) noexcept {
     return !(lhs < rhs);
   }
 }  // namespace network
