@@ -1,4 +1,4 @@
-// Copyright 2012, 2013 Glyn Matthews.
+// Copyright 2012, 2013, 2014 Glyn Matthews.
 // Copyright 2013 Hannes Kamecke.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -16,7 +16,7 @@ struct uri_resolve_test : public ::testing::Test {
   {
   }
 
-  uri::string_type resolved(const network::uri& base, uri reference) {
+  uri::string_type resolved(const uri& base, const uri& reference) {
     return reference.resolve(base).string();
   }
 

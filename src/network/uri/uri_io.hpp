@@ -16,7 +16,7 @@ namespace network {
   template <typename CharT, class CharTraits = std::char_traits<CharT> >
   std::basic_ostream<CharT, CharTraits> &operator << (std::basic_ostream<CharT, CharTraits> &os,
 						      const uri &uri_) {
-    return os << uri_.string<CharT, CharTraits>();
+    return os << uri_.to_string<CharT, CharTraits>();
   }
 
   template <typename CharT, class CharTraits = std::char_traits<CharT> >
