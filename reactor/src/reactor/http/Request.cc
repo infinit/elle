@@ -116,6 +116,8 @@ namespace reactor
       , _debug2(0)
       , _bt_frozen()
       , _bt_unfrozen()
+      , _slot_frozen()
+      , _slot_unfrozen()
     {
       if (!this->_handle)
         throw RequestError(url, "unable to initialize request");
@@ -186,6 +188,8 @@ namespace reactor
 
     Request::Impl::~Impl()
     {
+      this->_slot_frozen.disconnect();
+      this->_slot_unfrozen.disconnect();
       this->_request->_status = static_cast<StatusCode>(0);
       ELLE_TRACE_SCOPE("%s: terminate", *this->_request);
       if (this->_curl._requests.find(this->_handle) != this->_curl._requests.end())
@@ -752,19 +756,23 @@ namespace reactor
       else
       {
         this->_impl->_debug = 4;
-        reactor::scheduler().current()->frozen().connect(
-          [this]
-          {
-            this->_impl->_bt_frozen = elle::Backtrace::current();
-          });
-        reactor::scheduler().current()->unfrozen().connect(
-          [this]
-          {
-            this->_impl->_bt_unfrozen = elle::Backtrace::current();
-          });
-        reactor::scheduler().current()->unfrozen();
-        return Waitable::_wait(thread);
+        auto impl = this->_impl;
+        this->_impl->_slot_frozen =
+          reactor::scheduler().current()->frozen().connect(
+            [impl]
+            {
+              impl->_bt_frozen = elle::Backtrace::current();
+              impl->_slot_frozen.disconnect();
+            });
+        this->_impl->_slot_unfrozen =
+          reactor::scheduler().current()->unfrozen().connect(
+            [impl]
+            {
+              impl->_bt_unfrozen = elle::Backtrace::current();
+              impl->_slot_unfrozen.disconnect();
+            });
       }
+      return Waitable::_wait(thread);
     }
 
     /*-------.
