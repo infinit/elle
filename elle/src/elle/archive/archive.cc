@@ -60,7 +60,7 @@ namespace elle
       ::stat(file.string().c_str(), &st);
       archive_entry_copy_stat(entry.get(), &st);
       check_call(archive, archive_write_header(archive, entry.get()));
-      boost::filesystem::ifstream input(file);
+      boost::filesystem::ifstream input(file, std::ios_base::in | std::ios_base::binary);
       if (!input.good())
         throw elle::Exception(elle::sprintf("unable to read file %s", file));
       char buffer[BUFSIZ];
