@@ -1284,13 +1284,14 @@ class Linker(Builder):
     for hook in self.toolkit.hook_bin_deps():
       hook(self)
 
-  def __init__(self, exe, tk, cfg):
+  def __init__(self, exe, tk, cfg, strip = False):
     # FIXME: factor with DynLibLinker
     self.exe = exe
     self.toolkit = tk
     self.config = drake.cxx.Config(cfg)
     Builder.__init__(self, chain(exe.sources, exe.dynamic_libraries),
                      [exe])
+    self.__strip = strip
 
   def execute(self):
     return self.cmd('Link %s' % self.exe, self.command)
@@ -1298,10 +1299,13 @@ class Linker(Builder):
   @property
   def command(self):
     objects = self.exe.sources + list(self.exe.dynamic_libraries)
-    return self.toolkit.link(
-      self.config,
-      objects + list(self.sources_dynamic()),
-      self.exe)
+    cmd = self.toolkit.link(
+     self.config,
+     objects + list(self.sources_dynamic()),
+     self.exe)
+    if self.__strip:
+      cmd = (cmd, ['%sstrip' % self.toolkit.prefix, self.exe.path()])
+    return cmd
 
   def __repr__(self):
     return 'Linker(%s)' % self.exe
@@ -1577,14 +1581,15 @@ Node.extensions['a'] = StaticLib
 
 class Executable(Binary):
 
-  def __init__(self, path, sources = None, tk = None, cfg = None):
+  def __init__(self, path, sources = None, tk = None, cfg = None,
+               strip = False):
     if tk is not None:
       path = tk.exename(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
     for lib in self.dynamic_libraries:
       self.dependency_add(lib)
     if sources is not None:
-      Linker(self, self.tk, self.cfg)
+      Linker(self, self.tk, self.cfg, strip = strip)
 
 
 def deps_merge(nodes):
