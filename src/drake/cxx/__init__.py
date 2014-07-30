@@ -1300,9 +1300,9 @@ class Linker(Builder):
   def command(self):
     objects = self.exe.sources + list(self.exe.dynamic_libraries)
     cmd = self.toolkit.link(
-     self.config,
-     objects + list(self.sources_dynamic()),
-     self.exe)
+      self.config,
+      objects + list(sorted(self.sources_dynamic())),
+      self.exe)
     if self.__strip:
       cmd = (cmd, ['%sstrip' % self.toolkit.prefix, self.exe.path()])
     return cmd
