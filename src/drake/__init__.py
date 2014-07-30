@@ -1597,21 +1597,23 @@ class Builder:
     printed, except if drake is in raw mode, in which case the
     actual command is printed.
     """
+    if not _RAW and pretty is not None:
+      self.output(pretty)
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     with open(str(self.path_stdout), 'w') as f:
       def fun():
         for c in cmd:
           c = list(map(str, c))
-          if pretty is not None:
+          if _RAW or pretty is None:
             if env is not None:
               output_env = ('%s=%s ' % (var, pipes.quote(value))
                             for var, value in env.items())
             else:
               output_env = ()
             output_cmd = map(pipes.quote, c)
-            self.output(' '.join(chain(output_env, output_cmd)),
-                        pretty)
+            if _RAW:
+              self.output(' '.join(chain(output_env, output_cmd)))
           stdout = None
           if not leave_stdout:
             stdout = f
