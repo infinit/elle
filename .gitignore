@@ -1,3 +1,4 @@
 *.pyc
 .drake
+.DS_Store
 TAGS
