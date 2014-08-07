@@ -1,8 +1,9 @@
+#include <boost/coroutine/all.hpp>
+
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
 
-#include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
 #include <reactor/backend/coro_io/backend.hh>
 #include <reactor/exception.hh>
 
@@ -17,10 +18,6 @@ namespace reactor
       /*-------.
       | Thread |
       `-------*/
-
-      static
-      void
-      starter(void* arg);
 
       class Backend::Thread:
         public backend::Thread
@@ -41,7 +38,14 @@ namespace reactor
                const Action& action):
           Super(name, action),
           _backend(backend),
-          _coro(Coro_new()),
+          _coro(new Coro(
+            [&]
+            (Sink& sink)
+            {
+              this->_sink = &sink;
+              sink();
+              this->_run(sink);
+            })),
           _caller(nullptr),
           _root(false),
           _unwinding(false)
@@ -55,19 +59,30 @@ namespace reactor
           ELLE_TRACE("%s: die", *this);
           if (_coro)
           {
-            Coro_free(_coro);
+            delete _coro;
             _coro = nullptr;
+            _sink = nullptr;
           }
         }
 
       private:
-        Thread(Backend& backend):
-          Thread(backend, "<root>", Action())
+        Thread(Backend& backend)
+          : Super("<root>", Action())
+          , _backend(backend)
+          , _coro(new Coro(
+              [&]
+              (Sink& sink)
+              {
+                while (true)
+                {
+                  sink();
+                }
+              }))
+          , _caller(nullptr)
+          , _root(true)
+          , _unwinding(false)
         {
-          this->_root = true;
           this->status(Status::running);
-          ELLE_ASSERT(_coro);
-          Coro_initializeMainCoro(_coro);
         }
 
       /*----------.
@@ -91,9 +106,10 @@ namespace reactor
           if (starting)
           {
             this->status(Status::running);
-            ELLE_ASSERT(_coro);
+            ELLE_ASSERT_NEQ(_coro, nullptr);
+            ELLE_ASSERT_NEQ(_sink, nullptr);
             ELLE_TRACE("%s: start %s", *current , *this);
-            Coro_startCoro_(_caller->_coro, _coro, this, &starter);
+            (*_coro)();
             ELLE_TRACE("%s: back from %s", *current, *this);
           }
           else
@@ -115,11 +131,11 @@ namespace reactor
               }
               catch(...)
               {
-                Coro_switchTo_(current->_coro, _coro);
+                (*_coro)();
               }
             }
             else
-              Coro_switchTo_(current->_coro, _coro);
+              (*_coro)();
           }
           // It is unclear whether an uncaught_exception mismatch has any
           // consequence if the code does not explicitly depend on its result.
@@ -147,7 +163,7 @@ namespace reactor
           this->_exception = std::current_exception();
           if (this->_unwinding)
             ELLE_DUMP("yielding %s with in-flight exception", *this);
-          Coro_switchTo_(_coro, _backend._current->_coro);
+          (*_sink)();
           if (_backend._current->_unwinding != std::uncaught_exception())
             ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
               *_backend._current, _backend._current->_unwinding,
@@ -159,11 +175,14 @@ namespace reactor
       | Details |
       `--------*/
       private:
+        /// Define type of coroutine used.
+        typedef boost::coroutines::coroutine<void>::pull_type Coro;
+        typedef boost::coroutines::coroutine<void>::push_type Sink;
         /// Let the backend use our private constructor.
         friend class Backend;
         /// Main routine of this thread of execution.
         void
-        _run()
+        _run(boost::coroutines::coroutine<void>::push_type& sink)
         {
           this->status(Status::running);
           try
@@ -198,29 +217,21 @@ namespace reactor
           this->status(Status::done);
           _backend._current = caller;
           ELLE_TRACE("%s: done", *this);
-          Coro_switchTo_(_coro, caller->_coro);
+          (*caller->_coro)();
         }
 
         /// Owning backend.
         Backend& _backend;
         /// Underlying IO coroutine.
-        struct Coro* _coro;
+        Coro* _coro;
+        /// Yield sink.
+        Sink* _sink;
         /// The thread that stepped us.
         Thread* _caller;
-        /// Let libcoroutine callback invoke our _run.
-        friend void starter(void* arg);
         ELLE_ATTRIBUTE(bool, root);
         ELLE_ATTRIBUTE(bool, unwinding);
         ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
       };
-
-      static
-      void
-      starter(void* arg)
-      {
-        Backend::Thread* thread = reinterpret_cast<Backend::Thread*>(arg);
-        thread->_run();
-      }
 
       /*--------.
       | Backend |
