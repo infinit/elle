@@ -46,6 +46,8 @@ class Boost(drake.Configuration):
     'regex': 'regex',
     'program_options': 'program_options',
     'chrono': 'chrono',
+    'context': 'context',
+    'coroutine': 'coroutine',
     'iostreams': 'iostreams',
     'python': ( 'python-3.3', 'python-3.2', 'python3', 'python')
     }
