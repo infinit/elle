@@ -584,6 +584,8 @@ PY_MINOR_VERSION''', config = python3)
       '--with-python=%s' % python_version,
       '--with-libraries=%s' % ','.join((
         'atomic',
+        'context',
+        'coroutine',
         'chrono',
         'date_time',
         'filesystem',
@@ -599,6 +601,8 @@ PY_MINOR_VERSION''', config = python3)
     boost_libraries_names = (
       'atomic',
       'chrono',
+      'context',
+      'coroutine',
       'date_time',
       'filesystem',
       'program_options',
