@@ -5,8 +5,6 @@
 
 # include <reactor/backend/backend.hh>
 
-struct Coro;
-
 namespace reactor
 {
   namespace backend
