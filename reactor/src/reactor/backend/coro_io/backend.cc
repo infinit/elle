@@ -44,7 +44,7 @@ namespace reactor
             {
               this->_sink = &sink;
               sink();
-              this->_run(sink);
+              this->_run();
             })),
           _caller(nullptr),
           _root(false),
@@ -182,7 +182,7 @@ namespace reactor
         friend class Backend;
         /// Main routine of this thread of execution.
         void
-        _run(boost::coroutines::coroutine<void>::push_type& sink)
+        _run()
         {
           this->status(Status::running);
           try
@@ -217,7 +217,6 @@ namespace reactor
           this->status(Status::done);
           _backend._current = caller;
           ELLE_TRACE("%s: done", *this);
-          (*caller->_coro)();
         }
 
         /// Owning backend.
