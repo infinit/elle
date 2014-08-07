@@ -10,8 +10,6 @@ lib_dynamic = None
 library = None
 python_lib = None
 
-library_coroutine = None
-
 rule_build = None
 rule_check = None
 rule_install = None
@@ -35,7 +33,7 @@ def configure(curl_config,
               valgrind = None):
 
   global asio_udt_lib
-  global config, lib_static, lib_dynamic, library, library_coroutine
+  global config, lib_static, lib_dynamic, library
   global rule_build, rule_install
   global python_lib
 
@@ -52,32 +50,23 @@ def configure(curl_config,
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
 
-
-  libcoroutine_sources = drake.nodes(
-    'src/reactor/backend/coro_io/libcoroutine/asm.S',
-    'src/reactor/backend/coro_io/libcoroutine/context.cc',
-    'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
-    'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
-  )
-  libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
-  libcoroutine_cxx_config.warnings.missing_declarations = None
-  if valgrind is not None:
-    libcoroutine_cxx_config.define('USE_VALGRIND')
-  libcoroutine = drake.cxx.StaticLib('lib/coroutine',
-                                     libcoroutine_sources,
-                                     cxx_toolkit,
-                                     libcoroutine_cxx_config)
-  library_coroutine = libcoroutine
-
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
   if cxx_toolkit.os is drake.os.windows:
+    local_cxx_config += boost.config_context(static = True)
+    local_cxx_config += boost.config_coroutine(static = True)
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
   else:
+    local_cxx_config += boost.config_context(link = False)
+    local_cxx_config += boost.config_coroutine(link = False)
     local_cxx_config += boost.config_signals(link = False)
+    local_cxx_config.library_add(
+      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True))
+    local_cxx_config.library_add(
+      drake.copy(boost.coroutine_dynamic, 'lib', strip_prefix = True))
     local_cxx_config.library_add(
       drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True))
     local_cxx_config += boost.config_system(link = False)
@@ -247,8 +236,7 @@ def configure(curl_config,
     sources + [
       curl_lib,
       elle.lib_static,
-      miniupnpc.library,
-      libcoroutine
+      miniupnpc.library
       ] + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   lib_dynamic = drake.cxx.DynLib(
@@ -257,7 +245,6 @@ def configure(curl_config,
       curl_lib,
       elle_lib,
       miniupnpc.library,
-      libcoroutine,
       ] + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
@@ -322,7 +309,7 @@ def configure(curl_config,
     if valgrind is not None:
       tests_config.define('VALGRIND')
     sources = drake.nodes('tests/%s.cc' % test) + [
-      library, library_coroutine, elle_lib
+      library, elle_lib
       ] + libraries
     test = drake.cxx.Executable('tests/%s' % test,
                                 sources,
