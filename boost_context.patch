@@ -102,11 +102,9 @@ new file mode 100644
 index 0000000..4505f63
 --- /dev/null
 +++ b/libs/context/src/asm/jump_i386_ms_pe_gas.S
-@@ -0,0 +1,109 @@
-+// libs/context/src/asm/jump_i386_ms_pe_gas.S
+@@ -0,0 +1,162 @@
 +/*
 +            Copyright Oliver Kowalke 2009.
-+            Copyright Thomas Sailer 2013.
 +   Distributed under the Boost Software License, Version 1.0.
 +      (See accompanying file LICENSE_1_0.txt or copy at
 +            http://www.boost.org/LICENSE_1_0.txt)
@@ -119,99 +117,154 @@ index 0000000..4505f63
 + *  --------------------------------------------------------------  *
 + *  |    0h   |   04h   |   08h   |   0ch   |   010h   |   014h  |  *
 + *  --------------------------------------------------------------  *
-+ *  |   EDI   |   ESI   |   EBX   |   EBP   |   ESP    |   EIP   |  *
++ *  | fc_mxcsr|fc_x87_cw| fc_strg |fc_deallo|  limit   |   base  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |    6    |    7    |    8    |                              |  *
 + *  --------------------------------------------------------------  *
 + *  |   018h  |   01ch  |   020h  |                              |  *
 + *  --------------------------------------------------------------  *
-+ *  |    sp   |   size  |  limit  |                              |  *
++ *  | fc_seh  |   EDI   |   ESI   |                              |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |    9    |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  |  024h   |                                                  |  *
 + *  --------------------------------------------------------------  *
-+ *  |fc_execpt|                                                  |  *
++ *  |   EBX   |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |   10    |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  |  028h   |                                                  |  *
 + *  --------------------------------------------------------------  *
-+ *  |fc_strage|                                                  |  *
++ *  |   EBP   |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
-+ *  |   11    |    12   |                                        |  *
++ *  |   11    |    12   |    13   |    14   |    15   |          |  *
 + *  --------------------------------------------------------------  *
-+ *  |  02ch   |   030h  |                                        |  *
++ *  |   EIP   |   EXIT  |   034h  |   038h  |   03ch  |          |  *
 + *  --------------------------------------------------------------  *
-+ *  | fc_mxcsr|fc_x87_cw|                                        |  *
++ *  | fc_mxcsr|fc_x87_cw|         | SEH NXT |SEH HNDLR|          |  *
 + *  --------------------------------------------------------------  *
 + *                                                                  *
 + * *****************************************************************/
 +
-+.file  "jump_i386_ms_pe_gas.S"
-+.text
-+.p2align 4,,15
-+.globl _jump_fcontext
-+.def   _jump_fcontext; .scl    2;  .type   32; .endef
++ .file "jump_i386_ms_pe_gas.S"
++ .text
++ .p2align 4,,15
++ .globl _jump_fcontext
++ .def   _jump_fcontext; .scl    2;  .type   32; .endef
 +_jump_fcontext:
-+    movl    0x04(%esp), %ecx        /* load address of the first fcontext_t arg */
-+    movl    %edi,       (%ecx)      /* save EDI */
-+    movl    %esi,       0x04(%ecx)  /* save ESI */
-+    movl    %ebx,       0x08(%ecx)  /* save EBX */
-+    movl    %ebp,       0x0c(%ecx)  /* save EBP */
++    /* fourth arg of jump_fcontext() == flag indicating preserving FPU */
++    movl    0x10(%esp), %ecx
 +
-+    movl    %fs:(0x18), %edx        /* load NT_TIB */
-+    movl    (%edx),     %eax        /* load current SEH exception list */
-+    movl    %eax,       0x24(%ecx)  /* save current exception list */
-+    movl    0x04(%edx), %eax        /* load current stack base */
-+    movl    %eax,       0x18(%ecx)  /* save current stack base */
-+    movl    0x08(%edx), %eax        /* load current stack limit */
-+    movl    %eax,       0x20(%ecx)  /* save current stack limit */
-+    movl    0x10(%edx), %eax        /* load fiber local storage */
-+    movl    %eax,       0x28(%ecx)  /* save fiber local storage */
++    pushl   %ebp    /* save EBP */
++    pushl   %ebx    /* save EBX */
++    pushl   %esi    /* save ESI */
++    pushl   %edi    /* save EDI */
 +
-+    leal    0x04(%esp), %eax        /* exclude the return address */
-+    movl    %eax,       0x10(%ecx)  /* save as stack pointer */
-+    movl    (%esp),     %eax        /* load return address */
-+    movl    %eax,       0x14(%ecx)  /* save return address */
++    /* load NT_TIB into ECX */
++    movl    %fs:0x18,  %edx
 +
-+    movl    0x08(%esp), %edx        /* load address of the second fcontext_t arg */
-+    movl    (%edx),     %edi        /* restore EDI */
-+    movl    0x04(%edx), %esi        /* restore ESI */
-+    movl    0x08(%edx), %ebx        /* restore EBX */
-+    movl    0x0c(%edx), %ebp        /* restore EBP */
++    /* load current SEH exception list */
++    movl    (%edx),     %eax
++    pushl   %eax
 +
-+    movl    0x10(%esp), %eax        /* check if fpu enve preserving was requested */
-+    testl   %eax,       %eax
-+    je      1f
++    /* load current stack base */
++    movl    0x04(%edx), %eax
++    pushl   %eax
 +
-+    stmxcsr 0x2c(%ecx)              /* save MMX control word */
-+    fnstcw  0x30(%ecx)              /* save x87 control word */
-+    ldmxcsr 0x2c(%edx)              /* restore MMX control word */
-+    fldcw   0x30(%edx)              /* restore x87 control word */
-+1:
-+    movl    %edx,       %ecx
-+    movl    %fs:(0x18), %edx        /* load NT_TIB */
-+    movl    0x24(%ecx), %eax        /* load SEH exception list */
-+    movl    %eax,       (%edx)      /* restore next SEH item */
-+    movl    0x18(%ecx), %eax        /* load stack base */
-+    movl    %eax,       0x04(%edx)  /* restore stack base */
-+    movl    0x20(%ecx), %eax        /* load stack limit */
-+    movl    %eax,       0x08(%edx)  /* restore stack limit */
-+    movl    0x28(%ecx), %eax        /* load fiber local storage */
-+    movl    %eax,       0x10(%edx)  /* restore fiber local storage */
++    /* load current stack limit */
++    movl    0x08(%edx), %eax
++    pushl   %eax
 +
-+    movl    0x0c(%esp), %eax        /* use third arg as return value after jump */
++    /* load current deallocation stack */
++    movl    0xe0c(%edx),%eax
++    pushl   %eax
 +
-+    movl    0x10(%ecx), %esp        /* restore ESP */
-+    movl    %eax,       0x04(%esp)  /* use third arg as first arg in context function */
-+    movl    0x14(%ecx), %ecx        /* fetch the address to return to */
++    /* load fiber local storage */
++    movl    0x10(%edx), %eax
++    pushl   %eax
 +
-+    jmp     *%ecx                   /* indirect jump to context */
++    /* prepare stack for FPU */
++    leal    -0x08(%esp),%esp
++
++    /* test for flag preserve_fpu */
++    testl   %ecx,       %ecx
++    je      nxt1
++
++    /* save MMX control- and status-word */
++    stmxcsr (%esp)
++    /* save x87 control-word */
++    fnstcw  0x04(%esp)
++
++nxt1:
++    /* first arg of jump_fcontext() == context jumping from */
++    movl    0x30(%esp),%eax
++
++    /* store ESP (pointing to context-data) in EAX */
++    movl    %esp,       (%eax)
++
++    /* second arg of jump_fcontext() == context jumping to */
++    movl    0x34(%esp),%edx
++
++    /* third arg of jump_fcontext() == value to be returned after jump */
++    movl    0x38(%esp),%eax
++
++    /* restore ESP (pointing to context-data) from EDX */
++    movl    %edx,       %esp
++
++    /* test for flag preserve_fpu */
++    testl   %ecx,       %ecx
++    je      nxt2
++
++    /* restore MMX control- and status-word */
++    ldmxcsr (%esp)
++    /* restore x87 control-word */
++    fldcw   0x04(%esp)
++
++nxt2:
++    /* prepare stack for FPU */
++    leal    0x08(%esp), %esp
++
++    /* load NT_TIB into ECX */
++    movl    %fs:0x18,  %edx
++
++    /* restore fiber local storage */
++    popl    %ecx
++    movl    %ecx,       0x10(%edx)
++
++    /* restore current deallocation stack */
++    popl    %ecx
++    movl    %ecx,       0xe0c(%edx)
++
++    /* restore current stack limit */
++    popl    %ecx
++    movl    %ecx,       0x08(%edx)
++
++    /* restore current stack base */
++    popl    %ecx
++    movl    %ecx,       0x04(%edx)
++
++    /* restore current SEH exception list */
++    popl    %ecx
++    movl    %ecx,       (%edx)
++
++    popl    %edi        /* save EDI */
++    popl    %esi        /* save ESI */
++    popl    %ebx        /* save EBX */
++    popl    %ebp        /* save EBP */
++
++    /* restore return-address */
++    popl    %edx
++
++    /* use value in EAX as return-value after jump
++       use value in EAX as first arg in context function */
++    movl    %eax,       0x04(%esp)
++
++    /* indirect jump to context */
++    jmp    *%edx
 \ No newline at end of file
 diff --git a/libs/context/src/asm/jump_x86_64_ms_pe_gas.S b/libs/context/src/asm/jump_x86_64_ms_pe_gas.S
 new file mode 100644
@@ -416,12 +469,9 @@ new file mode 100644
 index 0000000..7e24283
 --- /dev/null
 +++ b/libs/context/src/asm/make_i386_ms_pe_gas.S
-@@ -0,0 +1,117 @@
-+// libs/context/src/asm/make_i386_ms_pe_gas.S
-+
+@@ -0,0 +1,143 @@
 +/*
 +            Copyright Oliver Kowalke 2009.
-+            Copyright Thomas Sailer 2013.
 +   Distributed under the Boost Software License, Version 1.0.
 +      (See accompanying file LICENSE_1_0.txt or copy at
 +            http://www.boost.org/LICENSE_1_0.txt)
@@ -434,103 +484,132 @@ index 0000000..7e24283
 + *  --------------------------------------------------------------  *
 + *  |    0h   |   04h   |   08h   |   0ch   |   010h   |   014h  |  *
 + *  --------------------------------------------------------------  *
-+ *  |   EDI   |   ESI   |   EBX   |   EBP   |   ESP    |   EIP   |  *
++ *  | fc_mxcsr|fc_x87_cw| fc_strg |fc_deallo|  limit   |   base  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |    6    |    7    |    8    |                              |  *
 + *  --------------------------------------------------------------  *
 + *  |   018h  |   01ch  |   020h  |                              |  *
 + *  --------------------------------------------------------------  *
-+ *  |    sp   |   size  |  limit  |                              |  *
++ *  | fc_seh  |   EDI   |   ESI   |                              |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |    9    |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  |  024h   |                                                  |  *
 + *  --------------------------------------------------------------  *
-+ *  |fc_execpt|                                                  |  *
++ *  |   EBX   |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
 + *  |   10    |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  |  028h   |                                                  |  *
 + *  --------------------------------------------------------------  *
-+ *  |fc_strage|                                                  |  *
++ *  |   EBP   |                                                  |  *
 + *  --------------------------------------------------------------  *
 + *  --------------------------------------------------------------  *
-+ *  |   11    |    12   |                                        |  *
++ *  |   11    |    12   |    13   |    14   |    15   |          |  *
 + *  --------------------------------------------------------------  *
-+ *  |  02ch   |   030h  |                                        |  *
++ *  |   EIP   |   EXIT  |   034h  |   038h  |   03ch  |          |  *
 + *  --------------------------------------------------------------  *
-+ *  | fc_mxcsr|fc_x87_cw|                                        |  *
++ *  | fc_mxcsr|fc_x87_cw|         | SEH NXT |SEH HNDLR|          |  *
 + *  --------------------------------------------------------------  *
 + *                                                                  *
 + * *****************************************************************/
 +
-+.file  "make_i386_ms_pe_gas.S"
-+.text
-+.p2align 4,,15
-+.globl _make_fcontext
-+.def   _make_fcontext; .scl    2;  .type   32; .endef
++ .file "make_i386_ms_pe_gas.S"
++ .text
++ .p2align 4,,15
++ .globl _make_fcontext
++ .def   _make_fcontext; .scl    2;  .type   32; .endef
 +_make_fcontext:
-+    movl    0x04(%esp), %eax        /* load 1. arg of make_fcontext, pointer to context stack (base) */
-+    leal    -0x34(%eax),%eax        /* reserve space for fcontext_t at top of context stack */
++    /* first arg of make_fcontext() == top of context-stack */
++    movl    0x04(%esp), %eax
++
++    /* reserve space for first argument of context-function
++       rax might already point to a 16byte border */
++    leal    -0x08(%eax),%eax
 +
 +    /* shift address in EAX to lower 16 byte boundary */
-+    /* == pointer to fcontext_t and address of context stack */
 +    andl    $-16,       %eax
 +
-+    movl    0x04(%esp), %ecx        /* load 1. arg of make_fcontext, pointer to context stack (base) */
-+    movl    %ecx,       0x18(%eax)  /* save address of context stack (base) in fcontext_t */
-+    movl    0x08(%esp), %edx        /* load 2. arg of make_fcontext, context stack size */
-+    movl    %edx,       0x1c(%eax)  /* save context stack size in fcontext_t */
-+    negl    %edx                    /* negate stack size for LEA instruction (== substraction) */
-+    leal    (%ecx,%edx),%ecx        /* compute bottom address of context stack (limit) */
-+    movl    %ecx,       0x20(%eax)  /* save address of context stack (limit) in fcontext_t */
-+    movl    0x0c(%esp), %ecx        /* load 3. arg of make_fcontext, pointer to context function */
-+    movl    %ecx,       0x14(%eax)  /* save address of context function in fcontext_t */
++    /* reserve space for context-data on context-stack
++       size for fc_mxcsr .. EIP + return-address for context-function
++       on context-function entry: (ESP -0x4) % 8 == 0
++       additional space is required for SEH */
++    leal    -0x3c(%eax),%eax
 +
-+    stmxcsr 0x02c(%eax)             /* save MMX control word */
-+    fnstcw  0x030(%eax)             /* save x87 control word */
++    /* first arg of make_fcontext() == top of context-stack */
++    movl    0x04(%esp), %ecx
++    /* save top address of context stack as 'base' */
++    movl    %ecx,       0x14(%eax)
++    /* second arg of make_fcontext() == size of context-stack */
++    movl    0x08(%esp), %edx
++    /* negate stack size for LEA instruction (== substraction) */
++    negl    %edx
++    /* compute bottom address of context stack (limit) */
++    leal    (%ecx,%edx),%ecx
++    /* save bottom address of context-stack as 'limit' */
++    movl    %ecx,       0x10(%eax)
++    /* save bottom address of context-stack as 'dealloction stack' */
++    movl    %ecx,       0x0c(%eax)
 +
-+    leal    -0x1c(%eax),%edx        /* reserve space for last frame and seh on context stack, (ESP - 0x4) % 16 == 0 */
-+    movl    %edx,       0x10(%eax)  /* save address in EDX as stack pointer for context function */
++    /* third arg of make_fcontext() == address of context-function */
++    movl    0x0c(%esp), %ecx
++    movl    %ecx,       0x2c(%eax)
 +
-+    movl    $finish,    %ecx        /* abs address of finish */
-+    movl    %ecx,       (%edx)      /* save address of finish as return address for context function */
-+                                    /* entered after context function returns */
++    /* save MMX control- and status-word */
++    stmxcsr (%eax)
++    /* save x87 control-word */
++    fnstcw  0x04(%eax)
 +
-+    /* traverse current seh chain to get the last exception handler installed by Windows */
-+    /* note that on Windows Server 2008 and 2008 R2, SEHOP is activated by default */
-+    /* the exception handler chain is tested for the presence of ntdll.dll!FinalExceptionHandler */
-+    /* at its end by RaiseException all seh andlers are disregarded if not present and the */
-+    /* program is aborted */
-+    movl    %fs:(0x18), %ecx        /* load NT_TIB into ECX */
++    /* compute abs address of label finish */
++    movl    $finish,    %ecx
++    /* save address of finish as return-address for context-function
++       will be entered after context-function returns */
++    movl    %ecx,       0x30(%eax)
++
++    /* traverse current seh chain to get the last exception handler installed by Windows
++       note that on Windows Server 2008 and 2008 R2, SEHOP is activated by default
++       the exception handler chain is tested for the presence of ntdll.dll!FinalExceptionHandler
++       at its end by RaiseException all seh-handlers are disregarded if not present and the
++       program is aborted */
++    movl    %fs:(0x0), %ecx
 +
 +walk:
-+    movl    (%ecx),     %edx        /* load 'next' member of current SEH into EDX */
-+    incl    %edx                    /* test if 'next' of current SEH is last (== 0xffffffff) */
++    /* load 'next' member of current SEH into EDX */
++    movl    (%ecx),     %edx
++    /* test if 'next' of current SEH is last (== 0xffffffff) */
++    incl    %edx
 +    jz      found
 +    decl    %edx
-+    xchgl    %ecx,      %edx        /* exchange content; ECX contains address of next SEH */
-+    jmp     walk                    /* inspect next SEH */
++    /* exchange content; ECX contains address of next SEH */
++    xchgl   %ecx,       %edx
++    /* inspect next SEH */
++    jmp     walk
 +
 +found:
-+    movl    0x04(%ecx), %ecx        /* load 'handler' member of SEH == address of last SEH handler installed by Windows */
-+    movl    0x10(%eax), %edx        /* load address of stack pointer for context function */
-+    movl    %ecx,       0x18(%edx)  /* save address in ECX as SEH handler for context */
-+    movl    $0xffffffff,%ecx        /* set ECX to -1 */
-+    movl    %ecx,       0x14(%edx)  /* save ECX as next SEH item */
-+    leal    0x14(%edx), %ecx        /* load address of next SEH item */
-+    movl    %ecx,       0x24(%eax)  /* save next SEH */
++    /* load 'handler' member of SEH == address of last SEH handler installed by Windows */
++    movl    0x04(%ecx), %ecx
++    /* save address in ECX as SEH handler for context */
++    movl    %ecx,       0x3c(%eax)
++    /* set ECX to -1 */
++    movl    $0xffffffff,%ecx
++    /* save ECX as next SEH item */
++    movl    %ecx,       0x38(%eax)
++    /* load address of next SEH item */
++    leal    0x38(%eax),%ecx
++    /* save next SEH */
++    movl    %ecx,       0x18(%eax)
 +
-+    ret
++    ret     /* return pointer to context-data */
 +
 +finish:
-+    /* ESP points to same address as ESP on entry of context function + 0x4 */
++    /* exit code is zero */
 +    xorl    %eax,       %eax
-+    movl    %eax,       (%esp)      /* exit code is zero */
-+    call    __exit                  /* exit application */
++    movl    %eax,       (%esp)
++    /* exit application */
++    call    __exit
 +    hlt
 +
 +.def   __exit; .scl    2;  .type   32; .endef  /* standard C library function */
