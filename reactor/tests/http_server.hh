@@ -394,7 +394,7 @@ namespace reactor
         _response(reactor::network::Socket& socket,
                   StatusCode code,
                   elle::ConstWeakBuffer content,
-                  Cookies const& cookies = {})
+                  Cookies const& cookies = std::unordered_map<std::string,std::string>())
         {
           ELLE_LOG_COMPONENT("reactor.test.http");
           Headers headers = this->_headers;
