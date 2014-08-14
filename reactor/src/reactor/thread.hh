@@ -1,7 +1,6 @@
 #ifndef INFINIT_REACTOR_THREAD_HH
 # define INFINIT_REACTOR_THREAD_HH
 
-# include <boost/optional.hpp>
 # include <boost/signals2.hpp>
 # include <boost/system/error_code.hpp>
 
@@ -180,7 +179,7 @@ namespace reactor
       void _wake(Waitable* waitable);
       std::set<Waitable*> _waited;
       bool _timeout;
-    boost::asio::deadline_timer _timeout_timer;
+      boost::asio::deadline_timer _timeout_timer;
 
   /*------.
   | Hooks |
