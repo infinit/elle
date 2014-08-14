@@ -323,6 +323,14 @@ PY_MINOR_VERSION''', config = python3)
     os_string = 'darwin64-x86_64-cc'
   openssl_prefix_absolute = \
     drake.path_build(openssl_prefix, absolute = True)
+  openssl_env = {
+    'PERL': 'perl',
+    'CC': cxx_toolkit.c,
+  }
+  if cxx_toolkit.os is drake.os.windows:
+    openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
+    openssl_env['AS'] = '%sas' % cxx_toolkit.prefix
+    openssl_env['RANLIB'] = '%sranlib' % cxx_toolkit.prefix
   GNUBuilder(
     cxx_toolkit,
     configure = openssl_configure,
@@ -340,10 +348,7 @@ PY_MINOR_VERSION''', config = python3)
     build_args = [
     'all', 'install',
     ],
-    additional_env = {
-        'PERL': 'perl',
-        'CC': cxx_toolkit.c,
-    },
+    additional_env = openssl_env,
   )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
