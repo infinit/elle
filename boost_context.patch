@@ -371,7 +371,7 @@ index 0000000..3da96a6
 +    pushq   %r12        /* save R12 */
 +
 +    /* load NT_TIB */
-+    movq    gs:(0x30),  %r10
++    movq    %gs:0x30,   %r10
 +    /* save current stack base */
 +    movq    0x08(%r10), %rax
 +    pushq   %rax
@@ -459,7 +459,7 @@ index 0000000..3da96a6
 +    leaq    (%rsp,%rcx),%rsp
 +
 +    /* load NT_TIB */
-+    movq    gs:(0x30),  %r10
++    movq    %gs:0x30,   %r10
 +    /* restore fiber local storage */
 +    popq    %rax
 +    movq    %rax,       0x18(%r10)
@@ -749,7 +749,7 @@ index 0000000..0010af7
 +
 +    /* shift address in RAX to lower 16 byte boundary
 +       == pointer to fcontext_t and address of context stack */
-+    andl    -16,        %rax
++    andq    -16,        %rax
 +
 +    /* reserve space for context-data on context-stack
 +       size for fc_mxcsr .. RIP + return-address for context-function
@@ -778,7 +778,7 @@ index 0000000..0010af7
 +    fnstcw  0xac(%rax)
 +
 +    /* compute abs address of label finish */
-+    leaq    $finish,    %rcx
++    leaq    finish,    %rcx
 +
 +    /* save address of finish as return-address for context-function
 +       will be entered after context-function returns */
