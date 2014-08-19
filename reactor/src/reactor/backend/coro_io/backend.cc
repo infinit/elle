@@ -1,9 +1,8 @@
-#include <boost/context/fcontext.hpp>
-
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
 
+#include <reactor/backend/coro_io/libcoroutine/coroutine.hh>
 #include <reactor/backend/coro_io/backend.hh>
 #include <reactor/exception.hh>
 
@@ -15,78 +14,13 @@ namespace reactor
   {
     namespace coro_io
     {
-      /*----------------.
-      | Stack Allocator |
-      `----------------*/
-      template <std::size_t Max, std::size_t Default, std::size_t Min>
-      class TemplatedStackAllocator
-      {
-      public:
-        static
-        std::size_t
-        maximum_stack_size()
-        {
-          return Max;
-        }
-        static
-        std::size_t
-        default_stack_size()
-        {
-          return Default;
-        }
-        static
-        std::size_t
-        minimum_stack_size()
-        {
-          return Min;
-        }
-
-        void*
-        allocate(std::size_t size) const
-        {
-          ELLE_ASSERT(minimum_stack_size() <= size);
-          ELLE_ASSERT(maximum_stack_size() >= size);
-
-          void* limit = std::malloc(size);
-          if (!limit)
-            throw std::bad_alloc();
-
-          return static_cast<char *>(limit) + size;
-        }
-
-        void
-        deallocate(void* vp, std::size_t size) const
-        {
-          ELLE_ASSERT(vp);
-          ELLE_ASSERT(minimum_stack_size() <= size);
-          ELLE_ASSERT(maximum_stack_size() >= size);
-
-          void* limit = static_cast<char *>(vp) - size;
-          std::free(limit);
-        }
-      };
-
       /*-------.
       | Thread |
       `-------*/
-      /// Default allocator type.
-      typedef TemplatedStackAllocator<
-        8 * 1024 * 1024,  // Max: 8 MiB
-        64 * 1024,        // Default: 64 kiB
-        8 * 1024          // Min: 8 kiB
-        > StackAllocator;
-      /// Type of context pointer used.
-      typedef boost::context::fcontext_t Context;
-
-      /// Allocator.
-      static StackAllocator stack_allocator;
 
       static
       void
-      wrapped_run(intptr_t arg);
-
-      using boost::context::make_fcontext;
-      using boost::context::jump_fcontext;
+      starter(void* arg);
 
       class Backend::Thread:
         public backend::Thread
@@ -104,18 +38,13 @@ namespace reactor
       public:
         Thread(Backend& backend,
                const std::string& name,
-               const Action& action)
-          : Super(name, action)
-          , _backend(backend)
-          , _stack_store(
-              stack_allocator.allocate(StackAllocator::default_stack_size()))
-          , _context(
-              make_fcontext(this->_stack_store,
-                            StackAllocator::default_stack_size(),
-                            wrapped_run))
-          , _caller(nullptr)
-          , _root(false)
-          , _unwinding(false)
+               const Action& action):
+          Super(name, action),
+          _backend(backend),
+          _coro(Coro_new()),
+          _caller(nullptr),
+          _root(false),
+          _unwinding(false)
         {}
 
         ~Thread()
@@ -124,21 +53,21 @@ namespace reactor
                       this->status() == Status::starting ||
                       this->_root);
           ELLE_TRACE("%s: die", *this);
-          if (this->_context)
+          if (_coro)
           {
-            this->_context = nullptr;
-            stack_allocator.deallocate(this->_stack_store,
-                                       StackAllocator::default_stack_size());
+            Coro_free(_coro);
+            _coro = nullptr;
           }
         }
 
       private:
-        Thread(Backend& backend)
-          : Thread(backend, "<root>", Action())
+        Thread(Backend& backend):
+          Thread(backend, "<root>", Action())
         {
           this->_root = true;
           this->status(Status::running);
-          ELLE_ASSERT(this->_context);
+          ELLE_ASSERT(_coro);
+          Coro_initializeMainCoro(_coro);
         }
 
       /*----------.
@@ -150,23 +79,21 @@ namespace reactor
         step() override
         {
           // go from current to this
-          ELLE_ASSERT(this->_caller == nullptr);
+          ELLE_ASSERT(_caller == nullptr);
 
           bool starting = this->status() == Status::starting;
-          Thread* current = this->_backend._current;
-          this->_caller = current;
-          this->_backend._current = this;
+          Thread* current = _backend._current;
+          _caller = current;
+          _backend._current = this;
           current->_unwinding = std::uncaught_exception();
           if (current->_unwinding)
             ELLE_DUMP("step %s with in-flight exception", *current);
           if (starting)
           {
             this->status(Status::running);
-            ELLE_ASSERT(this->_context);
+            ELLE_ASSERT(_coro);
             ELLE_TRACE("%s: start %s", *current , *this);
-            jump_fcontext(&this->_caller->_context,
-                          this->_context,
-                          reinterpret_cast<intptr_t>(this));
+            Coro_startCoro_(_caller->_coro, _coro, this, &starter);
             ELLE_TRACE("%s: back from %s", *current, *this);
           }
           else
@@ -188,27 +115,19 @@ namespace reactor
               }
               catch(...)
               {
-                jump_fcontext(&current->_context,
-                              this->_context,
-                              reinterpret_cast<intptr_t>(this));
+                Coro_switchTo_(current->_coro, _coro);
               }
             }
             else
-            {
-              jump_fcontext(&current->_context,
-                            this->_context,
-                            reinterpret_cast<intptr_t>(this));
-            }
+              Coro_switchTo_(current->_coro, _coro);
           }
           // It is unclear whether an uncaught_exception mismatch has any
           // consequence if the code does not explicitly depend on its result.
           // Warn about it just in case.
-          if (this->_backend._current->_unwinding != std::uncaught_exception())
-          {
+          if (_backend._current->_unwinding != std::uncaught_exception())
             ELLE_TRACE("step %s: unwind mismatch, expect %s, got %s",
-              *this->_backend._current, this->_backend._current->_unwinding,
+              *_backend._current, _backend._current->_unwinding,
               std::uncaught_exception());
-          }
         }
 
 
@@ -217,26 +136,22 @@ namespace reactor
         yield() override
         {
           // go from this to caller
-          ELLE_ASSERT_EQ(this->_backend._current, this);
+          ELLE_ASSERT_EQ(_backend._current, this);
           ELLE_ASSERT_EQ(this->status(), Status::running);
           this->status(Status::waiting);
-          this->_backend._current = this->_caller;
-          ELLE_TRACE("%s: yield back to %s", *this, *this->_backend._current);
-          this->_caller = nullptr;
+          _backend._current = _caller;
+          ELLE_TRACE("%s: yield back to %s", *this, *_backend._current);
+          _caller = nullptr;
           // Store current exception and stack unwinding state
           this->_unwinding = std::uncaught_exception();
           this->_exception = std::current_exception();
           if (this->_unwinding)
             ELLE_DUMP("yielding %s with in-flight exception", *this);
-          jump_fcontext(&this->_context,
-                        this->_backend._current->_context,
-                        reinterpret_cast<intptr_t>(this));
-          if (this->_backend._current->_unwinding != std::uncaught_exception())
-          {
+          Coro_switchTo_(_coro, _backend._current->_coro);
+          if (_backend._current->_unwinding != std::uncaught_exception())
             ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
-              *this->_backend._current, this->_backend._current->_unwinding,
+              *_backend._current, _backend._current->_unwinding,
               std::uncaught_exception());
-          }
         }
 
 
@@ -257,7 +172,7 @@ namespace reactor
           }
           catch (reactor::Exception const& e)
           {
-            std::cerr << "Thread " << this->name()
+            std::cerr << "Thread " << name()
                       << " killed by exception "
                       << elle::demangle(typeid(e).name()) << ": "
                       << e.what() << "." << std::endl;
@@ -266,7 +181,7 @@ namespace reactor
           }
           catch (const std::exception& e)
           {
-            std::cerr << "Thread " << this->name()
+            std::cerr << "Thread " << name()
                       << " killed by exception "
                       << elle::demangle(typeid(e).name()) << ": "
                       << e.what() << "." << std::endl;
@@ -274,31 +189,26 @@ namespace reactor
           }
           catch (...)
           {
-            std::cerr << "Thread " << this->name()
-                      << " killed by unknown exception."
+            std::cerr << "Thread " << name() << " killed by unknown exception."
                       << std::endl;
             std::abort();
           }
-          Thread* caller = this->_caller;
-          this->_caller = nullptr;
+          Thread* caller = _caller;
+          _caller = nullptr;
           this->status(Status::done);
-          this->_backend._current = caller;
+          _backend._current = caller;
           ELLE_TRACE("%s: done", *this);
-          jump_fcontext(&this->_context,
-                        caller->_context,
-                        reinterpret_cast<intptr_t>(this));
+          Coro_switchTo_(_coro, caller->_coro);
         }
 
         /// Owning backend.
         Backend& _backend;
-        /// Context stack store.
-        void* _stack_store;
-        /// Underlying IO context.
-        Context _context;
+        /// Underlying IO coroutine.
+        struct Coro* _coro;
         /// The thread that stepped us.
         Thread* _caller;
-        /// Wrap run function so that it can be passed when doing make_fcontext.
-        friend void wrapped_run(intptr_t);
+        /// Let libcoroutine callback invoke our _run.
+        friend void starter(void* arg);
         ELLE_ATTRIBUTE(bool, root);
         ELLE_ATTRIBUTE(bool, unwinding);
         ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
@@ -306,7 +216,7 @@ namespace reactor
 
       static
       void
-      wrapped_run(intptr_t arg)
+      starter(void* arg)
       {
         Backend::Thread* thread = reinterpret_cast<Backend::Thread*>(arg);
         thread->_run();
@@ -318,7 +228,7 @@ namespace reactor
 
       Backend::Backend():
         _self(new Thread(*this)),
-        _current(this->_self.get())
+        _current(_self.get())
       {}
 
       Backend::~Backend()
@@ -335,7 +245,7 @@ namespace reactor
       Thread*
       Backend::current() const
       {
-        return this->_current;
+        return _current;
       }
     }
   }
