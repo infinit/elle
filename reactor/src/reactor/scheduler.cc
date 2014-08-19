@@ -6,7 +6,11 @@
 #include <elle/memory.hh>
 
 #include <reactor/backend/backend.hh>
-#include <reactor/backend/coro_io/backend.hh>
+#ifdef INFINIT_WINDOWS
+# include <reactor/backend/coro_io/backend.hh>
+#else
+# include <reactor/backend/boost_context/backend.hh>
+#endif
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
@@ -37,7 +41,11 @@ namespace reactor
     _background_pool_free(0),
     _io_service(),
     _io_service_work(new boost::asio::io_service::work(this->_io_service)),
+#ifdef INFINIT_WINDOWS
     _manager(new backend::coro_io::Backend()),
+#else
+    _manager(new backend::boost_context::Backend()),
+#endif
     _running_thread()
   {
     this->_eptr = nullptr;
