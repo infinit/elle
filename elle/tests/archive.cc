@@ -139,6 +139,7 @@ extract(elle::archive::Format fmt,
       break;
     }
     case elle::archive::Format::zip:
+    case elle::archive::Format::zip_uncompressed:
     {
       elle::system::Process p({
           (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio" EXTENSION).string(),
