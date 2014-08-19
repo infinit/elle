@@ -581,29 +581,30 @@ PY_MINOR_VERSION''', config = python3)
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
     boost_prefix = drake.path_root() / drake.path_build('boost')
+    boost_bootstrap_libraries = [
+      'atomic',
+      'chrono',
+      'date_time',
+      'filesystem',
+      'program_options',
+      'python',
+      'signals',
+      'system',
+      'test',
+      'thread',
+    ]
+    if cxx_toolkit.os is not drake.os.windows:
+      boost_bootstrap_libraries.append('context')
     boost_bootstrap_command = [
       './bootstrap.sh',
       '--prefix=%s' % boost_prefix,
       '--with-python=%s' % python_version,
-      '--with-libraries=%s' % ','.join((
-        'atomic',
-        'context',
-        'chrono',
-        'date_time',
-        'filesystem',
-        'program_options',
-        'python',
-        'signals',
-        'system',
-        'test',
-        'thread',
-      )),
+      '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
-    boost_libraries_names = (
+    boost_library_names = [
       'atomic',
       'chrono',
-      'context',
       'date_time',
       'filesystem',
       'program_options',
@@ -613,7 +614,9 @@ PY_MINOR_VERSION''', config = python3)
       'system',
       cxx_toolkit.os is drake.os.windows and 'thread_win32' or 'thread',
       'unit_test_framework',
-    )
+    ]
+    if cxx_toolkit.os is not drake.os.windows:
+      boost_library_names.append('context')
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
@@ -629,7 +632,7 @@ PY_MINOR_VERSION''', config = python3)
     boost_libraries = ([t(fmt % name) for t, fmt in ((drake.cxx.StaticLib, boost_static_format),
                                                      (drake.cxx.DynLib, boost_dynamic_format))
                         if fmt is not None]
-                       for name in boost_libraries_names)
+                       for name in boost_library_names)
     boost_libraries = list(chain(*boost_libraries))
 
     class BoostUserConfigGenerator(drake.Builder):
