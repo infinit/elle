@@ -709,7 +709,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         else:
           toolset = 'gcc'
         self.__command = [
-          './b2', '-q', 'install',
+          './b2', '-q', 'install', '--ignore-site-config',
           'toolset=%s' % toolset,
           '--user-config=user-config.jam',
         ]
