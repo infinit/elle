@@ -1,7 +1,11 @@
 #include <elle/test.hh>
 
 #include <reactor/backend/backend.hh>
-#include <reactor/backend/coro_io/backend.hh>
+#ifdef INFINIT_WINDOWS
+# include <reactor/backend/coro_io/backend.hh>
+#else
+# include <reactor/backend/boost_context/backend.hh>
+#endif
 
 #include <boost/bind.hpp>
 
@@ -103,13 +107,21 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
   boost::unit_test::framework::master_test_suite().add(backend);
-#define TEST(Name)                                                      \
+#ifdef INFINIT_WINDOWS
+# define TEST(Name)                                                     \
   {                                                                     \
     backend->add(                                                       \
       BOOST_TEST_CASE(Name<reactor::backend::coro_io::Backend>),        \
       0, 10);                                                           \
-  }                                                                     \
-
+  }
+#else
+# define TEST(Name)                                                     \
+  {                                                                     \
+    backend->add(                                                       \
+      BOOST_TEST_CASE(Name<reactor::backend::boost_context::Backend>),  \
+      0, 10);                                                           \
+  }
+#endif
   TEST(test_die);
   TEST(test_deadlock_creation);
   TEST(test_deadlock_switch);
