@@ -51,7 +51,7 @@ namespace reactor
           if (!limit)
             throw std::bad_alloc();
 
-          return static_cast<char *>(limit) + size;
+          return static_cast<char*>(limit) + size;
         }
 
         void
@@ -61,7 +61,7 @@ namespace reactor
           ELLE_ASSERT(minimum_stack_size() <= size);
           ELLE_ASSERT(maximum_stack_size() >= size);
 
-          void* limit = static_cast<char *>(vp) - size;
+          void* limit = static_cast<char*>(vp) - size;
           std::free(limit);
         }
       };
@@ -72,7 +72,7 @@ namespace reactor
       /// Default allocator type.
       typedef TemplatedStackAllocator<
         8 * 1024 * 1024,  // Max: 8 MiB
-        64 * 1024,        // Default: 64 kiB
+        128 * 1024,       // Default: 128 kiB
         8 * 1024          // Min: 8 kiB
         > StackAllocator;
       /// Type of context pointer used.
