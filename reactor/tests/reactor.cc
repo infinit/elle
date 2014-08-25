@@ -9,6 +9,7 @@
 
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/MultiLockBarrier.hh>
 #include <reactor/Channel.hh>
 #include <reactor/Scope.hh>
 #include <reactor/duration.hh>
@@ -388,6 +389,65 @@ barrier_opened()
       reactor::wait(barrier);
     });
   sched.run();
+}
+
+/*------------------.
+| Multilock Barrier |
+`------------------*/
+static
+void
+multilock_barrier_basic()
+{
+  reactor::Scheduler sched;
+  reactor::MultiLockBarrier barrier;
+  bool no_lock = false;
+  bool first_lock = false;
+  bool second_lock = false;
+  bool third_lock = false;
+  bool beacon_waiter = false;
+  bool beacon_closer = false;
+  reactor::Thread waiter(sched, "waiter", [&] {
+      std::cerr << "waiter" << std::endl;
+      BOOST_CHECK(barrier.opened());
+      reactor::wait(barrier);
+      no_lock = true;
+      reactor::yield();
+      reactor::yield();
+      BOOST_CHECK_EQUAL(barrier.locks(), 1);
+      BOOST_CHECK(first_lock);
+      BOOST_CHECK(!second_lock);
+      reactor::wait(barrier);
+      BOOST_CHECK(barrier.opened());
+      BOOST_CHECK(first_lock);
+      BOOST_CHECK(second_lock);
+      BOOST_CHECK(third_lock);
+      beacon_waiter = true;
+    });
+
+  reactor::Thread closer(sched, "closer", [&] {
+      reactor::yield();
+      BOOST_CHECK(no_lock);
+      {
+        first_lock = true;
+        auto lock = barrier.lock();
+        reactor::yield();
+        {
+          second_lock = true;
+          auto lock = barrier.lock();
+          reactor::yield();
+
+          {
+            third_lock = true;
+            auto copied_lock = lock;
+            reactor::yield();
+          }
+        }
+
+      }
+      beacon_closer = true;
+    });
+  sched.run();
+  BOOST_CHECK(beacon_waiter & beacon_closer);
 }
 
 /*------.
@@ -2504,6 +2564,11 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(barrier);
   barrier->add(BOOST_TEST_CASE(barrier_closed), 0, 10);
   barrier->add(BOOST_TEST_CASE(barrier_opened), 0, 10);
+
+  boost::unit_test::test_suite* multilock_barrier =
+    BOOST_TEST_SUITE("MultilockBarrier");
+  boost::unit_test::framework::master_test_suite().add(multilock_barrier);
+  multilock_barrier->add(BOOST_TEST_CASE(multilock_barrier_basic), 0, 10);
 
   // Timer
   {
