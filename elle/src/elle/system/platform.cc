@@ -15,6 +15,8 @@ namespace elle
         return "Linux";
 #elif defined INFINIT_MACOSX
         return "MacOSX";
+#elif defined INFINIT_IOS
+        return "iOS";
 #else
 # error Please define INFINIT_{OS} according to your platform.
 #endif
