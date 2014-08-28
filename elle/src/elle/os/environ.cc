@@ -14,16 +14,18 @@
 
 #include <cstdlib>
 
-namespace elle
-{
-  namespace os
-  {
-
 #ifdef environ
 # undef environ
 #endif
 
+#ifdef INFINIT_IOS
+extern char **environ;
+#endif
 
+namespace elle
+{
+  namespace os
+  {
     static
     std::pair<std::string, std::string>
     split_env_var(char const* str)
