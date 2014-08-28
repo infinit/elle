@@ -48,17 +48,18 @@ def configure(zlib_lib,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.macos, drake.os.windows]:
+  if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios]:
     cxx_config += boost.config_filesystem(static = True)
   else:
     cxx_config += boost.config_filesystem(link = False)
     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
                                       'lib', strip_prefix = True))
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config += boost.config_system(static = True)
     cxx_config += boost.config_thread(static = True)
     cxx_config += boost.config_chrono(static = True)
-    boost_python = drake.cxx.Config(boost.config_python(static = True))
+    if python3 is not None:
+      boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
     boost_python = drake.cxx.Config(boost.config_system(link = False))
     boost_python.library_add(drake.copy(boost.python_dynamic,
@@ -389,19 +390,20 @@ def configure(zlib_lib,
   )
 
   # Python binding helpers.
-  sources += drake.nodes(
-    'src/elle/python/containers.hh',
-    'src/elle/python/containers.hxx',
-    'src/elle/python/converter-plugin.hh',
-    'src/elle/python/gil.hh'
-  )
+  if python3 is not None:
+    sources += drake.nodes(
+      'src/elle/python/containers.hh',
+      'src/elle/python/containers.hxx',
+      'src/elle/python/converter-plugin.hh',
+      'src/elle/python/gil.hh'
+    )
 
   sources += [drake.cxx.Header(p) for p in (
     'src/map',
     'src/utility',
   )]
 
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
     #sources.append(drake.node('src/elle/utility/Unicode-win32.cc'))
   else:
@@ -434,7 +436,7 @@ def configure(zlib_lib,
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -566,8 +568,8 @@ def configure(zlib_lib,
   cxx_config_tests = cxx_config + config
   cxx_config_tests.enable_debug_symbols()
 
-  if cxx_toolkit.os is drake.os.windows:
-    cxx_config_tests += boost.config_test()
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+    cxx_config_tests += boost.config_test(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
@@ -605,7 +607,7 @@ def configure(zlib_lib,
 
   rule_install = drake.Rule('install')
   prefix = drake.Path(prefix)
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
   rule_install << drake.install(
