@@ -73,7 +73,7 @@ def configure(curl_config,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
@@ -280,7 +280,7 @@ def configure(curl_config,
     sources + lib_dynamic_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -327,8 +327,8 @@ def configure(curl_config,
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests.add_local_include_path('tests')
-  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os is drake.os.macos) or None)
-  if cxx_toolkit.os is drake.os.windows:
+  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os in [drake.os.macos, drake.os.ios]) or None)
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config_tests += boost.config_test(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
@@ -362,7 +362,7 @@ def configure(curl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
-  if python3 is not None and cxx_toolkit.os is not drake.os.windows:
+  if python3 is not None:
     python_tests = (
       'tests/python',
       )
@@ -384,7 +384,7 @@ def configure(curl_config,
 
   # Install
   rule_install = drake.Rule('install')
-  if cxx_toolkit.os != drake.os.windows:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
   rule_install << drake.install(
