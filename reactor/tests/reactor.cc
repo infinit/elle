@@ -2155,7 +2155,7 @@ namespace background
 | Signals |
 `--------*/
 
-#ifndef INFINIT_WINDOWS
+#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
 namespace system_signals
 {
   static
@@ -2703,7 +2703,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(tracked);
   tracked->add(BOOST_TEST_CASE(test_tracked), 0, 10);
 
-#ifndef INFINIT_WINDOWS
+#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
   {
     boost::unit_test::test_suite* system_signals =
       BOOST_TEST_SUITE("system_signals");
