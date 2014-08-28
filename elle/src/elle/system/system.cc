@@ -129,7 +129,7 @@ namespace elle
         throw boost::filesystem::filesystem_error(strerror(errno), path,
           boost::system::error_code(errno, boost::system::system_category()));
        elle::SafeFinally close_file([&] { ::close(fd);});
-#ifdef INFINIT_MACOSX
+#if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
       // macos has 64 bit lseek because off_t is 64 bits
       ELLE_ASSERT_GTE(sizeof(off_t), 8);
       typedef off_t seek_offset_type;
