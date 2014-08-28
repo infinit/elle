@@ -713,6 +713,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         return res
       @property
       def params(self):
+        cxx = None
         if cxx_toolkit.os is drake.os.windows:
           extra = ': <target-os>windows '
         elif cxx_toolkit.os is drake.os.ios:
