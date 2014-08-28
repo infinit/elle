@@ -25,7 +25,6 @@ ELLE_LOG_COMPONENT("reactor.network.test");
 using reactor::network::Byte;
 using reactor::network::Buffer;
 using reactor::Signal;
-using reactor::network::Size;
 using reactor::network::TCPSocket;
 using reactor::network::TCPServer;
 using reactor::Thread;
@@ -202,7 +201,7 @@ serve(std::unique_ptr<reactor::network::Socket> socket)
   Byte buffer[512];
   while (true)
   {
-    Size read = 0;
+    reactor::network::Size read = 0;
     try
     {
       read = socket->read_some(Buffer(buffer, sizeof(buffer) - 1),
@@ -237,7 +236,7 @@ client(std::vector<std::string> messages, unsigned& check)
     s.write(elle::ConstWeakBuffer(message));
 
     Byte buf[256];
-    Size read = s.read_some(Buffer(buf, 256));
+    reactor::network::Size read = s.read_some(Buffer(buf, 256));
     buf[read] = 0;
     BOOST_CHECK_EQUAL(message, reinterpret_cast<char*>(buf));
     ++check;
