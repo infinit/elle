@@ -69,7 +69,7 @@ class Logger(metaclass = LoggerType):
   def __init__(self, configuration_string = None, indentation = None):
     self.__indentation = indentation or Logger.Indentation()
     def parse_log_level(string):
-      string = string.lower()
+      string = configuration_string.lower()
       if string == 'log':
         return LogLevel.log
       elif string == 'trace':
