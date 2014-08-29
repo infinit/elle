@@ -703,7 +703,7 @@ class GccToolkit(Toolkit):
     objects = [str(n.path()) for n in objs
                if isinstance(n, drake.cxx.Object)]
     return ([self.ar, 'crs', str(lib.path())] + objects,
-            ['ranlib', str(lib.path())])
+            ['%sranlib' % self.prefix, str(lib.path())])
 
   def __libraries_flags(self, cfg, libraries, cmd):
     for lib in libraries:
