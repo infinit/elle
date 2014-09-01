@@ -2960,7 +2960,7 @@ def touch(path):
 
 # Architectures
 class architecture(Enumerated,
-                   values = ['x86', 'x86_64', 'arm7']):
+                   values = ['x86', 'x86_64', 'arm']):
   pass
 
 # OSes
