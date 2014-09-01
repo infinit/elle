@@ -718,7 +718,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           extra = ': <target-os>windows '
         elif cxx_toolkit.os is drake.os.ios:
           cxx = '%s -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden' % self.__toolkit.cxx
-          cxx += '\n: <striper> <root>%s' % os.environment['CROSS_TOP']
+          cxx += '\n: <striper> <root>%s' % os.environ['CROSS_TOP']
           cxx += '\n: <architecture>arm <target-os>iphone'
           extra = ''
         else:
