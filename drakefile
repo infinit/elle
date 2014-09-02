@@ -78,7 +78,7 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
-  if python3 is not None:
+  if python3 is not False:
     python3 = drake.cxx.find_library(
       'pyconfig.h',
       prefix = python3,
@@ -99,7 +99,9 @@ def configure(cxx_toolkit = None,
       python_bin = 'bin/python%s' % python_version
     python3.python_interpreter = python3.prefix / python_bin
     python3.version = python_version
-    set_python3(python3)
+  else:
+    python3 = None
+  set_python3(python3)
 
   ## -------- ##
   ## Patchelf ##
