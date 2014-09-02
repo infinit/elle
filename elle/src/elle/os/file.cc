@@ -3,7 +3,7 @@
 #include <elle/Exception.hh>
 #include <elle/printf.hh>
 
-#include <boost/filesystem.hpp>
+# include <boost/filesystem.hpp>
 
 namespace elle
 {
@@ -11,11 +11,30 @@ namespace elle
   {
     namespace file
     {
+      bool
+      exists(std::string const& path)
+      {
+        return elle::os::file::exists(boost::filesystem::path{path});
+      }
+
+      bool
+      exists(boost::filesystem::path const& path)
+      {
+        return boost::filesystem::exists(path);
+      }
+
       size_t
       size(std::string const& path)
       {
+        return elle::os::file::size(boost::filesystem::path{path});
+      }
+
+      size_t
+      size(boost::filesystem::path const& path)
+      {
         boost::system::error_code err;
-        if (!boost::filesystem::exists(path))
+
+        if (!elle::os::file::exists(path))
           throw boost::filesystem::filesystem_error(
             "File does not exist",
             path,

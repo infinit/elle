@@ -3,6 +3,7 @@
 #include <elle/os/environ.hh>
 
 #ifdef INFINIT_WINDOWS
+# include <elle/windows/string_conversion.hh>
 # include <shlobj.h>
 #else
 # include <pwd.h>

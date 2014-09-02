@@ -642,6 +642,8 @@ def configure(cxx_toolkit = None,
       boost_bootstrap_libraries.append('python')
     if cxx_toolkit.os is not drake.os.windows:
       boost_bootstrap_libraries.append('context')
+    else:
+      boost_bootstrap_libraries.append('locale')
     boost_bootstrap_command = [
       './bootstrap.sh',
       '--prefix=%s' % boost_prefix,
@@ -666,6 +668,8 @@ def configure(cxx_toolkit = None,
       boost_library_names.append('python3')
     if cxx_toolkit.os is not drake.os.windows:
       boost_library_names.append('context')
+    else:
+      boost_library_names.append('locale')
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
