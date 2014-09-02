@@ -695,11 +695,14 @@ def configure(cxx_toolkit = None,
         with open(str(self.__user_config.path()), 'w') as f:
           print(self.format % self.params, file = f)
         return True
+
       @property
       def user_config(self):
         return self.__user_config
+
       def hash(self):
         return self.__toolkit.cxx
+
       @property
       def format(self):
         res = '''\
@@ -710,14 +713,17 @@ using %(compiler)s : : %(cxx)s ;
 using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib %(extra)s;
 '''
         return res
+
       @property
       def params(self):
-        cxx = None
+        cxx = self.__toolkit.cxx
         if cxx_toolkit.os is drake.os.windows:
           extra = ': <target-os>windows '
         elif cxx_toolkit.os is drake.os.ios:
-          cxx = '%s -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden' % self.__toolkit.cxx
+          cxx = '%s -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden' % cxx
           cxx += '\n: <striper> <root>%s' % os.environ['CROSS_TOP']
+          cxx = '%s -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden' % cxx
+          cxx += '\n: <striper> <root>/Applications/Xcode6-Beta6.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer'
           cxx += '\n: <architecture>arm <target-os>iphone'
           extra = ''
         else:
@@ -728,17 +734,16 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           compiler = 'darwin'
         else:
           compiler = 'gcc'
-        res = {
+        return {
           'compiler': compiler,
-          'cxx': cxx or self.__toolkit.cxx,
+          'cxx': cxx,
           'extra': extra,
+          'python_bin': python_bin,
+          'python_include': python3.include_dir,
+          'python_prefix': python3.prefix,
+          'python_version': python_version,
         }
-        if python3 is not None:
-          res['python_version'] = python_version
-          res['python_bin'] = python_bin
-          res['python_prefix'] = python3.prefix
-          res['python_include'] = python3.include_dir
-        return res
+
       def hash(self):
         return self.params
 
