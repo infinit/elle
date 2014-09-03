@@ -759,8 +759,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       targets = [boost_bjam],
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
-      cwd = drake.path_build('boost/%s' % boost_basename),
-      environment = {})
+      cwd = drake.path_build('boost/%s' % boost_basename))
     class BoostBuilder(drake.Builder):
       def __init__(self, sources, targets):
         self.__targets = targets
