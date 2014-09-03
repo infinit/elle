@@ -640,8 +640,6 @@ def configure(cxx_toolkit = None,
       '--prefix=%s' % boost_prefix,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
-    if python3 is not None:
-      boost_bootstrap_command.append('--with-python=python%s' % python_version)
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
     boost_library_names = [
       'atomic',
