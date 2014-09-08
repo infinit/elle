@@ -1285,17 +1285,25 @@ class Node(BaseNode):
 
   def hash(self):
     """Digest of the file as a string."""
+
+    def _hash_file(hasher, path):
+      if _OS.path.isdir(str(path)):
+        for sub_path in _OS.listdir(str(path)):
+          _hash_file(hasher, _OS.path.join(str(path), str(sub_path)))
+      else:
+        with open(str(path), 'rb') as f:
+          while True:
+            chunk = f.read(8192)
+            if not chunk:
+              break
+            hasher.update(chunk)
+
     if self.__hash is None:
       with profile_hashing():
         hasher = hashlib.sha1()
         for node in sorted(chain((self,), self.dependencies)):
           path = node.path()
-          with open(str(path), 'rb') as f:
-            while True:
-              chunk = f.read(8192)
-              if not chunk:
-                break
-              hasher.update(chunk)
+          _hash_file(hasher, path)
         self.__hash = hasher.digest()
     return self.__hash
 
