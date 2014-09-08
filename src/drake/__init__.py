@@ -1914,6 +1914,9 @@ class Builder:
               if not e_pretty:
                 e_pretty = repr(e)
               print('%s: %s' % (self, e_pretty), file = sys.stderr)
+              if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+                import traceback
+                traceback.print_exc()
               raise Builder.Failed(self) from e
             if not success:
               raise Builder.Failed(self)
