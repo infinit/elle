@@ -817,10 +817,12 @@ using python : python%(python_version)s : %(python_prefix)s/%(python_bin)s : %(p
             'linkflags=-std=c++11',
           ]
       def execute(self):
-        if not self.cmd('Build Boost',
-                        self.__command,
-                        self.__cwd):
-          return False
+        with drake.CWDPrinter(
+            drake.path_build('.', absolute = True) / self.__cwd):
+          if not self.cmd('Build Boost',
+                          self.__command,
+                          self.__cwd):
+            return False
         if cxx_toolkit.os is drake.os.macos:
           for target in self.__targets:
             if isinstance(target, drake.cxx.DynLib):
