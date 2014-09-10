@@ -8,7 +8,7 @@
 #include <network/uri.hpp>
 
 
-TEST(uri_make_reference_test, opaque_uri) {
+TEST(uri_make_relative_test, opaque_uri) {
   network::uri uri_1("mailto:glynos@example.com");
   network::uri uri_2("mailto:john.doe@example.com");
   ASSERT_EQ(uri_2, uri_1.make_relative(uri_2));
