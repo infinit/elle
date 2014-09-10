@@ -37,6 +37,16 @@ namespace elle
       }
     };
 
+    struct archive_read_deleter
+    {
+      void
+      operator()(::archive* archive)
+      {
+        check_call(archive, archive_read_close(archive));
+        check_call(archive, archive_read_free(archive));
+      }
+    };
+
     struct archive_entry_deleter
     {
       void
@@ -56,19 +66,36 @@ namespace elle
       std::unique_ptr<archive_entry, archive_entry_deleter> entry
         (archive_entry_new());
       archive_entry_set_pathname(entry.get(), relative_path.string().c_str());
+      archive_entry_copy_sourcepath(entry.get(), file.string().c_str());
       struct stat st;
-      ::stat(file.string().c_str(), &st);
-      archive_entry_copy_stat(entry.get(), &st);
+#ifdef INFINIT_WINDOWS
+      #define S_ISLNK(a) false
+      ::stat
+#else
+      ::lstat
+#endif
+             (file.string().c_str(), &st);
+
+      std::unique_ptr< ::archive, archive_read_deleter> read_disk
+        (archive_read_disk_new());
+      archive_read_disk_set_symlink_physical(read_disk.get());
+      archive_read_disk_entry_from_file(read_disk.get(), entry.get(), -1, 0/*&st*/);
       check_call(archive, archive_write_header(archive, entry.get()));
-      boost::filesystem::ifstream input(file, std::ios_base::in | std::ios_base::binary);
-      if (!input.good())
-        throw elle::Exception(elle::sprintf("unable to read file %s", file));
-      char buffer[BUFSIZ];
-      while (!input.eof())
+      ELLE_DEBUG("Will write %s bytes for %s, islink:%s mode:%s",
+        archive_entry_size(entry.get()), file, S_ISLNK(st.st_mode), st.st_mode);
+      // An archive_entry_size of 0 means data is not required (hardlink)
+      if (archive_entry_size(entry.get()) > 0 && !S_ISLNK(st.st_mode))
       {
-        input.read(buffer, BUFSIZ);
-        size_t read = input.gcount();
-        check_call(archive, archive_write_data(archive, buffer, read), read);
+        boost::filesystem::ifstream input(file, std::ios_base::in | std::ios_base::binary);
+        if (!input.good())
+          throw elle::Exception(elle::sprintf("unable to read file %s", file));
+        char buffer[BUFSIZ];
+        while (!input.eof())
+        {
+          input.read(buffer, BUFSIZ);
+          size_t read = input.gcount();
+          check_call(archive, archive_write_data(archive, buffer, read), read);
+        }
       }
     }
 

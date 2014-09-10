@@ -269,6 +269,45 @@ archive_duplicate(elle::archive::Format fmt)
   }
 }
 
+static
+void
+archive_symlink(elle::archive::Format fmt)
+{
+  #ifdef INFINIT_WINDOWS
+  return;
+  #else
+  TemporaryDirectory d1("input");
+  boost::filesystem::create_directories(d1.path() / "files");
+  boost::filesystem::ofstream(d1.path() / "files" / "data") << "data";
+  boost::filesystem::ofstream(d1.path() / "outside-data") << "outside-data";
+  boost::filesystem::create_symlink("data", (d1.path() / "files" / "data-link"));
+  boost::filesystem::create_symlink("nosuchfile", (d1.path() / "files" / "invalid-link"));
+  boost::filesystem::create_symlink("../outside-data", (d1.path() / "files" / "external-link"));
+  TemporaryDirectory d2("output");
+  auto path = d2.path() / "output.zip";
+  elle::archive::archive(fmt,
+                         {d1.path() / "files"},
+                         path
+                         );
+  TemporaryDirectory decompress("decompress");
+  extract(fmt, path, decompress.path());
+  BOOST_CHECK_EQUAL(boost::filesystem::read_symlink(decompress.path() / "files" / "data-link"),
+                    boost::filesystem::path("data"));
+  BOOST_CHECK_EQUAL(boost::filesystem::read_symlink(decompress.path() / "files" / "external-link"),
+                    boost::filesystem::path("..") / "outside-data");
+  BOOST_CHECK_EQUAL(boost::filesystem::read_symlink(decompress.path() / "files" / "invalid-link"),
+                    boost::filesystem::path("nosuchfile"));
+  boost::filesystem::ifstream input(decompress.path() / "files" / "data-link",
+                                    std::ios_base::in | std::ios_base::binary);
+  BOOST_CHECK(input.good());
+  char buffer[BUFSIZ];
+  input.read(buffer, BUFSIZ);
+  BOOST_CHECK_EQUAL(input.gcount(), 4);
+  buffer[4] = 0;
+  BOOST_CHECK_EQUAL(buffer, "data");
+  #endif // INFINIT_WINDOWS
+}
+
 #define FORMAT(Fmt)                                     \
   namespace Fmt                                         \
   {                                                     \
@@ -292,6 +331,12 @@ archive_duplicate(elle::archive::Format fmt)
     {                                                   \
       archive_duplicate(elle::archive::Format::Fmt);    \
     }                                                   \
+    static                                              \
+    void                                                \
+    symboliclink()                                           \
+    {                                                   \
+      archive_symlink(elle::archive::Format::Fmt);      \
+    }                                                   \
   }                                                     \
 
 FORMAT(zip)
@@ -310,6 +355,7 @@ ELLE_TEST_SUITE()
     suite->add(BOOST_TEST_CASE(simple));        \
     suite->add(BOOST_TEST_CASE(less_simple));   \
     suite->add(BOOST_TEST_CASE(duplicate));     \
+    suite->add(BOOST_TEST_CASE(symboliclink));  \
   }                                             \
 
   FORMAT(zip);
