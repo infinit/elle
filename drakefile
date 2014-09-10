@@ -673,10 +673,14 @@ def configure(cxx_toolkit = None,
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.so'
       boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.56.0'
-    boost_libraries = ([t(fmt % name) for t, fmt in ((drake.cxx.StaticLib, boost_static_format),
-                                                     (drake.cxx.DynLib, boost_dynamic_format))
-                        if fmt is not None]
-                       for name in boost_library_names)
+    boost_libraries = (
+      [t(fmt % name)
+       for t, fmt in (
+           (drake.cxx.StaticLib, boost_static_format),
+           (drake.cxx.DynLib, boost_dynamic_format),
+           (drake.cxx.DynLib, boost_dynamic_versioned_format))
+       if fmt is not None]
+      for name in boost_library_names)
     boost_libraries = list(chain(*boost_libraries))
 
     class BoostUserConfigGenerator(drake.Builder):
