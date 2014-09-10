@@ -47,10 +47,10 @@ class Git(VirtualNode):
         path -- path to the repository; the source dir by default.
         """
         if path is None:
-            self.__path = drake.path_source('.')
-        else:
-            self.__path = drake.path_source(path)
-        VirtualNode.__init__(self, self.__path / 'git')
+            path = '.'
+        self.__path = drake.path_source(path)
+        self.__name = drake.path_build(path)
+        VirtualNode.__init__(self, self.__name / 'git')
         self.__author_date = None
         self.__revision    = None
         self.__description = None
