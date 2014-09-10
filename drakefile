@@ -745,7 +745,7 @@ using python : python%(python_version)s : %(python_prefix)s/%(python_bin)s : %(p
         }
 
       def hash(self):
-        return self.params
+        return self.format, self.params
 
     boost_user_config = BoostUserConfigGenerator(
       drake.node('boost/%s/user-config.jam' % boost_basename),
