@@ -103,7 +103,7 @@ namespace elle
       : _arguments(std::move(args))
       , _impl(new Process::Impl(*this))
     {
-      ELLE_TRACE_SCOPE("%s: start");
+      ELLE_TRACE_SCOPE("%s: start", *this);
     }
 
     int
