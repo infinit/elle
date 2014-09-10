@@ -660,7 +660,8 @@ def configure(cxx_toolkit = None,
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
-      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.56.0.dylib'
+      boost_dynamic_versioned_format = None
+      # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.56.0.dylib'
     elif cxx_toolkit.os is drake.os.windows:
       boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
