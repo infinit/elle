@@ -1057,7 +1057,6 @@ class _BaseNodeTypeType(type):
 class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
 
   def __call__(c, *args, **kwargs):
-
     try:
       return type.__call__(c, *args, **kwargs)
     except NodeRedefinition as e:
@@ -1088,6 +1087,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
     def __init__(self, name):
         """Create a node with the given name."""
         self.__name = name.canonize()
+        if next(iter(name)) == '..':
+          raise Exception('%s is outside the build directory' % name)
         if Drake.current.nodes.setdefault(self.__name, self) is not self:
           raise NodeRedefinition(self.__name)
         self.uid = BaseNode.uid
