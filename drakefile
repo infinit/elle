@@ -49,6 +49,7 @@ def configure(cxx_toolkit = None,
               production_build = False,
               boost = None,
               python3 = None,
+              python_version = None,
               enable_rotation = False,
               dopenssl = None,
               prefix = '/usr',
@@ -79,14 +80,20 @@ def configure(cxx_toolkit = None,
     prefix = drake.Path('..') / prefix
 
   if python3 is not False:
+    if python_version is None:
+      python_version = (drake.Version(3, 2),
+                        drake.Version(3, 3),
+                        drake.Version(3, 4))
+    elif not isinstance(python_version, collections.Iterable):
+      python_version = (python_version,)
+    include_dir = list(itertools.chain(
+      ('include',),
+      *(('include/python%s' % v,
+         'include/python%sm' % v) for v in python_version)))
     python3 = drake.cxx.find_library(
       'pyconfig.h',
       prefix = python3,
-      include_dir = ['include',
-                     'include/python3.2',
-                     'include/python3.2m',
-                     'include/python3.3m',
-                     'include/python3.4m'])
+      include_dir = include_dir)
     python_version = cxx_toolkit.preprocess('''\
   #include <patchlevel.h>
   PY_MAJOR_VERSION
