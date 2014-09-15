@@ -84,7 +84,7 @@ namespace elle
       HANDLE h = CreateFileW(
         path.native().c_str(),
         GENERIC_READ,
-        0, 0,
+        FILE_SHARE_READ, 0,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         0);
