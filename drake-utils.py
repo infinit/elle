@@ -195,3 +195,7 @@ class VersionGenerator(drake.Builder):
 
   def _variable(self, name, value):
     raise NotImplementedError()
+
+class PythonVersionGenerator(VersionGenerator):
+  def _variable(self, name, value):
+    return '%s = %s' % (name, repr(value))
