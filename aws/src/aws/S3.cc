@@ -784,7 +784,11 @@ namespace aws
           throw aws_exception;
         }
         else
+        {
+          reactor::sleep(boost::posix_time::milliseconds(
+            std::min(int(500 * pow(2,attempt)), 20000)));
           continue;
+        }
       }
       catch (reactor::http::RequestError const& e)
       {
@@ -800,7 +804,11 @@ namespace aws
           throw aws_exception;
         }
         else
+        {
+          reactor::sleep(boost::posix_time::milliseconds(
+            std::min(int(500 * pow(2,attempt)), 20000)));
           continue;
+        }
       }
 
       try
