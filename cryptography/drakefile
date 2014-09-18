@@ -69,7 +69,7 @@ def configure(openssl_config,
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += config
   cxx_config += boost.config()
-  if cxx_toolkit.os is drake.os.ios:
+  if cxx_toolkit.os in [drake.os.ios, drake.os.windows]:
     cxx_config += boost.config_system(static = True)
   else:
     cxx_config += boost.config_system(link = False)
