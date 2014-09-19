@@ -58,7 +58,7 @@ def configure(zlib_lib,
     cxx_config += boost.config_system(static = True)
     cxx_config += boost.config_thread(static = True)
     cxx_config += boost.config_chrono(static = True)
-    if python3 is not None:
+    if python3 is not False:
       boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
     boost_python = drake.cxx.Config(boost.config_system(link = False))
@@ -390,7 +390,7 @@ def configure(zlib_lib,
   )
 
   # Python binding helpers.
-  if python3 is not None:
+  if python3 is not False:
     sources += drake.nodes(
       'src/elle/python/containers.hh',
       'src/elle/python/containers.hxx',
@@ -447,7 +447,7 @@ def configure(zlib_lib,
   ## ------ ##
 
 
-  if python3 is not None:
+  if python3 is not False:
     python = []
     python_rule = drake.Rule('python')
     python3 = drake.cxx.find_library(

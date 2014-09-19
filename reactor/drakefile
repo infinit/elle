@@ -286,7 +286,7 @@ def configure(curl_config,
   else:
     library = lib_static
 
-  if python3 is not None:
+  if python3 is not False:
     python_cxx_config = drake.cxx.Config(local_cxx_config)
     python_cxx_config.lib_path_runtime('..')
     python_cxx_config += python3
@@ -362,7 +362,7 @@ def configure(curl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
-  if python3 is not None:
+  if python3 is not False:
     python_tests = (
       'tests/python',
       )
