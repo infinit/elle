@@ -29,7 +29,7 @@ namespace reactor
     TCPSocket::TCPSocket(const std::string& hostname,
                          int port,
                          DurationOpt timeout):
-      TCPSocket(hostname, boost::lexical_cast<std::string>(port), timeout)
+      TCPSocket(hostname, std::to_string(port), timeout)
     {}
 
     TCPSocket::TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,

@@ -91,8 +91,7 @@ namespace reactor
       , _write_mutex()
     {
       this->socket()->bind(local_port);
-      _connect(resolve_udp(sched, hostname,
-                           boost::lexical_cast<std::string>(port)), timeout);
+      _connect(resolve_udp(sched, hostname, std::to_string(port)), timeout);
     }
 
     UDTSocket::~UDTSocket()
