@@ -363,9 +363,8 @@ post(reactor::http::Request::Configuration conf,
     int64_t lup = l;
     if (chunked)
       lup += 11;
-    // Request announce an upload content length, but curl seems to ignore it.
     BOOST_CHECK_EQUAL(r.progress(),
-                      (reactor::http::Request::Progress{l,l,lup, -1LL}));
+                      (reactor::http::Request::Progress{l,l,lup, 0}));
   }
   else
   {
@@ -508,7 +507,7 @@ ELLE_TEST_SCHEDULED(request_move)
   BOOST_CHECK_EQUAL(e.response(), "{}");
   BOOST_CHECK_EQUAL(e.status(), reactor::http::StatusCode::OK);
   BOOST_CHECK_EQUAL(e.progress(),
-                    (reactor::http::Request::Progress{2, 2, 2, -1LL}));
+                    (reactor::http::Request::Progress{2, 2, 2, 0}));
 }
 
 class ScheduledSilentHttpServer:
