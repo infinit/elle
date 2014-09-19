@@ -654,8 +654,7 @@ namespace reactor
       if (!this->_impl->_conf.chunked_transfers())
       {
         this->_impl->header_add(
-          "Content-Length",
-          boost::lexical_cast<std::string>(this->_impl->_output.size()));
+          "Content-Length", std::to_string(this->_impl->_output.size()));
         this->_impl->start();
       }
     }

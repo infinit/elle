@@ -115,7 +115,7 @@ namespace reactor
     UPNP::_setup_redirect(Protocol p, unsigned short port, PortMapping& res)
     { // THREADED
       char effectivePort[6];
-      std::string port_string = boost::lexical_cast<std::string>(port);
+      std::string port_string = std::to_string(port);
       std::string protocol_string = p == Protocol::tcp? "TCP" : "UDP";
       ELLE_TRACE("AddAnyPortMapping(%s, %s, %s, %s)",
                  protocol_string,

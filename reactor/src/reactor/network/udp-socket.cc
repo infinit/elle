@@ -34,7 +34,7 @@ namespace reactor
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
                          int port):
-      UDPSocket(sched, hostname, boost::lexical_cast<std::string>(port))
+      UDPSocket(sched, hostname, std::to_string(port))
     {}
 
     // UDPSocket::UDPSocket(Scheduler& sched,
@@ -43,7 +43,7 @@ namespace reactor
     //                      int port)
     //   : Super(sched, new AsioSocket(sched.io_service()),
     //           resolve_udp(sched, hostname,
-    //                       boost::lexical_cast<std::string>(port)))
+    //                       std::to_string(port)))
     // {
     //   this->_socket->open(boost::asio::ip::udp::v4());
     //   boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),

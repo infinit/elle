@@ -72,7 +72,7 @@ namespace reactor
         std::unique_ptr<UDTSocket>(
           new UDTSocket(this->scheduler(),
                         this->_udp_socket->socket()->native_handle(),
-                        addr, boost::lexical_cast<std::string>(port))));
+                        addr, std::to_string(port))));
       ELLE_DEBUG("%s: rendezvous attended", this);
       this->_accepted.signal_one();
     }
