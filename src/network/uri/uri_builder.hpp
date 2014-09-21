@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012, 2013, 2014.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Dean Michael Berris <dberris@google.com>
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
@@ -125,7 +125,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    ~uri_builder();
+    ~uri_builder() NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Adds a new scheme to the uri_builder.

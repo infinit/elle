@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2012, 2013, 2014.
+// Copyright (c) Glyn Matthews 2012, 2013.
 // Copyright 2012 Dean Michael Berris <dberris@google.com>
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
@@ -17,5 +17,11 @@
 #else
 #define NETWORK_URI_DECL
 #endif // defined(BOOST_ALL_DYN_LINK) || defined(BOOST_URI_DYN_LINK)
+
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
+#define NETWORK_URI_NOEXCEPT throw()
+#else
+#define NETWORK_URI_NOEXCEPT noexcept
+#endif // defined(BOOST_NO_CXX11_NOEXCEPT)
 
 #endif // NETWORK_URI_CONFIG_INC

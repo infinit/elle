@@ -1,4 +1,4 @@
-// Copyright 2012, 2013, 2014 Glyn Matthews.
+// Copyright 2012, 2013 Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -219,20 +219,20 @@ namespace network {
                builder.port_, builder.path_, builder.query_, builder.fragment_);
   }
 
-  uri::uri(uri &&other) noexcept : uri_(std::move(other.uri_)) {
+  uri::uri(uri &&other) NETWORK_URI_NOEXCEPT : uri_(std::move(other.uri_)) {
     advance_parts(uri_, uri_parts_, other.uri_parts_);
     other.uri_.clear();
     other.uri_parts_ = detail::uri_parts<string_type::iterator>();
   }
 
-  uri::~uri() noexcept {}
+  uri::~uri() NETWORK_URI_NOEXCEPT {}
 
   uri &uri::operator=(uri other) {
     other.swap(*this);
     return *this;
   }
 
-  void uri::swap(uri &other) noexcept {
+  void uri::swap(uri &other) NETWORK_URI_NOEXCEPT {
     advance_parts(other.uri_, uri_parts_, other.uri_parts_);
     uri_.swap(other.uri_);
     advance_parts(other.uri_, other.uri_parts_, uri_parts_);
@@ -339,7 +339,7 @@ namespace network {
     return std::u32string(std::begin(uri_), std::end(uri_));
   }
 
-  bool uri::empty() const noexcept { return uri_.empty(); }
+  bool uri::empty() const NETWORK_URI_NOEXCEPT { return uri_.empty(); }
 
   bool uri::is_absolute() const {
     return static_cast<bool>(scheme());
@@ -531,7 +531,7 @@ namespace network {
   }
 
   int uri::compare(const uri &other,
-                   uri_comparison_level level) const noexcept {
+                   uri_comparison_level level) const NETWORK_URI_NOEXCEPT {
     // if both URIs are empty, then we should define them as equal
     // even though they're still invalid.
     if (empty() && other.empty()) {
@@ -559,13 +559,13 @@ namespace network {
     return true;
   }
 
-  void swap(uri &lhs, uri &rhs) noexcept { lhs.swap(rhs); }
+  void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT { lhs.swap(rhs); }
 
-  bool operator==(const uri &lhs, const uri &rhs) noexcept {
+  bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return lhs.compare(rhs, uri_comparison_level::syntax_based) == 0;
   }
 
-  bool operator==(const uri &lhs, const char *rhs) noexcept {
+  bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT {
     if (std::strlen(rhs) !=
         std::size_t(std::distance(std::begin(lhs), std::end(lhs)))) {
       return false;
@@ -573,7 +573,7 @@ namespace network {
     return std::equal(std::begin(lhs), std::end(lhs), rhs);
   }
 
-  bool operator<(const uri &lhs, const uri &rhs) noexcept {
+  bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
     return lhs.compare(rhs, uri_comparison_level::syntax_based) < 0;
   }
 }  // namespace network

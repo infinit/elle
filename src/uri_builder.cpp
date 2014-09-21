@@ -43,7 +43,7 @@ uri_builder::uri_builder(const network::uri &base_uri) {
   }
 }
 
-uri_builder::~uri_builder() {}
+uri_builder::~uri_builder() NETWORK_URI_NOEXCEPT {}
 
 network::uri uri_builder::uri() const { return network::uri(*this); }
 

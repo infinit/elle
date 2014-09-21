@@ -1,4 +1,4 @@
-// Copyright 2013-2014 Glyn Matthews.
+// Copyright 2013 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -61,7 +61,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~uri_syntax_error();
+    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
 
   };
 
@@ -82,7 +82,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~uri_builder_error();
+    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
 
   };
 
@@ -102,7 +102,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~percent_decoding_error();
+    virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
 
   };
 } // namespace network
