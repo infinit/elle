@@ -1,5 +1,5 @@
 // Copyright 2010 Jeroen Habraken.
-// Copyright 2009-2013 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2014 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt of copy at
@@ -66,7 +66,7 @@ TEST(uri_test, make_uri_from_wstring) {
 
 TEST(uri_test, basic_uri_scheme_test) {
   network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.scheme());
+  ASSERT_TRUE(static_cast<bool>(instance.scheme()));
   ASSERT_EQ("http", *instance.scheme());
 }
 
@@ -77,7 +77,7 @@ TEST(uri_test, basic_uri_user_info_test) {
 
 TEST(uri_test, basic_uri_host_test) {
   network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.host());
+  ASSERT_TRUE(static_cast<bool>(instance.host()));
   ASSERT_EQ("www.example.com", *instance.host());
 }
 
@@ -93,7 +93,7 @@ TEST(uri_test, basic_uri_port_as_int_test) {
 
 TEST(uri_test, basic_uri_path_test) {
   network::uri instance("http://www.example.com/");
-  ASSERT_TRUE(instance.path());
+  ASSERT_TRUE(static_cast<bool>(instance.path()));
   ASSERT_EQ("/", *instance.path());
 }
 
@@ -160,54 +160,44 @@ TEST(uri_test, full_uri_fragment_test) {
 
 TEST(uri_test, full_uri_range_scheme_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.scheme());
+  ASSERT_TRUE(static_cast<bool>(instance.scheme()));
   ASSERT_EQ("http", *instance.scheme());
-}
-
-TEST(uri_test, DISABLED_full_uri_range_scheme_begin_iterator_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  //ASSERT_TRUE(std::begin(instance) == std::begin(*instance.scheme()));
 }
 
 TEST(uri_test, full_uri_range_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.user_info());
+  ASSERT_TRUE(static_cast<bool>(instance.user_info()));
   ASSERT_EQ("user:password", *instance.user_info());
 }
 
 TEST(uri_test, full_uri_range_host_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.host());
+  ASSERT_TRUE(static_cast<bool>(instance.host()));
   ASSERT_EQ("www.example.com", *instance.host());
 }
 
 TEST(uri_test, full_uri_range_port_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.port());
+  ASSERT_TRUE(static_cast<bool>(instance.port()));
   ASSERT_EQ("80", *instance.port());
 }
 
 TEST(uri_test, full_uri_range_path_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.path());
+  ASSERT_TRUE(static_cast<bool>(instance.path()));
   ASSERT_EQ("/path", *instance.path());
 }
 
 TEST(uri_test, full_uri_range_query_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.query());
+  ASSERT_TRUE(static_cast<bool>(instance.query()));
   ASSERT_EQ("query", *instance.query());
 }
 
 TEST(uri_test, full_uri_range_fragment_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.fragment());
+  ASSERT_TRUE(static_cast<bool>(instance.fragment()));
   ASSERT_EQ("fragment", *instance.fragment());
-}
-
-TEST(uri_test, DISABLED_full_uri_range_fragment_end_iterator_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  //ASSERT_TRUE(std::end(instance) == std::end(*instance.fragment()));
 }
 
 TEST(uri_test, mailto_test) {
@@ -382,6 +372,27 @@ TEST(uri_test, tel_test) {
   ASSERT_EQ("+1-816-555-1212", *instance.path());
 }
 
+TEST(uri_test, ldap_test) {
+  network::uri instance("ldap://[2001:db8::7]/c=GB?objectClass?one");
+  ASSERT_EQ("ldap", *instance.scheme());
+  ASSERT_EQ("[2001:db8::7]", *instance.host());
+  ASSERT_EQ("/c=GB", *instance.path());
+  ASSERT_EQ("objectClass?one", *instance.query());
+}
+
+TEST(uri_test, urn_test) {
+  network::uri instance("urn:oasis:names:specification:docbook:dtd:xml:4.1.2");
+  ASSERT_EQ("urn", *instance.scheme());
+  ASSERT_EQ("oasis:names:specification:docbook:dtd:xml:4.1.2", *instance.path());
+}
+
+TEST(uri_test, svn_ssh_test) {
+  network::uri instance("svn+ssh://example.com/");
+  ASSERT_EQ("svn+ssh", *instance.scheme());
+  ASSERT_EQ("example.com", *instance.host());
+  ASSERT_EQ("/", *instance.path());
+}
+
 TEST(uri_test, copy_constructor_test) {
   network::uri instance("http://www.example.com/");
   network::uri copy = instance;
@@ -405,13 +416,13 @@ TEST(uri_test, swap_test) {
 
 TEST(uri_test, authority_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
-  ASSERT_TRUE(instance.authority());
+  ASSERT_TRUE(static_cast<bool>(instance.authority()));
   ASSERT_EQ("user:password@www.example.com:80", *instance.authority());
 }
 
 TEST(uri_test, partial_authority_test) {
   network::uri instance("http://www.example.com/path?query#fragment");
-  ASSERT_TRUE(instance.authority());
+  ASSERT_TRUE(static_cast<bool>(instance.authority()));
   ASSERT_EQ("www.example.com", *instance.authority());
 }
 
@@ -544,50 +555,12 @@ TEST(uri_test, unnormalized_invalid_path_doesnt_throw) {
 
 TEST(uri_test, unnormalized_invalid_path_is_valid) {
   network::uri instance("http://www.example.com/..");
-  ASSERT_TRUE(instance.path());
+  ASSERT_TRUE(static_cast<bool>(instance.path()));
 }
 
 TEST(uri_test, unnormalized_invalid_path_value) {
   network::uri instance("http://www.example.com/..");
   ASSERT_EQ("/..", *instance.path());
-}
-
-
-TEST(uri_test, construct_uri_reference_from_char_array) {
-  ASSERT_NO_THROW(network::uri("relative/path/to/resource.txt"));
-}
-
-TEST(uri_test, uri_reference_scheme_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.scheme()) << *instance.scheme();
-}
-
-TEST(uri_test, uri_reference_host_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.host()) << *instance.host();
-}
-
-TEST(uri_test, uri_reference_authority_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_FALSE(instance.authority()) << *instance.authority();
-}
-
-TEST(uri_test, uri_reference_path_test) {
-  network::uri instance("relative/path/to/resource.txt");
-  ASSERT_TRUE(instance.path());
-  ASSERT_EQ("relative/path/to/resource.txt", *instance.path());
-}
-
-TEST(uri_test, uri_reference_query_test) {
-  network::uri instance("relative/path/to/resource?query#fragment");
-  ASSERT_TRUE(instance.query());
-  ASSERT_EQ("query", *instance.query());
-}
-
-TEST(uri_test, uri_reference_fragment_test) {
-  network::uri instance("relative/path/to/resource?query#fragment");
-  ASSERT_TRUE(instance.fragment());
-  ASSERT_EQ("fragment", *instance.fragment());
 }
 
 TEST(uri_test, git) {
@@ -607,7 +580,7 @@ TEST(uri_test, valid_empty_port_test) {
 
 TEST(uri_test, empty_port_test) {
   network::uri instance("http://123.34.23.56:/");
-  ASSERT_TRUE(instance.port());
+  ASSERT_TRUE(static_cast<bool>(instance.port()));
   ASSERT_EQ("", *instance.port());
 }
 
@@ -805,7 +778,19 @@ TEST(uri_test, move_empty_uri_check_fragment) {
 
 TEST(uri_test, empty_username_in_user_info) {
   network::uri instance("ftp://:@localhost");
-  ASSERT_TRUE(instance.user_info());
+  ASSERT_TRUE(static_cast<bool>(instance.user_info()));
   ASSERT_EQ(":", *instance.user_info());
   ASSERT_EQ("localhost", *instance.host());
+}
+
+TEST(uri_test, uri_begins_with_a_colon) {
+  ASSERT_THROW(network::uri("://example.com"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_begins_with_a_number) {
+  ASSERT_THROW(network::uri("3http://example.com"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_scheme_contains_an_invalid_character) {
+  ASSERT_THROW(network::uri("ht%tp://example.com"), network::uri_syntax_error);
 }
