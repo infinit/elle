@@ -1085,16 +1085,17 @@ class BaseNode(object, metaclass = _BaseNodeType):
     extensions = {}
 
     def __init__(self, name):
-        """Create a node with the given name."""
-        self.__name = name.canonize()
-        if next(iter(name)) == '..':
-          raise Exception('%s is outside the build directory' % name)
-        if Drake.current.nodes.setdefault(self.__name, self) is not self:
-          raise NodeRedefinition(self.__name)
-        self.uid = BaseNode.uid
-        BaseNode.uid += 1
-        self._builder = None
-        self.consumers = []
+      """Create a node with the given name."""
+      self.__name = name.canonize()
+      if next(iter(name)) == '..':
+        raise Exception('%s is outside the build directory' % name)
+      if Drake.current.nodes.setdefault(self.__name, self) is not self:
+        raise NodeRedefinition(self.__name)
+      self.uid = BaseNode.uid
+      BaseNode.uid += 1
+      self._builder = None
+      self.consumers = []
+      self.__dependencies = sched.OrderedSet()
 
     def name(self):
         """Node name, relative to the current drakefile."""
@@ -1156,6 +1157,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
           with debug.indentation():
             if self._builder is not None:
               self._builder.run()
+            for dep in self.dependencies:
+              dep.build()
             self.polish()
 
     @property
@@ -1247,6 +1250,30 @@ class BaseNode(object, metaclass = _BaseNodeType):
       self._builder = builder
       Drake.current.nodes[self._BaseNode__name] = self
 
+    def dependency_add(self, dep):
+        self.__dependencies.add(dep)
+
+    def dependencies_add(self, deps):
+      for dep in deps:
+        self.dependency_add(dep)
+
+    @property
+    def dependencies(self):
+        return self.__dependencies
+
+    @property
+    def dependencies_recursive(self):
+      for dep in self.__dependencies:
+        yield dep
+        for sub in dep.dependencies_recursive:
+          yield sub
+
+    def __lt__(self, rhs):
+      """Arbitrary global order on nodes, to enable
+      sorting/indexing."""
+      return self.name_absolute() < rhs.name_absolute()
+
+
 class VirtualNode(BaseNode):
 
     """BaseNode that does not represent a file.
@@ -1276,7 +1303,6 @@ class Node(BaseNode):
     """Construct a Node with the given path."""
     path = drake.Drake.current.prefix / path
     BaseNode.__init__(self, path)
-    self.__dependencies = sched.OrderedSet()
     self.__hash = None
     self.__exists = False
 
@@ -1302,7 +1328,10 @@ class Node(BaseNode):
     if self.__hash is None:
       with profile_hashing():
         hasher = hashlib.sha1()
-        for node in sorted(chain((self,), self.dependencies)):
+        hashable_deps = (dep
+                         for dep in self.dependencies
+                         if isinstance(dep, Node))
+        for node in sorted(chain((self,), hashable_deps)):
           path = node.path()
           _hash_file(hasher, path)
         self.__hash = hasher.digest()
@@ -1400,32 +1429,9 @@ class Node(BaseNode):
         """Filesystem path to the node file, as a string."""
         return str(self.path())
 
-  def __lt__(self, rhs):
-        """Arbitrary global order on nodes, to enable
-        sorting/indexing."""
-        return self.path() < rhs.path()
-
   @property
   def install_command(self):
       return None
-
-  @property
-  def dependencies(self):
-      return self.__dependencies
-
-  @property
-  def dependencies_recursive(self):
-    for dep in self.__dependencies:
-      yield dep
-      for sub in dep.dependencies_recursive:
-        yield sub
-
-  def dependency_add(self, dep):
-      self.__dependencies.add(dep)
-
-  def dependencies_add(self, deps):
-    for dep in deps:
-      self.dependency_add(dep)
 
 
 def node(path, type = None):
