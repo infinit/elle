@@ -8,7 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-#include <elle/Exception.hh>
+#include <elle/Error.hh>
 #include <elle/container/vector.hh>
 #include <elle/log.hh>
 #include <elle/printf.hh>
@@ -24,7 +24,7 @@ namespace elle
     check_call(::archive* archive, int code, int expected = ARCHIVE_OK)
     {
       if (code != expected)
-        throw elle::Exception(archive_error_string(archive));
+        throw elle::Error(archive_error_string(archive));
     }
 
     struct archive_deleter
@@ -88,7 +88,7 @@ namespace elle
       {
         boost::filesystem::ifstream input(file, std::ios_base::in | std::ios_base::binary);
         if (!input.good())
-          throw elle::Exception(elle::sprintf("unable to read file %s", file));
+          throw elle::Error(elle::sprintf("unable to read file %s", file));
         char buffer[BUFSIZ];
         while (!input.eof())
         {
@@ -149,7 +149,7 @@ namespace elle
         root_entries.insert(root.string());
         ELLE_DEBUG("Renamed %s to %s", path, root);
         if (!boost::filesystem::exists(path))
-          throw elle::Exception(elle::sprintf("Path %s does not exist", path));
+          throw elle::Error(elle::sprintf("Path %s does not exist", path));
         if (boost::filesystem::is_directory(path))
           for (auto it = boost::filesystem::recursive_directory_iterator(path);
                it != boost::filesystem::recursive_directory_iterator();
