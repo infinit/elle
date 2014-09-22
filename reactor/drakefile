@@ -362,7 +362,7 @@ def configure(curl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
-  if python3 is not None:
+  if python3 is not None and cxx_toolkit.os is not drake.os.windows:
     python_tests = (
       'tests/python',
       )
