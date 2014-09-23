@@ -57,7 +57,8 @@ def configure(zlib_lib,
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config += boost.config_system(static = True)
     cxx_config += boost.config_thread(static = True)
-    cxx_config += boost.config_locale(static = True)
+    if cxx_toolkit.os is not drake.os.ios:
+      cxx_config += boost.config_locale(static = True)
     cxx_config += boost.config_chrono(static = True)
     if python3 is not False:
       boost_python = drake.cxx.Config(boost.config_python(static = True))
