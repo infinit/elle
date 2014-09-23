@@ -1096,6 +1096,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     self._builder = None
     self.consumers = []
     self.__dependencies = sched.OrderedSet()
+    self.__hash = None
 
   def name(self):
       """Node name, relative to the current drakefile."""
@@ -1131,17 +1132,6 @@ class BaseNode(object, metaclass = _BaseNodeType):
   def __repr__(self):
       """Python representation."""
       return '%s(%s)' % (self.__class__.drake_type(), self.name())
-
-  def hash(self):
-      """Hash for this node.
-
-      The hash value of nodes is used by builders to determine
-      whether a source node has changed between two builds, and thus
-      if the builder must be reexecuted.
-
-      It must be reimplemented by subclasses.
-      """
-      raise Exception('hash must be implemented by BaseNodes')
 
   def build(self):
       """Build this node.
@@ -1273,43 +1263,6 @@ class BaseNode(object, metaclass = _BaseNodeType):
     sorting/indexing."""
     return self.name_absolute() < rhs.name_absolute()
 
-
-class VirtualNode(BaseNode):
-
-    """BaseNode that does not represent a file.
-
-    These may be configuration or meta information such as the version
-    system revision, used by other nodes as sources. They are also
-    used to implement Rule, which is a node that recursively builds
-    other nodes, but does not directly produce a file.
-    """
-
-    def __init__(self, name):
-        """Create a virtual node with the given name."""
-        path = drake.Drake.current.prefix / name
-        path = drake.Path(path._Path__path, False, True)
-        BaseNode.__init__(self, path)
-
-    def hash(self):
-        """Virtual node children must reimplement BaseNode.hash."""
-        raise Exception('hash must be implemented by VirtualNodes')
-
-
-class Node(BaseNode):
-
-  """BaseNode representing a file."""
-
-  def __init__(self, path):
-    """Construct a Node with the given path."""
-    path = drake.Drake.current.prefix / path
-    BaseNode.__init__(self, path)
-    self.__hash = None
-    self.__exists = False
-
-  def clone(self, path):
-        """Clone of this node, with an other path."""
-        return Node(path)
-
   def hash(self):
     """Digest of the file as a string."""
 
@@ -1328,14 +1281,45 @@ class Node(BaseNode):
     if self.__hash is None:
       with profile_hashing():
         hasher = hashlib.sha1()
-        hashable_deps = (dep
-                         for dep in self.dependencies
-                         if isinstance(dep, Node))
-        for node in sorted(chain((self,), hashable_deps)):
-          path = node.path()
-          _hash_file(hasher, path)
+        hashable = (
+          dep for dep in chain((self,), self.dependencies)
+          if isinstance(dep, Node))
+        for node in sorted(hashable):
+          _hash_file(hasher, node.path())
         self.__hash = hasher.digest()
     return self.__hash
+
+
+class VirtualNode(BaseNode):
+
+    """BaseNode that does not represent a file.
+
+    These may be configuration or meta information such as the version
+    system revision, used by other nodes as sources. They are also
+    used to implement Rule, which is a node that recursively builds
+    other nodes, but does not directly produce a file.
+    """
+
+    def __init__(self, name):
+        """Create a virtual node with the given name."""
+        path = drake.Drake.current.prefix / name
+        path = drake.Path(path._Path__path, False, True)
+        BaseNode.__init__(self, path)
+
+
+class Node(BaseNode):
+
+  """BaseNode representing a file."""
+
+  def __init__(self, path):
+    """Construct a Node with the given path."""
+    path = drake.Drake.current.prefix / path
+    BaseNode.__init__(self, path)
+    self.__exists = False
+
+  def clone(self, path):
+        """Clone of this node, with an other path."""
+        return Node(path)
 
   def clean(self):
         """Clean this node's file if it is generated, and recursively
