@@ -2872,53 +2872,53 @@ def install(sources, to, strip_prefix = None):
 
 class Rule(VirtualNode):
 
-    """Virtual node that bounces to other nodes.
+  """Virtual node that bounces to other nodes.
 
-    Since rules are virtual nodes, creating an install rule as
-    demonstrated below would enable to run `drake //install' to
-    copy files.
+  Since rules are virtual nodes, creating an install rule as
+  demonstrated below would enable to run `drake //install' to
+  copy files.
 
-    >>> sources = nodes('/tmp/.drake.rule1', '/tmp/.drake.rule2')
-    >>> for source in sources:
-    ...     source.path().touch()
-    >>> targets = copy(sources, '/tmp/.drake.rule.dest',
-    ...                strip_prefix = '/tmp')
-    >>> for target in targets:
-    ...     target.path().remove()
-    >>> rule = Rule('install', targets)
-    >>> rule.build()
-    Copy /tmp/.drake.rule.dest/.drake.rule1
-    Copy /tmp/.drake.rule.dest/.drake.rule2
+  >>> sources = nodes('/tmp/.drake.rule1', '/tmp/.drake.rule2')
+  >>> for source in sources:
+  ...     source.path().touch()
+  >>> targets = copy(sources, '/tmp/.drake.rule.dest',
+  ...                strip_prefix = '/tmp')
+  >>> for target in targets:
+  ...     target.path().remove()
+  >>> rule = Rule('install', targets)
+  >>> rule.build()
+  Copy /tmp/.drake.rule.dest/.drake.rule1
+  Copy /tmp/.drake.rule.dest/.drake.rule2
+  """
+
+  def __init__(self, name, nodes = []):
+    """Create a rule.
+
+    name  -- Node name.
+    nodes -- The node to build when the rule is built
     """
+    VirtualNode.__init__(self, name)
+    self << nodes
 
-    def __init__(self, name, nodes = []):
-        """Create a rule.
+  def hash(self):
+    """Hash value."""
+    return ''
 
-        name  -- Node name.
-        nodes -- The node to build when the rule is built
-        """
-        VirtualNode.__init__(self, name)
-        class RuleBuilder(Builder):
-            def execute(self):
-                return True
-            @property
-            def command(self):
-                return None
-            def __str__(self):
-                return 'RuleBuilder(%s)' % self._Builder__targets[0]
-        RuleBuilder(nodes, [self])
+  def __lshift__(self, nodes):
+    '''Add a node to build when the rule is built.
 
-    def hash(self):
-        """Hash value."""
-        return ''
-
-    def __lshift__(self, nodes):
-        """Add a node to build when the rule is built."""
-        if isinstance(nodes, list):
-            for node in nodes:
-                self << node
-        else:
-            self._builder.add_src(nodes)
+    >>> rule = Rule('name')
+    >>> created = drake.touch('/tmp/.drake.rule.add')
+    >>> created.path().remove()
+    >>> rule << created
+    >>> rule.build()
+    Touch /tmp/.drake.rule.add
+    '''
+    if isinstance(nodes, list):
+      for node in nodes:
+        self << node
+    else:
+      self.dependency_add(nodes)
 
 class EmptyBuilder(Builder):
 
