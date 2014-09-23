@@ -79,7 +79,7 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
-  if python3 is not False:
+  if python3 is not None:
     if python_version is None:
       python_version = (drake.Version(3, 2),
                         drake.Version(3, 3),
@@ -107,7 +107,7 @@ def configure(cxx_toolkit = None,
     python3.python_interpreter = python3.prefix / python_bin
     python3.version = python_version
   else:
-    python3 = False
+    python3 = None
   set_python3(python3)
 
   ## -------- ##
@@ -638,7 +638,7 @@ def configure(cxx_toolkit = None,
       'test',
       'thread',
     ]
-    if python3 is not False:
+    if python3 is not None:
       boost_bootstrap_libraries.append('python')
     if cxx_toolkit.os is not drake.os.windows:
       boost_bootstrap_libraries.append('context')
@@ -649,7 +649,7 @@ def configure(cxx_toolkit = None,
       '--prefix=%s' % boost_prefix,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
-    if python3 is not False:
+    if python3 is not None:
       boost_bootstrap_command.append('--with-python=%s' % python_version)
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
     boost_library_names = [
@@ -663,7 +663,7 @@ def configure(cxx_toolkit = None,
       cxx_toolkit.os is drake.os.windows and 'thread_win32' or 'thread',
       'unit_test_framework',
     ]
-    if python3 is not False:
+    if python3 is not None:
       boost_library_names.append('python')
       boost_library_names.append('python3')
     if cxx_toolkit.os is not drake.os.windows:
@@ -726,7 +726,7 @@ def configure(cxx_toolkit = None,
         res = '''\
 using %(compiler)s : : %(cxx)s ;
 '''
-        if python3 is not False:
+        if python3 is not None:
           res += '''\
 using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_prefix)s/%(python_include)s : %(python_prefix)s/lib %(extra)s;
 '''
@@ -755,7 +755,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           'cxx': cxx,
           'extra': extra,
         }
-        if python3 is not False:
+        if python3 is not None:
           res.update({
             'python_bin': python_bin,
             'python_include': python3.include_dir,

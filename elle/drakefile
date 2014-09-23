@@ -60,7 +60,7 @@ def configure(zlib_lib,
     if cxx_toolkit.os is drake.os.windows:
       cxx_config += boost.config_locale(static = True)
     cxx_config += boost.config_chrono(static = True)
-    if python3 is not False:
+    if python3 is not None:
       boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
     boost_python = drake.cxx.Config(boost.config_system(link = False))
@@ -392,7 +392,7 @@ def configure(zlib_lib,
   )
 
   # Python binding helpers.
-  if python3 is not False:
+  if python3 is not None:
     sources += drake.nodes(
       'src/elle/python/containers.hh',
       'src/elle/python/containers.hxx',
@@ -455,7 +455,7 @@ def configure(zlib_lib,
   ## ------ ##
 
 
-  if python3 is not False:
+  if python3 is not None:
     python = []
     python_rule = drake.Rule('python')
     python3 = drake.cxx.find_library(
