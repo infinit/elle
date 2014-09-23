@@ -1070,208 +1070,208 @@ class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
 
 class BaseNode(object, metaclass = _BaseNodeType):
 
-    """Base entity manipulated by drake.
+  """Base entity manipulated by drake.
 
-    Nodes represent the base elements that can be built or used as
-    input by the drake buildsystem. Builders have a list of sources
-    nodes, which are the node they use as input when they are
-    executed, and produce nodes as output.
+  Nodes represent the base elements that can be built or used as
+  input by the drake buildsystem. Builders have a list of sources
+  nodes, which are the node they use as input when they are
+  executed, and produce nodes as output.
 
-    Nodes are often attached to file (an input file in the case of a
-    source node, a generated file in the case of a target node), in
-    which case its type is Node."""
+  Nodes are often attached to file (an input file in the case of a
+  source node, a generated file in the case of a target node), in
+  which case its type is Node."""
 
-    uid = 0
-    extensions = {}
+  uid = 0
+  extensions = {}
 
-    def __init__(self, name):
-      """Create a node with the given name."""
-      self.__name = name.canonize()
-      if next(iter(name)) == '..':
-        raise Exception('%s is outside the build directory' % name)
-      if Drake.current.nodes.setdefault(self.__name, self) is not self:
-        raise NodeRedefinition(self.__name)
-      self.uid = BaseNode.uid
-      BaseNode.uid += 1
-      self._builder = None
-      self.consumers = []
-      self.__dependencies = sched.OrderedSet()
+  def __init__(self, name):
+    """Create a node with the given name."""
+    self.__name = name.canonize()
+    if next(iter(name)) == '..':
+      raise Exception('%s is outside the build directory' % name)
+    if Drake.current.nodes.setdefault(self.__name, self) is not self:
+      raise NodeRedefinition(self.__name)
+    self.uid = BaseNode.uid
+    BaseNode.uid += 1
+    self._builder = None
+    self.consumers = []
+    self.__dependencies = sched.OrderedSet()
 
-    def name(self):
-        """Node name, relative to the current drakefile."""
-        if self.__name.absolute():
-          return self.__name
-        return self.__name.without_prefix(drake.Drake.current.prefix)
+  def name(self):
+      """Node name, relative to the current drakefile."""
+      if self.__name.absolute():
+        return self.__name
+      return self.__name.without_prefix(drake.Drake.current.prefix)
 
-    def name_absolute(self):
-        """Node name, relative to the root of the source directory."""
-        return drake.Path(self.__name)
+  def name_absolute(self):
+      """Node name, relative to the root of the source directory."""
+      return drake.Path(self.__name)
 
-    def dot(self, marks):
-        """Print a dot representation of this nodes build graph."""
-        if (self in marks):
-            return True
-        marks[self] = None
-        print('  node_%s [label="%s"]' % (self.uid, self.__name))
-        if self._builder is not None:
-            if self._builder.dot(marks):
-                print('  builder_%s -> node_%s' % (self._builder.uid,
-                                                   self.uid))
-        return True
+  def dot(self, marks):
+      """Print a dot representation of this nodes build graph."""
+      if (self in marks):
+          return True
+      marks[self] = None
+      print('  node_%s [label="%s"]' % (self.uid, self.__name))
+      if self._builder is not None:
+          if self._builder.dot(marks):
+              print('  builder_%s -> node_%s' % (self._builder.uid,
+                                                 self.uid))
+      return True
 
-    @classmethod
-    def drake_type(self):
-        """The qualified name of this type."""
-        return '%s.%s' % (self.__module__, self.__name__)
+  @classmethod
+  def drake_type(self):
+      """The qualified name of this type."""
+      return '%s.%s' % (self.__module__, self.__name__)
 
-    def __str__(self):
-        """String representation."""
-        return str(self.__name)
+  def __str__(self):
+      """String representation."""
+      return str(self.__name)
 
-    def __repr__(self):
-        """Python representation."""
-        return '%s(%s)' % (self.__class__.drake_type(), self.name())
+  def __repr__(self):
+      """Python representation."""
+      return '%s(%s)' % (self.__class__.drake_type(), self.name())
 
-    def hash(self):
-        """Hash for this node.
+  def hash(self):
+      """Hash for this node.
 
-        The hash value of nodes is used by builders to determine
-        whether a source node has changed between two builds, and thus
-        if the builder must be reexecuted.
+      The hash value of nodes is used by builders to determine
+      whether a source node has changed between two builds, and thus
+      if the builder must be reexecuted.
 
-        It must be reimplemented by subclasses.
-        """
-        raise Exception('hash must be implemented by BaseNodes')
+      It must be reimplemented by subclasses.
+      """
+      raise Exception('hash must be implemented by BaseNodes')
 
-    def build(self):
-        """Build this node.
+  def build(self):
+      """Build this node.
 
-        Take necessary action to ensure this node is up to date. That
-        is, roughly, run this node runner.
-        """
-        if not _scheduled():
-          Coroutine(self.build, str(self), Drake.current.scheduler)
-          Drake.current.scheduler.run()
-        else:
-          debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-          with debug.indentation():
-            if self._builder is not None:
-              self._builder.run()
-            for dep in self.dependencies:
-              dep.build()
-            self.polish()
-
-    @property
-    def build_status(self):
-      return self._builder.build_status
-
-    def polish(self):
-        """A hook called when a node has been built.
-
-        Called when a node has been built, that is, when all its
-        dependencies have been built and the builder run. Default
-        implementation does nothing.
-
-        >>> class MyNode (Node):
-        ...   def polish(self):
-        ...     print('Polishing.')
-        >>> n = MyNode('/tmp/.drake.polish')
-        >>> n.path().remove()
-        >>> b = TouchBuilder(n)
-        >>> n.build()
-        Touch /tmp/.drake.polish
-        Polishing.
-        """
-        pass
-
-    def clean(self):
-        """Clean recursively for this node sources."""
-        if self._builder is not None:
-            self._builder.clean()
-
-    def missing(self):
-        """Whether this node is missing and must be built.
-
-        Always False, so unless redefined, BaseNode are built only if
-        a dependency changed.
-        """
-        return False
-
-    def makefile_name(self):
-        if isinstance(self, Node):
-            return str(self.path())
-        else:
-            res = Path(self.name())
-            res.virtual = False
-            return str(res)
-
-    def makefile(self, marks = None):
-      """Print a Makefile for this node."""
-      from pipes import quote
-      if self._builder is None:
-        return
-      if marks is None:
-        marks = set()
-      if str(self.name()) in marks:
-        return
+      Take necessary action to ensure this node is up to date. That
+      is, roughly, run this node runner.
+      """
+      if not _scheduled():
+        Coroutine(self.build, str(self), Drake.current.scheduler)
+        Drake.current.scheduler.run()
       else:
-        marks.add(str(self.name()))
-      print('%s: %s' % (self.makefile_name(),
-                        ' '.join(map(lambda n: n.makefile_name(),
-                                     self.dependencies))))
-      cmd = self._builder.command
-      if cmd is not None:
-        if isinstance(self, Node):
-          print('\t@mkdir -p %s' % self.path().dirname())
-        if not isinstance(cmd, tuple):
-          cmd = (cmd,)
-        for c in cmd:
-          print('\t%s' % ' '.join(
-              map(lambda a: quote(str(a)).replace('$', '$$'), c)))
-      print('')
-      for dependency in self.dependencies:
-        dependency.makefile(marks)
+        debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+        with debug.indentation():
+          if self._builder is not None:
+            self._builder.run()
+          for dep in self.dependencies:
+            dep.build()
+          self.polish()
 
-    def report_dependencies(self, dependencies):
-        """Called when dependencies have been built.
+  @property
+  def build_status(self):
+    return self._builder.build_status
 
-        This hook is always called no matter whether the nodes
-        were successfully built or not.
-        """
-        pass
+  def polish(self):
+      """A hook called when a node has been built.
 
-    @property
-    def builder(self):
-      return self._builder
+      Called when a node has been built, that is, when all its
+      dependencies have been built and the builder run. Default
+      implementation does nothing.
 
-    @builder.setter
-    def builder(self, builder):
-      del Drake.current.nodes[self._BaseNode__name]
-      self._builder = builder
-      Drake.current.nodes[self._BaseNode__name] = self
+      >>> class MyNode (Node):
+      ...   def polish(self):
+      ...     print('Polishing.')
+      >>> n = MyNode('/tmp/.drake.polish')
+      >>> n.path().remove()
+      >>> b = TouchBuilder(n)
+      >>> n.build()
+      Touch /tmp/.drake.polish
+      Polishing.
+      """
+      pass
 
-    def dependency_add(self, dep):
-        self.__dependencies.add(dep)
+  def clean(self):
+      """Clean recursively for this node sources."""
+      if self._builder is not None:
+          self._builder.clean()
 
-    def dependencies_add(self, deps):
-      for dep in deps:
-        self.dependency_add(dep)
+  def missing(self):
+      """Whether this node is missing and must be built.
 
-    @property
-    def dependencies(self):
-        return self.__dependencies
+      Always False, so unless redefined, BaseNode are built only if
+      a dependency changed.
+      """
+      return False
 
-    @property
-    def dependencies_recursive(self):
-      for dep in self.__dependencies:
-        yield dep
-        for sub in dep.dependencies_recursive:
-          yield sub
+  def makefile_name(self):
+      if isinstance(self, Node):
+          return str(self.path())
+      else:
+          res = Path(self.name())
+          res.virtual = False
+          return str(res)
 
-    def __lt__(self, rhs):
-      """Arbitrary global order on nodes, to enable
-      sorting/indexing."""
-      return self.name_absolute() < rhs.name_absolute()
+  def makefile(self, marks = None):
+    """Print a Makefile for this node."""
+    from pipes import quote
+    if self._builder is None:
+      return
+    if marks is None:
+      marks = set()
+    if str(self.name()) in marks:
+      return
+    else:
+      marks.add(str(self.name()))
+    print('%s: %s' % (self.makefile_name(),
+                      ' '.join(map(lambda n: n.makefile_name(),
+                                   self.dependencies))))
+    cmd = self._builder.command
+    if cmd is not None:
+      if isinstance(self, Node):
+        print('\t@mkdir -p %s' % self.path().dirname())
+      if not isinstance(cmd, tuple):
+        cmd = (cmd,)
+      for c in cmd:
+        print('\t%s' % ' '.join(
+            map(lambda a: quote(str(a)).replace('$', '$$'), c)))
+    print('')
+    for dependency in self.dependencies:
+      dependency.makefile(marks)
+
+  def report_dependencies(self, dependencies):
+      """Called when dependencies have been built.
+
+      This hook is always called no matter whether the nodes
+      were successfully built or not.
+      """
+      pass
+
+  @property
+  def builder(self):
+    return self._builder
+
+  @builder.setter
+  def builder(self, builder):
+    del Drake.current.nodes[self._BaseNode__name]
+    self._builder = builder
+    Drake.current.nodes[self._BaseNode__name] = self
+
+  def dependency_add(self, dep):
+      self.__dependencies.add(dep)
+
+  def dependencies_add(self, deps):
+    for dep in deps:
+      self.dependency_add(dep)
+
+  @property
+  def dependencies(self):
+      return self.__dependencies
+
+  @property
+  def dependencies_recursive(self):
+    for dep in self.__dependencies:
+      yield dep
+      for sub in dep.dependencies_recursive:
+        yield sub
+
+  def __lt__(self, rhs):
+    """Arbitrary global order on nodes, to enable
+    sorting/indexing."""
+    return self.name_absolute() < rhs.name_absolute()
 
 
 class VirtualNode(BaseNode):
