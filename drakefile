@@ -79,7 +79,7 @@ def configure(cxx_toolkit = None,
   if not prefix.absolute():
     prefix = drake.Path('..') / prefix
 
-  if python3 is not None:
+  if python3 is not False:
     if python_version is None:
       python_version = (drake.Version(3, 2),
                         drake.Version(3, 3),
