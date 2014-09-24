@@ -240,7 +240,7 @@ namespace network {
     template <typename Key, typename Value>
     uri_builder &query(const Key &key, const Value &value) {
       if (!query_) {
-	query_.reset(string_type());
+	query_ = string_type();
       }
       else {
 	query_->append("&");

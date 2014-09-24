@@ -45,8 +45,8 @@ namespace network {
         const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
       auto it = first;
       if (auto scheme = existing_parts.scheme) {
-        parts.scheme.reset(
-            copy_range(std::begin(*scheme), std::end(*scheme), it));
+        parts.scheme =
+            copy_range(std::begin(*scheme), std::end(*scheme), it);
 
         // ignore : for all URIs
         if (':' == *it) {
@@ -62,36 +62,36 @@ namespace network {
       }
 
       if (auto user_info = existing_parts.hier_part.user_info) {
-        parts.hier_part.user_info.reset(
-            copy_range(std::begin(*user_info), std::end(*user_info), it));
+        parts.hier_part.user_info =
+            copy_range(std::begin(*user_info), std::end(*user_info), it);
         ++it;  // ignore @
       }
 
       if (auto host = existing_parts.hier_part.host) {
-        parts.hier_part.host.reset(
-            copy_range(std::begin(*host), std::end(*host), it));
+        parts.hier_part.host =
+            copy_range(std::begin(*host), std::end(*host), it);
       }
 
       if (auto port = existing_parts.hier_part.port) {
         ++it;  // ignore :
-        parts.hier_part.port.reset(
-            copy_range(std::begin(*port), std::end(*port), it));
+        parts.hier_part.port =
+            copy_range(std::begin(*port), std::end(*port), it);
       }
 
       if (auto path = existing_parts.hier_part.path) {
-        parts.hier_part.path.reset(
-            copy_range(std::begin(*path), std::end(*path), it));
+        parts.hier_part.path =
+            copy_range(std::begin(*path), std::end(*path), it);
       }
 
       if (auto query = existing_parts.query) {
         ++it;  // ignore ?
-        parts.query.reset(copy_range(std::begin(*query), std::end(*query), it));
+        parts.query = copy_range(std::begin(*query), std::end(*query), it);
       }
 
       if (auto fragment = existing_parts.fragment) {
         ++it;  // ignore #
-        parts.fragment.reset(
-            copy_range(std::begin(*fragment), std::end(*fragment), it));
+        parts.fragment =
+            copy_range(std::begin(*fragment), std::end(*fragment), it);
       }
     }
 
@@ -165,8 +165,8 @@ namespace network {
 
     auto it = std::begin(uri_);
     if (scheme) {
-      uri_parts_.scheme.reset(
-          copy_range(std::begin(*scheme), std::end(*scheme), it));
+      uri_parts_.scheme =
+          copy_range(std::begin(*scheme), std::end(*scheme), it);
       // ignore ://
       while ((':' == *it) || ('/' == *it)) {
         ++it;
@@ -174,37 +174,37 @@ namespace network {
     }
 
     if (user_info) {
-      uri_parts_.hier_part.user_info.reset(
-          copy_range(std::begin(*user_info), std::end(*user_info), it));
+      uri_parts_.hier_part.user_info =
+          copy_range(std::begin(*user_info), std::end(*user_info), it);
       ++it;  // ignore @
     }
 
     if (host) {
-      uri_parts_.hier_part.host.reset(
-          copy_range(std::begin(*host), std::end(*host), it));
+      uri_parts_.hier_part.host =
+          copy_range(std::begin(*host), std::end(*host), it);
     }
 
     if (port) {
       ++it;  // ignore :
-      uri_parts_.hier_part.port.reset(
-          copy_range(std::begin(*port), std::end(*port), it));
+      uri_parts_.hier_part.port =
+          copy_range(std::begin(*port), std::end(*port), it);
     }
 
     if (path) {
-      uri_parts_.hier_part.path.reset(
-          copy_range(std::begin(*path), std::end(*path), it));
+      uri_parts_.hier_part.path =
+          copy_range(std::begin(*path), std::end(*path), it);
     }
 
     if (query) {
       ++it;  // ignore ?
-      uri_parts_.query.reset(
-          copy_range(std::begin(*query), std::end(*query), it));
+      uri_parts_.query =
+          copy_range(std::begin(*query), std::end(*query), it);
     }
 
     if (fragment) {
       ++it;  // ignore #
-      uri_parts_.fragment.reset(
-          copy_range(std::begin(*fragment), std::end(*fragment), it));
+      uri_parts_.fragment =
+          copy_range(std::begin(*fragment), std::end(*fragment), it);
     }
   }
 
@@ -387,13 +387,12 @@ namespace network {
         // put the normalized path back into the uri
         boost::optional<string_type> query, fragment;
         if (parts.query) {
-          query.reset(
-              string_type(std::begin(*parts.query), std::end(*parts.query)));
+          query = string_type(std::begin(*parts.query), std::end(*parts.query));
         }
 
         if (parts.fragment) {
-          fragment.reset(string_type(std::begin(*parts.fragment),
-                                     std::end(*parts.fragment)));
+          fragment = string_type(std::begin(*parts.fragment),
+                                 std::end(*parts.fragment));
         }
 
         string_type::iterator path_begin = std::begin(normalized);
