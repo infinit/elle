@@ -31,7 +31,8 @@ namespace elle
             std::vector<boost::filesystem::path> const& files,
             boost::filesystem::path const& path,
             Renamer const& renamer = Renamer(),
-            Excluder const& excluder = Excluder());
+            Excluder const& excluder = Excluder(),
+            bool ignore_failure = false);
   }
 }
 

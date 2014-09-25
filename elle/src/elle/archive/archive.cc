@@ -32,6 +32,7 @@ namespace elle
       void
       operator()(::archive* archive)
       {
+        ELLE_DEBUG_SCOPE("archive deleter: %s", archive);
         check_call(archive, archive_write_close(archive));
         check_call(archive, archive_write_free(archive));
       }
@@ -42,6 +43,7 @@ namespace elle
       void
       operator()(::archive* archive)
       {
+        ELLE_DEBUG_SCOPE("archive read deleter: %s", archive);
         check_call(archive, archive_read_close(archive));
         check_call(archive, archive_read_free(archive));
       }
@@ -52,6 +54,7 @@ namespace elle
       void
       operator()(archive_entry* entry)
       {
+        ELLE_DEBUG_SCOPE("archive entry deleter: %s", entry);
         archive_entry_free(entry);
       }
     };
@@ -62,7 +65,7 @@ namespace elle
               boost::filesystem::path const& file,
               boost::filesystem::path const& relative_path)
     {
-      ELLE_DEBUG_SCOPE("add %s as %s", file, relative_path);
+      ELLE_TRACE_SCOPE("add %s as %s", file, relative_path);
       std::unique_ptr<archive_entry, archive_entry_deleter> entry
         (archive_entry_new());
       archive_entry_set_pathname(entry.get(), relative_path.string().c_str());
@@ -81,9 +84,9 @@ namespace elle
       archive_read_disk_set_symlink_physical(read_disk.get());
       archive_read_disk_entry_from_file(read_disk.get(), entry.get(), -1, 0/*&st*/);
       check_call(archive, archive_write_header(archive, entry.get()));
-      ELLE_DEBUG("Will write %s bytes for %s, islink:%s mode:%s",
+      ELLE_DEBUG("will write %s bytes for %s, islink:%s mode:%s",
         archive_entry_size(entry.get()), file, S_ISLNK(st.st_mode), st.st_mode);
-      // An archive_entry_size of 0 means data is not required (hardlink)
+      // An archive_entry_size of 0 means data is not required (hardlink).
       if (archive_entry_size(entry.get()) > 0 && !S_ISLNK(st.st_mode))
       {
         size_t offset = 0;
@@ -109,12 +112,14 @@ namespace elle
             std::vector<boost::filesystem::path> const& files,
             boost::filesystem::path const& path,
             Renamer const& renamer,
-            Excluder const& excluder)
+            Excluder const& excluder,
+            bool ignore_failure)
     {
       ELLE_TRACE_SCOPE("archive %s", path);
       ELLE_DEBUG("files: %s", files);
       std::unordered_set<std::string> root_entries;
       std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
+      ELLE_TRACE("archive: %s", archive.get());
       int (*format_setter)(::archive*) = nullptr;
       int (*compression_setter)(::archive*) = nullptr;
       switch (format)
@@ -144,17 +149,35 @@ namespace elle
       if (compression_setter)
         check_call(archive.get(), compression_setter(archive.get()));
       check_call(archive.get(),
-                 archive_write_open_filename(archive.get(),
-                                             path.string().c_str()));
+                 archive_write_open_filename(archive.get(), path.string().c_str()));
+
+      auto do_archiving = [ignore_failure] (
+        ::archive* archive,
+        boost::filesystem::path const& absolute,
+        boost::filesystem::path const& relative)
+        {
+          try
+          {
+            _archive_file(archive, absolute, relative);
+          }
+          catch (elle::Error const& e)
+          {
+            if (ignore_failure)
+              ELLE_ERR("ignore %s: %s", absolute, e);
+            else
+              throw;
+          }
+        };
+
       for (auto const& path: files)
       {
         auto root = path.filename();
         while (root_entries.find(root.string()) != root_entries.end())
           root = renamer(root);
         root_entries.insert(root.string());
-        ELLE_DEBUG("Renamed %s to %s", path, root);
+        ELLE_DEBUG("renamed %s to %s", path, root);
         if (!boost::filesystem::exists(path))
-          throw elle::Error(elle::sprintf("Path %s does not exist", path));
+          throw elle::Error(elle::sprintf("path %s does not exist", path));
         if (boost::filesystem::is_directory(path))
           for (auto it = boost::filesystem::recursive_directory_iterator(path);
                it != boost::filesystem::recursive_directory_iterator();
@@ -175,21 +198,21 @@ namespace elle
             }
             if (excluder && excluder(absolute))
             {
-              ELLE_DEBUG("Skipping %s", absolute);
+              ELLE_DEBUG("skipping %s", absolute);
               continue;
             }
             ELLE_DEBUG("archiving from directory %s as %s", absolute, relative);
-            _archive_file(archive.get(), absolute, relative);
+            do_archiving(archive.get(), absolute, relative);
           }
         else
         {
           if (excluder && excluder(path))
           {
-            ELLE_DEBUG("Skipping %s", path);
+            ELLE_DEBUG("skipping %s", path);
             continue;
           }
           ELLE_DEBUG("archiving %s as %s", path, root);
-          _archive_file(archive.get(), path, root);
+          do_archiving(archive.get(), path, root);
         }
       }
     }
