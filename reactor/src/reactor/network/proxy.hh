@@ -4,7 +4,7 @@
 # include <iosfwd>
 
 # include <elle/attribute.hh>
-# include <elle/printable.hh>
+# include <elle/Printable.hh>
 
 namespace reactor
 {
