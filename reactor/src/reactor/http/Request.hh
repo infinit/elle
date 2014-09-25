@@ -15,7 +15,7 @@
 # include <reactor/http/Method.hh>
 # include <reactor/http/StatusCode.hh>
 # include <reactor/http/Version.hh>
-# include <reactor/network/Proxy.hh>
+# include <reactor/network/proxy.hh>
 # include <reactor/operation.hh>
 
 namespace reactor
