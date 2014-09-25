@@ -7,6 +7,7 @@
 #include <elle/filesystem/TemporaryFile.hh>
 #include <elle/finally.hh>
 #include <elle/os/environ.hh>
+#include <elle/printf.hh>
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
 
@@ -19,6 +20,9 @@
 using elle::filesystem::TemporaryDirectory;
 using elle::filesystem::TemporaryFile;
 
+static const std::string ROOT("root");
+static const std::string SUB("sub");
+
 class DummyHierarchy
 {
 public:
@@ -26,9 +30,9 @@ public:
   {
     auto pattern =
       boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
-    this->_root = boost::filesystem::unique_path(pattern) / "root";
+    this->_root = boost::filesystem::unique_path(pattern) / ROOT;
     auto root = this->_root;
-    auto sub = root / "sub";
+    auto sub = root / SUB;
     boost::filesystem::create_directories(sub);
     boost::filesystem::ofstream(root / "1") << "1";
     boost::filesystem::ofstream(root / "2") << "2";
@@ -169,26 +173,43 @@ archive(elle::archive::Format fmt)
     extract(fmt, path, output);
     int count = 0;
     ChangeDirectory cd(output);
+    bool beacon1 = false;
+    bool beacon2 = false;
+    bool beacon3 = false;
+    bool beacon4 = false;
     for (auto it = boost::filesystem::recursive_directory_iterator(".");
          it != boost::filesystem::recursive_directory_iterator();
          ++it)
     {
       ++count;
       auto path = *it;
-      if (path == "./root" || path == "./root/sub")
+      if (path == elle::sprintf("./%s", ROOT) || path == elle::sprintf("./%s/%s", ROOT, SUB))
         continue;
-      else if (path == "./root/1")
+      else if (path == elle::sprintf("./%s/1", ROOT))
+      {
+        beacon1 = true;
         check_file_content(path, '1');
-      else if (path == "./root/2")
+      }
+      else if (path == elle::sprintf("./%s/2", ROOT))
+      {
+        beacon2 = true;
         check_file_content(path, '2');
-      else if (path == "./root/sub/3")
+      }
+      else if (path == elle::sprintf("./%s/%s/3", ROOT, SUB))
+      {
+        beacon3 = true;
         check_file_content(path, '3');
-      else if (path == "./root/sub/4")
+      }
+      else if (path == elle::sprintf("./%s/%s/4", ROOT, SUB))
+      {
+        beacon4 = true;
         check_file_content(path, '4');
+      }
       else
         BOOST_FAIL(path);
     }
     BOOST_CHECK_EQUAL(count, 6);
+    BOOST_CHECK(beacon1 && beacon2 && beacon3 && beacon4);
   }
 }
 
