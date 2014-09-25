@@ -13,6 +13,10 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
+#ifdef INFINIT_WINDOWS
+# include <elle/windows/path_conversion.hh>
+#endif
+
 ELLE_LOG_COMPONENT("elle.archive.archive");
 
 namespace elle
@@ -68,8 +72,17 @@ namespace elle
       ELLE_TRACE_SCOPE("add %s as %s", file, relative_path);
       std::unique_ptr<archive_entry, archive_entry_deleter> entry
         (archive_entry_new());
-      archive_entry_set_pathname(entry.get(), relative_path.string().c_str());
-      archive_entry_copy_sourcepath(entry.get(), file.string().c_str());
+      ELLE_DEBUG("entry: %s", entry.get());
+#ifdef INFINIT_WINDOWS
+      std::string path_as_string = elle::path::to_string(relative_path);
+      std::string file_as_string = elle::path::to_string(file);
+#else
+      std::string path_as_string = relative_path.string();
+      std::string file_as_string = file.string();
+#endif
+
+      archive_entry_set_pathname(entry.get(), path_as_string.c_str());
+      archive_entry_copy_sourcepath(entry.get(), file_as_string.c_str());
       struct stat st;
 #ifdef INFINIT_WINDOWS
       #define S_ISLNK(a) false
@@ -148,9 +161,14 @@ namespace elle
       check_call(archive.get(), format_setter(archive.get()));
       if (compression_setter)
         check_call(archive.get(), compression_setter(archive.get()));
+      auto path_as_string =
+#ifdef INFINIT_WINDOWS
+        elle::path::to_string(path);
+#else
+        path.string();
+#endif
       check_call(archive.get(),
-                 archive_write_open_filename(archive.get(), path.string().c_str()));
-
+        archive_write_open_filename(archive.get(), path_as_string.c_str()));
       auto do_archiving = [ignore_failure] (
         ::archive* archive,
         boost::filesystem::path const& absolute,
