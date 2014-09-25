@@ -6,9 +6,9 @@
 #include <archive_entry.h>
 
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 #include <elle/Error.hh>
+#include <elle/system/system.hh>
 #include <elle/container/vector.hh>
 #include <elle/log.hh>
 #include <elle/printf.hh>
@@ -86,17 +86,22 @@ namespace elle
       // An archive_entry_size of 0 means data is not required (hardlink)
       if (archive_entry_size(entry.get()) > 0 && !S_ISLNK(st.st_mode))
       {
-        boost::filesystem::ifstream input(file, std::ios_base::in | std::ios_base::binary);
-        if (!input.good())
-          throw elle::Error(elle::sprintf("unable to read file %s", file));
-        char buffer[BUFSIZ];
-        while (!input.eof())
+        size_t offset = 0;
+        size_t chunck_size = 5 * 1024 * 1024;
+        while (true)
         {
-          input.read(buffer, BUFSIZ);
-          size_t read = input.gcount();
-          check_call(archive, archive_write_data(archive, buffer, read), read);
+          // ELLE_DEBUG("size: %s, offset: %s", chunck_size, offset);
+          auto buffer = elle::system::read_file_chunk(file, offset, chunck_size);
+          // ELLE_DEBUG("buffer size %s", buffer.size());
+          if (buffer.empty())
+            break;
+          check_call(archive, archive_write_data(archive, buffer.contents(), buffer.size()), buffer.size());
+          if (buffer.size() < chunck_size)
+            break;
+          offset += buffer.size();
         }
       }
+      ELLE_TRACE("file %s archived into %s", file, archive);
     }
 
     void
