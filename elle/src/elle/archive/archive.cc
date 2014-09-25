@@ -195,7 +195,11 @@ namespace elle
         root_entries.insert(root.string());
         ELLE_DEBUG("renamed %s to %s", path, root);
         if (!boost::filesystem::exists(path))
+        {
+          if (ignore_failure)
+            continue;
           throw elle::Error(elle::sprintf("path %s does not exist", path));
+        }
         if (boost::filesystem::is_directory(path))
           for (auto it = boost::filesystem::recursive_directory_iterator(path);
                it != boost::filesystem::recursive_directory_iterator();

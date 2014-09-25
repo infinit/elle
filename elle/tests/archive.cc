@@ -6,6 +6,7 @@
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/filesystem/TemporaryFile.hh>
 #include <elle/finally.hh>
+#include <elle/Error.hh>
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
 #include <elle/system/Process.hh>
@@ -329,6 +330,37 @@ archive_symlink(elle::archive::Format fmt)
   #endif // INFINIT_WINDOWS
 }
 
+static
+void
+archiving_error(elle::archive::Format fmt)
+{
+  TemporaryDirectory d1("input");
+  TemporaryDirectory d2("output");
+  boost::filesystem::path doesnt_exist = d1.path() / "this path doesn't exists";
+  boost::filesystem::path exists(d1.path() / "data");
+  boost::filesystem::ofstream(exists) << "data";
+  BOOST_CHECK(boost::filesystem::exists(exists));
+  {
+    auto path = d2.path() / "output.zip";
+    BOOST_CHECK_THROW(elle::archive::archive(fmt, {doesnt_exist}, path),
+                      elle::Error);
+    // Should have been deleted.
+    BOOST_CHECK(boost::filesystem::exists(path));
+    TemporaryDirectory decompress("decompress");
+    extract(fmt, path, decompress.path());
+    BOOST_CHECK(boost::filesystem::is_empty(decompress.path()));
+  }
+  {
+    auto path = d2.path() / "output2.zip";
+    elle::archive::archive(
+      fmt, {doesnt_exist, exists}, path, elle::archive::Renamer{}, elle::archive::Excluder{}, true);
+    TemporaryDirectory decompress("decompress2");
+    extract(fmt, path, decompress.path());
+    BOOST_CHECK(!boost::filesystem::is_empty(decompress.path()));
+    BOOST_CHECK(boost::filesystem::exists(decompress.path() / "data"));
+  }
+}
+
 #define FORMAT(Fmt)                                     \
   namespace Fmt                                         \
   {                                                     \
@@ -354,9 +386,16 @@ archive_symlink(elle::archive::Format fmt)
     }                                                   \
     static                                              \
     void                                                \
-    symboliclink()                                           \
+    symboliclink()                                      \
     {                                                   \
       archive_symlink(elle::archive::Format::Fmt);      \
+    }                                                   \
+                                                        \
+    static                                              \
+    void                                                \
+    error()                                             \
+    {                                                   \
+      archiving_error(elle::archive::Format::Fmt);      \
     }                                                   \
   }                                                     \
 
@@ -377,10 +416,12 @@ ELLE_TEST_SUITE()
     suite->add(BOOST_TEST_CASE(less_simple));   \
     suite->add(BOOST_TEST_CASE(duplicate));     \
     suite->add(BOOST_TEST_CASE(symboliclink));  \
+    suite->add(BOOST_TEST_CASE(error));         \
   }                                             \
 
   FORMAT(zip);
   FORMAT(tar);
   FORMAT(tar_gzip);
+
 #undef FORMAT
 }
