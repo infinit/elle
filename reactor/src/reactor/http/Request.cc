@@ -57,17 +57,20 @@ namespace reactor
     | Configuration |
     `--------------*/
 
-    Request::Configuration::Configuration(DurationOpt timeout,
-                                          DurationOpt stall_timeout,
-                                          Version version):
-      _version(version),
-      _timeout(timeout),
-      _stall_timeout(stall_timeout),
-      _headers(),
-      // XXX: not supported by wsgiref and <=nginx-1.2 ...
-      _chunked_transfers(false),
-      _expected_status(),
-      _ssl_verify_host(true)
+    Request::Configuration::Configuration(
+      DurationOpt timeout,
+      DurationOpt stall_timeout,
+      Version version,
+      boost::optional<Configuration::Proxy> proxy):
+        _version(version),
+        _proxy(proxy),
+        _timeout(timeout),
+        _stall_timeout(stall_timeout),
+        _headers(),
+        // XXX: not supported by wsgiref and <=nginx-1.2 ...
+        _chunked_transfers(false),
+        _expected_status(),
+        _ssl_verify_host(true)
     {}
 
     Request::Configuration::~Configuration()
@@ -128,6 +131,47 @@ namespace reactor
       auto version = this->_conf.version() == Version::v11 ?
         CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
       setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
+      // Set proxy.
+      using ProxyType = reactor::network::ProxyType;
+      if (this->_conf.proxy() &&
+          this->_conf.proxy().get().type() != ProxyType::None &&
+          !this->_conf.proxy().get().host().empty() &&
+          this->_conf.proxy().get().port() != 0)
+      {
+        auto proxy = this->_conf.proxy().get();
+        setopt(this->_handle, CURLOPT_PROXY, proxy.host().c_str());
+        setopt(this->_handle, CURLOPT_PROXYPORT, proxy.port());
+        // curl expects a long for the proxy type.
+        long proxy_type;
+        switch (proxy.type())
+        {
+          case ProxyType::None:
+            ELLE_ERR("cannot set proxy with type None", *this);
+            elle::unreachable();
+          case ProxyType::HTTP:
+            proxy_type = CURLPROXY_HTTP;
+            break;
+          // HTTPS is still an HTTP proxy but on port 443.
+          case ProxyType::HTTPS:
+            proxy_type = CURLPROXY_HTTP;
+            break;
+          case ProxyType::SOCKS:
+            proxy_type = CURLPROXY_SOCKS5;
+            break;
+        }
+        setopt(this->_handle, CURLOPT_PROXYTYPE, proxy_type);
+        if (proxy.username().length() > 0)
+        {
+          setopt(this->_handle,
+                 CURLOPT_PROXYUSERNAME, proxy.username().c_str());
+        }
+        if (proxy.password().length() > 0)
+        {
+          setopt(this->_handle,
+                 CURLOPT_PROXYPASSWORD, proxy.password().c_str());
+        }
+        setopt(this->_handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+      }
       // Set timeout.
       auto const& timeout = this->_conf.timeout();
       auto timeout_seconds = timeout ?

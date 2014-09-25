@@ -15,6 +15,7 @@
 # include <reactor/http/Method.hh>
 # include <reactor/http/StatusCode.hh>
 # include <reactor/http/Version.hh>
+# include <reactor/network/Proxy.hh>
 # include <reactor/operation.hh>
 
 namespace reactor
@@ -63,6 +64,7 @@ namespace reactor
       /// Configuration of an HTTP request.
       class Configuration
       {
+        using Proxy = reactor::network::Proxy;
       public:
         /// Create a configuration.
         ///
@@ -70,7 +72,8 @@ namespace reactor
         /// \param version Initial value of the version attribute.
         Configuration(DurationOpt timeout = 30_sec,
                       DurationOpt stall_timeout = DurationOpt(),
-                      Version version = Version::v11);
+                      Version version = Version::v11,
+                      boost::optional<Proxy> proxy = boost::optional<Proxy>());
         /// Configuration are not copiable.
         Configuration(Configuration const&) = default;
         /// Move a configuration.
@@ -99,6 +102,8 @@ namespace reactor
       public:
         /// The HTTP version.
         ELLE_ATTRIBUTE_RW(Version, version);
+        /// The proxy to use.
+        ELLE_ATTRIBUTE_RW(boost::optional<Proxy>, proxy);
         /// The potential request timeout.
         ELLE_ATTRIBUTE_RW(DurationOpt, timeout);
         /// Abort the request if both upload/download stall for given duration.
