@@ -813,7 +813,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             '--layout=tagged',
             '--prefix=%s' % boost_prefix,
             '-sBUILD=<define>BOOST_USE_WINDOWS_H=1',
-            'cxxflags=-std=c++11 -include cmath -DBOOST_USE_WINDOWS_H',
+            'cxxflags=-std=c++11 -include cmath -DBOOST_USE_WINDOWS_H -DBOOST_LEXICAL_CAST_ASSUME_C_LOCALE',
             'linkflags=-std=c++11',
           ]
         elif cxx_toolkit.os is drake.os.macos:
