@@ -17,8 +17,17 @@ namespace elle
 
     namespace platform
     {
+      /// The OS running (Linux, MacOSX, Windows, iOS).
       std::string
-      name();
+      os_name();
+
+      /// The version of the OS.
+      std::string
+      os_version();
+
+      /// Helper that concatenates the OS and version.
+      std::string
+      os_description();
     }
   }
 }
