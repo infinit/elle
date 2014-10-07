@@ -315,6 +315,9 @@ namespace reactor
             ELLE_LOG("%s: cookies (%s)", *this, cookies);
             ELLE_LOG("%s: parameters (%s)", *this, cmd.params());
 
+            auto content_length =
+              boost::lexical_cast<unsigned int>(headers.at("Content-Length"));
+            elle::Buffer content;
             if (cmd.version() == Version::v11 && headers.find("Expect") != headers.end())
             {
               std::string answer(
@@ -322,7 +325,6 @@ namespace reactor
                 "\r\n");
               ELLE_TRACE_SCOPE("send response header: %s", answer);
               socket->write(elle::ConstWeakBuffer(answer));
-              elle::Buffer content;
               if (headers.find("chunked") != headers.end())
                 while (true)
                 {
@@ -335,28 +337,16 @@ namespace reactor
                   content.append(buffer.contents(), buffer.size() - 2);
                 }
               else
-              {
-                content = this->read_sized_content(
-                  *socket, boost::lexical_cast<unsigned int>(headers.at("Content-Length")));
-              }
-
-              this->_response(
-                *socket,
-                StatusCode::OK,
-                route->second.at(cmd.method())(headers, cookies, cmd.params(), content),
-                cookies);
+                content = this->read_sized_content(*socket, content_length);
             }
             else
-            {
-              this->_response(
-                *socket,
-                reactor::http::StatusCode::OK,
-                this->_routes.at(cmd.path()).at(cmd.method())(
-                  headers, cookies, cmd.params(),
-                  this->read_sized_content(
-                    *socket, boost::lexical_cast<unsigned int>(headers.at("Content-Length")))),
-                cookies);
-            }
+              content = this->read_sized_content(*socket, content_length);
+            this->_response(
+              *socket,
+              StatusCode::OK,
+              route->second.at(cmd.method())
+                (headers, cookies, cmd.params(), content),
+              cookies);
           }
           catch (Exception const& e)
           {
