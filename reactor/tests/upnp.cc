@@ -24,6 +24,7 @@ int main(int argc, char** argv)
   lport = boost::lexical_cast<int>(argv[2]);
   if (argc > 3)
     eport = boost::lexical_cast<int>(argv[3]);
+  (void)eport;
   reactor::Scheduler sched;
   reactor::Thread t(sched, "upnp_start", [&]() {
     try
