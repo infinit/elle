@@ -4,8 +4,8 @@ namespace elle
 {
   namespace json
   {
-    ParserError::ParserError(std::string const& message):
-      elle::Exception(message)
+    ParseError::ParseError(std::string const& message):
+      Super(message)
     {}
   }
 }

@@ -129,7 +129,7 @@ namespace elle
       elle::IOStreamClear clearer(stream);
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
-        throw ParserError(elle::sprintf("JSON error"));
+        throw ParseError(elle::sprintf("JSON error"));
       auto res = from_spirit(value);
       return res;
     }

@@ -33,11 +33,11 @@ namespace elle
           this->_json = elle::json::read(input);
           this->_current.push_back(&this->_json);
         }
-        catch (elle::json::ParserError const& e)
+        catch (elle::json::ParseError const& e)
         {
           Error exception("json parse error");
           exception.inner_exception(
-            elle::make_unique<elle::json::ParserError>(e));
+            elle::make_unique<elle::json::ParseError>(e));
           throw exception;
         }
       }
