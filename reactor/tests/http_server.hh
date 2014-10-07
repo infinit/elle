@@ -41,10 +41,10 @@ namespace reactor
       public:
         // Use internally.
         class Exception:
-          public elle::Exception
+          public elle::Error
         {
         public:
-          typedef elle::Exception Super;
+          typedef elle::Error Super;
           Exception(std::string const& url,
                     reactor::http::StatusCode code,
                     std::string const& body = "")
