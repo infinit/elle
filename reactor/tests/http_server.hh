@@ -341,6 +341,13 @@ namespace reactor
             }
             else
               content = this->read_sized_content(*socket, content_length);
+            // Check JSON is valid.
+            if (this->is_json(headers))
+            {
+              elle::IOStream input(
+                new elle::InputStreamBuffer<elle::Buffer>(content));
+              auto json = elle::json::read(input);
+            }
             this->_response(
               *socket,
               StatusCode::OK,
