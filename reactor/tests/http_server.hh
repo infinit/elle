@@ -378,6 +378,8 @@ namespace reactor
                        Method method,
                        Function const& function)
         {
+          ELLE_LOG_COMPONENT("reactor.test.http");
+          ELLE_TRACE("%s: register %s on %s", *this, route, method);
           this->_routes[route][method] = function;
         }
 
