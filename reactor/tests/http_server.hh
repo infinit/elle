@@ -15,6 +15,7 @@
 # include <elle/attribute.hh>
 # include <elle/container/map.hh>
 # include <elle/container/vector.hh>
+# include <elle/json/exceptions.hh>
 # include <elle/json/json.hh>
 # include <elle/log.hh>
 # include <elle/string/algorithm.hh>
@@ -349,9 +350,19 @@ namespace reactor
             // Check JSON is valid.
             if (this->is_json(headers))
             {
-              elle::IOStream input(
-                new elle::InputStreamBuffer<elle::Buffer>(content));
-              auto json = elle::json::read(input);
+              try
+              {
+                elle::IOStream input(
+                  new elle::InputStreamBuffer<elle::Buffer>(content));
+                auto json = elle::json::read(input);
+              }
+              catch (elle::json::ParseError)
+              {
+                throw Exception(cmd.path(),
+                                reactor::http::StatusCode::Bad_Request,
+                                "invalid JSON");
+
+              }
             }
             this->_response(
               *socket,
