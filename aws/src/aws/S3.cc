@@ -322,7 +322,7 @@ namespace aws
     )
   {
     RequestQuery query;
-    query["partNumber"] = boost::lexical_cast<std::string>(chunk+1);
+    query["partNumber"] = std::to_string(chunk+1);
     query["uploadId"] = upload_key;
     return put_object(object, object_name, query, true, progress_callback);
   }
@@ -400,7 +400,7 @@ namespace aws
       RequestQuery query;
        query["uploadId"] = upload_key;
       if (max_id != -1)
-        query["part-number-marker"] = boost::lexical_cast<std::string>(max_id);
+        query["part-number-marker"] = std::to_string(max_id);
       auto url = elle::sprintf("/%s/%s",
                                this->_credentials.folder(),
                                object_name);
