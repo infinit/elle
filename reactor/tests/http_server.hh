@@ -315,9 +315,6 @@ namespace reactor
 
             ELLE_TRACE("%s: cookies: %s", *this, cookies);
             ELLE_TRACE("%s: parameters: %s", *this, cmd.params());
-
-            auto content_length =
-              boost::lexical_cast<unsigned int>(headers.at("Content-Length"));
             elle::Buffer content;
             if (cmd.version() == Version::v11 &&
                 headers.find("Expect") != headers.end())
@@ -329,25 +326,26 @@ namespace reactor
                   "\r\n");
                 socket->write(elle::ConstWeakBuffer(answer));
               }
-              if (headers.find("chunked") != headers.end())
-                ELLE_TRACE("%s: read chunked content", *this)
-                  while (true)
-                  {
-                    socket->read_until("\r\n"); // Ignore the chunked header.
-                    auto buffer = socket->read_until("\r\n");
-                    if (buffer == "\r\n")
-                      break;
-                    ELLE_DEBUG("%s: got content chunk from %s: %s",
-                               *this, peer, buffer.string());
-                    content.append(buffer.contents(), buffer.size() - 2);
-                  }
-              else
-                ELLE_TRACE("%s: read sized content", *this)
-                  content = this->read_sized_content(*socket, content_length);
             }
+            if (headers.find("chunked") != headers.end())
+              ELLE_TRACE("%s: read chunked content", *this)
+                while (true)
+                {
+                  socket->read_until("\r\n"); // Ignore the chunked header.
+                  auto buffer = socket->read_until("\r\n");
+                  if (buffer == "\r\n")
+                    break;
+                  ELLE_DEBUG("%s: got content chunk from %s: %s",
+                             *this, peer, buffer.string());
+                  content.append(buffer.contents(), buffer.size() - 2);
+                }
             else
+            {
+              auto content_length =
+                boost::lexical_cast<unsigned int>(headers.at("Content-Length"));
               ELLE_TRACE("%s: read sized content", *this)
                 content = this->read_sized_content(*socket, content_length);
+            }
             // Check JSON is valid.
             if (this->is_json(headers))
             {
