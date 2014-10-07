@@ -15,6 +15,7 @@
 # include <elle/attribute.hh>
 # include <elle/container/map.hh>
 # include <elle/container/vector.hh>
+# include <elle/json/json.hh>
 # include <elle/log.hh>
 # include <elle/string/algorithm.hh>
 # include <elle/utility/Move.hh>
