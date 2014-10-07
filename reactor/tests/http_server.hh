@@ -249,7 +249,7 @@ namespace reactor
           {
             auto peer = socket->peer();
             CommandLine cmd(socket->read_until("\r\n"));
-            ELLE_TRACE("%s: got request from %s: %s", *this, peer, cmd);
+            ELLE_LOG_SCOPE("%s: handle request from %s: %s", *this, peer, cmd);
             auto route = this->_routes.find(cmd.path());
             if (route == this->_routes.end())
             {
@@ -268,7 +268,7 @@ namespace reactor
               if (buffer == "\r\n")
                 break;
               buffer.size(buffer.size() - 2);
-              ELLE_LOG("%s: got header from %s: %s", *this, peer, buffer.string());
+              ELLE_TRACE("%s: get header: %s", *this, buffer.string());
               std::vector<std::string> words;
               boost::algorithm::split(words, buffer,
                                       boost::algorithm::is_any_of(" "));
@@ -313,35 +313,41 @@ namespace reactor
               }
             }
 
-            ELLE_LOG("%s: cookies (%s)", *this, cookies);
-            ELLE_LOG("%s: parameters (%s)", *this, cmd.params());
+            ELLE_TRACE("%s: cookies: %s", *this, cookies);
+            ELLE_TRACE("%s: parameters: %s", *this, cmd.params());
 
             auto content_length =
               boost::lexical_cast<unsigned int>(headers.at("Content-Length"));
             elle::Buffer content;
-            if (cmd.version() == Version::v11 && headers.find("Expect") != headers.end())
+            if (cmd.version() == Version::v11 &&
+                headers.find("Expect") != headers.end())
             {
-              std::string answer(
-                "HTTP/1.1 100 Continue\r\n"
-                "\r\n");
-              ELLE_TRACE_SCOPE("send response header: %s", answer);
-              socket->write(elle::ConstWeakBuffer(answer));
+              ELLE_TRACE("%s: send Continue header", *this)
+              {
+                std::string answer(
+                  "HTTP/1.1 100 Continue\r\n"
+                  "\r\n");
+                socket->write(elle::ConstWeakBuffer(answer));
+              }
               if (headers.find("chunked") != headers.end())
-                while (true)
-                {
-                  socket->read_until("\r\n"); // Ignore the chunked header.
-                  auto buffer = socket->read_until("\r\n");
-                  if (buffer == "\r\n")
-                    break;
-                  ELLE_DEBUG("%s: got content chunk from %s: %s",
-                             *this, peer, buffer.string());
-                  content.append(buffer.contents(), buffer.size() - 2);
-                }
+                ELLE_TRACE("%s: read chunked content", *this)
+                  while (true)
+                  {
+                    socket->read_until("\r\n"); // Ignore the chunked header.
+                    auto buffer = socket->read_until("\r\n");
+                    if (buffer == "\r\n")
+                      break;
+                    ELLE_DEBUG("%s: got content chunk from %s: %s",
+                               *this, peer, buffer.string());
+                    content.append(buffer.contents(), buffer.size() - 2);
+                  }
               else
-                content = this->read_sized_content(*socket, content_length);
+                ELLE_TRACE("%s: read sized content", *this)
+                  content = this->read_sized_content(*socket, content_length);
             }
             else
-              content = this->read_sized_content(*socket, content_length);
+              ELLE_TRACE("%s: read sized content", *this)
+                content = this->read_sized_content(*socket, content_length);
             // Check JSON is valid.
             if (this->is_json(headers))
             {
