@@ -9,10 +9,8 @@
 #include <elle/log.hh>
 #include <elle/finally.hh>
 #include <elle/system/system.hh>
-#include <elle/os/locale.hh>
 
 #include <boost/system/error_code.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 ELLE_LOG_COMPONENT("elle.system");
 
@@ -55,15 +53,70 @@ namespace elle
 #endif
     }
 
+    void
+    write_file(boost::filesystem::path const& path,
+               Buffer const& buffer)
+    {
+#ifdef INFINIT_WINDOWS
+      auto get_handle = [&] (DWORD desired_access = FILE_APPEND_DATA,
+                             DWORD creation_disposition = OPEN_ALWAYS)
+      {
+        return CreateFileW(
+          path.native().c_str(),
+          desired_access,
+          FILE_SHARE_READ,
+          NULL,
+           creation_disposition,
+          FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH,
+          NULL);
+      };
+      auto h = get_handle();
+      if (h == INVALID_HANDLE_VALUE)
+        throw boost::filesystem::filesystem_error(
+          "CreateFile",
+          path,
+          boost::system::error_code(::GetLastError(),
+                                    boost::system::system_category()));
+      elle::SafeFinally close_handle([&] { ::CloseHandle(h); });
+      DWORD written;
+      BOOL ok = WriteFile(h, buffer.contents(), buffer.size(), &written, nullptr);
+      if (ok != TRUE)
+      {
+        throw boost::filesystem::filesystem_error(
+          elle::sprintf("Write error: %s/%s", written, buffer.size()),
+          path,
+          boost::system::error_code(::GetLastError(),
+                                    boost::system::system_category()));
+      }
+#else
+      mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+      int fd = ::open(path.string().c_str(),/* trust the locale*/
+                      O_WRONLY | O_CREAT | O_APPEND, mode);
+      if (fd == -1)
+      {
+        throw boost::filesystem::filesystem_error(
+          strerror(errno), path,
+          boost::system::error_code(errno, boost::system::system_category()));
+      }
+      elle::SafeFinally close_file([&] { ::close(fd);});
+
+      ssize_t bytes_written = ::write(fd,
+                                      buffer.contents(),
+                                      buffer.size());
+      if (bytes_written == -1 || (Buffer::Size) bytes_written != buffer.size())
+        throw boost::filesystem::filesystem_error(
+          strerror(errno), path,
+          boost::system::error_code(errno, boost::system::system_category()));
+#endif
+      ELLE_ASSERT(boost::filesystem::exists(path));
+    }
+
     Buffer read_file_chunk(boost::filesystem::path path,
                            uint64_t offset,
                            uint64_t size)
     {
       ELLE_TRACE_SCOPE("read file %s chunck of size %s at offset %s", path, size, offset);
       // FIXME: accepts offsets >32bits, but size has to be below 1<<31
-      // Fix for locale issue
-      elle::os::locale::DefaultImbuer u;
-
       static const uint64_t MAX_buffer{elle::Buffer::max_size};
 
       if (size > MAX_buffer)

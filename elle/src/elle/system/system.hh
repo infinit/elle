@@ -42,11 +42,18 @@ namespace elle
       static Character const separator('/');
     };
     /// Read a part of a file, from file_offset to either size bytes or EOF
-    Buffer read_file_chunk(boost::filesystem::path file_name,
-                           uint64_t file_offset,
-                           uint64_t size);
-    void truncate(boost::filesystem::path file_name,
-                  uint64_t new_size);
+    Buffer
+    read_file_chunk(boost::filesystem::path file_name,
+                    uint64_t file_offset,
+                    uint64_t size);
+
+    void
+    write_file(boost::filesystem::path const& path,
+               Buffer const& buffer = elle::Buffer{0});
+
+    void
+    truncate(boost::filesystem::path file_name,
+             uint64_t new_size);
   }
 }
 
