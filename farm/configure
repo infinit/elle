@@ -46,13 +46,16 @@ with drake.Drake(%(dir_source)r) as d:
   import drake.valgrind
   if %(valgrind)r:
     valgrind = drake.valgrind.Valgrind()
+    valgrind_tests = True
   else:
     valgrind = None
+    valgrind_tests = False
 
   d.run(cxx_toolkit,
         cxx_config,
         python3 = python,
         valgrind = valgrind,
+        valgrind_tests = valgrind_tests,
         production_build = %(production_build)r,
         **extra_args)
 '''

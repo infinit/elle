@@ -35,7 +35,9 @@ def configure(zlib_lib,
               python3 = None,
               enable_tests = True,
               prefix = '/usr',
-              valgrind = None):
+              valgrind = None,
+              valgrind_tests = False,
+            ):
 
   global config, lib_static, lib_dynamic, library, library_zlib
   global python
@@ -611,7 +613,7 @@ def configure(zlib_lib,
       env = {
         'BUILD_DIR': str(drake.path_build()),
       }
-      if valgrind is not None:
+      if valgrind_tests:
         runner = drake.valgrind.ValgrindRunner(exe = test,
                                                valgrind = valgrind,
                                                env = env)

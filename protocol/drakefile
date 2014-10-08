@@ -20,7 +20,9 @@ def configure(cryptography,
               boost = None,
               stuntman = None,
               prefix = '/usr',
-              valgrind = None):
+              valgrind = None,
+              valgrind_tests = False,
+):
 
   # Public C++ configuration
   global config
@@ -144,7 +146,7 @@ def configure(cryptography,
       cxx_config_tests,
     )
     rule_tests << test
-    if valgrind is not None:
+    if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = test,
                                              valgrind = valgrind)
     else:

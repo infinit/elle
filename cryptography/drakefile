@@ -25,7 +25,9 @@ def configure(openssl_config,
               boost = None,
               elle = None,
               prefix = '/usr',
-              valgrind = None):
+              valgrind = None,
+              valgrind_tests = False,
+):
 
   global config
   global lib_static, lib_dynamic, library
@@ -221,7 +223,7 @@ def configure(openssl_config,
     bin = drake.cxx.Executable(bin_path, sources,
                                cxx_toolkit, config_test)
     rule_tests << bin
-    if valgrind is not None:
+    if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = bin,
                                              valgrind = valgrind)
     else:
