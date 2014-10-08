@@ -2,6 +2,12 @@
 #include <memory>
 #include <mutex>
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#else
+# define RUNNING_ON_VALGRIND 0
+#endif
+
 #include "reactor.hh"
 
 #include <elle/finally.hh>
@@ -23,7 +29,15 @@
 #include <reactor/thread.hh>
 #include <reactor/timer.hh>
 
+
 ELLE_LOG_COMPONENT("Test");
+
+static
+int
+valgrind(int base = 1)
+{
+  return (RUNNING_ON_VALGRIND ? 5 : 1) * base;
+}
 
 /*-----------------.
 | Global shortcuts |
@@ -407,7 +421,6 @@ multilock_barrier_basic()
   bool beacon_waiter = false;
   bool beacon_closer = false;
   reactor::Thread waiter(sched, "waiter", [&] {
-      std::cerr << "waiter" << std::endl;
       BOOST_CHECK(barrier.opened());
       reactor::wait(barrier);
       no_lock = true;
@@ -676,7 +689,7 @@ sleeper1(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  reactor::sleep(boost::posix_time::milliseconds(400));
+  reactor::sleep(boost::posix_time::milliseconds(valgrind(400)));
   BOOST_CHECK_EQUAL(step, 3);
   ++step;
 }
@@ -687,7 +700,7 @@ sleeper2(int& step)
 {
   BOOST_CHECK(step == 0 || step == 1);
   ++step;
-  reactor::sleep(boost::posix_time::milliseconds(200));
+  reactor::sleep(boost::posix_time::milliseconds(valgrind(200)));
   BOOST_CHECK_EQUAL(step, 2);
   ++step;
 }
@@ -815,17 +828,17 @@ static
 void
 sleeping_beauty()
 {
-  reactor::sleep(boost::posix_time::milliseconds(200));
+  reactor::sleep(boost::posix_time::milliseconds(valgrind(400)));
 }
 
 static
 void
 prince_charming(reactor::Thread& sleeping_beauty)
 {
-  bool finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(100));
+  bool finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(valgrind(200)));
   BOOST_CHECK(!finished);
   BOOST_CHECK(!sleeping_beauty.done());
-  finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(200));
+  finished = reactor::wait(sleeping_beauty, boost::posix_time::milliseconds(valgrind(400)));
   BOOST_CHECK(finished);
   BOOST_CHECK(sleeping_beauty.done());
 }
@@ -2312,39 +2325,31 @@ ELLE_TEST_SCHEDULED(test_released_signal)
 {
   using reactor::Thread;
   {
-    bool b = false, f=false;
-    Thread t("test", [&] { reactor::sleep(200_ms); b = true;});
-    t.released().connect([&] { f = true;});
-    BOOST_CHECK_EQUAL(b, false);
-    BOOST_CHECK_EQUAL(f, false);
-    reactor::sleep(300_ms);
-    BOOST_CHECK_EQUAL(b, true);
-    BOOST_CHECK_EQUAL(f, true);
+    bool beacon = false;
+    Thread t("test 1", [&] { reactor::yield(); });
+    t.released().connect([&] { beacon = true; });
+    BOOST_CHECK(!beacon);
+    reactor::wait(t);
+    BOOST_CHECK(beacon);
   }
-  { // terminate_now from thread
-    bool f=false;
-    Thread t("test", [&] { reactor::sleep(200_ms); t.terminate_now(true);});
-    t.released().connect([&] { ELLE_TRACE("release"); f = true;});
-    BOOST_CHECK_EQUAL(f, false);
-    reactor::sleep(300_ms);
-    BOOST_CHECK_EQUAL(f, true);
+  // terminate_now from thread
+  {
+    bool beacon = false;
+    Thread t("test 2", [&] { t.terminate_now(true); });
+    t.released().connect([&] { beacon = true; });
+    BOOST_CHECK(!beacon);
+    reactor::wait(t);
+    BOOST_CHECK(beacon);
   }
-  { // terminate_now
-    ELLE_TRACE("*****start*****");
-    bool b = false, f=false;
-    Thread t("test", [&] { reactor::sleep(200_ms); b = true;});
-    t.released().connect([&] {  ELLE_TRACE("release"); f = true;});
-    BOOST_CHECK_EQUAL(b, false);
-    BOOST_CHECK_EQUAL(f, false);
-    ELLE_TRACE("terminate_now");
+  // terminate_now
+  {
+    bool beacon = false;
+    Thread t("test 3", [&] { reactor::sleep(); });
+    t.released().connect([&] { beacon = true; });
+    BOOST_CHECK(!beacon);
     t.terminate_now();
-    ELLE_TRACE("sleep")
-    reactor::sleep(50_ms);
-    ELLE_TRACE("check");
-    BOOST_CHECK_EQUAL(b, false);
-    BOOST_CHECK_EQUAL(f, true);
+    BOOST_CHECK(beacon);
   }
-
 }
 
 // A class owning a thread, with various destruction configurations
@@ -2540,16 +2545,13 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(basics);
   basics->add(BOOST_TEST_CASE(test_basics_one), 0, 10);
   basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, 10);
-  basics->add(BOOST_TEST_CASE(nested_schedulers), 0, 1);
-
-  boost::unit_test::test_suite* multithread = BOOST_TEST_SUITE("Multithread");
-  multithread->add(BOOST_TEST_CASE(test_multithread));
+  basics->add(BOOST_TEST_CASE(nested_schedulers), 0, valgrind(1));
 
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
     boost::unit_test::framework::master_test_suite().add(subsuite);
     auto exception_no_wait = &waitable::exception_no_wait;
-    subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, 1);
+    subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind());
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
@@ -2640,12 +2642,13 @@ ELLE_TEST_SUITE()
   timeout->add(BOOST_TEST_CASE(test_timeout_threw), 0, 10);
   timeout->add(BOOST_TEST_CASE(test_timeout_finished), 0, 10);
 
-  boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("Return value");
+  boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("vthread");
   boost::unit_test::framework::master_test_suite().add(vthread);
   vthread->add(BOOST_TEST_CASE(test_vthread), 0, 10);
 
-  boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("Multithreading");
+  boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
+  // mt->add(BOOST_TEST_CASE(test_multithread), 0, 10);
   mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake), 0, 10);
   mt->add(BOOST_TEST_CASE(test_multithread_run), 0, 10);
   mt->add(BOOST_TEST_CASE(test_multithread_run_exception), 0, 10);
@@ -2675,11 +2678,11 @@ ELLE_TEST_SUITE()
 #endif
 
   boost::unit_test::test_suite* thread_exception =
-    BOOST_TEST_SUITE("Thread exception");
+    BOOST_TEST_SUITE("thread-exception");
   boost::unit_test::framework::master_test_suite().add(thread_exception);
   thread_exception->add(BOOST_TEST_CASE(thread_exception_test), 0, 10);
 
-  boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("IO service");
+  boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("io-service");
   boost::unit_test::framework::master_test_suite().add(io_service);
   io_service->add(BOOST_TEST_CASE(test_io_service_throw), 0, 10);
 
@@ -2709,7 +2712,7 @@ ELLE_TEST_SUITE()
       BOOST_TEST_SUITE("system_signals");
     boost::unit_test::framework::master_test_suite().add(system_signals);
     auto terminate = system_signals::terminate;
-    system_signals->add(BOOST_TEST_CASE(terminate), 0, 1);
+    system_signals->add(BOOST_TEST_CASE(terminate), 0, valgrind(1));
   }
 #endif
 }
