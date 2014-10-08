@@ -1,5 +1,9 @@
 #include <boost/context/fcontext.hpp>
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#endif
+
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
@@ -107,16 +111,21 @@ namespace reactor
                const Action& action)
           : Super(name, action)
           , _backend(backend)
-          , _stack_store(
-              stack_allocator.allocate(StackAllocator::default_stack_size()))
+          , _stack_size(StackAllocator::default_stack_size())
+          , _stack_pointer(stack_allocator.allocate(this->_stack_size))
           , _context(
-              make_fcontext(this->_stack_store,
-                            StackAllocator::default_stack_size(),
-                            wrapped_run))
+            make_fcontext(this->_stack_pointer, this->_stack_size, wrapped_run))
           , _caller(nullptr)
           , _root(false)
           , _unwinding(false)
-        {}
+        {
+          #ifdef VALGRIND
+          this->_valgrind_stack =
+            VALGRIND_STACK_REGISTER(
+              reinterpret_cast<char*>(this->_stack_pointer) - this->_stack_size,
+              this->_stack_pointer);
+          #endif
+        }
 
         ~Thread()
         {
@@ -127,9 +136,12 @@ namespace reactor
           if (this->_context)
           {
             this->_context = nullptr;
-            stack_allocator.deallocate(this->_stack_store,
+            stack_allocator.deallocate(this->_stack_pointer,
                                        StackAllocator::default_stack_size());
           }
+          #ifdef VALGRIND
+          VALGRIND_STACK_DEREGISTER(this->_valgrind_stack);
+          #endif
         }
 
       private:
@@ -291,8 +303,10 @@ namespace reactor
 
         /// Owning backend.
         Backend& _backend;
-        /// Context stack store.
-        void* _stack_store;
+        /// Context stack size.
+        std::size_t _stack_size;
+        /// Context stack pointer.
+        void* _stack_pointer;
         /// Underlying IO context.
         Context _context;
         /// The thread that stepped us.
@@ -302,6 +316,7 @@ namespace reactor
         ELLE_ATTRIBUTE(bool, root);
         ELLE_ATTRIBUTE(bool, unwinding);
         ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
+        ELLE_ATTRIBUTE(unsigned int, valgrind_stack);
       };
 
       static
