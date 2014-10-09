@@ -7,31 +7,27 @@ import sys
 
 from itertools import chain
 
-config = None
-elle = None
-cryptography = None
-protocol = None
-reactor = None
 asio_udt = None
 aws = None
-rule_check = None
-rule_tests = None
-
 boost = None
-python3 = None
-
+config = None
+cryptography = None
 curl_config = None
 curl_lib = None
-
-openssl_config = None
-openssl_lib_ssl = None
-openssl_lib_crypto = None
-
-zlib_config = None
-zlib_lib = None
-
+elle = None
 libarchive_config = None
 libarchive_lib = None
+openssl_config = None
+openssl_lib_crypto = None
+openssl_lib_ssl = None
+protocol = None
+python3 = None
+reactor = None
+rule_check = None
+rule_tests = None
+valgrind = None
+zlib_config = None
+zlib_lib = None
 
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
@@ -43,6 +39,10 @@ def set_boost(value):
 def set_python3(value):
   global python3
   python3 = value
+
+def set_valgrind(value):
+  global valgrind
+  valgrind = value
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
@@ -57,19 +57,35 @@ def configure(cxx_toolkit = None,
               valgrind_tests = False,
 ):
 
-  global config
-  global elle
-  global cryptography
-  global protocol
-  global reactor
   global asio_udt
   global aws
+  global config
+  global cryptography
+  global elle
+  global protocol
+  global reactor
 
   global curl_config, curl_lib
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
   global libarchive_config, libarchive_lib
 
+  ## -------- ##
+  ## Valgrind ##
+  ## -------- ##
+
+  if valgrind is not False:
+    if valgrind is True or valgrind is None:
+      try:
+        valgrind = drake.valgrind.Valgrind()
+      except Exception as e:
+        if valgrind is True:
+          raise
+        else:
+          valgrind = None
+  else:
+    valgrind = None
+  set_valgrind(valgrind)
   config = drake.cxx.Config()
 
   cxx_config = drake.cxx.Config(cxx_config)
