@@ -96,4 +96,6 @@ else:
 
 with open('%s/drake' % os.environ['DIR_BUILD'], 'w') as drake:
   parameters['dir_source'] = os.path.abspath(os.environ['DIR_SOURCE'])
-  print(template % parameters, file = drake)
+  content = template % parameters
+  print(content, file = drake)
+  print(content)
