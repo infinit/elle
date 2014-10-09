@@ -44,12 +44,8 @@ if qt is not None:
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
   import drake.valgrind
-  if %(valgrind)r:
-    valgrind = drake.valgrind.Valgrind()
-    valgrind_tests = True
-  else:
-    valgrind = None
-    valgrind_tests = False
+  valgrind = %(valgrind)r
+  valgrind_tests = %(valgrind)r
 
   d.run(cxx_toolkit,
         cxx_config,
