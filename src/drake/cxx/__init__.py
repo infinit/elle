@@ -1823,3 +1823,30 @@ class LibraryConfiguration(drake.Configuration):
   @property
   def libraries_path(self):
     return self.__libraries_path
+
+class CompilationDatabase(drake.Node):
+
+  class Builder(drake.Builder):
+
+    def __init__(self, database):
+      super().__init__([], [database])
+      self.__database = database
+
+    def execute(self):
+      res = []
+      self.output('Generate %s' % self.__database)
+      for node in drake.Drake.current.nodes.values():
+        if isinstance(node, drake.cxx.Object) and node.builder is not None:
+          res.append({
+            'directory': str(drake.path_build(absolute = True)),
+            'command': drake.command_flatten(node.builder.command),
+            'file': str(node.path()),
+          })
+      with open(str(self.__database.path()), 'w') as f:
+        import json
+        json.dump(res, f)
+      return True
+
+  def __init__(self, path = None):
+    super().__init__(path)
+    CompilationDatabase.Builder(self)
