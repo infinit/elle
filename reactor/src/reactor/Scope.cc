@@ -156,7 +156,11 @@ namespace reactor
   Scope::_wait(Thread* thread)
   {
     if (this->_running == 0)
+    {
+      if (this->_exception)
+        std::rethrow_exception(this->_exception);
       return false;
+    }
     else
       return Waitable::_wait(thread);
   }

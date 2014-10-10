@@ -565,6 +565,24 @@ namespace scope
     sched.run();
   }
 
+  // Check we get past exceptions even if the scope is done.
+  ELLE_TEST_SCHEDULED(exception_done)
+  {
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+    {
+      auto& thread = s.run_background(
+        "throw",
+        [&]
+        {
+          throw BeaconException();
+        });
+      reactor::yield();
+      reactor::yield();
+      BOOST_CHECK(thread.done());
+      BOOST_CHECK_THROW(s.wait(), BeaconException);
+    };
+  }
+
   static
   void
   multiple_exception()
@@ -2602,6 +2620,8 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(wait), 0, 10);
     auto exception = &scope::exception;
     scope->add(BOOST_TEST_CASE(exception), 0, 10);
+    auto exception_done = &scope::exception_done;
+    scope->add(BOOST_TEST_CASE(exception_done), 0, 10);
     auto multiple_exception = &scope::multiple_exception;
     scope->add(BOOST_TEST_CASE(multiple_exception), 0, 10);
     auto terminate = &scope::terminate;
