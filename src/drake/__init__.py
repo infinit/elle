@@ -1520,6 +1520,14 @@ def _can_skip_node(node):
       return False
   return all(_can_skip_node(dep) for dep in node.dependencies)
 
+def command_flatten(command, env = None):
+  if env is not None:
+    output_env = ('%s=%s ' % (var, pipes.quote(value))
+                  for var, value in env.items())
+  else:
+    output_env = ()
+  return ' '.join(map(pipes.quote, command))
+
 class Builder:
 
   """Produces a set of BaseNodes from an other set of BaseNodes."""
@@ -1619,14 +1627,7 @@ class Builder:
         for c in cmd:
           c = list(map(str, c))
           if _RAW or pretty is None:
-            if env is not None:
-              output_env = ('%s=%s ' % (var, pipes.quote(value))
-                            for var, value in env.items())
-            else:
-              output_env = ()
-            output_cmd = map(pipes.quote, c)
-            if _RAW:
-              self.output(' '.join(chain(output_env, output_cmd)))
+            self.output(command_flatten(c, env))
           stdout = None
           if not leave_stdout:
             stdout = f
