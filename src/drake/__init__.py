@@ -124,17 +124,25 @@ class Drake:
     self.__scheduler = Scheduler(policy = sched.DepthFirst())
     self.__prefix = drake.Path('.')
     self.__nodes = {}
+    # Load the root drakefile
+    self.__globals = {}
+    path = str(self.path_source / 'drakefile')
+    if _OS.path.exists(path):
+      with open(path, 'r') as drakefile:
+        with self:
+          exec(compile(drakefile.read(), path, 'exec'),
+               self.__globals)
+      self.__module = _Module(self.__globals)
+      self.__configure = self.__module.configure
+    else:
+      self.__module = _Module({})
+      self.__configure = None
 
   def run(self, *cfg, **kwcfg):
     try:
-      g = {}
-      # Load the root drakefile
-      path = str(self.path_source / 'drakefile')
-      with open(path, 'r') as drakefile:
-        with self:
-          exec(compile(drakefile.read(), path, 'exec'), g)
-      module = _Module(g)
-      configure = module.configure
+      g = self.__globals
+      module = self.__module
+      configure = self.__configure
       # Parse arguments
       options = {
         '--jobs': lambda j: self.jobs_set(j),
@@ -2574,11 +2582,13 @@ OPTIONS:
 \t--jobs N, -j N: set number of concurrent jobs to N.
 ''')
 
+
   print('CONFIG:')
   doc = {}
-  if _CONFIG.__doc__ is not None:
-    doc = _args_doc(_CONFIG.__doc__)
-  specs = inspect.getfullargspec(_CONFIG)
+  configure = Drake.current.configure
+  if configure.__doc__ is not None:
+    doc = _args_doc(configure.__doc__)
+  specs = inspect.getfullargspec(configure)
   for arg in specs.args:
     type = str
     if arg in specs.annotations:
