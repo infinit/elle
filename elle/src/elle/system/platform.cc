@@ -2,6 +2,8 @@
 #include <elle/printf.hh>
 #ifdef INFINIT_MACOSX
 # include <CoreServices/CoreServices.h>
+#elif defined INFINIT_WINDOWS
+# include <elle/system/Windows/version.hh>
 #endif
 
 namespace elle
@@ -30,7 +32,8 @@ namespace elle
       os_version()
       {
 #if defined INFINIT_WINDOWS
-        return "unknown";
+        static const std::string version = windows::version_name();
+        return version;
 #elif defined INFINIT_LINUX
         return "unknown";
 #elif defined INFINIT_MACOSX
