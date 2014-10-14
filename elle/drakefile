@@ -414,8 +414,6 @@ def configure(zlib_lib,
     sources += drake.nodes(
       'src/elle/windows/string_conversion.hh',
       'src/elle/windows/string_conversion.cc',
-      'src/elle/windows/path_conversion.hh',
-      'src/elle/windows/path_conversion.cc',
     )
 
   sources += [drake.cxx.Header(p) for p in (

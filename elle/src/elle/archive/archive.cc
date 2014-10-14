@@ -14,7 +14,7 @@
 #include <elle/printf.hh>
 
 #ifdef INFINIT_WINDOWS
-# include <elle/windows/path_conversion.hh>
+# define stat _stat
 #endif
 
 ELLE_LOG_COMPONENT("elle.archive.archive");
@@ -27,8 +27,15 @@ namespace elle
     void
     check_call(::archive* archive, int code, int expected = ARCHIVE_OK)
     {
+      ELLE_ASSERT(archive != nullptr);
       if (code != expected)
-        throw elle::Error(archive_error_string(archive));
+      {
+        auto error = archive_error_string(archive);
+        if (error == nullptr)
+          error = "unknown archiving error";
+        throw elle::Error(
+          elle::sprintf("%s (%s)", error, archive_errno(archive)));
+      }
     }
 
     struct archive_deleter
@@ -41,6 +48,7 @@ namespace elle
         check_call(archive, archive_write_free(archive));
       }
     };
+    typedef std::unique_ptr< ::archive, archive_deleter > ArchivePtr;
 
     struct archive_read_deleter
     {
@@ -52,6 +60,7 @@ namespace elle
         check_call(archive, archive_read_free(archive));
       }
     };
+    typedef std::unique_ptr< ::archive, archive_read_deleter > ArchiveReadPtr;
 
     struct archive_entry_deleter
     {
@@ -62,43 +71,34 @@ namespace elle
         archive_entry_free(entry);
       }
     };
+    typedef std::unique_ptr< ::archive_entry, archive_entry_deleter > EntryPtr;
 
     static
     void
     _archive_file(::archive* archive,
-              boost::filesystem::path const& file,
-              boost::filesystem::path const& relative_path)
+                  boost::filesystem::path const& file,
+                  boost::filesystem::path const& relative_path)
     {
       ELLE_TRACE_SCOPE("add %s as %s", file, relative_path);
-      std::unique_ptr<archive_entry, archive_entry_deleter> entry
-        (archive_entry_new());
-      ELLE_DEBUG("entry: %s", entry.get());
-#ifdef INFINIT_WINDOWS
-      std::string path_as_string = elle::path::to_string(relative_path);
-      std::string file_as_string = elle::path::to_string(file);
-#else
-      std::string path_as_string = relative_path.string();
-      std::string file_as_string = file.string();
-#endif
-
-      archive_entry_set_pathname(entry.get(), path_as_string.c_str());
-      archive_entry_copy_sourcepath(entry.get(), file_as_string.c_str());
+      EntryPtr entry(archive_entry_new());
+      // XXX: Convert path to native windows encoding.
+      archive_entry_copy_pathname(entry.get(), relative_path.string().c_str());
       struct stat st;
 #ifdef INFINIT_WINDOWS
-      #define S_ISLNK(a) false
-      ::stat
+      archive_entry_copy_sourcepath_w(entry.get(), file.native().c_str());
+#define S_ISLNK(a) false
+      ::_wstat(file.native().c_str(), &st);
 #else
-      ::lstat
+      archive_entry_copy_sourcepath(entry.get(), file.string().c_str());
+      ::lstat(file.string().c_str(), &st);
 #endif
-             (file.string().c_str(), &st);
-
-      std::unique_ptr< ::archive, archive_read_deleter> read_disk
-        (archive_read_disk_new());
+      ArchiveReadPtr read_disk(archive_read_disk_new());
       archive_read_disk_set_symlink_physical(read_disk.get());
       archive_read_disk_entry_from_file(read_disk.get(), entry.get(), -1, 0/*&st*/);
-      check_call(archive, archive_write_header(archive, entry.get()));
       ELLE_DEBUG("will write %s bytes for %s, islink:%s mode:%s",
         archive_entry_size(entry.get()), file, S_ISLNK(st.st_mode), st.st_mode);
+      check_call(archive, archive_write_header(archive, entry.get()));
+
       // An archive_entry_size of 0 means data is not required (hardlink).
       if (archive_entry_size(entry.get()) > 0 && !S_ISLNK(st.st_mode))
       {
@@ -106,9 +106,9 @@ namespace elle
         size_t chunck_size = 5 * 1024 * 1024;
         while (true)
         {
-          // ELLE_DEBUG("size: %s, offset: %s", chunck_size, offset);
+          ELLE_DEBUG("size: %s, offset: %s", chunck_size, offset);
           auto buffer = elle::system::read_file_chunk(file, offset, chunck_size);
-          // ELLE_DEBUG("buffer size %s", buffer.size());
+          ELLE_DEBUG("buffer size %s", buffer.size());
           if (buffer.empty())
             break;
           check_call(archive, archive_write_data(archive, buffer.contents(), buffer.size()), buffer.size());
@@ -131,7 +131,7 @@ namespace elle
       ELLE_TRACE_SCOPE("archive %s", path);
       ELLE_DEBUG("files: %s", files);
       std::unordered_set<std::string> root_entries;
-      std::unique_ptr< ::archive, archive_deleter> archive(archive_write_new());
+      ArchivePtr archive(archive_write_new());
       ELLE_TRACE("archive: %s", archive.get());
       int (*format_setter)(::archive*) = nullptr;
       int (*compression_setter)(::archive*) = nullptr;
@@ -161,14 +161,12 @@ namespace elle
       check_call(archive.get(), format_setter(archive.get()));
       if (compression_setter)
         check_call(archive.get(), compression_setter(archive.get()));
-      auto path_as_string =
-#ifdef INFINIT_WINDOWS
-        elle::path::to_string(path);
-#else
-        path.string();
-#endif
       check_call(archive.get(),
-        archive_write_open_filename(archive.get(), path_as_string.c_str()));
+#ifdef INFINIT_WINDOWS
+        archive_write_open_filename_w(archive.get(), path.native().c_str()));
+#else
+        archive_write_open_filename(archive.get(), path.string().c_str()));
+#endif
       auto do_archiving = [ignore_failure] (
         ::archive* archive,
         boost::filesystem::path const& absolute,
