@@ -117,19 +117,24 @@ namespace reactor
     /*----------------.
     | Pretty Printing |
     `----------------*/
+
     void
     SSLSocket::print(std::ostream& s) const
     {
       s << "SSLSocket(" << peer() << ")";
     }
 
+    /*---------------.
+    | SSL connection |
+    `---------------*/
+
     class SSLHandshake:
       public SocketOperation<boost::asio::ip::tcp::socket>
     {
     public:
-      SSLHandshake(SSLStream& socket,
+      SSLHandshake(SSLSocket& socket,
                    SSLStream::handshake_type const& type):
-        SocketOperation(socket.next_layer()),
+        SocketOperation(socket.socket()->next_layer()),
         _socket(socket),
         _type(type)
       {}
@@ -138,7 +143,7 @@ namespace reactor
       void
       print(std::ostream& stream) const override
       {
-        stream << "socket handshake";
+        elle::fprintf(stream, "SSL handshake %s", this->_socket);
       }
 
     protected:
@@ -146,8 +151,7 @@ namespace reactor
       void
       _start()
       {
-        ELLE_DUMP("%s: start async handshake", *this);
-        this->_socket.async_handshake(
+        this->_socket.socket()->async_handshake(
           this->_type,
           std::bind(&SSLHandshake::_wakeup,
                     this,
@@ -162,30 +166,26 @@ namespace reactor
         this->_raise<SSLHandshakeError>(error.message());
       }
 
-      ELLE_ATTRIBUTE(SSLStream&, socket);
+      ELLE_ATTRIBUTE(SSLSocket&, socket);
       ELLE_ATTRIBUTE(SSLStream::handshake_type, type);
     };
 
     void
     SSLSocket::_client_handshake()
     {
-      ELLE_DEBUG("start client handshake");
-      SSLHandshake handshaker(*this->_socket,
-                              SSLStream::handshake_type::client);
+      ELLE_TRACE_SCOPE("%s: handshake as client", *this);
+      SSLHandshake handshaker(*this, SSLStream::handshake_type::client);
       if (!handshaker.run(this->_timeout))
         throw TimeOut();
-      ELLE_DEBUG("client handshake done");
     }
 
     void
     SSLSocket::_server_handshake(reactor::DurationOpt const& timeout)
     {
-      ELLE_DEBUG("start server handshake");
-      SSLHandshake handshaker(*this->_socket,
-                              SSLStream::handshake_type::server);
+      ELLE_TRACE_SCOPE("%s: handshake as server", *this);
+      SSLHandshake handshaker(*this, SSLStream::handshake_type::server);
       if (!handshaker.run(timeout))
         throw TimeOut();
-      ELLE_DEBUG("server handshake done");
     }
 
 
