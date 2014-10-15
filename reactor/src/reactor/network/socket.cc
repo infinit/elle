@@ -134,13 +134,7 @@ namespace reactor
     void
     PlainSocket<AsioSocket, EndPoint>::print(std::ostream& s) const
     {
-      s << "reactor::network::Socket(" << this->peer() << ")";
-    }
-
-    std::ostream& operator << (std::ostream& s, const Socket& socket)
-    {
-      socket.print(s);
-      return s;
+      elle::fprintf(s, "reactor::network::Socket(%s)", this->peer());
     }
 
     /*-------------.

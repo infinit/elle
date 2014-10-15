@@ -114,12 +114,12 @@ namespace reactor
           void
           print(std::ostream& s) const = 0;
     };
-    std::ostream& operator << (std::ostream& s, const Socket& socket);
 
     template <typename AsioSocket_,
               typename EndPoint_ = typename AsioSocket_::endpoint_type>
-    class PlainSocket:
-      public Socket
+    class PlainSocket
+      : public Socket
+      , public elle::Printable
     {
     /*---------.
     | Typedefs |
@@ -177,7 +177,7 @@ namespace reactor
     public:
       virtual
       void
-      print(std::ostream& s) const;
+      print(std::ostream& s) const override;
 
     /*------------.
     | Asio socket |
