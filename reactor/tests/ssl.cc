@@ -109,6 +109,42 @@ ELLE_TEST_SCHEDULED(transfer)
   };
 }
 
+ELLE_TEST_SCHEDULED(short_read)
+{
+  reactor::Barrier listening;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "server",
+      [&]
+      {
+        auto certificate = load_certificate();
+        SSLServer server(std::move(certificate));
+        server.listen(0);
+        port = server.port();
+        listening.open();
+        std::unique_ptr<Socket> socket(server.accept());
+        BOOST_CHECK_THROW(socket->read_until("\n"),
+                          reactor::network::ConnectionClosed);
+      });
+    scope.run_background(
+      "client",
+      [&]
+      {
+        SSLCertificate certificate;
+        reactor::wait(listening);
+        auto endpoint = reactor::network::resolve_tcp(
+          "127.0.0.1",
+          boost::lexical_cast<std::string>(port));
+        FingerprintedSocket socket(endpoint,
+                                   fingerprint);
+        socket.socket()->next_layer().close();
+      });
+    reactor::wait(scope);
+  };
+}
+
 class Sniffer
 {
 public:
@@ -365,6 +401,7 @@ ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(transfer), 0, 10);
+  suite.add(BOOST_TEST_CASE(short_read), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
   suite.add(BOOST_TEST_CASE(encryption), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);

@@ -587,7 +587,10 @@ namespace reactor
             error == boost::asio::error::operation_aborted ||
             error == boost::asio::error::broken_pipe ||
             error == boost::asio::error::connection_aborted ||
-            error == boost::asio::error::connection_reset)
+            error == boost::asio::error::connection_reset ||
+            (error.category() == boost::asio::error::get_ssl_category() &&
+             error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
+          )
           this->template _raise<ConnectionClosed>();
         else
           Super::_handle_error(error);
