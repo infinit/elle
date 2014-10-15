@@ -124,9 +124,25 @@ ELLE_TEST_SCHEDULED(short_read)
         server.listen(0);
         port = server.port();
         listening.open();
-        std::unique_ptr<Socket> socket(server.accept());
-        BOOST_CHECK_THROW(socket->read_until("\n"),
-                          reactor::network::SSLShortRead);
+        {
+          std::unique_ptr<Socket> socket(server.accept());
+          try
+          {
+            socket->read_until("\n");
+            BOOST_ERROR("unexpected data received");
+          }
+          catch (reactor::network::SSLShortRead const&)
+          {
+            BOOST_ERROR("SSL connection was not shutdown properly");
+          }
+          catch (reactor::network::ConnectionClosed const&)
+          {}
+        }
+        {
+          std::unique_ptr<Socket> socket(server.accept());
+          BOOST_CHECK_THROW(socket->read_until("\n"),
+                            reactor::network::SSLShortRead);
+        }
       });
     scope.run_background(
       "client",
@@ -137,9 +153,15 @@ ELLE_TEST_SCHEDULED(short_read)
         auto endpoint = reactor::network::resolve_tcp(
           "127.0.0.1",
           boost::lexical_cast<std::string>(port));
-        FingerprintedSocket socket(endpoint,
-                                   fingerprint);
-        socket.socket()->next_layer().close();
+        {
+          FingerprintedSocket socket(endpoint,
+                                     fingerprint);
+        }
+        {
+          FingerprintedSocket socket(endpoint,
+                                     fingerprint);
+          socket.socket()->next_layer().close();
+        }
       });
     reactor::wait(scope);
   };
