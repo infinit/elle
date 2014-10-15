@@ -30,6 +30,15 @@ namespace reactor
     public:
       typedef Exception Super;
       ConnectionClosed();
+      ConnectionClosed(const std::string& message);
+    };
+
+    class SSLShortRead
+      : public ConnectionClosed
+    {
+    public:
+      typedef ConnectionClosed Super;
+      SSLShortRead();
     };
 
     class ResolutionError:

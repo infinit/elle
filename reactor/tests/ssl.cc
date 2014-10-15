@@ -126,7 +126,7 @@ ELLE_TEST_SCHEDULED(short_read)
         listening.open();
         std::unique_ptr<Socket> socket(server.accept());
         BOOST_CHECK_THROW(socket->read_until("\n"),
-                          reactor::network::ConnectionClosed);
+                          reactor::network::SSLShortRead);
       });
     scope.run_background(
       "client",

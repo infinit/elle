@@ -440,13 +440,10 @@ namespace reactor
             || error.value() == ERROR_CONNECTION_ABORTED
 #endif
           )
-          this->template _raise<reactor::network::ConnectionClosed>();
-        // SSL yields short read if the underlying TCP connection is closed.
+          this->template _raise<ConnectionClosed>();
         else if (error.category() == boost::asio::error::get_ssl_category() &&
                  error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
-        {
-          this->template _raise<reactor::network::ConnectionClosed>();
-        }
+          this->template _raise<SSLShortRead>();
         else
           Super::_handle_error(error);
       }
@@ -587,11 +584,11 @@ namespace reactor
             error == boost::asio::error::operation_aborted ||
             error == boost::asio::error::broken_pipe ||
             error == boost::asio::error::connection_aborted ||
-            error == boost::asio::error::connection_reset ||
-            (error.category() == boost::asio::error::get_ssl_category() &&
-             error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
-          )
+            error == boost::asio::error::connection_reset)
           this->template _raise<ConnectionClosed>();
+        else if (error.category() == boost::asio::error::get_ssl_category() &&
+                 error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
+          this->template _raise<SSLShortRead>();
         else
           Super::_handle_error(error);
       }

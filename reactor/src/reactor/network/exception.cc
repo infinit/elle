@@ -18,6 +18,14 @@ namespace reactor
       : Super("connection closed")
     {}
 
+    ConnectionClosed::ConnectionClosed(std::string const& message)
+      : Super(elle::sprintf("connection closed: %s", message))
+    {}
+
+    SSLShortRead::SSLShortRead()
+      : Super("SSL short read")
+    {}
+
     ResolutionError::ResolutionError(std::string const& host,
                                      std::string const& message):
       Super(elle::sprintf("error resolving %s: %s", host, message)),
