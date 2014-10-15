@@ -218,22 +218,6 @@ namespace reactor
                     std::placeholders::_1));
       }
 
-    private:
-      virtual
-      void
-      _handle_error(boost::system::error_code const& error) override
-      {
-        if (error == boost::asio::error::eof)
-          this->_raise<ConnectionClosed>();
-        else if (error.category() == boost::asio::error::get_ssl_category() &&
-                 error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
-          this->template _raise<SSLShortRead>();
-        else if (error == boost::asio::error::bad_descriptor)
-          this->_raise<SocketClosed>();
-        else
-          Super::_handle_error(error);
-      }
-
       ELLE_ATTRIBUTE(SSLSocket&, socket);
     };
 
