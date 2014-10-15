@@ -31,6 +31,21 @@ namespace reactor
       ELLE_ATTRIBUTE_R(AsioSocket&, socket);
       ELLE_ATTRIBUTE_R(bool, canceled);
     };
+
+
+    template <typename AsioSocket>
+    class DataOperation
+      : public SocketOperation<AsioSocket>
+    {
+    public:
+      typedef SocketOperation<AsioSocket> Super;
+      DataOperation(AsioSocket& socket);
+
+    protected:
+      virtual
+      void
+      _handle_error(boost::system::error_code const& error) override;
+    };
   }
 }
 

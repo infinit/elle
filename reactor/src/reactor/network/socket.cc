@@ -378,17 +378,17 @@ namespace reactor
     `-----*/
 
     template <typename PlainSocket, typename AsioSocket>
-    class Read:
-      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
+    class Read
+      : public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
       typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
-      typedef SocketOperation<Socket> Super;
+      typedef DataOperation<Socket> Super;
       Read(PlainSocket& plain,
            AsioSocket& socket,
            Buffer& buffer,
            bool some):
-        SocketOperation<AsioSocket>(socket),
+        DataOperation<AsioSocket>(socket),
         _buffer(buffer),
         _read(0),
         _some(some),
@@ -426,26 +426,6 @@ namespace reactor
       {
         this->_read = read;
         Super::_wakeup(error);
-      }
-
-      void
-      _handle_error(boost::system::error_code const& error) override
-      {
-        if (error == boost::asio::error::eof
-            || error == boost::asio::error::operation_aborted
-            || error == boost::asio::error::connection_aborted
-#ifdef INFINIT_WINDOWS
-            || error == boost::asio::error::bad_descriptor
-            || error == boost::asio::error::connection_reset
-            || error.value() == ERROR_CONNECTION_ABORTED
-#endif
-          )
-          this->template _raise<ConnectionClosed>();
-        else if (error.category() == boost::asio::error::get_ssl_category() &&
-                 error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
-          this->template _raise<SSLShortRead>();
-        else
-          Super::_handle_error(error);
       }
 
       ELLE_ATTRIBUTE(Buffer&, buffer);
@@ -530,13 +510,13 @@ namespace reactor
 
     template <typename PlainSocket, typename AsioSocket>
     class ReadUntil:
-      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
+      public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
       typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
       typedef ReadUntil<PlainSocket, AsioSocket> Self;
       typedef SocketSpecialization<AsioSocket> Spe;
-      typedef SocketOperation<Socket> Super;
+      typedef DataOperation<Socket> Super;
       ReadUntil(PlainSocket& plain,
                 AsioSocket& socket,
                 boost::asio::streambuf& buffer,
@@ -576,23 +556,6 @@ namespace reactor
         }
         Super::_wakeup(error);
       }
-
-      void
-      _handle_error(boost::system::error_code const& error) override
-      {
-        if (error == boost::asio::error::eof ||
-            error == boost::asio::error::operation_aborted ||
-            error == boost::asio::error::broken_pipe ||
-            error == boost::asio::error::connection_aborted ||
-            error == boost::asio::error::connection_reset)
-          this->template _raise<ConnectionClosed>();
-        else if (error.category() == boost::asio::error::get_ssl_category() &&
-                 error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
-          this->template _raise<SSLShortRead>();
-        else
-          Super::_handle_error(error);
-      }
-
 
       virtual
       void
@@ -640,11 +603,11 @@ namespace reactor
 
     template <typename PlainSocket, typename AsioSocket>
     class Write:
-      public SocketOperation<typename SocketSpecialization<AsioSocket>::Socket>
+      public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
     {
     public:
       typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
-      typedef SocketOperation<Socket> Super;
+      typedef DataOperation<Socket> Super;
       typedef SocketSpecialization<AsioSocket> Spe;
       Write(PlainSocket& plain,
             AsioSocket& socket,
@@ -672,19 +635,6 @@ namespace reactor
       {
         this->_written = written;
         Super::_wakeup(error);
-      }
-
-      void
-      _handle_error(boost::system::error_code const& error) override
-      {
-        if (error == boost::asio::error::eof ||
-            error == boost::asio::error::operation_aborted ||
-            error == boost::asio::error::broken_pipe ||
-            error == boost::asio::error::connection_aborted ||
-            error == boost::asio::error::connection_reset)
-          this->template _raise<ConnectionClosed>();
-        else
-          Super::_handle_error(error);
       }
 
       virtual

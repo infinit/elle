@@ -190,13 +190,13 @@ namespace reactor
 
 
     class SSLShutdown:
-      public SocketOperation<boost::asio::ip::tcp::socket>
+      public DataOperation<boost::asio::ip::tcp::socket>
     {
     public:
-      typedef SocketOperation<boost::asio::ip::tcp::socket> Super;
+      typedef DataOperation<boost::asio::ip::tcp::socket> Super;
 
       SSLShutdown(SSLSocket& socket)
-        : SocketOperation(socket.socket()->next_layer())
+        : Super(socket.socket()->next_layer())
         , _socket(socket)
       {}
 

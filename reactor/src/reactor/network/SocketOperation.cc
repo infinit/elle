@@ -1,3 +1,5 @@
+#include <boost/asio/ssl.hpp>
+
 #include <elle/log.hh>
 
 #include <reactor/network/SocketOperation.hh>
@@ -9,6 +11,10 @@ namespace reactor
 {
   namespace network
   {
+    /*----------------.
+    | SocketOperation |
+    `----------------*/
+
     template <typename AsioSocket>
     SocketOperation<AsioSocket>::SocketOperation(
       AsioSocket& socket):
@@ -60,5 +66,37 @@ namespace reactor
 
     template class SocketOperation<boost::asio::ip::tcp::socket>;
     template class SocketOperation<boost::asio::ip::udp::socket>;
+
+    /*--------------.
+    | DataOperation |
+    `--------------*/
+
+    template <typename AsioSocket>
+    DataOperation<AsioSocket>::DataOperation(AsioSocket& socket)
+      : Super(socket)
+    {}
+
+    template <typename AsioSocket>
+    void
+    DataOperation<AsioSocket>::_handle_error(
+      boost::system::error_code const& error)
+    {
+      if (error == boost::asio::error::eof ||
+          error == boost::asio::error::broken_pipe ||
+          error == boost::asio::error::connection_aborted ||
+          error == boost::asio::error::connection_reset ||
+          error == boost::asio::error::operation_aborted)
+        this->template _raise<ConnectionClosed>();
+      else if (error == boost::asio::error::bad_descriptor)
+        this->template _raise<SocketClosed>();
+      else if (error.category() == boost::asio::error::get_ssl_category() &&
+               error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ))
+        this->template _raise<SSLShortRead>();
+      else
+        Super::_handle_error(error);
+    }
+
+    template class DataOperation<boost::asio::ip::tcp::socket>;
+    template class DataOperation<boost::asio::ip::udp::socket>;
   }
 }
