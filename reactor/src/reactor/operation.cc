@@ -6,6 +6,9 @@
 #include <reactor/thread.hh>
 
 #include <elle/assert.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("reactor.Operation");
 
 namespace reactor
 {
@@ -22,23 +25,25 @@ namespace reactor
   bool
   Operation::run(DurationOpt timeout)
   {
-    Thread* current = _sched.current();
-    ELLE_ASSERT(current);
+    ELLE_TRACE_SCOPE("%s: run", *this);
     this->start();
     try
     {
-      if (!current->wait(*this, timeout))
+      if (!reactor::wait(*this, timeout))
       {
+        ELLE_TRACE("%s: timed out", *this);
         this->abort();
         return false;
       }
     }
     catch (const Terminate&)
     {
+      ELLE_TRACE("%s: thread terminated, aborting", *this);
       auto e = std::current_exception();
       this->abort();
       std::rethrow_exception(e);
     }
+    ELLE_TRACE("%s: done", *this);
     return true;
   }
 
@@ -52,6 +57,7 @@ namespace reactor
   void
   Operation::start()
   {
+    ELLE_TRACE_SCOPE("%s: start", *this);
     this->_running = true;
     this->_start();
   }
