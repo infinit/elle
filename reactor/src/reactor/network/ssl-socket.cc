@@ -94,7 +94,17 @@ namespace reactor
     }
 
     SSLSocket::~SSLSocket()
-    {}
+    {
+      try
+      {
+        this->_shutdown();
+      }
+      catch (...)
+      {
+        ELLE_ERR("fatal error in SSL shutdow: %s", elle::exception_string());
+        throw;
+      }
+    }
 
     SSLSocket::SSLSocket(std::unique_ptr<SSLStream> socket,
                          SSLEndPoint const& endpoint,
@@ -176,6 +186,77 @@ namespace reactor
       if (!handshaker.run(timeout))
         throw TimeOut();
       ELLE_DEBUG("server handshake done");
+    }
+
+
+    class SSLShutdown:
+      public SocketOperation<boost::asio::ip::tcp::socket>
+    {
+    public:
+      typedef SocketOperation<boost::asio::ip::tcp::socket> Super;
+
+      SSLShutdown(SSLSocket& socket)
+        : SocketOperation(socket.socket()->next_layer())
+        , _socket(socket)
+      {}
+
+      virtual
+      void
+      print(std::ostream& stream) const override
+      {
+        elle::fprintf(stream, "SSL shutdown %s", this->_socket);
+      }
+
+    protected:
+      virtual
+      void
+      _start()
+      {
+        this->_socket.socket()->async_shutdown(
+          std::bind(&SSLShutdown::_wakeup,
+                    this,
+                    std::placeholders::_1));
+      }
+
+    private:
+      virtual
+      void
+      _handle_error(boost::system::error_code const& error) override
+      {
+        if (error == boost::asio::error::eof ||
+            (error.category() == boost::asio::error::get_ssl_category() &&
+             error.value() == ERR_PACK(ERR_LIB_SSL, 0, SSL_R_SHORT_READ)))
+          this->_raise<ConnectionClosed>();
+        else if (error == boost::asio::error::bad_descriptor)
+          this->_raise<SocketClosed>();
+        else
+          Super::_handle_error(error);
+      }
+
+      ELLE_ATTRIBUTE(SSLSocket&, socket);
+    };
+
+    void
+    SSLSocket::_shutdown()
+    {
+      ELLE_TRACE_SCOPE("%s: shutdown SSL", *this);
+      try
+      {
+        SSLShutdown shutdown(*this);
+        if (!shutdown.run(this->_timeout))
+        {
+          ELLE_TRACE("%s: SSL shutdown timed out (%s)", *this, this->_timeout);
+          throw TimeOut();
+        }
+      }
+      catch (ConnectionClosed const&)
+      {
+        ELLE_DEBUG("%s: SSL already shutdown by peer", *this);
+      }
+      catch (SocketClosed const&)
+      {
+        ELLE_DEBUG("%s: socket is already closed", *this);
+      }
     }
   }
 }

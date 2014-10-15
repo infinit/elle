@@ -10,6 +10,10 @@ namespace reactor
       Super(message)
     {}
 
+    SocketClosed::SocketClosed()
+      : Super("socket was closed")
+    {}
+
     ConnectionClosed::ConnectionClosed()
       : Super("connection closed")
     {}

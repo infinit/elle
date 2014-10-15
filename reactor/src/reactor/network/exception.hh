@@ -17,6 +17,14 @@ namespace reactor
       Exception(const std::string& message);
     };
 
+    class SocketClosed
+      : public Exception
+    {
+    public:
+      typedef Exception Super;
+      SocketClosed();
+    };
+
     class ConnectionClosed: public Exception
     {
     public:

@@ -85,6 +85,9 @@ namespace reactor
     public:
       void print(std::ostream& s) const;
 
+    /*-----------.
+    | Connection |
+    `-----------*/
     private:
       friend class SSLServer;
       SSLSocket(std::unique_ptr<SSLStream> socket,
@@ -95,6 +98,8 @@ namespace reactor
       _client_handshake();
       void
       _server_handshake(reactor::DurationOpt const& timeout);
+      void
+      _shutdown();
 
     private:
       ELLE_ATTRIBUTE(DurationOpt, timeout);
@@ -102,4 +107,4 @@ namespace reactor
   }
 }
 
-#endif // INFINIT_REACTOR_NETWORK_SSL_SOCKET_HH
+#endif
