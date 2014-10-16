@@ -29,11 +29,14 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
+    public:
+      std::unique_ptr<SSLSocket>
+      accept();
     protected:
+      using Super::_accept;
       virtual
       std::unique_ptr<Socket>
       _accept() override;
-
     private:
       void
       _handshake();

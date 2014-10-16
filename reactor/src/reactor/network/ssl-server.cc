@@ -80,10 +80,16 @@ namespace reactor
       };
     }
 
+    std::unique_ptr<SSLSocket>
+    SSLServer::accept()
+    {
+      return this->_sockets.get();
+    }
+
     std::unique_ptr<Socket>
     SSLServer::_accept()
     {
-      return this->_sockets.get();
+      return this->accept();
     }
   }
 }
