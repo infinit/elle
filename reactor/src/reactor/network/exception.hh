@@ -2,6 +2,7 @@
 # define INFINIT_REACTOR_NETWORK_EXCEPTION_HH
 
 # include <elle/attribute.hh>
+# include <elle/Error.hh>
 
 # include <reactor/exception.hh>
 
@@ -10,10 +11,10 @@ namespace reactor
   namespace network
   {
     class Exception:
-      public reactor::Exception
+      public elle::Error
     {
     public:
-      typedef reactor::Exception Super;
+      typedef elle::Error Super;
       Exception(const std::string& message);
     };
 
