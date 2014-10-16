@@ -450,6 +450,29 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
   };
 }
 
+ELLE_TEST_SCHEDULED(shutdown_stuck)
+{
+  reactor::Barrier listening;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+      });
+    reactor::wait(listening);
+    reactor::network::SSLSocket valid(
+      "127.0.0.1", boost::lexical_cast<std::string>(port));
+    reactor::wait(server);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -461,6 +484,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
   suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
   suite.add(BOOST_TEST_CASE(shutdown_flush), 0, 3);
+  suite.add(BOOST_TEST_CASE(shutdown_stuck), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =

@@ -101,10 +101,10 @@ namespace reactor
       {
         this->_shutdown();
       }
-      catch (...)
+      catch (elle::Error const&)
       {
-        ELLE_ERR("fatal error in SSL shutdow: %s", elle::exception_string());
-        throw;
+        // Ignore shutdown error. This could be configurable.
+        ELLE_WARN("SSL shutdow error: %s", elle::exception_string());
       }
     }
 
