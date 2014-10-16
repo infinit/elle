@@ -81,7 +81,7 @@ namespace reactor
     }
 
     std::unique_ptr<Socket>
-    SSLServer::accept()
+    SSLServer::_accept()
     {
       return this->_sockets.get();
     }

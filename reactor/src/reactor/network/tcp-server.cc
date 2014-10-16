@@ -20,8 +20,9 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
+
     std::unique_ptr<Socket>
-    TCPServer::accept()
+    TCPServer::_accept()
     {
       // Open a new raw socket.
       auto new_socket = elle::make_unique<TCPSocket::AsioSocket>(

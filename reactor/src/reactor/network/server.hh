@@ -41,9 +41,8 @@ namespace reactor
       | Accepting |
       `----------*/
       public:
-        virtual
         std::unique_ptr<Socket>
-        accept() = 0;
+        accept();
 
         void
         listen(const EndPoint& end_point);
@@ -58,6 +57,9 @@ namespace reactor
         port() const;
 
       protected:
+        virtual
+        std::unique_ptr<Socket>
+        _accept() = 0;
         void
         _accept(TCPSocket::AsioSocket& socket, EndPoint& peer);
 

@@ -24,9 +24,11 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
-    public:
+    protected:
+      using Super::_accept;
+      virtual
       std::unique_ptr<Socket>
-      accept();
+      _accept() override;
     };
   }
 }

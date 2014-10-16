@@ -97,6 +97,16 @@ namespace reactor
       ELLE_ATTRIBUTE_X(TCPSocket::AsioSocket&, socket);
     };
 
+    /*----------.
+    | Accepting |
+    `----------*/
+
+    std::unique_ptr<Socket>
+    Server::accept()
+    {
+      return this->_accept();
+    }
+
     void
     Server::listen(int port)
     {
