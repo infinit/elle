@@ -3,6 +3,7 @@
 #include <reactor/network/ssl-socket.hh>
 #include <reactor/scheduler.hh>
 
+#include <elle/utility/Move.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.SSLSocket");
@@ -227,23 +228,46 @@ namespace reactor
     void
     SSLSocket::_shutdown()
     {
-      ELLE_TRACE_SCOPE("%s: shutdown SSL", *this);
-      try
+      if (!this->_shutdown_asynchronous)
       {
-        SSLShutdown shutdown(*this);
-        if (!shutdown.run(this->_timeout))
+        ELLE_TRACE_SCOPE("%s: shutdown SSL", *this);
+        try
         {
-          ELLE_TRACE("%s: SSL shutdown timed out (%s)", *this, *this->_timeout);
-          throw TimeOut();
+          SSLShutdown shutdown(*this);
+          if (!shutdown.run(this->_timeout))
+          {
+            ELLE_TRACE("%s: SSL shutdown timed out (%s)", *this, *this->_timeout);
+            throw TimeOut();
+          }
+        }
+        catch (ConnectionClosed const&)
+        {
+          ELLE_DEBUG("%s: SSL already shutdown by peer", *this);
+        }
+        catch (SocketClosed const&)
+        {
+          ELLE_DEBUG("%s: socket is already closed", *this);
         }
       }
-      catch (ConnectionClosed const&)
+      else
       {
-        ELLE_DEBUG("%s: SSL already shutdown by peer", *this);
-      }
-      catch (SocketClosed const&)
-      {
-        ELLE_DEBUG("%s: socket is already closed", *this);
+        ELLE_TRACE_SCOPE("%s: shutdown SSL asynchronously", *this);
+        auto socket_raw = this->_socket.get();
+        auto socket = elle::utility::move_on_copy(this->_socket);
+        socket_raw->async_shutdown(
+          [socket]
+          (boost::system::error_code const& error)
+          {
+            // EOF simply means the other side shut SSL down properly.
+            if (error && error != boost::asio::error::eof)
+              ELLE_WARN("error on async SSL shutdown: %s", error);
+            boost::system::error_code e;
+            socket->next_layer().shutdown(
+              boost::asio::ip::tcp::socket::shutdown_both, e);
+            if (e)
+              ELLE_WARN("error on async shutdown: %s", error);
+            socket->next_layer().close();
+          });
       }
     }
   }

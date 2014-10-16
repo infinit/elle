@@ -103,6 +103,7 @@ namespace reactor
       _shutdown();
 
     private:
+      ELLE_ATTRIBUTE_RW(bool, shutdown_asynchronous);
       ELLE_ATTRIBUTE(DurationOpt, timeout);
     };
   }

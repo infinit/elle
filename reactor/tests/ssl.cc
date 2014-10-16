@@ -450,7 +450,7 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
   };
 }
 
-ELLE_TEST_SCHEDULED(shutdown_stuck)
+ELLE_TEST_SCHEDULED(shutdown_timeout)
 {
   reactor::Barrier listening;
   int port = 0;
@@ -473,6 +473,50 @@ ELLE_TEST_SCHEDULED(shutdown_stuck)
   };
 }
 
+ELLE_TEST_SCHEDULED(shutdown_asynchronous)
+{
+  reactor::Barrier listening;
+  reactor::Barrier shutdown;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate());
+        server.listen();
+        port = server.port();
+        listening.open();
+        {
+          ELLE_LOG_SCOPE("accept first synchronous client");
+          auto client = server.accept();
+        }
+        shutdown.open();
+        {
+          ELLE_LOG_SCOPE("accept second asynchronous client");
+          auto client = server.accept();
+          client->shutdown_asynchronous(true);
+        }
+        shutdown.open();
+      });
+    reactor::wait(listening);
+    {
+      ELLE_LOG_SCOPE("connect first client");
+      reactor::network::SSLSocket synchronous(
+        "127.0.0.1", boost::lexical_cast<std::string>(port));
+      BOOST_CHECK(!reactor::wait(shutdown, 500_ms));
+    }
+    shutdown.close();
+    {
+      ELLE_LOG_SCOPE("connect second client");
+      reactor::network::SSLSocket synchronous(
+        "127.0.0.1", boost::lexical_cast<std::string>(port));
+      BOOST_CHECK(reactor::wait(shutdown, 500_ms));
+    }
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -484,7 +528,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
   suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
   suite.add(BOOST_TEST_CASE(shutdown_flush), 0, 3);
-  suite.add(BOOST_TEST_CASE(shutdown_stuck), 0, 3);
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =
