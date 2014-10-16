@@ -92,7 +92,8 @@ namespace reactor
       friend class SSLServer;
       SSLSocket(std::unique_ptr<SSLStream> socket,
                 SSLEndPoint const& endpoint,
-                std::shared_ptr<SSLCertificate> certificate);
+                std::shared_ptr<SSLCertificate> certificate,
+                DurationOpt timeout = DurationOpt());
       /// No check of certificate is done by default
       void
       _client_handshake();

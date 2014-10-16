@@ -110,10 +110,11 @@ namespace reactor
 
     SSLSocket::SSLSocket(std::unique_ptr<SSLStream> socket,
                          SSLEndPoint const& endpoint,
-                         std::shared_ptr<SSLCertificate> certificate):
+                         std::shared_ptr<SSLCertificate> certificate,
+                         DurationOpt handshake_timeout):
       SSLCertificateOwner(certificate),
       Super(std::move(socket), endpoint),
-      _timeout(DurationOpt())
+      _timeout(handshake_timeout)
     {}
 
     /*----------------.
@@ -232,7 +233,7 @@ namespace reactor
         SSLShutdown shutdown(*this);
         if (!shutdown.run(this->_timeout))
         {
-          ELLE_TRACE("%s: SSL shutdown timed out (%s)", *this, this->_timeout);
+          ELLE_TRACE("%s: SSL shutdown timed out (%s)", *this, *this->_timeout);
           throw TimeOut();
         }
       }

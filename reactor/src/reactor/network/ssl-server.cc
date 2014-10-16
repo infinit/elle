@@ -49,7 +49,10 @@ namespace reactor
           EndPoint peer;
           this->_accept(ssl->next_layer(), peer);
           ELLE_TRACE("%s: got TCP connection", *this);
-          auto naked = new SSLSocket(std::move(ssl), peer, this->_certificate);
+          auto naked = new SSLSocket(std::move(ssl),
+                                     peer,
+                                     this->_certificate,
+                                     this->_handshake_timeout);
           auto socket =
             elle::utility::move_on_copy(std::unique_ptr<SSLSocket>(naked));
           scope.run_background(
