@@ -43,7 +43,7 @@ static
 auto
 valgrind(T base) -> decltype(base * 42)
 {
-  return base * (RUNNING_ON_VALGRIND ? 10 : 1);
+  return base * (RUNNING_ON_VALGRIND ? 100 : 1);
 }
 
 static
@@ -279,6 +279,7 @@ ELLE_TEST_SCHEDULED(encryption)
 
 ELLE_TEST_SCHEDULED(handshake_timeout)
 {
+  auto const timeout = valgrind(10_ms);
   reactor::Barrier listening;
   reactor::Barrier timed_out;
   int port = 0;
@@ -295,18 +296,13 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
         std::unique_ptr<reactor::network::Socket> socket(server.accept());
         reactor::wait(timed_out);
       });
-    scope.run_background(
-      "client",
-      [&]
-      {
-        reactor::wait(listening);
-        BOOST_CHECK_THROW(
-          SSLSocket("127.0.0.1",
-                    boost::lexical_cast<std::string>(port),
-                    1_sec),
-          reactor::network::TimeOut);
-        timed_out.open();
-      });
+    reactor::wait(listening);
+    BOOST_CHECK_THROW(
+      SSLSocket("127.0.0.1",
+                boost::lexical_cast<std::string>(port),
+                timeout),
+      reactor::network::TimeOut);
+    timed_out.open();
     reactor::wait(scope);
   };
 }
@@ -358,13 +354,12 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
       "server",
       [&]
       {
-        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        reactor::network::SSLServer server(load_certificate());
         server.listen();
         port = server.port();
         listening.open();
         std::unique_ptr<reactor::network::Socket> socket(server.accept());
         socket->write(elle::ConstWeakBuffer("not stuck"));
-        reactor::wait(closed);
       });
     scope.run_background(
       "stuck client",
@@ -374,11 +369,7 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
         reactor::network::TCPSocket s("127.0.0.1",
                                       boost::lexical_cast<std::string>(port));
         stuck.open();
-        ELLE_LOG("HELLO");
         BOOST_CHECK_THROW(s.read(4), reactor::network::ConnectionClosed);
-        ELLE_LOG("BYE");
-        closed.open();
-        BOOST_CHECK(not_stuck);
       });
     scope.run_background(
       "client",
@@ -391,6 +382,7 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
         not_stuck = true;
       });
     reactor::wait(scope);
+    BOOST_CHECK(not_stuck);
   };
 }
 
@@ -404,7 +396,7 @@ ELLE_TEST_SCHEDULED(handshake_error)
       "server",
       [&]
       {
-        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        reactor::network::SSLServer server(load_certificate());
         server.listen();
         port = server.port();
         listening.open();
@@ -445,7 +437,7 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
       "server",
       [&]
       {
-        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        reactor::network::SSLServer server(load_certificate());
         server.listen();
         port = server.port();
         listening.open();
@@ -474,7 +466,7 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
       "server",
       [&]
       {
-        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        reactor::network::SSLServer server(load_certificate(), valgrind(10_ms));
         server.listen();
         port = server.port();
         listening.open();
@@ -519,14 +511,14 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
       ELLE_LOG_SCOPE("connect first client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(!reactor::wait(shutdown, valgrind(100_ms)));
+      BOOST_CHECK(!reactor::wait(shutdown, valgrind(10_ms)));
     }
     shutdown.close();
     {
       ELLE_LOG_SCOPE("connect second client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(reactor::wait(shutdown, valgrind(100_ms)));
+      BOOST_CHECK(reactor::wait(shutdown, valgrind(10_ms)));
     }
   };
 }
