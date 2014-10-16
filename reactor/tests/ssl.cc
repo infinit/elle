@@ -5,6 +5,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#else
+# define RUNNING_ON_VALGRIND 0
+#endif
+
 #include <elle/finally.hh>
 #include <elle/os/environ.hh>
 #include <elle/test.hh>
@@ -31,6 +37,14 @@ extern const std::vector<unsigned char> fingerprint;
 extern const std::vector<char> server_cert;
 extern const std::vector<char> server_key;
 extern const std::vector<char> server_dh1024;
+
+template <typename T>
+static
+auto
+valgrind(T base) -> decltype(base * 42)
+{
+  return base * (RUNNING_ON_VALGRIND ? 10 : 1);
+}
 
 static
 std::unique_ptr<SSLCertificate>
@@ -505,14 +519,14 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
       ELLE_LOG_SCOPE("connect first client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(!reactor::wait(shutdown, 500_ms));
+      BOOST_CHECK(!reactor::wait(shutdown, valgrind(100_ms)));
     }
     shutdown.close();
     {
       ELLE_LOG_SCOPE("connect second client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(reactor::wait(shutdown, 500_ms));
+      BOOST_CHECK(reactor::wait(shutdown, valgrind(100_ms)));
     }
   };
 }
