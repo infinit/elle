@@ -419,6 +419,37 @@ ELLE_TEST_SCHEDULED(handshake_error)
   };
 }
 
+// Check we flush before shutting down the door.
+ELLE_TEST_SCHEDULED(shutdown_flush)
+{
+  std::string const data= "nobody can hear you scream\n";
+  reactor::Barrier listening;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate(), 500_ms);
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+        auto received = client->read_until("\n");
+        BOOST_CHECK_EQUAL(received, data);
+      });
+    reactor::wait(listening);
+    {
+      reactor::network::SSLSocket client(
+        "127.0.0.1", boost::lexical_cast<std::string>(port));
+      // Use the buffered interface
+      client << data;
+    }
+    reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -429,6 +460,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);
   suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
   suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
+  suite.add(BOOST_TEST_CASE(shutdown_flush), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =

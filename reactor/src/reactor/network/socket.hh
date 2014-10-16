@@ -258,7 +258,9 @@ namespace reactor
       virtual
       void
       write(elle::ConstWeakBuffer buffer);
-
+    protected:
+      void
+      _final_flush();
     private:
       ELLE_ATTRIBUTE(Mutex, write_mutex);
 

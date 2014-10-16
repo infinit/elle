@@ -95,6 +95,8 @@ namespace reactor
 
     SSLSocket::~SSLSocket()
     {
+      // Flush before shutting SSL down.
+      this->_final_flush();
       try
       {
         this->_shutdown();
