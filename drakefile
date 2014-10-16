@@ -245,14 +245,14 @@ def configure(cxx_toolkit = None,
   ## OpenSSL ##
   ## ------- ##
 
-  openssl_basename = 'openssl-1.0.1i'
+  openssl_basename = 'openssl-1.0.1j'
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
   openssl_build = openssl_prefix / openssl_basename
   openssl_url = \
     'http://www.openssl.org/source/%s.tar.gz' % openssl_basename
   drake.HTTPDownload(openssl_url, openssl_tarball,
-                     fingerprint = 'c8dc151a671b9b92ff3e4c118b174972')
+                     fingerprint = 'f7175c9cd3c39bb1907ac8bba9df8ed3')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
