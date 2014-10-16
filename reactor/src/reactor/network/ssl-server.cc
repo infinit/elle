@@ -16,14 +16,15 @@ namespace reactor
     `-------------*/
 
     SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate,
-                         reactor::Duration const& handshake_timeout):
-      Super(),
-      _certificate(std::move(certificate)),
-      _handshake_timeout(handshake_timeout),
-      _sockets(),
-      _handshake_thread(elle::sprintf("%s handshake", *this),
-                        std::bind(&SSLServer::_handshake,
-                                  std::ref(*this)))
+                         reactor::Duration const& handshake_timeout)
+      : Super()
+      , _certificate(std::move(certificate))
+      , _handshake_timeout(handshake_timeout)
+      , _sockets()
+      , _handshake_thread(elle::sprintf("%s handshake", *this),
+                          std::bind(&SSLServer::_handshake,
+                                    std::ref(*this)))
+      , _shutdown_asynchronous(false)
     {}
 
     SSLServer::~SSLServer()
@@ -53,6 +54,7 @@ namespace reactor
                                      peer,
                                      this->_certificate,
                                      this->_handshake_timeout);
+          naked->shutdown_asynchronous(this->_shutdown_asynchronous);
           auto socket =
             elle::utility::move_on_copy(std::unique_ptr<SSLSocket>(naked));
           scope.run_background(

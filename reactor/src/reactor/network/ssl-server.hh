@@ -44,6 +44,7 @@ namespace reactor
       ELLE_ATTRIBUTE(reactor::Duration, handshake_timeout);
       ELLE_ATTRIBUTE(reactor::Channel<std::unique_ptr<SSLSocket>>, sockets);
       ELLE_ATTRIBUTE(reactor::Thread, handshake_thread);
+      ELLE_ATTRIBUTE_RW(bool, shutdown_asynchronous);
     };
   }
 }
