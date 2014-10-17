@@ -390,19 +390,27 @@ namespace reactor
       return true;
     }
     switch (thread->state())
-      {
-        case Thread::state::running:
+    {
+      case Thread::state::running:
+        if (!thread->_terminating)
+        {
+          thread->_terminating = true;
           thread->raise<Terminate>(thread->name());
-          break;
-        case Thread::state::frozen:
+        }
+        break;
+      case Thread::state::frozen:
+        if (!thread->_terminating)
+        {
+          thread->_terminating = true;
           thread->raise<Terminate>(thread->name());
           thread->_wait_abort();
           ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
-          break;
-        case Thread::state::done:
-          return true;
-          break;
-      }
+        }
+        break;
+      case Thread::state::done:
+        return true;
+        break;
+    }
     return false;
   }
 

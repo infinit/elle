@@ -197,6 +197,7 @@ namespace reactor
     friend class Scheduler;
     ELLE_ATTRIBUTE(std::unique_ptr<backend::Thread>, thread);
     ELLE_ATTRIBUTE(Scheduler&, scheduler);
+    ELLE_ATTRIBUTE_R(bool, terminating);
   };
 
   template <typename R>

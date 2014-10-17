@@ -35,6 +35,7 @@ namespace reactor
                 name,
                 boost::bind(&Thread::_action_wrapper, this, action)))
     , _scheduler(scheduler)
+    , _terminating(false)
   {
     _scheduler._thread_register(*this);
   }

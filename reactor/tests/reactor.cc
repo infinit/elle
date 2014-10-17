@@ -1673,7 +1673,7 @@ ELLE_TEST_SCHEDULED(thread_exception_yield)
 }
 
 /*----------------.
-| Terminate reactor::yield |
+| Terminate yield |
 `----------------*/
 
 static
@@ -1722,6 +1722,98 @@ test_terminate_yield()
 | Terminate now |
 `--------------*/
 
+ELLE_TEST_SCHEDULED(test_terminate_now)
+{
+  reactor::Barrier sleeping;
+  bool beacon = false;
+  reactor::Thread t(
+    "terminated",
+    [&]
+    {
+      beacon = false;
+      try
+      {
+        while (true)
+        {
+          ELLE_LOG("wait for termination");
+          sleeping.open();
+          reactor::sleep();
+        }
+      }
+      catch (...)
+      {
+        ELLE_LOG("delay termination");
+        reactor::sleep(boost::posix_time::milliseconds(10));
+        beacon = true;
+        ELLE_LOG("actually die");
+        throw;
+      }
+    });
+  BOOST_CHECK_EQUAL(t.state(), reactor::Thread::state::running);
+  reactor::wait(sleeping);
+  t.terminate_now();
+  BOOST_CHECK(beacon);
+}
+
+/*------------------------.
+| Terminate now destroyed |
+`------------------------*/
+
+ELLE_TEST_SCHEDULED(test_terminate_now_destroyed)
+{
+  reactor::Barrier finish;
+  reactor::Thread t1(
+    "t1",
+    [&]
+    {
+      // Ignore the first Terminate (sent by t2) and catch the second one (by
+      // t4).
+      try
+      {
+        ELLE_LOG("sleep")
+          reactor::sleep();
+      }
+      catch (...)
+      {
+        ELLE_LOG("block until test end")
+          finish.wait();
+      }
+    });
+  reactor::Thread t2(
+    "t2",
+    [&]
+    {
+      ELLE_LOG("terminate thread 1")
+        t1.terminate_now();
+      BOOST_ERROR("terminate_now should have failed (killed by t3 during wait)");
+    });
+  reactor::Thread t3(
+    "t3",
+    [&]
+    {
+      ELLE_LOG("terminate thread 2")
+        t2.terminate_now();
+    });
+  while (true)
+  {
+    // If t2 is effectively waiting for t1 to die and t3 for t2 to die
+    // then the test has passed.
+    if (t3.state() == reactor::Thread::state::frozen)
+    {
+      finish.open();
+      break;
+    }
+    BOOST_CHECK(!t1.done());
+    BOOST_CHECK(!t2.done());
+    reactor::yield();
+  }
+  reactor::wait(t3);
+}
+
+/*-----------------------.
+| Terminate now disposed |
+`-----------------------*/
+
 static
 void
 terminated(bool& terminated)
@@ -1743,7 +1835,6 @@ terminated(bool& terminated)
   }
 }
 
-
 static
 void
 terminate_now(reactor::Thread& t, bool& terminated)
@@ -1751,107 +1842,6 @@ terminate_now(reactor::Thread& t, bool& terminated)
   t.terminate_now();
   BOOST_CHECK(terminated);
 }
-
-static
-void
-test_terminate_now()
-{
-  reactor::Scheduler sched;
-  bool beacon = false;
-  reactor::Thread t(sched, "terminated", std::bind(&terminated,
-                                                   std::ref(beacon)));
-  reactor::Thread terminate(sched, "terminate", std::bind(&terminate_now,
-                                                          std::ref(t),
-                                                          std::ref(beacon)));
-  sched.run();
-}
-
-/*------------------------.
-| Terminate now destroyed |
-`------------------------*/
-
-static
-void
-terminate_now_destroyed_t1(void)
-{
-
-  // Ignore the first Terminate (sent by t2) and catch the second one (by t4).
-  try
-  {
-    while (true)
-      reactor::yield();
-  }
-  catch (...)
-  {}
-
-  while (true)
-    reactor::yield();
-}
-
-static
-void
-terminate_now_destroyed_t2(reactor::Thread& t1)
-{
-  t1.terminate_now();
-  BOOST_FAIL("terminate_now should have failed (killed by t3 during wait)");
-}
-
-static
-void
-terminate_now_destroyed_t3(reactor::Thread& t2)
-{
-  t2.terminate_now();
-}
-
-static
-void
-terminate_now_destroyed_t4(reactor::Thread& t1,
-                           reactor::Thread& t2,
-                           reactor::Thread& t3)
-{
-
-  while (true)
-  {
-    // The thread t2 did not wait for t1 to end before dying.
-    if (t1.state() == reactor::Thread::state::running &&
-        t2.state() == reactor::Thread::state::done)
-      BOOST_FAIL("2nd thread did not wait for 1st thread to die before dying");
-    // If t2 is effectively waiting for t1 to die and t3 for t2 to die
-    // then the test has passed.
-    else if (t1.state() == reactor::Thread::state::running &&
-             t2.state() == reactor::Thread::state::frozen &&
-             t3.state() == reactor::Thread::state::frozen)
-    {
-      t1.terminate_now();
-      break;
-    }
-
-    reactor::yield();
-  }
-}
-
-static
-void
-test_terminate_now_destroyed()
-{
-  reactor::Scheduler sched;
-
-  reactor::Thread t1(sched, "t1", &terminate_now_destroyed_t1);
-  reactor::Thread t2(sched, "t2", std::bind(&terminate_now_destroyed_t2,
-                                            std::ref(t1)));
-  reactor::Thread t3(sched, "t3", std::bind(&terminate_now_destroyed_t3,
-                                            std::ref(t2)));
-  reactor::Thread t4(sched, "t4", std::bind(&terminate_now_destroyed_t4,
-                                            std::ref(t1),
-                                            std::ref(t2),
-                                            std::ref(t3)));
-
-  sched.run();
-}
-
-/*-----------------------.
-| Terminate now disposed |
-`-----------------------*/
 
 static
 void
@@ -1998,6 +1988,36 @@ test_exception_escape_collateral()
 
   BOOST_CHECK_THROW(sched.run(), BeaconException);
   BOOST_CHECK_EQUAL(beacon, 3);
+}
+
+// Check thread are not re-terminated.
+ELLE_TEST_SCHEDULED(test_terminate_twice)
+{
+  reactor::Barrier waiting;
+  reactor::Barrier reterminated;
+  reactor::Barrier rewaiting;
+  reactor::Thread thread(
+    "waiter",
+    [&]
+    {
+      try
+      {
+        waiting.open();
+        reactor::sleep();
+      }
+      catch (reactor::Terminate const&)
+      {
+        rewaiting.open();
+        BOOST_CHECK_NO_THROW(reactor::wait(reterminated));
+        throw;
+      }
+    });
+  reactor::wait(waiting);
+  thread.terminate();
+  reactor::wait(rewaiting);
+  thread.terminate();
+  reterminated.open();
+  reactor::wait(thread);
 }
 
 
@@ -2158,27 +2178,26 @@ namespace background
     sched.run();
   }
 
-  static
-  void
-  aborted_throw()
+  ELLE_TEST_SCHEDULED(aborted_throw)
   {
-    reactor::Scheduler sched;
+    reactor::Barrier backgrounded;
     reactor::Thread main(
-      sched, "main",
+      "background",
       [&]
       {
-        auto start = std::chrono::system_clock::now();
-        reactor::background([] { ::sleep(1); throw BeaconException(); });
-        auto duration = std::chrono::system_clock::now() - start;
-        BOOST_CHECK(duration < std::chrono::seconds(1));
+        bool beacon = false;
+        backgrounded.open();
+        reactor::background(
+          [&]
+          {
+            ::sleep(1);
+            beacon = true;
+            throw BeaconException();
+          });
+        BOOST_CHECK(!beacon);
       });
-    reactor::Thread kill(
-      sched, "kill",
-      [&]
-      {
-        main.terminate();
-      });
-    sched.run();
+    reactor::wait(backgrounded);
+    main.terminate_now();
   }
 }
 
@@ -2641,7 +2660,7 @@ ELLE_TEST_SUITE()
   join->add(BOOST_TEST_CASE(test_join_multiple), 0, 10);
   join->add(BOOST_TEST_CASE(test_join_timeout), 0, 10);
 
-  boost::unit_test::test_suite* terminate = BOOST_TEST_SUITE("Terminate");
+  boost::unit_test::test_suite* terminate = BOOST_TEST_SUITE("terminate");
   boost::unit_test::framework::master_test_suite().add(terminate);
   terminate->add(BOOST_TEST_CASE(test_terminate_yield), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_now), 0, 10);
@@ -2653,6 +2672,7 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, 10);
+  terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, 10);
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);
