@@ -195,6 +195,11 @@ namespace reactor
       _state = Thread::state::done;
       _signal();
     }
+    else if (this->_terminating && !std::current_exception())
+    {
+      ELLE_ERR("%s: terminate exception was swallowed", *this);
+      this->_raise<Terminate>(elle::sprintf("re-terminate %s", *this));
+    }
     if (this->_exception_thrown)
     {
       ELLE_TRACE("%s: re-raise exception: %s",

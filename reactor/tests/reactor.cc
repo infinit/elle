@@ -74,24 +74,21 @@ usleep(int usec)
 
 static
 void
-coro(int& step)
-{
-  BOOST_CHECK_EQUAL(step, 0);
-  ++step;
-  reactor::yield();
-  BOOST_CHECK_EQUAL(step, 1);
-  ++step;
-}
-
-static
-void
 test_basics_one()
 {
-
   reactor::Scheduler sched;
-
   int step = 0;
-  reactor::Thread t(sched, "coro", std::bind(coro, std::ref(step)));
+  reactor::Thread t(
+    sched,
+    "coro",
+    [&]
+    {
+      BOOST_CHECK_EQUAL(step, 0);
+      ++step;
+      reactor::yield();
+      BOOST_CHECK_EQUAL(step, 1);
+      ++step;
+    });
   sched.run();
   BOOST_CHECK_EQUAL(step, 2);
 }
@@ -2020,6 +2017,29 @@ ELLE_TEST_SCHEDULED(test_terminate_twice)
   reactor::wait(thread);
 }
 
+// Check you can't swallow terminate exception.
+ELLE_TEST_SCHEDULED(test_terminate_swallowed)
+{
+  int i = 0;
+  int const n = 8;
+  reactor::Barrier waiting;
+  reactor::Thread thread(
+    "survivor",
+    [&]
+    {
+      while (++i < n);
+        try
+        {
+          waiting.open();
+          reactor::sleep();
+        }
+        catch (reactor::Terminate const&)
+        {}
+    });
+  reactor::wait(waiting);
+  thread.terminate_now();
+  BOOST_CHECK_EQUAL(i, n);
+}
 
 /*-----------------.
 | IO service throw |
@@ -2448,6 +2468,17 @@ ELLE_TEST_SCHEDULED(test_tracked)
   f4.reset();
 }
 
+static
+void
+coro(int& step)
+{
+  BOOST_CHECK_EQUAL(step, 0);
+  ++step;
+  reactor::yield();
+  BOOST_CHECK_EQUAL(step, 1);
+  ++step;
+}
+
 namespace timer
 {
   using reactor::Timer;
@@ -2673,6 +2704,7 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, 10);
   terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, 10);
+  terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, 10);
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);
