@@ -173,6 +173,7 @@ namespace reactor
       virtual bool _wait(Thread* thread);
     private:
       friend class Waitable;
+      friend class TimeoutGuard;
       void _wait_timeout(const boost::system::error_code& e);
       void _wait_abort();
       void _freeze();

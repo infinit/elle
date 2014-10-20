@@ -13,7 +13,7 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: start", *this);
     auto current = reactor::scheduler().current();
-    auto timeout_msg = elle::sprintf("%s: time out", *this);
+    auto timeout_msg = elle::sprintf("%s: timeout %s", *this, *current);
     this->_timer.async_wait(
       [delay, current, timeout_msg]
       (boost::system::error_code const& e)
@@ -24,6 +24,8 @@ namespace reactor
           ELLE_ABORT("unexpected timer error: %s", e);
         ELLE_TRACE_SCOPE("%s", timeout_msg);
         current->raise<reactor::Timeout>(delay);
+        if (current->state() == Thread::state::frozen)
+          current->_wait_abort();
       });
   }
 
@@ -31,5 +33,11 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: cancel", *this);
     this->_timer.cancel();
+  }
+
+  void
+  TimeoutGuard::print(std::ostream& output) const
+  {
+    elle::fprintf(output, "reactor::TimeoutGuard(%s)", this->_delay);
   }
 }

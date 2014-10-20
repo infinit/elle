@@ -2598,13 +2598,16 @@ namespace timeout_
   {
     elle::With<reactor::Scope>() << [] (reactor::Scope& scope)
     {
-      bool beacon = false;
+      bool beacon1 = false;
+      bool beacon2 = false;
       scope.run_background(
         "control",
         [&]
         {
-          reactor::sleep(100_ms);
-          beacon = true;
+          reactor::sleep(250_ms);
+          beacon1 = true;
+          reactor::sleep(500_ms);
+          beacon2 = true;
         });
       try
       {
@@ -2614,7 +2617,8 @@ namespace timeout_
       }
       catch(reactor::Timeout const&)
       {}
-      BOOST_CHECK(beacon);
+      BOOST_CHECK(beacon1);
+      BOOST_CHECK(!beacon2);
     };
   }
 

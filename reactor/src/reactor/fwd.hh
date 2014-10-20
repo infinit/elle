@@ -11,17 +11,18 @@
 
 namespace reactor
 {
+  class Barrier;
   class Mutex;
   class Operation;
   class Scheduler;
+  class Semaphore;
   class Signal;
   class Sleep;
   class Thread;
+  class TimeoutGuard;
   template <typename R = void>
   class VThread;
   class Waitable;
-  class Semaphore;
-  class Barrier;
 
   typedef std::vector<Signal*> Signals;
   typedef std::vector<Waitable*> Waitables;
