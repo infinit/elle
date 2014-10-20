@@ -270,8 +270,8 @@ namespace reactor
         if (error)
         {
           if (error == boost::asio::error::not_connected
-#ifdef INFINIT_WINDOWS
               || error == boost::asio::error::bad_descriptor
+#ifdef INFINIT_WINDOWS
               // A request to send or receive data was disallowed because the
               // socket had already been shut down in that direction with a
               // previous shutdown call.
