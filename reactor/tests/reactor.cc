@@ -18,6 +18,7 @@
 #include <reactor/MultiLockBarrier.hh>
 #include <reactor/Channel.hh>
 #include <reactor/Scope.hh>
+#include <reactor/TimeoutGuard.hh>
 #include <reactor/duration.hh>
 #include <reactor/exception.hh>
 #include <reactor/mutex.hh>
@@ -2591,6 +2592,65 @@ namespace timer
   }
 }
 
+namespace timeout_
+{
+  ELLE_TEST_SCHEDULED(timeout)
+  {
+    elle::With<reactor::Scope>() << [] (reactor::Scope& scope)
+    {
+      bool beacon = false;
+      scope.run_background(
+        "control",
+        [&]
+        {
+          reactor::sleep(100_ms);
+          beacon = true;
+        });
+      try
+      {
+        reactor::TimeoutGuard timeout(500_ms);
+        reactor::sleep(1_sec);
+        BOOST_ERROR("didn't timeout");
+      }
+      catch(reactor::Timeout const&)
+      {}
+      BOOST_CHECK(beacon);
+    };
+  }
+
+  ELLE_TEST_SCHEDULED(complete)
+  {
+    elle::With<reactor::Scope>() << [] (reactor::Scope& scope)
+    {
+      try
+      {
+        reactor::TimeoutGuard timeout(500_ms);
+        reactor::sleep(100_ms);
+      }
+      catch(reactor::Timeout const&)
+      {
+        BOOST_ERROR("timeout");
+      }
+    };
+  }
+
+  ELLE_TEST_SCHEDULED(race_condition)
+  {
+    elle::With<reactor::Scope>() << [] (reactor::Scope& scope)
+    {
+      try
+      {
+        reactor::TimeoutGuard timeout(100_ms);
+        ::sleep(1);
+      }
+      catch(reactor::Timeout const&)
+      {
+        BOOST_ERROR("timeout");
+      }
+    };
+  }
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -2777,6 +2837,17 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* tracked = BOOST_TEST_SUITE("tracked");
   boost::unit_test::framework::master_test_suite().add(tracked);
   tracked->add(BOOST_TEST_CASE(test_tracked), 0, 10);
+
+  {
+    boost::unit_test::test_suite* s = BOOST_TEST_SUITE("timeout");
+    boost::unit_test::framework::master_test_suite().add(s);
+    auto timeout = &timeout_::timeout;
+    s->add(BOOST_TEST_CASE(timeout), 0, 3);
+    auto complete = &timeout_::complete;
+    s->add(BOOST_TEST_CASE(complete), 0, 3);
+    auto race_condition = &timeout_::race_condition;
+    s->add(BOOST_TEST_CASE(race_condition), 0, 3);
+  }
 
 #if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
   {

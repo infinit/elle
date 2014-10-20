@@ -19,6 +19,11 @@ namespace reactor
     //     _backtrace.strip_base(t->_backtrace_root);
   }
 
+  Timeout::Timeout(reactor::Duration const& delay)
+    : Super(elle::sprintf("timeout %s", delay))
+    , _delay(delay)
+  {}
+
   Terminate::Terminate(const std::string& message):
     Super(),
     _message{elle::sprintf("thread termination: %s", message)}

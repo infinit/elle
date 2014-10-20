@@ -2,7 +2,9 @@
 # define INFINIT_REACTOR_EXCEPTION_HH
 
 # include <elle/Exception.hh>
+# include <elle/Error.hh>
 
+# include <reactor/duration.hh>
 # include <reactor/fwd.hh>
 
 namespace reactor
@@ -12,6 +14,15 @@ namespace reactor
   public:
     Exception(const std::string& message);
     Exception(elle::Backtrace const& bt, elle::String const& format);
+  };
+
+  class Timeout
+    : public elle::Error
+  {
+  public:
+    typedef elle::Error Super;
+    Timeout(reactor::Duration const& delay);
+    ELLE_ATTRIBUTE_R(reactor::Duration, delay);
   };
 
   class Terminate: public std::exception
