@@ -36,9 +36,10 @@ namespace reactor
         return false;
       }
     }
-    catch (const Terminate&)
+    catch (...)
     {
-      ELLE_TRACE("%s: thread terminated, aborting", *this);
+      ELLE_TRACE("%s: aborted by exception: %s",
+                 *this, elle::exception_string());
       auto e = std::current_exception();
       this->abort();
       std::rethrow_exception(e);
