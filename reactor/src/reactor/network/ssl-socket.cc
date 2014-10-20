@@ -107,6 +107,11 @@ namespace reactor
         // Ignore shutdown error. This could be configurable.
         ELLE_WARN("SSL shutdow error: %s", elle::exception_string());
       }
+      catch (...)
+      {
+        ELLE_ABORT("unexpected error in SSL shutdown: %s",
+                   elle::exception_string());
+      }
     }
 
     SSLSocket::SSLSocket(std::unique_ptr<SSLStream> socket,
