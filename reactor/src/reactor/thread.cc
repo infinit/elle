@@ -199,6 +199,7 @@ namespace reactor
     {
       ELLE_ERR("%s: terminate exception was swallowed", *this);
       this->_raise<Terminate>(elle::sprintf("re-terminate %s", *this));
+      this->_wait_abort();
     }
     if (this->_exception_thrown)
     {
