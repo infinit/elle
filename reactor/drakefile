@@ -141,8 +141,6 @@ def configure(curl_config,
     'src/reactor/TimeoutGuard.cc',
     'src/reactor/TimeoutGuard.hh',
     'src/reactor/asio.hh',
-    'src/reactor/backend/backend.cc',
-    'src/reactor/backend/backend.hh',
     # 'src/reactor/backend/pthread/pthread.cc',
     # 'src/reactor/backend/pthread/pthread.hh',
     'src/reactor/duration.cc',
@@ -253,12 +251,26 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
+  backend = drake.cxx.StaticLib(
+    'lib/reactor/backend',
+    drake.nodes(
+      'src/reactor/backend/backend.cc',
+      'src/reactor/backend/backend.hh',
+    ),
+    cxx_toolkit,
+    lib_cxx_config,
+  )
+
+  backend_coro_libs = [backend]
+  if cxx_toolkit.os is drake.os.windows:
+    backend_coro_libs += [libcoroutine]
+
   backend_coro_io = drake.cxx.StaticLib(
     'lib/reactor/backend_coro_io',
     drake.nodes(
       'src/reactor/backend/coro_io/backend.cc',
       'src/reactor/backend/coro_io/backend.hh',
-    ),
+    ) + backend_coro_libs,
     cxx_toolkit,
     lib_cxx_config,
   )
@@ -286,6 +298,7 @@ def configure(curl_config,
     lib_static_link_libs.append(backend_coro_io)
   else:
     lib_static_link_libs.append(backend_boost_context)
+    lib_static_link_libs.append(backend)
   lib_static = drake.cxx.StaticLib(
     'lib/reactor',
     sources + lib_static_link_libs + openssl_libs,
@@ -300,6 +313,7 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend_coro_io)
   else:
     lib_dynamic_link_libs.append(backend_boost_context)
+    lib_dynamic_link_libs.append(backend)
   lib_dynamic = drake.cxx.DynLib(
     'lib/reactor',
     sources + lib_dynamic_link_libs + openssl_libs,
