@@ -2028,7 +2028,7 @@ ELLE_TEST_SCHEDULED(test_terminate_swallowed)
     "survivor",
     [&]
     {
-      while (++i < n);
+      while (++i < n)
         try
         {
           waiting.open();
