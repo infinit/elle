@@ -195,7 +195,9 @@ namespace reactor
       _state = Thread::state::done;
       _signal();
     }
-    else if (this->_terminating && !std::current_exception())
+    // Unfortunately, uncaught_exception is broken by elle::exception_string,
+    // probably because of the coroutines. True on GCC 4.9 at least.
+    else if (this->_terminating && !std::uncaught_exception())
     {
       ELLE_ERR("%s: terminate exception was swallowed", *this);
       this->_raise<Terminate>(elle::sprintf("re-terminate %s", *this));
