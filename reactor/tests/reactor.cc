@@ -2266,16 +2266,14 @@ namespace background
       "background",
       [&]
       {
-        bool beacon = false;
         backgrounded.open();
         reactor::background(
           [&]
           {
             ::sleep(1);
-            beacon = true;
             throw BeaconException();
           });
-        BOOST_CHECK(!beacon);
+        BOOST_ERROR("should have been aborted");
       });
     reactor::wait(backgrounded);
     main.terminate_now();
