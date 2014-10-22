@@ -58,18 +58,19 @@ namespace reactor
 
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
-                         DurationOpt timeout):
-      SSLSocket(resolve_tcp(hostname, port), timeout)
+                         DurationOpt timeout)
+      : SSLSocket(resolve_tcp(hostname, port), timeout)
     {}
 
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
-                         DurationOpt timeout):
-      SSLCertificateOwner(),
-      Super(elle::make_unique<SSLStream>(
-              reactor::Scheduler::scheduler()->io_service(),
-              this->certificate()->context()),
-            endpoint, timeout),
-      _timeout(timeout)
+                         DurationOpt timeout)
+      : SSLCertificateOwner()
+      , Super(elle::make_unique<SSLStream>(
+                reactor::Scheduler::scheduler()->io_service(),
+                this->certificate()->context()),
+              endpoint, timeout)
+      , _shutdown_asynchronous(false)
+      , _timeout(timeout)
     {
       this->_client_handshake();
     }
@@ -77,19 +78,20 @@ namespace reactor
     SSLSocket::SSLSocket(const std::string& hostname,
                          const std::string& port,
                          SSLCertificate& certificate,
-                         DurationOpt timeout):
-      SSLSocket(resolve_tcp(hostname, port), certificate, timeout)
+                         DurationOpt timeout)
+      : SSLSocket(resolve_tcp(hostname, port), certificate, timeout)
     {}
 
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          SSLCertificate& certificate,
-                         DurationOpt timeout):
-      SSLCertificateOwner(),
-      Super(elle::make_unique<SSLStream>(
-              reactor::Scheduler::scheduler()->io_service(),
-              certificate.context()),
-            endpoint, timeout),
-      _timeout(timeout)
+                         DurationOpt timeout)
+      : SSLCertificateOwner()
+      , Super(elle::make_unique<SSLStream>(
+                reactor::Scheduler::scheduler()->io_service(),
+                certificate.context()),
+              endpoint, timeout)
+      , _shutdown_asynchronous(false)
+      , _timeout(timeout)
     {
       this->_server_handshake(this->_timeout);
     }
@@ -117,10 +119,11 @@ namespace reactor
     SSLSocket::SSLSocket(std::unique_ptr<SSLStream> socket,
                          SSLEndPoint const& endpoint,
                          std::shared_ptr<SSLCertificate> certificate,
-                         DurationOpt handshake_timeout):
-      SSLCertificateOwner(certificate),
-      Super(std::move(socket), endpoint),
-      _timeout(handshake_timeout)
+                         DurationOpt handshake_timeout)
+      : SSLCertificateOwner(certificate)
+      , Super(std::move(socket), endpoint)
+      , _shutdown_asynchronous(false)
+      , _timeout(handshake_timeout)
     {}
 
     /*----------------.
