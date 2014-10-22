@@ -523,6 +523,61 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
   };
 }
 
+ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
+{
+  reactor::Barrier listening;
+  reactor::Barrier done;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate());
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+        elle::Buffer data(4096);
+        // Read at the TCP level, discarding the SSL shutdown data and waiting
+        // for a TCP shutdown anyway.
+        std::function<void (const boost::system::error_code& error,
+                            std::size_t read)> read_callback =
+          [&] (const boost::system::error_code& error, std::size_t read)
+          {
+            if (!error)
+            {
+              ELLE_LOG("read %s bytes of raw SSL shutdown", read);
+              client->socket()->next_layer().async_read_some(
+                boost::asio::buffer(data.mutable_contents(), data.size()),
+                read_callback);
+            }
+            else
+            {
+              ELLE_LOG("got TCP shutdown");
+              BOOST_CHECK_EQUAL(read, 0);
+              BOOST_CHECK_EQUAL(error, boost::asio::error::eof);
+              done.open();
+            }
+          };
+        client->socket()->next_layer().async_read_some(
+          boost::asio::buffer(data.mutable_contents(), data.size()),
+          read_callback);
+        reactor::wait(done);
+      });
+    reactor::wait(listening);
+    ELLE_LOG("connect client")
+    {
+      reactor::network::SSLSocket client(
+        "127.0.0.1", boost::lexical_cast<std::string>(port), valgrind(1_sec));
+      client.shutdown_asynchronous(true);
+    }
+    ELLE_LOG("wait for SSL shutdown timeout")
+      reactor::wait(done);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -535,6 +590,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
   suite.add(BOOST_TEST_CASE(shutdown_flush), 0, 3);
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, 3);
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, 3);
 }
 
 const std::vector<unsigned char> fingerprint =
