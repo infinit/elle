@@ -2065,7 +2065,7 @@ ELLE_TEST_SCHEDULED(test_terminate_not_swallowed_catch)
       {
         reactor::sleep();
       }
-      catch (...)
+      catch (reactor::Terminate const&)
       {
         reactor::yield();
         beacon = true;
