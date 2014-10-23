@@ -129,6 +129,19 @@ _test_suite()                                           \
   ELLE_TEST_SCHEDULED_HELPER(BOOST_PP_SEQ_HEAD(Seq),                    \
                              BOOST_PP_SEQ_TAIL(Seq))                    \
 
+# ifdef INFINIT_WINDOWS
+#  define ELLE_TEST_HANDLE_SIGALRM(Sched)
+# else
+#  define ELLE_TEST_HANDLE_SIGALRM(Sched)                             \
+  Sched.signal_handle(SIGALRM,                                        \
+                      []                                              \
+                      {                                               \
+                        ELLE_ERR("test timeout: SIGALRM");            \
+                        throw elle::Error("test timeout");            \
+                      });
+# endif
+
+
 # define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                       \
 static                                                                \
 void                                                                  \
@@ -139,12 +152,7 @@ void                                                                  \
 Name(ELLE_TEST_PROTOTYPE(Args))                                       \
 {                                                                     \
   reactor::Scheduler sched;                                           \
-  sched.signal_handle(14, /* SIGALRM is not defined on mingw */       \
-                      []                                              \
-                      {                                               \
-                        ELLE_ERR("test timeout: SIGALRM");            \
-                        throw elle::Error("test timeout");            \
-                      });                                             \
+  ELLE_TEST_HANDLE_SIGALRM(sched);                                    \
   reactor::Thread main(                                               \
     sched, "main",                                                    \
     [&]                                                               \
