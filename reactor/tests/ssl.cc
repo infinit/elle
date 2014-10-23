@@ -570,7 +570,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
     ELLE_LOG("connect client")
     {
       reactor::network::SSLSocket client(
-        "127.0.0.1", boost::lexical_cast<std::string>(port), valgrind(1_sec));
+        "127.0.0.1", boost::lexical_cast<std::string>(port), valgrind(100_ms));
       client.shutdown_asynchronous(true);
     }
     ELLE_LOG("wait for SSL shutdown timeout")
@@ -581,16 +581,16 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(transfer), 0, 10);
-  suite.add(BOOST_TEST_CASE(short_read), 0, 10);
-  suite.add(BOOST_TEST_CASE(handshake_timeout), 0, 10);
-  suite.add(BOOST_TEST_CASE(encryption), 0, 10);
-  suite.add(BOOST_TEST_CASE(connection_closed), 0, 10);
-  suite.add(BOOST_TEST_CASE(handshake_stuck), 0, 3);
-  suite.add(BOOST_TEST_CASE(handshake_error), 0, 3);
-  suite.add(BOOST_TEST_CASE(shutdown_flush), 0, 3);
-  suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, 3);
-  suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, 3);
+  suite.add(BOOST_TEST_CASE(transfer), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(short_read), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(handshake_timeout), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(encryption), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(connection_closed), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(handshake_stuck), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(handshake_error), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(shutdown_flush), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, valgrind(1));
 }
 
 const std::vector<unsigned char> fingerprint =
