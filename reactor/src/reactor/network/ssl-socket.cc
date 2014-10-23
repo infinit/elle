@@ -260,6 +260,7 @@ namespace reactor
       else
       {
         ELLE_TRACE_SCOPE("%s: shutdown SSL asynchronously", *this);
+        bool const has_timeout = bool(this->_timeout);
         auto socket_raw = this->_socket.get();
         auto socket = elle::utility::move_on_copy(this->_socket);
         auto timer = elle::utility::move_on_copy(
@@ -267,12 +268,13 @@ namespace reactor
             reactor::scheduler().io_service()));
         auto timer_raw = (*timer).get();
         socket_raw->async_shutdown(
-          [socket, timer_raw]
+          [socket, timer_raw, has_timeout]
           (boost::system::error_code const& error)
           {
             if (!error || error != boost::system::errc::operation_canceled)
             {
-              timer_raw->cancel();
+              if (has_timeout)
+                timer_raw->cancel();
               // EOF simply means the other side shut SSL down properly.
               if (error && error != boost::asio::error::eof)
                 ELLE_WARN("error on async SSL shutdown: %s", error);
@@ -284,7 +286,7 @@ namespace reactor
               ELLE_WARN("error on async shutdown: %s", error);
             socket->next_layer().close();
           });
-        if (this->_timeout)
+        if (has_timeout)
         {
           auto timeout = *this->_timeout;
           timer->expires_from_now(timeout);
