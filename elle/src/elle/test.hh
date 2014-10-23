@@ -139,7 +139,7 @@ void                                                                  \
 Name(ELLE_TEST_PROTOTYPE(Args))                                       \
 {                                                                     \
   reactor::Scheduler sched;                                           \
-  sched.signal_handle(SIGALRM,                                        \
+  sched.signal_handle(14, /* SIGALRM is not defined on mingw */       \
                       []                                              \
                       {                                               \
                         ELLE_ERR("test timeout: SIGALRM");            \
