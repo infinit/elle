@@ -574,7 +574,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
       client.shutdown_asynchronous(true);
     }
     ELLE_LOG("wait for SSL shutdown timeout")
-      reactor::wait(done);
+      reactor::wait(scope);
   };
 }
 
