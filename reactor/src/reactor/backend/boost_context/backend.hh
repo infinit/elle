@@ -1,11 +1,9 @@
-#ifndef INFINIT_REACTOR_BACKEND_CORO_IO_THREAD_HH
-# define INFINIT_REACTOR_BACKEND_CORO_IO_THREAD_HH
+#ifndef INFINIT_REACTOR_BACKEND_BOOST_CONTEXT_THREAD_HH
+# define INFINIT_REACTOR_BACKEND_BOOST_CONTEXT_THREAD_HH
 
 # include <string>
 
 # include <reactor/backend/backend.hh>
-
-struct Coro;
 
 namespace reactor
 {
