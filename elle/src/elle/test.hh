@@ -139,6 +139,12 @@ void                                                                  \
 Name(ELLE_TEST_PROTOTYPE(Args))                                       \
 {                                                                     \
   reactor::Scheduler sched;                                           \
+  sched.signal_handle(SIGALRM,                                        \
+                      []                                              \
+                      {                                               \
+                        ELLE_ERR("test timeout: SIGALRM");            \
+                        throw elle::Error("test timeout");            \
+                      });                                             \
   reactor::Thread main(                                               \
     sched, "main",                                                    \
     [&]                                                               \
