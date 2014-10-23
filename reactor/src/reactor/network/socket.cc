@@ -457,8 +457,11 @@ namespace reactor
                                               DurationOpt timeout,
                                               bool some)
     {
-      ELLE_TRACE_SCOPE("%s: read %s%s bytes (%s)",
-                       *this, some ? "up to " : "", buf.size(), timeout);
+      ELLE_TRACE_SCOPE("%s: read %s%s bytes%s",
+                       *this,
+                       some ? "up to " : "",
+                       buf.size(),
+                       timeout ? elle::sprintf(" in %s", timeout.get()): "");
       if (this->_streambuffer.size())
       {
         std::istream s(&this->_streambuffer);
