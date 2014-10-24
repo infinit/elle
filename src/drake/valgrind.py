@@ -48,6 +48,7 @@ class ValgrindRunner(drake.Runner):
     self.__valgrind_status = drake.node(
       '%s.valgrind' % self.executable.name())
     self.__valgrind_status.builder = self
+    self.valgrind_reporting = drake.Runner.Reporting.on_failure
 
   @property
   def command(self):
@@ -58,3 +59,8 @@ class ValgrindRunner(drake.Runner):
       '--log-file=%s' % self.__valgrind_status.path(),
       '--error-exitcode=1',
     ] + super().command
+
+  def _report(self, status):
+    super()._report(status)
+    if self._must_report(self.valgrind_reporting, status):
+      self._report_node(self.__valgrind_status)
