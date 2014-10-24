@@ -78,6 +78,19 @@ load_certificate()
                                            dh1024.string());
 }
 
+static
+void
+exhaust(reactor::network::Socket& socket)
+{
+  try
+  {
+    while (true)
+      socket.read_some(BUFSIZ);
+  }
+  catch (reactor::network::ConnectionClosed const&)
+  {}
+}
+
 ELLE_TEST_SCHEDULED(transfer)
 {
   reactor::Barrier listening;
@@ -523,6 +536,35 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
   };
 }
 
+// Timeoutless asynchronous shutdown used to make illegal memory access to the
+// deleted timeout timer.
+ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeoutless)
+{
+  reactor::Barrier listening;
+  reactor::Barrier shutdown;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate());
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+        exhaust(*client);
+      });
+    reactor::wait(listening);
+    {
+      reactor::network::SSLSocket client("127.0.0.1", std::to_string(port));
+      client.shutdown_asynchronous(true);
+    }
+    reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
 {
   reactor::Barrier listening;
@@ -590,6 +632,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_error), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_flush), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeoutless), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, valgrind(2));
 }
 
