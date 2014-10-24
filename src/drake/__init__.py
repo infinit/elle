@@ -3335,7 +3335,7 @@ class Runner(Builder):
     self.stderr_reporting = val
   reporting = property(fget = None, fset = __reporting_set)
 
-  def __must_report(self, reporting, status):
+  def _must_report(self, reporting, status):
     if reporting is Runner.Reporting.always:
       return True
     elif reporting is Runner.Reporting.on_failure:
@@ -3343,7 +3343,7 @@ class Runner(Builder):
     else:
       return False
 
-  def __report(self, node):
+  def _report_node(self, node):
     with open(str(node.path()), 'r') as f:
       for line in f:
         print('  %s' % line, end = '')
@@ -3381,12 +3381,15 @@ class Runner(Builder):
     status = self._run_job(run)
     if status is False:
       return False
-    if self.__must_report(self.stdout_reporting, status):
-      self.__report(self.__out)
-    if self.__must_report(self.stderr_reporting, status):
-      self.__report(self.__err)
+    self._report(status)
     assert status is not None
     return status == 0
+
+  def _report(self, status):
+    if self._must_report(self.stdout_reporting, status):
+      self._report_node(self.__out)
+    if self._must_report(self.stderr_reporting, status):
+      self._report_node(self.__err)
 
   @property
   def command(self):
