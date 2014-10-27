@@ -277,13 +277,15 @@ namespace reactor
                 timer_raw->cancel();
               // EOF simply means the other side shut SSL down properly.
               if (error && error != boost::asio::error::eof)
-                ELLE_WARN("error on async SSL shutdown: %s", error);
+                ELLE_WARN("error on asynchronous SSL shutdown: %s",
+                          error.message());
             }
+            ELLE_TRACE("asynchronous SSL shutdown done");
             boost::system::error_code e;
             socket->next_layer().shutdown(
               boost::asio::ip::tcp::socket::shutdown_both, e);
             if (e)
-              ELLE_WARN("error on async shutdown: %s", error);
+              ELLE_WARN("error on async shutdown: %s", error.message());
             socket->next_layer().close();
           });
         if (has_timeout)
