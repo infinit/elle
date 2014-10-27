@@ -205,7 +205,7 @@ namespace reactor
       }
       catch (std::exception const& e)
       {
-        ELLE_WARN("%s: asynchronous jobs threw an exception: %s",
+        ELLE_WARN("%s: asynchronous job threw an exception: %s",
                   *this, e.what());
         this->_eptr = std::current_exception();
         this->terminate();
