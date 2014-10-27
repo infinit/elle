@@ -296,10 +296,15 @@ namespace reactor
             [timer, socket_raw, timeout]
             (boost::system::error_code const& error)
             {
-              if (error == boost::system::errc::operation_canceled)
-                return;
-              ELLE_WARN("ansynchronous shutdown timeout after %s", timeout);
-              socket_raw->next_layer().cancel();
+              if (!error)
+              {
+                ELLE_WARN("asynchronous SSL shutdown timeout after %s", timeout);
+                socket_raw->next_layer().cancel();
+              }
+              else if (error !=  boost::asio::error::operation_aborted)
+                ELLE_ABORT(
+                  "unexpected asynchronous SSL shutdown timeout error: %s",
+                  error.message());
             });
         }
       }
