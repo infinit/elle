@@ -47,6 +47,7 @@ namespace elle
                     uint64_t file_offset,
                     uint64_t size);
 
+    /// Write at the ond of the file
     void
     write_file(boost::filesystem::path const& path,
                Buffer const& buffer = elle::Buffer{0});
@@ -54,6 +55,40 @@ namespace elle
     void
     truncate(boost::filesystem::path file_name,
              uint64_t new_size);
+
+    class FileHandle
+    {
+    public:
+      enum OpenMode
+      {
+        READ,
+        WRITE,
+        APPEND
+      };
+      FileHandle();
+      FileHandle(boost::filesystem::path, OpenMode mode);
+      FileHandle(FileHandle && b);
+      FileHandle(FileHandle const&) = delete;
+      FileHandle& operator=(FileHandle const&) = delete;
+      FileHandle& operator=(FileHandle&& b);
+      ~FileHandle();
+      void
+      write(Buffer const& buffer);
+      Buffer
+      read(uint64_t size);
+      Buffer
+      read(uint64_t file_offset, uint64_t size);
+    private:
+#ifdef INFINIT_WINDOWS
+    typedef HANDLE NativeHandle;
+#else
+    typedef int NativeHandle;
+#endif
+      NativeHandle _handle;
+      static NativeHandle _invalid;
+      ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+    };
+
   }
 }
 
