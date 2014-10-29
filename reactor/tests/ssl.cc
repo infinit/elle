@@ -41,9 +41,9 @@ extern const std::vector<char> server_dh1024;
 template <typename T>
 static
 auto
-valgrind(T base) -> decltype(base * 42)
+valgrind(T base, int factor = 50) -> decltype(base * 42)
 {
-  return base * (RUNNING_ON_VALGRIND ? 50 : 1);
+  return base * (RUNNING_ON_VALGRIND ? factor : 1);
 }
 
 static
@@ -620,6 +620,42 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
   };
 }
 
+ELLE_TEST_SCHEDULED(shutdown_asynchronous_concurrent)
+{
+  reactor::Barrier listening;
+  reactor::Barrier closed;
+  reactor::Barrier done;
+  int port = 0;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    auto& server = scope.run_background(
+      "server",
+      [&]
+      {
+        reactor::network::SSLServer server(load_certificate());
+        server.listen();
+        port = server.port();
+        listening.open();
+        auto client = server.accept();
+        client->socket()->next_layer().close();
+        closed.open();
+        reactor::wait(done);
+      });
+    reactor::wait(listening);
+    ELLE_LOG("connect client")
+    {
+      reactor::network::SSLSocket client(
+        "127.0.0.1", boost::lexical_cast<std::string>(port),
+        valgrind(500_ms, 5));
+      client.shutdown_asynchronous(true);
+      reactor::wait(closed);
+    }
+    ::sleep(valgrind(1, 10));
+    done.open();
+    reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -634,6 +670,8 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeoutless), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous_concurrent), 0, valgrind(2));
+
 }
 
 const std::vector<unsigned char> fingerprint =
