@@ -267,14 +267,16 @@ namespace reactor
           elle::make_unique<boost::asio::deadline_timer>(
             reactor::scheduler().io_service()));
         auto timer_raw = (*timer).get();
+        auto over = std::make_shared<bool>(false);
         socket_raw->async_shutdown(
-          [socket, timer_raw, has_timeout]
+          [over, socket, timer_raw, has_timeout]
           (boost::system::error_code const& error)
           {
             if (!error || error != boost::system::errc::operation_canceled)
             {
-              if (has_timeout)
+              if (has_timeout && !*over)
                 timer_raw->cancel();
+              *over = true;
               // EOF simply means the other side shut SSL down properly.
               if (error && error != boost::asio::error::eof)
                 ELLE_WARN("error on asynchronous SSL shutdown: %s",
@@ -293,13 +295,15 @@ namespace reactor
           auto timeout = *this->_timeout;
           timer->expires_from_now(timeout);
           timer_raw->async_wait(
-            [timer, socket_raw, timeout]
+            [over, timer, socket_raw, timeout]
             (boost::system::error_code const& error)
             {
               if (!error)
               {
                 ELLE_WARN("asynchronous SSL shutdown timeout after %s", timeout);
-                socket_raw->next_layer().cancel();
+                if (!*over)
+                  socket_raw->next_layer().cancel();
+                *over = true;
               }
               else if (error !=  boost::asio::error::operation_aborted)
                 ELLE_ABORT(
