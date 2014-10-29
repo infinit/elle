@@ -20,12 +20,6 @@
 
 ELLE_LOG_COMPONENT("aws.test");
 
-#ifdef VALGRIND
-# include <valgrind/valgrind.h>
-#else
-# define RUNNING_ON_VALGRIND 0
-#endif
-
 // Credentials:
 // AccessKeyId
 // SecretAccessKey

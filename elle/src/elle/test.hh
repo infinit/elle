@@ -1,6 +1,12 @@
 #ifndef ELLE_TEST_HH
 # define ELLE_TEST_HH
 
+# ifdef VALGRIND
+#  include <valgrind/valgrind.h>
+# else
+#  define RUNNING_ON_VALGRIND 0
+# endif
+
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
@@ -211,7 +217,8 @@ operator new(std::size_t n) throw(std::bad_alloc)
   return res;
 }
 
-void operator delete(void* p) throw()
+void
+operator delete(void* p) throw()
 {
   if (!p)
     return;

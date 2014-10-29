@@ -3,12 +3,6 @@
 #include <elle/os/environ.hh>
 #include <elle/test.hh>
 
-#ifdef VALGRIND
-# include <valgrind/valgrind.h>
-#else
-# define RUNNING_ON_VALGRIND 0
-#endif
-
 #include <elle/log.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/os/environ.hh>

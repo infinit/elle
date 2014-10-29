@@ -6,12 +6,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-#ifdef VALGRIND
-# include <valgrind/valgrind.h>
-#else
-# define RUNNING_ON_VALGRIND 0
-#endif
-
 #include <elle/finally.hh>
 #include <elle/os/environ.hh>
 #include <elle/test.hh>

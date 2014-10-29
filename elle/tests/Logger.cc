@@ -1,3 +1,4 @@
+//#define ELLE_TEST_NO_MEMFRY
 #include <elle/test.hh>
 
 #include <elle/finally.hh>

@@ -3,12 +3,6 @@
 #include <thread>
 #include <vector>
 
-#ifdef VALGRIND
-# include <valgrind/valgrind.h>
-#else
-# define RUNNING_ON_VALGRIND 0
-#endif
-
 #include <elle/threading/Monitor.hh>
 #include <elle/print.hh>
 #include <elle/test.hh>

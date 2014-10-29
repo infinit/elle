@@ -2,12 +2,6 @@
 #include <memory>
 #include <mutex>
 
-#ifdef VALGRIND
-# include <valgrind/valgrind.h>
-#else
-# define RUNNING_ON_VALGRIND 0
-#endif
-
 #include "reactor.hh"
 
 #include <elle/finally.hh>
