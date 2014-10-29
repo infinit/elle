@@ -88,6 +88,8 @@ def configure(zlib_lib,
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
+  if valgrind is not None:
+    config.define('VALGRIND')
 
   # XXX[for fuse only]
   config.define('HAVE_SETXATTR')
@@ -597,8 +599,6 @@ def configure(zlib_lib,
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-  if valgrind is not None:
-    cxx_config_tests.define('VALGRIND')
   if enable_tests:
     for test in tests:
       if isinstance(test, tuple):
