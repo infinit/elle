@@ -201,11 +201,16 @@ Name##_impl()                                              \
 void*
 operator new(std::size_t n, std::nothrow_t const&) throw()
 {
-  char* chunk = reinterpret_cast<char*>(::malloc(n + sizeof(std::size_t)));
-  *reinterpret_cast<std::size_t*>(chunk) = n;
-  ::memset(chunk + sizeof(std::size_t), 0xd0, n);
-  void* res = chunk + sizeof(std::size_t);
-  return res;
+  if (RUNNING_ON_VALGRIND)
+    return ::malloc(n);
+  else
+  {
+    char* chunk = reinterpret_cast<char*>(::malloc(n + sizeof(std::size_t)));
+    *reinterpret_cast<std::size_t*>(chunk) = n;
+    ::memset(chunk + sizeof(std::size_t), 0xd0, n);
+    void* res = chunk + sizeof(std::size_t);
+    return res;
+  }
 }
 
 void*
@@ -222,10 +227,15 @@ operator delete(void* p) throw()
 {
   if (!p)
     return;
-  char* chunk = reinterpret_cast<char*>(p) - sizeof(std::size_t);
-  std::size_t n = *(reinterpret_cast<std::size_t*>(chunk));
-  ::memset(chunk, 0xdf, n + sizeof(std::size_t));
-  ::free(chunk);
+  if (RUNNING_ON_VALGRIND)
+    ::free(p);
+  else
+  {
+    char* chunk = reinterpret_cast<char*>(p) - sizeof(std::size_t);
+    std::size_t n = *(reinterpret_cast<std::size_t*>(chunk));
+    ::memset(chunk, 0xdf, n + sizeof(std::size_t));
+    ::free(chunk);
+  }
 }
 # endif
 #endif
