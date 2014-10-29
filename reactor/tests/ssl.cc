@@ -1,3 +1,4 @@
+#include <unistd.h>
 #ifdef INFINIT_WINDOWS
 # include <winsock2.h>
 #endif
