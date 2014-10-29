@@ -14,7 +14,6 @@
 #include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/Overflow.hh>
 #include <elle/serialization/json/TypeError.hh>
-#define ELLE_TEST_NO_MEMFRY // Our memfrying make spirit crash. To investigate.
 #include <elle/test.hh>
 
 template <typename Format>

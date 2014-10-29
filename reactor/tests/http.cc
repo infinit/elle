@@ -4,7 +4,6 @@
 
 #include <elle/With.hh>
 #include <elle/container/map.hh>
-#define ELLE_TEST_NO_MEMFRY // Our memfrying make spirit crash. To investigate.
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
 

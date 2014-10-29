@@ -190,19 +190,34 @@ void                                                       \
 Name##_impl()                                              \
 
 # ifndef ELLE_TEST_NO_MEMFRY
-void * operator new(std::size_t n) throw(std::bad_alloc)
+
+# include <iostream>
+void*
+operator new(std::size_t n, std::nothrow_t const&) throw()
 {
-  char* chunk = reinterpret_cast<char*>(::malloc(n + 4));
-  *reinterpret_cast<int*>(chunk) = n;
-  ::memset(chunk + 4, 0xd0, n);
-  return chunk + 4;
+  char* chunk = reinterpret_cast<char*>(::malloc(n + sizeof(std::size_t)));
+  *reinterpret_cast<std::size_t*>(chunk) = n;
+  ::memset(chunk + sizeof(std::size_t), 0xd0, n);
+  void* res = chunk + sizeof(std::size_t);
+  return res;
 }
 
-void operator delete(void * p) throw()
+void*
+operator new(std::size_t n) throw(std::bad_alloc)
 {
-  char* chunk = reinterpret_cast<char*>(p) - 4;
-  std::size_t n = *(reinterpret_cast<int*>(chunk));
-  ::memset(chunk, 0xdf, n + 4);
+  void* res = ::operator new(n, std::nothrow);
+  if (!res)
+    throw std::bad_alloc();
+  return res;
+}
+
+void operator delete(void* p) throw()
+{
+  if (!p)
+    return;
+  char* chunk = reinterpret_cast<char*>(p) - sizeof(std::size_t);
+  std::size_t n = *(reinterpret_cast<std::size_t*>(chunk));
+  ::memset(chunk, 0xdf, n + sizeof(std::size_t));
   ::free(chunk);
 }
 # endif
