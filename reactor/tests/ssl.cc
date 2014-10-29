@@ -33,14 +33,6 @@ extern const std::vector<char> server_cert;
 extern const std::vector<char> server_key;
 extern const std::vector<char> server_dh1024;
 
-template <typename T>
-static
-auto
-valgrind(T base, int factor = 50) -> decltype(base * 42)
-{
-  return base * (RUNNING_ON_VALGRIND ? factor : 1);
-}
-
 static
 std::unique_ptr<SSLCertificate>
 load_certificate()

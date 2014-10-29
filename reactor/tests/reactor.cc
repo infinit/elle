@@ -27,13 +27,6 @@
 
 ELLE_LOG_COMPONENT("Test");
 
-static
-int
-valgrind(int base = 1)
-{
-  return (RUNNING_ON_VALGRIND ? 5 : 1) * base;
-}
-
 /*-----------------.
 | Global shortcuts |
 `-----------------*/
@@ -2716,64 +2709,64 @@ ELLE_TEST_SUITE()
   {
     boost::unit_test::test_suite* channels = BOOST_TEST_SUITE("channel");
     boost::unit_test::framework::master_test_suite().add(channels);
-    channels->add(BOOST_TEST_CASE(test_simple_channel), 0, 10);
-    channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, 10);
-    channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, 10);
+    channels->add(BOOST_TEST_CASE(test_simple_channel), 0, valgrind(1));
+    channels->add(BOOST_TEST_CASE(test_multiple_channel), 0, valgrind(1));
+    channels->add(BOOST_TEST_CASE(test_multiple_consumers), 0, valgrind(1));
     auto wake_clear = &channel::wake_clear;
-    channels->add(BOOST_TEST_CASE(wake_clear), 0, 10);
+    channels->add(BOOST_TEST_CASE(wake_clear), 0, valgrind(1));
     auto open_close = &channel::open_close;
-    channels->add(BOOST_TEST_CASE(open_close), 0, 10);
+    channels->add(BOOST_TEST_CASE(open_close), 0, valgrind(1));
   }
 
   boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
   boost::unit_test::framework::master_test_suite().add(basics);
-  basics->add(BOOST_TEST_CASE(test_basics_one), 0, 10);
-  basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, 10);
+  basics->add(BOOST_TEST_CASE(test_basics_one), 0, valgrind(1));
+  basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1));
   basics->add(BOOST_TEST_CASE(nested_schedulers), 0, valgrind(1));
 
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
     boost::unit_test::framework::master_test_suite().add(subsuite);
     auto exception_no_wait = &waitable::exception_no_wait;
-    subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind());
+    subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind(1));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
   boost::unit_test::framework::master_test_suite().add(signals);
-  signals->add(BOOST_TEST_CASE(test_signals_one_on_one), 0, 10);
-  signals->add(BOOST_TEST_CASE(test_signals_one_on_two), 0, 10);
-  signals->add(BOOST_TEST_CASE(test_signals_two_on_one), 0, 10);
-  signals->add(BOOST_TEST_CASE(test_signals_timeout), 0, 10);
-  signals->add(BOOST_TEST_CASE(test_signals_order), 0, 10);
+  signals->add(BOOST_TEST_CASE(test_signals_one_on_one), 0, valgrind(1));
+  signals->add(BOOST_TEST_CASE(test_signals_one_on_two), 0, valgrind(1));
+  signals->add(BOOST_TEST_CASE(test_signals_two_on_one), 0, valgrind(1));
+  signals->add(BOOST_TEST_CASE(test_signals_timeout), 0, valgrind(1));
+  signals->add(BOOST_TEST_CASE(test_signals_order), 0, valgrind(1));
 
   boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
   boost::unit_test::framework::master_test_suite().add(barrier);
-  barrier->add(BOOST_TEST_CASE(barrier_closed), 0, 10);
-  barrier->add(BOOST_TEST_CASE(barrier_opened), 0, 10);
+  barrier->add(BOOST_TEST_CASE(barrier_closed), 0, valgrind(1));
+  barrier->add(BOOST_TEST_CASE(barrier_opened), 0, valgrind(1));
 
   boost::unit_test::test_suite* multilock_barrier =
     BOOST_TEST_SUITE("MultilockBarrier");
   boost::unit_test::framework::master_test_suite().add(multilock_barrier);
-  multilock_barrier->add(BOOST_TEST_CASE(multilock_barrier_basic), 0, 10);
+  multilock_barrier->add(BOOST_TEST_CASE(multilock_barrier_basic), 0, valgrind(1));
 
   // Timer
   {
     boost::unit_test::test_suite* timer = BOOST_TEST_SUITE("timer");
     boost::unit_test::framework::master_test_suite().add(timer);
     auto wait = &timer::wait;
-    timer->add(BOOST_TEST_CASE(wait), 0, 10);
+    timer->add(BOOST_TEST_CASE(wait), 0, valgrind(1));
     auto destructor = &timer::destructor;
-    timer->add(BOOST_TEST_CASE(destructor), 0, 10);
+    timer->add(BOOST_TEST_CASE(destructor), 0, valgrind(1));
     auto basic_cancel = &timer::basic_cancel;
-    timer->add(BOOST_TEST_CASE(basic_cancel), 0, 10);
+    timer->add(BOOST_TEST_CASE(basic_cancel), 0, valgrind(1));
     auto cancel_after_start = &timer::cancel_after_start;
-    timer->add(BOOST_TEST_CASE(cancel_after_start), 0, 10);
+    timer->add(BOOST_TEST_CASE(cancel_after_start), 0, valgrind(1));
     auto cancel_now_after_start = &timer::cancel_now_after_start;
-    timer->add(BOOST_TEST_CASE(cancel_now_after_start), 0, 10);
+    timer->add(BOOST_TEST_CASE(cancel_now_after_start), 0, valgrind(1));
     auto terminate_after_start = &timer::terminate_after_start;
-    timer->add(BOOST_TEST_CASE(terminate_after_start), 0, 10);
+    timer->add(BOOST_TEST_CASE(terminate_after_start), 0, valgrind(1));
     auto terminate_now_after_start = &timer::terminate_now_after_start;
-    timer->add(BOOST_TEST_CASE(terminate_now_after_start), 0, 10);
+    timer->add(BOOST_TEST_CASE(terminate_now_after_start), 0, valgrind(1));
   }
 
   // Scope
@@ -2781,122 +2774,122 @@ ELLE_TEST_SUITE()
     boost::unit_test::test_suite* scope = BOOST_TEST_SUITE("scope");
     boost::unit_test::framework::master_test_suite().add(scope);
     auto empty = &scope::empty;
-    scope->add(BOOST_TEST_CASE(empty), 0, 10);
+    scope->add(BOOST_TEST_CASE(empty), 0, valgrind(1));
     auto wait = &scope::wait;
-    scope->add(BOOST_TEST_CASE(wait), 0, 10);
+    scope->add(BOOST_TEST_CASE(wait), 0, valgrind(1));
     auto exception = &scope::exception;
-    scope->add(BOOST_TEST_CASE(exception), 0, 10);
+    scope->add(BOOST_TEST_CASE(exception), 0, valgrind(1));
     auto exception_done = &scope::exception_done;
-    scope->add(BOOST_TEST_CASE(exception_done), 0, 10);
+    scope->add(BOOST_TEST_CASE(exception_done), 0, valgrind(1));
     auto multiple_exception = &scope::multiple_exception;
-    scope->add(BOOST_TEST_CASE(multiple_exception), 0, 10);
+    scope->add(BOOST_TEST_CASE(multiple_exception), 0, valgrind(1));
     auto terminate = &scope::terminate;
-    scope->add(BOOST_TEST_CASE(terminate), 0, 10);
+    scope->add(BOOST_TEST_CASE(terminate), 0, valgrind(1));
     auto terminate_all = &scope::terminate_all;
-    scope->add(BOOST_TEST_CASE(terminate_all), 0, 10);
+    scope->add(BOOST_TEST_CASE(terminate_all), 0, valgrind(1));
   }
 
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
   boost::unit_test::framework::master_test_suite().add(sleep);
-  sleep->add(BOOST_TEST_CASE(test_sleep_interleave), 0, 10);
-  sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, 10);
+  sleep->add(BOOST_TEST_CASE(test_sleep_interleave), 0, valgrind(1));
+  sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, valgrind(1));
 
   boost::unit_test::test_suite* join = BOOST_TEST_SUITE("Join");
   boost::unit_test::framework::master_test_suite().add(join);
-  join->add(BOOST_TEST_CASE(test_join), 0, 10);
-  join->add(BOOST_TEST_CASE(test_join_multiple), 0, 10);
-  join->add(BOOST_TEST_CASE(test_join_timeout), 0, 10);
+  join->add(BOOST_TEST_CASE(test_join), 0, valgrind(1));
+  join->add(BOOST_TEST_CASE(test_join_multiple), 0, valgrind(1));
+  join->add(BOOST_TEST_CASE(test_join_timeout), 0, valgrind(1));
 
   boost::unit_test::test_suite* terminate = BOOST_TEST_SUITE("terminate");
   boost::unit_test::framework::master_test_suite().add(terminate);
-  terminate->add(BOOST_TEST_CASE(test_terminate_yield), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_destroyed), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting_dispose), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_started), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, 10);
+  terminate->add(BOOST_TEST_CASE(test_terminate_yield), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_destroyed), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_disposed), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_starting_dispose), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_started), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_now_scheduled), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, valgrind(1));
   // See Thread::_step: uncaught_exception is broken, can't make this work. It's
   // a security anyway ...
-  // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_unwinding), 0, 10);
-  terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_catch), 0, 10);
+  // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_unwinding), 0, valgrind(1));
+  terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_catch), 0, valgrind(1));
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);
-  timeout->add(BOOST_TEST_CASE(test_timeout_do), 0, 10);
-  timeout->add(BOOST_TEST_CASE(test_timeout_dont), 0, 10);
-  timeout->add(BOOST_TEST_CASE(test_timeout_aborted), 0, 10);
-  timeout->add(BOOST_TEST_CASE(test_timeout_threw), 0, 10);
-  timeout->add(BOOST_TEST_CASE(test_timeout_finished), 0, 10);
+  timeout->add(BOOST_TEST_CASE(test_timeout_do), 0, valgrind(1));
+  timeout->add(BOOST_TEST_CASE(test_timeout_dont), 0, valgrind(1));
+  timeout->add(BOOST_TEST_CASE(test_timeout_aborted), 0, valgrind(1));
+  timeout->add(BOOST_TEST_CASE(test_timeout_threw), 0, valgrind(1));
+  timeout->add(BOOST_TEST_CASE(test_timeout_finished), 0, valgrind(1));
 
   boost::unit_test::test_suite* vthread = BOOST_TEST_SUITE("vthread");
   boost::unit_test::framework::master_test_suite().add(vthread);
-  vthread->add(BOOST_TEST_CASE(test_vthread), 0, 10);
+  vthread->add(BOOST_TEST_CASE(test_vthread), 0, valgrind(1));
 
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
-  // mt->add(BOOST_TEST_CASE(test_multithread), 0, 10);
-  mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake), 0, 10);
-  mt->add(BOOST_TEST_CASE(test_multithread_run), 0, 10);
-  mt->add(BOOST_TEST_CASE(test_multithread_run_exception), 0, 10);
-  mt->add(BOOST_TEST_CASE(test_multithread_deadlock_assert), 0, 10);
+  // mt->add(BOOST_TEST_CASE(test_multithread), 0, valgrind(1));
+  mt->add(BOOST_TEST_CASE(test_multithread_spawn_wake), 0, valgrind(1));
+  mt->add(BOOST_TEST_CASE(test_multithread_run), 0, valgrind(1));
+  mt->add(BOOST_TEST_CASE(test_multithread_run_exception), 0, valgrind(1));
+  mt->add(BOOST_TEST_CASE(test_multithread_deadlock_assert), 0, valgrind(1));
 
   boost::unit_test::test_suite* sem = BOOST_TEST_SUITE("Semaphore");
   boost::unit_test::framework::master_test_suite().add(sem);
-  sem->add(BOOST_TEST_CASE(test_semaphore_noblock), 0, 10);
-  sem->add(BOOST_TEST_CASE(test_semaphore_block), 0, 10);
-  sem->add(BOOST_TEST_CASE(test_semaphore_multi), 0, 10);
+  sem->add(BOOST_TEST_CASE(test_semaphore_noblock), 0, valgrind(1));
+  sem->add(BOOST_TEST_CASE(test_semaphore_block), 0, valgrind(1));
+  sem->add(BOOST_TEST_CASE(test_semaphore_multi), 0, valgrind(1));
 
   boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
   boost::unit_test::framework::master_test_suite().add(mtx);
-  mtx->add(BOOST_TEST_CASE(test_mutex), 0, 10);
+  mtx->add(BOOST_TEST_CASE(test_mutex), 0, valgrind(1));
 
   boost::unit_test::test_suite* rwmtx = BOOST_TEST_SUITE("RWMutex");
   boost::unit_test::framework::master_test_suite().add(rwmtx);
-  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_read), 0, 10);
-  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_write), 0, 10);
-  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_both), 0, 10);
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_read), 0, valgrind(1));
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_multi_write), 0, valgrind(1));
+  rwmtx->add(BOOST_TEST_CASE(test_rw_mutex_both), 0, valgrind(1));
 
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
-  storage->add(BOOST_TEST_CASE(test_storage), 0, 10);
+  storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1));
 #ifndef INFINIT_WINDOWS
-  storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, 10);
+  storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(1));
 #endif
 
   boost::unit_test::test_suite* thread_exception =
     BOOST_TEST_SUITE("thread-exception");
   boost::unit_test::framework::master_test_suite().add(thread_exception);
-  thread_exception->add(BOOST_TEST_CASE(thread_exception_test), 0, 10);
+  thread_exception->add(BOOST_TEST_CASE(thread_exception_test), 0, valgrind(1));
 
   boost::unit_test::test_suite* io_service = BOOST_TEST_SUITE("io-service");
   boost::unit_test::framework::master_test_suite().add(io_service);
-  io_service->add(BOOST_TEST_CASE(test_io_service_throw), 0, 10);
+  io_service->add(BOOST_TEST_CASE(test_io_service_throw), 0, valgrind(1));
 
   boost::unit_test::test_suite* background = BOOST_TEST_SUITE("background");
   boost::unit_test::framework::master_test_suite().add(background);
   {
     using namespace background;
-    background->add(BOOST_TEST_CASE(operation), 0, 10);
-    background->add(BOOST_TEST_CASE(operations), 0, 10);
-    background->add(BOOST_TEST_CASE(exception), 0, 10);
-    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, 10);
-    background->add(BOOST_TEST_CASE(aborted), 0, 10);
-    background->add(BOOST_TEST_CASE(aborted_throw), 0, 10);
+    background->add(BOOST_TEST_CASE(operation), 0, valgrind(1));
+    background->add(BOOST_TEST_CASE(operations), 0, valgrind(1));
+    background->add(BOOST_TEST_CASE(exception), 0, valgrind(1));
+    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1));
+    background->add(BOOST_TEST_CASE(aborted), 0, valgrind(1));
+    background->add(BOOST_TEST_CASE(aborted_throw), 0, valgrind(1));
   }
 
   boost::unit_test::test_suite* released = BOOST_TEST_SUITE("released");
   boost::unit_test::framework::master_test_suite().add(released);
-  released->add(BOOST_TEST_CASE(test_released_signal), 0, 10);
+  released->add(BOOST_TEST_CASE(test_released_signal), 0, valgrind(1));
 
   boost::unit_test::test_suite* tracked = BOOST_TEST_SUITE("tracked");
   boost::unit_test::framework::master_test_suite().add(tracked);
-  tracked->add(BOOST_TEST_CASE(test_tracked), 0, 10);
+  tracked->add(BOOST_TEST_CASE(test_tracked), 0, valgrind(1));
 
   {
     boost::unit_test::test_suite* s = BOOST_TEST_SUITE("timeout");

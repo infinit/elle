@@ -238,4 +238,13 @@ operator delete(void* p) throw()
   }
 }
 # endif
+
+template <typename T>
+static
+auto
+valgrind(T base, int factor = 50) -> decltype(base * 42)
+{
+  return base * (RUNNING_ON_VALGRIND ? factor : 1);
+}
+
 #endif

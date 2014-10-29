@@ -719,32 +719,33 @@ ELLE_TEST_SCHEDULED(query_string)
   reactor::wait(hit);
 }
 
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(simple), 0, 10);
-  suite.add(BOOST_TEST_CASE(complex), 0, 10);
-  suite.add(BOOST_TEST_CASE(not_found), 0, 10);
-  suite.add(BOOST_TEST_CASE(bad_request), 0, 10);
-  suite.add(BOOST_TEST_CASE(no_answer), 0, 10);
-  suite.add(BOOST_TEST_CASE(partial_answer), 0, 10);
-  suite.add(BOOST_TEST_CASE(connection_reset), 0, 10);
-  suite.add(BOOST_TEST_CASE(concurrent), 0, 100);
-  suite.add(BOOST_TEST_CASE(timeout), 0, 10);
-  suite.add(BOOST_TEST_CASE(post_no_body), 0, 10);
-  suite.add(BOOST_TEST_CASE(post_10), 0, 10);
-  suite.add(BOOST_TEST_CASE(post_11), 0, 10);
-  suite.add(BOOST_TEST_CASE(post_11_chunked), 0, 10);
-  suite.add(BOOST_TEST_CASE(put_no_body), 0, 10);
-  suite.add(BOOST_TEST_CASE(put_10), 0, 10);
-  suite.add(BOOST_TEST_CASE(put_11), 0, 10);
-  suite.add(BOOST_TEST_CASE(put_11_chunked), 0, 10);
-  suite.add(BOOST_TEST_CASE(cookies), 0, 10);
-  suite.add(BOOST_TEST_CASE(request_move), 0, 10);
-  suite.add(BOOST_TEST_CASE(interrupted), 0, 10);
-  suite.add(BOOST_TEST_CASE(escaped_string), 0, 3);
-  suite.add(BOOST_TEST_CASE(no_header_answer), 0, 3);
-  suite.add(BOOST_TEST_CASE(download_progress), 0, 5);
-  suite.add(BOOST_TEST_CASE(download_stall), 0, 40);
-  suite.add(BOOST_TEST_CASE(query_string), 0, 3);
+  suite.add(BOOST_TEST_CASE(simple), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(complex), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(not_found), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(bad_request), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(no_answer), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(partial_answer), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(connection_reset), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(concurrent), 0, valgrind(10));
+  suite.add(BOOST_TEST_CASE(timeout), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(post_no_body), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(post_10), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(post_11), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(post_11_chunked), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(put_no_body), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(put_10), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(put_11), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(put_11_chunked), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(cookies), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(request_move), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(interrupted), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(escaped_string), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(no_header_answer), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(download_progress), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
+  suite.add(BOOST_TEST_CASE(query_string), 0, valgrind(1));
 }

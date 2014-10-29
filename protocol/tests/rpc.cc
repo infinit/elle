@@ -358,9 +358,11 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
 #define TEST(Name)                                                      \
   auto BOOST_PP_CAT(Name, _sync) = std::bind(Name, true);               \
-  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)), 0, 5);          \
+  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)),                 \
+            0, valgrind(1));                                            \
   auto BOOST_PP_CAT(Name, _async) = std::bind(Name, false);             \
-  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)), 0, 5);         \
+  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)),                \
+            0, valgrind(1));
 
   TEST(rpc);
   TEST(terminate);
