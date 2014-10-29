@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include <elle/json/json.hh>
+#define ELLE_TEST_NO_MEMFRY // Our memfrying make spirit crash. To investigate.
 #include <elle/test.hh>
 
 static

@@ -189,4 +189,21 @@ static                                                     \
 void                                                       \
 Name##_impl()                                              \
 
+# ifndef ELLE_TEST_NO_MEMFRY
+void * operator new(std::size_t n) throw(std::bad_alloc)
+{
+  char* chunk = reinterpret_cast<char*>(::malloc(n + 4));
+  *reinterpret_cast<int*>(chunk) = n;
+  ::memset(chunk + 4, 0xd0, n);
+  return chunk + 4;
+}
+
+void operator delete(void * p) throw()
+{
+  char* chunk = reinterpret_cast<char*>(p) - 4;
+  std::size_t n = *(reinterpret_cast<int*>(chunk));
+  ::memset(chunk, 0xdf, n + 4);
+  ::free(chunk);
+}
+# endif
 #endif
