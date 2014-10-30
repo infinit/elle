@@ -746,12 +746,12 @@ now()
 
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
-  reactor::Duration const delay = valgrind(40_ms, 10);
+  reactor::Duration const delay = valgrind(60_ms, 10);
 
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
     reactor::sleep(delay);
-  for (int i = 0; i < 8; ++i)
+  for (int i = 0; i < 4; ++i)
   {
     boost::posix_time::ptime start(now());
     reactor::sleep(delay);
@@ -2230,7 +2230,7 @@ namespace background
       [&]
       {
         auto done = std::make_shared<bool>(false);
-        auto const sleep_time = 100_ms;
+        auto const sleep_time = 200_ms;
         try
         {
           reactor::background([done, sleep_time]
