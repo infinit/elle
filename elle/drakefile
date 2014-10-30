@@ -576,6 +576,7 @@ def configure(zlib_lib,
     'serialize/version_change.cc',
     'system/home_directory.cc',
     'threading/monitor.cc',
+    'threading/rw-mutex.cc',
     'utility/Suffixes.cc',
     'AtomicFile.cc',
     ]
