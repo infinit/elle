@@ -21,7 +21,7 @@ multiple_read()
          bool& locked_his,
          std::condition_variable& locked_his_barrier)
     {
-      std::unique_lock<elle::threading::rw_mutex> rw_lock(mtx);
+      std::unique_lock<elle::threading::read_mutex> rw_lock(mtx);
       std::unique_lock<std::mutex> lock(locked_mutex);
       locked_mine = true;
       locked_mine_barrier.notify_all();
@@ -163,13 +163,13 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(multiple_read), 0, 1);
   auto read_blocks_read =
-    &blocks<elle::threading::rw_mutex, elle::threading::rw_mutex>;
+    &blocks<elle::threading::read_mutex, elle::threading::read_mutex>;
   suite.add(BOOST_TEST_CASE(read_blocks_read), 1, 1);
   auto read_blocks_write =
-    &blocks<elle::threading::rw_mutex, elle::threading::write_mutex>;
+    &blocks<elle::threading::read_mutex, elle::threading::write_mutex>;
   suite.add(BOOST_TEST_CASE(read_blocks_write), 0, 1);
   auto write_blocks_read =
-    &blocks<elle::threading::write_mutex, elle::threading::rw_mutex>;
+    &blocks<elle::threading::write_mutex, elle::threading::read_mutex>;
   suite.add(BOOST_TEST_CASE(write_blocks_read), 0, 1);
   auto write_blocks_write =
     &blocks<elle::threading::write_mutex, elle::threading::write_mutex>;
