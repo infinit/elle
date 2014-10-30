@@ -1026,13 +1026,10 @@ test_multithread_spawn_wake()
   std::thread s(
     [&]
     {
-      // Wait for the scheduler to be frozen.
-      while (keeper.state() != reactor::Thread::state::frozen)
-        ::usleep(10000);
-      reactor::Thread w(sched, "waker", [&] { barrier.open(); });
-      // Make sure the scheduler is done.
-      while (!w.done())
-        ::usleep(10000);
+      ELLE_LOG("wait for the scheduler to be frozen")
+        while (keeper.state() != reactor::Thread::state::frozen)
+          ::usleep(10000);
+      new reactor::Thread(sched, "waker", [&] { barrier.open(); }, true);
     });
   sched.run();
   s.join();
