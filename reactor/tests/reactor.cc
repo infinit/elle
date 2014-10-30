@@ -1669,7 +1669,7 @@ test_terminate_yield()
       {
         reactor::yield();
       }
-      catch (...)
+      catch (reactor::Terminate const&)
       {
         reactor::yield();
         beacon = true;
