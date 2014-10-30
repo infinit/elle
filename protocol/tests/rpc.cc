@@ -60,9 +60,8 @@ int
 count()
 {
   ++global_counter;
-  // This gives 100ms to the rpc to "synchronize".
-  reactor::Scheduler::scheduler()->current()->sleep(
-    boost::posix_time::milliseconds(1000));
+  // "synchronize" parallel count RPCs.
+  reactor::sleep(valgrind(50_ms, 10));
   return global_counter;
 }
 
@@ -77,8 +76,7 @@ static
 void
 await()
 {
-  reactor::Scheduler::scheduler()->current()->sleep(
-    boost::posix_time::seconds(2));
+  reactor::sleep();
 }
 
 struct DummyRPC:
@@ -326,7 +324,6 @@ disconnection(bool sync)
   reactor::Scheduler sched;
   reactor::Semaphore lock;
   int port = 0;
-
   reactor::Thread r(sched, "Runner", std::bind(runner,
                                                std::ref(lock),
                                                true,
@@ -336,12 +333,9 @@ disconnection(bool sync)
                                                   sync,
                                                   std::ref(port)));
   reactor::Thread killer(sched, "Killer", [&] {
-      reactor::Scheduler::scheduler()->current()->sleep(
-        boost::posix_time::seconds(1));
+      reactor::sleep(valgrind(50_ms, 20));
       r.terminate();
     });
-
-
   sched.run();
   return 0;
 }
@@ -359,10 +353,10 @@ ELLE_TEST_SUITE()
 #define TEST(Name)                                                      \
   auto BOOST_PP_CAT(Name, _sync) = std::bind(Name, true);               \
   suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)),                 \
-            0, valgrind(1));                                            \
+            0, valgrind(1, 10));                                           \
   auto BOOST_PP_CAT(Name, _async) = std::bind(Name, false);             \
   suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)),                \
-            0, valgrind(1));
+            0, valgrind(1, 10));
 
   TEST(rpc);
   TEST(terminate);
