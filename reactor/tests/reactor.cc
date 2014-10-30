@@ -42,17 +42,17 @@ public:
 };
 
 #ifdef INFINIT_WINDOWS
-static
 void
 sleep(int sec)
 {
-  ::Sleep(sec);
+  ::Sleep(sec * 1000);
 }
+
 static
 void
 usleep(int usec)
 {
-  ::Sleep(usec / 1000000.0);
+  ::Sleep(usec / 1000.0);
 }
 #endif
 
