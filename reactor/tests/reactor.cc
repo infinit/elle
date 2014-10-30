@@ -2229,19 +2229,19 @@ namespace background
       sched, "main",
       [&]
       {
-        bool done = false;
+        auto done = std::make_shared<bool>(false);
         auto const sleep_time = 100_ms;
         try
         {
-          reactor::background([&]
+          reactor::background([done, sleep_time]
                               {
                                 ::usleep(sleep_time.total_microseconds());
-                                done = true;
+                                *done = true;
                               });
         }
         catch (reactor::Terminate const&)
         {
-          BOOST_CHECK(!done);
+          BOOST_CHECK(!*done);
           return;
         }
         BOOST_ERROR("background task was not terminated");
