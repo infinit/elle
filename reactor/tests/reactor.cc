@@ -746,7 +746,7 @@ now()
 
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
-  reactor::Duration const delay = valgrind(20_ms, 10);
+  reactor::Duration const delay = valgrind(40_ms, 10);
 
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
