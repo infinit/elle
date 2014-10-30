@@ -99,9 +99,9 @@ blocks()
 {
   elle::threading::rw_mutex mutex;
   std::mutex sync_mutex;
-  bool reading;
+  bool reading = false;
   std::condition_variable reading_barrier;
-  bool writing;
+  bool writing = false;
   std::condition_variable writing_barrier;
   std::thread acquire(
     [&]
