@@ -42,12 +42,6 @@ public:
 };
 
 #ifdef INFINIT_WINDOWS
-void
-sleep(int sec)
-{
-  ::Sleep(sec * 1000);
-}
-
 static
 void
 usleep(int usec)
