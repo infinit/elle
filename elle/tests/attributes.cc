@@ -1,6 +1,10 @@
-#include <elle/test.hh>
+#include <thread>
+#include <vector>
 
 #include <elle/Exception.hh>
+#include <elle/attribute.hh>
+#include <elle/test.hh>
+#include <elle/threading/rw-mutex.hh>
 
 using elle::Exception;
 
@@ -128,11 +132,43 @@ types()
   BOOST_CHECK((std::is_same<decltype(t.object()), Object&>::value));
 };
 
+class ThreadSafe
+{
+public:
+  ThreadSafe()
+    : _ints()
+  {}
+
+  ELLE_ATTRIBUTE_RW_TS(std::vector<int>, ints);
+};
+
+static
+void
+thread_safe()
+{
+  ThreadSafe ts;
+  std::thread reader(
+    [&]
+    {
+      for (int i = 0; i < 1024; ++i)
+        ts.ints(std::vector<int>({i}));
+    });
+  std::thread writer(
+    [&]
+    {
+      while (ts.ints().size() < 0 || ts.ints()[0] != 1023)
+        ;
+    });
+  writer.join();
+  reader.join();
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(test_r));
-  suite.add(BOOST_TEST_CASE(test_w));
-  suite.add(BOOST_TEST_CASE(test_x));
-  suite.add(BOOST_TEST_CASE(types));
+  suite.add(BOOST_TEST_CASE(test_r), 0, 1);
+  suite.add(BOOST_TEST_CASE(test_w), 0, 1);
+  suite.add(BOOST_TEST_CASE(test_x), 0, 1);
+  suite.add(BOOST_TEST_CASE(types), 0, 1);
+  suite.add(BOOST_TEST_CASE(thread_safe), 0, 3);
 }

@@ -41,6 +41,17 @@ namespace elle
     return (this->BOOST_PP_CAT(_, _name_));                             \
   }
 
+/// Define and implement a thread safe accessor returning the attribute.
+# define ELLE_ATTRIBUTE_R_TS_ACCESSOR(_type_, _name_)                   \
+  public:                                                               \
+  _type_                                                                \
+  _name_() const                                                        \
+  {                                                                     \
+    std::unique_lock<elle::threading::read_mutex> lock                  \
+      (this->BOOST_PP_CAT(BOOST_PP_CAT(_, _name_), _mutex));            \
+    return (this->BOOST_PP_CAT(_, _name_));                             \
+  }
+
 /// Define an accessor enabling one to set the attribute.
 # define ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_)                      \
   public:                                                               \
@@ -51,6 +62,16 @@ namespace elle
 # define ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                      \
   ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_)                             \
   {                                                                     \
+    this->BOOST_PP_CAT(_, _name_) = name;                               \
+  }
+
+/// Define and implement a thread safe accessor enabling one to set the
+/// attribute.
+# define ELLE_ATTRIBUTE_W_TS_ACCESSOR(_type_, _name_)                   \
+  ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_)                             \
+  {                                                                     \
+    std::unique_lock<elle::threading::write_mutex> lock                 \
+      (this->BOOST_PP_CAT(BOOST_PP_CAT(_, _name_), _mutex));            \
     this->BOOST_PP_CAT(_, _name_) = name;                               \
   }
 
@@ -72,6 +93,10 @@ namespace elle
 # define ELLE_ATTRIBUTE_RW_ACCESSORS(_type_, _name_)                    \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
   ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RW_TS_ACCESSORS(_type_, _name_)                 \
+  ELLE_ATTRIBUTE_R_TS_ACCESSOR(_type_, _name_)                          \
+  ELLE_ATTRIBUTE_W_TS_ACCESSOR(_type_, _name_)
 
 # define ELLE_ATTRIBUTE_RX_ACCESSORS(_type_, _name_)                    \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
@@ -108,6 +133,12 @@ namespace elle
 # define ELLE_ATTRIBUTE_RW(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
   ELLE_ATTRIBUTE_RW_ACCESSORS(_type_, _name_)
+
+# define ELLE_ATTRIBUTE_RW_TS(_type_, _name_)                           \
+  ELLE_ATTRIBUTE(_type_, _name_);                                       \
+  mutable ::elle::threading::rw_mutex                                   \
+  BOOST_PP_CAT(BOOST_PP_CAT(_, _name_), _mutex);                        \
+  ELLE_ATTRIBUTE_RW_TS_ACCESSORS(_type_, _name_)                        \
 
 # define ELLE_ATTRIBUTE_Rw(_type_, _name_)                              \
   ELLE_ATTRIBUTE(_type_, _name_)                                        \
