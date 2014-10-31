@@ -54,13 +54,10 @@ namespace elle
     void
     write_mutex::_lock(std::unique_lock<std::mutex>& lock)
     {
-      if (!this->_try_lock(lock))
+      while (!this->_try_lock(lock))
       {
         ELLE_TRACE("%s: wait for internal lock", *static_cast<rw_mutex*>(this));
         static_cast<rw_mutex*>(this)->_condition.wait(lock);
-        ELLE_ASSERT(!static_cast<rw_mutex*>(this)->_writing);
-        ELLE_ASSERT(static_cast<rw_mutex*>(this)->_readers == 0);
-        this->_set_locked();
       }
     }
 
@@ -122,12 +119,10 @@ namespace elle
     void
     read_mutex::_lock(std::unique_lock<std::mutex>& lock)
     {
-      if (!this->_try_lock(lock))
+      while (!this->_try_lock(lock))
       {
         ELLE_TRACE("%s: wait for internal lock", *static_cast<rw_mutex*>(this));
         static_cast<rw_mutex*>(this)->_condition.wait(lock);
-        ELLE_ASSERT(!static_cast<rw_mutex*>(this)->_writing);
-        this->_set_locked();
       }
     }
 
