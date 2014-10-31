@@ -11,10 +11,12 @@ namespace reactor
   {
     boost::asio::ip::tcp::endpoint
     resolve_tcp(const std::string& hostname,
-                const std::string& service);
+                const std::string& service,
+                bool ipv4_only = true);
     boost::asio::ip::udp::endpoint
     resolve_udp(const std::string& hostname,
-                const std::string& service);
+                const std::string& service,
+                bool ipv4_only = true);
   }
 }
 

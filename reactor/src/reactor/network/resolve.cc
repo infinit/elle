@@ -11,18 +11,21 @@ namespace reactor
 {
   namespace network
   {
-    template <typename Resolver>
+    template <typename Protocol>
     class Resolution: public Operation
     {
     public:
-      typedef typename Resolver::endpoint_type EndPoint;
-      Resolution(const std::string& hostname, const std::string& service):
+      typedef typename Protocol::resolver Resolver;
+      typedef typename Protocol::resolver::endpoint_type EndPoint;
+      Resolution(const std::string& hostname, const std::string& service,
+                 bool ipv4_only):
         Operation(*reactor::Scheduler::scheduler()),
         _resolver(reactor::Scheduler::scheduler()->io_service()),
         _canceled(false),
         _hostname(hostname),
         _service(service),
-        _end_point()
+        _end_point(),
+        _ipv4_only(ipv4_only)
       {}
 
       virtual
@@ -57,10 +60,21 @@ namespace reactor
       _start()
       {
         ELLE_TRACE("resolve %s:%s", this->_hostname, this->_service);
-        typename Resolver::query query(this->_hostname, this->_service);
-        this->_resolver.async_resolve(
-          query,
-          boost::bind(&Resolution::_wakeup, this, _1, _2));
+        if (this->ipv4_only())
+        {
+          typename Resolver::query query(
+            Protocol::v4(),this->_hostname, this->_service);
+          this->_resolver.async_resolve(
+            query,
+            boost::bind(&Resolution::_wakeup, this, _1, _2));
+        }
+        else
+        {
+          typename Resolver::query query(this->_hostname, this->_service);
+          this->_resolver.async_resolve(
+            query,
+            boost::bind(&Resolution::_wakeup, this, _1, _2));
+        }
       }
 
     private:
@@ -91,6 +105,8 @@ namespace reactor
         {
           ELLE_TRACE_SCOPE("%s: ended", *this);
           this->_end_point = *it;
+          ELLE_DEBUG("%s: endpoint address: %s",
+                     *this, this->_end_point.address().to_string());
         }
         this->done();
       }
@@ -100,27 +116,34 @@ namespace reactor
       ELLE_ATTRIBUTE(std::string, hostname);
       ELLE_ATTRIBUTE(std::string, service);
       ELLE_ATTRIBUTE_R(EndPoint, end_point);
+      ELLE_ATTRIBUTE_R(bool, ipv4_only);
     };
 
-    template <typename Resolver>
-    typename Resolver::endpoint_type
-    resolve(const std::string& hostname, const std::string& service)
+    template <typename Protocol>
+    typename Protocol::resolver::endpoint_type
+    resolve(const std::string& hostname,
+            const std::string& service,
+            bool ipv4_only)
     {
-      Resolution<Resolver> resolution(hostname, service);
+      Resolution<Protocol> resolution(hostname, service, ipv4_only);
       resolution.run();
       return resolution.end_point();
     }
 
     boost::asio::ip::tcp::endpoint
-    resolve_tcp(const std::string& hostname, const std::string& service)
+    resolve_tcp(const std::string& hostname,
+                const std::string& service,
+                bool ipv4_only)
     {
-      return resolve<boost::asio::ip::tcp::resolver>(hostname, service);
+      return resolve<boost::asio::ip::tcp>(hostname, service, ipv4_only);
     }
 
     boost::asio::ip::udp::endpoint
-    resolve_udp(const std::string& hostname, const std::string& service)
+    resolve_udp(const std::string& hostname,
+                const std::string& service,
+                bool ipv4_only)
     {
-      return resolve<boost::asio::ip::udp::resolver>(hostname, service);
+      return resolve<boost::asio::ip::udp>(hostname, service, ipv4_only);
     }
   }
 }
