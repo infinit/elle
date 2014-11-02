@@ -1354,13 +1354,13 @@ class Node(BaseNode):
     source/tree/file
     file
     """
-    name = self.name()
+    name = self._BaseNode__name
     if name.absolute() or name.virtual:
       return name
     if self._builder is None:
-      path = drake.path_source() / self._BaseNode__name
+      path = drake.path_source() / name
     else:
-      path = drake.Path(self._BaseNode__name)
+      path = drake.Path(name)
     if absolute:
       path = drake.path_root() / path
     return path
