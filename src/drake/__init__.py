@@ -1114,7 +1114,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
   def name_absolute(self):
       """Node name, relative to the root of the source directory."""
-      return drake.Path(self.__name)
+      return self.__name
 
   def dot(self, marks):
       """Print a dot representation of this nodes build graph."""
