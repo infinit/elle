@@ -1434,7 +1434,7 @@ class Object(Node):
         self.source = source
         self.toolkit = tk
         self.cfg = cfg
-        path = source.name()
+        path = source.name_relative
         c = path.extension == 'c'
         path = path.without_last_extension()
         if len(path.extension):
@@ -1480,7 +1480,7 @@ class Binary(Node):
       self.sources.append(source)
     elif source.__class__ == Source:
       # FIXME: factor
-      p = source.name().with_extension('o')
+      p = source.name_relative.with_extension('o')
       if str(p) in drake.Drake.current.nodes:
         o = drake.Drake.current.nodes[p]
       else:

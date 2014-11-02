@@ -1107,10 +1107,15 @@ class BaseNode(object, metaclass = _BaseNodeType):
     self.__hash = None
 
   def name(self):
-      """Node name, relative to the current drakefile."""
-      if self.__name.absolute():
-        return self.__name
-      return self.__name.without_prefix(drake.Drake.current.prefix)
+    '''The node name.'''
+    return self.__name
+
+  @property
+  def name_relative(self):
+    """Node name, relative to the current drakefile."""
+    if self.__name.absolute():
+      return self.__name
+    return self.__name.without_prefix(drake.Drake.current.prefix)
 
   def name_absolute(self):
       """Node name, relative to the root of the source directory."""
@@ -2800,9 +2805,9 @@ def __copy(sources, to, strip_prefix, builder):
     if strip_prefix is not None:
       if strip_prefix is True:
         if multiple:
-          strip_prefix = sources[0].name().dirname()
+          strip_prefix = sources[0].name_relative.dirname()
         else:
-          strip_prefix = sources.name().dirname()
+          strip_prefix = sources.name_relative.dirname()
       else:
         strip_prefix = drake.Path(strip_prefix)
       if not strip_prefix.absolute():
@@ -2834,7 +2839,7 @@ def __copy_stripped(source, to, strip_prefix, builder):
         return res
     res = builder(source, path).target()
     for dep in source.dependencies:
-      if not dep.path().absolute():
+      if not dep.name_absolute().absolute():
         node = __copy_stripped(dep, to, strip_prefix, builder)
         if node is not None:
           res.dependency_add(node)
@@ -3312,9 +3317,9 @@ class Runner(Builder):
   def __init__(self, exe, args = None, env = None):
     self.__args = args or list()
     self.__exe = exe
-    self.__out = node('%s.out' % exe.name())
-    self.__err = node('%s.err' % exe.name())
-    self.__status = node('%s.status' % exe.name())
+    self.__out = node('%s.out' % exe.name_relative)
+    self.__err = node('%s.err' % exe.name_relative)
+    self.__status = node('%s.status' % exe.name_relative)
     self.__sources = [exe]
     self.__env = env
     import drake.cxx

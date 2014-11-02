@@ -59,7 +59,7 @@ class Renderer(drake.Converter):
                hooks = {}):
     self.__template = template
     self.__hooks = hooks
-    dst = template.name().without_last_extension()
+    dst = template.name_relative.without_last_extension()
     self.__target = drake.node(dst)
     super().__init__(self.__template,
                      self.__target,

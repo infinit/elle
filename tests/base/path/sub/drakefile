@@ -11,8 +11,8 @@ class TouchBuilder(drake.Builder):
 
 def configure():
   n = drake.node('foo')
-  assert n.name() == 'foo'
-  assert n.name_absolute() == 'sub/foo'
+  assert n.name_relative == 'foo'
+  assert n.name() == 'sub/foo'
   TouchBuilder(n)
   assert n.path() == 'sub/foo'
   assert drake.path_build('bar') == 'sub/bar'
