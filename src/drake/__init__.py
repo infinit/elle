@@ -1455,13 +1455,13 @@ def node(path, type = None):
   return Node(path)
 
 
-def nodes(*paths):
+def nodes(*paths, type = None):
     """Call node() on each given path and return the list of results.
 
     nodes('foo', 'bar', ...) is equivalent to
     [node('foo'), node('bar'), ...]
     """
-    return list(map(node, paths))
+    return list(map(lambda p: node(p, type = type), paths))
 
 
 def _cmd_escape(fmt, *args):
