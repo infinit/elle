@@ -1,5 +1,6 @@
 #ifndef ELLE_CONTAINERS_HH
-#define ELLE_CONTAINERS_HH
+# define ELLE_CONTAINERS_HH
+
 namespace elle
 {
   namespace containers
@@ -16,6 +17,6 @@ namespace elle
   }
 }
 
-#include <elle/containers.hxx>
+# include <elle/containers.hxx>
 
 #endif
