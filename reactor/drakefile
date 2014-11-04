@@ -110,7 +110,7 @@ def configure(curl_config,
   # Elle
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', elle.library.name().dirname())
+  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True)
 
   # miniupnpc
   miniupnp = drake.include('miniupnp', cxx_toolkit)
