@@ -402,6 +402,12 @@ def configure(zlib_lib,
     'src/elle/serialization/json/TypeError.hh',
   )
 
+  sources += drake.nodes(
+    'src/set',
+    'src/unordered_map',
+    type = drake.cxx.Header,
+  )
+
   # Python binding helpers.
   if python3 is not None:
     sources += drake.nodes(
@@ -573,9 +579,11 @@ def configure(zlib_lib,
     'serialize/extract.cc',
     'serialize/footprint.cc',
     'serialize/version_change.cc',
+    'set.cc',
     'system/home_directory.cc',
     'threading/monitor.cc',
     'threading/rw-mutex.cc',
+    'unordered_map.cc',
     'utility/Suffixes.cc',
     'AtomicFile.cc',
     ]

@@ -1,0 +1,16 @@
+#ifndef ELLE_SET
+# define ELLE_SET
+
+# include_next <set>
+
+namespace std
+{
+  template <typename T, typename H, typename E>
+  bool
+  contains(std::set<T, H> const& set, E const& e)
+  {
+    return set.find(e) != set.end();
+  }
+}
+
+#endif

@@ -1,0 +1,16 @@
+#ifndef ELLE_UNORDERED_MAP
+# define ELLE_UNORDERED_MAP
+
+# include_next <unordered_map>
+
+namespace std
+{
+  template <typename K, typename V, typename E>
+  bool
+  contains(std::unordered_map<K, V> const& map, E const& e)
+  {
+    return map.find(e) != map.end();
+  }
+}
+
+#endif
