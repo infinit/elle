@@ -46,7 +46,7 @@ class ValgrindRunner(drake.Runner):
     super().__init__(exe, args = args, env = env)
     self.__valgrind = Valgrind(valgrind)
     self.__valgrind_status = drake.node(
-      '%s.valgrind' % self.executable.name())
+      '%s.valgrind' % self.executable.name_relative)
     self.__valgrind_status.builder = self
     self.valgrind_reporting = drake.Runner.Reporting.on_failure
 
