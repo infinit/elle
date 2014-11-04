@@ -3505,9 +3505,8 @@ class TarballExtractor(Builder):
     self.__patches = patches
     self.__patch_dir = drake.Path(patch_dir)
     import tarfile
-    directory = self.__tarball.name().dirname()
-    self.__targets = [node(self.__tarball.name().dirname() / target)
-                      for target in targets]
+    directory = self.__tarball.name_relative.dirname()
+    self.__targets = [node(directory / target) for target in targets]
     # targets = []
     # with tarfile.open(str(self.__tarball.path()), 'r') as f:
     #   for name in f.getnames():
