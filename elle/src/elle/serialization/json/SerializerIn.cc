@@ -13,6 +13,8 @@
 #include <elle/serialization/json/TypeError.hh>
 #include <elle/serialization/json/FieldError.hh>
 
+ELLE_LOG_COMPONENT("elle.serialization.json.SerializerIn");
+
 namespace elle
 {
   namespace serialization
@@ -55,6 +57,7 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, int64_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize integer \"%s\"", *this, name);
         v = this->_check_type<int64_t>(name);
       }
 
@@ -109,12 +112,14 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, double& v)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize double \"%s\"", *this, name);
         v = this->_check_type<double, int64_t>(name);
       }
 
       void
       SerializerIn::_serialize(std::string const& name, bool& v)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize boolean \"%s\"", *this, name);
         v = this->_check_type<bool>(name);
       }
 
@@ -131,12 +136,14 @@ namespace elle
       void
       SerializerIn::_serialize(std::string const& name, std::string& v)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize string \"%s\"", *this, name);
         v = this->_check_type<std::string>(name);
       }
 
       void
       SerializerIn::_serialize(std::string const& name, elle::Buffer& buffer)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize buffer \"%s\"", *this, name);
         auto& str = this->_check_type<std::string>(name);
         std::stringstream encoded(str);
         elle::format::base64::Stream base64(encoded);
@@ -152,6 +159,7 @@ namespace elle
       SerializerIn::_serialize(std::string const& name,
                                boost::posix_time::ptime& time)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize date \"%s\"", *this, name);
         auto& str = this->_check_type<std::string>(name);
         // Use the ISO extended input facet to interpret the string.
         std::stringstream ss(str);
@@ -198,6 +206,7 @@ namespace elle
       bool
       SerializerIn::_enter(std::string const& name)
       {
+        ELLE_TRACE_SCOPE("%s: enter \"%s\"", *this, name);
         auto& object = this->_check_type<elle::json::Object>(name);
         auto it = object.find(name);
         if (it == object.end())
@@ -213,8 +222,9 @@ namespace elle
       }
 
       void
-      SerializerIn::_leave(std::string const&)
+      SerializerIn::_leave(std::string const& name)
       {
+        ELLE_TRACE_SCOPE("%s: leave \"%s\"", *this, name);
         this->_current.pop_back();
       }
 
@@ -223,6 +233,7 @@ namespace elle
         std::string const& name,
         std::function<void ()> const& serialize_element)
       {
+        ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
         auto& array = this->_check_type<elle::json::Array>(name);
         for (auto& elt: array)
         {
@@ -240,6 +251,7 @@ namespace elle
         T&
         cast(std::string const& name, boost::any& value)
         {
+          std::cerr << elle::Backtrace::current() << std::endl;
           throw TypeError(name, typeid(T), value.type());
         }
       };
