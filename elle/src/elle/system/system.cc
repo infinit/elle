@@ -172,6 +172,7 @@ namespace elle
     {
     }
     FileHandle::FileHandle(FileHandle && b)
+    : _handle(_invalid)
     {
       *this = std::move(b);
     }
