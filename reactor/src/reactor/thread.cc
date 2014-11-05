@@ -406,6 +406,12 @@ namespace reactor
     return _scheduler;
   }
 
+  void
+  Thread::raise(std::exception_ptr e)
+  {
+    this->_exception = e;
+  }
+
   /*----------------.
   | Print operators |
   `----------------*/

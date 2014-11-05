@@ -125,6 +125,7 @@ namespace reactor
     void inject(const Injection& injection);
     template <typename Exception, typename... Args>
     void raise(Args&&... args);
+    void raise(std::exception_ptr e);
   protected:
     virtual
     void
