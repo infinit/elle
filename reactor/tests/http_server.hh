@@ -229,7 +229,7 @@ namespace reactor
             {
               std::unique_ptr<reactor::network::Socket> socket(
                 this->_server.accept());
-              ELLE_LOG("accept connection from %s", socket->peer());
+              ELLE_DEBUG("accept connection from %s", socket->peer());
               auto name = elle::sprintf("request %s", socket->peer());
               scope.run_background(
                 name,
@@ -347,6 +347,7 @@ namespace reactor
               ELLE_TRACE("%s: read sized content", *this)
                 content = this->read_sized_content(*socket, content_length);
             }
+            ELLE_DUMP("%s: content: %s", *this, content);
             // Check JSON is valid.
             if (this->is_json(headers))
             {
@@ -424,8 +425,12 @@ namespace reactor
             for (auto const& value: headers)
               answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
             answer += "\r\n" + response;
-            ELLE_LOG("%s: send response to %s: %s", *this, socket.peer(), answer)
+            ELLE_TRACE("%s: send response to %s: %s %s",
+                       *this, socket.peer(), static_cast<int>(code), code)
+            {
+              ELLE_DUMP("%s", answer);
               socket.write(elle::ConstWeakBuffer(answer));
+            }
           }
         }
 
