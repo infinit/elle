@@ -8,6 +8,7 @@
 # include <unordered_map>
 
 # include <boost/optional.hpp>
+# include <boost/date_time/posix_time/posix_time.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/serialization/fwd.hh>
@@ -121,6 +122,9 @@ namespace elle
       virtual
       void
       _serialize(std::string const& name, elle::Buffer& v) = 0;
+      virtual
+      void
+      _serialize(std::string const& name, boost::posix_time::ptime& v) = 0;
       virtual
       void
       _serialize_option(std::string const& name,

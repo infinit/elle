@@ -153,6 +153,20 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize(std::string const& name,
+                                boost::posix_time::ptime& time)
+      {
+        std::stringstream ss;
+        auto output_facet =
+          elle::make_unique<boost::posix_time::time_facet>();
+        // ISO 8601
+        output_facet->format("%Y-%m-%dT%H:%M:%S%F%q");
+        ss.imbue(std::locale(ss.getloc(), output_facet.release()));
+        ss << time;
+        this->_get_current() = ss.str();
+      }
+
+      void
       SerializerOut::_serialize_option(std::string const& name,
                                        bool filled,
                                        std::function<void ()> const& f)

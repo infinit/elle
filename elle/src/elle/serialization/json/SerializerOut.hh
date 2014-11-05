@@ -77,6 +77,10 @@ namespace elle
         _serialize(std::string const& name, elle::Buffer& v) override;
         virtual
         void
+        _serialize(std::string const& name,
+                   boost::posix_time::ptime& v) override;
+        virtual
+        void
         _serialize_option(std::string const& name,
                           bool filled,
                           std::function<void ()> const& f) override;

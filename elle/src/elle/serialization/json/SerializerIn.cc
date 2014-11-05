@@ -11,6 +11,7 @@
 #include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/Overflow.hh>
 #include <elle/serialization/json/TypeError.hh>
+#include <elle/serialization/json/FieldError.hh>
 
 namespace elle
 {
@@ -144,6 +145,53 @@ namespace elle
           std::copy(std::istreambuf_iterator<char>(base64),
                     std::istreambuf_iterator<char>(),
                     std::ostreambuf_iterator<char>(output));
+        }
+      }
+
+      void
+      SerializerIn::_serialize(std::string const& name,
+                               boost::posix_time::ptime& time)
+      {
+        auto& str = this->_check_type<std::string>(name);
+        // Use the ISO extended input facet to interpret the string.
+        std::stringstream ss(str);
+        auto input_facet =
+          elle::make_unique<boost::posix_time::time_input_facet>();
+        // ISO 8601
+        input_facet->format("%Y-%m-%dT%H:%M:%S%F");
+        ss.imbue(std::locale(ss.getloc(), input_facet.release()));
+        if (!(ss >> time))
+          throw FieldError
+            (name, elle::sprintf("invalid ISO8601 date: %s", str));
+        // Check there isn't any leftover.
+        std::string leftover;
+        std::getline(ss, leftover);
+        if (leftover.empty())
+          return;
+        // Boost can't parse timezones, handle it manually.
+        if (leftover == "Z")
+          ; // Accept UTC suffix.
+        else if ((leftover[0] == '+' || leftover[0] == '-') && leftover.size() == 5)
+        {
+          // Handle timezone.
+          std::stringstream tz(leftover);
+          int direction = tz.get() == '+' ? -1 : 1;
+          int amount;
+          tz >> amount;
+          if (tz.get() != -1)
+            throw FieldError
+              (name, elle::sprintf("garbage at end of date: %s", leftover));
+          time += boost::posix_time::hours(direction * amount / 100);
+        }
+        else
+          throw FieldError
+            (name, elle::sprintf("garbage at end of date: %s", leftover));
+        if (!ss.eof())
+        {
+          std::string leftover;
+          std::getline(ss, leftover);
+          throw FieldError
+            (name, elle::sprintf("garbage at end of date: %s", leftover));
         }
       }
 

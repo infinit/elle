@@ -333,6 +333,26 @@ buffer()
   }
 }
 
+template <typename Format>
+static
+void
+date()
+{
+  auto now = boost::posix_time::microsec_clock().local_time();
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("date", now);
+  }
+  std::cerr << stream.str() << std::endl;
+  {
+    boost::posix_time::ptime res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("date", res);
+    BOOST_CHECK_EQUAL(now, res);
+  }
+}
+
 class Super
   : public elle::serialization::VirtuallySerializable
 {
@@ -611,6 +631,57 @@ json_overflows()
   input.serialize("32u_nunderflow", ui32);
 }
 
+static
+void
+json_iso8601()
+{
+  boost::gregorian::date const date(2014, 11, 05);
+  boost::posix_time::ptime const expected
+    (date, boost::posix_time::seconds((11 * 60 + 36) * 60 + 10));
+  // Reading test
+  {
+    std::stringstream stream(
+      "{"
+      "  \"date\": \"2014-11-05\","
+      "  \"date-time\": \"2014-11-05T11:36:10\","
+      "  \"date-time-utc\": \"2014-11-05T11:36:10Z\","
+      "  \"date-time-timezone\": \"2014-11-05T12:36:10+0100\","
+      "  \"error-garbage\": \"GIGO\","
+      "  \"error-garbage-end\": \"2014-11-05T11:36:10+0200GIGO\""
+      "}"
+      );
+    typename elle::serialization::json::SerializerIn input(stream);
+    {
+      boost::posix_time::ptime time;
+      input.serialize("date", time);
+      BOOST_CHECK_EQUAL(time, boost::posix_time::ptime(date));
+      input.serialize("date-time", time);
+      BOOST_CHECK_EQUAL(time, expected);
+      input.serialize("date-time-utc", time);
+      BOOST_CHECK_EQUAL(time, expected);
+      input.serialize("date-time-timezone", time);
+      BOOST_CHECK_EQUAL(time, expected);
+      BOOST_CHECK_THROW(input.serialize("error-garbage", time),
+                        elle::serialization::Error);
+      BOOST_CHECK_THROW(input.serialize("error-garbage-end", time),
+                        elle::serialization::Error);
+    }
+  }
+  // Writing test
+  {
+    std::stringstream stream;
+    {
+      elle::serialization::json::SerializerOut output(stream);
+      auto date = expected;
+      output.serialize("date", date);
+    }
+    auto json = elle::json::read(stream);
+    auto object = boost::any_cast<elle::json::Object>(json);
+    auto str = boost::any_cast<std::string>(object.at("date"));
+    BOOST_CHECK_EQUAL(str, "2014-11-05T11:36:10");
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -628,9 +699,11 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(date<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
   suite.add(BOOST_TEST_CASE(json_overflows));
+  suite.add(BOOST_TEST_CASE(json_iso8601));
 }
