@@ -82,16 +82,18 @@ namespace aws
   /*-------------.
   | Construction |
   `-------------*/
-  S3::S3(aws::Credentials const& credentials):
-    _credentials(credentials),
-    _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
+  S3::S3(aws::Credentials const& credentials)
+    : _credentials(credentials)
+    , _host_name(
+      elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
+    , _query_credentials()
   {}
 
   S3::S3(std::function<Credentials(bool)> query_credentials)
-    : _credentials(query_credentials(true))
-    , _host_name(elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
-    , _query_credentials(query_credentials)
-  {}
+    : S3(query_credentials(true))
+  {
+    this->_query_credentials = query_credentials;
+  }
 
   static std::string query_parameters(RequestQuery const& query)
   {
