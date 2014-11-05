@@ -28,8 +28,8 @@ namespace aws
                   std::string const& region,
                   std::string const& bucket,
                   std::string const& folder,
-                  std::string const& expiration = "never",
-                  std::string const& server_time = "");
+                  boost::posix_time::ptime expiration,
+                  boost::posix_time::ptime server_time);
 
       std::string
       credential_string(RequestTime const& request_time,
@@ -44,13 +44,11 @@ namespace aws
       ELLE_ATTRIBUTE_R(std::string, region);
       ELLE_ATTRIBUTE_R(std::string, bucket);
       ELLE_ATTRIBUTE_R(std::string, folder);
-      ELLE_ATTRIBUTE_R(std::string, expiration_str);
-      // Amazon-formated current time from server
-      ELLE_ATTRIBUTE_R(std::string, server_time);
-
+      // Amazon current time from server
+      ELLE_ATTRIBUTE_R(boost::posix_time::ptime, server_time);
       ELLE_ATTRIBUTE_R(boost::posix_time::ptime, expiry);
       // Estimated skew between trusted server time and local universal time.
-      ELLE_ATTRIBUTE_R(boost::optional<boost::posix_time::time_duration>, skew);
+      ELLE_ATTRIBUTE_R(boost::posix_time::time_duration, skew);
 
       /*--------------.
       | Serialization |

@@ -17,16 +17,16 @@ namespace aws
                            std::string const& region,
                            std::string const& bucket,
                            std::string const& folder,
-                           std::string const& expiration,
-                           std::string const& server_time)
+                           boost::posix_time::ptime expiration,
+                           boost::posix_time::ptime server_time)
     : _access_key_id(access_key_id)
     , _secret_access_key(secret_access_key)
     , _session_token(session_token)
     , _region(region)
     , _bucket(bucket)
     , _folder(folder)
-    , _expiration_str(expiration)
-    , _server_time(server_time)
+    , _server_time(std::move(server_time))
+    , _expiry(std::move(expiration))
     , _skew()
   {
     this->_initialize();
@@ -35,36 +35,10 @@ namespace aws
   void
   Credentials::_initialize()
   {
-    if (!this->_server_time.empty())
-    { // Assume creation time is now, and compute skew with local clock
-      ELLE_TRACE("Parsing server time: %s", this->_server_time);
-      std::string time_str;
-      for (auto c: this->_server_time)
-      {
-        if (c != '-' && c != ':' && c != 'Z')
-        {
-          time_str += c;
-        }
-      }
-      auto creation_time = boost::posix_time::from_iso_string(time_str);
-      this->_skew = boost::posix_time::second_clock::universal_time() - creation_time;
-      ELLE_TRACE("Computed clock skew of %s", *this->_skew);
-    }
-    // For debugging.
-    if (this->_expiration_str == "never")
-      return;
-
-    // Take the AWS server response and convert it to a ptime.
-    // eg: 2014-02-26T23:34:19Z -> 20140226T233419
-    std::string time_str;
-    for (auto c: this->_expiration_str)
-    {
-      if (c != '-' && c != ':' && c != 'Z')
-      {
-        time_str += c;
-      }
-    }
-    this->_expiry = boost::posix_time::from_iso_string(time_str);
+    // Assume creation time is now, and compute skew with local clock
+    this->_skew =
+      boost::posix_time::second_clock::universal_time() - this->_server_time;
+    ELLE_TRACE("Computed clock skew of %s", this->_skew);
     if (!this->valid())
     {
       // Maybe the local clock is wrong. AWS will tell us if creds are
@@ -92,10 +66,6 @@ namespace aws
   bool
   Credentials::valid()
   {
-    // For debugging.
-    if (this->_expiration_str == "never")
-      return true;
-
     using namespace boost::posix_time;
     ptime now = second_clock::universal_time();
     bool res;
@@ -126,16 +96,17 @@ namespace aws
     s.serialize("region", this->_region);
     s.serialize("bucket", this->_bucket);
     s.serialize("folder", this->_folder);
-    s.serialize("expiration", this->_expiration_str);
+    s.serialize("expiration", this->_expiry);
     s.serialize("current_time", this->_server_time);
     if (s.in())
       this->_initialize();
   }
 
+
   void
   Credentials::print(std::ostream& stream) const
   {
-    stream << "AWS credentials: access_id=" << this->_access_key_id
-           << "expiry=" << this->_expiration_str;
+    stream << "aws::Credentials(access_id = \"" << this->_access_key_id
+           << "\", expiry = " << this->_expiry << ")";
   }
 }

@@ -720,14 +720,11 @@ namespace aws
     {
       RequestTime request_time =
         boost::posix_time::second_clock::universal_time();
-      if (_credentials.skew())
-      {
-        ELLE_TRACE("Applying clock skew: %s - %s = %s",
-                   request_time,
-                   *_credentials.skew(),
-                   request_time - *_credentials.skew());
-        request_time -= *_credentials.skew();
-      }
+      ELLE_TRACE("Applying clock skew: %s - %s = %s",
+                 request_time,
+                 this->_credentials.skew(),
+                 request_time - this->_credentials.skew());
+      request_time -= this->_credentials.skew();
       RequestHeaders headers(extra_headers);
       headers["x-amz-date"] = this->_amz_date(request_time);
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
@@ -818,7 +815,7 @@ namespace aws
       catch(CredentialsExpired const& e)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
-                   *this, _credentials.expiration_str(), !!_query_credentials);
+                   *this, this->_credentials.expiry(), !!_query_credentials);
         AWSException aws_exception(operation, url, 0,
                                    elle::make_unique<CredentialsExpired>(e));
         if (_on_error)
@@ -829,7 +826,7 @@ namespace aws
         _host_name = elle::sprintf("%s.s3.amazonaws.com",
                                    this->_credentials.bucket());
         ELLE_TRACE("%s: acquired new credentials expiring %s",
-                   *this,  _credentials.expiration_str());
+                   *this,  this->_credentials.expiry());
         continue;
       }
       catch(TransientError const& err)
