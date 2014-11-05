@@ -82,10 +82,9 @@ namespace aws
   /*-------------.
   | Construction |
   `-------------*/
+
   S3::S3(aws::Credentials const& credentials)
     : _credentials(credentials)
-    , _host_name(
-      elle::sprintf("%s.s3.amazonaws.com", this->_credentials.bucket()))
     , _query_credentials()
   {}
 
@@ -720,6 +719,7 @@ namespace aws
     }
     while (true)
     {
+      std::string const hostname(this->hostname(this->_credentials));
       RequestTime request_time =
         boost::posix_time::second_clock::universal_time();
       ELLE_TRACE("Applying clock skew: %s - %s = %s",
@@ -731,7 +731,7 @@ namespace aws
       headers["x-amz-date"] = this->_amz_date(request_time);
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
       headers["x-amz-security-token"] = this->_credentials.session_token();
-      headers["Host"] = this->_host_name;
+      headers["Host"] = hostname;
       if (!content_type.empty())
         headers["Content-Type"] = content_type;
 
@@ -745,9 +745,8 @@ namespace aws
       reactor::http::Request::Configuration cfg(
         _initialize_request(kind, request_time, canonical_request, headers, timeout));
       std::string full_url = elle::sprintf(
-        "https://%s:%s%s%s",
-        _host_name,
-        "443",
+        "%s%s%s",
+        hostname,
         url_encoded,
         query_parameters(query)
         );
@@ -824,9 +823,7 @@ namespace aws
           _on_error(aws_exception, !!_query_credentials);
         if (!_query_credentials)
           throw aws_exception;
-        _credentials = _query_credentials(false);
-        _host_name = elle::sprintf("%s.s3.amazonaws.com",
-                                   this->_credentials.bucket());
+        this->_credentials = _query_credentials(false);
         ELLE_TRACE("%s: acquired new credentials expiring %s",
                    *this,  this->_credentials.expiry());
         continue;
@@ -837,7 +834,7 @@ namespace aws
         AWSException aws_exception(operation, url, attempt,
                                    elle::make_unique<TransientError>(err));
         // we have nothing better to do, so keep retrying
-        ELLE_LOG("S3 transient error '%s' (attempt %s)", err.what(), attempt);
+        ELLE_WARN("S3 transient error '%s' (attempt %s)", err.what(), attempt);
         if (_on_error)
           _on_error(aws_exception,
                     !max_attempts || attempt < max_attempts);
@@ -853,7 +850,7 @@ namespace aws
       catch(aws::RequestError const& err)
       { // non-transient RequestError is fatal
         ++attempt;
-        ELLE_LOG("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
+        ELLE_ERR("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
         AWSException aws_exception(operation, url, attempt,
                                    elle::make_unique<RequestError>(err));
         if (_on_error)
@@ -863,5 +860,11 @@ namespace aws
       // Consider all other failures as fatal errors
       return std::move(request);
     }
+  }
+
+  std::string
+  S3::hostname(Credentials const& credentials) const
+  {
+    return elle::sprintf("https://%s.s3.amazonaws.com", credentials.bucket());
   }
 }

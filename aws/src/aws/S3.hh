@@ -32,7 +32,7 @@ namespace aws
   `-------------*/
   public:
     /// Create a new S3 handler.
-    /// This requires a bucket name, remote folder and set of credentials.
+    /// This requires a bucket name, rbemote folder and set of credentials.
     /// Use of this should be optimised based on S3 pricing:
     /// http://aws.amazon.com/s3/pricing/
     S3(Credentials const& credentials);
@@ -121,9 +121,13 @@ namespace aws
     /*-----------.
     | Attributes |
     `-----------*/
-  private:
+  public:
+    /// Get the host including the http scheme to connect to depending on the
+    /// credentials.
+    virtual
+    std::string
+    hostname(Credentials const& credentials) const;
     ELLE_ATTRIBUTE(Credentials, credentials);
-    ELLE_ATTRIBUTE(std::string, host_name);
     ELLE_ATTRIBUTE(std::function<Credentials(bool)>, query_credentials);
 
     /*--------.
