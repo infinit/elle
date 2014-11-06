@@ -8,15 +8,17 @@ namespace reactor
   namespace network
   {
     class Buffer;
-    class Socket;
     template <typename AsioSocket, typename EndPoint>
     class PlainSocket;
-    class TCPSocket;
-    class UDPSocket;
-    class UDPServerSocket;
     class Server;
-    class UDPServer;
+    class SSLServer;
+    class SSLSocket;
+    class Socket;
     class TCPServer;
+    class TCPSocket;
+    class UDPServer;
+    class UDPServerSocket;
+    class UDPSocket;
 
     /// A byte travelling on the network.
     typedef unsigned char Byte;
