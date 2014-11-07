@@ -731,7 +731,10 @@ namespace aws
       headers["x-amz-date"] = this->_amz_date(request_time);
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
       headers["x-amz-security-token"] = this->_credentials.session_token();
-      headers["Host"] = hostname;
+      // Host header needs bare hostname.
+      size_t p = hostname.find_last_of("/");
+      ELLE_ASSERT(p != hostname.npos);
+      headers["Host"] = hostname.substr(p+1);
       if (!content_type.empty())
         headers["Content-Type"] = content_type;
 
