@@ -167,16 +167,20 @@ class GNUBuilder(drake.Builder):
 
 class VersionGenerator(drake.Builder):
 
-  def __init__(self, output, git = None):
+  def __init__(self, output, git = None, production_build = True):
     git = git or drake.git.Git()
     drake.Builder.__init__(self, [git], [output])
     self.__git = git
     self.__output = output
+    self.__production_build = production_build
 
   def execute(self):
     self.output('Generate %s' % self.__output.path())
     chunks = {}
-    version = self.__git.description()
+    if self.__production_build:
+      version = self.__git.description()
+    else:
+      version = '%s-dev' % self.__git.version().split('-')[0]
     chunks['version'] = version
     chunks['major'], chunks['minor'], chunks['subminor'] = \
       map(int, version.split('-')[0].split('.'))
