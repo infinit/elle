@@ -1,8 +1,10 @@
+import collections
+import itertools
+import subprocess
+
 import drake
 import drake.cxx
 import drake.git
-import itertools
-import subprocess
 
 def _default_make_binary():
   from drake.which import which
@@ -176,7 +178,7 @@ class VersionGenerator(drake.Builder):
 
   def execute(self):
     self.output('Generate %s' % self.__output.path())
-    chunks = {}
+    chunks = collections.OrderedDict()
     if self.__production_build:
       version = self.__git.description()
     else:
