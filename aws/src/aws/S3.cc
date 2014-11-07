@@ -719,7 +719,7 @@ namespace aws
     }
     while (true)
     {
-      std::string const hostname(this->hostname(this->_credentials));
+      URL const hostname(this->hostname(this->_credentials));
       RequestTime request_time =
         boost::posix_time::second_clock::universal_time();
       ELLE_TRACE("Applying clock skew: %s - %s = %s",
@@ -732,9 +732,7 @@ namespace aws
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
       headers["x-amz-security-token"] = this->_credentials.session_token();
       // Host header needs bare hostname.
-      size_t p = hostname.find_last_of("/");
-      ELLE_ASSERT(p != hostname.npos);
-      headers["Host"] = hostname.substr(p+1);
+      headers["Host"] = hostname.domain;
       if (!content_type.empty())
         headers["Content-Type"] = content_type;
 
@@ -749,7 +747,7 @@ namespace aws
         _initialize_request(kind, request_time, canonical_request, headers, timeout));
       std::string full_url = elle::sprintf(
         "%s%s%s",
-        hostname,
+        hostname.join(),
         url_encoded,
         query_parameters(query)
         );
@@ -865,9 +863,17 @@ namespace aws
     }
   }
 
-  std::string
+  URL
   S3::hostname(Credentials const& credentials) const
   {
-    return elle::sprintf("https://%s.s3.amazonaws.com", credentials.bucket());
+    return URL{"https://",
+               elle::sprintf("%s.s3.amazonaws.com", credentials.bucket()),
+               ""};
+  }
+
+  std::string
+  URL::join() const
+  {
+    return scheme + domain + path;
   }
 }

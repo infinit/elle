@@ -17,6 +17,13 @@
 
 namespace aws
 {
+  struct URL
+  {
+    std::string scheme;
+    std::string domain;
+    std::string path;
+    std::string join() const;
+  };
   class S3:
     public elle::Printable
   {
@@ -125,7 +132,7 @@ namespace aws
     /// Get the host including the http scheme to connect to depending on the
     /// credentials.
     virtual
-    std::string
+    URL
     hostname(Credentials const& credentials) const;
     ELLE_ATTRIBUTE(Credentials, credentials);
     ELLE_ATTRIBUTE(std::function<Credentials(bool)>, query_credentials);
