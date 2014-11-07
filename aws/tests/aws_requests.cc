@@ -30,6 +30,12 @@ ELLE_LOG_COMPONENT("aws.test");
 static
 std::string _bucket_name("us-east-1-buffer-dev-infinit-io");
 
+static
+boost::posix_time::ptime _now =
+  boost::posix_time::second_clock::universal_time();
+
+static
+boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);
 
 static
 aws::Credentials _GET_credentials(
@@ -39,7 +45,8 @@ aws::Credentials _GET_credentials(
   "us-east-1",
   _bucket_name,
   "testing",
-  "never"
+  _later,
+  _now
 );
 
 static
@@ -50,7 +57,8 @@ aws::Credentials _PUT_credentials(
   "us-east-1",
   "none",
   "/",
-  "never"
+  _later,
+  _now
 );
 
 
