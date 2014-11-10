@@ -131,6 +131,8 @@ namespace reactor
       auto version = this->_conf.version() == Version::v11 ?
         CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
       setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
+      // Set IPv4 only.
+      setopt(this->_handle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
       // Set proxy.
       using ProxyType = reactor::network::ProxyType;
       if (this->_conf.proxy() &&
