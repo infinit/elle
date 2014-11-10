@@ -13,6 +13,8 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
+#include <elle/log.hh>
+
 /// This header includes boost Unit Test Framework and provides a simple macro
 /// to customize the creation of your test suite.
 ///
@@ -163,6 +165,8 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
     sched, "main",                                                    \
     [&]                                                               \
     {                                                                 \
+      ELLE_LOG_COMPONENT("elle.Test")                                 \
+      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name));        \
       BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));                 \
     });                                                               \
   sched.run();                                                        \
@@ -172,28 +176,30 @@ static                                                                \
 void                                                                  \
 BOOST_PP_CAT(Name, _impl)(ELLE_TEST_PROTOTYPE(Args))                  \
 
-#define ELLE_TEST_SCHEDULED_THROWS(Name, _exception_type_) \
-static                                                     \
-void                                                       \
-Name##_impl();                                             \
-                                                           \
-static                                                     \
-void                                                       \
-Name()                                                     \
-{                                                          \
-  reactor::Scheduler sched;                                \
-  reactor::Thread main(                                    \
-    sched, "main",                                         \
-    [&]                                                    \
-    {                                                      \
-      Name##_impl();                                       \
-    });                                                    \
-  BOOST_CHECK_THROW(sched.run(), _exception_type_);        \
-}                                                          \
-                                                           \
-static                                                     \
-void                                                       \
-Name##_impl()                                              \
+#define ELLE_TEST_SCHEDULED_THROWS(Name, _exception_type_)            \
+static                                                                \
+void                                                                  \
+Name##_impl();                                                        \
+                                                                      \
+static                                                                \
+void                                                                  \
+Name()                                                                \
+{                                                                     \
+  reactor::Scheduler sched;                                           \
+  reactor::Thread main(                                               \
+    sched, "main",                                                    \
+    [&]                                                               \
+    {                                                                 \
+      ELLE_LOG_COMPONENT("elle.Test")                                 \
+      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name));        \
+      Name##_impl();                                                  \
+    });                                                               \
+  BOOST_CHECK_THROW(sched.run(), _exception_type_);                   \
+}                                                                     \
+                                                                      \
+static                                                                \
+void                                                                  \
+Name##_impl()                                                         \
 
 # ifndef ELLE_TEST_NO_MEMFRY
 
