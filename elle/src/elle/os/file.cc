@@ -23,13 +23,13 @@ namespace elle
         return boost::filesystem::exists(path);
       }
 
-      size_t
+      uint64_t
       size(std::string const& path)
       {
         return elle::os::file::size(boost::filesystem::path{path});
       }
 
-      size_t
+      uint64_t
       size(boost::filesystem::path const& path)
       {
         boost::system::error_code err;
