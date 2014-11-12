@@ -251,7 +251,6 @@ namespace elle
         T&
         cast(std::string const& name, boost::any& value)
         {
-          std::cerr << elle::Backtrace::current() << std::endl;
           throw TypeError(name, typeid(T), value.type());
         }
       };
