@@ -22,10 +22,10 @@ namespace elle
       exists(boost::filesystem::path const& path);
 
       // Give the size of all the files for path.
-      size_t
+      uint64_t
       size(std::string const& path);
 
-      size_t
+      uint64_t
       size(boost::filesystem::path const& path);
     }
   }
