@@ -127,8 +127,9 @@ namespace elle
       return _is_unserializable_inplace<T>(42);
     };
 
-    struct Serializer::Details
+    class Serializer::Details
     {
+    public:
       template <typename T>
       static
       typename std::enable_if<
