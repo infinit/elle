@@ -111,6 +111,8 @@ namespace reactor
     if (!chan)
       throw std::runtime_error("fuse_mount failed");
     fuse* res = ::fuse_new(chan, &args, op, op_size, user_data);
+    if (!res)
+      throw std::runtime_error("fuse_new failed");
     return res;
   }
   void fuse_destroy(fuse* f, std::string const& mountpoint)

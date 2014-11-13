@@ -104,7 +104,7 @@ bool goon = true;
 static void loop()
 {
   std::cerr << "entering loop" << std::endl;
-  reactor::fuse_loop_mt(f, 10);
+  reactor::fuse_loop_mt(f);
   std::cerr << "exiting loop" << std::endl;
   goon = false;
 }
@@ -125,12 +125,17 @@ int main(int argc, char *argv[])
 	hello_oper.open		= hello_open;
 	hello_oper.read		= hello_read;
   reactor::Scheduler s;
-  char* mount_point = 0;
-  int multithread = 0;
-  f = fuse_setup(argc, argv, &hello_oper, sizeof(hello_oper),
-                       &mount_point, &multithread, NULL);
+  //char* mount_point = 0;
+  //int multithread = 0;
+  //f = fuse_setup(argc, argv, &hello_oper, sizeof(hello_oper),
+  //                     &mount_point, &multithread, NULL);
+  std::vector<std::string> opts;
+  opts.push_back(argv[0]);
+  for (int i=2; i<argc; ++i)
+    opts.push_back(argv[i]);
+  f = reactor::fuse_create(argv[1], opts, &hello_oper, sizeof(hello_oper), 0);
   reactor::Thread thread(s, "loop", []{loop();});
   reactor::Thread thread2(s, "ping", []{ping();});
 	s.run();
-	fuse_teardown(f, mount_point);
+	reactor::fuse_destroy(f, argv[1]);
 }
