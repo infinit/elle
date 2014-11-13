@@ -103,7 +103,7 @@ namespace reactor
 		  try
 		  {
 		    Handle* handle = (Handle*)fi->fh;
-		    handle->write(elle::WeakBuffer((void*)buf, size), size, offset);
+		    return handle->write(elle::WeakBuffer((void*)buf, size), size, offset);
 		  }
 		  catch (Error const& e)
       {

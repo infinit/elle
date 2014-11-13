@@ -31,7 +31,7 @@ namespace reactor
     public:
       virtual ~Handle() {}
       virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
-      virtual void write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
+      virtual int write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual void close()=0;
     };
 
