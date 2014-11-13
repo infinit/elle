@@ -87,7 +87,7 @@ namespace reactor
 		  try
 		  {
 		    Handle* handle = (Handle*)fi->fh;
-		    handle->read(elle::WeakBuffer(buf, size), size, offset);
+		    return handle->read(elle::WeakBuffer(buf, size), size, offset);
 		  }
 		  catch (Error const& e)
       {
@@ -157,6 +157,7 @@ namespace reactor
         throw elle::Error("Filesystem already mounted");
       _impl->_where = where.string();
       fuse_operations ops;
+      memset(&ops, 0, sizeof(ops));
       ops.getattr = fusop_getattr;
       ops.readdir = fusop_readdir;
       ops.open = fusop_open;
@@ -176,27 +177,35 @@ namespace reactor
     }
     Path& FileSystemImpl::fetch_recurse(boost::filesystem::path const& path)
     {
+      ELLE_DEBUG("fetch_recurse on %s", path);
       auto it = _cache.find(path);
       if (it != _cache.end())
+      {
+        ELLE_DEBUG("cache hit");
         return *it->second;
+      }
       else
       {
+        ELLE_DEBUG("cache miss");
         if (path == "/")
         {
           auto p = _operations->path("/");
           auto ptr = p.get();
+          ELLE_ASSERT(ptr);
           _cache[path] = std::move(p);
           return *ptr;
         }
         Path& parent = fetch_recurse(path.parent_path());
         auto p = parent.child(path.filename().string());
         auto ptr = p.get();
+        ELLE_ASSERT(ptr);
         _cache[path] = std::move(p);
         return *ptr;
       }
     }
     Path& FileSystem::path(std::string const& spath)
     {
+      ELLE_ASSERT(_impl);
       if (_impl->_full_tree)
       {
         return _impl->fetch_recurse(spath);

@@ -13,13 +13,16 @@ namespace reactor
   namespace filesystem
   {
     typedef
-    std::function<void(std::string const&, stat* stbuf)>
+    std::function<void(std::string const&, struct stat* stbuf)>
     OnDirectoryEntry;
 
     class Error: public elle::Error
     {
     public:
-      Error(int error_code, std::string const& message);
+      Error(int error_code, std::string const& message)
+      : elle::Error(message)
+      , _error_code(error_code)
+      {}
       ELLE_ATTRIBUTE_R(int, error_code);
     };
 
@@ -27,7 +30,7 @@ namespace reactor
     {
     public:
       virtual ~Handle() {}
-      virtual void read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
+      virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual void write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual void close()=0;
     };
@@ -55,11 +58,11 @@ namespace reactor
     class FileSystem
     {
     public:
-      /** Create a new file system with given operations 
+      /** Create a new file system with given operations
       *
       * @param full_tree: If set, will use Operations.path('/') only and
       *        recurse using Path::child(). Otherwise Operations::path()
-      *        will be used with full pathes.
+      *        will be used with full pathes and Path::child will never be called.
       */
       FileSystem(std::unique_ptr<Operations> op, bool full_tree);
       ~FileSystem();
