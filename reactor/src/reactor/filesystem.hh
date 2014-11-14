@@ -8,6 +8,7 @@
 #include <elle/Exception.hh>
 
 struct stat;
+struct statvfs;
 namespace reactor
 {
   namespace filesystem
@@ -53,6 +54,14 @@ namespace reactor
       virtual void unlink();
       virtual void mkdir(mode_t mode);
       virtual void rmdir();
+      virtual void rename(boost::filesystem::path const& where);
+      virtual boost::filesystem::path readlink();
+      virtual void symlink(boost::filesystem::path const& where);
+      virtual void link(boost::filesystem::path const& where);
+      virtual void chmod(mode_t mode);
+      virtual void chown(uid_t uid, gid_t gid);
+      virtual void statfs(struct statvfs *);
+      virtual void utimens(const struct timespec tv[2]);
       /// Return a Path for given child name.
       virtual std::unique_ptr<Path> child(std::string const& name) = 0;
 

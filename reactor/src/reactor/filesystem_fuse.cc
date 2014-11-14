@@ -46,9 +46,9 @@ namespace reactor
       return 0;
     }
     static int fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-			 off_t offset, struct fuse_file_info *fi)
-		{
-		  try
+       off_t offset, struct fuse_file_info *fi)
+    {
+      try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
@@ -63,12 +63,12 @@ namespace reactor
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_open(const char *path, struct fuse_file_info *fi)
-		{
-		  ELLE_DEBUG("fusop_open %s %s", path, fi->flags);
-		  try
+    static int fusop_open(const char *path, struct fuse_file_info *fi)
+    {
+      ELLE_DEBUG("fusop_open %s %s", path, fi->flags);
+      try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
@@ -81,12 +81,12 @@ namespace reactor
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
-		{
-		  ELLE_DEBUG("fusop_create %s %s %s", path, mode, fi->flags);
-		  try
+    static int fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
+    {
+      ELLE_DEBUG("fusop_create %s %s %s", path, mode, fi->flags);
+      try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
@@ -99,105 +99,233 @@ namespace reactor
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_unlink(const char* path)
-		{
-		  ELLE_DEBUG("fusop_unlink %s", path);
-		  try
-		  {
-		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+    static int fusop_unlink(const char* path)
+    {
+      ELLE_DEBUG("fusop_unlink %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
         p.unlink();
-		  }
-		  catch (Error const& e)
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error unlinking %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_mkdir(const char* path, mode_t mode)
-		{
-		  ELLE_DEBUG("fusop_mkdir %s", path);
-		  try
-		  {
-		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+    static int fusop_mkdir(const char* path, mode_t mode)
+    {
+      ELLE_DEBUG("fusop_mkdir %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
         p.mkdir(mode);
-		  }
-		  catch (Error const& e)
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error mkdiring %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_rmdir(const char* path)
-		{
-		  ELLE_DEBUG("fusop_rmdir %s", path);
-		  try
-		  {
-		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+    static int fusop_rmdir(const char* path)
+    {
+      ELLE_DEBUG("fusop_rmdir %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
         p.rmdir();
-		  }
-		  catch (Error const& e)
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error rmdiring %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
-		                      struct fuse_file_info *fi)
-		{
-		  try
-		  {
-		    Handle* handle = (Handle*)fi->fh;
-		    return handle->read(elle::WeakBuffer(buf, size), size, offset);
-		  }
-		  catch (Error const& e)
+    static int fusop_rename(const char* path, const char* to)
+    {
+      ELLE_DEBUG("fusop_rename %s %s", path, to);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.rename(to);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error renaming %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
+    static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
+                          struct fuse_file_info *fi)
+    {
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        return handle->read(elle::WeakBuffer(buf, size), size, offset);
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error reading %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
-		                       struct fuse_file_info *fi)
-		{
-		  try
-		  {
-		    Handle* handle = (Handle*)fi->fh;
-		    return handle->write(elle::WeakBuffer((void*)buf, size), size, offset);
-		  }
-		  catch (Error const& e)
+    static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
+                           struct fuse_file_info *fi)
+    {
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        return handle->write(elle::WeakBuffer((void*)buf, size), size, offset);
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error writing %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
-		}
+    }
 
-		static int fusop_release(const char *path, struct fuse_file_info *fi)
-		{
-		  try
-		  {
-		    Handle* handle = (Handle*)fi->fh;
-		    delete handle;
-		  }
-		  catch (Error const& e)
+    static int fusop_release(const char *path, struct fuse_file_info *fi)
+    {
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        handle->close();
+        delete handle;
+      }
+      catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error releasing %s: %s", path, e);
         return -e.error_code();
       }
-		  return 0;
-		}
+      return 0;
+    }
+
+    static int fusop_readlink(const char* path, char* buf, size_t len)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        auto target = p.readlink();
+        auto starget = target.string();
+        strncpy(buf, starget.c_str(), len);
+        return 0;
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on readlink %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
+    static int fusop_symlink(const char* path, const char* to)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.symlink(to);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on symlink %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_link(const char* path, const char* to)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.link(to);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on link %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_chmod(const char* path, mode_t mode)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.chmod(mode);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on chmod %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_chown(const char* path, uid_t uid, gid_t gid)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.chown(uid, gid);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on chown %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_statfs(const char* path, struct ::statvfs* svfs)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.statfs(svfs);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on statfs %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_utimens(const char* path, const struct timespec tv[2])
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.utimens(tv);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on readlink %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
 
     class FileSystemImpl
     {
@@ -239,6 +367,14 @@ namespace reactor
       ops.unlink = fusop_unlink;
       ops.mkdir = fusop_mkdir;
       ops.rmdir = fusop_rmdir;
+      ops.rename = fusop_rename;
+      ops.readlink = fusop_readlink;
+      ops.symlink = fusop_symlink;
+      ops.link = fusop_link;
+      ops.chmod = fusop_chmod;
+      ops.chown = fusop_chown;
+      ops.statfs = fusop_statfs;
+      ops.utimens = fusop_utimens;
       _impl->_handle = fuse_create(where.string(), options, &ops, sizeof(ops), this);
       fuse* handle = _impl->_handle;
       _impl->_poller.reset(new Thread("fuse loop", [handle] { reactor::fuse_loop_mt(handle);}));

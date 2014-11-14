@@ -9,8 +9,11 @@
 #include <reactor/signal.hh>
 #include <elle/test.hh>
 #include <elle/finally.hh>
+#include <elle/os/environ.hh>
 
 ELLE_LOG_COMPONENT("Test");
+
+bool sandbox = !elle::os::getenv("SANDBOX", "").empty();
 
 namespace sum
 {
@@ -133,8 +136,13 @@ static void test_sum(void)
   });
   boost::filesystem::create_directories(tmp);
   std::thread t([&] { run_filesystem(fs, tmp);});
+  ELLE_LOG("Mounted on %s", tmp);
+  if (sandbox)
+  {
+    t.join();
+    return;
+  }
   ::usleep(500000);
-  ELLE_LOG("will mount on %s", tmp);
   int s;
   boost::filesystem::ifstream(tmp/"1"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 1);
@@ -262,6 +270,17 @@ namespace xorfs
       else
         throw rfs::Error(ENOTDIR, "Not a directory");
     }
+    void rename(bfs::path const& to) override
+    {
+      bfs::path p = ctx.storage / where;
+      boost::system::error_code erc;
+      bfs::rename(p, ctx.storage / to, erc);
+      if (erc)
+      {
+        ELLE_TRACE("bfs rename failed: %s", erc.message());
+        throw rfs::Error(erc.value(), erc.message());
+      }
+    }
     Encrypt& ctx;
     bfs::path where;
   };
@@ -289,6 +308,11 @@ static void test_xor(void)
   boost::filesystem::create_directories(tmpsource);
   ELLE_LOG("mount: %s   source: %s", tmpmount, tmpsource);
   std::thread t([&] { run_filesystem(fs, tmpmount);});
+  if (sandbox)
+  {
+    t.join();
+    return;
+  }
   std::string text = "coincoin";
   usleep(200000);
   {
@@ -331,15 +355,17 @@ static void test_xor(void)
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   boost::filesystem::remove(tmpmount / "dir");
-
+  ELLE_TRACE("unmounting...");
   fs.unmount();
+  ELLE_TRACE("joining...");
   t.join();
+  ELLE_TRACE("finished");
 }
 
 ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* filesystem = BOOST_TEST_SUITE("filesystem");
   boost::unit_test::framework::master_test_suite().add(filesystem);
-  filesystem->add(BOOST_TEST_CASE(test_sum), 0, 5);
-  filesystem->add(BOOST_TEST_CASE(test_xor), 0, 500);
+  filesystem->add(BOOST_TEST_CASE(test_sum), 0, sandbox?0:5);
+  filesystem->add(BOOST_TEST_CASE(test_xor), 0, sandbox?0:5);
 }
