@@ -120,6 +120,7 @@ namespace reactor
     fuse_session* s = ::fuse_get_session(f);
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
     ::fuse_unmount(mountpoint.c_str(), ch);
+    ::fuse_exit(f);
     ::fuse_destroy(f);
   }
 }

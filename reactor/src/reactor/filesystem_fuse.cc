@@ -31,6 +31,7 @@ namespace reactor
   {
     static int fusop_getattr(const char *path, struct stat *stbuf)
     {
+      ELLE_DEBUG("fusop_getattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -66,11 +67,30 @@ namespace reactor
 
 		static int fusop_open(const char *path, struct fuse_file_info *fi)
 		{
+		  ELLE_DEBUG("fusop_open %s %s", path, fi->flags);
 		  try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         Path& p = fs->path(path);
-        auto handle = p.open(fi->flags);
+        auto handle = p.open(fi->flags, 0);
+        fi->fh = (decltype(fi->fh)) handle.release();
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error stating %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+		}
+
+		static int fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
+		{
+		  ELLE_DEBUG("fusop_create %s %s %s", path, mode, fi->flags);
+		  try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        auto handle = p.create(fi->flags, mode);
         fi->fh = (decltype(fi->fh)) handle.release();
       }
       catch (Error const& e)
@@ -164,6 +184,7 @@ namespace reactor
       ops.read = fusop_read;
       ops.write = fusop_write;
       ops.release = fusop_release;
+      ops.create = fusop_create;
       _impl->_handle = fuse_create(where.string(), options, &ops, sizeof(ops), this);
       fuse* handle = _impl->_handle;
       _impl->_poller.reset(new Thread("fuse loop", [handle] { reactor::fuse_loop_mt(handle);}));

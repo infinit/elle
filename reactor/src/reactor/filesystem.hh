@@ -16,6 +16,9 @@ namespace reactor
     std::function<void(std::string const&, struct stat* stbuf)>
     OnDirectoryEntry;
 
+    /** Exception type for filesystem errors. Filesystems should not throw
+     *  anything else.
+     */
     class Error: public elle::Error
     {
     public:
@@ -26,6 +29,7 @@ namespace reactor
       ELLE_ATTRIBUTE_R(int, error_code);
     };
 
+    /// Handle to an open file
     class Handle
     {
     public:
@@ -39,10 +43,15 @@ namespace reactor
     {
     public:
       virtual ~Path() {}
+
       virtual void stat(struct stat*) = 0;
       virtual void list_directory(OnDirectoryEntry cb) = 0;
+      virtual std::unique_ptr<Handle> open(int flags, mode_t mode) = 0;
+      /// Will bounce to open() if not implemented
+      virtual std::unique_ptr<Handle> create(int flags, mode_t mode);
+
       virtual std::unique_ptr<Path> child(std::string const& name) = 0;
-      virtual std::unique_ptr<Handle> open(int flags) = 0;
+
     };
 
     class Operations

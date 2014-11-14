@@ -8,9 +8,9 @@
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <elle/test.hh>
+#include <elle/finally.hh>
 
 ELLE_LOG_COMPONENT("Test");
-
 
 namespace sum
 {
@@ -84,7 +84,7 @@ namespace sum
         throw reactor::filesystem::Error(ENOENT, "No such file or directory");
       return elle::make_unique<Path>(n + num);
     }
-    std::unique_ptr<reactor::filesystem::Handle> open(int flags)
+    std::unique_ptr<reactor::filesystem::Handle> open(int flags, mode_t mode)
     {
       if ((flags & 3) != O_RDONLY)
         throw reactor::filesystem::Error(EACCES, "Write access denied");
@@ -105,6 +105,17 @@ namespace sum
   };
 }
 
+static int directory_count(boost::filesystem::path const& p)
+{
+  boost::filesystem::directory_iterator d(p);
+  int s=0;
+  while (d!= boost::filesystem::directory_iterator())
+  {
+    ++s; ++d;
+  }
+  return s;
+}
+
 static void run_filesystem(reactor::filesystem::FileSystem &fs,
              boost::filesystem::path tmp)
 {
@@ -117,6 +128,9 @@ static void test_sum(void)
 {
   reactor::filesystem::FileSystem fs(elle::make_unique<sum::Operations>(), true);
   auto tmp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
+  elle::SafeFinally remover([&] {
+      boost::filesystem::remove(tmp);
+  });
   boost::filesystem::create_directories(tmp);
   std::thread t([&] { run_filesystem(fs, tmp);});
   ::usleep(500000);
@@ -129,26 +143,10 @@ static void test_sum(void)
   s=0;
   boost::filesystem::ifstream(tmp/"10"/"12"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 22);
-  {
-    boost::filesystem::directory_iterator d(tmp);
-    s=0;
-    while (d!= boost::filesystem::directory_iterator())
-    {
-      ++s; ++d;
-    }
-    BOOST_CHECK_EQUAL(s, 101);
-  }
+  BOOST_CHECK_EQUAL(directory_count(tmp), 101);
   fs.unmount();
   t.join();
-  {
-    boost::filesystem::directory_iterator d(tmp);
-    s=0;
-    while (d!= boost::filesystem::directory_iterator())
-    {
-      ++s; ++d;
-    }
-    BOOST_CHECK_EQUAL(s, 0);
-  }
+  BOOST_CHECK_EQUAL(directory_count(tmp), 0);
 }
 
 namespace xorfs
@@ -165,15 +163,17 @@ namespace xorfs
   class Handle: public rfs::Handle
   {
   public:
-    Handle(Encrypt& ctx, bfs::path path, int flags)
+    Handle(Encrypt& ctx, bfs::path path, int flags, mode_t mode)
     {
       ELLE_TRACE("open %s with flags %s", path, flags);
       bfs::path p = ctx.storage / path;
       struct stat st;
-      ::stat(p.string().c_str(), &st);
-      if (! S_ISREG(st.st_mode))
+      int res = ::stat(p.string().c_str(), &st);
+      if (res==0 && !S_ISREG(st.st_mode))
         throw rfs::Error(EINVAL, "Not a regular file");
-      fd = open(p.string().c_str(), flags, 0);
+      fd = open(p.string().c_str(), flags, mode);
+      if (fd < 0)
+        throw rfs::Error(errno, strerror(errno));
     }
     int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
@@ -188,7 +188,7 @@ namespace xorfs
     int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
       lseek(fd, offset, SEEK_SET);
-      for (int i=0; i<size; ++i)
+      for (size_t i=0; i<size; ++i)
         buffer[i] = buffer[i] ^ 0xFF;
       return ::write(fd, buffer.contents(), size);
     }
@@ -211,7 +211,9 @@ namespace xorfs
       ELLE_TRACE("stat %s", ctx.storage / where);
       bfs::path p = ctx.storage / where;
 
-      ::stat(p.string().c_str(), st);
+      int res = ::stat(p.string().c_str(), st);
+      if (res < 0)
+        throw rfs::Error(errno, strerror(errno));
     }
     void list_directory(rfs::OnDirectoryEntry cb) override
     {
@@ -231,9 +233,9 @@ namespace xorfs
       ELLE_ASSERT(false);
       return std::unique_ptr<rfs::Path>{};
     }
-    std::unique_ptr<rfs::Handle> open(int flags) override
+    std::unique_ptr<rfs::Handle> open(int flags, mode_t mode) override
     {
-      return elle::make_unique<Handle>(ctx, where, flags);
+      return elle::make_unique<Handle>(ctx, where, flags, mode);
     }
     Encrypt& ctx;
     bfs::path where;
@@ -250,6 +252,11 @@ static void test_xor(void)
   auto tmpmount = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
   auto tmpsource = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
 
+  elle::SafeFinally remover([&] {
+      boost::system::error_code erc;
+      boost::filesystem::remove(tmpmount, erc);
+      boost::filesystem::remove(tmpsource, erc);
+  });
   reactor::filesystem::FileSystem fs(
     elle::make_unique<xorfs::Encrypt>(tmpsource),
     false);
@@ -257,9 +264,31 @@ static void test_xor(void)
   boost::filesystem::create_directories(tmpsource);
   ELLE_LOG("mount: %s   source: %s", tmpmount, tmpsource);
   std::thread t([&] { run_filesystem(fs, tmpmount);});
-  while (true)
-    ::usleep(500000);
-
+  std::string text = "coincoin";
+  usleep(200000);
+  {
+    boost::filesystem::ofstream ofs(tmpmount / "test");
+    ofs << text;
+  }
+  BOOST_CHECK_EQUAL(directory_count(tmpmount), 1);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource), 1);
+  {
+    boost::filesystem::ifstream ifs(tmpmount / "test");
+    ifs >> text;
+  }
+  BOOST_CHECK_EQUAL(text, "coincoin");
+  {
+    boost::filesystem::ifstream ifs(tmpsource / "test");
+    unsigned char xored[10];
+    ifs.read((char*)xored, 10);
+    BOOST_CHECK_EQUAL(ifs.gcount(), 8);
+    for (int i=0; i<8; ++i)
+    {
+      BOOST_CHECK_EQUAL(text[i], xored[i] ^ 0xFF);
+    }
+  }
+  fs.unmount();
+  t.join();
 }
 
 ELLE_TEST_SUITE()
