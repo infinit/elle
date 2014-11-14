@@ -101,6 +101,57 @@ namespace reactor
       return 0;
 		}
 
+		static int fusop_unlink(const char* path)
+		{
+		  ELLE_DEBUG("fusop_unlink %s", path);
+		  try
+		  {
+		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.unlink();
+		  }
+		  catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error unlinking %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+		}
+
+		static int fusop_mkdir(const char* path, mode_t mode)
+		{
+		  ELLE_DEBUG("fusop_mkdir %s", path);
+		  try
+		  {
+		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.mkdir(mode);
+		  }
+		  catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error mkdiring %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+		}
+
+		static int fusop_rmdir(const char* path)
+		{
+		  ELLE_DEBUG("fusop_rmdir %s", path);
+		  try
+		  {
+		    FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.rmdir();
+		  }
+		  catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error rmdiring %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+		}
+
 		static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
 		                      struct fuse_file_info *fi)
 		{
@@ -116,7 +167,7 @@ namespace reactor
       }
       return 0;
 		}
-		
+
 		static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
 		                       struct fuse_file_info *fi)
 		{
@@ -132,7 +183,7 @@ namespace reactor
       }
       return 0;
 		}
-		
+
 		static int fusop_release(const char *path, struct fuse_file_info *fi)
 		{
 		  try
@@ -147,7 +198,7 @@ namespace reactor
       }
 		  return 0;
 		}
-		
+
     class FileSystemImpl
     {
     public:
@@ -185,6 +236,9 @@ namespace reactor
       ops.write = fusop_write;
       ops.release = fusop_release;
       ops.create = fusop_create;
+      ops.unlink = fusop_unlink;
+      ops.mkdir = fusop_mkdir;
+      ops.rmdir = fusop_rmdir;
       _impl->_handle = fuse_create(where.string(), options, &ops, sizeof(ops), this);
       fuse* handle = _impl->_handle;
       _impl->_poller.reset(new Thread("fuse loop", [handle] { reactor::fuse_loop_mt(handle);}));

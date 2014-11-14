@@ -237,6 +237,31 @@ namespace xorfs
     {
       return elle::make_unique<Handle>(ctx, where, flags, mode);
     }
+    void unlink() override
+    {
+      bfs::path p = ctx.storage / where;
+      boost::system::error_code erc;
+      bfs::remove(p, erc);
+      if (erc)
+        throw rfs::Error(erc.value(), erc.message());
+    }
+    void mkdir(mode_t mode) override
+    {
+      bfs::create_directory(ctx.storage / where);
+    }
+    void rmdir()
+    {
+      bfs::path p = ctx.storage / where;
+      boost::system::error_code erc;
+      if (bfs::is_directory(p, erc))
+      {
+        bfs::remove(p, erc);
+        if (erc)
+          throw rfs::Error(erc.value(), erc.message());
+      }
+      else
+        throw rfs::Error(ENOTDIR, "Not a directory");
+    }
     Encrypt& ctx;
     bfs::path where;
   };
@@ -287,6 +312,26 @@ static void test_xor(void)
       BOOST_CHECK_EQUAL(text[i], xored[i] ^ 0xFF);
     }
   }
+  boost::filesystem::remove(tmpmount / "test");
+  BOOST_CHECK_EQUAL(directory_count(tmpmount), 0);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource), 0);
+
+  boost::filesystem::create_directory(tmpmount / "dir");
+  BOOST_CHECK_EQUAL(directory_count(tmpmount), 1);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource), 1);
+  BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
+  {
+    boost::filesystem::ofstream ofs(tmpmount / "dir"/ "test");
+    ofs << text;
+  }
+  BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 1);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 1);
+  boost::filesystem::remove(tmpmount / "dir" / "test");
+  BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
+  boost::filesystem::remove(tmpmount / "dir");
+
   fs.unmount();
   t.join();
 }

@@ -49,7 +49,11 @@ namespace reactor
       virtual std::unique_ptr<Handle> open(int flags, mode_t mode) = 0;
       /// Will bounce to open() if not implemented
       virtual std::unique_ptr<Handle> create(int flags, mode_t mode);
-
+      /// Delete a file. Defaults to error(not implemented)
+      virtual void unlink();
+      virtual void mkdir(mode_t mode);
+      virtual void rmdir();
+      /// Return a Path for given child name.
       virtual std::unique_ptr<Path> child(std::string const& name) = 0;
 
     };

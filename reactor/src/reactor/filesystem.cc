@@ -15,5 +15,17 @@ namespace reactor
       ELLE_ASSERT(flags & O_CREAT);
       return this->open(flags, mode);
     }
+    void Path::unlink()
+    {
+      throw Error(EPERM, "Not implemented");
+    }
+    void Path::rmdir()
+    {
+      throw Error(EPERM, "Not implemented");
+    }
+    void Path::mkdir(mode_t)
+    {
+      throw Error(EPERM, "Not implemented");
+    }
   }
 }
