@@ -161,17 +161,17 @@ blocks()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(multiple_read), 0, 1);
+  suite.add(BOOST_TEST_CASE(multiple_read), 0, 3);
   auto read_blocks_read =
     &blocks<elle::threading::read_mutex, elle::threading::read_mutex>;
-  suite.add(BOOST_TEST_CASE(read_blocks_read), 1, 1);
+  suite.add(BOOST_TEST_CASE(read_blocks_read), 1, 3);
   auto read_blocks_write =
     &blocks<elle::threading::read_mutex, elle::threading::write_mutex>;
-  suite.add(BOOST_TEST_CASE(read_blocks_write), 0, 1);
+  suite.add(BOOST_TEST_CASE(read_blocks_write), 0, 3);
   auto write_blocks_read =
     &blocks<elle::threading::write_mutex, elle::threading::read_mutex>;
-  suite.add(BOOST_TEST_CASE(write_blocks_read), 0, 1);
+  suite.add(BOOST_TEST_CASE(write_blocks_read), 0, 3);
   auto write_blocks_write =
     &blocks<elle::threading::write_mutex, elle::threading::write_mutex>;
-  suite.add(BOOST_TEST_CASE(write_blocks_write), 0, 1);
+  suite.add(BOOST_TEST_CASE(write_blocks_write), 0, 3);
 }
