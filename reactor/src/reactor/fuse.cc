@@ -83,10 +83,9 @@ namespace reactor
       if (fuse_exited(_fuse))
         break;
       ELLE_DUMP("Processing command");
-      fuse_buf fbuf { buffer_size, fuse_buf_flags(), buffer_data};
       int res = -EINTR;
       while(res == -EINTR)
-        res = fuse_session_receive_buf(s, &fbuf, &ch);
+        res = fuse_chan_recv(&ch, (char*)buffer_data, buffer_size);
       if (res == -EAGAIN)
         continue;
       if (res <= 0)
@@ -94,15 +93,13 @@ namespace reactor
         ELLE_LOG("%s: %s", res, strerror(-res));
         break;
       }
-      void* b2 = malloc(buffer_size);
-      memcpy(b2, buffer_data, buffer_size);
-      fuse_buf fbuf2 = fbuf;
-      fbuf2.mem = b2;
+      void* b2 = malloc(res);
+      memcpy(b2, buffer_data, res);
 
-      _workers.push_back(new Thread("fuse worker", [s, fbuf2, ch, this] {
+      _workers.push_back(new Thread("fuse worker", [s, b2, res, ch, this] {
         auto lock = this->_mt_barrier.lock();
-        fuse_session_process_buf(s, &fbuf2, ch);
-        free(fbuf2.mem);
+        fuse_session_process(s, (const char*)b2, res, ch);
+        free(b2);
         auto it = std::find(_workers.begin(), _workers.end(), scheduler().current());
         ELLE_ASSERT(it != _workers.end());
         std::swap(*it, _workers.back());
