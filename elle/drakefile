@@ -264,13 +264,23 @@ def configure(zlib_lib,
     'src/elle/sfinae.hh',
     'src/elle/system/getpid.cc',
     'src/elle/system/getpid.hh',
-    'src/elle/system/home_directory.cc',
-    'src/elle/system/platform.cc',
     'src/elle/system/platform.hh',
     'src/elle/system/signal.cc',
     'src/elle/system/signal.hh',
     'src/elle/time.hh',
     'src/elle/types.hh',
+    )
+
+  # Home Directory
+  if cxx_toolkit.os is not drake.os.ios:
+    sources += drake.nodes(
+      'src/elle/system/home_directory.cc',
+      'src/elle/system/platform.cc',
+    )
+  else:
+    sources += drake.nodes(
+      'src/elle/system/home_directory.mm',
+      'src/elle/system/platform.mm',
     )
 
   # JSON Spirit
