@@ -7,6 +7,7 @@
 #include <reactor/filesystem.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
+#include <reactor/Barrier.hh>
 #include <elle/test.hh>
 #include <elle/finally.hh>
 #include <elle/os/environ.hh>
@@ -26,8 +27,11 @@ namespace sum
     {
       ELLE_TRACE("read %s/%s", offset, size);
       std::string val = std::to_string(num) + "\n";
-      strncpy((char*)buffer.contents(), val.c_str(), std::min(val.length()+1, size));
-      return size;
+      if (offset >= val.length())
+        return 0;
+      size_t sz = std::min(val.length()+1, size);
+      strncpy((char*)buffer.contents(), val.c_str(), sz);
+      return sz;
     }
     int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
@@ -120,10 +124,17 @@ static int directory_count(boost::filesystem::path const& p)
 }
 
 static void run_filesystem(reactor::filesystem::FileSystem &fs,
-             boost::filesystem::path tmp)
+             boost::filesystem::path tmp,
+             reactor::Barrier** b)
 {
   reactor::Scheduler sched;
-  reactor::Thread t(sched, "mount", [&] { fs.mount(tmp, {});});
+  reactor::Thread t(sched, "mount", [&] {
+    reactor::Barrier barrier;
+    *b = &barrier;
+    fs.mount(tmp, {});
+    barrier.wait();
+    fs.unmount();
+  });
   sched.run();
 }
 
@@ -135,7 +146,8 @@ static void test_sum(void)
       boost::filesystem::remove(tmp);
   });
   boost::filesystem::create_directories(tmp);
-  std::thread t([&] { run_filesystem(fs, tmp);});
+  reactor::Barrier* barrier;
+  std::thread t([&] { run_filesystem(fs, tmp, &barrier);});
   ELLE_LOG("Mounted on %s", tmp);
   if (sandbox)
   {
@@ -152,7 +164,9 @@ static void test_sum(void)
   boost::filesystem::ifstream(tmp/"10"/"12"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 22);
   BOOST_CHECK_EQUAL(directory_count(tmp), 101);
-  fs.unmount();
+  ELLE_DEBUG("teardown");
+  barrier->open();
+  ELLE_DEBUG("joining");
   t.join();
   BOOST_CHECK_EQUAL(directory_count(tmp), 0);
 }
@@ -307,7 +321,8 @@ static void test_xor(void)
   boost::filesystem::create_directories(tmpmount);
   boost::filesystem::create_directories(tmpsource);
   ELLE_LOG("mount: %s   source: %s", tmpmount, tmpsource);
-  std::thread t([&] { run_filesystem(fs, tmpmount);});
+  reactor::Barrier* barrier;
+  std::thread t([&] { run_filesystem(fs, tmpmount, &barrier);});
   if (sandbox)
   {
     t.join();
@@ -356,7 +371,7 @@ static void test_xor(void)
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   boost::filesystem::remove(tmpmount / "dir");
   ELLE_TRACE("unmounting...");
-  fs.unmount();
+  barrier->open();
   ELLE_TRACE("joining...");
   t.join();
   ELLE_TRACE("finished");
@@ -366,6 +381,6 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* filesystem = BOOST_TEST_SUITE("filesystem");
   boost::unit_test::framework::master_test_suite().add(filesystem);
-  filesystem->add(BOOST_TEST_CASE(test_sum), 0, sandbox?0:5);
-  filesystem->add(BOOST_TEST_CASE(test_xor), 0, sandbox?0:5);
+  filesystem->add(BOOST_TEST_CASE(test_sum), 0, sandbox?0:10);
+  filesystem->add(BOOST_TEST_CASE(test_xor), 0, sandbox?0:10);
 }

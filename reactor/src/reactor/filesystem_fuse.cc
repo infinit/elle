@@ -4,6 +4,7 @@
 
 #include <reactor/fuse.hh>
 #include <reactor/thread.hh>
+#include <reactor/scheduler.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -333,27 +334,23 @@ namespace reactor
       Path& fetch_recurse(boost::filesystem::path const& path);
       std::unique_ptr<Operations> _operations;
       bool _full_tree;
-      fuse* _handle;
+      FuseContext _fuse;
       std::string _where;
-      std::unique_ptr<Thread> _poller;
       std::unordered_map<boost::filesystem::path, std::unique_ptr<Path>> _cache;
     };
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
-    : _impl(new FileSystemImpl{std::move(op), full_tree, nullptr})
+    : _impl(new FileSystemImpl{std::move(op), full_tree})
     {
     }
     FileSystem::~FileSystem()
     {
-      if (_impl->_handle)
-        unmount();
+      unmount();
       delete _impl;
     }
     void FileSystem::mount(boost::filesystem::path const& where,
                            std::vector<std::string> const& options)
     {
-      if (_impl->_handle)
-        throw elle::Error("Filesystem already mounted");
       _impl->_where = where.string();
       fuse_operations ops;
       memset(&ops, 0, sizeof(ops));
@@ -375,16 +372,14 @@ namespace reactor
       ops.chown = fusop_chown;
       ops.statfs = fusop_statfs;
       ops.utimens = fusop_utimens;
-      _impl->_handle = fuse_create(where.string(), options, &ops, sizeof(ops), this);
-      fuse* handle = _impl->_handle;
-      _impl->_poller.reset(new Thread("fuse loop", [handle] { reactor::fuse_loop_mt(handle);}));
+      _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
+      _impl->_fuse.loop_mt();
     }
     void FileSystem::unmount()
     {
-      if (!_impl->_handle)
-        throw elle::Error("Filesystem is not mounted");
-      fuse_destroy(_impl->_handle, _impl->_where);
-      _impl->_handle = nullptr;
+      if (!_impl->_where.empty())
+        _impl->_fuse.destroy();
+      _impl->_where = "";
     }
     Path& FileSystemImpl::fetch_recurse(boost::filesystem::path const& path)
     {

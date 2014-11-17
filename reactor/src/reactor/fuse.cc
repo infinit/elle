@@ -13,63 +13,75 @@
 #include <elle/finally.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/scheduler.hh>
+#include <reactor/MultiLockBarrier.hh>
+#include <reactor/exception.hh>
 
 ELLE_LOG_COMPONENT("reactor.fuse");
 
 namespace reactor
 {
-  void fuse_loop(fuse* f)
+  void FuseContext::loop()
   {
-    fuse_session* s = fuse_get_session(f);
+    fuse_session* s = fuse_get_session(_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     int fd = fuse_chan_fd(ch);
     ELLE_TRACE("Got fuse fs %s", fd);
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
-    Barrier b;
-
-    while (!fuse_exited(f))
+    auto lock = _mt_barrier.lock();
+    while (!fuse_exited(_fuse))
     {
-      b.close();
+      _socket_barrier.close();
       socket.async_read_some(boost::asio::null_buffers(),
         [&](boost::system::error_code const&, std::size_t)
         {
-          b.open();
+          _socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
-      wait(b);
+      wait(_socket_barrier);
+      if (fuse_exited(_fuse))
+        break;
       ELLE_DUMP("Processing command");
       //highlevel api
-      fuse_cmd* cmd = fuse_read_cmd(f);
+      fuse_cmd* cmd = fuse_read_cmd(_fuse);
       if (!cmd)
         break;
-      fuse_process_cmd(f, cmd);
+      fuse_process_cmd(_fuse, cmd);
     }
     socket.release();
   }
 
-  void fuse_loop_mt(fuse* f)
+  void FuseContext::loop_mt()
   {
-    fuse_session* s = fuse_get_session(f);
+    _loop.reset(new Thread("fuse loop",
+                           [this] { this->_loop_mt();}));
+  }
+  void FuseContext::_loop_mt()
+  {
+    reactor::MultiLockBarrier barrier;
+    fuse_session* s = fuse_get_session(_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
     int fd = fuse_chan_fd(ch);
     ELLE_TRACE("Got fuse fs %s", fd);
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
-    Barrier b;
-    
+    auto lock = _mt_barrier.lock();
     void* buffer_data = malloc(buffer_size);
-    while (!fuse_exited(f))
+    while (!fuse_exited(_fuse))
     {
-      b.close();
+      _socket_barrier.close();
       socket.async_read_some(boost::asio::null_buffers(),
-        [&](boost::system::error_code const&, std::size_t)
+        [&](boost::system::error_code const& erc, std::size_t)
         {
-          b.open();
+          if (erc)
+            return;
+          _socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
-      wait(b);
+      wait(_socket_barrier);
+      if (fuse_exited(_fuse))
+        break;
       ELLE_DUMP("Processing command");
       fuse_buf fbuf { buffer_size, fuse_buf_flags(), buffer_data};
       int res = -EINTR;
@@ -87,18 +99,25 @@ namespace reactor
       fuse_buf fbuf2 = fbuf;
       fbuf2.mem = b2;
 
-      new Thread("fuse worker", [s, fbuf2, ch] {
+      _workers.push_back(new Thread("fuse worker", [s, fbuf2, ch, this] {
+        auto lock = this->_mt_barrier.lock();
         fuse_session_process_buf(s, &fbuf2, ch);
         free(fbuf2.mem);
-      });
+        auto it = std::find(_workers.begin(), _workers.end(), scheduler().current());
+        ELLE_ASSERT(it != _workers.end());
+        std::swap(*it, _workers.back());
+        _workers.pop_back();
+        },
+        true));
     }
   }
 
-  fuse* fuse_create(std::string const& mountpoint,
+  void FuseContext::create(std::string const& mountpoint,
                     std::vector<std::string> const& arguments,
                     const struct fuse_operations *op, size_t op_size,
                     void* user_data)
   {
+    _mountpoint = mountpoint;
     fuse_args args;
     args.allocated = false;
     args.argc = arguments.size();
@@ -110,17 +129,34 @@ namespace reactor
     fuse_chan* chan = ::fuse_mount(mountpoint.c_str(), &args);
     if (!chan)
       throw std::runtime_error("fuse_mount failed");
-    fuse* res = ::fuse_new(chan, &args, op, op_size, user_data);
-    if (!res)
+    _fuse = ::fuse_new(chan, &args, op, op_size, user_data);
+    if (!_fuse)
       throw std::runtime_error("fuse_new failed");
-    return res;
   }
-  void fuse_destroy(fuse* f, std::string const& mountpoint)
-  {   
-    fuse_session* s = ::fuse_get_session(f);
+
+  void FuseContext::destroy(DurationOpt graceTime)
+  {
+    ELLE_TRACE("fuse_destroy");
+    ::fuse_exit(_fuse);
+    _socket_barrier.open();
+    ELLE_TRACE("terminating...");
+    try
+    {
+      reactor::wait(_mt_barrier, graceTime);
+    }
+    catch(Timeout const&)
+    {
+      ELLE_TRACE("killing...");
+      _loop->terminate_now();
+      for (auto const& t: _workers)
+        t->terminate_now();
+      reactor::wait(_mt_barrier);
+    }
+    ELLE_TRACE("done");
+    fuse_session* s = ::fuse_get_session(_fuse);
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
-    ::fuse_unmount(mountpoint.c_str(), ch);
-    ::fuse_exit(f);
-    ::fuse_destroy(f);
+    ::fuse_unmount(_mountpoint.c_str(), ch);
+    ::fuse_exit(_fuse);
+    ::fuse_destroy(_fuse);
   }
 }
