@@ -83,8 +83,9 @@ namespace reactor
       /** Create a new file system with given operations
       *
       * @param full_tree: If set, will use Operations.path('/') only and
-      *        recurse using Path::child(). Otherwise Operations::path()
-      *        will be used with full pathes and Path::child will never be called.
+      *        traverse the filesystem tree using Path::child().
+      *        Otherwise Operations::path() will be used with full pathes
+      *        and Path::child will never be called.
       */
       FileSystem(std::unique_ptr<Operations> op, bool full_tree);
       ~FileSystem();
@@ -94,6 +95,45 @@ namespace reactor
       Path& path(std::string const& path);
     private:
       FileSystemImpl* _impl;
+    };
+
+    /// Handle implementation reading/writing to the local filesystem
+    class BindHandle: public Handle
+    {
+    public:
+      BindHandle(int fd);
+      int read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
+      int write(elle::WeakBuffer buffer, size_t size, off_t offset) override;
+      void close() override;
+    protected:
+      int _fd;
+    };
+
+    /// Default Path implementation acting on the local filesystem.
+    class BindPath: public Path
+    {
+    public:
+      BindPath(boost::filesystem::path const& where);
+      void stat(struct stat*) override;
+      void list_directory(OnDirectoryEntry cb) override;
+      std::unique_ptr<Handle> open(int flags, mode_t mode) override;
+      void unlink() override;
+      void mkdir(mode_t mode) override;
+      void rmdir() override;
+      void rename(boost::filesystem::path const& where) override;
+      boost::filesystem::path readlink() override;
+      void symlink(boost::filesystem::path const& where) override;
+      void link(boost::filesystem::path const& where) override;
+      void chmod(mode_t mode) override;
+      void chown(uid_t uid, gid_t gid) override;
+      void statfs(struct statvfs *) override;
+      void utimens(const struct timespec tv[2]) override;
+      /// Return a Path for given child name.
+      std::unique_ptr<Path> child(std::string const& name) override;
+      virtual std::unique_ptr<BindHandle> make_handle(boost::filesystem::path& where,
+                                                      int fd);
+    private:
+      ELLE_ATTRIBUTE_R(boost::filesystem::path, where);
     };
   }
 }

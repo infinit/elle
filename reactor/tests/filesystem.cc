@@ -182,25 +182,17 @@ namespace xorfs
     Encrypt(bfs::path storage): storage(storage) {}
     bfs::path storage;
   };
-  class Handle: public rfs::Handle
+  class Handle: public rfs::BindHandle
   {
   public:
-    Handle(Encrypt& ctx, bfs::path path, int flags, mode_t mode)
+    Handle(int fd)
+    : rfs::BindHandle(fd)
     {
-      ELLE_TRACE("open %s with flags %s", path, flags);
-      bfs::path p = ctx.storage / path;
-      struct stat st;
-      int res = ::stat(p.string().c_str(), &st);
-      if (res==0 && !S_ISREG(st.st_mode))
-        throw rfs::Error(EINVAL, "Not a regular file");
-      fd = open(p.string().c_str(), flags, mode);
-      if (fd < 0)
-        throw rfs::Error(errno, strerror(errno));
     }
     int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
-      lseek(fd, offset, SEEK_SET);
-      int len = ::read(fd, (void*)buffer.contents(), size);
+      lseek(_fd, offset, SEEK_SET);
+      int len = ::read(_fd, (void*)buffer.contents(), size);
       if (len <=0)
         return len;
       for (int i=0; i<len; ++i)
@@ -209,94 +201,23 @@ namespace xorfs
     }
     int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
-      lseek(fd, offset, SEEK_SET);
+      lseek(_fd, offset, SEEK_SET);
       for (size_t i=0; i<size; ++i)
         buffer[i] = buffer[i] ^ 0xFF;
-      return ::write(fd, buffer.contents(), size);
+      return ::write(_fd, buffer.contents(), size);
     }
-    void close() override
-    {
-      ::close(fd);
-    }
-    int fd;
   };
-  class Path: public rfs::Path
+  class Path: public rfs::BindPath
   {
   public:
     Path(bfs::path where, Encrypt& ctx)
-    : ctx(ctx)
-    , where(where)
+    : rfs::BindPath(ctx.storage /where)
     {}
-    void stat(struct stat* st) override
+    std::unique_ptr<rfs::BindHandle> make_handle(boost::filesystem::path& where,
+                                            int fd) override
     {
-      ELLE_TRACE("stat %s/%s", ctx.storage, where);
-      ELLE_TRACE("stat %s", ctx.storage / where);
-      bfs::path p = ctx.storage / where;
-
-      int res = ::stat(p.string().c_str(), st);
-      if (res < 0)
-        throw rfs::Error(errno, strerror(errno));
+      return elle::make_unique<Handle>(fd);
     }
-    void list_directory(rfs::OnDirectoryEntry cb) override
-    {
-      ELLE_TRACE("listdir %s/%s", ctx.storage, where);
-      ELLE_TRACE("listdir %s", ctx.storage / where);
-      bfs::path p = ctx.storage / where;
-      bfs::directory_iterator it(p);
-      for(;it != bfs::directory_iterator(); ++it)
-      {
-        ELLE_TRACE("->%s", it->path());
-        cb(it->path().filename().string(), nullptr);
-      }
-      ELLE_TRACE("end listdir");
-    }
-    std::unique_ptr<rfs::Path> child(std::string const& name) override
-    {
-      ELLE_ASSERT(false);
-      return std::unique_ptr<rfs::Path>{};
-    }
-    std::unique_ptr<rfs::Handle> open(int flags, mode_t mode) override
-    {
-      return elle::make_unique<Handle>(ctx, where, flags, mode);
-    }
-    void unlink() override
-    {
-      bfs::path p = ctx.storage / where;
-      boost::system::error_code erc;
-      bfs::remove(p, erc);
-      if (erc)
-        throw rfs::Error(erc.value(), erc.message());
-    }
-    void mkdir(mode_t mode) override
-    {
-      bfs::create_directory(ctx.storage / where);
-    }
-    void rmdir()
-    {
-      bfs::path p = ctx.storage / where;
-      boost::system::error_code erc;
-      if (bfs::is_directory(p, erc))
-      {
-        bfs::remove(p, erc);
-        if (erc)
-          throw rfs::Error(erc.value(), erc.message());
-      }
-      else
-        throw rfs::Error(ENOTDIR, "Not a directory");
-    }
-    void rename(bfs::path const& to) override
-    {
-      bfs::path p = ctx.storage / where;
-      boost::system::error_code erc;
-      bfs::rename(p, ctx.storage / to, erc);
-      if (erc)
-      {
-        ELLE_TRACE("bfs rename failed: %s", erc.message());
-        throw rfs::Error(erc.value(), erc.message());
-      }
-    }
-    Encrypt& ctx;
-    bfs::path where;
   };
   std::unique_ptr<rfs::Path> Encrypt::path(std::string const& p)
   {
