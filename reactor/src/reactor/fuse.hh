@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <thread>
 
 #include <reactor/Barrier.hh>
 #include <reactor/scheduler.hh>
@@ -25,12 +26,13 @@ namespace reactor
     /// unmount and free ressources. Fore-kill after graceTime
     void destroy(DurationOpt graceTime = DurationOpt());
   private:
-    void _loop_mt();
+    void _loop_mt(Scheduler&);
     fuse* _fuse;
     std::string _mountpoint;
     Barrier _socket_barrier;
     reactor::MultiLockBarrier _mt_barrier;
     std::unique_ptr<reactor::Thread> _loop;
+    std::unique_ptr<std::thread> _loopThread;
     std::vector<reactor::Thread*> _workers;
   };
 

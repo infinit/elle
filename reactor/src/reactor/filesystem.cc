@@ -148,9 +148,13 @@ namespace reactor
     }
     void BindPath::utimens(const struct timespec tv[2])
     {
+#ifdef INFINIT_LINUX
       int res = ::utimensat(0, _where.string().c_str(), tv, 0);
       if (res < 0)
         throw Error(errno, strerror(errno));
+#else
+      throw Error(EPERM, "Not implemented");
+#endif
     }
     /// Return a Path for given child name.
     std::unique_ptr<Path> BindPath::child(std::string const& name)
