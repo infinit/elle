@@ -60,7 +60,7 @@ namespace reactor
     _loopThread.reset(new std::thread([&] { this->_loop_mt(sched);}));
 #else
     _loop.reset(new Thread("fuse loop",
-                           [this] { this->_loop_mt(sched);}));
+                           [&] { this->_loop_mt(sched);}));
 #endif
   }
   void FuseContext::_loop_mt(Scheduler& sched)
