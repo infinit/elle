@@ -317,11 +317,11 @@ def configure(curl_config,
     sources + lib_dynamic_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+    library = lib_static
+  else:
     rule_build << lib_dynamic
     library = lib_dynamic
-  else:
-    library = lib_static
 
   if python3 is not None:
     python_cxx_config = drake.cxx.Config(local_cxx_config)
