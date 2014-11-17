@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "home_directory.hh"
+#include <elle/system/home_directory.hh>
 
 #include <elle/os/environ.hh>
 #ifdef INFINIT_WINDOWS
