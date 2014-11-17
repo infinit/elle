@@ -36,7 +36,7 @@ multiple_read()
   std::thread reader2(
     [&]
     {
-      reader(locked2, locked2_barrier, locked1, locked2_barrier);
+      reader(locked2, locked2_barrier, locked1, locked1_barrier);
     });
   reader1.join();
   reader2.join();
