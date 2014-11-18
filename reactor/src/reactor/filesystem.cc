@@ -50,7 +50,7 @@ namespace reactor
     void Path::chmod(mode_t mode)                           { throw Error(EPERM, "Not implemented");}
     void Path::chown(uid_t uid, gid_t gid)                  { throw Error(EPERM, "Not implemented");}
     void Path::utimens(const struct timespec tv[2])         { throw Error(EPERM, "Not implemented");}
-
+    void Path::truncate(off_t new_size)                     { throw Error(EPERM, "Not implemented");}
     namespace bfs = boost::filesystem;
     BindPath::BindPath(bfs::path const&path)
     : _where(path)
@@ -163,6 +163,12 @@ namespace reactor
 #else
       throw Error(EPERM, "Not implemented");
 #endif
+    }
+    void BindPath::truncate(off_t new_size)
+    {
+      int res = ::truncate(_where.string().c_str(), new_size);
+      if (res < 0)
+        throw Error(errno, strerror(errno));
     }
     /// Return a Path for given child name.
     std::unique_ptr<Path> BindPath::child(std::string const& name)

@@ -327,6 +327,21 @@ namespace reactor
       }
       return 0;
     }
+    static int fusop_truncate(const char* path, off_t new_size)
+    {
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        Path& p = fs->path(path);
+        p.truncate(new_size);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on truncate %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
 
     class FileSystemImpl
     {
@@ -372,6 +387,7 @@ namespace reactor
       ops.chown = fusop_chown;
       ops.statfs = fusop_statfs;
       ops.utimens = fusop_utimens;
+      ops.truncate = fusop_truncate;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
       _impl->_fuse.loop_mt();
     }

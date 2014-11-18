@@ -62,6 +62,7 @@ namespace reactor
       virtual void chown(uid_t uid, gid_t gid);
       virtual void statfs(struct statvfs *);
       virtual void utimens(const struct timespec tv[2]);
+      virtual void truncate(off_t new_size);
       /// Return a Path for given child name.
       virtual std::unique_ptr<Path> child(std::string const& name) = 0;
 
@@ -128,6 +129,7 @@ namespace reactor
       void chown(uid_t uid, gid_t gid) override;
       void statfs(struct statvfs *) override;
       void utimens(const struct timespec tv[2]) override;
+      void truncate(off_t new_size);
       /// Return a Path for given child name.
       std::unique_ptr<Path> child(std::string const& name) override;
       virtual std::unique_ptr<BindHandle> make_handle(boost::filesystem::path& where,
