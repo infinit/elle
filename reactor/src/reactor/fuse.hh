@@ -34,6 +34,7 @@ namespace reactor
     std::unique_ptr<reactor::Thread> _loop;
     std::unique_ptr<std::thread> _loopThread;
     std::vector<reactor::Thread*> _workers;
+    std::mutex _mutex;
   };
 
 }

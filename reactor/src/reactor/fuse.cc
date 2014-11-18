@@ -106,11 +106,16 @@ namespace reactor
       }
       void* b2 = malloc(res);
       memcpy(b2, buffer_data, res);
-
+#ifdef INFINIT_MACOSX
+      std::unique_lock<std::mutex> mutex_lock(_mutex);
+#endif
       _workers.push_back(new Thread(sched, "fuse worker", [s, b2, res, ch, this] {
         auto lock = this->_mt_barrier.lock();
         fuse_session_process(s, (const char*)b2, res, ch);
         free(b2);
+#ifdef INFINIT_MACOSX
+        std::unique_lock<std::mutex> mutex_lock(_mutex);
+#endif
         auto it = std::find(_workers.begin(), _workers.end(), scheduler().current());
         ELLE_ASSERT(it != _workers.end());
         std::swap(*it, _workers.back());
