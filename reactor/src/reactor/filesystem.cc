@@ -212,5 +212,10 @@ namespace reactor
       lseek(_fd, offset, SEEK_SET);
       return ::write(_fd, buffer.contents(), size);
     }
+
+    std::unique_ptr<Path> BindOperations::path(std::string const& p)
+    {
+      return elle::make_unique<BindPath>(p, *this);
+    }
   }
 }

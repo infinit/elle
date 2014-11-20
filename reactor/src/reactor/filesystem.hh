@@ -117,6 +117,7 @@ namespace reactor
     {
     public:
       BindOperations(boost::filesystem::path const& source);
+      std::unique_ptr<Path> path(std::string const& path) override;
       ELLE_ATTRIBUTE_R(boost::filesystem::path, source);
     };
 
