@@ -115,8 +115,9 @@ namespace reactor
       else
         throw Error(ENOTDIR, "Not a directory");
     }
-    void BindPath::rename(boost::filesystem::path const& target)
+    void BindPath::rename(boost::filesystem::path const& localtarget)
     {
+      boost::filesystem::path target = ops().source() / localtarget;
       boost::system::error_code erc;
       bfs::rename(_where, target, erc);
       if (erc)
