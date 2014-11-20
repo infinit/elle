@@ -212,7 +212,7 @@ namespace xorfs
   {
   public:
     Path(bfs::path where, Encrypt& ctx)
-    : rfs::BindPath(ctx.source() /where, ctx)
+    : rfs::BindPath(where, ctx)
     {}
     std::unique_ptr<rfs::BindHandle> make_handle(boost::filesystem::path& where,
                                             int fd) override

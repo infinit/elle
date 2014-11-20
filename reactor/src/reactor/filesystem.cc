@@ -65,7 +65,7 @@ namespace reactor
     }
 
     BindPath::BindPath(bfs::path const&path, BindOperations& ops)
-    : _where(path)
+    : _where(ops.source() / path)
     , _ops(ops)
     {
     }
