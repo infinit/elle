@@ -113,11 +113,19 @@ namespace reactor
       int _fd;
     };
 
+    class BindOperations: public Operations
+    {
+    public:
+      BindOperations(boost::filesystem::path const& source);
+      ELLE_ATTRIBUTE_R(boost::filesystem::path, source);
+    };
+
     /// Default Path implementation acting on the local filesystem.
     class BindPath: public Path
     {
     public:
-      BindPath(boost::filesystem::path const& where);
+      BindPath(boost::filesystem::path const& where,
+               BindOperations& ops);
       void stat(struct stat*) override;
       void list_directory(OnDirectoryEntry cb) override;
       std::unique_ptr<Handle> open(int flags, mode_t mode) override;
@@ -139,6 +147,7 @@ namespace reactor
                                                       int fd);
     private:
       ELLE_ATTRIBUTE_R(boost::filesystem::path, where);
+      ELLE_ATTRIBUTE_R(BindOperations&, ops);
     };
   }
 }

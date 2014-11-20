@@ -175,12 +175,13 @@ namespace xorfs
 {
   namespace rfs = reactor::filesystem;
   namespace bfs = boost::filesystem;
-  class Encrypt: public rfs::Operations
+  class Encrypt: public rfs::BindOperations
   {
   public:
+    Encrypt(boost::filesystem::path const& source)
+    : rfs::BindOperations(source)
+    {}
     std::unique_ptr<rfs::Path> path(std::string const&) override;
-    Encrypt(bfs::path storage): storage(storage) {}
-    bfs::path storage;
   };
   class Handle: public rfs::BindHandle
   {
@@ -211,7 +212,7 @@ namespace xorfs
   {
   public:
     Path(bfs::path where, Encrypt& ctx)
-    : rfs::BindPath(ctx.storage /where)
+    : rfs::BindPath(ctx.source() /where, ctx)
     {}
     std::unique_ptr<rfs::BindHandle> make_handle(boost::filesystem::path& where,
                                             int fd) override
