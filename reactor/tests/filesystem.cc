@@ -288,7 +288,42 @@ static void test_xor(void)
   }
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 1);
-  boost::filesystem::remove(tmpmount / "dir" / "test");
+  boost::system::error_code erc;
+  boost::filesystem::remove(tmpmount / "dir", erc); // dir not empty
+  BOOST_CHECK_EQUAL(!!erc, true);
+  struct stat st;
+  ::stat((tmpmount / "dir" / "test").string().c_str(), &st);
+  BOOST_CHECK_EQUAL(st.st_size, 8);
+  int fd = ::open((tmpmount / "dir" / "test").string().c_str(),
+                   O_WRONLY | O_APPEND);
+  BOOST_CHECK_GT(fd, 0);
+  ::write(fd, "foo", 3);
+  ::close(fd);
+  BOOST_CHECK_EQUAL(boost::filesystem::file_size(tmpmount / "dir" / "test"), 11);
+  fd = ::open((tmpmount / "dir" / "test").string().c_str(),
+    O_WRONLY | O_CREAT | O_EXCL, 0644);
+  BOOST_CHECK_LT(fd, 0);
+  fd = ::open((tmpmount / "dir" / "test").string().c_str(),
+    O_WRONLY | O_CREAT | O_TRUNC, 0644);
+  BOOST_CHECK_GT(fd, 0);
+  ::write(fd, "foo", 3);
+  ::close(fd);
+  BOOST_CHECK_EQUAL(boost::filesystem::file_size(tmpmount / "dir" / "test"), 3);
+  boost::filesystem::rename(tmpmount / "dir" / "test", tmpmount / "dir" / "test2", erc);
+  if (erc)
+    ELLE_ERR("move: %s", erc.message());
+  BOOST_CHECK_EQUAL(!!erc, false);
+  BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 1);
+  BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 1);
+  BOOST_CHECK_EQUAL(boost::filesystem::file_size(tmpmount / "dir" / "test2"), 3);
+
+  int res = ::chmod((tmpmount / "dir" / "test2").string().c_str(), 0600);
+  if (res)
+    ELLE_ERR("chmod failed: %s", strerror(errno));
+  ::stat((tmpmount / "dir" / "test2").string().c_str(), &st);
+  BOOST_CHECK_EQUAL(st.st_mode&0777, 0600);
+
+  boost::filesystem::remove(tmpmount / "dir" / "test2");
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   boost::filesystem::remove(tmpmount / "dir");
