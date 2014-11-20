@@ -68,13 +68,16 @@ namespace reactor
 
     };
 
+    class FileSystem;
     class Operations
     {
     public:
+      Operations();
       virtual
       std::unique_ptr<Path>
       path(std::string const& path) = 0;
       virtual ~Operations() {}
+      ELLE_ATTRIBUTE_RW(FileSystem*, filesystem);
     };
 
     class FileSystemImpl;

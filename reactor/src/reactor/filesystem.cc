@@ -11,6 +11,11 @@ namespace reactor
 {
   namespace filesystem
   {
+    Operations::Operations()
+    : _filesystem(nullptr)
+    {
+    }
+
     std::unique_ptr<Handle> Path::create(int flags, mode_t mode)
     {
       ELLE_ASSERT(flags & O_CREAT);

@@ -357,6 +357,7 @@ namespace reactor
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
     : _impl(new FileSystemImpl{std::move(op), full_tree})
     {
+      _impl->_operations->filesystem(this);
     }
     FileSystem::~FileSystem()
     {
