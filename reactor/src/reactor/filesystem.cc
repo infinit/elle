@@ -151,10 +151,9 @@ namespace reactor
     void BindPath::chmod(mode_t mode)
     {
       boost::system::error_code erc;
-      bfs::file_status stat = bfs::status(_where, erc);
+      bfs::permissions(_where, (bfs::perms)mode, erc);
       if (erc)
         throw Error(erc.value(), erc.message());
-      stat.permissions((bfs::perms)mode);
     }
     void BindPath::chown(uid_t uid, gid_t gid)
     {
