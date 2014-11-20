@@ -186,8 +186,8 @@ namespace xorfs
   class Handle: public rfs::BindHandle
   {
   public:
-    Handle(int fd)
-    : rfs::BindHandle(fd)
+    Handle(int fd, boost::filesystem::path const& where)
+    : rfs::BindHandle(fd, where)
     {
     }
     int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
@@ -217,7 +217,7 @@ namespace xorfs
     std::unique_ptr<rfs::BindHandle> make_handle(boost::filesystem::path& where,
                                             int fd) override
     {
-      return elle::make_unique<Handle>(fd);
+      return elle::make_unique<Handle>(fd, where);
     }
   };
   std::unique_ptr<rfs::Path> Encrypt::path(std::string const& p)

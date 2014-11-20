@@ -105,12 +105,13 @@ namespace reactor
     class BindHandle: public Handle
     {
     public:
-      BindHandle(int fd);
+      BindHandle(int fd, boost::filesystem::path const&);
       int read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
       int write(elle::WeakBuffer buffer, size_t size, off_t offset) override;
       void close() override;
     protected:
       int _fd;
+      boost::filesystem::path _where;
     };
 
     class BindOperations: public Operations

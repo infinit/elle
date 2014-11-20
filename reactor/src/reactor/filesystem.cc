@@ -191,11 +191,12 @@ namespace reactor
     std::unique_ptr<BindHandle> BindPath::make_handle(boost::filesystem::path& where,
                                                       int fd)
     {
-      return elle::make_unique<BindHandle>(fd);
+      return elle::make_unique<BindHandle>(fd, where);
     }
 
-    BindHandle::BindHandle(int fd)
+    BindHandle::BindHandle(int fd, boost::filesystem::path const& where)
     : _fd(fd)
+    , _where(where)
     {
     }
     void BindHandle::close()
