@@ -1,11 +1,22 @@
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/statvfs.h>
+
 #include <fcntl.h>
 
 #include <reactor/filesystem.hh>
 
 #include <elle/assert.hh>
+
+namespace std
+{
+  template<> struct hash<boost::filesystem::path>
+  {
+    size_t operator()(const boost::filesystem::path& p) const
+    {
+      return boost::filesystem::hash_value(p);
+    }
+  };
+}
 
 namespace reactor
 {
@@ -53,7 +64,7 @@ namespace reactor
     void Path::symlink(boost::filesystem::path const& where){ throw Error(EPERM, "Not implemented");}
     void Path::link(boost::filesystem::path const& where)   { throw Error(EPERM, "Not implemented");}
     void Path::chmod(mode_t mode)                           { throw Error(EPERM, "Not implemented");}
-    void Path::chown(uid_t uid, gid_t gid)                  { throw Error(EPERM, "Not implemented");}
+    void Path::chown(int uid, int gid)                      { throw Error(EPERM, "Not implemented");}
     void Path::utimens(const struct timespec tv[2])         { throw Error(EPERM, "Not implemented");}
     void Path::truncate(off_t new_size)                     { throw Error(EPERM, "Not implemented");}
     void Handle::ftruncate(off_t new_size)                  { throw Error(EPERM, "Not implemented");}
@@ -156,17 +167,25 @@ namespace reactor
       if (erc)
         throw Error(erc.value(), erc.message());
     }
-    void BindPath::chown(uid_t uid, gid_t gid)
+    void BindPath::chown(int uid, int gid)
     {
+      #ifdef INFINIT_WINDOWS
+      throw Error(EPERM, "Not implemented");
+      #else
       int res = ::chown(_where.string().c_str(), uid, gid);
       if (res < 0)
         throw Error(errno, strerror(errno));
+      #endif
     }
     void BindPath::statfs(struct statvfs *s)
     {
+      #ifdef INFINIT_WINDOWS
+      throw Error(EPERM, "Not implemented");
+      #else
      int res = ::statvfs(_where.string().c_str(), s);
      if (res < 0)
        throw Error(errno, strerror(errno));
+     #endif
     }
     void BindPath::utimens(const struct timespec tv[2])
     {
@@ -180,9 +199,10 @@ namespace reactor
     }
     void BindPath::truncate(off_t new_size)
     {
-      int res = ::truncate(_where.string().c_str(), new_size);
-      if (res < 0)
-        throw Error(errno, strerror(errno));
+      boost::system::error_code erc;
+      boost::filesystem::resize_file(_where, new_size, erc);
+      if (erc)
+        throw Error(erc.value(), erc.message());
     }
     /// Return a Path for given child name.
     std::unique_ptr<Path> BindPath::child(std::string const& name)

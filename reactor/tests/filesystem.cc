@@ -141,11 +141,16 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
 static void test_sum(void)
 {
   reactor::filesystem::FileSystem fs(elle::make_unique<sum::Operations>(), true);
+  #ifdef INFINIT_WINDOWS
+  boost::filesystem::path tmp("K:");
+  #else
   auto tmp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
   elle::SafeFinally remover([&] {
       boost::filesystem::remove(tmp);
   });
   boost::filesystem::create_directories(tmp);
+  #endif
+
   reactor::Barrier* barrier;
   std::thread t([&] { run_filesystem(fs, tmp, &barrier);});
   ELLE_LOG("Mounted on %s", tmp);
@@ -154,7 +159,11 @@ static void test_sum(void)
     t.join();
     return;
   }
+#if INFINIT_WINDOWS
+  Sleep(500);
+#else
   ::usleep(500000);
+#endif
   int s;
   boost::filesystem::ifstream(tmp/"1"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 1);
@@ -251,7 +260,11 @@ static void test_xor(void)
     return;
   }
   std::string text = "coincoin";
-  usleep(200000);
+  #if INFINIT_WINDOWS
+  Sleep(200);
+#else
+  ::usleep(200000);
+#endif
   {
     boost::filesystem::ofstream ofs(tmpmount / "test");
     ofs << text;

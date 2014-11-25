@@ -7,6 +7,23 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 
+#ifdef INFINIT_WINDOWS
+struct statvfs {
+  unsigned long  f_bsize;    /* filesystem block size */
+  unsigned long  f_frsize;   /* fragment size */
+  unsigned long  f_blocks;   /* size of fs in f_frsize units */
+  unsigned long  f_bfree;    /* # free blocks */
+  unsigned long  f_bavail;   /* # free blocks for unprivileged users */
+  unsigned long  f_files;    /* # inodes */
+  unsigned long  f_ffree;    /* # free inodes */
+  unsigned long  f_favail;   /* # free inodes for unprivileged users */
+  unsigned long  f_fsid;     /* filesystem ID */
+  unsigned long  f_flag;     /* mount flags */
+  unsigned long  f_namemax;  /* maximum filename length */
+};
+#else
+#include <sys/statvfs.h>
+#endif
 struct stat;
 struct statvfs;
 namespace reactor
@@ -60,7 +77,7 @@ namespace reactor
       virtual void symlink(boost::filesystem::path const& where);
       virtual void link(boost::filesystem::path const& where);
       virtual void chmod(mode_t mode);
-      virtual void chown(uid_t uid, gid_t gid);
+      virtual void chown(int uid, int gid);
       virtual void statfs(struct statvfs *);
       virtual void utimens(const struct timespec tv[2]);
       virtual void truncate(off_t new_size);
@@ -141,7 +158,7 @@ namespace reactor
       void symlink(boost::filesystem::path const& where) override;
       void link(boost::filesystem::path const& where) override;
       void chmod(mode_t mode) override;
-      void chown(uid_t uid, gid_t gid) override;
+      void chown(int uid, int gid) override;
       void statfs(struct statvfs *) override;
       void utimens(const struct timespec tv[2]) override;
       void truncate(off_t new_size);
