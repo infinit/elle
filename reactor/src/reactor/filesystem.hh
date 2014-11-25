@@ -37,6 +37,7 @@ namespace reactor
       virtual ~Handle() {}
       virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual int write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
+      virtual void ftruncate(off_t offset);
       virtual void close()=0;
     };
 
@@ -108,6 +109,7 @@ namespace reactor
       BindHandle(int fd, boost::filesystem::path const&);
       int read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
       int write(elle::WeakBuffer buffer, size_t size, off_t offset) override;
+      void ftruncate(off_t offset) override;
       void close() override;
     protected:
       int _fd;

@@ -218,6 +218,22 @@ namespace reactor
       return 0;
     }
 
+    static int fusop_ftruncate(const char* path, off_t offset,
+                               struct fuse_file_info* fi)
+    {
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        handle->ftruncate(offset);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error truncating %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
     static int fusop_readlink(const char* path, char* buf, size_t len)
     {
       try
@@ -389,6 +405,7 @@ namespace reactor
       ops.statfs = fusop_statfs;
       ops.utimens = fusop_utimens;
       ops.truncate = fusop_truncate;
+      ops.ftruncate = fusop_ftruncate;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
       _impl->_fuse.loop_mt();
     }

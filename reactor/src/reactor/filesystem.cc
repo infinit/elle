@@ -56,6 +56,7 @@ namespace reactor
     void Path::chown(uid_t uid, gid_t gid)                  { throw Error(EPERM, "Not implemented");}
     void Path::utimens(const struct timespec tv[2])         { throw Error(EPERM, "Not implemented");}
     void Path::truncate(off_t new_size)                     { throw Error(EPERM, "Not implemented");}
+    void Handle::ftruncate(off_t new_size)                  { throw Error(EPERM, "Not implemented");}
 
     namespace bfs = boost::filesystem;
 
@@ -217,6 +218,13 @@ namespace reactor
     std::unique_ptr<Path> BindOperations::path(std::string const& p)
     {
       return elle::make_unique<BindPath>(p, *this);
+    }
+
+    void BindHandle::ftruncate(off_t sz)
+    {
+      int res = ::ftruncate(_fd, sz);
+      if (res != 0)
+        throw Error(errno, strerror(errno));
     }
   }
 }
