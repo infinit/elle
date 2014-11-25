@@ -60,7 +60,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error stating %s: %s", path, e);
+        ELLE_TRACE("Filesystem error reading dir %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
@@ -78,7 +78,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error stating %s: %s", path, e);
+        ELLE_TRACE("Filesystem error opening %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
@@ -96,7 +96,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error stating %s: %s", path, e);
+        ELLE_TRACE("Filesystem error creating %s: %s", path, e);
         return -e.error_code();
       }
       return 0;
