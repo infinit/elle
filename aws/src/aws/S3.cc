@@ -852,6 +852,12 @@ namespace aws
       { // non-transient RequestError is fatal
         ++attempt;
         ELLE_ERR("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
+        // Debug, retry a bit on checksum error to see if value changes on
+        // either side
+        if (err.error_code() && *err.error_code() == "XAmzContentSHA256Mismatch" && attempt < 5)
+        {
+          continue;
+        }
         AWSException aws_exception(operation, url, attempt,
                                    elle::make_unique<RequestError>(err));
         if (_on_error)
