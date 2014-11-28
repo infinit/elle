@@ -84,7 +84,9 @@ namespace elle
           strerror(errno), _path,
           boost::system::error_code(errno, boost::system::system_category()));
 #endif
-      ELLE_ASSERT(boost::filesystem::exists(_path));
+      if (!boost::filesystem::exists(_path))
+        throw boost::filesystem::filesystem_error("File vanished", _path,
+          boost::system::error_code(ENOENT, boost::system::system_category()));
     }
 
     Buffer read_file_chunk(boost::filesystem::path path,
