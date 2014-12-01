@@ -39,6 +39,7 @@ def configure(curl_config,
               prefix = '/usr',
               valgrind = None,
               valgrind_tests = False,
+              archs = [],
 ):
 
   global asio_udt_lib
@@ -170,7 +171,7 @@ def configure(curl_config,
   elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True)
 
   # miniupnpc
-  miniupnp = drake.include('miniupnp', cxx_toolkit)
+  miniupnp = drake.include('miniupnp', cxx_toolkit, archs = archs)
   miniupnpc = miniupnp.miniupnpc
   local_cxx_config += miniupnpc.config
 
