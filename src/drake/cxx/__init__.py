@@ -535,7 +535,13 @@ class GccToolkit(Toolkit):
              values = ['gcc', 'clang']):
     pass
 
-  def __init__(self, compiler = None, compiler_c = None, os = None):
+  def __init__(self,
+               compiler = None,
+               compiler_c = None,
+               os = None,
+               archiver = None,
+               archiver_flags = [],
+               ranlib = None):
     Toolkit.__init__(self)
     self.os = os
     self.__include_path = None
@@ -578,7 +584,18 @@ class GccToolkit(Toolkit):
     else:
       self.__kind = GccToolkit.Kind.gcc
     self.c = compiler_c or '%sgcc' % self.prefix
-    self.ar = '%sar' % self.prefix
+    if archiver:
+      self.ar = archiver
+    else:
+      self.ar = '%sar' % self.prefix
+    if archiver_flags:
+      self.ar_flags = archiver_flags
+    else:
+      self.ar_flags = ['crs']
+    if ranlib is None:
+      self.ranlib = '%sranlib' % self.prefix
+    else:
+      self.ranlib = ranlib
 
   def preprocess_istrue(self, vars, config = Config(), preamble = None):
     if preamble:
@@ -702,8 +719,11 @@ class GccToolkit(Toolkit):
   def archive(self, objs, lib):
     objects = [str(n.path()) for n in objs
                if isinstance(n, drake.cxx.Object)]
-    return ([self.ar, 'crs', str(lib.path())] + objects,
-            ['%sranlib' % self.prefix, str(lib.path())])
+    archive_cmd = [self.ar] + self.ar_flags + [str(lib.path())] + objects
+    if self.ranlib:
+      return (archive_cmd, [self.ranlib] + [str(lib.path())])
+    else:
+      return archive_cmd
 
   def __libraries_flags(self, cfg, libraries, cmd):
     for lib in libraries:
