@@ -28,6 +28,18 @@ TEST(uri_test, construct_uri_from_char_array) {
   ASSERT_NO_THROW(network::uri("http://www.example.com/"));
 }
 
+TEST(uri_test, construct_uri_starting_with_ipv4_like) {
+  ASSERT_NO_THROW(network::uri("http://198.51.100.0.example.com/"));
+}
+
+TEST(uri_test, construct_uri_like_short_ipv4) {
+  ASSERT_NO_THROW(network::uri("http://198.51.100/"));
+}
+
+TEST(uri_test, construct_uri_like_long_ipv4) {
+  ASSERT_NO_THROW(network::uri("http://198.51.100.0.255/"));
+}
+
 TEST(uri_test, make_uri_from_char_array) {
   std::error_code ec;
   network::uri uri = network::make_uri("http://www.example.com/", ec);
