@@ -167,6 +167,68 @@ class GNUBuilder(drake.Builder):
   def __str__(self):
     return '%s(%s)' % (self.__class__.__name__, self.__working_directory)
 
+class FatLibraryGenerator(drake.Builder):
+
+  def __init__(self,
+               input_libs,
+               output_lib,
+               headers = [],
+               input_headers = None,
+               output_headers = None):
+    drake.Builder.__init__(self,
+                           input_libs,
+                           chain([output_lib], (drake.node(output_headers / p)
+                                                for p in headers)))
+    self.__input_libs = input_libs
+    self.__output_lib = output_lib
+    self.__headers = headers
+    if input_headers:
+      self.__input_headers = drake.path_build(input_headers)
+    else:
+      self.__input_headers = None
+    if output_headers:
+      self.__output_headers = drake.path_build(output_headers)
+    else:
+      self.__output_headers = None
+
+  def execute(self):
+    res = self.cmd('Lipo %s' % self.input_paths,
+                   self.lipo_command,
+                   leave_stdout = False)
+    if not res:
+      return False
+    if self.__headers and self.__input_headers and self.__output_headers:
+      res = self.cmd('cp %s' % self.__input_headers,
+                     self.copy_headers_command,
+                     leave_stdout = False)
+    return res
+
+  @property
+  def lipo_command(self):
+    if len(self.__input_libs) == 1:
+      res = ['cp']
+      res.extend(self.input_paths)
+      res.append(self.__output_lib.path())
+    else:
+      res = ['lipo']
+      res.extend(self.input_paths)
+      res.extend(['-create', '-output'])
+      res.append(self.__output_lib.path())
+    return res
+
+  @property
+  def input_paths(self):
+    res = []
+    for input in self.__input_libs:
+      res.append(input.path())
+    return res
+
+  @property
+  def copy_headers_command(self):
+    return ['cp', '-r',
+            self.__input_headers, self.__output_headers]
+
+
 class VersionGenerator(drake.Builder):
 
   def __init__(self, output, git = None, production_build = True):
