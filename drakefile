@@ -4,9 +4,11 @@ niniupnpc = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
-              prefix = '/usr'):
+              prefix = '/usr',
+              archs = []):
   global miniupnpc
   miniupnpc = drake.include('miniupnpc',
                             cxx_toolkit,
                             drake.cxx.Config(cxx_config),
-                            prefix = prefix)
+                            prefix = prefix,
+                            archs = archs)

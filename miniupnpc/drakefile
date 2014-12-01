@@ -11,7 +11,8 @@ rule_install = None
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
-              prefix = '/usr'):
+              prefix = '/usr',
+              archs = []):
   global library, rule_build, rule_install, config
   libminiupnp_sources = drake.nodes(
     'miniupnpc.h',
@@ -49,8 +50,9 @@ def configure(cxx_toolkit = None,
     local_config.lib('iphlpapi')
     config.lib('iphlpapi')
   elif cxx_toolkit.os is drake.os.ios:
-    local_config.flag('-arch')
-    local_config.flag('armv7')
+    for arch in archs:
+      local_config.flag('-arch')
+      local_config.flag(arch)
     local_config.flag('-miphoneos-version-min=7.0')
     local_config.flag('--sysroot=%s' % os.environ['SDKROOT'])
   libminiupnp = drake.cxx.StaticLib(
