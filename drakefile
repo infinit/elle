@@ -7,6 +7,7 @@ import sys
 
 from itertools import chain
 
+archs = None
 asio_udt = None
 aws = None
 boost = None
@@ -32,6 +33,10 @@ zlib_lib = None
 with open(str(drake.path_source('drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
+def set_archs(value):
+  global archs
+  archs = value
+
 def set_boost(value):
   global boost
   boost = value
@@ -46,6 +51,7 @@ def set_valgrind(value):
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
+              archs = [],
               production_build = False,
               boost = None,
               python3 = None,
@@ -69,6 +75,16 @@ def configure(cxx_toolkit = None,
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto
   global zlib_config, zlib_lib
   global libarchive_config, libarchive_lib
+
+  ## ------------- ##
+  ## Architectures ##
+  ## ------------- ##
+
+  if archs:
+    if cxx_toolkit.os is not drake.os.ios:
+      raise Exception("building for multiple architectures only supported on "\
+                      "iOS")
+    set_archs(archs)
 
   ## -------- ##
   ## Valgrind ##
@@ -211,9 +227,11 @@ def configure(cxx_toolkit = None,
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
     elif cxx_toolkit.os is drake.os.ios:
       zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
-      zlib_configure_args = ['--static']
+      zlib_arch_str = ''
+      for arch in archs:
+        zlib_arch_str += '-arch %s ' % arch
+      zlib_env['CC'] = '%s %s -mios-version-min=7.0' % (cxx_toolkit.c, zlib_arch_str)
       zlib_env['SDKROOT'] = os.environ['SDKROOT']
-      zlib_env['CC'] = '%s -arch armv7 -mios-version-min=7.0' % cxx_toolkit.c
       zlib_env['CFLAGS'] = '-fPIC -isysroot %s' % os.environ['SDKROOT']
   zlib_libs = [zlib_lib,]
 
@@ -355,42 +373,75 @@ def configure(cxx_toolkit = None,
     openssl_lib_crypto = StaticLib(openssl_prefix / 'lib/libcrypto.a')
     openssl_shared = False
   openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
+  openssl_prefix_absolute = \
+    drake.path_build(openssl_prefix, absolute = True)
   if cxx_toolkit.os is drake.os.linux:
     os_string = 'linux-x86_64'
   elif cxx_toolkit.os is drake.os.windows:
     os_string = 'mingw64'
+    openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
+    openssl_env['AS'] = '%sas' % cxx_toolkit.prefix
+    openssl_env['RANLIB'] = '%sranlib' % cxx_toolkit.prefix
   elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
   elif cxx_toolkit.os is drake.os.ios:
     os_string = 'iphoneos-cross'
-    openssl_env['CC'] = '%s -arch armv7 -mios-version-min=7.0' % cxx_toolkit.c
     openssl_env['CROSS_TOP'] = os.environ['CROSS_TOP']
     openssl_env['CROSS_SDK'] = os.environ['CROSS_SDK']
-  openssl_prefix_absolute = \
-    drake.path_build(openssl_prefix, absolute = True)
-  if cxx_toolkit.os is drake.os.windows:
-    openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
-    openssl_env['AS'] = '%sas' % cxx_toolkit.prefix
-    openssl_env['RANLIB'] = '%sranlib' % cxx_toolkit.prefix
-  GNUBuilder(
-    cxx_toolkit,
-    configure = openssl_configure,
-    configure_interpreter = 'perl',
-    targets = chain(openssl_libs,
-                    (drake.node(openssl_prefix / p)
-                     for p in openssl_headers)),
-    configure_args = [
-      '--prefix=%s' % openssl_prefix_absolute,
-      openssl_shared and 'shared' or 'no-shared',
-      'no-asm',
-      '-DPURIFY',
-      os_string,
-    ],
-    build_args = [
-    'all', 'install',
-    ],
-    additional_env = openssl_env,
-  )
+    crypto_arch_libs = []
+    ssl_arch_libs = []
+  if cxx_toolkit.os is drake.os.ios and archs:
+    for arch in archs:
+      openssl_env['CC'] = \
+        '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch)
+      openssl_arch_prefix = openssl_prefix / drake.Path('%s' % arch)
+      crypto_arch_lib = StaticLib(openssl_arch_prefix / 'lib/libcrypto.a')
+      crypto_arch_libs.append(crypto_arch_lib)
+      ssl_arch_lib = StaticLib(openssl_arch_prefix / 'lib/libssl.a')
+      ssl_arch_libs.append(ssl_arch_lib)
+      GNUBuilder(
+        cxx_toolkit,
+        configure = openssl_configure,
+        configure_interpreter = 'perl',
+        targets = [crypto_arch_lib, ssl_arch_lib],
+        configure_args = [
+          '--prefix=%s' % drake.path_build(openssl_arch_prefix, absolute = True),
+          openssl_shared and 'shared' or 'no-shared',
+          'no-asm',
+          '-DPURIFY',
+          os_string,
+        ],
+        build_args = [
+        'build_libs', 'install', 'clean'
+        ],
+        additional_env = openssl_env,
+      )
+    FatLibraryGenerator(crypto_arch_libs, openssl_lib_crypto)
+    FatLibraryGenerator(ssl_arch_libs, openssl_lib_ssl,
+                        headers = openssl_headers,
+                        input_headers = openssl_build / 'include',
+                        output_headers = openssl_prefix)
+
+  else:
+    GNUBuilder(
+      cxx_toolkit,
+      configure = openssl_configure,
+      configure_interpreter = 'perl',
+      targets = chain(openssl_libs,
+                      (drake.node(openssl_prefix / p)
+                       for p in openssl_headers)),
+      configure_args = [
+        '--prefix=%s' % openssl_prefix_absolute,
+        openssl_shared and 'shared' or 'no-shared',
+        'no-asm',
+        '-DPURIFY',
+        os_string,
+      ],
+      build_args = [
+      'all', 'install',
+      ],
+      additional_env = openssl_env,
+    )
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
 
@@ -431,7 +482,6 @@ def configure(cxx_toolkit = None,
   curl_zlib_libs = drake.copy(zlib_libs, curl_prefix / 'lib',
                               strip_prefix = True)
   curl_configure_args = [
-    '--prefix=%s' % drake.path_build(curl_prefix, absolute = True),
     '--with-ssl=%s' % drake.path_build(openssl_prefix,
                                        absolute = True),
     '--with-zlib=%s' % drake.path_build(zlib_prefix,
@@ -450,6 +500,9 @@ def configure(cxx_toolkit = None,
     '--with-gssapi',
     '--without-libidn',
   ]
+  if cxx_toolkit.os is not drake.os.ios:
+    curl_configure_args.append(
+      '--prefix=%s' % drake.path_build(curl_prefix, absolute = True))
   if isinstance(curl_lib, StaticLib):
     curl_configure_args.extend([
       '--disable-shared',
@@ -474,29 +527,57 @@ def configure(cxx_toolkit = None,
     curl_configure_args.append('--host=%s' % cxx_toolkit.prefix[:-1])
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
   elif cxx_toolkit.os is drake.os.ios:
-    curl_environment['CC'] = '%s -arch armv7 -mios-version-min=7.0' % cxx_toolkit.c
-    curl_configure_args.append('--host=armv7-apple-darwin')
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
-  GNUBuilder(
-    cxx_toolkit,
-    configure = curl_configure,
-    working_directory = drake.path_build(curl_build),
-    targets = [curl_lib] +
-      drake.nodes(*(curl_prefix / path for path in
-                    ('include/curl/typecheck-gcc.h',
-                     'include/curl/stdcheaders.h',
-                     'include/curl/easy.h',
-                     'include/curl/mprintf.h',
-                     'include/curl/curl.h',
-                     'include/curl/curlver.h',
-                     'include/curl/multi.h',
-                     'include/curl/curlrules.h'))),
-    configure_args = curl_configure_args,
-    sources = curl_dependency_libs + [curl_configure],
-    build_args = ['all', 'install',],
-    additional_env = curl_environment,
-  )
+  curl_headers = [
+    'include/curl/typecheck-gcc.h',
+    'include/curl/stdcheaders.h',
+    'include/curl/easy.h',
+    'include/curl/mprintf.h',
+    'include/curl/curl.h',
+    'include/curl/curlver.h',
+    'include/curl/multi.h',
+    'include/curl/curlrules.h'
+  ]
+  if cxx_toolkit.os is drake.os.ios and archs:
+    curl_arch_libs = []
+    for arch in archs:
+      curl_configure_arch_args = list(curl_configure_args)
+      curl_arch_prefix = curl_prefix / drake.Path('%s' % arch)
+      curl_environment['CC'] = \
+        '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch)
+      curl_configure_arch_args.append('--host=%s-apple-darwin' % arch)
+      curl_configure_arch_args.append(
+        '--prefix=%s' % drake.path_build(curl_arch_prefix, absolute = True))
+      curl_arch_lib = StaticLib(curl_arch_prefix / 'lib/libcurl.a')
+      curl_arch_libs.append(curl_arch_lib)
+      GNUBuilder(
+        cxx_toolkit,
+        configure = curl_configure,
+        working_directory = drake.path_build(curl_build),
+        targets = [curl_arch_lib],
+        configure_args = curl_configure_arch_args,
+        sources = curl_dependency_libs + [curl_configure],
+        build_args = ['all', 'install', 'distclean'],
+        additional_env = curl_environment,
+      )
+    FatLibraryGenerator(curl_arch_libs, curl_lib,
+                        headers = curl_headers,
+                        input_headers = curl_prefix / 'armv7/include',
+                        output_headers = curl_prefix)
+  else:
+    GNUBuilder(
+      cxx_toolkit,
+      configure = curl_configure,
+      working_directory = drake.path_build(curl_build),
+      targets = [curl_lib] +
+        drake.nodes(*(curl_prefix / path for path in
+                      curl_headers)),
+      configure_args = curl_configure_args,
+      sources = curl_dependency_libs + [curl_configure],
+      build_args = ['all', 'install',],
+      additional_env = curl_environment,
+    )
   for lib in curl_dependency_libs:
     curl_lib.dependency_add(lib)
   curl_config = drake.cxx.Config()
@@ -541,13 +622,7 @@ def configure(cxx_toolkit = None,
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
     libarchive_env = {}
   elif cxx_toolkit.os is drake.os.ios:
-    libarchive_configure_args = [
-      '--host=armv7-apple-darwin',
-    ]
-    libarchive_env = {
-      'CC': '%s -arch armv7 -mios-version-min=7.0' % cxx_toolkit.c,
-      'CFLAGS': '-isysroot %s' % os.environ['SDKROOT'],
-    }
+    libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
@@ -567,7 +642,6 @@ def configure(cxx_toolkit = None,
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
   libarchive_configure_args += [
-    '--prefix=%s' % libarchive_prefix_absolute,
     '--disable-acl',
     '--disable-xattr',
     'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
@@ -581,26 +655,62 @@ def configure(cxx_toolkit = None,
     '--without-nettle',
     '--without-xml2',
   ]
-  GNUBuilder(
-    cxx_toolkit,
-    configure = libarchive_configure,
-    configure_args = libarchive_configure_args,
-    additional_env = libarchive_env,
-    working_directory = drake.path_build(libarchive_build),
-    targets = [
-      libarchive_lib,
-      bsdcpio,
-      bsdtar,
-    ] + drake.nodes(
-      'libarchive/include/archive.h',
-      'libarchive/include/archive_entry.h',
-    ),
-    sources = [libarchive_configure] + libarchive_dependency_libs,
-  )
+  if cxx_toolkit.os is not drake.os.ios:
+    libarchive_configure_args.append('--prefix=%s' % libarchive_prefix_absolute)
+  libarchive_headers = [
+    'include/archive.h',
+    'include/archive_entry.h',
+  ]
+  if cxx_toolkit.os is drake.os.ios:
+    libarchive_arch_libs = []
+    for arch in archs:
+      libarchive_arch_prefix = libarchive_prefix / drake.Path('%s' % arch)
+      libarchive_arch_configure_args = list(libarchive_configure_args)
+      libarchive_arch_configure_args += [
+        '--host=%s-apple-darwin' % arch,
+        '--prefix=%s' % drake.path_build(libarchive_arch_prefix, absolute = True)
+      ]
+      libarchive_env = {
+        'CC': '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch),
+        'CFLAGS': '-isysroot %s' % os.environ['SDKROOT'],
+      }
+      libarchive_arch_lib = \
+        drake.cxx.StaticLib(libarchive_arch_prefix / 'lib/libarchive.a')
+      libarchive_arch_libs.append(libarchive_arch_lib)
+      GNUBuilder(
+        cxx_toolkit,
+        configure = libarchive_configure,
+        configure_args = libarchive_arch_configure_args,
+        additional_env = libarchive_env,
+        working_directory = drake.path_build(libarchive_build),
+        targets = [libarchive_arch_lib,],
+        sources = [libarchive_configure] + libarchive_dependency_libs,
+        build_args = ['all', 'install', 'clean'],
+      )
+    FatLibraryGenerator(libarchive_arch_libs, libarchive_lib,
+                        headers = libarchive_headers,
+                        input_headers = libarchive_prefix / 'armv7/include',
+                        output_headers = libarchive_prefix)
+  else:
+    GNUBuilder(
+      cxx_toolkit,
+      configure = libarchive_configure,
+      configure_args = libarchive_configure_args,
+      additional_env = libarchive_env,
+      working_directory = drake.path_build(libarchive_build),
+      targets = chain([
+        libarchive_lib,
+        bsdcpio,
+        bsdtar,
+      ],
+      (drake.node(libarchive_prefix / p)
+            for p in libarchive_headers)),
+      sources = [libarchive_configure] + libarchive_dependency_libs,
+    )
   for lib in libarchive_dependency_libs:
     libarchive_lib.dependency_add(lib)
   libarchive_config = drake.cxx.Config()
-  libarchive_config.add_local_include_path('libarchive/include')
+  libarchive_config.add_local_include_path(libarchive_prefix / 'include')
 
   ## ----- ##
   ## Boost ##
@@ -752,7 +862,10 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         if cxx_toolkit.os is drake.os.windows:
           extra = ': <target-os>windows '
         elif cxx_toolkit.os is drake.os.ios:
-          cxx = '%s -arch armv7 -fvisibility=hidden -fvisibility-inlines-hidden' % cxx
+          boost_arch_str = ''
+          for arch in archs:
+            boost_arch_str += '-arch %s ' % arch
+          cxx = '%s %s -fvisibility=hidden -fvisibility-inlines-hidden' % (cxx, boost_arch_str)
           cxx += '\n: <striper> <root>%s' % os.environ['CROSS_TOP']
           cxx += '\n: <architecture>arm <target-os>iphone'
           extra = ''
@@ -992,6 +1105,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     prefix = prefix,
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,
+    archs = archs,
   )
   protocol = drake.include(
     'protocol',
