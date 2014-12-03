@@ -20,7 +20,17 @@ namespace reactor
     class UPNPImpl
     {
     public:
-      struct UPNPDev * devlist;
+      ~UPNPImpl()
+      {
+        FreeUPNPUrls(&this->urls);
+        freeUPNPDevlist(this->devlist);
+      }
+      UPNPDev* devlist;
+      void _initialize();
+      void _setup_redirect(Protocol p,
+                           unsigned short port,
+                           PortMapping& res,
+                           std::shared_ptr<UPNP> owner);
       struct UPNPUrls urls;
       struct IGDdatas data;
       char lanaddr[64];
@@ -29,8 +39,8 @@ namespace reactor
     };
 
     UPNP::UPNP(PrivateGuard)
-    : _available(false)
-    , _impl(0)
+      : _available(false)
+      , _impl()
     {}
 
     std::shared_ptr<UPNP>
@@ -40,48 +50,44 @@ namespace reactor
     }
 
     UPNP::~UPNP()
-    {
-      if (_impl)
-      {
-        FreeUPNPUrls(&_impl->urls);
-        freeUPNPDevlist(_impl->devlist);
-      }
-      delete _impl;
-    }
+    {}
 
     void
     UPNP::initialize()
     {
+      ELLE_TRACE_SCOPE("%s: initialize", *this);
       reactor::Lock lock(_mutex);
       if (_impl)
         throw elle::Exception("UPNP instance already initialized");
-      _impl = new UPNPImpl();
-      reactor::background(std::bind(&UPNP::_initialize, this));
-      ELLE_TRACE("UPNP initialized: lan=%s, igd=%s, external=%s",
+      auto impl = std::make_shared<UPNPImpl>();
+      this->_impl = impl;
+      reactor::background([impl] { impl->_initialize(); });
+      ELLE_DEBUG("%s: initialized: lan=%s, igd=%s, external=%s",
+                 *this,
                  _impl->lanaddr,
                  _impl->valid_igd,
-                 _impl->externalIPAddress?
-                   *_impl->externalIPAddress
-                   : std::string("unknown"));
-      _available = true;
+                 _impl->externalIPAddress ?
+                 *_impl->externalIPAddress :
+                 std::string("unknown"));
+      this->_available = true;
     }
 
     void
-    UPNP::_initialize()
+    UPNPImpl::_initialize()
     { // THREADED
       // timeoutMS multicastiface, daemonpath, sameport, use_ipv6
       int error = 0;
-      _impl->devlist = upnpDiscover(2000, 0, 0, 0, 0, &error);
-      if (!_impl->devlist)
+      this->devlist = upnpDiscover(2000, 0, 0, 0, 0, &error);
+      if (!this->devlist)
       {
         ELLE_TRACE("upnpDiscover failed with %s", error);
         throw std::runtime_error(
           elle::sprintf("UPNP device discovery failure: %s", error));
       }
-      _impl->valid_igd = UPNP_GetValidIGD(_impl->devlist, &_impl->urls,
-                                          &_impl->data,
-                                          _impl->lanaddr, sizeof(_impl->lanaddr));
-      ELLE_TRACE("GetValidIGD: %s", _impl->valid_igd);
+      this->valid_igd = UPNP_GetValidIGD(this->devlist, &this->urls,
+                                          &this->data,
+                                          this->lanaddr, sizeof(this->lanaddr));
+      ELLE_TRACE("GetValidIGD: %s", this->valid_igd);
       /*
        1 ok urls.constrolURL
        2 not consnnected igd
@@ -89,14 +95,14 @@ namespace reactor
        0 no upnp device found
       */
       // be optimistic, and try to go on on !0
-      if (!_impl->valid_igd)
+      if (!this->valid_igd)
         throw std::runtime_error("Could not find any IGD device");
       char externalIPAddress[40];
-      int r = UPNP_GetExternalIPAddress(_impl->urls.controlURL,
-                                        _impl->data.first.servicetype,
+      int r = UPNP_GetExternalIPAddress(this->urls.controlURL,
+                                        this->data.first.servicetype,
                                         externalIPAddress);
       if (r == UPNPCOMMAND_SUCCESS)
-        _impl->externalIPAddress = externalIPAddress;
+        this->externalIPAddress = externalIPAddress;
     }
 
     PortMapping
@@ -105,26 +111,35 @@ namespace reactor
       reactor::Lock lock(_mutex);
       if (!_impl)
         throw elle::Exception("UPNP not initialized");
-      PortMapping result;
+      auto impl = this->_impl;
+      auto owner = this->shared_from_this();
+      auto result = std::make_shared<PortMapping>();
       reactor::background(
-        std::bind(&UPNP::_setup_redirect, this, p, port, std::ref(result)));
-      return result;
+        [impl, owner, result, p, port]
+        {
+          impl->_setup_redirect(p, port, *result, owner);
+        });
+      return std::move(*result);
     }
 
+    // Threaded
     void
-    UPNP::_setup_redirect(Protocol p, unsigned short port, PortMapping& res)
-    { // THREADED
+    UPNPImpl::_setup_redirect(Protocol p,
+                              unsigned short port,
+                              PortMapping& res,
+                              std::shared_ptr<UPNP> owner)
+    {
       char effectivePort[6];
       std::string port_string = std::to_string(port);
       std::string protocol_string = p == Protocol::tcp? "TCP" : "UDP";
       ELLE_TRACE("AddAnyPortMapping(%s, %s, %s, %s)",
                  protocol_string,
-                 port_string, port_string, _impl->lanaddr);
+                 port_string, port_string, this->lanaddr);
       int r = UPNP_AddAnyPortMapping(
-        _impl->urls.controlURL,
-        _impl->data.first.servicetype,
+        this->urls.controlURL,
+        this->data.first.servicetype,
         port_string.c_str(), port_string.c_str(),
-        _impl->lanaddr,
+        this->lanaddr,
         "reactor",
         protocol_string.c_str(),
         0, // remotehost
@@ -135,10 +150,10 @@ namespace reactor
         // Fallback to AddPortMapping (AddAnyPortMapping seems to only be
         // implemented by some IGDs).
         r = UPNP_AddPortMapping(
-          _impl->urls.controlURL,
-          _impl->data.first.servicetype,
+          this->urls.controlURL,
+          this->data.first.servicetype,
            port_string.c_str(), port_string.c_str(),
-           _impl->lanaddr,
+           this->lanaddr,
            "reactor",
            protocol_string.c_str(),
            nullptr, // remotehost
@@ -154,8 +169,8 @@ namespace reactor
       char intPort[6];
       char duration[16];
       r = UPNP_GetSpecificPortMappingEntry(
-        _impl->urls.controlURL,
-        _impl->data.first.servicetype,
+        this->urls.controlURL,
+        this->data.first.servicetype,
         effectivePort,
         protocol_string.c_str(), NULL/*remoteHost*/,
         intClient, intPort,
@@ -165,12 +180,12 @@ namespace reactor
       if(r!=UPNPCOMMAND_SUCCESS)
         throw std::runtime_error(
           elle::sprintf("GetSpecificPortMappingEntry: %s", strupnperror(r)));
-      res._owner = shared_from_this();
+      res._owner = owner;
       res.protocol = p;
-      res.internal_host = _impl->lanaddr;
+      res.internal_host = this->lanaddr;
       res.internal_port = intPort;
-      if (_impl->externalIPAddress)
-        res.external_host = *_impl->externalIPAddress;
+      if (this->externalIPAddress)
+        res.external_host = *this->externalIPAddress;
       res.external_port = effectivePort;
       ELLE_TRACE("_setup_redirect succeeded, returning %s", res);
     }
