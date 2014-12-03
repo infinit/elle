@@ -596,6 +596,8 @@ class GccToolkit(Toolkit):
       self.ranlib = '%sranlib' % self.prefix
     else:
       self.ranlib = ranlib
+    if self.os == drake.os.windows:
+      self.res = '%swindres' % self.prefix
 
   def preprocess_istrue(self, vars, config = Config(), preamble = None):
     if preamble:
@@ -715,6 +717,9 @@ class GccToolkit(Toolkit):
     return [c and self.c or self.cxx] + cfg.flags + \
         self.cppflags(cfg) + self.cflags(cfg) + \
         extraflags + ['-c', str(src), '-o', str(obj)]
+
+  def render_resource(self, src, obj):
+    return [self.res, src, '-O', 'coff', '-o', str(obj)]
 
   def archive(self, objs, lib):
     objects = [str(n.path()) for n in objs
@@ -1220,7 +1225,69 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
                    'file not found: %s', include)
     return (cycles, deps)
 
-class Compiler(Builder):
+class _Compiler(Builder):
+
+  def __init__(self, src, obj, tk, cfg):
+
+    self.src = src
+    self.obj = obj
+    self.config = cfg
+    self.toolkit = tk
+    self.__header_dependencies = set()
+    Builder.__init__(self, [src], [obj])
+
+  def dependencies(self):
+    for dep, local in inclusion_dependencies(
+        self.src, self.toolkit, self.config):
+      if dep != self.src:
+        self.add_dynsrc(self.deps, dep)
+        self.header_dependencies.add((dep, local))
+    for hook in self.toolkit.hook_object_deps():
+      hook(self)
+
+  def execute(self):
+    # FIXME: handle this in the toolkit itself.
+    leave_stdout = isinstance(self.toolkit, VisualToolkit)
+    return self.cmd('Compile %s' % self.obj, self.command,
+                    leave_stdout = leave_stdout)
+
+  def mkdeps(self):
+    return {self.src: inclusion_dependencies(self.src, self.config)}
+
+  @property
+  def header_dependencies(self):
+    return self.__header_dependencies
+
+  @property
+  def object(self):
+    return self.obj
+
+  @property
+  def source(self):
+    return self.src
+
+  def __str__(self):
+    return 'compilation of %s' % self.obj
+
+  def __repr__(self):
+    return 'Compiler(%s)' % self.obj
+
+class ResourceCompiler(_Compiler):
+
+  name = 'C++ resource compilation'
+  deps = 'drake.cxx.inclusions'
+
+  Builder.register_deps_handler(deps, deps_handler)
+
+  def __init__(self, src, obj, tk, cfg, c = False):
+    super().__init__(src, obj, tk, cfg)
+
+  @property
+  def command(self):
+    return self.toolkit.render_resource(self.src.path(),
+                                        self.obj.path())
+
+class Compiler(_Compiler):
 
   name = 'C++ compilation'
   deps = 'drake.cxx.inclusions'
@@ -1228,33 +1295,8 @@ class Compiler(Builder):
   Builder.register_deps_handler(deps, deps_handler)
 
   def __init__(self, src, obj, tk, cfg, c = False):
-    self.src = src
-    self.obj = obj
-    self.config = cfg
-    self.toolkit = tk
+    super().__init__(src, obj, tk, cfg)
     self.__c = c
-    self.__header_dependencies = set()
-    Builder.__init__(self, [src], [obj])
-
-
-  def dependencies(self):
-    for dep, local in inclusion_dependencies(
-        self.src, self.toolkit, self.config):
-      if dep != self.src:
-        self.add_dynsrc(self.deps, dep)
-        self.__header_dependencies.add((dep, local))
-    for hook in self.toolkit.hook_object_deps():
-      hook(self)
-
-  @property
-  def header_dependencies(self):
-    return self.__header_dependencies
-
-  def execute(self):
-    # FIXME: handle this in the toolkit itself.
-    leave_stdout = isinstance(self.toolkit, VisualToolkit)
-    return self.cmd('Compile %s' % self.obj, self.command,
-                    leave_stdout = leave_stdout)
 
   @property
   def command(self):
@@ -1280,26 +1322,6 @@ class Compiler(Builder):
 
   def hash(self):
     return self.command
-
-  def mkdeps(self):
-    def add(res, node, sub):
-      res[node] = sub
-    return {self.src:
-            inclusion_dependencies(self.src, self.config)}
-
-  @property
-  def object(self):
-    return self.obj
-
-  @property
-  def source(self):
-    return self.src
-
-  def __str__(self):
-    return 'compilation of %s' % self.obj
-
-  def __repr__(self):
-    return 'Compiler(%s)' % self.obj
 
 class Linker(Builder):
 
@@ -1448,6 +1470,17 @@ Node.extensions['hh'] = Header
 Node.extensions['hpp'] = Header
 Node.extensions['hxx'] = Header
 
+class ResourceFile(Node):
+
+    def __init__(self, path):
+
+        Node.__init__(self, path)
+
+    def clone(self, path):
+
+        return ResourceFile(path)
+
+Node.extensions['rc'] = ResourceFile
 
 class Object(Node):
 
@@ -1484,6 +1517,26 @@ class Object(Node):
 
 Node.extensions['o'] = Object
 
+class Resource(Node):
+
+  def __init__(self, source, tk, cfg):
+
+    self.source = source
+    self.toolkit = tk
+
+    path = source.name_relative
+    path = path.without_last_extension()
+    if len(path.extension):
+      path = path.with_extension('%s.%s' % (path.extension, 'res'))
+    else:
+      path = path.with_extension('res')
+
+    Node.__init__(self, path)
+
+    ResourceCompiler(source, self, tk, cfg)
+
+Node.extensions['res'] = Resource
+
 class Binary(Node):
 
   def __init__(self, path, sources, tk, cfg):
@@ -1519,6 +1572,8 @@ class Binary(Node):
       else:
         o = Object(source, tk, cfg)
       self.sources.append(o)
+    elif source.__class__ == ResourceFile:
+      self.sources.append(Resource(source, tk, cfg))
     elif source.__class__ == Header:
       pass
     elif isinstance(source, (DynLib, Module)):
