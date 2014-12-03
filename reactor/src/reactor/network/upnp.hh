@@ -69,12 +69,10 @@ namespace reactor
       UPNP(PrivateGuard);
     private:
 
-      void _setup_redirect(Protocol p, unsigned short port, PortMapping& res);
-      void _initialize();
       void release(PortMapping &);
       void _release(PortMapping&);
       friend class PortMapping;
-      UPNPImpl* _impl;
+      std::shared_ptr<UPNPImpl> _impl;
       Mutex     _mutex;
     };
   }
