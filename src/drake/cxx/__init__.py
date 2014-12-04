@@ -769,15 +769,17 @@ class GccToolkit(Toolkit):
           cmd += ['-framework', framework]
       for path in cfg.library_path:
           cmd += ['-L', path]
-      for path in cfg._Config__rpath:
-        cmd.append('-Wl,-rpath,%s' % self.rpath(path))
+      rpath = sched.OrderedSet(cfg._Config__rpath)
+      rpath_link = sched.OrderedSet()
       if self.os == drake.os.linux:
-        rpath_link = sched.OrderedSet()
         for lib in (lib for lib in objs if isinstance(lib, DynLib)):
           for library in lib.dynamic_libraries:
+            rpath.add(library.path().dirname().without_prefix(exe.path().dirname()))
             rpath_link.add(str(library.path().dirname()))
-        for path in rpath_link:
-          cmd.append('-Wl,-rpath-link,%s' % path)
+      for path in rpath:
+        cmd.append('-Wl,-rpath,%s' % self.rpath(path))
+      for path in rpath_link:
+        cmd.append('-Wl,-rpath-link,%s' % path)
       if self.os == drake.os.macos:
           cmd += ['-undefined', 'dynamic_lookup']
       for obj in (obj for obj in objs if not isinstance(obj, Library)):

@@ -105,9 +105,12 @@ class OrderedSet:
     if model is None:
       self.__set = set()
       self.__list = []
-    else:
+    elif isinstance(model, OrderedSet):
       self.__set = set(model.__set)
       self.__list = list(model.__list)
+    else:
+      self.__set = set(model)
+      self.__list = list(model)
 
   def add(self, v):
     self.__set.add(v)
