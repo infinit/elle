@@ -464,5 +464,21 @@ namespace reactor
           return *it->second;
       }
     }
+    std::unique_ptr<Path> FileSystem::extract(std::string const& path)
+    {
+      auto it = _impl->_cache.find(path);
+      if (it == _impl->_cache.end())
+        return {};
+      auto res = std::move(it->second);
+      _impl->_cache.erase(path);
+      return res;
+    }
+    std::unique_ptr<Path> FileSystem::set(std::string const& path,
+                                          std::unique_ptr<Path> new_content)
+    {
+      std::unique_ptr<Path> res = extract(path);
+      _impl->_cache[path] = std::move(new_content);
+      return res;
+    }
   }
 }

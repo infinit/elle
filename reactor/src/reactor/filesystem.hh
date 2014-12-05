@@ -115,6 +115,11 @@ namespace reactor
                  std::vector<std::string> const& options);
       void unmount();
       Path& path(std::string const& path);
+
+      //cache operations
+      std::unique_ptr<Path> extract(std::string const& path);
+      std::unique_ptr<Path> set(std::string const& path,
+                                std::unique_ptr<Path> new_content);
     private:
       FileSystemImpl* _impl;
     };
