@@ -407,7 +407,22 @@ namespace reactor
       ops.truncate = fusop_truncate;
       ops.ftruncate = fusop_ftruncate;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
-      _impl->_fuse.loop_mt();
+      if (!elle::os::getenv("INFINIT_FUSE_MONOTHREAD", "").empty())
+      {
+        ELLE_LOG("Single mode");
+        _impl->_fuse.loop();
+      }
+      else if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
+      {
+        int nt = std::stoi(elle::os::getenv("INFINIT_FUSE_POOL"));
+        ELLE_LOG("Pool mode with %s workers", nt);
+        _impl->_fuse.loop_pool(nt);
+      }
+      else
+      {
+        ELLE_LOG("Thread mode");
+        _impl->_fuse.loop_mt();
+      }
     }
     void FileSystem::unmount()
     {
