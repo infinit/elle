@@ -23,10 +23,12 @@ namespace reactor
                     void* user_data);
     void loop();
     void loop_mt();
+    void loop_pool(int threads);
     /// unmount and free ressources. Fore-kill after graceTime
     void destroy(DurationOpt graceTime = DurationOpt());
   private:
     void _loop_mt(Scheduler&);
+    void _loop_pool(int threads, Scheduler&);
     fuse* _fuse;
     std::string _mountpoint;
     Barrier _socket_barrier;

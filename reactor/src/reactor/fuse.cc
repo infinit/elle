@@ -11,6 +11,7 @@
 
 #include <boost/asio.hpp>
 
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 #include <elle/finally.hh>
 #include <reactor/Barrier.hh>
@@ -53,6 +54,17 @@ namespace reactor
     socket.release();
   }
 
+  void FuseContext::loop_pool(int nThreads)
+  {
+    Scheduler& sched = scheduler();
+#ifdef INFINIT_MACOSX
+    _loopThread.reset(new std::thread([&] { this->_loop_pool(nThreads, sched);}));
+#else
+    _loop.reset(new Thread("fuse loop",
+                           [&] { this->_loop_pool(nThreads, sched);}));
+#endif
+  }
+
   void FuseContext::loop_mt()
   {
     Scheduler& sched = scheduler();
@@ -63,6 +75,92 @@ namespace reactor
                            [&] { this->_loop_mt(sched);}));
 #endif
   }
+
+  void FuseContext::_loop_pool(int nThreads, Scheduler& sched)
+  {
+    reactor::Barrier barrier;
+    bool stop = false;
+    std::list<elle::Buffer> requests;
+    fuse_session* s = fuse_get_session(_fuse);
+    fuse_chan* ch = fuse_session_next_chan(s, NULL);
+    size_t buffer_size = fuse_chan_bufsize(ch);
+    auto lock = _mt_barrier.lock();
+    auto worker = [&] {
+      auto lock = _mt_barrier.lock();
+      while (true)
+      {
+        barrier.wait();
+        elle::Buffer buf;
+        {
+#ifdef INFINIT_MACOSX
+          std::unique_lock<std::mutex> mutex_lock(_mutex);
+#endif
+          if (stop)
+            return;
+          if (requests.empty())
+            continue;
+          buf = std::move(requests.front());
+          requests.pop_front();
+          if (requests.empty())
+            barrier.close();
+        }
+        fuse_session_process(s, (const char*)buf.mutable_contents(), buf.size(), ch);
+      }
+    };
+    for(int i=0; i< nThreads; ++i)
+    {
+      Thread* t = new Thread("fuse worker", worker);
+      _workers.push_back(t);
+    }
+#ifndef INFINIT_MACOSX
+    int fd = fuse_chan_fd(ch);
+    ELLE_TRACE("Got fuse fs %s", fd);
+    boost::asio::posix::stream_descriptor socket(scheduler().io_service());
+    socket.assign(fd);
+#endif
+    while (!fuse_exited(_fuse))
+    {
+#ifndef INFINIT_MACOSX
+      _socket_barrier.close();
+      socket.async_read_some(boost::asio::null_buffers(),
+        [&](boost::system::error_code const& erc, std::size_t)
+        {
+          if (erc)
+            return;
+          _socket_barrier.open();
+        });
+      ELLE_DUMP("waiting for socket");
+      wait(_socket_barrier);
+#endif
+      if (fuse_exited(_fuse))
+        break;
+      ELLE_DUMP("Processing command");
+      elle::Buffer buf;
+      buf.size(buffer_size);
+      int res = -EINTR;
+      while(res == -EINTR)
+        res = fuse_chan_recv(&ch, (char*)buf.mutable_contents(), buf.size());
+      if (res == -EAGAIN)
+        continue;
+      if (res <= 0)
+      {
+        ELLE_LOG("%s: %s", res, strerror(-res));
+        break;
+      }
+      buf.size(res);
+#ifdef INFINIT_MACOSX
+      std::unique_lock<std::mutex> mutex_lock(_mutex);
+#endif
+      requests.push_back(std::move(buf));
+      barrier.open();
+    }
+    stop = true;
+    barrier.open();
+    for(auto t : _workers)
+      reactor::wait(*t);
+  }
+
+
   void FuseContext::_loop_mt(Scheduler& sched)
   {
     reactor::MultiLockBarrier barrier;
