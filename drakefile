@@ -15,6 +15,7 @@ config = None
 cryptography = None
 curl_config = None
 curl_lib = None
+cxx_toolkit = None
 elle = None
 libarchive_config = None
 libarchive_lib = None
@@ -48,6 +49,10 @@ def set_python3(value):
 def set_valgrind(value):
   global valgrind
   valgrind = value
+
+def set_cxx_toolkit(value):
+  global cxx_toolkit
+  cxx_toolkit = value
 
 def configure(cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
@@ -106,6 +111,7 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+  set_cxx_toolkit(cxx_toolkit)
   if cxx_toolkit.os is drake.os.ios:
     print('Cross compiling for iOS')
 
