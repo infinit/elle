@@ -12,7 +12,7 @@
 
 #include <boost/system/error_code.hpp>
 
-ELLE_LOG_COMPONENT("elle.system");
+// ELLE_LOG_COMPONENT("elle.system");
 
 namespace elle
 {
