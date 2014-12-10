@@ -444,7 +444,7 @@ namespace reactor
       else
       {
         ELLE_DEBUG("cache miss");
-        if (path == "/")
+        if (path == "/" || path == "")
         {
           auto p = _operations->path("/");
           auto ptr = p.get();
