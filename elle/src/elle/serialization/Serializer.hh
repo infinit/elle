@@ -122,6 +122,8 @@ namespace elle
       virtual
       void
       _serialize(std::string const& name, elle::Buffer& v) = 0;
+      void
+      _serialize(std::string const& name, elle::WeakBuffer& v);
       virtual
       void
       _serialize(std::string const& name, boost::posix_time::ptime& v) = 0;
