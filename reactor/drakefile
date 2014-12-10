@@ -101,10 +101,10 @@ def configure(curl_config,
 
   # FUSE
   if cxx_toolkit.os is drake.os.linux:
-    print("FUSE")
     fuse_basename = 'fuse-2.9.3'
     fuse_url = \
-    'http://downloads.sourceforge.net/project/fuse/fuse-2.X/2.9.3/fuse-2.9.3.tar.gz'
+      'http://downloads.sourceforge.net/' \
+      'project/fuse/fuse-2.X/2.9.3/fuse-2.9.3.tar.gz'
     fuse_tarball = \
       drake.node('fuse/fuse-2.9.3.tar.gz')
     fuse_configure = \
