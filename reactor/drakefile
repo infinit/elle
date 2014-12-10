@@ -3,6 +3,7 @@ import drake.cxx
 import drake.cxx.boost
 import drake.templating
 import sys
+import os
 
 config = None
 lib_static = None
@@ -18,6 +19,10 @@ rule_install = None
 rule_tests = None
 
 asio_udt_lib = None
+
+with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
+  exec(f.read(), globals(), globals())
+
 
 def configure(curl_config,
               curl_lib,
@@ -93,6 +98,58 @@ def configure(curl_config,
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
+
+  # FUSE
+  if cxx_toolkit.os is drake.os.linux:
+    fuse_basename = 'fuse-2.9.3'
+    fuse_url = \
+      'http://downloads.sourceforge.net/' \
+      'project/fuse/fuse-2.X/2.9.3/fuse-2.9.3.tar.gz'
+    fuse_tarball = \
+      drake.node('fuse/fuse-2.9.3.tar.gz')
+    fuse_configure = \
+      drake.node('fuse/fuse-2.9.3/configure')
+    fuse_prefix = drake.path_build('fuse')
+    fuse_prefix_absolute = drake.path_root() / fuse_prefix
+    fuse_lib =  drake.cxx.DynLib('fuse/lib/libfuse.so.2')
+    fuse_includes = drake.nodes(
+      'fuse/include/fuse/cuse_lowlevel.h',
+      'fuse/include/fuse/fuse_common_compat.h',
+      'fuse/include/fuse/fuse_common.h',
+      'fuse/include/fuse/fuse_compat.h',
+      'fuse/include/fuse/fuse.h',
+      'fuse/include/fuse/fuse_lowlevel_compat.h',
+      'fuse/include/fuse/fuse_lowlevel.h',
+      'fuse/include/fuse/fuse_opt.h'
+      )
+    drake.HTTPDownload(fuse_url, fuse_tarball,
+                       fingerprint='33cae22ca50311446400daf8a6255c6a')
+    drake.TarballExtractor(
+      fuse_tarball,
+      targets = ['%s/configure' % fuse_basename],
+    )
+    GNUBuilder(
+      cxx_toolkit,
+      configure = fuse_configure,
+      configure_args = [
+      '--prefix=%s' % fuse_prefix_absolute,
+      'CXX=%s' % cxx_toolkit.cxx,
+      '--disable-util',
+      '--disable-example',
+      '--disable-static',
+      '--enable-shared'
+      ],
+      targets = [fuse_lib] + fuse_includes
+    )
+    fuse_config = drake.cxx.Config()
+    fuse_config.add_local_include_path('fuse/include')
+    local_cxx_config += fuse_config
+    fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
+  elif cxx_toolkit.os is drake.os.macos:
+    fuse_config = drake.cxx.Config()
+    fuse_config.add_local_include_path('/usr/local/include/osxfuse')
+    local_cxx_config += fuse_config
+    fuse_lib = drake.cxx.DynLib('/usr/local/lib/libosxfuse.2.dylib')
 
   # Curl
   local_cxx_config += curl_config
@@ -230,7 +287,14 @@ def configure(curl_config,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
-
+  if cxx_toolkit.os is not drake.os.windows:
+    sources += drake.nodes(
+      'src/reactor/fuse.hh',
+      'src/reactor/fuse.cc',
+      'src/reactor/filesystem.hh',
+      'src/reactor/filesystem.cc',
+      'src/reactor/filesystem_fuse.cc',
+      )
   sources += drake.nodes(
     'src/reactor/http/Client.cc',
     'src/reactor/http/Client.hh',
@@ -313,6 +377,8 @@ def configure(curl_config,
   else:
     lib_dynamic_link_libs.append(backend_boost_context)
     lib_dynamic_link_libs.append(backend)
+  if cxx_toolkit.os is not drake.os.windows:
+    lib_dynamic_link_libs.append(fuse_lib)
   lib_dynamic = drake.cxx.DynLib(
     'lib/reactor',
     sources + lib_dynamic_link_libs + openssl_libs,
@@ -362,6 +428,10 @@ def configure(curl_config,
     ('ssl', openssl_libs),
     # 'reactor/file',
     ]
+  if cxx_toolkit.os is not drake.os.windows:
+    tests.append(('filesystem', []))
+    tests.append(('filesystem_bind', []))
+    tests.append(('filesystem_git', []))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests.add_local_include_path('tests')
@@ -383,6 +453,8 @@ def configure(curl_config,
                                 sources,
                                 cxx_toolkit, tests_config)
     rule_tests << test
+    if test in ['filesystem_git', 'filesystem_bind']:
+      continue
     env = {
       'DIR_BUILD':  str(drake.path_build()),
       'DIR_SOURCE': str(drake.path_source()),

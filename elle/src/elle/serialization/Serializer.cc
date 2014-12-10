@@ -43,5 +43,22 @@ namespace elle
         this->serialize(".type", type_name);
       }
     }
+
+    void
+    Serializer::_serialize(std::string const& name, elle::WeakBuffer& v)
+    {
+      if (this->in())
+      {
+        elle::Buffer buf;
+        this->_serialize(name, buf);
+        ELLE_ASSERT(buf.size() == v.size());
+        memcpy(v.mutable_contents(), buf.mutable_contents(), v.size());
+      }
+      else
+      {
+        elle::Buffer buf(v.mutable_contents(), v.size());
+        this->_serialize(name, buf);
+      }
+    }
   }
 }

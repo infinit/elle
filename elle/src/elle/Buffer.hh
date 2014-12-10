@@ -335,11 +335,13 @@ namespace elle
   `-------------------*/
 
   /// A StreamBuffer to write into a Buffer.
+  template <typename BufferType>
   class OutputStreamBuffer:
     public StreamBuffer
   {
   public:
-    OutputStreamBuffer(Buffer& buffer);
+    explicit
+    OutputStreamBuffer(BufferType& buffer);
 
   protected:
     virtual
@@ -354,7 +356,28 @@ namespace elle
 
   private:
     size_t _old_size;
-    Buffer& _buffer;
+    BufferType& _buffer;
+  };
+
+  template<>
+  class OutputStreamBuffer<WeakBuffer>:
+    public StreamBuffer
+  {
+  public:
+    OutputStreamBuffer(WeakBuffer& buffer);
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+  private:
+    bool _buffer_returned;
+    WeakBuffer& _buffer;
   };
 
   /*------------------.

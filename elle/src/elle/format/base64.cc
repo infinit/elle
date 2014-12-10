@@ -32,7 +32,7 @@ namespace elle
         ELLE_DEBUG("previsional size: %s", size);
         Buffer res;
         res.capacity(size);
-        IOStream stream(new OutputStreamBuffer(res));
+        IOStream stream(new OutputStreamBuffer<Buffer>(res));
         Stream base64_stream(stream);
         base64_stream.write(reinterpret_cast<char const*>(input.contents()),
                             input.size());
