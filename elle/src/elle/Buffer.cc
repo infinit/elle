@@ -623,13 +623,15 @@ namespace elle
   | OutputStreamBuffer |
   `-------------------*/
 
-  OutputStreamBuffer::OutputStreamBuffer(Buffer& buffer):
+  template <typename BufferType>
+  OutputStreamBuffer<BufferType>::OutputStreamBuffer(BufferType& buffer):
     _old_size(buffer.size()),
     _buffer(buffer)
   {}
 
+  template <typename BufferType>
   WeakBuffer
-  OutputStreamBuffer::write_buffer()
+  OutputStreamBuffer<BufferType>::write_buffer()
   {
     _buffer.size(_old_size + 512);
     ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
@@ -639,25 +641,52 @@ namespace elle
       );
   }
 
+  template <typename BufferType>
   WeakBuffer
-  OutputStreamBuffer::read_buffer()
+  OutputStreamBuffer<BufferType>::read_buffer()
   {
     throw Exception("the buffer is in output mode");
   }
 
+  template <typename BufferType>
   void
-  OutputStreamBuffer::flush(Size size)
+  OutputStreamBuffer<BufferType>::flush(Size size)
   {
     ELLE_DEBUG("Flush buffer stream size: %s", size);
     _old_size += size;
     _buffer.size(_old_size);
   }
 
+  OutputStreamBuffer<WeakBuffer>::OutputStreamBuffer(WeakBuffer& buffer):
+    _buffer_returned(false),
+    _buffer(buffer)
+  {}
+
+  WeakBuffer
+  OutputStreamBuffer<WeakBuffer>::write_buffer()
+  {
+    if (_buffer_returned)
+      throw Exception("the buffer is full and cannot grow");
+    _buffer_returned = true;
+    return _buffer;
+  }
+
+  WeakBuffer
+  OutputStreamBuffer<WeakBuffer>::read_buffer()
+  {
+    throw Exception("the buffer is in output mode");
+  }
+
+  void
+  OutputStreamBuffer<WeakBuffer>::flush(Size size)
+  {
+    ELLE_DEBUG("Flush buffer stream size: %s", size);
+  }
   ///////////////////////////////////////////////////////////////////////////
 
   OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
     serialize::OutputBinaryArchive(
-      *(_ostream = new IOStream(new OutputStreamBuffer(buffer)))
+      *(_ostream = new IOStream(new OutputStreamBuffer<Buffer>(buffer)))
     )
   {
     ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
@@ -678,6 +707,8 @@ namespace elle
     _ostream = nullptr;
   }
 
+  template
+  class OutputStreamBuffer<Buffer>;
 }
 
 /*-----.
