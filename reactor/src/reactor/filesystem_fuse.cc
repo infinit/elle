@@ -8,6 +8,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include <elle/os/environ.hh>
+
 #define _FILE_OFFSET_BITS 64
 #define FUSE_USE_VERSION 26
 
@@ -494,6 +496,14 @@ namespace reactor
       std::unique_ptr<Path> res = extract(path);
       _impl->_cache[path] = std::move(new_content);
       return res;
+    }
+    Path* FileSystem::get(std::string const& path)
+    {
+      auto it = _impl->_cache.find(path);
+      if (it == _impl->_cache.end())
+        return nullptr;
+      else
+        return it->second.get();
     }
   }
 }

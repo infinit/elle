@@ -120,6 +120,7 @@ namespace reactor
       std::unique_ptr<Path> extract(std::string const& path);
       std::unique_ptr<Path> set(std::string const& path,
                                 std::unique_ptr<Path> new_content);
+      Path* get(std::string const& path);
     private:
       FileSystemImpl* _impl;
     };
