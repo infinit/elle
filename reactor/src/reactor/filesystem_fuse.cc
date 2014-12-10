@@ -34,7 +34,7 @@ namespace reactor
   {
     static int fusop_getattr(const char *path, struct stat *stbuf)
     {
-      ELLE_DEBUG("fusop_getattr %s", path);
+      ELLE_DEBUG_SCOPE("fusop_getattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -51,6 +51,7 @@ namespace reactor
     static int fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
        off_t offset, struct fuse_file_info *fi)
     {
+      ELLE_DEBUG_SCOPE("fusop_readdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -70,7 +71,7 @@ namespace reactor
 
     static int fusop_open(const char *path, struct fuse_file_info *fi)
     {
-      ELLE_DEBUG("fusop_open %s %s", path, fi->flags);
+      ELLE_DEBUG_SCOPE("fusop_open %s %s", path, fi->flags);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -88,7 +89,7 @@ namespace reactor
 
     static int fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
     {
-      ELLE_DEBUG("fusop_create %s %s %s", path, mode, fi->flags);
+      ELLE_DEBUG_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -106,7 +107,7 @@ namespace reactor
 
     static int fusop_unlink(const char* path)
     {
-      ELLE_DEBUG("fusop_unlink %s", path);
+      ELLE_DEBUG_SCOPE("fusop_unlink %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -123,7 +124,7 @@ namespace reactor
 
     static int fusop_mkdir(const char* path, mode_t mode)
     {
-      ELLE_DEBUG("fusop_mkdir %s", path);
+      ELLE_DEBUG_SCOPE("fusop_mkdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -140,7 +141,7 @@ namespace reactor
 
     static int fusop_rmdir(const char* path)
     {
-      ELLE_DEBUG("fusop_rmdir %s", path);
+      ELLE_DEBUG_SCOPE("fusop_rmdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -157,7 +158,7 @@ namespace reactor
 
     static int fusop_rename(const char* path, const char* to)
     {
-      ELLE_DEBUG("fusop_rename %s %s", path, to);
+      ELLE_DEBUG_SCOPE("fusop_rename %s %s", path, to);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -175,6 +176,7 @@ namespace reactor
     static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
                           struct fuse_file_info *fi)
     {
+      ELLE_DEBUG_SCOPE("fusop_read %s", path);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -191,6 +193,7 @@ namespace reactor
     static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
                            struct fuse_file_info *fi)
     {
+      ELLE_DEBUG_SCOPE("fusop_write %s", path);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -206,6 +209,7 @@ namespace reactor
 
     static int fusop_release(const char *path, struct fuse_file_info *fi)
     {
+      ELLE_DEBUG_SCOPE("fusop_release %s", path);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -223,6 +227,7 @@ namespace reactor
     static int fusop_ftruncate(const char* path, off_t offset,
                                struct fuse_file_info* fi)
     {
+      ELLE_DEBUG_SCOPE("fusop_ftruncate %s %s", path, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -238,6 +243,7 @@ namespace reactor
 
     static int fusop_readlink(const char* path, char* buf, size_t len)
     {
+      ELLE_DEBUG_SCOPE("fusop_readlink %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -257,6 +263,7 @@ namespace reactor
 
     static int fusop_symlink(const char* path, const char* to)
     {
+      ELLE_DEBUG_SCOPE("fusop_symlink %s %s", path, to);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -272,6 +279,7 @@ namespace reactor
     }
     static int fusop_link(const char* path, const char* to)
     {
+      ELLE_DEBUG_SCOPE("fusop_link %s %s", path, to);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -287,6 +295,7 @@ namespace reactor
     }
     static int fusop_chmod(const char* path, mode_t mode)
     {
+      ELLE_DEBUG_SCOPE("fusop_chmod %s %s", path, mode);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -302,6 +311,7 @@ namespace reactor
     }
     static int fusop_chown(const char* path, uid_t uid, gid_t gid)
     {
+      ELLE_DEBUG_SCOPE("fusop_chown %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -317,6 +327,7 @@ namespace reactor
     }
     static int fusop_statfs(const char* path, struct ::statvfs* svfs)
     {
+      ELLE_DEBUG_SCOPE("fusop_statfs %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -332,6 +343,7 @@ namespace reactor
     }
     static int fusop_utimens(const char* path, const struct timespec tv[2])
     {
+      ELLE_DEBUG_SCOPE("fusop_utimens %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -347,6 +359,7 @@ namespace reactor
     }
     static int fusop_truncate(const char* path, off_t new_size)
     {
+      ELLE_DEBUG_SCOPE("fusop_truncate %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
