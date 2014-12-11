@@ -43,7 +43,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error stating %s: %s", path, e);
+        ELLE_TRACE("Filesystem error stating %s: %s", path, e.what());
         return -e.error_code();
       }
       return 0;
@@ -176,7 +176,7 @@ namespace reactor
     static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
                           struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_read %s", path);
+      ELLE_DEBUG_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -193,7 +193,7 @@ namespace reactor
     static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
                            struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_write %s", path);
+      ELLE_DEBUG_SCOPE("fusop_write %s sz=%s, offset=%s ", path, size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -377,7 +377,7 @@ namespace reactor
     class FileSystemImpl
     {
     public:
-      Path& fetch_recurse(boost::filesystem::path const& path);
+      Path& fetch_recurse(boost::filesystem::path path);
       std::unique_ptr<Operations> _operations;
       bool _full_tree;
       FuseContext _fuse;
@@ -445,8 +445,10 @@ namespace reactor
         _impl->_fuse.destroy();
       _impl->_where = "";
     }
-    Path& FileSystemImpl::fetch_recurse(boost::filesystem::path const& path)
+    Path& FileSystemImpl::fetch_recurse(boost::filesystem::path path)
     {
+      if (path == "" || path == "\\")
+        path = "/";
       ELLE_DEBUG("fetch_recurse on %s", path);
       auto it = _cache.find(path);
       if (it != _cache.end())
@@ -457,7 +459,7 @@ namespace reactor
       else
       {
         ELLE_DEBUG("cache miss");
-        if (path == "/" || path == "")
+        if (path == "/")
         {
           auto p = _operations->path("/");
           auto ptr = p.get();
@@ -473,8 +475,11 @@ namespace reactor
         return *ptr;
       }
     }
-    Path& FileSystem::path(std::string const& spath)
+    Path& FileSystem::path(std::string const& opath)
     {
+      std::string spath(opath);
+      if (spath == "" || spath == "\\")
+        spath = "/";
       ELLE_ASSERT(_impl);
       if (_impl->_full_tree)
       {
