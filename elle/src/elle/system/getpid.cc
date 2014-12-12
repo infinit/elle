@@ -1,4 +1,4 @@
-#include "getpid.hh"
+#include <elle/system/getpid.hh>
 
 #ifdef INFINIT_WINDOWS
 # include <windows.h>

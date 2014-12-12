@@ -1,4 +1,4 @@
-#include "environ.hh"
+#include <elle/os/environ.hh>
 
 #include <elle/Exception.hh>
 #include <elle/os/exceptions.hh>
