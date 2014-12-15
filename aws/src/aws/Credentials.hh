@@ -48,7 +48,7 @@ namespace aws
       ELLE_ATTRIBUTE_R(boost::posix_time::ptime, server_time);
       ELLE_ATTRIBUTE_R(boost::posix_time::ptime, expiry);
       // Estimated skew between trusted server time and local universal time.
-      ELLE_ATTRIBUTE_R(boost::posix_time::time_duration, skew);
+      ELLE_ATTRIBUTE_RW(boost::posix_time::time_duration, skew);
 
       /*--------------.
       | Serialization |
