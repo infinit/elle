@@ -56,6 +56,8 @@ class Qt:
           self.__cfg_gui = Config()
           self.__cfg_gui.add_system_include_path(include_path / 'QtGui')
           self.__cfg_gui.lib('QtGui%s' % lib_suffix)
+          self.__cfg_phonon = Config()
+          self.__cfg_phonon.lib('phonon%s' % lib_suffix)
           self.__cfg_xml = Config()
           self.__cfg_xml.add_system_include_path(include_path / 'QtXml')
           self.__cfg_xml.lib('QtXml%s' % lib_suffix)
@@ -79,6 +81,10 @@ class Qt:
   @property
   def config_gui(self):
     return self.__cfg_gui
+
+  @property
+  def config_phonon(self):
+    return self.__cfg_phonon
 
   @property
   def config_xml(self):
