@@ -1350,7 +1350,7 @@ class DynLibLinker(Builder):
     for hook in self.toolkit.hook_bin_deps():
       hook(self)
 
-  def __init__(self, lib, tk, cfg):
+  def __init__(self, lib, tk, cfg, strip = False):
     self.lib = lib
     self.toolkit = tk
     self.config = Config(cfg)
@@ -1361,6 +1361,7 @@ class DynLibLinker(Builder):
     Builder.__init__(self,
                      chain(self.__objects, lib.dynamic_libraries),
                      [lib])
+    self.__strip = strip
 
   def execute(self):
     return self.cmd('Link %s' % self.lib, self.command)
@@ -1368,10 +1369,13 @@ class DynLibLinker(Builder):
   @property
   def command(self):
     objects = self.__objects + list(self.__dynamic_libraries)
-    return self.toolkit.dynlink(
+    cmd = self.toolkit.dynlink(
         self.config,
         objects + list(self.sources_dynamic()),
         self.lib)
+    if self.__strip:
+      cmd = (cmd, ['%sstrip' % self.toolkit.prefix, self.lib.path()])
+    return cmd
 
   def __repr__(self):
     return 'Linker for %s' % self.lib
@@ -1546,7 +1550,7 @@ class Library(Binary):
 
 class DynLib(Library):
   def __init__(self, path, sources = None, tk = None, cfg = None,
-               preserve_filename = False):
+               preserve_filename = False, strip = False):
     path = Path(path)
     if not preserve_filename and tk is not None:
       path = tk.libname_dyn(path, cfg)
@@ -1554,7 +1558,7 @@ class DynLib(Library):
     for lib in self.dynamic_libraries:
       self.dependency_add(lib)
     if tk is not None and cfg is not None and sources is not None:
-      DynLibLinker(self, self.tk, self.cfg)
+      DynLibLinker(self, self.tk, self.cfg, strip = strip)
 
   def clone(self, path):
     res = DynLib(path, None, self.tk, self.cfg,
