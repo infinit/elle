@@ -20,10 +20,16 @@ namespace reactor
     class UPNPImpl
     {
     public:
+      UPNPImpl()
+      : devlist(0)
+      {
+        memset(&urls, 0, sizeof(UPNPUrls));
+      }
       ~UPNPImpl()
       {
         FreeUPNPUrls(&this->urls);
-        freeUPNPDevlist(this->devlist);
+        if (this->devlist)
+          freeUPNPDevlist(this->devlist);
       }
       UPNPDev* devlist;
       void _initialize();
