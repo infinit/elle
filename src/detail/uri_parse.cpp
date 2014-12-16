@@ -137,8 +137,11 @@ namespace network {
         // reg-name = *( unreserved / pct-encoded / sub-delims )
         reg_name %= qi::raw[*(unreserved | pct_encoded | sub_delims)];
 
-        // TODO, host = IP-literal / IPv4address / reg-name
-        host %= qi::raw[ip_literal | ipv4address | reg_name];
+        // host = IP-literal / IPv4address / reg-name
+        // This should be priority ordering, but Spirit is greedy
+        // and will fail if 'host' starts with 'ipv4address'. We make
+        // sure there isn't another '.' after last IPv4 octet.
+        host %= qi::raw[ip_literal | (ipv4address >> !(&qi::lit('.'))) | reg_name];
 
         port %= qi::raw[qi::ushort_ | qi::eps];
 
