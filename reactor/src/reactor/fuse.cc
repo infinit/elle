@@ -232,9 +232,10 @@ namespace reactor
     fuse_args args;
     args.allocated = false;
     args.argc = arguments.size();
-    args.argv = new char*[arguments.size() + 1];
-    elle::SafeFinally cleanup([&] { delete[]args.argv;});
-    for (unsigned int i = 0; i < arguments.size(); ++i)
+    args.argv = (char**) malloc(sizeof(void*) * (arguments.size() + 1));
+    void* ptr = args.argv;
+    elle::SafeFinally cleanup([&] { if (ptr == args.argv) free(args.argv);});
+    for (unsigned int i=0; i<arguments.size(); ++i)
       args.argv[i] = (char*)arguments[i].c_str();
     args.argv[arguments.size()] = nullptr;
     fuse_chan* chan = ::fuse_mount(mountpoint.c_str(), &args);
