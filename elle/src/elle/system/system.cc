@@ -12,8 +12,6 @@
 
 #include <boost/system/error_code.hpp>
 
-// ELLE_LOG_COMPONENT("elle.system");
-
 namespace elle
 {
   namespace system
@@ -100,6 +98,7 @@ namespace elle
     : _path(path)
     {
 #ifdef INFINIT_WINDOWS
+      ELLE_LOG_COMPONENT("elle.system");
       ELLE_DEBUG("get HANDLE for file: %s", path);
       switch(mode)
       {
