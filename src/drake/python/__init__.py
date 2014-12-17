@@ -21,6 +21,7 @@ class Package(drake.VirtualNode):
     nodes -- the package files
     '''
     super().__init__(name)
+    self.__root = root
     self.__root_source = drake.path_source(root)
     self.__root_build = drake.path_build(root)
     self.__nodes = nodes
@@ -38,3 +39,11 @@ class Package(drake.VirtualNode):
     [Path("srcdir/path/to"), Path("path/to")]
     '''
     return [self.__root_source, self.__root_build]
+
+  @property
+  def root(self):
+    return self.__root
+
+  @property
+  def nodes(self):
+    return self.__nodes
