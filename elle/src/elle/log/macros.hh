@@ -1,10 +1,18 @@
 #ifndef ELLE_LOG_MACROS_HH
-
 # define ELLE_LOG_MACROS_HH
-# define ELLE_LOG_COMPONENT(_component_)                                \
+
+# ifdef ELLE_LOG_DISABLE
+
+#  define ELLE_LOG_COMPONENT(_component_) /* */
+#  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...) /* */
+#  define ELLE_LOG_LEVEL(Lvl, T, ...) /* */
+
+# else
+
+#  define ELLE_LOG_COMPONENT(_component_)                               \
     static char const* _trace_component_ = _component_;
 
-# define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                              \
+#  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
       ::elle::log::detail::Send                                         \
       (elle::log::Logger::Level::Lvl,                                   \
@@ -14,13 +22,14 @@
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
        __VA_ARGS__)                                                     \
 
-# define ELLE_LOG_LEVEL(Lvl, Type, ...)                                       \
+#  define ELLE_LOG_LEVEL(Lvl, Type, ...)                                      \
     if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                         \
       {                                                                       \
         elle::unreachable();                                                  \
       }                                                                       \
     else                                                                      \
 /**/
+# endif
 
 # define ELLE_LOG_SCOPE(...)   ELLE_LOG_LEVEL_SCOPE(log,   info, __VA_ARGS__)
 # define ELLE_TRACE_SCOPE(...) ELLE_LOG_LEVEL_SCOPE(trace, info, __VA_ARGS__)
@@ -43,7 +52,14 @@
 /// @param  the list of arguments
 /// XXX does not work with empty call
 
-# define ELLE_TRACE_FUNCTION(...)                                             \
+# ifdef ELLE_LOG_DISABLE
+#  define ELLE_TRACE_FUNCTION(...) /* */
+#  define ELLE_DEBUG_FUNCTION(...) /* */
+#  define ELLE_TRACE_METHOD(...) /* */
+#  define ELLE_DEBUG_METHOD(...) /* */
+
+# else
+#  define ELLE_TRACE_FUNCTION(...)                                            \
   std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
   if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
                                         elle::log::Logger::Level::trace,      \
@@ -55,7 +71,7 @@
                    BOOST_PP_CAT(__trace_str_, __LINE__))                      \
 /**/
 
-# define ELLE_DEBUG_FUNCTION(...)                                             \
+#  define ELLE_DEBUG_FUNCTION(...)                                            \
   std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
   if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
                                         elle::log::Logger::Level::debug,      \
@@ -72,7 +88,7 @@
 /// @param  the list of arguments
 /// XXX does not work with empty call
 
-# define ELLE_TRACE_METHOD(...)                                               \
+#  define ELLE_TRACE_METHOD(...)                                              \
   std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
   if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
                                         elle::log::Logger::Level::trace,      \
@@ -84,7 +100,7 @@
                    BOOST_PP_CAT(__trace_str_, __LINE__), *this, this)         \
 /**/
 
-# define ELLE_DEBUG_METHOD(...)                                               \
+#  define ELLE_DEBUG_METHOD(...)                                              \
   std::string BOOST_PP_CAT(__trace_str_, __LINE__);                           \
   if (elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,        \
                                         elle::log::Logger::Level::debug,      \
@@ -96,6 +112,7 @@
                    BOOST_PP_CAT(__trace_str_, __LINE__), *this, this)         \
 /**/
 
+# endif
 # include <elle/log/Send.hh>
 
 #endif
