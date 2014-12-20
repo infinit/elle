@@ -215,6 +215,7 @@ namespace elle
     ConstWeakBuffer(ConstWeakBuffer const& other);
     /// ConstWeakBuffer move.
     ConstWeakBuffer(ConstWeakBuffer&& other);
+    ConstWeakBuffer& operator = (ConstWeakBuffer const& other) = default;
   private:
     /// ConstWeakBuffer cannot take ownership of memory.
     ConstWeakBuffer(Buffer&&);
