@@ -127,6 +127,8 @@ def configure(curl_config,
     drake.TarballExtractor(
       fuse_tarball,
       targets = ['%s/configure' % fuse_basename],
+      patches = ((drake.node('fuse.patch'),1),),
+      patch_dir = fuse_basename
     )
     GNUBuilder(
       cxx_toolkit,
@@ -294,6 +296,8 @@ def configure(curl_config,
       'src/reactor/filesystem.hh',
       'src/reactor/filesystem.cc',
       'src/reactor/filesystem_fuse.cc',
+      'src/reactor/pthread.hh',
+      'src/reactor/pthread.cc',
       )
   sources += drake.nodes(
     'src/reactor/http/Client.cc',

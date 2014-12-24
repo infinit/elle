@@ -1,0 +1,97 @@
+diff --git a/lib/fuse.c b/lib/fuse.c
+index 1cc39b9..18832bf 100644
+--- a/lib/fuse.c
++++ b/lib/fuse.c
+@@ -93,7 +93,7 @@ struct fusemod_so {
+ 
+ struct lock_queue_element {
+ 	struct lock_queue_element *next;
+-	pthread_cond_t cond;
++	reactor_pthread_cond_t cond;
+ 	fuse_ino_t nodeid1;
+ 	const char *name1;
+ 	char **path1;
+@@ -1036,7 +1036,7 @@ static void queue_element_wakeup(struct fuse *f, struct lock_queue_element *qe)
+ 	if (!qe->path1) {
+ 		/* Just waiting for it to be unlocked */
+ 		if (get_node(f, qe->nodeid1)->treelock == 0)
+-			pthread_cond_signal(&qe->cond);
++			reactor_pthread_cond_signal(&qe->cond);
+ 
+ 		return;
+ 	}
+@@ -1081,7 +1081,7 @@ err_unlock:
+ done:
+ 	qe->err = err;
+ 	qe->done = true;
+-	pthread_cond_signal(&qe->cond);
++	reactor_pthread_cond_signal(&qe->cond);
+ }
+ 
+ static void wake_up_queued(struct fuse *f)
+@@ -1115,7 +1115,7 @@ static void queue_path(struct fuse *f, struct lock_queue_element *qe)
+ 	qe->done = false;
+ 	qe->first_locked = false;
+ 	qe->second_locked = false;
+-	pthread_cond_init(&qe->cond, NULL);
++	reactor_pthread_cond_init(&qe->cond, NULL);
+ 	qe->next = NULL;
+ 	for (qp = &f->lockq; *qp != NULL; qp = &(*qp)->next);
+ 	*qp = qe;
+@@ -1125,7 +1125,7 @@ static void dequeue_path(struct fuse *f, struct lock_queue_element *qe)
+ {
+ 	struct lock_queue_element **qp;
+ 
+-	pthread_cond_destroy(&qe->cond);
++	reactor_pthread_cond_destroy(&qe->cond);
+ 	for (qp = &f->lockq; *qp != qe; qp = &(*qp)->next);
+ 	*qp = qe->next;
+ }
+@@ -1135,7 +1135,7 @@ static int wait_path(struct fuse *f, struct lock_queue_element *qe)
+ 	queue_path(f, qe);
+ 
+ 	do {
+-		pthread_cond_wait(&qe->cond, &f->lock);
++		reactor_mixed_pthread_cond_wait(&qe->cond, &f->lock);
+ 	} while (!qe->done);
+ 
+ 	dequeue_path(f, qe);
+@@ -1303,7 +1303,7 @@ static void forget_node(struct fuse *f, fuse_ino_t nodeid, uint64_t nlookup)
+ 		queue_path(f, &qe);
+ 
+ 		do {
+-			pthread_cond_wait(&qe.cond, &f->lock);
++			reactor_mixed_pthread_cond_wait(&qe.cond, &f->lock);
+ 		} while (node->nlookup == nlookup && node->treelock);
+ 
+ 		dequeue_path(f, &qe);
+diff --git a/lib/fuse_i.h b/lib/fuse_i.h
+index 78f1467..aceb1d0 100644
+--- a/lib/fuse_i.h
++++ b/lib/fuse_i.h
+@@ -9,6 +9,25 @@
+ #include "fuse.h"
+ #include "fuse_lowlevel.h"
+ 
++/*
++#define reactor_pthread_mutex_t void
++#define pthread_mutex_t reactor_pthread_mutex_t*
++#define pthread_mutex_lock reactor_pthread_mutex_lock
++#define pthread_mutex_unlock reactor_pthread_mutex_unlock
++#define pthread_mutex_destroy reactor_pthread_mutex_destroy
++#define PTHREAD_MUTEX_INITIALIZER NULL
++*/
++
++#define reactor_pthread_cond_t void *
++//#define pthread_cond_t reactor_pthread_cond_t*
++//#define pthread_cond_init reactor_pthread_cond_init
++//#define pthread_cond_signal reactor_pthread_cond_signal
++//#define pthread_cond_wait reactor_mixed_pthread_cond_wait
++//#define pthread_cond_timedwait reactor_pthread_cond_timedwait
++//#define pthread_cond_broadcast reactor_pthread_cond_broadcast
++//#define pthread_cond_destroy reactor_pthread_cond_destroy
++
++
+ struct fuse_chan;
+ struct fuse_ll;
+ 
