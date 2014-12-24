@@ -15,11 +15,12 @@
 #include <elle/log.hh>
 #include <elle/finally.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/semaphore.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/MultiLockBarrier.hh>
 #include <reactor/exception.hh>
 
-ELLE_LOG_COMPONENT("reactor.fuse");
+ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
 namespace reactor
 {
@@ -78,7 +79,7 @@ namespace reactor
 
   void FuseContext::_loop_pool(int nThreads, Scheduler& sched)
   {
-    reactor::Barrier barrier;
+    reactor::Semaphore sem;
     bool stop = false;
     std::list<elle::Buffer> requests;
     fuse_session* s = fuse_get_session(_fuse);
@@ -89,7 +90,7 @@ namespace reactor
       auto lock = _mt_barrier.lock();
       while (true)
       {
-        barrier.wait();
+        sem.wait();
         elle::Buffer buf;
         {
 #ifdef INFINIT_MACOSX
@@ -98,18 +99,21 @@ namespace reactor
           if (stop)
             return;
           if (requests.empty())
+          {
+            ELLE_WARN("Worker woken up with empty queue");
             continue;
+          }
           buf = std::move(requests.front());
           requests.pop_front();
-          if (requests.empty())
-            barrier.close();
         }
+        ELLE_TRACE("Processing new request");
         fuse_session_process(s, (const char*)buf.mutable_contents(), buf.size(), ch);
+        ELLE_TRACE("Back to the pool");
       }
     };
     for(int i=0; i< nThreads; ++i)
     {
-      Thread* t = new Thread("fuse worker", worker);
+      Thread* t = new Thread(elle::sprintf("fuse worker %s", i), worker);
       _workers.push_back(t);
     }
 #ifndef INFINIT_MACOSX
@@ -127,6 +131,7 @@ namespace reactor
         {
           if (erc)
             return;
+          ELLE_DUMP("fuse message ready, opening...");
           _socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
@@ -152,10 +157,11 @@ namespace reactor
       std::unique_lock<std::mutex> mutex_lock(_mutex);
 #endif
       requests.push_back(std::move(buf));
-      barrier.open();
+      sem.release();
     }
     stop = true;
-    barrier.open();
+    for (int i=0; i<_workers.size(); ++i)
+      sem.release();
     for(auto t : _workers)
       reactor::wait(*t);
   }
