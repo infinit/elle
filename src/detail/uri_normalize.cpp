@@ -78,7 +78,7 @@ namespace network {
               bool has_adjacent_slash =
                   ((prev_segment && prev_segment->empty()) && segment.empty());
               if (!has_adjacent_slash) {
-                prev_segment.reset(segment);
+                prev_segment = segment;
               }
               return has_adjacent_slash;
             });

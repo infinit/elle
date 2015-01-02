@@ -12,8 +12,14 @@
 #include <cstdint>
 #include <utility>
 #include <type_traits>
+
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
 #include <boost/asio/ip/address.hpp>
+#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
+
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 #include <boost/filesystem/path.hpp>
+#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -28,6 +34,7 @@ namespace network {
 
     };
 
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
     template <>
     struct host_converter<boost::asio::ip::address_v4> {
 
@@ -49,6 +56,7 @@ namespace network {
       }
 
     };
+#endif
 
     template <class T, class Enable = void>
     struct port_converter {
@@ -77,6 +85,7 @@ namespace network {
 
     };
 
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
     template <>
     struct path_converter<boost::filesystem::path> {
 
@@ -85,6 +94,7 @@ namespace network {
       }
 
     };
+#endif
 
   } // namespace detail
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -240,7 +250,7 @@ namespace network {
     template <typename Key, typename Value>
     uri_builder &query(const Key &key, const Value &value) {
       if (!query_) {
-	query_.reset(string_type());
+	query_ = string_type();
       }
       else {
 	query_->append("&");

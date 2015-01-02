@@ -49,22 +49,22 @@ network::uri uri_builder::uri() const { return network::uri(*this); }
 
 void uri_builder::set_scheme(string_type scheme) {
   // validate scheme is valid and normalize
-  scheme_.reset(boost::to_lower_copy(scheme));
+  scheme_ = boost::to_lower_copy(scheme);
 }
 
 void uri_builder::set_user_info(string_type user_info) {
-  user_info_.reset(string_type());
+  user_info_ = string_type();
   network::uri::encode_user_info(std::begin(user_info), std::end(user_info),
                                  std::back_inserter(*user_info_));
 }
 
 uri_builder &uri_builder::clear_user_info() {
-  user_info_.reset();
+  user_info_ = boost::none;
   return *this;
 }
 
 void uri_builder::set_host(string_type host) {
-  host_.reset(string_type());
+  host_ = string_type();
   auto end = network::uri::encode_host(std::begin(host), std::end(host),
                                        std::back_inserter(*host_));
   std::transform(std::begin(*host_), std::end(*host_), std::begin(*host_),
@@ -72,13 +72,13 @@ void uri_builder::set_host(string_type host) {
 }
 
 void uri_builder::set_port(string_type port) {
-  port_.reset(string_type());
+  port_ = string_type();
   network::uri::encode_port(std::begin(port), std::end(port),
                             std::back_inserter(*port_));
 }
 
 uri_builder &uri_builder::clear_port() {
-  port_.reset();
+  port_ = boost::none;
   return *this;
 }
 
@@ -101,35 +101,35 @@ void uri_builder::set_authority(string_type authority) {
 }
 
 void uri_builder::set_path(string_type path) {
-  path_.reset(string_type());
+  path_ = string_type();
   network::uri::encode_path(std::begin(path), std::end(path),
                             std::back_inserter(*path_));
 }
 
 uri_builder &uri_builder::clear_path() {
-  path_.reset();
+  path_ = boost::none;
   return *this;
 }
 
 void uri_builder::set_query(string_type query) {
-  query_.reset(string_type());
+  query_ = string_type();
   network::uri::encode_query(std::begin(query), std::end(query),
                              std::back_inserter(*query_));
 }
 
 uri_builder &uri_builder::clear_query() {
-  query_.reset();
+  query_ = boost::none;
   return *this;
 }
 
 void uri_builder::set_fragment(string_type fragment) {
-  fragment_.reset(string_type());
+  fragment_ = string_type();
   network::uri::encode_fragment(std::begin(fragment), std::end(fragment),
                                 std::back_inserter(*fragment_));
 }
 
 uri_builder &uri_builder::clear_fragment() {
-  fragment_.reset();
+  fragment_ = boost::none;
   return *this;
 }
 }  // namespace network
