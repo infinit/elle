@@ -144,7 +144,7 @@ namespace reactor
         setopt(this->_handle, CURLOPT_PROXY, proxy.host().c_str());
         setopt(this->_handle, CURLOPT_PROXYPORT, proxy.port());
         // curl expects a long for the proxy type.
-        long proxy_type;
+        long proxy_type = 0;
         switch (proxy.type())
         {
           case ProxyType::None:
