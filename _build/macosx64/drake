@@ -33,4 +33,5 @@ with drake.Drake('../..') as d:
         cxx_toolkit,
         cxx_config,
         boost = boost,
+        fuse = '/usr/local',
     )
