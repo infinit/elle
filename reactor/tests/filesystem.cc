@@ -133,7 +133,7 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
   reactor::Thread t(sched, "mount", [&] {
     reactor::Barrier barrier;
     *b = &barrier;
-    fs.mount(tmp, {"","-o", "allow_other"});
+    fs.mount(tmp, {});
     barrier.wait();
     fs.unmount();
   });
