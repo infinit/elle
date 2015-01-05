@@ -13,71 +13,10 @@
 #include <elle/test.hh>
 #include <elle/serialize/BinaryArchive.hh>
 
-static
-int
-answer()
-{
-  return 42;
-}
-
-static
-int
-square(int x)
-{
-  return x * x;
-}
-
-static
-std::string
-concat(std::string const& left,
-       std::string const& right)
-{
-  return left + right;
-}
+ELLE_LOG_COMPONENT("infinit.protocol.test");
 
 static
 reactor::Thread* suicide_thread(nullptr);
-
-static
-void
-suicide()
-{
-  suicide_thread->terminate();
-  suicide_thread = nullptr;
-  reactor::Scheduler::scheduler()->current()->yield();
-  reactor::Scheduler::scheduler()->current()->yield();
-  reactor::Scheduler::scheduler()->current()->yield();
-  reactor::Scheduler::scheduler()->current()->yield();
-  reactor::Scheduler::scheduler()->current()->yield();
-  reactor::Scheduler::scheduler()->current()->yield();
-  BOOST_CHECK(false);
-}
-
-static int global_counter = 0;
-
-static
-int
-count()
-{
-  ++global_counter;
-  // "synchronize" parallel count RPCs.
-  reactor::sleep(valgrind(50_ms, 10));
-  return global_counter;
-}
-
-static
-void
-except()
-{
-  throw std::runtime_error("blablabla");
-}
-
-static
-void
-await()
-{
-  reactor::sleep();
-}
 
 struct DummyRPC:
   public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
@@ -104,20 +43,97 @@ struct DummyRPC:
   RemoteProcedure<void> wait;
 };
 
+class RPCServer
+{
+public:
+  RPCServer(bool sync)
+    : _sync(sync)
+    , _counter(0)
+    , _server()
+    , _thread(elle::sprintf("%s runner", *this), [this] { this->_run(); })
+  {
+    this->_server.listen();
+  }
+
+  ~RPCServer()
+  {
+    this->_thread.terminate_now();
+  }
+
+  int
+  port() const
+  {
+    return this->_server.port();
+  }
+
+  void
+  terminate()
+  {
+    this->_thread.terminate();
+  }
+
+  void
+  _run()
+  {
+    auto& sched = *reactor::Scheduler::scheduler();
+    auto socket = this->_server.accept();
+    infinit::protocol::Serializer s(sched, *socket);
+    infinit::protocol::ChanneledStream channels(sched, s);
+
+    DummyRPC rpc(channels);
+    rpc.answer = [] { return 42; };
+    rpc.square = [] (int x) { return x * x; };
+    rpc.concat = []
+      (std::string const& a, std::string const& b) { return a + b; };
+    rpc.raise = [] { throw std::runtime_error("blablabla"); };
+    rpc.suicide = []
+      {
+        suicide_thread->terminate();
+        suicide_thread = nullptr;
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        BOOST_CHECK(false);
+      };
+    rpc.count =
+      [this]
+      {
+        ++this->_counter;
+        // "synchronize" parallel count RPCs.
+        reactor::sleep(valgrind(50_ms, 10));
+        return this->_counter;
+      };
+    rpc.wait = [] { reactor::sleep(); };
+    try
+    {
+      if (this->_sync)
+        rpc.run();
+      else
+        rpc.parallel_run();
+    }
+    catch (reactor::network::ConnectionClosed&)
+    {}
+  }
+
+  ELLE_ATTRIBUTE_R(bool, sync);
+  ELLE_ATTRIBUTE_R(int, counter);
+  ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
+  ELLE_ATTRIBUTE(reactor::Thread, thread);
+};
+
 /*------.
 | Basic |
 `------*/
 
-static
-void
-caller(reactor::Semaphore& lock, int& port)
+ELLE_TEST_SCHEDULED(rpc, (bool, sync))
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  sched.current()->wait(lock);
-  reactor::network::TCPSocket socket("127.0.0.1", port);
-  infinit::protocol::Serializer s(sched, socket);
-  infinit::protocol::ChanneledStream channels(sched, s);
-
+  RPCServer server(sync);
+  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  infinit::protocol::Serializer s(socket);
+  infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
   BOOST_CHECK_EQUAL(rpc.square(8), 64);
@@ -125,219 +141,85 @@ caller(reactor::Semaphore& lock, int& port)
   BOOST_CHECK_THROW(rpc.raise(), std::runtime_error);
 }
 
-static
-void
-runner(reactor::Semaphore& lock,
-       bool sync,
-       int& port)
-{
-  auto& sched = *reactor::Scheduler::scheduler();
-  reactor::network::TCPServer server{};
-  server.listen();
-  port = server.port();
-  lock.release();
-  lock.release();
-  std::unique_ptr<reactor::network::Socket> socket(server.accept());
-  infinit::protocol::Serializer s(sched, *socket);
-  infinit::protocol::ChanneledStream channels(sched, s);
-
-  DummyRPC rpc(channels);
-  rpc.answer = &answer;
-  rpc.square = &square;
-  rpc.concat = &concat;
-  rpc.raise = &except;
-  rpc.suicide = &suicide;
-  rpc.count = &count;
-  rpc.wait = &await;
-  try
-  {
-    if (sync)
-      rpc.run();
-    else
-      rpc.parallel_run();
-  }
-  catch (reactor::network::ConnectionClosed&)
-  {}
-}
-
-static
-int
-rpc(bool sync)
-{
-  reactor::Scheduler sched;
-  reactor::Semaphore lock;
-  int port = 0;
-
-  reactor::Thread r(sched, "Runner",
-                    std::bind(runner,
-                              std::ref(lock),
-                              sync,
-                              std::ref(port)));
-  reactor::Thread c(sched, "Caller",
-                    std::bind(caller,
-                              std::ref(lock),
-                              std::ref(port)));
-
-  sched.run();
-  return 0;
-}
-
 /*----------.
 | Terminate |
 `----------*/
 
-static
-void
-pacify(reactor::Semaphore& lock,
-       reactor::Thread& t,
-       int& port)
+ELLE_TEST_SCHEDULED(terminate, (bool, sync))
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  sched.current()->wait(lock);
-  reactor::network::TCPSocket socket("127.0.0.1", port);
-  infinit::protocol::Serializer s(sched, socket);
-  infinit::protocol::ChanneledStream channels(sched, s);
-
-  DummyRPC rpc(channels);
-  suicide_thread = &t;
-  BOOST_CHECK_THROW(rpc.suicide(), std::runtime_error);
-}
-
-static
-int
-terminate(bool sync)
-{
-  reactor::Scheduler sched{};
-  reactor::Semaphore lock;
-  int port = 0;
-
-  reactor::Thread r(sched, "Runner", std::bind(runner,
-                                               std::ref(lock),
-                                               sync,
-                                               std::ref(port)));
-  reactor::Thread j(sched, "Judge dread", std::bind(pacify,
-                                                    std::ref(lock),
-                                                    std::ref(r),
-                                                    std::ref(port)));
-
-  sched.run();
-  return 0;
+  RPCServer server(sync);
+  reactor::Thread thread(
+    "judge dread",
+    [&]
+    {
+      reactor::network::TCPSocket socket("127.0.0.1", server.port());
+      infinit::protocol::Serializer s(socket);
+      infinit::protocol::ChanneledStream channels(s);
+      DummyRPC rpc(channels);
+      suicide_thread = &thread;
+      BOOST_CHECK_THROW(rpc.suicide(), std::runtime_error);
+    });
+  reactor::wait(thread);
 }
 
 /*---------.
 | Parallel |
 `---------*/
 
-static
-void
-counter(reactor::Semaphore& lock,
-        bool sync,
-        int& port)
+ELLE_TEST_SCHEDULED(parallel, (bool, sync))
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  sched.current()->wait(lock);
-  reactor::network::TCPSocket socket("127.0.0.1", port);
-  infinit::protocol::Serializer s(sched, socket);
-  infinit::protocol::ChanneledStream channels(sched, s);
-
+  RPCServer server(sync);
+  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  infinit::protocol::Serializer s(socket);
+  infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
-  global_counter = 0;
   std::vector<reactor::Thread*> threads;
   std::list<int> inserted;
-  for (int i = 1; i <= 3; ++i)
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
   {
-    if (sync)
-      inserted.push_back(i);
-    auto t = new reactor::Thread(sched,
-                                 elle::sprintf("Counter %s", i),
-                                 [&,i] ()
-                                 {
-                                   if (sync)
-                                     inserted.remove(rpc.count());
-                                   else
-                                     BOOST_CHECK_EQUAL(rpc.count(), 3);
-                                 });
-    threads.push_back(t);
-  }
-  for (auto& t: threads)
-  {
-    sched.current()->wait(*t);
-    delete t;
-  }
-
+    for (int i = 1; i <= 3; ++i)
+    {
+      if (sync)
+        inserted.push_back(i);
+      scope.run_background(
+        elle::sprintf("counter %s", i),
+        [&]
+        {
+          if (sync)
+            inserted.remove(rpc.count());
+          else
+            BOOST_CHECK_EQUAL(rpc.count(), 3);
+        });
+    }
+    reactor::wait(scope);
+  };
   BOOST_CHECK(inserted.empty());
-}
-
-
-static
-int
-parallel(bool sync)
-{
-  reactor::Scheduler sched;
-  reactor::Semaphore lock;
-  int port = 0;
-
-  reactor::Thread r(sched, "Runner", std::bind(runner,
-                                               std::ref(lock),
-                                               sync,
-                                               std::ref(port)));
-  reactor::Thread c1(sched, "Counter", std::bind(counter,
-                                                 std::ref(lock),
-                                                 sync,
-                                                 std::ref(port)));
-
-  sched.run();
-  return 0;
 }
 
 /*--------------.
 | Disconnection |
 `--------------*/
 
-static
-void
-disconnection_caller(reactor::Semaphore& lock,
-                       bool,
-                       int& port)
+ELLE_TEST_SCHEDULED(disconnection, (bool, sync))
 {
-  auto& sched = *reactor::Scheduler::scheduler();
-  sched.current()->wait(lock);
-  reactor::network::TCPSocket socket("127.0.0.1", port);
-  infinit::protocol::Serializer s(sched, socket);
-  infinit::protocol::ChanneledStream channels(sched, s);
-
+  RPCServer server(sync);
+  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  infinit::protocol::Serializer s(socket);
+  infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
-
-  reactor::Thread call_1(sched, "Call 1", [&]() {
-      BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
-    });
-  reactor::Thread call_2(sched, "Call 2", [&]() {
-      BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
-    });
-  sched.current()->wait({&call_1, &call_2});
-}
-
-static
-int
-disconnection(bool sync)
-{
-  reactor::Scheduler sched;
-  reactor::Semaphore lock;
-  int port = 0;
-  reactor::Thread r(sched, "Runner", std::bind(runner,
-                                               std::ref(lock),
-                                               true,
-                                               std::ref(port)));
-  reactor::Thread c1(sched, "Caller", std::bind(disconnection_caller,
-                                                  std::ref(lock),
-                                                  sync,
-                                                  std::ref(port)));
-  reactor::Thread killer(sched, "Killer", [&] {
-      reactor::sleep(valgrind(50_ms, 20));
-      r.terminate();
-    });
-  sched.run();
-  return 0;
+  reactor::Thread call_1("call 1",
+                         [&]
+                         {
+                           BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
+                         });
+  reactor::Thread call_2("call 2",
+                         [&]
+                         {
+                           BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
+                         });
+  reactor::sleep(valgrind(50_ms, 20));
+  server.terminate();
+  reactor::wait({&call_1, &call_2});
 }
 
 /*-----------.
@@ -353,7 +235,7 @@ ELLE_TEST_SUITE()
 #define TEST(Name)                                                      \
   auto BOOST_PP_CAT(Name, _sync) = std::bind(Name, true);               \
   suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)),                 \
-            0, valgrind(1, 10));                                           \
+            0, valgrind(1, 10));                                        \
   auto BOOST_PP_CAT(Name, _async) = std::bind(Name, false);             \
   suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)),                \
             0, valgrind(1, 10));
