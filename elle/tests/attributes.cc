@@ -170,5 +170,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(test_w), 0, 1);
   suite.add(BOOST_TEST_CASE(test_x), 0, 1);
   suite.add(BOOST_TEST_CASE(types), 0, 1);
-  suite.add(BOOST_TEST_CASE(thread_safe), 0, 3);
+  suite.add(BOOST_TEST_CASE(thread_safe), 0, 10);
 }
