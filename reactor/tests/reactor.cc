@@ -682,28 +682,6 @@ namespace scope
 
 static
 void
-sleeper1(int& step)
-{
-  BOOST_CHECK(step == 0 || step == 1);
-  ++step;
-  reactor::sleep(boost::posix_time::milliseconds(valgrind(400)));
-  BOOST_CHECK_EQUAL(step, 3);
-  ++step;
-}
-
-static
-void
-sleeper2(int& step)
-{
-  BOOST_CHECK(step == 0 || step == 1);
-  ++step;
-  reactor::sleep(boost::posix_time::milliseconds(valgrind(200)));
-  BOOST_CHECK_EQUAL(step, 2);
-  ++step;
-}
-
-static
-void
 test_sleep_interleave()
 {
   reactor::Scheduler sched;
