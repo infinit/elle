@@ -718,7 +718,7 @@ now()
 
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
-  reactor::Duration const delay = valgrind(100_ms, 10);
+  reactor::Duration const delay = valgrind(200_ms, 10);
 
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
@@ -729,7 +729,7 @@ ELLE_TEST_SCHEDULED(test_sleep_timing)
     reactor::sleep(delay);
     double elapsed = (now() - start).total_milliseconds();
     double expected =  delay.total_milliseconds();
-    BOOST_CHECK_CLOSE(elapsed, expected, double(15));
+    BOOST_CHECK_CLOSE(elapsed, expected, double(25));
   }
 }
 
@@ -2127,7 +2127,7 @@ namespace background
   {
     reactor::Scheduler sched;
     static int const iterations = 16;
-    reactor::Duration sleep_time = valgrind(200_ms, 10);
+    reactor::Duration sleep_time = valgrind(500_ms, 5);
     reactor::Thread main(
       sched, "main",
       [&]
@@ -2155,8 +2155,7 @@ namespace background
                   ++count;
                 }));
           auto start = boost::posix_time::microsec_clock::local_time();
-          sched.current()->wait(reactor::Waitables(begin(threads),
-                                                   end(threads)));
+          reactor::wait(reactor::Waitables(begin(threads), end(threads)));
           auto duration =
             boost::posix_time::microsec_clock::local_time() - start;
           BOOST_CHECK_EQUAL(count, iterations);
