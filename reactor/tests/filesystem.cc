@@ -22,12 +22,14 @@ namespace sum
   {
   public:
     Handle(int num)
-    : num(num) {}
+      : num(num)
+    {}
+
     int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
       ELLE_TRACE("read %s/%s", offset, size);
       std::string val = std::to_string(num) + "\n";
-      if (offset >= val.length())
+      if (offset >= signed(val.length()))
         return 0;
       size_t sz = std::min(val.length()+1, size);
       strncpy((char*)buffer.contents(), val.c_str(), sz);

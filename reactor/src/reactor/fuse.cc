@@ -160,7 +160,7 @@ namespace reactor
       sem.release();
     }
     stop = true;
-    for (int i=0; i<_workers.size(); ++i)
+    for (unsigned i = 0; i < _workers.size(); ++i)
       sem.release();
     for(auto t : _workers)
       reactor::wait(*t);
