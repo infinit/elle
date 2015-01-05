@@ -2811,7 +2811,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1, 5));
 #ifndef INFINIT_WINDOWS
-  storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(1, 5));
+  storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(3, 4));
 #endif
 
   boost::unit_test::test_suite* thread_exception =
