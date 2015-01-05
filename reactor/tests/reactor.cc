@@ -2127,7 +2127,7 @@ namespace background
   {
     reactor::Scheduler sched;
     static int const iterations = 16;
-    reactor::Duration sleep_time = valgrind(100_ms, 10);
+    reactor::Duration sleep_time = valgrind(200_ms, 10);
     reactor::Thread main(
       sched, "main",
       [&]
@@ -2135,7 +2135,7 @@ namespace background
         // The first sleep is erratic on valgrind, don't include it in the
         // tests.
         if (RUNNING_ON_VALGRIND)
-          reactor::sleep(100_ms);
+          reactor::sleep(sleep_time);
         // Run it three times to check the thread pool doesn't exceed 16.
         for (int run = 0; run < 3; ++run)
         {
