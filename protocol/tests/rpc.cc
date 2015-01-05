@@ -102,11 +102,10 @@ public:
       [this]
       {
         ++this->_counter;
-        // "synchronize" parallel count RPCs.
-        reactor::sleep(valgrind(50_ms, 10));
+        reactor::wait(this->_count_barrier);
         return this->_counter;
       };
-    rpc.wait = [] { reactor::sleep(); };
+    rpc.wait = [this] { ++this->_counter; reactor::sleep(); };
     try
     {
       if (this->_sync)
@@ -120,6 +119,7 @@ public:
 
   ELLE_ATTRIBUTE_R(bool, sync);
   ELLE_ATTRIBUTE_R(int, counter);
+  ELLE_ATTRIBUTE_RX(reactor::Barrier, count_barrier)
   ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
   ELLE_ATTRIBUTE(reactor::Thread, thread);
 };
@@ -191,6 +191,14 @@ ELLE_TEST_SCHEDULED(parallel, (bool, sync))
             BOOST_CHECK_EQUAL(rpc.count(), 3);
         });
     }
+    // Let the RPC get executed once.
+    if (!sync)
+      do
+      {
+        reactor::yield();
+      }
+      while (server.counter() != 3);
+    server.count_barrier().open();
     reactor::wait(scope);
   };
   BOOST_CHECK(inserted.empty());
@@ -217,7 +225,11 @@ ELLE_TEST_SCHEDULED(disconnection, (bool, sync))
                          {
                            BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
                          });
-  reactor::sleep(valgrind(50_ms, 20));
+  do
+  {
+    reactor::yield();
+  }
+  while (server.counter() < (sync ? 1 : 2));
   server.terminate();
   reactor::wait({&call_1, &call_2});
 }
