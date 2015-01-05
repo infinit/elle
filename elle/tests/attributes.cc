@@ -147,16 +147,16 @@ void
 thread_safe()
 {
   ThreadSafe ts;
-  std::thread reader(
+  std::thread writer(
     [&]
     {
       for (int i = 0; i < 1024; ++i)
         ts.ints(std::vector<int>({i}));
     });
-  std::thread writer(
+  std::thread reader(
     [&]
     {
-      while (ts.ints().size() < 0 || ts.ints()[0] != 1023)
+      while (ts.ints().size() == 0 || ts.ints()[0] != 1023)
         ;
     });
   writer.join();
