@@ -6,6 +6,9 @@ namespace reactor
     : Super(name)
   {}
 
+  Signal::~Signal()
+  {}
+
   bool
   Signal::signal()
   {

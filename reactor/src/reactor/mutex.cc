@@ -8,6 +8,9 @@ namespace reactor
     : _locked(false)
   {}
 
+  Mutex::~Mutex()
+  {}
+
   bool
   Mutex::locked() const
   {

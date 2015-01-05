@@ -12,6 +12,8 @@ namespace reactor
     typedef Signal Self;
     typedef Waitable Super;
     Signal(const std::string& name = std::string());
+    virtual
+    ~Signal();
     bool signal();
     bool signal_one();
 

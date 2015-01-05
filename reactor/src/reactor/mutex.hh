@@ -7,16 +7,18 @@ namespace reactor
 {
   class Mutex: public Lockable
   {
-    public:
-      Mutex();
-      bool locked() const;
-      virtual bool release();
+  public:
+    Mutex();
+    virtual
+    ~Mutex();
+    bool locked() const;
+    virtual bool release();
 
-    protected:
-      virtual bool _wait(Thread* thread);
+  protected:
+    virtual bool _wait(Thread* thread);
 
-    private:
-      bool _locked;
+  private:
+    bool _locked;
   };
 }
 
