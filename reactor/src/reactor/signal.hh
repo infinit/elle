@@ -14,6 +14,7 @@ namespace reactor
     Signal(const std::string& name = std::string());
     virtual
     ~Signal();
+    Signal(Signal&&) = default;
     bool signal();
     bool signal_one();
 

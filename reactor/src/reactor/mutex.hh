@@ -11,6 +11,7 @@ namespace reactor
     Mutex();
     virtual
     ~Mutex();
+    Mutex(Mutex&&) = default;
     bool locked() const;
     virtual bool release();
 
