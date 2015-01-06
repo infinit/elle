@@ -552,8 +552,8 @@ class GccToolkit(Toolkit):
       version = subprocess.check_output([self.cxx, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
-    apple, win32, win64, linux, clang, x86_64 = self.preprocess_isdef(
-      ('__APPLE__', '_WIN32', '_WIN64', '__linux__', '__clang__', '__x86_64__'))
+    apple, win32, win64, linux, android, clang, x86_64 = self.preprocess_isdef(
+      ('__APPLE__', '_WIN32', '_WIN64', '__linux__', '__ANDROID__', '__clang__', '__x86_64__'))
     if self.os is None:
       if x86_64:
         self.architecture = drake.architecture.x86_64
@@ -575,6 +575,8 @@ class GccToolkit(Toolkit):
           self.architecture = drake.architecture.x86_64
         else:
           self.architecture = drake.architecture.x86
+      elif android:
+        self.os = drake.os.android
       elif linux:
         self.os = drake.os.linux
       else:
@@ -832,7 +834,7 @@ class GccToolkit(Toolkit):
   def libname_dyn(self, path, cfg = None):
 
       path = Path(path)
-      if self.os == drake.os.linux:
+      if self.os in [drake.os.linux, drake.os.android]:
           ext = 'so'
       elif self.os in (drake.os.macos, drake.os.ios, drake.os.ios_simulator):
           ext = 'dylib'
