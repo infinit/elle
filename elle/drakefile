@@ -64,9 +64,11 @@ def configure(zlib_lib,
     if python3 is not None:
       boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
-    boost_python = drake.cxx.Config(boost.config_system(link = False))
-    boost_python.library_add(drake.copy(boost.python_dynamic,
-                                        'lib', strip_prefix = True))
+    if python3 is not None:
+      boost_python = drake.cxx.Config(
+        boost.config_system(link = False))
+      boost_python.library_add(
+        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
     cxx_config += boost.config_system(link = False)
     cxx_config.library_add(drake.copy(boost.system_dynamic,
                                       'lib', strip_prefix = True))
