@@ -466,7 +466,12 @@ def configure(curl_config,
     }
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
-    if valgrind_tests:
+    # Disable valgrind for tests using fuse.
+    # Valgrind has deadlock issues when hosting a program that both implements
+    # and use a FUSE fs from different threads.
+    # The option --sim-hints=fuse-compatible is supposed to fix that, but
+    # it crashes valgrind with an assert.
+    if valgrind_tests and test_name is not 'filesystem':
       runner = drake.valgrind.ValgrindRunner(exe = test,
                                              valgrind = valgrind,
                                              env = env)
