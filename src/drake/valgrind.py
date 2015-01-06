@@ -42,13 +42,14 @@ class Valgrind:
 
 class ValgrindRunner(drake.Runner):
 
-  def __init__(self, exe, args = None, env = None, valgrind = None):
+  def __init__(self, exe, args = None, env = None, valgrind = None, valgrind_args = None):
     super().__init__(exe, args = args, env = env)
     self.__valgrind = Valgrind(valgrind)
     self.__valgrind_status = drake.node(
       '%s.valgrind' % self.executable.name_relative)
     self.__valgrind_status.builder = self
     self.valgrind_reporting = drake.Runner.Reporting.on_failure
+    self.__valgrind_args = valgrind_args or []
 
   @property
   def command(self):
@@ -58,7 +59,7 @@ class ValgrindRunner(drake.Runner):
       '--num-callers=50',
       '--log-file=%s' % self.__valgrind_status.path(),
       '--error-exitcode=1',
-    ] + super().command
+    ] + self.__valgrind_args + super().command
 
   def _report(self, status):
     super()._report(status)
