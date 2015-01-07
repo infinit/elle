@@ -232,8 +232,10 @@ def configure(cxx_toolkit = None,
     zlib_configure_call = zlib_configure
     zlib_configure_args = []
     if cxx_toolkit.os is drake.os.macos:
+      zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
-    elif cxx_toolkit.os is drake.os.linux:
+    elif cxx_toolkit.os in [drake.os.linux, drake.os.android]:
+      zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
     elif cxx_toolkit.os is drake.os.ios:
       zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
@@ -263,11 +265,13 @@ def configure(cxx_toolkit = None,
       "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
       "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
       "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
-      "PREFIX=%s" % cxx_toolkit.prefix,
+      # FIXME: really needed ?
+      # "PREFIX=%s" % cxx_toolkit.prefix,
     ])
   )
   zlib_config = drake.cxx.Config()
   zlib_config.add_local_include_path('zlib/include')
+  drake.Rule('zlib') << zlib_libs
 
   ## ------- ##
   ## OpenSSL ##
