@@ -1054,6 +1054,9 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   if cxx_toolkit.os == drake.os.linux:
     config.define('INFINIT_LINUX')
     cxx_config.define('INFINIT_LINUX')
+  elif cxx_toolkit.os == drake.os.android:
+    config.define('INFINIT_ANDROID')
+    cxx_config.define('INFINIT_ANDROID')
   elif cxx_toolkit.os == drake.os.macos:
     config.define('INFINIT_MACOSX')
     cxx_config.define('INFINIT_MACOSX')
