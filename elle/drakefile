@@ -620,7 +620,8 @@ def configure(zlib_lib,
 
   cxx_config_tests = cxx_config + config
   cxx_config_tests.enable_debug_symbols()
-
+  if cxx_toolkit.os == drake.os.android:
+    cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config_tests += boost.config_test(static = True)
   else:

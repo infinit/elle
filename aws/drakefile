@@ -110,6 +110,8 @@ def configure(cryptography,
   ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
+  if cxx_toolkit.os == drake.os.android:
+    cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config_tests += boost.config_test(static = True)
     cxx_config_tests += boost.config_system(static = True)
