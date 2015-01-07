@@ -1,7 +1,7 @@
 #ifndef ELLE_BACKTRACE_HXX
 # define ELLE_BACKTRACE_HXX
 
-# ifndef INFINIT_WINDOWS
+# if not defined(INFINIT_WINDOWS) and not defined(INFINIT_ANDROID)
 #  include <execinfo.h>
 # endif
 
@@ -11,8 +11,11 @@ namespace elle
   Backtrace
   Backtrace::current(unsigned skip)
   {
-# ifdef INFINIT_WINDOWS
+# if defined(INFINIT_WINDOWS)
     return Backtrace::_current();
+# elif defined(INFINIT_ANDROID)
+    // FIXME: implement with https://android.googlesource.com/platform/frameworks/native/+/jb-dev/include/utils/CallStack.h
+    return Backtrace();
 # else
     static const size_t size = 128;
     void* callstack[size];
