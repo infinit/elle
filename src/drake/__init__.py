@@ -3556,3 +3556,16 @@ class TarballExtractor(Builder):
 
   def __str__(self):
     return 'Extraction of %s' % self.__tarball
+
+def host():
+  system = platform.system()
+  if system == 'Linux':
+    os_string = 'pc-linux-gnu'
+  elif platform.system() == 'Windows':
+    if platform.architecture()[0] == '64bits':
+      os_string = 'w64'
+    else:
+      os_string = 'w32'
+  else:
+    raise Exception('Unhandled system: %s' % system)
+  return '%s-%s' % (platform.machine(), os_string)
