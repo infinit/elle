@@ -626,9 +626,13 @@ def configure(cxx_toolkit = None,
     libarchive_tarball,
     fingerprint = 'efad5a503f66329bb9d2f4308b5de98a',
   )
+  libarchive_patches = None
+  if cxx_toolkit.os is drake.os.android:
+      libarchive_patches = ((drake.node('libarchive_android.patch'), 0),)
   drake.TarballExtractor(
     libarchive_tarball,
     targets = ['libarchive-%s/configure' % libarchive_version],
+    patches = libarchive_patches
   )
   libarchive_openssl_libs = \
     drake.copy(openssl_libs, libarchive_prefix / 'lib',
