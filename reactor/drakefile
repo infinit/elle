@@ -63,7 +63,7 @@ def configure(curl_config,
 
   # Lib coroutine
   libcoroutine = None
-  if cxx_toolkit.os is drake.os.windows:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.android]:
     libcoroutine_sources = drake.nodes(
       'src/reactor/backend/coro_io/libcoroutine/asm.S',
       'src/reactor/backend/coro_io/libcoroutine/context.cc',
@@ -88,10 +88,11 @@ def configure(curl_config,
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
   else:
-    local_cxx_config += boost.config_context(link = False)
+    if cxx_toolkit.os is not drake.os.android:
+      local_cxx_config += boost.config_context(link = False)
+      local_cxx_config.library_add(
+        drake.copy(boost.context_dynamic, 'lib', strip_prefix = True))
     local_cxx_config += boost.config_signals(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True))
     local_cxx_config.library_add(
       drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True))
     local_cxx_config += boost.config_system(link = False)
@@ -332,19 +333,18 @@ def configure(curl_config,
     lib_cxx_config,
   )
 
-  backend_coro_libs = [backend]
   if libcoroutine is not None:
-    backend_coro_libs += [libcoroutine]
-
-  backend_coro_io = drake.cxx.StaticLib(
-    'lib/reactor/backend_coro_io',
-    drake.nodes(
-      'src/reactor/backend/coro_io/backend.cc',
-      'src/reactor/backend/coro_io/backend.hh',
-    ) + backend_coro_libs,
-    cxx_toolkit,
-    lib_cxx_config,
-  )
+    backend_coro_io = drake.cxx.StaticLib(
+      'lib/reactor/backend_coro_io',
+      drake.nodes(
+        'src/reactor/backend/coro_io/backend.cc',
+        'src/reactor/backend/coro_io/backend.hh',
+      ) + [backend, libcoroutine],
+      cxx_toolkit,
+      lib_cxx_config,
+    )
+  else:
+    backend_coro_io = None
 
   backend_boost_context_cxx_config = drake.cxx.Config(lib_cxx_config)
   backend_boost_context = drake.cxx.StaticLib(
@@ -356,18 +356,26 @@ def configure(curl_config,
     cxx_toolkit,
     backend_boost_context_cxx_config,
   )
-
+  lib_dynamic_link_libs = [
+    curl_lib,
+    elle_lib,
+    miniupnpc.library,
+  ]
   lib_static_link_libs = [
     curl_lib,
     elle.lib_static,
     miniupnpc.library,
   ]
-  if cxx_toolkit.os is drake.os.windows:
-    lib_static_link_libs.append(libcoroutine)
+  if backend_coro_io is not None:
+    lib_dynamic_link_libs.append(backend_coro_io)
     lib_static_link_libs.append(backend_coro_io)
   else:
+    lib_dynamic_link_libs.append(backend_boost_context)
+    lib_dynamic_link_libs.append(backend)
     lib_static_link_libs.append(backend_boost_context)
     lib_static_link_libs.append(backend)
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.android]:
+    lib_dynamic_link_libs.append(fuse_lib)
   lib_static = drake.cxx.StaticLib(
     'lib/reactor',
     sources + lib_static_link_libs + openssl_libs,
