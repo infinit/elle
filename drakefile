@@ -55,6 +55,7 @@ def set_cxx_toolkit(value):
   cxx_toolkit = value
 
 def configure(cxx_toolkit = None,
+              cxx_toolkit_host = None,
               cxx_config = drake.cxx.Config(),
               archs = [],
               fuse = None,
@@ -112,6 +113,7 @@ def configure(cxx_toolkit = None,
 
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+  cxx_toolkit_host = cxx_toolkit_host or cxx_toolkit
   set_cxx_toolkit(cxx_toolkit)
   if cxx_toolkit.os is drake.os.ios:
     print('Cross compiling for iOS')
@@ -181,13 +183,14 @@ def configure(cxx_toolkit = None,
     configure = patchelf_configure,
     configure_args = [
       '--prefix=%s' % patchelf_prefix_absolute,
-      'CXX=%s' % cxx_toolkit.cxx,
+      'CXX=%s' % cxx_toolkit_host.cxx,
     ],
     targets = [patchelf],
     sources = [],
   )
   if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
     cxx_toolkit.patchelf = patchelf
+  drake.Rule('patchelf') << patchelf
 
   ## ---- ##
   ## Zlib ##

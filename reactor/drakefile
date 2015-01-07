@@ -62,6 +62,7 @@ def configure(curl_config,
   local_cxx_config.enable_debug_symbols()
 
   # Lib coroutine
+  libcoroutine = None
   if cxx_toolkit.os is drake.os.windows:
     libcoroutine_sources = drake.nodes(
       'src/reactor/backend/coro_io/libcoroutine/asm.S',
@@ -332,7 +333,7 @@ def configure(curl_config,
   )
 
   backend_coro_libs = [backend]
-  if cxx_toolkit.os is drake.os.windows:
+  if libcoroutine is not None:
     backend_coro_libs += [libcoroutine]
 
   backend_coro_io = drake.cxx.StaticLib(
