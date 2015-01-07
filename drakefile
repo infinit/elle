@@ -547,6 +547,10 @@ def configure(cxx_toolkit = None,
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
+  elif cxx_toolkit.os is drake.os.android:
+    # configure is making a runtime library availability check
+    curl_environment['LD_LIBRARY_PATH'] = \
+      str(drake.path_build(curl_prefix / 'lib', absolute = True))
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
@@ -656,7 +660,7 @@ def configure(cxx_toolkit = None,
       libarchive_env = {'LD_PRELOAD': libarchive_preload}
     elif cxx_toolkit.os is drake.os.android:
       libarchive_lib = 'lib/libarchive.so.13'
-      libarchive_env = {}
+      libarchive_env = {'LD_PRELOAD': libarchive_preload}
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / libarchive_lib)
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
