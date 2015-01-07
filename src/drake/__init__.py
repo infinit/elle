@@ -1519,11 +1519,11 @@ def _can_skip_node(node):
 
 def command_flatten(command, env = None):
   if env is not None:
-    output_env = ('%s=%s ' % (var, pipes.quote(value))
+    output_env = ('%s=%s' % (var, pipes.quote(value))
                   for var, value in env.items())
   else:
     output_env = ()
-  return ' '.join(map(pipes.quote, command))
+  return ' '.join(chain(output_env, map(pipes.quote, command)))
 
 class Builder:
 
