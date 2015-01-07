@@ -11,7 +11,7 @@ ELLE_LOG_COMPONENT("elle.assert");
 namespace elle
 {
   void
-  _assert(bool predicate,
+  _elle_assert(bool predicate,
           std::string const& message,
           char const* file,
           int line)
