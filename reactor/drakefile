@@ -63,7 +63,7 @@ def configure(curl_config,
 
   # Lib coroutine
   libcoroutine = None
-  if cxx_toolkit.os in [drake.os.windows, drake.os.android]:
+  if cxx_toolkit.os in [drake.os.windows]:
     libcoroutine_sources = drake.nodes(
       'src/reactor/backend/coro_io/libcoroutine/asm.S',
       'src/reactor/backend/coro_io/libcoroutine/context.cc',
