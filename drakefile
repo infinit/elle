@@ -372,7 +372,7 @@ def configure(cxx_toolkit = None,
     'PERL': 'perl',
     'CC': cxx_toolkit.c,
   }
-  if cxx_toolkit.os is drake.os.linux:
+  if cxx_toolkit.os in [drake.os.linux, drake.os.android]:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
     openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.so.1.0.0')
   elif cxx_toolkit.os is drake.os.macos:
@@ -387,6 +387,8 @@ def configure(cxx_toolkit = None,
     drake.path_build(openssl_prefix, absolute = True)
   if cxx_toolkit.os is drake.os.linux:
     os_string = 'linux-x86_64'
+  elif cxx_toolkit.os is drake.os.android:
+    os_string = 'android'
   elif cxx_toolkit.os is drake.os.windows:
     os_string = 'mingw64'
     openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
@@ -452,6 +454,7 @@ def configure(cxx_toolkit = None,
       ],
       additional_env = openssl_env,
     )
+  drake.Rule('openssl') << openssl_libs
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
 
