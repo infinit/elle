@@ -3561,6 +3561,8 @@ def host():
   system = platform.system()
   if system == 'Linux':
     os_string = 'pc-linux-gnu'
+  elif system == 'Darwin':
+    os_string = 'apple-darwin'
   elif platform.system() == 'Windows':
     if platform.architecture()[0] == '64bits':
       os_string = 'w64'
