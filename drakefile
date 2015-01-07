@@ -635,18 +635,15 @@ def configure(cxx_toolkit = None,
   libarchive_dependency_libs = \
     libarchive_openssl_libs + libarchive_zlib_libs
   if cxx_toolkit.os is drake.os.windows:
-    libarchive_configure_args = ['--host=%s' % cxx_toolkit.prefix[:-1]]
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
     libarchive_env = {}
   elif cxx_toolkit.os is drake.os.ios:
-    libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
   else:
-    libarchive_configure_args = []
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
     libarchive_preload = ':'.join(str(drake.path_root() / n.path())
@@ -657,10 +654,14 @@ def configure(cxx_toolkit = None,
     elif cxx_toolkit.os is drake.os.linux:
       libarchive_lib = 'lib/libarchive.so.13'
       libarchive_env = {'LD_PRELOAD': libarchive_preload}
+    elif cxx_toolkit.os is drake.os.android:
+      libarchive_lib = 'lib/libarchive.so.13'
+      libarchive_env = {}
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / libarchive_lib)
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
-  libarchive_configure_args += [
+  libarchive_configure_args = [
+    '--host=%s' % drake.host(),
     '--disable-acl',
     '--disable-xattr',
     'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
@@ -686,13 +687,12 @@ def configure(cxx_toolkit = None,
       libarchive_arch_prefix = libarchive_prefix / drake.Path('%s' % arch)
       libarchive_arch_configure_args = list(libarchive_configure_args)
       libarchive_arch_configure_args += [
-        '--host=%s-apple-darwin' % arch,
         '--prefix=%s' % drake.path_build(libarchive_arch_prefix, absolute = True)
       ]
-      libarchive_env = {
+      libarchive_env.update({
         'CC': '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch),
         'CFLAGS': '-isysroot %s' % os.environ['SDKROOT'],
-      }
+      })
       libarchive_arch_lib = \
         drake.cxx.StaticLib(libarchive_arch_prefix / 'lib/libarchive.a')
       libarchive_arch_libs.append(libarchive_arch_lib)
@@ -711,6 +711,9 @@ def configure(cxx_toolkit = None,
                         input_headers = libarchive_prefix / 'armv7/include',
                         output_headers = libarchive_prefix)
   else:
+    libarchive_env.update({
+      'CC': cxx_toolkit.c,
+    })
     GNUBuilder(
       cxx_toolkit,
       configure = libarchive_configure,
@@ -730,6 +733,7 @@ def configure(cxx_toolkit = None,
     libarchive_lib.dependency_add(lib)
   libarchive_config = drake.cxx.Config()
   libarchive_config.add_local_include_path(libarchive_prefix / 'include')
+  drake.Rule('libarchive') << libarchive_lib
 
   ## ----- ##
   ## Boost ##
