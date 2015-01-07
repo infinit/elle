@@ -201,6 +201,8 @@ def configure(openssl_config,
     tests += [ "Seed.cc" ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
+  if cxx_toolkit.os == drake.os.android:
+    tests_cxx_config.lib('atomic')
   tests_cxx_config += config
   tests_cxx_config += boost.config()
   tests_cxx_config += boost_test
