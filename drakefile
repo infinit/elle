@@ -485,6 +485,9 @@ def configure(cxx_toolkit = None,
   from drake.cxx import DynLib, StaticLib
   if cxx_toolkit.os is drake.os.linux:
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.4')
+  elif cxx_toolkit.os is drake.os.android:
+    # WTF Curl, the same tarball produces a curl "5" on Android.
+    curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.5.3.0')
   elif cxx_toolkit.os is drake.os.macos:
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.4.dylib')
   elif cxx_toolkit.os is drake.os.windows:
@@ -493,7 +496,6 @@ def configure(cxx_toolkit = None,
     curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
   else:
     raise Exception('Unknown OS')
-
   curl_openssl_libs = drake.copy(openssl_libs, curl_prefix / 'lib',
                                  strip_prefix = True)
   curl_zlib_libs = drake.copy(zlib_libs, curl_prefix / 'lib',
@@ -535,13 +537,13 @@ def configure(cxx_toolkit = None,
   #   curl_configure_args.append(
   #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
   curl_environment = {}
+  curl_environment['CC'] = cxx_toolkit.c
+  curl_configure_args.append('--host=%s' % drake.host())
   if cxx_toolkit.os is drake.os.macos:
     key = 'DYLD_FALLBACK_LIBRARY_PATH'
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_environment[key] = str(path)
   elif cxx_toolkit.os is drake.os.windows:
-    curl_environment['CC'] = cxx_toolkit.c
-    curl_configure_args.append('--host=%s' % cxx_toolkit.prefix[:-1])
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
@@ -563,7 +565,6 @@ def configure(cxx_toolkit = None,
       curl_arch_prefix = curl_prefix / drake.Path('%s' % arch)
       curl_environment['CC'] = \
         '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch)
-      curl_configure_arch_args.append('--host=%s-apple-darwin' % arch)
       curl_configure_arch_args.append(
         '--prefix=%s' % drake.path_build(curl_arch_prefix, absolute = True))
       curl_arch_lib = StaticLib(curl_arch_prefix / 'lib/libcurl.a')
@@ -601,6 +602,7 @@ def configure(cxx_toolkit = None,
   curl_config.add_local_include_path(curl_prefix / 'include')
   if cxx_toolkit.os is drake.os.windows:
     curl_config.define('CURL_STATICLIB', '1')
+  drake.Rule('curl') << curl_lib
 
   ## ---------- ##
   ## LibArchive ##
