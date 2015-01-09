@@ -44,7 +44,7 @@ def configure(openssl_config,
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
   boost = boost or drake.cxx.boost.Boost()
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     boost_test = boost.config_test(static = True)
     boost_thread = boost.config_thread(static = True)
   else:
@@ -55,6 +55,10 @@ def configure(openssl_config,
 
   elle_lib_static = elle.lib_static
   elle_lib_dynamic = drake.copy(elle.lib_dynamic, 'lib', strip_prefix = True)
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    elle_library = elle_lib_static
+  else:
+    elle_library = elle_lib_dynamic
 
   # Global Configuration
   config = drake.cxx.Config()
@@ -71,7 +75,7 @@ def configure(openssl_config,
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += config
   cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.ios, drake.os.windows]:
+  if cxx_toolkit.os in [drake.os.ios, drake.os.windows, drake.os.android]:
     cxx_config += boost.config_system(static = True)
   else:
     cxx_config += boost.config_system(link = False)
@@ -178,7 +182,7 @@ def configure(openssl_config,
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -202,6 +206,7 @@ def configure(openssl_config,
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.android:
+    tests_cxx_config.lib('stdc++')
     tests_cxx_config.lib('atomic')
   tests_cxx_config += config
   tests_cxx_config += boost.config()
@@ -222,7 +227,7 @@ def configure(openssl_config,
     bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
     sources = drake.nodes(path)
     sources.append(library)
-    sources.append(elle.lib_dynamic)
+    sources.append(elle_library)
     sources.append(openssl_lib_crypto) # Some tests use BIGNUM
     bin = drake.cxx.Executable(bin_path, sources,
                                cxx_toolkit, config_test)
@@ -238,7 +243,7 @@ def configure(openssl_config,
   # Install
   rule_install = drake.Rule('install')
   prefix = drake.Path(prefix)
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
     rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
   rule_install << drake.install(
