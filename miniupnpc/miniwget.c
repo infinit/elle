@@ -47,6 +47,10 @@
 #define MAXHOSTNAMELEN 64
 #endif
 
+#ifdef __ANDROID__
+#define MIN(x,y) (((x)<(y))?(x):(y))
+#endif
+
 #include "miniupnpcstrings.h"
 #include "miniwget.h"
 #include "connecthostport.h"
