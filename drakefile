@@ -234,9 +234,12 @@ def configure(cxx_toolkit = None,
     if cxx_toolkit.os is drake.os.macos:
       zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
-    elif cxx_toolkit.os in [drake.os.linux, drake.os.android]:
+    elif cxx_toolkit.os in [drake.os.linux]:
       zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
+    elif cxx_toolkit.os is drake.os.android:
+      zlib_env['CC'] = cxx_toolkit.c
+      zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
     elif cxx_toolkit.os is drake.os.ios:
       zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
       zlib_arch_str = ''
@@ -376,13 +379,13 @@ def configure(cxx_toolkit = None,
     'PERL': 'perl',
     'CC': cxx_toolkit.c,
   }
-  if cxx_toolkit.os in [drake.os.linux, drake.os.android]:
+  if cxx_toolkit.os in [drake.os.linux]:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
     openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.so.1.0.0')
   elif cxx_toolkit.os is drake.os.macos:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.1.0.0.dylib')
     openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.1.0.0.dylib')
-  elif cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  elif cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     openssl_lib_ssl = StaticLib(openssl_prefix / 'lib/libssl.a')
     openssl_lib_crypto = StaticLib(openssl_prefix / 'lib/libcrypto.a')
     openssl_shared = False
@@ -485,14 +488,9 @@ def configure(cxx_toolkit = None,
   from drake.cxx import DynLib, StaticLib
   if cxx_toolkit.os is drake.os.linux:
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.4')
-  elif cxx_toolkit.os is drake.os.android:
-    # WTF Curl, the same tarball produces a curl "5" on Android.
-    curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.5.3.0')
   elif cxx_toolkit.os is drake.os.macos:
     curl_lib = DynLib(curl_prefix / 'lib/libcurl.4.dylib')
-  elif cxx_toolkit.os is drake.os.windows:
-    curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
-  elif cxx_toolkit.os is drake.os.ios:
+  elif cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
   else:
     raise Exception('Unknown OS')
@@ -651,6 +649,13 @@ def configure(cxx_toolkit = None,
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
+  elif cxx_toolkit.os is drake.os.android:
+    bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
+    bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
+    libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
+    libarchive_preload = ':'.join(str(drake.path_root() / n.path())
+                                  for n in libarchive_dependency_libs)
+    libarchive_env = {'LD_PRELOAD': libarchive_preload}
   else:
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar')
@@ -662,9 +667,7 @@ def configure(cxx_toolkit = None,
     elif cxx_toolkit.os is drake.os.linux:
       libarchive_lib = 'lib/libarchive.so.13'
       libarchive_env = {'LD_PRELOAD': libarchive_preload}
-    elif cxx_toolkit.os is drake.os.android:
-      libarchive_lib = 'lib/libarchive.so.13'
-      libarchive_env = {'LD_PRELOAD': libarchive_preload}
+
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / libarchive_lib)
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
@@ -771,7 +774,7 @@ def configure(cxx_toolkit = None,
                      disable_ssl_certificate_validation = True), strip)
       for url, fingerprint, strip in boost_patches] + [(drake.Node('boost.patch'), 2), (drake.Node('boost_optional.patch'), 1)]
     boost_context_enabled = \
-      cxx_toolkit.os not in [drake.os.windows, drake.os.android]
+      cxx_toolkit.os not in [drake.os.windows]
     boost_locale_enabled = \
       cxx_toolkit.os in [drake.os.windows]
     if cxx_toolkit.os is drake.os.windows:
@@ -996,6 +999,12 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'architecture=arm',
             'define=_LITTLE_ENDIAN',
             'macosx-version=iphone-8.0',
+            'abi=aapcs',
+          ]
+        elif cxx_toolkit.os is drake.os.android:
+          self.__command += [
+            'cxxflags=-std=c++11',
+            'linkflags=-std=c++11',
             'abi=aapcs',
           ]
         else:

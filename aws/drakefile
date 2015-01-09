@@ -55,7 +55,7 @@ def configure(cryptography,
   local_cxx_config.enable_debug_symbols()
   local_cxx_config += config
 
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     local_cxx_config += boost.config_date_time(static = True)
   else:
     local_cxx_config += boost.config_date_time(link = False)
@@ -94,7 +94,7 @@ def configure(cryptography,
   global rule_build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -111,10 +111,12 @@ def configure(cryptography,
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   if cxx_toolkit.os == drake.os.android:
+    cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
     cxx_config_tests += boost.config_system(static = True)
+    cxx_config_tests += boost.config_thread(static = True)
   else:
     cxx_config_tests += boost.config_system(link = False)
     cxx_config_tests.library_add(
@@ -122,6 +124,9 @@ def configure(cryptography,
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_thread(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
   cxx_config_tests.lib_path_runtime('../lib')
 
   for name in tests:

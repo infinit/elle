@@ -49,13 +49,13 @@ def configure(zlib_lib,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_filesystem(static = True)
   else:
     cxx_config += boost.config_filesystem(link = False)
     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
                                       'lib', strip_prefix = True))
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_system(static = True)
     cxx_config += boost.config_thread(static = True)
     if cxx_toolkit.os is drake.os.windows:
@@ -481,7 +481,7 @@ def configure(zlib_lib,
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -560,7 +560,6 @@ def configure(zlib_lib,
     'With.cc',
     'archive.cc',
     'assert.cc',
-    'attributes.cc',
     'cast.cc',
     'compiler.cc',
     'containers.cc',
@@ -579,7 +578,6 @@ def configure(zlib_lib,
     'io/Path.cc',
     'io/Piece.cc',
     'json.cc',
-    'log.cc',
     'memory.cc',
     'network/hostname.cc',
     'network/interface.cc',
@@ -601,13 +599,17 @@ def configure(zlib_lib,
     'serialize/version_change.cc',
     'set.cc',
     'system/home_directory.cc',
-    'threading/monitor.cc',
-    'threading/rw-mutex.cc',
     'unordered_map.cc',
     'utility/Suffixes.cc',
     'AtomicFile.cc',
     ]
-
+  if cxx_toolkit.os != drake.os.android:
+    tests.extend([
+      'attributes.cc',
+      'log.cc',
+      'threading/monitor.cc',
+      'threading/rw-mutex.cc',
+    ])
   process_helpers = [
     drake.cxx.Executable('tests/system/%s' % name,
                          drake.nodes('tests/system/%s.cc' % name),
@@ -621,8 +623,9 @@ def configure(zlib_lib,
   cxx_config_tests = cxx_config + config
   cxx_config_tests.enable_debug_symbols()
   if cxx_toolkit.os == drake.os.android:
+    cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
