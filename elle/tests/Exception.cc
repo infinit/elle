@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
   catch (elle::Exception& e)
   {
     BOOST_CHECK_EQUAL(e.what(), "test message");
-#ifndef INFINIT_WINDOWS
+#if ! defined INFINIT_WINDOWS && ! defined INFINIT_ANDROID
     BOOST_CHECK_EQUAL(e.backtrace().front().symbol, "thrower()");
 #endif
   }
