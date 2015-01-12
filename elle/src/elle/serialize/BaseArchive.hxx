@@ -106,7 +106,11 @@ namespace elle
       ELLE_DEBUG(
         "save %p with its concrete type %s (%s format = %d)",
         &val,
+#ifndef INFINIT_ANDROID
         ELLE_PRETTY_TYPE(T),
+#else
+        "<unavailable>",
+#endif
         (AccessDynamicFormat::has_dynamic_format(val) ? "dynamic" : "static"),
         format.version)
       {
