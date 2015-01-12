@@ -359,7 +359,6 @@ def configure(cxx_toolkit = None,
     openssl_tarball,
     targets = ['%s/%s' % (openssl_basename, f)
                for f in ['Configure'] + openssl_headers],
-    patches = ((drake.node('openssl.patch'),1),),
     patch_dir = openssl_basename,
   )
   openssl_configure = drake.node(openssl_build / 'Configure')
