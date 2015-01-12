@@ -74,7 +74,7 @@ parameters = {
   'arch': arch,
 }
 
-if arch == 'arm':
+if osyst == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
   parameters['valgrind'] = False
