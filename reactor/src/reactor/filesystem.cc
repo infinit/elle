@@ -179,7 +179,7 @@ namespace reactor
     }
     void BindPath::statfs(struct statvfs *s)
     {
-      #ifdef INFINIT_WINDOWS
+      #if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
       throw Error(EPERM, "Not implemented");
       #else
      int res = ::statvfs(_where.string().c_str(), s);
