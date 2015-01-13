@@ -53,7 +53,7 @@ namespace elle
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
 #  define ELLE_ENFORCE(_condition_)                                           \
-  ::elle::_assert(_condition_, #_condition_, __FILE__, __LINE__)
+  ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
 #  define ELLE_ENFORCE_EQ(A, B)                                               \
   ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
@@ -80,12 +80,13 @@ namespace elle
   ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
 
 /// Use after the last catch close to enforce no other exception is caught
-# define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                         \
-  catch(...)                                                                     \
-  {                                                                              \
-    ::elle::_assert(false, elle::sprintf("Expected no more exception, got '%s'", \
-                                         elle::exception_string()),              \
-                    __FILE__, __LINE__);                                         \
+# define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                \
+  catch(...)                                                            \
+  {                                                                     \
+    ::elle::_elle_assert(                                               \
+      false, elle::sprintf("Expected no more exception, got '%s'",      \
+                           elle::exception_string()),                   \
+      __FILE__, __LINE__);                                              \
   }
 
 # if defined(DEBUG) || !defined(NDEBUG)
@@ -124,10 +125,10 @@ namespace elle
 namespace elle
 {
   // Throw an AssertError if the predicate is false.
-  void _assert(bool predicate,
-               std::string const& message,
-               char const* file,
-               int line);
+  void _elle_assert(bool predicate,
+                    std::string const& message,
+                    char const* file,
+                    int line);
 
   // Generate a specialized assert function for operators.
 # define ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                                   \
@@ -141,7 +142,7 @@ namespace elle
                           int line)                                           \
   {                                                                           \
     if (not (std::forward<A>(a) _op_ std::forward<B>(b)))                     \
-      _assert(false,                                                          \
+      _elle_assert(false,                                                     \
               elle::sprintf("%s " #_op_ " %s is false: (%s=%s, %s=%s)",       \
                             a_str, b_str, a_str, a, b_str, b),                \
               file,                                                           \
@@ -168,11 +169,12 @@ namespace elle
                         int line)
   {
     if (container.find(element) == container.end())
-      _assert(false,
-              elle::sprintf("%s does not contain %s: (%s=%s, %s=%s)",
-                            c_str, e_str, c_str, container, e_str, element),
-              file,
-              line);
+      _elle_assert(
+        false,
+        elle::sprintf("%s does not contain %s: (%s=%s, %s=%s)",
+                      c_str, e_str, c_str, container, e_str, element),
+        file,
+        line);
   }
 
   template <typename C, typename E>
@@ -185,11 +187,12 @@ namespace elle
                          int line)
   {
     if (container.find(element) != container.end())
-      _assert(false,
-              elle::sprintf("%s contains %s: (%s=%s, %s=%s)",
-                            c_str, e_str, c_str, container, e_str, element),
-              file,
-              line);
+      _elle_assert(
+        false,
+        elle::sprintf("%s contains %s: (%s=%s, %s=%s)",
+                      c_str, e_str, c_str, container, e_str, element),
+        file,
+        line);
   }
 }
 

@@ -32,14 +32,14 @@ namespace elle
     void
     strip_base(const Backtrace& base);
   private:
-# ifndef INFINIT_WINDOWS
-    static
-    Backtrace
-    _current(void** callstack, size_t frames, unsigned skip);
-# else
+# if defined(INFINIT_WINDOWS)
     static
     Backtrace
     _current();
+# elif !defined(INFINIT_ANDROID)
+    static
+    Backtrace
+    _current(void** callstack, size_t frames, unsigned skip);
 # endif
   };
 

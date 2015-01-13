@@ -1,7 +1,7 @@
 #include <elle/test.hh>
 #include <elle/compiler.hh>
 
-#ifndef INFINIT_WINDOWS
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
 # include <execinfo.h>
 #endif
 

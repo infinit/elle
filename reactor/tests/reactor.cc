@@ -2783,6 +2783,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(vthread);
   vthread->add(BOOST_TEST_CASE(test_vthread), 0, valgrind(1, 5));
 
+#if !defined INFINIT_ANDROID
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
   // mt->add(BOOST_TEST_CASE(test_multithread), 0, valgrind(1, 5));
@@ -2790,6 +2791,7 @@ ELLE_TEST_SUITE()
   mt->add(BOOST_TEST_CASE(test_multithread_run), 0, valgrind(1, 5));
   mt->add(BOOST_TEST_CASE(test_multithread_run_exception), 0, valgrind(1, 5));
   mt->add(BOOST_TEST_CASE(test_multithread_deadlock_assert), 0, valgrind(1, 5));
+#endif
 
   boost::unit_test::test_suite* sem = BOOST_TEST_SUITE("Semaphore");
   boost::unit_test::framework::master_test_suite().add(sem);
@@ -2810,7 +2812,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1, 5));
-#ifndef INFINIT_WINDOWS
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
   storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(3, 4));
 #endif
 

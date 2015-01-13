@@ -7,7 +7,7 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 
-#ifdef INFINIT_WINDOWS
+#if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
 struct statvfs {
   unsigned long  f_bsize;    /* filesystem block size */
   unsigned long  f_frsize;   /* fragment size */

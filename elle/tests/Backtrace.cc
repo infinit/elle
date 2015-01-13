@@ -3,7 +3,7 @@
 
 using elle::Backtrace;
 
-#ifndef INFINIT_WINDOWS
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
 
 static
 void
@@ -88,7 +88,7 @@ dummy()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-#ifndef INFINIT_WINDOWS
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
   suite.add(BOOST_TEST_CASE(test_backtrace_empty));
   suite.add(BOOST_TEST_CASE(test_backtrace));
   suite.add(BOOST_TEST_CASE(test_strip_base));

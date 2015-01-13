@@ -401,6 +401,7 @@ ELLE_TEST_SUITE()
   logger->add(BOOST_TEST_CASE(message_test));
   logger->add(BOOST_TEST_CASE(environment_format_test));
 
+#ifndef INFINIT_ANDROID
   boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("Concurrency");
   boost::unit_test::framework::master_test_suite().add(concurrency);
   concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
@@ -409,4 +410,5 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(format);
   concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
   concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
+#endif
 }

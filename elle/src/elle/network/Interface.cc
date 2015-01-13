@@ -11,6 +11,12 @@
 
 #ifdef INFINIT_WINDOWS
 # include <winsock2.h>
+#elif defined INFINIT_ANDROID
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <net/if.h>
+# include <elle/network/ifaddrs_android.h>
 #else
 # include <sys/socket.h>
 # include <netinet/in.h>

@@ -17,7 +17,7 @@
 
 namespace elle
 {
-#if !defined(INFINIT_MACOSX) and !defined(INFINIT_WINDOWS)
+#if !defined(INFINIT_MACOSX) && !defined(INFINIT_WINDOWS) && !defined(INFINIT_ANDROID)
   static bool
   extract(std::string& str, std::string& chunk, unsigned char until)
   {
@@ -88,7 +88,37 @@ namespace elle
     : SuperType()
   {}
 
-#ifndef INFINIT_WINDOWS
+#if defined(INFINIT_WINDOWS)
+  Backtrace
+  Backtrace::_current()
+  {
+    auto initialize = []
+      {
+        HANDLE process = GetCurrentProcess();
+        if (!::SymInitialize(process, NULL, TRUE))
+          throw std::runtime_error("unable to initialize debug symbols");
+        return process;
+      };
+    static auto process = initialize();
+    void* stack[128];
+    long unsigned int hash = 0;
+    int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
+    ::SYMBOL_INFO* symbol;
+    symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+    symbol->MaxNameLen = 255;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    Backtrace res;
+    for (int i = 0; i < frames; i++)
+    {
+      ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+      res.push_back(StackFrame{symbol->Name, symbol->Name, symbol->Name,
+                               symbol->Address, 0});
+    }
+    ::free(symbol);
+    return Backtrace();
+  }
+#elif !defined(INFINIT_ANDROID)
   Backtrace
   Backtrace::_current(void** callstack, size_t frames, unsigned skip)
   {
@@ -140,36 +170,6 @@ namespace elle
     free(strs);
 
     return bt;
-  }
-#else
-  Backtrace
-  Backtrace::_current()
-  {
-    auto initialize = []
-      {
-        HANDLE process = GetCurrentProcess();
-        if (!::SymInitialize(process, NULL, TRUE))
-          throw std::runtime_error("unable to initialize debug symbols");
-        return process;
-      };
-    static auto process = initialize();
-    void* stack[128];
-    long unsigned int hash = 0;
-    int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
-    ::SYMBOL_INFO* symbol;
-    symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
-    symbol->MaxNameLen = 255;
-    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-
-    Backtrace res;
-    for (int i = 0; i < frames; i++)
-    {
-      ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-      res.push_back(StackFrame{symbol->Name, symbol->Name, symbol->Name,
-                               symbol->Address, 0});
-    }
-    ::free(symbol);
-    return Backtrace();
   }
 #endif
 

@@ -41,6 +41,11 @@ if qt is not None:
   qt = drake.cxx.qt.Qt(qt)
   extra_args['qt'] = qt
 
+if %(arch)r == 'arm':
+  cxx_toolkit_host =  drake.cxx.GccToolkit()
+  extra_args['cxx_toolkit_host'] = cxx_toolkit_host
+
+
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
   import drake.valgrind
@@ -48,7 +53,7 @@ with drake.Drake(%(dir_source)r) as d:
   valgrind_tests = %(valgrind)r
 
   d.run(cxx_toolkit,
-        cxx_config,
+        cxx_config = cxx_config,
         python3 = python,
         valgrind = valgrind,
         valgrind_tests = valgrind_tests,
@@ -66,9 +71,14 @@ parameters = {
   'valgrind': False,
   'qt': None,
   'production_build': True,
+  'arch': arch,
 }
 
-if osyst == 'linux_ubuntu_14':
+if osyst == 'android':
+  parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
+  parameters['python'] = False
+  parameters['valgrind'] = False
+elif osyst == 'linux_ubuntu_14':
   parameters['valgrind'] = True
 elif osyst == 'linux_debian_squeeze':
   pass

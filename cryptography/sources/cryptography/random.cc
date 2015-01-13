@@ -43,7 +43,7 @@ namespace infinit
 
         ELLE_TRACE("setting up the random generator");
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX) || defined(INFINIT_ANDROID)
         {
           /// The path to read random data from.
           ///

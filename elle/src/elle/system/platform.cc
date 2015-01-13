@@ -23,6 +23,8 @@ namespace elle
         return "MacOSX";
 #elif defined INFINIT_IOS
         return "iOS";
+#elif defined(INFINIT_ANDROID)
+        return "Android";
 #else
 # error Please define INFINIT_{OS} according to your platform.
 #endif
@@ -48,6 +50,8 @@ namespace elle
                              major_version, minor_version, bugfix_version);
 #elif defined INFINIT_IOS
         return "unknown";
+#elif defined INFINIT_ANDROID
+        return "unknown"; // FIXME
 #else
 # error Please define INFINIT_{OS} according to your platform.
 #endif
