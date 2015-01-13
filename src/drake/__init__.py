@@ -3502,7 +3502,7 @@ class TarballExtractor(Builder):
         @param patches: list of (patch_node, strip_level)
     """
     self.__tarball = tarball
-    self.__patches = patches
+    self.__patches = patches if patches is not None else ()
     self.__patch_dir = drake.Path(patch_dir)
     import tarfile
     directory = self.__tarball.name_relative.dirname()
@@ -3514,8 +3514,7 @@ class TarballExtractor(Builder):
     # for target in targets:
     #   print(target)
     # self.__targets = nodes(*targets)
-    patch_nodes = \
-      map(lambda x: x[0], patches) if patches is not None else ()
+    patch_nodes = map(lambda x: x[0], self.__patches)
     Builder.__init__(self, list(chain((tarball,), patch_nodes)),
                      self.__targets)
 
