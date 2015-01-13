@@ -3497,7 +3497,7 @@ def download(url,
 class TarballExtractor(Builder):
 
   def __init__(self, tarball, targets = [],
-               patches = (), patch_dir = drake.Path('.')):
+               patches = None, patch_dir = drake.Path('.')):
     """ Constructor
         @param patches: list of (patch_node, strip_level)
     """
@@ -3514,8 +3514,10 @@ class TarballExtractor(Builder):
     # for target in targets:
     #   print(target)
     # self.__targets = nodes(*targets)
-    patch_nodes = map(lambda x: x[0], patches)
-    Builder.__init__(self, list(chain((tarball,), patch_nodes)), self.__targets)
+    patch_nodes = \
+      map(lambda x: x[0], patches) if patches is not None else ()
+    Builder.__init__(self, list(chain((tarball,), patch_nodes)),
+                     self.__targets)
 
   def execute(self):
     import tarfile
