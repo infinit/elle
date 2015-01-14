@@ -105,7 +105,8 @@ def configure(curl_config,
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
 
   # FUSE
-  if cxx_toolkit.os is drake.os.linux:
+  fuse_lib = None
+  if fuse is None and cxx_toolkit.os is drake.os.linux:
     fuse_basename = 'fuse-2.9.3'
     fuse_url = \
       'http://downloads.sourceforge.net/' \
@@ -152,7 +153,7 @@ def configure(curl_config,
     fuse_config.add_local_include_path('fuse/include')
     local_cxx_config += fuse_config
     fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
-  elif cxx_toolkit.os is drake.os.macos and fuse:
+  elif fuse:
     fuse_config = drake.cxx.Config()
     fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
     local_cxx_config += fuse_config
@@ -376,7 +377,7 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend)
     lib_static_link_libs.append(backend_boost_context)
     lib_static_link_libs.append(backend)
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.android]:
+  if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   lib_static = drake.cxx.StaticLib(
     'lib/reactor',
@@ -393,7 +394,7 @@ def configure(curl_config,
   else:
     lib_dynamic_link_libs.append(backend_boost_context)
     lib_dynamic_link_libs.append(backend)
-  if cxx_toolkit.os is drake.os.linux or (cxx_toolkit.os is drake.os.macos and fuse):
+  if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   lib_dynamic = drake.cxx.DynLib(
     'lib/reactor',
