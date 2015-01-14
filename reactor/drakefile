@@ -87,7 +87,9 @@ def configure(curl_config,
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
-    local_cxx_config += boost.config_context(static = True)
+    if cxx_toolkit.os != drake.os.windows:
+      # windows uses coro io
+      local_cxx_config += boost.config_context(static = True)
   else:
     local_cxx_config += boost.config_context(link = False)
     local_cxx_config.library_add(
