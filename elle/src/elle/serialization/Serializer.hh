@@ -31,6 +31,8 @@ namespace elle
       virtual
       void
       serialize(Serializer& s) = 0;
+
+      static constexpr char const* virtually_serializable_key = ".type";
     };
 
     class Serializer

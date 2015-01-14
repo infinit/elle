@@ -179,7 +179,7 @@ namespace elle
           elle::SafeFinally leave([&] { s._leave(name); });
           auto const& map = Hierarchy<T>::_map();
           std::string type_name;
-          s.serialize(".type", type_name);
+          s.serialize(T::virtually_serializable_key, type_name);
           auto it = map.find(type_name);
           if (it == map.end())
             throw Error(elle::sprintf("unable to deserialize type %s",
@@ -375,9 +375,10 @@ namespace elle
       class Register
       {
       public:
-        Register()
+        Register(std::string const& name = "")
         {
-          Hierarchy<T>::_map()[demangle(typeid(U).name())] =
+          Hierarchy<T>::_map()
+            [name.empty() ? demangle(typeid(U).name()) : name] =
             [] (SerializerIn& s) { return elle::make_unique<U>(s); };
         }
       };
