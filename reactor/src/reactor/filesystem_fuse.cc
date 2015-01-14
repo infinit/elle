@@ -410,10 +410,11 @@ namespace reactor
     };
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
-    : _impl(new FileSystemImpl{std::move(op), full_tree})
+      : _impl(new FileSystemImpl{std::move(op), full_tree})
     {
-      _impl->_operations->filesystem(this);
+      this->_impl->_operations->filesystem(this);
     }
+
     FileSystem::~FileSystem()
     {
       unmount();
@@ -469,9 +470,19 @@ namespace reactor
     void
     FileSystem::unmount()
     {
+      this->_signal();
       if (!_impl->_where.empty())
         _impl->_fuse.destroy();
       _impl->_where = "";
+    }
+
+    bool
+    FileSystem::_wait(Thread* thread)
+    {
+      if (!this->_impl)
+        return false;
+      else
+        return Waitable::_wait(thread);
     }
 
     Path&

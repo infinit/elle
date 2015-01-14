@@ -102,6 +102,7 @@ namespace reactor
 
     class FileSystemImpl;
     class FileSystem
+      : public reactor::Waitable
     {
     public:
       /** Create a new file system with given operations
@@ -132,6 +133,14 @@ namespace reactor
           std::unique_ptr<Path> new_content);
       Path*
       get(std::string const& path);
+
+    /*---------.
+    | Waitable |
+    `---------*/
+    protected:
+      virtual
+      bool
+      _wait(Thread* thread) override;
 
     /*--------.
     | Details |
