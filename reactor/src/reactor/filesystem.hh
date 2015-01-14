@@ -1,13 +1,15 @@
 #ifndef REACTOR_FILESYSTEM_HH
-#define REACTOR_FILESYSTEM_HH
+# define REACTOR_FILESYSTEM_HH
 
-#include <string>
-#include <boost/filesystem.hpp>
+# include <string>
+# include <boost/filesystem.hpp>
 
-#include <elle/Buffer.hh>
-#include <elle/Exception.hh>
+# include <elle/Buffer.hh>
+# include <elle/Exception.hh>
 
-#if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
+# include <reactor/waitable.hh>
+
+# if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
 struct statvfs {
   unsigned long  f_bsize;    /* filesystem block size */
   unsigned long  f_frsize;   /* fragment size */
@@ -21,9 +23,9 @@ struct statvfs {
   unsigned long  f_flag;     /* mount flags */
   unsigned long  f_namemax;  /* maximum filename length */
 };
-#else
-#include <sys/statvfs.h>
-#endif
+# else
+#  include <sys/statvfs.h>
+# endif
 struct stat;
 struct statvfs;
 namespace reactor
@@ -111,16 +113,29 @@ namespace reactor
       */
       FileSystem(std::unique_ptr<Operations> op, bool full_tree);
       ~FileSystem();
-      void mount(boost::filesystem::path const& where,
-                 std::vector<std::string> const& options);
-      void unmount();
-      Path& path(std::string const& path);
+      void
+      mount(boost::filesystem::path const& where,
+            std::vector<std::string> const& options);
+      void
+      unmount();
+      Path&
+      path(std::string const& path);
 
-      //cache operations
-      std::unique_ptr<Path> extract(std::string const& path);
-      std::unique_ptr<Path> set(std::string const& path,
-                                std::unique_ptr<Path> new_content);
-      Path* get(std::string const& path);
+    /*-----------------.
+    | Cache operations |
+    `-----------------*/
+    public:
+      std::unique_ptr<Path>
+      extract(std::string const& path);
+      std::unique_ptr<Path>
+      set(std::string const& path,
+          std::unique_ptr<Path> new_content);
+      Path*
+      get(std::string const& path);
+
+    /*--------.
+    | Details |
+    `--------*/
     private:
       FileSystemImpl* _impl;
     };

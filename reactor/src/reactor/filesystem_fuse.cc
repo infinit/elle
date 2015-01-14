@@ -69,7 +69,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_open(const char *path, struct fuse_file_info *fi)
+    static
+    int
+    fusop_open(const char *path, struct fuse_file_info *fi)
     {
       ELLE_DEBUG_SCOPE("fusop_open %s %s", path, fi->flags);
       try
@@ -87,7 +89,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
+    static
+    int
+    fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
     {
       ELLE_DEBUG_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
       try
@@ -105,7 +109,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_unlink(const char* path)
+    static
+    int
+    fusop_unlink(const char* path)
     {
       ELLE_DEBUG_SCOPE("fusop_unlink %s", path);
       try
@@ -122,7 +128,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_mkdir(const char* path, mode_t mode)
+    static
+    int
+    fusop_mkdir(const char* path, mode_t mode)
     {
       ELLE_DEBUG_SCOPE("fusop_mkdir %s", path);
       try
@@ -139,7 +147,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_rmdir(const char* path)
+    static
+    int
+    fusop_rmdir(const char* path)
     {
       ELLE_DEBUG_SCOPE("fusop_rmdir %s", path);
       try
@@ -156,7 +166,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_rename(const char* path, const char* to)
+    static
+    int
+    fusop_rename(const char* path, const char* to)
     {
       ELLE_DEBUG_SCOPE("fusop_rename %s %s", path, to);
       try
@@ -173,8 +185,10 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_read(const char *path, char *buf, size_t size, off_t offset,
-                          struct fuse_file_info *fi)
+    static
+    int
+    fusop_read(const char *path, char *buf, size_t size, off_t offset,
+               struct fuse_file_info *fi)
     {
       ELLE_DEBUG_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
       try
@@ -190,8 +204,10 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_write(const char *path, const char *buf, size_t size, off_t offset,
-                           struct fuse_file_info *fi)
+    static
+    int
+    fusop_write(const char *path, const char *buf, size_t size, off_t offset,
+                struct fuse_file_info *fi)
     {
       ELLE_DEBUG_SCOPE("fusop_write %s sz=%s, offset=%s ", path, size, offset);
       try
@@ -207,7 +223,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_release(const char *path, struct fuse_file_info *fi)
+    static
+    int
+    fusop_release(const char *path, struct fuse_file_info *fi)
     {
       ELLE_DEBUG_SCOPE("fusop_release %s", path);
       try
@@ -224,8 +242,10 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_ftruncate(const char* path, off_t offset,
-                               struct fuse_file_info* fi)
+    static
+    int
+    fusop_ftruncate(const char* path, off_t offset,
+                    struct fuse_file_info* fi)
     {
       ELLE_DEBUG_SCOPE("fusop_ftruncate %s %s", path, offset);
       try
@@ -241,7 +261,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_readlink(const char* path, char* buf, size_t len)
+    static
+    int
+    fusop_readlink(const char* path, char* buf, size_t len)
     {
       ELLE_DEBUG_SCOPE("fusop_readlink %s", path);
       try
@@ -261,7 +283,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_symlink(const char* path, const char* to)
+    static
+    int
+    fusop_symlink(const char* path, const char* to)
     {
       ELLE_DEBUG_SCOPE("fusop_symlink %s %s", path, to);
       try
@@ -395,8 +419,10 @@ namespace reactor
       unmount();
       delete _impl;
     }
-    void FileSystem::mount(boost::filesystem::path const& where,
-                           std::vector<std::string> const& options)
+
+    void
+    FileSystem::mount(boost::filesystem::path const& where,
+                      std::vector<std::string> const& options)
     {
       _impl->_where = where.string();
       fuse_operations ops;
@@ -439,13 +465,17 @@ namespace reactor
         _impl->_fuse.loop_mt();
       }
     }
-    void FileSystem::unmount()
+
+    void
+    FileSystem::unmount()
     {
       if (!_impl->_where.empty())
         _impl->_fuse.destroy();
       _impl->_where = "";
     }
-    Path& FileSystemImpl::fetch_recurse(boost::filesystem::path path)
+
+    Path&
+    FileSystemImpl::fetch_recurse(boost::filesystem::path path)
     {
       if (path == "" || path == "\\")
         path = "/";
@@ -475,7 +505,9 @@ namespace reactor
         return *ptr;
       }
     }
-    Path& FileSystem::path(std::string const& opath)
+
+    Path&
+    FileSystem::path(std::string const& opath)
     {
       std::string spath(opath);
       if (spath == "" || spath == "\\")
@@ -499,7 +531,9 @@ namespace reactor
           return *it->second;
       }
     }
-    std::unique_ptr<Path> FileSystem::extract(std::string const& path)
+
+    std::unique_ptr<Path>
+    FileSystem::extract(std::string const& path)
     {
       auto it = _impl->_cache.find(path);
       if (it == _impl->_cache.end())
@@ -508,14 +542,18 @@ namespace reactor
       _impl->_cache.erase(path);
       return res;
     }
-    std::unique_ptr<Path> FileSystem::set(std::string const& path,
-                                          std::unique_ptr<Path> new_content)
+
+    std::unique_ptr<Path>
+    FileSystem::set(std::string const& path,
+                    std::unique_ptr<Path> new_content)
     {
       std::unique_ptr<Path> res = extract(path);
       _impl->_cache[path] = std::move(new_content);
       return res;
     }
-    Path* FileSystem::get(std::string const& path)
+
+    Path*
+    FileSystem::get(std::string const& path)
     {
       auto it = _impl->_cache.find(path);
       if (it == _impl->_cache.end())
