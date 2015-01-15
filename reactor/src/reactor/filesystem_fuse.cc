@@ -470,10 +470,12 @@ namespace reactor
     void
     FileSystem::unmount()
     {
-      this->_signal();
       if (!_impl->_where.empty())
+      {
         _impl->_fuse.destroy();
-      _impl->_where = "";
+        _impl->_where = "";
+        this->_signal();
+      }
     }
 
     bool
