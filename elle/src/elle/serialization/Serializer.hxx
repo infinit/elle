@@ -82,28 +82,6 @@ namespace elle
     }
 
     template <typename T>
-    void
-    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt)
-    {
-      if (this->_out())
-        this->_serialize_option(name,
-                                bool(opt),
-                                [&]
-                                {
-                                  this->serialize(name, *opt);
-                                });
-      else
-        this->_serialize_option(name,
-                                bool(opt),
-                                [&]
-                                {
-                                  // FIXME: use in place constructor if available.
-                                  opt.reset(new T);
-                                  this->serialize(name, *opt);
-                                });
-    }
-
-    template <typename T>
     constexpr
     typename std::enable_if<sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
     _is_unserializable_inplace(int)
@@ -130,16 +108,16 @@ namespace elle
     class Serializer::Details
     {
     public:
-      template <typename T>
+      template <typename P, typename T>
       static
       typename std::enable_if<
         is_unserializable_inplace<T>(),
         void
       >::type
-      _shared_emplace_switch(
+      _smart_emplace_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr)
+        P& ptr)
       {
         if (s._enter(name))
         {
@@ -148,31 +126,31 @@ namespace elle
         }
       }
 
-      template <typename T>
+      template <typename P, typename T>
       static
       typename std::enable_if<
         !is_unserializable_inplace<T>(),
         void
       >::type
-      _shared_emplace_switch(
+      _smart_emplace_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr)
+        P& ptr)
       {
         ptr.reset(new T);
         s.serialize(name, *ptr);
       }
 
-      template <typename T>
+      template <typename P, typename T>
       static
       typename std::enable_if<
         std::is_base_of<VirtuallySerializable, T>::value,
         void
       >::type
-      _shared_virtual_switch(
+      _smart_virtual_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr)
+        P& ptr)
       {
         if (s._enter(name))
         {
@@ -188,20 +166,44 @@ namespace elle
         }
       }
 
-      template <typename T>
+      template <typename P, typename T>
       static
       typename std::enable_if<
         !std::is_base_of<VirtuallySerializable, T>::value,
         void
       >::type
-      _shared_virtual_switch(
+      _smart_virtual_switch(
         Serializer& s,
         std::string const& name,
-        std::shared_ptr<T>& ptr)
+        P& ptr)
       {
-        _shared_emplace_switch<T>(s, name, ptr);
+        _smart_emplace_switch<P, T>(s, name, ptr);
       }
     };
+
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt)
+    {
+      if (this->_out())
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            this->serialize(name, *opt);
+          });
+      else
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+              (*this, name, opt);
+
+          });
+    }
 
     template <typename T>
     void
@@ -221,7 +223,8 @@ namespace elle
           bool(opt),
           [&]
           {
-            Details::_shared_virtual_switch<T>(*this, name, opt);
+            Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+              (*this, name, opt);
           });
     }
 
