@@ -73,6 +73,16 @@ namespace elle
     (*this) = std::move(other);
   }
 
+  Buffer::Buffer(Buffer const& source)
+    : _size(source._size)
+    , _capacity(source._size)
+    , _contents(static_cast<Byte*>(::malloc(this->_capacity)))
+  {
+    if (!this->_contents)
+      throw std::bad_alloc();
+    memcpy(this->_contents, source._contents, this->_size);
+  }
+
   Buffer&
   Buffer::operator = (Buffer&& other)
   {

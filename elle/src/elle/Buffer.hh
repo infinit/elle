@@ -64,13 +64,13 @@ namespace elle
            size_t size);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);
+    /// A copy of the source buffer
+    Buffer(Buffer const& source);
     /// Steal the content of the moved buffer.
     Buffer&
     operator = (Buffer&& other);
     /// Free owned memory.
     ~Buffer();
-    /// Buffer is not copyable
-    Buffer(Buffer const&) = delete;
 
   /*------------------.
   | Memory management |
