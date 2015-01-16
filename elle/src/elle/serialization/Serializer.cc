@@ -34,17 +34,6 @@ namespace elle
     }
 
     void
-    Serializer::serialize_virtual_object(std::string const& name,
-                                 VirtuallySerializable& object)
-    {
-      if (this->out())
-      {
-        std::string type_name = demangle(typeid(object).name());
-        this->serialize(".type", type_name);
-      }
-    }
-
-    void
     Serializer::_serialize(std::string const& name, elle::WeakBuffer& v)
     {
       if (this->in())

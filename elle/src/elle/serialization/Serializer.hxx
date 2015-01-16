@@ -22,7 +22,14 @@ namespace elle
         ELLE_SFINAE_IF_WORKS(obj.serialize(ELLE_SFINAE_INSTANCE(Serializer))))
       {
         s.serialize_object(name, obj);
-        s.serialize_virtual_object(name, obj);
+        if (s.out())
+        {
+          auto const& map = Hierarchy<T>::_rmap();
+          auto it = map.find(&typeid(obj));
+          ELLE_ASSERT(it != map.end());
+          auto type_name = it->second;
+          s.serialize(T::virtually_serializable_key, type_name);
+        }
       }
 
       template <typename T>
@@ -378,19 +385,29 @@ namespace elle
       class Register
       {
       public:
-        Register(std::string const& name = "")
+        Register(std::string const& name_ = "")
         {
-          Hierarchy<T>::_map()
-            [name.empty() ? demangle(typeid(U).name()) : name] =
+          std::string name = name_.empty() ? demangle(typeid(U).name()) : name_;
+          Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s) { return elle::make_unique<U>(s); };
+          Hierarchy<T>::_rmap()[&typeid(U)] = name;
         }
       };
 
       static
-      std::unordered_map<std::string, std::function<std::unique_ptr<T>(SerializerIn&)>>&
+      std::unordered_map<std::string,
+                         std::function<std::unique_ptr<T>(SerializerIn&)>>&
       _map()
       {
         static std::unordered_map<std::string, std::function<std::unique_ptr<T>(SerializerIn&)>> res;
+        return res;
+      }
+
+      static
+      std::unordered_map<std::type_info const*, std::string>&
+      _rmap()
+      {
+        static std::unordered_map<std::type_info const*, std::string> res;
         return res;
       }
     };
