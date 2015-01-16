@@ -45,12 +45,31 @@ namespace elle
 
       template <typename T>
       void
-      _serialize_switch(Serializer& s,
-                        std::string const& name,
-                        T& v,
-                        ELLE_SFINAE_OTHERWISE())
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& v,
+        ELLE_SFINAE_OTHERWISE())
       {
         s.serialize_pod(name, v);
+      }
+
+      template <typename T>
+      typename std::conditional<true, void, typename Serialize<T>::Type>::type
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& v,
+        ELLE_SFINAE_IF_POSSIBLE())
+      {
+        typedef typename Serialize<T>::Type Type;
+        Type value;
+        bool out = s.out();
+        if (out)
+          Serialize<T>::convert(v, value);
+        _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
+        if (!out)
+          Serialize<T>::convert(value, v);
       }
     }
 
@@ -375,6 +394,13 @@ namespace elle
             ++i;
           });
       }
+    }
+
+    template <typename T>
+    void
+    Serializer::serialize_forward(T& v)
+    {
+      this->_serialize_anonymous<T>("FIXME BUT I DON'T THINK THIS IS USED", v);
     }
 
     template <typename T>

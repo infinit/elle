@@ -16,6 +16,9 @@ namespace elle
 # define ELLE_SFINAE_IF_WORKS(Expr)                             \
   int, ::elle::sfinae::Helper<sizeof(Expr, 0)>* = 0
 
+# define ELLE_SFINAE_IF_POSSIBLE()                             \
+  int
+
 # define ELLE_SFINAE_OTHERWISE()                \
   unsigned int
 

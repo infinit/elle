@@ -35,6 +35,10 @@ namespace elle
       static constexpr char const* virtually_serializable_key = ".type";
     };
 
+    template <typename T>
+    struct Serialize
+    {};
+
     class Serializer
     {
     /*------.
@@ -77,11 +81,12 @@ namespace elle
       template <typename T>
       void
       serialize_object(std::string const& name, T& v);
-      void
-      serialize_virtual_object(std::string const& name, VirtuallySerializable& v);
       template <typename T>
       void
       serialize_pod(std::string const& name, T& v);
+      template <typename T>
+      void
+      serialize_forward(T& v);
 
     protected:
       virtual
@@ -148,6 +153,8 @@ namespace elle
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
+      template <typename T>
+      friend struct Serialize;
       class Details;
       friend class Details;
     };
