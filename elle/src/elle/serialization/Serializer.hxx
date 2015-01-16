@@ -24,9 +24,18 @@ namespace elle
         s.serialize_object(name, obj);
         if (s.out())
         {
+          std::type_info const* id = &typeid(obj);
           auto const& map = Hierarchy<T>::_rmap();
-          auto it = map.find(&typeid(obj));
-          ELLE_ASSERT(it != map.end());
+          auto it = map.find(id);
+          if (it == map.end())
+          {
+            ELLE_LOG_COMPONENT("elle.serialization");
+            auto message =
+              elle::sprintf("unable to get serialization name for type %s (%s)",
+                            demangle(id->name()), id);
+            ELLE_WARN("%s", message);
+            throw Error(message);
+          }
           auto type_name = it->second;
           s.serialize(T::virtually_serializable_key, type_name);
         }
@@ -441,10 +450,18 @@ namespace elle
       public:
         Register(std::string const& name_ = "")
         {
-          std::string name = name_.empty() ? demangle(typeid(U).name()) : name_;
+          ELLE_LOG_COMPONENT("elle.serialization");
+          std::type_info const* id = &typeid(U);
+          if (name_.empty())
+            ELLE_TRACE_SCOPE("register dynamic type %s (%s)",
+                             demangle(id->name()), id);
+          else
+            ELLE_TRACE_SCOPE("register dynamic type %s (%s) as %s",
+                             demangle(id->name()), id, name_);
+          std::string name = name_.empty() ? demangle(id->name()) : name_;
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s) { return elle::make_unique<U>(s); };
-          Hierarchy<T>::_rmap()[&typeid(U)] = name;
+          Hierarchy<T>::_rmap()[id] = name;
         }
       };
 
