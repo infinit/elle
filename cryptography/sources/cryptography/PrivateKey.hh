@@ -3,11 +3,13 @@
 
 # include <utility>
 
-# include <elle/types.hh>
+# include <elle/concept/Uniquable.hh>
 # include <elle/operator.hh>
+# include <elle/serialization/Serializer.hh>
+# include <elle/serialization/fwd.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
-# include <elle/concept/Uniquable.hh>
+# include <elle/types.hh>
 # include <elle/utility/fwd.hh>
 
 # include <cryptography/Clear.hh>
@@ -122,19 +124,31 @@ namespace infinit
       operator <(PrivateKey const& other) const;
       ELLE_OPERATOR_NO_ASSIGNMENT(PrivateKey);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+
+    /*----------.
+    | Printable |
+    `----------*/
     public:
-      // printable
       void
       print(std::ostream& stream) const;
-      // serializable
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+    public:
+      PrivateKey(elle::serialization::SerializerIn& serializer);
+      void
+      serialize(elle::serialization::Serializer& serializer);
+
+    /*-------------.
+    | Serializable |
+    `-------------*/
+    public:
       ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
 
-      /*-----------.
-      | Attributes |
-      `-----------*/
+    /*--------.
+    | Details |
+    `--------*/
     private:
       ELLE_ATTRIBUTE(std::unique_ptr<privatekey::Interface>, implementation);
     };
@@ -175,10 +189,11 @@ namespace infinit
     {
       /// Represent the private key interface to which every cryptosystem
       /// implementation must comply.
-      class Interface:
-        public elle::Printable,
-        public elle::serialize::Serializable<>,
-        public elle::concept::Uniquable<>
+      class Interface
+        : public elle::Printable
+        , public elle::serialize::Serializable<>
+        , public elle::concept::Uniquable<>
+        , public elle::serialization::VirtuallySerializable
       {
         /*-------------.
         | Construction |
@@ -246,6 +261,13 @@ namespace infinit
         Seed
         rotate(Seed const& seed) const = 0;
 # endif
+      /*-------------.
+      | Serializable |
+      `-------------*/
+      public:
+        static constexpr char const* virtually_serializable_key = "algorithm";
+        // Old school serialization also has a serialize method.
+        using elle::serialization::VirtuallySerializable::serialize;
       };
     }
   }

@@ -6,6 +6,7 @@
 #include <cryptography/rsa/PublicKey.hh>
 
 #include <elle/log.hh>
+#include <elle/serialization/Serializer.hh>
 #include <elle/utility/Factory.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
@@ -69,6 +70,17 @@ namespace infinit
     /*--------.
     | Methods |
     `--------*/
+
+    elle::Buffer
+    PublicKey::encrypt(elle::Buffer const& input) const
+    {
+      ELLE_TRACE_SCOPE("%s: encrypt buffer", *this);
+      ELLE_DUMP("%s: data: %x", *this, input);
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+      Plain plain(elle::ConstWeakBuffer(input.contents(), input.size()));
+      auto output = this->_implementation->encrypt(plain);
+      return std::move(output.buffer());
+    }
 
     Code
     PublicKey::encrypt(Plain const& plain) const
@@ -190,6 +202,21 @@ namespace infinit
       ELLE_ASSERT_NEQ(other._implementation, nullptr);
 
       return (*this->_implementation < *other._implementation);
+    }
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    PublicKey::PublicKey(elle::serialization::SerializerIn& serializer)
+    {
+      this->serialize(serializer);
+    }
+
+    void
+    PublicKey::serialize(elle::serialization::Serializer& serializer)
+    {
+      serializer.serialize_forward(this->_implementation);
     }
 
     /*----------.

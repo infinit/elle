@@ -136,10 +136,18 @@ namespace infinit
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
 
-        /*-----------.
-        | Attributes |
-        `-----------*/
-      private:
+      /*-------------.
+      | Serializable |
+      `-------------*/
+      public:
+        PublicKey(elle::serialization::SerializerIn& serializer);
+        void
+        serialize(elle::serialization::Serializer& serializer) override;
+
+      /*-----------.
+      | Attributes |
+      `-----------*/
+      public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
         ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);

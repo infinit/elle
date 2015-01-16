@@ -1,6 +1,17 @@
 #ifndef INFINIT_CRYPTOGRAPHY_PUBLICKEY_HH
 # define INFINIT_CRYPTOGRAPHY_PUBLICKEY_HH
 
+# include <utility>
+
+# include <elle/Printable.hh>
+# include <elle/attribute.hh>
+# include <elle/concept/Uniquable.hh>
+# include <elle/operator.hh>
+# include <elle/serialization/Serializer.hh>
+# include <elle/serialize/construct.hh>
+# include <elle/types.hh>
+# include <elle/utility/fwd.hh>
+
 # include <cryptography/Clear.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/Cryptosystem.hh>
@@ -9,15 +20,6 @@
 # include <cryptography/oneway.hh>
 # include <cryptography/fwd.hh>
 
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
-# include <elle/concept/Uniquable.hh>
-# include <elle/operator.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/types.hh>
-# include <elle/utility/fwd.hh>
-
-# include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
 //
@@ -62,6 +64,9 @@ namespace infinit
       | Methods |
       `--------*/
     public:
+      /// Encrypt the given buffer
+      elle::Buffer
+      encrypt(elle::Buffer const& input) const;
       /// Encrypt the given plain text.
       Code
       encrypt(Plain const& plain) const;
@@ -122,20 +127,31 @@ namespace infinit
       operator <(PublicKey const& other) const;
       ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+    /*-----------.
+    | Printable |
+    `-----------*/
     public:
-      // printable
       virtual
       void
       print(std::ostream& stream) const;
-      // serializable
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+    public:
+      PublicKey(elle::serialization::SerializerIn& serializer);
+      void
+      serialize(elle::serialization::Serializer& serializer);
+
+    /*-------------.
+    | Serializable |
+    `-------------*/
+    public:
       ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
 
-      /*-----------.
-      | Attributes |
-      `-----------*/
+    /*--------.
+    | Details |
+    `--------*/
     private:
       ELLE_ATTRIBUTE(std::unique_ptr<publickey::Interface>, implementation);
     };
@@ -176,23 +192,23 @@ namespace infinit
     {
       /// Represent the public key interface to which every cryptosystem
       /// implementation must comply.
-      class Interface:
-        public elle::Printable,
-        public elle::serialize::Serializable<>,
-        public elle::concept::Uniquable<>
+      class Interface
+        : public elle::Printable
+        , public elle::serialize::Serializable<>
+        , public elle::concept::Uniquable<>
+        , public elle::serialization::VirtuallySerializable
       {
-        /*-------------.
-        | Construction |
-        `-------------*/
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
         virtual
         ~Interface()
-        {
-        }
+        {}
 
-        /*----------.
-        | Operators |
-        `----------*/
+      /*----------.
+      | Operators |
+      `----------*/
       public:
         virtual
         elle::Boolean
@@ -201,9 +217,9 @@ namespace infinit
         elle::Boolean
         operator <(Interface const& other) const = 0;
 
-        /*--------.
-        | Methods |
-        `--------*/
+      /*--------.
+      | Methods |
+      `--------*/
       public:
         /// Clone the given implementation and return it.
         virtual
@@ -240,6 +256,13 @@ namespace infinit
         Seed
         derive(Seed const& seed) const = 0;
 # endif
+      /*-------------.
+      | Serializable |
+      `-------------*/
+      public:
+        static constexpr char const* virtually_serializable_key = "algorithm";
+        // Old school serialization also has a serialize method.
+        using elle::serialization::VirtuallySerializable::serialize;
       };
     }
   }

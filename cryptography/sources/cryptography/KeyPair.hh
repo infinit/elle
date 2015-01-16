@@ -9,6 +9,7 @@
 # include <elle/Printable.hh>
 # include <elle/operator.hh>
 # include <elle/concept/Uniquable.hh>
+# include <elle/serialization/fwd.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialize/DynamicFormat.hh>
@@ -32,17 +33,17 @@ namespace infinit
       public elle::concept::MakeUniquable<KeyPair>,
       public elle::Printable
     {
-      /*----------.
-      | Constants |
-      `----------*/
+    /*----------.
+    | Constants |
+    `----------*/
     public:
       /// The algorithm used for hashing the content to sign/verify.
       static oneway::Algorithm const oneway_algorithm =
         oneway::Algorithm::sha256;
 
-      /*---------------.
-      | Static Methods |
-      `---------------*/
+    /*---------------.
+    | Static Methods |
+    `---------------*/
     public:
       /// Return a brand new, freshly generated key pair of the
       /// given length.
@@ -53,9 +54,9 @@ namespace infinit
       generate(Cryptosystem const cryptosystem,
                elle::Natural32 const length);
 
-      /*-------------.
-      | Construction |
-      `-------------*/
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       KeyPair(); // XXX[to deserialize]
       KeyPair(PublicKey const& K,
@@ -70,9 +71,9 @@ namespace infinit
       KeyPair(KeyPair&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
 
-      /*--------.
-      | Methods |
-      `--------*/
+    /*--------.
+    | Methods |
+    `--------*/
     public:
       /// Return the public key.
       PublicKey const&
@@ -90,28 +91,41 @@ namespace infinit
       elle::Natural32
       length() const;
 
-      /*----------.
-      | Operators |
-      `----------*/
+    /*----------.
+    | Operators |
+    `----------*/
     public:
       elle::Boolean
       operator ==(KeyPair const& other) const;
       ELLE_OPERATOR_NO_ASSIGNMENT(KeyPair);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+    /*----------.
+    | Printable |
+    `----------*/
     public:
       // printable
       virtual
       void
       print(std::ostream& stream) const;
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+    public:
+      KeyPair(elle::serialization::SerializerIn& serializer);
+      void
+      serialize(elle::serialization::Serializer& serializer);
+
+    /*----------.
+    | Serialize |
+    `----------*/
+    public:
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
 
-      /*-----------.
-      | Attributes |
-      `-----------*/
+    /*--------.
+    | Details |
+    `--------*/
     private:
       /// The public key.
       ELLE_ATTRIBUTE(std::unique_ptr<PublicKey>, K);

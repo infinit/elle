@@ -8,6 +8,7 @@
 #include <cryptography/rsa/keypair.hh>
 
 #include <elle/log.hh>
+#include <elle/serialization/SerializerIn.hh>
 #include <elle/types.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.KeyPair");
@@ -184,6 +185,24 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_k, nullptr);
 
       return ((*this->_K == *other._K) && (*this->_k == *other._k));
+    }
+
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+    KeyPair::KeyPair(elle::serialization::SerializerIn& serializer)
+      : _K()
+      , _k()
+    {
+      this->serialize(serializer);
+    }
+
+    void
+    KeyPair::serialize(elle::serialization::Serializer& s)
+    {
+      s.serialize("public_key", this->_K);
+      s.serialize("private_key", this->_k);
     }
 
     /*----------.
