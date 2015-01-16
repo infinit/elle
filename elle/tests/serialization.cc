@@ -474,9 +474,9 @@ hierarchy()
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
-    auto super = std::make_shared<Super>(0);
-    auto s1 = std::make_shared<Sub1>(2);
-    auto s2 = std::make_shared<Sub2>(3);
+    std::unique_ptr<Super> super(new Super(0));
+    std::unique_ptr<Super> s1(new Sub1(2));
+    std::unique_ptr<Super> s2(new Sub2(3));
     output.serialize("super", super);
     output.serialize("sub1", s1);
     output.serialize("sub2", s2);
