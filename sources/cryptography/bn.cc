@@ -1,13 +1,14 @@
 #include <cryptography/bn.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
-
-#include <elle/types.hh>
-
-#include <openssl/err.h>
 
 #include <iostream>
 #include <cstring>
+
+#include <openssl/err.h>
+
+#include <elle/types.hh>
+
+#include <cryptography/finally.hh>
+#include <cryptography/Exception.hh>
 
 /*----------.
 | Operators |
@@ -52,4 +53,37 @@ operator <<(std::ostream& stream,
   ::OPENSSL_free(hexadecimal);
 
   return (stream);
+}
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    void
+    Serialize<::BIGNUM*>::convert(::BIGNUM*& bignum, std::string& repr)
+    {
+      std::unique_ptr<char, void (*) (char*)> hexadecimal
+        (::BN_bn2hex(bignum), [] (char* p) {OPENSSL_free(p);});
+      if (!hexadecimal)
+        throw ::elle::Error(
+          ::elle::sprintf(
+            "unable to convert big number to hexadecimal: %s",
+            ::ERR_error_string(ERR_get_error(), nullptr)));
+      repr = hexadecimal.get();
+      hexadecimal.release();
+    }
+
+    void
+    Serialize<::BIGNUM*>::convert(std::string& repr, ::BIGNUM*& bn)
+    {
+      if (BN_hex2bn(&bn, repr.c_str()) == 0)
+        throw ::elle::Error(
+          ::elle::sprintf("unable to read big number from hexadecimal: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+    }
+  }
 }
