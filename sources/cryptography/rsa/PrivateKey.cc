@@ -669,6 +669,45 @@ namespace infinit
       }
 #endif
 
+      /*--------------.
+      | Serialization |
+      `--------------*/
+
+      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer)
+        : _key(::EVP_PKEY_new())
+      {
+        std::unique_ptr<::RSA, void (*) (::RSA*)> rsa(::RSA_new(), &::RSA_free);
+        if (!rsa)
+          throw elle::Error(
+            elle::sprintf("unable to initialize RSA: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa.get()) <= 0)
+          throw elle::Error(
+            elle::sprintf("unable to assign the RSA: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        rsa.release();
+        this->serialize(serializer);
+      }
+
+      void
+      PrivateKey::serialize(elle::serialization::Serializer& serializer)
+      {
+        serializer.serialize("modulus", this->_key->pkey.rsa->n);
+        serializer.serialize("public_exponent", this->_key->pkey.rsa->e);
+        serializer.serialize("private_exponent", this->_key->pkey.rsa->d);
+        // FIXME: https://www.openssl.org/docs/crypto/rsa.html
+        // p, q, dmp1, dmq1 and iqmp may be NULL in private keys, but the RSA
+        // operations are much faster when these values are available.
+        // serializer.serialize("p", this->_key->pkey.rsa->p);
+        // serializer.serialize("q", this->_key->pkey.rsa->q);
+        // serializer.serialize("dmp1", this->_key->pkey.rsa->dmp1);
+        // serializer.serialize("dmq1", this->_key->pkey.rsa->dmq1);
+        // serializer.serialize("iqmp;", this->_key->pkey.rsa->iqmp);
+      }
+      static const elle::serialization::Hierarchy
+      <cryptography::privatekey::Interface>::
+      Register<PrivateKey> _register_("rsa");
+
       /*----------.
       | Printable |
       `----------*/

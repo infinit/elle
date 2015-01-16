@@ -146,6 +146,14 @@ namespace infinit
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
 
+      /*-------------.
+      | Serializable |
+      `-------------*/
+      public:
+        PrivateKey(elle::serialization::SerializerIn& serializer);
+        void
+        serialize(elle::serialization::Serializer& serializer) override;
+
         /*-----------.
         | Attributes |
         `-----------*/

@@ -1,3 +1,17 @@
+#include <openssl/engine.h>
+#include <openssl/crypto.h>
+#include <openssl/rsa.h>
+#include <openssl/err.h>
+
+#include <elle/Error.hh>
+#include <elle/finally.hh>
+#include <elle/log.hh>
+#include <elle/printf.hh>
+
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# include <dopenssl/rsa.h>
+#endif
+
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/Seed.hh>
@@ -8,17 +22,6 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
-
-#include <elle/log.hh>
-
-#include <openssl/engine.h>
-#include <openssl/crypto.h>
-#include <openssl/rsa.h>
-#include <openssl/err.h>
-
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-# include <dopenssl/rsa.h>
-#endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
 
@@ -564,6 +567,68 @@ namespace infinit
         return (cryptography::Seed(std::move(implementation)));
       }
 #endif
+
+      /*--------------.
+      | Serialization |
+      `--------------*/
+
+      class BigNum
+        : public std::string
+      {
+      public:
+        BigNum(::BIGNUM* const bignum)
+        {
+          if (bignum)
+          {
+            char* hexadecimal = ::BN_bn2hex(bignum);
+            elle::SafeFinally free
+              ([hexadecimal] {::OPENSSL_free(hexadecimal);});
+            // Transform the number in hexadecimal.
+            if (!hexadecimal)
+              throw ::elle::Error(
+                ::elle::sprintf(
+                  "unable to convert big number to hexadecimal: %s",
+                  ::ERR_error_string(ERR_get_error(), nullptr)));
+            this->std::string::operator =(hexadecimal);
+          }
+        }
+
+        operator ::BIGNUM*()
+        {
+          ::BIGNUM* res = nullptr;
+          if (BN_hex2bn(&res, this->c_str()) == 0)
+            throw ::elle::Error(
+              ::elle::sprintf("unable to read big number from hexadecimal: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          return res;
+        }
+      };
+
+      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer)
+        : _key(::EVP_PKEY_new())
+      {
+        auto rsa = ::RSA_new();
+        if (!rsa)
+          throw elle::Error(
+            elle::sprintf("unable to initialize RSA: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa) <= 0)
+          throw elle::Error(
+            elle::sprintf("unable to assign the RSA: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        this->serialize(serializer);
+      }
+
+      void
+      PublicKey::serialize(elle::serialization::Serializer& serializer)
+      {
+        serializer.serialize("modulus", this->_key->pkey.rsa->n);
+        serializer.serialize("public_exponent", this->_key->pkey.rsa->e);
+      }
+
+      static const elle::serialization::Hierarchy
+      <cryptography::publickey::Interface>::
+      Register<PublicKey> _register_PublicKey("rsa");
 
       /*----------.
       | Printable |

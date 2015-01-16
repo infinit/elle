@@ -186,6 +186,21 @@ namespace infinit
       return (*this->_implementation < *other._implementation);
     }
 
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer)
+    {
+      this->serialize(serializer);
+    }
+
+    void
+    PrivateKey::serialize(elle::serialization::Serializer& serializer)
+    {
+      serializer.serialize_forward(this->_implementation);
+    }
+
     /*----------.
     | Printable |
     `----------*/
