@@ -145,11 +145,7 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        if (s._enter(name))
-        {
-          elle::SafeFinally leave([&] { s._leave(name); });
-          ptr.reset(new T(static_cast<SerializerIn&>(s)));
-        }
+        ptr.reset(new T(static_cast<SerializerIn&>(s)));
       }
 
       template <typename P, typename T>
@@ -164,7 +160,7 @@ namespace elle
         P& ptr)
       {
         ptr.reset(new T);
-        s.serialize(name, *ptr);
+        s._serialize_anonymous(name, *ptr);
       }
 
       template <typename P, typename T>
@@ -178,18 +174,14 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        if (s._enter(name))
-        {
-          elle::SafeFinally leave([&] { s._leave(name); });
-          auto const& map = Hierarchy<T>::_map();
-          std::string type_name;
-          s.serialize(T::virtually_serializable_key, type_name);
-          auto it = map.find(type_name);
-          if (it == map.end())
-            throw Error(elle::sprintf("unable to deserialize type %s",
-                                      type_name));
-          ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
-        }
+        auto const& map = Hierarchy<T>::_map();
+        std::string type_name;
+        s.serialize(T::virtually_serializable_key, type_name);
+        auto it = map.find(type_name);
+        if (it == map.end())
+          throw Error(elle::sprintf("unable to deserialize type %s",
+                                    type_name));
+        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
       }
 
       template <typename P, typename T>
@@ -225,9 +217,41 @@ namespace elle
           bool(opt),
           [&]
           {
-            Details::_smart_virtual_switch<std::unique_ptr<T>, T>
-              (*this, name, opt);
+            if (this->_enter(name))
+            {
+              elle::SafeFinally leave([&] { this->_leave(name); });
+              Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+                (*this, name, opt);
+            }
+          });
+    }
 
+    // FIXME: duplicated with ::serialize(name, unique_ptr)
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     std::unique_ptr<T>& opt)
+    {
+      if (this->_out())
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            this->_serialize_anonymous(name, *opt);
+          });
+      else
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            if (this->_enter(name))
+            {
+              elle::SafeFinally leave([&] { this->_leave(name); });
+              Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+                (*this, name, opt);
+            }
           });
     }
 
@@ -249,8 +273,12 @@ namespace elle
           bool(opt),
           [&]
           {
-            Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-              (*this, name, opt);
+            if (this->_enter(name))
+            {
+              elle::SafeFinally leave([&] { this->_leave(name); });
+              Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+                (*this, name, opt);
+            }
           });
     }
 
@@ -400,7 +428,7 @@ namespace elle
     void
     Serializer::serialize_forward(T& v)
     {
-      this->_serialize_anonymous<T>("FIXME BUT I DON'T THINK THIS IS USED", v);
+      this->_serialize_anonymous("FIXME BUT I DON'T THINK THIS IS USED", v);
     }
 
     template <typename T>

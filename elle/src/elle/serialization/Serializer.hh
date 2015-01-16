@@ -154,6 +154,9 @@ namespace elle
       void
       _serialize_anonymous(std::string const& name, T& v);
       template <typename T>
+      void
+      _serialize_anonymous(std::string const& name, std::unique_ptr<T>& v);
+      template <typename T>
       friend struct Serialize;
       class Details;
       friend class Details;
