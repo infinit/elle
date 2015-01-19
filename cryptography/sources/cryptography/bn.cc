@@ -16,7 +16,7 @@
 
 std::ostream&
 operator <<(std::ostream& stream,
-            ::BIGNUM const& bignum)
+            BIGNUM const& bignum)
 {
   static elle::Natural32 const length = 50;
   char* hexadecimal;
@@ -64,7 +64,7 @@ namespace elle
   namespace serialization
   {
     void
-    Serialize<::BIGNUM*>::convert(::BIGNUM*& bignum, std::string& repr)
+    Serialize<BIGNUM*>::convert(BIGNUM*& bignum, std::string& repr)
     {
       std::unique_ptr<char, void (*) (char*)> hexadecimal
         (::BN_bn2hex(bignum), [] (char* p) {OPENSSL_free(p);});
@@ -78,7 +78,7 @@ namespace elle
     }
 
     void
-    Serialize<::BIGNUM*>::convert(std::string& repr, ::BIGNUM*& bn)
+    Serialize<BIGNUM*>::convert(std::string& repr, BIGNUM*& bn)
     {
       if (BN_hex2bn(&bn, repr.c_str()) == 0)
         throw ::elle::Error(
