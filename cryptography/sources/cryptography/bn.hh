@@ -25,15 +25,15 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<::BIGNUM*>
+    struct Serialize<BIGNUM*>
     {
       typedef std::string Type;
       static
       void
-      convert(::BIGNUM*& bignum, std::string& repr);
+      convert(BIGNUM*& bignum, std::string& repr);
       static
       void
-      convert(std::string& repr, ::BIGNUM*& bn);
+      convert(std::string& repr, BIGNUM*& bn);
     };
   }
 }
