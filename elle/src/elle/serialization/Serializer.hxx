@@ -242,26 +242,15 @@ namespace elle
                                      std::unique_ptr<T>& opt)
     {
       if (this->_out())
-        this->_serialize_option(
-          name,
-          bool(opt),
-          [&]
-          {
-            this->_serialize_anonymous(name, *opt);
-          });
+      {
+        ELLE_ASSERT(opt.get());
+        this->_serialize_anonymous(name, *opt);
+      }
       else
-        this->_serialize_option(
-          name,
-          bool(opt),
-          [&]
-          {
-            if (this->_enter(name))
-            {
-              elle::SafeFinally leave([&] { this->_leave(name); });
-              Details::_smart_virtual_switch<std::unique_ptr<T>, T>
-                (*this, name, opt);
-            }
-          });
+      {
+        Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+          (*this, name, opt);
+      }
     }
 
     template <typename T>
