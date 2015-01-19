@@ -454,16 +454,19 @@ namespace reactor
         ELLE_LOG("Single mode");
         _impl->_fuse.loop();
       }
-      else if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
-      {
-        int nt = std::stoi(elle::os::getenv("INFINIT_FUSE_POOL"));
-        ELLE_LOG("Pool mode with %s workers", nt);
-        _impl->_fuse.loop_pool(nt);
-      }
-      else
+      else if (!elle::os::getenv("INFINIT_FUSE_THREAD", "").empty())
       {
         ELLE_LOG("Thread mode");
         _impl->_fuse.loop_mt();
+      }
+      else
+      {
+        int nt = 5;
+        std::string nthread = elle::os::getenv("INFINIT_FUSE_POOL", "");
+        if (!nthread.empty())
+          nt = std::stoi(nthread);
+        ELLE_LOG("Pool mode with %s workers", nt);
+        _impl->_fuse.loop_pool(nt);
       }
     }
 
