@@ -49,7 +49,7 @@ namespace elle
       {
         elle::Buffer buf;
         this->_serialize(name, buf);
-        ELLE_ASSERT(buf.size() == v.size());
+        ELLE_ASSERT_EQ(buf.size(), v.size());
         memcpy(v.mutable_contents(), buf.mutable_contents(), v.size());
       }
       else
