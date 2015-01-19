@@ -72,13 +72,17 @@ namespace elle
         ELLE_SFINAE_IF_POSSIBLE())
       {
         typedef typename Serialize<T>::Type Type;
-        Type value;
-        bool out = s.out();
-        if (out)
-          Serialize<T>::convert(v, value);
-        _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
-        if (!out)
-          Serialize<T>::convert(value, v);
+        if (s.out())
+        {
+          Type value(Serialize<T>::convert(v));
+          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
+        }
+        else
+        {
+          Type value;
+          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
+          v = Serialize<T>::convert(value);
+        }
       }
     }
 

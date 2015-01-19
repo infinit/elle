@@ -29,11 +29,11 @@ namespace elle
     {
       typedef std::string Type;
       static
-      void
-      convert(BIGNUM*& bignum, std::string& repr);
+      std::string
+      convert(BIGNUM*& bignum);
       static
-      void
-      convert(std::string& repr, BIGNUM*& bn);
+      BIGNUM*
+      convert(std::string& repr);
     };
   }
 }
