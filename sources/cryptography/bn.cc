@@ -63,8 +63,8 @@ namespace elle
 {
   namespace serialization
   {
-    void
-    Serialize<BIGNUM*>::convert(BIGNUM*& bignum, std::string& repr)
+    std::string
+    Serialize<BIGNUM*>::convert(BIGNUM*& bignum)
     {
       std::unique_ptr<char, void (*) (char*)> hexadecimal
         (::BN_bn2hex(bignum), [] (char* p) {OPENSSL_free(p);});
@@ -73,17 +73,19 @@ namespace elle
           ::elle::sprintf(
             "unable to convert big number to hexadecimal: %s",
             ::ERR_error_string(ERR_get_error(), nullptr)));
-      repr = hexadecimal.get();
-      hexadecimal.release();
+      std::string res(hexadecimal.get());
+      return res;
     }
 
-    void
-    Serialize<BIGNUM*>::convert(std::string& repr, BIGNUM*& bn)
+    BIGNUM*
+    Serialize<BIGNUM*>::convert(std::string& repr)
     {
-      if (BN_hex2bn(&bn, repr.c_str()) == 0)
+      BIGNUM* res = nullptr;
+      if (BN_hex2bn(&res, repr.c_str()) == 0)
         throw ::elle::Error(
           ::elle::sprintf("unable to read big number from hexadecimal: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+      return res;
     }
   }
 }
