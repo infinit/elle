@@ -57,8 +57,8 @@ namespace reactor
 
   void FuseContext::loop_pool(int nThreads)
   {
-    Scheduler& sched = scheduler();
 #ifdef INFINIT_MACOSX
+    Scheduler& sched = scheduler();
     _loopThread.reset(new std::thread([=](Scheduler* sched) { this->_loop_pool(nThreads, *sched);}, &sched));
 #else
     _loop.reset(new Thread("fuse loop",
