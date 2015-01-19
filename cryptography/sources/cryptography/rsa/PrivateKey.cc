@@ -687,6 +687,7 @@ namespace infinit
                           ::ERR_error_string(ERR_get_error(), nullptr)));
         rsa.release();
         this->serialize(serializer);
+        this->_prepare();
       }
 
       void
