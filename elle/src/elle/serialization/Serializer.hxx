@@ -418,9 +418,11 @@ namespace elle
     {
       if (this->_versioned)
       {
-        auto guard = scoped_assignment(this->_versioned, false);
         elle::Version v(this->_version);
-        this->serialize("version", v);
+        {
+          auto guard = scoped_assignment(this->_versioned, false);
+          this->serialize("version", v);
+        }
         _version_switch(*this, object, std::move(v), ELLE_SFINAE_TRY());
       }
       else
