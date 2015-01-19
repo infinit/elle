@@ -53,6 +53,19 @@ namespace elle
       }
 
       template <typename T>
+      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& obj,
+        ELLE_SFINAE_IF_WORKS(
+          obj.serialize(ELLE_SFINAE_INSTANCE(Serializer),
+                        ELLE_SFINAE_INSTANCE(elle::Version))))
+      {
+        s.serialize_object(name, obj);
+      }
+
+      template <typename T>
       void
       _serialize_switch(
         Serializer& s,
@@ -411,7 +424,7 @@ namespace elle
         _version_switch(*this, object, std::move(v), ELLE_SFINAE_TRY());
       }
       else
-        object.serialize(*this);
+        _version_switch(*this, object, elle::Version(), ELLE_SFINAE_TRY());
     }
 
     template <typename T>
