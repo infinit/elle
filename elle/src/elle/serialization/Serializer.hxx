@@ -183,9 +183,13 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_DEBUG_SCOPE("%s: deserialize virtual key %s of type %s",
+                         s, name, demangle(typeid(T).name()));
         auto const& map = Hierarchy<T>::_map();
         std::string type_name;
         s.serialize(T::virtually_serializable_key, type_name);
+        ELLE_DUMP("%s: type: %s", s, type_name);
         auto it = map.find(type_name);
         if (it == map.end())
           throw Error(elle::sprintf("unable to deserialize type %s",
