@@ -13,9 +13,23 @@ namespace elle
     class SerializerOut:
       public Serializer
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef SerializerOut Self;
+      typedef Serializer Super;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       SerializerOut(std::ostream& output);
+      SerializerOut(std::ostream& output, elle::Version version);
 
+    /*--------.
+    | Details |
+    `--------*/
     protected:
       std::ostream&
       output();

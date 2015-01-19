@@ -15,7 +15,11 @@ namespace elle
       `-------------*/
 
       SerializerOut::SerializerOut(std::ostream& output)
-        : Super(output)
+        : SerializerOut(output, elle::Version())
+      {}
+
+      SerializerOut::SerializerOut(std::ostream& output, elle::Version version)
+        : Super(output, std::move(version))
         , _json()
         , _current()
       {

@@ -11,6 +11,7 @@
 # include <boost/date_time/posix_time/posix_time.hpp>
 
 # include <elle/Buffer.hh>
+# include <elle/Version.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
 
@@ -47,6 +48,13 @@ namespace elle
     public:
       typedef Serializer Self;
 
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      Serializer();
+      Serializer(elle::Version version);
+
     /*-----------.
     | Properties |
     `-----------*/
@@ -55,6 +63,8 @@ namespace elle
       in() const;
       bool
       out() const;
+      ELLE_ATTRIBUTE_R(elle::Version const, version);
+      ELLE_ATTRIBUTE_R(bool, versioned);
     private:
       bool
       _out() const;

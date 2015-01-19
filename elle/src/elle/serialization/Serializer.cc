@@ -5,6 +5,15 @@ namespace elle
 {
   namespace serialization
   {
+    Serializer::Serializer()
+      : Serializer(elle::Version())
+    {}
+
+    Serializer::Serializer(elle::Version version)
+      : _version(std::move(version))
+      , _versioned(true)
+    {}
+
     bool
     Serializer::_enter(std::string const&)
     {

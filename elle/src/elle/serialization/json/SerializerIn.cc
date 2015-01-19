@@ -26,7 +26,11 @@ namespace elle
       `-------------*/
 
       SerializerIn::SerializerIn(std::istream& input)
-        : Super(input)
+        : SerializerIn(input, elle::Version())
+      {}
+
+      SerializerIn::SerializerIn(std::istream& input, elle::Version version)
+        : Super(input, version)
         , _partial(false)
         , _json()
         , _current()

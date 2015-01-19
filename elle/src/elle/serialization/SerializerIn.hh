@@ -13,9 +13,23 @@ namespace elle
     class SerializerIn:
       public Serializer
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef SerializerIn Self;
+      typedef Serializer Super;
+
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       SerializerIn(std::istream& input);
+      SerializerIn(std::istream& input, elle::Version version);
 
+    /*--------.
+    | Details |
+    `--------*/
     protected:
       ELLE_ATTRIBUTE(std::istream&, input);
     };

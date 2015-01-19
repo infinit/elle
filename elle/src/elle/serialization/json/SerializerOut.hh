@@ -29,6 +29,7 @@ namespace elle
       `-------------*/
       public:
         SerializerOut(std::ostream& output);
+        SerializerOut(std::ostream& output, elle::Version version);
         ~SerializerOut() noexcept(false);
 
       /*--------------.
