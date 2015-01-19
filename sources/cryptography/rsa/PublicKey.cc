@@ -617,6 +617,7 @@ namespace infinit
             elle::sprintf("unable to assign the RSA: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
         this->serialize(serializer);
+        this->_prepare();
       }
 
       void
