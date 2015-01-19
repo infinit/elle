@@ -63,6 +63,9 @@ namespace infinit
       | Methods |
       `--------*/
     public:
+      /// Decrypt a buffer
+      elle::Buffer
+      decrypt(elle::Buffer const& input) const;
       /// Decrypt a code and returns the original clear text.
       ///
       /// Note that the code is, in practice, an archive containing both
