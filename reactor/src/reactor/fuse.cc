@@ -59,10 +59,10 @@ namespace reactor
   {
     Scheduler& sched = scheduler();
 #ifdef INFINIT_MACOSX
-    _loopThread.reset(new std::thread([&] { this->_loop_pool(nThreads, sched);}));
+    _loopThread.reset(new std::thread([=](Scheduler* sched) { this->_loop_pool(nThreads, *sched);}, &sched));
 #else
     _loop.reset(new Thread("fuse loop",
-                           [&] { this->_loop_pool(nThreads, sched);}));
+                           [=] { this->_loop_pool(nThreads, scheduler());}));
 #endif
   }
 
@@ -79,6 +79,7 @@ namespace reactor
 
   void FuseContext::_loop_pool(int nThreads, Scheduler& sched)
   {
+    ELLE_TRACE("Entering pool loop with %s workers", nThreads);
     reactor::Semaphore sem;
     bool stop = false;
     std::list<elle::Buffer> requests;
