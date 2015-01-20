@@ -14,12 +14,15 @@ namespace elle
       | Construction |
       `-------------*/
 
-      SerializerOut::SerializerOut(std::ostream& output)
-        : SerializerOut(output, elle::Version())
+      SerializerOut::SerializerOut(std::ostream& output,
+                                   bool versioned)
+        : SerializerOut(output, elle::Version(), versioned)
       {}
 
-      SerializerOut::SerializerOut(std::ostream& output, elle::Version version)
-        : Super(output, std::move(version))
+      SerializerOut::SerializerOut(std::ostream& output,
+                                   elle::Version version,
+                                   bool versioned)
+        : Super(output, std::move(version), versioned)
         , _json()
         , _current()
       {

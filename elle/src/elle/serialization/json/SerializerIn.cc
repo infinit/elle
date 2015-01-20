@@ -25,12 +25,15 @@ namespace elle
       | Construction |
       `-------------*/
 
-      SerializerIn::SerializerIn(std::istream& input)
-        : SerializerIn(input, elle::Version())
+      SerializerIn::SerializerIn(std::istream& input,
+                                 bool versioned)
+        : Self(input, elle::Version(), versioned)
       {}
 
-      SerializerIn::SerializerIn(std::istream& input, elle::Version version)
-        : Super(input, version)
+      SerializerIn::SerializerIn(std::istream& input,
+                                 elle::Version version,
+                                 bool versioned)
+        : Super(input, version, versioned)
         , _partial(false)
         , _json()
         , _current()
@@ -50,7 +53,7 @@ namespace elle
       }
 
       SerializerIn::SerializerIn(elle::json::Json input)
-        : Super(ELLE_SFINAE_INSTANCE(std::istream)) // FIXME
+        : Super(ELLE_SFINAE_INSTANCE(std::istream), false) // FIXME
         , _partial(false)
         , _json(std::move(input))
         , _current()

@@ -52,8 +52,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      Serializer();
-      Serializer(elle::Version version);
+      Serializer(bool versioned);
+      Serializer(elle::Version version, bool versioned);
 
     /*-----------.
     | Properties |

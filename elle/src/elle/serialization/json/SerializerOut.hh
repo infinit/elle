@@ -28,8 +28,11 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        SerializerOut(std::ostream& output);
-        SerializerOut(std::ostream& output, elle::Version version);
+        SerializerOut(std::ostream& output,
+                      bool versioned = true);
+        SerializerOut(std::ostream& output,
+                      elle::Version version,
+                      bool versioned = true);
         ~SerializerOut() noexcept(false);
 
       /*--------------.

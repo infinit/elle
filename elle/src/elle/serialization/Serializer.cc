@@ -5,13 +5,13 @@ namespace elle
 {
   namespace serialization
   {
-    Serializer::Serializer()
-      : Serializer(elle::Version())
+    Serializer::Serializer(bool versioned)
+      : Serializer(elle::Version(), versioned)
     {}
 
-    Serializer::Serializer(elle::Version version)
+    Serializer::Serializer(elle::Version version, bool versioned)
       : _version(std::move(version))
-      , _versioned(true)
+      , _versioned(versioned)
     {}
 
     bool
