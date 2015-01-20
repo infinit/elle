@@ -493,6 +493,91 @@ hierarchy()
   }
 }
 
+class Versioned
+{
+public:
+  Versioned(int old, int addition)
+    : _old(old)
+    , _addition(addition)
+  {}
+
+  Versioned(elle::serialization::Serializer& s)
+    : _old(0)
+    , _addition(0)
+  {
+    s.serialize_forward(*this);
+  }
+
+  bool
+  operator ==(Versioned const& other) const
+  {
+    return this->old() == other.old() && this->addition() == other.addition();
+  }
+
+  void
+  serialize(elle::serialization::Serializer& s, elle::Version const& v)
+  {
+    s.serialize("old", this->_old);
+    if (v >= elle::Version(0, 1, 0))
+      s.serialize("addition", this->_addition);
+  }
+
+  ELLE_ATTRIBUTE_R(int, old);
+  ELLE_ATTRIBUTE_R(int, addition);
+};
+
+template <typename Format>
+static
+void
+versioning()
+{
+  // old -> old
+  {
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut output(stream);
+      Versioned v(1, 2);
+      output.serialize_forward(v);
+    }
+    {
+      typename Format::SerializerIn input(stream);
+      Versioned v(input);
+      BOOST_CHECK_EQUAL(v.old(), 1);
+      BOOST_CHECK_EQUAL(v.addition(), 0);
+    }
+  }
+  // old -> new
+  {
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut output(stream);
+      Versioned v(1, 2);
+      output.serialize_forward(v);
+    }
+    {
+      typename Format::SerializerIn input(stream, elle::Version(0, 1, 1));
+      Versioned v(input);
+      BOOST_CHECK_EQUAL(v.old(), 1);
+      BOOST_CHECK_EQUAL(v.addition(), 0);
+    }
+  }
+  // new -> new
+  {
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut output(stream, elle::Version(0, 1, 1));
+      Versioned v(1, 2);
+      output.serialize_forward(v);
+    }
+    {
+      typename Format::SerializerIn input(stream, elle::Version(0, 1, 1));
+      Versioned v(input);
+      BOOST_CHECK_EQUAL(v.old(), 1);
+      BOOST_CHECK_EQUAL(v.addition(), 2);
+    }
+  }
+}
+
 class InPlace
 {
 public:
@@ -701,6 +786,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(date<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
