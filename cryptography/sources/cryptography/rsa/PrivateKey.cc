@@ -676,7 +676,7 @@ namespace infinit
       PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer)
         : _key(::EVP_PKEY_new())
       {
-        std::unique_ptr<::RSA, void (*) (::RSA*)> rsa(::RSA_new(), &::RSA_free);
+        std::unique_ptr<RSA, void (*) (::RSA*)> rsa(::RSA_new(), &::RSA_free);
         if (!rsa)
           throw elle::Error(
             elle::sprintf("unable to initialize RSA: %s",
