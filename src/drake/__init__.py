@@ -484,6 +484,10 @@ class Path(metaclass = PathType):
         return self.__absolute
 
     @property
+    def relative(self):
+      return not self.__absolute
+
+    @property
     def virtual(self):
       """Whether this path is virtual.
 
