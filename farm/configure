@@ -80,7 +80,7 @@ if osyst == 'android':
   parameters['valgrind'] = False
 elif osyst == 'linux_ubuntu_14':
   parameters['valgrind'] = True
-elif osyst.startswith('linux_debian')
+elif osyst.startswith('linux_debian'):
   pass
 elif osyst == 'osx':
   parameters['compiler'] = 'clang++'
