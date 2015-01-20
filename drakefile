@@ -281,14 +281,14 @@ def configure(cxx_toolkit = None,
   ## OpenSSL ##
   ## ------- ##
 
-  openssl_basename = 'openssl-1.0.1k'
+  openssl_basename = 'openssl-1.0.1l'
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
   openssl_build = openssl_prefix / openssl_basename
   openssl_url = \
     'http://www.openssl.org/source/%s.tar.gz' % openssl_basename
   drake.HTTPDownload(openssl_url, openssl_tarball,
-                     fingerprint = 'd4f002bd22a56881340105028842ae1f')
+                     fingerprint = 'cdb22925fc9bc97ccbf1e007661f2aa6')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
@@ -469,13 +469,13 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.38.0'
+  curl_basename = 'curl-7.40.0'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = 'b6e3ea55bb718f2270489581efa50a8a')
+                     fingerprint = '58943642ea0ed050ab0431ea1caf3a6f')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
@@ -567,6 +567,11 @@ def configure(cxx_toolkit = None,
       curl_arch_prefix = curl_prefix / drake.Path('%s' % arch)
       curl_environment['CC'] = \
         '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch)
+      if arch is 'arm64':
+        arch_str = 'aarch64'
+      else:
+        arch_str = arch
+      curl_configure_arch_args.append('--host=%s-apple-darwin' % arch_str)
       curl_configure_arch_args.append(
         '--prefix=%s' % drake.path_build(curl_arch_prefix, absolute = True))
       curl_arch_lib = StaticLib(curl_arch_prefix / 'lib/libcurl.a')
@@ -583,7 +588,7 @@ def configure(cxx_toolkit = None,
       )
     FatLibraryGenerator(curl_arch_libs, curl_lib,
                         headers = curl_headers,
-                        input_headers = curl_prefix / 'armv7/include',
+                        input_headers = curl_prefix / ('%s/include' % archs[0]),
                         output_headers = curl_prefix)
   else:
     GNUBuilder(
@@ -696,6 +701,7 @@ def configure(cxx_toolkit = None,
       libarchive_arch_prefix = libarchive_prefix / drake.Path('%s' % arch)
       libarchive_arch_configure_args = list(libarchive_configure_args)
       libarchive_arch_configure_args += [
+        '--host=%s-apple-darwin' % 'armv7',#xxx% arch,
         '--prefix=%s' % drake.path_build(libarchive_arch_prefix, absolute = True)
       ]
       libarchive_env.update({
@@ -717,7 +723,7 @@ def configure(cxx_toolkit = None,
       )
     FatLibraryGenerator(libarchive_arch_libs, libarchive_lib,
                         headers = libarchive_headers,
-                        input_headers = libarchive_prefix / 'armv7/include',
+                        input_headers = libarchive_prefix / ('%s/include' % archs[0]),
                         output_headers = libarchive_prefix)
   else:
     libarchive_env.update({
@@ -748,7 +754,14 @@ def configure(cxx_toolkit = None,
   ## Boost ##
   ## ----- ##
 
-  if boost is None:
+  if boost is not None:
+    boost = drake.cxx.boost.Boost(
+      cxx_toolkit = cxx_toolkit,
+      prefix = boost,
+      version_effective = drake.Version(1, 57, 0),
+      prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
+    )
+  else:
     boost_version = drake.Version(1, 56, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = \
@@ -1052,14 +1065,14 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       version_effective = boost_version,
       prefer_shared = cxx_toolkit.os is not drake.os.windows,
     )
-  # Fix ::hypot issues on windows.
+    boost_rule = drake.Rule('boost')
+    boost_rule << boost_headers
+    boost_rule << boost_libraries
+    # Fix ::hypot issues on windows.
   if cxx_toolkit.os is drake.os.windows:
     boost.config_python(static = True).flag('-include')
     boost.config_python(static = True).flag('cmath')
   set_boost(boost)
-  boost_rule = drake.Rule('boost')
-  boost_rule << boost_headers
-  boost_rule << boost_libraries
 
   ## ------------- ##
   ## Configuration ##
