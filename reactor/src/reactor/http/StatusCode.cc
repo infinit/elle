@@ -135,6 +135,8 @@ namespace reactor
         case StatusCode::HTTP_Version_Not_Supported:
           output << "HTTP Version Not Supported";
           break;
+        default:
+          output << "Unknown(" << (int)status << ")";
       }
       return output;
     }
