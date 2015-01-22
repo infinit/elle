@@ -285,18 +285,18 @@ namespace reactor
 
     static
     int
-    fusop_symlink(const char* path, const char* to)
+    fusop_symlink(const char* target, const char* where)
     {
-      ELLE_DEBUG_SCOPE("fusop_symlink %s %s", path, to);
+      ELLE_DEBUG_SCOPE("fusop_symlink %s %s", target, where);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.symlink(to);
+        Path& p = fs->path(where);
+        p.symlink(target);
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on symlink %s: %s", path, e);
+        ELLE_TRACE("Filesystem error on symlink %s: %s", where, e);
         return -e.error_code();
       }
       return 0;
