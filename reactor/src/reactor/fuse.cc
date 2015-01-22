@@ -256,7 +256,8 @@ namespace reactor
   void FuseContext::destroy(DurationOpt graceTime)
   {
     ELLE_TRACE("fuse_destroy");
-    ::fuse_exit(_fuse);
+    if (_fuse)
+      ::fuse_exit(_fuse);
     _socket_barrier.open();
     ELLE_TRACE("terminating...");
     try
@@ -275,6 +276,8 @@ namespace reactor
     if (_loopThread)
       _loopThread->join();
     ELLE_TRACE("done");
+    if (!_fuse)
+      return;
     fuse_session* s = ::fuse_get_session(_fuse);
     ELLE_TRACE("session");
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
