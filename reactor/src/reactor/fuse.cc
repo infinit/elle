@@ -53,6 +53,8 @@ namespace reactor
       fuse_process_cmd(_fuse, cmd);
     }
     socket.release();
+    if (_on_loop_exited)
+      new reactor::Thread("exit notifier", _on_loop_exited, true);
   }
 
   void FuseContext::loop_pool(int nThreads)
@@ -160,11 +162,19 @@ namespace reactor
       requests.push_back(std::move(buf));
       sem.release();
     }
+    ELLE_DEBUG("Exiting worker threads");
     stop = true;
     for (int i = 0; i < signed(this->_workers.size()); ++i)
       sem.release();
     for(auto t : _workers)
       reactor::wait(*t);
+    ELLE_DEBUG("fuse loop returning");
+    if (_on_loop_exited)
+#ifdef INFINIT_MACOSX
+      sched.mt_run<void>("exit notifier", _on_loop_exited);
+#else
+      new reactor::Thread("exit notifier", _on_loop_exited, true);
+#endif
   }
 
 
@@ -228,6 +238,11 @@ namespace reactor
         },
         true));
     }
+#ifdef INFINIT_MACOSX
+      sched.mt_run<void>("exit notifier", _on_loop_exited);
+#else
+      new reactor::Thread("exit notifier", _on_loop_exited, true);
+#endif
   }
 
   void FuseContext::create(std::string const& mountpoint,

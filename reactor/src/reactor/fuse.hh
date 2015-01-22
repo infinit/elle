@@ -26,6 +26,7 @@ namespace reactor
     void loop_pool(int threads);
     /// unmount and free ressources. Fore-kill after graceTime
     void destroy(DurationOpt graceTime = DurationOpt());
+    ELLE_ATTRIBUTE_RW(std::function<void()>, on_loop_exited);
   private:
     void _loop_mt(Scheduler&);
     void _loop_pool(int threads, Scheduler&);

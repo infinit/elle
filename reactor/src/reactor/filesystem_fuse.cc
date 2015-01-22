@@ -449,6 +449,7 @@ namespace reactor
       ops.truncate = fusop_truncate;
       ops.ftruncate = fusop_ftruncate;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
+      _impl->_fuse.on_loop_exited([this] { this->unmount();});
       if (!elle::os::getenv("INFINIT_FUSE_MONOTHREAD", "").empty())
       {
         ELLE_LOG("Single mode");
