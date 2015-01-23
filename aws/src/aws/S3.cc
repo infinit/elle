@@ -79,6 +79,16 @@ namespace aws
     return result;
   }
 
+  static
+  reactor::Duration
+  delay(int attempt)
+  {
+    if (attempt > 8)
+      attempt = 8;
+    unsigned int factor = pow(2, attempt);
+    return boost::posix_time::milliseconds(factor * 100);
+  }
+
   /*-------------.
   | Construction |
   `-------------*/
@@ -784,8 +794,7 @@ namespace aws
         }
         else
         {
-          reactor::sleep(boost::posix_time::milliseconds(
-            std::min(int(500 * pow(2,attempt)), 20000)));
+          reactor::sleep(delay(attempt));
           continue;
         }
       }
@@ -804,8 +813,7 @@ namespace aws
         }
         else
         {
-          reactor::sleep(boost::posix_time::milliseconds(
-            std::min(int(500 * pow(2,attempt)), 20000)));
+          reactor::sleep(delay(attempt));
           continue;
         }
       }
@@ -843,8 +851,7 @@ namespace aws
           throw aws_exception;
         else
         {
-          reactor::sleep(boost::posix_time::milliseconds(
-            std::min(int(500 * pow(2,attempt)), 20000)));
+          reactor::sleep(delay(attempt));
           continue;
         }
       }
