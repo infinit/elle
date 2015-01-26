@@ -60,7 +60,7 @@ namespace reactor
       virtual void close()=0;
     };
 
-    class Path
+    class Path: public std::enable_shared_from_this<Path>
     {
     public:
       virtual ~Path() {}
@@ -84,7 +84,9 @@ namespace reactor
       virtual void utimens(const struct timespec tv[2]);
       virtual void truncate(off_t new_size);
       /// Return a Path for given child name.
-      virtual std::unique_ptr<Path> child(std::string const& name) = 0;
+      virtual std::shared_ptr<Path> child(std::string const& name) = 0;
+      /// Return true to allow the filesystem to keep this Path in cache.
+      virtual bool allow_cache() { return true;}
 
     };
 
@@ -94,7 +96,7 @@ namespace reactor
     public:
       Operations();
       virtual
-      std::unique_ptr<Path>
+      std::shared_ptr<Path>
       path(std::string const& path) = 0;
       virtual ~Operations() {}
       ELLE_ATTRIBUTE_RW(FileSystem*, filesystem);
@@ -119,19 +121,19 @@ namespace reactor
             std::vector<std::string> const& options);
       void
       unmount();
-      Path&
+      std::shared_ptr<Path>
       path(std::string const& path);
 
     /*-----------------.
     | Cache operations |
     `-----------------*/
     public:
-      std::unique_ptr<Path>
+      std::shared_ptr<Path>
       extract(std::string const& path);
-      std::unique_ptr<Path>
+      std::shared_ptr<Path>
       set(std::string const& path,
-          std::unique_ptr<Path> new_content);
-      Path*
+          std::shared_ptr<Path> new_content);
+      std::shared_ptr<Path>
       get(std::string const& path);
 
     /*---------.
@@ -167,7 +169,7 @@ namespace reactor
     {
     public:
       BindOperations(boost::filesystem::path const& source);
-      std::unique_ptr<Path> path(std::string const& path) override;
+      std::shared_ptr<Path> path(std::string const& path) override;
       ELLE_ATTRIBUTE_R(boost::filesystem::path, source);
     };
 
@@ -193,7 +195,7 @@ namespace reactor
       void utimens(const struct timespec tv[2]) override;
       void truncate(off_t new_size);
       /// Return a Path for given child name.
-      std::unique_ptr<Path> child(std::string const& name) override;
+      std::shared_ptr<Path> child(std::string const& name) override;
       virtual std::unique_ptr<BindHandle> make_handle(boost::filesystem::path& where,
                                                       int fd);
     private:

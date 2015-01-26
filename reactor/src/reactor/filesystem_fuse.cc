@@ -32,14 +32,16 @@ namespace reactor
 {
   namespace filesystem
   {
+    typedef std::shared_ptr<Path> PathPtr;
+
     static int fusop_getattr(const char *path, struct stat *stbuf)
     {
       ELLE_DEBUG_SCOPE("fusop_getattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.stat(stbuf);
+        PathPtr p = fs->path(path);
+        p->stat(stbuf);
       }
       catch (Error const& e)
       {
@@ -55,8 +57,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.list_directory(
+        PathPtr p = fs->path(path);
+        p->list_directory(
           [&](std::string const& filename, struct stat* stbuf) {
             filler(buf, filename.c_str(), stbuf, 0);
         });
@@ -77,8 +79,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        auto handle = p.open(fi->flags, 0);
+        PathPtr p = fs->path(path);
+        auto handle = p->open(fi->flags, 0);
         fi->fh = (decltype(fi->fh)) handle.release();
       }
       catch (Error const& e)
@@ -97,8 +99,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        auto handle = p.create(fi->flags, mode);
+        PathPtr p = fs->path(path);
+        auto handle = p->create(fi->flags, mode);
         fi->fh = (decltype(fi->fh)) handle.release();
       }
       catch (Error const& e)
@@ -117,8 +119,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.unlink();
+        PathPtr p = fs->path(path);
+        p->unlink();
       }
       catch (Error const& e)
       {
@@ -136,8 +138,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.mkdir(mode);
+        PathPtr p = fs->path(path);
+        p->mkdir(mode);
       }
       catch (Error const& e)
       {
@@ -155,8 +157,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.rmdir();
+        PathPtr p = fs->path(path);
+        p->rmdir();
       }
       catch (Error const& e)
       {
@@ -174,8 +176,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.rename(to);
+        PathPtr p = fs->path(path);
+        p->rename(to);
       }
       catch (Error const& e)
       {
@@ -269,8 +271,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        auto target = p.readlink();
+        PathPtr p = fs->path(path);
+        auto target = p->readlink();
         auto starget = target.string();
         strncpy(buf, starget.c_str(), len);
         return 0;
@@ -291,8 +293,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(where);
-        p.symlink(target);
+        PathPtr p = fs->path(where);
+        p->symlink(target);
       }
       catch (Error const& e)
       {
@@ -307,8 +309,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.link(to);
+        PathPtr p = fs->path(path);
+        p->link(to);
       }
       catch (Error const& e)
       {
@@ -323,8 +325,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.chmod(mode);
+        PathPtr p = fs->path(path);
+        p->chmod(mode);
       }
       catch (Error const& e)
       {
@@ -339,8 +341,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.chown(uid, gid);
+        PathPtr p = fs->path(path);
+        p->chown(uid, gid);
       }
       catch (Error const& e)
       {
@@ -355,8 +357,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.statfs(svfs);
+        PathPtr p = fs->path(path);
+        p->statfs(svfs);
       }
       catch (Error const& e)
       {
@@ -371,8 +373,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.utimens(tv);
+        PathPtr p = fs->path(path);
+        p->utimens(tv);
       }
       catch (Error const& e)
       {
@@ -387,8 +389,8 @@ namespace reactor
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
-        Path& p = fs->path(path);
-        p.truncate(new_size);
+        PathPtr p = fs->path(path);
+        p->truncate(new_size);
       }
       catch (Error const& e)
       {
@@ -401,12 +403,12 @@ namespace reactor
     class FileSystemImpl
     {
     public:
-      Path& fetch_recurse(boost::filesystem::path path);
+      std::shared_ptr<Path> fetch_recurse(boost::filesystem::path path);
       std::unique_ptr<Operations> _operations;
       bool _full_tree;
       FuseContext _fuse;
       std::string _where;
-      std::unordered_map<boost::filesystem::path, std::unique_ptr<Path>> _cache;
+      std::unordered_map<boost::filesystem::path, std::shared_ptr<Path>> _cache;
     };
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
@@ -491,7 +493,7 @@ namespace reactor
         return Waitable::_wait(thread);
     }
 
-    Path&
+    std::shared_ptr<Path>
     FileSystemImpl::fetch_recurse(boost::filesystem::path path)
     {
       if (path == "" || path == "\\")
@@ -500,8 +502,8 @@ namespace reactor
       auto it = _cache.find(path);
       if (it != _cache.end())
       {
-        ELLE_DEBUG("cache hit");
-        return *it->second;
+        ELLE_DEBUG("cache hit: %x", it->second.get());
+        return it->second;
       }
       else
       {
@@ -509,21 +511,19 @@ namespace reactor
         if (path == "/")
         {
           auto p = _operations->path("/");
-          auto ptr = p.get();
-          ELLE_ASSERT(ptr);
-          _cache[path] = std::move(p);
-          return *ptr;
+          if (p->allow_cache())
+            _cache[path] = p;
+          return p;
         }
-        Path& parent = fetch_recurse(path.parent_path());
-        auto p = parent.child(path.filename().string());
-        auto ptr = p.get();
-        ELLE_ASSERT(ptr);
-        _cache[path] = std::move(p);
-        return *ptr;
+        std::shared_ptr<Path> parent = fetch_recurse(path.parent_path());
+        auto p = parent->child(path.filename().string());
+        if (p->allow_cache())
+          _cache[path] = p;
+        return p;
       }
     }
 
-    Path&
+    std::shared_ptr<Path>
     FileSystem::path(std::string const& opath)
     {
       std::string spath(opath);
@@ -540,43 +540,43 @@ namespace reactor
         if (it == _impl->_cache.end())
         {
           auto res = _impl->_operations->path(spath);
-          auto ptr = res.get();
-          _impl->_cache[spath] = std::move(res);
-          return *ptr;
+          if (res->allow_cache())
+            _impl->_cache[spath] = res;
+          return res;
         }
         else
-          return *it->second;
+          return it->second;
       }
     }
 
-    std::unique_ptr<Path>
+    std::shared_ptr<Path>
     FileSystem::extract(std::string const& path)
     {
       auto it = _impl->_cache.find(path);
       if (it == _impl->_cache.end())
         return {};
-      auto res = std::move(it->second);
+      auto res = it->second;
       _impl->_cache.erase(path);
       return res;
     }
 
-    std::unique_ptr<Path>
+    std::shared_ptr<Path>
     FileSystem::set(std::string const& path,
-                    std::unique_ptr<Path> new_content)
+                    std::shared_ptr<Path> new_content)
     {
-      std::unique_ptr<Path> res = extract(path);
-      _impl->_cache[path] = std::move(new_content);
+      std::shared_ptr<Path> res = extract(path);
+      _impl->_cache[path] = new_content;
       return res;
     }
 
-    Path*
+    std::shared_ptr<Path>
     FileSystem::get(std::string const& path)
     {
       auto it = _impl->_cache.find(path);
       if (it == _impl->_cache.end())
         return nullptr;
       else
-        return it->second.get();
+        return it->second;
     }
   }
 }

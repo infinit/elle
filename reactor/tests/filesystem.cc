@@ -73,7 +73,7 @@ namespace sum
       }
       cb("sum", nullptr);
     }
-    std::unique_ptr<reactor::filesystem::Path> child(std::string const& name) override
+    std::shared_ptr<reactor::filesystem::Path> child(std::string const& name) override
     {
       ELLE_LOG("child %s", name);
       if (!isDir)
@@ -91,7 +91,7 @@ namespace sum
       }
       if (pos < name.size())
         throw reactor::filesystem::Error(ENOENT, "No such file or directory");
-      return elle::make_unique<Path>(n + num);
+      return std::make_shared<Path>(n + num);
     }
     std::unique_ptr<reactor::filesystem::Handle> open(int flags, mode_t mode)
     {
@@ -106,10 +106,10 @@ namespace sum
   class Operations: public reactor::filesystem::Operations
   {
   public:
-    std::unique_ptr<reactor::filesystem::Path> path(std::string const& path) override
+    std::shared_ptr<reactor::filesystem::Path> path(std::string const& path) override
     {
       ELLE_ASSERT(path == "/");
-      return elle::make_unique<Path>(0);
+      return std::make_shared<Path>(0);
     }
   };
 }
@@ -192,7 +192,7 @@ namespace xorfs
     Encrypt(boost::filesystem::path const& source)
     : rfs::BindOperations(source)
     {}
-    std::unique_ptr<rfs::Path> path(std::string const&) override;
+    std::shared_ptr<rfs::Path> path(std::string const&) override;
   };
   class Handle: public rfs::BindHandle
   {
@@ -231,9 +231,9 @@ namespace xorfs
       return elle::make_unique<Handle>(fd, where);
     }
   };
-  std::unique_ptr<rfs::Path> Encrypt::path(std::string const& p)
+  std::shared_ptr<rfs::Path> Encrypt::path(std::string const& p)
   {
-    return elle::make_unique<Path>(p, *this);
+    return std::make_shared<Path>(p, *this);
   }
 }
 

@@ -205,9 +205,9 @@ namespace reactor
         throw Error(erc.value(), erc.message());
     }
     /// Return a Path for given child name.
-    std::unique_ptr<Path> BindPath::child(std::string const& name)
+    std::shared_ptr<Path> BindPath::child(std::string const& name)
     {
-      return elle::make_unique<BindPath>(_where / name, ops());
+      return std::make_shared<BindPath>(_where / name, ops());
     }
     std::unique_ptr<BindHandle> BindPath::make_handle(boost::filesystem::path& where,
                                                       int fd)
@@ -235,9 +235,9 @@ namespace reactor
       return ::write(_fd, buffer.contents(), size);
     }
 
-    std::unique_ptr<Path> BindOperations::path(std::string const& p)
+    std::shared_ptr<Path> BindOperations::path(std::string const& p)
     {
-      return elle::make_unique<BindPath>(p, *this);
+      return std::make_shared<BindPath>(p, *this);
     }
 
     void BindHandle::ftruncate(off_t sz)
