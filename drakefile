@@ -801,7 +801,7 @@ def configure(cxx_toolkit = None,
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
     boost_prefix = drake.path_root() / drake.path_build('boost')
-    boost_bootstrap_libraries = [
+    boost_built_libraries = [
       'atomic',
       'chrono',
       'date_time',
@@ -810,9 +810,14 @@ def configure(cxx_toolkit = None,
       'regex',
       'signals',
       'system',
-      'test',
-      'thread',
+      ('test', 'unit_test_framework'),
+      ('thread',
+       'thread_win32' if windows else 'thread'),
     ]
+    boost_bootstrap_libraries, boost_library_names = ([
+      l[i] if isinstance(l, tuple) else l
+      for e in boost_build_libraries]
+      for i in (0, 1))
     if python3 is not None:
       boost_bootstrap_libraries.append('python')
     if boost_context_enabled:
@@ -827,18 +832,6 @@ def configure(cxx_toolkit = None,
     if python3 is not None:
       boost_bootstrap_command.append('--with-python=%s' % python_version)
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
-    boost_library_names = [
-      'atomic',
-      'chrono',
-      'date_time',
-      'filesystem',
-      'program_options',
-      'regex',
-      'signals',
-      'system',
-      cxx_toolkit.os is drake.os.windows and 'thread_win32' or 'thread',
-      'unit_test_framework',
-    ]
     if python3 is not None:
       boost_library_names.append('python')
       boost_library_names.append('python3')
