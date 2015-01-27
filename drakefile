@@ -92,6 +92,7 @@ def configure(cxx_toolkit = None,
       raise Exception("building for multiple architectures only supported on "\
                       "iOS")
     set_archs(archs)
+  windows = cxx_toolkit.os is drake.os.windows
 
   ## -------- ##
   ## Valgrind ##
@@ -143,7 +144,7 @@ def configure(cxx_toolkit = None,
   PY_MINOR_VERSION''', config = python3)
     python_version = python_version.split('\n')[-3:-1]
     python_version = drake.Version(*map(int, python_version))
-    if cxx_toolkit.os is drake.os.windows:
+    if windows:
       python_bin = 'python.exe'
     else:
       python_bin = 'bin/python%s' % python_version
@@ -220,7 +221,7 @@ def configure(cxx_toolkit = None,
   )
 
   zlib_env = {}
-  if cxx_toolkit.os is drake.os.windows:
+  if windows:
     # XXX only for mingw
     zlib_makefile = 'win32/Makefile.gcc'
     zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
@@ -396,7 +397,7 @@ def configure(cxx_toolkit = None,
     os_string = 'linux-x86_64'
   elif cxx_toolkit.os is drake.os.android:
     os_string = 'android'
-  elif cxx_toolkit.os is drake.os.windows:
+  elif windows:
     os_string = 'mingw64'
     openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
     openssl_env['AS'] = '%sas' % cxx_toolkit.prefix
@@ -541,7 +542,7 @@ def configure(cxx_toolkit = None,
     key = 'DYLD_FALLBACK_LIBRARY_PATH'
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_environment[key] = str(path)
-  elif cxx_toolkit.os is drake.os.windows:
+  elif windows:
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
@@ -607,7 +608,7 @@ def configure(cxx_toolkit = None,
     curl_lib.dependency_add(lib)
   curl_config = drake.cxx.Config()
   curl_config.add_local_include_path(curl_prefix / 'include')
-  if cxx_toolkit.os is drake.os.windows:
+  if windows:
     curl_config.define('CURL_STATICLIB', '1')
   drake.Rule('curl') << curl_lib
 
@@ -660,7 +661,7 @@ def configure(cxx_toolkit = None,
     '--without-nettle',
     '--without-xml2',
   ]
-  if cxx_toolkit.os is drake.os.windows:
+  if windows:
     libarchive_lib = drake.cxx.StaticLib(libarchive_prefix / 'lib/libarchive.a')
     bsdcpio = drake.cxx.Executable('libarchive/bin/bsdcpio.exe')
     bsdtar = drake.cxx.Executable('libarchive/bin/bsdtar.exe')
@@ -776,7 +777,7 @@ def configure(cxx_toolkit = None,
       fingerprint = 'a744cf167b05d72335f27c88115f211d',
     )
     boost_patches = []
-    if cxx_toolkit.os is drake.os.windows:
+    if windows:
       boost_patches = [
         ('https://svn.boost.org/trac/boost/raw-attachment/ticket/7506/001-unique_path_windows.patch', 'defe8a6582915b4b2f61b763bc237622', 0),
       ]
@@ -788,7 +789,7 @@ def configure(cxx_toolkit = None,
       cxx_toolkit.os not in [drake.os.windows]
     boost_locale_enabled = \
       cxx_toolkit.os in [drake.os.windows]
-    if cxx_toolkit.os is drake.os.windows:
+    if windows:
       boost_patches.append((drake.Node('boost_context_win.patch'), 1))
     elif cxx_toolkit.os is drake.os.ios:
       boost_patches.append((drake.Node('boost_context_ios.patch'), 1))
@@ -850,7 +851,7 @@ def configure(cxx_toolkit = None,
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = None
       # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.56.0.dylib'
-    elif cxx_toolkit.os is drake.os.windows:
+    elif windows:
       boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
       boost_dynamic_versioned_format = None
@@ -910,7 +911,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       @property
       def params(self):
         cxx = self.__toolkit.cxx
-        if cxx_toolkit.os is drake.os.windows:
+        if windows:
           extra = ': <target-os>windows '
         elif cxx_toolkit.os is drake.os.ios:
           boost_arch_str = ''
@@ -972,7 +973,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           toolset = 'clang'
         elif cxx_toolkit.os is drake.os.ios:
           toolset = 'darwin'
-        elif cxx_toolkit.os is drake.os.windows:
+        elif windows:
           toolset = 'gcc-mingw'
         else:
           toolset = 'gcc'
@@ -981,7 +982,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           'toolset=%s' % toolset,
           '--user-config=user-config.jam',
         ]
-        if cxx_toolkit.os is drake.os.windows:
+        if windows:
           self.__command += [
             'target-os=windows',
             'threading=multi,single',
@@ -1057,7 +1058,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
                  targets = boost_libraries + boost_headers)
     if cxx_toolkit.os is drake.os.macos:
       drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
-    elif cxx_toolkit.os is drake.os.windows:
+    elif windows:
       python_dll = drake.node('%s/python%s%s.dll' % (python3.prefix, python_version.major, python_version.minor))
       boost_fs = drake.node('boost/lib/libboost_python3-mt-s.a')
       boost_fs.dependency_add(python_dll)
@@ -1071,7 +1072,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost_rule << boost_headers
     boost_rule << boost_libraries
     # Fix ::hypot issues on windows.
-  if cxx_toolkit.os is drake.os.windows:
+  if windows:
     boost.config_python(static = True).flag('-include')
     boost.config_python(static = True).flag('cmath')
   set_boost(boost)
