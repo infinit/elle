@@ -425,6 +425,7 @@ def configure(zlib_lib,
   sources += drake.nodes(
     'src/set',
     'src/unordered_map',
+    'src/vector',
     type = drake.cxx.Header,
   )
 

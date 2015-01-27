@@ -1,0 +1,29 @@
+// -*- c++ -*-
+#ifndef ELLE_VECTOR
+# define ELLE_VECTOR
+
+# include <ostream>
+# include_next <vector>
+
+namespace std
+{
+  template <class V, class ... OTHER>
+  std::ostream&
+  operator <<(ostream& out, vector<V, OTHER...> const& v)
+  {
+    out << "[";
+    bool first = true;
+    for (auto const& elt: v)
+    {
+      if (first)
+        first = false;
+      else
+        out << ", ";
+      out << elt;
+    }
+    out << "]";
+    return out;
+  }
+}
+
+#endif
