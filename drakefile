@@ -816,7 +816,7 @@ def configure(cxx_toolkit = None,
     ]
     boost_bootstrap_libraries, boost_library_names = ([
       l[i] if isinstance(l, tuple) else l
-      for e in boost_build_libraries]
+      for l in boost_built_libraries]
       for i in (0, 1))
     if python3 is not None:
       boost_bootstrap_libraries.append('python')
