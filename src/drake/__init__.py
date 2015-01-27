@@ -2827,6 +2827,8 @@ def __copy_stripped(source, to, strip_prefix, builder):
     if strip_prefix is not None:
       path = path.without_prefix(strip_prefix)
     path = (to / path).canonize()
+    sched.logger.log('drake.copy', drake.log.LogLevel.debug,
+                     'copy as: %s', path)
     path_abs = drake.path_build(path)
     # Break install loops
     if path_abs in drake.Drake.current.nodes:
