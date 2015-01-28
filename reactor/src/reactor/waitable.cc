@@ -1,5 +1,4 @@
 #include <elle/assert.hh>
-#include <elle/container/vector.hh>
 #include <elle/log.hh>
 #include <elle/string/algorithm.hh>
 #include <elle/Backtrace.hh>

@@ -9,7 +9,6 @@
 
 #include <elle/Error.hh>
 #include <elle/system/system.hh>
-#include <elle/container/vector.hh>
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
