@@ -449,7 +449,7 @@ namespace elle
     Serializer::_serialize(std::string const& name,
                            C<T, A>& collection)
     {
-      if (!collection.empty())
+      if (this->out())
       {
         this->_serialize_array(
           name,

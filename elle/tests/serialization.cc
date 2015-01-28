@@ -9,7 +9,6 @@
 #include <elle/container/deque.hh>
 #include <elle/container/list.hh>
 #include <elle/container/map.hh>
-#include <elle/container/vector.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/Overflow.hh>
@@ -195,10 +194,12 @@ public:
   {
     s.serialize("ints", this->ints);
     s.serialize("strings", this->strings);
+    s.serialize("empty", this->empty);
   }
 
   Container<int, std::allocator<int>> ints;
   Container<std::string, std::allocator<std::string>> strings;
+  Container<int, std::allocator<int>> empty;
 };
 
 template <typename Format, template <typename, typename> class Container>
