@@ -30,6 +30,14 @@ namespace elle
                     elle::Version version,
                     bool versioned);
 
+    /*----------------.
+    | Const overloads |
+    `----------------*/
+    public:
+      template <typename T>
+      void
+      serialize_forward(T const& v);
+
     /*--------.
     | Details |
     `--------*/
@@ -41,6 +49,6 @@ namespace elle
   }
 }
 
-# include <elle/serialization/Serializer.hxx>
+# include <elle/serialization/SerializerOut.hxx>
 
 #endif
