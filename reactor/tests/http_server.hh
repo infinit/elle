@@ -14,7 +14,6 @@
 # include <elle/With.hh>
 # include <elle/attribute.hh>
 # include <elle/container/map.hh>
-# include <elle/container/vector.hh>
 # include <elle/json/exceptions.hh>
 # include <elle/json/json.hh>
 # include <elle/log.hh>
