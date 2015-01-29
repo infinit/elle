@@ -9,6 +9,8 @@ namespace elle
 {
   namespace log
   {
+    Logger&
+    logger();
     void
     logger(elle::generic_unique_ptr<Logger> logger);
 

@@ -29,7 +29,6 @@ namespace elle
       return mutex;
     }
 
-    static
     Logger&
     logger()
     {
