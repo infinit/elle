@@ -2,6 +2,7 @@
 # define ELLE_PLUGIN_HXX
 
 # include <elle/compiler.hh>
+# include <elle/log.hh>
 
 namespace elle
 {
@@ -52,8 +53,10 @@ namespace elle
   void
   Plugin<T>::register_plugin(std::unique_ptr<T> plugin)
   {
+    auto& p = *plugin;
     Plugin<T>::plugins().insert(std::make_pair(&typeid(*plugin),
                                                 std::move(plugin)));
+    Plugin<T>::hook_added()(p);
   }
 
   template <typename T>
@@ -94,6 +97,15 @@ namespace elle
   PluginLoad::PluginLoad(Args const& ... args)
   {
     Load<Args...>::load(args...);
+  }
+
+  template <typename T>
+
+  boost::signals2::signal<void (T&)>&
+  Plugin<T>::hook_added()
+  {
+    static boost::signals2::signal<void (T&)> res;
+    return res;
   }
 }
 

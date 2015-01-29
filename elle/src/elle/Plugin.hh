@@ -5,6 +5,8 @@
 # include <typeinfo>
 # include <unordered_map>
 
+# include <boost/signals2.hpp>
+
 namespace elle
 {
   class BasePlugin
@@ -33,7 +35,11 @@ namespace elle
     void
     register_plugin(std::unique_ptr<T> plugin);
     static
-    std::unordered_map<std::type_info const*, std::unique_ptr<T>>& plugins();
+    std::unordered_map<std::type_info const*, std::unique_ptr<T>>&
+    plugins();
+    static
+    boost::signals2::signal<void (T&)>&
+    hook_added();
   };
 
   class PluginLoad
