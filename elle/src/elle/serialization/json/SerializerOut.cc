@@ -3,6 +3,9 @@
 #include <elle/assert.hh>
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("elle.serialization.json.SerializerOut")
 
 namespace elle
 {
@@ -41,12 +44,17 @@ namespace elle
       bool
       SerializerOut::_enter(std::string const& name)
       {
+        ELLE_TRACE_SCOPE("%s: enter %s", *this, name);
         ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
         if (current.empty())
+        {
+          ELLE_DEBUG("%s: create object", *this);
           current = elle::json::Object();
+        }
         if (current.type() == typeid(elle::json::Object))
         {
+          ELLE_DEBUG("%s: insert key", *this);
           auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
@@ -57,6 +65,7 @@ namespace elle
         }
         else if (current.type() == typeid(elle::json::Array))
         {
+          ELLE_DEBUG("%s: insert array element", *this);
           auto& array = boost::any_cast<elle::json::Array&>(current);
           array.emplace_back();
           this->_current.push_back(&array.back());
@@ -72,6 +81,7 @@ namespace elle
       void
       SerializerOut::_leave(std::string const& name)
       {
+        ELLE_TRACE_SCOPE("%s: leave %s", *this, name);
         ELLE_ASSERT(!this->_current.empty());
         this->_current.pop_back();
       }
@@ -80,6 +90,7 @@ namespace elle
       SerializerOut::_serialize_array(std::string const& name,
                                       std::function<void ()> const& f)
       {
+        ELLE_TRACE_SCOPE("%s: create array", *this);
         ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
         ELLE_ASSERT(current.empty());
@@ -191,7 +202,11 @@ namespace elle
       {
         ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
-        ELLE_ASSERT(current.empty());
+        if (!current.empty())
+        {
+          ELLE_ABORT("%s: serializing in-place to an already filled object: %s",
+                     *this, elle::json::pretty_print(current));
+        }
         return current;
       }
     }

@@ -29,7 +29,7 @@ namespace elle
           auto it = map.find(id);
           if (it == map.end())
           {
-            ELLE_LOG_COMPONENT("elle.serialization");
+            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             auto message =
               elle::sprintf("unable to get serialization name for type %s (%s)",
                             demangle(id->name()), id);
@@ -103,6 +103,8 @@ namespace elle
     void
     Serializer::serialize(std::string const& name, T& v)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize %s", *this, name);
       if (this->_enter(name))
       {
         elle::SafeFinally leave([&] { this->_leave(name); });
@@ -129,7 +131,7 @@ namespace elle
                                   // FIXME: no emplace in optional.
                                   T value;
                                   this->serialize(name, value);
-                                  opt = value;
+                                  opt = std::move(value);
                                 });
     }
 
@@ -418,8 +420,10 @@ namespace elle
     {
       if (this->_versioned)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         elle::Version v(this->_version);
         {
+          ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, this->_version);
           auto guard = scoped_assignment(this->_versioned, false);
           this->serialize("version", v);
         }
