@@ -92,6 +92,9 @@ namespace elle
       Logger(std::string const& log_level);
       virtual
       ~Logger();
+    private:
+      void
+      _setup_indentation();
 
     /*------------.
     | Indentation |

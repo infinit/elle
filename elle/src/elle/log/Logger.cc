@@ -114,19 +114,10 @@ namespace elle
       , _component_levels()
       , _component_max_size(0)
     {
-      std::function<std::unique_ptr<Indentation> ()> factory =
-        [] () -> std::unique_ptr<Indentation>
-        {
-          return elle::make_unique<PlainIndentation>();
-        };
-      for (auto const& indenter: elle::Plugin<Indenter>::plugins())
-      {
-        factory = [&indenter, factory] ()  -> std::unique_ptr<Indentation>
-          {
-            return indenter.second->indentation(factory);
-          };
-      }
-      this->_indentation = factory();
+      this->_setup_indentation();
+      // FIXME: resets indentation
+      elle::Plugin<Indenter>::hook_added().connect(
+        [this] (Indenter&) { this->_setup_indentation(); });
       std::string levels_str(log_level);
       if (elle::os::inenv("ELLE_LOG_LEVEL"))
         levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
@@ -161,6 +152,24 @@ namespace elle
 
     Logger::~Logger()
     {}
+
+    void
+    Logger::_setup_indentation()
+    {
+      std::function<std::unique_ptr<Indentation> ()> factory =
+        [] () -> std::unique_ptr<Indentation>
+        {
+          return elle::make_unique<PlainIndentation>();
+        };
+      for (auto const& indenter: elle::Plugin<Indenter>::plugins())
+      {
+        factory = [&indenter, factory] ()  -> std::unique_ptr<Indentation>
+          {
+            return indenter.second->indentation(factory);
+          };
+      }
+      this->_indentation = factory();
+    }
 
     /*----------.
     | Messaging |
