@@ -7,7 +7,6 @@
 #include <reactor/network/udt-server.hh>
 #include <reactor/network/udt-rdv-server.hh>
 #include <reactor/network/udp-socket.hh>
-#include <elle/container/vector.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/network/buffer.hh>
 #include <elle/memory.hh>

@@ -1,4 +1,3 @@
-#include <elle/container/vector.hh>
 #include <elle/string/algorithm.hh>
 
 namespace std

@@ -5,7 +5,6 @@
 #include <elle/container/map.hh>
 #include <elle/container/set.hh>
 #include <elle/container/list.hh>
-#include <elle/container/vector.hh>
 #include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/test.hh>

@@ -2,7 +2,6 @@
 #include <string>
 #include <sstream>
 
-#include <elle/container/vector.hh>
 #include <elle/memory.hh>
 
 #include <boost/algorithm/string/classification.hpp>

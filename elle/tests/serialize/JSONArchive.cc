@@ -5,7 +5,6 @@
 #include <vector>
 
 #include <elle/container/list.hh>
-#include <elle/container/vector.hh>
 #include <elle/format/json/Array.hh>
 #include <elle/serialize/Concrete.hh>
 #include <elle/serialize/JSONArchive.hh>
