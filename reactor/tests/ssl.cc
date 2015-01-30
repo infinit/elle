@@ -482,7 +482,8 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
 ELLE_TEST_SCHEDULED(shutdown_asynchronous)
 {
   reactor::Barrier listening;
-  reactor::Barrier shutdown;
+  reactor::Barrier shutdown1;
+  reactor::Barrier shutdown2;
   int port = 0;
   elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
   {
@@ -498,28 +499,28 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
           ELLE_LOG_SCOPE("accept first synchronous client");
           auto client = server.accept();
         }
-        shutdown.open();
+        shutdown1.open();
         {
           ELLE_LOG_SCOPE("accept second asynchronous client");
           auto client = server.accept();
           client->shutdown_asynchronous(true);
         }
-        shutdown.open();
+        shutdown2.open();
       });
     reactor::wait(listening);
     {
       ELLE_LOG_SCOPE("connect first client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(!reactor::wait(shutdown, valgrind(10_ms)));
+      BOOST_CHECK(!reactor::wait(shutdown1, valgrind(10_ms)));
     }
-    shutdown.close();
     {
       ELLE_LOG_SCOPE("connect second client");
       reactor::network::SSLSocket synchronous(
         "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(reactor::wait(shutdown, valgrind(10_ms)));
+      BOOST_CHECK(reactor::wait(shutdown2, valgrind(10_ms)));
     }
+    reactor::wait(scope);
   };
 }
 
