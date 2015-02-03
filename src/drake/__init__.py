@@ -1143,22 +1143,26 @@ class BaseNode(object, metaclass = _BaseNodeType):
       return '%s(%s)' % (self.__class__.drake_type(), self.name())
 
   def build(self):
-      """Build this node.
+    """Build this node.
 
-      Take necessary action to ensure this node is up to date. That
-      is, roughly, run this node runner.
-      """
-      if not _scheduled():
-        Coroutine(self.build, str(self), Drake.current.scheduler)
-        Drake.current.scheduler.run()
-      else:
-        debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-        with debug.indentation():
-          if self._builder is not None:
-            self._builder.run()
-          for dep in self.dependencies:
-            dep.build()
-          self.polish()
+    Take necessary action to ensure this node is up to date. That
+    is, roughly, run this node runner.
+    """
+    if not _scheduled():
+      Coroutine(self.build, str(self), Drake.current.scheduler)
+      Drake.current.scheduler.run()
+    else:
+      debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
+      with debug.indentation():
+        self._build()
+        for dep in self.dependencies:
+          dep.build()
+        self.polish()
+
+  def _build(self):
+    if self._builder is not None:
+      self._builder.run()
+
 
   @property
   def build_status(self):
@@ -1403,20 +1407,15 @@ class Node(BaseNode):
         ...
     drake.Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
     """
-    if not _scheduled():
-      Coroutine(self.build, str(self), Drake.current.scheduler)
-      Drake.current.scheduler.run()
+  def build(self):
+    super().build()
+
+  def _build(self):
+    if self._builder is None:
+      if self.missing():
+        raise NoBuilder(self)
     else:
-      debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-      with debug.indentation():
-        if self._builder is None:
-          if self.missing():
-            raise NoBuilder(self)
-        else:
-          self._builder.run()
-        for dep in self.dependencies:
-          dep.build()
-        self.polish()
+      self._builder.run()
 
   def __repr__(self):
         """Filesystem path to the node file, as a string."""
