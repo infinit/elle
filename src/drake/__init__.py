@@ -1101,6 +1101,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     self.consumers = []
     self.__dependencies = sched.OrderedSet()
     self.__hash = None
+    self.__skippable = False
 
   def name(self):
     '''The node name.'''
@@ -1159,7 +1160,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
         self._build()
         with sched.Scope() as scope:
           for dep in self.dependencies:
-            if not _can_skip_node(dep):
+            if not dep.skippable():
               scope.run(dep.build, str(dep))
         self.polish()
 
@@ -1305,6 +1306,22 @@ class BaseNode(object, metaclass = _BaseNodeType):
           _hash_file(hasher, node.path())
         self.__hash = hasher.digest()
     return self.__hash
+
+  def skippable(self):
+    if self.__skippable:
+      return True
+    self.__skippable = self._skippable()
+    return self.__skippable
+
+  def _skippable(self):
+    if self.builder is None:
+      if isinstance(self, Node):
+        if self.missing():
+          return False
+    else:
+      if not self.builder._Builder__executed:
+        return False
+    return all(dep.skippable() for dep in self.dependencies)
 
 
 class VirtualNode(BaseNode):
@@ -1511,16 +1528,6 @@ def command(cmd, cwd = None, stdout = None, env = None):
     print(e, file = sys.stderr)
     return False
 
-
-def _can_skip_node(node):
-  if node.builder is None:
-    if isinstance(node, Node):
-      if node.missing():
-        return False
-  else:
-    if not node.builder._Builder__executed:
-      return False
-  return all(_can_skip_node(dep) for dep in node.dependencies)
 
 def command_flatten(command, env = None):
   if env is not None:
@@ -1801,7 +1808,7 @@ class Builder:
           with sched.Scope() as scope:
             for node in chain(self.__sources.values(),
                               self.__vsrcs.values()):
-              if _can_skip_node(node):
+              if node.skippable():
                 continue
               skip = True
               if node.builder not in run_builders:
@@ -1822,7 +1829,7 @@ class Builder:
           try:
             with sched.Scope() as scope:
               for node in self.__dynsrc.values():
-                if _can_skip_node(node):
+                if node.skippable():
                   continue
                 skip = True
                 if node.builder not in run_builders:
