@@ -255,6 +255,13 @@ def configure(cxx_toolkit = None,
 
   zlib_prefix_absolute = drake.path_build(zlib_prefix,
                                           absolute = True)
+  zlib_args = [
+    "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
+    "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
+    "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
+  ]
+  if windows:
+    zlib_args.append("PREFIX=%s" % cxx_toolkit.prefix)
   GNUBuilder(
     cxx_toolkit,
     configure = zlib_configure_call,
@@ -267,13 +274,7 @@ def configure(cxx_toolkit = None,
                                       'zlib/include/zconf.h'),
     makefile = zlib_makefile,
     sources = [zlib_configure],
-    build_args = ['install'] + list(s.replace('\\', '/') for s in [
-      "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
-      "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
-      "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
-      # FIXME: really needed ?
-      # "PREFIX=%s" % cxx_toolkit.prefix,
-    ])
+    build_args = ['install'] + list(s.replace('\\', '/') for s in zlib_args)
   )
   zlib_config = drake.cxx.Config()
   zlib_config.add_local_include_path('zlib/include')
