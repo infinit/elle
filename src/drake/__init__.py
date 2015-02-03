@@ -1350,6 +1350,8 @@ class Node(BaseNode):
     path = drake.Drake.current.prefix / path
     BaseNode.__init__(self, path)
     self.__exists = False
+    self.__path = None
+    self.__path_absolute = None
 
   def clone(self, path):
         """Clone of this node, with an other path."""
@@ -1368,23 +1370,29 @@ class Node(BaseNode):
     build directory.
 
     >>> with Drake('source/tree') as drake:
-    ...   n = node('file')
+    ...   n = node('file1')
     ...   print(n.path())
+    ...   n = node('file2')
     ...   builder = TouchBuilder([n])
     ...   print(n.path())
-    source/tree/file
-    file
+    source/tree/file1
+    file2
     """
-    name = self._BaseNode__name
-    if name.absolute() or name.virtual:
-      return name
-    if self._builder is None:
-      path = drake.path_source() / name
-    else:
-      path = drake.Path(name)
+    if self.__path is None:
+      name = self._BaseNode__name
+      if name.absolute() or name.virtual:
+        self.__path = name
+        self.__path_absolute = name
+      elif self._builder is None:
+        self.__path = drake.path_source() / name
+      else:
+        self.__path = name
     if absolute:
-      path = drake.path_root() / path
-    return path
+      if self.__path_absolute is None:
+        self.__path_absolute = drake.path_root() / self.__path
+      return self.__path_absolute
+    else:
+      return self.__path
 
   def missing(self):
     """Whether the associated file doesn't exist.
