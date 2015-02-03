@@ -1517,8 +1517,6 @@ def _can_skip_node(node):
     if isinstance(node, Node):
       if node.missing():
         return False
-    else:
-      return True
   else:
     if not node.builder._Builder__executed:
       return False
