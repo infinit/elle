@@ -388,13 +388,13 @@ class Config:
           else:
             res.__defines[key] = value
 
-        res.__local_includes.update(rhs.__local_includes)
-        res.__system_includes.update(rhs.__system_includes)
+        res.__local_includes |= rhs.__local_includes
+        res.__system_includes |= rhs.__system_includes
         res._includes.update(rhs._includes)
         res._framework.update(rhs._framework)
-        res.__lib_paths.update(rhs.__lib_paths)
-        res.__libs.update(rhs.__libs)
-        res.__libraries.update(rhs.__libraries)
+        res.__lib_paths |= rhs.__lib_paths
+        res.__libs |= rhs.__libs
+        res.__libraries |= rhs.__libraries
         res.flags += rhs.flags
         std_s = self.__standard
         std_o = rhs.__standard

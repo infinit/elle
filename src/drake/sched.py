@@ -6,6 +6,7 @@
 #
 # See the LICENSE file for more information.
 
+import collections
 import greenlet
 import os
 import sys
@@ -99,48 +100,8 @@ class Scope:
       else:
         break
 
-class OrderedSet:
-
-  def __init__(self, model = None):
-    if model is None:
-      self.__set = set()
-      self.__list = []
-    elif isinstance(model, OrderedSet):
-      self.__set = set(model.__set)
-      self.__list = list(model.__list)
-    else:
-      self.__set = set(model)
-      self.__list = list(model)
-
-  def add(self, v):
-    self.__set.add(v)
-    self.__list.append(v)
-
-  def remove(self, v):
-    self.__set.remove(v)
-
-  def __iter__(self):
-    remove = []
-    i = 0
-    seen = set()
-    while i < len(self.__list):
-      elt = self.__list[i]
-      if elt in self.__set and elt not in seen:
-        seen.add(elt)
-        yield elt
-        i += 1
-      else:
-        del self.__list[i]
-
-  def __bool__(self):
-    return bool(self.__set)
-
-  def update(self, rhs):
-    self.__set.update(rhs.__set)
-    self.__list.extend(rhs.__list)
-
-  def __repr__(self):
-    return 'OrderedSet(%r)' % self.__list
+import oset
+OrderedSet = oset.oset
 
 class SchedulingPolicy:
 
