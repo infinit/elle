@@ -85,8 +85,8 @@ class Logger(metaclass = LoggerType):
       for component in configuration_string.split(','):
         colons = component.count(':')
         if colons == 0:
-          component = None
           level = parse_log_level(component)
+          component = None
         elif colons == 1:
           component, level = component.split(':')
           level = parse_log_level(level)
