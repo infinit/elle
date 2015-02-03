@@ -1155,8 +1155,10 @@ class BaseNode(object, metaclass = _BaseNodeType):
       debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
       with debug.indentation():
         self._build()
-        for dep in self.dependencies:
-          dep.build()
+        with sched.Scope() as scope:
+          for dep in self.dependencies:
+            if not _can_skip_node(dep):
+              scope.run(dep.build, str(dep))
         self.polish()
 
   def _build(self):
