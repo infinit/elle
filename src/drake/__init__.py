@@ -1152,8 +1152,10 @@ class BaseNode(object, metaclass = _BaseNodeType):
       Coroutine(self.build, str(self), Drake.current.scheduler)
       Drake.current.scheduler.run()
     else:
-      debug.debug('Building %s.' % self, debug.DEBUG_TRACE)
-      with debug.indentation():
+      with sched.logger.log(
+          'drake.Builder',
+          drake.log.LogLevel.trace,
+          '%s: build', self):
         self._build()
         with sched.Scope() as scope:
           for dep in self.dependencies:
