@@ -1577,6 +1577,7 @@ class Builder:
             only one.
     """
     self.__sources = {}
+    self.__sources_dyn = {}
     for src in srcs:
       self.add_src(src)
     self.__targets = []
@@ -1594,11 +1595,10 @@ class Builder:
     self.__executed = False
     self.__executed_exception = None
     self.__executed_signal = None
-    self.__dynsrc = {}
 
   def sources_dynamic(self):
     """The list of dynamic source nodes."""
-    return self.__dynsrc.values()
+    return self.__sources_dyn.values()
 
   def sources(self):
     """The list of source nodes."""
@@ -1699,7 +1699,7 @@ class Builder:
     """Add a dynamic source node."""
     self.depfile(name).register(node, source = source)
     if source:
-      self.__dynsrc[node.path()] = node
+      self.__sources_dyn[node.path()] = node
 
   def get_type(self, tname):
     """Return the node type with the given name."""
@@ -1789,7 +1789,7 @@ class Builder:
           run_builders = set()
           try:
             with sched.Scope() as scope:
-              for node in self.__dynsrc.values():
+              for node in self.__sources_dyn.values():
                 if node.skippable():
                   continue
                 if node.builder in run_builders and not node.dependencies:
@@ -1877,7 +1877,7 @@ class Builder:
                     drake.log.LogLevel.trace,
                     '%s: needs execution', self):
       # Regenerate dynamic dependencies
-      self.__dynsrc = {}
+      self.__sources_dyn = {}
       self._depfiles = {}
       with logger.log(
           'drake.Builder',
@@ -1888,7 +1888,7 @@ class Builder:
           'drake.Builder',
           drake.log.LogLevel.debug,
           '%s: build dynamic dependencies', self):
-        for node in self.__dynsrc.values():
+        for node in self.__sources_dyn.values():
           # FIXME: parallelize
           node.build()
       self._builder_hash = self.hash()
@@ -1970,7 +1970,7 @@ class Builder:
             drake.log.LogLevel.dump,
             '%s: consider dependencies file %s', self, f):
           for path, (hash, data) in depfile.hashes.items():
-            if path not in self.__sources and path not in self.__dynsrc:
+            if path not in self.__sources and path not in self.__sources_dyn:
               handler(self, path, self.get_type(data), None)
 
 
@@ -1998,7 +1998,7 @@ class Builder:
   def all_srcs(self):
     """All sources, recursively."""
     res = []
-    for src in self.__sources.values() + self.__dynsrc.values():
+    for src in self.__sources.values() + self.__sources_dyn.values():
         res.append(src)
         if src.builder is not None:
             res += src.builder.all_srcs()
@@ -2013,7 +2013,7 @@ class Builder:
     print('  builder_%s [label="%s", shape=rect]' % \
           (self.uid, self.__class__))
     for node in itertools.chain(self.__sources.values(),
-                                self.__dynsrc.values()):
+                                self.__sources_dyn.values()):
         if node.dot(marks):
             print('  node_%s -> builder_%s' % (node.uid, self.uid))
     return True
@@ -2981,7 +2981,7 @@ def reset():
     for node in Drake.current.nodes.values():
         if node.builder is not None:
             node.builder._Builder__built = False
-            node.builder._Builder__dynsrc = {}
+            node.builder._Builder__sources_dyn = {}
     Drake.current._Drake__nodes = {}
 
 # Configuration
