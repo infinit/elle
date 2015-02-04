@@ -1901,91 +1901,7 @@ class Builder:
                 if not f.up_to_date():
                     execute = True
         if execute:
-          self.cachedir.mkpath()
-          self._depfile.remove()
-          for target in self.__targets:
-            if isinstance(target, Node):
-              target.path().dirname().mkpath()
-          with logger.log('drake.Builder',
-                          drake.log.LogLevel.trace,
-                          '%s: needs execution', self):
-            # Regenerate dynamic dependencies
-            self.__dynsrc = {}
-            self._depfiles = {}
-            with logger.log(
-                'drake.Builder',
-                drake.log.LogLevel.debug,
-                '%s: recompute dynamic dependencies', self):
-              self.dependencies()
-            with logger.log(
-                'drake.Builder',
-                drake.log.LogLevel.debug,
-                '%s: build dynamic dependencies', self):
-              for node in self.__dynsrc.values():
-                # FIXME: parallelize
-                node.build()
-            self._builder_hash = self.hash()
-            try:
-              with logger.log('drake.Builder',
-                              drake.log.LogLevel.trace,
-                              '%s: execute', self):
-                success = self.execute()
-                logger.log('drake.Builder',
-                           drake.log.LogLevel.trace,
-                           '%s: executed', self)
-            except sched.Terminate:
-              raise
-            except _Exception as e:
-              e_pretty = str(e)
-              if not e_pretty:
-                e_pretty = repr(e)
-              print('%s: %s' % (self, e_pretty), file = sys.stderr)
-              if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-                import traceback
-                traceback.print_exc()
-              raise Builder.Failed(self) from e
-            if not success:
-              raise Builder.Failed(self)
-            # Check every non-virtual target was built.
-            with logger.log(
-                'drake.Builder',
-                drake.log.LogLevel.trace,
-                '%s: check all targets were built', self):
-              for dst in self.__targets:
-                if isinstance(dst, Node):
-                  if dst.missing():
-                    raise Exception('%s wasn\'t created by %s' \
-                                    % (dst, self))
-                  dst._Node__hash = None
-            # Update depfiles
-            with logger.log('drake.Builder',
-                            drake.log.LogLevel.debug,
-                            '%s: write dependencies file %s',
-                            self, self._depfile):
-              self._depfile.update()
-            if self._builder_hash is None:
-              logger.log('drake.Builder',
-                         drake.log.LogLevel.debug,
-                         '%s: remove builder dependency file %s',
-                         self, depfile_builder)
-              depfile_builder.remove()
-            else:
-              logger.log('drake.Builder',
-                         drake.log.LogLevel.debug,
-                         '%s: write builder dependency file %s',
-                         self, depfile_builder)
-              with open(str(depfile_builder), 'wb') as f:
-                drake.Path.Pickler(f).dump(self._builder_hash)
-            # FIXME: BUG: remove dynamic dependencies files
-            # that are no longer present, otherwise this will
-            # be rebuilt forever.
-            for f in self._depfiles.values():
-              logger.log('drake.Builder',
-                         drake.log.LogLevel.debug,
-                         '%s: write dependencies file %s',
-                         self, f)
-              f.update()
-            self.__executed = True
+          self._execute(depfile_builder)
         else:
             self.__executed = True
             logger.log('drake.Builder',
@@ -2004,6 +1920,94 @@ class Builder:
       finally:
         self.__executed = True
         self.__executed_signal.signal()
+
+  def _execute(self, depfile_builder):
+    self.cachedir.mkpath()
+    self._depfile.remove()
+    for target in self.__targets:
+      if isinstance(target, Node):
+        target.path().dirname().mkpath()
+    with logger.log('drake.Builder',
+                    drake.log.LogLevel.trace,
+                    '%s: needs execution', self):
+      # Regenerate dynamic dependencies
+      self.__dynsrc = {}
+      self._depfiles = {}
+      with logger.log(
+          'drake.Builder',
+          drake.log.LogLevel.debug,
+          '%s: recompute dynamic dependencies', self):
+        self.dependencies()
+      with logger.log(
+          'drake.Builder',
+          drake.log.LogLevel.debug,
+          '%s: build dynamic dependencies', self):
+        for node in self.__dynsrc.values():
+          # FIXME: parallelize
+          node.build()
+      self._builder_hash = self.hash()
+      try:
+        with logger.log('drake.Builder',
+                        drake.log.LogLevel.trace,
+                        '%s: execute', self):
+          success = self.execute()
+          logger.log('drake.Builder',
+                     drake.log.LogLevel.trace,
+                     '%s: executed', self)
+      except sched.Terminate:
+        raise
+      except _Exception as e:
+        e_pretty = str(e)
+        if not e_pretty:
+          e_pretty = repr(e)
+        print('%s: %s' % (self, e_pretty), file = sys.stderr)
+        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+          import traceback
+          traceback.print_exc()
+        raise Builder.Failed(self) from e
+      if not success:
+        raise Builder.Failed(self)
+      # Check every non-virtual target was built.
+      with logger.log(
+          'drake.Builder',
+          drake.log.LogLevel.trace,
+          '%s: check all targets were built', self):
+        for dst in self.__targets:
+          if isinstance(dst, Node):
+            if dst.missing():
+              raise Exception('%s wasn\'t created by %s' \
+                              % (dst, self))
+            dst._Node__hash = None
+      # Update depfiles
+      with logger.log('drake.Builder',
+                      drake.log.LogLevel.debug,
+                      '%s: write dependencies file %s',
+                      self, self._depfile):
+        self._depfile.update()
+      if self._builder_hash is None:
+        logger.log('drake.Builder',
+                   drake.log.LogLevel.debug,
+                   '%s: remove builder dependency file %s',
+                   self, depfile_builder)
+        depfile_builder.remove()
+      else:
+        logger.log('drake.Builder',
+                   drake.log.LogLevel.debug,
+                   '%s: write builder dependency file %s',
+                   self, depfile_builder)
+        with open(str(depfile_builder), 'wb') as f:
+          drake.Path.Pickler(f).dump(self._builder_hash)
+      # FIXME: BUG: remove dynamic dependencies files
+      # that are no longer present, otherwise this will
+      # be rebuilt forever.
+      for f in self._depfiles.values():
+        logger.log('drake.Builder',
+                   drake.log.LogLevel.debug,
+                   '%s: write dependencies file %s',
+                   self, f)
+        f.update()
+      self.__executed = True
+
 
   def execute(self):
     """Generate target nodes from source node.
@@ -2761,9 +2765,9 @@ class Copy(Builder):
     self.output('Copy %s to %s' % (self.__source.path(),
                                    self.__target.path()),
                 'Copy %s' % self.__target)
-    return self._execute()
+    return self._copy()
 
-  def _execute(self):
+  def _copy(self):
     with WritePermissions(self.__target):
       shutil.copy2(str(self.__source.path()),
                    str(self.__target.path()))
@@ -2789,7 +2793,7 @@ class Install(Copy):
     self.output('Install %s to %s' % (self.source.path(),
                                    self.target().path()),
                 'Install %s' % self.target())
-    if not self._execute():
+    if not self._copy():
       return False
     if self.target().install_command is not None:
       with WritePermissions(self.target()):
