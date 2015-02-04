@@ -1762,46 +1762,10 @@ class Builder:
         # The list of static dependencies is now fixed
         for source in self.__sources.values():
           self._depfile.register(source)
+        # Reload dynamic dependencies
+        self.__reload_dyndeps()
         # See Whether we need to execute or not
         execute = False
-        # Reload dynamic dependencies
-        if not execute:
-          cachedir = self.cachedir
-          if _OS.path.exists(str(cachedir)):
-            for f in _OS.listdir(str(cachedir)):
-              if not _OS.path.isfile(str(cachedir / f)):
-                continue
-              if f in ['drake', 'drake.Builder', 'stdout']:
-                continue
-              depfile = self.depfile(f)
-              depfile.read()
-              handler = self._deps_handlers[f]
-              with sched.logger.log(
-                  'drake.Builder',
-                  drake.log.LogLevel.dump,
-                  '%s: consider dependencies file %s', self, f):
-                for path, (hash, data) in depfile.hashes.items():
-                  if path in self.__sources or path in self.__dynsrc:
-                    sched.logger.log(
-                      'drake.Builder',
-                      drake.log.LogLevel.debug,
-                      '%s: already in our sources: %s', self, path)
-                    continue
-                  with sched.logger.log(
-                      'drake.Builder',
-                      drake.log.LogLevel.dump,
-                      '%s: %s is unkown, calling handler', self, path):
-                    node = handler(self,
-                                   path,
-                                   self.get_type(data),
-                                   None)
-                    if node is not None:
-                      sched.logger.log(
-                        'drake.Builder',
-                        drake.log.LogLevel.dump,
-                        '%s: add %s to sources', self, path)
-                      self.add_dynsrc(f, node)
-
         coroutines_static = []
         coroutines_dynamic = []
         # FIXME: symetric of can_skip_node: if a node is a
@@ -1991,6 +1955,25 @@ class Builder:
                    self, f)
         f.update()
       self.__executed = True
+
+  def __reload_dyndeps(self):
+    cachedir = self.cachedir
+    if _OS.path.exists(str(cachedir)):
+      for f in _OS.listdir(str(cachedir)):
+        if not _OS.path.isfile(str(cachedir / f)):
+          continue
+        if f in ['drake', 'drake.Builder', 'stdout']:
+          continue
+        depfile = self.depfile(f)
+        depfile.read()
+        handler = self._deps_handlers[f]
+        with sched.logger.log(
+            'drake.Builder',
+            drake.log.LogLevel.dump,
+            '%s: consider dependencies file %s', self, f):
+          for path, (hash, data) in depfile.hashes.items():
+            if path not in self.__sources and path not in self.__dynsrc:
+              handler(self, path, self.get_type(data), None)
 
 
   def execute(self):
