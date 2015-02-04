@@ -1577,7 +1577,6 @@ class Builder:
             only one.
     """
     self.__sources = {}
-    self.__vsrcs = {}
     for src in srcs:
       self.add_src(src)
     self.__targets = []
@@ -1777,8 +1776,7 @@ class Builder:
                         '%s: build static dependencies', self):
           run_builders = set()
           with sched.Scope() as scope:
-            for node in chain(self.__sources.values(),
-                              self.__vsrcs.values()):
+            for node in self.__sources.values():
               if node.skippable():
                 continue
               if node.builder in run_builders and not node.dependencies:
@@ -1985,7 +1983,7 @@ class Builder:
 
   def clean(self):
     """Clean source nodes recursively."""
-    for node in chain(self.__sources.values(), self.__vsrcs.values()):
+    for node in self.__sources.values():
       node.clean()
 
   def __str__(self):
@@ -1996,15 +1994,6 @@ class Builder:
     """Add a static source."""
     self.__sources[src._BaseNode__name] = src
     src.consumers.append(self)
-
-  def add_virtual_src(self, src):
-    """Add a virtual source.
-
-    Virtual sources are built when the builder is runned, but are
-    not taken in account when determining if this builder must be
-    executed.
-    """
-    self.__vsrcs[str(src.path())] = src
 
   def all_srcs(self):
     """All sources, recursively."""
