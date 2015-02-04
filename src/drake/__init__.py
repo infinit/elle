@@ -1471,20 +1471,24 @@ def node(path, type = None):
   """
   if path.__class__ is not Path:
     path = Path(path)
-  existing = Drake.current.nodes.get(path, None)
-  if existing is not None:
-    return existing
-  if type is not None:
-    return type(path)
-  extension = path.extension
-  extension_type = Node.extensions.get(extension, None)
-  if extension_type is not None:
-    return extension_type(path)
-  last_extension = extension.split('.')[-1]
-  last_extension_type = Node.extensions.get(last_extension, None)
-  if last_extension_type is not None:
-    return last_extension_type(path)
-  return Node(path)
+  d = Drake.current
+  res = d.nodes.get(path, None)
+  if res is None:
+    if type is not None:
+      res = type(path)
+    else:
+      extension = path.extension
+      extension_type = Node.extensions.get(extension, None)
+      if extension_type is not None:
+        res = extension_type(path)
+      else:
+        last_extension = extension.split('.')[-1]
+        last_extension_type = Node.extensions.get(last_extension, None)
+        if last_extension_type is not None:
+          res = last_extension_type(path)
+        else:
+          res = Node(path)
+  return res
 
 
 def nodes(*paths, type = None):
