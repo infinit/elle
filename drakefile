@@ -396,7 +396,10 @@ def configure(cxx_toolkit = None,
   openssl_prefix_absolute = \
     drake.path_build(openssl_prefix, absolute = True)
   if cxx_toolkit.os is drake.os.linux:
-    os_string = 'linux-x86_64'
+    if cxx_toolkit.architecture == drake.architecture.x86_64:
+      os_string = 'linux-x86_64'
+    elif cxx_toolkit.architecture == drake.architecture.x86:
+      os_string = 'linux-generic32'
   elif cxx_toolkit.os is drake.os.android:
     os_string = 'android'
   elif windows:
