@@ -2827,7 +2827,12 @@ def __copy(sources, to, strip_prefix, builder):
     else:
       return __copy_stripped(sources, to, strip_prefix, builder)
 
+__copy_stripped_cache = {}
 def __copy_stripped(source, to, strip_prefix, builder):
+  key = (source, to, strip_prefix, builder)
+  cache = __copy_stripped_cache.get(key)
+  if cache is not None:
+    return cache
   with sched.logger.log(
       'drake.copy',
       drake.log.LogLevel.debug,
@@ -2843,6 +2848,7 @@ def __copy_stripped(source, to, strip_prefix, builder):
     if path_abs in drake.Drake.current.nodes:
       res = drake.Drake.current.nodes[path_abs]
       if Copy._Copy__original(source) is res:
+        __copy_stripped_cache[key] = res
         return res
     res = builder(source, path).target()
     for dep in source.dependencies:
@@ -2850,6 +2856,7 @@ def __copy_stripped(source, to, strip_prefix, builder):
         node = __copy_stripped(dep, to, strip_prefix, builder)
         if node is not None:
           res.dependency_add(node)
+    __copy_stripped_cache[key] = res
     return res
 
 def copy(sources, to, strip_prefix = None):
