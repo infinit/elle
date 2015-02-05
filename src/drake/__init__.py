@@ -352,565 +352,588 @@ class BuilderRedefinition(Exception):
 _RAW = 'DRAKE_RAW' in _OS.environ
 _SILENT = 'DRAKE_SILENT' in _OS.environ
 
+class Path:
 
-class PathType(type):
+  """Node names, similar to a filesystem path."""
 
   cache = {}
 
-  def __call__(self, path,
-               absolute = None,
-               virtual = None,
-               volume = None):
+  def __new__(self,
+              path,
+              absolute = None,
+              virtual = None,
+              volume = None,
+              string = None):
     if path.__class__ is Path:
-      assert absolute is None
-      assert virtual is None
-      assert volume is None
       return path
+    elif path.__class__ is str:
+      strkey = path
+      res = Path.cache.get(path, None)
+      if res is not None:
+        return res
+      else:
+        path, absolute, virtual, volume = Path.__parse(path)
     else:
-      if path.__class__ is str:
-        assert absolute is None
-        assert virtual is None
-        assert volume is None
-        strkey = path
-        res = PathType.cache.get(path, None)
-        if res is not None:
-          return res
-        else:
-          if Path.windows:
-            volume = re.compile('^([a-zA-Z]):').match(path)
-            if volume:
-              volume = volume.group(1)
-              path = path[2:]
-            else:
-              volume = ''
-            if path[:2] == '//' or path[:2] == '\\\\':
-              path = path[2:]
-              absolute = False
-              virtual = True
-            elif path[:1] == '/' or path[:1] == '\\':
-              path = path[1:]
-              absolute = True
-              virtual = False
-            else:
-              absolute = False
-              virtual = False
-            path = path = tuple(re.split(r'/|\\', path))
-          else:
-            if path[:2] == '//':
-              path = path[2:]
-              absolute = False
-              virtual = True
-            elif path[:1] == '/':
-              path = path[1:]
-              absolute = True
-              virtual = False
-            else:
-              absolute = False
-              virtual = False
-            path = tuple(path.split('/'))
+      strkey = string
+    if Path.windows:
+      key = (path, absolute, virtual, volume)
+    else:
+      key = (path, absolute, virtual)
+    res = Path.cache.get(key, None)
+    if res is None:
+      res = object.__new__(self)
+      res.__init(path, absolute, virtual, volume)
+      Path.cache[key] = res
+    if strkey is not None:
+      Path.cache[strkey] = res
+    return res
+
+  def __parse(path):
+    if Path.windows:
+      volume = re.compile('^([a-zA-Z]):').match(path)
+      if volume:
+        volume = volume.group(1)
+        path = path[2:]
       else:
-        assert absolute is not None
-        assert virtual is not None
-        assert not Path.windows or volume is not None
-        strkey = None
-      assert path.__class__ is tuple
-      if Path.windows:
-        key = (path, absolute, virtual, volume)
+        volume = ''
+      if path[:2] == '//' or path[:2] == '\\\\':
+        path = path[2:]
+        absolute = False
+        virtual = True
+      elif path[:1] == '/' or path[:1] == '\\':
+        path = path[1:]
+        absolute = True
+        virtual = False
       else:
-        key = (path, absolute, virtual)
-      res = PathType.cache.get(key, None)
-      if res is None:
-        res = type.__call__(self, path, absolute, virtual, volume)
-        PathType.cache[key] = res
-      if strkey is not None:
-        PathType.cache[strkey] = res
-      return res
+        absolute = False
+        virtual = False
+      path = path = tuple(re.split(r'/|\\', path))
+    else:
+      volume = None
+      if path[:2] == '//':
+        path = path[2:]
+        absolute = False
+        virtual = True
+      elif path[:1] == '/':
+        path = path[1:]
+        absolute = True
+        virtual = False
+      else:
+        absolute = False
+        virtual = False
+      path = tuple(path.split('/'))
+    return path, absolute, virtual, volume
 
+  separator = '/'
 
-class Path(metaclass = PathType):
+  windows = platform.system() == 'Windows'
+  if windows:
+    separator = '\\'
 
-    """Node names, similar to a filesystem path."""
+  def __init(self, path, absolute, virtual, volume):
+    """Build a path.
 
-    separator = '/'
+    path -- The path, as a string or an other Path.
+    """
+    self.__absolute = absolute
+    self.__canonized = None
+    self.__path = path
+    self.__str = None
+    self.__virtual = virtual
+    self.__volume = volume
 
-    windows = platform.system() == 'Windows'
-    if windows:
-      separator = '\\'
-
-    def __init__(self, path, absolute, virtual, volume):
-      """Build a path.
-
-      path -- The path, as a string or an other Path.
-      """
-      self.__absolute = absolute
-      self.__canonized = None
-      self.__path = path
-      self.__str = None
-      self.__virtual = virtual
-      self.__volume = volume
-
-    def canonize(self):
-      if self.__canonized is None:
-        res = ()
-        path = self.__path
-        for i in range(len(path)):
-          if path[i] == '..' and len(res) > 0 and res[-1] != '..':
-            res = res[:-1]
-          elif path[i] == '.':
-            pass
-          else:
-            res += (path[i],)
-        if res == self.__path:
-          self.__canonized = self
+  def canonize(self):
+    if self.__canonized is None:
+      res = ()
+      path = self.__path
+      for i in range(len(path)):
+        if path[i] == '..' and len(res) > 0 and res[-1] != '..':
+          res = res[:-1]
+        elif path[i] == '.':
+          pass
         else:
-          self.__canonized = drake.Path(res,
-                                        absolute = self.__absolute,
-                                        virtual = self.__virtual,
-                                        volume = self.__volume)
-      return self.__canonized
+          res += (path[i],)
+      if res == self.__path:
+        self.__canonized = self
+      else:
+        self.__canonized = drake.Path(res,
+                                      absolute = self.__absolute,
+                                      virtual = self.__virtual,
+                                      volume = self.__volume)
+    return self.__canonized
 
-    def absolute(self):
-        """Whether this path is absolute.
+  def absolute(self):
+      """Whether this path is absolute.
 
-        >>> Path('.').absolute()
-        False
-        >>> Path('foo/bar').absolute()
-        False
-        >>> Path('/').absolute()
-        True
-        >>> Path('/foo').absolute()
-        True
-        """
-        return self.__absolute
-
-    @property
-    def relative(self):
-      return not self.__absolute
-
-    @property
-    def virtual(self):
-      """Whether this path is virtual.
-
-      >>> Path('.').virtual
+      >>> Path('.').absolute()
       False
-      >>> Path('foo/bar').virtual
+      >>> Path('foo/bar').absolute()
       False
-      >>> Path('//').virtual
+      >>> Path('/').absolute()
       True
-      >>> Path('//foo').virtual
+      >>> Path('/foo').absolute()
       True
       """
-      return self.__virtual
+      return self.__absolute
 
-    def remove(self, err = False):
-        """Remove the target file.
+  @property
+  def relative(self):
+    return not self.__absolute
 
-        err -- Whether this is an error for non-existent file.
+  @property
+  def virtual(self):
+    """Whether this path is virtual.
 
-        No-op if the file does not exist, unless err is true.
+    >>> Path('.').virtual
+    False
+    >>> Path('foo/bar').virtual
+    False
+    >>> Path('//').virtual
+    True
+    >>> Path('//foo').virtual
+    True
+    """
+    return self.__virtual
 
-        >>> p = Path('/tmp/.drake.foo')
-        >>> p.touch()
-        >>> p.exists()
-        True
-        >>> p.remove()
-        >>> p.exists()
-        False
-        >>> p.touch()
-        >>> p.remove(True)
-        >>> p.remove(True)
-        Traceback (most recent call last):
-            ...
-        drake.Exception: Path does not exist: /tmp/.drake.foo
-        """
-        try:
-            _OS.remove(str(self))
-        except OSError as e:
-          if e.errno == 2:
-            if err:
-              raise Exception('Path does not exist: %s' % str(self))
-          elif e.errno == 21:
-            shutil.rmtree(str(self))
-          else:
-            raise
+  @property
+  def volume(self):
+    return self.__volume
 
-    def __extension_get(self):
-        parts = self.__path[-1].split('.')
-        if len(parts) > 1:
-            return '.'.join(parts[1:])
+
+  def remove(self, err = False):
+      """Remove the target file.
+
+      err -- Whether this is an error for non-existent file.
+
+      No-op if the file does not exist, unless err is true.
+
+      >>> p = Path('/tmp/.drake.foo')
+      >>> p.touch()
+      >>> p.exists()
+      True
+      >>> p.remove()
+      >>> p.exists()
+      False
+      >>> p.touch()
+      >>> p.remove(True)
+      >>> p.remove(True)
+      Traceback (most recent call last):
+          ...
+      drake.Exception: Path does not exist: /tmp/.drake.foo
+      """
+      try:
+          _OS.remove(str(self))
+      except OSError as e:
+        if e.errno == 2:
+          if err:
+            raise Exception('Path does not exist: %s' % str(self))
+        elif e.errno == 21:
+          shutil.rmtree(str(self))
         else:
-            return ''
+          raise
 
-    def with_extension(self, value):
-      '''The path with a different extension.
-
-      >>> p = Path('foo')
-      >>> p
-      Path("foo")
-      >>> p = p.with_extension('tar.bz2')
-      >>> p
-      Path("foo.tar.bz2")
-      >>> p.with_extension('txt')
-      Path("foo.txt")
-      '''
+  def __extension_get(self):
       parts = self.__path[-1].split('.')
       if len(parts) > 1:
-        if value == '':
-          parts = [parts[0]]
-        else:
-          parts = [parts[0], value]
-        return Path(self.__path[:-1] + ('.'.join(parts),),
+          return '.'.join(parts[1:])
+      else:
+          return ''
+
+  def with_extension(self, value):
+    '''The path with a different extension.
+
+    >>> p = Path('foo')
+    >>> p
+    Path("foo")
+    >>> p = p.with_extension('tar.bz2')
+    >>> p
+    Path("foo.tar.bz2")
+    >>> p.with_extension('txt')
+    Path("foo.txt")
+    '''
+    parts = self.__path[-1].split('.')
+    if len(parts) > 1:
+      if value == '':
+        parts = [parts[0]]
+      else:
+        parts = [parts[0], value]
+      return Path(self.__path[:-1] + ('.'.join(parts),),
+                  absolute = self.__absolute,
+                  virtual = self.__virtual,
+                  volume = self.__volume)
+    else:
+      if value != '':
+        return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
                     absolute = self.__absolute,
                     virtual = self.__virtual,
                     volume = self.__volume)
       else:
-        if value != '':
-          return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
+        return self
+
+  extension = property(
+      fget = __extension_get,
+      doc = """Extension of the file name.
+
+      The extension is the part after the first dot of the basename,
+      or the empty string if there are no dot.
+
+      >>> Path('foo.txt').extension
+      'txt'
+      >>> Path('foo.tar.bz2').extension
+      'tar.bz2'
+      >>> Path('foo').extension
+      ''
+      """)
+
+  def without_last_extension(self):
+      """Remove the last dot and what follows from the basename.
+
+      Does nothing if there is no dot.
+
+      >>> p = Path('foo.tar.bz2')
+      >>> p
+      Path("foo.tar.bz2")
+      >>> p = p.without_last_extension()
+      >>> p
+      Path("foo.tar")
+      >>> p = p.without_last_extension()
+      >>> p
+      Path("foo")
+      >>> p.without_last_extension()
+      Path("foo")
+      """
+      ext = '.'.join(self.extension.split('.')[:-1])
+      return self.with_extension(ext)
+
+  def __str__(self):
+    """The path as a string, adapted to the underlying OS."""
+    if self.__str is None:
+      if self.__absolute:
+        if self.__volume is None or self.__volume == '':
+          prefix = drake.Path.separator
+        else:
+          prefix = self.__volume + ':' + drake.Path.separator
+      elif self.__virtual:
+        prefix = drake.Path.separator * 2
+      else:
+        prefix = ''
+      if not self.__path:
+        body = '.'
+      else:
+        body = self.separator.join(self.__path)
+      self.__str = prefix + body
+    return self.__str
+
+  def __repr__(self):
+      """Python representation."""
+      return 'Path(\"%s\")' % str(self)
+
+  def __lt__(self, rhs):
+      """Arbitrary comparison.
+
+      >>> Path('foo') < Path('foo')
+      False
+      >>> (Path('foo') < Path('bar')) ^ (Path('bar') < Path('foo'))
+      True
+      """
+      return str(self) < str(rhs)
+
+  def __hash__(self):
+    """Hash value.
+
+    >>> hash(Path('foo')) == hash(Path('foo'))
+    True
+    """
+    return id(self)
+
+  def exists(self):
+      """Whether the designed file or directory exists.
+
+      >>> p = Path('/tmp/.drake.foo')
+      >>> p.touch()
+      >>> p.exists()
+      True
+      >>> p.remove()
+      >>> p.exists()
+      False
+      """
+      if _OS.path.islink(str(self)):
+          return True
+      return _OS.path.exists(str(self))
+
+  @property
+  def executable(self):
+      """Whether the designed file is executable by the user."""
+      return _OS.access(str(self), _OS.X_OK)
+
+  def is_file(self):
+      """Whether the designed file exists and is a regular file.
+
+      >>> p = Path('/tmp/.drake.foo')
+      >>> p.touch()
+      >>> p.is_file()
+      True
+      >>> p.remove()
+      >>> p.is_file()
+      False
+      >>> p.mkpath()
+      >>> p.exists()
+      True
+      >>> p.is_file()
+      False
+      >>> p.remove()
+      """
+      return _OS.path.isfile(str(self))
+
+  def basename(self):
+    """The filename part of the path.
+
+    This is the path without the dirname. Throws if the path has
+    no components.
+
+
+    >>> Path('foo/bar/baz').basename()
+    Path("baz")
+    """
+    if not self.__path:
+      raise Exception('Cannot take the basename of an empty path.')
+    return Path(self.__path[-1:],
+                absolute = False,
+                virtual = False,
+                volume = '')
+
+  def dirname(self):
+    """The directory part of the path.
+
+    This is the path without the basename. Throws if the path has
+    no components.
+
+    >>> Path('foo/bar/baz').dirname()
+    Path("foo/bar")
+    >>> Path('foo').dirname()
+    Path(".")
+    """
+    if len(self.__path) == 1:
+      return Path.dot
+    else:
+      return Path(self.__path[0:-1],
+                  absolute = self.__absolute,
+                  virtual = self.__virtual,
+                  volume = self.__volume)
+
+  def touch(self):
+      """Create the designed file if it does not exists.
+
+      Creates the parent directories if needed first.
+
+      >>> Path('/tmp/.drake').remove()
+      >>> p = Path('/tmp/.drake/.sub/.foo')
+      >>> p.touch()
+      >>> p.exists()
+      True
+
+      If the file does exist, this is a no-op.
+
+      >>> path = Path('/tmp/.drake.touch.exists')
+      >>> with open(str(path), 'w') as f:
+      ...   print('foobar', file = f)
+      >>> path.touch()
+      >>> with open(str(path), 'r') as f:
+      ...   print(f.read(), end = '')
+      foobar
+      """
+      parent = self.dirname()
+      if parent is not Path.dot:
+        parent.mkpath()
+      if not _OS.path.exists(str(self)):
+        with open(str(self), 'w') as f:
+          pass
+
+  def mkpath(self):
+      """Create the designed directory.
+
+      Creates the parent directories if needed first.
+
+      >>> Path('/tmp/.drake').remove()
+      >>> p = Path('/tmp/.drake/.sub/')
+      >>> p.mkpath()
+      >>> p.exists()
+      True
+      """
+      if not _OS.path.exists(str(self)):
+          _OS.makedirs(str(self))
+
+  def __eq__(self, rhs):
+      """Whether self equals rhs.
+
+      Pathes are equals if they have the same components and
+      absoluteness.
+
+      >>> Path('foo/bar') == Path('foo/bar')
+      True
+      >>> Path('foo/bar') == Path('foo')
+      False
+      >>> Path('foo/bar') == Path('bar/foo')
+      False
+      >>> Path('foo/bar') == Path('/foo/bar')
+      False
+      >>> Path('/foo/bar') == Path('/foo/bar')
+      True
+      """
+      return self is drake.Path(rhs)
+
+  def __truediv__(self, rhs):
+    """The concatenation of self and rhs.
+
+    rhs -- the end of the new path, as a Path or a string.
+
+    >>> Path('foo/bar') / Path('bar/baz')
+    Path("foo/bar/bar/baz")
+    >>> Path('foo/bar') / 'baz'
+    Path("foo/bar/baz")
+    >>> Path('.') / 'baz'
+    Path("baz")
+
+    Contatenating an absolute path yields the path itself.
+
+    >>> Path('foo') / Path('/absolute')
+    Path("/absolute")
+    """
+    rhs = Path(rhs)
+    if self is Path.dot:
+      return rhs
+    if rhs is Path.dot:
+      return self
+    if rhs.__absolute:
+      return rhs
+    return drake.Path(self.__path + rhs.__path,
                       absolute = self.__absolute,
                       virtual = self.__virtual,
                       volume = self.__volume)
-        else:
-          return self
 
-    extension = property(
-        fget = __extension_get,
-        doc = """Extension of the file name.
+  def without_prefix(self, rhs, force = True):
+      """Remove rhs prefix from self.
 
-        The extension is the part after the first dot of the basename,
-        or the empty string if there are no dot.
+      rhs -- the prefix to strip, as a Path or a string.
 
-        >>> Path('foo.txt').extension
-        'txt'
-        >>> Path('foo.tar.bz2').extension
-        'tar.bz2'
-        >>> Path('foo').extension
-        ''
-        """)
-
-    def without_last_extension(self):
-        """Remove the last dot and what follows from the basename.
-
-        Does nothing if there is no dot.
-
-        >>> p = Path('foo.tar.bz2')
-        >>> p
-        Path("foo.tar.bz2")
-        >>> p = p.without_last_extension()
-        >>> p
-        Path("foo.tar")
-        >>> p = p.without_last_extension()
-        >>> p
-        Path("foo")
-        >>> p.without_last_extension()
-        Path("foo")
-        """
-        ext = '.'.join(self.extension.split('.')[:-1])
-        return self.with_extension(ext)
-
-    def __str__(self):
-      """The path as a string, adapted to the underlying OS."""
-      if self.__str is None:
-        if self.__absolute:
-          if self.__volume is None or self.__volume == '':
-            prefix = drake.Path.separator
-          else:
-            prefix = self.__volume + ':' + drake.Path.separator
-        elif self.__virtual:
-          prefix = drake.Path.separator * 2
-        else:
-          prefix = ''
-        if not self.__path:
-          body = '.'
-        else:
-          body = self.separator.join(self.__path)
-        self.__str = prefix + body
-      return self.__str
-
-    def __repr__(self):
-        """Python representation."""
-        return 'Path(\"%s\")' % str(self)
-
-    def __lt__(self, rhs):
-        """Arbitrary comparison.
-
-        >>> Path('foo') < Path('foo')
-        False
-        >>> (Path('foo') < Path('bar')) ^ (Path('bar') < Path('foo'))
-        True
-        """
-        return str(self) < str(rhs)
-
-    def __hash__(self):
-      """Hash value.
-
-      >>> hash(Path('foo')) == hash(Path('foo'))
+      >>> p = Path('foo/bar/baz/quux')
+      >>> p
+      Path("foo/bar/baz/quux")
+      >>> p.without_prefix("foo/bar")
+      Path("baz/quux")
+      >>> p = Path('/foo/bar/baz')
+      >>> p.absolute()
       True
-      """
-      return id(self)
+      >>> p = p.without_prefix('/foo')
+      >>> p
+      Path("bar/baz")
+      >>> p.absolute()
+      False
 
-    def exists(self):
-        """Whether the designed file or directory exists.
+      Rewinds if rhs is not a prefix of self.
 
-        >>> p = Path('/tmp/.drake.foo')
-        >>> p.touch()
-        >>> p.exists()
-        True
-        >>> p.remove()
-        >>> p.exists()
-        False
-        """
-        if _OS.path.islink(str(self)):
-            return True
-        return _OS.path.exists(str(self))
+      >>> p.without_prefix("quux")
+      Path("../bar/baz")
 
-    @property
-    def executable(self):
-        """Whether the designed file is executable by the user."""
-        return _OS.access(str(self), _OS.X_OK)
+      Rewinding a path entirerly yields the current directory.
 
-    def is_file(self):
-        """Whether the designed file exists and is a regular file.
-
-        >>> p = Path('/tmp/.drake.foo')
-        >>> p.touch()
-        >>> p.is_file()
-        True
-        >>> p.remove()
-        >>> p.is_file()
-        False
-        >>> p.mkpath()
-        >>> p.exists()
-        True
-        >>> p.is_file()
-        False
-        >>> p.remove()
-        """
-        return _OS.path.isfile(str(self))
-
-    def basename(self):
-      """The filename part of the path.
-
-      This is the path without the dirname. Throws if the path has
-      no components.
-
-
-      >>> Path('foo/bar/baz').basename()
-      Path("baz")
-      """
-      if not self.__path:
-        raise Exception('Cannot take the basename of an empty path.')
-      return Path(self.__path[-1:],
-                  absolute = False,
-                  virtual = False,
-                  volume = '')
-
-    def dirname(self):
-      """The directory part of the path.
-
-      This is the path without the basename. Throws if the path has
-      no components.
-
-      >>> Path('foo/bar/baz').dirname()
-      Path("foo/bar")
-      >>> Path('foo').dirname()
+      >>> Path('foo/bar').without_prefix('foo/bar')
       Path(".")
       """
-      if len(self.__path) == 1:
-        return Path.dot
-      else:
-        return Path(self.__path[0:-1],
-                    absolute = self.__absolute,
-                    virtual = self.__virtual,
-                    volume = self.__volume)
-
-    def touch(self):
-        """Create the designed file if it does not exists.
-
-        Creates the parent directories if needed first.
-
-        >>> Path('/tmp/.drake').remove()
-        >>> p = Path('/tmp/.drake/.sub/.foo')
-        >>> p.touch()
-        >>> p.exists()
-        True
-
-        If the file does exist, this is a no-op.
-
-        >>> path = Path('/tmp/.drake.touch.exists')
-        >>> with open(str(path), 'w') as f:
-        ...   print('foobar', file = f)
-        >>> path.touch()
-        >>> with open(str(path), 'r') as f:
-        ...   print(f.read(), end = '')
-        foobar
-        """
-        parent = self.dirname()
-        if parent is not Path.dot:
-          parent.mkpath()
-        if not _OS.path.exists(str(self)):
-          with open(str(self), 'w') as f:
-            pass
-
-    def mkpath(self):
-        """Create the designed directory.
-
-        Creates the parent directories if needed first.
-
-        >>> Path('/tmp/.drake').remove()
-        >>> p = Path('/tmp/.drake/.sub/')
-        >>> p.mkpath()
-        >>> p.exists()
-        True
-        """
-        if not _OS.path.exists(str(self)):
-            _OS.makedirs(str(self))
-
-    def __eq__(self, rhs):
-        """Whether self equals rhs.
-
-        Pathes are equals if they have the same components and
-        absoluteness.
-
-        >>> Path('foo/bar') == Path('foo/bar')
-        True
-        >>> Path('foo/bar') == Path('foo')
-        False
-        >>> Path('foo/bar') == Path('bar/foo')
-        False
-        >>> Path('foo/bar') == Path('/foo/bar')
-        False
-        >>> Path('/foo/bar') == Path('/foo/bar')
-        True
-        """
-        return self is drake.Path(rhs)
-
-    def __truediv__(self, rhs):
-      """The concatenation of self and rhs.
-
-      rhs -- the end of the new path, as a Path or a string.
-
-      >>> Path('foo/bar') / Path('bar/baz')
-      Path("foo/bar/bar/baz")
-      >>> Path('foo/bar') / 'baz'
-      Path("foo/bar/baz")
-      >>> Path('.') / 'baz'
-      Path("baz")
-
-      Contatenating an absolute path yields the path itself.
-
-      >>> Path('foo') / Path('/absolute')
-      Path("/absolute")
-      """
-      rhs = Path(rhs)
-      if self is Path.dot:
-        return rhs
-      if rhs is Path.dot:
+      rhs = drake.Path(rhs).canonize().__path
+      path = self.__path
+      while len(rhs) and len(path) and path[0] == rhs[0]:
+        rhs = rhs[1:]
+        path = path[1:]
+      if not force and len(rhs) > 0:
         return self
-      if rhs.__absolute:
-        return rhs
-      return drake.Path(self.__path + rhs.__path,
+      # FIXME: naive if rhs contains some '..'
+      assert '..' not in rhs
+      path = ('..',) * len(rhs) + path
+      if not path:
+        path = ('.',)
+      return drake.Path(path,
+                        absolute = False,
+                        virtual = False,
+                        volume = '')
+
+  def __len__(self):
+      return len(self.__path)
+
+  def without_suffix(self, rhs):
+      """Remove rhs suffix from self.
+
+      rhs -- the suffix to strip, as a Path or a string.
+
+      >>> p = Path('foo/bar/baz/quux')
+      >>> p
+      Path("foo/bar/baz/quux")
+      >>> p.without_suffix("baz/quux")
+      Path("foo/bar")
+
+      Throws if rhs is not a prefix of self.
+
+      >>> p.without_suffix("baz")
+      Traceback (most recent call last):
+          ...
+      drake.Exception: baz is not a suffix of foo/bar/baz/quux
+      """
+      rhs = drake.Path(rhs)
+      if self.__path[-len(rhs.__path):] != rhs.__path:
+        raise Exception("%s is not a suffix of %s" % (rhs, self))
+      path = self.__path[0:-len(rhs.__path):]
+      if not path:
+        path = ('.',)
+      return drake.Path(path,
                         absolute = self.__absolute,
                         virtual = self.__virtual,
                         volume = self.__volume)
 
-    def without_prefix(self, rhs, force = True):
-        """Remove rhs prefix from self.
+  @classmethod
+  def cwd(self):
+      return Path(_OS.getcwd())
 
-        rhs -- the prefix to strip, as a Path or a string.
+  def list(self):
+      return _OS.listdir(str(self))
 
-        >>> p = Path('foo/bar/baz/quux')
-        >>> p
-        Path("foo/bar/baz/quux")
-        >>> p.without_prefix("foo/bar")
-        Path("baz/quux")
-        >>> p = Path('/foo/bar/baz')
-        >>> p.absolute()
-        True
-        >>> p = p.without_prefix('/foo')
-        >>> p
-        Path("bar/baz")
-        >>> p.absolute()
-        False
+  class Pickler(pickle.Pickler):
+    def persistent_id(self, obj):
+      if isinstance(obj, drake.Path):
+        return (
+          obj._Path__path,
+          obj.absolute(),
+          obj.virtual,
+          obj.volume,
+        )
+      else:
+        return None
 
-        Rewinds if rhs is not a prefix of self.
+  class Unpickler(pickle.Unpickler):
+    def persistent_load(self, obj):
+      return drake.Path(
+        obj[0],
+        absolute = obj[1],
+        virtual = obj[2],
+        volume = obj[3],
+      )
 
-        >>> p.without_prefix("quux")
-        Path("../bar/baz")
+  def __iter__(self):
+    return self.__path.__iter__()
 
-        Rewinding a path entirerly yields the current directory.
+  def __getnewargs__(self, *args, **kwargs):
+    return (
+      self.__path,
+      self.__absolute,
+      self.__virtual,
+      self.__volume,
+      str(self),
+    )
 
-        >>> Path('foo/bar').without_prefix('foo/bar')
-        Path(".")
-        """
-        rhs = drake.Path(rhs).canonize().__path
-        path = self.__path
-        while len(rhs) and len(path) and path[0] == rhs[0]:
-          rhs = rhs[1:]
-          path = path[1:]
-        if not force and len(rhs) > 0:
-          return self
-        # FIXME: naive if rhs contains some '..'
-        assert '..' not in rhs
-        path = ('..',) * len(rhs) + path
-        if not path:
-          path = ('.',)
-        return drake.Path(path,
-                          absolute = False,
-                          virtual = False,
-                          volume = '')
+  def __getstate__(self):
+    pass
 
-    def __len__(self):
-        return len(self.__path)
-
-    def without_suffix(self, rhs):
-        """Remove rhs suffix from self.
-
-        rhs -- the suffix to strip, as a Path or a string.
-
-        >>> p = Path('foo/bar/baz/quux')
-        >>> p
-        Path("foo/bar/baz/quux")
-        >>> p.without_suffix("baz/quux")
-        Path("foo/bar")
-
-        Throws if rhs is not a prefix of self.
-
-        >>> p.without_suffix("baz")
-        Traceback (most recent call last):
-            ...
-        drake.Exception: baz is not a suffix of foo/bar/baz/quux
-        """
-        rhs = drake.Path(rhs)
-        if self.__path[-len(rhs.__path):] != rhs.__path:
-          raise Exception("%s is not a suffix of %s" % (rhs, self))
-        path = self.__path[0:-len(rhs.__path):]
-        if not path:
-          path = ('.',)
-        return drake.Path(path,
-                          absolute = self.__absolute,
-                          virtual = self.__virtual,
-                          volume = self.__volume)
-
-    @classmethod
-    def cwd(self):
-        return Path(_OS.getcwd())
-
-    def list(self):
-        return _OS.listdir(str(self))
-
-    class Pickler(pickle.Pickler):
-      def persistent_id(self, obj):
-        if isinstance(obj, drake.Path):
-          return str(obj)
-        else:
-          return None
-
-    class Unpickler(pickle.Unpickler):
-      def persistent_load(self, obj):
-        return drake.Path(obj)
-
-    def __iter__(self):
-      return self.__path.__iter__()
+  def __setstate__(self):
+    pass
 
 Path.dot = Path('.')
 Path.dotdot = Path('..')
@@ -963,6 +986,8 @@ class DepFile:
           try:
             with open(str(self.path()), 'rb') as f:
               self.__hashes = drake.Path.Unpickler(f).load()
+              if self.__hashes is None:
+                self.__invalid = True
           except:
             self.__invalid = True
       else:
@@ -998,7 +1023,7 @@ class DepFile:
       with profile_pickling():
         path = self.path()
         with open(str(path), 'wb') as f:
-          drake.Path.Pickler(f).dump(value)
+          pickle.Pickler(f).dump(value)
 
     def remove(self):
       """Rehash all files and write to the store file."""
@@ -1454,7 +1479,6 @@ class Node(BaseNode):
   def install_command(self):
       return None
 
-
 def node(path, type = None):
   """Create or get a BaseNode.
 
@@ -1766,9 +1790,7 @@ class Builder:
         for source in self.__sources.values():
           self._depfile.register(source)
         # Reload dynamic dependencies
-        self.__reload_dyndeps()
-        # See Whether we need to execute or not
-        execute = False
+        execute = self.__reload_dyndeps()
         coroutines_static = []
         coroutines_dynamic = []
         # FIXME: symetric of can_skip_node: if a node is a
@@ -1817,6 +1839,10 @@ class Builder:
               break
         # Load static dependencies
         self._depfile.read()
+        if self._depfile._DepFile__invalid:
+          explain(self,
+                  'dependency file %s is invalid' % self._depfile)
+          execute = True
         # If a new dependency appeared, we must rebuild.
         if not execute:
           for source in self.__sources.values():
@@ -1833,7 +1859,7 @@ class Builder:
             if depfile_builder.exists():
               try:
                 with open(str(depfile_builder), 'rb') as f:
-                  stored_hash = drake.Path.Unpickler(f).load()
+                  stored_hash = pickle.Unpickler(f).load()
               except:
                 explain(self, 'the builder hash is invalid')
                 execute = True
@@ -1946,7 +1972,7 @@ class Builder:
                    '%s: write builder dependency file %s',
                    self, depfile_builder)
         with open(str(depfile_builder), 'wb') as f:
-          drake.Path.Pickler(f).dump(self._builder_hash)
+          pickle.Pickler(f).dump(self._builder_hash)
       # FIXME: BUG: remove dynamic dependencies files
       # that are no longer present, otherwise this will
       # be rebuilt forever.
@@ -1968,6 +1994,9 @@ class Builder:
           continue
         depfile = self.depfile(f)
         depfile.read()
+        if depfile._DepFile__invalid:
+          explain(self, 'dependency file %s is invalid' % f)
+          return True
         handler = self._deps_handlers[f]
         with sched.logger.log(
             'drake.Builder',
