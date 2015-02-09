@@ -155,6 +155,12 @@ namespace elle
     InputBufferArchive
     reader() const;
 
+    /// Construct an output streambuf from the buffer.
+    std::streambuf* ostreambuf();
+
+    /// Construct an input streambuf from the buffer.
+    std::streambuf* istreambuf();
+
   /*---------.
   | Iterable |
   `---------*/

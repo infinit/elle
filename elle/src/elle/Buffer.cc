@@ -344,6 +344,23 @@ namespace elle
   }
 
 
+  std::streambuf*
+  Buffer::ostreambuf()
+  {
+        OutputStreamBuffer<elle::Buffer>* out_buffer =
+            new OutputStreamBuffer<elle::Buffer>(*this);
+        return out_buffer;
+  }
+
+  std::streambuf*
+  Buffer::istreambuf()
+  {
+      InputStreamBuffer<elle::Buffer>* in_buffer =
+          new InputStreamBuffer<elle::Buffer>(*this);
+      return in_buffer;
+  }
+
+
   std::ostream&
   operator <<(std::ostream& stream,
               Buffer const& buffer)
