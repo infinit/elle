@@ -1,6 +1,7 @@
 #ifndef REACTOR_FILESYSTEM_HH
 # define REACTOR_FILESYSTEM_HH
 
+# define _FILE_OFFSET_BITS 64
 # include <string>
 # include <boost/filesystem.hpp>
 
@@ -8,6 +9,8 @@
 # include <elle/Exception.hh>
 
 # include <reactor/waitable.hh>
+
+static_assert(sizeof(off_t) == 8, "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
 
 # if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
 struct statvfs {
