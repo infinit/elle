@@ -278,6 +278,12 @@ namespace elle
     InputBufferArchive
     reader() const;
 
+    /// Construct an input streambuf from the buffer.
+    std::streambuf* istreambuf();
+
+    // Note: no ostreambuf equivalent, as the buffer is const
+
+
   /*---------.
   | Iterable |
   `---------*/
@@ -335,86 +341,19 @@ namespace elle
     begin();
     Byte*
     end();
-  };
 
-  /*-------------------.
-  | OutputStreamBuffer |
-  `-------------------*/
+  /*--------------.
+  | Serialization |
+  `--------------*/
 
-  /// A StreamBuffer to write into a Buffer.
-  template <typename BufferType>
-  class OutputStreamBuffer:
-    public StreamBuffer
-  {
   public:
-    explicit
-    OutputStreamBuffer(BufferType& buffer);
+    /// Construct an output streambuf from the buffer.
+    std::streambuf* ostreambuf();
 
-  protected:
-    virtual
-    WeakBuffer
-    write_buffer();
-    virtual
-    WeakBuffer
-    read_buffer();
-    virtual
-    void
-    flush(Size size);
+    /// Construct an input streambuf from the buffer.
+    std::streambuf* istreambuf();
 
-  private:
-    size_t _old_size;
-    BufferType& _buffer;
   };
-
-  template<>
-  class OutputStreamBuffer<WeakBuffer>:
-    public StreamBuffer
-  {
-  public:
-    OutputStreamBuffer(WeakBuffer& buffer);
-  protected:
-    virtual
-    WeakBuffer
-    write_buffer();
-    virtual
-    WeakBuffer
-    read_buffer();
-    virtual
-    void
-    flush(Size size);
-  private:
-    bool _buffer_returned;
-    WeakBuffer& _buffer;
-  };
-
-  /*------------------.
-  | InputStreamBuffer |
-  `------------------*/
-
-  template <typename BufferType>
-  class InputStreamBuffer:
-    public StreamBuffer
-  {
-  public:
-    explicit
-    InputStreamBuffer(BufferType const& buffer);
-
-  protected:
-    virtual
-    WeakBuffer
-    write_buffer();
-    virtual
-    WeakBuffer
-    read_buffer();
-    virtual
-    void
-    flush(Size size);
-
-  private:
-    BufferType const& _buffer;
-    bool _read;
-  };
-
 
   /*----------.
   | Operators |

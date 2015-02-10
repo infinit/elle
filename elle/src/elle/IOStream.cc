@@ -28,7 +28,7 @@ namespace elle
   | IOStream |
   `---------*/
 
-  IOStream::IOStream(StreamBuffer* buffer):
+  IOStream::IOStream(std::streambuf* buffer):
     std::iostream(buffer),
     _buffer(buffer)
   {
@@ -46,7 +46,7 @@ namespace elle
   {
     if (this->_buffer)
     {
-      this->_buffer->sync();
+      this->_buffer->pubsync();
       delete _buffer;
     }
   }

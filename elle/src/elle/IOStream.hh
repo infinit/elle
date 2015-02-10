@@ -23,15 +23,12 @@ namespace elle
   class IOStream: public std::iostream
   {
   public:
-    IOStream(StreamBuffer* buffer);
+    IOStream(std::streambuf* buffer);
     IOStream(IOStream&& buffer);
     ~IOStream();
 
-  protected:
-    friend class StreamBuffer;
-
   private:
-    StreamBuffer* _buffer;
+    std::streambuf* _buffer;
   };
 
   class StreamBuffer: public std::streambuf

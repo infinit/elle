@@ -32,7 +32,7 @@ namespace elle
         ELLE_DEBUG("previsional size: %s", size);
         Buffer res;
         res.capacity(size);
-        IOStream stream(new OutputStreamBuffer<Buffer>(res));
+        IOStream stream(res.ostreambuf());
         Stream base64_stream(stream);
         base64_stream.write(reinterpret_cast<char const*>(input.contents()),
                             input.size());
@@ -58,7 +58,7 @@ namespace elle
         size_t size = decoded_size(input);
         ELLE_DEBUG("previsional size: %s", size);
         Buffer res(size);
-        IOStream stream(new InputStreamBuffer<ConstWeakBuffer>(input));
+        IOStream stream(input.istreambuf());
         Stream base64_stream(stream);
         base64_stream.read(reinterpret_cast<char*>(res.mutable_contents()),
                            size);

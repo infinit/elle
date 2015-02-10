@@ -352,8 +352,7 @@ namespace reactor
             {
               try
               {
-                elle::IOStream input(
-                  new elle::InputStreamBuffer<elle::Buffer>(content));
+                elle::IOStream input(content.istreambuf());
                 auto json = elle::json::read(input);
               }
               catch (elle::json::ParseError)

@@ -23,6 +23,84 @@ namespace elle
     ::free(data);
   }
 
+  /*-------------------.
+  | OutputStreamBuffer |
+  `-------------------*/
+
+  /// A StreamBuffer to write into a Buffer.
+  template <typename BufferType>
+  class OutputStreamBuffer:
+    public StreamBuffer
+  {
+  public:
+    explicit
+    OutputStreamBuffer(BufferType& buffer);
+
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+
+  private:
+    size_t _old_size;
+    BufferType& _buffer;
+  };
+
+  template<>
+  class OutputStreamBuffer<WeakBuffer>:
+    public StreamBuffer
+  {
+  public:
+    OutputStreamBuffer(WeakBuffer& buffer);
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+  private:
+    bool _buffer_returned;
+    WeakBuffer& _buffer;
+  };
+
+  /*------------------.
+  | InputStreamBuffer |
+  `------------------*/
+
+  template <typename BufferType>
+  class InputStreamBuffer:
+    public StreamBuffer
+  {
+  public:
+    explicit
+    InputStreamBuffer(BufferType const& buffer);
+
+  protected:
+    virtual
+    WeakBuffer
+    write_buffer();
+    virtual
+    WeakBuffer
+    read_buffer();
+    virtual
+    void
+    flush(Size size);
+
+  private:
+    BufferType const& _buffer;
+    bool _read;
+  };
+
 //
 // ---------- Buffer ----------------------------------------------------------
 //
@@ -377,6 +455,31 @@ namespace elle
   {
     return InputBufferArchive(*this);
   }
+
+  std::streambuf*
+  ConstWeakBuffer::istreambuf()
+  {
+      InputStreamBuffer<elle::ConstWeakBuffer>* in_buffer =
+          new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
+      return in_buffer;
+  }
+
+  std::streambuf*
+  WeakBuffer::ostreambuf()
+  {
+        OutputStreamBuffer<elle::WeakBuffer>* out_buffer =
+            new OutputStreamBuffer<elle::WeakBuffer>(*this);
+        return out_buffer;
+  }
+
+  std::streambuf*
+  WeakBuffer::istreambuf()
+  {
+      InputStreamBuffer<elle::WeakBuffer>* in_buffer =
+          new InputStreamBuffer<elle::WeakBuffer>(*this);
+      return in_buffer;
+  }
+
 
   void
   ConstWeakBuffer::dump(const Natural32 margin) const
@@ -736,6 +839,14 @@ namespace elle
 
   template
   class OutputStreamBuffer<Buffer>;
+
+  /*----------.
+  | Operators |
+  `----------*/
+
+  std::ostream&
+  operator <<(std::ostream& stream,
+              ConstWeakBuffer const& buffer);
 }
 
 /*-----.

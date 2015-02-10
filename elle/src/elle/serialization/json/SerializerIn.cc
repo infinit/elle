@@ -155,7 +155,7 @@ namespace elle
         std::stringstream encoded(str);
         elle::format::base64::Stream base64(encoded);
         {
-          elle::IOStream output(new elle::OutputStreamBuffer<Buffer>(buffer));
+          elle::IOStream output(buffer.ostreambuf());
           std::copy(std::istreambuf_iterator<char>(base64),
                     std::istreambuf_iterator<char>(),
                     std::ostreambuf_iterator<char>(output));

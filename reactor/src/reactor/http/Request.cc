@@ -850,7 +850,7 @@ namespace reactor
       this->finalize();
       elle::Buffer res;
       {
-        elle::IOStream output(new elle::OutputStreamBuffer<elle::Buffer>(res));
+        elle::IOStream output(res.ostreambuf());
         std::copy(std::istreambuf_iterator<char>(*this),
                   std::istreambuf_iterator<char>(),
                   std::ostreambuf_iterator<char>(output));
