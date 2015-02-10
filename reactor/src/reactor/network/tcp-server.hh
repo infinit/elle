@@ -16,7 +16,7 @@ namespace reactor
       `-------------*/
       public:
         typedef Server Super;
-        TCPServer();
+        TCPServer(bool no_delay = false);
 
         virtual
         ~TCPServer();
@@ -29,6 +29,8 @@ namespace reactor
       virtual
       std::unique_ptr<Socket>
       _accept() override;
+
+      ELLE_ATTRIBUTE_RX(bool, no_delay);
     };
   }
 }
