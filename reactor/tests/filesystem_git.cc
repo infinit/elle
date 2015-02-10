@@ -58,9 +58,9 @@ public:
     if (!bfs::exists(".git"))
       elle::system::Process({"git", "init"}).wait();
   }
-  std::unique_ptr<rfs::Path> path(std::string const& path) override
+  std::shared_ptr<rfs::Path> path(std::string const& path) override
   {
-    return elle::make_unique<GitPath>(path, *this);
+    return std::make_shared<GitPath>(path, *this);
   }
 };
 rfs::FileSystem* fs;
