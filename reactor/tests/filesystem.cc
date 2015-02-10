@@ -128,9 +128,11 @@ static int directory_count(boost::filesystem::path const& p)
 
 static void run_filesystem(reactor::filesystem::FileSystem &fs,
              boost::filesystem::path tmp,
-             reactor::Barrier** b)
+             reactor::Barrier** b,
+             reactor::Scheduler* & sched_ptr)
 {
   reactor::Scheduler sched;
+  sched_ptr = &sched;
   reactor::Thread t(sched, "mount", [&] {
     reactor::Barrier barrier;
     *b = &barrier;
@@ -155,7 +157,8 @@ static void test_sum(void)
   #endif
 
   reactor::Barrier* barrier;
-  std::thread t([&] { run_filesystem(fs, tmp, &barrier);});
+  reactor::Scheduler* sched;
+  std::thread t([&] { run_filesystem(fs, tmp, &barrier, sched);});
   ELLE_LOG("Mounted on %s", tmp);
   if (sandbox)
   {
@@ -177,7 +180,7 @@ static void test_sum(void)
   BOOST_CHECK_EQUAL(s, 22);
   BOOST_CHECK_EQUAL(directory_count(tmp), 101);
   ELLE_DEBUG("teardown");
-  barrier->open();
+  sched->mt_run<void>("stop", [&] {barrier->open();});
   ELLE_DEBUG("joining");
   t.join();
   BOOST_CHECK_EQUAL(directory_count(tmp), 0);
@@ -256,7 +259,8 @@ static void test_xor(void)
   boost::filesystem::create_directories(tmpsource);
   ELLE_LOG("mount: %s   source: %s", tmpmount, tmpsource);
   reactor::Barrier* barrier;
-  std::thread t([&] { run_filesystem(fs, tmpmount, &barrier);});
+  reactor::Scheduler* sched;
+  std::thread t([&] { run_filesystem(fs, tmpmount, &barrier, sched);});
   if (sandbox)
   {
     t.join();
@@ -346,7 +350,7 @@ static void test_xor(void)
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   boost::filesystem::remove(tmpmount / "dir");
   ELLE_TRACE("unmounting...");
-  barrier->open();
+  sched->mt_run<void>("stop", [&] {barrier->open();});
   ELLE_TRACE("joining...");
   t.join();
   ELLE_TRACE("finished");
