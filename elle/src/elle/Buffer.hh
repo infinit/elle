@@ -159,7 +159,7 @@ namespace elle
     std::streambuf* ostreambuf();
 
     /// Construct an input streambuf from the buffer.
-    std::streambuf* istreambuf();
+    std::streambuf* istreambuf() const;
 
   /*---------.
   | Iterable |
@@ -279,7 +279,7 @@ namespace elle
     reader() const;
 
     /// Construct an input streambuf from the buffer.
-    std::streambuf* istreambuf();
+    std::streambuf* istreambuf() const;
 
     // Note: no ostreambuf equivalent, as the buffer is const
 
@@ -351,7 +351,7 @@ namespace elle
     std::streambuf* ostreambuf();
 
     /// Construct an input streambuf from the buffer.
-    std::streambuf* istreambuf();
+    std::streambuf* istreambuf() const;
 
   };
 

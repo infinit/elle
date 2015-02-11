@@ -431,7 +431,7 @@ namespace elle
   }
 
   std::streambuf*
-  Buffer::istreambuf()
+  Buffer::istreambuf() const
   {
       InputStreamBuffer<elle::Buffer>* in_buffer =
           new InputStreamBuffer<elle::Buffer>(*this);
@@ -457,7 +457,7 @@ namespace elle
   }
 
   std::streambuf*
-  ConstWeakBuffer::istreambuf()
+  ConstWeakBuffer::istreambuf() const
   {
       InputStreamBuffer<elle::ConstWeakBuffer>* in_buffer =
           new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
@@ -473,7 +473,7 @@ namespace elle
   }
 
   std::streambuf*
-  WeakBuffer::istreambuf()
+  WeakBuffer::istreambuf() const
   {
       InputStreamBuffer<elle::WeakBuffer>* in_buffer =
           new InputStreamBuffer<elle::WeakBuffer>(*this);
