@@ -119,9 +119,23 @@ namespace reactor
         continue;
       }
       ELLE_DEBUG("%s: terminate %s", *this, *t)
-        t->terminate();
+      // Workaround for an exception glitch on arm: stop the threads one by one.
+# ifdef __arm__
+      try
+      {
+        t->terminate_now();
+      }
+      catch (...)
+      {
+        ELLE_DEBUG("%s wait exception: %s", *this, elle::exception_string());
+        e = std::current_exception();
+      }
+# else
+      t->terminate();
+# endif
       join.push_back(t);
     }
+# ifndef __arm__
     while (true)
     {
       ELLE_DEBUG_SCOPE("%s: wait for all threads to finish", *this);
@@ -132,9 +146,12 @@ namespace reactor
       }
       catch (...)
       {
+        ELLE_DEBUG("%s wait exception: %s", *this, elle::exception_string());
         e = std::current_exception();
       }
     }
+# endif
+    ELLE_DEBUG("%s: cleaning up", *this);
     for (auto* t: this->_threads)
     {
       if (t == current)
