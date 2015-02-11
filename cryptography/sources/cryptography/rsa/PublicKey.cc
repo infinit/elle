@@ -514,7 +514,7 @@ namespace infinit
       PublicKey::verify(Signature const& signature,
                         Digest const& digest) const
       {
-        ELLE_TRACE_METHOD(signature, digest);
+        ELLE_TRACE("verify(%x, %x)", signature, digest);
 
         return (evp::asymmetric::verify(signature,
                                         digest,
