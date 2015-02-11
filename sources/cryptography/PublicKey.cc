@@ -85,7 +85,7 @@ namespace infinit
     Code
     PublicKey::encrypt(Plain const& plain) const
     {
-      ELLE_TRACE_METHOD(plain);
+      ELLE_TRACE("encrypt(%x)", plain);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -96,7 +96,7 @@ namespace infinit
     PublicKey::verify(Signature const& signature,
                       Digest const& digest) const
     {
-      ELLE_TRACE_METHOD(signature, digest);
+      ELLE_TRACE("verify(%x, %x)", signature, digest);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -107,7 +107,7 @@ namespace infinit
     PublicKey::verify(Signature const& signature,
                       Plain const& plain) const
     {
-      ELLE_TRACE_METHOD(signature, plain);
+      ELLE_TRACE("verify(%x, %x)", signature, plain);
 
       Digest digest = oneway::hash(plain, KeyPair::oneway_algorithm);
 
@@ -117,7 +117,7 @@ namespace infinit
     Clear
     PublicKey::decrypt(Code const& code) const
     {
-      ELLE_TRACE_METHOD(code);
+      ELLE_TRACE("decrypt(%x)", code);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 

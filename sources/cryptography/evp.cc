@@ -262,7 +262,7 @@ namespace infinit
                                const unsigned char*,
                                size_t))
         {
-          ELLE_TRACE_FUNCTION(signature, digest, context, function);
+          ELLE_TRACE("verify(%x, %x, %s, %s)", signature, digest, context, function);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
