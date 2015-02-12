@@ -101,7 +101,7 @@ namespace elle
       // An archive_entry_size of 0 means data is not required (hardlink).
       if (archive_entry_size(entry.get()) > 0 && !S_ISLNK(st.st_mode))
       {
-        size_t offset = 0;
+        uint64_t offset = 0;
         size_t chunck_size = 5 * 1024 * 1024;
         while (true)
         {
