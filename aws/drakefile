@@ -1,3 +1,4 @@
+
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -144,8 +145,11 @@ def configure(cryptography,
     )
     rule_tests << test
     if valgrind_tests:
-      runner = drake.valgrind.ValgrindRunner(exe = test,
-                                             valgrind = valgrind)
+      runner = drake.valgrind.ValgrindRunner(
+        exe = test,
+        valgrind = valgrind,
+        valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))]
+        )
     else:
       runner = drake.Runner(exe = test)
     runner.reporting = drake.Runner.Reporting.on_failure

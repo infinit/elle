@@ -3,7 +3,6 @@ import drake.cxx
 import drake.cxx.boost
 import drake.templating
 import sys
-import os
 
 config = None
 lib_static = None
@@ -487,9 +486,12 @@ def configure(curl_config,
     # The option --sim-hints=fuse-compatible is supposed to fix that, but
     # it crashes valgrind with an assert.
     if valgrind_tests and test_name is not 'filesystem':
-      runner = drake.valgrind.ValgrindRunner(exe = test,
-                                             valgrind = valgrind,
-                                             env = env)
+      runner = drake.valgrind.ValgrindRunner(
+        exe = test,
+        valgrind = valgrind,
+        env = env,
+        valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))
+        ])
     else:
       runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
