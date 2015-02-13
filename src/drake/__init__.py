@@ -2465,7 +2465,7 @@ def _raw_include(path, *args, **kwargs):
   g = {}
   #execfile(path, g)
   with open(path) as f:
-    exec(compile(f.read(), path, 'exec'), g)
+    exec(compile('__file__ = "%s"\n' % (path) + f.read(), path, 'exec'), g)
   res = _Module(g)
   res.configure(*args, **kwargs)
   return res
