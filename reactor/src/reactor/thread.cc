@@ -158,7 +158,7 @@ namespace reactor
     {
       if (this->_exception)
       {
-        ELLE_TRACE("%s: re-raise exception: %s",
+        ELLE_TRACE("%s: wrapper: re-raise exception: %s",
                    *this, elle::exception_string(this->_exception));
         std::exception_ptr tmp = this->_exception;
         this->_exception = std::exception_ptr{};
@@ -207,8 +207,10 @@ namespace reactor
     }
     if (this->_exception_thrown)
     {
-      ELLE_TRACE("%s: re-raise exception: %s",
+      ELLE_TRACE("%s: step: re-raise exception: %s",
                  *this, elle::exception_string(this->_exception_thrown));
+      // Do not reraise in the context of this thread
+      this->_scheduler._current = nullptr;
       std::rethrow_exception(this->_exception_thrown);
     }
   }
@@ -229,7 +231,7 @@ namespace reactor
       }
       if (_exception)
       {
-        ELLE_TRACE("%s: re-raise exception: %s",
+        ELLE_TRACE("%s: yield: re-raise exception: %s",
                    *this, elle::exception_string(this->_exception));
         std::exception_ptr tmp = this->_exception;
         this->_exception = std::exception_ptr{};
