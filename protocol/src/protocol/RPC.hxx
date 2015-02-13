@@ -446,6 +446,7 @@ namespace infinit
           }
           catch (reactor::Terminate const&)
           {
+            ELLE_TRACE("%s: terminating as requested", *this);
             throw;
           }
           catch (...)
@@ -528,6 +529,11 @@ namespace infinit
                   output << frame.address;
                   output << frame.offset;
                 }
+              }
+              catch (reactor::Terminate const&)
+              {
+                ELLE_TRACE("%s: terminating as requested", *this);
+                throw;
               }
               catch (std::exception& e)
               {
