@@ -1593,11 +1593,15 @@ exception_yield_pattern(std::vector<unsigned int> yield_pattern,
         });
       // check that current_exception stays empty on non-throwing threads
       auto no_exception_test = [&](unsigned int count) {
-        BOOST_CHECK(!!std::current_exception());
+        if (!!std::current_exception())
+            ELLE_ERR("Exception in no_exception thread: %s", elle::exception_string());
+        BOOST_CHECK(!std::current_exception());
         for (unsigned i=0; i<count; ++i)
         {
           reactor::yield();
-          BOOST_CHECK(!!std::current_exception());
+          if (!!std::current_exception())
+            ELLE_ERR("Exception in no_exception thread: %s", elle::exception_string());
+          BOOST_CHECK(!std::current_exception());
         }
       };
       for (unsigned i=0; i <no_exception.size(); ++i)

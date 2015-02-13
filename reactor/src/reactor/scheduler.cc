@@ -794,3 +794,67 @@ namespace reactor
     sched->run_later(name, f);
   }
 }
+
+
+#if defined(INFINIT_LINUX) || defined(INFINIT_ANDROID) || defined(INFINIT_WINDOWS)
+
+
+/* Override _cxa_get_globals from libc++/libstdc++
+* which uses TLS.
+* Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
+* between coroutines.
+*/
+// FIXME: wrong switches, we assume arm=libc++, linux=libstdc++
+#ifdef __arm__
+
+#include <reactor/libcxx-exceptions/cxa_exception.hpp>
+#define THROW_SPEC
+
+#elif defined(INFINIT_LINUX) || defined(INFINIT_WINDOWS)
+#include <reactor/libcxx-exceptions/unwind-cxx.h>
+#define THROW_SPEC throw()
+#endif
+
+typedef std::unordered_map<reactor::Thread*, __cxxabiv1::__cxa_eh_globals*> CXAMap;
+static CXAMap& cxa_map()
+{
+  static CXAMap res;
+  return res;
+}
+
+typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;
+static CXAThreadMap& cxa_thread_map()
+{
+  static CXAThreadMap map;
+  return map;
+}
+
+namespace __cxxabiv1 {
+
+extern "C" {
+  __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
+  {
+
+    reactor::Scheduler* sched = reactor::Scheduler::scheduler();
+    if (sched == nullptr)
+    {
+      CXAThreadMap& map = cxa_thread_map();
+      __cxa_eh_globals * &res = map[std::this_thread::get_id()];
+      if (res == nullptr)
+        res = new __cxa_eh_globals();
+      return res;
+    }
+    CXAMap& map = cxa_map();
+    reactor::Thread* t = sched->current();
+    __cxa_eh_globals * &res = map[t];
+    if (res == nullptr)
+      res = new __cxa_eh_globals();
+    return res;
+  }
+  __cxa_eh_globals * __cxa_get_globals_fast() THROW_SPEC {
+    return __cxa_get_globals();
+  }
+}
+}
+
+#endif
