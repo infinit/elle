@@ -856,5 +856,7 @@ extern "C" {
   }
 }
 }
+#else
+#error "Platform not supported."
 
 #endif
