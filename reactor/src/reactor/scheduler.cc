@@ -796,7 +796,7 @@ namespace reactor
 }
 
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_ANDROID) || defined(INFINIT_WINDOWS)
+#if defined(INFINIT_LINUX) || defined(INFINIT_ANDROID) || defined(INFINIT_WINDOWS) || defined(INFINIT_MACOSX)
 
 
 /* Override _cxa_get_globals from libc++/libstdc++
@@ -805,7 +805,7 @@ namespace reactor
 * between coroutines.
 */
 // FIXME: wrong switches, we assume arm=libc++, linux=libstdc++
-#ifdef __arm__
+#if defined(__arm__) || defined(INFINIT_MACOSX)
 
 #include <reactor/libcxx-exceptions/cxa_exception.hpp>
 #define THROW_SPEC
