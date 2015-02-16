@@ -1,37 +1,42 @@
 #!/usr/bin/env python3
 
-import os, sys
-sys.path.insert(
-    0,
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '../../drake/src')
-    )
-)
+import os
+import sys
+root = os.path.dirname(__file__)
+drake = os.path.abspath(os.path.join(root, '../../drake/src'))
+sys.path.insert(0, drake)
+
 import resource
 resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
 
 import drake
 import drake.cxx
 import drake.cxx.boost
-import os
-
-cxx_compiler = os.getenv('CXX', 'g++')
 
 with drake.Drake('../..') as d:
-    cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
-    cxx_config = drake.cxx.Config()
-    cxx_config.flag('-fPIC')
-    cxx_config.flag('-Wall')
-    cxx_config.flag('-m64') # XXX[to fix properly: we should have to specify this on a 64-bit machine]
-    cxx_config.enable_debug_symbols()
-    cxx_config.enable_optimization(False)
-    cxx_config.add_system_include_path('.')
+  cxx_compiler = os.getenv('CXX', 'clang++')
+  cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
+  os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
 
-    boost = drake.cxx.boost.Boost(prefix = '/opt/local')
+  cxx_config = drake.cxx.Config()
 
-    d.run(
-        cxx_toolkit,
+  cxx_config.enable_debug_symbols()
+  cxx_config.enable_optimization(False)
+  cxx_config.flag('-ftemplate-depth=512')
+  cxx_config.flag('-std=c++11')
+  cxx_config.flag('-stdlib=libc++')
+  cxx_config.warnings.overloaded_virtual = False
+
+#  cxx_config.flag('-m64') # XXX[to fix properly: we should have to specify this on a 64-bit machine]
+
+  python3 = '/usr/local/Frameworks/Python.framework/Versions/3.4'
+  d.run(cxx_toolkit,
+        None,
         cxx_config,
-        boost = boost,
-        fuse = '/usr/local',
-    )
+        python3 = python3,
+        # XXX fuse = '/usr/local',
+  )
+
+
+# XXX
+#    cxx_config.add_system_include_path('.')
