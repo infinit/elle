@@ -27,8 +27,6 @@ with drake.Drake('../..') as d:
   cxx_config.flag('-stdlib=libc++')
   cxx_config.warnings.overloaded_virtual = False
 
-#  cxx_config.flag('-m64') # XXX[to fix properly: we should have to specify this on a 64-bit machine]
-
   python3 = '/usr/local/Frameworks/Python.framework/Versions/3.4'
   d.run(cxx_toolkit,
         None,
@@ -36,7 +34,3 @@ with drake.Drake('../..') as d:
         python3 = python3,
         # XXX fuse = '/usr/local',
   )
-
-
-# XXX
-#    cxx_config.add_system_include_path('.')
