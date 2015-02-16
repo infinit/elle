@@ -109,6 +109,13 @@ namespace reactor
         // Ignore shutdown error. This could be configurable.
         ELLE_WARN("SSL shutdow error: %s", elle::exception_string());
       }
+      catch (reactor::Terminate const&)
+      {
+        ELLE_WARN("%s: ignore stacked thread termination during SSL shutdown",
+                  *this);
+        if (!reactor::scheduler().current()->terminating())
+          throw;
+      }
       catch (...)
       {
         ELLE_ABORT("unexpected error in SSL shutdown: %s",
