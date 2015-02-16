@@ -86,6 +86,8 @@ namespace reactor
       ELLE_ATTRIBUTE_R(std::string, name);
       /// Current status.
       ELLE_ATTRIBUTE_R(Status, status);
+      ELLE_ATTRIBUTE_RP(bool, unwinding, protected:);
+      ELLE_ATTRIBUTE_RP(std::exception_ptr, exception, protected:); // stored when yielding
     protected:
       void
       status(Status status);

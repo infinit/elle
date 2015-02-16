@@ -19,7 +19,8 @@ namespace reactor
                    const Action& action):
       _action(action),
       _name(name),
-      _status(Status::starting)
+      _status(Status::starting),
+      _unwinding(false)
     {}
 
     Thread::~Thread()

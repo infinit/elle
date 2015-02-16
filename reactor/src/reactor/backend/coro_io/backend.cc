@@ -43,8 +43,7 @@ namespace reactor
           _backend(backend),
           _coro(Coro_new()),
           _caller(nullptr),
-          _root(false),
-          _unwinding(false)
+          _root(false)
         {}
 
         ~Thread()
@@ -210,8 +209,6 @@ namespace reactor
         /// Let libcoroutine callback invoke our _run.
         friend void starter(void* arg);
         ELLE_ATTRIBUTE(bool, root);
-        ELLE_ATTRIBUTE(bool, unwinding);
-        ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
       };
 
       static
