@@ -117,7 +117,6 @@ namespace reactor
             make_fcontext(this->_stack_pointer, this->_stack_size, wrapped_run))
           , _caller(nullptr)
           , _root(false)
-          , _unwinding(false)
         {
           #ifdef VALGRIND
           this->_valgrind_stack =
@@ -232,12 +231,13 @@ namespace reactor
           ELLE_ASSERT_EQ(this->_backend._current, this);
           ELLE_ASSERT_EQ(this->status(), Status::running);
           this->status(Status::waiting);
-          this->_backend._current = this->_caller;
-          ELLE_TRACE("%s: yield back to %s", *this, *this->_backend._current);
-          this->_caller = nullptr;
           // Store current exception and stack unwinding state
           this->_unwinding = std::uncaught_exception();
           this->_exception = std::current_exception();
+          this->_backend._current = this->_caller;
+          ELLE_TRACE("%s: yield back to %s", *this, *this->_backend._current);
+          this->_caller = nullptr;
+
           if (this->_unwinding)
             ELLE_DUMP("yielding %s with in-flight exception", *this);
           jump_fcontext(&this->_context,
@@ -314,8 +314,6 @@ namespace reactor
         /// Wrap run function so that it can be passed when doing make_fcontext.
         friend void wrapped_run(intptr_t);
         ELLE_ATTRIBUTE(bool, root);
-        ELLE_ATTRIBUTE(bool, unwinding);
-        ELLE_ATTRIBUTE(std::exception_ptr, exception); // stored when yielding
         ELLE_ATTRIBUTE(unsigned int, valgrind_stack);
       };
 
