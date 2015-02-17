@@ -70,9 +70,11 @@ namespace infinit
     Clear
     PrivateKey::decrypt(Code const& code) const
     {
-      ELLE_TRACE_SCOPE("%s: decrypt", *this);
+      ELLE_TRACE_SCOPE("%s: decrypt()", *this);
       ELLE_DUMP("code: %x", code);
+
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
       return (this->_implementation->decrypt(code));
     }
 
