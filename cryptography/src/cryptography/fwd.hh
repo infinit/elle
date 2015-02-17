@@ -35,7 +35,7 @@ namespace infinit
     typedef Output Clear;
     /// Represent an encrypted text, asymmetrically or symmetrically.
     typedef Output Code;
-    /// Represent an asymmetrically encrypted text.
+    /// Represent a hashed content.
     typedef Output Digest;
     /// Represent a cryptographic signature.
     typedef Output Signature;
