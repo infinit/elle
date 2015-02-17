@@ -64,9 +64,6 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-      /// Encrypt the given buffer
-      elle::Buffer
-      encrypt(elle::Buffer const& input) const;
       /// Encrypt the given plain text.
       Code
       encrypt(Plain const& plain) const;

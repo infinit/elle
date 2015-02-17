@@ -11,7 +11,6 @@
 | Operators |
 `----------*/
 
-
 std::ostream&
 operator <<(std::ostream& stream,
             ::BIGNUM const& bignum);

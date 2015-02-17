@@ -11,7 +11,7 @@
 
 # include <cryptography/Exception.hh>
 
-#include <openssl/err.h>
+# include <openssl/err.h>
 
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
