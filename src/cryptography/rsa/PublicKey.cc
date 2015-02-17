@@ -572,38 +572,6 @@ namespace infinit
       | Serialization |
       `--------------*/
 
-      class BigNum
-        : public std::string
-      {
-      public:
-        BigNum(::BIGNUM* const bignum)
-        {
-          if (bignum)
-          {
-            char* hexadecimal = ::BN_bn2hex(bignum);
-            elle::SafeFinally free
-              ([hexadecimal] {::OPENSSL_free(hexadecimal);});
-            // Transform the number in hexadecimal.
-            if (!hexadecimal)
-              throw ::elle::Error(
-                ::elle::sprintf(
-                  "unable to convert big number to hexadecimal: %s",
-                  ::ERR_error_string(ERR_get_error(), nullptr)));
-            this->std::string::operator =(hexadecimal);
-          }
-        }
-
-        operator ::BIGNUM*()
-        {
-          ::BIGNUM* res = nullptr;
-          if (BN_hex2bn(&res, this->c_str()) == 0)
-            throw ::elle::Error(
-              ::elle::sprintf("unable to read big number from hexadecimal: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          return res;
-        }
-      };
-
       PublicKey::PublicKey(elle::serialization::SerializerIn& serializer)
         : _key(::EVP_PKEY_new())
       {
