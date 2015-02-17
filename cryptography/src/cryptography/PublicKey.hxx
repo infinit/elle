@@ -25,6 +25,12 @@ namespace infinit
 
       static_assert(std::is_same<T, Plain>::value == false,
                     "this call should never have occured");
+      static_assert(std::is_same<T, elle::Buffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                    "this call should never have occured");
 
       elle::Buffer buffer;
       buffer.writer() << value;
@@ -40,6 +46,12 @@ namespace infinit
       ELLE_DEBUG_FUNCTION(code);
 
       static_assert(std::is_same<T, Clear>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::Buffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
                     "this call should never have occured");
 
       Clear clear = this->decrypt(code);
@@ -62,6 +74,12 @@ namespace infinit
       static_assert(std::is_same<T, Digest>::value == false,
                     "this call should never have occured");
       static_assert(std::is_same<T, Plain>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::Buffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
                     "this call should never have occured");
 
       elle::Buffer buffer;

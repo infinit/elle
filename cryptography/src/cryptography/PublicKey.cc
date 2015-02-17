@@ -71,17 +71,6 @@ namespace infinit
     | Methods |
     `--------*/
 
-    elle::Buffer
-    PublicKey::encrypt(elle::Buffer const& input) const
-    {
-      ELLE_TRACE_SCOPE("%s: encrypt buffer", *this);
-      ELLE_DUMP("%s: data: %x", *this, input);
-      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
-      Plain plain(elle::ConstWeakBuffer(input.contents(), input.size()));
-      auto output = this->_implementation->encrypt(plain);
-      return std::move(output.buffer());
-    }
-
     Code
     PublicKey::encrypt(Plain const& plain) const
     {

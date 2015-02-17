@@ -67,17 +67,6 @@ namespace infinit
     | Methods |
     `--------*/
 
-    elle::Buffer
-    PrivateKey::decrypt(elle::Buffer const& input) const
-    {
-      ELLE_TRACE_SCOPE("%s: decrypt buffer", *this);
-      ELLE_DUMP("%s: data: %x", *this, input);
-      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
-      Code plain(input);
-      auto output = this->_implementation->decrypt(plain);
-      return std::move(output.buffer());
-    }
-
     Clear
     PrivateKey::decrypt(Code const& code) const
     {

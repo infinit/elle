@@ -71,7 +71,6 @@ namespace infinit
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
 
-
     /*----------.
     | Printable |
     `----------*/

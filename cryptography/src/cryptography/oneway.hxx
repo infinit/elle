@@ -29,7 +29,13 @@ namespace infinit
         ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
         ELLE_DEBUG_FUNCTION(value, algorithm);
 
-        static_assert(!std::is_same<T, Plain>::value,
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
                       "this call should never have occured");
 
         elle::Buffer buffer;
@@ -49,7 +55,13 @@ namespace infinit
         ELLE_LOG_COMPONENT("infinit.cryptography.oneway");
         ELLE_DEBUG_FUNCTION(value, algorithm);
 
-        static_assert(!std::is_same<T, Plain>::value,
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
                       "this call should never have occured");
 
         elle::Buffer buffer;
