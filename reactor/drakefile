@@ -158,6 +158,67 @@ def configure(curl_config,
     local_cxx_config += fuse_config
     fuse_lib = drake.cxx.DynLib('%s/lib/libosxfuse.2.dylib' % fuse)
 
+  # Libcxabi through llvm
+  if cxx_toolkit.os == drake.os.macos:
+    build_libcxxabi = drake.Rule("libcxxabi")
+    llvm_url = 'http://llvm.org/releases/3.5.1/llvm-3.5.1.src.tar.xz'
+    libcxx_url = 'http://llvm.org/releases/3.5.1/libcxx-3.5.1.src.tar.xz'
+    libcxxabi_url = 'http://llvm.org/releases/3.5.1/libcxxabi-3.5.1.src.tar.xz'
+    llvm_tarball = drake.node('llvm/llvm-3.5.1.src.tar.xz')
+    libcxx_tarball = drake.node('llvm/libcxx-3.5.1.src.tar.xz')
+    libcxxabi_tarball = drake.node('llvm/libcxxabi-3.5.1.src.tar.xz')
+    drake.HTTPDownload(llvm_url , llvm_tarball,
+                       fingerprint='2d3d8004f38852aa679e5945b8ce0b14')
+    drake.HTTPDownload(libcxx_url , libcxx_tarball,
+                       fingerprint='406f09b1dab529f3f7879f4d548329d2')
+    drake.HTTPDownload(libcxxabi_url , libcxxabi_tarball,
+                       fingerprint='b22c707e8d474a99865ad3c521c3d464')
+    drake.TarballExtractor(
+        llvm_tarball,
+        targets = ['llvm-3.5.1.src/configure'],
+        )
+    drake.TarballExtractor(
+        libcxx_tarball,
+        targets = ['libcxx-3.5.1.src/CMakeLists.txt'],
+        )
+    # Patch CMakeLists.txt to more recent version for llvm detection
+    libcxxabi_patches = [(drake.node('libcxxabi2.patch'),0)]
+    if cxx_toolkit.os == drake.os.macos: # pass --unused dyn_lookup to linker
+        libcxxabi_patches.append((drake.node('libcxxabi.patch'),0))
+    drake.TarballExtractor(
+        libcxxabi_tarball,
+        targets = ['libcxxabi-3.5.1.src/CMakeLists.txt'],
+        patches = libcxxabi_patches,
+        patch_dir = 'libcxxabi-3.5.1.src'
+      )
+    #invoke cmake
+    drake.ShellCommand(
+      drake.nodes('llvm/libcxxabi-3.5.1.src/CMakeLists.txt',
+        'llvm/llvm-3.5.1.src/configure',
+        'llvm/libcxx-3.5.1.src/CMakeLists.txt'
+        ),
+      drake.nodes('llvm/libcxxabi-3.5.1.src/build/CMakeCache.txt'),
+      [
+       'cmake', '..',
+       '-DCMAKE_CXX_COMPILER=clang++',
+       '-DLLVM_PATH=%s' % (drake.path_build('llvm/llvm-3.5.1.src', True)),
+       '-DLIBCXXABI_LIBCXX_PATH=%s' % (drake.path_build('llvm/libcxx-3.5.1.src', True))
+      ],
+      True,
+      drake.path_build('llvm/libcxxabi-3.5.1.src/build/'),
+      )
+    libcxxabi_lib = cxx_toolkit.libname_dyn('llvm/libcxxabi-3.5.1.src/build/lib/c++abi')
+    #invoke make
+    drake.ShellCommand(
+      drake.nodes('llvm/libcxxabi-3.5.1.src/build/CMakeCache.txt'),
+      drake.nodes(libcxxabi_lib),
+      ['make'],
+      True,
+      drake.path_build('llvm/libcxxabi-3.5.1.src/build/'),
+      )
+    build_libcxxabi << drake.nodes(libcxxabi_lib)
+
+
   # Curl
   local_cxx_config += curl_config
   curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
@@ -478,6 +539,9 @@ def configure(curl_config,
       'DIR_BUILD':  str(drake.path_build()),
       'DIR_SOURCE': str(drake.path_source()),
     }
+    if cxx_toolkit.os == drake.os.macos:
+      env['DYLD_LIBRARY_PATH'] = drake.Path(libcxxabi_lib).dirname()
+      test.dependency_add(libcxxabi_lib)
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
     # Disable valgrind for tests using fuse.
