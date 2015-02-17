@@ -100,12 +100,13 @@ namespace infinit
       | Operators |
       `----------*/
     public:
+      void
+      operator =(const SecretKey&) = delete;
+      SecretKey&
+      operator =(SecretKey&&) = default;
       elle::Boolean
       operator ==(SecretKey const&) const;
-      void
-      operator = (const SecretKey&) = delete;
-      SecretKey&
-      operator = (SecretKey&&) = default;
+
       /*-----------.
       | Interfaces |
       `-----------*/
