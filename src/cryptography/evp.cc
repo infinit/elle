@@ -79,8 +79,6 @@ namespace infinit
                               const unsigned char*,
                               size_t))
         {
-          ELLE_TRACE_FUNCTION(input, context, function);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -133,7 +131,9 @@ namespace infinit
                                 size_t),
                 elle::Natural32 const padding_size)
         {
-          ELLE_TRACE_FUNCTION(plain, context, function, padding_size);
+          ELLE_TRACE_SCOPE("encrypt(%s, %s, %s)",
+                           context, function, padding_size);
+          ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -202,7 +202,8 @@ namespace infinit
                                 const unsigned char*,
                                 size_t))
         {
-          ELLE_TRACE_SCOPE("decrypt RSA");
+          ELLE_TRACE_SCOPE("decrypt(%s, %s)", context, function);
+          ELLE_DUMP("code: %s", code);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -240,7 +241,8 @@ namespace infinit
                              const unsigned char*,
                              size_t))
         {
-          ELLE_TRACE_FUNCTION(digest, context, function);
+          ELLE_TRACE_SCOPE("sign(%s, %s)", context, function);
+          ELLE_DUMP("digest: %s", digest);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -262,7 +264,9 @@ namespace infinit
                                const unsigned char*,
                                size_t))
         {
-          ELLE_TRACE("verify(%x, %x, %s, %s)", signature, digest, context, function);
+          ELLE_TRACE_SCOPE("verify(%s, %s)", context, function);
+          ELLE_DUMP("signature: %s", signature);
+          ELLE_DUMP("digest: %s", digest);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -331,7 +335,9 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_FUNCTION(plain, secret, function_cipher, function_oneway);
+          ELLE_TRACE_SCOPE("verify(%s, %s)", function_cipher, function_oneway);
+          ELLE_DUMP("plain: %s", plain);
+          ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -446,9 +452,9 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_SCOPE("decrypt asymmetrically");
-          ELLE_DUMP("code: %x", code);
-          ELLE_DUMP("secret: %x", secret);
+          ELLE_TRACE_SCOPE("decrypt(%s, %s)", function_cipher, function_oneway);
+          ELLE_DUMP("code: %s", code);
+          ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -546,7 +552,6 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
-          ELLE_DUMP("result: %x", clear);
           return (clear);
         }
       }
@@ -570,7 +575,8 @@ namespace infinit
         hash(Plain const& plain,
              ::EVP_MD const* function)
         {
-          ELLE_TRACE_FUNCTION(plain, function);
+          ELLE_TRACE_SCOPE("hash(%s)", function);
+          ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -638,7 +644,9 @@ namespace infinit
              Digest const& key,
              ::EVP_MD const* function)
         {
-          ELLE_TRACE_FUNCTION(plain, function);
+          ELLE_TRACE_SCOPE("hmac(%s)", function);
+          ELLE_DUMP("plain: %s", plain);
+          ELLE_DUMP("key: %s", key);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
