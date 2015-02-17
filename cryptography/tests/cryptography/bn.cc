@@ -37,6 +37,8 @@ test_represent()
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << bn;
     elle::printf("[representation 1] %s\n", archive);
+
+    ::BN_free(&bn);
   }
 }
 
@@ -64,6 +66,7 @@ test_serialize()
       elle::serialize::OutputBase64Archive>(archive2) << bn;
 
     BOOST_CHECK_EQUAL(archive1, archive2);
+
     ::BN_free(&bn);
   }
 
@@ -77,6 +80,8 @@ test_serialize()
     BOOST_CHECK_THROW(elle::serialize::from_string<
                         elle::serialize::InputBase64Archive>(archive) >> bn,
                       elle::serialize::Exception);
+
+    ::BN_free(&bn);
   }
 }
 

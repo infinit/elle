@@ -57,7 +57,7 @@ namespace infinit
       /// HMAC anything serializable using a key and return a digest.
       template <typename T>
       Digest
-      hmac(T const& plain,
+      hmac(T const& value,
            Digest const& key,
            Algorithm algorithm);
 

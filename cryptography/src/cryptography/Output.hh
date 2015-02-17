@@ -36,7 +36,8 @@ namespace infinit
       Output(Output const& other);
       Output(Output&& other);
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
-      virtual ~Output() = default;
+      virtual
+      ~Output() = default;
 
       /*----------.
       | Operators |
