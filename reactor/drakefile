@@ -202,12 +202,14 @@ def configure(curl_config,
        'cmake', '..',
        '-DCMAKE_CXX_COMPILER=clang++',
        '-DLLVM_PATH=%s' % (drake.path_build('llvm/llvm-3.5.1.src', True)),
+       '-DLLVM_ENABLE_LIBCXX=ON',
        '-DLIBCXXABI_LIBCXX_PATH=%s' % (drake.path_build('llvm/libcxx-3.5.1.src', True))
       ],
       True,
       drake.path_build('llvm/libcxxabi-3.5.1.src/build/'),
       )
     libcxxabi_lib = cxx_toolkit.libname_dyn('llvm/libcxxabi-3.5.1.src/build/lib/c++abi')
+    libcxxabi_lib = drake.path_build(libcxxabi_lib, True)
     #invoke make
     drake.ShellCommand(
       drake.nodes('llvm/libcxxabi-3.5.1.src/build/CMakeCache.txt'),
@@ -529,6 +531,8 @@ def configure(curl_config,
     sources = drake.nodes('tests/%s.cc' % test_name) + [
       library, elle_lib
       ] + libraries
+    if cxx_toolkit.os == drake.os.macos:
+      sources += drake.nodes(str(libcxxabi_lib))
     test = drake.cxx.Executable('tests/%s' % test_name,
                                 sources,
                                 cxx_toolkit, tests_config)
@@ -543,7 +547,6 @@ def configure(curl_config,
       # We need this environment variable to prevent loading of
       # /usr/lib/libc++abi.1.dylib by /usr/lib/libc++.1.dylib
       env['DYLD_LIBRARY_PATH'] = drake.Path(libcxxabi_lib).dirname()
-      test.dependency_add(libcxxabi_lib)
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
     # Disable valgrind for tests using fuse.
