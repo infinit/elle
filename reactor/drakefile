@@ -540,6 +540,8 @@ def configure(curl_config,
       'DIR_SOURCE': str(drake.path_source()),
     }
     if cxx_toolkit.os == drake.os.macos:
+      # We need this environment variable to prevent loading of
+      # /usr/lib/libc++abi.1.dylib by /usr/lib/libc++.1.dylib
       env['DYLD_LIBRARY_PATH'] = drake.Path(libcxxabi_lib).dirname()
       test.dependency_add(libcxxabi_lib)
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
