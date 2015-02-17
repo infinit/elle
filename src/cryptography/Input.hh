@@ -23,7 +23,7 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      Input(elle::ConstWeakBuffer const& buffer);
+      Input(elle::ConstWeakBuffer const& buffer); /* implicit */
       virtual
       ~Input() = default;
     private:

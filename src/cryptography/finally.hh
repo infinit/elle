@@ -27,22 +27,22 @@
 /// Make it easy to clean up a cipher context.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(V)  \
   elle::SafeFinally _finally_##V(                                       \
-    [&] () {::EVP_CIPHER_CTX_cleanup(&V);});                            \
+    [&] () { ::EVP_CIPHER_CTX_cleanup(&V); });                          \
 
 /// Make it easy to clean up a digest context.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(V)  \
   elle::SafeFinally _finally_##V(                                       \
-    [&] () {::EVP_MD_CTX_cleanup(&V);});                                 \
+    [&] () { ::EVP_MD_CTX_cleanup(&V); });                              \
 
 /// Make it easy to clean up a digest context.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_HMAC_DIGEST_CONTEXT(V)  \
   elle::SafeFinally _finally_##V(                                            \
-    [&] () {::HMAC_CTX_cleanup(&V);});                                       \
+    [&] () { ::HMAC_CTX_cleanup(&V); });                                     \
 
 /// Make it easy to clean up a EVP_PKEY context.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(V)   \
   elle::SafeFinally _finally_##V(                                       \
-    [&] () {::EVP_PKEY_CTX_free(V);});                                  \
+    [&] () { ::EVP_PKEY_CTX_free(V); });                                \
 
 /// Make it super easy to abort the final action based on the name of
 /// the variable it relates to.
