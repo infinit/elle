@@ -1,0 +1,18 @@
+--- src/CMakeLists.txt.old	2015-02-17 16:36:58.584332465 +0100
++++ src/CMakeLists.txt	2015-02-17 16:37:05.896332157 +0100
+@@ -5,7 +5,6 @@
+   cxa_default_handlers.cpp
+   cxa_demangle.cpp
+   cxa_exception.cpp
+-  cxa_exception_storage.cpp
+   cxa_guard.cpp
+   cxa_handlers.cpp
+   cxa_new_delete.cpp
+@@ -61,6 +60,7 @@
+ append_if(compile_flags LIBCXXABI_HAS_FPIC_FLAG -fPIC)
+ append_if(link_flags LIBCXXABI_HAS_NODEFAULTLIBS_FLAG -nodefaultlibs)
+ 
++list(APPEND link_flags --undefined dynamic_lookup)
+ if ( APPLE )
+   if ( CMAKE_OSX_DEPLOYMENT_TARGET STREQUAL "10.6" )
+     list(APPEND compile_flags "-U__STRICT_ANSI__")
