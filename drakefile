@@ -25,7 +25,7 @@ def configure(cxx_toolkit = None,
 
   # Global Configuration
   config = drake.cxx.Config()
-  config.add_local_include_path('sources')
+  config.add_local_include_path('src')
   config.lib_path('lib')
   config += openssl
 
@@ -49,13 +49,13 @@ def configure(cxx_toolkit = None,
 
   # Sources
   sources = drake.nodes(
-    'sources/dopenssl/all.h',
-    'sources/dopenssl/bn.c',
-    'sources/dopenssl/bn.h',
-    'sources/dopenssl/rand.c',
-    'sources/dopenssl/rand.h',
-    'sources/dopenssl/rsa.c',
-    'sources/dopenssl/rsa.h',
+    'src/dopenssl/all.h',
+    'src/dopenssl/bn.c',
+    'src/dopenssl/bn.h',
+    'src/dopenssl/rand.c',
+    'src/dopenssl/rand.h',
+    'src/dopenssl/rsa.c',
+    'src/dopenssl/rsa.h',
     )
 
   if enable_debug:
@@ -92,4 +92,4 @@ def configure(cxx_toolkit = None,
   prefix = drake.Path(prefix)
   rule_install << drake.install(lib_dynamic, prefix)
   rule_install << drake.install(lib_static, prefix)
-  rule_install << drake.install(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'sources')
+  rule_install << drake.install(list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)), prefix / 'include', 'src')
