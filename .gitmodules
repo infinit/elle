@@ -13,3 +13,6 @@
 [submodule "reactor/miniupnp"]
 	path = reactor/miniupnp
 	url = git@git.infinit.io:miniupnp
+[submodule "cryptography/modules/dopenssl"]
+	path = cryptography/modules/dopenssl
+	url = https://github.com/infinitdotio/dopenssl
