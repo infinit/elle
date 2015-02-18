@@ -9,6 +9,8 @@ sys.path.insert(0, drake)
 import resource
 resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
 
+enable_rotation = bool(os.getenv('INFINIT_CRYPTOGRAPHY_ENABLE_ROTATION', False))
+
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -31,6 +33,7 @@ with drake.Drake('../..') as d:
   d.run(cxx_toolkit,
         None,
         cxx_config,
+        enable_rotation = enable_rotation,
         python3 = python3,
         # XXX fuse = '/usr/local',
   )
