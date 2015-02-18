@@ -52,7 +52,10 @@ namespace infinit
       ELLE_OPERATOR_NEQ(Output);
       ELLE_OPERATOR_GT(Output);
       ELLE_OPERATOR_GTE(Output);
-      ELLE_OPERATOR_NO_ASSIGNMENT(Output);
+      void
+      operator =(Output const& other) = delete;
+      Output&
+      operator =(Output&& other) = default;
 
       elle::Boolean
       operator ==(Input const& other) const;
