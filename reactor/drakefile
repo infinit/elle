@@ -9,6 +9,7 @@ lib_static = None
 lib_dynamic = None
 library = None
 python_lib = None
+cxx_lib = None
 
 library_coroutine = None
 
@@ -43,7 +44,7 @@ def configure(curl_config,
 ):
 
   global asio_udt_lib
-  global config, lib_static, lib_dynamic, library
+  global config, lib_static, lib_dynamic, library, cxx_lib
   global rule_build, rule_install
   global python_lib
 
@@ -166,7 +167,7 @@ def configure(curl_config,
       post_process = rpath_libcxx)
     lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
       post_process = rpath_libcxxabi)
-    libs_cxx = [lib_cxx, lib_cxx_abi]
+    cxx_lib = [lib_cxx, lib_cxx_abi]
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
