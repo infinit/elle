@@ -268,10 +268,14 @@ class PythonVersionGenerator(VersionGenerator):
   def _variable(self, name, value):
     return '%s = %s' % (name, repr(value))
 
-def set_local_libcxx(tgt):
-  if cxx_toolkit.os in [drake.os.macos]:
-    with drake.WritePermissions(drake.node(tgt)):
-      return drake.command([
-        'install_name_tool', '-change',
-        '/usr/lib/libc++.1.dylib', '@rpath/libc++.1.dylib', str(drake.path_build(tgt, True))
-        ])
+def set_local_libcxx(cxx_toolkit):
+  def _set_local_libcxx(tgt):
+    if cxx_toolkit.os in [drake.os.macos]:
+      with drake.WritePermissions(drake.node(tgt)):
+        return drake.command([
+          'install_name_tool', '-change',
+          '/usr/lib/libc++.1.dylib', '@rpath/libc++.1.dylib', str(drake.path_build(tgt, True))
+          ])
+    else:
+      return True
+  return _set_local_libcxx

@@ -167,7 +167,7 @@ def configure(curl_config,
       post_process = rpath_libcxx)
     lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
       post_process = rpath_libcxxabi)
-    cxx_lib = [lib_cxx, lib_cxx_abi]
+    cxx_lib = lib_cxx + lib_cxx_abi
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
@@ -182,16 +182,16 @@ def configure(curl_config,
   else:
     local_cxx_config += boost.config_context(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
+      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
 
   # FUSE
   fuse_lib = None
@@ -266,7 +266,7 @@ def configure(curl_config,
   # Elle
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = set_local_libcxx)
+  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
 
   # miniupnpc
   miniupnp = drake.include('miniupnp', cxx_toolkit, archs = archs)
