@@ -41,12 +41,23 @@ def configure(openssl_config,
                             'lib', strip_prefix = True)
   if enable_rotation:
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
-    try:
-      dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
-    except Exception as e:
-      print("The dependency 'dopenssl' appears not to be installed. Please "
-            "visit http://open.infinit.io/dopenssl")
-      raise e
+
+    dopenssl = drake.include(
+      'modules/dopenssl',
+      cxx_toolkit = cxx_toolkit,
+      cxx_config = cxx_config,
+      openssl_config = openssl_config,
+      openssl_lib_crypto = openssl_lib_crypto,
+      openssl_lib_ssl = openssl_lib_ssl,
+      prefix = prefix,
+      )
+
+#    try:
+#      dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
+#    except Exception as e:
+#      print("The dependency 'dopenssl' appears not to be installed. Please "
+#            "visit http://open.infinit.io/dopenssl")
+#      raise e
   boost = boost or drake.cxx.boost.Boost()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     boost_test = boost.config_test(static = True)
