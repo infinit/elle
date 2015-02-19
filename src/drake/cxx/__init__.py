@@ -63,6 +63,7 @@ class Config:
             self.__standard = None
             self.__rpath = []
             self.__warnings = Config.Warnings()
+            self.__use_local_libcxx = False
         else:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
@@ -79,6 +80,7 @@ class Config:
             self.__standard = model.__standard
             self.__rpath = model.__rpath[:]
             self.__warnings = Config.Warnings(model.__warnings)
+            self.__use_local_libcxx = model.__use_local_libcxx
 
     class Warnings:
 
@@ -459,6 +461,14 @@ class Config:
     def libraries(self):
       return tuple(self.__libraries)
 
+    @property
+    def use_local_libcxx(self):
+        return self.__use_local_libcxx
+
+    @use_local_libcxx.setter
+    def use_local_libcxx(self, val):
+        self.__use_local_libcxx = bool(val)
+
     def __repr__(self):
       content = {}
       if self._includes:
@@ -721,6 +731,8 @@ class GccToolkit(Toolkit):
       res.append('-dynamic')
     elif self.os in (drake.os.ios, drake.os.ios_simulator):
       res.append('-static')
+    elif self.os is drake.os.linux:
+      res.append('-pthread')
     return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
@@ -1366,8 +1378,15 @@ class Linker(Builder):
       self.config,
       objects + list(sorted(self.sources_dynamic())),
       self.exe)
+    cmd = (cmd,)
     if self.__strip:
-      cmd = (cmd, ['%sstrip' % self.toolkit.prefix, self.exe.path()])
+      cmd = cmd + (['%sstrip' % self.toolkit.prefix, self.exe.path()],)
+    if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
+      cmd = cmd + (['install_name_tool',
+                   '-change', '/usr/lib/libc++.1.dylib',
+                   '@rpath/libc++.1.dylib',
+                   self.exe.path()
+                   ],)
     return cmd
 
   def __repr__(self):
@@ -1408,8 +1427,15 @@ class DynLibLinker(Builder):
         self.config,
         objects + list(self.sources_dynamic()),
         self.lib)
+    cmd = (cmd,)
     if self.__strip:
-      cmd = (cmd, ['%sstrip' % self.toolkit.prefix, self.lib.path()])
+      cmd = cmd + ( ['%sstrip' % self.toolkit.prefix, self.lib.path()],)
+    if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
+      cmd = cmd + (['install_name_tool',
+                   '-change', '/usr/lib/libc++.1.dylib',
+                   '@rpath/libc++.1.dylib',
+                   self.lib.path()
+                   ],)
     return cmd
 
   def __repr__(self):
