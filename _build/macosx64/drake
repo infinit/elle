@@ -1,25 +1,33 @@
 #!/usr/bin/env python3
 
 import os
+import sys
+root = os.path.dirname(__file__)
+drake = os.path.abspath(os.path.join(root, '../../../../../drake/src'))
+sys.path.insert(0, drake)
+
+import resource
+resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
+
+enable_cryptographic_rotation = bool(os.getenv('INFINIT_CRYPTOGRAPHY_ENABLE_ROTATION', False))
+
 import drake
 import drake.cxx
 
-c_compiler = os.getenv('CC', 'gcc')
+with drake.Drake('../..') as d:
+  c_compiler = os.getenv('CC', 'gcc')
+  cxx_toolkit = drake.cxx.GccToolkit(compiler_c = c_compiler, compiler = c_compiler)
+  os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler_c = c_compiler, compiler = c_compiler)
-cxx_config = drake.cxx.Config()
-cxx_config.flag('-fPIC')
-cxx_config.flag('-Wall')
-cxx_config.enable_debug_symbols(False)
-cxx_config.enable_optimization(True)
-cxx_config.add_system_include_path('.')
+  cxx_config = drake.cxx.Config()
 
-openssl = '/opt/local'
+  cxx_config.flag('-fPIC')
+  cxx_config.flag('-Wall')
+  cxx_config.enable_debug_symbols(False)
+  cxx_config.enable_optimization(False) # XXX True
 
-drake.run(
-    '../..',
-    cxx_toolkit,
-    cxx_config,
-    openssl = openssl,
-    enable_debug = False,
-)
+  python3 = '/usr/local/Frameworks/Python.framework/Versions/3.4'
+  d.run(cxx_toolkit,
+        cxx_config,
+        openssl_config = '/usr/local/opt/openssl'
+  )

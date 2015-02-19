@@ -11,41 +11,22 @@ rule_install = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
-              openssl = None,
+              openssl_config = None,
+              openssl_lib_crypto = None,
+              openssl_lib_ssl = None,
               prefix = '/usr',
-              enable_debug = True):
+              enable_debug = False):
 
   global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
-  # Libraries
-  openssl = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl)
-
   # Global Configuration
   config = drake.cxx.Config()
   config.add_local_include_path('src')
   config.lib_path('lib')
-  config += openssl
-
-  # Local Configuration
-  cxx_config = cxx_config or drake.cxx.Config()
-  cxx_config += config
-  cxx_config.lib('crypto')
-  cxx_config.lib('ssl')
-  cxx_config.lib_path_runtime('.')
-
-  # Tests
-  tests = ['bn',
-           'rand',
-           'rsa']
-
-  tests_cxx_config = drake.cxx.Config(cxx_config)
-  tests_cxx_config += config
-  tests_cxx_config += openssl
-  tests_cxx_config.lib('crypto')
-  tests_cxx_config.lib('ssl')
+# XXX  config += openssl_config
 
   # Sources
   sources = drake.nodes(
@@ -57,6 +38,35 @@ def configure(cxx_toolkit = None,
     'src/dopenssl/rsa.c',
     'src/dopenssl/rsa.h',
     )
+
+  # Tests
+  tests = ['bn',
+           'rand',
+           'rsa']
+
+  # Local Configuration
+  cxx_config = cxx_config or drake.cxx.Config()
+  cxx_config += config
+
+  if openssl_lib_crypto and openssl_lib_ssl:
+    openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
+                              'lib', strip_prefix = True)
+    sources += openssl_libs
+  else:
+    openssl_config = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl_config)
+
+    cxx_config += openssl_config
+    cxx_config.lib('crypto')
+    cxx_config.lib('ssl')
+
+  cxx_config.lib_path_runtime('.')
+
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+  tests_cxx_config += config
+  if openssl_lib_crypto and openssl_lib_ssl:
+    tests_cxx_config += openssl_libs
+  tests_cxx_config.lib('crypto')
+  tests_cxx_config.lib('ssl')
 
   if enable_debug:
     cxx_config.define("DEBUG")
