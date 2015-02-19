@@ -167,13 +167,7 @@ def configure(curl_config,
     lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
       post_process = rpath_libcxxabi)
     libs_cxx = [lib_cxx, lib_cxx_abi]
-  def post_process(tgt):
-    if cxx_toolkit.os in [drake.os.macos]:
-      with drake.WritePermissions(drake.node(tgt)):
-        return drake.command([
-          'install_name_tool', '-change',
-          '/usr/lib/libc++.1.dylib', '@rpath/libc++.1.dylib', str(drake.path_build(tgt, True))
-          ])
+
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
@@ -187,16 +181,16 @@ def configure(curl_config,
   else:
     local_cxx_config += boost.config_context(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx))
 
   # FUSE
   fuse_lib = None
@@ -271,7 +265,7 @@ def configure(curl_config,
   # Elle
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = post_process)
+  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = set_local_libcxx)
 
   # miniupnpc
   miniupnp = drake.include('miniupnp', cxx_toolkit, archs = archs)
