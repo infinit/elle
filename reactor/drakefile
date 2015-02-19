@@ -164,7 +164,6 @@ def configure(curl_config,
                     ])
     lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), 'lib', strip_prefix = True,
       post_process = rpath_libcxx)
-    print(lib_cxx)
     lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
       post_process = rpath_libcxxabi)
     libs_cxx = [lib_cxx, lib_cxx_abi]
