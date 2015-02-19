@@ -2712,7 +2712,7 @@ class Copy(Builder):
     else:
       return node
 
-  def __init__(self, source, to):
+  def __init__(self, source, to, post_process = None):
     """Create a copy builder.
 
     source -- Node to copy.
@@ -2720,6 +2720,7 @@ class Copy(Builder):
     """
     self.__source = source
     self.__target = source.clone(to.canonize())
+    self.__post_process = post_process
     if self.__source is self.__target:
       return
     try:
@@ -2754,7 +2755,12 @@ class Copy(Builder):
     self.output('Copy %s to %s' % (self.__source.path(),
                                    self.__target.path()),
                 'Copy %s' % self.__target)
-    return self._copy()
+    res = self._copy()
+    if not res:
+      return res
+    if self.__post_process:
+      res = self.__post_process(self.__target.path())
+    return res
 
   def _copy(self):
     with WritePermissions(self.__target):
@@ -2800,7 +2806,7 @@ class Install(Copy):
       return cmd
 
 import collections
-def __copy(sources, to, strip_prefix, builder):
+def __copy(sources, to, strip_prefix, builder, post_process):
   with sched.logger.log(
       'drake.copy',
       drake.log.LogLevel.trace,
@@ -2822,13 +2828,13 @@ def __copy(sources, to, strip_prefix, builder):
     if multiple:
       res = []
       for node in sources:
-        res.append(__copy_stripped(node, to, strip_prefix, builder))
+        res.append(__copy_stripped(node, to, strip_prefix, builder, post_process))
       return res
     else:
-      return __copy_stripped(sources, to, strip_prefix, builder)
+      return __copy_stripped(sources, to, strip_prefix, builder, post_process)
 
 __copy_stripped_cache = {}
-def __copy_stripped(source, to, strip_prefix, builder):
+def __copy_stripped(source, to, strip_prefix, builder, post_process):
   key = (source, to, strip_prefix, builder)
   cache = __copy_stripped_cache.get(key)
   if cache is not None:
@@ -2850,16 +2856,16 @@ def __copy_stripped(source, to, strip_prefix, builder):
       if Copy._Copy__original(source) is res:
         __copy_stripped_cache[key] = res
         return res
-    res = builder(source, path).target()
+    res = builder(source, path, post_process).target()
     for dep in source.dependencies:
       if not dep.name_absolute().absolute():
-        node = __copy_stripped(dep, to, strip_prefix, builder)
+        node = __copy_stripped(dep, to, strip_prefix, builder, post_process)
         if node is not None:
           res.dependency_add(node)
     __copy_stripped_cache[key] = res
     return res
 
-def copy(sources, to, strip_prefix = None):
+def copy(sources, to, strip_prefix = None, post_process = None):
   """Convenience function to create Copy builders.
 
   When copying large file trees, iterating and creating Copy
@@ -2889,15 +2895,15 @@ def copy(sources, to, strip_prefix = None):
   >>> targets
   [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
   """
-  return __copy(sources, to, strip_prefix, Copy)
+  return __copy(sources, to, strip_prefix, Copy, post_process)
 
 
-def install(sources, to, strip_prefix = None):
+def install(sources, to, strip_prefix = None, post_process = None):
   """Convenience function to create Install builders.
 
   See documentation of copy.
   """
-  return __copy(sources, to, strip_prefix, Install)
+  return __copy(sources, to, strip_prefix, Install, post_process)
 
 
 class Rule(VirtualNode):
