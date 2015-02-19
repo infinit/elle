@@ -126,6 +126,34 @@ namespace infinit
                                       function_oneway));
     }
 
+    /*-------.
+    | Legacy |
+    `-------*/
+
+    Code
+    SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
+    {
+      ELLE_DEBUG_METHOD(plain);
+
+      elle::Buffer buffer;
+      buffer.writer() << plain;
+
+      return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
+    }
+
+    elle::Buffer
+    SecretKey::legacy_decrypt_buffer(Code const& code) const
+    {
+      ELLE_DEBUG_FUNCTION(code);
+
+      Clear clear(this->decrypt(code));
+
+      elle::Buffer value;
+      clear.buffer().reader() >> value;
+
+      return (value);
+    }
+
     /*----------.
     | Operators |
     `----------*/
@@ -149,7 +177,7 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      elle::fprintf(stream, "SecretKey(%s, %x)", this->_cipher, this->_password);
+      elle::fprintf(stream, "%s(%x)", this->_cipher, this->_password);
     }
   }
 }
