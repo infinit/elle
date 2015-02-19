@@ -582,10 +582,6 @@ def configure(curl_config,
       'DIR_BUILD':  str(drake.path_build()),
       'DIR_SOURCE': str(drake.path_source()),
     }
-    if cxx_toolkit.os == drake.os.macos:
-      # We need this environment variable to prevent loading of
-      # /usr/lib/libc++abi.1.dylib by /usr/lib/libc++.1.dylib
-      env['DYLD_LIBRARY_PATH'] = drake.Path(libcxxabi_lib).dirname()
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
     # Disable valgrind for tests using fuse.
