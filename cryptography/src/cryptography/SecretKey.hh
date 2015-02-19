@@ -81,20 +81,14 @@ namespace infinit
       T
       decrypt(Code const& code) const;
 
-      /// XXX[temporary until the nucleus node factory is set to handle this
-      //      case]
-      template <typename T>
-      void
-      decrypt(Code const& code,
-              T& object) const
-      {
-        ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-        ELLE_TRACE_METHOD(code);
-
-        Clear clear(this->decrypt(code));
-
-        clear.buffer().reader() >> object;
-      }
+      /*-------.
+      | Legacy |
+      `-------*/
+    public:
+      Code
+      legacy_encrypt_buffer(elle::Buffer const& buffer) const;
+      elle::Buffer
+      legacy_decrypt_buffer(Code const& code) const;
 
       /*----------.
       | Operators |
