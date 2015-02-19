@@ -79,85 +79,6 @@ def configure(curl_config,
                                        libcoroutine_cxx_config)
     library_coroutine = libcoroutine
 
-  # Boost
-  boost = boost or drake.cxx.boost.Boost()
-  local_cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    local_cxx_config += boost.config_signals(static = True)
-    local_cxx_config += boost.config_system(static = True)
-    local_cxx_config += boost.config_thread(static = True)
-    if cxx_toolkit.os != drake.os.windows:
-      # windows uses coro io
-      local_cxx_config += boost.config_context(static = True)
-  else:
-    local_cxx_config += boost.config_context(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True))
-    local_cxx_config += boost.config_signals(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True))
-    local_cxx_config += boost.config_system(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
-    local_cxx_config += boost.config_thread(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
-
-  # FUSE
-  fuse_lib = None
-  if fuse is None and cxx_toolkit.os is drake.os.linux:
-    fuse_basename = 'fuse-2.9.3'
-    fuse_url = \
-      'http://downloads.sourceforge.net/' \
-      'project/fuse/fuse-2.X/2.9.3/fuse-2.9.3.tar.gz'
-    fuse_tarball = \
-      drake.node('fuse/fuse-2.9.3.tar.gz')
-    fuse_configure = \
-      drake.node('fuse/fuse-2.9.3/configure')
-    fuse_prefix = drake.path_build('fuse')
-    fuse_prefix_absolute = drake.path_root() / fuse_prefix
-    fuse_lib =  drake.cxx.DynLib('fuse/lib/libfuse.so.2')
-    fuse_includes = drake.nodes(
-      'fuse/include/fuse/cuse_lowlevel.h',
-      'fuse/include/fuse/fuse_common_compat.h',
-      'fuse/include/fuse/fuse_common.h',
-      'fuse/include/fuse/fuse_compat.h',
-      'fuse/include/fuse/fuse.h',
-      'fuse/include/fuse/fuse_lowlevel_compat.h',
-      'fuse/include/fuse/fuse_lowlevel.h',
-      'fuse/include/fuse/fuse_opt.h'
-      )
-    drake.HTTPDownload(fuse_url, fuse_tarball,
-                       fingerprint='33cae22ca50311446400daf8a6255c6a')
-    drake.TarballExtractor(
-      fuse_tarball,
-      targets = ['%s/configure' % fuse_basename],
-      patches = ((drake.node('fuse.patch'),1),),
-      patch_dir = fuse_basename
-    )
-    GNUBuilder(
-      cxx_toolkit,
-      configure = fuse_configure,
-      configure_args = [
-      '--prefix=%s' % fuse_prefix_absolute,
-      'CXX=%s' % cxx_toolkit.cxx,
-      '--disable-util',
-      '--disable-example',
-      '--disable-static',
-      '--enable-shared'
-      ],
-      targets = [fuse_lib] + fuse_includes
-    )
-    fuse_config = drake.cxx.Config()
-    fuse_config.add_local_include_path('fuse/include')
-    local_cxx_config += fuse_config
-    fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
-  elif fuse:
-    fuse_config = drake.cxx.Config()
-    fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
-    local_cxx_config += fuse_config
-    fuse_lib = drake.cxx.DynLib('%s/lib/libosxfuse.2.dylib' % fuse)
-
   # Libcxabi through llvm
   if cxx_toolkit.os == drake.os.macos:
     build_libcxxabi = drake.Rule("libcxxabi")
@@ -221,6 +142,119 @@ def configure(curl_config,
     build_libcxxabi << drake.nodes(libcxxabi_lib)
 
 
+  libs_cxx = []
+  if cxx_toolkit.os in [drake.os.macos]:
+    # Every lib/bin links to /usr/lib/libc++.dylib, which itself refers /usr/lib/libc++abi.dylib.
+    # So we need to copy and patch libc++.dylib
+    def rpath_libcxx(tgt):
+      with drake.WritePermissions(drake.node(tgt)):
+        return drake.command([
+            'install_name_tool',
+            '-change',
+            '/usr/lib/libc++abi.dylib',
+            '@rpath/libc++abi.dylib',
+            str(drake.path_build(tgt, True))
+            ])
+    def rpath_libcxxabi(tgt):
+      with drake.WritePermissions(drake.node(tgt)):
+        return drake.command(
+                    ['install_name_tool', '-id',
+                     '@rpath/libc++abi.dylib',
+                     str(drake.path_build(tgt, True))
+                    ])
+    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), 'lib', strip_prefix = True,
+      post_process = rpath_libcxx)
+    print(lib_cxx)
+    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
+      post_process = rpath_libcxxabi)
+    libs_cxx = [lib_cxx, lib_cxx_abi]
+  def post_process(tgt):
+    if cxx_toolkit.os in [drake.os.macos]:
+      with drake.WritePermissions(drake.node(tgt)):
+        return drake.command([
+          'install_name_tool', '-change',
+          '/usr/lib/libc++.1.dylib', '@rpath/libc++.1.dylib', str(drake.path_build(tgt, True))
+          ])
+  # Boost
+  boost = boost or drake.cxx.boost.Boost()
+  local_cxx_config += boost.config()
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    local_cxx_config += boost.config_signals(static = True)
+    local_cxx_config += boost.config_system(static = True)
+    local_cxx_config += boost.config_thread(static = True)
+    if cxx_toolkit.os != drake.os.windows:
+      # windows uses coro io
+      local_cxx_config += boost.config_context(static = True)
+  else:
+    local_cxx_config += boost.config_context(link = False)
+    local_cxx_config.library_add(
+      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+    local_cxx_config += boost.config_signals(link = False)
+    local_cxx_config.library_add(
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+    local_cxx_config += boost.config_system(link = False)
+    local_cxx_config.library_add(
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+    local_cxx_config += boost.config_thread(link = False)
+    local_cxx_config.library_add(
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = post_process))
+
+  # FUSE
+  fuse_lib = None
+  if fuse is None and cxx_toolkit.os is drake.os.linux:
+    fuse_basename = 'fuse-2.9.3'
+    fuse_url = \
+      'http://downloads.sourceforge.net/' \
+      'project/fuse/fuse-2.X/2.9.3/fuse-2.9.3.tar.gz'
+    fuse_tarball = \
+      drake.node('fuse/fuse-2.9.3.tar.gz')
+    fuse_configure = \
+      drake.node('fuse/fuse-2.9.3/configure')
+    fuse_prefix = drake.path_build('fuse')
+    fuse_prefix_absolute = drake.path_root() / fuse_prefix
+    fuse_lib =  drake.cxx.DynLib('fuse/lib/libfuse.so.2')
+    fuse_includes = drake.nodes(
+      'fuse/include/fuse/cuse_lowlevel.h',
+      'fuse/include/fuse/fuse_common_compat.h',
+      'fuse/include/fuse/fuse_common.h',
+      'fuse/include/fuse/fuse_compat.h',
+      'fuse/include/fuse/fuse.h',
+      'fuse/include/fuse/fuse_lowlevel_compat.h',
+      'fuse/include/fuse/fuse_lowlevel.h',
+      'fuse/include/fuse/fuse_opt.h'
+      )
+    drake.HTTPDownload(fuse_url, fuse_tarball,
+                       fingerprint='33cae22ca50311446400daf8a6255c6a')
+    drake.TarballExtractor(
+      fuse_tarball,
+      targets = ['%s/configure' % fuse_basename],
+      patches = ((drake.node('fuse.patch'),1),),
+      patch_dir = fuse_basename
+    )
+    GNUBuilder(
+      cxx_toolkit,
+      configure = fuse_configure,
+      configure_args = [
+      '--prefix=%s' % fuse_prefix_absolute,
+      'CXX=%s' % cxx_toolkit.cxx,
+      '--disable-util',
+      '--disable-example',
+      '--disable-static',
+      '--enable-shared'
+      ],
+      targets = [fuse_lib] + fuse_includes
+    )
+    fuse_config = drake.cxx.Config()
+    fuse_config.add_local_include_path('fuse/include')
+    local_cxx_config += fuse_config
+    fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
+  elif fuse:
+    fuse_config = drake.cxx.Config()
+    fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
+    local_cxx_config += fuse_config
+    fuse_lib = drake.cxx.DynLib('%s/lib/libosxfuse.2.dylib' % fuse)
+
+
   # Curl
   local_cxx_config += curl_config
   curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
@@ -238,7 +272,7 @@ def configure(curl_config,
   # Elle
   elle = elle or drake.include('../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True)
+  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = post_process)
 
   # miniupnpc
   miniupnp = drake.include('miniupnp', cxx_toolkit, archs = archs)
@@ -458,6 +492,8 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend)
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
+  if cxx_toolkit.os in [drake.os.macos]:
+    lib_cxx_config.use_local_libcxx = True
   lib_dynamic = drake.cxx.DynLib(
     'lib/reactor',
     sources + lib_dynamic_link_libs + openssl_libs,
@@ -513,8 +549,11 @@ def configure(curl_config,
     tests.append(('filesystem_git', []))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
+
   cxx_config_tests.add_local_include_path('tests')
   cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os in [drake.os.macos, drake.os.ios, drake.os.android]) or None)
+  if cxx_toolkit.os in [drake.os.macos]:
+    cxx_config_tests.use_local_libcxx = True
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
@@ -532,7 +571,7 @@ def configure(curl_config,
       library, elle_lib
       ] + libraries
     if cxx_toolkit.os == drake.os.macos:
-      sources += drake.nodes(str(libcxxabi_lib))
+      sources += lib_cxx_abi + lib_cxx
     test = drake.cxx.Executable('tests/%s' % test_name,
                                 sources,
                                 cxx_toolkit, tests_config)
