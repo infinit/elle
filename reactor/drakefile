@@ -154,6 +154,8 @@ def configure(curl_config,
             '-change',
             '/usr/lib/libc++abi.dylib',
             '@rpath/libc++abi.dylib',
+            '-id',
+            '@rpath/libc++.1.dylib',
             str(drake.path_build(tgt, True))
             ])
     def rpath_libcxxabi(tgt):
