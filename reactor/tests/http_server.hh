@@ -120,7 +120,7 @@ namespace reactor
         // e.g.: {"/foo" -> {GET -> get_function, POST -> post_function, ...}}
         typedef std::unordered_map<std::string, MethodFunctions> Routes;
 
-        ELLE_ATTRIBUTE(Routes, routes);
+        ELLE_ATTRIBUTE_X(Routes, routes);
         ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
         ELLE_ATTRIBUTE_R(int, port);
         ELLE_ATTRIBUTE(std::unique_ptr<reactor::Thread>, accepter);
