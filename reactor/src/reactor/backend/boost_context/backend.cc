@@ -185,31 +185,9 @@ namespace reactor
             ELLE_ASSERT_EQ(this->status(), Status::waiting);
             this->status(Status::running);
             ELLE_TRACE("%s: step from %s", *this, *_caller);
-            if (this->_exception)
-            {
-              /* The stack we are switching to expects std::current_exception()
-              * to return this->_exception (which contains current_exception()
-              * at the time of yield).
-              * So wrap the switch into a catch clause to trick the compiler
-              * into restoring it.
-              */
-              try
-              {
-                std::rethrow_exception(this->_exception);
-              }
-              catch(...)
-              {
-                jump_fcontext(&current->_context,
-                              this->_context,
-                              reinterpret_cast<intptr_t>(this));
-              }
-            }
-            else
-            {
-              jump_fcontext(&current->_context,
-                            this->_context,
-                            reinterpret_cast<intptr_t>(this));
-            }
+            jump_fcontext(&current->_context,
+                          this->_context,
+                          reinterpret_cast<intptr_t>(this));
           }
           // It is unclear whether an uncaught_exception mismatch has any
           // consequence if the code does not explicitly depend on its result.
