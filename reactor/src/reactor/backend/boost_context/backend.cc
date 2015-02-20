@@ -76,7 +76,7 @@ namespace reactor
       /// Default allocator type.
       typedef TemplatedStackAllocator<
         8 * 1024 * 1024,  // Max: 8 MiB
-        128 * 1024,       // Default: 128 kiB
+        4 * 128 * 1024,       // Default: 128 kiB
         8 * 1024          // Min: 8 kiB
         > StackAllocator;
       /// Type of context pointer used.
@@ -101,7 +101,6 @@ namespace reactor
       public:
         typedef Thread Self;
         typedef backend::Thread Super;
-
       /*-------------.
       | Construction |
       `-------------*/
