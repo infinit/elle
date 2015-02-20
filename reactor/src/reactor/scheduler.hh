@@ -201,6 +201,8 @@ namespace reactor
     /*--------.
     | Details |
     `--------*/
+    public:
+      backend::Backend& manager();
     private:
       friend class Thread;
       std::unique_ptr<backend::Backend> _manager;

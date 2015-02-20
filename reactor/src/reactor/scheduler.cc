@@ -711,6 +711,12 @@ namespace reactor
     this->mt_run<int>(name, [&] () { action(); return 42; });
   }
 
+  backend::Backend&
+  Scheduler::manager()
+  {
+    return *_manager;
+  }
+
   /*---------------.
   | Free functions |
   `---------------*/
@@ -815,12 +821,6 @@ namespace reactor
 #define THROW_SPEC throw()
 #endif
 
-typedef std::unordered_map<reactor::Thread*, __cxxabiv1::__cxa_eh_globals*> CXAMap;
-static CXAMap& cxa_map()
-{
-  static CXAMap res;
-  return res;
-}
 
 typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;
 static CXAThreadMap& cxa_thread_map()
@@ -834,8 +834,10 @@ namespace __cxxabiv1 {
 extern "C" {
   __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
   {
-
     reactor::Scheduler* sched = reactor::Scheduler::scheduler();
+    reactor::backend::Thread* t = nullptr;
+    if (sched != nullptr)
+      t = sched->manager().current();
     if (sched == nullptr)
     {
       CXAThreadMap& map = cxa_thread_map();
@@ -844,13 +846,15 @@ extern "C" {
         res = new __cxa_eh_globals();
       return res;
     }
-    CXAMap& map = cxa_map();
-    reactor::Thread* t = sched->current();
-    __cxa_eh_globals * &res = map[t];
-    if (res == nullptr)
-      res = new __cxa_eh_globals();
-    return res;
+    if (t == nullptr)
+    {
+      static __cxa_eh_globals* nullthread_ceg = new __cxa_eh_globals();
+      return nullthread_ceg;
+    }
+    __cxa_eh_globals* ceg = (__cxa_eh_globals*)t->exception_storage();
+    return ceg;
   }
+
   __cxa_eh_globals * __cxa_get_globals_fast() THROW_SPEC {
     return __cxa_get_globals();
   }
