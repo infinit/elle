@@ -29,6 +29,8 @@ cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(True)
 # Needed on OSX ?
 # cxx_config.warnings.overloaded_virtual = False
+if cxx_toolkit.os == drake.os.macos:
+  cxx_config.use_local_libcxx = True
 
 for f in %(flags)r:
   cxx_config.flag(f)
