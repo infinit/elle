@@ -82,9 +82,9 @@ namespace reactor
 
           bool starting = this->status() == Status::starting;
           Thread* current = _backend._current;
+          current->_unwinding = std::uncaught_exception();
           _caller = current;
           _backend._current = this;
-          current->_unwinding = std::uncaught_exception();
           if (current->_unwinding)
             ELLE_DUMP("step %s with in-flight exception", *current);
           if (starting)
@@ -111,7 +111,6 @@ namespace reactor
               std::uncaught_exception());
         }
 
-
         virtual
         void
         yield() override
@@ -120,12 +119,13 @@ namespace reactor
           ELLE_ASSERT_EQ(_backend._current, this);
           ELLE_ASSERT_EQ(this->status(), Status::running);
           this->status(Status::waiting);
-          _backend._current = _caller;
-          ELLE_TRACE("%s: yield back to %s", *this, *_backend._current);
-          _caller = nullptr;
           // Store current exception and stack unwinding state
           this->_unwinding = std::uncaught_exception();
           this->_exception = std::current_exception();
+          _backend._current = _caller;
+          ELLE_TRACE("%s: yield back to %s", *this, *_backend._current);
+          _caller = nullptr;
+
           if (this->_unwinding)
             ELLE_DUMP("yielding %s with in-flight exception", *this);
           Coro_switchTo_(_coro, _backend._current->_coro);
