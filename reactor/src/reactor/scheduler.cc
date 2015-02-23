@@ -52,7 +52,10 @@ namespace reactor
   }
 
   Scheduler::~Scheduler()
-  {}
+  {
+    delete _background_service_work;
+    delete _io_service_work;
+  }
 
   /*------------------.
   | Current Scheduler |
