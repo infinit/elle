@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
 
 import os
+import sys
+root = os.path.dirname(__file__)
+drake = os.path.abspath(os.path.join(root, '../../../../../drake/src'))
+sys.path.insert(0, drake)
+
+import resource
+resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
+
 import drake
 import drake.cxx
 
-cxx_compiler = os.getenv('CC', 'gcc')
+with drake.Drake('../..') as d:
+  c_compiler = os.getenv('CC', 'gcc')
+  cxx_compiler = os.getenv('CXX', 'g++')
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
-cxx_config = drake.cxx.Config()
-cxx_config.flag('-fPIC')
-cxx_config.flag('-Wall')
-cxx_config.enable_debug_symbols(False)
-cxx_config.enable_optimization(True)
-cxx_config.add_system_include_path('.')
+  cxx_toolkit = drake.cxx.GccToolkit(compiler_c = c_compiler, compiler = cxx_compiler)
+  cxx_config = drake.cxx.Config()
 
-drake.run(
-    '../..',
-    cxx_toolkit,
-    cxx_config,
-    enable_debug = False,
-)
+  cxx_config.flag('-fPIC')
+  cxx_config.flag('-Wall')
+  cxx_config.enable_debug_symbols(False)
+  cxx_config.enable_optimization(True)
+
+  d.run(cxx_toolkit,
+        cxx_config,
+  )

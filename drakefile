@@ -8,14 +8,14 @@ lib_dynamic = None
 rule_build = None
 rule_check = None
 rule_install = None
+rule_tests = None
 
 def configure(cxx_toolkit = None,
               cxx_config = None,
               openssl_config = None,
               openssl_lib_crypto = None,
               openssl_lib_ssl = None,
-              prefix = '/usr',
-              enable_debug = False):
+              prefix = '/usr'):
 
   global config, lib_static, lib_dynamic, rule_build, rule_check, rule_install
 
@@ -23,10 +23,11 @@ def configure(cxx_toolkit = None,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
 
   # Global Configuration
-  config = drake.cxx.Config()
+  config = drake.cxx.Config(cxx_config)
   config.add_local_include_path('src')
-  config.lib_path('lib')
-# XXX  config += openssl_config
+
+  # Local Configuration
+  cxx_config = drake.cxx.Config(config)
 
   # Sources
   sources = drake.nodes(
@@ -44,46 +45,39 @@ def configure(cxx_toolkit = None,
            'rand',
            'rsa']
 
-  # Local Configuration
-  cxx_config = cxx_config or drake.cxx.Config()
-  cxx_config += config
-
+  openssl_libs = []
   if openssl_lib_crypto and openssl_lib_ssl:
+    cxx_config += openssl_config
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                               'lib', strip_prefix = True)
-    sources += openssl_libs
   else:
-    openssl_config = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl_config)
-
     cxx_config += openssl_config
+    openssl_config = drake.cxx.find_library('openssl/opensslconf.h', prefix = openssl_config)
     cxx_config.lib('crypto')
     cxx_config.lib('ssl')
 
   cxx_config.lib_path_runtime('.')
 
-  tests_cxx_config = drake.cxx.Config(cxx_config)
-  tests_cxx_config += config
-  if openssl_lib_crypto and openssl_lib_ssl:
-    tests_cxx_config += openssl_libs
-  tests_cxx_config.lib('crypto')
-  tests_cxx_config.lib('ssl')
-
-  if enable_debug:
-    cxx_config.define("DEBUG")
-  else:
-    cxx_config.define("NDEBUG")
-
-  lib_static = drake.cxx.StaticLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
-  lib_dynamic = drake.cxx.DynLib('lib/dopenssl', sources, cxx_toolkit, cxx_config)
+  lib_static = drake.cxx.StaticLib('lib/dopenssl',
+                                   sources + openssl_libs,
+                                   cxx_toolkit, cxx_config)
+  lib_dynamic = drake.cxx.DynLib('lib/dopenssl',
+                                 sources + openssl_libs,
+                                 cxx_toolkit, cxx_config)
 
   # Build
   rule_build = drake.Rule('build')
   rule_build << lib_static
   rule_build << lib_dynamic
 
-  # Check
+  # Tests
+  global rule_check, rule_tests
+
   tests_rule = drake.Rule('tests')
   rule_check = drake.Rule('check')
+
+  tests_cxx_config = drake.cxx.Config(cxx_config)
+
   for test in tests:
     config_test = drake.cxx.Config(tests_cxx_config)
     config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
@@ -91,7 +85,7 @@ def configure(cxx_toolkit = None,
     bin_path = drake.Path('tests/dopenssl/%s' % test)
     bin = drake.cxx.Executable(bin_path,
                                drake.nodes(path) +
-                               [lib_dynamic],
+                               [lib_dynamic] + openssl_libs,
                                cxx_toolkit, config_test)
     tests_rule << bin
     runner = drake.Runner(bin)

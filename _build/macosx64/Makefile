@@ -20,15 +20,15 @@ lib/libdopenssl.a: src/dopenssl/rand.o src/dopenssl/bn.o src/dopenssl/rsa.o
 
 src/dopenssl/bn.o: ../../src/dopenssl/bn.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -DNDEBUG -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/bn.c -o src/dopenssl/bn.o
+	${CC} -Wall -fPIC -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/bn.c -o src/dopenssl/bn.o
 
 src/dopenssl/rand.o: ../../src/dopenssl/rand.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -DNDEBUG -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rand.c -o src/dopenssl/rand.o
+	${CC} -Wall -fPIC -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rand.c -o src/dopenssl/rand.o
 
 src/dopenssl/rsa.o: ../../src/dopenssl/rsa.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -DNDEBUG -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rsa.c -o src/dopenssl/rsa.o
+	${CC} -Wall -fPIC -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rsa.c -o src/dopenssl/rsa.o
 
 tests: tests/dopenssl/bn tests/dopenssl/rand tests/dopenssl/rsa
 
