@@ -177,7 +177,7 @@ class FatLibraryGenerator(drake.Builder):
                output_headers = None):
     drake.Builder.__init__(self,
                            input_libs,
-                           chain([output_lib], (drake.node(output_headers / p)
+                           itertools.chain([output_lib], (drake.node(output_headers / p)
                                                 for p in headers)))
     self.__input_libs = input_libs
     self.__output_lib = output_lib
