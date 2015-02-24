@@ -39,9 +39,9 @@ def configure(openssl_config,
   # Libraries
   openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                             'lib', strip_prefix = True)
+
   if enable_rotation:
     cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
-
     dopenssl = drake.include(
       'modules/dopenssl',
       cxx_toolkit = cxx_toolkit,
@@ -52,12 +52,13 @@ def configure(openssl_config,
       prefix = prefix,
       )
 
-#    try:
-#      dopenssl = drake.cxx.find_library('dopenssl/all.h', dopenssl)
-#    except Exception as e:
-#      print("The dependency 'dopenssl' appears not to be installed. Please "
-#            "visit http://open.infinit.io/dopenssl")
-#      raise e
+    dopenssl_lib_static = dopenssl.lib_static
+    dopenssl_lib_dynamic = drake.copy(dopenssl.lib_dynamic, 'lib', strip_prefix = True)
+    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+      dopenssl_library = dopenssl_lib_static
+    else:
+      dopenssl_library = dopenssl_lib_dynamic
+
   boost = boost or drake.cxx.boost.Boost()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     boost_test = boost.config_test(static = True)
@@ -80,11 +81,9 @@ def configure(openssl_config,
   config.standard = drake.cxx.Config.cxx_11
   config.add_local_include_path('src')
   config.lib_path('lib')
-  if enable_rotation:
-    config += dopenssl
-  # XXX: openssl should not be leaked.
-  # cryptography/fwd.hh leaks EVP_PKEY_CTX for instance.
   config += openssl_config
+  if enable_rotation:
+    config += dopenssl.config
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config)
@@ -96,9 +95,10 @@ def configure(openssl_config,
     cxx_config += boost.config_system(link = False)
     cxx_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
-
   cxx_config += elle.config
   cxx_config += openssl_config
+  if enable_rotation:
+    cxx_config += dopenssl.config
 
   # Sources
   sources = drake.nodes(
@@ -178,11 +178,9 @@ def configure(openssl_config,
       'src/cryptography/rsa/Seed.cc',
       'src/cryptography/rsa/Seed.hh',
       'src/cryptography/rsa/Seed.hxx',
-      )
+      ) + [dopenssl_library]
 
   cxx_config_lib = drake.cxx.Config(cxx_config)
-  if enable_rotation:
-    cxx_config.lib('dopenssl')
   cxx_config_lib.lib_path_runtime('.')
 
   lib_static = drake.cxx.StaticLib('lib/cryptography',
@@ -228,13 +226,17 @@ def configure(openssl_config,
   tests_cxx_config += boost_test
   tests_cxx_config += boost_thread
   tests_cxx_config += openssl_config
-  if enable_rotation:
-    tests_cxx_config += dopenssl
   tests_cxx_config += elle.config
 
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
+  if enable_rotation:
+    rule_check << dopenssl.rule_check
+
   rule_tests = drake.Rule('tests')
+  if enable_rotation:
+    rule_tests << dopenssl.rule_tests
+
   for test in tests:
     config_test = drake.cxx.Config(tests_cxx_config)
     config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
@@ -244,6 +246,7 @@ def configure(openssl_config,
     sources.append(library)
     sources.append(elle_library)
     sources.append(openssl_lib_crypto) # Some tests use BIGNUM
+    sources.append(openssl_lib_ssl)
     bin = drake.cxx.Executable(bin_path, sources,
                                cxx_toolkit, config_test)
     rule_tests << bin

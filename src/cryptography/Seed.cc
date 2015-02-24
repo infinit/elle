@@ -24,7 +24,7 @@ namespace infinit
     Seed::generate(KeyPair const& keypair)
     {
       ELLE_TRACE_FUNCTION(keypair);
-
+      /* XXX
       switch (keypair.cryptosystem())
       {
         case Cryptosystem::rsa:
@@ -44,7 +44,7 @@ namespace infinit
             elle::sprintf("unknown or non-supported asymmetric "
                           "cryptosystem '%s'", keypair.cryptosystem()));
       }
-
+      */
       elle::unreachable();
     }
 

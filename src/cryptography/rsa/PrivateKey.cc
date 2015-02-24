@@ -17,7 +17,7 @@
 #include <openssl/err.h>
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-# include <dopenssl/rsa.h>
+# include <dopenssl/rsa.hh>
 #endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
@@ -662,10 +662,14 @@ namespace infinit
         ELLE_ASSERT_EQ(_seed.buffer().size(), buffer.size());
 
         // Create an implementation of an RSA seed.
+        /* XXX
         std::unique_ptr<cryptography::seed::Interface> implementation(
           new Seed(std::move(buffer), ::BN_dup(_seed.n())));
 
         return (cryptography::Seed(std::move(implementation)));
+        */
+
+        return (cryptography::Seed());
       }
 #endif
 
@@ -771,12 +775,15 @@ namespace infinit
           ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
           Seed const& _seed = static_cast<Seed const&>(seed);
 
+          /* XXX
           ELLE_ASSERT_EQ(_seed.buffer().size(),
                          static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
+          */
 
           // Deduce the RSA key from the given seed.
           ::RSA* rsa = nullptr;
 
+          /* XXX
           if ((rsa = ::dRSA_deduce_privatekey(
                  ::BN_num_bits(_seed.n()),
                  static_cast<unsigned char const*>(_seed.buffer().contents()),
@@ -793,6 +800,9 @@ namespace infinit
           PrivateKey k(rsa);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+          */
+
+          PrivateKey k{}; // XXX
 
           return (k);
         }
