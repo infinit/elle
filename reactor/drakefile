@@ -116,6 +116,7 @@ def configure(curl_config,
     #invoke cmake
     if cxx_toolkit.os is drake.os.ios and archs:
       libcxxabi_libs = []
+      libcxx_libs = []
       for arch in archs:
         build = 'build_%s' % arch
         drake.ShellCommand(
@@ -149,10 +150,47 @@ def configure(curl_config,
           True,
           drake.path_build('llvm/libcxxabi-3.5.1.src/' + build),
           )
-        build_libcxxabi << drake.nodes(libcxxabi_lib)
-      libcxxabi_lib = cxx_toolkit.libname_static(None, 'llvm/libcxxabi-3.5.1.src/build/lib/c++abi')
+        # Under ios we cannot link with our own dylib,
+        # So we can't override libc++.dylib as we do on macos.
+        # So build our own static libc++ so we can stop linking to the system
+        # one altogether
+        drake.ShellCommand(
+          drake.nodes('llvm/libcxx-3.5.1.src/CMakeLists.txt',
+            'llvm/llvm-3.5.1.src/configure',
+            'llvm/libcxx-3.5.1.src/CMakeLists.txt'
+            ),
+          drake.nodes('llvm/libcxx-3.5.1.src/'+build+'/CMakeCache.txt'),
+            [
+             'cmake', '..',
+             '-DCMAKE_CXX_COMPILER=clang++',
+             '-DCMAKE_C_COMPILER=clang',
+             '-DCMAKE_CXX_FLAGS=-arch %s -mios-version-min=7.0' % arch,
+             '-DCMAKE_C_FLAGS=-arch %s -mios-version-min=7.0' % arch,
+             '-DLLVM_PATH=%s' % (drake.path_build('llvm/llvm-3.5.1.src', True)),
+             '-DLLVM_ENABLE_LIBCXX=ON',
+             '-DLIBCXX_ENABLE_SHARED=OFF',
+             ],
+            True,
+            drake.path_build('llvm/libcxx-3.5.1.src/' + build),
+        )
+        libcxx_lib = cxx_toolkit.libname_static(None,'llvm/libcxx-3.5.1.src/'+build+'/lib/c++')
+        libcxx_lib = drake.path_build(libcxx_lib, True)
+        libcxx_libs.append(drake.node(libcxx_lib))
+        #make
+        drake.ShellCommand(
+          drake.nodes('llvm/libcxx-3.5.1.src/'+build+'/CMakeCache.txt'),
+          drake.nodes(libcxx_lib),
+          ['make'],
+          True,
+          drake.path_build('llvm/libcxx-3.5.1.src/' + build),
+          )
+      libcxxabi_lib = cxx_toolkit.libname_static(None, 'lib/c++abi')
       libcxxabi_lib = drake.path_build(libcxxabi_lib, True)
       FatLibraryGenerator(libcxxabi_libs, drake.node(libcxxabi_lib))
+      libcxx_lib = drake.path_build('lib/libc++.a', True)
+      FatLibraryGenerator(libcxx_libs, drake.node(libcxx_lib))
+      build_libcxxabi << drake.node(libcxxabi_lib)
+      build_libcxxabi << drake.node(libcxx_lib)
     else:
       drake.ShellCommand(
         drake.nodes('llvm/libcxxabi-3.5.1.src/CMakeLists.txt',
@@ -180,7 +218,7 @@ def configure(curl_config,
         True,
         drake.path_build('llvm/libcxxabi-3.5.1.src/build/'),
         )
-    build_libcxxabi << drake.nodes(libcxxabi_lib)
+      build_libcxxabi << drake.nodes(libcxxabi_lib)
 
 
   if cxx_toolkit.os in [drake.os.macos]:
