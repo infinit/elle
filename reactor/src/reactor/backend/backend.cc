@@ -1,6 +1,6 @@
 #include <reactor/backend/backend.hh>
 
-#if defined(__arm__) || defined(INFINIT_MACOSX)
+#if defined(__arm__) || defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
 
 #include <reactor/libcxx-exceptions/cxa_exception.hpp>
 
