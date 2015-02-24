@@ -47,13 +47,13 @@ namespace infinit
 
       Seed::Seed(Seed const& other):
         _buffer(other._buffer.contents(), other._buffer.size()),
-        _n(::BN_dup(other._n))
+        _n(::BN_dup(other._n.get()))
       {
       }
 
       Seed::Seed(Seed&& other):
         _buffer(std::move(other._buffer)),
-        _n(std::move(other._n))
+        _n(std::move(other._n.get()))
       {
         ELLE_ASSERT_EQ(other._n, nullptr);
       }
@@ -163,8 +163,7 @@ namespace infinit
           ELLE_ASSERT_NEQ(_K.key()->pkey.rsa->n, nullptr);
 
           elle::Buffer buffer =
-            random::generate<elle::Buffer>(
-              static_cast<elle::Natural32>(::EVP_PKEY_size(_K.key())));
+            random::generate<elle::Buffer>(_K.size());
           ::BIGNUM* n = ::BN_dup(_K.key()->pkey.rsa->n);
 
           return (Seed(std::move(buffer), n));

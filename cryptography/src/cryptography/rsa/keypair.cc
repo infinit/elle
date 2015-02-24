@@ -16,7 +16,7 @@
 #include <openssl/evp.h>
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-# include <dopenssl/rsa.h>
+# include <dopenssl/rsa.hh>
 #endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.keypair");
@@ -141,6 +141,7 @@ namespace infinit
           ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
           Seed const& _seed = static_cast<Seed const&>(seed);
 
+          /* XXX
           ELLE_ASSERT_EQ(_seed.buffer().size(),
                          static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
 
@@ -171,6 +172,11 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
           return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
+          */
+
+          PublicKey K{};
+          PrivateKey k{};
+          return (std::pair<PublicKey, PrivateKey>(K, k));
         }
 #endif
 

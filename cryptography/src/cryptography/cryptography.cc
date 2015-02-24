@@ -9,7 +9,7 @@
 #include <openssl/err.h>
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-# include <dopenssl/rand.h>
+# include <dopenssl/rand.hh>
 #endif
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
@@ -43,7 +43,7 @@ namespace infinit
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         // Initialize the deterministic PNRG engine.
-        if (::dRAND_init() == 1)
+        if (::dRAND_init() != 1)
           throw Exception(
             elle::sprintf("unable to initialize the deterministic PNRG "
                           "engine: %s",
@@ -55,7 +55,7 @@ namespace infinit
       {
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         // Clean the deterministic PNRG engine.
-        if (::dRAND_clean() == 1)
+        if (::dRAND_clean() != 1)
         {
           ELLE_ERR("unable to clean the deterministic PNRG "
                    "engine: %s",

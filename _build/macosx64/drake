@@ -17,17 +17,14 @@ import drake.cxx.boost
 
 with drake.Drake('../..') as d:
   cxx_compiler = os.getenv('CXX', 'clang++')
-  cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler)
+  c_compiler = os.getenv('C', 'clang')
+  cxx_toolkit = drake.cxx.GccToolkit(compiler = cxx_compiler, compiler_c = c_compiler)
   os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
 
   cxx_config = drake.cxx.Config()
 
-  cxx_config.enable_debug_symbols()
-  cxx_config.enable_optimization(False)
-  cxx_config.flag('-ftemplate-depth=512')
-  cxx_config.flag('-std=c++11')
+  # XXX[still required but it shouldn't be the case]
   cxx_config.flag('-stdlib=libc++')
-  cxx_config.warnings.overloaded_virtual = False
 
   python3 = '/usr/local/Frameworks/Python.framework/Versions/3.4'
   d.run(cxx_toolkit,
