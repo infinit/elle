@@ -16,4 +16,12 @@
    fun:__cxa_get_globals
 }
 
-
+{
+   cxa_per_thread
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_ZnwmRKSt9nothrow_t
+   fun:_Znwm
+   fun:__cxa_get_globals
+}
