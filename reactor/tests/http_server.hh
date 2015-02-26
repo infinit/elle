@@ -101,7 +101,11 @@ namespace reactor
         typedef std::unordered_map<std::string, std::string> Headers;
         typedef std::unordered_map<std::string, std::string> Cookies;
         typedef std::unordered_map<std::string, std::string> Parameters;
-        typedef std::function<std::string (Headers const&, Cookies const&, std::unordered_map<std::string, std::string> const&, elle::Buffer const&)> Function;
+        typedef std::function<std::string (Headers const&,
+                                           Cookies const&,
+                                           Parameters const&,
+                                           elle::Buffer const&)>
+        Function;
         // Matching a Method to a specific function.
         // e.g.: {GET -> get_function, POST -> post_function, ...}
         struct enum_hash
