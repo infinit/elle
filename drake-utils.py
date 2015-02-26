@@ -67,6 +67,7 @@ class GNUBuilder(drake.Builder):
 
   def execute(self):
     env = dict(self.__env)
+    import os
     env.update(os.environ)
     with drake.CWDPrinter(drake.path_root() / drake.path_build() / self.work_directory):
       # Patch
