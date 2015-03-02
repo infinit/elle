@@ -6,9 +6,10 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  Barrier::Barrier(const std::string& name):
-    Super(name),
-    _opened(false)
+  Barrier::Barrier(const std::string& name)
+    : Super(name)
+    , _opened(false)
+    , _inverted(*this)
   {}
 
   Barrier::~Barrier()
@@ -42,6 +43,7 @@ namespace reactor
   {
     this->_opened = false;
     this->_changed(this->_opened);
+    this->_inverted._signal();
   }
 
   bool
@@ -51,6 +53,34 @@ namespace reactor
       return false;
     else
       return Super::_wait(thread);
+  }
+
+  /*----------.
+  | Inversion |
+  `----------*/
+
+  Barrier::InvertedBarrier&
+  Barrier::operator !()
+  {
+    return this->_inverted;
+  }
+
+  Barrier::InvertedBarrier::InvertedBarrier(Barrier& barrier)
+    : _barrier(barrier)
+  {}
+
+  bool
+  Barrier::InvertedBarrier::_wait(Thread* thread)
+  {
+    if (!this->_barrier._opened)
+      return false;
+    else
+      return Super::_wait(thread);
+  }
+
+  Barrier::InvertedBarrier::operator bool() const
+  {
+    return !this->_barrier._opened;
   }
 
   /*----------.

@@ -58,6 +58,26 @@ namespace reactor
     /// Stop the thread if and only if this is closed.
     virtual bool _wait(Thread* thread);
 
+  /*----------.
+  | Inversion |
+  `----------*/
+  private:
+    class InvertedBarrier
+      : public Waitable
+    {
+    public:
+      InvertedBarrier(Barrier& barrier);
+      virtual bool _wait(Thread* thread);
+      operator bool() const;
+    private:
+      friend class Barrier;
+      ELLE_ATTRIBUTE(Barrier&, barrier);
+    };
+    ELLE_ATTRIBUTE(InvertedBarrier, inverted);
+  public:
+    InvertedBarrier&
+    operator !();
+
   /*------.
   | Hooks |
   `------*/

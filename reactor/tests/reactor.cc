@@ -442,6 +442,30 @@ multilock_barrier_basic()
   BOOST_CHECK(beacon_waiter & beacon_closer);
 }
 
+namespace barrier
+{
+  ELLE_TEST_SCHEDULED(inverted)
+  {
+    reactor::Barrier b;
+    reactor::wait(!b);
+    b.open();
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      reactor::Barrier timedout;
+      scope.run_background(
+        "closer",
+        [&]
+        {
+          reactor::wait(timedout);
+          b.close();
+        });
+      BOOST_CHECK(!reactor::wait(!b, 10_ms));
+      timedout.open();
+      reactor::wait(!b);
+    };
+  }
+}
+
 /*------.
 | Scope |
 `------*/
@@ -2699,6 +2723,10 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(barrier);
   barrier->add(BOOST_TEST_CASE(barrier_closed), 0, valgrind(1, 5));
   barrier->add(BOOST_TEST_CASE(barrier_opened), 0, valgrind(1, 5));
+  {
+    auto inverted = &barrier::inverted;
+    barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
+  }
 
   boost::unit_test::test_suite* multilock_barrier =
     BOOST_TEST_SUITE("MultilockBarrier");
