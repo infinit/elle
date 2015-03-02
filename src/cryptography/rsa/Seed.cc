@@ -32,30 +32,29 @@ namespace infinit
       }
 
       Seed::Seed(elle::Buffer const& buffer,
-                 ::BIGNUM* n):
-        _buffer(buffer.contents(), buffer.size()),
-        _n(::BN_dup(n))
+                 elle::Natural32 const length):
+        _buffer(buffer),
+        _length(length)
       {
       }
 
       Seed::Seed(elle::Buffer&& buffer,
-                 ::BIGNUM* n):
+                 elle::Natural32 const length):
         _buffer(std::move(buffer)),
-        _n(n)
+        _length(length)
       {
       }
 
       Seed::Seed(Seed const& other):
         _buffer(other._buffer.contents(), other._buffer.size()),
-        _n(::BN_dup(other._n.get()))
+        _length(other._length)
       {
       }
 
       Seed::Seed(Seed&& other):
         _buffer(std::move(other._buffer)),
-        _n(std::move(other._n.get()))
+        _length(other._length)
       {
-        ELLE_ASSERT_EQ(other._n, nullptr);
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(Seed)
@@ -72,13 +71,10 @@ namespace infinit
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_n, nullptr);
-        ELLE_ASSERT_NEQ(other._n, nullptr);
+        if (this->_length != other._length)
+          return (false);
 
-        // Compare the buffer and modulus.
-        if ((this->_buffer != other._buffer) ||
-            (::BN_cmp(this->_n.get(),
-                      other._n.get()) != 0))
+        if (this->_buffer != other._buffer)
           return (false);
 
         return (true);
@@ -112,6 +108,12 @@ namespace infinit
         return (Cryptosystem::rsa);
       }
 
+      elle::Natural32
+      Seed::length() const
+      {
+        return (this->_length);
+      }
+
       /*----------.
       | Printable |
       `----------*/
@@ -119,13 +121,7 @@ namespace infinit
       void
       Seed::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_n, nullptr);
-
-        stream << "("
-               << this->_buffer
-               << ", "
-               << *this->_n
-               << ")";
+        stream << '(' << this->_buffer << ', ' << this->_length << ')';
       }
     }
   }
@@ -144,29 +140,40 @@ namespace infinit
       namespace seed
       {
         Seed
-        generate(cryptography::publickey::Interface const& K,
-                 cryptography::privatekey::Interface const& k)
+        generate(elle::Natural32 const length)
         {
-          ELLE_TRACE_FUNCTION(K, k);
+          ELLE_TRACE_FUNCTION(length);
 
-          ELLE_ASSERT_EQ(K.cryptosystem(), k.cryptosystem());
-          ELLE_ASSERT_EQ(K.cryptosystem(), Cryptosystem::rsa);
-
-          // Cast the interface into an actual RSA public key.
-          ELLE_ASSERT_NEQ(dynamic_cast<PublicKey const*>(&K), nullptr);
-          PublicKey const& _K = static_cast<PublicKey const&>(K);
+          if ((length % 8) != 0)
+            throw Exception(
+              elle::sprintf("the seed length %s is not a multiple of 8",
+                            length));
 
           // Return an RSA seed constructed by generating a random buffer
-          // or the size of the modulus.
-          ELLE_ASSERT_NEQ(_K.key(), nullptr);
-          ELLE_ASSERT_NEQ(_K.key()->pkey.rsa, nullptr);
-          ELLE_ASSERT_NEQ(_K.key()->pkey.rsa->n, nullptr);
-
+          // of the given length.
           elle::Buffer buffer =
-            random::generate<elle::Buffer>(_K.size());
-          ::BIGNUM* n = ::BN_dup(_K.key()->pkey.rsa->n);
+            random::generate<elle::Buffer>(length / 8);
 
-          return (Seed(std::move(buffer), n));
+          // Prepend a zero byte to make sure the buffer, once translated into
+          // a big number, will always be smaller than any other number of the
+          // same size.
+          //
+          // As an example, if the modulus is A87E9CD1, a buffer of the same
+          // size must be generated, say D719A0BE. Unfortunately this buffer,
+          // once transformed into a number, is bigger than the modulus (also
+          // in its number format): D719A0BE > A87E9CD1.
+          //
+          // One could be tempted to generate a shorter buffer. Unfortunately
+          // OpenSSL requires the data to be the exact same size as the modulus
+          // for non-padded operations.
+          //
+          // The solution consists in keeping a buffer of the same size but
+          // making sure that, once transformed into a number, it will always
+          // be smaller than the modulus. Enforcing the first byte to zero is
+          // a way to achieve this result.
+          buffer.mutable_contents()[0] = 0;
+
+          return (Seed(std::move(buffer), length));
         }
       }
     }

@@ -128,7 +128,7 @@ namespace infinit
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         std::pair<PublicKey, PrivateKey>
-        generate(cryptography::seed::Interface const& seed)
+        deduce(cryptography::seed::Interface const& seed)
         {
           ELLE_TRACE_FUNCTION(seed);
 
@@ -141,15 +141,11 @@ namespace infinit
           ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
           Seed const& _seed = static_cast<Seed const&>(seed);
 
-          /* XXX
-          ELLE_ASSERT_EQ(_seed.buffer().size(),
-                         static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
-
           // Deduce the RSA key from the given seed.
           ::RSA* rsa = nullptr;
 
           if ((rsa = ::dRSA_deduce_privatekey(
-                 ::BN_num_bits(_seed.n()),
+                 _seed.length(),
                  static_cast<unsigned char const*>(_seed.buffer().contents()),
                  _seed.buffer().size())) == nullptr)
             throw Exception(
@@ -172,11 +168,6 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
           return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
-          */
-
-          PublicKey K{};
-          PrivateKey k{};
-          return (std::pair<PublicKey, PrivateKey>(K, k));
         }
 #endif
 

@@ -97,6 +97,9 @@ namespace infinit
       T
       decrypt(Code const& code) const;
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+      /// Return the seed once rotated by the public key.
+      Seed
+      rotate(Seed const& seed) const;
       /// Return the seed once derived by the public key.
       Seed
       derive(Seed const& seed) const;
@@ -248,6 +251,10 @@ namespace infinit
         Clear
         decrypt(Code const& code) const = 0;
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        /// Return the seed once rotated by the public key.
+        virtual
+        Seed
+        rotate(Seed const& seed) const = 0;
         /// Return the seed once derived with the public key.
         virtual
         Seed

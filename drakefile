@@ -155,6 +155,7 @@ def configure(openssl_config,
     'src/cryptography/random.cc',
     'src/cryptography/random.hh',
     'src/cryptography/random.hxx',
+    'src/cryptography/types.hh',
     'src/cryptography/rsa/PrivateKey.cc',
     'src/cryptography/rsa/PrivateKey.hh',
     'src/cryptography/rsa/PrivateKey.hxx',
@@ -167,7 +168,8 @@ def configure(openssl_config,
     'src/cryptography/rsa/keypair.hh',
     'src/cryptography/rsa/padding.cc',
     'src/cryptography/rsa/padding.hh',
-    'src/cryptography/types.hh',
+    'src/cryptography/rsa/context.cc',
+    'src/cryptography/rsa/context.hh',
     )
 
   if enable_rotation:

@@ -81,9 +81,9 @@ namespace infinit
       {
         case Cryptosystem::rsa:
         {
-          // Generate a RSA key pair.
+          // Deduce a RSA key pair from the seed.
           std::pair<rsa::PublicKey, rsa::PrivateKey> pair =
-            rsa::keypair::generate(seed.implementation());
+            rsa::keypair::deduce(seed.implementation());
 
           // Construct high-level public and private keys.
           std::unique_ptr<publickey::Interface> K(
@@ -94,6 +94,8 @@ namespace infinit
           // Set both public and private keys.
           this->_K.reset(new PublicKey(std::move(K)));
           this->_k.reset(new PrivateKey(std::move(k)));
+
+          break;
         }
         default:
           throw Exception(

@@ -10,7 +10,12 @@
 #  include <elle/operator.hh>
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
+#  include <elle/concept/Uniquable.hh>
 #  include <elle/serialize/fwd.hh>
+#  include <elle/serialization/Serializer.hh>
+#  include <elle/serialization/fwd.hh>
+#  include <elle/serialize/fwd.hh>
+#  include <elle/serialize/construct.hh>
 #  include <elle/utility/fwd.hh>
 
 //
@@ -27,6 +32,7 @@ namespace infinit
     /// For instance, given the seed 'abcdefgh', one is guaranteed to always
     /// generate the same KeyPair.
     class Seed:
+      public elle::concept::MakeUniquable<Seed>,
       public elle::Printable
     {
       /*---------------.
@@ -34,9 +40,17 @@ namespace infinit
       `---------------*/
     public:
       /// Return a randomly generated seed suitable for the given key pair.
+      ///
+      /// Note that the length is given in bits.
       static
       Seed
-      generate(KeyPair const& pair);
+      generate(Cryptosystem const cryptosystem,
+               elle::Natural32 const length);
+      /// Return a seed based on the keypair that will be used to
+      /// rotate/derive it.
+      static
+      Seed
+      generate(KeyPair const& keypair);
 
       /*-------------.
       | Construction |
@@ -57,6 +71,9 @@ namespace infinit
       /// Return the cryptosystem provided by this key.
       Cryptosystem
       cryptosystem() const;
+      /// Return the length of the keys one can generate with this seed.
+      elle::Natural32
+      length() const;
       /// Return the implementation.
       seed::Interface const&
       implementation() const;
@@ -126,7 +143,8 @@ namespace infinit
       /// implementation must comply.
       class Interface:
         public elle::Printable,
-        public elle::serialize::Serializable<>
+        public elle::serialize::Serializable<>,
+        public elle::concept::Uniquable<>
       {
         /*-------------.
         | Construction |
@@ -157,6 +175,10 @@ namespace infinit
         virtual
         Cryptosystem
         cryptosystem() const = 0;
+        /// Return the length of the keys one can generate with this seed.
+        virtual
+        elle::Natural32
+        length() const = 0;
       };
     }
   }

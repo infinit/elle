@@ -1,6 +1,7 @@
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/rsa/padding.hh>
+#include <cryptography/rsa/context.hh>
 #include <cryptography/Seed.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -191,8 +192,11 @@ namespace infinit
         _context_decrypt(std::move(other._context_decrypt)),
         _context_sign(std::move(other._context_sign)),
         _context_encrypt(std::move(other._context_encrypt)),
-        _context_encrypt_padding_size(other._context_encrypt_padding_size),
-        _context_rotate(std::move(other._context_rotate))
+        _context_encrypt_padding_size(other._context_encrypt_padding_size)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        , _context_derive(std::move(other._context_derive))
+        , _context_rotate(std::move(other._context_rotate))
+#endif
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -201,7 +205,10 @@ namespace infinit
         ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
         ELLE_ASSERT_EQ(other._context_sign, nullptr);
         ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        ELLE_ASSERT_EQ(other._context_derive, nullptr);
         ELLE_ASSERT_EQ(other._context_rotate, nullptr);
+#endif
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
@@ -326,110 +333,47 @@ namespace infinit
         // Prepare the decrypt context.
         ELLE_ASSERT_EQ(this->_context_decrypt, nullptr);
         this->_context_decrypt.reset(
-          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
-
-        if (this->_context_decrypt == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_decrypt_init(this->_context_decrypt.get()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt.get(),
-                                EVP_PKEY_RSA,
-                                -1,
-                                EVP_PKEY_CTRL_RSA_PADDING,
-                                padding_decrypt,
-                                nullptr) <= 0)
-          throw Exception(
-            elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+          context::create(this->_key.get(),
+                          ::EVP_PKEY_decrypt_init,
+                          padding_decrypt));
 
         // Prepare the sign context.
         ELLE_ASSERT_EQ(this->_context_sign, nullptr);
         this->_context_sign.reset(
-          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
-
-        if (this->_context_sign == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_sign_init(this->_context_sign.get()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_CTX_ctrl(this->_context_sign.get(),
-                                EVP_PKEY_RSA,
-                                -1,
-                                EVP_PKEY_CTRL_RSA_PADDING,
-                                RSA_PKCS1_PADDING,
-                                nullptr) <= 0)
-          throw Exception(
-            elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+          context::create(this->_key.get(),
+                          ::EVP_PKEY_sign_init,
+                          RSA_PKCS1_PADDING));
 
         // Prepare the encrypt context.
         ELLE_ASSERT_EQ(this->_context_encrypt, nullptr);
         this->_context_encrypt.reset(
-          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
-
-        if (this->_context_encrypt == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_sign_init(this->_context_encrypt.get()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt.get(),
-                                EVP_PKEY_RSA,
-                                -1,
-                                EVP_PKEY_CTRL_RSA_PADDING,
-                                RSA_PKCS1_PADDING,
-                                nullptr) <= 0)
-          throw Exception(
-            elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+          context::create(this->_key.get(),
+                          ::EVP_PKEY_sign_init,
+                          RSA_PKCS1_PADDING));
 
         this->_context_encrypt_padding_size =
           padding::footprint(this->_context_encrypt.get());
 
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        // Note that in these cases, using no RSA padding is not dangerous
+        // because (1) the content being rotated is always random i.e cannot be
+        // guessed because produced by a human being (2) the content is always
+        // the size of the RSA key's modulus.
+
+        // Prepare the derive context.
+        ELLE_ASSERT_EQ(this->_context_derive, nullptr);
+        this->_context_derive.reset(
+          context::create(this->_key.get(),
+                          ::EVP_PKEY_decrypt_init,
+                          RSA_NO_PADDING));
+
         // Prepare the rotate context.
-        //
-        // Note that in this case, using no RSA padding is not dangerous because
-        // (1) the content being rotated is always random i.e cannot be guessed
-        // because produced by a human being (2) the content is always the size
-        // of the RSA key's modulus.
         ELLE_ASSERT_EQ(this->_context_rotate, nullptr);
         this->_context_rotate.reset(
-          ::EVP_PKEY_CTX_new(this->_key.get(), nullptr));
-
-        if (this->_context_rotate == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate a EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_sign_init(this->_context_rotate.get()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (::EVP_PKEY_CTX_ctrl(this->_context_rotate.get(),
-                                EVP_PKEY_RSA,
-                                -1,
-                                EVP_PKEY_CTRL_RSA_PADDING,
-                                RSA_NO_PADDING,
-                                nullptr) <= 0)
-          throw Exception(
-            elle::sprintf("unable to control the EVP_PKEY context: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+          context::create(this->_key.get(),
+                          ::EVP_PKEY_sign_init,
+                          RSA_NO_PADDING));
+#endif
       }
 
       /*----------.
@@ -629,6 +573,41 @@ namespace infinit
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       cryptography::Seed
+      PrivateKey::derive(cryptography::Seed const& seed) const
+      {
+        ELLE_TRACE_METHOD(seed);
+
+        ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
+
+        // Cast the seed into an actual RSA seed.
+        ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed.implementation()),
+                        nullptr);
+        Seed const& _seed = static_cast<Seed const&>(seed.implementation());
+
+        // As for the rotation mechanism, ensure the size of the seed
+        // equals the modulus.
+        if (_seed.length() != this->length())
+          throw Exception(
+            elle::sprintf("unable to derive a seed whose length does not match "
+                          "the RSA key's modulus: %s versus %s",
+                          _seed.length(), this->length()));
+
+        elle::Buffer buffer =
+          evp::asymmetric::apply(elle::WeakBuffer{_seed.buffer()},
+                                 this->_context_derive.get(),
+                                 ::EVP_PKEY_decrypt);
+
+        // Make sure the derived seed has the same size as the original.
+        ELLE_ASSERT_EQ(_seed.buffer().size(), buffer.size());
+
+        // Create an implementation of an RSA seed.
+        std::unique_ptr<cryptography::seed::Interface> implementation(
+          new Seed(std::move(buffer), _seed.length()));
+
+        return (cryptography::Seed(std::move(implementation)));
+      }
+
+      cryptography::Seed
       PrivateKey::rotate(cryptography::Seed const& seed) const
       {
         ELLE_TRACE_METHOD(seed);
@@ -643,15 +622,16 @@ namespace infinit
         // Ensure the size of the seed equals the modulus.
         //
         // If the seed is too large, the algorithm would need to encrypt
-        // it with a symmetric keg etc. (as the encrypt() method does) which
-        // would result in a seed larger than the original.
+        // it with a symmetric key etc. (as the encrypt() method does) which
+        // would result in a future seed larger than the original.
         //
         // If it is too small, an attack could be performed against textbook
         // RSA which is the algorithm used in this case.
-        if (_seed.buffer().size() !=
-            static_cast<elle::Natural32>(::EVP_PKEY_size(this->_key.get())))
-          throw Exception("unable to rotate a seed whose size does not match "
-                          "the RSA key's modulus");
+        if (_seed.length() != this->length())
+          throw Exception(
+            elle::sprintf("unable to rotate a seed whose length does not match "
+                          "the RSA key's modulus: %s versus %s",
+                          _seed.length(), this->length()));
 
         elle::Buffer buffer =
           evp::asymmetric::apply(elle::WeakBuffer{_seed.buffer()},
@@ -662,14 +642,10 @@ namespace infinit
         ELLE_ASSERT_EQ(_seed.buffer().size(), buffer.size());
 
         // Create an implementation of an RSA seed.
-        /* XXX
         std::unique_ptr<cryptography::seed::Interface> implementation(
-          new Seed(std::move(buffer), ::BN_dup(_seed.n())));
+          new Seed(std::move(buffer), _seed.length()));
 
         return (cryptography::Seed(std::move(implementation)));
-        */
-
-        return (cryptography::Seed());
       }
 #endif
 
@@ -740,8 +716,12 @@ namespace infinit
         padding::print(stream, this->_context_sign.get());
         stream << ", ";
         padding::print(stream, this->_context_encrypt.get());
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        stream << ", ";
+        padding::print(stream, this->_context_derive.get());
         stream << ", ";
         padding::print(stream, this->_context_rotate.get());
+#endif
         stream << "]";
       }
     }
@@ -762,7 +742,7 @@ namespace infinit
       {
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         PrivateKey
-        generate(cryptography::seed::Interface const& seed)
+        deduce(cryptography::seed::Interface const& seed)
         {
           ELLE_TRACE_FUNCTION(seed);
 
@@ -775,17 +755,11 @@ namespace infinit
           ELLE_ASSERT_NEQ(dynamic_cast<Seed const*>(&seed), nullptr);
           Seed const& _seed = static_cast<Seed const&>(seed);
 
-          /* XXX
-          ELLE_ASSERT_EQ(_seed.buffer().size(),
-                         static_cast<elle::Natural32>(BN_num_bytes(_seed.n())));
-          */
-
           // Deduce the RSA key from the given seed.
           ::RSA* rsa = nullptr;
 
-          /* XXX
           if ((rsa = ::dRSA_deduce_privatekey(
-                 ::BN_num_bits(_seed.n()),
+                 _seed.length(),
                  static_cast<unsigned char const*>(_seed.buffer().contents()),
                  _seed.buffer().size())) == nullptr)
             throw Exception(
@@ -800,9 +774,6 @@ namespace infinit
           PrivateKey k(rsa);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-          */
-
-          PrivateKey k{}; // XXX
 
           return (k);
         }
