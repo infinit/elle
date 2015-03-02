@@ -28,10 +28,10 @@ namespace infinit
         std::pair<PublicKey, PrivateKey>
         generate(elle::Natural32 const length);
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-        /// Generate a key pair in a deterministic way based on the
-        /// given seed.
+        /// Generate a key pair in a deterministic way (i.e deduce) based on
+        /// the given seed.
         std::pair<PublicKey, PrivateKey>
-        generate(cryptography::seed::Interface const& seed);
+        deduce(cryptography::seed::Interface const& seed);
 # endif
         /// Construct a pair of keys based on the given EVP structure.
         ///

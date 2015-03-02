@@ -52,7 +52,7 @@ namespace infinit
         elle::Natural32
         _overhead()
         {
-          // Generate a secret key of some length and serialize it.
+          // Generate a secret key of some length (in bits) and serialize it.
           elle::Natural32 length_original = 256;
 
           SecretKey secret = SecretKey::generate(cipher_algorithm,
@@ -81,6 +81,10 @@ namespace infinit
         {
           // Make sure the cryptographic system is set up.
           cryptography::require();
+
+          ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
+                            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
+                          input.size() * 8);
 
           // Compute the size of the encrypted buffer.
           ::size_t size;
@@ -139,7 +143,8 @@ namespace infinit
           cryptography::require();
 
           // The overhead represents the difference between a bare secret
-          // key length and the same key in its serialized form.
+          // key length and the same key in its serialized form. Note that
+          // the overhead is expressed in bits.
           //
           // Without computing this difference, one may think the following
           // is going to encrypt the temporary secret key with the given
@@ -156,12 +161,17 @@ namespace infinit
 
           // 1) Compute the size of the secret key to generate by taking
           //    into account the padding size, if any.
-          ELLE_ASSERT_GT(static_cast<elle::Natural32>(
-                           ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
-                         (padding_size + overhead));
+          ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
+                            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
+                          (padding_size + overhead));
+
+          // The maximum length, in bits, of the generated symmetric key.
+          elle::Natural32 const ceiling = 512;
           elle::Natural32 const length =
+            (::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
+             (padding_size + overhead)) < ceiling ?
             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
-            (padding_size + overhead);
+            (padding_size + overhead) : ceiling;
 
           // 2) Generate a temporary secret key.
           SecretKey secret = SecretKey::generate(cipher_algorithm, length);

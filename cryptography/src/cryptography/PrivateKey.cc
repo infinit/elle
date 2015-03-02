@@ -36,10 +36,12 @@ namespace infinit
       {
         case Cryptosystem::rsa:
         {
-          // Generate a RSA private key implementation based on the seed.
+          // Deduce a RSA private key implementation based on the seed.
           this->_implementation.reset(
             new rsa::PrivateKey(
-              rsa::privatekey::generate(seed.implementation())));
+              rsa::privatekey::deduce(seed.implementation())));
+
+          break;
         }
         default:
           throw Exception(
@@ -109,6 +111,16 @@ namespace infinit
     }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+    Seed
+    PrivateKey::derive(Seed const& seed) const
+    {
+      ELLE_TRACE_METHOD(seed);
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->derive(seed));
+    }
+
     Seed
     PrivateKey::rotate(Seed const& seed) const
     {

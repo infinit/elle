@@ -40,10 +40,12 @@ namespace infinit
       {
         case Cryptosystem::rsa:
         {
-          // Generate a RSA public key implementation based on the seed.
+          // Deduce a RSA public key implementation based on the seed.
           this->_implementation.reset(
             new rsa::PublicKey(
-              rsa::publickey::generate(seed.implementation())));
+              rsa::publickey::deduce(seed.implementation())));
+
+          break;
         }
         default:
           throw Exception(
@@ -114,6 +116,16 @@ namespace infinit
     }
 
 #if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+    Seed
+    PublicKey::rotate(Seed const& seed) const
+    {
+      ELLE_TRACE_METHOD(seed);
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->rotate(seed));
+    }
+
     Seed
     PublicKey::derive(Seed const& seed) const
     {

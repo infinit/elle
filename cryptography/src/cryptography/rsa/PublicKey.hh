@@ -127,6 +127,9 @@ namespace infinit
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         virtual
         cryptography::Seed
+        rotate(cryptography::Seed const& seed) const;
+        virtual
+        cryptography::Seed
         derive(cryptography::Seed const& seed) const;
 # endif
         // printable
@@ -150,10 +153,14 @@ namespace infinit
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
+        // The padding size expressed in bits.
         ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
+# endif
       };
     }
   }
@@ -176,10 +183,10 @@ namespace infinit
         `----------*/
 
 # if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-        /// Generate a public key in a deterministic way based on the
-        /// given seed.
+        /// Generate a public key in a deterministic way (i.e deduce) based on
+        /// the given seed.
         PublicKey
-        generate(cryptography::seed::Interface const& seed);
+        deduce(cryptography::seed::Interface const& seed);
 # endif
         /// Construct a public key based on the given EVP structure whose
         /// ownership is transferred.

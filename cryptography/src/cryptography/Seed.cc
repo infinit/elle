@@ -21,11 +21,12 @@ namespace infinit
     `---------------*/
 
     Seed
-    Seed::generate(KeyPair const& keypair)
+    Seed::generate(Cryptosystem const cryptosystem,
+                   elle::Natural32 const length)
     {
-      ELLE_TRACE_FUNCTION(keypair);
-      /* XXX
-      switch (keypair.cryptosystem())
+      ELLE_TRACE_FUNCTION(cryptosystem, length);
+
+      switch (cryptosystem)
       {
         case Cryptosystem::rsa:
         {
@@ -33,19 +34,25 @@ namespace infinit
           // implementation.
 
           std::unique_ptr<seed::Interface> implementation(
-            new rsa::Seed(
-              rsa::seed::generate(keypair.K().implementation(),
-                                  keypair.k().implementation())));
+            new rsa::Seed(rsa::seed::generate(length)));
 
           return (Seed(std::move(implementation)));
         }
         default:
           throw Exception(
             elle::sprintf("unknown or non-supported asymmetric "
-                          "cryptosystem '%s'", keypair.cryptosystem()));
+                          "cryptosystem '%s'", cryptosystem));
       }
-      */
+
       elle::unreachable();
+    }
+
+    Seed
+    Seed::generate(KeyPair const& keypair)
+    {
+      ELLE_TRACE_FUNCTION(keypair);
+
+      return Seed::generate(keypair.cryptosystem(), keypair.length());
     }
 
     /*-------------.
@@ -97,6 +104,16 @@ namespace infinit
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
       return (this->_implementation->cryptosystem());
+    }
+
+    elle::Natural32
+    Seed::length() const
+    {
+      ELLE_TRACE_METHOD("");
+
+      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
+
+      return (this->_implementation->length());
     }
 
     seed::Interface const&

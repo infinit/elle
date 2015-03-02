@@ -43,6 +43,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::Seed,
   archive >> cryptosystem;
 
   ELLE_ASSERT_EQ(value._implementation, nullptr);
+
   value._implementation.reset(
     infinit::cryptography::seed::factory().allocate<
       infinit::cryptography::seed::Interface>(cryptosystem));

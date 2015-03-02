@@ -13,7 +13,9 @@
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
 #  include <elle/serialize/fwd.hh>
+#  include <elle/serialize/DynamicFormat.hh>
 #  include <elle/serialize/construct.hh>
+#  include <elle/concept/Uniquable.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -26,30 +28,30 @@ namespace infinit
     namespace rsa
     {
       /// Represent an RSA seed which can be used to deterministically generate
-      /// RSA key pairs, private or public keys given a buffer of random data
-      /// and the modulus N of the key to generate.
+      /// RSA key pairs, private or public keys given a buffer of random data.
       class Seed:
         public cryptography::seed::Interface,
-        public elle::serialize::SerializableMixin<Seed>
+        public elle::serialize::SerializableMixin<Seed>,
+        public elle::serialize::DynamicFormat<Seed>,
+        public elle::concept::MakeUniquable<Seed>
       {
         /*-------------.
         | Construction |
         `-------------*/
       public:
         Seed(); // XXX[to deserialize]
-        /// Construct an RSA seed based on a buffer and the modulus which is
-        /// especially used for deriving public keys.
+        /// Construct an RSA seed based on a buffer and the length of the
+        /// keys' modulus it will allow generating.
         ///
-        /// Note that this version of the constructor duplicates both the buffer
-        /// and the modulus.
+        /// Note that this version of the constructor duplicates the buffer.
         explicit
         Seed(elle::Buffer const& buffer,
-             ::BIGNUM* n);
+             elle::Natural32 const length);
         /// Construct an RSA seed as above but by transferring the ownership
-        /// of both the buffer and the modulus.
+        /// of the buffer.
         explicit
         Seed(elle::Buffer&& buffer,
-             ::BIGNUM* n);
+             elle::Natural32 const length);
         Seed(Seed const& seed);
         Seed(Seed&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
@@ -77,6 +79,9 @@ namespace infinit
         virtual
         Cryptosystem
         cryptosystem() const;
+        virtual
+        elle::Natural32
+        length() const;
         // printable
         virtual
         void
@@ -89,7 +94,9 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(elle::Buffer, buffer);
-        ELLE_ATTRIBUTE_R(types::BIGNUM, n);
+        // The length, in bits, of the keys' modulus one can
+        // generate with this seed.
+        ELLE_ATTRIBUTE(elle::Natural32, length);
       };
     }
   }
@@ -111,11 +118,9 @@ namespace infinit
         | Functions |
         `----------*/
 
-        /// Generate a seed based on both the public and private RSA keys
-        /// which will be used to rotate it.
+        /// Generate a seed of the given length.
         Seed
-        generate(cryptography::publickey::Interface const& K,
-                 cryptography::privatekey::Interface const& k);
+        generate(elle::Natural32 const length);
       }
     }
   }
