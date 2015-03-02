@@ -18,7 +18,7 @@
    exponent with a deterministic PNRG seeded with the content provided. */
 RSA *dRSA_deduce_publickey(BIGNUM *N,
                            const unsigned char *seed, size_t seed_length);
-/* Deduce the whole private key _rsa_ of the given _size_ in bits by relying on
+/* Deduce the whole private key _rsa_ of the given size in _bits_ by relying on
    a deterministic PNRG seeded with the content provided. */
 RSA *dRSA_deduce_privatekey(int bits,
                             const unsigned char *seed, size_t seed_length);
