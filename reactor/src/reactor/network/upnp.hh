@@ -70,7 +70,7 @@ namespace reactor
     private:
 
       void release(PortMapping &);
-      void _release(PortMapping&);
+      void _release(char const* port, char const* protocol);
       friend class PortMapping;
       std::shared_ptr<UPNPImpl> _impl;
       Mutex     _mutex;

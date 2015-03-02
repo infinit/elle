@@ -1,10 +1,13 @@
 #include <reactor/network/upnp.hh>
-#include <reactor/scheduler.hh>
 
-#include <elle/log.hh>
 #include <miniupnpc.h>
 #include <upnpcommands.h>
 #include <upnperrors.h>
+
+#include <reactor/scheduler.hh>
+
+#include <elle/log.hh>
+#include <elle/utility/Move.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.upnp");
 
@@ -25,12 +28,14 @@ namespace reactor
       {
         memset(&urls, 0, sizeof(UPNPUrls));
       }
+
       ~UPNPImpl()
       {
         FreeUPNPUrls(&this->urls);
         if (this->devlist)
           freeUPNPDevlist(this->devlist);
       }
+
       UPNPDev* devlist;
       void _initialize();
       void _setup_redirect(Protocol p,
@@ -114,6 +119,7 @@ namespace reactor
     PortMapping
     UPNP::setup_redirect(Protocol p, unsigned short port)
     {
+      ELLE_TRACE_SCOPE("%s: setup redirect on %s (%s)", *this, port, p);
       reactor::Lock lock(_mutex);
       if (!_impl)
         throw elle::Exception("UPNP not initialized");
@@ -208,30 +214,39 @@ namespace reactor
     }
 
     void
-    UPNP::release(PortMapping & redirect)
+    UPNP::release(PortMapping& redirect)
     {
-      reactor::Lock lock(_mutex);
-      if (!_impl)
+      ELLE_TRACE_SCOPE("%s: release %s", *this, redirect);
+      if (!this->_impl)
         throw elle::Exception("UPNP not initialized");
-      reactor::background(std::bind(&UPNP::_release, this, std::ref(redirect)));
+      auto port = redirect.external_port.c_str();
+      auto protocol = redirect.protocol == Protocol::tcp ? "TCP" : "UDP";
+      if (reactor::Scheduler::scheduler())
+      {
+        reactor::Lock lock(_mutex);
+        reactor::background([this, port, protocol] {
+            this->_release(port, protocol);
+          });
+      }
+      else
+        this->_release(port, protocol);
     }
 
     void
-    UPNP::_release(PortMapping & redirect)
+    UPNP::_release(char const* port, char const* protocol)
     {
-      ELLE_TRACE("Releasing redirection %s", redirect);
+      ELLE_TRACE("%s: release %s", *this, port);
       int r = UPNP_DeletePortMapping(_impl->urls.controlURL,
                                      _impl->data.first.servicetype,
-                                     redirect.external_port.c_str(),
-                                     redirect.protocol == Protocol::tcp?"TCP":"UDP",
+                                     port,
+                                     protocol,
                                      0);
-      ELLE_TRACE("Mapping %s released with %s", redirect, strupnperror(r));
+      ELLE_DEBUG("%s: released with %s", *this, strupnperror(r));
     }
 
     PortMapping::PortMapping()
-    : _owner(0)
-    {
-    }
+      : _owner(0)
+    {}
 
     PortMapping::~PortMapping()
     {
