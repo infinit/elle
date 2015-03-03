@@ -2,6 +2,7 @@
 
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/string_generator.hpp>
 
 namespace elle
 {
@@ -11,6 +12,10 @@ namespace elle
 
   UUID::UUID(boost::uuids::uuid uuid)
     : boost::uuids::uuid(std::move(uuid))
+  {}
+
+  UUID::UUID(std::string const& repr)
+    : boost::uuids::uuid(boost::uuids::string_generator()(repr))
   {}
 
   UUID

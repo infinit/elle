@@ -14,6 +14,7 @@ namespace elle
   public:
     UUID();
     UUID(boost::uuids::uuid uuid);
+    UUID(std::string const& repr);
     static
     UUID
     random();
