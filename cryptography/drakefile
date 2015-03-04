@@ -217,7 +217,8 @@ def configure(openssl_config,
     "random.cc",
      ]
   if enable_rotation:
-    tests += [ "Seed.cc" ]
+    tests += [ "Seed.cc",
+               "scenario.cc" ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.android:

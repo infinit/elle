@@ -126,6 +126,18 @@ namespace infinit
                                       function_oneway));
     }
 
+    elle::Natural32
+    SecretKey::size() const
+    {
+      return (this->_password.size());
+    }
+
+    elle::Natural32
+    SecretKey::length() const
+    {
+      return (this->_password.size() * 8);
+    }
+
     /*-------.
     | Legacy |
     `-------*/

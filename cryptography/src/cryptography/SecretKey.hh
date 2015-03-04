@@ -80,6 +80,12 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
+      /// Return the size, in bytes, of the secret key.
+      elle::Natural32
+      size() const;
+      /// Return the length, in bits, of the secret key.
+      elle::Natural32
+      length() const;
 
       /*-------.
       | Legacy |
@@ -113,7 +119,7 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(cipher::Algorithm, cipher);
+      ELLE_ATTRIBUTE_R(cipher::Algorithm, cipher);
       ELLE_ATTRIBUTE(elle::Buffer, password);
       ELLE_ATTRIBUTE(oneway::Algorithm, oneway);
     };

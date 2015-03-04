@@ -4,6 +4,7 @@
 
 # include <cryptography/Seed.hh>
 # include <cryptography/KeyPair.hh>
+# include <cryptography/SecretKey.hh>
 # include <cryptography/Exception.hh>
 # include <cryptography/random.hh>
 
@@ -222,16 +223,6 @@ test_operate()
 }
 
 /*----------.
-| Scenarios |
-`----------*/
-
-static
-void
-test_scearios()
-{
-}
-
-/*----------.
 | Serialize |
 `----------*/
 
@@ -239,7 +230,7 @@ static
 void
 test_serialize()
 {
-  // XXX + represent()
+  // XXX[waiting for new serialization] + represent()
 }
 
 /*-----.
@@ -254,8 +245,7 @@ ELLE_TEST_SUITE()
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));
-  // XXX suite->add(BOOST_TEST_CASE(test_scenarios));
-  // XXX suite->add(BOOST_TEST_CASE(test_serialize));
+  suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

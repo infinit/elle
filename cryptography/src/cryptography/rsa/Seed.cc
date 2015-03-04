@@ -121,7 +121,7 @@ namespace infinit
       void
       Seed::print(std::ostream& stream) const
       {
-        stream << '(' << this->_buffer << ', ' << this->_length << ')';
+        stream << this->_buffer;
       }
     }
   }

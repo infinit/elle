@@ -17,6 +17,9 @@
 #  include <elle/serialize/construct.hh>
 #  include <elle/concept/Uniquable.hh>
 
+#  include <utility>
+ELLE_OPERATOR_RELATIONALS();
+
 //
 // ---------- Class -----------------------------------------------------------
 //
@@ -62,7 +65,6 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(Seed const& other) const;
-        ELLE_OPERATOR_NEQ(Seed);
         ELLE_OPERATOR_NO_ASSIGNMENT(Seed);
 
         /*-----------.
