@@ -8,18 +8,68 @@
 
 namespace elle
 {
+  /// Universal unique identifier
+  ///
+  /// Universal unique identifier as per RFC 4122. This class is mostly a
+  /// convenience wrapper above boost::uuids.
   class UUID:
     public boost::uuids::uuid
   {
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
+    /// Create nil UUID
     UUID();
+    /// Create from Boost UUID.
     UUID(boost::uuids::uuid uuid);
+    /// Create from string representation.
     UUID(std::string const& repr);
+    /// Create random UUID.
     static
     UUID
     random();
+
+  /*----------.
+  | Observers |
+  `----------*/
+  public:
+    /// The string representation.
+    std::string
+    repr();
   };
 
+  /// String cannot be interpreted as a UUID error.
+  ///
+  ///
+  class InvalidUUID
+    : public Error
+  {
+  /*------.
+  | Types |
+  `------*/
+  public:
+    typedef InvalidUUID Self;
+    typedef Error Super;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    InvalidUUID(std::string repr);
+
+  /*-----------.
+  | Attributes |
+  `-----------*/
+  public:
+    ELLE_ATTRIBUTE_R(std::string, repr);
+  };
+
+
+  /// Serialization
+  ///
+  /// Serialize UUID as strings. The empty string is considered a valid, nil
+  /// UUID.
   namespace serialization
   {
     template <>
