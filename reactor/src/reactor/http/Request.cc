@@ -124,8 +124,8 @@ namespace reactor
     {
       if (!this->_handle)
         throw RequestError(url, "unable to initialize request");
-      // Set error buffer.
-      memset(this->_error, 0, CURL_ERROR_SIZE);
+      // Weird clang macos bug, using 'this->_error' causes a SEGV for some offset of the _error in the class.
+      memset(&this->_error[0], 0, CURL_ERROR_SIZE);
       setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
       // Set version.
       auto version = this->_conf.version() == Version::v11 ?
