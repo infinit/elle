@@ -768,6 +768,19 @@ json_iso8601()
   }
 }
 
+static
+void
+json_unicode_surrogate()
+{
+  // Check we don't choke on a surrogate pair.
+  std::stringstream stream(
+    "{"
+    "    \"foo\": \"\\uD834\\uDD1E\""
+    "}"
+    );
+  elle::json::read(stream);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -793,4 +806,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_missing_key));
   suite.add(BOOST_TEST_CASE(json_overflows));
   suite.add(BOOST_TEST_CASE(json_iso8601));
+  suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
 }
