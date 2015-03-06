@@ -775,10 +775,16 @@ json_unicode_surrogate()
   // Check we don't choke on a surrogate pair.
   std::stringstream stream(
     "{"
-    "    \"foo\": \"\\uD834\\uDD1E\""
+    "    \"foo\": \"\\uD83D\\uDE18\","
+    "    \"bar\": \"\\u00E9\\u00E9\""
     "}"
     );
-  elle::json::read(stream);
+  elle::serialization::json::SerializerIn serializer(stream);
+  std::string res;
+  serializer.serialize("foo", res);
+  BOOST_CHECK_EQUAL(res, "😘");
+  serializer.serialize("bar", res);
+  BOOST_CHECK_EQUAL(res, "éé");
 }
 
 ELLE_TEST_SUITE()
