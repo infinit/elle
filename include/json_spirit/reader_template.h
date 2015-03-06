@@ -105,10 +105,7 @@ namespace json_spirit
       }
       else if (c - 0xd800u < 0x800)
       {
-        //FIXME: this is probably a character from a surrogate pair ie codepoint above 0xFFFF
-        // that must be encoded in two characters because the json specs says \u is followed
-        // by exactly 4 hex digits.
-        res[0] = '?';
+        throw std::runtime_error("invalid unicode codepoint: " + std::to_string(c));
       }
       else if (c<0x10000)
       {
@@ -128,19 +125,62 @@ namespace json_spirit
       return res;
     }
 
-    template<>
-    std::string unicode_str_to_char<char, std::string::const_iterator>( std::string::const_iterator& begin )
+    static int unicode_str_to_codepoint(std::string::const_iterator& begin)
     {
-        const char c1( *( ++begin ) );
-        const char c2( *( ++begin ) );
-        const char c3( *( ++begin ) );
-        const char c4( *( ++begin ) );
-        int codepoint =
+      const char c1( *( ++begin ) );
+      const char c2( *( ++begin ) );
+      const char c3( *( ++begin ) );
+      const char c4( *( ++begin ) );
+      int codepoint =
           (hex_to_num( c1 ) << 12) +
           (hex_to_num( c2 ) <<  8) +
           (hex_to_num( c3 ) <<  4) +
           (hex_to_num( c4 ) <<  0);
+      return codepoint;
+    }
+
+    template<>
+    std::string unicode_str_to_char<char, std::string::const_iterator>( std::string::const_iterator& begin )
+    {
+        int codepoint = unicode_str_to_codepoint(begin);
         return codepoint_to_utf8(codepoint);
+    }
+
+    template< class String_type >
+    void process_unicode_escape(String_type& s,
+                                typename String_type::const_iterator& begin,
+                                typename String_type::const_iterator end )
+    {
+      if (end - begin >= 5) //  expecting "uHHHH..."
+        s += unicode_str_to_char<typename String_type::value_type,
+                                 typename String_type::const_iterator>(begin);
+    }
+
+    template<>
+    void process_unicode_escape<std::string>(std::string& s,
+                                        std::string::const_iterator& begin,
+                                        std::string::const_iterator end )
+    {
+      if( end - begin >= 5 )  //  expecting "uHHHH..."
+      {
+        int cp = unicode_str_to_codepoint(begin);
+        if (cp >= 0xd800u && cp -0xd800u < 0x800)
+        { // Possibly a surrogate pair
+          if (end - begin >= 6 && *(begin+1) == '\\' && *(begin+2)=='u')
+          {
+            begin += 2;
+            int cp2 = unicode_str_to_codepoint(begin);
+            int res = (cp - 0xd800)*0x400 + (cp2 - 0xdc00) + 0x10000;
+            s += codepoint_to_utf8(res);
+          }
+          else
+            throw std::runtime_error("invalid unicode codepoint: " + std::to_string(cp));
+        }
+        else
+        {
+          s += codepoint_to_utf8(cp);
+        }
+      }
     }
 
     template< class String_type >
@@ -172,11 +212,8 @@ namespace json_spirit
             }
             case 'u':
             {
-                if( end - begin >= 5 )  //  expecting "uHHHH..."
-                {
-                    s += unicode_str_to_char< Char_type >( begin );
-                }
-                break;
+              process_unicode_escape(s, begin, end);
+              break;
             }
         }
     }
