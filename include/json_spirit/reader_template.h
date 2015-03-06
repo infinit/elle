@@ -104,7 +104,12 @@ namespace json_spirit
         res[1] = 128 + c % 64;
       }
       else if (c - 0xd800u < 0x800)
-        throw std::runtime_error("invalid unicode codepoint: " + std::to_string(c));
+      {
+        //FIXME: this is probably a character from a surrogate pair ie codepoint above 0xFFFF
+        // that must be encoded in two characters because the json specs says \u is followed
+        // by exactly 4 hex digits.
+        res[0] = '?';
+      }
       else if (c<0x10000)
       {
         res[0] = 224 + c / 4096;
