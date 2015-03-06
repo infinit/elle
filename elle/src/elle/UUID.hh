@@ -36,7 +36,7 @@ namespace elle
   public:
     /// The string representation.
     std::string
-    repr();
+    repr() const;
   };
 
   /// String cannot be interpreted as a UUID error.

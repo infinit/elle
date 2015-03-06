@@ -39,7 +39,7 @@ namespace elle
   `----------------*/
 
   std::string
-  UUID::repr()
+  UUID::repr() const
   {
     return boost::lexical_cast<std::string>(*this);
   }
