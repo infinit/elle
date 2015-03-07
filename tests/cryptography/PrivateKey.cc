@@ -38,9 +38,8 @@ test_represent_rsa()
   {
     infinit::cryptography::Code code =
       keypair.K().encrypt(
-        infinit::cryptography::Plain(
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(_input1.c_str())),
-                                                   _input1.length()}));
+        infinit::cryptography::Plain{
+          elle::ConstWeakBuffer{_input1}});
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << code;
@@ -151,8 +150,7 @@ test_operate_rsa()
         elle::serialize::InputBase64Archive>(archive);
     infinit::cryptography::Code code(extractor);
     infinit::cryptography::Clear clear = k.decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+    elle::String const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(_input1, output);
   }

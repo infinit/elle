@@ -79,15 +79,13 @@ test_hash_operate_x(elle::String const& R)
   {
     infinit::cryptography::Digest digest1 =
       infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain(
-          elle::WeakBuffer(reinterpret_cast<void*>(const_cast<char*>(_input.c_str())),
-                           _input.length())),
+        infinit::cryptography::Plain{
+          elle::ConstWeakBuffer{_input}},
         A);
     infinit::cryptography::Digest digest2 =
       infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain(
-          elle::WeakBuffer(reinterpret_cast<void*>(const_cast<char*>(_input.c_str())),
-                           _input.length())),
+        infinit::cryptography::Plain{
+          elle::ConstWeakBuffer{_input}},
         A);
 
     BOOST_CHECK_EQUAL(digest1, digest2);
