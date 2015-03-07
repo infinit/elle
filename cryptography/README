@@ -24,7 +24,7 @@ These variables can be used to parameter the library:
   o INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE defines the path to the source file
     from which data will be read in order to initialize the random generator.
     The default value for this variable is: "/dev/random"
-  o ELLE_CRYPTOGRAPHY_ROTATION activates the key rotation mechanism enabling
+  o INFINIT_CRYPTOGRAPHY_ROTATION activates the key rotation mechanism enabling
     one to derive key pairs, public and private keys from a seed in a
     deterministic way.
 

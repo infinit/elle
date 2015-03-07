@@ -50,7 +50,7 @@ namespace infinit
       /// Construct a public key by providing its implementation.
       explicit
       PublicKey(std::unique_ptr<publickey::Interface>&& implementation);
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       /// Construct a public key based on a given seed i.e in a deterministic
       /// way.
       explicit
@@ -96,7 +96,7 @@ namespace infinit
       template <typename T>
       T
       decrypt(Code const& code) const;
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       /// Return the seed once rotated by the public key.
       Seed
       rotate(Seed const& seed) const;
@@ -250,7 +250,7 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const = 0;
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once rotated by the public key.
         virtual
         Seed

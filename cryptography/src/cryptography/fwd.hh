@@ -21,7 +21,7 @@ namespace infinit
       class Interface;
     }
     class SecretKey;
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     namespace seed
     {
       class Interface;

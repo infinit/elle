@@ -41,7 +41,7 @@ def configure(openssl_config,
                             'lib', strip_prefix = True)
 
   if enable_rotation:
-    cxx_config.define("ELLE_CRYPTOGRAPHY_ROTATION")
+    cxx_config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.include(
       'modules/dopenssl',
       cxx_toolkit = cxx_toolkit,

@@ -15,7 +15,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
 
@@ -126,7 +126,7 @@ namespace infinit
           return (std::pair<PublicKey, PrivateKey>(std::move(K), std::move(k)));
         }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         std::pair<PublicKey, PrivateKey>
         deduce(cryptography::seed::Interface const& seed)
         {

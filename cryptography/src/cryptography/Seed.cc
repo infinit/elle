@@ -1,4 +1,4 @@
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 
 # include <cryptography/Seed.hh>
 # include <cryptography/PrivateKey.hh>

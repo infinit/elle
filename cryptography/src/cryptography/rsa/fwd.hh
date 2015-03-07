@@ -9,7 +9,7 @@ namespace infinit
     {
       class PrivateKey;
       class PublicKey;
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       class Seed;
 # endif
     }

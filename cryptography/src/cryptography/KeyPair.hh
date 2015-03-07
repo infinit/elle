@@ -64,7 +64,7 @@ namespace infinit
       KeyPair(PublicKey&& K,
               PrivateKey&& k);
       explicit
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       KeyPair(Seed const& seed);
 # endif
       KeyPair(KeyPair const& other);
