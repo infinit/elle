@@ -74,7 +74,7 @@ namespace infinit
     {
     }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     KeyPair::KeyPair(Seed const& seed)
     {
       switch (seed.cryptosystem())

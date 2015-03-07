@@ -124,7 +124,7 @@ namespace infinit
         virtual
         Clear
         decrypt(Code const& code) const;
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         virtual
         cryptography::Seed
         rotate(cryptography::Seed const& seed) const;
@@ -157,7 +157,7 @@ namespace infinit
         ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
 # endif
@@ -182,7 +182,7 @@ namespace infinit
         | Functions |
         `----------*/
 
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Generate a public key in a deterministic way (i.e deduce) based on
         /// the given seed.
         PublicKey

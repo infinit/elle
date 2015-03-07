@@ -17,7 +17,7 @@
 #include <openssl/rsa.h>
 #include <openssl/err.h>
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
 
@@ -193,7 +193,7 @@ namespace infinit
         _context_sign(std::move(other._context_sign)),
         _context_encrypt(std::move(other._context_encrypt)),
         _context_encrypt_padding_size(other._context_encrypt_padding_size)
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         , _context_derive(std::move(other._context_derive))
         , _context_rotate(std::move(other._context_rotate))
 #endif
@@ -205,7 +205,7 @@ namespace infinit
         ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
         ELLE_ASSERT_EQ(other._context_sign, nullptr);
         ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ASSERT_EQ(other._context_derive, nullptr);
         ELLE_ASSERT_EQ(other._context_rotate, nullptr);
 #endif
@@ -354,7 +354,7 @@ namespace infinit
         this->_context_encrypt_padding_size =
           padding::footprint(this->_context_encrypt.get());
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Note that in these cases, using no RSA padding is not dangerous
         // because (1) the content being rotated is always random i.e cannot be
         // guessed because produced by a human being (2) the content is always
@@ -571,7 +571,7 @@ namespace infinit
                                          this->_context_encrypt_padding_size));
       }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       cryptography::Seed
       PrivateKey::derive(cryptography::Seed const& seed) const
       {
@@ -716,7 +716,7 @@ namespace infinit
         padding::print(stream, this->_context_sign.get());
         stream << ", ";
         padding::print(stream, this->_context_encrypt.get());
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         stream << ", ";
         padding::print(stream, this->_context_derive.get());
         stream << ", ";
@@ -740,7 +740,7 @@ namespace infinit
     {
       namespace privatekey
       {
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         PrivateKey
         deduce(cryptography::seed::Interface const& seed)
         {

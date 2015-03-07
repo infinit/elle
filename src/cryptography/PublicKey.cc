@@ -33,7 +33,7 @@ namespace infinit
     {
     }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     PublicKey::PublicKey(Seed const& seed)
     {
       switch (seed.cryptosystem())
@@ -115,7 +115,7 @@ namespace infinit
       return (this->_implementation->decrypt(code));
     }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     Seed
     PublicKey::rotate(Seed const& seed) const
     {

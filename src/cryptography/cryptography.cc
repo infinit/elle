@@ -8,11 +8,11 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rand.hh>
 #endif
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
 #endif
 
@@ -41,7 +41,7 @@ namespace infinit
         if (::RAND_status() == 0)
           random::setup();
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Initialize the deterministic PNRG engine.
         if (::dRAND_init() != 1)
           throw Exception(
@@ -53,7 +53,7 @@ namespace infinit
 
       ~Initializer()
       {
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Clean the deterministic PNRG engine.
         if (::dRAND_clean() != 1)
         {

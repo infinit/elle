@@ -8,7 +8,7 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
 
@@ -176,7 +176,7 @@ namespace infinit
         _context_encrypt_padding_size(other._context_encrypt_padding_size),
         _context_verify(std::move(other._context_verify)),
         _context_decrypt(std::move(other._context_decrypt))
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         , _context_rotate(std::move(other._context_rotate))
         , _context_derive(std::move(other._context_derive))
 #endif
@@ -188,7 +188,7 @@ namespace infinit
         ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
         ELLE_ASSERT_EQ(other._context_verify, nullptr);
         ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ASSERT_EQ(other._context_rotate, nullptr);
         ELLE_ASSERT_EQ(other._context_derive, nullptr);
 #endif
@@ -313,7 +313,7 @@ namespace infinit
                           ::EVP_PKEY_verify_recover_init,
                           RSA_PKCS1_PADDING));
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // These contexts do not use paddings. Not that relying on textbook
         // RSA is considered foolish. In this case however, restricting the
         // rotation/derivation to content of the size of the RSA key's modulus
@@ -476,7 +476,7 @@ namespace infinit
                                          ::EVP_PKEY_verify_recover));
       }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       cryptography::Seed
       PublicKey::rotate(cryptography::Seed const& seed) const
       {
@@ -609,7 +609,7 @@ namespace infinit
         padding::print(stream, this->_context_verify.get());
         stream << ", ";
         padding::print(stream, this->_context_decrypt.get());
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         stream << ", ";
         padding::print(stream, this->_context_rotate.get());
         stream << ", ";
@@ -633,7 +633,7 @@ namespace infinit
     {
       namespace publickey
       {
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         PublicKey
         deduce(cryptography::seed::Interface const& seed)
         {

@@ -29,7 +29,7 @@ namespace infinit
     {
     }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     PrivateKey::PrivateKey(Seed const& seed)
     {
       switch (seed.cryptosystem())
@@ -110,7 +110,7 @@ namespace infinit
       return (this->_implementation->encrypt(plain));
     }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     Seed
     PrivateKey::derive(Seed const& seed) const
     {
