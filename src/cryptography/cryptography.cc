@@ -12,9 +12,7 @@
 # include <dopenssl/rand.hh>
 #endif
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
-#endif
 
 namespace infinit
 {
