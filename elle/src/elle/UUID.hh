@@ -1,6 +1,7 @@
 #ifndef ELLE_UUID_HH
 # define ELLE_UUID_HH
 
+# include <boost/functional/hash.hpp>
 # include <boost/uuid/uuid.hpp>
 # include <boost/uuid/uuid_io.hpp>
 
@@ -84,6 +85,19 @@ namespace elle
       convert(std::string& repr);
     };
   }
+}
+
+namespace std
+{
+  template<>
+  class hash<elle::UUID>
+  {
+  public:
+    size_t operator()(elle::UUID const& uuid) const
+    {
+      return boost::hash<boost::uuids::uuid>()(uuid);
+    }
+  };
 }
 
 #endif
