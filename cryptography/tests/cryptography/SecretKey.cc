@@ -175,11 +175,9 @@ test_operate_idea()
     infinit::cryptography::Code code =
       key.encrypt(
         infinit::cryptography::Plain{
-          elle::WeakBuffer(reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                           input.length())});
+          elle::ConstWeakBuffer{input}});
     infinit::cryptography::Clear clear = key.decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+    elle::String const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
   }

@@ -608,7 +608,7 @@ namespace infinit
 
           // Normalize behavior between no data and data of size 0.
           // by always forcing it into the second
-          const elle::Byte* data = reinterpret_cast<const elle::Byte*>("");
+          elle::Byte const* data = reinterpret_cast<const elle::Byte*>("");
           elle::Buffer::Size length = 0;
           if (plain.buffer().contents() != nullptr)
           {

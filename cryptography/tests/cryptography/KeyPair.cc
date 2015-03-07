@@ -136,12 +136,9 @@ _test_operate_rsa(infinit::cryptography::KeyPair const& pair)
       infinit::cryptography::random::generate<elle::String>(9128);
     infinit::cryptography::Code code =
       pair.K().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
+        infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
     infinit::cryptography::Clear clear = pair.k().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+    elle::String const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -162,12 +159,9 @@ _test_operate_rsa(infinit::cryptography::KeyPair const& pair)
       infinit::cryptography::random::generate<elle::String>(5123);
     infinit::cryptography::Code code =
       pair.k().encrypt(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
+        infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
     infinit::cryptography::Clear clear = pair.K().decrypt(code);
-    elle::String const output(reinterpret_cast<char const*>(clear.buffer().contents()),
-                              clear.buffer().size());
+    elle::String const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -188,14 +182,11 @@ _test_operate_rsa(infinit::cryptography::KeyPair const& pair)
       infinit::cryptography::random::generate<elle::String>(1493);
     infinit::cryptography::Signature signature =
       pair.k().sign(
-        infinit::cryptography::Plain{
-          elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                                   input.length()}});
+        infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
     auto result =
       pair.K().verify(signature,
                       infinit::cryptography::Plain{
-                        elle::WeakBuffer{reinterpret_cast<void*>(const_cast<char*>(input.c_str())),
-                                         input.length()}});
+                        elle::ConstWeakBuffer{input}});
 
     BOOST_CHECK_EQUAL(result, true);
   }
