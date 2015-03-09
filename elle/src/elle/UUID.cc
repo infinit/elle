@@ -30,7 +30,15 @@ namespace elle
   UUID
   UUID::random()
   {
-    static boost::uuids::random_generator generator;
+    // Beware, (probably) not thread safe.
+    static bool first = true;
+    static boost::mt19937 rng;
+    if (first)
+    {
+      first = false;
+      rng.seed(time(nullptr));
+    }
+    static boost::uuids::basic_random_generator<boost::mt19937> generator(&rng);
     return generator();
   }
 
