@@ -639,10 +639,10 @@ def configure(zlib_lib,
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
   for test in tests:
     if isinstance(test, tuple):
-      test, dependencies, valgrind = test
+      test, dependencies, valgrind_this_test = test
     else:
       dependencies = ()
-      valgrind = True
+      valgrind_this_test = True
     config_test = drake.cxx.Config(cxx_config_tests)
     config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
     test = drake.cxx.Executable(
@@ -655,7 +655,7 @@ def configure(zlib_lib,
     env = {
       'BUILD_DIR': str(drake.path_build()),
     }
-    if valgrind_tests and valgrind:
+    if valgrind_tests and valgrind_this_test:
       runner = drake.valgrind.ValgrindRunner(exe = test,
                                              valgrind = valgrind,
                                              env = env)
