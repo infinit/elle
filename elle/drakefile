@@ -560,7 +560,8 @@ def configure(zlib_lib,
     'Lazy.cc',
     'Logger.cc',
     'Printable.cc',
-    'UUID.cc',
+    # Disable valgrind because of random uuids.
+    ('UUID.cc', (), False),
     'Version.cc',
     'With.cc',
     'archive.cc',
@@ -621,8 +622,8 @@ def configure(zlib_lib,
                          cxx_toolkit, drake.cxx.Config())
     for name in ('true', 'false')]
   tests.extend([
-    ('system/process.cc', process_helpers),
-    ('system/process-fail.cc', process_helpers),
+    ('system/process.cc', process_helpers, True),
+    ('system/process-fail.cc', process_helpers, True),
   ])
 
   cxx_config_tests = cxx_config + config
@@ -638,9 +639,10 @@ def configure(zlib_lib,
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
   for test in tests:
     if isinstance(test, tuple):
-      test, dependencies = test
+      test, dependencies, valgrind = test
     else:
       dependencies = ()
+      valgrind = True
     config_test = drake.cxx.Config(cxx_config_tests)
     config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
     test = drake.cxx.Executable(
@@ -653,7 +655,7 @@ def configure(zlib_lib,
     env = {
       'BUILD_DIR': str(drake.path_build()),
     }
-    if valgrind_tests:
+    if valgrind_tests and valgrind:
       runner = drake.valgrind.ValgrindRunner(exe = test,
                                              valgrind = valgrind,
                                              env = env)
