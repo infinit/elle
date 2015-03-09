@@ -28,8 +28,7 @@ namespace infinit
       T
       load(boost::filesystem::path const& path,
            elle::String const& passphrase);
-      // XXX
-      /// Store a public, private or pair of key(s) to a file.
+      /// Store a public, private or pair of key(s) in a file.
       template <typename T>
       void
       store(T const& object,

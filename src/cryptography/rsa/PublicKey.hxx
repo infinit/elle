@@ -40,7 +40,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      // XXX ::elle::cryptography::Exception
       throw infinit::cryptography::Exception(
         elle::sprintf("unknown format '%s'", format));
   }
@@ -76,7 +75,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      // XXX ::elle::cryptography::Exception
       throw infinit::cryptography::Exception(
         elle::sprintf("unknown format '%s'", format));
   }

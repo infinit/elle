@@ -66,8 +66,8 @@ namespace infinit
 
           throw Exception(
             elle::sprintf("unable to read the private key from the PEM "
-                          "file; please check the file format or the passphrase: "
-                          "%s",
+                          "file; please check the file format or the "
+                          "passphrase: %s",
                           ::ERR_error_string(ERR_get_error(),
                                              nullptr)));
         }
@@ -137,8 +137,8 @@ namespace infinit
 
           throw Exception(
             elle::sprintf("unable to read the public key from the PEM "
-                          "file; please check the file format or the passphrase: "
-                          "%s",
+                          "file; please check the file format or the "
+                          "passphrase: %s",
                           ::ERR_error_string(ERR_get_error(),
                                              nullptr)));
         }
