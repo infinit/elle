@@ -67,7 +67,6 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::seed::Interface,
 {
   enforce(format == 0);
 
-  // XXX[nothing to do: we should not have to write this]
   (void)archive;
   (void)value;
 }

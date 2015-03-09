@@ -148,7 +148,6 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::publickey::Interface,
 {
   enforce(format == 0);
 
-  // XXX[nothing to do: we should not have to write this]
   (void)archive;
   (void)value;
 }
