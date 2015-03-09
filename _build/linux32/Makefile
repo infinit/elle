@@ -69,20 +69,3 @@ tests/dopenssl/rand.status: tests/dopenssl/rand lib/libdopenssl.dylib
 tests/dopenssl/bn.status: tests/dopenssl/bn lib/libdopenssl.dylib
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/bn
-
-
-XXX
-
-
-
-tests/dopenssl/rsa.o: ../../tests/dopenssl/rsa.c
-	@mkdir -p tests/dopenssl
-	gcc -Wall -fPIC -isystem . -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
-
-tests/dopenssl/rand.o: ../../tests/dopenssl/rand.c
-	@mkdir -p tests/dopenssl
-	gcc -Wall -fPIC -isystem . -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rand.c -o tests/dopenssl/rand.o
-
-tests/dopenssl/bn.o: ../../tests/dopenssl/bn.c
-	@mkdir -p tests/dopenssl
-	gcc -Wall -fPIC -isystem . -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/bn.c -o tests/dopenssl/bn.o
