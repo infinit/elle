@@ -816,8 +816,8 @@ namespace reactor
               impl->_bt_unfrozen = elle::Backtrace::current();
               impl->_slot_unfrozen.disconnect();
             });
+        return Waitable::_wait(thread);
       }
-      return Waitable::_wait(thread);
     }
 
     /*-------.
