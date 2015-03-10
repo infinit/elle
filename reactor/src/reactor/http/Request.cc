@@ -119,6 +119,7 @@ namespace reactor
       , _debug2(0)
       , _bt_frozen()
       , _bt_unfrozen()
+      , _bt_waited()
       , _slot_frozen()
       , _slot_unfrozen()
     {
@@ -802,6 +803,7 @@ namespace reactor
       {
         this->_impl->_debug = 4;
         auto impl = this->_impl;
+        impl->_bt_waited = elle::Backtrace::current();
         this->_impl->_slot_frozen =
           reactor::scheduler().current()->frozen().connect(
             [impl]
@@ -839,6 +841,8 @@ namespace reactor
                  *this, this->_impl->_bt_frozen);
         ELLE_ERR("%s: unfrozen backtrace: %s",
                  *this, this->_impl->_bt_unfrozen);
+        ELLE_ERR("%s: waited backtrace: %s",
+                 *this, this->_impl->_bt_waited);
         ELLE_ASSERT_NEQ(this->_status, static_cast<StatusCode>(0));
       }
       return this->_status;
