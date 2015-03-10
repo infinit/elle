@@ -321,12 +321,12 @@ namespace reactor
   }
 
   void
-  Scheduler::_unfreeze(Thread& thread)
+  Scheduler::_unfreeze(Thread& thread, std::string const& reason)
   {
     ELLE_ASSERT_EQ(thread.state(), Thread::state::frozen);
     _frozen.erase(&thread);
     _running.insert(&thread);
-    thread.unfrozen()();
+    thread.unfrozen()(reason);
     if (_running.size() == 1)
       _io_service.post(nothing);
   }
@@ -400,7 +400,7 @@ namespace reactor
       thread->raise<Terminate>(thread->name());
       if (thread->state() == Thread::state::frozen)
       {
-        thread->_wait_abort();
+        thread->_wait_abort("thread termination");
         ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
       }
     }

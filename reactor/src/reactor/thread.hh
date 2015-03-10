@@ -176,7 +176,7 @@ namespace reactor
       friend class Waitable;
       friend class TimeoutGuard;
       void _wait_timeout(const boost::system::error_code& e);
-      void _wait_abort();
+      void _wait_abort(std::string const& reason);
       void _freeze();
       void _wake(Waitable* waitable);
       std::set<Waitable*> _waited;
@@ -188,7 +188,8 @@ namespace reactor
   `------*/
   public:
     ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, frozen);
-    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, unfrozen);
+    ELLE_ATTRIBUTE_RX(
+      boost::signals2::signal<void (std::string const&)>, unfrozen);
 
   /*--------.
   | Backend |

@@ -163,6 +163,7 @@ namespace reactor
       int _debug2;
       elle::Backtrace _bt_frozen;
       elle::Backtrace _bt_unfrozen;
+      std::string _bt_unfrozen_reason;
       elle::Backtrace _bt_waited;
       boost::signals2::connection _slot_frozen;
       boost::signals2::connection _slot_unfrozen;

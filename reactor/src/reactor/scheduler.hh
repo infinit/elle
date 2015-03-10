@@ -81,9 +81,10 @@ namespace reactor
   private:
     void _freeze(Thread& thread);
     void _thread_register(Thread& thread);
-    void _unfreeze(Thread& thread);
+    void _unfreeze(Thread& thread, std::string const& reason);
   private:
-    bool _terminate(Thread* thread); // return true if terminate_now or wait will noop
+    // return true if terminate_now or wait will noop
+    bool _terminate(Thread* thread);
     void _terminate_now(Thread* thread,
                         bool suicide);
     Thread* _current;

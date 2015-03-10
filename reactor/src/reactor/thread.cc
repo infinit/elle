@@ -203,7 +203,7 @@ namespace reactor
     {
       ELLE_ERR("%s: terminate exception was swallowed", *this);
       this->_raise<Terminate>(elle::sprintf("re-terminate %s", *this));
-      this->_wait_abort();
+      this->_wait_abort("terminate exception was swallowed");
     }
     if (this->_exception_thrown)
     {
@@ -300,9 +300,10 @@ namespace reactor
         this->_timeout = false;
         this->_timeout_timer.async_wait(
           boost::bind(&Thread::_wait_timeout, this, _1));
-        auto cancel_timeout = [&]
+        auto cancel_timeout = [this]
           {
-            if (!_timeout)
+            ELLE_DUMP("%s: cancel timeout", *this);
+            if (!this->_timeout)
               this->_timeout_timer.cancel();
           };
         return elle::With<elle::Finally>(cancel_timeout) << [&]
@@ -351,19 +352,19 @@ namespace reactor
       return;
     ELLE_TRACE("%s: timed out", *this);
     this->_timeout = true;
-    this->_wait_abort();
+    this->_wait_abort(elle::sprintf("wait timeout for %s", this->_waited));
   }
 
   void
-  Thread::_wait_abort()
+  Thread::_wait_abort(std::string const& reason)
   {
-    ELLE_TRACE("%s: abort wait", *this);
+    ELLE_TRACE("%s: abort wait because: %s", *this, reason);
     ELLE_ASSERT_EQ(state(), state::frozen);
     BOOST_FOREACH (Waitable* waitable, _waited)
       waitable->_unwait(this);
     this->_waited.clear();
     this->_timeout_timer.cancel();
-    this->_scheduler._unfreeze(*this);
+    this->_scheduler._unfreeze(*this, reason);
     this->_state = Thread::state::running;
   }
 
@@ -377,25 +378,27 @@ namespace reactor
   }
 
   void
-  Thread::_wake(Waitable*       waitable)
+  Thread::_wake(Waitable* waitable)
   {
     ELLE_TRACE("%s: wait ended for %s", *this, *waitable)
+    {
+      if (waitable->_exception && !this->_exception)
       {
-        if (waitable->_exception && !_exception)
-          {
-            ELLE_TRACE("%s: forward exception", *this);
-            _exception = waitable->_exception;
-          }
-        _waited.erase(waitable);
-        if (_waited.empty())
-          {
-            ELLE_TRACE("%s: nothing to wait on, waking up", *this);
-            _scheduler._unfreeze(*this);
-            _state = Thread::state::running;
-          }
-        else
-          ELLE_TRACE("%s: still waiting for %s other elements", *this, _waited.size());
+        ELLE_TRACE("%s: forward exception", *this);
+        this->_exception = waitable->_exception;
       }
+      this->_waited.erase(waitable);
+      if (this->_waited.empty())
+      {
+        ELLE_TRACE("%s: nothing to wait on, waking up", *this);
+        this->_scheduler._unfreeze(
+          *this, elle::sprintf("wait for %s ended", *waitable));
+        this->_state = Thread::state::running;
+      }
+      else
+        ELLE_TRACE("%s: still waiting for %s other elements",
+                   *this, this->_waited.size());
+    }
   }
 
   /*--------.

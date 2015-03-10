@@ -119,6 +119,7 @@ namespace reactor
       , _debug2(0)
       , _bt_frozen()
       , _bt_unfrozen()
+      , _bt_unfrozen_reason()
       , _bt_waited()
       , _slot_frozen()
       , _slot_unfrozen()
@@ -814,7 +815,9 @@ namespace reactor
         this->_impl->_slot_unfrozen =
           reactor::scheduler().current()->unfrozen().connect(
             [impl]
+            (std::string const& reason)
             {
+              impl->_bt_unfrozen_reason = reason;
               impl->_bt_unfrozen = elle::Backtrace::current();
               impl->_slot_unfrozen.disconnect();
             });
@@ -839,6 +842,7 @@ namespace reactor
                  *this, this->_impl->_debug, this->_impl->_debug2);
         ELLE_ERR("%s: frozen backtrace: %s",
                  *this, this->_impl->_bt_frozen);
+        ELLE_ERR("%s: unfrozen because: %s", this->_impl->_bt_unfrozen_reason);
         ELLE_ERR("%s: unfrozen backtrace: %s",
                  *this, this->_impl->_bt_unfrozen);
         ELLE_ERR("%s: waited backtrace: %s",

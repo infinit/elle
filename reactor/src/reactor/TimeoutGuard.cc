@@ -25,7 +25,7 @@ namespace reactor
         ELLE_TRACE_SCOPE("%s", timeout_msg);
         current->raise<reactor::Timeout>(delay);
         if (current->state() == Thread::state::frozen)
-          current->_wait_abort();
+          current->_wait_abort("guard timed out");
       });
   }
 
