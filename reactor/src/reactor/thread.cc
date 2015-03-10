@@ -273,8 +273,10 @@ namespace reactor
   Thread::wait(Waitables const& waitables,
                DurationOpt timeout)
   {
+#ifndef INFINIT_IOS
     ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
                      timeout ? elle::sprintf(" for %s", timeout) : "");
+#endif
     ELLE_ASSERT_EQ(_state, state::running);
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
