@@ -1,0 +1,53 @@
+import drake
+
+def configure(cxx_toolkit,
+              cxx_config,
+              elle,
+              boost,
+              prefix = '/usr',
+              valgrind = None,
+              valgrind_tests = True):
+
+  ## ----------------- ##
+  ## C++ configuration ##
+  ## ----------------- ##
+
+  rule_build = drake.Rule('build')
+  config = drake.cxx.Config(elle.config)
+  config.add_local_include_path('src')
+  local_config = drake.cxx.Config(config) + cxx_config
+
+  ## ------ ##
+  ## Libdas ##
+  ## ------ ##
+
+  sources = drake.nodes(
+    'src/das/Model.cc',
+    'src/das/Model.hh',
+  )
+  das = drake.cxx.DynLib('lib/das', sources, cxx_toolkit, local_config)
+  rule_build << das
+
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
+  local_config_tests = drake.cxx.Config(local_config)
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    local_config_tests += boost.config_test(static = True)
+  else:
+    local_config_tests += boost.config_test(link = False)
+    local_config_tests.library_add(
+      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+  rule_tests = drake.Rule('tests')
+  rule_check = drake.TestSuite('check')
+  for name in ('das',):
+    test = drake.cxx.Executable(
+      'tests/%s' % name,
+      [drake.node('tests/%s.cc' % name), elle.library],
+      cxx_toolkit,
+      local_config_tests)
+    rule_tests << test
+    runner = drake.Runner(test)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_check << runner.status
