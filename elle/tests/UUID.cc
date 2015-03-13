@@ -85,6 +85,6 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(from_string));
   auto random = &uuid::random;
   master.add(BOOST_TEST_CASE(random));
-  // master.add(BOOST_TEST_CASE(repr));
-  // master.add(BOOST_TEST_CASE(serialization));
+  master.add(BOOST_TEST_CASE(repr));
+  master.add(BOOST_TEST_CASE(serialization));
 }
