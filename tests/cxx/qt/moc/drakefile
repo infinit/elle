@@ -4,7 +4,7 @@ def configure(cxx_toolkit = None, qt = None):
   if cxx_toolkit is None:
     cxx_toolkit = drake.cxx.Toolkit()
   if qt is None:
-    qt = drake.cxx.qt.Qt()
+    qt = drake.cxx.qt.Qt(cxx_toolkit)
   cfg = drake.cxx.Config()
   cfg += qt.config
   qt.plug(cxx_toolkit)

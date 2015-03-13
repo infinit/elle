@@ -28,19 +28,28 @@ def moc_file(linker, header):
   return Object(src, linker.toolkit, linker.config)
 
 class Qt:
-  def __init__(self, prefix = None, gui = False):
+  def __init__(self,
+               toolkit,
+               prefix = None,
+               gui = False,
+               version = drake.Version(4, 8, 6)):
+    # XXX: Use QT_VERSION_STR (from Qt/qglobal.h) to determine the version at
+    # the given prefix.
+    self.plug(toolkit)
     self.files = {}
     self.__moc_cache = {}
     self.__dependencies = {}
+    self.__version = version
     if prefix is None:
       test = ['/usr', '/usr/local']
     else:
       test = [prefix]
     beacon = Path('Qt/qconfig.h')
     subdirs = [Path('.'), Path('qt4')]
-    lib_suffix = ''
-    if platform.system() == 'Windows':
-      lib_suffix = '4'
+    if toolkit.os == drake.os.windows:
+      lib_suffix = self.__version.major
+    else:
+      lib_suffix = ''
     for path in test:
       p = Path(path)
       if not p.absolute:
