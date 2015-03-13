@@ -52,10 +52,11 @@ def configure(cxx_toolkit,
   local_config_tests.lib_path_runtime('../lib')
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
+  elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
   for name in ('das',):
     test = drake.cxx.Executable(
       'tests/%s' % name,
-      [drake.node('tests/%s.cc' % name), das, elle.library],
+      [drake.node('tests/%s.cc' % name), das, elle_library],
       cxx_toolkit,
       local_config_tests)
     rule_tests << test
