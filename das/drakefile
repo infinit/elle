@@ -1,5 +1,9 @@
 import drake
 
+rule_build = None
+rule_check = None
+rule_tests = None
+
 def configure(cxx_toolkit,
               cxx_config,
               elle,
@@ -7,6 +11,8 @@ def configure(cxx_toolkit,
               prefix = '/usr',
               valgrind = None,
               valgrind_tests = True):
+
+  global rule_build, rule_check, rule_tests
 
   ## ----------------- ##
   ## C++ configuration ##
