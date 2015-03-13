@@ -89,6 +89,7 @@ def configure(zlib_lib,
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
+  config += boost.config()
   if valgrind is not None:
     config.define('VALGRIND')
 
