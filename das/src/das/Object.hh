@@ -48,7 +48,6 @@ namespace das
 
   template <typename T, typename ... Fields>
   class Object
-    : public Model
   {
   public:
     class Update
