@@ -1,8 +1,11 @@
 #ifndef DAS_OBJECT_HH
 # define DAS_OBJECT_HH
 
-# include <das/Model.hh>
 # include <boost/optional.hpp>
+
+# include <elle/serialization/Serializer.hh>
+
+# include <das/Model.hh>
 
 namespace das
 {

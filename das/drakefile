@@ -28,12 +28,13 @@ def configure(cxx_toolkit,
   ## ------ ##
 
   sources = drake.nodes(
-    'Collection.hh',
-    'Model.hh',
-    'Object.hh',
-    'Variable.hh',
-    'Variable.hxx',
-    'model.hh',
+    'src/das/Collection.hh',
+    'src/das/Model.hh',
+    'src/das/Object.cc',
+    'src/das/Object.hh',
+    'src/das/Variable.hh',
+    'src/das/Variable.hxx',
+    'src/das/model.hh',
   )
   das = drake.cxx.DynLib('lib/das', sources, cxx_toolkit, local_config)
   rule_build << das
