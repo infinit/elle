@@ -3,8 +3,6 @@
 
 # include <boost/asio.hpp>
 
-# include <reactor/network/fwd.hh>
-
 namespace reactor
 {
   namespace network

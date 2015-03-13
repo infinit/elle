@@ -7,9 +7,6 @@
 
 # include <elle/utility/fwd.hh>
 
-# include <chrono>
-# include <ctime>
-
 namespace elle
 {
   namespace utility

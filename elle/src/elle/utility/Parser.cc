@@ -1,6 +1,8 @@
 #include <elle/utility/Parser.hh>
 #include <elle/io/Dumpable.hh>
 
+#include <unistd.h>
+
 namespace elle
 {
   namespace utility

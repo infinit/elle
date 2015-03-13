@@ -8,7 +8,6 @@
 # include <reactor/fwd.hh>
 # include <reactor/duration.hh>
 # include <reactor/thread.hh>
-# include <reactor/Barrier.hh>
 
 namespace reactor
 {

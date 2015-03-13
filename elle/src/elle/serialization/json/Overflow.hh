@@ -1,8 +1,6 @@
 #ifndef ELLE_SERIALIZATION_JSON_OVERFLOW_HH
 # define ELLE_SERIALIZATION_JSON_OVERFLOW_HH
 
-# include <typeinfo>
-
 # include <elle/serialization/Error.hh>
 
 namespace elle

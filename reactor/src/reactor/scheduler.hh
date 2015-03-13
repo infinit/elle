@@ -2,9 +2,7 @@
 # define INFINIT_REACTOR_SCHEDULER_HH
 
 # include <memory>
-# include <set>
 # include <thread>
-# include <unordered_map>
 
 # include <boost/multi_index_container.hpp>
 # include <boost/multi_index/hashed_index.hpp>

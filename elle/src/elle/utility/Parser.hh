@@ -6,7 +6,6 @@
 #include <elle/Exception.hh>
 
 # include <vector>
-# include <unistd.h>
 # include <getopt.h>
 
 namespace elle

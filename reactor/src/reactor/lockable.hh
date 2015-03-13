@@ -1,7 +1,6 @@
 #ifndef INFINIT_REACTOR_LOCKABLE_HH
 # define INFINIT_REACTOR_LOCKABLE_HH
 
-# include <reactor/fwd.hh>
 # include <reactor/waitable.hh>
 
 namespace reactor

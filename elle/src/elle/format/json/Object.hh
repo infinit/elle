@@ -1,7 +1,7 @@
 #ifndef ELLE_FORMAT_JSON_OBJECT_HH
 # define ELLE_FORMAT_JSON_OBJECT_HH
 
-# include <cstdint>
+# include <cstddef>
 # include <iosfwd>
 # include <memory>
 # include <string>

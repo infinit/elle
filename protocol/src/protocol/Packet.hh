@@ -1,7 +1,7 @@
 #ifndef INFINIT_PROTOCOL_PACKET_HH
 # define INFINIT_PROTOCOL_PACKET_HH
 
-# include <memory>
+# include <iosfwd>
 
 # include <boost/noncopyable.hpp>
 

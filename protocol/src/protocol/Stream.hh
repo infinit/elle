@@ -1,8 +1,7 @@
 #ifndef INFINIT_PROTOCOL_STREAM_HH
 # define INFINIT_PROTOCOL_STREAM_HH
 
-# include <iostream>
-# include <list>
+# include <iosfwd>
 
 # include <elle/Printable.hh>
 
