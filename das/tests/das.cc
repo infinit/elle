@@ -40,7 +40,6 @@ simple()
     DasDevice;
   DasDevice::Update u(input);
   u.apply(d);
-  // das::Collection<Device, elle::UUID, &Device::id> devices;
 }
 
 ELLE_TEST_SUITE()
