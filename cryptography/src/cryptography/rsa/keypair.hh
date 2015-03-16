@@ -18,6 +18,12 @@ namespace infinit
       namespace keypair
       {
         /*----------.
+        | Constants |
+        `----------*/
+        /// The default length for secure RSA key pairs.
+        static elle::Natural32 const default_length = 8192;
+
+        /*----------.
         | Functions |
         `----------*/
 
@@ -26,7 +32,7 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         std::pair<PublicKey, PrivateKey>
-        generate(elle::Natural32 const length);
+        generate(elle::Natural32 const length = default_length);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Generate a key pair in a deterministic way (i.e deduce) based on
         /// the given seed.
