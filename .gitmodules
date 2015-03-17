@@ -15,4 +15,4 @@
 	url = git@git.infinit.io:miniupnp
 [submodule "cryptography"]
 	path = cryptography
-	url = git.infinit.io:cryptography
+	url = git@git.infinit.io:cryptography
