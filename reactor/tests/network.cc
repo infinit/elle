@@ -605,14 +605,7 @@ ELLE_TEST_SCHEDULED(resolution_abort)
       "resolve",
       []
       {
-        try
-        {
-          reactor::network::resolve_tcp("bertier.lacogip.fr", "80");
-        }
-        catch (...)
-        {
-          reactor::sleep(3_sec);
-        }
+        reactor::network::resolve_tcp("bertier.lacogip.fr", "80");
       });
     scope.run_background(
       "kill",
