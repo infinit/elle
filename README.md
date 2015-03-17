@@ -285,7 +285,7 @@ Dependencies
 
 The library relies upon the following libraries:
 
- * **OpenSSL** which provides the fundamental cryptographic operations.
+ * [**OpenSSL**](http://www.openssl.org) which provides the fundamental cryptographic operations.
 
 Internals
 ---------
