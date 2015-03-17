@@ -654,5 +654,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_until), 0, 10);
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
   suite.add(BOOST_TEST_CASE(read_write_cancel), 0, 10);
-  suite.add(BOOST_TEST_CASE(resolution_abort), 0, 1);
+  suite.add(BOOST_TEST_CASE(resolution_abort), 0, 2);
 }
