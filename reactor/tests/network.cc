@@ -599,19 +599,29 @@ ELLE_TEST_SCHEDULED(read_write_cancel)
 
 ELLE_TEST_SCHEDULED(resolution_abort)
 {
-  reactor::Thread resolve(
-    "resolve",
-    []
-    {
-      reactor::network::resolve_tcp("bertier.lacogip.fr", "80");
-    });
-  reactor::Thread kill(
-    "kill",
-    [&]
-    {
-      resolve.terminate_now();
-    });
-  reactor::wait(kill);
+  elle::With<reactor::Scope>() << [] (reactor::Scope& scope)
+  {
+    auto& resolve = scope.run_background(
+      "resolve",
+      []
+      {
+        try
+        {
+          reactor::network::resolve_tcp("bertier.lacogip.fr", "80");
+        }
+        catch (...)
+        {
+          reactor::sleep(3_sec);
+        }
+      });
+    scope.run_background(
+      "kill",
+      [&]
+      {
+        resolve.terminate_now();
+      });
+    reactor::wait(scope);
+  };
 }
 
 /*-----------.
