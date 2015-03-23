@@ -121,9 +121,6 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const;
-        virtual
-        Clear
-        decrypt(Code const& code) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         virtual
         cryptography::Seed
@@ -156,7 +153,6 @@ namespace infinit
         // The padding size expressed in bits.
         ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);

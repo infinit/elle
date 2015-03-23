@@ -85,17 +85,6 @@ namespace infinit
       template <typename T>
       Signature
       sign(T const& value) const;
-      /// Encrypt the given plain text with the private key.
-      ///
-      /// Although unusual, the private key can very well be used for
-      /// encrypting in which case the public key would be used for
-      /// decrypting.
-      Code
-      encrypt(Plain const& plain) const;
-      /// Encrypt the given serializable type with the private key.
-      template <typename T>
-      Code
-      encrypt(T const& value) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       /// Return the seed once derived by the private key.
       Seed
@@ -250,14 +239,6 @@ namespace infinit
         virtual
         Signature
         sign(Digest const& digest) const = 0;
-        /// Encrypt the given plain text with the private key.
-        ///
-        /// Although unusual, the private key can very well be used for
-        /// encrypting in which case the public key would be used for
-        /// decrypting.
-        virtual
-        Code
-        encrypt(Plain const& plain) const = 0;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once derived by the private key.
         virtual

@@ -190,9 +190,7 @@ namespace infinit
         elle::serialize::DynamicFormat<PrivateKey>(std::move(other)),
         _key(std::move(other._key)),
         _context_decrypt(std::move(other._context_decrypt)),
-        _context_sign(std::move(other._context_sign)),
-        _context_encrypt(std::move(other._context_encrypt)),
-        _context_encrypt_padding_size(other._context_encrypt_padding_size)
+        _context_sign(std::move(other._context_sign))
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         , _context_derive(std::move(other._context_derive))
         , _context_rotate(std::move(other._context_rotate))
@@ -204,7 +202,6 @@ namespace infinit
         ELLE_ASSERT_EQ(other._key, nullptr);
         ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
         ELLE_ASSERT_EQ(other._context_sign, nullptr);
-        ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ASSERT_EQ(other._context_derive, nullptr);
         ELLE_ASSERT_EQ(other._context_rotate, nullptr);
@@ -325,7 +322,6 @@ namespace infinit
         // serialized or created, set the padding for the contexts.
         int padding_decrypt;
         int padding_sign;
-        int padding_encrypt;
 
         switch (this->version())
         {
@@ -333,7 +329,6 @@ namespace infinit
           {
             padding_decrypt = RSA_PKCS1_OAEP_PADDING;
             padding_sign = RSA_PKCS1_PADDING;
-            padding_encrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -341,7 +336,6 @@ namespace infinit
           {
             padding_decrypt = RSA_PKCS1_PADDING;
             padding_sign = RSA_PKCS1_PADDING;
-            padding_encrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -349,7 +343,6 @@ namespace infinit
           {
             padding_decrypt = RSA_PKCS1_OAEP_PADDING;
             padding_sign = RSA_PKCS1_PSS_PADDING;
-            padding_encrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -405,45 +398,6 @@ namespace infinit
                               "function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
-            break;
-          }
-          default:
-            throw Exception(
-              elle::sprintf("unknown format '%s'", this->version()));
-        }
-
-        // Prepare the encrypt context.
-        ELLE_ASSERT_EQ(this->_context_encrypt, nullptr);
-        this->_context_encrypt.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_sign_init,
-                          padding_encrypt));
-
-        this->_context_encrypt_padding_size =
-          padding::footprint(this->_context_encrypt.get());
-
-        switch (this->version())
-        {
-          case 0:
-          case 1:
-          {
-            break;
-          }
-          case 2:
-          {
-            // Set the digest function.
-            /* XXX
-            if (::EVP_PKEY_CTX_ctrl(this->_context_encrypt.get(),
-                                    EVP_PKEY_RSA,
-                                    EVP_PKEY_OP_TYPE_SIG,
-                                    EVP_PKEY_CTRL_MD,
-                                    0,
-                                    (void*)::EVP_sha256()) <= 0)
-              throw Exception(
-                elle::sprintf("unable to set the EVP_PKEY context's digest "
-                              "function: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-            */
             break;
           }
           default:
@@ -652,25 +606,6 @@ namespace infinit
                                       ::EVP_PKEY_sign));
       }
 
-      // Since the private key size limits the size of the data that can be
-      // encrypted and raising large data to large exponent is very slow;
-      // the algorithm below consists in (1) generating a secret key (2)
-      // ciphering the plain text with this key (3) encrypting the secret
-      // key with the private key and finally (4) returning an archive
-      // containing the asymetrically-encrypted secret key with the
-      // symmetrically-encrypted data.
-      Code
-      PrivateKey::encrypt(Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("plain: %x", plain);
-
-        return (evp::asymmetric::encrypt(plain,
-                                         this->_context_encrypt.get(),
-                                         ::EVP_PKEY_sign,
-                                         this->_context_encrypt_padding_size));
-      }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       cryptography::Seed
       PrivateKey::derive(cryptography::Seed const& seed) const
@@ -816,8 +751,6 @@ namespace infinit
         padding::print(stream, this->_context_decrypt.get());
         stream << ", ";
         padding::print(stream, this->_context_sign.get());
-        stream << ", ";
-        padding::print(stream, this->_context_encrypt.get());
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         stream << ", ";
         padding::print(stream, this->_context_derive.get());

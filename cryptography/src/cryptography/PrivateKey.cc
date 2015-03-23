@@ -102,17 +102,6 @@ namespace infinit
       return (this->sign(digest));
     }
 
-    Code
-    PrivateKey::encrypt(Plain const& plain) const
-    {
-      ELLE_TRACE_METHOD("");
-      ELLE_DUMP("plain: %x", plain);
-
-      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
-
-      return (this->_implementation->encrypt(plain));
-    }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     Seed
     PrivateKey::derive(Seed const& seed) const

@@ -35,27 +35,6 @@ test_represent_rsa()
 
   // 2)
   {
-    infinit::cryptography::Code code =
-      keypair.k().encrypt(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{_input1}});
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << code;
-    elle::printf("[representation 2] %s\n", archive);
-  }
-
-  // 3)
-  {
-    infinit::cryptography::Code code = keypair.k().encrypt(_input2);
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << code;
-    elle::printf("[representation 3] %s\n", archive);
-  }
-
-  // 4)
-  {
     infinit::cryptography::Signature signature =
       keypair.k().sign(
         infinit::cryptography::Plain{
@@ -63,16 +42,16 @@ test_represent_rsa()
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << signature;
-    elle::printf("[representation 4] %s\n", archive);
+    elle::printf("[representation 2] %s\n", archive);
   }
 
-  // 5)
+  // 3)
   {
     infinit::cryptography::Signature signature = keypair.k().sign(_input2);
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << signature;
-    elle::printf("[representation 5] %s\n", archive);
+    elle::printf("[representation 3] %s\n", archive);
   }
 }
 
@@ -162,36 +141,7 @@ test_operate_rsa()
   // The following operations are based on hard-coded base64 string which
   // represent the data on which to operate, in their serialized form.
 
-  // Decrypt plain from [representation 2]
-  {
-    elle::String archive("AAAAAEgBAAAAAAAAAAAAAAABAAAAAAAAPp7Cjg0v+ri4JgUPpEJF2rn+b2BcZdY8tFixtPqEeW+GWjF8bDV/6URur/6SlqfNsTOd/QBfWughvuySXG9e2xTqMPNnr5vxrR93AUFLOzVqpzh4l2L06rcek6O8wrgLGUo5sdQVmOK4bcCaKMBHr07dX65v+p0VJbXBL1v6BbB2vwr96oON83do/nhhWUl6OCNKc8uNUNFsoezWbGuB/M6isEnWGL0bwcysIDR7rMBdQFddyMl+mnRGZPLwUrtQAN5nD87eCE6G6VRks7EYQIVD16ixFZsmOr7jJj+27vfS+ecudYqx6rkmt/pkkM9vlT1adazZ2H5xWBzvC8H00QAAAAAwAAAAAAAAAFNhbHRlZF9fPJ74dkTTB2ejro62W8At35SZxkz6HY942Y0N+b2G73pO+/SUSI1aaA==");
-
-    auto extractor =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive);
-    infinit::cryptography::Code code(extractor);
-
-    infinit::cryptography::Clear clear = K.decrypt(code);
-    elle::String const output(clear.buffer().string());
-
-    BOOST_CHECK_EQUAL(_input1, output);
-  }
-
-  // Decrypt complex type from [representation 3].
-  {
-    elle::String archive("AAAAAEgBAAAAAAAAAAAAAAABAAAAAAAAvv3h5tCR1eqnGNTapIOO0kDAsjSHy9KLuDwyVaK120XrTtE3vAiLUUqedtqrRcisEk+dbiYL4IWGqj3LunM5/yWwf/R2DK4MKIR/YOvxLSkjLqggqzgFqGEvA5C5LcVeGuOE+qlEOmR2WryKzM0GHfsV7GWG5+IPpWI4J2PdZGitIJQ2t0uBKaOEYPaMiFXy0ohABWgFSnZaAxreqlOW74K4fmGniQQ7tWOHeE5rgyaG8NnsCsorLupYBj3D0yR7onohQnQWKBWjJxUnyhMOa5EfPSw4dT5QzlgBDu4evuOiZcnQBk6QuYpnzXDfClhDDttrVzoDBdzsbmUvgFMInAAAAAAwAAAAAAAAAFNhbHRlZF9fV0ATftOFs0xIEVCJh8APAASPmedeCOyiuCYumgjW7zeuquwPJYOC5Q==");
-
-    auto extractor =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive);
-    infinit::cryptography::Code code(extractor);
-
-    Sample output = K.decrypt<Sample>(code);
-
-    BOOST_CHECK_EQUAL(_input2, output);
-  }
-
-  // Verify plain from [representation 4].
+  // Verify plain from [representation 2].
   {
     elle::String archive("AAAAAAABAAAAAAAACtl3p9rCYGLPwr6YbEkmo17d5QtogRLppEIzHbtA+P1WAZYFuQeSF4/BE5eJZugYu4PEbVgdX5Mv8l11nddGfdgmwuEL1ACZ6yc7gxps2Skb2U+ZzbrS3ZBYeGYe5haUfjrVCCyP2wE/oe86WiAKhBVIEekb7eAxtO+AlQm6JjBzmTHcDK9ZxaLwmrPxhUyLMTfyTRWf53di7njr65IppRdJMfgbQB+hDWdODSDj/M446e+C8NQWIKxj5EjqQC62dEoyH9CAht98cOHL6251EZRZEG+YFiSTdmo77QHwpAZ+Mq7erlYW78g1uPgDQ1kJ8olMyGYF3tWIazQ1reEonA==");
 
@@ -208,7 +158,7 @@ test_operate_rsa()
     BOOST_CHECK_EQUAL(result, true);
   }
 
-  // Verify plain from [representation 5].
+  // Verify plain from [representation 3].
   {
     elle::String archive("AAAAAAABAAAAAAAABIZUvjdGrl1z9AHo4RYsrnvchBBnLnA+B3B4oLdfcDcp5Th0pe85rjyrwoTsFn/NgqsdMmitgDmOZ+cwc5SVMAoq4sN5jshz9bypaSAW+ZmHzoibvhL7eJjPmUJEKUN+mg4rpY6mMVu9btzaROcBocL8J2JjCxLSm3r3xd75k2idKLlbIndtjWt2atKErxTgBSEsYYyjUHS5OaO1ElZgftz8ooDZQZr7AKUYbY+ppydl3aaGiHpekHN1qgya5YC/MwDRVsbptTqeg8h0lWezWgP480mTSk2UgjyQTCcxa8l7dvsrQWpdythkrZLk+KaARci7S82LGIcqhxmMNDBOng==");
 

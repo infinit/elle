@@ -39,31 +39,6 @@ namespace infinit
     }
 
     template <typename T>
-    T
-    PublicKey::decrypt(Code const& code) const
-    {
-      ELLE_LOG_COMPONENT("infinit.cryptography.PublicKey");
-      ELLE_DEBUG_FUNCTION(code);
-
-      static_assert(std::is_same<T, Clear>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::Buffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                    "this call should never have occured");
-
-      Clear clear = this->decrypt(code);
-
-      // XXX[this is the way it should be] T value(clear.buffer().reader());
-      T value;
-      clear.buffer().reader() >> value;
-
-      return (value);
-    }
-
-    template <typename T>
     elle::Boolean
     PublicKey::verify(Signature const& signature,
                       T const& value) const

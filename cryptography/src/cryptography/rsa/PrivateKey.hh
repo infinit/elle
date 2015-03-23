@@ -132,9 +132,6 @@ namespace infinit
         virtual
         Signature
         sign(Digest const& digest) const;
-        virtual
-        Code
-        encrypt(Plain const& plain) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         virtual
         cryptography::Seed
@@ -164,8 +161,6 @@ namespace infinit
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_sign);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
-        ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);

@@ -153,29 +153,6 @@ _test_operate_rsa(infinit::cryptography::KeyPair const& pair)
     BOOST_CHECK_EQUAL(input, output);
   }
 
-  // Private/public encryption/decryption with plain.
-  {
-    elle::String const input =
-      infinit::cryptography::random::generate<elle::String>(5123);
-    infinit::cryptography::Code code =
-      pair.k().encrypt(
-        infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
-    infinit::cryptography::Clear clear = pair.K().decrypt(code);
-    elle::String const output(clear.buffer().string());
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Private/public encryption/decryption with complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(28130));
-    infinit::cryptography::Code code = pair.k().encrypt(input);
-    Sample const output = pair.K().decrypt<Sample>(code);
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
   // Sign a plain text.
   {
     elle::String input =

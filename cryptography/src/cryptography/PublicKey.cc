@@ -110,17 +110,6 @@ namespace infinit
       return (this->verify(signature, digest));
     }
 
-    Clear
-    PublicKey::decrypt(Code const& code) const
-    {
-      ELLE_TRACE_METHOD("");
-      ELLE_DUMP("code: %x", code);
-
-      ELLE_ASSERT_NEQ(this->_implementation, nullptr);
-
-      return (this->_implementation->decrypt(code));
-    }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
     Seed
     PublicKey::rotate(Seed const& seed) const

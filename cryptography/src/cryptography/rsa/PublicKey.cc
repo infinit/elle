@@ -174,8 +174,7 @@ namespace infinit
         _key(std::move(other._key)),
         _context_encrypt(std::move(other._context_encrypt)),
         _context_encrypt_padding_size(other._context_encrypt_padding_size),
-        _context_verify(std::move(other._context_verify)),
-        _context_decrypt(std::move(other._context_decrypt))
+        _context_verify(std::move(other._context_verify))
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         , _context_rotate(std::move(other._context_rotate))
         , _context_derive(std::move(other._context_derive))
@@ -187,7 +186,6 @@ namespace infinit
         ELLE_ASSERT_EQ(other._key, nullptr);
         ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
         ELLE_ASSERT_EQ(other._context_verify, nullptr);
-        ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ASSERT_EQ(other._context_rotate, nullptr);
         ELLE_ASSERT_EQ(other._context_derive, nullptr);
@@ -284,7 +282,6 @@ namespace infinit
         // serialized or created, set the padding for the contexts.
         int padding_encrypt;
         int padding_verify;
-        int padding_decrypt;
 
         switch (this->version())
         {
@@ -292,7 +289,6 @@ namespace infinit
           {
             padding_encrypt = RSA_PKCS1_OAEP_PADDING;
             padding_verify = RSA_PKCS1_PADDING;
-            padding_decrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -300,7 +296,6 @@ namespace infinit
           {
             padding_encrypt = RSA_PKCS1_PADDING;
             padding_verify = RSA_PKCS1_PADDING;
-            padding_decrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -308,7 +303,6 @@ namespace infinit
           {
             padding_encrypt = RSA_PKCS1_OAEP_PADDING;
             padding_verify = RSA_PKCS1_PSS_PADDING;
-            padding_decrypt = RSA_PKCS1_PADDING;
 
             break;
           }
@@ -367,42 +361,6 @@ namespace infinit
                               "function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
-            break;
-          }
-          default:
-            throw Exception(
-              elle::sprintf("unknown format '%s'", this->version()));
-        }
-
-        // Prepare the decrypt context.
-        ELLE_ASSERT_EQ(this->_context_decrypt, nullptr);
-        this->_context_decrypt.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_verify_recover_init,
-                          padding_decrypt));
-
-        switch (this->version())
-        {
-          case 0:
-          case 1:
-          {
-            break;
-          }
-          case 2:
-          {
-            // Set the digest function.
-            /* XXX
-            if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt.get(),
-                                    EVP_PKEY_RSA,
-                                    EVP_PKEY_OP_TYPE_SIG,
-                                    EVP_PKEY_CTRL_MD,
-                                    0,
-                                    (void*)::EVP_sha256()) <= 0)
-              throw Exception(
-                elle::sprintf("unable to set the EVP_PKEY context's digest "
-                              "function: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-            */
             break;
           }
           default:
@@ -566,17 +524,6 @@ namespace infinit
                                         ::EVP_PKEY_verify));
       }
 
-      Clear
-      PublicKey::decrypt(Code const& code) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("code: %x", code);
-
-        return (evp::asymmetric::decrypt(code,
-                                         this->_context_decrypt.get(),
-                                         ::EVP_PKEY_verify_recover));
-      }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       cryptography::Seed
       PublicKey::rotate(cryptography::Seed const& seed) const
@@ -710,8 +657,6 @@ namespace infinit
         padding::print(stream, this->_context_encrypt.get());
         stream << ", ";
         padding::print(stream, this->_context_verify.get());
-        stream << ", ";
-        padding::print(stream, this->_context_decrypt.get());
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         stream << ", ";
         padding::print(stream, this->_context_rotate.get());

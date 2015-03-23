@@ -92,6 +92,8 @@ namespace infinit
           ELLE_ASSERT_NEQ(context, nullptr);
           ELLE_ASSERT_NEQ(input.contents(), nullptr);
 
+          elle::printf("XXX 1\n");
+
           if (function(context,
                        nullptr,
                        &size,
@@ -105,18 +107,21 @@ namespace infinit
           // Prepare the output buffer for receiving the encrypted content.
           elle::Buffer output(size);
 
+          elle::printf("XXX 2\n");
+
           // Encrypt the input buffer.
           if (function(context,
                        reinterpret_cast<unsigned char*>(
                          output.mutable_contents()),
                        &size,
-                       reinterpret_cast<const unsigned char*>(
-                         input.contents()),
+                       input.contents(),
                        input.size()) <= 0)
             throw Exception(elle::sprintf("unable to apply the cryptographic "
                                           "function: %s",
                                           ::ERR_error_string(ERR_get_error(),
                                                              nullptr)));
+
+          elle::printf("XXX 3\n");
 
           // Set the final output buffer size.
           output.size(size);
@@ -345,7 +350,7 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_SCOPE("verify(%s, %s)", function_cipher, function_oneway);
+          ELLE_TRACE_SCOPE("encrypt(%s, %s)", function_cipher, function_oneway);
           ELLE_DUMP("plain: %s", plain);
           ELLE_DUMP("secret: %s", secret);
 
