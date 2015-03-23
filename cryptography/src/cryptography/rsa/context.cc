@@ -45,7 +45,7 @@ namespace infinit
                                   padding,
                                   nullptr) <= 0)
             throw Exception(
-              elle::sprintf("unable to control the EVP_PKEY context: %s",
+              elle::sprintf("unable to set the EVP_PKEY context's padding: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);

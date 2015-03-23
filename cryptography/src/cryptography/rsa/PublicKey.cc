@@ -198,6 +198,19 @@ namespace infinit
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
+
+        // XXX would need to prepare
+
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       /*--------.
@@ -268,20 +281,35 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key, nullptr);
 
         // Depending on the format from which the public key has been
-        // serialized or created, set the padding for the encryption
-        // context.
+        // serialized or created, set the padding for the contexts.
         int padding_encrypt;
+        int padding_verify;
+        int padding_decrypt;
 
         switch (this->version())
         {
           case 0:
           {
             padding_encrypt = RSA_PKCS1_OAEP_PADDING;
+            padding_verify = RSA_PKCS1_PADDING;
+            padding_decrypt = RSA_PKCS1_PADDING;
+
             break;
           }
           case 1:
           {
             padding_encrypt = RSA_PKCS1_PADDING;
+            padding_verify = RSA_PKCS1_PADDING;
+            padding_decrypt = RSA_PKCS1_PADDING;
+
+            break;
+          }
+          case 2:
+          {
+            padding_encrypt = RSA_PKCS1_OAEP_PADDING;
+            padding_verify = RSA_PKCS1_PSS_PADDING;
+            padding_decrypt = RSA_PKCS1_PADDING;
+
             break;
           }
           default:
@@ -304,14 +332,83 @@ namespace infinit
         this->_context_verify.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_verify_init,
-                          RSA_PKCS1_PADDING));
+                          padding_verify));
+
+        switch (this->version())
+        {
+          case 0:
+          case 1:
+          {
+            break;
+          }
+          case 2:
+          {
+            // Configure the PSS signature-specific padding.
+            if (::EVP_PKEY_CTX_ctrl(this->_context_verify.get(),
+                                    EVP_PKEY_RSA,
+                                    -1,
+                                    EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
+                                    -2,
+                                    nullptr) <= 0)
+              throw Exception(
+                elle::sprintf("unable to set the EVP_PKEY context's PSS "
+                              "salt length: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            // Set the digest function.
+            if (::EVP_PKEY_CTX_ctrl(this->_context_verify.get(),
+                                    EVP_PKEY_RSA,
+                                    EVP_PKEY_OP_TYPE_SIG,
+                                    EVP_PKEY_CTRL_MD,
+                                    0,
+                                    (void*)::EVP_sha256()) <= 0)
+              throw Exception(
+                elle::sprintf("unable to set the EVP_PKEY context's digest "
+                              "function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            break;
+          }
+          default:
+            throw Exception(
+              elle::sprintf("unknown format '%s'", this->version()));
+        }
 
         // Prepare the decrypt context.
         ELLE_ASSERT_EQ(this->_context_decrypt, nullptr);
         this->_context_decrypt.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_verify_recover_init,
-                          RSA_PKCS1_PADDING));
+                          padding_decrypt));
+
+        switch (this->version())
+        {
+          case 0:
+          case 1:
+          {
+            break;
+          }
+          case 2:
+          {
+            // Set the digest function.
+            /* XXX
+            if (::EVP_PKEY_CTX_ctrl(this->_context_decrypt.get(),
+                                    EVP_PKEY_RSA,
+                                    EVP_PKEY_OP_TYPE_SIG,
+                                    EVP_PKEY_CTRL_MD,
+                                    0,
+                                    (void*)::EVP_sha256()) <= 0)
+              throw Exception(
+                elle::sprintf("unable to set the EVP_PKEY context's digest "
+                              "function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+            */
+            break;
+          }
+          default:
+            throw Exception(
+              elle::sprintf("unknown format '%s'", this->version()));
+        }
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // These contexts do not use paddings. Not that relying on textbook
@@ -446,7 +543,8 @@ namespace infinit
       Code
       PublicKey::encrypt(Plain const& plain) const
       {
-        ELLE_TRACE_METHOD(plain);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("plain: %x", plain);
 
         return (evp::asymmetric::encrypt(plain,
                                          this->_context_encrypt.get(),
@@ -458,7 +556,9 @@ namespace infinit
       PublicKey::verify(Signature const& signature,
                         Digest const& digest) const
       {
-        ELLE_TRACE("verify(%x, %x)", signature, digest);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("signature: %x", signature);
+        ELLE_DUMP("digest: %x", digest);
 
         return (evp::asymmetric::verify(signature,
                                         digest,
@@ -469,7 +569,8 @@ namespace infinit
       Clear
       PublicKey::decrypt(Code const& code) const
       {
-        ELLE_TRACE_METHOD(code);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("code: %x", code);
 
         return (evp::asymmetric::decrypt(code,
                                          this->_context_decrypt.get(),
@@ -480,7 +581,8 @@ namespace infinit
       cryptography::Seed
       PublicKey::rotate(cryptography::Seed const& seed) const
       {
-        ELLE_TRACE_METHOD(seed);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("seed: %x", seed);
 
         ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
 
@@ -521,7 +623,8 @@ namespace infinit
       cryptography::Seed
       PublicKey::derive(cryptography::Seed const& seed) const
       {
-        ELLE_TRACE_METHOD(seed);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("seed: %x", seed);
 
         ELLE_ASSERT_EQ(seed.cryptosystem(), Cryptosystem::rsa);
 
@@ -637,7 +740,8 @@ namespace infinit
         PublicKey
         deduce(cryptography::seed::Interface const& seed)
         {
-          ELLE_TRACE_FUNCTION(seed);
+          ELLE_TRACE_FUNCTION("");
+          ELLE_DUMP("seed: %x", seed);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();

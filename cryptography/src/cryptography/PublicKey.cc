@@ -76,7 +76,8 @@ namespace infinit
     Code
     PublicKey::encrypt(Plain const& plain) const
     {
-      ELLE_TRACE("encrypt(%x)", plain);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("plain: %x", plain);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -87,7 +88,9 @@ namespace infinit
     PublicKey::verify(Signature const& signature,
                       Digest const& digest) const
     {
-      ELLE_TRACE("verify(%x, %x)", signature, digest);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("signature: %x", signature);
+      ELLE_DUMP("digest: %x", digest);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -98,7 +101,9 @@ namespace infinit
     PublicKey::verify(Signature const& signature,
                       Plain const& plain) const
     {
-      ELLE_TRACE("verify(%x, %x)", signature, plain);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("signature: %x", signature);
+      ELLE_DUMP("plain: %x", plain);
 
       Digest digest = oneway::hash(plain, KeyPair::oneway_algorithm);
 
@@ -108,7 +113,8 @@ namespace infinit
     Clear
     PublicKey::decrypt(Code const& code) const
     {
-      ELLE_TRACE("decrypt(%x)", code);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("code: %x", code);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -119,7 +125,8 @@ namespace infinit
     Seed
     PublicKey::rotate(Seed const& seed) const
     {
-      ELLE_TRACE_METHOD(seed);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("seed: %x", seed);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 
@@ -129,7 +136,8 @@ namespace infinit
     Seed
     PublicKey::derive(Seed const& seed) const
     {
-      ELLE_TRACE_METHOD(seed);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("seed: %x", seed);
 
       ELLE_ASSERT_NEQ(this->_implementation, nullptr);
 

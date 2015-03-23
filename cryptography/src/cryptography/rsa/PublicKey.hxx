@@ -17,8 +17,9 @@
 # include <cryptography/bn.hh>
 
 # include <openssl/rsa.h>
+# include <openssl/x509.h>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 2);
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PublicKey)
 
@@ -36,6 +37,26 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
     {
       archive << *value._key->pkey.rsa->n
               << *value._key->pkey.rsa->e;
+
+      break;
+    }
+    case 2:
+    {
+      unsigned char* _buffer = nullptr;
+      int _size = ::i2d_RSAPublicKey(value._key->pkey.rsa, &_buffer);
+      if (_size <= 0)
+        throw infinit::cryptography::Exception(
+          elle::sprintf("unable to encode the RSA public key: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr)));
+
+      // XXX[use a WeakBuffer to avoid a copy]
+      //elle::ConstWeakBuffer buffer(_buffer, _size);
+      //archive << buffer;
+      // XXX
+      elle::Buffer buffer(_buffer, _size);
+      archive << buffer;
+
+      ::OPENSSL_free(_buffer);
 
       break;
     }
@@ -71,6 +92,24 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
+
+      break;
+    }
+    case 2:
+    {
+      elle::Buffer buffer;
+      archive >> buffer;
+
+      const unsigned char* _buffer = buffer.contents();
+      long _size = buffer.size();
+
+      ::RSA* rsa = nullptr;
+      if ((rsa = ::d2i_RSAPublicKey(NULL, &_buffer, _size)) == NULL)
+        throw infinit::cryptography::Exception(
+          elle::sprintf("unable to decode the RSA public key: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr)));
+
+      value._construct(rsa);
 
       break;
     }

@@ -20,7 +20,8 @@ namespace infinit
         print(std::ostream& stream,
               ::EVP_PKEY_CTX* context);
         /// Return the padding footprint --- i.e the number of bits (not bytes)
-        /// of data reserved for the padding --- for the given context.
+        /// of data reserved for the padding --- for the given encryption
+        /// context.
         elle::Natural32
         footprint(::EVP_PKEY_CTX* context);
       }

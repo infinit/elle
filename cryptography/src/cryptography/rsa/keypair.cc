@@ -130,7 +130,8 @@ namespace infinit
         std::pair<PublicKey, PrivateKey>
         deduce(cryptography::seed::Interface const& seed)
         {
-          ELLE_TRACE_FUNCTION(seed);
+          ELLE_TRACE_FUNCTION("");
+          ELLE_DUMP("seed: %x", seed);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();

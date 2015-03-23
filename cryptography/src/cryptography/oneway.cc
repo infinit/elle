@@ -52,7 +52,8 @@ namespace infinit
       hash(Plain const& plain,
            Algorithm algorithm)
       {
-        ELLE_TRACE("hash(%x, %s)", plain, algorithm);
+        ELLE_TRACE_FUNCTION(algorithm);
+        ELLE_DUMP("plain: %x", plain);
 
         ::EVP_MD const* function = resolve(algorithm);
 
@@ -64,7 +65,9 @@ namespace infinit
            Digest const& key,
            Algorithm algorithm)
       {
-        ELLE_TRACE("hmac(%x, %s)", plain, algorithm);
+        ELLE_TRACE_FUNCTION(algorithm);
+        ELLE_DUMP("plain: %x", plain);
+        ELLE_DUMP("digest: %x", key);
 
         ::EVP_MD const* function = resolve(algorithm);
 

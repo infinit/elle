@@ -50,7 +50,7 @@ namespace infinit
     Seed
     Seed::generate(KeyPair const& keypair)
     {
-      ELLE_TRACE_FUNCTION(keypair);
+      ELLE_TRACE_METHOD(keypair);
 
       return Seed::generate(keypair.cryptosystem(), keypair.length());
     }

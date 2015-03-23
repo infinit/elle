@@ -99,7 +99,8 @@ namespace infinit
     Code
     SecretKey::encrypt(Plain const& plain) const
     {
-      ELLE_TRACE_METHOD(plain);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("plain: %x", plain);
 
       // Resolve the cipher and oneway functions.
       ::EVP_CIPHER const* function_cipher = cipher::resolve(this->_cipher);
@@ -114,7 +115,8 @@ namespace infinit
     Clear
     SecretKey::decrypt(Code const& code) const
     {
-      ELLE_TRACE_METHOD(code);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("code: %x", code);
 
       // Resolve the cipher and oneway functions.
       ::EVP_CIPHER const* function_cipher = cipher::resolve(this->_cipher);
@@ -145,7 +147,8 @@ namespace infinit
     Code
     SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
     {
-      ELLE_DEBUG_METHOD(plain);
+      ELLE_DEBUG_METHOD("");
+      ELLE_DUMP("plain: %x", plain);
 
       elle::Buffer buffer;
       buffer.writer() << plain;
@@ -156,7 +159,8 @@ namespace infinit
     elle::Buffer
     SecretKey::legacy_decrypt_buffer(Code const& code) const
     {
-      ELLE_DEBUG_FUNCTION(code);
+      ELLE_DEBUG_METHOD("");
+      ELLE_DUMP("code: %x", code);
 
       Clear clear(this->decrypt(code));
 
