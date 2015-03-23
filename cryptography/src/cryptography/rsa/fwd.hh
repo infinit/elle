@@ -9,6 +9,7 @@ namespace infinit
     {
       class PrivateKey;
       class PublicKey;
+      class KeyPair;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       class Seed;
 # endif

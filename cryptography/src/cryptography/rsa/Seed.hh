@@ -5,7 +5,6 @@
 
 #  include <cryptography/fwd.hh>
 #  include <cryptography/types.hh>
-#  include <cryptography/Seed.hh>
 
 #  include <elle/types.hh>
 #  include <elle/attribute.hh>
@@ -13,9 +12,7 @@
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
 #  include <elle/serialize/fwd.hh>
-#  include <elle/serialize/DynamicFormat.hh>
 #  include <elle/serialize/construct.hh>
-#  include <elle/concept/Uniquable.hh>
 
 #  include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -33,10 +30,7 @@ namespace infinit
       /// Represent an RSA seed which can be used to deterministically generate
       /// RSA key pairs, private or public keys given a buffer of random data.
       class Seed:
-        public cryptography::seed::Interface,
-        public elle::serialize::SerializableMixin<Seed>,
-        public elle::serialize::DynamicFormat<Seed>,
-        public elle::concept::MakeUniquable<Seed>
+        public elle::Printable
       {
         /*-------------.
         | Construction |
@@ -71,19 +65,6 @@ namespace infinit
         | Interfaces |
         `-----------*/
       public:
-        // seed
-        virtual
-        elle::Boolean
-        operator ==(cryptography::seed::Interface const& other) const;
-        virtual
-        cryptography::seed::Interface*
-        clone() const;
-        virtual
-        Cryptosystem
-        cryptosystem() const;
-        virtual
-        elle::Natural32
-        length() const;
         // printable
         virtual
         void
@@ -98,7 +79,7 @@ namespace infinit
         ELLE_ATTRIBUTE_R(elle::Buffer, buffer);
         // The length, in bits, of the keys' modulus one can
         // generate with this seed.
-        ELLE_ATTRIBUTE(elle::Natural32, length);
+        ELLE_ATTRIBUTE_R(elle::Natural32, length);
       };
     }
   }
@@ -123,6 +104,9 @@ namespace infinit
         /// Generate a seed of the given length.
         Seed
         generate(elle::Natural32 const length);
+        /// Generate a seed for the given key pair.
+        Seed
+        generate(KeyPair const& keypair);
       }
     }
   }

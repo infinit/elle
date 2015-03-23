@@ -1,7 +1,7 @@
 #include <cryptography/pem.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/rsa/keypair.hh>
+#include <cryptography/rsa/KeyPair.hh>
 
 #include <elle/log.hh>
 

@@ -1,10 +1,10 @@
-#include "cryptography.hh"
-#include "Sample.hh"
+#include "../cryptography.hh"
+#include "../Sample.hh"
 
-#include <cryptography/PublicKey.hh>
-#include <cryptography/PrivateKey.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/rsa/PublicKey.hh>
+#include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/keypair.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
@@ -18,12 +18,10 @@ static Sample const _input2(23293083121, "chodaboy");
 
 static
 void
-test_represent_rsa()
+_test_represent()
 {
-  infinit::cryptography::KeyPair keypair =
-    infinit::cryptography::KeyPair::generate(
-      infinit::cryptography::Cryptosystem::rsa,
-      2048);
+  infinit::cryptography::rsa::KeyPair keypair =
+    infinit::cryptography::rsa::keypair::generate(2048);
 
   // 1)
   {
@@ -65,29 +63,21 @@ test_represent()
   // These generate base64-based representations which can be used in
   // other tests.
 
-  test_represent_rsa();
+  _test_represent();
 }
 
 /*---------.
 | Generate |
 `---------*/
-#ifdef interface
-# undef interface
-#endif
 
 static
-infinit::cryptography::PublicKey
-test_generate_rsa(elle::Natural32 const length = 1024)
+infinit::cryptography::rsa::PublicKey
+_test_generate(elle::Natural32 const length = 1024)
 {
-  // By implementation.
-  std::pair<infinit::cryptography::rsa::PublicKey,
-            infinit::cryptography::rsa::PrivateKey> pair =
+  infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(length);
 
-  std::unique_ptr<infinit::cryptography::publickey::Interface> interface(
-    new infinit::cryptography::rsa::PublicKey{std::move(pair.first)});
-
-  infinit::cryptography::PublicKey K(std::move(interface));
+  infinit::cryptography::rsa::PublicKey K(keypair.K());
 
   return (K);
 }
@@ -96,8 +86,7 @@ static
 void
 test_generate()
 {
-  // RSA.
-  test_generate_rsa();
+  _test_generate();
 }
 
 /*----------.
@@ -108,16 +97,15 @@ static
 void
 test_construct()
 {
-  // RSA.
-  infinit::cryptography::PublicKey K1 = test_generate_rsa(2048);
+  infinit::cryptography::rsa::PublicKey K1 = _test_generate(2048);
 
   // PublicKey copy.
-  infinit::cryptography::PublicKey K2(K1);
+  infinit::cryptography::rsa::PublicKey K2(K1);
 
   BOOST_CHECK_EQUAL(K1, K2);
 
   // PublicKey move.
-  infinit::cryptography::PublicKey K3(std::move(K1));
+  infinit::cryptography::rsa::PublicKey K3(std::move(K1));
 
   BOOST_CHECK_EQUAL(K2, K3);
 }
@@ -128,22 +116,22 @@ test_construct()
 
 static
 void
-test_operate_rsa()
+test_operate()
 {
   // Construct a public key from [representation 1]
-  elle::String representation("AAAAAAAAAAAAAQAAwyqSEVWQVKNMVyKy+COV5huZNfdkU79dKbyV3Pt7rvVJ2FNcdx2AJOZc7iWRAcB9i+VdHBgJs9uJ/5wUoBvjiXBV45E+6wm0Zz6QRqdtph1vRP8UtXMfY7nZxh6h/NgcV5uGj/zwrg4PWZq1NR3DzA3r2n5buc4TLoX8sFUlSBF5wIUAWL/GLKD+ZR1tsoszXVgG+KR7RzTT0CqEzQ23KLtHoVQi3cXFE4hTFBsAxbhbO9WC1hLh13CcpmWPKBo8lCtbvcElmodQnuwouprZydICVDKoQjsRuj+AyOqjQgkhSN7eTHCpffaf0cjz+qMReboRSw9zhIp8uBqtCIAv+wAAAwAAAAEAAQ==");
+  elle::String representation("AAAAAA4BAAAAAAAAMIIBCgKCAQEA1CJdc0qVxKAtvMPQ0T3i4H1CRiVoJZDakX2YJuzADqQeJpMbUvXQnmkTJ5CMf3gBRdnkz++LSfM2bG122U7SWryuZIEnB9SXE5P/gDMxt50AuVEvXxKiCaw9Y3IN/lQaT9e19mtl4zb2ZZSYQKzOvPL190MyQDk+9hDKsf7cnS99kbdeOM8PeqRoMbr8Brs3ae2zgezl6K+j1mQrkXgxJW7NqeH0Y7r1a2HHE8jkARnC3iAEmm/ZxRK3FF4JJTNqV1UKzVl4sIZ0qsIfesCsBZZTZ0oWpA/ed/GjWAbHd39TZ1Nh+hch9lOzWnZkMnG1Q1Fw5ID7lZtxD4JQNHnxLQIDAQAB");
 
   auto extractor =
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(representation);
-  infinit::cryptography::PublicKey K(extractor);
+  infinit::cryptography::rsa::PublicKey K(extractor);
 
   // The following operations are based on hard-coded base64 string which
   // represent the data on which to operate, in their serialized form.
 
   // Verify plain from [representation 2].
   {
-    elle::String archive("AAAAAAABAAAAAAAACtl3p9rCYGLPwr6YbEkmo17d5QtogRLppEIzHbtA+P1WAZYFuQeSF4/BE5eJZugYu4PEbVgdX5Mv8l11nddGfdgmwuEL1ACZ6yc7gxps2Skb2U+ZzbrS3ZBYeGYe5haUfjrVCCyP2wE/oe86WiAKhBVIEekb7eAxtO+AlQm6JjBzmTHcDK9ZxaLwmrPxhUyLMTfyTRWf53di7njr65IppRdJMfgbQB+hDWdODSDj/M446e+C8NQWIKxj5EjqQC62dEoyH9CAht98cOHL6251EZRZEG+YFiSTdmo77QHwpAZ+Mq7erlYW78g1uPgDQ1kJ8olMyGYF3tWIazQ1reEonA==");
+    elle::String archive("AAAAAAABAAAAAAAALKe9gjbFAxgkZgLTDsIq55hW6OOe1Z5foYSVjWV0fP+JBXe4pd/AYDqq/z3rhm5B5iVWusBs7ZFaTiS0PPrtBiIvLBq/qSt5kKERzi76n263zh2rVPAndu+HB+7Ok5jGwWEzTGxFd7PpGXHP7lIpkvdNPiraecb9Oe3dTvYuKQ1JQ3YRT32+uw/E+3pwLektxHv1yN6c05INYLhPtmX5iRfdZ6lsI6bnyejT9wp0IgthVfHmGDLi5QfCNeJjzPLNHLBrfhd1MzODH6zHtAqtF8r2dWVCWYA/lKjlFwoCdD5WdL+18faLTrquEtPJyxa2rI0LxB3ZMrvEkc0NL+siUQ==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -160,7 +148,7 @@ test_operate_rsa()
 
   // Verify plain from [representation 3].
   {
-    elle::String archive("AAAAAAABAAAAAAAABIZUvjdGrl1z9AHo4RYsrnvchBBnLnA+B3B4oLdfcDcp5Th0pe85rjyrwoTsFn/NgqsdMmitgDmOZ+cwc5SVMAoq4sN5jshz9bypaSAW+ZmHzoibvhL7eJjPmUJEKUN+mg4rpY6mMVu9btzaROcBocL8J2JjCxLSm3r3xd75k2idKLlbIndtjWt2atKErxTgBSEsYYyjUHS5OaO1ElZgftz8ooDZQZr7AKUYbY+ppydl3aaGiHpekHN1qgya5YC/MwDRVsbptTqeg8h0lWezWgP480mTSk2UgjyQTCcxa8l7dvsrQWpdythkrZLk+KaARci7S82LGIcqhxmMNDBOng==");
+    elle::String archive("AAAAAAABAAAAAAAAetN5D0kOORVokGuT61o3EbwezS+KlBzqrD2I5CjIQ4n1XWTafwy+xjmCJzqbsJvhgLpmRf15d1bphtbWU0M6XnlUzODkEXYEoQbRvtlnAIpwvoAS0lFb51n6uBonutpIWR/eW/PEjuAaCkS9BZ6VFWTVkeOp7RHkRAF7JxlAqN933Lxmu1Z+eIIpVxLl1o15Ia7vom9q9/DqhLfl55Mz89G5O+56G+SCNP56QXVuGKpfj/nw7Ri2T6Q0HwqJ+oFcrbFStyL2ZJJLcJnHNWkTH2O04MFUK4/Z3UQrsVHjz1IhmZW4fJ6EhcRCL/yyvMgWkC/aKhXQltlZPi+T1wZe2w==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -173,26 +161,18 @@ test_operate_rsa()
   }
 }
 
-static
-void
-test_operate()
-{
-  // RSA.
-  test_operate_rsa();
-}
-
 /*--------.
 | Compare |
 `--------*/
 
 static
 void
-test_compare_rsa()
+test_compare()
 {
-  infinit::cryptography::PublicKey K1 = test_generate_rsa(1024);
-  infinit::cryptography::PublicKey K2 = test_generate_rsa(1024);
+  infinit::cryptography::rsa::PublicKey K1 = _test_generate(1024);
+  infinit::cryptography::rsa::PublicKey K2 = _test_generate(1024);
 
-  // With high probabilituy, this should not be the case. Otherwise,
+  // With high probability, this should not be the case. Otherwise,
   // the random generator is probably broken.
   BOOST_CHECK(K1 != K2);
   BOOST_CHECK(!(K1 == K2));
@@ -211,31 +191,23 @@ test_compare_rsa()
   }
 }
 
-static
-void
-test_compare()
-{
-  // RSA.
-  test_compare_rsa();
-}
-
 /*----------.
 | Serialize |
 `----------*/
 
 static
 void
-test_serialize_rsa()
+test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::PublicKey K1 = test_generate_rsa(2048);
+    infinit::cryptography::rsa::PublicKey K1 = _test_generate(2048);
 
     elle::String archive;
     elle::serialize::to_string(archive) << K1;
 
     auto extractor = elle::serialize::from_string(archive);
-    infinit::cryptography::PublicKey K2(extractor);
+    infinit::cryptography::rsa::PublicKey K2(extractor);
 
     BOOST_CHECK_EQUAL(K1, K2);
   }
@@ -246,21 +218,13 @@ test_serialize_rsa()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=",
-      // format 1
-      "AAAAAAEAAAAAAQAAzJcO4BIlHIdoQUYGiMvjSG+U4434tyZOhRnfRJUxd9tK/zxezIwPQOBShjU5zin4rhXholbVKJxOLrMN29AoF+wJi3c8+GCFQFBH5sJAQwf66M6kIOdtY2rtIIUd8H4SxWNe9j7MpYQxaYWpMlJE578oZ2/X4aYOO/5Ki4jA4X+afRjaN3yJnikG7OkkwndRLzQzR2BTmG6zT5hGrOZQ13G1SmeMxI5REK6rjrAsrbNPi9yojrjGK5UyityKy2yjiJSf7br7f34sG1xIhKcUW1MWUxi0gaFR4X/6TbTeIxXuuRIgyY3OLWZx3O8Vlx7jwcWcPG/kY5RPbdfU29x9lwAAAwAAAAEAAQ=="};
+      "AAAAAA4BAAAAAAAAMIIBCgKCAQEA1CJdc0qVxKAtvMPQ0T3i4H1CRiVoJZDakX2YJuzADqQeJpMbUvXQnmkTJ5CMf3gBRdnkz++LSfM2bG122U7SWryuZIEnB9SXE5\
+P/gDMxt50AuVEvXxKiCaw9Y3IN/lQaT9e19mtl4zb2ZZSYQKzOvPL190MyQDk+9hDKsf7cnS99kbdeOM8PeqRoMbr8Brs3ae2zgezl6K+j1mQrkXgxJW7NqeH0Y7r1a2HHE8jkARnC3iAEmm/ZxRK3FF4JJTNqV1UKzVl4sIZ0qsIfesCsBZZTZ0oWpA/ed/GjWAbHd39TZ1Nh+hch9lOzWnZkMnG1Q1Fw5ID7lZtxD4JQNHnxLQIDAQAB"
+    };
 
-    infinit::cryptography::test::formats<infinit::cryptography::PublicKey>(
-      archives);
+    infinit::cryptography::test::formats<
+      infinit::cryptography::rsa::PublicKey>(archives);
   }
-}
-
-static
-void
-test_serialize()
-{
-  // RSA.
-  test_serialize_rsa();
 }
 
 /*-----.

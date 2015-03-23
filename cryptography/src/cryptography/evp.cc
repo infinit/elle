@@ -92,8 +92,6 @@ namespace infinit
           ELLE_ASSERT_NEQ(context, nullptr);
           ELLE_ASSERT_NEQ(input.contents(), nullptr);
 
-          elle::printf("XXX 1\n");
-
           if (function(context,
                        nullptr,
                        &size,
@@ -107,8 +105,6 @@ namespace infinit
           // Prepare the output buffer for receiving the encrypted content.
           elle::Buffer output(size);
 
-          elle::printf("XXX 2\n");
-
           // Encrypt the input buffer.
           if (function(context,
                        reinterpret_cast<unsigned char*>(
@@ -120,8 +116,6 @@ namespace infinit
                                           "function: %s",
                                           ::ERR_error_string(ERR_get_error(),
                                                              nullptr)));
-
-          elle::printf("XXX 3\n");
 
           // Set the final output buffer size.
           output.size(size);

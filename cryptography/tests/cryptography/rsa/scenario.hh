@@ -3,13 +3,13 @@
 # ifndef SCENARIO_HH
 #  define SCENARIO_HH
 
-#  include "cryptography.hh"
+#  include "../cryptography.hh"
 
-#  include <cryptography/Seed.hh>
-#  include <cryptography/KeyPair.hh>
 #  include <cryptography/SecretKey.hh>
 #  include <cryptography/Exception.hh>
 #  include <cryptography/random.hh>
+#  include <cryptography/rsa/Seed.hh>
+#  include <cryptography/rsa/KeyPair.hh>
 
 //
 // ---------- Entry -----------------------------------------------------------
@@ -23,7 +23,7 @@ class Entry
 {
 public:
   Entry(elle::Natural32 version,
-        infinit::cryptography::PublicKey const& pass_K,
+        infinit::cryptography::rsa::PublicKey const& pass_K,
         infinit::cryptography::Code const& key):
     _version(version),
     _pass_K(pass_K),
@@ -38,7 +38,7 @@ public:
 
 private:
   ELLE_ATTRIBUTE_R(elle::Natural32 const, version);
-  ELLE_ATTRIBUTE_R(infinit::cryptography::PublicKey const, pass_K);
+  ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, pass_K);
   ELLE_ATTRIBUTE_R(infinit::cryptography::Code const, key);
 };
 
@@ -61,16 +61,16 @@ public:
 
 public:
   void
-  grant(infinit::cryptography::PublicKey const& address,
+  grant(infinit::cryptography::rsa::PublicKey const& address,
         elle::Natural32 version,
-        infinit::cryptography::PublicKey const& pass_K,
+        infinit::cryptography::rsa::PublicKey const& pass_K,
         infinit::cryptography::SecretKey const& key)
   {
     this->_entries[address] = new Entry(version, pass_K, pass_K.encrypt(key));
   }
 
   void
-  revoke(infinit::cryptography::PublicKey const& address)
+  revoke(infinit::cryptography::rsa::PublicKey const& address)
   {
     if (this->_entries.erase(address) != 1)
       throw infinit::cryptography::Exception(
@@ -78,7 +78,7 @@ public:
   }
 
   Entry*
-  retrieve(infinit::cryptography::PublicKey const& address)
+  retrieve(infinit::cryptography::rsa::PublicKey const& address)
   {
     auto iterator = this->_entries.find(address);
     if (iterator == this->_entries.end())
@@ -91,8 +91,8 @@ public:
   }
 
   infinit::cryptography::SecretKey
-  key(infinit::cryptography::PublicKey const& address,
-      infinit::cryptography::PrivateKey const& pass_k)
+  key(infinit::cryptography::rsa::PublicKey const& address,
+      infinit::cryptography::rsa::PrivateKey const& pass_k)
   {
     Entry* entry = this->retrieve(address);
 
@@ -103,9 +103,9 @@ public:
 
   void
   update(infinit::cryptography::SecretKey const& key,
-         infinit::cryptography::PublicKey const& address,
+         infinit::cryptography::rsa::PublicKey const& address,
          elle::Natural32 const version,
-         infinit::cryptography::PublicKey const& pass_K)
+         infinit::cryptography::rsa::PublicKey const& pass_K)
   {
     Entry* _entry = this->retrieve(address);
 
@@ -142,7 +142,7 @@ public:
   }
 
 private:
-  std::map<infinit::cryptography::PublicKey, Entry*> _entries;
+  std::map<infinit::cryptography::rsa::PublicKey, Entry*> _entries;
 };
 
 //
@@ -154,14 +154,14 @@ private:
 class Object
 {
 public:
-  Object(infinit::cryptography::KeyPair const& owner_keypair,
+  Object(infinit::cryptography::rsa::KeyPair const& owner_keypair,
          elle::String const& content):
     Object(owner_keypair.K(),
            content)
   {}
 
 private:
-  Object(infinit::cryptography::PublicKey const& owner_K,
+  Object(infinit::cryptography::rsa::PublicKey const& owner_K,
          elle::String const& content):
     Object(owner_K,
            infinit::cryptography::SecretKey::generate(
@@ -170,7 +170,7 @@ private:
            content)
   {}
 
-  Object(infinit::cryptography::PublicKey const& owner_K,
+  Object(infinit::cryptography::rsa::PublicKey const& owner_K,
          infinit::cryptography::SecretKey const& key,
          elle::String const& content):
     _owner_K(owner_K),
@@ -189,7 +189,7 @@ private:
 
 public:
   Object
-  write(infinit::cryptography::PrivateKey const& owner_k,
+  write(infinit::cryptography::rsa::PrivateKey const& owner_k,
         elle::String const& content)
   {
     infinit::cryptography::SecretKey _key = this->key(owner_k);
@@ -211,13 +211,13 @@ public:
   }
 
   infinit::cryptography::SecretKey
-  key(infinit::cryptography::PrivateKey const& owner_k) const
+  key(infinit::cryptography::rsa::PrivateKey const& owner_k) const
   {
     return (owner_k.decrypt<infinit::cryptography::SecretKey>(this->_key));
   }
 
 private:
-  ELLE_ATTRIBUTE_R(infinit::cryptography::PublicKey, owner_K);
+  ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, owner_K);
   ELLE_ATTRIBUTE(infinit::cryptography::Code, key);
   ELLE_ATTRIBUTE(infinit::cryptography::Code, content);
   ELLE_ATTRIBUTE_RX(ACL, acl);
@@ -258,16 +258,16 @@ class Members
 {
 public:
   void
-  add(infinit::cryptography::PublicKey const& user_K,
-      infinit::cryptography::PrivateKey const& pass_k,
-      infinit::cryptography::Seed const& seed)
+  add(infinit::cryptography::rsa::PublicKey const& user_K,
+      infinit::cryptography::rsa::PrivateKey const& pass_k,
+      infinit::cryptography::rsa::Seed const& seed)
   {
     this->_members[user_K] = new Member(user_K.encrypt(pass_k),
                                         user_K.encrypt(seed));
   }
 
   void
-  remove(infinit::cryptography::PublicKey const& user_K)
+  remove(infinit::cryptography::rsa::PublicKey const& user_K)
   {
     if (this->_members.erase(user_K) != 1)
       throw infinit::cryptography::Exception(
@@ -275,7 +275,7 @@ public:
   }
 
   Member*
-  retrieve(infinit::cryptography::PublicKey const& user_K)
+  retrieve(infinit::cryptography::rsa::PublicKey const& user_K)
   {
     auto iterator = this->_members.find(user_K);
     if (iterator == this->_members.end())
@@ -287,35 +287,35 @@ public:
     return (member);
   }
 
-  infinit::cryptography::PrivateKey
-  pass_k(infinit::cryptography::KeyPair const& user_keypair)
+  infinit::cryptography::rsa::PrivateKey
+  pass_k(infinit::cryptography::rsa::KeyPair const& user_keypair)
   {
     Member* member = this->retrieve(user_keypair.K());
 
     return (
-      user_keypair.k().decrypt<infinit::cryptography::PrivateKey>(
+      user_keypair.k().decrypt<infinit::cryptography::rsa::PrivateKey>(
         member->pass_k()));
   }
 
-  infinit::cryptography::Seed
-  seed(infinit::cryptography::KeyPair const& user_keypair)
+  infinit::cryptography::rsa::Seed
+  seed(infinit::cryptography::rsa::KeyPair const& user_keypair)
   {
     Member* member = this->retrieve(user_keypair.K());
 
     return (
-      user_keypair.k().decrypt<infinit::cryptography::Seed>(
+      user_keypair.k().decrypt<infinit::cryptography::rsa::Seed>(
         member->seed()));
   }
 
   void
-  upgrade(infinit::cryptography::PrivateKey const& pass_k,
-          infinit::cryptography::Seed const& seed)
+  upgrade(infinit::cryptography::rsa::PrivateKey const& pass_k,
+          infinit::cryptography::rsa::Seed const& seed)
   {
     for (auto iterator = this->_members.begin();
          iterator != this->_members.end();
          ++iterator)
     {
-      infinit::cryptography::PublicKey user_K = iterator->first;
+      infinit::cryptography::rsa::PublicKey user_K = iterator->first;
       Member*& member = iterator->second;
       Member* _member = member;
 
@@ -334,7 +334,7 @@ public:
   }
 
 private:
-  std::map<infinit::cryptography::PublicKey, Member*> _members;
+  std::map<infinit::cryptography::rsa::PublicKey, Member*> _members;
 };
 
 //
@@ -346,40 +346,39 @@ private:
 class Group
 {
 public:
-  Group(infinit::cryptography::PublicKey const& manager_K):
-    Group(infinit::cryptography::KeyPair::generate(
-            manager_K.cryptosystem(), 2048),
+  Group(infinit::cryptography::rsa::PublicKey const& manager_K):
+    Group(infinit::cryptography::rsa::keypair::generate(2048),
           manager_K)
   {}
 
 private:
-  Group(infinit::cryptography::KeyPair const& keypair,
-        infinit::cryptography::PublicKey const& manager_K):
+  Group(infinit::cryptography::rsa::KeyPair const& keypair,
+        infinit::cryptography::rsa::PublicKey const& manager_K):
     Group(keypair.K(),
           0,
           manager_K,
-          infinit::cryptography::Seed::generate(keypair),
+          infinit::cryptography::rsa::seed::generate(keypair),
           Members{})
   {}
 
-  Group(infinit::cryptography::PublicKey const& address,
+  Group(infinit::cryptography::rsa::PublicKey const& address,
         elle::Natural32 const version,
-        infinit::cryptography::PublicKey const& manager_K,
-        infinit::cryptography::Seed const& seed,
+        infinit::cryptography::rsa::PublicKey const& manager_K,
+        infinit::cryptography::rsa::Seed const& seed,
         Members const& members):
     Group(address,
           version,
           manager_K,
           seed,
-          infinit::cryptography::KeyPair(seed),
+          infinit::cryptography::rsa::KeyPair(seed),
           members)
   {}
 
-  Group(infinit::cryptography::PublicKey const& address,
+  Group(infinit::cryptography::rsa::PublicKey const& address,
         elle::Natural32 const version,
-        infinit::cryptography::PublicKey const& manager_K,
-        infinit::cryptography::Seed const& seed,
-        infinit::cryptography::KeyPair const& pass,
+        infinit::cryptography::rsa::PublicKey const& manager_K,
+        infinit::cryptography::rsa::Seed const& seed,
+        infinit::cryptography::rsa::KeyPair const& pass,
         Members const& members):
     _address(address),
     _version(version),
@@ -392,7 +391,7 @@ private:
 
 private:
   Group(Group const& group,
-        infinit::cryptography::Seed const& seed):
+        infinit::cryptography::rsa::Seed const& seed):
     Group(group._address,
           group._version + 1,
           group._manager_K,
@@ -401,30 +400,30 @@ private:
   {}
 
 public:
-  infinit::cryptography::PrivateKey
-  pass_k(infinit::cryptography::PrivateKey const& manager_k) const
+  infinit::cryptography::rsa::PrivateKey
+  pass_k(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
     return (
-      manager_k.decrypt<infinit::cryptography::PrivateKey>(this->_pass_k));
+      manager_k.decrypt<infinit::cryptography::rsa::PrivateKey>(this->_pass_k));
   }
 
-  infinit::cryptography::Seed
-  seed(infinit::cryptography::PrivateKey const& manager_k) const
+  infinit::cryptography::rsa::Seed
+  seed(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
     return (
-      manager_k.decrypt<infinit::cryptography::Seed>(this->_seed));
+      manager_k.decrypt<infinit::cryptography::rsa::Seed>(this->_seed));
   }
 
   Group
-  rotate(infinit::cryptography::PrivateKey const& manager_k)
+  rotate(infinit::cryptography::rsa::PrivateKey const& manager_k)
   {
-    infinit::cryptography::Seed seed =
-      manager_k.decrypt<infinit::cryptography::Seed>(this->_seed);
-    infinit::cryptography::Seed _seed = manager_k.rotate(seed);
+    infinit::cryptography::rsa::Seed seed =
+      manager_k.decrypt<infinit::cryptography::rsa::Seed>(this->_seed);
+    infinit::cryptography::rsa::Seed _seed = manager_k.rotate(seed);
 
     Group group(*this, _seed);
 
-    infinit::cryptography::PrivateKey _pass_k = group.pass_k(manager_k);
+    infinit::cryptography::rsa::PrivateKey _pass_k = group.pass_k(manager_k);
 
     group.members().upgrade(_pass_k, _seed);
 
@@ -432,11 +431,11 @@ public:
   }
 
 private:
-  ELLE_ATTRIBUTE_R(infinit::cryptography::PublicKey const, address);
+  ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, address);
   ELLE_ATTRIBUTE_R(elle::Natural32, version);
-  ELLE_ATTRIBUTE_R(infinit::cryptography::PublicKey const, manager_K);
+  ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, manager_K);
   ELLE_ATTRIBUTE(infinit::cryptography::Code, seed);
-  ELLE_ATTRIBUTE_R(infinit::cryptography::PublicKey, pass_K);
+  ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, pass_K);
   ELLE_ATTRIBUTE(infinit::cryptography::Code, pass_k);
   ELLE_ATTRIBUTE_RX(Members, members);
 };

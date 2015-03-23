@@ -1,13 +1,10 @@
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 
-# include <cryptography/rsa/Seed.hh>
 # include <cryptography/Exception.hh>
-# include <cryptography/PublicKey.hh>
-# include <cryptography/PrivateKey.hh>
 # include <cryptography/random.hh>
 # include <cryptography/bn.hh>
-# include <cryptography/rsa/PublicKey.hh>
-# include <cryptography/rsa/PrivateKey.hh>
+# include <cryptography/rsa/Seed.hh>
+# include <cryptography/rsa/KeyPair.hh>
 
 # include <elle/log.hh>
 
@@ -80,40 +77,6 @@ namespace infinit
         return (true);
       }
 
-      /*-----.
-      | Seed |
-      `-----*/
-
-      elle::Boolean
-      Seed::operator ==(cryptography::seed::Interface const& other) const
-      {
-        if (this == &other)
-          return (true);
-
-        if (this->cryptosystem() != other.cryptosystem())
-          return (false);
-
-        return (*this == static_cast<Seed const&>(other));
-      }
-
-      cryptography::seed::Interface*
-      Seed::clone() const
-      {
-        return (new Seed(*this));
-      }
-
-      Cryptosystem
-      Seed::cryptosystem() const
-      {
-        return (Cryptosystem::rsa);
-      }
-
-      elle::Natural32
-      Seed::length() const
-      {
-        return (this->_length);
-      }
-
       /*----------.
       | Printable |
       `----------*/
@@ -139,6 +102,10 @@ namespace infinit
     {
       namespace seed
       {
+        /*----------.
+        | Functions |
+        `----------*/
+
         Seed
         generate(elle::Natural32 const length)
         {
@@ -174,6 +141,14 @@ namespace infinit
           buffer.mutable_contents()[0] = 0;
 
           return (Seed(std::move(buffer), length));
+        }
+
+        Seed
+        generate(KeyPair const& keypair)
+        {
+          ELLE_TRACE_FUNCTION(keypair);
+
+          return (generate(keypair.length()));
         }
       }
     }

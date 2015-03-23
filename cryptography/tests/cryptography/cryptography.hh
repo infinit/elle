@@ -47,22 +47,6 @@ namespace infinit
 
           BOOST_CHECK_EQUAL(archives[i], archive);
         }
-
-        // Then, for each object, try to upgrade it sequentially until
-        // reaching the last possible format while testing every version.
-        for (elle::Natural32 i = 0; i < objects.size(); ++i)
-        {
-          // XXX vector (initially empty) for holding the upgraded version of
-          //     object[i].
-          // XXX upgraded[0] = objects[i]
-
-          for (elle::Natural32 j = i + 1; j < objects.size(); ++j)
-          {
-            // XXX upgrade upgraded[j] to upgraded[j + 1]
-            // XXX check que chaque version upgraded equals the others of
-            //     the same object.
-          }
-        }
       }
     }
   }

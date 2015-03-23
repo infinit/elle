@@ -8,26 +8,8 @@ namespace infinit
     enum class Cryptosystem;
     class Exception;
     class Input;
-    class KeyPair;
     class Output;
-    class PrivateKey;
-    namespace privatekey
-    {
-      class Interface;
-    }
-    class PublicKey;
-    namespace publickey
-    {
-      class Interface;
-    }
     class SecretKey;
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-    namespace seed
-    {
-      class Interface;
-    }
-    class Seed;
-# endif
     /// Represent a plain text for cryptographic operations.
     typedef Input Plain;
     /// Represent a decrypted text, both trought symmetric and asymmetric

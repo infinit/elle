@@ -5,6 +5,71 @@
 // ---------- Class -----------------------------------------------------------
 //
 
+# include <cryptography/Plain.hh>
+
+# include <elle/Buffer.hh>
+# include <elle/log.hh>
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      /*--------.
+      | Methods |
+      `--------*/
+
+      template <typename T>
+      Code
+      PublicKey::encrypt(T const& value) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
+        ELLE_DEBUG_FUNCTION(value);
+
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                      "this call should never have occured");
+
+        elle::Buffer buffer;
+        buffer.writer() << value;
+
+        return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
+      }
+
+      template <typename T>
+      elle::Boolean
+      PublicKey::verify(Signature const& signature,
+                        T const& value) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
+        ELLE_DEBUG_FUNCTION(signature, value);
+
+        static_assert(std::is_same<T, Digest>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                      "this call should never have occured");
+
+        elle::Buffer buffer;
+        buffer.writer() << value;
+
+        return (this->verify(signature, Plain(elle::WeakBuffer(buffer))));
+      }
+    }
+  }
+}
+
 /*-------------.
 | Serializable |
 `-------------*/
@@ -19,8 +84,6 @@
 # include <openssl/rsa.h>
 # include <openssl/x509.h>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 2);
-
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PublicKey)
 
 ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
@@ -30,40 +93,21 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
 {
   ELLE_ASSERT_NEQ(value._key, nullptr);
 
-  switch (format)
-  {
-    case 0:
-    case 1:
-    {
-      archive << *value._key->pkey.rsa->n
-              << *value._key->pkey.rsa->e;
+  unsigned char* _buffer = nullptr;
+  int _size = ::i2d_RSAPublicKey(value._key->pkey.rsa, &_buffer);
+  if (_size <= 0)
+    throw infinit::cryptography::Exception(
+      elle::sprintf("unable to encode the RSA public key: %s",
+                    ::ERR_error_string(ERR_get_error(), nullptr)));
 
-      break;
-    }
-    case 2:
-    {
-      unsigned char* _buffer = nullptr;
-      int _size = ::i2d_RSAPublicKey(value._key->pkey.rsa, &_buffer);
-      if (_size <= 0)
-        throw infinit::cryptography::Exception(
-          elle::sprintf("unable to encode the RSA public key: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr)));
+  // XXX[use a WeakBuffer to avoid a copy]
+  //elle::ConstWeakBuffer buffer(_buffer, _size);
+  //archive << buffer;
+  // XXX
+  elle::Buffer buffer(_buffer, _size);
+  archive << buffer;
 
-      // XXX[use a WeakBuffer to avoid a copy]
-      //elle::ConstWeakBuffer buffer(_buffer, _size);
-      //archive << buffer;
-      // XXX
-      elle::Buffer buffer(_buffer, _size);
-      archive << buffer;
-
-      ::OPENSSL_free(_buffer);
-
-      break;
-    }
-    default:
-      throw infinit::cryptography::Exception(
-        elle::sprintf("unknown format '%s'", format));
-  }
+  ::OPENSSL_free(_buffer);
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
@@ -71,53 +115,19 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
                           value,
                           format)
 {
-  switch (format)
-  {
-    case 0:
-    case 1:
-    {
-      ::BIGNUM *n = ::BN_new();
-      ::BIGNUM *e = ::BN_new();
+  elle::Buffer buffer;
+  archive >> buffer;
 
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+  const unsigned char* _buffer = buffer.contents();
+  long _size = buffer.size();
 
-      ELLE_ASSERT_NEQ(n, nullptr);
-      ELLE_ASSERT_NEQ(e, nullptr);
+  ::RSA* rsa = nullptr;
+  if ((rsa = ::d2i_RSAPublicKey(NULL, &_buffer, _size)) == NULL)
+    throw infinit::cryptography::Exception(
+      elle::sprintf("unable to decode the RSA public key: %s",
+                    ::ERR_error_string(ERR_get_error(), nullptr)));
 
-      archive >> *n
-              >> *e;
-
-      value._construct(n, e);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
-
-      break;
-    }
-    case 2:
-    {
-      elle::Buffer buffer;
-      archive >> buffer;
-
-      const unsigned char* _buffer = buffer.contents();
-      long _size = buffer.size();
-
-      ::RSA* rsa = nullptr;
-      if ((rsa = ::d2i_RSAPublicKey(NULL, &_buffer, _size)) == NULL)
-        throw infinit::cryptography::Exception(
-          elle::sprintf("unable to decode the RSA public key: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr)));
-
-      value._construct(rsa);
-
-      break;
-    }
-    default:
-      throw infinit::cryptography::Exception(
-        elle::sprintf("unknown format '%s'", format));
-  }
-
+  value._construct(rsa);
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);

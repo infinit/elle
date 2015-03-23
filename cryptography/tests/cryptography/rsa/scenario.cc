@@ -7,18 +7,19 @@
 `---------*/
 
 // The following scenario consists in creating an object and granting access
-// to it to two groups.
+// to two groups.
 //
-// Over time, the objec is going to evolve, along with the access to the two
+// Over time, the object is going to evolve, along with the access to the two
 // groups. In parallel, the groups also evolve with members joining/leaving,
 // action represented by the group rotation mechanism.
 //
 // The goal of this scenario is to show that users who have been evicted from
 // a group can still access objects (versions of objects) from when the user
-// was a member but cannot access the newer versions.
+// was a member but cannot access the newer versions, also known as lazy
+// revocation.
 //
 // Even more, the scenario emphasizes the ability for a new member of a group
-// to be able to access past version of objects even though he was not a member
+// to be able to access past versions of objects even though he was not a member
 // at the time the access to the object in question was granted.
 //
 // IMPORTANT!
@@ -32,11 +33,11 @@
 // be secure e.g 1024) and the seed large, one could speed up the process.
 static
 void
-_test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
+test_scenario()
 {
   // Create the keypair for the object's owner.
-  infinit::cryptography::KeyPair owner =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 2048);
+  infinit::cryptography::rsa::KeyPair owner =
+    infinit::cryptography::rsa::keypair::generate(2048);
 
   // Create the object and store some information in it.
   elle::String content0("When I'm sad, I stop being sad "
@@ -56,26 +57,26 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   }
 
   // Create two users.
-  infinit::cryptography::KeyPair userX =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 1024);
-  infinit::cryptography::KeyPair userY =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 1024);
+  infinit::cryptography::rsa::KeyPair userX =
+    infinit::cryptography::rsa::keypair::generate(1024);
+  infinit::cryptography::rsa::KeyPair userY =
+    infinit::cryptography::rsa::keypair::generate(1024);
 
   // Create group A with user X as a member.
-  infinit::cryptography::KeyPair managerA =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 2048);
+  infinit::cryptography::rsa::KeyPair managerA =
+    infinit::cryptography::rsa::keypair::generate(2048);
   Group groupA0(managerA.K());
-  infinit::cryptography::PrivateKey passA0_k = groupA0.pass_k(managerA.k());
-  infinit::cryptography::Seed seedA0 = groupA0.seed(managerA.k());
+  infinit::cryptography::rsa::PrivateKey passA0_k = groupA0.pass_k(managerA.k());
+  infinit::cryptography::rsa::Seed seedA0 = groupA0.seed(managerA.k());
   groupA0.members().add(userX.K(), passA0_k, seedA0);
   BOOST_CHECK_EQUAL(groupA0.members().size(), 1);
 
   // Create group B with user Y as a member
-  infinit::cryptography::KeyPair managerB =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 2048);
+  infinit::cryptography::rsa::KeyPair managerB =
+    infinit::cryptography::rsa::keypair::generate(2048);
   Group groupB0(managerB.K());
-  infinit::cryptography::PrivateKey passB0_k = groupB0.pass_k(managerB.k());
-  infinit::cryptography::Seed seedB0 = groupB0.seed(managerB.k());
+  infinit::cryptography::rsa::PrivateKey passB0_k = groupB0.pass_k(managerB.k());
+  infinit::cryptography::rsa::Seed seedB0 = groupB0.seed(managerB.k());
   groupB0.members().add(userY.K(), passB0_k, seedB0);
   BOOST_CHECK_EQUAL(groupB0.members().size(), 1);
 
@@ -94,7 +95,7 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   // Both users X and Y should have access to object 0's content. Let's
   // try with user Y.
   {
-    infinit::cryptography::PrivateKey _passB0_k =
+    infinit::cryptography::rsa::PrivateKey _passB0_k =
       groupB0.members().pass_k(userY);
     infinit::cryptography::SecretKey _key0 =
       object0.acl().key(groupB0.address(), _passB0_k);
@@ -110,8 +111,8 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   BOOST_CHECK_EQUAL(groupA2.version(), 2);
   BOOST_CHECK_EQUAL(groupA2.members().size(), 1);
 
-  infinit::cryptography::PrivateKey passA2_k = groupA2.pass_k(managerA.k());
-  infinit::cryptography::Seed seedA2 = groupA2.seed(managerA.k());
+  infinit::cryptography::rsa::PrivateKey passA2_k = groupA2.pass_k(managerA.k());
+  infinit::cryptography::rsa::Seed seedA2 = groupA2.seed(managerA.k());
 
   // Update the object to version 1.
   elle::String content1("If you don't have ability, "
@@ -136,7 +137,7 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   // User Y, belonging to group B, cannot access object 1 though he can
   // still access object 0.
   {
-    infinit::cryptography::PrivateKey _passB0_k =
+    infinit::cryptography::rsa::PrivateKey _passB0_k =
       groupB0.members().pass_k(userY);
 
     BOOST_CHECK_THROW(object1.acl().key(groupB0.address(), _passB0_k),
@@ -150,7 +151,7 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
 
   // User X however can access object 1.
   {
-    infinit::cryptography::PrivateKey _passA2_k =
+    infinit::cryptography::rsa::PrivateKey _passA2_k =
       groupA2.members().pass_k(userX);
     infinit::cryptography::SecretKey _key1 =
       object1.acl().key(groupA2.address(), _passA2_k);
@@ -177,12 +178,13 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   Group groupA4 = groupA3.rotate(managerA.k());
   Group groupA5 = groupA4.rotate(managerA.k());
 
-  infinit::cryptography::PrivateKey passA5_k = groupA5.pass_k(managerA.k());
-  infinit::cryptography::Seed seedA5 = groupA5.seed(managerA.k());
+  infinit::cryptography::rsa::PrivateKey passA5_k =
+    groupA5.pass_k(managerA.k());
+  infinit::cryptography::rsa::Seed seedA5 = groupA5.seed(managerA.k());
 
   // Add user Z to group A.
-  infinit::cryptography::KeyPair userZ =
-    infinit::cryptography::KeyPair::generate(cryptosystem, 1024);
+  infinit::cryptography::rsa::KeyPair userZ =
+    infinit::cryptography::rsa::keypair::generate(1024);
   groupA5.members().add(userZ.K(), passA5_k, seedA5);
   BOOST_CHECK_EQUAL(groupA5.members().size(), 2);
 
@@ -223,15 +225,15 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
     elle::Natural32 derivations = groupA5.version() - entry->version();
     BOOST_CHECK_EQUAL(derivations, 3);
 
-    infinit::cryptography::Seed* seed =
-      new infinit::cryptography::Seed(groupA5.members().seed(userZ));
+    infinit::cryptography::rsa::Seed* seed =
+      new infinit::cryptography::rsa::Seed(groupA5.members().seed(userZ));
 
     for (elle::Natural32 i = 0; i < derivations; i++)
     {
-      infinit::cryptography::Seed* _seed = seed;
+      infinit::cryptography::rsa::Seed* _seed = seed;
 
       seed =
-        new infinit::cryptography::Seed(
+        new infinit::cryptography::rsa::Seed(
           groupA5.manager_K().derive(*_seed));
 
       delete _seed;
@@ -239,7 +241,7 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
 
     BOOST_CHECK_EQUAL(*seed, seedA2);
 
-    infinit::cryptography::PrivateKey pass_k(*seed);
+    infinit::cryptography::rsa::PrivateKey pass_k(*seed);
     BOOST_CHECK_EQUAL(pass_k, passA2_k);
 
     infinit::cryptography::SecretKey key =
@@ -250,21 +252,13 @@ _test_scenario(infinit::cryptography::Cryptosystem const cryptosystem)
   }
 }
 
-static
-void
-test_scenario()
-{
-  // RSA
-  _test_scenario(infinit::cryptography::Cryptosystem::rsa);
-}
-
 /*-----.
 | Main |
 `-----*/
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("Seed");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("scenario");
 
   suite->add(BOOST_TEST_CASE(test_scenario));
 

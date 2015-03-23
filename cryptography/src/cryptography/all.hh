@@ -6,14 +6,10 @@
 # include <cryptography/Cryptosystem.hh>
 # include <cryptography/Digest.hh>
 # include <cryptography/Exception.hh>
-# include <cryptography/KeyPair.hh>
 # include <cryptography/Input.hh>
 # include <cryptography/Output.hh>
 # include <cryptography/Plain.hh>
-# include <cryptography/PrivateKey.hh>
-# include <cryptography/PublicKey.hh>
 # include <cryptography/SecretKey.hh>
-# include <cryptography/Seed.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/bn.hh>
 # include <cryptography/cipher.hh>
@@ -23,7 +19,8 @@
 # include <cryptography/oneway.hh>
 # include <cryptography/pem.hh>
 # include <cryptography/random.hh>
-# include <cryptography/rsa/all.hh>
 # include <cryptography/types.hh>
+
+# include <cryptography/rsa/all.hh>
 
 #endif

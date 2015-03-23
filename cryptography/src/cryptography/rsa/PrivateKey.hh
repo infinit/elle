@@ -6,20 +6,17 @@
 # include <cryptography/Clear.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/oneway.hh>
-# include <cryptography/PrivateKey.hh>
+# include <cryptography/rsa/Seed.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
-# include <elle/serialize/DynamicFormat.hh>
-# include <elle/concept/Uniquable.hh>
-
-# include <openssl/evp.h>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
+
+# include <openssl/evp.h>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -33,10 +30,7 @@ namespace infinit
     {
       /// Represent a private key in the RSA asymmetric cryptosystem.
       class PrivateKey:
-        public cryptography::privatekey::Interface,
-        public elle::serialize::SerializableMixin<PrivateKey>,
-        public elle::serialize::DynamicFormat<PrivateKey>,
-        public elle::concept::MakeUniquable<PrivateKey>
+        public elle::Printable
       {
         /*-------------.
         | Construction |
@@ -61,6 +55,12 @@ namespace infinit
                    ::BIGNUM* dmp1,
                    ::BIGNUM* dmq1,
                    ::BIGNUM* iqmp);
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        /// Construct a private key based on a given seed i.e in a deterministic
+        /// way.
+        explicit
+        PrivateKey(Seed const& seed);
+# endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
@@ -68,7 +68,7 @@ namespace infinit
         /*--------.
         | Methods |
         `--------*/
-      public:
+      private:
         /// Construct the object based on the given RSA structure whose
         /// ownership is transferred to the callee.
         void
@@ -92,6 +92,43 @@ namespace infinit
         /// Prepare the private key cryptographic contexts.
         void
         _prepare();
+      public:
+        /// Decrypt a code and returns the original clear text.
+        ///
+        /// Note that the code is, in practice, an archive containing both
+        /// a temporarily-generated secret key and the plain text encrypted
+        /// with the secret key.
+        Clear
+        decrypt(Code const& code) const;
+        /// Decrypt a code and returns the given type, assuming the given type
+        /// can be extracted from the clear, which should then be an archive.
+        template <typename T>
+        T
+        decrypt(Code const& code) const;
+        /// Return a signature of the given digest.
+        Signature
+        sign(Digest const& digest) const;
+        /// Return a signature of the given plain text.
+        Signature
+        sign(Plain const& plain) const;
+        /// Return a signature of any given serializable type.
+        template <typename T>
+        Signature
+        sign(T const& value) const;
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        /// Return the seed once derived by the private key.
+        Seed
+        derive(Seed const& seed) const;
+        /// Return the seed once rotated by the private key.
+        Seed
+        rotate(Seed const& seed) const;
+# endif
+        /// Return the private key's size in bytes.
+        elle::Natural32
+        size() const;
+        /// Return the private key's length in bits.
+        elle::Natural32
+        length() const;
 
         /*----------.
         | Operators |
@@ -103,47 +140,17 @@ namespace infinit
         operator <(PrivateKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PrivateKey);
 
-        /*-----------.
-        | Interfaces |
-        `-----------*/
+        /*----------.
+        | Printable |
+        `----------*/
       public:
-        // privatekey
-        virtual
-        elle::Boolean
-        operator ==(cryptography::privatekey::Interface const& other) const;
-        virtual
-        elle::Boolean
-        operator <(cryptography::privatekey::Interface const& other) const;
-        virtual
-        cryptography::privatekey::Interface*
-        clone() const;
-        virtual
-        elle::Natural32
-        size() const;
-        virtual
-        elle::Natural32
-        length() const;
-        virtual
-        Cryptosystem
-        cryptosystem() const;
-        virtual
-        Clear
-        decrypt(Code const& code) const;
-        virtual
-        Signature
-        sign(Digest const& digest) const;
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        virtual
-        cryptography::Seed
-        derive(cryptography::Seed const& seed) const;
-        virtual
-        cryptography::Seed
-        rotate(cryptography::Seed const& seed) const;
-# endif
-        // printable
         void
         print(std::ostream& stream) const;
-        // serializable
+
+        /*----------.
+        | Serialize |
+        `----------*/
+      public:
         ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
 
         /*-------------.
@@ -152,7 +159,7 @@ namespace infinit
       public:
         PrivateKey(elle::serialization::SerializerIn& serializer);
         void
-        serialize(elle::serialization::Serializer& serializer) override;
+        serialize(elle::serialization::Serializer& serializer);
 
         /*-----------.
         | Attributes |
@@ -166,37 +173,6 @@ namespace infinit
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
 # endif
       };
-    }
-  }
-}
-
-//
-// ---------- Generator -------------------------------------------------------
-//
-
-namespace infinit
-{
-  namespace cryptography
-  {
-    namespace rsa
-    {
-      namespace privatekey
-      {
-        /*----------.
-        | Functions |
-        `----------*/
-
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Generate a private key in a deterministic way (i.e deduce) based on
-        /// the given seed.
-        PrivateKey
-        deduce(cryptography::seed::Interface const& seed);
-# endif
-        /// Construct a private key based on the given EVP structure whose
-        /// ownership is transferred.
-        PrivateKey
-        construct(::EVP_PKEY* key);
-      }
     }
   }
 }
