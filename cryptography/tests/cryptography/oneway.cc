@@ -31,8 +31,7 @@ test_hash_represent_n()
   {
     infinit::cryptography::Digest digest =
       infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain(
-          elle::ConstWeakBuffer(_input)),
+        infinit::cryptography::Plain(_input),
         A);
     std::string representation =
       elle::format::hexadecimal::encode(digest.buffer());
@@ -79,13 +78,11 @@ test_hash_operate_x(elle::String const& R)
   {
     infinit::cryptography::Digest digest1 =
       infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{_input}},
+        infinit::cryptography::Plain{_input},
         A);
     infinit::cryptography::Digest digest2 =
       infinit::cryptography::oneway::hash(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{_input}},
+        infinit::cryptography::Plain{_input},
         A);
 
     BOOST_CHECK_EQUAL(digest1, digest2);
@@ -145,7 +142,7 @@ test_hmac_represent_n()
   {
     using namespace infinit::cryptography;
     Digest key(elle::Buffer("key", 3));
-    Digest digest = oneway::hmac(Plain(elle::ConstWeakBuffer(_input)), key, A);
+    Digest digest = oneway::hmac(Plain(_input), key, A);
     std::string representation =
       elle::format::hexadecimal::encode(digest.buffer());
     elle::sprintf("[representation %s] %s\n", N, representation);
@@ -191,8 +188,8 @@ test_hmac_operate_x(elle::String const& R)
   Digest key(elle::Buffer("key", 3));
   // HMAC a plain.
   {
-    Digest digest1 = oneway::hmac(Plain(elle::ConstWeakBuffer(_input)), key, A);
-    Digest digest2 = oneway::hmac(Plain(elle::ConstWeakBuffer(_input)), key, A);
+    Digest digest1 = oneway::hmac(Plain(_input), key, A);
+    Digest digest2 = oneway::hmac(Plain(_input), key, A);
 
     BOOST_CHECK_EQUAL(digest1, digest2);
 

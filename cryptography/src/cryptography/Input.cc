@@ -47,19 +47,19 @@ namespace infinit
     elle::Boolean
     Input::operator ==(Output const& other) const
     {
-      return (this->_buffer == elle::WeakBuffer(other.buffer()));
+      return (this->_buffer == elle::ConstBuffer(other.buffer()));
     }
 
     elle::Boolean
     Input::operator <(Output const& other) const
     {
-      return (this->_buffer < elle::WeakBuffer(other.buffer()));
+      return (this->_buffer < elle::ConstBuffer(other.buffer()));
     }
 
     elle::Boolean
     Input::operator <=(Output const& other) const
     {
-      return (this->_buffer <= elle::WeakBuffer(other.buffer()));
+      return (this->_buffer <= elle::ConstBuffer(other.buffer()));
     }
 
     /*----------.

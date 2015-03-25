@@ -39,7 +39,7 @@ namespace infinit
         elle::Buffer buffer;
         buffer.writer() << value;
 
-        return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
+        return (this->encrypt(Plain(buffer)));
       }
 
       template <typename T>
@@ -64,7 +64,7 @@ namespace infinit
         elle::Buffer buffer;
         buffer.writer() << value;
 
-        return (this->verify(signature, Plain(elle::WeakBuffer(buffer))));
+        return (this->verify(signature, Plain(buffer)));
       }
     }
   }

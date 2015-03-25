@@ -36,8 +36,7 @@ _test_represent()
   {
     infinit::cryptography::Code code =
       keypair.K().encrypt(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{_input1}});
+        infinit::cryptography::Plain{_input1});
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << code;

@@ -189,7 +189,7 @@ namespace infinit
           ELLE_ASSERT_GT(buffer.size(), 0u);
 
           // Encrypt the secret key's archive.
-          Code key(apply(elle::WeakBuffer{buffer},
+          Code key(apply(buffer,
                          context,
                          function));
 
@@ -228,7 +228,7 @@ namespace infinit
 
           // Decrypt the key.
           ELLE_DEBUG("decrypt symmetric key");
-          elle::Buffer buffer = apply(elle::WeakBuffer{key.buffer()},
+          elle::Buffer buffer = apply(key.buffer(),
                                       context,
                                       function);
           // Finally extract the secret key since decrypted.
@@ -256,7 +256,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          Signature signature(apply(elle::WeakBuffer{digest.buffer()},
+          Signature signature(apply(digest.buffer(),
                                     context,
                                     function));
 

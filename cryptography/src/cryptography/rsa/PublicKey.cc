@@ -402,7 +402,7 @@ namespace infinit
                           seed.length(), this->length()));
 
         elle::Buffer buffer =
-          evp::asymmetric::apply(elle::WeakBuffer{seed.buffer()},
+          evp::asymmetric::apply(seed.buffer(),
                                  this->_context_rotate.get(),
                                  ::EVP_PKEY_encrypt);
 
@@ -427,7 +427,7 @@ namespace infinit
                           seed.length(), this->length()));
 
         elle::Buffer buffer =
-          evp::asymmetric::apply(elle::WeakBuffer{seed.buffer()},
+          evp::asymmetric::apply(seed.buffer(),
                                  this->_context_derive.get(),
                                  ::EVP_PKEY_verify_recover);
 

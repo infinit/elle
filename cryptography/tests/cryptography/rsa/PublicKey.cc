@@ -35,8 +35,7 @@ _test_represent()
   {
     infinit::cryptography::Signature signature =
       keypair.k().sign(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{_input1}});
+        infinit::cryptography::Plain{_input1});
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << signature;
@@ -140,8 +139,7 @@ test_operate()
 
     auto result =
       K.verify(signature,
-               infinit::cryptography::Plain{
-                 elle::ConstWeakBuffer{_input1}});
+               infinit::cryptography::Plain{_input1});
 
     BOOST_CHECK_EQUAL(result, true);
   }

@@ -154,7 +154,7 @@ test_compare()
   }
 
   // Output/input.
-  infinit::cryptography::Input input2(elle::WeakBuffer{output2.buffer()});
+  infinit::cryptography::Input input2(output2.buffer());
 
   BOOST_CHECK(output1 != input2);
   BOOST_CHECK(!(output1 == input2));

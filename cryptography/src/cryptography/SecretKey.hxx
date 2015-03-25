@@ -35,7 +35,7 @@ namespace infinit
       buffer.writer() << value;
 
       // Encrypt the archive.
-      return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
+      return (this->encrypt(Plain(buffer)));
     }
 
     template <typename T>

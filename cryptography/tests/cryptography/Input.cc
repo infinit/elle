@@ -12,13 +12,49 @@ static
 void
 test_construction()
 {
-  elle::Buffer buffer =
-    infinit::cryptography::random::generate<elle::Buffer>(128);
+  // Implicit construction from ConstWeakBuffer.
+  {
+    elle::Natural32 size = 256;
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(size);
+    elle::ConstWeakBuffer constweakbuffer(buffer);
 
-  infinit::cryptography::Input input(elle::WeakBuffer{buffer});
+    infinit::cryptography::Input input(constweakbuffer);
 
-  BOOST_CHECK_EQUAL(input.buffer().size(), 128);
-  BOOST_CHECK_EQUAL(input.buffer(), buffer);
+    BOOST_CHECK_EQUAL(input.buffer().size(), size);
+    BOOST_CHECK_EQUAL(input.buffer(), constweakbuffer);
+
+    BOOST_CHECK_EQUAL(input.buffer().size(), size);
+    BOOST_CHECK_EQUAL(input.buffer(), buffer);
+  }
+
+  // Implicit construction from WeakBuffer.
+  {
+    elle::Natural32 size = 64;
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(size);
+    elle::WeakBuffer weakbuffer(buffer);
+
+    infinit::cryptography::Input input(weakbuffer);
+
+    BOOST_CHECK_EQUAL(input.buffer().size(), size);
+    BOOST_CHECK_EQUAL(input.buffer(), weakbuffer);
+
+    BOOST_CHECK_EQUAL(input.buffer().size(), size);
+    BOOST_CHECK_EQUAL(input.buffer(), buffer);
+  }
+
+  // Implicit construction from Buffer.
+  {
+    elle::Natural32 size = 512;
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(size);
+
+    infinit::cryptography::Input input(buffer);
+
+    BOOST_CHECK_EQUAL(input.buffer().size(), size);
+    BOOST_CHECK_EQUAL(input.buffer(), buffer);
+  }
 }
 
 /*-----------.
@@ -34,8 +70,8 @@ test_comparison()
   elle::Buffer buffer2 =
     infinit::cryptography::random::generate<elle::Buffer>(4096);
 
-  infinit::cryptography::Input input1(elle::WeakBuffer{buffer1});
-  infinit::cryptography::Input input2(elle::WeakBuffer{buffer2});
+  infinit::cryptography::Input input1(buffer1);
+  infinit::cryptography::Input input2(buffer2);
 
   // With high probabilituy, this should not be the case. Otherwise,
   // the random generator is probably broken.

@@ -174,8 +174,7 @@ test_operate_idea()
     elle::String const input = "Chier du foutre!";
     infinit::cryptography::Code code =
       key.encrypt(
-        infinit::cryptography::Plain{
-          elle::ConstWeakBuffer{input}});
+        infinit::cryptography::Plain{input});
     infinit::cryptography::Clear clear = key.decrypt(code);
     elle::String const output(clear.buffer().string());
 

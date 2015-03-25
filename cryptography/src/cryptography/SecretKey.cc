@@ -153,7 +153,7 @@ namespace infinit
       elle::Buffer buffer;
       buffer.writer() << plain;
 
-      return (this->encrypt(Plain(elle::WeakBuffer(buffer))));
+      return (this->encrypt(Plain(buffer)));
     }
 
     elle::Buffer

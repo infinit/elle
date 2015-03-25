@@ -64,7 +64,7 @@ namespace infinit
         elle::Buffer buffer;
         buffer.writer() << value;
 
-        return (this->sign(Plain(elle::WeakBuffer(buffer))));
+        return (this->sign(Plain(buffer)));
       }
     }
   }

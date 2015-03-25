@@ -43,7 +43,7 @@ namespace infinit
           buffer.writer() << value;
 
         ELLE_MEASURE_SCOPE("Hash the buffer");
-        return (hash(Plain(elle::WeakBuffer(buffer)), algorithm));
+        return (hash(Plain(buffer), algorithm));
       }
 
       template <typename T>
@@ -69,7 +69,7 @@ namespace infinit
           buffer.writer() << value;
 
         ELLE_MEASURE_SCOPE("HMAC the buffer");
-        return (hmac(Plain(elle::WeakBuffer(buffer)), key, algorithm));
+        return (hmac(Plain(buffer), key, algorithm));
       }
     }
   }
