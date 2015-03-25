@@ -4,6 +4,7 @@
 #include <cryptography/Exception.hh>
 
 #include <elle/log.hh>
+#include <elle/Buffer.hh>
 
 #include <openssl/evp.h>
 #include <openssl/pem.h>
@@ -31,25 +32,33 @@ namespace infinit
 
         ELLE_ASSERT_NEQ(private_key, nullptr);
 
-        ::BIO *mem = ::BIO_new(::BIO_s_mem());
+        unsigned char* buffer = nullptr;
+        int size = 0;
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BIO(mem);
-
-        if (::PEM_write_bio_RSAPublicKey(mem, private_key) != 1)
-          throw Exception(
-            elle::sprintf("unable to transcode the private key: %s",
+        if ((size = ::i2d_RSAPublicKey(private_key,
+                                       &buffer)) <= 0)
+          throw infinit::cryptography::Exception(
+            elle::sprintf("unable to encode the RSA private key: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
+
+        const unsigned char* _buffer = buffer;
 
         ::RSA* public_key = nullptr;
-        if ((public_key =
-             ::PEM_read_bio_RSAPublicKey(mem, nullptr,
-                                         nullptr, nullptr)) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to extract the public key: %s",
+        if ((public_key = ::d2i_RSAPublicKey(NULL,
+                                             &_buffer,
+                                             size)) == NULL)
+          throw infinit::cryptography::Exception(
+            elle::sprintf("unable to decode the RSA private key: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(mem);
-        ::BIO_free(mem);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(public_key);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
+        ::OPENSSL_free(buffer);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(public_key);
 
         return (public_key);
       }

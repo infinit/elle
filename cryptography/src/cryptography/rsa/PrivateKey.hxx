@@ -99,6 +99,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
       elle::sprintf("unable to encode the RSA private key: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
+
   // XXX[use a WeakBuffer to avoid a copy: not supported by Raph's
   //     serialization]
   //elle::ConstWeakBuffer buffer(_buffer, _size);
@@ -107,6 +109,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
   elle::Buffer buffer(_buffer, _size);
   archive << buffer;
 
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
   ::OPENSSL_free(_buffer);
 }
 
@@ -127,7 +130,12 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
       elle::sprintf("unable to decode the RSA private key: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
   value._construct(rsa);
+
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);
