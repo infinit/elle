@@ -24,6 +24,21 @@ namespace infinit
           stream << "rsa";
           break;
         }
+        case Cryptosystem::dh:
+        {
+          stream << "dh";
+          break;
+        }
+        case Cryptosystem::dsa:
+        {
+          stream << "dsa";
+          break;
+        }
+        case Cryptosystem::ec:
+        {
+          stream << "ec";
+          break;
+        }
         default:
           throw Exception(elle::sprintf("unknown asymmetric cryptosystem '%s'",
                                         static_cast<int>(cryptosystem)));

@@ -99,7 +99,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
       elle::sprintf("unable to encode the RSA private key: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
-  // XXX[use a WeakBuffer to avoid a copy]
+  // XXX[use a WeakBuffer to avoid a copy: not supported by Raph's
+  //     serialization]
   //elle::ConstWeakBuffer buffer(_buffer, _size);
   //archive << buffer;
   // XXX
@@ -130,6 +131,42 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);
+}
+
+//
+// ---------- Hash ------------------------------------------------------------
+//
+
+#include <exception>
+
+namespace std
+{
+  template <>
+  struct hash<infinit::cryptography::rsa::PrivateKey>
+  {
+    size_t
+    operator ()(infinit::cryptography::rsa::PrivateKey const& value) const
+    {
+      unsigned char* buffer = nullptr;
+      int size = ::i2d_RSAPrivateKey(value.key()->pkey.rsa, &buffer);
+
+      if (size <= 0)
+        throw std::runtime_error(
+          elle::sprintf("unable to encode the RSA private key: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr)));
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
+
+      std::string string(reinterpret_cast<char const*>(buffer), size);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
+      ::OPENSSL_free(buffer);
+
+      size_t result = std::hash<std::string>()(string);
+
+      return (result);
+    }
+  };
 }
 
 #endif

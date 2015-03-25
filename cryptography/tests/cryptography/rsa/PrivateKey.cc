@@ -172,19 +172,6 @@ test_compare()
   // the random generator is probably broken.
   BOOST_CHECK(k1 != k2);
   BOOST_CHECK(!(k1 == k2));
-
-  if (k1 < k2)
-  {
-    BOOST_CHECK(k1 <= k2);
-    BOOST_CHECK(!(k1 > k2));
-    BOOST_CHECK(!(k1 >= k2));
-  }
-  else
-  {
-    BOOST_CHECK(k1 >= k2);
-    BOOST_CHECK(!(k1 < k2));
-    BOOST_CHECK(!(k1 <= k2));
-  }
 }
 
 /*----------.

@@ -100,13 +100,18 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
       elle::sprintf("unable to encode the RSA public key: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
-  // XXX[use a WeakBuffer to avoid a copy]
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
+
+  // XXX[use a WeakBuffer to avoid a copy: not supported by Raph's
+  //     serialization]
   //elle::ConstWeakBuffer buffer(_buffer, _size);
   //archive << buffer;
   // XXX
   elle::Buffer buffer(_buffer, _size);
+
   archive << buffer;
 
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
   ::OPENSSL_free(_buffer);
 }
 
@@ -116,6 +121,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
                           format)
 {
   elle::Buffer buffer;
+
   archive >> buffer;
 
   const unsigned char* _buffer = buffer.contents();
@@ -127,10 +133,51 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       elle::sprintf("unable to decode the RSA public key: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
+  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
   value._construct(rsa);
+
+  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
   value._prepare();
 
   ELLE_ASSERT_NEQ(value._key, nullptr);
+}
+
+//
+// ---------- Hash ------------------------------------------------------------
+//
+
+#include <exception>
+
+namespace std
+{
+  template <>
+  struct hash<infinit::cryptography::rsa::PublicKey>
+  {
+    size_t
+    operator ()(infinit::cryptography::rsa::PublicKey const& value) const
+    {
+      unsigned char* buffer = nullptr;
+      int size = ::i2d_RSAPublicKey(value.key()->pkey.rsa, &buffer);
+
+      if (size <= 0)
+        throw std::runtime_error(
+          elle::sprintf("unable to encode the RSA public key: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr)));
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
+
+      std::string string(reinterpret_cast<char const*>(buffer), size);
+
+      size_t result = std::hash<std::string>()(string);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
+      ::OPENSSL_free(buffer);
+
+      return (result);
+    }
+  };
 }
 
 #endif

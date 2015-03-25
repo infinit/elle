@@ -55,6 +55,8 @@ namespace infinit
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+        virtual
+        ~KeyPair() = default;
 
         /*--------.
         | Methods |
@@ -79,8 +81,6 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(KeyPair const& other) const;
-        elle::Boolean
-        operator <(KeyPair const& other) const; // XXX(EVP_cmp)
         ELLE_OPERATOR_NO_ASSIGNMENT(KeyPair);
 
         /*----------.
@@ -88,9 +88,8 @@ namespace infinit
         `----------*/
       public:
         // printable
-        virtual
         void
-        print(std::ostream& stream) const;
+        print(std::ostream& stream) const override;
 
         /*--------------.
         | Serialization |

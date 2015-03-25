@@ -10,5 +10,6 @@
 #endif
 # include <cryptography/rsa/context.hh>
 # include <cryptography/rsa/padding.hh>
+# include <cryptography/rsa/pem.hh>
 
 #endif

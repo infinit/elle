@@ -52,6 +52,8 @@ namespace infinit
       SecretKey(SecretKey&& other);
       /// Derialization constructor.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
+      virtual
+      ~SecretKey() = default;
     private:
       /// Construct a secret key based on a given buffer.
       SecretKey(cipher::Algorithm const cipher,
@@ -109,9 +111,8 @@ namespace infinit
       `-----------*/
     public:
       // printable
-      virtual
       void
-      print(std::ostream& stream) const;
+      print(std::ostream& stream) const override;
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
 

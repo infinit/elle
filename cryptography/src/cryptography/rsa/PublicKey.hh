@@ -37,6 +37,9 @@ namespace infinit
         `-------------*/
       public:
         PublicKey(); // XXX[to deserialize]
+        /// Construct a public key out of its private counterpart.
+        explicit
+        PublicKey(PrivateKey const& k);
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -45,10 +48,6 @@ namespace infinit
         /// ownership is transferred to the public key.
         explicit
         PublicKey(::RSA* rsa);
-        /// Construct a public key by transferring ownership of some big
-        /// numbers.
-        PublicKey(::BIGNUM* n,
-                  ::BIGNUM* e);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Construct a public key based on a given seed i.e in a deterministic
         /// way.
@@ -59,6 +58,8 @@ namespace infinit
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
+        virtual
+        ~PublicKey() = default;
 
         /*--------.
         | Methods |
@@ -68,16 +69,6 @@ namespace infinit
         /// ownership is transferred to the callee.
         void
         _construct(::RSA* rsa);
-        /// Construct the object based on big numbers.
-        ///
-        /// Note that when called, the number are already allocated for the
-        /// purpose of the object construction. In other words, the ownership
-        /// is transferred to the public key being constructed. Thus, it is
-        /// the responsibility of the public key being constructed to release
-        /// memory should an error occur, i.e not the caller's
-        void
-        _construct(::BIGNUM* n,
-                   ::BIGNUM* e);
         /// Prepare the public key cryptographic contexts.
         void
         _prepare();
@@ -131,8 +122,6 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(PublicKey const& other) const;
-        elle::Boolean
-        operator <(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 
         /*----------.
@@ -140,7 +129,7 @@ namespace infinit
         `----------*/
       public:
         void
-        print(std::ostream& stream) const;
+        print(std::ostream& stream) const override;
 
         /*-------------.
         | Serializable |
@@ -148,27 +137,27 @@ namespace infinit
       public:
         ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
 
-      /*--------------.
-      | Serialization |
-      `--------------*/
+        /*--------------.
+        | Serialization |
+        `--------------*/
       public:
         PublicKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
 
-      /*-----------.
-      | Attributes |
-      `-----------*/
+        /*-----------.
+        | Attributes |
+        `-----------*/
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
-        // The padding size expressed in bits.
-        ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
 # endif
+        // The padding size expressed in bits.
+        ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
       };
     }
   }

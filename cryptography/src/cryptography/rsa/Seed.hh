@@ -52,6 +52,8 @@ namespace infinit
         Seed(Seed const& seed);
         Seed(Seed&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
+        virtual
+        ~Seed() = default;
 
         /*----------.
         | Operators |
@@ -66,9 +68,8 @@ namespace infinit
         `-----------*/
       public:
         // printable
-        virtual
         void
-        print(std::ostream& stream) const;
+        print(std::ostream& stream) const override;
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(Seed);
 

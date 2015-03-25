@@ -70,13 +70,8 @@ namespace infinit
 
         // Instanciate both a RSA public and private key based on the RSA
         // structure.
-        //
-        // Note that some internal numbers need to be duplicated for the
-        // instanciation of the public key while the private key is
-        // constructed by transferring the ownership of the RSA.
-        this->_K.reset(new PublicKey(::BN_dup(rsa->n),
-                                     ::BN_dup(rsa->e)));
         this->_k.reset(new PrivateKey(rsa));
+        this->_K.reset(new PublicKey(*this->_k));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -151,29 +146,8 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_K, nullptr);
         ELLE_ASSERT_NEQ(this->_k, nullptr);
 
-        return ((*this->_K == *other._K) && (*this->_k == *other._k));
-      }
-
-      elle::Boolean
-      KeyPair::operator <(KeyPair const& other) const
-      {
-        if (this == &other)
-          return (false);
-
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
-
-        if (*this->_K < *other._K)
-          return (true);
-        else if (*this->_K > *other._K)
-          return (false);
-
-        if (*this->_k < *other._k)
-          return (true);
-        else
-          return (false);
-
-        elle::unreachable();
+        // The public component is enough to uniquely identify a key pair.
+        return (*this->_K == *other._K);
       }
 
       /*--------------.
@@ -306,13 +280,8 @@ namespace infinit
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.
-          //
-          // Note that some internal numbers need to be duplicated for the
-          // instanciation of the public key while the private key is
-          // constructed by transferring the ownership of the EVP_PKEY.
-          PublicKey K(::BN_dup(key->pkey.rsa->n),
-                      ::BN_dup(key->pkey.rsa->e));
           PrivateKey k(key);
+          PublicKey K(k);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 

@@ -44,6 +44,11 @@
   elle::SafeFinally _finally_##V(                                       \
     [&] () { ::EVP_PKEY_CTX_free(V); });                                \
 
+/// Make it easy to clean up a EVP_PKEY context.
+# define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BIO(V)                \
+  elle::SafeFinally _finally_##V(                                       \
+    [&] () { ::BIO_free(V); });                                         \
+
 /// Make it super easy to abort the final action based on the name of
 /// the variable it relates to.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(V)  \

@@ -2,6 +2,7 @@
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
+#include <openssl/pem.h>
 
 #include <elle/Error.hh>
 #include <elle/finally.hh>
@@ -18,6 +19,7 @@
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/rsa/padding.hh>
 #include <cryptography/rsa/context.hh>
+#include <cryptography/low.hh>
 #include <cryptography/Digest.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -45,6 +47,37 @@ namespace infinit
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
+      }
+
+      PublicKey::PublicKey(PrivateKey const& k)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Extract the public key only.
+        RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
+
+        // Construct the public key based on the given RSA structure whose
+        // ownership is retained.
+        this->_construct(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
+
+        // Prepare the cryptographic contexts.
+        this->_prepare();
+
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
       PublicKey::PublicKey(::EVP_PKEY* key):
@@ -111,35 +144,6 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      PublicKey::PublicKey(::BIGNUM* n,
-                           ::BIGNUM* e)
-      {
-        ELLE_ASSERT_NEQ(n, nullptr);
-        ELLE_ASSERT_NEQ(e, nullptr);
-
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Call a private method for constructing the object so as
-        // to also be callable from the serialization mechanism, especially
-        // the deserialization.
-        this->_construct(n, e);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
-      }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       PublicKey::PublicKey(Seed const& seed)
       {
@@ -160,14 +164,19 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
-        // Construct the public key based on the given RSA structure whose
-        // ownership is retained.
-        this->_construct(::BN_dup(rsa->n),
-                         ::BN_dup(rsa->e));
+        // Extract the public key only.
+        RSA* _rsa = low::RSA_priv2pub(rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-
         ::RSA_free(rsa);
+
+        // Construct the public key based on the given RSA structure whose
+        // ownership is retained.
+        this->_construct(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
         // Prepare the cryptographic contexts.
         this->_prepare();
@@ -193,13 +202,15 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Call a private method for constructing the object so as
-        // to also be callable from the serialization mechanism, especially
-        // the deserialization.
-        this->_construct(::BN_dup(other._key->pkey.rsa->n),
-                         ::BN_dup(other._key->pkey.rsa->e));
+        // Duplicate the RSA structure.
+        RSA* _rsa = low::RSA_dup(other._key->pkey.rsa);
 
-        // Prepare the cryptographic contexts.
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
+
+        this->_construct(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
+
         this->_prepare();
 
         ELLE_ASSERT_NEQ(this->_key, nullptr);
@@ -217,23 +228,15 @@ namespace infinit
       PublicKey::PublicKey(PublicKey&& other):
         _key(std::move(other._key)),
         _context_encrypt(std::move(other._context_encrypt)),
-        _context_encrypt_padding_size(other._context_encrypt_padding_size),
         _context_verify(std::move(other._context_verify))
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         , _context_rotate(std::move(other._context_rotate))
         , _context_derive(std::move(other._context_derive))
 #endif
+        , _context_encrypt_padding_size(other._context_encrypt_padding_size)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
-        ELLE_ASSERT_EQ(other._key, nullptr);
-        ELLE_ASSERT_EQ(other._context_encrypt, nullptr);
-        ELLE_ASSERT_EQ(other._context_verify, nullptr);
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        ELLE_ASSERT_EQ(other._context_rotate, nullptr);
-        ELLE_ASSERT_EQ(other._context_derive, nullptr);
-#endif
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
@@ -268,38 +271,6 @@ namespace infinit
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      void
-      PublicKey::_construct(::BIGNUM* n,
-                            ::BIGNUM* e)
-      {
-        ELLE_DEBUG_FUNCTION(n, e);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
-
-        ::RSA* rsa = nullptr;
-
-        // Create the RSA structure.
-        if ((rsa = ::RSA_new()) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate the RSA structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Assign the big numbers relevant to the public key.
-        rsa->n = n;
-        rsa->e = e;
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
-
-        // Construct the public key based on an RSA key.
-        this->_construct(rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
 
       void
@@ -494,43 +465,7 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(other._key, nullptr);
 
-        // Compare the internal numbers.
-        if ((::BN_cmp(this->_key->pkey.rsa->n,
-                      other._key->pkey.rsa->n) != 0) ||
-            (::BN_cmp(this->_key->pkey.rsa->e,
-                      other._key->pkey.rsa->e) != 0))
-          return (false);
-
-        return (true);
-      }
-
-      elle::Boolean
-      PublicKey::operator <(PublicKey const& other) const
-      {
-        if (this == &other)
-          return (true);
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
-
-        // Compare the internal numbers.
-        int cmp_n = ::BN_cmp(this->_key->pkey.rsa->n,
-                             other._key->pkey.rsa->n);
-
-        if (cmp_n < 0)
-          return (true);
-        else if (cmp_n > 0)
-          return (false);
-
-        int cmp_e = ::BN_cmp(this->_key->pkey.rsa->e,
-                             other._key->pkey.rsa->e);
-
-        if (cmp_e < 0)
-          return (true);
-        else
-          return (false);
-
-        elle::unreachable();
+        return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
       /*--------------.

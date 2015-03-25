@@ -142,7 +142,7 @@ public:
   }
 
 private:
-  std::map<infinit::cryptography::rsa::PublicKey, Entry*> _entries;
+  std::unordered_map<infinit::cryptography::rsa::PublicKey, Entry*> _entries;
 };
 
 //
@@ -334,7 +334,7 @@ public:
   }
 
 private:
-  std::map<infinit::cryptography::rsa::PublicKey, Member*> _members;
+  std::unordered_map<infinit::cryptography::rsa::PublicKey, Member*> _members;
 };
 
 //

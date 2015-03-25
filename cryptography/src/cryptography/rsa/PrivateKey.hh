@@ -45,16 +45,6 @@ namespace infinit
         /// ownership is transferred to the private key.
         explicit
         PrivateKey(::RSA* rsa);
-        /// Construct a private key by transferring ownership of some big
-        /// numbers.
-        PrivateKey(::BIGNUM* n,
-                   ::BIGNUM* e,
-                   ::BIGNUM* d,
-                   ::BIGNUM* p,
-                   ::BIGNUM* q,
-                   ::BIGNUM* dmp1,
-                   ::BIGNUM* dmq1,
-                   ::BIGNUM* iqmp);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Construct a private key based on a given seed i.e in a deterministic
         /// way.
@@ -64,6 +54,8 @@ namespace infinit
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
+        virtual
+        ~PrivateKey() = default;
 
         /*--------.
         | Methods |
@@ -73,22 +65,6 @@ namespace infinit
         /// ownership is transferred to the callee.
         void
         _construct(::RSA* rsa);
-        /// Construct the object based on big numbers.
-        ///
-        /// Note that when called, the number are already allocated for the
-        /// purpose of the object construction. In other words, the ownership
-        /// is transferred to the private key being constructed. Thus, it is
-        /// the responsibility of the private key being constructed to release
-        /// memory should an error occur, i.e not the caller's
-        void
-        _construct(::BIGNUM* n,
-                   ::BIGNUM* e,
-                   ::BIGNUM* d,
-                   ::BIGNUM* p,
-                   ::BIGNUM* q,
-                   ::BIGNUM* dmp1,
-                   ::BIGNUM* dmq1,
-                   ::BIGNUM* iqmp);
         /// Prepare the private key cryptographic contexts.
         void
         _prepare();
@@ -136,8 +112,6 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(PrivateKey const& other) const;
-        elle::Boolean
-        operator <(PrivateKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PrivateKey);
 
         /*----------.
@@ -145,7 +119,7 @@ namespace infinit
         `----------*/
       public:
         void
-        print(std::ostream& stream) const;
+        print(std::ostream& stream) const override;
 
         /*----------.
         | Serialize |

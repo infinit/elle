@@ -9,6 +9,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
+#include <cryptography/low.hh>
 
 #include <elle/log.hh>
 
@@ -103,47 +104,6 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      PrivateKey::PrivateKey(::BIGNUM* n,
-                             ::BIGNUM* e,
-                             ::BIGNUM* d,
-                             ::BIGNUM* p,
-                             ::BIGNUM* q,
-                             ::BIGNUM* dmp1,
-                             ::BIGNUM* dmq1,
-                             ::BIGNUM* iqmp)
-      {
-        ELLE_ASSERT_NEQ(n, nullptr);
-        ELLE_ASSERT_NEQ(e, nullptr);
-        ELLE_ASSERT_NEQ(d, nullptr);
-        ELLE_ASSERT_NEQ(p, nullptr);
-        ELLE_ASSERT_NEQ(q, nullptr);
-        ELLE_ASSERT_NEQ(dmp1, nullptr);
-        ELLE_ASSERT_NEQ(dmq1, nullptr);
-        ELLE_ASSERT_NEQ(iqmp, nullptr);
-
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Call a private method for constructing the object so as
-        // to also be callable from the serialization mechanism, especially
-        // the deserialization.
-        this->_construct(n, e, d, p, q, dmp1, dmq1, iqmp);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
-      }
-
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
       PrivateKey::PrivateKey(Seed const& seed)
       {
@@ -199,17 +159,14 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Call a private method for constructing the object so as
-        // to also be callable from the serialization mechanism, especially
-        // the deserialization.
-        this->_construct(::BN_dup(other._key->pkey.rsa->n),
-                         ::BN_dup(other._key->pkey.rsa->e),
-                         ::BN_dup(other._key->pkey.rsa->d),
-                         ::BN_dup(other._key->pkey.rsa->p),
-                         ::BN_dup(other._key->pkey.rsa->q),
-                         ::BN_dup(other._key->pkey.rsa->dmp1),
-                         ::BN_dup(other._key->pkey.rsa->dmq1),
-                         ::BN_dup(other._key->pkey.rsa->iqmp));
+        // Duplicate the RSA structure.
+        RSA* _rsa = low::RSA_dup(other._key->pkey.rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
+
+        this->_construct(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
         // Prepare the cryptographic contexts.
         this->_prepare();
@@ -237,14 +194,6 @@ namespace infinit
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
-        ELLE_ASSERT_EQ(other._key, nullptr);
-        ELLE_ASSERT_EQ(other._context_decrypt, nullptr);
-        ELLE_ASSERT_EQ(other._context_sign, nullptr);
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        ELLE_ASSERT_EQ(other._context_derive, nullptr);
-        ELLE_ASSERT_EQ(other._context_rotate, nullptr);
-#endif
       }
 
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
@@ -279,62 +228,6 @@ namespace infinit
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      void
-      PrivateKey::_construct(::BIGNUM* n,
-                             ::BIGNUM* e,
-                             ::BIGNUM* d,
-                             ::BIGNUM* p,
-                             ::BIGNUM* q,
-                             ::BIGNUM* dmp1,
-                             ::BIGNUM* dmq1,
-                             ::BIGNUM* iqmp)
-      {
-        ELLE_DEBUG_FUNCTION(n, e, d, p, q, dmp1, dmq1, iqmp);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
-
-        ::RSA* rsa = nullptr;
-
-        // Create the RSA structure.
-        if ((rsa = ::RSA_new()) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to allocate the RSA structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Assign the big numbers relevant to the private key.
-        rsa->n = n;
-        rsa->e = e;
-        rsa->d = d;
-        rsa->p = p;
-        rsa->q = q;
-        rsa->dmp1 = dmp1;
-        rsa->dmq1 = dmq1;
-        rsa->iqmp = iqmp;
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(d);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(p);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(q);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
-
-        // Construct the private key based on an RSA key.
-        this->_construct(rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
 
       void
@@ -520,92 +413,9 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(other._key, nullptr);
 
-        // Compare the internal numbers.
-        return ((::BN_cmp(this->_key->pkey.rsa->n,
-                          other._key->pkey.rsa->n) == 0) &&
-                (::BN_cmp(this->_key->pkey.rsa->d,
-                          other._key->pkey.rsa->d) == 0) &&
-                (::BN_cmp(this->_key->pkey.rsa->p,
-                          other._key->pkey.rsa->p) == 0) &&
-                (::BN_cmp(this->_key->pkey.rsa->q,
-                          other._key->pkey.rsa->q) == 0));
-      }
-
-      elle::Boolean
-      PrivateKey::operator <(PrivateKey const& other) const
-      {
-        if (this == &other)
-          return (true);
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
-
-        // Compare the internal numbers.
-        int cmp_n = ::BN_cmp(this->_key->pkey.rsa->n,
-                             other._key->pkey.rsa->n);
-
-        if (cmp_n < 0)
-          return (true);
-        else if (cmp_n > 0)
-          return (false);
-
-        int cmp_e = ::BN_cmp(this->_key->pkey.rsa->e,
-                             other._key->pkey.rsa->e);
-
-        if (cmp_e < 0)
-          return (true);
-        else if (cmp_e > 0)
-          return (false);
-
-        int cmp_d = ::BN_cmp(this->_key->pkey.rsa->d,
-                             other._key->pkey.rsa->d);
-
-        if (cmp_d < 0)
-          return (true);
-        else if (cmp_d > 0)
-          return (false);
-
-        int cmp_p = ::BN_cmp(this->_key->pkey.rsa->p,
-                             other._key->pkey.rsa->p);
-
-        if (cmp_p < 0)
-          return (true);
-        else if (cmp_p > 0)
-          return (false);
-
-        int cmp_q = ::BN_cmp(this->_key->pkey.rsa->q,
-                             other._key->pkey.rsa->q);
-
-        if (cmp_q < 0)
-          return (true);
-        else if (cmp_q > 0)
-          return (false);
-
-        int cmp_dmp1 = ::BN_cmp(this->_key->pkey.rsa->dmp1,
-                                other._key->pkey.rsa->dmp1);
-
-        if (cmp_dmp1 < 0)
-          return (true);
-        else if (cmp_dmp1 > 0)
-          return (false);
-
-        int cmp_dmq1 = ::BN_cmp(this->_key->pkey.rsa->dmq1,
-                                other._key->pkey.rsa->dmq1);
-
-        if (cmp_dmq1 < 0)
-          return (true);
-        else if (cmp_dmq1 > 0)
-          return (false);
-
-        int cmp_iqmp = ::BN_cmp(this->_key->pkey.rsa->iqmp,
-                                other._key->pkey.rsa->iqmp);
-
-        if (cmp_iqmp < 0)
-          return (true);
-        else
-          return (false);
-
-        elle::unreachable();
+        // Compare the public components because it is sufficient to
+        // uniquely distinguish keys.
+        return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
       /*--------------.

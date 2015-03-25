@@ -14,7 +14,10 @@ namespace infinit
     /// Define the asymmetric cryptosystem algorithm.
     enum class Cryptosystem
     {
-      rsa
+      rsa,
+      dh,
+      dsa,
+      ec
     };
 
     /*----------.
