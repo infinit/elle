@@ -858,13 +858,13 @@ class GccToolkit(Toolkit):
 
       path = Path(path)
       if self.os in [drake.os.linux, drake.os.android]:
-          ext = 'so'
+        ext = 'so'
       elif self.os in (drake.os.macos, drake.os.ios, drake.os.ios_simulator):
-          ext = 'dylib'
+        ext = 'dylib'
       elif self.os == drake.os.windows:
-          ext = 'dll'
+        ext = 'dll'
       else:
-          assert False
+        assert False
       return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
 
   def libname_module(self, cfg, path):

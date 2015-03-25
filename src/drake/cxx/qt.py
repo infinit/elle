@@ -6,106 +6,206 @@
 #
 # See the LICENSE file for more information.
 
+import itertools
 import drake
 import platform
 import re
+import os
 
 from itertools import chain
 
 from .. import Builder, Exception, Node, Path, node, debug
 from .  import Config, StaticLib, Header, Object, Source
-
+from .qt_headers import headers as per_version_headers
 import drake.cxx
 
 deps_handler_name = 'drake.cxx.qt.moc'
 
-
 def moc_file(linker, header):
+  for i in linker.config.system_include_path:
+    if header.name_relative.dirname() == i:
+      return None
   path = Path(header.name()).with_extension('moc.cc')
   src = node(path)
   if src.builder is None:
     Moc(linker.toolkit.qt, header, src)
   return Object(src, linker.toolkit, linker.config)
 
-class Qt:
+def find(prefix = None,
+         cxx_toolkit = None,
+         version = drake.Version(),
+         prefer_shared = True):
+  if isinstance(prefix, Qt):
+    if prefix.version not in version:
+      raise Exception('given Qt %s does not fit '
+                      'the requested version %s' %
+                      (prefix.version, version))
+    return prefix
+  else:
+    return Qt(prefix = prefix,
+              cxx_toolkit = cxx_toolkit,
+              version = version,
+              prefer_shared = prefer_shared)
+
+class Qt(drake.Configuration):
+  __libraries = {
+    'core': 'QtCore',
+    'support_3': 'Qt3Support',
+    'declarative': 'QtDeclarative',
+    'gui': 'QtGui',
+    'multimedia': 'QtMultimedia',
+    'network': 'QtNetwork',
+    'webkit': 'QtWebKit',
+    'xml': 'QtXml',
+    'xml_pattars': 'QtXmlPatterns',
+#    'phonon': 'phonon',
+    }
+
+  imageformats = {
+    "gif",
+    "ico",
+    "jpeg",
+    "svg",
+  }
+
   def __init__(self,
-               toolkit,
+               cxx_toolkit = None,
                prefix = None,
-               gui = False,
-               version = drake.Version(4, 8, 6)):
-    # XXX: Use QT_VERSION_STR (from Qt/qglobal.h) to determine the version at
-    # the given prefix.
-    self.plug(toolkit)
-    self.files = {}
+               version = drake.Version(),
+               version_effective = None,
+               prefer_shared = True):
+    """Find and create a configuration for Qt.
+
+    prefix -- Where to find Qt, should contain
+              include/Qt/qglobal.h among others. /usr and
+              /usr/local are searched by default. If relative, it
+              is rooted in the source tree.
+    version -- Requested version.
+    prefer_shared -- Check dynamic libraries first.
+    """
     self.__moc_cache = {}
     self.__dependencies = {}
-    self.__version = version
+    cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+    self.__cxx_toolkit = cxx_toolkit
+    self.__prefer_shared = prefer_shared
+    include_subdirs = set(drake.Path(p)
+                          for p in ['include', 'include/qt4'])
     if prefix is None:
-      test = ['/usr', '/usr/local']
+      test = [path.dirname() for path in cxx_toolkit.include_path
+              if path.basename() in include_subdirs]
     else:
-      test = [prefix]
-    beacon = Path('Qt/qconfig.h')
-    subdirs = [Path('.'), Path('qt4')]
-    if toolkit.os == drake.os.windows:
-      lib_suffix = self.__version.major
-    else:
-      lib_suffix = ''
-    for path in test:
-      p = Path(path)
-      if not p.absolute:
-        p = drake.path_source() / p
-      for subdir in subdirs:
-        if (p / 'include' / subdir / beacon).exists():
-          self.prefix = Path(path)
-          include_path = self.prefix / 'include' / subdir
-          self.__cfg = Config()
-          self.__cfg.add_system_include_path(include_path)
-          self.__cfg.add_system_include_path(include_path / 'Qt')
-          self.__cfg.add_system_include_path(include_path / 'QtCore')
-          self.__cfg_gui = Config()
-          self.__cfg_gui.add_system_include_path(include_path / 'QtGui')
-          self.__cfg_gui.lib('QtGui%s' % lib_suffix)
-          self.__cfg_phonon = Config()
-          self.__cfg_phonon.lib('phonon%s' % lib_suffix)
-          self.__cfg_xml = Config()
-          self.__cfg_xml.add_system_include_path(include_path / 'QtXml')
-          self.__cfg_xml.lib('QtXml%s' % lib_suffix)
-          self.__cfg_network = Config()
-          self.__cfg_network.add_system_include_path(include_path / 'QtNetwork')
-          self.__cfg_network.lib('QtNetwork%s' % lib_suffix)
-          if (include_path / 'QtWebKit').exists():
-            self.__cfg_webkit = Config()
-            self.__cfg_webkit.add_system_include_path(include_path / 'QtWebKit')
-            self.__cfg_webkit.lib('QtWebKit%s' % lib_suffix)
-          self.__cfg.lib_path(self.prefix / 'lib' / subdir)
-          self.__cfg.lib('QtCore%s' % lib_suffix)
+      test = [Path(prefix)]
+    for i in range(len(test)):
+      if not test[i].absolute():
+        test[i] = drake.path_source() / test[i]
+    token = drake.Path('Qt/qglobal.h')
+    tokens = list(map(lambda p: p / token, include_subdirs))
+    prefixes = self._search_many_all(list(tokens), test)
+    miss = []
+    if version_effective is not None:
+      assert prefix is not None
+    # Try every search path
+    for path, include_subdir in prefixes:
+      include_subdir = include_subdir.without_suffix(token)
+      # Create basic configuration for version checking.
+      cfg = Config()
+      if not path.absolute():
+        path = path.without_prefix(drake.path_build())
+      cfg.add_system_include_path(path / include_subdir)
+      self.__lib_path = path / 'lib'
+      if (self.__lib_path / 'qt4').exists():
+        self.__lib_path = self.__lib_path / 'qt4'
+      cfg.lib_path(path / 'lib')
+      # XXX: Check the version.
+      if version_effective not in version:
+        miss.append(version_effective)
+        continue
+      # Fill configuration
+      self.__prefix = path
+      self.__cfg = cfg
+      for prop in self.__libraries:
+        setattr(self, '_Qt__config_%s_dynamic' % prop, None)
+        setattr(self, '_Qt__config_%s_static' % prop, None)
+        setattr(self, '_Qt__config_%s_dynamic_header' % prop, None)
+        setattr(self, '_Qt__config_%s_static_header' % prop, None)
+        setattr(self, '_Qt__%s_dynamic' % prop, None)
+        setattr(self, '_Qt__%s_static' % prop, None)
+      self.__version = version_effective
+      self.plug(cxx_toolkit)
+      Qt.__include_dir = path / include_subdir
+      return
 
-          return
-    raise Exception('unable to find %s in %s' % (beacon, ', '.join(test)))
+    raise Exception('no matching Qt for the requested version '
+                    '(%s) in %s. Found versions: %s.' % \
+                    (version, self._format_search([path for path, include_subdir in prefixes]),
+                     ', '.join(map(str, miss))))
 
-  @property
+  def __find_lib(self, lib, lib_path, cxx_toolkit, static):
+    suffixes = ['', '-mt']
+    # Suffixes
+    if static:
+      suffixes.append('-mt-s')
+      suffixes.append('-s')
+    if cxx_toolkit.os == drake.os.windows:
+      suffixes = list(map(lambda x: x + str(self.version.major), suffixes))
+    if isinstance(cxx_toolkit, drake.cxx.VisualToolkit):
+      suffix = '-vc%s0-mt-%s_%s' % (cxx_toolkit.version,
+                                    self.version.major,
+                                    self.version.minor)
+      suffixes = [suffix] + suffixes
+      mgw = '-mgw-mt-%s_%s' % (self.version.major, self.version.minor)
+      suffixes += [mgw]
+
+    # Variants
+    variants = ['']
+    if isinstance(lib, str):
+      lib = (lib,)
+    for lib, suffix, variant in itertools.product(lib, suffixes, variants):
+      libname = '%s%s%s' % (lib, variant, suffix)
+      tests = []
+      if static:
+        filename = cxx_toolkit.libname_static(self.__cfg, libname)
+        tests.append(lib_path / filename)
+      else:
+        filename = cxx_toolkit.libname_dyn(libname, self.__cfg)
+        if cxx_toolkit.os is drake.os.windows and filename.startswith('lib'):
+          filename = filename[3:]
+        if self.__version is not None:
+          tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
+        tests.append(lib_path / filename)
+      for test in  tests:
+        # Look for a node if we build our own Qt.
+        if test.absolute():
+          drake_path = test.without_prefix(drake.path_root())
+        else:
+          drake_path = test
+        node = drake.Drake.current.nodes.get(drake_path, None)
+        if node is not None:
+          return node
+        # Otherwise look on the filesystem.
+        if test.exists():
+          path = os.path.realpath(str(test))
+          if static:
+            return drake.cxx.StaticLib(path)
+          else:
+            return drake.cxx.DynLib(path)
+    raise Exception(
+      'Unable to find %s Qt %s library in %s' % \
+      ('static' if static else 'dynamic', lib, lib_path))
+
   def config(self):
-    return self.__cfg
+      return self.__cfg
+
+  def __repr__(self):
+    return 'Qt(prefix = %s)' % repr(self.__prefix)
 
   @property
-  def config_gui(self):
-    return self.__cfg_gui
+  def version(self):
+    return self.__version
 
   @property
-  def config_phonon(self):
-    return self.__cfg_phonon
-
-  @property
-  def config_xml(self):
-    return self.__cfg_xml
-
-  @property
-  def config_network(self):
-    return self.__cfg_network
-
-  @property
-  def config_webkit(self):
-    return self.__cfg_webkit
+  def prefix(self):
+    return self.__prefix
 
   def plug(self, tk):
     # When an object is compiled, search Q_OBJECT in all included
@@ -160,6 +260,41 @@ class Qt:
       for dep in self.__dependencies.get(source, ()):
         compiler.add_dynsrc(deps_handler_name, dep)
 
+
+for prop, library in Qt._Qt__libraries.items():
+  def unclosure(prop, library):
+    def library_getter(self, static):
+      name = '_Qt__%s_%s' % (prop, 'static' if static else 'dynamic')
+      if getattr(self, name) is None:
+        lib = self._Qt__find_lib(library,
+                                 self._Qt__lib_path,
+                                 self._Qt__cxx_toolkit,
+                                 static = static)
+        setattr(self, name, lib)
+      return getattr(self, name)
+    setattr(Qt, '%s_dynamic' % prop,
+            property(lambda self: library_getter(self, False)))
+    setattr(Qt, '%s_static' % prop,
+            property(lambda self: library_getter(self, True)))
+    def config_getter(self, static = None, link = True):
+      if static is None:
+        static = not self._Qt__prefer_shared
+      name = '_Qt__config_%s_%s' % \
+             (prop, 'static' if static else 'dynamic')
+      if getattr(self, name) is None:
+        lib = library_getter(self, static)
+        c = Config()
+        macro = prop.upper()
+        macro += static and '_STATIC' or '_DYN'
+        c.define('Qt_%s_LINK' % macro, 1)
+        setattr(self, name + '_header', Config(c))
+        c.library_add(lib)
+        c.add_system_include_path(Qt._Qt__include_dir /  Qt._Qt__libraries[prop])
+        setattr(self, name, Config(c))
+      return getattr(self, name + ('_header' if not link else ''))
+    setattr(Qt, 'config_%s' % prop, config_getter)
+  unclosure(prop, library)
+
 def deps_handler(builder, path_obj, t, data):
   if isinstance(builder, (drake.cxx.Linker, drake.cxx.DynLibLinker)):
     if path_obj in drake.Drake.current.nodes:
@@ -175,11 +310,12 @@ def deps_handler(builder, path_obj, t, data):
     source = builder.source
     # FIXME: factor filling of __moc_cache
     res = moc_file(builder, t(path_obj))
-    qt = builder.toolkit.qt
-    qt._Qt__moc_cache[source] = res
-    o = builder.object
-    qt._Qt__dependencies.setdefault(o, [])
-    qt._Qt__dependencies[o].append(res)
+    if res is not None:
+      qt = builder.toolkit.qt
+      qt._Qt__moc_cache[source] = res
+      o = builder.object
+      qt._Qt__dependencies.setdefault(o, [])
+      qt._Qt__dependencies[o].append(res)
   else:
     raise Exception('unexpected Moc dependency for %s' % builder)
 
@@ -226,6 +362,7 @@ class Uic(Builder):
                        self.src.path(),
                        '-o',
                        self.tgt.path()])
+
 
 class Rc(Node):
 
