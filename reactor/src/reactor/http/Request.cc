@@ -842,7 +842,8 @@ namespace reactor
                  *this, this->_impl->_debug, this->_impl->_debug2);
         ELLE_ERR("%s: frozen backtrace: %s",
                  *this, this->_impl->_bt_frozen);
-        ELLE_ERR("%s: unfrozen because: %s", this->_impl->_bt_unfrozen_reason);
+        ELLE_ERR("%s: unfrozen because: %s",
+                 *this, this->_impl->_bt_unfrozen_reason);
         ELLE_ERR("%s: unfrozen backtrace: %s",
                  *this, this->_impl->_bt_unfrozen);
         ELLE_ERR("%s: waited backtrace: %s",
