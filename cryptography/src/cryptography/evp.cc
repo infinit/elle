@@ -55,7 +55,7 @@ namespace infinit
           // Generate a secret key of some length (in bits) and serialize it.
           elle::Natural32 length_original = 256;
 
-          SecretKey secret = SecretKey::generate(cipher_algorithm,
+          SecretKey secret = secretkey::generate(cipher_algorithm,
                                                  length_original);
 
           elle::Buffer buffer;
@@ -173,7 +173,7 @@ namespace infinit
             (padding_size + overhead) : ceiling;
 
           // 2) Generate a temporary secret key.
-          SecretKey secret = SecretKey::generate(cipher_algorithm, length);
+          SecretKey secret = secretkey::generate(cipher_algorithm, length);
 
           // 3) Cipher the plain text with the secret key.
           Code data = secret.encrypt(plain);

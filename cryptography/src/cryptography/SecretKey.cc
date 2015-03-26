@@ -9,31 +9,14 @@
 
 ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
   {
-    /*---------------.
-    | Static Methods |
-    `---------------*/
-
-    SecretKey
-    SecretKey::generate(cipher::Algorithm const cipher,
-                        elle::Natural32 const length,
-                        oneway::Algorithm const oneway)
-    {
-      ELLE_TRACE_FUNCTION(cipher, length, oneway);
-
-      // Convert the length in a bit-specific size.
-      elle::Natural32 size = length / 8;
-
-      // Generate a buffer-based password.
-      elle::Buffer password(random::generate<elle::Buffer>(size));
-
-      // Return a new secret key.
-      return (SecretKey(cipher, std::move(password), oneway));
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -56,6 +39,17 @@ namespace infinit
       cryptography::require();
     }
 
+    SecretKey::SecretKey(cipher::Algorithm const cipher,
+                         elle::Buffer&& password,
+                         oneway::Algorithm const oneway):
+      _cipher(cipher),
+      _password(std::move(password)),
+      _oneway(oneway)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
     SecretKey::SecretKey(SecretKey const& other):
       _cipher(other._cipher),
       _password(other._password.contents(), other._password.size()),
@@ -69,17 +63,6 @@ namespace infinit
       _cipher(other._cipher),
       _password(std::move(other._password)),
       _oneway(other._oneway)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-
-    SecretKey::SecretKey(cipher::Algorithm const cipher,
-                         elle::Buffer&& password,
-                         oneway::Algorithm const oneway):
-      _cipher(cipher),
-      _password(std::move(password)),
-      _oneway(oneway)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -194,6 +177,40 @@ namespace infinit
     SecretKey::print(std::ostream& stream) const
     {
       elle::fprintf(stream, "%s(%x)", this->_cipher, this->_password);
+    }
+  }
+}
+
+//
+// ---------- Generator -------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace secretkey
+    {
+      /*----------.
+      | Functions |
+      `----------*/
+
+      SecretKey
+      generate(cipher::Algorithm const cipher,
+               elle::Natural32 const length,
+               oneway::Algorithm const oneway)
+      {
+        ELLE_TRACE_FUNCTION(cipher, length, oneway);
+
+        // Convert the length in a bit-specific size.
+        elle::Natural32 size = length / 8;
+
+        // Generate a buffer-based password.
+        elle::Buffer password(random::generate<elle::Buffer>(size));
+
+        // Return a new secret key.
+        return (SecretKey(cipher, std::move(password), oneway));
+      }
     }
   }
 }

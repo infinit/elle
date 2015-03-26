@@ -16,6 +16,10 @@
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -25,19 +29,6 @@ namespace infinit
       public elle::concept::MakeUniquable<SecretKey>,
       public elle::Printable
     {
-      /*---------------.
-      | Static Methods |
-      `---------------*/
-    public:
-      /// Return a freshly generated secret key of the given length.
-      ///
-      /// Note that the length is expressed in bits.
-      static
-      SecretKey
-      generate(cipher::Algorithm const cipher,
-               elle::Natural32 const length,
-               oneway::Algorithm const oneway = oneway::Algorithm::sha256);
-
       /*-------------.
       | Construction |
       `-------------*/
@@ -48,17 +39,16 @@ namespace infinit
       SecretKey(cipher::Algorithm const cipher,
                 elle::String const& password,
                 oneway::Algorithm const oneway = oneway::Algorithm::sha256);
+      /// Construct a secret key based on a given buffer.
+      SecretKey(cipher::Algorithm const cipher,
+                elle::Buffer&& password,
+                oneway::Algorithm const oneway);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
       /// Derialization constructor.
       ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
       virtual
       ~SecretKey() = default;
-    private:
-      /// Construct a secret key based on a given buffer.
-      SecretKey(cipher::Algorithm const cipher,
-                elle::Buffer&& password,
-                oneway::Algorithm const oneway);
 
       /*--------.
       | Methods |
@@ -124,6 +114,31 @@ namespace infinit
       ELLE_ATTRIBUTE(elle::Buffer, password);
       ELLE_ATTRIBUTE(oneway::Algorithm, oneway);
     };
+  }
+}
+
+//
+// ---------- Generator -------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace secretkey
+    {
+      /*----------.
+      | Functions |
+      `----------*/
+
+      /// Return a freshly generated secret key of the given length.
+      ///
+      /// Note that the length is expressed in bits.
+      SecretKey
+      generate(cipher::Algorithm const cipher,
+               elle::Natural32 const length,
+               oneway::Algorithm const oneway = oneway::Algorithm::sha256);
+    }
   }
 }
 

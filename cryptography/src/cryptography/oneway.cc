@@ -16,9 +16,9 @@ namespace infinit
   {
     namespace oneway
     {
-      /*---------------.
-      | Static Methods |
-      `---------------*/
+      /*----------.
+      | Functions |
+      `----------*/
 
       ::EVP_MD const*
       resolve(Algorithm const name)

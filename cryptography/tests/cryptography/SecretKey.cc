@@ -19,7 +19,7 @@ void
 test_represent_n()
 {
   infinit::cryptography::SecretKey key =
-    infinit::cryptography::SecretKey::generate(A, L);
+    infinit::cryptography::secretkey::generate(A, L);
 
   // N)
   {
@@ -74,7 +74,7 @@ infinit::cryptography::SecretKey
 test_generate_x()
 {
   infinit::cryptography::SecretKey key =
-    infinit::cryptography::SecretKey::generate(A, L);
+    infinit::cryptography::secretkey::generate(A, L);
 
   return (key);
 }

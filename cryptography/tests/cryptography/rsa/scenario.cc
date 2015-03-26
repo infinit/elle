@@ -48,7 +48,7 @@ test_scenario()
   // A user tries to access the content without the right key.
   {
     infinit::cryptography::SecretKey key =
-      infinit::cryptography::SecretKey::generate(
+      infinit::cryptography::secretkey::generate(
         infinit::cryptography::cipher::Algorithm::aes256,
         256);
 

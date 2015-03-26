@@ -164,7 +164,7 @@ private:
   Object(infinit::cryptography::rsa::PublicKey const& owner_K,
          elle::String const& content):
     Object(owner_K,
-           infinit::cryptography::SecretKey::generate(
+           infinit::cryptography::secretkey::generate(
              infinit::cryptography::cipher::Algorithm::aes256,
              256),
            content)
@@ -194,7 +194,7 @@ public:
   {
     infinit::cryptography::SecretKey _key = this->key(owner_k);
     infinit::cryptography::SecretKey key =
-      infinit::cryptography::SecretKey::generate(_key.cipher(),
+      infinit::cryptography::secretkey::generate(_key.cipher(),
                                                  _key.length());
 
     Object object(*this, key, content);
