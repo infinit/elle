@@ -323,7 +323,8 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = oneway::hash(plain, KeyPair::oneway_algorithm);
+        Digest digest = oneway::hash(plain,
+                                     KeyPair::signature_oneway_algorithm);
 
         return (this->sign(digest));
       }

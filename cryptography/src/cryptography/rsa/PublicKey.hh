@@ -150,6 +150,14 @@ namespace infinit
         `-----------*/
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
+        // Note that the contexts are not serialized because the behavior
+        // of the key depends on the implementation and changes with every
+        // version.
+        //
+        // Instead of serializing the padding schemes along with message
+        // digest algorithm used to sign for instance, only the key is
+        // serialized along with the version of the implementation with
+        // which it is supposed to work.
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)

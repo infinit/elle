@@ -375,7 +375,8 @@ namespace infinit
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = oneway::hash(plain, KeyPair::oneway_algorithm);
+        Digest digest = oneway::hash(plain,
+                                     KeyPair::signature_oneway_algorithm);
 
         return (this->verify(signature, digest));
       }

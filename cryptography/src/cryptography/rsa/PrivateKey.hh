@@ -140,6 +140,8 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
+        // Note that the contexts are not encrypted. For more information,
+        // please refer to the PublicKey class.
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
         ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_sign);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)

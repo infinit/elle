@@ -33,9 +33,7 @@ namespace infinit
         `----------*/
       public:
         /// The algorithm used for hashing the content to sign/verify.
-        ///
-        /// XXX[should be the value by default and overwrittable]
-        static oneway::Algorithm const oneway_algorithm =
+        static oneway::Algorithm const signature_oneway_algorithm =
           oneway::Algorithm::sha256;
 
         /*-------------.
