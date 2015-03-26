@@ -798,6 +798,8 @@ def configure(cxx_toolkit = None,
       boost_patches.append((drake.Node('boost_context_win.patch'), 1))
     elif cxx_toolkit.os is drake.os.ios:
       boost_patches.append((drake.Node('boost_context_ios.patch'), 1))
+    elif cxx_toolkit.os is drake.os.macos:
+      boost_patches.append((drake.Node('boost_filesystem_apple.patch'), 1))
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
