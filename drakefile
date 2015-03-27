@@ -22,6 +22,7 @@ libarchive_lib = None
 openssl_config = None
 openssl_lib_crypto = None
 openssl_lib_ssl = None
+openssl_libs_eay = []
 protocol = None
 python3 = None
 reactor = None
@@ -68,7 +69,8 @@ def configure(cxx_toolkit = None,
               prefix = '/usr',
               valgrind = None,
               valgrind_tests = False,
-):
+              build_openssl_eay = False
+  ):
 
   global asio_udt
   global aws
@@ -79,7 +81,7 @@ def configure(cxx_toolkit = None,
   global reactor
 
   global curl_config, curl_lib
-  global openssl_config, openssl_lib_ssl, openssl_lib_crypto
+  global openssl_config, openssl_lib_ssl, openssl_lib_crypto, openssl_libs_eay
   global zlib_config, zlib_lib
   global libarchive_config, libarchive_lib
 
@@ -283,7 +285,7 @@ def configure(cxx_toolkit = None,
   ## ------- ##
   ## OpenSSL ##
   ## ------- ##
-
+  openssl_rule = drake.Rule('openssl')
   openssl_basename = 'openssl-1.0.2a'
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
@@ -404,9 +406,8 @@ def configure(cxx_toolkit = None,
     os_string = 'android'
   elif windows:
     os_string = 'mingw64'
-    openssl_env['AR'] = '%sar' % cxx_toolkit.prefix
-    openssl_env['AS'] = '%sas' % cxx_toolkit.prefix
-    openssl_env['RANLIB'] = '%sranlib' % cxx_toolkit.prefix
+    del openssl_env['CC']
+    openssl_env['CROSS_COMPILE'] = '%s' % cxx_toolkit.prefix
   elif cxx_toolkit.os is drake.os.macos:
     os_string = 'darwin64-x86_64-cc'
   elif cxx_toolkit.os is drake.os.ios:
@@ -448,26 +449,39 @@ def configure(cxx_toolkit = None,
                         output_headers = openssl_prefix)
 
   else:
-    GNUBuilder(
-      cxx_toolkit,
-      configure = openssl_configure,
-      configure_interpreter = 'perl',
-      targets = chain(openssl_libs,
-                      (drake.node(openssl_prefix / p)
-                       for p in openssl_headers)),
-      configure_args = [
-        '--prefix=%s' % openssl_prefix_absolute,
-        openssl_shared and 'shared' or 'no-shared',
-        'no-asm',
-        '-DPURIFY',
-        os_string,
-      ],
-      build_args = [
-      'all', 'install',
-      ],
-      additional_env = openssl_env,
-    )
-  drake.Rule('openssl') << openssl_libs
+    def build_ssl_libs(targets,
+                       sharing_model):
+      GNUBuilder(
+        cxx_toolkit,
+        configure = openssl_configure,
+        configure_interpreter = 'perl',
+        targets = targets,
+        configure_args = [
+          '--prefix=%s' % openssl_prefix_absolute,
+          sharing_model,
+          'no-asm',
+          '-DPURIFY',
+          os_string,
+        ],
+        build_args = [
+          'all', 'install',
+        ],
+        additional_env = openssl_env,
+      )
+    build_ssl_libs(
+      targets = chain(
+        openssl_libs,
+        (drake.node(openssl_prefix / p) for p in openssl_headers)),
+      sharing_model = openssl_shared and 'shared' or 'no-shared')
+    if build_openssl_eay and windows:
+      names = ['libeay32.dll', 'ssleay32.dll']
+      openssl_libs_eay = [DynLib(openssl_prefix / 'bin' / name) for name in names]
+      build_ssl_libs(targets = openssl_libs_eay,
+                     sharing_model = 'shared')
+      openssl_eay_rule = drake.Rule('openssl/eay')
+      openssl_eay_rule << openssl_libs_eay
+      openssl_rule << openssl_eay_rule
+  openssl_rule << openssl_libs
   openssl_config = drake.cxx.Config()
   openssl_config.add_local_include_path(openssl_prefix / 'include')
 
