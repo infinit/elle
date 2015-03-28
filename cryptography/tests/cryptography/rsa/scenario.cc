@@ -49,7 +49,7 @@ test_scenario()
   {
     infinit::cryptography::SecretKey key =
       infinit::cryptography::secretkey::generate(
-        infinit::cryptography::cipher::Algorithm::aes256,
+        infinit::cryptography::Cipher::aes256,
         256);
 
     BOOST_CHECK_THROW(object0.read(key),
@@ -66,7 +66,8 @@ test_scenario()
   infinit::cryptography::rsa::KeyPair managerA =
     infinit::cryptography::rsa::keypair::generate(2048);
   Group groupA0(managerA.K());
-  infinit::cryptography::rsa::PrivateKey passA0_k = groupA0.pass_k(managerA.k());
+  infinit::cryptography::rsa::PrivateKey passA0_k =
+    groupA0.pass_k(managerA.k());
   infinit::cryptography::rsa::Seed seedA0 = groupA0.seed(managerA.k());
   groupA0.members().add(userX.K(), passA0_k, seedA0);
   BOOST_CHECK_EQUAL(groupA0.members().size(), 1);
@@ -75,7 +76,8 @@ test_scenario()
   infinit::cryptography::rsa::KeyPair managerB =
     infinit::cryptography::rsa::keypair::generate(2048);
   Group groupB0(managerB.K());
-  infinit::cryptography::rsa::PrivateKey passB0_k = groupB0.pass_k(managerB.k());
+  infinit::cryptography::rsa::PrivateKey passB0_k =
+    groupB0.pass_k(managerB.k());
   infinit::cryptography::rsa::Seed seedB0 = groupB0.seed(managerB.k());
   groupB0.members().add(userY.K(), passB0_k, seedB0);
   BOOST_CHECK_EQUAL(groupB0.members().size(), 1);
@@ -111,7 +113,8 @@ test_scenario()
   BOOST_CHECK_EQUAL(groupA2.version(), 2);
   BOOST_CHECK_EQUAL(groupA2.members().size(), 1);
 
-  infinit::cryptography::rsa::PrivateKey passA2_k = groupA2.pass_k(managerA.k());
+  infinit::cryptography::rsa::PrivateKey passA2_k =
+    groupA2.pass_k(managerA.k());
   infinit::cryptography::rsa::Seed seedA2 = groupA2.seed(managerA.k());
 
   // Update the object to version 1.

@@ -4,7 +4,7 @@
 #include <cryptography/cipher.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/Signature.hh>
-#include <cryptography/oneway.hh>
+#include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 
@@ -36,8 +36,7 @@ namespace infinit
         `----------*/
 
         /// The cipher algorithm used for encrypting the data.
-        static cipher::Algorithm const cipher_algorithm =
-          cipher::Algorithm::aes256;
+        static Cipher const cipher_algorithm = Cipher::aes256;
 
         /*----------.
         | Functions |

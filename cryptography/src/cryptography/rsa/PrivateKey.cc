@@ -1,7 +1,7 @@
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/Seed.hh>
-#include <cryptography/rsa/padding.hh>
+#include <cryptography/rsa/Padding.hh>
 #include <cryptography/rsa/context.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -10,6 +10,7 @@
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
 #include <cryptography/low.hh>
+#include <cryptography/hash.hh>
 
 #include <elle/log.hh>
 
@@ -323,8 +324,7 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = oneway::hash(plain,
-                                     KeyPair::signature_oneway_algorithm);
+        Digest digest = hash(plain, KeyPair::signature_oneway_algorithm);
 
         return (this->sign(digest));
       }

@@ -3,9 +3,10 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
+# include <cryptography/Plain.hh>
 # include <cryptography/Clear.hh>
 # include <cryptography/Signature.hh>
-# include <cryptography/oneway.hh>
+# include <cryptography/Oneway.hh>
 # include <cryptography/rsa/Seed.hh>
 
 # include <elle/types.hh>

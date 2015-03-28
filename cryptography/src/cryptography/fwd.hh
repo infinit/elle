@@ -5,7 +5,9 @@ namespace infinit
 {
   namespace cryptography
   {
+    enum class Cipher;
     enum class Cryptosystem;
+    enum class Oneway;
     class Exception;
     class Input;
     class Output;

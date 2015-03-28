@@ -165,7 +165,7 @@ private:
          elle::String const& content):
     Object(owner_K,
            infinit::cryptography::secretkey::generate(
-             infinit::cryptography::cipher::Algorithm::aes256,
+             infinit::cryptography::Cipher::aes256,
              256),
            content)
   {}

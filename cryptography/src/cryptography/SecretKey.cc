@@ -27,9 +27,9 @@ namespace infinit
       cryptography::require();
     }
 
-    SecretKey::SecretKey(cipher::Algorithm const cipher,
+    SecretKey::SecretKey(Cipher const cipher,
                          elle::String const& password,
-                         oneway::Algorithm const oneway):
+                         Oneway const oneway):
       _cipher(cipher),
       _password(reinterpret_cast<elle::Byte const*>(password.c_str()),
                 password.length()),
@@ -39,9 +39,9 @@ namespace infinit
       cryptography::require();
     }
 
-    SecretKey::SecretKey(cipher::Algorithm const cipher,
+    SecretKey::SecretKey(Cipher const cipher,
                          elle::Buffer&& password,
-                         oneway::Algorithm const oneway):
+                         Oneway const oneway):
       _cipher(cipher),
       _password(std::move(password)),
       _oneway(oneway)
@@ -163,7 +163,7 @@ namespace infinit
       if (this == &other)
         return (true);
 
-      // Compare the internal buffer along with the algorithms.
+      // Compare the internal buffer along with the oneways.
       return ((this->_cipher == other._cipher) &&
               (this->_password == other._password) &&
               (this->_oneway == other._oneway));
@@ -196,9 +196,9 @@ namespace infinit
       `----------*/
 
       SecretKey
-      generate(cipher::Algorithm const cipher,
+      generate(Cipher const cipher,
                elle::Natural32 const length,
-               oneway::Algorithm const oneway)
+               Oneway const oneway)
       {
         ELLE_TRACE_FUNCTION(cipher, length, oneway);
 

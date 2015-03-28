@@ -10,8 +10,8 @@
 # include <elle/concept/Uniquable.hh>
 
 # include <cryptography/fwd.hh>
-# include <cryptography/oneway.hh>
-# include <cryptography/cipher.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -36,13 +36,13 @@ namespace infinit
       SecretKey(); // XXX[to deserialize]
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
-      SecretKey(cipher::Algorithm const cipher,
+      SecretKey(Cipher const cipher,
                 elle::String const& password,
-                oneway::Algorithm const oneway = oneway::Algorithm::sha256);
+                Oneway const oneway);
       /// Construct a secret key based on a given buffer.
-      SecretKey(cipher::Algorithm const cipher,
+      SecretKey(Cipher const cipher,
                 elle::Buffer&& password,
-                oneway::Algorithm const oneway);
+                Oneway const oneway);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
       /// Derialization constructor.
@@ -110,9 +110,9 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(cipher::Algorithm, cipher);
+      ELLE_ATTRIBUTE_R(Cipher, cipher);
       ELLE_ATTRIBUTE(elle::Buffer, password);
-      ELLE_ATTRIBUTE(oneway::Algorithm, oneway);
+      ELLE_ATTRIBUTE(Oneway, oneway);
     };
   }
 }
@@ -135,9 +135,9 @@ namespace infinit
       ///
       /// Note that the length is expressed in bits.
       SecretKey
-      generate(cipher::Algorithm const cipher,
+      generate(Cipher const cipher,
                elle::Natural32 const length,
-               oneway::Algorithm const oneway = oneway::Algorithm::sha256);
+               Oneway const oneway = Oneway::sha256);
     }
   }
 }

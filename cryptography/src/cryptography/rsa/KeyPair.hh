@@ -2,9 +2,12 @@
 # define INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 
 # include <cryptography/fwd.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 # include <cryptography/rsa/PublicKey.hh>
 # include <cryptography/rsa/PrivateKey.hh>
 # include <cryptography/rsa/KeyPair.hh>
+# include <cryptography/rsa/Padding.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -33,8 +36,10 @@ namespace infinit
         `----------*/
       public:
         /// The algorithm used for hashing the content to sign/verify.
-        static oneway::Algorithm const signature_oneway_algorithm =
-          oneway::Algorithm::sha256;
+        ///
+        /// XXX to remove
+        static Oneway const signature_oneway_algorithm =
+          Oneway::sha256;
 
         /*-------------.
         | Construction |
@@ -138,7 +143,11 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         KeyPair
-        generate(elle::Natural32 const length);
+        generate(elle::Natural32 const length,
+                 Padding const encryption = Padding::oaep,
+                 Padding const signature = Padding::pss,
+                 Oneway const digest = Oneway::sha256,
+                 Cipher const envelope = Cipher::aes256);
       }
     }
   }

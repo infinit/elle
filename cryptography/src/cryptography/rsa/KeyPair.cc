@@ -18,7 +18,7 @@
 # include <dopenssl/rsa.hh>
 #endif
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.keypair");
+ELLE_LOG_COMPONENT("infinit.cryptography.rsa.KeyPair");
 
 namespace infinit
 {
@@ -249,7 +249,11 @@ namespace infinit
         `----------*/
 
         KeyPair
-        generate(elle::Natural32 const length)
+        generate(elle::Natural32 const length,
+                 Padding const encryption,
+                 Padding const signature,
+                 Oneway const digest,
+                 Cipher const envelope)
         {
           ELLE_TRACE_FUNCTION(length);
 

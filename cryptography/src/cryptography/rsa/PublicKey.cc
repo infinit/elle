@@ -17,7 +17,7 @@
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/Seed.hh>
-#include <cryptography/rsa/padding.hh>
+#include <cryptography/rsa/Padding.hh>
 #include <cryptography/rsa/context.hh>
 #include <cryptography/low.hh>
 #include <cryptography/Digest.hh>
@@ -26,6 +26,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
+#include <cryptography/hash.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
 
@@ -375,8 +376,7 @@ namespace infinit
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = oneway::hash(plain,
-                                     KeyPair::signature_oneway_algorithm);
+        Digest digest = hash(plain, KeyPair::signature_oneway_algorithm);
 
         return (this->verify(signature, digest));
       }
