@@ -474,8 +474,8 @@ def configure(cxx_toolkit = None,
         (drake.node(openssl_prefix / p) for p in openssl_headers)),
       sharing_model = openssl_shared and 'shared' or 'no-shared')
     if build_openssl_eay and windows:
-      names = ['libeay32.dll', 'ssleay32.dll']
-      openssl_libs_eay = [DynLib(openssl_prefix / 'bin' / name) for name in names]
+      names = ['bin/libeay32.dll', 'bin/ssleay32.dll', 'lib/libssl.dll.a', 'lib/libcrypto.dll.a']
+      openssl_libs_eay = [DynLib(openssl_prefix / name) for name in names]
       build_ssl_libs(targets = openssl_libs_eay,
                      sharing_model = 'shared')
       openssl_eay_rule = drake.Rule('openssl/eay')
