@@ -118,7 +118,7 @@ void
 test_operate()
 {
   // Construct a public key from [representation 1]
-  elle::String representation("AAAAAA4BAAAAAAAAMIIBCgKCAQEA1CJdc0qVxKAtvMPQ0T3i4H1CRiVoJZDakX2YJuzADqQeJpMbUvXQnmkTJ5CMf3gBRdnkz++LSfM2bG122U7SWryuZIEnB9SXE5P/gDMxt50AuVEvXxKiCaw9Y3IN/lQaT9e19mtl4zb2ZZSYQKzOvPL190MyQDk+9hDKsf7cnS99kbdeOM8PeqRoMbr8Brs3ae2zgezl6K+j1mQrkXgxJW7NqeH0Y7r1a2HHE8jkARnC3iAEmm/ZxRK3FF4JJTNqV1UKzVl4sIZ0qsIfesCsBZZTZ0oWpA/ed/GjWAbHd39TZ1Nh+hch9lOzWnZkMnG1Q1Fw5ID7lZtxD4JQNHnxLQIDAQAB");
+  elle::String representation("AAAAAA4BAAAAAAAAMIIBCgKCAQEAv8dH60kw7ZuZ28gf3p2wr5C7rElFRjFVC3RtrM6Ke8grEyZbVq07dgy4jgfWuD752Odde73/yYU5Z5h0++AocJb+0q5ZmLGclyslSHuXnoWg5Wwe2LwsXIQUy0sP86rJuX5wEAf3mz+OpwEUAbsTMm7jaI7bMM6y6qBW5Bqmamu1XxIwOp5MQnAiwn/uFwk7aJ/mI+NQ+orfIEPi5mczevfafziXb8qm5Nes36C0n0l0Bs88vnkwLZ3Nc5qYiqo0WbulqtIJOXP7kKUt+RbqONakxa3Zyr8iaCyj3vDbmPqW8KOEzgAS8/bJuhTPzXBZ+4EeJQK2xRafsViSyffGXwIDAQABAwAFAAQACgA=");
 
   auto extractor =
     elle::serialize::from_string<
@@ -130,7 +130,7 @@ test_operate()
 
   // Verify plain from [representation 2].
   {
-    elle::String archive("AAAAAAABAAAAAAAALKe9gjbFAxgkZgLTDsIq55hW6OOe1Z5foYSVjWV0fP+JBXe4pd/AYDqq/z3rhm5B5iVWusBs7ZFaTiS0PPrtBiIvLBq/qSt5kKERzi76n263zh2rVPAndu+HB+7Ok5jGwWEzTGxFd7PpGXHP7lIpkvdNPiraecb9Oe3dTvYuKQ1JQ3YRT32+uw/E+3pwLektxHv1yN6c05INYLhPtmX5iRfdZ6lsI6bnyejT9wp0IgthVfHmGDLi5QfCNeJjzPLNHLBrfhd1MzODH6zHtAqtF8r2dWVCWYA/lKjlFwoCdD5WdL+18faLTrquEtPJyxa2rI0LxB3ZMrvEkc0NL+siUQ==");
+    elle::String archive("AAAAAAABAAAAAAAAubQ1VXp6BARfgVKZW+ptXVRHiznuhxhFeH3TMdoxqLjqjN815oGD3QF6EHL+V11vwny4mJJ0zzJeFoEzqK3LzO3UYPEonWSsokn5mlix4t3AZM/Cbs9pJfB1LU9AYU25Z1aD4Kq2H71fdD1cdERlNJoMlb9lWAEHkhyik3YancjDCyQgZukDU4P76HaDXOnBh3p6cOiaHJ13kUsb+OspiclbFMQrRO5U9YPFrrwEfx6WXmWT4mPHiHefIJNLyIOtSiRd+vxPB2NKD724i1/WYs6kkc70ZE8yYe7kSPCKpGakAIkItafQ/v5gMoTD8BuEfzzQOOgV9ggPZTGMxIv5fA==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -146,7 +146,7 @@ test_operate()
 
   // Verify plain from [representation 3].
   {
-    elle::String archive("AAAAAAABAAAAAAAAetN5D0kOORVokGuT61o3EbwezS+KlBzqrD2I5CjIQ4n1XWTafwy+xjmCJzqbsJvhgLpmRf15d1bphtbWU0M6XnlUzODkEXYEoQbRvtlnAIpwvoAS0lFb51n6uBonutpIWR/eW/PEjuAaCkS9BZ6VFWTVkeOp7RHkRAF7JxlAqN933Lxmu1Z+eIIpVxLl1o15Ia7vom9q9/DqhLfl55Mz89G5O+56G+SCNP56QXVuGKpfj/nw7Ri2T6Q0HwqJ+oFcrbFStyL2ZJJLcJnHNWkTH2O04MFUK4/Z3UQrsVHjz1IhmZW4fJ6EhcRCL/yyvMgWkC/aKhXQltlZPi+T1wZe2w==");
+    elle::String archive("AAAAAAABAAAAAAAAaBGtrirDjT3oAgw+ZmAg69SGLUiLTEvLb5lv5fWN+AjsP2MdPCl7zusOJEfeWAm4nmAWI9EvLIH1fn1S+EP3RgtLzkTpSKCG2qOkSAB49MiMlfq9EuGBYBILichZw0pUPvZmkHG/ewcQ0/IWMEEjUqqIlgNJ0mcaMh6pF91T+FLGvqbC9jJ9x+y7M1kz0oNw7CxiGg7hdfNosNcwNQclbIbDj1oEMjgc/T97AHiCgTcY8eECy31fxVQiRSQHgqE4NvBTgoaYex47xv0tYvF3WgC+RmeHyo4ZbKA6bqq0ygxOj5N+w/5OTokW72V4ZUt2i6tTppwtRUEFLs/3PTTXcA==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -203,8 +203,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAA4BAAAAAAAAMIIBCgKCAQEA1CJdc0qVxKAtvMPQ0T3i4H1CRiVoJZDakX2YJuzADqQeJpMbUvXQnmkTJ5CMf3gBRdnkz++LSfM2bG122U7SWryuZIEnB9SXE5\
-P/gDMxt50AuVEvXxKiCaw9Y3IN/lQaT9e19mtl4zb2ZZSYQKzOvPL190MyQDk+9hDKsf7cnS99kbdeOM8PeqRoMbr8Brs3ae2zgezl6K+j1mQrkXgxJW7NqeH0Y7r1a2HHE8jkARnC3iAEmm/ZxRK3FF4JJTNqV1UKzVl4sIZ0qsIfesCsBZZTZ0oWpA/ed/GjWAbHd39TZ1Nh+hch9lOzWnZkMnG1Q1Fw5ID7lZtxD4JQNHnxLQIDAQAB"
+      "AAAAAA4BAAAAAAAAMIIBCgKCAQEAv8dH60kw7ZuZ28gf3p2wr5C7rElFRjFVC3RtrM6Ke8grEyZbVq07dgy4jgfWuD752Odde73/yYU5Z5h0++AocJb+0q5ZmLGclyslSHuXnoWg5Wwe2LwsXIQUy0sP86rJuX5wEAf3mz+OpwEUAbsTMm7jaI7bMM6y6qBW5Bqmamu1XxIwOp5MQnAiwn/uFwk7aJ/mI+NQ+orfIEPi5mczevfafziXb8qm5Nes36C0n0l0Bs88vnkwLZ3Nc5qYiqo0WbulqtIJOXP7kKUt+RbqONakxa3Zyr8iaCyj3vDbmPqW8KOEzgAS8/bJuhTPzXBZ+4EeJQK2xRafsViSyffGXwIDAQABAwAFAAQACgA="
     };
 
     infinit::cryptography::test::formats<

@@ -53,7 +53,11 @@ namespace infinit
         explicit
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Deduce a keypair based out of the given seed.
-        KeyPair(Seed const& seed);
+        KeyPair(Seed const& seed,
+                Padding const encryption_padding = Padding::oaep,
+                Padding const signature_padding = Padding::pss,
+                Oneway const digest_algorithm = Oneway::sha256,
+                Cipher const envelope_algorithm = Cipher::aes256);
 # endif
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
@@ -144,10 +148,10 @@ namespace infinit
         /// Note that the length is in bits.
         KeyPair
         generate(elle::Natural32 const length,
-                 Padding const encryption = Padding::oaep,
-                 Padding const signature = Padding::pss,
-                 Oneway const digest = Oneway::sha256,
-                 Cipher const envelope = Cipher::aes256);
+                 Padding const encryption_padding = Padding::oaep,
+                 Padding const signature_padding = Padding::pss,
+                 Oneway const digest_algorithm = Oneway::sha256,
+                 Cipher const envelope_algorithm = Cipher::aes256);
       }
     }
   }

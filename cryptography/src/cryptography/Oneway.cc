@@ -9,6 +9,59 @@ namespace infinit
 {
   namespace cryptography
   {
+    /*----------.
+    | Operators |
+    `----------*/
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Oneway const oneway)
+    {
+      switch (oneway)
+      {
+        case Oneway::md5:
+        {
+          stream << "md5";
+          break;
+        }
+        case Oneway::sha:
+        {
+          stream << "sha";
+          break;
+        }
+        case Oneway::sha1:
+        {
+          stream << "sha1";
+          break;
+        }
+        case Oneway::sha224:
+        {
+          stream << "sha224";
+          break;
+        }
+        case Oneway::sha256:
+        {
+          stream << "sha256";
+          break;
+        }
+        case Oneway::sha384:
+        {
+          stream << "sha384";
+          break;
+        }
+        case Oneway::sha512:
+        {
+          stream << "sha512";
+          break;
+        }
+        default:
+          throw Exception(elle::sprintf("unknown one-way algorithm '%s'",
+                                        static_cast<int>(oneway)));
+      }
+
+      return (stream);
+    }
+
     namespace oneway
     {
       /*----------.
@@ -42,59 +95,6 @@ namespace infinit
         }
 
         elle::unreachable();
-      }
-
-      /*----------.
-      | Operators |
-      `----------*/
-
-      std::ostream&
-      operator <<(std::ostream& stream,
-                  Oneway const oneway)
-      {
-        switch (oneway)
-        {
-          case Oneway::md5:
-          {
-            stream << "md5";
-            break;
-          }
-          case Oneway::sha:
-          {
-            stream << "sha";
-            break;
-          }
-          case Oneway::sha1:
-          {
-            stream << "sha1";
-            break;
-          }
-          case Oneway::sha224:
-          {
-            stream << "sha224";
-            break;
-          }
-          case Oneway::sha256:
-          {
-            stream << "sha256";
-            break;
-          }
-          case Oneway::sha384:
-          {
-            stream << "sha384";
-            break;
-          }
-          case Oneway::sha512:
-          {
-            stream << "sha512";
-            break;
-          }
-          default:
-            throw Exception(elle::sprintf("unknown one-way algorithm '%s'",
-                                          static_cast<int>(oneway)));
-        }
-
-        return (stream);
       }
     }
   }

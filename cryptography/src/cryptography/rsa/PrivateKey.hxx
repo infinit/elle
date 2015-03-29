@@ -108,6 +108,9 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
   // XXX
   elle::Buffer buffer(_buffer, _size);
   archive << buffer;
+  archive << value._encryption_padding;
+  archive << value._signature_padding;
+  archive << value._digest_algorithm;
 
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
   ::OPENSSL_free(_buffer);
@@ -120,6 +123,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
 {
   elle::Buffer buffer;
   archive >> buffer;
+  archive >> value._encryption_padding;
+  archive >> value._signature_padding;
+  archive >> value._digest_algorithm;
 
   const unsigned char* _buffer = buffer.contents();
   long _size = buffer.size();

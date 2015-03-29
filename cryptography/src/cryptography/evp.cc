@@ -36,6 +36,8 @@ namespace infinit
         `----------*/
 
         /// The cipher algorithm used for encrypting the data.
+        ///
+        /// XXX to remove
         static Cipher const cipher_algorithm = Cipher::aes256;
 
         /*----------.

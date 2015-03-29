@@ -50,10 +50,17 @@ namespace infinit
         cryptography::require();
       }
 
-      PublicKey::PublicKey(PrivateKey const& k)
+      PublicKey::PublicKey(PrivateKey const& k,
+                           Cipher const envelope_algorithm)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
+
+        // Set the key parameters.
+        this->_encryption_padding = k.encryption_padding();
+        this->_signature_padding = k.signature_padding();
+        this->_digest_algorithm = k.digest_algorithm();
+        this->_envelope_algorithm = envelope_algorithm;
 
         // Extract the public key only.
         RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
@@ -81,8 +88,16 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      PublicKey::PublicKey(::EVP_PKEY* key):
-        _key(key)
+      PublicKey::PublicKey(::EVP_PKEY* key,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const digest_algorithm,
+                           Cipher const envelope_algorithm):
+        _key(key),
+        _encryption_padding(encryption_padding),
+        _signature_padding(signature_padding),
+        _digest_algorithm(digest_algorithm),
+        _envelope_algorithm(envelope_algorithm)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -112,7 +127,15 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      PublicKey::PublicKey(::RSA* rsa)
+      PublicKey::PublicKey(::RSA* rsa,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const digest_algorithm,
+                           Cipher const envelope_algorithm):
+        _encryption_padding(encryption_padding),
+        _signature_padding(signature_padding),
+        _digest_algorithm(digest_algorithm),
+        _envelope_algorithm(envelope_algorithm)
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -146,7 +169,15 @@ namespace infinit
       }
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-      PublicKey::PublicKey(Seed const& seed)
+      PublicKey::PublicKey(Seed const& seed,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const digest_algorithm,
+                           Cipher const envelope_algorithm):
+        _encryption_padding(encryption_padding),
+        _signature_padding(signature_padding),
+        _digest_algorithm(digest_algorithm),
+        _envelope_algorithm(envelope_algorithm)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -195,7 +226,11 @@ namespace infinit
       }
 #endif
 
-      PublicKey::PublicKey(PublicKey const& other)
+      PublicKey::PublicKey(PublicKey const& other):
+        _encryption_padding(other._encryption_padding),
+        _signature_padding(other._signature_padding),
+        _digest_algorithm(other._digest_algorithm),
+        _envelope_algorithm(other._envelope_algorithm)
       {
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
@@ -228,14 +263,20 @@ namespace infinit
 
       PublicKey::PublicKey(PublicKey&& other):
         _key(std::move(other._key)),
-        _context_encrypt(std::move(other._context_encrypt)),
-        _context_verify(std::move(other._context_verify))
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        , _context_rotate(std::move(other._context_rotate))
-        , _context_derive(std::move(other._context_derive))
-#endif
-        , _context_encrypt_padding_size(other._context_encrypt_padding_size)
+        _encryption_padding(std::move(other._encryption_padding)),
+        _signature_padding(std::move(other._signature_padding)),
+        _digest_algorithm(std::move(other._digest_algorithm)),
+        _envelope_algorithm(std::move(other._envelope_algorithm))
       {
+        this->_context.encrypt = std::move(other._context.encrypt);
+        this->_context.verify = std::move(other._context.verify);
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        this->_context.rotate = std::move(other._context.rotate);
+        this->_context.derive = std::move(other._context.derive);
+#endif
+        this->_context.envelope_padding_size =
+          other._context.envelope_padding_size;
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
       }
@@ -282,39 +323,43 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key, nullptr);
 
         // Prepare the encrypt context.
-        ELLE_ASSERT_EQ(this->_context_encrypt, nullptr);
-        this->_context_encrypt.reset(
+        ELLE_ASSERT_EQ(this->_context.encrypt, nullptr);
+        this->_context.encrypt.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_encrypt_init,
-                          RSA_PKCS1_OAEP_PADDING));
+                          this->_encryption_padding));
 
-        this->_context_encrypt_padding_size =
-          padding::footprint(this->_context_encrypt.get());
+        this->_context.envelope_padding_size =
+          padding::footprint(this->_context.encrypt.get());
 
         // Prepare the verify context.
-        ELLE_ASSERT_EQ(this->_context_verify, nullptr);
-        this->_context_verify.reset(
+        ELLE_ASSERT_EQ(this->_context.verify, nullptr);
+        this->_context.verify.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_verify_init,
-                          RSA_PKCS1_PSS_PADDING));
+                          this->_signature_padding));
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_verify.get(),
-                                EVP_PKEY_RSA,
-                                -1,
-                                EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
-                                -2,
-                                nullptr) <= 0)
-          throw Exception(
-            elle::sprintf("unable to set the EVP_PKEY context's PSS "
-                          "salt length: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        if (this->_signature_padding == Padding::pss)
+        {
+          if (::EVP_PKEY_CTX_ctrl(this->_context.verify.get(),
+                                  EVP_PKEY_RSA,
+                                  -1,
+                                  EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
+                                  -2,
+                                  nullptr) <= 0)
+            throw Exception(
+              elle::sprintf("unable to set the EVP_PKEY context's PSS "
+                            "salt length: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+        }
 
-        if (::EVP_PKEY_CTX_ctrl(this->_context_verify.get(),
-                                EVP_PKEY_RSA,
-                                EVP_PKEY_OP_TYPE_SIG,
-                                EVP_PKEY_CTRL_MD,
-                                0,
-                                (void*)::EVP_sha256()) <= 0)
+        if (::EVP_PKEY_CTX_ctrl(
+              this->_context.verify.get(),
+              EVP_PKEY_RSA,
+              EVP_PKEY_OP_TYPE_SIG,
+              EVP_PKEY_CTRL_MD,
+              0,
+              (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
           throw Exception(
             elle::sprintf("unable to set the EVP_PKEY context's digest "
                           "function: %s",
@@ -327,18 +372,18 @@ namespace infinit
         // makes it secure.
 
         // Prepare the rotation context.
-        ELLE_ASSERT_EQ(this->_context_rotate, nullptr);
-        this->_context_rotate.reset(
+        ELLE_ASSERT_EQ(this->_context.rotate, nullptr);
+        this->_context.rotate.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_encrypt_init,
-                          RSA_NO_PADDING));
+                          Padding::none));
 
         // Prepare the derive context.
-        ELLE_ASSERT_EQ(this->_context_derive, nullptr);
-        this->_context_derive.reset(
+        ELLE_ASSERT_EQ(this->_context.derive, nullptr);
+        this->_context.derive.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_verify_recover_init,
-                          RSA_NO_PADDING));
+                          Padding::none));
 #endif
       }
 
@@ -349,9 +394,9 @@ namespace infinit
         ELLE_DUMP("plain: %x", plain);
 
         return (evp::asymmetric::encrypt(plain,
-                                         this->_context_encrypt.get(),
+                                         this->_context.encrypt.get(),
                                          ::EVP_PKEY_encrypt,
-                                         this->_context_encrypt_padding_size));
+                                         this->_context.envelope_padding_size));
       }
 
       elle::Boolean
@@ -364,7 +409,7 @@ namespace infinit
 
         return (evp::asymmetric::verify(signature,
                                         digest,
-                                        this->_context_verify.get(),
+                                        this->_context.verify.get(),
                                         ::EVP_PKEY_verify));
       }
 
@@ -404,7 +449,7 @@ namespace infinit
 
         elle::Buffer buffer =
           evp::asymmetric::apply(seed.buffer(),
-                                 this->_context_rotate.get(),
+                                 this->_context.rotate.get(),
                                  ::EVP_PKEY_encrypt);
 
         // Make sure the seed does not grow over time.
@@ -429,7 +474,7 @@ namespace infinit
 
         elle::Buffer buffer =
           evp::asymmetric::apply(seed.buffer(),
-                                 this->_context_derive.get(),
+                                 this->_context.derive.get(),
                                  ::EVP_PKEY_verify_recover);
 
         // Make sure the derived seed has the same size as the original.
@@ -514,17 +559,15 @@ namespace infinit
                << *this->_key->pkey.rsa->e
                << ")";
 
-        stream << "[";
-        padding::print(stream, this->_context_encrypt.get());
-        stream << ", ";
-        padding::print(stream, this->_context_verify.get());
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        stream << ", ";
-        padding::print(stream, this->_context_rotate.get());
-        stream << ", ";
-        padding::print(stream, this->_context_derive.get());
-#endif
-        stream << "]";
+        stream << "["
+               << this->_encryption_padding
+               << ", "
+               << this->_signature_padding
+               << ", "
+               << this->_digest_algorithm
+               << ", "
+               << this->_envelope_algorithm
+               << "]";
       }
     }
   }

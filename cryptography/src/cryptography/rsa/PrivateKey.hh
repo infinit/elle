@@ -7,7 +7,9 @@
 # include <cryptography/Clear.hh>
 # include <cryptography/Signature.hh>
 # include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
+# include <cryptography/rsa/Padding.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -41,16 +43,25 @@ namespace infinit
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PrivateKey(::EVP_PKEY* key);
+        PrivateKey(::EVP_PKEY* key,
+                   Padding const encryption_padding,
+                   Padding const signature_padding,
+                   Oneway const digest_algorithm);
         /// Construct a private key based on the given RSA key whose
         /// ownership is transferred to the private key.
         explicit
-        PrivateKey(::RSA* rsa);
+        PrivateKey(::RSA* rsa,
+                   Padding const encryption_padding,
+                   Padding const signature_padding,
+                   Oneway const digest_algorithm);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Construct a private key based on a given seed i.e in a deterministic
         /// way.
         explicit
-        PrivateKey(Seed const& seed);
+        PrivateKey(Seed const& seed,
+                   Padding const encryption_padding = Padding::oaep,
+                   Padding const signature_padding = Padding::pss,
+                   Oneway const digest_algorithm = Oneway::sha256);
 # endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
@@ -141,14 +152,20 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-        // Note that the contexts are not encrypted. For more information,
-        // please refer to the PublicKey class.
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_decrypt);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_sign);
+        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
+        ELLE_ATTRIBUTE_R(Padding, signature_padding);
+        ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
+        // Note that the contexts are not serialized because they can
+        // be reconstructed out of the paddings and algorithms above.
+        struct
+        {
+          types::EVP_PKEY_CTX decrypt;
+          types::EVP_PKEY_CTX sign;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
+          types::EVP_PKEY_CTX derive;
+          types::EVP_PKEY_CTX rotate;
 # endif
+        } _context;
       };
     }
   }

@@ -49,7 +49,11 @@ namespace infinit
       }
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-      KeyPair::KeyPair(Seed const& seed)
+      KeyPair::KeyPair(Seed const& seed,
+                       Padding const encryption_padding,
+                       Padding const signature_padding,
+                       Oneway const digest_algorithm,
+                       Cipher const envelope_algorithm)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -70,8 +74,11 @@ namespace infinit
 
         // Instanciate both a RSA public and private key based on the RSA
         // structure.
-        this->_k.reset(new PrivateKey(rsa));
-        this->_K.reset(new PublicKey(*this->_k));
+        this->_k.reset(new PrivateKey(rsa,
+                                      encryption_padding, signature_padding,
+                                      digest_algorithm));
+        this->_K.reset(new PublicKey(*this->_k,
+                                     envelope_algorithm));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -250,10 +257,10 @@ namespace infinit
 
         KeyPair
         generate(elle::Natural32 const length,
-                 Padding const encryption,
-                 Padding const signature,
-                 Oneway const digest,
-                 Cipher const envelope)
+                 Padding const encryption_padding,
+                 Padding const signature_padding,
+                 Oneway const digest_algorithm,
+                 Cipher const envelope_algorithm)
         {
           ELLE_TRACE_FUNCTION(length);
 
@@ -284,8 +291,10 @@ namespace infinit
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.
-          PrivateKey k(key);
-          PublicKey K(k);
+          PrivateKey k(key,
+                       encryption_padding, signature_padding,
+                       digest_algorithm);
+          PublicKey K(k, envelope_algorithm);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 

@@ -5,7 +5,10 @@
 # include <cryptography/types.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
+# include <cryptography/rsa/Padding.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -39,20 +42,33 @@ namespace infinit
         PublicKey(); // XXX[to deserialize]
         /// Construct a public key out of its private counterpart.
         explicit
-        PublicKey(PrivateKey const& k);
+        PublicKey(PrivateKey const& k,
+                  Cipher const envelope_algorithm);
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PublicKey(::EVP_PKEY* key);
+        PublicKey(::EVP_PKEY* key,
+                  Padding const encryption_padding,
+                  Padding const signature_padding,
+                  Oneway const digest_algorithm,
+                  Cipher const envelope_algorithm);
         /// Construct a public key based on the given RSA key whose
         /// ownership is transferred to the public key.
         explicit
-        PublicKey(::RSA* rsa);
+        PublicKey(::RSA* rsa,
+                  Padding const encryption_padding,
+                  Padding const signature_padding,
+                  Oneway const digest_algorithm,
+                  Cipher const envelope_algorithm);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Construct a public key based on a given seed i.e in a deterministic
         /// way.
         explicit
-        PublicKey(Seed const& seed);
+        PublicKey(Seed const& seed,
+                  Padding const encryption_padding = Padding::oaep,
+                  Padding const signature_padding = Padding::pss,
+                  Oneway const digest_algorithm = Oneway::sha256,
+                  Cipher const envelope_algorithm = Cipher::aes256);
 # endif
 
         PublicKey(PublicKey const& other);
@@ -150,22 +166,23 @@ namespace infinit
         `-----------*/
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-        // Note that the contexts are not serialized because the behavior
-        // of the key depends on the implementation and changes with every
-        // version.
-        //
-        // Instead of serializing the padding schemes along with message
-        // digest algorithm used to sign for instance, only the key is
-        // serialized along with the version of the implementation with
-        // which it is supposed to work.
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_encrypt);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_verify);
+        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
+        ELLE_ATTRIBUTE_R(Padding, signature_padding);
+        ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
+        ELLE_ATTRIBUTE_R(Cipher, envelope_algorithm);
+        // Note that the contexts are not serialized because they can
+        // be reconstructed out of the paddings and algorithms above.
+        struct
+        {
+          types::EVP_PKEY_CTX encrypt;
+          types::EVP_PKEY_CTX verify;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_rotate);
-        ELLE_ATTRIBUTE(types::EVP_PKEY_CTX, context_derive);
+          types::EVP_PKEY_CTX rotate;
+          types::EVP_PKEY_CTX derive;
 # endif
-        // The padding size expressed in bits.
-        ELLE_ATTRIBUTE(elle::Natural32, context_encrypt_padding_size);
+          // The encryption padding size expressed in bits.
+          elle::Natural32 envelope_padding_size;
+        } _context;
       };
     }
   }
