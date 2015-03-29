@@ -2657,22 +2657,29 @@ class WritePermissions:
 
   def __init__(self, node):
     self.__path = str(node.path())
+    self.__initial_permissions = None
 
   def __enter__(self):
     # FIXME: errors!
     try:
+      self.__initial_permissions = _OS.stat(self.__path).st_mode
       _OS.chmod(self.__path,
                 _OS.stat(self.__path).st_mode | stat.S_IWUSR)
     except OSError as e:
+      self.__initial_permissions = None
       if e.errno == 2:
         pass
       else:
         raise
 
+  @property
+  def permissions(self):
+    return self.__initial_permissions or \
+      _OS.stat(self.__path).st_mode & ~stat.S_IWRITE
+
   def __exit__(self, *args):
     try:
-      _OS.chmod(self.__path,
-                _OS.stat(self.__path).st_mode & ~stat.S_IWRITE)
+      _OS.chmod(self.__path, self.permissions)
     except OSError as e:
       if e.errno == 2:
         pass
