@@ -3,6 +3,8 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Code.hh>
+# include <cryptography/Cipher.hh>
+# include <cryptography/Oneway.hh>
 
 # include <elle/types.hh>
 # include <elle/fwd.hh>
@@ -50,6 +52,8 @@ namespace infinit
                                 size_t*,
                                 const unsigned char*,
                                 size_t),
+                Cipher const cipher,
+                Oneway const oneway,
                 elle::Natural32 const padding_size);
         /// Decrypt the code with the provided context and function.
         Clear

@@ -35,12 +35,6 @@ namespace infinit
         | Constants |
         `----------*/
       public:
-        /// The algorithm used for hashing the content to sign/verify.
-        ///
-        /// XXX to remove
-        static Oneway const signature_oneway_algorithm =
-          Oneway::sha256;
-
         /*-------------.
         | Construction |
         `-------------*/
