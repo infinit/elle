@@ -4,6 +4,9 @@
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/rsa/Padding.hh>
+#include <cryptography/Oneway.hh>
+#include <cryptography/Cipher.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/random.hh>
 
@@ -18,12 +21,23 @@
 
 static
 void
-_test_represent()
+_test_represent(elle::Natural32 const length,
+                infinit::cryptography::rsa::Padding const encryption_padding,
+                infinit::cryptography::rsa::Padding const signature_padding,
+                infinit::cryptography::Oneway const digest_algorithm,
+                infinit::cryptography::Cipher const envelope_cipher,
+                infinit::cryptography::Mode const envelope_mode)
 {
   // 1)
   {
     infinit::cryptography::rsa::KeyPair keypair =
-      infinit::cryptography::rsa::keypair::generate(1024);
+      infinit::cryptography::rsa::keypair::generate(length,
+                                                    encryption_padding,
+                                                    signature_padding,
+                                                    digest_algorithm,
+                                                    envelope_cipher,
+                                                    envelope_mode);
+
     elle::String archive;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive) << keypair;
@@ -41,7 +55,12 @@ test_represent()
   // These generate base64-based representations which can be used in
   // other tests.
 
-  _test_represent();
+  _test_represent(1024,
+                  infinit::cryptography::rsa::Padding::oaep,
+                  infinit::cryptography::rsa::Padding::pss,
+                  infinit::cryptography::Oneway::sha1,
+                  infinit::cryptography::Cipher::idea,
+                  infinit::cryptography::Mode::cbc);
 }
 
 /*---------.
@@ -50,10 +69,20 @@ test_represent()
 
 static
 infinit::cryptography::rsa::KeyPair
-_test_generate(elle::Natural32 const length = 2048)
+_test_generate(elle::Natural32 const length,
+               infinit::cryptography::rsa::Padding const encryption_padding,
+               infinit::cryptography::rsa::Padding const signature_padding,
+               infinit::cryptography::Oneway const digest_algorithm,
+               infinit::cryptography::Cipher const envelope_cipher,
+               infinit::cryptography::Mode const envelope_mode)
 {
   infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(length);
+    infinit::cryptography::rsa::keypair::generate(length,
+                                                  encryption_padding,
+                                                  signature_padding,
+                                                  digest_algorithm,
+                                                  envelope_cipher,
+                                                  envelope_mode);
 
   return (keypair);
 }
@@ -62,7 +91,12 @@ static
 void
 test_generate()
 {
-  _test_generate();
+  _test_generate(4096,
+                 infinit::cryptography::rsa::Padding::pkcs1,
+                 infinit::cryptography::rsa::Padding::pkcs1,
+                 infinit::cryptography::Oneway::sha256,
+                 infinit::cryptography::Cipher::blowfish,
+                 infinit::cryptography::Mode::ecb);
 }
 
 /*----------.
@@ -73,7 +107,13 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::rsa::KeyPair keypair1 = _test_generate(1024);
+  infinit::cryptography::rsa::KeyPair keypair1 =
+    _test_generate(2048,
+                   infinit::cryptography::rsa::Padding::oaep,
+                   infinit::cryptography::rsa::Padding::pkcs1,
+                   infinit::cryptography::Oneway::sha,
+                   infinit::cryptography::Cipher::aes128,
+                   infinit::cryptography::Mode::ofb);
 
   // KeyPair copy.
   infinit::cryptography::rsa::KeyPair keypair2(keypair1);
@@ -166,7 +206,13 @@ static
 void
 test_operate()
 {
-  infinit::cryptography::rsa::KeyPair keypair = _test_generate(1024);
+  infinit::cryptography::rsa::KeyPair keypair =
+    _test_generate(512,
+                   infinit::cryptography::rsa::Padding::pkcs1,
+                   infinit::cryptography::rsa::Padding::pss,
+                   infinit::cryptography::Oneway::md5,
+                   infinit::cryptography::Cipher::desx,
+                   infinit::cryptography::Mode::cbc);
 
   _test_operate(keypair);
 }
@@ -181,7 +227,13 @@ test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::rsa::KeyPair keypair1 = _test_generate(512);
+    infinit::cryptography::rsa::KeyPair keypair1 =
+      _test_generate(1024,
+                     infinit::cryptography::rsa::Padding::oaep,
+                     infinit::cryptography::rsa::Padding::pkcs1,
+                     infinit::cryptography::Oneway::sha512,
+                     infinit::cryptography::Cipher::des2,
+                     infinit::cryptography::Mode::cfb);
 
     elle::String archive;
     elle::serialize::to_string(archive) << keypair1;
@@ -201,7 +253,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "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"
+      "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"
       };
 
     infinit::cryptography::test::formats<infinit::cryptography::rsa::KeyPair>(
