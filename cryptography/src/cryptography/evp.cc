@@ -54,8 +54,9 @@ namespace infinit
           // The cipher is not important as it does not impact the
           // serialization's overhead.
           Cipher cipher = Cipher::aes256;
+          Mode mode = Mode::cbc;
           Oneway oneway = Oneway::sha256;
-          SecretKey secret(cipher, password, oneway);
+          SecretKey secret(password, cipher, mode, oneway);
 
           elle::Buffer buffer;
           buffer.writer() << secret;
@@ -132,6 +133,7 @@ namespace infinit
                                 const unsigned char*,
                                 size_t),
                 Cipher const cipher,
+                Mode const mode,
                 Oneway const oneway,
                 elle::Natural32 const padding_size)
         {
@@ -180,7 +182,7 @@ namespace infinit
             (padding_size + overhead) : ceiling;
 
           // 2) Generate a temporary secret key.
-          SecretKey secret = secretkey::generate(cipher, length, oneway);
+          SecretKey secret = secretkey::generate(length, cipher, mode, oneway);
 
           // 3) Cipher the plain text with the secret key.
           Code data = secret.encrypt(plain);

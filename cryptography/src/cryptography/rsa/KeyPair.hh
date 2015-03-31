@@ -31,9 +31,19 @@ namespace infinit
       class KeyPair:
         public elle::Printable
       {
-        /*----------.
-        | Constants |
-        `----------*/
+        /*---------------.
+        | Default Values |
+        `---------------*/
+      public:
+        struct defaults
+        {
+          static Padding const encryption_padding = Padding::oaep;
+          static Padding const signature_padding = Padding::pss;
+          static Oneway const digest_algorithm = Oneway::sha256;
+          static Cipher const envelope_cipher = Cipher::aes256;
+          static Mode const envelope_mode = Mode::cbc;
+        };
+
       public:
         /*-------------.
         | Construction |
@@ -48,10 +58,11 @@ namespace infinit
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Deduce a keypair based out of the given seed.
         KeyPair(Seed const& seed,
-                Padding const encryption_padding = Padding::oaep,
-                Padding const signature_padding = Padding::pss,
-                Oneway const digest_algorithm = Oneway::sha256,
-                Cipher const envelope_algorithm = Cipher::aes256);
+                Padding const encryption_padding = defaults::encryption_padding,
+                Padding const signature_padding = defaults::signature_padding,
+                Oneway const digest_algorithm = defaults::digest_algorithm,
+                Cipher const envelope_cipher = defaults::envelope_cipher,
+                Mode const envelope_mode = defaults::envelope_mode);
 # endif
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
@@ -142,10 +153,16 @@ namespace infinit
         /// Note that the length is in bits.
         KeyPair
         generate(elle::Natural32 const length,
-                 Padding const encryption_padding = Padding::oaep,
-                 Padding const signature_padding = Padding::pss,
-                 Oneway const digest_algorithm = Oneway::sha256,
-                 Cipher const envelope_algorithm = Cipher::aes256);
+                 Padding const encryption_padding =
+                   KeyPair::defaults::encryption_padding,
+                 Padding const signature_padding =
+                   KeyPair::defaults::signature_padding,
+                 Oneway const digest_algorithm =
+                   KeyPair::defaults::digest_algorithm,
+                 Cipher const envelope_cipher =
+                   KeyPair::defaults::envelope_cipher,
+                 Mode const envelope_mode =
+                   KeyPair::defaults::envelope_mode);
       }
     }
   }

@@ -59,9 +59,12 @@ namespace infinit
         /// way.
         explicit
         PrivateKey(Seed const& seed,
-                   Padding const encryption_padding = Padding::oaep,
-                   Padding const signature_padding = Padding::pss,
-                   Oneway const digest_algorithm = Oneway::sha256);
+                   Padding const encryption_padding =
+                     KeyPair::defaults::encryption_padding,
+                   Padding const signature_padding =
+                     KeyPair::defaults::signature_padding,
+                   Oneway const digest_algorithm =
+                     KeyPair::defaults::digest_algorithm);
 # endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);

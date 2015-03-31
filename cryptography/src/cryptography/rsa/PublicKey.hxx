@@ -113,7 +113,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
   archive << value._encryption_padding;
   archive << value._signature_padding;
   archive << value._digest_algorithm;
-  archive << value._envelope_algorithm;
+  archive << value._envelope_cipher;
+  archive << value._envelope_mode;
 
   INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
   ::OPENSSL_free(_buffer);
@@ -130,7 +131,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
   archive >> value._encryption_padding;
   archive >> value._signature_padding;
   archive >> value._digest_algorithm;
-  archive >> value._envelope_algorithm;
+  archive >> value._envelope_cipher;
+  archive >> value._envelope_mode;
 
   const unsigned char* _buffer = buffer.contents();
   long _size = buffer.size();

@@ -80,8 +80,9 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::SecretKey,
 {
   enforce(format == 0);
 
-  archive & value._cipher;
   archive & value._password;
+  archive & value._cipher;
+  archive & value._mode;
   archive & value._oneway;
 }
 

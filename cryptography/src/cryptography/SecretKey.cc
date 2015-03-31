@@ -27,23 +27,27 @@ namespace infinit
       cryptography::require();
     }
 
-    SecretKey::SecretKey(Cipher const cipher,
-                         elle::String const& password,
+    SecretKey::SecretKey(elle::String const& password,
+                         Cipher const cipher,
+                         Mode const mode,
                          Oneway const oneway):
-      _cipher(cipher),
       _password(reinterpret_cast<elle::Byte const*>(password.c_str()),
                 password.length()),
+      _cipher(cipher),
+      _mode(mode),
       _oneway(oneway)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(Cipher const cipher,
-                         elle::Buffer&& password,
+    SecretKey::SecretKey(elle::Buffer&& password,
+                         Cipher const cipher,
+                         Mode const mode,
                          Oneway const oneway):
-      _cipher(cipher),
       _password(std::move(password)),
+      _cipher(cipher),
+      _mode(mode),
       _oneway(oneway)
     {
       // Make sure the cryptographic system is set up.
@@ -51,8 +55,9 @@ namespace infinit
     }
 
     SecretKey::SecretKey(SecretKey const& other):
-      _cipher(other._cipher),
       _password(other._password.contents(), other._password.size()),
+      _cipher(other._cipher),
+      _mode(other._mode),
       _oneway(other._oneway)
     {
       // Make sure the cryptographic system is set up.
@@ -60,8 +65,9 @@ namespace infinit
     }
 
     SecretKey::SecretKey(SecretKey&& other):
-      _cipher(other._cipher),
       _password(std::move(other._password)),
+      _cipher(other._cipher),
+      _mode(other._mode),
       _oneway(other._oneway)
     {
       // Make sure the cryptographic system is set up.
@@ -86,8 +92,10 @@ namespace infinit
       ELLE_DUMP("plain: %x", plain);
 
       // Resolve the cipher and oneway functions.
-      ::EVP_CIPHER const* function_cipher = cipher::resolve(this->_cipher);
-      ::EVP_MD const* function_oneway = oneway::resolve(this->_oneway);
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
 
       return (evp::symmetric::encrypt(plain,
                                       this->_password,
@@ -102,8 +110,10 @@ namespace infinit
       ELLE_DUMP("code: %x", code);
 
       // Resolve the cipher and oneway functions.
-      ::EVP_CIPHER const* function_cipher = cipher::resolve(this->_cipher);
-      ::EVP_MD const* function_oneway = oneway::resolve(this->_oneway);
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
 
       return (evp::symmetric::decrypt(code,
                                       this->_password,
@@ -164,8 +174,9 @@ namespace infinit
         return (true);
 
       // Compare the internal buffer along with the oneways.
-      return ((this->_cipher == other._cipher) &&
-              (this->_password == other._password) &&
+      return ((this->_password == other._password) &&
+              (this->_cipher == other._cipher) &&
+              (this->_mode == other._mode) &&
               (this->_oneway == other._oneway));
     }
 
@@ -176,7 +187,9 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      elle::fprintf(stream, "%s(%x)", this->_cipher, this->_password);
+      elle::fprintf(stream, "%x[%s, %s, %s]",
+                    this->_password,
+                    this->_cipher, this->_mode, this->_oneway);
     }
   }
 }
@@ -196,11 +209,12 @@ namespace infinit
       `----------*/
 
       SecretKey
-      generate(Cipher const cipher,
-               elle::Natural32 const length,
+      generate(elle::Natural32 const length,
+               Cipher const cipher,
+               Mode const mode,
                Oneway const oneway)
       {
-        ELLE_TRACE_FUNCTION(cipher, length, oneway);
+        ELLE_TRACE_FUNCTION(length, cipher, mode, oneway);
 
         // Convert the length in a bit-specific size.
         elle::Natural32 size = length / 8;
@@ -209,7 +223,7 @@ namespace infinit
         elle::Buffer password(random::generate<elle::Buffer>(size));
 
         // Return a new secret key.
-        return (SecretKey(cipher, std::move(password), oneway));
+        return (SecretKey(std::move(password), cipher, mode, oneway));
       }
     }
   }

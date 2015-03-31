@@ -53,7 +53,8 @@ namespace infinit
                        Padding const encryption_padding,
                        Padding const signature_padding,
                        Oneway const digest_algorithm,
-                       Cipher const envelope_algorithm)
+                       Cipher const envelope_cipher,
+                       Mode const envelope_mode)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -78,7 +79,7 @@ namespace infinit
                                       encryption_padding, signature_padding,
                                       digest_algorithm));
         this->_K.reset(new PublicKey(*this->_k,
-                                     envelope_algorithm));
+                                     envelope_cipher, envelope_mode));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -260,7 +261,8 @@ namespace infinit
                  Padding const encryption_padding,
                  Padding const signature_padding,
                  Oneway const digest_algorithm,
-                 Cipher const envelope_algorithm)
+                 Cipher const envelope_cipher,
+                 Mode const envelope_mode)
         {
           ELLE_TRACE_FUNCTION(length);
 
@@ -294,7 +296,8 @@ namespace infinit
           PrivateKey k(key,
                        encryption_padding, signature_padding,
                        digest_algorithm);
-          PublicKey K(k, envelope_algorithm);
+          PublicKey K(k,
+                      envelope_cipher, envelope_mode);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 

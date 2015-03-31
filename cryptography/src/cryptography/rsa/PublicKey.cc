@@ -51,7 +51,8 @@ namespace infinit
       }
 
       PublicKey::PublicKey(PrivateKey const& k,
-                           Cipher const envelope_algorithm)
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -60,7 +61,8 @@ namespace infinit
         this->_encryption_padding = k.encryption_padding();
         this->_signature_padding = k.signature_padding();
         this->_digest_algorithm = k.digest_algorithm();
-        this->_envelope_algorithm = envelope_algorithm;
+        this->_envelope_cipher = envelope_cipher;
+        this->_envelope_mode = envelope_mode;
 
         // Extract the public key only.
         RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
@@ -92,12 +94,14 @@ namespace infinit
                            Padding const encryption_padding,
                            Padding const signature_padding,
                            Oneway const digest_algorithm,
-                           Cipher const envelope_algorithm):
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode):
         _key(key),
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
         _digest_algorithm(digest_algorithm),
-        _envelope_algorithm(envelope_algorithm)
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -131,11 +135,13 @@ namespace infinit
                            Padding const encryption_padding,
                            Padding const signature_padding,
                            Oneway const digest_algorithm,
-                           Cipher const envelope_algorithm):
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode):
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
         _digest_algorithm(digest_algorithm),
-        _envelope_algorithm(envelope_algorithm)
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -173,11 +179,13 @@ namespace infinit
                            Padding const encryption_padding,
                            Padding const signature_padding,
                            Oneway const digest_algorithm,
-                           Cipher const envelope_algorithm):
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode):
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
         _digest_algorithm(digest_algorithm),
-        _envelope_algorithm(envelope_algorithm)
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -230,7 +238,8 @@ namespace infinit
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
         _digest_algorithm(other._digest_algorithm),
-        _envelope_algorithm(other._envelope_algorithm)
+        _envelope_cipher(other._envelope_cipher),
+        _envelope_mode(other._envelope_mode)
       {
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
@@ -266,7 +275,8 @@ namespace infinit
         _encryption_padding(std::move(other._encryption_padding)),
         _signature_padding(std::move(other._signature_padding)),
         _digest_algorithm(std::move(other._digest_algorithm)),
-        _envelope_algorithm(std::move(other._envelope_algorithm))
+        _envelope_cipher(std::move(other._envelope_cipher)),
+        _envelope_mode(std::move(other._envelope_mode))
       {
         this->_context.encrypt = std::move(other._context.encrypt);
         this->_context.verify = std::move(other._context.verify);
@@ -397,7 +407,8 @@ namespace infinit
                   plain,
                   this->_context.encrypt.get(),
                   ::EVP_PKEY_encrypt,
-                  this->_envelope_algorithm,
+                  this->_envelope_cipher,
+                  this->_envelope_mode,
                   this->_digest_algorithm,
                   this->_context.envelope_padding_size));
       }
@@ -569,7 +580,9 @@ namespace infinit
                << ", "
                << this->_digest_algorithm
                << ", "
-               << this->_envelope_algorithm
+               << this->_envelope_cipher
+               << ", "
+               << this->_envelope_mode
                << "]";
       }
     }

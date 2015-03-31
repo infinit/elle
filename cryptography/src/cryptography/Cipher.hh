@@ -16,6 +16,7 @@ namespace infinit
     /// Define the cipher algorithm.
     enum class Cipher
     {
+      null,
       des,
       des2,
       des3,
@@ -29,6 +30,16 @@ namespace infinit
       aes256
     };
 
+    // The mode of operation
+    enum class Mode
+    {
+      none,
+      cbc,
+      ecb,
+      cfb,
+      ofb
+    };
+
     /*----------.
     | Operators |
     `----------*/
@@ -36,6 +47,10 @@ namespace infinit
     std::ostream&
     operator <<(std::ostream& stream,
                 Cipher const cipher);
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Mode const mode);
 
     namespace cipher
     {
@@ -45,7 +60,8 @@ namespace infinit
 
       /// Return the cipher function associated with the given algorithm name.
       ::EVP_CIPHER const*
-      resolve(Cipher const name);
+      resolve(Cipher const cipher,
+              Mode const mode);
     }
   }
 }

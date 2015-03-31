@@ -20,7 +20,7 @@ def configure(openssl_config,
               openssl_lib_ssl,
               cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
-              rotation = False,
+              enable_rotation = False,
               boost = None,
               elle = None,
               prefix = '/usr',
@@ -40,7 +40,7 @@ def configure(openssl_config,
   openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                             'lib', strip_prefix = True)
 
-  if rotation:
+  if enable_rotation:
     cxx_config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.include(
       'modules/dopenssl',
@@ -82,7 +82,7 @@ def configure(openssl_config,
   config.add_local_include_path('src')
   config.lib_path('lib')
   config += openssl_config
-  if rotation:
+  if enable_rotation:
     config += dopenssl.config
 
   # Local Configuration
@@ -97,11 +97,13 @@ def configure(openssl_config,
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   cxx_config += elle.config
   cxx_config += openssl_config
-  if rotation:
+  if enable_rotation:
     cxx_config += dopenssl.config
 
   # Sources
   sources = drake.nodes(
+    'src/cryptography/Cipher.cc',
+    'src/cryptography/Cipher.hh',
     'src/cryptography/Clear.hh',
     'src/cryptography/Code.hh',
     'src/cryptography/Cryptosystem.cc',
@@ -130,8 +132,6 @@ def configure(openssl_config,
     'src/cryptography/bn.hxx',
 # XXX    'src/cryptography/challenge.cc',
 # XXX    'src/cryptography/challenge.hh',
-    'src/cryptography/cipher.cc',
-    'src/cryptography/cipher.hh',
     'src/cryptography/cryptography.cc',
     'src/cryptography/cryptography.hh',
     'src/cryptography/evp.cc',
@@ -166,7 +166,7 @@ def configure(openssl_config,
     'src/cryptography/rsa/context.hh',
     )
 
-  if rotation:
+  if enable_rotation:
     sources += drake.nodes(
       'src/cryptography/rsa/Seed.cc',
       'src/cryptography/rsa/Seed.hh',
@@ -207,7 +207,7 @@ def configure(openssl_config,
     "rsa/PrivateKey.cc",
     "rsa/PublicKey.cc",
      ]
-  if rotation:
+  if enable_rotation:
     tests += [ "rsa/Seed.cc",
                "rsa/scenario.cc" ]
 
@@ -224,11 +224,11 @@ def configure(openssl_config,
 
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
-  if rotation:
+  if enable_rotation:
     rule_check << dopenssl.rule_check
 
   rule_tests = drake.Rule('tests')
-  if rotation:
+  if enable_rotation:
     rule_tests << dopenssl.rule_tests
 
   for test in tests:

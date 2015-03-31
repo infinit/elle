@@ -29,6 +29,17 @@ namespace infinit
       public elle::concept::MakeUniquable<SecretKey>,
       public elle::Printable
     {
+      /*---------------.
+      | Default Values |
+      `---------------*/
+    public:
+      struct defaults
+      {
+        static Cipher const cipher = Cipher::aes256;
+        static Mode const mode = Mode::cbc;
+        static Oneway const oneway = Oneway::sha256;
+      };
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -36,13 +47,15 @@ namespace infinit
       SecretKey(); // XXX[to deserialize]
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
-      SecretKey(Cipher const cipher,
-                elle::String const& password,
-                Oneway const oneway);
+      SecretKey(elle::String const& password,
+                Cipher const cipher = defaults::cipher,
+                Mode const mode = defaults::mode,
+                Oneway const oneway = defaults::oneway);
       /// Construct a secret key based on a given buffer.
-      SecretKey(Cipher const cipher,
-                elle::Buffer&& password,
-                Oneway const oneway);
+      SecretKey(elle::Buffer&& password,
+                Cipher const cipher = defaults::cipher,
+                Mode const mode = defaults::mode,
+                Oneway const oneway = defaults::oneway);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
       /// Derialization constructor.
@@ -110,9 +123,10 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE_R(Cipher, cipher);
       ELLE_ATTRIBUTE(elle::Buffer, password);
-      ELLE_ATTRIBUTE(Oneway, oneway);
+      ELLE_ATTRIBUTE_R(Cipher, cipher);
+      ELLE_ATTRIBUTE_R(Mode, mode)
+      ELLE_ATTRIBUTE_R(Oneway, oneway);
     };
   }
 }
@@ -135,9 +149,10 @@ namespace infinit
       ///
       /// Note that the length is expressed in bits.
       SecretKey
-      generate(Cipher const cipher,
-               elle::Natural32 const length,
-               Oneway const oneway = Oneway::sha256);
+      generate(elle::Natural32 const length,
+               Cipher const cipher = SecretKey::defaults::cipher,
+               Mode const mode = SecretKey::defaults::mode,
+               Oneway const oneway = SecretKey::defaults::oneway);
     }
   }
 }

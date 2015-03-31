@@ -53,6 +53,7 @@ namespace infinit
                                 const unsigned char*,
                                 size_t),
                 Cipher const cipher,
+                Mode const mode,
                 Oneway const oneway,
                 elle::Natural32 const padding_size);
         /// Decrypt the code with the provided context and function.

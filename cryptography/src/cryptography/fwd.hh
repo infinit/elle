@@ -6,6 +6,7 @@ namespace infinit
   namespace cryptography
   {
     enum class Cipher;
+    enum class Mode;
     enum class Cryptosystem;
     enum class Oneway;
     class Exception;

@@ -43,7 +43,8 @@ namespace infinit
         /// Construct a public key out of its private counterpart.
         explicit
         PublicKey(PrivateKey const& k,
-                  Cipher const envelope_algorithm);
+                  Cipher const envelope_cipher,
+                  Mode const envelope_mode);
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -51,7 +52,8 @@ namespace infinit
                   Padding const encryption_padding,
                   Padding const signature_padding,
                   Oneway const digest_algorithm,
-                  Cipher const envelope_algorithm);
+                  Cipher const envelope_cipher,
+                  Mode const envelope_mode);
         /// Construct a public key based on the given RSA key whose
         /// ownership is transferred to the public key.
         explicit
@@ -59,18 +61,24 @@ namespace infinit
                   Padding const encryption_padding,
                   Padding const signature_padding,
                   Oneway const digest_algorithm,
-                  Cipher const envelope_algorithm);
+                  Cipher const envelope_cipher,
+                  Mode const envelope_mode);
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Construct a public key based on a given seed i.e in a deterministic
         /// way.
         explicit
         PublicKey(Seed const& seed,
-                  Padding const encryption_padding = Padding::oaep,
-                  Padding const signature_padding = Padding::pss,
-                  Oneway const digest_algorithm = Oneway::sha256,
-                  Cipher const envelope_algorithm = Cipher::aes256);
+                  Padding const encryption_padding =
+                    KeyPair::defaults::encryption_padding,
+                  Padding const signature_padding =
+                    KeyPair::defaults::signature_padding,
+                  Oneway const digest_algorithm =
+                    KeyPair::defaults::digest_algorithm,
+                  Cipher const envelope_cipher =
+                    KeyPair::defaults::envelope_cipher,
+                  Mode const envelope_mode =
+                    KeyPair::defaults::envelope_mode);
 # endif
-
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
@@ -169,7 +177,8 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Padding, encryption_padding);
         ELLE_ATTRIBUTE_R(Padding, signature_padding);
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
-        ELLE_ATTRIBUTE_R(Cipher, envelope_algorithm);
+        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
+        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
         // Note that the contexts are not serialized because they can
         // be reconstructed out of the paddings and algorithms above.
         struct

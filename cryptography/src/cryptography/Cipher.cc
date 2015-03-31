@@ -19,6 +19,11 @@ namespace infinit
     {
       switch (cipher)
       {
+        case Cipher::null:
+        {
+          stream << "null";
+          break;
+        }
         case Cipher::des:
         {
           stream << "des";
@@ -75,8 +80,47 @@ namespace infinit
           break;
         }
         default:
-          throw Exception(elle::sprintf("unknown cipher cipher '%s'",
+          throw Exception(elle::sprintf("unknown cipher '%s'",
                                         static_cast<int>(cipher)));
+      }
+
+      return (stream);
+    }
+
+    std::ostream&
+    operator <<(std::ostream& stream,
+                Mode const mode)
+    {
+      switch (mode)
+      {
+        case Mode::none:
+        {
+          stream << "none";
+          break;
+        }
+        case Mode::cbc:
+        {
+          stream << "cbc";
+          break;
+        }
+        case Mode::ecb:
+        {
+          stream << "ecb";
+          break;
+        }
+        case Mode::cfb:
+        {
+          stream << "cfb";
+          break;
+        }
+        case Mode::ofb:
+        {
+          stream << "ofb";
+          break;
+        }
+        default:
+          throw Exception(elle::sprintf("unknown operation mode '%s'",
+                                        static_cast<int>(mode)));
       }
 
       return (stream);
@@ -89,40 +133,225 @@ namespace infinit
       `----------*/
 
       ::EVP_CIPHER const*
-      resolve(Cipher const name)
+      resolve(Cipher const cipher,
+              Mode const mode)
       {
-        ELLE_TRACE_FUNCTION(name);
+        ELLE_TRACE_FUNCTION(cipher, mode);
 
-        switch (name)
+        switch (cipher)
         {
+          case Cipher::null:
+          {
+            switch (mode)
+            {
+              case Mode::none:
+                return (::EVP_enc_null());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::des:
-            return (::EVP_des_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_des_cbc());
+              case Mode::ecb:
+                return (::EVP_des_ecb());
+              case Mode::cfb:
+                return (::EVP_des_cfb());
+              case Mode::ofb:
+                return (::EVP_des_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::des2:
-            return (::EVP_des_ede_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_des_ede_cbc());
+              case Mode::ecb:
+                return (::EVP_des_ede_ecb());
+              case Mode::cfb:
+                return (::EVP_des_ede_cfb());
+              case Mode::ofb:
+                return (::EVP_des_ede_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::des3:
-            return (::EVP_des_ede3_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_des_ede3_cbc());
+              case Mode::ecb:
+                return (::EVP_des_ede3_ecb());
+              case Mode::cfb:
+                return (::EVP_des_ede3_cfb());
+              case Mode::ofb:
+                return (::EVP_des_ede3_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::desx:
-            return (::EVP_desx_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_desx_cbc());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::idea:
-            return (::EVP_idea_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_idea_cbc());
+              case Mode::ecb:
+                return (::EVP_idea_ecb());
+              case Mode::cfb:
+                return (::EVP_idea_cfb());
+              case Mode::ofb:
+                return (::EVP_idea_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::rc2:
-            return (::EVP_rc2_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_rc2_cbc());
+              case Mode::ecb:
+                return (::EVP_rc2_ecb());
+              case Mode::cfb:
+                return (::EVP_rc2_cfb());
+              case Mode::ofb:
+                return (::EVP_rc2_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::blowfish:
-            return (::EVP_bf_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_bf_cbc());
+              case Mode::ecb:
+                return (::EVP_bf_ecb());
+              case Mode::cfb:
+                return (::EVP_bf_cfb());
+              case Mode::ofb:
+                return (::EVP_bf_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::cast5:
-            return (::EVP_cast5_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_cast5_cbc());
+              case Mode::ecb:
+                return (::EVP_cast5_ecb());
+              case Mode::cfb:
+                return (::EVP_cast5_cfb());
+              case Mode::ofb:
+                return (::EVP_cast5_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::aes128:
-            return (::EVP_aes_128_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_aes_128_cbc());
+              case Mode::ecb:
+                return (::EVP_aes_128_ecb());
+              case Mode::cfb:
+                return (::EVP_aes_128_cfb());
+              case Mode::ofb:
+                return (::EVP_aes_128_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::aes192:
-            return (::EVP_aes_192_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_aes_192_cbc());
+              case Mode::ecb:
+                return (::EVP_aes_192_ecb());
+              case Mode::cfb:
+                return (::EVP_aes_192_cfb());
+              case Mode::ofb:
+                return (::EVP_aes_192_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           case Cipher::aes256:
-            return (::EVP_aes_256_cbc());
+          {
+            switch (mode)
+            {
+              case Mode::cbc:
+                return (::EVP_aes_256_cbc());
+              case Mode::ecb:
+                return (::EVP_aes_256_ecb());
+              case Mode::cfb:
+                return (::EVP_aes_256_cfb());
+              case Mode::ofb:
+                return (::EVP_aes_256_ofb());
+              default:
+                break;
+            }
+
+            break;
+          }
           default:
-            throw Exception(elle::sprintf("unable to resolve the given cipher "
-                                          "function name '%s'", name));
+            throw Exception(elle::sprintf("unknown cipher '%s'", cipher));
         }
 
-        elle::unreachable();
+        throw Exception(
+          elle::sprintf("the operation mode '%s' is "
+                        "non-compliant with the cipher '%s'",
+                        mode, cipher));
       }
     }
   }
