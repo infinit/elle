@@ -247,6 +247,8 @@ test_scenario()
     infinit::cryptography::rsa::PrivateKey pass_k(*seed);
     BOOST_CHECK_EQUAL(pass_k, passA2_k);
 
+    delete seed;
+
     infinit::cryptography::SecretKey key =
       object1.acl().key(groupA5.address(), pass_k);
     BOOST_CHECK_EQUAL(key, key1);
