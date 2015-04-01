@@ -351,8 +351,10 @@ namespace reactor
                 content = this->read_sized_content(*socket, content_length);
             }
             ELLE_DUMP("%s: content: %s", *this, content);
-            // Check JSON is valid.
-            if (this->is_json(headers))
+            // Check JSON is valid. When getting meta_data on S3, we send a JSON
+            // mimetype but an empty body, skip this case (and fix it later
+            // cautiously).
+            if (this->is_json(headers) && content.size() > 0)
             {
               try
               {
