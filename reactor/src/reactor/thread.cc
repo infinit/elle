@@ -343,6 +343,28 @@ namespace reactor
       return Waitable::_wait(thread);
   }
 
+  static
+  std::ostream&
+  operator <<(std::ostream& output, std::set<Waitable*> waitables)
+  {
+    if (waitables.size() == 1)
+      output << **waitables.begin();
+    else
+    {
+      bool first = true;
+      for (auto const& waitable: waitables)
+      {
+        if (first)
+          first = false;
+        else
+          output << ", ";
+        output << *waitable;
+      }
+      output << "}";
+    }
+    return output;
+  }
+
   void
   Thread::_wait_timeout(boost::system::error_code const& e)
   {
