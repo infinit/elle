@@ -175,7 +175,8 @@ namespace reactor
     private:
       friend class Waitable;
       friend class TimeoutGuard;
-      void _wait_timeout(const boost::system::error_code& e);
+      void _wait_timeout(const boost::system::error_code& e,
+                         std::string const& waited);
       void _wait_abort(std::string const& reason);
       void _freeze();
       void _wake(Waitable* waitable);

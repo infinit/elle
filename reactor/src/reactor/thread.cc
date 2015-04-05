@@ -13,6 +13,9 @@
 
 ELLE_LOG_COMPONENT("reactor.Thread");
 
+// FIXME: bug hunting, remove
+#include <reactor/http/Request.hh>
+
 namespace reactor
 {
   /*-------------.
@@ -300,8 +303,13 @@ namespace reactor
       {
         this->_timeout_timer.expires_from_now(timeout.get());
         this->_timeout = false;
+        auto repr = elle::sprintf("%s", waitables);
         this->_timeout_timer.async_wait(
-          boost::bind(&Thread::_wait_timeout, this, _1));
+          [this, repr]
+          (boost::system::error_code const& e)
+          {
+            this->_wait_timeout(e, repr);
+          });
         auto cancel_timeout = [this]
           {
             ELLE_DUMP("%s: cancel timeout", *this);
@@ -366,7 +374,8 @@ namespace reactor
   }
 
   void
-  Thread::_wait_timeout(boost::system::error_code const& e)
+  Thread::_wait_timeout(boost::system::error_code const& e,
+                        std::string const& waited)
   {
     if (e == boost::system::errc::operation_canceled)
       return;
@@ -376,7 +385,12 @@ namespace reactor
       return;
     ELLE_TRACE("%s: timed out", *this);
     this->_timeout = true;
-    this->_wait_abort(elle::sprintf("wait timeout for %s", this->_waited));
+    // FIXME: bug hunting, remove
+    if (this->_waited.size() == 1 &&
+        dynamic_cast<reactor::http::Request*>(*this->_waited.begin()))
+      ELLE_WARN("DEBUG: timeout on HTTP request: %s", this->_waited);
+    this->_wait_abort(elle::sprintf("wait timeout for %s (waiting %s)",
+                                    waited, this->_waited));
   }
 
   void
