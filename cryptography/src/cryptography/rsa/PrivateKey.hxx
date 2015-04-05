@@ -151,8 +151,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
 // ---------- Hash ------------------------------------------------------------
 //
 
-#include <exception>
-
 namespace std
 {
   template <>
@@ -161,22 +159,12 @@ namespace std
     size_t
     operator ()(infinit::cryptography::rsa::PrivateKey const& value) const
     {
-      unsigned char* buffer = nullptr;
-      int size = ::i2d_RSAPrivateKey(value.key()->pkey.rsa, &buffer);
+      std::stringstream stream;
+      elle::serialize::OutputBinaryArchive archive(stream);
 
-      if (size <= 0)
-        throw std::runtime_error(
-          elle::sprintf("unable to encode the RSA private key: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr)));
+      archive << value;
 
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
-
-      std::string string(reinterpret_cast<char const*>(buffer), size);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
-      ::OPENSSL_free(buffer);
-
-      size_t result = std::hash<std::string>()(string);
+      size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
     }
