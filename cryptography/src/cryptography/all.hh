@@ -21,6 +21,7 @@
 # include <cryptography/types.hh>
 # include <cryptography/low.hh>
 # include <cryptography/hash.hh>
+# include <cryptography/hmac.hh>
 # include <cryptography/pem.hh>
 
 # include <cryptography/rsa/all.hh>

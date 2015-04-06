@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_HASH_HH
-# define INFINIT_CRYPTOGRAPHY_HASH_HH
+#ifndef INFINIT_CRYPTOGRAPHY_HMAC_HH
+# define INFINIT_CRYPTOGRAPHY_HMAC_HH
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
@@ -19,18 +19,20 @@ namespace infinit
     | Functions |
     `----------*/
 
-    /// Hash a plain text and return a digest.
+    /// HMAC plain text using a key and return a digest.
     Digest
-    hash(Plain const& plain,
+    hmac(Plain const& plain,
+         Digest const& key,
          Oneway oneway);
-    /// Hash anything serializable and return a digest.
+    /// HMAC anything serializable using a key and return a digest.
     template <typename T>
     Digest
-    hash(T const& value,
+    hmac(T const& value,
+         Digest const& key,
          Oneway oneway);
   }
 }
 
-# include <cryptography/hash.hxx>
+# include <cryptography/hmac.hxx>
 
 #endif

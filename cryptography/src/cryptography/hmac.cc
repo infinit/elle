@@ -1,4 +1,4 @@
-#include <cryptography/hash.hh>
+#include <cryptography/hmac.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/evp.hh>
@@ -9,7 +9,7 @@
 
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.hash");
+ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
 
 namespace infinit
 {
@@ -20,15 +20,17 @@ namespace infinit
     `----------*/
 
     Digest
-    hash(Plain const& plain,
+    hmac(Plain const& plain,
+         Digest const& key,
          Oneway oneway)
     {
       ELLE_TRACE_FUNCTION(oneway);
       ELLE_DUMP("plain: %x", plain);
+      ELLE_DUMP("digest: %x", key);
 
       ::EVP_MD const* function = oneway::resolve(oneway);
 
-      return (evp::digest::hash(plain, function));
+      return (evp::digest::hmac(plain, key, function));
     }
   }
 }
