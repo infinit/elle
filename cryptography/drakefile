@@ -165,6 +165,8 @@ def configure(openssl_config,
     'src/cryptography/rsa/context.hh',
     'src/cryptography/rsa/pem.cc',
     'src/cryptography/rsa/pem.hh',
+    'src/cryptography/rsa/der.cc',
+    'src/cryptography/rsa/der.hh',
     )
 
   if enable_rotation:

@@ -83,6 +83,9 @@ namespace infinit
         /// Prepare the private key cryptographic contexts.
         void
         _prepare();
+        /// Check that the key is valid.
+        void
+        _check() const;
       public:
         /// Decrypt a code and returns the original clear text.
         ///

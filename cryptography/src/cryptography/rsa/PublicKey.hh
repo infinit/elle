@@ -96,6 +96,9 @@ namespace infinit
         /// Prepare the public key cryptographic contexts.
         void
         _prepare();
+        /// Check that the key is valid.
+        void
+        _check() const;
       public:
         /// Encrypt the given plain text.
         Code

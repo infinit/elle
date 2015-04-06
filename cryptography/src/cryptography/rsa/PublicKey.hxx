@@ -77,12 +77,8 @@ namespace infinit
 # include <elle/serialize/Serializer.hh>
 # include <elle/serialize/StaticFormat.hh>
 
-# include <cryptography/Exception.hh>
 # include <cryptography/finally.hh>
-# include <cryptography/bn.hh>
-
-# include <openssl/rsa.h>
-# include <openssl/x509.h>
+# include <cryptography/rsa/der.hh>
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PublicKey)
 
@@ -93,21 +89,8 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
 {
   ELLE_ASSERT_NEQ(value._key, nullptr);
 
-  unsigned char* _buffer = nullptr;
-  int _size = ::i2d_RSAPublicKey(value._key->pkey.rsa, &_buffer);
-  if (_size <= 0)
-    throw infinit::cryptography::Exception(
-      elle::sprintf("unable to encode the RSA public key: %s",
-                    ::ERR_error_string(ERR_get_error(), nullptr)));
-
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
-
-  // XXX[use a WeakBuffer to avoid a copy: not supported by Raph's
-  //     serialization]
-  //elle::ConstWeakBuffer buffer(_buffer, _size);
-  //archive << buffer;
-  // XXX
-  elle::Buffer buffer(_buffer, _size);
+  elle::Buffer buffer =
+    infinit::cryptography::rsa::der::encode_public(value._key->pkey.rsa);
 
   archive << buffer;
   archive << value._encryption_padding;
@@ -115,9 +98,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
   archive << value._digest_algorithm;
   archive << value._envelope_cipher;
   archive << value._envelope_mode;
-
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
-  ::OPENSSL_free(_buffer);
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
@@ -134,14 +114,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
   archive >> value._envelope_cipher;
   archive >> value._envelope_mode;
 
-  const unsigned char* _buffer = buffer.contents();
-  long _size = buffer.size();
-
-  ::RSA* rsa = nullptr;
-  if ((rsa = ::d2i_RSAPublicKey(NULL, &_buffer, _size)) == NULL)
-    throw infinit::cryptography::Exception(
-      elle::sprintf("unable to decode the RSA public key: %s",
-                    ::ERR_error_string(ERR_get_error(), nullptr)));
+  ::RSA* rsa =
+      infinit::cryptography::rsa::der::decode_public(buffer);
 
   INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
@@ -151,7 +125,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
 
   value._prepare();
 
-  ELLE_ASSERT_NEQ(value._key, nullptr);
+  value._check();
 }
 
 //

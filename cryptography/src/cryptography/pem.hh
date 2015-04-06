@@ -11,6 +11,8 @@ namespace infinit
 {
   namespace cryptography
   {
+    /// Privacy-enhanced Electronic Mail is a base64 encoded DER format.
+    ///
     /// These functions should not be used directly. Prefer the
     /// cryptosystem-specific PEM functions e.g rsa::pem::*.
     namespace pem
