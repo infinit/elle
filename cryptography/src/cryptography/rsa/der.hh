@@ -13,8 +13,8 @@ namespace infinit
     namespace rsa
     {
       /// Distinguished Encoding Rules is a restricted variant of BER for
-      // producing unequivocal transfer syntax for data structures described
-      // by ASN.1.
+      /// producing unequivocal transfer syntax for data structures described
+      /// by ASN.1.
       namespace der
       {
         /*----------.
