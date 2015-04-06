@@ -140,9 +140,8 @@ def configure(openssl_config,
     'src/cryptography/fwd.hh',
     'src/cryptography/hash.hh',
     'src/cryptography/hash.cc',
-# XXX    'src/cryptography/pem.cc',
-# XXX    'src/cryptography/pem.hh',
-# XXX    'src/cryptography/pem.hxx',
+    'src/cryptography/pem.cc',
+    'src/cryptography/pem.hh',
     'src/cryptography/random.cc',
     'src/cryptography/random.hh',
     'src/cryptography/random.hxx',
@@ -164,6 +163,8 @@ def configure(openssl_config,
     'src/cryptography/rsa/Padding.hh',
     'src/cryptography/rsa/context.cc',
     'src/cryptography/rsa/context.hh',
+    'src/cryptography/rsa/pem.cc',
+    'src/cryptography/rsa/pem.hh',
     )
 
   if enable_rotation:
@@ -206,6 +207,7 @@ def configure(openssl_config,
     "rsa/KeyPair.cc",
     "rsa/PrivateKey.cc",
     "rsa/PublicKey.cc",
+    "rsa/pem.cc",
      ]
   if enable_rotation:
     tests += [ "rsa/Seed.cc",

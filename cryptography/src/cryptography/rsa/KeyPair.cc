@@ -264,7 +264,10 @@ namespace infinit
                  Cipher const envelope_cipher,
                  Mode const envelope_mode)
         {
-          ELLE_TRACE_FUNCTION(length);
+          ELLE_TRACE_FUNCTION(length,
+                              encryption_padding, signature_padding,
+                              digest_algorithm,
+                              envelope_cipher, envelope_mode);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
