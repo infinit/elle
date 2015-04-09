@@ -6,6 +6,7 @@
 # include <elle/serialization/Serializer.hh>
 
 # include <das/Model.hh>
+# include <das/Variable.hh>
 
 namespace das
 {
@@ -28,7 +29,14 @@ namespace das
 
   template <typename T>
   struct
-  MakeOptional
+  UpdateMember
+  {
+    typedef boost::optional<T> type;
+  };
+
+  template <typename T>
+  struct
+  UpdateMember<das::Variable<T>>
   {
     typedef boost::optional<T> type;
   };
@@ -36,10 +44,10 @@ namespace das
   template <typename T, typename M, M (T::*m), typename ... Tail>
   class UpdateHelper<T, Field<T, M, m>, Tail...>
     : public UpdateHelper<T, Tail ...>
-    , public Field<T, M, m>::template Member<MakeOptional>
+    , public Field<T, M, m>::template Member<UpdateMember>
   {
   public:
-    typedef typename Field<T, M, m>::template Member<MakeOptional> Member;
+    typedef typename Field<T, M, m>::template Member<UpdateMember> Member;
     void
     serialize(elle::serialization::Serializer& s)
     {
