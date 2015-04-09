@@ -10,7 +10,7 @@
 
 namespace das
 {
-  template <typename O, typename T, T (O::*member)>
+  template <typename O, typename T, T (O::*member), typename Model = void>
   class Field
   {};
 
@@ -23,8 +23,27 @@ namespace das
     {}
 
     void
-    apply(T& o)
+    apply(T& o) const
     {}
+  };
+
+  template <typename T, typename ... Fields>
+  class Object
+  {
+  public:
+    typedef T Model;
+    class Update
+      : public UpdateHelper<T, Fields...>
+    {
+    public:
+      Update()
+      {}
+
+      Update(elle::serialization::SerializerIn& s)
+      {
+        this->serialize(s);
+      }
+    };
   };
 
   template <typename T>
@@ -51,12 +70,12 @@ namespace das
     void
     serialize(elle::serialization::Serializer& s)
     {
-      s.serialize(Field<T, M, m>::_name, this->*Member::member);
+      s.serialize(Field<T, M, m, void>::_name, this->*Member::member);
       UpdateHelper<T, Tail ...>::serialize(s);
     }
 
     void
-    apply(T& o)
+    apply(T& o) const
     {
       auto const& v = this->*Member::member;
       if (v)
@@ -65,22 +84,39 @@ namespace das
     }
   };
 
-  template <typename T, typename ... Fields>
-  class Object
+  template <typename T>
+  struct ReplaceMember
+  {
+    template <typename Ignored>
+    struct Functor
+    {
+      typedef boost::optional<T> type;
+    };
+  };
+
+  template <typename T, typename M, M (T::*m), typename Model,
+            typename ... Tail, typename ... Fields>
+  class UpdateHelper<T, Field<T, M, m, das::Object<Model, Fields...>>, Tail...>
+    : public UpdateHelper<T, Tail ...>
+    , public Field<T, M, m>::template Member<ReplaceMember<typename das::Object<Model, Fields...>::Update>::template Functor>
   {
   public:
-    class Update
-      : public UpdateHelper<T, Fields...>
+    typedef typename Field<T, M, m>::template Member<ReplaceMember<typename das::Object<Model, Fields...>::Update>::template Functor> Member;
+    void
+    serialize(elle::serialization::Serializer& s)
     {
-    public:
-      Update()
-      {}
+      s.serialize(Field<T, M, m>::_name, this->*Member::member);
+      UpdateHelper<T, Tail ...>::serialize(s);
+    }
 
-      Update(elle::serialization::SerializerIn& s)
-      {
-        this->serialize(s);
-      }
-    };
+    void
+    apply(T& o) const
+    {
+      auto const& v = this->*Member::member;
+      if (v)
+        v.get().apply(o.*m);
+      UpdateHelper<T, Tail ...>::apply(o);
+    }
   };
 }
 
@@ -88,7 +124,7 @@ namespace das
   namespace das                                                         \
   {                                                                     \
     template <>                                                         \
-    class Field<Class, decltype(Class::Name), &Class::Name>             \
+    class Field<Class, decltype(Class::Name), &Class::Name, void>       \
     {                                                                   \
       public:                                                           \
       constexpr static char const* _name = BOOST_PP_STRINGIZE(Name);    \
