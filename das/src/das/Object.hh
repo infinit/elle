@@ -68,4 +68,15 @@ namespace das
   };
 }
 
+#define DAS_MODEL_FIELD(Class, Name)                                    \
+  namespace das                                                         \
+  {                                                                     \
+    template <>                                                         \
+    class Field<Class, decltype(Class::Name), &Class::Name>             \
+    {                                                                   \
+      public:                                                           \
+      constexpr static char const* _name = BOOST_PP_STRINGIZE(Name);    \
+    };                                                                  \
+  }                                                                     \
+
 #endif

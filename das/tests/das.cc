@@ -16,15 +16,7 @@ public:
   }
 };
 
-namespace das
-{
-  template <>
-  class Field<Device, das::Variable<std::string>, &Device::name>
-  {
-  public:
-    constexpr static char const* _name = "name";
-  };
-}
+DAS_MODEL_FIELD(Device, name);
 
 static
 void
