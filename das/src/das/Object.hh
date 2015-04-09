@@ -61,6 +61,7 @@ namespace das
       auto const& v = this->*Member::member;
       if (v)
         o.*m = v.get();
+      UpdateHelper<T, Tail ...>::apply(o);
     }
   };
 
