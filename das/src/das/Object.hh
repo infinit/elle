@@ -26,27 +26,34 @@ namespace das
     {}
   };
 
+  template <typename T>
+  struct
+  MakeOptional
+  {
+    typedef boost::optional<T> type;
+  };
+
   template <typename T, typename M, M (T::*m), typename ... Tail>
   class UpdateHelper<T, Field<T, M, m>, Tail...>
     : public UpdateHelper<T, Tail ...>
+    , public Field<T, M, m>::template Member<MakeOptional>
   {
   public:
+    typedef typename Field<T, M, m>::template Member<MakeOptional> Member;
     void
     serialize(elle::serialization::Serializer& s)
     {
-      s.serialize(Field<T, M, m>::_name, this->_member);
+      s.serialize(Field<T, M, m>::_name, this->*Member::member);
       UpdateHelper<T, Tail ...>::serialize(s);
     }
 
     void
     apply(T& o)
     {
-      if (this->_member)
-        o.*m = this->_member.get();
+      auto const& v = this->*Member::member;
+      if (v)
+        o.*m = v.get();
     }
-
-  private:
-    boost::optional<M> _member;
   };
 
   template <typename T, typename ... Fields>
@@ -76,6 +83,14 @@ namespace das
     {                                                                   \
       public:                                                           \
       constexpr static char const* _name = BOOST_PP_STRINGIZE(Name);    \
+      template <template <typename> class Functor>                      \
+        struct Member                                                   \
+      {                                                                 \
+        typedef typename Functor<decltype(Class::Name)>::type Type;     \
+        Type Name;                                                      \
+        static constexpr Type (Member<Functor>::*member) =              \
+          &Member<Functor>::Name;                                       \
+      };                                                                \
     };                                                                  \
   }                                                                     \
 
