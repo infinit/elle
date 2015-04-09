@@ -1,7 +1,7 @@
 #ifndef DAS_VARIABLE_HH
 # define DAS_VARIABLE_HH
 
-#include <elle/serialization/Serializer.hh>
+# include <elle/serialization/Serializer.hh>
 
 namespace das
 {
@@ -9,6 +9,9 @@ namespace das
   class Variable
   {
   public:
+    Variable();
+    Variable(T const& value);
+    Variable(T&& value);
     Variable<T>&
     operator =(T const& value);
     ELLE_ATTRIBUTE_R(T, value);

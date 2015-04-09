@@ -4,6 +4,21 @@
 namespace das
 {
   template <typename T>
+  Variable<T>::Variable()
+    : _value()
+  {}
+
+  template <typename T>
+  Variable<T>::Variable(T const& value)
+    : _value(value)
+  {}
+
+  template <typename T>
+  Variable<T>::Variable(T&& value)
+    : _value(std::move(value))
+  {}
+
+  template <typename T>
   Variable<T>&
   Variable<T>::operator =(T const& value)
   {
