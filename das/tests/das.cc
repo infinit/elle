@@ -105,10 +105,62 @@ object_composite()
   }
 }
 
+typedef das::Collection<Device, elle::UUID, &Device::id, DasDevice> DasDevices;
+
+static
+void
+collection()
+{
+  std::vector<Device> devices;
+  {
+    DasDevices::Update u;
+    u.apply(devices);
+    BOOST_CHECK(devices.empty());
+  }
+  {
+    DasDevices::Update u;
+    u.push_back(DasDevice::Update());
+    BOOST_CHECK_THROW(u.apply(devices), elle::Error);
+  }
+  {
+    DasDevices::Update u;
+    DasDevice::Update du;
+    auto id = elle::UUID::random();
+    du.id = id;
+    du.name = "device-name-1";
+    u.push_back(du);
+    u.apply(devices);
+    BOOST_CHECK_EQUAL(devices.size(), 1u);
+    BOOST_CHECK_EQUAL(devices[0].id, id);
+    BOOST_CHECK_EQUAL(devices[0].name.value(), "device-name-1");
+  }
+  {
+    DasDevices::Update u;
+    {
+      DasDevice::Update du;
+      auto id = elle::UUID::random();
+      du.id = id;
+      du.name = "device-name-2";
+      u.push_back(du);
+    }
+    {
+      DasDevice::Update du;
+      du.id = devices[0].id;
+      du.name = "new-device-name-1";
+      u.push_back(du);
+    }
+    u.apply(devices);
+    BOOST_CHECK_EQUAL(devices.size(), 2u);
+    BOOST_CHECK_EQUAL(devices[0].name.value(), "new-device-name-1");
+    BOOST_CHECK_EQUAL(devices[1].name.value(), "device-name-2");
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(object_update), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_update_serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_composite), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
 }

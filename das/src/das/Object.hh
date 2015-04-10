@@ -70,7 +70,7 @@ namespace das
     void
     serialize(elle::serialization::Serializer& s)
     {
-      s.serialize(Field<T, M, m, void>::_name, this->*Member::member);
+      s.serialize(Field<T, M, m, void>::name, this->*Member::member);
       UpdateHelper<T, Tail ...>::serialize(s);
     }
 
@@ -105,7 +105,7 @@ namespace das
     void
     serialize(elle::serialization::Serializer& s)
     {
-      s.serialize(Field<T, M, m>::_name, this->*Member::member);
+      s.serialize(Field<T, M, m>::name, this->*Member::member);
       UpdateHelper<T, Tail ...>::serialize(s);
     }
 
@@ -126,8 +126,8 @@ namespace das
     template <>                                                         \
     class Field<Class, decltype(Class::Name), &Class::Name, void>       \
     {                                                                   \
-      public:                                                           \
-      constexpr static char const* _name = BOOST_PP_STRINGIZE(Name);    \
+    public:                                                             \
+      constexpr static char const* name = BOOST_PP_STRINGIZE(Name);     \
       template <template <typename> class Functor>                      \
         struct Member                                                   \
       {                                                                 \
@@ -137,6 +137,8 @@ namespace das
           &Member<Functor>::Name;                                       \
       };                                                                \
     };                                                                  \
+    template                                                            \
+    class Field<Class, decltype(Class::Name), &Class::Name, void>;      \
   }                                                                     \
 
 #endif
