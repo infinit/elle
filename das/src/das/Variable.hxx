@@ -29,6 +29,12 @@ namespace das
   }
 
   template <typename T>
+  Variable<T>::operator T const& () const
+  {
+    return this->_value;
+  }
+
+  template <typename T>
   std::ostream&
   operator << (std::ostream& o, Variable<T> const& v)
   {
