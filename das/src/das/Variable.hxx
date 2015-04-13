@@ -1,6 +1,8 @@
 #ifndef DAS_VARIABLE_HXX
 # define DAS_VARIABLE_HXX
 
+# include <elle/serialization/Serializer.hh>
+
 namespace das
 {
   template <typename T>
