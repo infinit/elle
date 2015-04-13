@@ -16,6 +16,7 @@ cryptography = None
 curl_config = None
 curl_lib = None
 cxx_toolkit = None
+das = None
 elle = None
 libarchive_config = None
 libarchive_lib = None
@@ -76,6 +77,7 @@ def configure(cxx_toolkit = None,
   global aws
   global config
   global cryptography
+  global das
   global elle
   global protocol
   global reactor

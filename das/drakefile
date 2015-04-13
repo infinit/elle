@@ -4,6 +4,8 @@ rule_build = None
 rule_check = None
 rule_tests = None
 
+config = None
+
 def configure(cxx_toolkit,
               cxx_config,
               elle,
@@ -13,6 +15,7 @@ def configure(cxx_toolkit,
               valgrind_tests = True):
 
   global rule_build, rule_check, rule_tests
+  global config
 
   ## ----------------- ##
   ## C++ configuration ##
