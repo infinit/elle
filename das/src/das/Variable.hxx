@@ -27,6 +27,14 @@ namespace das
     this->_value = value;
     return *this;
   }
+
+  template <typename T>
+  std::ostream&
+  operator << (std::ostream& o, Variable<T> const& v)
+  {
+    o << v.value();
+    return o;
+  }
 }
 
 namespace elle

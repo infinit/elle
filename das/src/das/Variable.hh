@@ -14,6 +14,10 @@ namespace das
     operator =(T const& value);
     ELLE_ATTRIBUTE_R(T, value);
   };
+
+  template <typename T>
+  std::ostream&
+  operator << (std::ostream& o, Variable<T> const& v);
 }
 
 # include <das/Variable.hxx>
