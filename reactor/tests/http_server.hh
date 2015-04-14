@@ -375,9 +375,6 @@ namespace reactor
               route->second.at(cmd.method())
                 (headers, cookies, cmd.params(), content),
               cookies);
-            auto it = this->headers().find("Set-Cookie");
-            if (it != this->headers().end())
-              this->headers().erase(it);
           }
           catch (Exception const& e)
           {
