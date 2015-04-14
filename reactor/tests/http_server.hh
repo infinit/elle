@@ -391,6 +391,7 @@ namespace reactor
 
       public:
         // Register a fonction for a given route / method.
+        virtual
         void
         register_route(std::string const& route,
                        Method method,
