@@ -59,4 +59,14 @@ namespace reactor
   }
 }
 
+namespace std
+{
+  template<>
+  struct hash<reactor::http::StatusCode>
+  {
+    size_t
+    operator ()(reactor::http::StatusCode const& code) const;
+  };
+}
+
 #endif

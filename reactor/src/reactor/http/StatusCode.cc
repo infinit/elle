@@ -142,3 +142,13 @@ namespace reactor
     }
   }
 }
+
+namespace std
+{
+  std::size_t
+  hash<reactor::http::StatusCode>::operator()(
+    reactor::http::StatusCode const& code) const
+  {
+    return (std::size_t) code;
+  }
+}
