@@ -72,7 +72,7 @@ namespace reactor
   void
   MultiLockBarrier::_unlock()
   {
-    ELLE_ASSERT_GT(this->_locks, 0);
+    ELLE_ASSERT_GT(this->_locks, 0u);
     ELLE_DEBUG_SCOPE("%s: remove a lock", *this);
     --this->_locks;
     ELLE_DEBUG("it has %s lock(s) now", this->_locks);
