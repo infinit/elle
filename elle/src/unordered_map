@@ -1,3 +1,4 @@
+// -*- c++ -*-
 #ifndef ELLE_UNORDERED_MAP
 # define ELLE_UNORDERED_MAP
 
@@ -10,6 +11,99 @@ namespace std
   contains(std::unordered_map<K, V> const& map, E const& e)
   {
     return map.find(e) != map.end();
+  }
+
+  template <typename K, typename V>
+  class keys_iterator
+    : public std::unordered_map<K, V>::iterator
+  {
+  public:
+    typedef typename std::unordered_map<K, V>::iterator parent_iterator;
+    keys_iterator() = default;
+    keys_iterator(parent_iterator s)
+      : parent_iterator(s)
+    {}
+
+    K
+    operator*()
+    {
+      return parent_iterator::operator*().first;
+    }
+  };
+
+  template <typename K, typename V>
+  class const_keys_iterator
+    : public std::unordered_map<K, V>::const_iterator
+  {
+  public:
+    typedef typename std::unordered_map<K, V>::const_iterator parent_iterator;
+    const_keys_iterator() = default;
+    const_keys_iterator(parent_iterator s)
+      : parent_iterator(s)
+    {}
+
+    K
+    operator*()
+    {
+      return parent_iterator::operator*().first;
+    }
+  };
+
+  template <typename K, typename V>
+  keys_iterator<K, V>
+  iter_keys(typename std::unordered_map<K, V> const& c)
+  {
+    return const_keys_iterator<K, V>(c.begin());
+  }
+
+  template <typename K, typename V>
+  class values_iterator
+    : public std::unordered_map<K, V>::iterator
+  {
+  public:
+    typedef typename std::unordered_map<K, V>::iterator parent_iterator;
+    values_iterator() = default;
+    values_iterator(parent_iterator s)
+      : parent_iterator(s)
+    {}
+
+    V
+    operator*()
+    {
+      return parent_iterator::operator*().second;
+    }
+  };
+
+  template <typename K, typename V>
+  values_iterator<K, V>
+  iter_values(typename std::unordered_map<K, V>& c)
+  {
+    return values_iterator<K, V>(c.begin());
+  }
+
+  template <typename K, typename V>
+  class const_values_iterator
+    : public std::unordered_map<K, V>::const_iterator
+  {
+  public:
+    typedef typename std::unordered_map<K, V>::const_iterator parent_iterator;
+    const_values_iterator() = default;
+    const_values_iterator(parent_iterator s)
+      : parent_iterator(s)
+    {}
+
+    V
+    operator*()
+    {
+      return parent_iterator::operator*().second;
+    }
+  };
+
+  template <typename K, typename V>
+  const_values_iterator<K, V>
+  iter_values(typename std::unordered_map<K, V> const& c)
+  {
+    return const_values_iterator<K, V>(c.begin());
   }
 }
 
