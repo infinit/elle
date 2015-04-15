@@ -8,6 +8,67 @@
 
 namespace das
 {
+  template <typename T, typename K, K (T::*key)>
+  class IndexList
+  {
+  /*------.
+  | Types |
+  `------*/
+  public:
+    typedef IndexList<T, K, key> Self;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    IndexList();
+
+  /*----------.
+  | Modifiers |
+  `----------*/
+  public:
+    void
+    add(T t);
+    bool
+    remove(K const& k);
+    template <typename C>
+    void
+    reset(C const& collection);
+    T&
+    get(K const& k);
+    T const&
+    get(K const& k) const;
+
+  /*--------.
+  | Details |
+  `--------*/
+  private:
+    typedef std::unordered_map<K, T> Contents;
+    Contents _contents;
+
+  /*----------.
+  | Container |
+  `----------*/
+  public:
+    typedef T value_type;
+    typedef T& reference;
+    typedef T const& const_reference;
+    typedef std::values_iterator<K, T> iterator;
+    typedef std::const_values_iterator<K, T> const_iterator;
+    typedef typename Contents::difference_type difference_type;
+    typedef typename Contents::size_type size_type;
+    iterator
+    begin();
+    iterator
+    end();
+    const_iterator
+    begin() const;
+    const_iterator
+    end() const;
+    size_type
+    size() const;
+  };
+
   template <typename T, typename K, K (T::*key), typename Model>
   class Collection
   {
@@ -43,5 +104,7 @@ namespace das
     };
   };
 }
+
+# include <das/Collection.hxx>
 
 #endif
