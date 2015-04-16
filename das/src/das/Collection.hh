@@ -5,7 +5,7 @@
 
 # include <elle/attribute.hh>
 
-# include <das/Model.hh>
+# include <das/model.hh>
 # include <das/Object.hh>
 
 namespace das

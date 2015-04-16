@@ -5,7 +5,7 @@
 
 # include <elle/serialization/Serializer.hh>
 
-# include <das/Model.hh>
+# include <das/model.hh>
 # include <das/Variable.hh>
 
 namespace das
