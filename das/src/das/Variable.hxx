@@ -21,11 +21,38 @@ namespace das
   {}
 
   template <typename T>
+  template <typename U>
+  Variable<T>::Variable(Variable<U> const& v)
+    : Variable<T>(v.value())
+  {}
+
+  template <typename T>
+  Variable<T>::Variable(Variable<T> const& v)
+    : Variable<T>(v.value())
+  {}
+
+  template <typename T>
   Variable<T>&
   Variable<T>::operator =(T const& value)
   {
     this->_value = value;
+    this->_changed(this->_value);
     return *this;
+  }
+
+  template <typename T>
+  template <typename U>
+  Variable<T>&
+  Variable<T>::operator =(Variable<U> const& value)
+  {
+    return this->operator =(value.value());
+  }
+
+  template <typename T>
+  Variable<T>&
+  Variable<T>::operator =(Variable<T> const& value)
+  {
+    return this->operator =(value.value());
   }
 
   template <typename T>

@@ -184,6 +184,23 @@ collection()
 
 static
 void
+variable()
+{
+  das::Variable<int> v1(0);
+  bool changed = false;
+  v1.changed().connect(
+    [&] (int const&) {BOOST_CHECK(!changed); changed = true;});
+  auto check_changed = [&] {BOOST_CHECK(changed); changed = false;};
+  v1 = 1;
+  check_changed();
+  BOOST_CHECK_EQUAL(v1, 1);
+  v1 = das::Variable<int>(2);
+  check_changed();
+  BOOST_CHECK_EQUAL(v1, 2);
+}
+
+static
+void
 index_list()
 {
   bool changed = false;
@@ -227,5 +244,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(object_update_serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(variable), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
 }
