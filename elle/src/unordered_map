@@ -50,7 +50,7 @@ namespace std
   };
 
   template <typename K, typename V>
-  keys_iterator<K, V>
+  const_keys_iterator<K, V>
   iter_keys(typename std::unordered_map<K, V> const& c)
   {
     return const_keys_iterator<K, V>(c.begin());
