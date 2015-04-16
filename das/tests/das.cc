@@ -197,6 +197,9 @@ variable()
   v1 = das::Variable<int>(2);
   check_changed();
   BOOST_CHECK_EQUAL(v1, 2);
+  das::Variable<int> moved = std::move(v1);
+  moved = 3;
+  check_changed();
 }
 
 static

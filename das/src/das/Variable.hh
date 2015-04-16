@@ -15,6 +15,9 @@ namespace das
     template <typename U>
     Variable(Variable<U> const& value);
     Variable(Variable<T> const& value);
+    template <typename U>
+    Variable(Variable<U>&& value);
+    Variable(Variable<T>&& value);
     Variable<T>&
     operator =(T const& value);
     template <typename U>
