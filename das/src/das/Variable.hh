@@ -12,6 +12,9 @@ namespace das
     Variable(T&& value);
     Variable<T>&
     operator =(T const& value);
+    template <typename U>
+    bool
+    operator ==(Variable<U> const& other) const;
     operator T const& () const;
     ELLE_ATTRIBUTE_R(T, value);
   };

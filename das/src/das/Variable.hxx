@@ -29,6 +29,14 @@ namespace das
   }
 
   template <typename T>
+  template <typename U>
+  bool
+  Variable<T>::operator ==(Variable<U> const& other) const
+  {
+    return this->value() == other.value();
+  }
+
+  template <typename T>
   Variable<T>::operator T const& () const
   {
     return this->_value;
