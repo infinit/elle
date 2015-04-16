@@ -67,7 +67,7 @@ namespace std
       : parent_iterator(s)
     {}
 
-    V
+    V&
     operator*()
     {
       return parent_iterator::operator*().second;
@@ -92,7 +92,7 @@ namespace std
       : parent_iterator(s)
     {}
 
-    V
+    V const&
     operator*()
     {
       return parent_iterator::operator*().second;

@@ -30,6 +30,9 @@ values_iterator()
 {
   std::unordered_map<int, int> map({{0, 10}, {1, 11}, {2, 12}});
   std::unordered_set<int> values({10, 11, 12});
+  // Check values are iterated by reference.
+  auto it = iter_values(map);
+  BOOST_CHECK_EQUAL(&*it, &map.at(*it - 10));
   for (auto it = iter_values(map); it != map.end(); ++it)
     BOOST_CHECK(values.erase(*it));
   BOOST_CHECK(values.empty());
