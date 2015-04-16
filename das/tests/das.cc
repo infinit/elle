@@ -5,11 +5,12 @@
 #include <das/model.hh>
 
 class Device
+  : public elle::Printable
 {
 public:
   das::Variable<std::string> name;
   elle::UUID id;
-  Device(std::string name_, elle::UUID id_)
+  Device(std::string name_, elle::UUID id_ = elle::UUID::random())
     : name(std::move(name_))
     , id(std::move(id_))
   {}
@@ -18,6 +19,19 @@ public:
     : name()
     , id()
   {}
+
+  bool
+  operator ==(Device const& other) const
+  {
+    return this->id == other.id && this->name == other.name;
+  }
+
+  virtual
+  void
+  print(std::ostream& s) const
+  {
+    elle::fprintf(s, "Device(%s, \"%s\")", this->id, this->name);
+  }
 };
 
 DAS_MODEL_FIELD(Device, name);
@@ -168,6 +182,44 @@ collection()
   }
 }
 
+static
+void
+index_list()
+{
+  bool changed = false;
+  bool reset = false;
+  boost::optional<elle::UUID> added;
+  boost::optional<elle::UUID> removed;
+  das::IndexList<Device, elle::UUID, &Device::id> l;
+  l.changed().connect([&] {BOOST_CHECK(!changed); changed = true;});
+  l.reset().connect([&] {BOOST_CHECK(!reset); reset = true;});
+  l.added().connect([&] (Device& d){BOOST_CHECK(!added); added = d.id;});
+  l.removed().connect(
+    [&] (elle::UUID const& id){BOOST_CHECK(!removed); removed = id;});
+  auto check_changed = [&] { BOOST_CHECK(changed); changed = false; };
+  auto check_added = [&] { BOOST_CHECK(added); added = {}; };
+  auto check_removed = [&] { BOOST_CHECK(removed); removed = {}; };
+  Device d1("d1");
+  Device d2("d1");
+  l.add(d1);
+  check_changed();
+  check_added();
+  l.add(d2);
+  check_changed();
+  check_added();
+  BOOST_CHECK_EQUAL(l.size(), 2u);
+  BOOST_CHECK_EQUAL(l.get(d1.id), d1);
+  BOOST_CHECK_EQUAL(l.get(d2.id), d2);
+  BOOST_CHECK_THROW(l.get(elle::UUID::random()), elle::Error);
+  BOOST_CHECK_THROW(l.add(d1), elle::Error);
+  l.remove(d2.id);
+  check_changed();
+  check_removed();
+  BOOST_CHECK_EQUAL(l.size(), 1u);
+  BOOST_CHECK_THROW(l.get(d2.id), elle::Error);
+  BOOST_CHECK_THROW(l.remove(d2.id), elle::Error);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -175,4 +227,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(object_update_serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
 }

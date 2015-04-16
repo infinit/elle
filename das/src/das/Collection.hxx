@@ -12,14 +12,24 @@ namespace das
   void
   IndexList<T, K, key>::add(T t)
   {
-    this->_contents.emplace(t.*key, std::move(t));
+    auto inserted = this->_contents.emplace(t.*key, std::move(t));
+    if (!inserted.second)
+      throw elle::Error(elle::sprintf("duplicate key: %s", t.*key));
+    this->_added(inserted.first->second);
+    this->_changed();
   }
 
   template <typename T, typename K, K (T::*key)>
-  bool
+  void
   IndexList<T, K, key>::remove(K const& k)
   {
-    return this->_contents.erase(k) != this->_contents.end();
+    if (this->_contents.erase(k) > 0)
+    {
+      this->_removed(k);
+      this->_changed();
+    }
+    else
+      throw elle::Error(elle::sprintf("mising key: %s", k));
   }
 
   template <typename T, typename K, K (T::*key)>
@@ -27,16 +37,29 @@ namespace das
   void
   IndexList<T, K, key>::reset(C const& c)
   {
-    this->_contents.clear();
-    for (auto const& e: c)
-      this->add(e);
+    if (!this->empty() || !c.empty())
+    {
+      this->_contents.clear();
+      for (auto const& e: c)
+        this->add(e);
+      this->_reset();
+      this->_changed();
+    }
   }
 
   template <typename T, typename K, K (T::*key)>
   T&
   IndexList<T, K, key>::get(K const& k)
   {
-    return this->_contents.at(k);
+    try
+    {
+      return this->_contents.at(k);
+    }
+    catch (std::out_of_range const&)
+    {
+      throw elle::Error(elle::sprintf("missing key: %s", k));
+    }
+
   }
 
   template <typename T, typename K, K (T::*key)>
@@ -83,6 +106,14 @@ namespace das
   IndexList<T, K, key>::size() const
   {
     return this->_contents.size();
+  }
+
+
+  template <typename T, typename K, K (T::*key)>
+  bool
+  IndexList<T, K, key>::empty() const
+  {
+    return this->_contents.empty();
   }
 }
 

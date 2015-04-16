@@ -1,6 +1,8 @@
 #ifndef DAS_COLLECTION_HH
 # define DAS_COLLECTION_HH
 
+# include <boost/signals2.hpp>
+
 # include <elle/attribute.hh>
 
 # include <das/Model.hh>
@@ -29,7 +31,7 @@ namespace das
   public:
     void
     add(T t);
-    bool
+    void
     remove(K const& k);
     template <typename C>
     void
@@ -38,6 +40,19 @@ namespace das
     get(K const& k);
     T const&
     get(K const& k) const;
+
+  /*------.
+  | Hooks |
+  `------*/
+  public:
+    /// Trigger whenever an individual element is added.
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (T&)>, added);
+    /// Trigger whenever an individual element is removed.
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (K const&)>, removed);
+    /// Trigger whenever the whole lists is reset.
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, reset);
+    /// Trigger whenever the list is changed in any way
+    ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, changed);
 
   /*--------.
   | Details |
@@ -67,6 +82,8 @@ namespace das
     end() const;
     size_type
     size() const;
+    bool
+    empty() const;
   };
 
   template <typename T, typename K, K (T::*key), typename Model>
