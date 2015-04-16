@@ -73,8 +73,28 @@ namespace das
   class Collection
   {
   public:
+    class ElementUpdate
+      : public Model::Update
+    {
+    public:
+      ElementUpdate() = default;
+
+      ElementUpdate(typename Model::Update&& update)
+        : Model::Update(std::move(update))
+      {}
+
+      void
+      serialize(elle::serialization::Serializer& s)
+      {
+        this->Model::Update::serialize(s);
+        this->serialize(this->remove, "$remove");
+      }
+
+      boost::optional<bool> remove;
+    };
+
     class Update
-      : public std::vector<typename Model::Update>
+      : public std::vector<ElementUpdate>
     {
     public:
       template <typename C>
@@ -90,15 +110,21 @@ namespace das
               elle::sprintf("key \"%s\" missing from a collection of %s update",
                             /* KeyField::name */ "FIXME",
                             elle::demangle(typeid(T).name())));
-          for (auto& elt: collection)
-            if (elt.*key == k.get())
-            {
-              update.apply(elt);
-              return;
-            }
-          // FIXME: do better
-          collection.emplace_back();
-          update.apply(collection.back());
+          auto it = std::find_if(
+            collection.begin(),
+            collection.end(),
+            [&](T const& elt) { return elt.*key == k.get(); });
+          if (it != collection.end())
+            if (update.remove)
+              collection.erase(it);
+            else
+              update.apply(*it);
+          else
+          {
+            // FIXME: do better
+            collection.emplace_back();
+            update.apply(collection.back());
+          }
         }
       }
     };

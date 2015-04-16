@@ -128,7 +128,7 @@ collection()
     auto id = elle::UUID::random();
     du.id = id;
     du.name = "device-name-1";
-    u.push_back(du);
+    u.push_back(std::move(du));
     u.apply(devices);
     BOOST_CHECK_EQUAL(devices.size(), 1u);
     BOOST_CHECK_EQUAL(devices[0].id, id);
@@ -141,18 +141,30 @@ collection()
       auto id = elle::UUID::random();
       du.id = id;
       du.name = "device-name-2";
-      u.push_back(du);
+      u.push_back(std::move(du));
     }
     {
       DasDevice::Update du;
       du.id = devices[0].id;
       du.name = "new-device-name-1";
-      u.push_back(du);
+      u.push_back(std::move(du));
     }
     u.apply(devices);
     BOOST_CHECK_EQUAL(devices.size(), 2u);
     BOOST_CHECK_EQUAL(devices[0].name.value(), "new-device-name-1");
     BOOST_CHECK_EQUAL(devices[1].name.value(), "device-name-2");
+  }
+  {
+    DasDevices::Update u;
+    {
+      DasDevices::ElementUpdate du;
+      du.id = devices[0].id;
+      du.remove = true;
+      u.push_back(std::move(du));
+    }
+    u.apply(devices);
+    BOOST_CHECK_EQUAL(devices.size(), 1u);
+    BOOST_CHECK_EQUAL(devices[0].name.value(), "device-name-2");
   }
 }
 
