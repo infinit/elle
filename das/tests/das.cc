@@ -253,6 +253,13 @@ update_print()
   u.name = "COIN";
   BOOST_CHECK_EQUAL(elle::sprintf("%s", u),
                     elle::sprintf("Device::Update(id = %s, name = COIN)", id));
+  DasDevices::Update lu;
+  lu.push_back(std::move(u));
+  lu.push_back(DasDevice::Update());
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", lu),
+    elle::sprintf("[Device::Update(id = %s, name = COIN),"
+                  " Device::Update()]", id));
 }
 
 ELLE_TEST_SUITE()
