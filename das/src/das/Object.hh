@@ -10,6 +10,9 @@
 
 namespace das
 {
+  template <typename T, typename K, K (T::*key), typename Model>
+  class Collection;
+
   template <typename O, typename T, T (O::*member), typename Model = void>
   class Field
   {};
@@ -143,6 +146,31 @@ namespace das
   {
   public:
     typedef typename Field<T, M, m>::template Member<ReplaceMember<typename das::Object<Model, Fields...>::Update>::template Functor> Member;
+    void
+    serialize(elle::serialization::Serializer& s)
+    {
+      s.serialize(Field<T, M, m>::name, this->*Member::member);
+      UpdateHelper<T, Tail ...>::serialize(s);
+    }
+
+    void
+    apply(T& o) const
+    {
+      auto const& v = this->*Member::member;
+      if (v)
+        v.get().apply(o.*m);
+      UpdateHelper<T, Tail ...>::apply(o);
+    }
+  };
+
+  template <typename T, typename M, M (T::*m), typename ... Tail,
+            typename Element, typename Key, Key (Element::*key), typename Model>
+  class UpdateHelper<T, Field<T, M, m, das::Collection<Element, Key, key, Model>>, Tail...>
+    : public UpdateHelper<T, Tail ...>
+    , public Field<T, M, m>::template Member<ReplaceMember<typename das::Collection<Element, Key, key, Model>::Update>::template Functor>
+  {
+  public:
+    typedef typename Field<T, M, m>::template Member<ReplaceMember<typename das::Collection<Element, Key, key, Model>::Update>::template Functor> Member;
     void
     serialize(elle::serialization::Serializer& s)
     {

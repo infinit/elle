@@ -182,6 +182,37 @@ collection()
   }
 }
 
+class Model
+{
+public:
+  std::vector<Device> devices;
+};
+
+DAS_MODEL_FIELD(Model, devices);
+
+typedef das::Object<
+  Model,
+  das::Field<Model, std::vector<Device>, &Model::devices, DasDevices>
+  > DasModel;
+
+static
+void
+collection_composite()
+{
+  DasModel::Update u;
+  u.devices.emplace();
+  {
+    DasDevice::Update du;
+    du.id = elle::UUID::random();
+    du.name = "name";
+    u.devices.get().push_back(std::move(du));
+  }
+  Model m;
+  u.apply(m);
+  BOOST_CHECK_EQUAL(m.devices.size(), 1u);
+  BOOST_CHECK_EQUAL(m.devices[0].name.value(), "name");
+}
+
 static
 void
 variable()
@@ -269,6 +300,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(object_update_serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(collection_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(variable), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(update_print), 0, valgrind(1));

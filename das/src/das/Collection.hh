@@ -116,7 +116,7 @@ namespace das
     public:
       template <typename C>
       void
-      apply(C& collection)
+      apply(C& collection) const
       {
         for (auto& update: *this)
         {
