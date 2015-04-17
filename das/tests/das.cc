@@ -65,19 +65,6 @@ object_update()
   }
 }
 
-static
-void
-object_update_serialization()
-{
-  {
-    std::stringstream data("{}");
-    elle::serialization::json::SerializerIn input(data);
-    DasDevice::Update u(input);
-    BOOST_CHECK(!u.id);
-    BOOST_CHECK(!u.name);
-  }
-}
-
 class User
 {
 public:
@@ -293,15 +280,46 @@ update_print()
                   " Device::Update()]", id));
 }
 
+static
+void
+serialization()
+{
+  {
+    std::stringstream data("{}");
+    elle::serialization::json::SerializerIn input(data, false);
+    DasDevice::Update u(input);
+    BOOST_CHECK(!u.id);
+    BOOST_CHECK(!u.name);
+  }
+  {
+    std::stringstream data(
+      elle::sprintf(
+        "{"
+        "  \"devices\": ["
+        "    {"
+        "      \"id\": \"%s\","
+        "      \"name\": \"das-device\""
+        "    }"
+        "  ]"
+        "}",
+        elle::UUID::random()
+        ));
+    elle::serialization::json::SerializerIn input(data, false);
+    DasModel::Update u(input);
+    BOOST_CHECK_EQUAL(u.devices.get().size(), 1u);
+    BOOST_CHECK_EQUAL(u.devices.get()[0].name.value(), "das-device");
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(object_update), 0, valgrind(1));
-  suite.add(BOOST_TEST_CASE(object_update_serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(object_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(collection_composite), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(variable), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(update_print), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
 }

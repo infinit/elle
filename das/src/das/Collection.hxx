@@ -8,6 +8,10 @@ namespace das
     : _contents()
   {}
 
+  /*----------.
+  | Modifiers |
+  `----------*/
+
   template <typename T, typename K, K (T::*key)>
   void
   IndexList<T, K, key>::add(T t)
@@ -30,6 +34,23 @@ namespace das
     }
     else
       throw elle::Error(elle::sprintf("mising key: %s", k));
+  }
+
+  template <typename T, typename K, K (T::*key)>
+  typename IndexList<T, K, key>::iterator
+  IndexList<T, K, key>::erase(iterator position)
+  {
+    return IndexList<T, K, key>::iterator(this->_contents.erase(position));
+  }
+
+  template <typename T, typename K, K (T::*key)>
+  template <class... Args>
+  std::pair<typename IndexList<T, K, key>::iterator, bool>
+  IndexList<T, K, key>::emplace( Args&&... args )
+  {
+    T element(std::forward<Args>(args)...);
+    auto res = this->_contents.emplace(element.*key, std::move(element));
+    return std::make_pair(iterator(res.first), res.second);
   }
 
   template <typename T, typename K, K (T::*key)>

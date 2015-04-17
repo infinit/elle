@@ -18,12 +18,37 @@ namespace das
   `------*/
   public:
     typedef IndexList<T, K, key> Self;
+    typedef T value_type;
+    typedef T& reference;
+    typedef T const& const_reference;
+    typedef std::values_iterator<K, T> iterator;
+    typedef std::const_values_iterator<K, T> const_iterator;
+    typedef std::unordered_map<K, T> Contents;
+    typedef typename Contents::difference_type difference_type;
+    typedef typename Contents::size_type size_type;
 
   /*-------------.
   | Construction |
   `-------------*/
   public:
     IndexList();
+
+  /*----------.
+  | Observers |
+  `----------*/
+  public:
+    iterator
+    begin();
+    iterator
+    end();
+    const_iterator
+    begin() const;
+    const_iterator
+    end() const;
+    size_type
+    size() const;
+    bool
+    empty() const;
 
   /*----------.
   | Modifiers |
@@ -40,6 +65,11 @@ namespace das
     get(K const& k);
     T const&
     get(K const& k) const;
+    iterator
+    erase(iterator position);
+    template <class... Args>
+    std::pair<iterator, bool>
+    emplace(Args&&... args);
 
   /*------.
   | Hooks |
@@ -58,32 +88,36 @@ namespace das
   | Details |
   `--------*/
   private:
-    typedef std::unordered_map<K, T> Contents;
     Contents _contents;
+  };
 
-  /*----------.
-  | Container |
-  `----------*/
-  public:
-    typedef T value_type;
-    typedef T& reference;
-    typedef T const& const_reference;
-    typedef std::values_iterator<K, T> iterator;
-    typedef std::const_values_iterator<K, T> const_iterator;
-    typedef typename Contents::difference_type difference_type;
-    typedef typename Contents::size_type size_type;
-    iterator
-    begin();
-    iterator
-    end();
-    const_iterator
-    begin() const;
-    const_iterator
-    end() const;
-    size_type
-    size() const;
-    bool
-    empty() const;
+
+  template <typename C, typename ElementUpdate, typename T>
+  struct Inserter
+  {
+    static
+    void
+    insert(C& c, ElementUpdate const& u)
+    {
+      // FIXME: do better
+      T element;
+      u.apply(element);
+      c.emplace(std::move(element));
+    }
+  };
+
+  template <typename ElementUpdate, typename T>
+  struct Inserter<std::vector<T>, ElementUpdate, T>
+  {
+    static
+      void
+      insert(std::vector<T>& c, ElementUpdate const& u)
+    {
+      // FIXME: do better
+      T element;
+      u.apply(element);
+      c.emplace_back(std::move(element));
+    }
   };
 
   template <typename T, typename K, K (T::*key), typename Model>
@@ -104,7 +138,7 @@ namespace das
       serialize(elle::serialization::Serializer& s)
       {
         this->Model::Update::serialize(s);
-        this->serialize(this->remove, "$remove");
+        s.serialize("$remove", this->remove);
       }
 
       boost::optional<bool> remove;
@@ -114,6 +148,8 @@ namespace das
       : public std::vector<ElementUpdate>
     {
     public:
+      typedef std::vector<ElementUpdate> Super;
+
       template <typename C>
       void
       apply(C& collection) const
@@ -137,12 +173,14 @@ namespace das
             else
               update.apply(*it);
           else
-          {
-            // FIXME: do better
-            collection.emplace_back();
-            update.apply(collection.back());
-          }
+            Inserter<C, ElementUpdate, T>::insert(collection, update);
         }
+      }
+
+      void
+      serialize(elle::serialization::Serializer& s)
+      {
+        s.serialize_forward(static_cast<Super&>(*this));
       }
     };
   };
