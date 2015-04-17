@@ -3,6 +3,7 @@
 
 # include <boost/optional.hpp>
 
+# include <elle/Backtrace.hh>
 # include <elle/serialization/Serializer.hh>
 
 # include <das/Variable.hh>
@@ -24,6 +25,10 @@ namespace das
     void
     apply(T& o) const
     {}
+
+    void
+    print(std::ostream& s, bool comma) const
+    {}
   };
 
   template <typename T, typename ... Fields>
@@ -33,14 +38,26 @@ namespace das
     typedef T Model;
     class Update
       : public UpdateHelper<T, Fields...>
+      , public elle::Printable
     {
     public:
+      typedef UpdateHelper<T, Fields...> Super;
+
       Update()
       {}
 
       Update(elle::serialization::SerializerIn& s)
       {
         this->serialize(s);
+      }
+
+      virtual
+      void
+      print(std::ostream& s) const override
+      {
+        elle::fprintf(s, "%s::Update(", elle::demangle(typeid(T).name()));
+        Super::print(s, false);
+        s << ")";
       }
     };
   };
@@ -65,12 +82,22 @@ namespace das
     , public Field<T, M, m>::template Member<UpdateMember>
   {
   public:
+    typedef UpdateHelper<T, Tail ...> Super;
     typedef typename Field<T, M, m>::template Member<UpdateMember> Member;
+
+    inline
+    static
+    char const*
+    field_name()
+    {
+      return Field<T, M, m, void>::name;
+    }
+
     void
     serialize(elle::serialization::Serializer& s)
     {
-      s.serialize(Field<T, M, m, void>::name, this->*Member::member);
-      UpdateHelper<T, Tail ...>::serialize(s);
+      s.serialize(field_name(), this->*Member::member);
+      Super::serialize(s);
     }
 
     void
@@ -79,7 +106,22 @@ namespace das
       auto const& v = this->*Member::member;
       if (v)
         o.*m = v.get();
-      UpdateHelper<T, Tail ...>::apply(o);
+      Super::apply(o);
+    }
+
+    void
+    print(std::ostream& s, bool comma) const
+    {
+      auto const& v = this->*Member::member;
+      if (v)
+      {
+        if (comma)
+          s << ", ";
+        elle::fprintf(s, "%s = %s", field_name(), v.get());
+        Super::print(s, true);
+      }
+      else
+        Super::print(s, comma);
     }
   };
 

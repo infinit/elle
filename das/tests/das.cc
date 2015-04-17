@@ -240,6 +240,21 @@ index_list()
   BOOST_CHECK_THROW(l.remove(d2.id), elle::Error);
 }
 
+static
+void
+update_print()
+{
+  DasDevice::Update u;
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", u), "Device::Update()");
+  auto id = elle::UUID::random();
+  u.id = id;
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", u),
+                    elle::sprintf("Device::Update(id = %s)", id));
+  u.name = "COIN";
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", u),
+                    elle::sprintf("Device::Update(id = %s, name = COIN)", id));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -249,4 +264,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(collection), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(variable), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(update_print), 0, valgrind(1));
 }
