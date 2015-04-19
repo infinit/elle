@@ -16,40 +16,40 @@ namespace das
   void
   IndexList<T, K, key>::add(T t)
   {
-    auto inserted = this->_contents.emplace(t.*key, std::move(t));
-    if (!inserted.second)
-      throw elle::Error(elle::sprintf("duplicate key: %s", t.*key));
-    this->_added(inserted.first->second);
-    this->_changed();
+    this->emplace(std::move(t));
   }
 
   template <typename T, typename K, K (T::*key)>
   void
   IndexList<T, K, key>::remove(K const& k)
   {
-    if (this->_contents.erase(k) > 0)
-    {
-      this->_removed(k);
-      this->_changed();
-    }
-    else
+    auto it = this->find(k);
+    if (it == this->end())
       throw elle::Error(elle::sprintf("mising key: %s", k));
+    this->erase(it);
   }
 
   template <typename T, typename K, K (T::*key)>
   typename IndexList<T, K, key>::iterator
   IndexList<T, K, key>::erase(iterator position)
   {
-    return IndexList<T, K, key>::iterator(this->_contents.erase(position));
+    auto it = IndexList<T, K, key>::iterator(this->_contents.erase(position));
+    this->_removed(it->first);
+    this->_changed();
+    return it;
   }
 
   template <typename T, typename K, K (T::*key)>
   template <class... Args>
   std::pair<typename IndexList<T, K, key>::iterator, bool>
-  IndexList<T, K, key>::emplace( Args&&... args )
+  IndexList<T, K, key>::emplace(Args&&... args)
   {
     T element(std::forward<Args>(args)...);
     auto res = this->_contents.emplace(element.*key, std::move(element));
+    if (!res.second)
+      throw elle::Error(elle::sprintf("duplicate key: %s", element.*key));
+    this->_added(res.first->second);
+    this->_changed();
     return std::make_pair(iterator(res.first), res.second);
   }
 
