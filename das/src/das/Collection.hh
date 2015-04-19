@@ -41,10 +41,14 @@ namespace das
     begin();
     iterator
     end();
+    iterator
+    find(K const& k);
     const_iterator
     begin() const;
     const_iterator
     end() const;
+    const_iterator
+    find(K const& k) const;
     size_type
     size() const;
     bool

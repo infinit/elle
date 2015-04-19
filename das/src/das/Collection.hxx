@@ -109,6 +109,13 @@ namespace das
   }
 
   template <typename T, typename K, K (T::*key)>
+  typename IndexList<T, K, key>::iterator
+  IndexList<T, K, key>::find(K const& k)
+  {
+    return this->_contents.find(k);
+  }
+
+  template <typename T, typename K, K (T::*key)>
   typename IndexList<T, K, key>::const_iterator
   IndexList<T, K, key>::begin() const
   {
@@ -120,6 +127,13 @@ namespace das
   IndexList<T, K, key>::end() const
   {
     return this->_contents.end();
+  }
+
+  template <typename T, typename K, K (T::*key)>
+  typename IndexList<T, K, key>::const_iterator
+  IndexList<T, K, key>::find(K const& k) const
+  {
+    return this->_contents.find(k);
   }
 
   template <typename T, typename K, K (T::*key)>
