@@ -13,5 +13,10 @@ namespace elle
       return archive(no_compression ? Format::zip_uncompressed : Format::zip,
                      files, path, renamer);
     }
+    void
+    unzip(boost::filesystem::path const& path)
+    {
+      return extract(path);
+    }
   }
 }

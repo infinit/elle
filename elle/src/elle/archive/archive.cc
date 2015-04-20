@@ -37,6 +37,31 @@ namespace elle
       }
     }
 
+    static
+    int
+    copy_data(::archive* ar, ::archive* aw)
+    {
+      int r;
+      const void* buff;
+      size_t size;
+#if ARCHIVE_VERSION >= 3000000
+      int64_t offset;
+#else
+      off_t offset;
+#endif
+      for (;;)
+      {
+        r = archive_read_data_block(ar, &buff, &size, &offset);
+        if (r == ARCHIVE_EOF)
+          return ARCHIVE_OK;
+        if (r != ARCHIVE_OK)
+          return r;
+        r = archive_write_data_block(aw, buff, size, offset);
+        if (r != ARCHIVE_OK)
+          return r;
+      }
+    }
+
     struct archive_deleter
     {
       void
@@ -235,5 +260,35 @@ namespace elle
         }
       }
     }
+
+    void extract(boost::filesystem::path const& archive)
+    {
+      ELLE_TRACE("[Archive] extracting %s", archive.string());
+      ArchiveReadPtr a(archive_read_new());
+      ArchivePtr out(archive_write_disk_new());
+      int r;
+
+      archive_read_support_filter_all(a.get());
+      archive_read_support_format_all(a.get());
+      check_call(a.get(), archive_read_open_filename(a.get(),
+                 archive.string().c_str(), 10240));
+      for (;;)
+      {
+        ::archive_entry* entry;
+        r = archive_read_next_header(a.get(), &entry);
+        if (r == ARCHIVE_EOF)
+          break;
+        check_call(a.get(), r);
+        const char* cur_file = archive_entry_pathname(entry);
+        const std::string fullpath = (archive.parent_path() / cur_file).string();
+        ELLE_TRACE("[Archive] extracting %s", fullpath);
+        archive_entry_set_pathname(entry, fullpath.c_str());
+        check_call(a.get(), archive_write_header(out.get(), entry));
+        check_call(a.get(), copy_data(a.get(), out.get()));
+        check_call(a.get(), archive_write_finish_entry(out.get()));
+        boost::filesystem::remove(archive);
+      }
+    }
+
   }
 }

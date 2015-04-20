@@ -11,5 +11,11 @@ namespace elle
     {
       return archive(Format::tar, files, path, renamer);
     }
+
+    void
+    untar(boost::filesystem::path const& path)
+    {
+      return extract(path);
+    }
   }
 }

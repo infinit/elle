@@ -33,6 +33,10 @@ namespace elle
             Renamer const& renamer = Renamer(),
             Excluder const& excluder = Excluder(),
             bool ignore_failure = false);
+
+    /// The extract function supports all formats, no need to specify it
+    void
+    extract(boost::filesystem::path const& archive);
   }
 }
 

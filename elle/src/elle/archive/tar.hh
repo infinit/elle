@@ -11,6 +11,9 @@ namespace elle
     tar(std::vector<boost::filesystem::path> const& files,
         boost::filesystem::path const& path,
         Renamer const& renamer = Renamer());
+
+    void
+    untar(boost::filesystem::path const& path);
   }
 }
 

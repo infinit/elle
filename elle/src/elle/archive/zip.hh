@@ -12,6 +12,9 @@ namespace elle
         boost::filesystem::path const& path,
         Renamer const& renamer = Renamer(),
         bool no_compression = false);
+
+    void
+    unzip(boost::filesystem::path const& path);
   }
 }
 
