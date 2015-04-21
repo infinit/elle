@@ -10,8 +10,9 @@ namespace reactor
   namespace fsm
   {
     CatchTransition::CatchTransition(State& start,
-                                     State& end):
-      Transition(start, end)
+                                     State& end,
+                                     bool make_first):
+      Transition(start, end, make_first)
     {}
 
     void

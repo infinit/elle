@@ -27,7 +27,8 @@ namespace reactor
       ~Transition() = default;
     protected:
       Transition(State& start,
-                 State& end);
+                 State& end,
+                 bool make_first = false);
       friend class Machine;
       ELLE_ATTRIBUTE_R(State&, start);
       ELLE_ATTRIBUTE_R(State&, end);

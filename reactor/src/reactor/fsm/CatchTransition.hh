@@ -29,7 +29,8 @@ namespace reactor
                         condition);
     protected:
       CatchTransition(State& start,
-                      State& end);
+                      State& end,
+                      bool make_first = false);
       friend class Machine;
 
     /*----------.

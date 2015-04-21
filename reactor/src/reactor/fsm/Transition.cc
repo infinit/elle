@@ -24,11 +24,16 @@ namespace reactor
     {}
 
     Transition::Transition(State& start,
-                           State& end):
+                           State& end,
+                           bool make_first):
       _start(start),
       _end(end)
     {
-      start._transitions_out.insert(this);
+      if (make_first)
+        start._transitions_out.get<1>().insert(
+          start._transitions_out.get<1>().begin(), this);
+      else
+        start._transitions_out.insert(this);
       end._transitions_in.insert(this);
     }
 

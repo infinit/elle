@@ -583,6 +583,66 @@ transition_catch_specific()
 
 static
 void
+transition_catch_priority()
+{
+  Machine m;
+  bool beacon1, beacon2, beacon3;
+  auto reset_beacons = [&] {
+    beacon1 = false;
+    beacon2 = false;
+    beacon3 = false;
+  };
+  reset_beacons();
+  State& s1 = m.state_make(
+    "s1",
+    [&] ()
+    {
+      beacon1 = true;
+      throw BeaconException();
+    });
+  State& s2 = m.state_make(
+    "s2",
+    [&] ()
+    {
+      beacon2 = true;
+    });
+  State& s3 = m.state_make(
+    "s3",
+    [&] ()
+    {
+      beacon3 = true;
+    });
+  m.transition_add_catch(s1, s2);
+  m.transition_add_catch(s1, s3);
+  auto run = [&] {
+    reactor::Scheduler sched;
+    reactor::Thread run(sched, "run", [&] { m.run(); });
+    sched.run();
+  };
+  run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+  BOOST_CHECK(!beacon3);
+  // The transition is specific exception will be 'hidden' by the global catch.
+  reset_beacons();
+  bool handle_first = false;
+  m.transition_add_catch_specific<BeaconException>(s1, s3, handle_first);
+  run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(beacon2);
+  BOOST_CHECK(!beacon3);
+  // Now, the transition will be treated first.
+  reset_beacons();
+  handle_first = true;
+  m.transition_add_catch_specific<BeaconException>(s1, s3, handle_first);
+  run();
+  BOOST_CHECK(beacon1);
+  BOOST_CHECK(!beacon2);
+  BOOST_CHECK(beacon3);
+}
+
+static
+void
 transition_catch_terminate()
 {
   reactor::Scheduler sched;
@@ -729,6 +789,7 @@ ELLE_TEST_SUITE()
   fsm->add(BOOST_TEST_CASE(transition_auto_versus_waitable), 0, 10);
   fsm->add(BOOST_TEST_CASE(transition_catch), 0, 10);
   fsm->add(BOOST_TEST_CASE(transition_catch_specific), 0, 10);
+  fsm->add(BOOST_TEST_CASE(transition_catch_priority), 0, 10);
   fsm->add(BOOST_TEST_CASE(transition_catch_terminate), 0, 10);
   fsm->add(BOOST_TEST_CASE(transition_actions), 0, 10);
   fsm->add(BOOST_TEST_CASE(transition_action_throw), 0, 10);

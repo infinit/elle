@@ -81,11 +81,14 @@ namespace reactor
       ///
       /// \param  start The state where to catch transition.
       /// \param  end   The state to switch to.
+      /// \param  front (optional) If the transition should be push front or
+      ///               normally inserted at the end of the list.
       /// \return       The added transition.
       template <typename T>
       Transition&
       transition_add_catch_specific(State& start,
-                                    State& end);
+                                    State& end,
+                                    bool front = false);
     private:
       ELLE_ATTRIBUTE(
         std::unordered_set<std::unique_ptr<Transition>>, transitions);

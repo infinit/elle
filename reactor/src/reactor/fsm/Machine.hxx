@@ -26,10 +26,11 @@ namespace reactor
     template <typename T>
     Transition&
     Machine::transition_add_catch_specific(State& start,
-                                           State& end)
+                                           State& end,
+                                           bool front)
     {
       std::unique_ptr<CatchTransition> transition(
-        new CatchTransition(start, end));
+        new CatchTransition(start, end, front));
       std::function<bool (std::exception_ptr const&)> condition =
         [] (std::exception_ptr const& exn) -> bool
         {
