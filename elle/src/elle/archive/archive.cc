@@ -44,7 +44,7 @@ namespace elle
       int r;
       const void* buff;
       size_t size;
-#if ARCHIVE_VERSION >= 3000000
+#if ARCHIVE_VERSION_NUMBER >= 3000000
       int64_t offset;
 #else
       off_t offset;
