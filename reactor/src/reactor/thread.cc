@@ -205,7 +205,7 @@ namespace reactor
              && !this->_thread->exception())
     {
       ELLE_ERR("%s: terminate exception was swallowed", *this);
-      this->_raise<Terminate>(elle::sprintf("re-terminate %s", *this));
+      this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
       this->_wait_abort("terminate exception was swallowed");
     }
     if (this->_exception_thrown)
