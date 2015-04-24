@@ -29,7 +29,8 @@ namespace elle
         SerializerIn(std::istream& input,
                      elle::Version version,
                      bool versioned = true);
-        SerializerIn(elle::json::Json input);
+        SerializerIn(elle::json::Json input,
+                     bool versioned = true);
 
       /*--------------.
       | Configuration |

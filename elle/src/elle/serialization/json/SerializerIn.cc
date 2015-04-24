@@ -52,8 +52,8 @@ namespace elle
         }
       }
 
-      SerializerIn::SerializerIn(elle::json::Json input)
-        : Super(ELLE_SFINAE_INSTANCE(std::istream), false) // FIXME
+      SerializerIn::SerializerIn(elle::json::Json input, bool versioned)
+        : Super(ELLE_SFINAE_INSTANCE(std::istream), versioned) // FIXME
         , _partial(false)
         , _json(std::move(input))
         , _current()
