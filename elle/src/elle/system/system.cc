@@ -28,13 +28,13 @@ namespace elle
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         0);
-      if (h == INVALID_HANDLE_VALUE)
+      if (h == INVALID_HANDLE_Value)
       {
+        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           "CreateFile",
           path,
-          boost::system::error_code(::GetLastError(),
-                                    boost::system::system_category()));
+          boost::system::error_code(error, boost::system::system_category()));
       }
       LONG offsetHigh = size >> 32;
       SetFilePointer(h,
@@ -64,14 +64,15 @@ namespace elle
 #ifdef INFINIT_WINDOWS
 
       DWORD written;
-      BOOL ok = WriteFile(_handle, buffer.contents(), buffer.size(), &written, nullptr);
+      BOOL ok =
+        WriteFile(_handle, buffer.contents(), buffer.size(), &written, nullptr);
       if (ok != TRUE)
       {
+        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           elle::sprintf("Write error: %s/%s", written, buffer.size()),
           path(),
-          boost::system::error_code(::GetLastError(),
-                                    boost::system::system_category()));
+          boost::system::error_code(error, boost::system::system_category()));
       }
 #else
       ssize_t bytes_written = ::write(_handle,
@@ -134,11 +135,11 @@ namespace elle
       }
       if (_handle == INVALID_HANDLE_VALUE)
       {
+        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           "CreateFile",
           path,
-          boost::system::error_code(::GetLastError(),
-                                    boost::system::system_category()));
+          boost::system::error_code(error, boost::system::system_category()));
       }
 #else
       int flags = 0;
@@ -207,14 +208,13 @@ namespace elle
       LONG offsetLow = offset & 0xFFFFFFFF;
       LONG offsetHigh = offset >> 32;
       DWORD seekAmount = SetFilePointer(_handle, offsetLow, &offsetHigh, FILE_BEGIN);
-      DWORD err = GetLastError();
       if (seekAmount == INVALID_SET_FILE_POINTER && err != NO_ERROR)
       {
+        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           elle::sprintf("unable to seek to pos %s", offset),
           path(),
-          boost::system::error_code(::GetLastError(),
-                                    boost::system::system_category()));
+          boost::system::error_code(error, boost::system::system_category()));
       }
 #else // POSIX version
 #if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
@@ -244,11 +244,11 @@ namespace elle
       BOOL ok = ReadFile(_handle, buffer.mutable_contents(), size, &bytesRead, NULL);
       if (ok != TRUE) // who knows what a WIN32 BOOL realy is?
       {
+        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           elle::sprintf("Read error: %s/%s", bytesRead, size),
           path(),
-          boost::system::error_code(::GetLastError(),
-                                    boost::system::system_category()));
+          boost::system::error_code(error, boost::system::system_category()));
       }
       buffer.size(bytesRead);
       return buffer;
