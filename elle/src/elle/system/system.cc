@@ -28,7 +28,7 @@ namespace elle
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         0);
-      if (h == INVALID_HANDLE_Value)
+      if (h == INVALID_HANDLE_VALUE)
       {
         auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
@@ -208,9 +208,9 @@ namespace elle
       LONG offsetLow = offset & 0xFFFFFFFF;
       LONG offsetHigh = offset >> 32;
       DWORD seekAmount = SetFilePointer(_handle, offsetLow, &offsetHigh, FILE_BEGIN);
-      if (seekAmount == INVALID_SET_FILE_POINTER && err != NO_ERROR)
+      auto error = ::GetLastError();
+      if (seekAmount == INVALID_SET_FILE_POINTER && error != NO_ERROR)
       {
-        auto error = ::GetLastError();
         throw boost::filesystem::filesystem_error(
           elle::sprintf("unable to seek to pos %s", offset),
           path(),
