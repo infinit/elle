@@ -993,10 +993,12 @@ class DepFile:
       else:
         self.__hashes = {}
 
-    def up_to_date(self):
+    Hashed = object()
+    def up_to_date(self, oldest_target, oldest_mtime):
       """Whether all registered files match the stored hash."""
       if self.__invalid:
         return False
+      hashing = True
       for path, (old_hash, data) in self.__hashes.items():
         if old_hash is None:
           continue
@@ -1004,15 +1006,22 @@ class DepFile:
         # if path not in Drake.current.nodes:
         #   del self.__hashes[path]
         #   continue
+        n = node(path)
+        if isinstance(n, Node):
+          if n.mtime < oldest_mtime:
+            continue
+          else:
+            hashing = DepFile.Hashed
+        # print('hash %s because %s is older than %s' % (self.__builder, n.path(), oldest_target))
         try:
-          h = node(path).hash()
+          h = n.hash()
         except:
           explain(self.__builder, '%s cannot be hashed' % path)
           return False
         if h != old_hash:
           explain(self.__builder, '%s has changed' % path)
           return False
-      return True
+      return hashing
 
     def update(self):
       """Rehash all files and write to the store file."""
@@ -1375,6 +1384,7 @@ class Node(BaseNode):
     path = drake.Drake.current.prefix / path
     BaseNode.__init__(self, path)
     self.__exists = False
+    self.__mtime = None
     self.__path = None
     self.__path_absolute = None
 
@@ -1478,6 +1488,23 @@ class Node(BaseNode):
   @property
   def install_command(self):
       return None
+
+  @property
+  def mtime(self):
+    return max(chain(
+      (self.mtime_local,),
+      (d.mtime for d in self.dependencies if isinstance(d, Node))))
+
+  @property
+  def mtime_local(self):
+    if self.__mtime is None:
+      self.__mtime = _OS.path.getmtime(str(self.path()))
+    return self.__mtime
+
+  def touch(self):
+    _OS.utime(str(self.path()))
+    self.__mtime = time.time()
+
 
 def node(path, type = None):
   """Create or get a BaseNode.
@@ -1831,12 +1858,20 @@ class Builder:
               'some dynamic dependency couldn\'t be built')
             execute = True
         # If any non-virtual target is missing, we must rebuild.
+        oldest_target = None
+        oldest_mtime = None
         if not execute:
           for dst in self.__targets:
             if dst.missing():
               explain(self, 'target %s is missing' % dst)
               execute = True
               break
+            else:
+              mtime = dst.mtime_local
+              if oldest_target is None or mtime < oldest_mtime:
+                oldest_target = dst
+                oldest_mtime = mtime
+
         # Load static dependencies
         self._depfile.read()
         if self._depfile._DepFile__invalid:
@@ -1871,11 +1906,17 @@ class Builder:
               execute = True
         # Check if we are up to date wrt all dependencies
         if not execute:
-            if not self._depfile.up_to_date():
-                execute = True
-            for f in self._depfiles.values():
-                if not f.up_to_date():
-                    execute = True
+          hashed = False
+          for f in chain((self._depfile,), self._depfiles.values()):
+            res = f.up_to_date(oldest_target, oldest_mtime)
+            if not res:
+              execute = True
+            elif res is DepFile.Hashed:
+              hashed = True
+          if not execute and hashed:
+            print('adjust mtime for %s' % self)
+            for dst in self.__targets:
+              dst.touch()
         if execute:
           self._execute(depfile_builder)
         else:
@@ -1927,6 +1968,8 @@ class Builder:
                         drake.log.LogLevel.trace,
                         '%s: execute', self):
           success = self.execute()
+          for dst in self.__targets:
+            dst._Node__mtime = None
           logger.log('drake.Builder',
                      drake.log.LogLevel.trace,
                      '%s: executed', self)
