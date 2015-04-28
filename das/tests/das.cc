@@ -236,6 +236,7 @@ index_list()
     [&] (elle::UUID const& id){BOOST_CHECK(!removed); removed = id;});
   auto check_changed = [&] { BOOST_CHECK(changed); changed = false; };
   auto check_added = [&] { BOOST_CHECK(added); added = {}; };
+  auto check_reset = [&] { BOOST_CHECK(reset); reset = false; };
   auto check_removed = [&] { BOOST_CHECK(removed); removed = {}; };
   Device d1("d1");
   Device d2("d1");
@@ -256,6 +257,9 @@ index_list()
   BOOST_CHECK_EQUAL(l.size(), 1u);
   BOOST_CHECK_THROW(l.get(d2.id), elle::Error);
   BOOST_CHECK_THROW(l.remove(d2.id), elle::Error);
+  l.reset(std::vector<Device>{d1, d2});
+  check_changed();
+  check_reset();
 }
 
 static

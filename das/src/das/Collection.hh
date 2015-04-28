@@ -74,6 +74,9 @@ namespace das
     template <class... Args>
     std::pair<iterator, bool>
     emplace(Args&&... args);
+    template <class... Args>
+    std::pair<iterator, bool>
+    _emplace(Args&&... args);
 
   /*------.
   | Hooks |

@@ -44,12 +44,21 @@ namespace das
   std::pair<typename IndexList<T, K, key>::iterator, bool>
   IndexList<T, K, key>::emplace(Args&&... args)
   {
+    auto res = this->_emplace(std::forward<Args&&>(args)...);
+    this->_added(res.first->second);
+    this->_changed();
+    return std::move(res);
+  }
+
+  template <typename T, typename K, K (T::*key)>
+  template <class... Args>
+  std::pair<typename IndexList<T, K, key>::iterator, bool>
+  IndexList<T, K, key>::_emplace(Args&&... args)
+  {
     T element(std::forward<Args>(args)...);
     auto res = this->_contents.emplace(element.*key, std::move(element));
     if (!res.second)
       throw elle::Error(elle::sprintf("duplicate key: %s", element.*key));
-    this->_added(res.first->second);
-    this->_changed();
     return std::make_pair(iterator(res.first), res.second);
   }
 
@@ -62,7 +71,7 @@ namespace das
     {
       this->_contents.clear();
       for (auto const& e: c)
-        this->add(e);
+        this->_emplace(e);
       this->_reset();
       this->_changed();
     }
