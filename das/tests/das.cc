@@ -5,7 +5,6 @@
 #include <das/model.hh>
 
 class Device
-  : public elle::Printable
 {
 public:
   das::Variable<std::string> name;
@@ -25,13 +24,6 @@ public:
   {
     return this->id == other.id && this->name == other.name;
   }
-
-  virtual
-  void
-  print(std::ostream& s) const
-  {
-    elle::fprintf(s, "Device(%s, \"%s\")", this->id, this->name);
-  }
 };
 
 DAS_MODEL_FIELD(Device, name);
@@ -45,6 +37,15 @@ typedef das::Object<
 DasDevice;
 
 DAS_MODEL(Device, DasDevice);
+
+static
+void
+printer()
+{
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", Device("name", elle::UUID())),
+    "Device(id = 00000000-0000-0000-0000-000000000000, name = name)");
+}
 
 static
 void
@@ -328,4 +329,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(index_list), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(update_print), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(printer), 0, valgrind(1));
 }

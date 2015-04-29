@@ -21,5 +21,6 @@ namespace das
 # include <das/Object.hh>
 # include <das/Collection.hh>
 # include <das/Variable.hh>
+# include <das/printer.hh>
 
 #endif
