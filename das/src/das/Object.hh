@@ -205,6 +205,20 @@ namespace das
         static constexpr Type (Member<Functor>::*member) =              \
           &Member<Functor>::Name;                                       \
       };                                                                \
+                                                                        \
+      static                                                            \
+      decltype(((Class*)(nullptr))->Name)&                              \
+      get(Class& o)                                                     \
+      {                                                                 \
+        return o.Name;                                                  \
+      };                                                                \
+                                                                        \
+      static                                                            \
+      decltype(((Class*)(nullptr))->Name) const&                        \
+      get(Class const& o)                                               \
+      {                                                                 \
+        return o.Name;                                                  \
+      };                                                                \
     };                                                                  \
     template                                                            \
     class Field<Class, decltype(Class::Name), &Class::Name, void>;      \
