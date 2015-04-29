@@ -33,8 +33,9 @@ namespace das
   typename IndexList<T, K, key>::iterator
   IndexList<T, K, key>::erase(iterator position)
   {
+    K k = position->first;
     auto it = IndexList<T, K, key>::iterator(this->_contents.erase(position));
-    this->_removed(it->first);
+    this->_removed(k);
     this->_changed();
     return it;
   }
