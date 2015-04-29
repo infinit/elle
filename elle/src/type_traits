@@ -1,0 +1,16 @@
+// -*- c++ -*-
+#ifndef ELLE_TYPE_TRAITS
+# define ELLE_TYPE_TRAITS
+
+# include_next <type_traits>
+
+namespace std
+{
+  template <typename C, typename T>
+  struct enable_if_exists
+  {
+    typedef T type;
+  };
+}
+
+#endif
