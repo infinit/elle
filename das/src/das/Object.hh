@@ -35,6 +35,30 @@ namespace das
   };
 
   template <typename T, typename ... Fields>
+  struct FieldHelper
+  {
+    template <template <typename> class F>
+    static
+    void
+    each_field(T const& o)
+    {}
+  };
+
+
+  template <typename T, typename Head, typename ... Tail>
+  struct FieldHelper<T, Head, Tail...>
+  {
+    template <template <typename> class F>
+    static
+    void
+    each_field(T const& o)
+    {
+      F<Head>::apply(o);
+      FieldHelper<T, Tail...>::template each_field<F>(o);
+    }
+  };
+
+  template <typename T, typename ... Fields>
   class Object
   {
   public:
@@ -63,6 +87,14 @@ namespace das
         s << ")";
       }
     };
+
+    template <template <typename> class F>
+    static
+    void
+    each_field(T const& o)
+    {
+      FieldHelper<T, Fields...>::template each_field<F>(o);
+    }
   };
 
   template <typename T>
