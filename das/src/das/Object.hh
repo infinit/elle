@@ -37,24 +37,24 @@ namespace das
   template <typename T, typename ... Fields>
   struct FieldHelper
   {
-    template <template <typename> class F>
+    template <template <typename> class F, typename ... Args>
     static
     void
-    each_field(T const& o)
+    each_field(T const&, Args&& ...)
     {}
   };
-
 
   template <typename T, typename Head, typename ... Tail>
   struct FieldHelper<T, Head, Tail...>
   {
-    template <template <typename> class F>
+    template <template <typename> class F, typename ... Args>
     static
     void
-    each_field(T const& o)
+    each_field(T const& o, Args&& ... args)
     {
-      F<Head>::apply(o);
-      FieldHelper<T, Tail...>::template each_field<F>(o);
+      F<Head>::apply(o, std::forward<Args>(args)...);
+      FieldHelper<T, Tail...>::template each_field<F>(
+        o, std::forward<Args>(args)...);
     }
   };
 
@@ -88,12 +88,13 @@ namespace das
       }
     };
 
-    template <template <typename> class F>
+    template <template <typename> class F, typename ... Args>
     static
     void
-    each_field(T const& o)
+    each_field(T const& o, Args&& ... args)
     {
-      FieldHelper<T, Fields...>::template each_field<F>(o);
+      FieldHelper<T, Fields...>::template each_field<F>(
+        o, std::forward<Args>(args)...);
     }
   };
 
