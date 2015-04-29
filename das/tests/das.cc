@@ -44,6 +44,8 @@ typedef das::Object<
   >
 DasDevice;
 
+DAS_MODEL(Device, DasDevice);
+
 static
 void
 object_update()
