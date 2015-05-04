@@ -128,68 +128,134 @@ static
 void
 extract(elle::archive::Format fmt,
         boost::filesystem::path const& path,
-        boost::filesystem::path const& where)
+        boost::optional<boost::filesystem::path> const& where = boost::none,
+        bool use_libarchive_binaries = false)
 {
-  ChangeDirectory cd(where);
-  elle::archive::extract(path, cd.path());
+  if (where)
+  {
+    ChangeDirectory cd(where.get());
+    if (use_libarchive_binaries)
+    {
+      switch (fmt)
+      {
+        case elle::archive::Format::tar:
+        case elle::archive::Format::tar_bzip2:
+        case elle::archive::Format::tar_gzip:
+        {
+          elle::system::Process p({
+              (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar" EXTENSION).string(),
+              "-x", "-f", path.string()});
+          BOOST_CHECK_EQUAL(p.wait(), 0);
+          break;
+        }
+        case elle::archive::Format::zip:
+        case elle::archive::Format::zip_uncompressed:
+        {
+          elle::system::Process p({
+              (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio" EXTENSION).string(),
+              "--extract", "--make-directories", "-I", path.string()});
+          BOOST_CHECK_EQUAL(p.wait(), 0);
+          break;
+        }
+      }
+    }
+    else
+      elle::archive::extract(path, cd.path());
+  }
+  else
+  {
+    ELLE_ASSERT(use_libarchive_binaries == false);
+    elle::archive::extract(path);
+  }
 }
 
 static
 void
 archive(elle::archive::Format fmt)
 {
-  DummyHierarchy dummy;
-  auto pattern =
-    boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%.zip";
+  auto root =
+    boost::filesystem::unique_path(
+      boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%");
+  boost::filesystem::create_directories(root);
+  elle::SafeFinally clean_root([&] { boost::filesystem::remove_all(root); });
+  auto pattern = root / "%%%%-%%%%-%%%%-%%%%.zip";
   auto path = boost::filesystem::unique_path(pattern);
   elle::SafeFinally clean([&] { boost::filesystem::remove(path); });
-  elle::archive::archive(fmt, {dummy.root()}, path, renamer_forbid);
+  {
+    DummyHierarchy dummy;
+    elle::archive::archive(fmt, {dummy.root()}, path, renamer_forbid);
+  }
   {
     auto output_pattern =
       boost::filesystem::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
     auto output = boost::filesystem::unique_path(output_pattern);
     boost::filesystem::create_directory(output);
     elle::SafeFinally clean([&] { boost::filesystem::remove_all(output); });
-    extract(fmt, path, output);
-    int count = 0;
-    ChangeDirectory cd(output);
-    bool beacon1 = false;
-    bool beacon2 = false;
-    bool beacon3 = false;
-    bool beacon4 = false;
-    for (auto it = boost::filesystem::recursive_directory_iterator(".");
-         it != boost::filesystem::recursive_directory_iterator();
-         ++it)
-    {
-      ++count;
-      auto path = *it;
-      if (path == elle::sprintf("./%s", ROOT) || path == elle::sprintf("./%s/%s", ROOT, SUB))
-        continue;
-      else if (path == elle::sprintf("./%s/1", ROOT))
+    bool change_directory_beacon = false;
+    bool extract_and_delete_beacon = false;
+    auto extraction = [&] (bool use_libarchive_binaries,
+                           boost::optional<boost::filesystem::path> _output)
       {
-        beacon1 = true;
-        check_file_content(path, '1');
-      }
-      else if (path == elle::sprintf("./%s/2", ROOT))
-      {
-        beacon2 = true;
-        check_file_content(path, '2');
-      }
-      else if (path == elle::sprintf("./%s/%s/3", ROOT, SUB))
-      {
-        beacon3 = true;
-        check_file_content(path, '3');
-      }
-      else if (path == elle::sprintf("./%s/%s/4", ROOT, SUB))
-      {
-        beacon4 = true;
-        check_file_content(path, '4');
-      }
-      else
-        BOOST_FAIL(path);
-    }
-    BOOST_CHECK_EQUAL(count, 6);
-    BOOST_CHECK(beacon1 && beacon2 && beacon3 && beacon4);
+        int count = 0;
+        boost::filesystem::path output;
+        if (_output)
+        {
+          change_directory_beacon = true;
+          output = _output.get();
+          extract(fmt, path, output, use_libarchive_binaries);
+        }
+        else
+        {
+          extract_and_delete_beacon = true;
+          output = path.parent_path();
+          extract(fmt, path);
+          boost::filesystem::remove(path);
+        }
+        ChangeDirectory cd(output);
+        bool beacon1 = false;
+        bool beacon2 = false;
+        bool beacon3 = false;
+        bool beacon4 = false;
+        for (auto it = boost::filesystem::recursive_directory_iterator(".");
+             it != boost::filesystem::recursive_directory_iterator();
+             ++it)
+        {
+          ++count;
+          auto path = *it;
+          if (path == elle::sprintf("./%s", ROOT) || path == elle::sprintf("./%s/%s", ROOT, SUB))
+            continue;
+          else if (path == elle::sprintf("./%s/1", ROOT))
+          {
+            beacon1 = true;
+            check_file_content(path, '1');
+          }
+          else if (path == elle::sprintf("./%s/2", ROOT))
+          {
+            beacon2 = true;
+            check_file_content(path, '2');
+          }
+          else if (path == elle::sprintf("./%s/%s/3", ROOT, SUB))
+          {
+            beacon3 = true;
+            check_file_content(path, '3');
+          }
+          else if (path == elle::sprintf("./%s/%s/4", ROOT, SUB))
+          {
+            beacon4 = true;
+            check_file_content(path, '4');
+          }
+          else
+          {
+            BOOST_FAIL(path);
+          }
+        }
+        BOOST_CHECK_EQUAL(count, 6);
+        BOOST_CHECK(beacon1 && beacon2 && beacon3 && beacon4);
+      };
+    extraction(true, output);
+    extraction(false, output);
+    extraction(false, boost::none);
+    ELLE_ASSERT(change_directory_beacon && extract_and_delete_beacon);
   }
 }
 
