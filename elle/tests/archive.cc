@@ -131,28 +131,7 @@ extract(elle::archive::Format fmt,
         boost::filesystem::path const& where)
 {
   ChangeDirectory cd(where);
-  switch (fmt)
-  {
-    case elle::archive::Format::tar:
-    case elle::archive::Format::tar_bzip2:
-    case elle::archive::Format::tar_gzip:
-    {
-      elle::system::Process p({
-          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar" EXTENSION).string(),
-          "-x", "-f", path.string()});
-      BOOST_CHECK_EQUAL(p.wait(), 0);
-      break;
-    }
-    case elle::archive::Format::zip:
-    case elle::archive::Format::zip_uncompressed:
-    {
-      elle::system::Process p({
-          (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio" EXTENSION).string(),
-          "--extract", "--make-directories", "-I", path.string()});
-      BOOST_CHECK_EQUAL(p.wait(), 0);
-      break;
-    }
-  }
+  elle::archive::extract(path, cd.path());
 }
 
 static
