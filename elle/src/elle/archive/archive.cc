@@ -286,7 +286,6 @@ namespace elle
         check_call(a.get(), archive_write_header(out.get(), entry));
         check_call(a.get(), copy_data(a.get(), out.get()));
         check_call(a.get(), archive_write_finish_entry(out.get()));
-        boost::filesystem::remove(archive);
       }
     }
 
