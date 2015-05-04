@@ -261,7 +261,8 @@ namespace elle
       }
     }
 
-    void extract(boost::filesystem::path const& archive)
+    void extract(boost::filesystem::path const& archive,
+                 boost::optional<boost::filesystem::path> const& output)
     {
       ELLE_TRACE("[Archive] extracting %s", archive.string());
       ArchiveReadPtr a(archive_read_new());
@@ -280,7 +281,8 @@ namespace elle
           break;
         check_call(a.get(), r);
         const char* cur_file = archive_entry_pathname(entry);
-        const std::string fullpath = (archive.parent_path() / cur_file).string();
+        auto dest = output ? output.get() : archive.parent_path();
+        const std::string fullpath = (dest / cur_file).string();
         ELLE_TRACE("[Archive] extracting %s", fullpath);
         archive_entry_set_pathname(entry, fullpath.c_str());
         check_call(a.get(), archive_write_header(out.get(), entry));
@@ -288,6 +290,5 @@ namespace elle
         check_call(a.get(), archive_write_finish_entry(out.get()));
       }
     }
-
   }
 }

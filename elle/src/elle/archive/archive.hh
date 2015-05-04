@@ -4,6 +4,8 @@
 # include <functional>
 # include <vector>
 
+# include <boost/optional.hpp>
+
 # include <elle/filesystem.hh>
 
 namespace elle
@@ -36,7 +38,8 @@ namespace elle
 
     /// The extract function supports all formats, no need to specify it
     void
-    extract(boost::filesystem::path const& archive);
+    extract(boost::filesystem::path const& archive,
+            boost::optional<boost::filesystem::path> const& output = boost::none);
   }
 }
 
