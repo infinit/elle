@@ -267,7 +267,7 @@ test_serialize()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("KeyPair");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/KeyPair");
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));

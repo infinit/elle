@@ -597,7 +597,7 @@ namespace infinit
 }
 
 //
-// ---------- Digest ----------------------------------------------------------
+// ---------- Hash ------------------------------------------------------------
 //
 
 namespace infinit
@@ -606,75 +606,88 @@ namespace infinit
   {
     namespace evp
     {
-      namespace digest
+      elle::Buffer
+      hash(elle::ConstWeakBuffer const& plain,
+           ::EVP_MD const* function)
+      {
+        ELLE_TRACE_SCOPE("hash(%s)", function);
+        ELLE_DUMP("plain: %s", plain);
+
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Normalize the plain buffer.
+        elle::ConstWeakBuffer const _plain = _normalize(plain);
+
+        elle::Buffer digest(EVP_MD_size(function));
+
+        // Initialise the context.
+        ::EVP_MD_CTX context;
+
+        ::EVP_MD_CTX_init(&context);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
+
+        // Initialise the digest.
+        if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
+          throw Exception(
+            elle::sprintf("unable to initialize the digest process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Update the digest with the given plain's data.
+        if (::EVP_DigestUpdate(&context,
+                               _plain.contents(),
+                               _plain.size()) <= 0)
+          throw Exception(
+            elle::sprintf("unable to apply the digest process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Finalise the digest.
+        unsigned int size(0);
+
+        if (::EVP_DigestFinal_ex(&context,
+                                 digest.mutable_contents(),
+                                 &size) <= 0)
+          throw Exception(
+            elle::sprintf("unable to finalize the digest process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Update the digest final size.
+        digest.size(size);
+        digest.shrink_to_fit();
+
+        // Clean the context.
+        if (::EVP_MD_CTX_cleanup(&context) <= 0)
+          throw Exception(
+            elle::sprintf("unable to clean the digest context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+        return (digest);
+      }
+    }
+  }
+}
+
+//
+// ---------- HMAC ------------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace evp
+    {
+      namespace hmac
       {
         elle::Buffer
-        hash(elle::ConstWeakBuffer const& plain,
-             ::EVP_MD const* function)
-        {
-          ELLE_TRACE_SCOPE("hash(%s)", function);
-          ELLE_DUMP("plain: %s", plain);
-
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          // Normalize the plain buffer.
-          elle::ConstWeakBuffer const _plain = _normalize(plain);
-
-          elle::Buffer digest(EVP_MD_size(function));
-
-          // Initialise the context.
-          ::EVP_MD_CTX context;
-
-          ::EVP_MD_CTX_init(&context);
-
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
-
-          // Initialise the digest.
-          if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
-            throw Exception(
-              elle::sprintf("unable to initialize the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Update the digest with the given plain's data.
-          if (::EVP_DigestUpdate(&context,
-                                 _plain.contents(),
-                                 _plain.size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to apply the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Finalise the digest.
-          unsigned int size(0);
-
-          if (::EVP_DigestFinal_ex(&context,
-                                   digest.mutable_contents(),
-                                   &size) <= 0)
-            throw Exception(
-              elle::sprintf("unable to finalize the digest process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Update the digest final size.
-          digest.size(size);
-          digest.shrink_to_fit();
-
-          // Clean the context.
-          if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Exception(
-              elle::sprintf("unable to clean the digest context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-          return (digest);
-        }
-
-        elle::Buffer
-        hmac(elle::ConstWeakBuffer const& plain,
+        sign(elle::ConstWeakBuffer const& plain,
              ::EVP_PKEY* key,
              ::EVP_MD const* function)
         {
-          ELLE_TRACE_SCOPE("hmac(%s, %s)", key, function);
+          ELLE_TRACE_SCOPE("sign(%s, %s)", key, function);
           ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
@@ -742,6 +755,62 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
           return (digest);
+        }
+
+        elle::Boolean
+        verify(elle::ConstWeakBuffer const& digest,
+               elle::ConstWeakBuffer const& plain,
+               ::EVP_PKEY* key,
+               ::EVP_MD const* function)
+        {
+          ELLE_TRACE_SCOPE("verify(%s, %s)", key, function);
+          ELLE_DUMP("digest: %s", digest);
+          ELLE_DUMP("plain: %s", plain);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          // Normalize the plain buffer.
+          elle::ConstWeakBuffer const _plain = _normalize(plain);
+
+          // Initialise the context.
+          ::EVP_MD_CTX context;
+
+          ::EVP_MD_CTX_init(&context);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
+
+          if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
+            throw Exception(
+              elle::sprintf("unable to initialize the digest function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (::EVP_DigestVerifyInit(&context, NULL, function, NULL, key) <= 0)
+            throw Exception(
+              elle::sprintf("unable to initialize the HMAC process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (::EVP_DigestVerifyUpdate(&context,
+                                       _plain.contents(),
+                                       _plain.size()) <= 0)
+            throw Exception(
+              elle::sprintf("unable to apply the HMAC function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (::EVP_DigestVerifyFinal(&context,
+                                      digest.contents(),
+                                      digest.size()) == 0)
+            return (false);
+
+          // Clean the context.
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Exception(
+              elle::sprintf("unable to clean the digest context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+          return (true);
         }
       }
     }

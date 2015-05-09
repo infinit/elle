@@ -263,7 +263,7 @@ test_scenario()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("scenario");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/scenario");
 
   suite->add(BOOST_TEST_CASE(test_scenario));
 

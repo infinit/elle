@@ -77,16 +77,6 @@ test_operate_x(elle::String const& K,
   {
     elle::Buffer buffer = elle::format::hexadecimal::decode(R);
 
-    // Re-HMAC the same content and compare.
-    infinit::cryptography::Digest digest =
-      infinit::cryptography::hmac::sign(
-        infinit::cryptography::Plain(_input),
-        K,
-        O);
-
-    BOOST_CHECK_EQUAL(digest.buffer(), buffer);
-
-    // Verify using the appropriate verify() method.
     BOOST_CHECK_EQUAL(
       infinit::cryptography::hmac::verify(
         infinit::cryptography::Digest(buffer),
@@ -102,23 +92,30 @@ test_operate_x(elle::String const& K,
       42,
       infinit::cryptography::random::generate<elle::String>(S));
 
-    infinit::cryptography::Digest digest1 =
+    infinit::cryptography::Digest digest =
       infinit::cryptography::hmac::sign(input, K, O);
 
-    // Verify by doing the same process twice.
-    infinit::cryptography::Digest digest2 =
-      infinit::cryptography::hmac::sign(input, K, O);
-
-    BOOST_CHECK_EQUAL(digest1, digest2);
-
-    // Sign and verify through the appropriate methods.
     BOOST_CHECK_EQUAL(
       infinit::cryptography::hmac::verify(
-        digest1,
+        digest,
         input,
         K,
         O),
       true);
+  }
+
+  // Try to verify an invalid HMAC.
+  {
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(16);
+
+    BOOST_CHECK_EQUAL(
+      infinit::cryptography::hmac::verify(
+        infinit::cryptography::Digest(buffer),
+        infinit::cryptography::Plain(_input),
+        K,
+        O),
+      false);
   }
 }
 

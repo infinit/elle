@@ -120,7 +120,7 @@ namespace infinit
 }
 
 //
-// ---------- Digest ----------------------------------------------------------
+// ---------- Hash ------------------------------------------------------------
 //
 
 namespace infinit
@@ -129,17 +129,37 @@ namespace infinit
   {
     namespace evp
     {
-      namespace digest
+      /// Hash the given plain text with the message digest function.
+      elle::Buffer
+      hash(elle::ConstWeakBuffer const& plain,
+           ::EVP_MD const* function);
+    }
+  }
+}
+
+//
+// ---------- HMAC ------------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace evp
+    {
+      namespace hmac
       {
-        /// Hash the given plain text with the message digest function.
-        elle::Buffer
-        hash(elle::ConstWeakBuffer const& plain,
-             ::EVP_MD const* function);
         /// HMAC the given plain text using a key and digest function.
         elle::Buffer
-        hmac(elle::ConstWeakBuffer const& plain,
+        sign(elle::ConstWeakBuffer const& plain,
              ::EVP_PKEY* key,
              ::EVP_MD const* function);
+        /// Verify a HMAC digest.
+        elle::Boolean
+        verify(elle::ConstWeakBuffer const& digest,
+               elle::ConstWeakBuffer const& plain,
+               ::EVP_PKEY* key,
+               ::EVP_MD const* function);
       }
     }
   }

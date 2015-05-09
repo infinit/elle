@@ -217,7 +217,7 @@ test_serialize()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("PublicyKey");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/PublicyKey");
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));

@@ -28,7 +28,7 @@ namespace infinit
            Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_DEBUG_FUNCTION(oneway);
+        ELLE_DEBUG_FUNCTION(key, oneway);
         ELLE_DUMP("value: %x", value);
 
         static_assert(std::is_same<T, Plain>::value == false,
@@ -57,7 +57,7 @@ namespace infinit
              Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_DEBUG_FUNCTION(oneway);
+        ELLE_DEBUG_FUNCTION(key, oneway);
         ELLE_DUMP("digest: %x", digest);
         ELLE_DUMP("value: %x", value);
 
