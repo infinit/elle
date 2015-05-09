@@ -15,21 +15,38 @@ namespace infinit
 {
   namespace cryptography
   {
-    /*----------.
-    | Functions |
-    `----------*/
+    namespace hmac
+    {
+      /*----------.
+      | Functions |
+      `----------*/
 
-    /// HMAC plain text using a key and return a digest.
-    Digest
-    hmac(Plain const& plain,
-         Digest const& key,
-         Oneway oneway);
-    /// HMAC anything serializable using a key and return a digest.
-    template <typename T>
-    Digest
-    hmac(T const& value,
-         Digest const& key,
-         Oneway oneway);
+      /// Sign a plain text using the given string as a key
+      /// and return a HMAC digest.
+      Digest
+      sign(Plain const& plain,
+           elle::String const& key,
+           Oneway const oneway);
+      /// HMAC any serializable data.
+      template <typename T>
+      Digest
+      sign(T const& value,
+           elle::String const& key,
+           Oneway const oneway);
+      /// Verify a HMAC digest.
+      elle::Boolean
+      verify(Digest const& digest,
+             Plain const& plain,
+             elle::String const& key,
+             Oneway const oneway);
+      /// Verify any serializable data.
+      template <typename T>
+      elle::Boolean
+      verify(Digest const& digest,
+             T const& value,
+             elle::String const& key,
+             Oneway const oneway);
+    }
   }
 }
 

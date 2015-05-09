@@ -22,7 +22,7 @@ public:
   }
 
   Sample(elle::Real const& salt,
-        elle::String const& string):
+         elle::String const& string):
     _salt(salt),
     _string(string)
   {

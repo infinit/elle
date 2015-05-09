@@ -353,6 +353,121 @@ namespace infinit
                         "non-compliant with the cipher '%s'",
                         mode, cipher));
       }
+
+      std::pair<Cipher, Mode>
+      resolve(::EVP_CIPHER const* function)
+      {
+        ELLE_TRACE_FUNCTION(function);
+
+        static std::map< ::EVP_CIPHER const*,
+                         std::pair<Cipher, Mode> > const functions =
+          {
+            // null
+            { ::EVP_enc_null(),
+              std::pair<Cipher, Mode>(Cipher::null, Mode::none) },
+            // des
+            { ::EVP_des_cbc(),
+              std::pair<Cipher, Mode>(Cipher::des, Mode::cbc) },
+            { ::EVP_des_ecb(),
+              std::pair<Cipher, Mode>(Cipher::des, Mode::ecb) },
+            { ::EVP_des_cfb(),
+              std::pair<Cipher, Mode>(Cipher::des, Mode::cfb) },
+            { ::EVP_des_ofb(),
+              std::pair<Cipher, Mode>(Cipher::des, Mode::ofb) },
+            // des2
+            { ::EVP_des_ede_cbc(),
+              std::pair<Cipher, Mode>(Cipher::des2, Mode::cbc) },
+            { ::EVP_des_ede_ecb(),
+              std::pair<Cipher, Mode>(Cipher::des2, Mode::ecb) },
+            { ::EVP_des_ede_cfb(),
+              std::pair<Cipher, Mode>(Cipher::des2, Mode::cfb) },
+            { ::EVP_des_ede_ofb(),
+              std::pair<Cipher, Mode>(Cipher::des2, Mode::ofb) },
+            // des3
+            { ::EVP_des_ede3_cbc(),
+              std::pair<Cipher, Mode>(Cipher::des3, Mode::cbc) },
+            { ::EVP_des_ede3_ecb(),
+              std::pair<Cipher, Mode>(Cipher::des3, Mode::ecb) },
+            { ::EVP_des_ede3_cfb(),
+              std::pair<Cipher, Mode>(Cipher::des3, Mode::cfb) },
+            { ::EVP_des_ede3_ofb(),
+              std::pair<Cipher, Mode>(Cipher::des3, Mode::ofb) },
+            // desx
+            { ::EVP_desx_cbc(),
+              std::pair<Cipher, Mode>(Cipher::desx, Mode::cbc) },
+            // idea
+            { ::EVP_idea_cbc(),
+              std::pair<Cipher, Mode>(Cipher::idea, Mode::cbc) },
+            { ::EVP_idea_ecb(),
+              std::pair<Cipher, Mode>(Cipher::idea, Mode::ecb) },
+            { ::EVP_idea_cfb(),
+              std::pair<Cipher, Mode>(Cipher::idea, Mode::cfb) },
+            { ::EVP_idea_ofb(),
+              std::pair<Cipher, Mode>(Cipher::idea, Mode::ofb) },
+            // rc2
+            { ::EVP_rc2_cbc(),
+              std::pair<Cipher, Mode>(Cipher::rc2, Mode::cbc) },
+            { ::EVP_rc2_ecb(),
+              std::pair<Cipher, Mode>(Cipher::rc2, Mode::ecb) },
+            { ::EVP_rc2_cfb(),
+              std::pair<Cipher, Mode>(Cipher::rc2, Mode::cfb) },
+            { ::EVP_rc2_ofb(),
+              std::pair<Cipher, Mode>(Cipher::rc2, Mode::ofb) },
+            // blowfish
+            { ::EVP_bf_cbc(),
+              std::pair<Cipher, Mode>(Cipher::blowfish, Mode::cbc) },
+            { ::EVP_bf_ecb(),
+              std::pair<Cipher, Mode>(Cipher::blowfish, Mode::ecb) },
+            { ::EVP_bf_cfb(),
+              std::pair<Cipher, Mode>(Cipher::blowfish, Mode::cfb) },
+            { ::EVP_bf_ofb(),
+              std::pair<Cipher, Mode>(Cipher::blowfish, Mode::ofb) },
+            // cast5
+            { ::EVP_cast5_cbc(),
+              std::pair<Cipher, Mode>(Cipher::cast5, Mode::cbc) },
+            { ::EVP_cast5_ecb(),
+              std::pair<Cipher, Mode>(Cipher::cast5, Mode::ecb) },
+            { ::EVP_cast5_cfb(),
+              std::pair<Cipher, Mode>(Cipher::cast5, Mode::cfb) },
+            { ::EVP_cast5_ofb(),
+              std::pair<Cipher, Mode>(Cipher::cast5, Mode::ofb) },
+            // aes128
+            { ::EVP_aes_128_cbc(),
+              std::pair<Cipher, Mode>(Cipher::aes128, Mode::cbc) },
+            { ::EVP_aes_128_ecb(),
+              std::pair<Cipher, Mode>(Cipher::aes128, Mode::ecb) },
+            { ::EVP_aes_128_cfb(),
+              std::pair<Cipher, Mode>(Cipher::aes128, Mode::cfb) },
+            { ::EVP_aes_128_ofb(),
+              std::pair<Cipher, Mode>(Cipher::aes128, Mode::ofb) },
+            // aes192
+            { ::EVP_aes_192_cbc(),
+              std::pair<Cipher, Mode>(Cipher::aes192, Mode::cbc) },
+            { ::EVP_aes_192_ecb(),
+              std::pair<Cipher, Mode>(Cipher::aes192, Mode::ecb) },
+            { ::EVP_aes_192_cfb(),
+              std::pair<Cipher, Mode>(Cipher::aes192, Mode::cfb) },
+            { ::EVP_aes_192_ofb(),
+              std::pair<Cipher, Mode>(Cipher::aes192, Mode::ofb) },
+            // aes256
+            { ::EVP_aes_256_cbc(),
+              std::pair<Cipher, Mode>(Cipher::aes256, Mode::cbc) },
+            { ::EVP_aes_256_ecb(),
+              std::pair<Cipher, Mode>(Cipher::aes256, Mode::ecb) },
+            { ::EVP_aes_256_cfb(),
+              std::pair<Cipher, Mode>(Cipher::aes256, Mode::cfb) },
+            { ::EVP_aes_256_ofb(),
+              std::pair<Cipher, Mode>(Cipher::aes256, Mode::ofb) }
+          };
+
+        for (auto const& iterator: functions)
+        {
+          if (function == iterator.first)
+            return (iterator.second);
+        }
+
+        throw Exception(elle::sprintf("unknown function '%s'", function));
+      }
     }
   }
 }

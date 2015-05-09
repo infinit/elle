@@ -97,10 +97,10 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      return (evp::symmetric::encrypt(plain,
-                                      this->_password,
-                                      function_cipher,
-                                      function_oneway));
+      return (Code(evp::symmetric::encrypt(plain.buffer(),
+                                           this->_password,
+                                           function_cipher,
+                                           function_oneway)));
     }
 
     Clear
@@ -115,10 +115,10 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      return (evp::symmetric::decrypt(code,
-                                      this->_password,
-                                      function_cipher,
-                                      function_oneway));
+      return (Clear(evp::symmetric::decrypt(code.buffer(),
+                                            this->_password,
+                                            function_cipher,
+                                            function_oneway)));
     }
 
     elle::Natural32

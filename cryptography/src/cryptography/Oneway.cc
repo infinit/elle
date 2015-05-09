@@ -96,6 +96,32 @@ namespace infinit
 
         elle::unreachable();
       }
+
+      Oneway
+      resolve(::EVP_MD const* function)
+      {
+        ELLE_TRACE_FUNCTION(function);
+
+        static std::map<::EVP_MD const*, Oneway> const functions =
+          {
+            { ::EVP_md5(), Oneway::md5 },
+            { ::EVP_sha(), Oneway::sha },
+            { ::EVP_sha1(), Oneway::sha1 },
+            { ::EVP_sha224(), Oneway::sha224 },
+            { ::EVP_sha256(), Oneway::sha256 },
+            { ::EVP_sha384(), Oneway::sha384 },
+            { ::EVP_sha512(), Oneway::sha512 },
+          };
+
+        for (auto const& iterator: functions)
+        {
+          if (function == iterator.first)
+            return (iterator.second);
+        }
+
+        throw Exception(elle::sprintf("unable to resolve the given one-way "
+                                      "function '%s'", function));
+      }
     }
   }
 }

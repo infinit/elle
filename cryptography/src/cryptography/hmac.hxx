@@ -15,35 +15,69 @@ namespace infinit
 {
   namespace cryptography
   {
-    /*----------.
-    | Functions |
-    `----------*/
-
-    template <typename T>
-    Digest
-    hmac(T const& value,
-         Digest const& key,
-         Oneway oneway)
+    namespace hmac
     {
-      ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-      ELLE_DEBUG_FUNCTION(value, oneway);
+      /*----------.
+      | Functions |
+      `----------*/
 
-      static_assert(std::is_same<T, Plain>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::Buffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                    "this call should never have occured");
+      template <typename T>
+      Digest
+      sign(T const& value,
+           elle::String const& key,
+           Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_DEBUG_FUNCTION(oneway);
+        ELLE_DUMP("value: %x", value);
 
-      elle::Buffer buffer;
-      ELLE_MEASURE("Serialize into the buffer")
-        buffer.writer() << value;
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                      "this call should never have occured");
 
-      ELLE_MEASURE_SCOPE("hmac the buffer");
+        elle::Buffer _value;
+        ELLE_MEASURE("serialize the value")
+          _value.writer() << value;
 
-      return (hmac(Plain(buffer), key, oneway));
+        ELLE_MEASURE_SCOPE("sign the value with the key");
+
+        return (sign(Plain(_value), key, oneway));
+      }
+
+      template <typename T>
+      elle::Boolean
+      verify(Digest const& digest,
+             T const& value,
+             elle::String const& key,
+             Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_DEBUG_FUNCTION(oneway);
+        ELLE_DUMP("digest: %x", digest);
+        ELLE_DUMP("value: %x", value);
+
+        static_assert(std::is_same<T, Plain>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::Buffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                      "this call should never have occured");
+        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                      "this call should never have occured");
+
+        elle::Buffer _value;
+        ELLE_MEASURE("serialize the value")
+          _value.writer() << value;
+
+        ELLE_MEASURE_SCOPE("verify the value with the key");
+
+        return (verify(digest, Plain(_value), key, oneway));
+      }
     }
   }
 }

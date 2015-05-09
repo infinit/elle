@@ -40,14 +40,11 @@ namespace infinit
 
           int _padding = padding::resolve(padding);
 
-          if (::EVP_PKEY_CTX_ctrl(context,
-                                  EVP_PKEY_RSA,
-                                  -1,
-                                  EVP_PKEY_CTRL_RSA_PADDING,
-                                  _padding,
-                                  nullptr) <= 0)
+          if (EVP_PKEY_CTX_set_rsa_padding(context, _padding) <= 0)
             throw Exception(
-              elle::sprintf("unable to set the EVP_PKEY context's padding: %s",
+              elle::sprintf("unable to set the EVP_PKEY context's "
+                            "padding '%s': %s",
+                            _padding,
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);

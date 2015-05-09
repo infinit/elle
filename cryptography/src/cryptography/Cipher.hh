@@ -62,6 +62,9 @@ namespace infinit
       ::EVP_CIPHER const*
       resolve(Cipher const cipher,
               Mode const mode);
+      /// Return the cipher and mode based on the function.
+      std::pair<Cipher, Mode>
+      resolve(::EVP_CIPHER const* function);
     }
   }
 }

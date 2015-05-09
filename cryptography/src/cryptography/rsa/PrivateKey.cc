@@ -312,9 +312,9 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        return (evp::asymmetric::decrypt(code,
-                                         this->_context.decrypt.get(),
-                                         ::EVP_PKEY_decrypt));
+        return (Clear(evp::asymmetric::decrypt(code.buffer(),
+                                               this->_context.decrypt.get(),
+                                               ::EVP_PKEY_decrypt)));
       }
 
       Signature
@@ -323,9 +323,9 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("digest: %x", digest);
 
-        return (evp::asymmetric::sign(digest,
-                                      this->_context.sign.get(),
-                                      ::EVP_PKEY_sign));
+        return (Signature(evp::asymmetric::sign(digest.buffer(),
+                                                this->_context.sign.get(),
+                                                ::EVP_PKEY_sign)));
       }
 
       Signature

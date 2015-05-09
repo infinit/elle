@@ -29,6 +29,24 @@ namespace infinit
   {
     namespace evp
     {
+      /*-----------------.
+      | Static Functions |
+      `-----------------*/
+
+      /// Normalize behavior between no data and data of size 0.
+      /// by always forcing it into the second
+      static
+      elle::ConstWeakBuffer
+      _normalize(elle::ConstWeakBuffer const& input)
+      {
+        static elle::ConstWeakBuffer blank("", 0);
+
+        if (input.contents() != nullptr)
+          return (input);
+
+        return (blank);
+      }
+
       namespace asymmetric
       {
         /*-----------------.
@@ -70,8 +88,12 @@ namespace infinit
           return (length_final - length_original);
         }
 
+        /*----------.
+        | Functions |
+        `----------*/
+
         elle::Buffer
-        apply(elle::WeakBuffer const& input,
+        apply(elle::ConstWeakBuffer const& input,
               ::EVP_PKEY_CTX* context,
               int (*function)(EVP_PKEY_CTX*,
                               unsigned char*,
@@ -82,21 +104,22 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
+          ELLE_ASSERT_NEQ(context, nullptr);
           ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
                             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
                           input.size() * 8);
 
+          // Normalize the input.
+          elle::ConstWeakBuffer const _input = _normalize(input);
+
           // Compute the size of the encrypted buffer.
           ::size_t size;
-
-          ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(input.contents(), nullptr);
 
           if (function(context,
                        nullptr,
                        &size,
-                       input.contents(),
-                       input.size()) <= 0)
+                       _input.contents(),
+                       _input.size()) <= 0)
             throw Exception(elle::sprintf("unable to pre-compute the size of "
                                           "the encrypted output: %s",
                                           ::ERR_error_string(ERR_get_error(),
@@ -110,8 +133,8 @@ namespace infinit
                        reinterpret_cast<unsigned char*>(
                          output.mutable_contents()),
                        &size,
-                       input.contents(),
-                       input.size()) <= 0)
+                       _input.contents(),
+                       _input.size()) <= 0)
             throw Exception(elle::sprintf("unable to apply the cryptographic "
                                           "function: %s",
                                           ::ERR_error_string(ERR_get_error(),
@@ -124,21 +147,20 @@ namespace infinit
           return (output);
         }
 
-        Code
-        encrypt(Plain const& plain,
+        elle::Buffer
+        encrypt(elle::ConstWeakBuffer const& plain,
                 ::EVP_PKEY_CTX* context,
                 int (*function)(EVP_PKEY_CTX*,
                                 unsigned char*,
                                 size_t*,
                                 const unsigned char*,
                                 size_t),
-                Cipher const cipher,
-                Mode const mode,
-                Oneway const oneway,
+                ::EVP_CIPHER const* cipher,
+                ::EVP_MD const* oneway,
                 elle::Natural32 const padding_size)
         {
-          ELLE_TRACE_SCOPE("encrypt(%s, %s, %s, %s)",
-                           context, function, cipher, padding_size);
+          ELLE_TRACE_SCOPE("encrypt(%s, %s, %s, %s, %s)",
+                           context, function, cipher, oneway, padding_size);
           ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
@@ -181,38 +203,39 @@ namespace infinit
             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
             (padding_size + overhead) : ceiling;
 
+          // Resolve back the cipher, mode and oneway.
+          std::pair<Cipher, Mode> _cipher = cipher::resolve(cipher);
+          Oneway _oneway = oneway::resolve(oneway);
+
           // 2) Generate a temporary secret key.
-          SecretKey secret = secretkey::generate(length, cipher, mode, oneway);
+          SecretKey secret =
+            secretkey::generate(length, _cipher.first, _cipher.second, _oneway);
 
           // 3) Cipher the plain text with the secret key.
-          Code data = secret.encrypt(plain);
+          Code data = secret.encrypt(Plain(plain));
 
           // 4) Asymmetrically encrypt the secret with the given function
           //    and encryption context.
 
           // Serialize the secret.
           elle::Buffer buffer;
-
           buffer.writer() << secret;
 
           ELLE_ASSERT_GT(buffer.size(), 0u);
 
           // Encrypt the secret key's archive.
-          Code key(apply(buffer,
-                         context,
-                         function));
+          Code key = Code(apply(buffer, context, function));
 
           // 5) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
-          Code code;
-
-          code.buffer().writer() << key << data;
+          elle::Buffer code;
+          code.writer() << key << data;
 
           return (code);
         }
 
-        Clear
-        decrypt(Code const& code,
+        elle::Buffer
+        decrypt(elle::ConstWeakBuffer const& code,
                 ::EVP_PKEY_CTX* context,
                 int (*function)(EVP_PKEY_CTX*,
                                 unsigned char*,
@@ -228,30 +251,26 @@ namespace infinit
 
           // 1) Extract the key and ciphered data from the code which
           //    is supposed to be an archive.
-          ELLE_DEBUG("extract symmetric key and message");
-          auto extractor = code.buffer().reader();
+          auto extractor = code.reader();
           Code key(extractor);
           Code data(extractor);
 
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
           // Decrypt the key.
-          ELLE_DEBUG("decrypt symmetric key");
-          elle::Buffer buffer = apply(key.buffer(),
-                                      context,
-                                      function);
+          elle::Buffer buffer = apply(key.buffer(), context, function);
+
           // Finally extract the secret key since decrypted.
           SecretKey secret(buffer.reader());
 
           // 3) Decrypt the data with the secret key.
-          ELLE_DEBUG("decrypt message");
           Clear clear = secret.decrypt(data);
 
-          return (clear);
+          return (clear.buffer());
         }
 
-        Signature
-        sign(Digest const& digest,
+        elle::Buffer
+        sign(elle::ConstWeakBuffer const& digest,
              ::EVP_PKEY_CTX* context,
              int (*function)(EVP_PKEY_CTX*,
                              unsigned char*,
@@ -265,16 +284,12 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          Signature signature(apply(digest.buffer(),
-                                    context,
-                                    function));
-
-          return (signature);
+          return (apply(digest, context, function));
         }
 
         elle::Boolean
-        verify(Signature const& signature,
-               Digest const& digest,
+        verify(elle::ConstWeakBuffer const& signature,
+               elle::ConstWeakBuffer const& digest,
                ::EVP_PKEY_CTX* context,
                int (*function)(EVP_PKEY_CTX*,
                                const unsigned char*,
@@ -290,18 +305,18 @@ namespace infinit
           cryptography::require();
 
           ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(signature.buffer().contents(), nullptr);
-          ELLE_ASSERT_NEQ(digest.buffer().contents(), nullptr);
+          ELLE_ASSERT_NEQ(signature.contents(), nullptr);
+          ELLE_ASSERT_NEQ(digest.contents(), nullptr);
 
           // Verify the signature.
           int result =
             function(context,
                      reinterpret_cast<const unsigned char*>(
-                       signature.buffer().contents()),
-                     signature.buffer().size(),
+                       signature.contents()),
+                     signature.size(),
                      reinterpret_cast<const unsigned char*>(
-                       digest.buffer().contents()),
-                     digest.buffer().size());
+                       digest.contents()),
+                     digest.size());
 
           switch (result)
           {
@@ -347,9 +362,9 @@ namespace infinit
         | Functions |
         `----------*/
 
-        Code
-        encrypt(Plain const& plain,
-                elle::Buffer const& secret,
+        elle::Buffer
+        encrypt(elle::ConstWeakBuffer const& plain,
+                elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
@@ -359,6 +374,9 @@ namespace infinit
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
+
+          // Normalize the plain text.
+          elle::ConstWeakBuffer const _plain = _normalize(plain);
 
           // Generate a salt.
           unsigned char salt[PKCS5_SALT_LEN];
@@ -408,20 +426,19 @@ namespace infinit
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
-          // Allocate the code.
-          Code code(sizeof (magic) -
-                    1 +
-                    sizeof (salt) +
-                    plain.buffer().size() +
-                    block_size);
+          elle::Buffer code(sizeof (magic) -
+                            1 +
+                            sizeof (salt) +
+                            _plain.size() +
+                            block_size);
 
           // Embed the magic directly into the code.
-          ::memcpy(code.buffer().mutable_contents(),
+          ::memcpy(code.mutable_contents(),
                    magic,
                    sizeof (magic) - 1);
 
           // Copy the salt directly into the code.
-          ::memcpy(code.buffer().mutable_contents() +
+          ::memcpy(code.mutable_contents() +
                    sizeof (magic) - 1,
                    salt,
                    sizeof (salt));
@@ -432,14 +449,14 @@ namespace infinit
           // Cipher the plain text.
           int size_update(0);
 
-          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
+          ELLE_ASSERT_NEQ(_plain.contents(), nullptr);
 
           if (::EVP_EncryptUpdate(&context,
-                                  code.buffer().mutable_contents() +
+                                  code.mutable_contents() +
                                   size_header,
                                   &size_update,
-                                  plain.buffer().contents(),
-                                  plain.buffer().size()) == 0)
+                                  _plain.contents(),
+                                  _plain.size()) == 0)
             throw Exception(
               elle::sprintf("unable to apply the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -448,7 +465,7 @@ namespace infinit
           int size_finalize(0);
 
           if (::EVP_EncryptFinal_ex(&context,
-                                    code.buffer().mutable_contents() +
+                                    code.mutable_contents() +
                                     size_header + size_update,
                                     &size_finalize) == 0)
             throw Exception(
@@ -456,8 +473,8 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the code size with the actual size of the generated data.
-          code.buffer().size(size_header + size_update + size_finalize);
-          code.buffer().shrink_to_fit();
+          code.size(size_header + size_update + size_finalize);
+          code.shrink_to_fit();
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
@@ -467,9 +484,9 @@ namespace infinit
           return (code);
         }
 
-        Clear
-        decrypt(Code const& code,
-                elle::Buffer const& secret,
+        elle::Buffer
+        decrypt(elle::ConstWeakBuffer const& code,
+                elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
@@ -481,10 +498,10 @@ namespace infinit
           cryptography::require();
 
           // Check whether the code was produced with a salt.
-          ELLE_ASSERT_NEQ(code.buffer().contents(), nullptr);
+          ELLE_ASSERT_NEQ(code.contents(), nullptr);
 
           if (::memcmp(magic,
-                       code.buffer().contents(),
+                       code.contents(),
                        sizeof (magic) - 1) != 0)
             throw Exception("the code was produced without any salt");
 
@@ -492,7 +509,7 @@ namespace infinit
           unsigned char salt[PKCS5_SALT_LEN];
 
           ::memcpy(salt,
-                   code.buffer().contents() + sizeof (magic) - 1,
+                   code.contents() + sizeof (magic) - 1,
                    sizeof (salt));
 
           // Check that the secret key's buffer has a non-null address.
@@ -534,20 +551,19 @@ namespace infinit
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
-          // Allocate the clear;
-          Clear clear(code.buffer().size() -
-                      (sizeof (magic) - 1 + sizeof (salt)) +
-                      block_size);
+          elle::Buffer clear(code.size() -
+                             (sizeof (magic) - 1 + sizeof (salt)) +
+                             block_size);
 
           // Decipher the code.
           int size_update(0);
 
           if (::EVP_DecryptUpdate(&context,
-                                  clear.buffer().mutable_contents(),
+                                  clear.mutable_contents(),
                                   &size_update,
-                                  code.buffer().contents() +
+                                  code.contents() +
                                   sizeof (magic) - 1 + sizeof (salt),
-                                  code.buffer().size() -
+                                  code.size() -
                                   (sizeof (magic) - 1 + sizeof (salt))) == 0)
             throw Exception(
               elle::sprintf("unable to apply the decryption process: %s",
@@ -557,7 +573,7 @@ namespace infinit
           int size_final(0);
 
           if (::EVP_DecryptFinal_ex(&context,
-                                    clear.buffer().mutable_contents() +
+                                    clear.mutable_contents() +
                                     size_update,
                                     &size_final) == 0)
             throw Exception(
@@ -565,8 +581,8 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the clear size with the actual size of the data decrypted.
-          clear.buffer().size(size_update + size_final);
-          clear.buffer().shrink_to_fit();
+          clear.size(size_update + size_final);
+          clear.shrink_to_fit();
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
@@ -592,8 +608,8 @@ namespace infinit
     {
       namespace digest
       {
-        Digest
-        hash(Plain const& plain,
+        elle::Buffer
+        hash(elle::ConstWeakBuffer const& plain,
              ::EVP_MD const* function)
         {
           ELLE_TRACE_SCOPE("hash(%s)", function);
@@ -602,7 +618,10 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          Digest digest(EVP_MD_size(function));
+          // Normalize the plain buffer.
+          elle::ConstWeakBuffer const _plain = _normalize(plain);
+
+          elle::Buffer digest(EVP_MD_size(function));
 
           // Initialise the context.
           ::EVP_MD_CTX context;
@@ -617,37 +636,27 @@ namespace infinit
               elle::sprintf("unable to initialize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Normalize behavior between no data and data of size 0.
-          // by always forcing it into the second
-          elle::Byte const* data = reinterpret_cast<const elle::Byte*>("");
-          elle::Buffer::Size length = 0;
-          if (plain.buffer().contents() != nullptr)
-          {
-            data = plain.buffer().contents();
-            length = plain.buffer().size();
-          }
-
           // Update the digest with the given plain's data.
           if (::EVP_DigestUpdate(&context,
-                                 data,
-                                 length) <= 0)
+                                 _plain.contents(),
+                                 _plain.size()) <= 0)
             throw Exception(
               elle::sprintf("unable to apply the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Finalise the digest.
-          unsigned int size;
+          unsigned int size(0);
 
           if (::EVP_DigestFinal_ex(&context,
-                                   digest.buffer().mutable_contents(),
-                                   &size) <=0)
+                                   digest.mutable_contents(),
+                                   &size) <= 0)
             throw Exception(
               elle::sprintf("unable to finalize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Update the digest final size.
-          digest.buffer().size(size);
-          digest.buffer().shrink_to_fit();
+          digest.size(size);
+          digest.shrink_to_fit();
 
           // Clean the context.
           if (::EVP_MD_CTX_cleanup(&context) <= 0)
@@ -660,61 +669,75 @@ namespace infinit
           return (digest);
         }
 
-        Digest
-        hmac(Plain const& plain,
-             Digest const& key,
+        elle::Buffer
+        hmac(elle::ConstWeakBuffer const& plain,
+             ::EVP_PKEY* key,
              ::EVP_MD const* function)
         {
-          ELLE_TRACE_SCOPE("hmac(%s)", function);
+          ELLE_TRACE_SCOPE("hmac(%s, %s)", key, function);
           ELLE_DUMP("plain: %s", plain);
-          ELLE_DUMP("key: %s", key);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          Digest digest(EVP_MD_size(function));
+          // Normalize the plain buffer.
+          elle::ConstWeakBuffer const _plain = _normalize(plain);
 
           // Initialise the context.
-          ::HMAC_CTX context;
+          ::EVP_MD_CTX context;
 
-          ::HMAC_CTX_init(&context);
+          ::EVP_MD_CTX_init(&context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_HMAC_DIGEST_CONTEXT(
-            context);
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
-          // Initialise the digest.
-          if (::HMAC_Init_ex(&context, key.buffer().contents(),
-                             key.buffer().size(), function, nullptr) <= 0)
+          if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
             throw Exception(
-              elle::sprintf("unable to initialize the digest process: %s",
+              elle::sprintf("unable to initialize the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT_NEQ(plain.buffer().contents(), nullptr);
-
-          // Update the digest with the given plain's data.
-          if (::HMAC_Update(&context,
-                            plain.buffer().contents(),
-                            plain.buffer().size()) <= 0)
+          if (::EVP_DigestSignInit(&context, NULL, function, NULL, key) <= 0)
             throw Exception(
-              elle::sprintf("unable to apply the digest process: %s",
+              elle::sprintf("unable to initialize the HMAC process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (::EVP_DigestSignUpdate(&context,
+                                     _plain.contents(),
+                                     _plain.size()) <= 0)
+            throw Exception(
+              elle::sprintf("unable to apply the HMAC function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Compute the output length.
+          unsigned long size(0);
+
+          if (::EVP_DigestSignFinal(&context,
+                                    nullptr,
+                                    &size) <= 0)
+            throw Exception(
+              elle::sprintf("unable to compute the final HMAC size: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Finalise the digest.
-          unsigned int size;
+          elle::Buffer digest(size);
 
-          if (::HMAC_Final(&context,
-                           digest.buffer().mutable_contents(),
-                           &size) <=0)
+          if (::EVP_DigestSignFinal(&context,
+                                    digest.mutable_contents(),
+                                    &size) <= 0)
             throw Exception(
               elle::sprintf("unable to finalize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
+          ELLE_ASSERT_EQ(digest.size(), size);
+
           // Update the digest final size.
-          digest.buffer().size(size);
-          digest.buffer().shrink_to_fit();
+          digest.size(size);
+          digest.shrink_to_fit();
 
           // Clean the context.
-          ::HMAC_CTX_cleanup(&context);
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Exception(
+              elle::sprintf("unable to clean the digest context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
 

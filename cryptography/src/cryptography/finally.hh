@@ -34,11 +34,6 @@
   elle::SafeFinally _finally_##V(                                       \
     [&] () { ::EVP_MD_CTX_cleanup(&V); });                              \
 
-/// Make it easy to clean up a digest context.
-# define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_HMAC_DIGEST_CONTEXT(V)  \
-  elle::SafeFinally _finally_##V(                                            \
-    [&] () { ::HMAC_CTX_cleanup(&V); });                                     \
-
 /// Make it easy to clean up a EVP_PKEY context.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(V)   \
   elle::SafeFinally _finally_##V(                                       \

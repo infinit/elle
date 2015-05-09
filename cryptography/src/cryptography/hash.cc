@@ -28,7 +28,7 @@ namespace infinit
 
       ::EVP_MD const* function = oneway::resolve(oneway);
 
-      return (evp::digest::hash(plain, function));
+      return (Digest(evp::digest::hash(plain.buffer(), function)));
     }
   }
 }

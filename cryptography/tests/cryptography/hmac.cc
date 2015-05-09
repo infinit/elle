@@ -3,6 +3,7 @@
 
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
+#include <cryptography/Plain.hh>
 #include <cryptography/hmac.hh>
 #include <cryptography/random.hh>
 
@@ -12,8 +13,7 @@
 #include <elle/format/hexadecimal.hh>
 
 static std::string const _input(
-  "- Do you think she's expecting something big?"
-  "- You mean, like anal?");
+  "- Back off Susan Boyle!");
 
 /*----------.
 | Represent |
@@ -22,16 +22,18 @@ static std::string const _input(
 template <elle::Natural32 N,
           infinit::cryptography::Oneway O>
 void
-test_represent_n()
+test_represent_n(elle::String const& K)
 {
   // N)
   {
-    infinit::cryptography::Digest key(elle::Buffer("key", 3));
     infinit::cryptography::Digest digest =
-      hmac(infinit::cryptography::Plain(_input), key, O);
+      infinit::cryptography::hmac::sign(
+        infinit::cryptography::Plain(_input),
+        K,
+        O);
     std::string representation =
       elle::format::hexadecimal::encode(digest.buffer());
-    elle::sprintf("[representation %s] %s\n", N, representation);
+    elle::printf("[representation %s] %s\n", N, representation);
   }
 }
 
@@ -46,19 +48,19 @@ test_represent()
   // other tests.
 
   // MD5.
-  test_represent_n<1, infinit::cryptography::Oneway::md5>();
+  test_represent_n<1, infinit::cryptography::Oneway::md5>("one");
   // SHA.
-  test_represent_n<2, infinit::cryptography::Oneway::sha>();
+  test_represent_n<2, infinit::cryptography::Oneway::sha>("deux");
   // SHA-1.
-  test_represent_n<3, infinit::cryptography::Oneway::sha1>();
+  test_represent_n<3, infinit::cryptography::Oneway::sha1>("san");
   // SHA-224.
-  test_represent_n<4, infinit::cryptography::Oneway::sha224>();
+  test_represent_n<4, infinit::cryptography::Oneway::sha224>("cetiri");
   // SHA-256.
-  test_represent_n<5, infinit::cryptography::Oneway::sha256>();
+  test_represent_n<5, infinit::cryptography::Oneway::sha256>("négy");
   // SHA-384.
-  test_represent_n<6, infinit::cryptography::Oneway::sha384>();
+  test_represent_n<6, infinit::cryptography::Oneway::sha384>("seis");
   // SHA-512.
-  test_represent_n<7, infinit::cryptography::Oneway::sha512>();
+  test_represent_n<7, infinit::cryptography::Oneway::sha512>("yedi");
 }
 
 /*--------.
@@ -68,35 +70,55 @@ test_represent()
 template <infinit::cryptography::Oneway O,
           elle::Natural32 S>
 void
-test_operate_x(elle::String const& R)
+test_operate_x(elle::String const& K,
+               elle::String const& R)
 {
-  infinit::cryptography::Digest key(elle::Buffer("key", 3));
-
-  // HMAC a plain.
+  // Verify a HMAC digest.
   {
-    infinit::cryptography::Digest digest1 =
-      infinit::cryptography::hmac(infinit::cryptography::Plain(_input), key, O);
-    infinit::cryptography::Digest digest2 =
-      infinit::cryptography::hmac(infinit::cryptography::Plain(_input), key, O);
-
-    BOOST_CHECK_EQUAL(digest1, digest2);
-
     elle::Buffer buffer = elle::format::hexadecimal::decode(R);
 
-    BOOST_CHECK_EQUAL(digest1.buffer(), buffer);
+    // Re-HMAC the same content and compare.
+    infinit::cryptography::Digest digest =
+      infinit::cryptography::hmac::sign(
+        infinit::cryptography::Plain(_input),
+        K,
+        O);
+
+    BOOST_CHECK_EQUAL(digest.buffer(), buffer);
+
+    // Verify using the appropriate verify() method.
+    BOOST_CHECK_EQUAL(
+      infinit::cryptography::hmac::verify(
+        infinit::cryptography::Digest(buffer),
+        infinit::cryptography::Plain(_input),
+        K,
+        O),
+      true);
   }
 
   // HMAC a complex type.
   {
     Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(S));
+      42,
+      infinit::cryptography::random::generate<elle::String>(S));
 
     infinit::cryptography::Digest digest1 =
-      infinit::cryptography::hmac(input, key, O);
+      infinit::cryptography::hmac::sign(input, K, O);
+
+    // Verify by doing the same process twice.
     infinit::cryptography::Digest digest2 =
-      infinit::cryptography::hmac(input, key, O);
+      infinit::cryptography::hmac::sign(input, K, O);
 
     BOOST_CHECK_EQUAL(digest1, digest2);
+
+    // Sign and verify through the appropriate methods.
+    BOOST_CHECK_EQUAL(
+      infinit::cryptography::hmac::verify(
+        digest1,
+        input,
+        K,
+        O),
+      true);
   }
 }
 
@@ -105,19 +127,26 @@ void
 test_operate()
 {
   // MD5 based on [representation 1].
-  test_operate_x<infinit::cryptography::Oneway::md5, 820>("f580b9c649f64331bd0add676e13e03d");
+  test_operate_x<infinit::cryptography::Oneway::md5, 820>("one",
+                                                          "89f94dc2a07e5f98ccb0895faedb8597");
   // SHA based on [representation 2].
-  test_operate_x<infinit::cryptography::Oneway::sha, 31>("8f23a8944e8abf5062743cc8604ab1b37c4ed2d1");
+  test_operate_x<infinit::cryptography::Oneway::sha, 31>("deux",
+                                                         "e9ccd70278f254a0d4a74e1806e8ca6fb0671e1a");
   // SHA-1 based on [representation 3].
-  test_operate_x<infinit::cryptography::Oneway::sha1, 9028>("ad149753940c4a9e3faf56e4a7125acd28f0454f");
+  test_operate_x<infinit::cryptography::Oneway::sha1, 9028>("san",
+                                                            "55362be05530fe6359fe980db363232fc02473c8");
   // SHA-224 based on [representation 4].
-  test_operate_x<infinit::cryptography::Oneway::sha224, 630>("1293b424873159446fd0c23e1f0367f186591b7acaadd2668b492c10");
+  test_operate_x<infinit::cryptography::Oneway::sha224, 630>("cetiri",
+                                                             "b2dcadd118569cc8f7076bbbf9b13446cd7f0285b3b7a72d41911545");
   // SHA-256 based on [representation 5].
-  test_operate_x<infinit::cryptography::Oneway::sha256, 73>("ea95ff42cb433311cadac495946fc03fd370f42c4f7214b56d6e5fb02029ad3b");
+  test_operate_x<infinit::cryptography::Oneway::sha256, 73>("négy",
+                                                            "6bead92026badb1e4102806a2277d143407a98a5c8265016e1b81b63b8436802");
   // SHA-384 based on [representation 6].
-  test_operate_x<infinit::cryptography::Oneway::sha384, 933>("83461c33c0f18386dd2092a9937c07205db402a5c0c520981804fb5f893f5fe13f8ef6dfeb7490a44835305d3184989e");
+  test_operate_x<infinit::cryptography::Oneway::sha384, 933>("seis",
+                                                             "10c4a8a6b5ab4168092a8c832d6076b7622bf541b8f2835556cfc6a5767d2c42ec7eb688ed12978ba0f1cfcd856837d9");
   // SHA-512 based on [representation 7].
-  test_operate_x<infinit::cryptography::Oneway::sha512, 9223>("74ea6d290be470f30784675e2798376e662669189758afd03fd24d917152dba29f95f35e27d167a6dd1b7be28fdfe8ae68d54aa70ba6c90b03b0e3c8676b5c1d");
+  test_operate_x<infinit::cryptography::Oneway::sha512, 9223>("yedi",
+                                                              "7bbc550b1459ac1b503c9ecb170863ef66ade07372c53f938cdf091d27b94d583282fc8d0a411fffcabbf1596ea2e42eef5dab879b3ec670adc2b6b277ce892c");
 }
 
 /*-----.

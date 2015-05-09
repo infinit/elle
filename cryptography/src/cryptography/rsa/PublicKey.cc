@@ -308,12 +308,8 @@ namespace infinit
 
         if (this->_signature_padding == Padding::pss)
         {
-          if (::EVP_PKEY_CTX_ctrl(this->_context.verify.get(),
-                                  EVP_PKEY_RSA,
-                                  -1,
-                                  EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
-                                  -2,
-                                  nullptr) <= 0)
+          if (EVP_PKEY_CTX_set_rsa_pss_saltlen(this->_context.verify.get(),
+                                               -2) <= 0)
             throw Exception(
               elle::sprintf("unable to set the EVP_PKEY context's PSS "
                             "salt length: %s",
@@ -375,14 +371,14 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (evp::asymmetric::encrypt(
-                  plain,
-                  this->_context.encrypt.get(),
-                  ::EVP_PKEY_encrypt,
-                  this->_envelope_cipher,
-                  this->_envelope_mode,
-                  this->_digest_algorithm,
-                  this->_context.envelope_padding_size));
+        return (Code(evp::asymmetric::encrypt(
+                       plain.buffer(),
+                       this->_context.encrypt.get(),
+                       ::EVP_PKEY_encrypt,
+                       cipher::resolve(this->_envelope_cipher,
+                                       this->_envelope_mode),
+                       oneway::resolve(this->_digest_algorithm),
+                       this->_context.envelope_padding_size)));
       }
 
       elle::Boolean
@@ -393,8 +389,8 @@ namespace infinit
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("digest: %x", digest);
 
-        return (evp::asymmetric::verify(signature,
-                                        digest,
+        return (evp::asymmetric::verify(signature.buffer(),
+                                        digest.buffer(),
                                         this->_context.verify.get(),
                                         ::EVP_PKEY_verify));
       }

@@ -46,6 +46,9 @@ namespace infinit
       /// Resolve a algorithm name into an EVP function pointer.
       ::EVP_MD const*
       resolve(Oneway const name);
+      /// Return the name of the oneway function.
+      Oneway
+      resolve(::EVP_MD const* function);
     }
   }
 }

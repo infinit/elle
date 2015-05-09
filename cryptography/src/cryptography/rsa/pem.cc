@@ -11,7 +11,7 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa/pem");
+ELLE_LOG_COMPONENT("infinit.cryptography.rsa.pem");
 
 namespace infinit
 {

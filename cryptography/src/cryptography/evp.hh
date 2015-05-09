@@ -32,7 +32,7 @@ namespace infinit
 
         /// Apply the given cryptographic function/context on the buffer.
         elle::Buffer
-        apply(elle::WeakBuffer const& input,
+        apply(elle::ConstWeakBuffer const& input,
               ::EVP_PKEY_CTX* context,
               int (*function)(EVP_PKEY_CTX*,
                               unsigned char*,
@@ -44,21 +44,20 @@ namespace infinit
         ///
         /// Note that a padding size is provided, in bits, representing the
         /// number of bits taken by the padding in the output code.
-        Code
-        encrypt(Plain const& plain,
+        elle::Buffer
+        encrypt(elle::ConstWeakBuffer const& plain,
                 ::EVP_PKEY_CTX* context,
                 int (*function)(EVP_PKEY_CTX*,
                                 unsigned char*,
                                 size_t*,
                                 const unsigned char*,
                                 size_t),
-                Cipher const cipher,
-                Mode const mode,
-                Oneway const oneway,
+                ::EVP_CIPHER const* cipher,
+                ::EVP_MD const* oneway,
                 elle::Natural32 const padding_size);
         /// Decrypt the code with the provided context and function.
-        Clear
-        decrypt(Code const& code,
+        elle::Buffer
+        decrypt(elle::ConstWeakBuffer const& code,
                 ::EVP_PKEY_CTX* context,
                 int (*function)(EVP_PKEY_CTX*,
                                 unsigned char*,
@@ -66,8 +65,8 @@ namespace infinit
                                 const unsigned char*,
                                 size_t));
         /// Sign the given digest.
-        Signature
-        sign(Digest const& digest,
+        elle::Buffer
+        sign(elle::ConstWeakBuffer const& digest,
              ::EVP_PKEY_CTX* context,
              int (*function)(EVP_PKEY_CTX*,
                              unsigned char*,
@@ -76,8 +75,8 @@ namespace infinit
                              size_t));
         /// Return true if the signature is valid according to the given digest.
         elle::Boolean
-        verify(Signature const& signature,
-               Digest const& digest,
+        verify(elle::ConstWeakBuffer const& signature,
+               elle::ConstWeakBuffer const& digest,
                ::EVP_PKEY_CTX* context,
                int (*function)(EVP_PKEY_CTX*,
                                const unsigned char*,
@@ -103,16 +102,16 @@ namespace infinit
       namespace symmetric
       {
         /// Encrypt the plain text according to the given secret and functions.
-        Code
-        encrypt(Plain const& plain,
-                elle::Buffer const& secret,
+        elle::Buffer
+        encrypt(elle::ConstWeakBuffer const& plain,
+                elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway);
         /// Decrypt the ciphered text according to the given secret and
         /// functions.
-        Clear
-        decrypt(Code const& code,
-                elle::Buffer const& secret,
+        elle::Buffer
+        decrypt(elle::ConstWeakBuffer const& code,
+                elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway);
       }
@@ -133,14 +132,13 @@ namespace infinit
       namespace digest
       {
         /// Hash the given plain text with the message digest function.
-        Digest
-        hash(Plain const& plain,
+        elle::Buffer
+        hash(elle::ConstWeakBuffer const& plain,
              ::EVP_MD const* function);
-
-        /// HMAC the given plain text using a key with the hmac digest function.
-        Digest
-        hmac(Plain const& plain,
-             Digest const& key,
+        /// HMAC the given plain text using a key and digest function.
+        elle::Buffer
+        hmac(elle::ConstWeakBuffer const& plain,
+             ::EVP_PKEY* key,
              ::EVP_MD const* function);
       }
     }

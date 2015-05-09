@@ -32,7 +32,7 @@ test_represent_n()
         O);
     std::string representation =
       elle::format::hexadecimal::encode(digest.buffer());
-    elle::sprintf("[representation %s] %s\n", N, representation);
+    elle::printf("[representation %s] %s\n", N, representation);
   }
 }
 
