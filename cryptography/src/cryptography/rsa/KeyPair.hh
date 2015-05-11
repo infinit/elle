@@ -4,10 +4,8 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
-# include <cryptography/rsa/PublicKey.hh>
-# include <cryptography/rsa/PrivateKey.hh>
 # include <cryptography/rsa/KeyPair.hh>
-# include <cryptography/rsa/Padding.hh>
+# include <cryptography/rsa/defaults.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -32,19 +30,6 @@ namespace infinit
       class KeyPair:
         public elle::Printable
       {
-        /*---------------.
-        | Default Values |
-        `---------------*/
-      public:
-        struct defaults
-        {
-          static Padding const encryption_padding = Padding::oaep;
-          static Padding const signature_padding = Padding::pss;
-          static Oneway const digest_algorithm = Oneway::sha256;
-          static Cipher const envelope_cipher = Cipher::aes256;
-          static Mode const envelope_mode = Mode::cbc;
-        };
-
       public:
         /*-------------.
         | Construction |
@@ -155,15 +140,15 @@ namespace infinit
         KeyPair
         generate(elle::Natural32 const length,
                  Padding const encryption_padding =
-                   KeyPair::defaults::encryption_padding,
+                   defaults::encryption_padding,
                  Padding const signature_padding =
-                   KeyPair::defaults::signature_padding,
+                   defaults::signature_padding,
                  Oneway const digest_algorithm =
-                   KeyPair::defaults::digest_algorithm,
+                   defaults::digest_algorithm,
                  Cipher const envelope_cipher =
-                   KeyPair::defaults::envelope_cipher,
+                   defaults::envelope_cipher,
                  Mode const envelope_mode =
-                   KeyPair::defaults::envelope_mode);
+                   defaults::envelope_mode);
       }
     }
   }

@@ -125,7 +125,7 @@ _test_operate(R const& r,
   infinit::cryptography::rsa::PublicKey K3(seed3);
   infinit::cryptography::rsa::PrivateKey k3(seed3);
 
-  infinit::cryptography::rsa::Seed _seed2 = d.derive(seed3);
+  infinit::cryptography::rsa::Seed _seed2 = d.unrotate(seed3);
 
   infinit::cryptography::rsa::KeyPair _keypair2(_seed2);
   infinit::cryptography::rsa::PublicKey _K2(_seed2);
@@ -136,13 +136,13 @@ _test_operate(R const& r,
   BOOST_CHECK_EQUAL(_keypair2.K(), _K2);
   BOOST_CHECK_EQUAL(_keypair2.k(), _k2);
 
-  infinit::cryptography::rsa::Seed _seed1 = d.derive(_seed2);
+  infinit::cryptography::rsa::Seed _seed1 = d.unrotate(_seed2);
 
   infinit::cryptography::rsa::KeyPair _keypair1(_seed1);
   infinit::cryptography::rsa::PublicKey _K1(_seed1);
   infinit::cryptography::rsa::PrivateKey _k1(_seed1);
 
-  infinit::cryptography::rsa::Seed _seed0 = d.derive(_seed1);
+  infinit::cryptography::rsa::Seed _seed0 = d.unrotate(_seed1);
 
   BOOST_CHECK_EQUAL(seed1, _seed1);
   BOOST_CHECK_EQUAL(keypair1, _keypair1);
@@ -156,7 +156,7 @@ static
 void
 test_operate()
 {
-  // 512-bit K-rotate/k-derive
+  // 512-bit K-rotate/k-unrotate.
   {
     elle::Natural32 const length = 512;
     infinit::cryptography::rsa::KeyPair keypair =
@@ -165,7 +165,7 @@ test_operate()
     _test_operate(keypair.K(), keypair.k(), length);
   }
 
-  // 2048-bit k-rotate/K-derive
+  // 2048-bit k-rotate/K-unrotate.
   //
   // Note that since the rotation/derivation process performs a textbook
   // RSA --- i.e raising big number to big exponents ---, the larger the

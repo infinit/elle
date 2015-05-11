@@ -10,6 +10,7 @@
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
 # include <cryptography/rsa/Padding.hh>
+# include <cryptography/rsa/defaults.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -60,11 +61,11 @@ namespace infinit
         explicit
         PrivateKey(Seed const& seed,
                    Padding const encryption_padding =
-                     KeyPair::defaults::encryption_padding,
+                     defaults::encryption_padding,
                    Padding const signature_padding =
-                     KeyPair::defaults::signature_padding,
+                     defaults::signature_padding,
                    Oneway const digest_algorithm =
-                     KeyPair::defaults::digest_algorithm);
+                     defaults::digest_algorithm);
 # endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
@@ -110,9 +111,9 @@ namespace infinit
         Signature
         sign(T const& value) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Return the seed once derived by the private key.
+        /// Return the seed once unrotated by the private key.
         Seed
-        derive(Seed const& seed) const;
+        unrotate(Seed const& seed) const;
         /// Return the seed once rotated by the private key.
         Seed
         rotate(Seed const& seed) const;
@@ -168,7 +169,7 @@ namespace infinit
           types::EVP_PKEY_CTX decrypt;
           types::EVP_PKEY_CTX sign;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-          types::EVP_PKEY_CTX derive;
+          types::EVP_PKEY_CTX unrotate;
           types::EVP_PKEY_CTX rotate;
 # endif
         } _context;

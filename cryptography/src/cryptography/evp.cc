@@ -332,6 +332,43 @@ namespace infinit
 
           elle::unreachable();
         }
+
+        elle::Buffer
+        derive(::EVP_PKEY_CTX* context,
+               ::EVP_PKEY* peer)
+        {
+          // Set the peer key.
+          if (::EVP_PKEY_derive_set_peer(context, peer) <= 0)
+            throw Exception(
+              elle::sprintf("unable to initialize the context for "
+                            "derivation: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          size_t size;
+
+          // Compute the shared key's future length.
+          if (::EVP_PKEY_derive(context, nullptr, &size) <= 0)
+            throw Exception(
+              elle::sprintf("unable to compute the output size of the "
+                            "shared key: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          elle::Buffer buffer(size);
+
+          // Generate the shared key.
+          if (::EVP_PKEY_derive(context,
+                                buffer.mutable_contents(),
+                                &size) <= 0)
+            throw Exception(
+              elle::sprintf("unable to generate the shared key: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Update the code size with the actual size of the generated data.
+          buffer.size(size);
+          buffer.shrink_to_fit();
+
+          return (buffer);
+        }
       }
     }
   }

@@ -18,7 +18,7 @@
 // Represent an entry in an access control list that references a group.
 //
 // The group is referenced in a specific version (both _version_ and _pass_K_)
-// that will be required to derive past passes (_pass_k_).
+// that will be required to unrotate past passes (_pass_k_).
 class Entry
 {
 public:
@@ -165,8 +165,8 @@ private:
          elle::String const& content):
     Object(owner_K,
            infinit::cryptography::secretkey::generate(
-             infinit::cryptography::Cipher::aes256,
-             256),
+             256,
+             infinit::cryptography::Cipher::aes256),
            content)
   {}
 
@@ -194,8 +194,10 @@ public:
   {
     infinit::cryptography::SecretKey _key = this->key(owner_k);
     infinit::cryptography::SecretKey key =
-      infinit::cryptography::secretkey::generate(_key.cipher(),
-                                                 _key.length());
+      infinit::cryptography::secretkey::generate(_key.length(),
+                                                 _key.cipher(),
+                                                 _key.mode(),
+                                                 _key.oneway());
 
     Object object(*this, key, content);
 

@@ -237,7 +237,7 @@ namespace infinit
         this->_context.verify = std::move(other._context.verify);
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         this->_context.rotate = std::move(other._context.rotate);
-        this->_context.derive = std::move(other._context.derive);
+        this->_context.unrotate = std::move(other._context.unrotate);
 #endif
         this->_context.envelope_padding_size =
           other._context.envelope_padding_size;
@@ -341,9 +341,9 @@ namespace infinit
                           ::EVP_PKEY_encrypt_init,
                           Padding::none));
 
-        // Prepare the derive context.
-        ELLE_ASSERT_EQ(this->_context.derive, nullptr);
-        this->_context.derive.reset(
+        // Prepare the unrotate context.
+        ELLE_ASSERT_EQ(this->_context.unrotate, nullptr);
+        this->_context.unrotate.reset(
           context::create(this->_key.get(),
                           ::EVP_PKEY_verify_recover_init,
                           Padding::none));
@@ -441,7 +441,7 @@ namespace infinit
       }
 
       Seed
-      PublicKey::derive(Seed const& seed) const
+      PublicKey::unrotate(Seed const& seed) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
@@ -450,16 +450,16 @@ namespace infinit
         // equals the modulus.
         if (seed.length() != this->length())
           throw Exception(
-            elle::sprintf("unable to derive a seed whose length does not match "
-                          "the RSA key's modulus: %s versus %s",
+            elle::sprintf("unable to unrotate a seed whose length does not "
+                          "match the RSA key's modulus: %s versus %s",
                           seed.length(), this->length()));
 
         elle::Buffer buffer =
           evp::asymmetric::apply(seed.buffer(),
-                                 this->_context.derive.get(),
+                                 this->_context.unrotate.get(),
                                  ::EVP_PKEY_verify_recover);
 
-        // Make sure the derived seed has the same size as the original.
+        // Make sure the unrotated seed has the same size as the original.
         ELLE_ASSERT_EQ(seed.buffer().size(), buffer.size());
 
         return (Seed(std::move(buffer), seed.length()));

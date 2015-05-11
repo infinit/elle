@@ -1,5 +1,7 @@
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/Seed.hh>
+#include <cryptography/rsa/PublicKey.hh>
+#include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>

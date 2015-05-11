@@ -49,8 +49,8 @@ test_scenario()
   {
     infinit::cryptography::SecretKey key =
       infinit::cryptography::secretkey::generate(
-        infinit::cryptography::Cipher::aes256,
-        256);
+        256,
+        infinit::cryptography::Cipher::aes256);
 
     BOOST_CHECK_THROW(object0.read(key),
                       infinit::cryptography::Exception);
@@ -213,7 +213,7 @@ test_scenario()
   }
 
   // Even though user Z does not have direct access to the
-  // past versions of the object, he can derive past passes
+  // past versions of the object, he can unrotate past passes
   // 'pass_k' from the latest version he has been given access
   // to.
   //
@@ -237,7 +237,7 @@ test_scenario()
 
       seed =
         new infinit::cryptography::rsa::Seed(
-          groupA5.manager_K().derive(*_seed));
+          groupA5.manager_K().unrotate(*_seed));
 
       delete _seed;
     }

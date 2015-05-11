@@ -7,6 +7,8 @@
 
 # include <elle/types.hh>
 
+# include <cryptography/Cipher.hh>
+
 namespace infinit
 {
   namespace cryptography
@@ -17,6 +19,17 @@ namespace infinit
     /// cryptosystem-specific PEM functions e.g rsa::pem::*.
     namespace pem
     {
+      /*---------------.
+      | Default Values |
+      `---------------*/
+
+      namespace defaults
+      {
+        static Cipher const cipher = Cipher::aes256;
+        static Mode const mode = Mode::cbc;
+        static elle::String const passphrase;
+      };
+
       /*----------.
       | Functions |
       `----------*/

@@ -9,6 +9,7 @@
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
 # include <cryptography/rsa/Padding.hh>
+# include <cryptography/rsa/defaults.hh>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
@@ -69,15 +70,15 @@ namespace infinit
         explicit
         PublicKey(Seed const& seed,
                   Padding const encryption_padding =
-                    KeyPair::defaults::encryption_padding,
+                    defaults::encryption_padding,
                   Padding const signature_padding =
-                    KeyPair::defaults::signature_padding,
+                    defaults::signature_padding,
                   Oneway const digest_algorithm =
-                    KeyPair::defaults::digest_algorithm,
+                    defaults::digest_algorithm,
                   Cipher const envelope_cipher =
-                    KeyPair::defaults::envelope_cipher,
+                    defaults::envelope_cipher,
                   Mode const envelope_mode =
-                    KeyPair::defaults::envelope_mode);
+                    defaults::envelope_mode);
 # endif
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
@@ -132,9 +133,9 @@ namespace infinit
         /// Return the seed once rotated by the public key.
         Seed
         rotate(Seed const& seed) const;
-        /// Return the seed once derived by the public key.
+        /// Return the seed once unrotated by the public key.
         Seed
-        derive(Seed const& seed) const;
+        unrotate(Seed const& seed) const;
 # endif
         /// Return the public key's size in bytes.
         elle::Natural32
@@ -190,7 +191,7 @@ namespace infinit
           types::EVP_PKEY_CTX verify;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
           types::EVP_PKEY_CTX rotate;
-          types::EVP_PKEY_CTX derive;
+          types::EVP_PKEY_CTX unrotate;
 # endif
           // The encryption padding size expressed in bits.
           elle::Natural32 envelope_padding_size;

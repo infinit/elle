@@ -83,6 +83,11 @@ namespace infinit
                                size_t,
                                const unsigned char*,
                                size_t));
+        /// Derive a shared key between two key pairs: between a one's private
+        /// key and a peer's public key.
+        elle::Buffer
+        derive(::EVP_PKEY_CTX* context,
+               ::EVP_PKEY* peer);
       }
     }
   }

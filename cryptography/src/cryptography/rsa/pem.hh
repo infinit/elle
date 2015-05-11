@@ -3,8 +3,8 @@
 
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/KeyPair.hh>
-# include <cryptography/Oneway.hh>
-# include <cryptography/Cipher.hh>
+# include <cryptography/rsa/defaults.hh>
+# include <cryptography/pem.hh>
 
 # include <boost/filesystem.hpp>
 
@@ -16,17 +16,6 @@ namespace infinit
     {
       namespace pem
       {
-        /*-----------.
-        | Structures |
-        `-----------*/
-
-        struct defaults
-        {
-          static Cipher const cipher = Cipher::aes256;
-          static Mode const mode = Mode::cbc;
-          static elle::String const passphrase;
-        };
-
         /*----------.
         | Functions |
         `----------*/
@@ -35,39 +24,41 @@ namespace infinit
         PublicKey
         import_K(boost::filesystem::path const& path,
                  Padding const encryption_padding =
-                   KeyPair::defaults::encryption_padding,
+                   defaults::encryption_padding,
                  Padding const signature_padding =
-                   KeyPair::defaults::signature_padding,
+                   defaults::signature_padding,
                  Oneway const digest_algorithm =
-                   KeyPair::defaults::digest_algorithm,
+                   defaults::digest_algorithm,
                  Cipher const envelope_cipher =
-                   KeyPair::defaults::envelope_cipher,
+                   defaults::envelope_cipher,
                  Mode const envelope_mode =
-                   KeyPair::defaults::envelope_mode);
+                   defaults::envelope_mode);
         /// Import an RSA private key from a path.
         PrivateKey
         import_k(boost::filesystem::path const& path,
-                 elle::String const& passphrase = defaults::passphrase,
+                 elle::String const& passphrase =
+                   cryptography::pem::defaults::passphrase,
                  Padding const encryption_padding =
-                   KeyPair::defaults::encryption_padding,
+                   defaults::encryption_padding,
                  Padding const signature_padding =
-                   KeyPair::defaults::signature_padding,
+                   defaults::signature_padding,
                  Oneway const digest_algorithm =
-                   KeyPair::defaults::digest_algorithm);
+                   defaults::digest_algorithm);
         /// Import an RSA key pair from a path.
         KeyPair
         import_keypair(boost::filesystem::path const& path,
-                       elle::String const& passphrase = defaults::passphrase,
+                       elle::String const& passphrase =
+                         cryptography::pem::defaults::passphrase,
                        Padding const encryption_padding =
-                         KeyPair::defaults::encryption_padding,
+                         defaults::encryption_padding,
                        Padding const signature_padding =
-                         KeyPair::defaults::signature_padding,
+                         defaults::signature_padding,
                        Oneway const digest_algorithm =
-                         KeyPair::defaults::digest_algorithm,
+                         defaults::digest_algorithm,
                        Cipher const envelope_cipher =
-                         KeyPair::defaults::envelope_cipher,
+                         defaults::envelope_cipher,
                        Mode const envelope_mode =
-                         KeyPair::defaults::envelope_mode);
+                         defaults::envelope_mode);
         /// Export an RSA public key.
         void
         export_K(PublicKey const& K,
@@ -77,16 +68,22 @@ namespace infinit
         void
         export_k(PrivateKey const& k,
                  boost::filesystem::path const& path,
-                 elle::String const& passphrase = defaults::passphrase,
-                 Cipher const& cipher = defaults::cipher,
-                 Mode const& mode = defaults::mode);
+                 elle::String const& passphrase =
+                   cryptography::pem::defaults::passphrase,
+                 Cipher const& cipher =
+                   cryptography::pem::defaults::cipher,
+                 Mode const& mode =
+                   cryptography::pem::defaults::mode);
         /// Export an RSA key pair.
         void
         export_keypair(KeyPair const& keypair,
                        boost::filesystem::path const& path,
-                       elle::String const& passphrase = defaults::passphrase,
-                       Cipher const& cipher = defaults::cipher,
-                       Mode const& mode = defaults::mode);
+                       elle::String const& passphrase =
+                         cryptography::pem::defaults::passphrase,
+                       Cipher const& cipher =
+                         cryptography::pem::defaults::cipher,
+                       Mode const& mode =
+                         cryptography::pem::defaults::mode);
       }
     }
   }
