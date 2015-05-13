@@ -14,7 +14,7 @@ ELLE_OPERATOR_RELATIONALS();
 # include <iosfwd>
 
 # include <elle/serialize/construct.hh>
-#include <elle/serialization/Serializer.hh>
+# include <elle/serialization/Serializer.hh>
 # include <elle/types.hh>
 
 namespace infinit
