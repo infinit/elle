@@ -15,9 +15,6 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-// XXX
-#include <openssl/evp.h>
-
 /*----------.
 | Represent |
 `----------*/

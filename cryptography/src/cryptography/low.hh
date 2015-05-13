@@ -21,6 +21,13 @@ namespace infinit
       // Duplicate a RSA key.
       ::RSA*
       RSA_dup(::RSA* key);
+      /// Return a copy of the given private key that has been transformed
+      /// into a DSA public key.
+      ::DSA*
+      DSA_priv2pub(::DSA* private_key);
+      // Duplicate a DSA key.
+      ::DSA*
+      DSA_dup(::DSA* key);
     }
   }
 }
