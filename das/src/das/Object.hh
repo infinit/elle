@@ -50,6 +50,16 @@ namespace das
     template <template <typename> class F, typename ... Args>
     static
     void
+    each_field(T& o, Args&& ... args)
+    {
+      F<Head>::apply(o, std::forward<Args>(args)...);
+      FieldHelper<T, Tail...>::template each_field<F>(
+        o, std::forward<Args>(args)...);
+    }
+
+    template <template <typename> class F, typename ... Args>
+    static
+    void
     each_field(T const& o, Args&& ... args)
     {
       F<Head>::apply(o, std::forward<Args>(args)...);
@@ -87,6 +97,15 @@ namespace das
         s << ")";
       }
     };
+
+    template <template <typename> class F, typename ... Args>
+    static
+    void
+    each_field(T& o, Args&& ... args)
+    {
+      FieldHelper<T, Fields...>::template each_field<F>(
+        o, std::forward<Args>(args)...);
+    }
 
     template <template <typename> class F, typename ... Args>
     static
