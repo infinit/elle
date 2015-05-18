@@ -97,6 +97,19 @@ namespace elle
           v = Serialize<T>::convert(value);
         }
       }
+
+      template <typename T>
+      typename std::conditional<true, void, typename Serialize<T>::Wrapper>::type
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& v,
+        ELLE_SFINAE_IF_POSSIBLE())
+      {
+        typedef typename Serialize<T>::Wrapper Wrapper;
+        Wrapper wrapper(v);
+        _serialize_switch<Wrapper>(s, name, wrapper, ELLE_SFINAE_TRY());
+      }
     }
 
     template <typename T>
