@@ -854,7 +854,7 @@ class GccToolkit(Toolkit):
       path = Path(path)
       return path.dirname() / ('lib%s.a' % str(path.basename()))
 
-  def libname_dyn(self, path, cfg = None):
+  def libname_dyn(self, path, cfg = None, prefix = 'lib'):
 
       path = Path(path)
       if self.os in [drake.os.linux, drake.os.android]:
@@ -865,7 +865,7 @@ class GccToolkit(Toolkit):
         ext = 'dll'
       else:
         assert False
-      return path.dirname() / ('lib%s.%s' % (path.basename(), ext))
+      return path.dirname() / ('%s%s.%s' % (prefix, path.basename(), ext))
 
   def libname_module(self, cfg, path):
     if self.os == drake.os.windows:
