@@ -384,11 +384,18 @@ class Rcc(Builder):
     self.src = src
     self.tgt = tgt
 
+  @property
+  def command(self):
+    return ['%s/bin/rcc' % self.qt.prefix,
+            '-name',
+            'resources',
+            self.src.path(),
+            '-o',
+            self.tgt.path()]
+
   def execute(self):
-    return self.cmd('Rcc %s' % self.tgt,
-                    ['%s/bin/rcc' % self.qt.prefix,
-                     '-name',
-                     'resources',
-                     self.src.path(),
-                     '-o',
-                     self.tgt.path()])
+    return self.cmd('Rcc %s' % self.tgt, self.command)
+
+  def hash(self):
+    """A hash for this builder"""
+    return self.command
