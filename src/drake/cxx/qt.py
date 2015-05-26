@@ -175,7 +175,7 @@ class Qt(drake.Configuration):
       else:
         prefix = '' if cxx_toolkit.os == drake.os.windows else 'lib'
         filename = cxx_toolkit.libname_dyn(libname, self.__cfg, prefix)
-        tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
+        tests.append(lib_path / ('%s.%s' % (filename, self.__version.major)))
         tests.append(lib_path / filename)
       for test in  tests:
         # Look for a node if we build our own Qt.
