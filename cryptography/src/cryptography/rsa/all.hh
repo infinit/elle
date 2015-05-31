@@ -11,7 +11,6 @@
 # include <cryptography/rsa/context.hh>
 # include <cryptography/rsa/pem.hh>
 # include <cryptography/rsa/der.hh>
-# include <cryptography/rsa/hmac.hh>
 # include <cryptography/rsa/defaults.hh>
 
 #endif

@@ -77,10 +77,6 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const;
-        /// Return true if the given signature matches with the plain text.
-        elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain) const;
         /// Return true if the given signature matches with the serializable
         /// value.
         template <typename T>

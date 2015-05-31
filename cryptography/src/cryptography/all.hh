@@ -23,6 +23,7 @@
 # include <cryptography/hash.hh>
 # include <cryptography/hmac.hh>
 # include <cryptography/pem.hh>
+# include <cryptography/serialize.hh>
 
 # include <cryptography/rsa/all.hh>
 

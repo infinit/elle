@@ -5,6 +5,10 @@
 // ---------- Class -----------------------------------------------------------
 //
 
+# include <cryptography/serialization.hh>
+# include <cryptography/hash.hh>
+# include <cryptography/Plain.hh>
+
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
@@ -23,7 +27,10 @@ namespace infinit
       PrivateKey::decrypt(Code const& code) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
-        ELLE_DEBUG_FUNCTION(code);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("code: %x", code);
+
+        // XXX put that in cryptography::serialization???
 
         static_assert(std::is_same<T, Clear>::value == false,
                       "this call should never have occured");
@@ -35,6 +42,10 @@ namespace infinit
                       "this call should never have occured");
 
         Clear clear(this->decrypt(code));
+
+        // XXX
+        printf("DECRYPT\n");
+        clear.buffer().dump();
 
         // XXX[this is the way it should be] T value(clear.buffer().reader());
         T value;
@@ -48,23 +59,17 @@ namespace infinit
       PrivateKey::sign(T const& value) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
-        ELLE_DEBUG_FUNCTION(value);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("value: %x", value);
 
         static_assert(std::is_same<T, Digest>::value == false,
                       "this call should never have occured");
-        static_assert(std::is_same<T, Plain>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
 
-        elle::Buffer buffer;
-        buffer.writer() << value;
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
 
-        return (this->sign(Plain(buffer)));
+        Digest digest = hash(Plain(_value), this->_digest_algorithm);
+
+        return (this->sign(digest));
       }
     }
   }

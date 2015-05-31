@@ -137,32 +137,6 @@ namespace infinit
     | Legacy |
     `-------*/
 
-    Code
-    SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
-    {
-      ELLE_DEBUG_METHOD("");
-      ELLE_DUMP("plain: %x", plain);
-
-      elle::Buffer buffer;
-      buffer.writer() << plain;
-
-      return (this->encrypt(Plain(buffer)));
-    }
-
-    elle::Buffer
-    SecretKey::legacy_decrypt_buffer(Code const& code) const
-    {
-      ELLE_DEBUG_METHOD("");
-      ELLE_DUMP("code: %x", code);
-
-      Clear clear(this->decrypt(code));
-
-      elle::Buffer value;
-      clear.buffer().reader() >> value;
-
-      return (value);
-    }
-
     /*----------.
     | Operators |
     `----------*/

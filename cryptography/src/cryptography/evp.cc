@@ -101,6 +101,9 @@ namespace infinit
                               const unsigned char*,
                               size_t))
         {
+          ELLE_DEBUG_FUNCTION(context, function);
+          ELLE_DUMP("input: %s", input);
+
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -159,8 +162,7 @@ namespace infinit
                 ::EVP_MD const* oneway,
                 elle::Natural32 const padding_size)
         {
-          ELLE_TRACE_SCOPE("encrypt(%s, %s, %s, %s, %s)",
-                           context, function, cipher, oneway, padding_size);
+          ELLE_DEBUG_FUNCTION(context, function, cipher, oneway, padding_size);
           ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
@@ -189,11 +191,19 @@ namespace infinit
           // depend on the nature of the secret key that will be generated.
           static elle::Natural32 overhead = _overhead();
 
+          // XXX
+          plain.dump();
+
           // 1) Compute the size of the secret key to generate by taking
           //    into account the padding size, if any.
-           ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
+          /*
+          ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
                             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
                           (padding_size + overhead));
+          */
+
+          // XXX
+          plain.dump();
 
           // The maximum length, in bits, of the generated symmetric key.
           elle::Natural32 const ceiling = 512;
@@ -211,6 +221,9 @@ namespace infinit
           SecretKey secret =
             secretkey::generate(length, _cipher.first, _cipher.second, _oneway);
 
+          // XXX
+          plain.dump();
+
           // 3) Cipher the plain text with the secret key.
           Code data = secret.encrypt(Plain(plain));
 
@@ -225,6 +238,10 @@ namespace infinit
 
           // Encrypt the secret key's archive.
           Code key = Code(apply(buffer, context, function));
+
+          // XXX
+          key.buffer().dump();
+          data.buffer().dump();
 
           // 5) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
@@ -243,7 +260,7 @@ namespace infinit
                                 const unsigned char*,
                                 size_t))
         {
-          ELLE_TRACE_SCOPE("decrypt(%s, %s)", context, function);
+          ELLE_DEBUG_FUNCTION(context, function);
           ELLE_DUMP("code: %s", code);
 
           // Make sure the cryptographic system is set up.
@@ -255,6 +272,10 @@ namespace infinit
           Code key(extractor);
           Code data(extractor);
 
+          // XXX
+          key.buffer().dump();
+          data.buffer().dump();
+
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
           // Decrypt the key.
@@ -265,6 +286,9 @@ namespace infinit
 
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);
+
+          // XXX
+          clear.buffer().dump();
 
           return (clear.buffer());
         }
@@ -278,7 +302,7 @@ namespace infinit
                              const unsigned char*,
                              size_t))
         {
-          ELLE_TRACE_SCOPE("sign(%s, %s)", context, function);
+          ELLE_DEBUG_FUNCTION(context, function);
           ELLE_DUMP("digest: %s", digest);
 
           // Make sure the cryptographic system is set up.
@@ -297,7 +321,7 @@ namespace infinit
                                const unsigned char*,
                                size_t))
         {
-          ELLE_TRACE_SCOPE("verify(%s, %s)", context, function);
+          ELLE_DEBUG_FUNCTION(context, function);
           ELLE_DUMP("signature: %s", signature);
           ELLE_DUMP("digest: %s", digest);
 
@@ -405,7 +429,7 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_SCOPE("encrypt(%s, %s)", function_cipher, function_oneway);
+          ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
           ELLE_DUMP("plain: %s", plain);
           ELLE_DUMP("secret: %s", secret);
 
@@ -527,7 +551,7 @@ namespace infinit
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
-          ELLE_TRACE_SCOPE("decrypt(%s, %s)", function_cipher, function_oneway);
+          ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
           ELLE_DUMP("code: %s", code);
           ELLE_DUMP("secret: %s", secret);
 
@@ -647,7 +671,7 @@ namespace infinit
       hash(elle::ConstWeakBuffer const& plain,
            ::EVP_MD const* function)
       {
-        ELLE_TRACE_SCOPE("hash(%s)", function);
+        ELLE_DEBUG_FUNCTION(function);
         ELLE_DUMP("plain: %s", plain);
 
         // Make sure the cryptographic system is set up.
@@ -724,7 +748,7 @@ namespace infinit
              ::EVP_PKEY* key,
              ::EVP_MD const* function)
         {
-          ELLE_TRACE_SCOPE("sign(%s, %s)", key, function);
+          ELLE_DEBUG_FUNCTION(key, function);
           ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
@@ -800,7 +824,7 @@ namespace infinit
                ::EVP_PKEY* key,
                ::EVP_MD const* function)
         {
-          ELLE_TRACE_SCOPE("verify(%s, %s)", key, function);
+          ELLE_DEBUG_FUNCTION(key, function);
           ELLE_DUMP("digest: %s", digest);
           ELLE_DUMP("plain: %s", plain);
 

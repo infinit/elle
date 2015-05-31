@@ -6,6 +6,8 @@
 //
 
 # include <cryptography/Plain.hh>
+# include <cryptography/serialization.hh>
+# include <cryptography/hash.hh>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
@@ -25,21 +27,23 @@ namespace infinit
       PublicKey::encrypt(T const& value) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
-        ELLE_DEBUG_FUNCTION(value);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("value: %x", value);
 
-        static_assert(std::is_same<T, Plain>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
 
-        elle::Buffer buffer;
-        buffer.writer() << value;
+        // XXX
+        printf("ENCRYPT\n");
+        _value.dump();
 
-        return (this->encrypt(Plain(buffer)));
+        return (Code(evp::asymmetric::encrypt(
+                       _value,
+                       this->_context.encrypt.get(),
+                       ::EVP_PKEY_encrypt,
+                       cipher::resolve(this->_envelope_cipher,
+                                       this->_envelope_mode),
+                       oneway::resolve(this->_digest_algorithm),
+                       this->_context.envelope_padding_size)));
       }
 
       template <typename T>
@@ -48,23 +52,18 @@ namespace infinit
                         T const& value) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
-        ELLE_DEBUG_FUNCTION(signature, value);
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("signature: %x", signature);
+        ELLE_DUMP("value: %x", value);
 
         static_assert(std::is_same<T, Digest>::value == false,
                       "this call should never have occured");
-        static_assert(std::is_same<T, Plain>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
 
-        elle::Buffer buffer;
-        buffer.writer() << value;
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
 
-        return (this->verify(signature, Plain(buffer)));
+        Digest digest = hash(Plain(_value), this->_digest_algorithm);
+
+        return (this->verify(signature, digest));
       }
     }
   }

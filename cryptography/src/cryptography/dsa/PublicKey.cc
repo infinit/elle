@@ -212,19 +212,6 @@ namespace infinit
                                         ::EVP_PKEY_verify));
       }
 
-      elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("plain: %x", plain);
-
-        Digest digest = hash(plain, this->_digest_algorithm);
-
-        return (this->verify(signature, digest));
-      }
-
       elle::Natural32
       PublicKey::size() const
       {

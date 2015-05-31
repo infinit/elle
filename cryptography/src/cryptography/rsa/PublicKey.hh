@@ -101,10 +101,7 @@ namespace infinit
         void
         _check() const;
       public:
-        /// Encrypt the given plain text.
-        Code
-        encrypt(Plain const& plain) const;
-        /// Encrypt any serializable type.
+        /// Encrypt any serializable type, including Plain.
         template <typename T>
         Code
         encrypt(T const& value) const;
@@ -112,10 +109,6 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const;
-        /// Return true if the given signature matches with the plain text.
-        elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain) const;
         /// Return true if the given signature matches with the serializable
         /// value.
         template <typename T>

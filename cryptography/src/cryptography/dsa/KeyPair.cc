@@ -162,54 +162,6 @@ namespace infinit
     {
       namespace keypair
       {
-        /*--------.
-        | Classes |
-        `--------*/
-
-        // The key pair initializer.
-        class Initializer
-        {
-        public:
-          Initializer()
-          {
-            // Create the context for the DSA algorithm.
-            this->_context.reset(
-              ::EVP_PKEY_CTX_new_id(EVP_PKEY_DSA, nullptr));
-
-            if (this->_context == nullptr)
-              throw Exception(
-                elle::sprintf("unable to allocate a keypair generation "
-                              "context: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-
-            // Initialise the context for key generation.
-            if (::EVP_PKEY_keygen_init(this->_context.get()) <= 0)
-              throw Exception(
-                elle::sprintf("unable to initialize the keypair generation "
-                              "context: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          }
-
-        private:
-          ELLE_ATTRIBUTE_R(types::EVP_PKEY_CTX, context);
-        };
-
-        /*-----------------.
-        | Static Functions |
-        `-----------------*/
-
-        /// Construct the key pair generation context.
-        static
-        ::EVP_PKEY_CTX*
-        _context()
-        {
-          static Initializer initialized;
-
-          ELLE_ASSERT_NEQ(initialized.context(), nullptr);
-
-          return (initialized.context().get());
-        }
-
         /*----------.
         | Functions |
         `----------*/
@@ -224,23 +176,73 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          // Retrieve the key pair generation context.
-          static ::EVP_PKEY_CTX* context = _context();
+          ::EVP_PKEY* parameters = nullptr;
 
-          // Set the key length in the keypair generation context.
-          if (::EVP_PKEY_CTX_set_dsa_paramgen_bits(context, length) <= 0)
-            throw Exception(
-              elle::sprintf("unable to set the length of the keypair to "
-                            "be generated: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          // Generate the parameters for the DSA key.
+          {
+            ::EVP_PKEY_CTX* context;
+
+            if ((context =
+                 ::EVP_PKEY_CTX_new_id(EVP_PKEY_DSA, nullptr)) == nullptr)
+              throw Exception(
+                elle::sprintf("unable to allocate a parameters generation "
+                              "context: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+
+            if (::EVP_PKEY_paramgen_init(context) <= 0)
+              throw Exception(
+                elle::sprintf("unable to initialize the parameters generation "
+                              "context: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            if (::EVP_PKEY_CTX_set_dsa_paramgen_bits(context, length) <= 0)
+              throw Exception(
+                elle::sprintf("unable to set the parameters generation "
+                              "context's key length: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            if (::EVP_PKEY_paramgen(context, &parameters) <= 0)
+              throw Exception(
+                elle::sprintf("unable to generate the parameters: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+            ::EVP_PKEY_CTX_free(context);
+          }
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
 
           ::EVP_PKEY* key = nullptr;
 
-          // Generate the EVP key.
-          if (::EVP_PKEY_keygen(context, &key) <= 0)
-            throw Exception(
-              elle::sprintf("unable to generate a keypair: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          // Generate the DSA key pair.
+          {
+            ::EVP_PKEY_CTX* context;
+
+            if ((context =
+                 ::EVP_PKEY_CTX_new(parameters, nullptr)) == nullptr)
+              throw Exception(
+                elle::sprintf("unable to allocate a keypair generation "
+                              "context: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+
+            if (::EVP_PKEY_keygen_init(context) <= 0)
+              throw Exception(
+                elle::sprintf("unable to initialize the keypair generation "
+                              "context: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            if (::EVP_PKEY_keygen(context, &key) <= 0)
+              throw Exception(
+                elle::sprintf("unable to generate a keypair: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+            ::EVP_PKEY_CTX_free(context);
+          }
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
@@ -253,6 +255,9 @@ namespace infinit
           PublicKey K(k);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(parameters);
+          ::EVP_PKEY_free(parameters);
 
           return (KeyPair(std::move(K), std::move(k)));
         }

@@ -92,15 +92,6 @@ namespace infinit
       elle::Natural32
       length() const;
 
-      /*-------.
-      | Legacy |
-      `-------*/
-    public:
-      Code
-      legacy_encrypt_buffer(elle::Buffer const& buffer) const;
-      elle::Buffer
-      legacy_decrypt_buffer(Code const& code) const;
-
       /*----------.
       | Operators |
       `----------*/

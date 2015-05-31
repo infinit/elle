@@ -48,6 +48,8 @@ _temporary(elle::String const& content = "")
 | Operate |
 `--------*/
 
+// XXX explain how to generate those
+
 static elle::String const private_key_encrypted("-----BEGIN RSA PRIVATE KEY-----\n\
 Proc-Type: 4,ENCRYPTED\n\
 DEK-Info: DES-EDE3-CBC,2D218A3959EC071F\n\

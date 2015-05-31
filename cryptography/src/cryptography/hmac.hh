@@ -21,30 +21,40 @@ namespace infinit
       | Functions |
       `----------*/
 
-      /// Sign a plain text using the given string as a key
-      /// and return a HMAC digest.
-      Digest
-      sign(Plain const& plain,
-           elle::String const& key,
-           Oneway const oneway);
-      /// HMAC any serializable data.
+      /// HMAC any serializable data, including plain texts i.e Plain
+      /// with a string-based key.
       template <typename T>
       Digest
       sign(T const& value,
            elle::String const& key,
            Oneway const oneway);
-      /// Verify a HMAC digest.
-      elle::Boolean
-      verify(Digest const& digest,
-             Plain const& plain,
-             elle::String const& key,
-             Oneway const oneway);
-      /// Verify any serializable data.
+      /// HMAC with a private key, no matter the algorithm. Example:
+      ///
+      ///   rsa::PrivateKey k;
+      ///
+      ///   hmac::sign(value, k, Oneway::sha1);
+      template <typename T,
+                typename K>
+      Digest
+      sign(T const& value,
+           K const& key,
+           Oneway const oneway);
+      /// Verify any serializable data, include plain texts with a
+      /// string-based key.
       template <typename T>
       elle::Boolean
       verify(Digest const& digest,
              T const& value,
              elle::String const& key,
+             Oneway const oneway);
+      /// Verify a HMAC signature with the public key associated with
+      /// the private key used to sign.
+      template <typename T,
+                typename K>
+      elle::Boolean
+      verify(Digest const& digest,
+             T const& value,
+             K const& key,
              Oneway const oneway);
     }
   }

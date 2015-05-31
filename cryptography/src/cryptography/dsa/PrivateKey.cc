@@ -177,17 +177,6 @@ namespace infinit
                                                 ::EVP_PKEY_sign)));
       }
 
-      Signature
-      PrivateKey::sign(Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("plain: %x", plain);
-
-        Digest digest = hash(plain, this->_digest_algorithm);
-
-        return (this->sign(digest));
-      }
-
       // XXX derive
 
       elle::Natural32

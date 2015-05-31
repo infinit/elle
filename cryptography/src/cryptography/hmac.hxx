@@ -2,6 +2,9 @@
 # define INFINIT_CRYPTOGRAPHY_HMAC_HXX
 
 # include <cryptography/Plain.hh>
+# include <cryptography/evp.hh>
+# include <cryptography/finally.hh>
+# include <cryptography/serialization.hh>
 
 # include <elle/serialize/BaseArchive.hxx>
 
@@ -10,6 +13,10 @@
 # include <elle/Measure.hh>
 
 # include <utility>
+
+# include <openssl/evp.h>
+# include <openssl/err.h>
+# include <openssl/hmac.h>
 
 namespace infinit
 {
@@ -28,25 +35,55 @@ namespace infinit
            Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_DEBUG_FUNCTION(key, oneway);
+        ELLE_TRACE_FUNCTION(key, oneway);
         ELLE_DUMP("value: %x", value);
 
-        static_assert(std::is_same<T, Plain>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
 
-        elle::Buffer _value;
-        ELLE_MEASURE("serialize the value")
-          _value.writer() << value;
+        ::EVP_MD const* function = oneway::resolve(oneway);
 
-        ELLE_MEASURE_SCOPE("sign the value with the key");
+        ::EVP_PKEY *_key = nullptr;
 
-        return (sign(Plain(_value), key, oneway));
+        if ((_key = ::EVP_PKEY_new_mac_key(EVP_PKEY_HMAC,
+                                           NULL,
+                                           (const unsigned char*)key.data(),
+                                           key.size())) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to generate a MAC key: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
+
+        // Apply the HMAC function with the given key.
+        elle::Buffer output = evp::hmac::sign(_value, _key, function);
+
+        ::EVP_PKEY_free(_key);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_key);
+
+        return (Digest(output));
+      }
+
+      template <typename T,
+                typename K>
+      Digest
+      sign(T const& value,
+           K const& key,
+           Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_TRACE_FUNCTION(oneway);
+        ELLE_DUMP("value: %x", value);
+        ELLE_DUMP("key: %x", key);
+
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+
+        ::EVP_MD const* function = oneway::resolve(oneway);
+
+        // Apply the HMAC function with the given key.
+        elle::Buffer output =
+          evp::hmac::sign(_value, key.key().get(), function);
+
+        return (Digest(output));
       }
 
       template <typename T>
@@ -57,26 +94,66 @@ namespace infinit
              Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_DEBUG_FUNCTION(key, oneway);
+        ELLE_TRACE_FUNCTION(key, oneway);
         ELLE_DUMP("digest: %x", digest);
         ELLE_DUMP("value: %x", value);
 
-        static_assert(std::is_same<T, Plain>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
 
-        elle::Buffer _value;
-        ELLE_MEASURE("serialize the value")
-          _value.writer() << value;
+        ::EVP_MD const* function = oneway::resolve(oneway);
 
-        ELLE_MEASURE_SCOPE("verify the value with the key");
+        ::EVP_PKEY *_key = nullptr;
 
-        return (verify(digest, Plain(_value), key, oneway));
+        if ((_key = ::EVP_PKEY_new_mac_key(EVP_PKEY_HMAC,
+                                           NULL,
+                                           (const unsigned char*)key.data(),
+                                           key.size())) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to generate a MAC key: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
+
+        // Apply the HMAC function with the given key.
+        elle::Buffer output = evp::hmac::sign(_value, _key, function);
+
+        ::EVP_PKEY_free(_key);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_key);
+
+        if (digest.buffer().size() != output.size())
+          return (false);
+
+        // Compare using low-level OpenSSL functions to prevent timing attacks.
+        if (CRYPTO_memcmp(digest.buffer().contents(),
+                          output.contents(),
+                          output.size()) != 0)
+          return (false);
+
+        return (true);
+      }
+
+      template <typename T,
+                typename K>
+      elle::Boolean
+      verify(Digest const& digest,
+             T const& value,
+             K const& key,
+             Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_TRACE_FUNCTION(oneway);
+        ELLE_DUMP("digest: %x", digest);
+        ELLE_DUMP("value: %x", value);
+        ELLE_DUMP("key: %x", key);
+
+        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+
+        ::EVP_MD const* function = oneway::resolve(oneway);
+
+        return (evp::hmac::verify(digest.buffer(),
+                                  _value,
+                                  key.key().get(),
+                                  function));
       }
     }
   }

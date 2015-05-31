@@ -72,10 +72,7 @@ namespace infinit
         /// Return a signature of the given digest.
         Signature
         sign(Digest const& digest) const;
-        /// Return a signature of the given plain text.
-        Signature
-        sign(Plain const& plain) const;
-        /// Return a signature of any given serializable type.
+        /// Return a signature of any given serializable type, including Plain.
         template <typename T>
         Signature
         sign(T const& value) const;

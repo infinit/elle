@@ -362,22 +362,6 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      Code
-      PublicKey::encrypt(Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("plain: %x", plain);
-
-        return (Code(evp::asymmetric::encrypt(
-                       plain.buffer(),
-                       this->_context.encrypt.get(),
-                       ::EVP_PKEY_encrypt,
-                       cipher::resolve(this->_envelope_cipher,
-                                       this->_envelope_mode),
-                       oneway::resolve(this->_digest_algorithm),
-                       this->_context.envelope_padding_size)));
-      }
-
       elle::Boolean
       PublicKey::verify(Signature const& signature,
                         Digest const& digest) const
@@ -390,19 +374,6 @@ namespace infinit
                                         digest.buffer(),
                                         this->_context.verify.get(),
                                         ::EVP_PKEY_verify));
-      }
-
-      elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Plain const& plain) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("plain: %x", plain);
-
-        Digest digest = hash(plain, this->_digest_algorithm);
-
-        return (this->verify(signature, digest));
       }
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)

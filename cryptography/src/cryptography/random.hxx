@@ -28,7 +28,7 @@
     generate()                                                          \
     {                                                                   \
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_DEBUG_FUNCTION("");                                          \
+      ELLE_TRACE_FUNCTION("");                                          \
                                                                         \
       return (_generate<_type_>());                                     \
     }                                                                   \
@@ -39,7 +39,7 @@
              _type_ maximum)                                            \
     {                                                                   \
       ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_DEBUG_FUNCTION(minimum, maximum);                            \
+      ELLE_TRACE_FUNCTION(minimum, maximum);                            \
                                                                         \
       return (::infinit::cryptography::random::_rangify(                \
                 _generate<_type_>(), minimum, maximum));                \
@@ -134,7 +134,7 @@ namespace infinit
         generate()
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_DEBUG_FUNCTION("");
+          ELLE_TRACE_FUNCTION("");
 
           elle::Integer32 value = _generate<elle::Boolean>();
 
@@ -155,7 +155,7 @@ namespace infinit
         generate()
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_DEBUG_FUNCTION("");
+          ELLE_TRACE_FUNCTION("");
 
           return (_generate<elle::Real>());
         }
@@ -179,7 +179,7 @@ namespace infinit
         generate(elle::Natural32 const length)
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_DEBUG_FUNCTION(length);
+          ELLE_TRACE_FUNCTION(length);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -213,7 +213,7 @@ namespace infinit
         generate(elle::Natural32 const size)
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_DEBUG_FUNCTION(size);
+          ELLE_TRACE_FUNCTION(size);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();

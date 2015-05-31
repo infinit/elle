@@ -2,14 +2,12 @@
 # define INFINIT_CRYPTOGRAPHY_HASH_HXX
 
 # include <cryptography/Plain.hh>
+# include <cryptography/serialization.hh>
 
 # include <elle/serialize/BaseArchive.hxx>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
-# include <elle/Measure.hh>
-
-# include <utility>
 
 namespace infinit
 {
@@ -25,24 +23,11 @@ namespace infinit
          Oneway oneway)
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.hash");
-      ELLE_DEBUG_FUNCTION(value, oneway);
+      ELLE_TRACE_FUNCTION(value, oneway);
 
-      static_assert(std::is_same<T, Plain>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::Buffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                    "this call should never have occured");
+      elle::ConstWeakBuffer archive = cryptography::serialize(value);
 
-      elle::Buffer buffer;
-      ELLE_MEASURE("serialize into the buffer")
-        buffer.writer() << value;
-
-      ELLE_MEASURE_SCOPE("hash the buffer");
-
-      return (hash(Plain(buffer), oneway));
+      return (hash(Plain(archive), oneway));
     }
   }
 }

@@ -6,7 +6,7 @@
 #include <cryptography/Plain.hh>
 #include <cryptography/random.hh>
 #include <cryptography/hmac.hh>
-#include <cryptography/rsa/KeyPair.hh>
+#include <cryptography/dsa/KeyPair.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
@@ -23,7 +23,7 @@ static std::string const _input(
 template <elle::Natural32 N,
           infinit::cryptography::Oneway O>
 void
-test_represent_n(infinit::cryptography::rsa::PrivateKey const& k)
+test_represent_n(infinit::cryptography::dsa::PrivateKey const& k)
 {
   // N)
   {
@@ -43,14 +43,14 @@ void
 test_represent()
 {
   // WARNING: To uncomment only if one wants to update the representations.
-  return;
+  // XXX return;
 
   // These generate hexadecimal-based representations which can be used in
   // other tests.
 
   // 0)
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  infinit::cryptography::dsa::KeyPair keypair =
+    infinit::cryptography::dsa::keypair::generate(2048);
   elle::String archive;
   elle::serialize::to_string<
     elle::serialize::OutputBase64Archive>(archive) << keypair;
@@ -79,7 +79,7 @@ test_represent()
 template <infinit::cryptography::Oneway O,
           elle::Natural32 S>
 void
-test_operate_x(infinit::cryptography::rsa::KeyPair const& keypair,
+test_operate_x(infinit::cryptography::dsa::KeyPair const& keypair,
                elle::String const& R)
 {
   // Verify a HMAC digest.
@@ -137,7 +137,7 @@ test_operate()
   auto extractor =
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(representation);
-  infinit::cryptography::rsa::KeyPair keypair(extractor);
+  infinit::cryptography::dsa::KeyPair keypair(extractor);
 
   // MD5 based on [representation 1].
   test_operate_x<infinit::cryptography::Oneway::md5, 820>(keypair,
@@ -168,7 +168,7 @@ test_operate()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/hmac");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("dsa/hmac");
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
