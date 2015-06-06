@@ -1,7 +1,7 @@
 #include <cryptography/evp.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/SecretKey.hh>
-#include <cryptography/cipher.hh>
+#include <cryptography/Cipher.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/Signature.hh>
 #include <cryptography/Oneway.hh>

@@ -18,11 +18,11 @@ namespace infinit
     `----------*/
 
     template <typename T>
-    elle::ConstWeakBuffer
+    elle::Buffer
     serialize(T const& value)
     {
       ELLE_LOG_COMPONENT("infinit.cryptography");
-      ELLE_DEBUG_FUNCTION("");
+      ELLE_DEBUG_FUNCTION("T");
       ELLE_DUMP("value: %x", value);
 
       static_assert(std::is_same<T, Plain>::value == false,

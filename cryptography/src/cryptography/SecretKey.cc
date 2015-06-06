@@ -1,7 +1,7 @@
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Digest.hh>
 #include <cryptography/random.hh>
-#include <cryptography/cipher.hh>
+#include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/evp.hh>
 

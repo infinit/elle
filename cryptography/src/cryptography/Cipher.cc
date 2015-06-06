@@ -1,4 +1,4 @@
-#include <cryptography/cipher.hh>
+#include <cryptography/Cipher.hh>
 #include <cryptography/Exception.hh>
 
 #include <elle/log.hh>

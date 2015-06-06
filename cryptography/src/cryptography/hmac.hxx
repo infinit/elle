@@ -38,7 +38,7 @@ namespace infinit
         ELLE_TRACE_FUNCTION(key, oneway);
         ELLE_DUMP("value: %x", value);
 
-        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+        elle::Buffer _value = cryptography::serialize(value);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
@@ -75,7 +75,7 @@ namespace infinit
         ELLE_DUMP("value: %x", value);
         ELLE_DUMP("key: %x", key);
 
-        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+        elle::Buffer _value = cryptography::serialize(value);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
@@ -98,7 +98,7 @@ namespace infinit
         ELLE_DUMP("digest: %x", digest);
         ELLE_DUMP("value: %x", value);
 
-        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+        elle::Buffer _value = cryptography::serialize(value);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
@@ -146,7 +146,7 @@ namespace infinit
         ELLE_DUMP("value: %x", value);
         ELLE_DUMP("key: %x", key);
 
-        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+        elle::Buffer _value = cryptography::serialize(value);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 

@@ -23,11 +23,14 @@ namespace infinit
          Oneway oneway)
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.hash");
-      ELLE_TRACE_FUNCTION(value, oneway);
+      ELLE_TRACE_FUNCTION(oneway);
+      ELLE_DUMP("value: %x", value);
 
-      elle::ConstWeakBuffer archive = cryptography::serialize(value);
+      elle::Buffer archive = cryptography::serialize(value);
 
-      return (hash(Plain(archive), oneway));
+      ::EVP_MD const* function = oneway::resolve(oneway);
+
+      return (Digest(evp::hash(archive, function)));
     }
   }
 }

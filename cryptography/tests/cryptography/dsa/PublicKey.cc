@@ -3,7 +3,7 @@
 
 #include <cryptography/dsa/PublicKey.hh>
 #include <cryptography/dsa/PrivateKey.hh>
-#include <cryptography/dsa/keypair.hh>
+#include <cryptography/dsa/KeyPair.hh>
 #include <cryptography/Exception.hh>
 
 #include <elle/serialize/insert.hh>
@@ -228,4 +228,3 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }
-

@@ -308,6 +308,7 @@ test_operate()
 | Serialize |
 `----------*/
 
+static
 void
 test_serialize_x(elle::String const& R1,
                  elle::String const& R2)

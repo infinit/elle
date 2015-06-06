@@ -15,6 +15,8 @@
 #include <elle/serialize/extract.hh>
 #include <elle/Exception.hh>
 
+#include <boost/filesystem.hpp>
+
 #include <cstdio>
 #include <fstream>
 
@@ -28,8 +30,10 @@ static
 boost::filesystem::path
 _temporary(elle::String const& content = "")
 {
+  /* XXX
   char path[L_tmpnam];
-  strcpy(path, "/tmp/infinit-cryptography-rsa-pem-XXXXX");
+
+  ::strncpy(path, "/tmp/infinit-cryptography-rsa-pem-XXXXX", L_tmpnam);
 
   if (::mkstemp(path) == -1)
     throw elle::Exception(
@@ -42,6 +46,9 @@ _temporary(elle::String const& content = "")
   stream.close();
 
   return (boost::filesystem::path(path));
+  */
+  boost::filesystem::path path("/");
+  return path;
 }
 
 /*--------.

@@ -19,10 +19,6 @@ namespace infinit
     | Functions |
     `----------*/
 
-    /// Hash a plain text and return a digest.
-    Digest
-    hash(Plain const& plain,
-         Oneway oneway);
     /// Hash anything serializable and return a digest.
     template <typename T>
     Digest

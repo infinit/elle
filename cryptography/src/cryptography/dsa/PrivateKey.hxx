@@ -34,7 +34,7 @@ namespace infinit
         static_assert(std::is_same<T, Digest>::value == false,
                       "this call should never have occured");
 
-        elle::ConstWeakBuffer _value = cryptography::serialize(value);
+        elle::Buffer _value = cryptography::serialize(value);
 
         Digest digest = hash(Plain(_value), this->_digest_algorithm);
 

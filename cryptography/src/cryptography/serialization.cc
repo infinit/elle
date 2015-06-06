@@ -13,13 +13,13 @@ namespace infinit
     | Functions |
     `----------*/
 
-    elle::ConstWeakBuffer
+    elle::Buffer
     serialize(Plain const& plain)
     {
       ELLE_DEBUG_FUNCTION("");
       ELLE_DUMP("plain: %x", plain);
 
-      return (plain.buffer());
+      return (elle::Buffer(plain.buffer().contents(), plain.buffer().size()));
     }
   }
 }

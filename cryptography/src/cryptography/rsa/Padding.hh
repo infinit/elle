@@ -45,6 +45,9 @@ namespace infinit
         /// Return the value associated with the given padding.
         int
         resolve(Padding const name);
+        /// Return the Padding associated with the given internal OpenSSL value.
+        Padding
+        resolve(int const value);
         /// Print information regarding the given EVP context's padding.
         void
         print(std::ostream& stream,

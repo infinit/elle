@@ -17,11 +17,14 @@ namespace infinit
     `----------*/
 
     /// Do nothing and return the plain text received as argument.
-    elle::ConstWeakBuffer
+    ///
+    /// WARNING: this is not optimized as the buffer is cloned! To be
+    ///          improved through streams.
+    elle::Buffer
     serialize(Plain const& plain);
     /// Serialize the argument and return an archive i.e buffer.
     template <typename T>
-    elle::ConstWeakBuffer
+    elle::Buffer
     serialize(T const& value);
   }
 }
