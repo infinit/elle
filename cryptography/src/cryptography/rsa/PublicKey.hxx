@@ -32,10 +32,6 @@ namespace infinit
 
         elle::Buffer _value = cryptography::serialize(value);
 
-        // XXX
-        printf("ENCRYPT\n");
-        _value.dump();
-
         return (Code(evp::asymmetric::encrypt(
                        _value,
                        this->_context.encrypt.get(),

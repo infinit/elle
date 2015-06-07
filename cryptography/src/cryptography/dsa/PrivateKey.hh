@@ -73,7 +73,7 @@ namespace infinit
         Signature
         sign(Digest const& digest) const;
         /// Return a signature of any given serializable type, including Plain.
-        template <typename T>
+        template <typename T = Plain>
         Signature
         sign(T const& value) const;
 

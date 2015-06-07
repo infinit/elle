@@ -20,7 +20,7 @@ namespace infinit
     `----------*/
 
     /// Hash anything serializable and return a digest.
-    template <typename T>
+    template <typename T = Plain>
     Digest
     hash(T const& value,
          Oneway oneway);

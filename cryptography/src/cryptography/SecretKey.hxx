@@ -5,6 +5,8 @@
 # include <elle/log.hh>
 
 # include <cryptography/Plain.hh>
+# include <cryptography/serialization.hh>
+# include <cryptography/evp.hh>
 
 namespace infinit
 {
@@ -21,21 +23,17 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
       ELLE_DEBUG_FUNCTION(value);
 
-      static_assert(std::is_same<T, Plain>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::Buffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                    "this call should never have occured");
+      elle::Buffer archive = cryptography::serialize(value);
 
-      // Serialize the value.
-      elle::Buffer buffer;
-      buffer.writer() << value;
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
 
-      // Encrypt the archive.
-      return (this->encrypt(Plain(buffer)));
+      return (Code(evp::symmetric::encrypt(archive,
+                                           this->_password,
+                                           function_cipher,
+                                           function_oneway)));
     }
 
     template <typename T>
@@ -45,24 +43,17 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
       ELLE_DEBUG_FUNCTION(code);
 
-      static_assert(std::is_same<T, Clear>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::Buffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                    "this call should never have occured");
-      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                    "this call should never have occured");
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
 
-      // Decrypt the code leading to a clear containing an archive.
-      Clear clear(this->decrypt(code));
+      Clear clear(evp::symmetric::decrypt(code.buffer(),
+                                          this->_password,
+                                          function_cipher,
+                                          function_oneway));
 
-      // Deserialize the object from the clear.
-      // XXX[this is should be used] T value(clear.buffer().reader());
-      T value;
-      clear.buffer().reader() >> value;
-
-      return (value);
+      return (cryptography::deserialize<T>(clear.buffer()));
     }
   }
 }

@@ -67,22 +67,15 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-      /// Encrypt the given plain text and return a ciphered text i.e
-      /// a code.
-      Code
-      encrypt(Plain const& plain) const;
       /// Encrypt any serializable object and return a ciphered text
       /// of its archive.
-      template <typename T>
+      template <typename T = Plain>
       Code
       encrypt(T const& value) const;
       /// Decrypt the given code and return a clear text i.e the
       /// equivalent of the plain text provided as input to the
       /// encryption process.
-      Clear
-      decrypt(Code const& code) const;
-      /// Decrypt a code and return a deserializable object.
-      template <typename T>
+      template <typename T = Clear>
       T
       decrypt(Code const& code) const;
       /// Return the size, in bytes, of the secret key.

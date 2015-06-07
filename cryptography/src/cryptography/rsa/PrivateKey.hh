@@ -93,18 +93,14 @@ namespace infinit
         /// Note that the code is, in practice, an archive containing both
         /// a temporarily-generated secret key and the plain text encrypted
         /// with the secret key.
-        Clear
-        decrypt(Code const& code) const;
-        /// Decrypt a code and returns the given type, assuming the given type
-        /// can be extracted from the clear, which should then be an archive.
-        template <typename T>
+        template <typename T = Clear>
         T
         decrypt(Code const& code) const;
         /// Return a signature of the given digest.
         Signature
         sign(Digest const& digest) const;
         /// Return a signature of any given serializable type.
-        template <typename T>
+        template <typename T = Plain>
         Signature
         sign(T const& value) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)

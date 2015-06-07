@@ -30,28 +30,11 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        // XXX put that in cryptography::serialization???
+        Clear clear(evp::asymmetric::decrypt(code.buffer(),
+                                             this->_context.decrypt.get(),
+                                             ::EVP_PKEY_decrypt));
 
-        static_assert(std::is_same<T, Clear>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::Buffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
-                      "this call should never have occured");
-        static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
-                      "this call should never have occured");
-
-        Clear clear(this->decrypt(code));
-
-        // XXX
-        printf("DECRYPT\n");
-        clear.buffer().dump();
-
-        // XXX[this is the way it should be] T value(clear.buffer().reader());
-        T value;
-        clear.buffer().reader() >> value;
-
-        return (value);
+        return (cryptography::deserialize<T>(clear.buffer()));
       }
 
       template <typename T>

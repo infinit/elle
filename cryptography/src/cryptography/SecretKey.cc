@@ -85,42 +85,6 @@ namespace infinit
     | Methods |
     `--------*/
 
-    Code
-    SecretKey::encrypt(Plain const& plain) const
-    {
-      ELLE_TRACE_METHOD("");
-      ELLE_DUMP("plain: %x", plain);
-
-      // Resolve the cipher and oneway functions.
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
-
-      return (Code(evp::symmetric::encrypt(plain.buffer(),
-                                           this->_password,
-                                           function_cipher,
-                                           function_oneway)));
-    }
-
-    Clear
-    SecretKey::decrypt(Code const& code) const
-    {
-      ELLE_TRACE_METHOD("");
-      ELLE_DUMP("code: %x", code);
-
-      // Resolve the cipher and oneway functions.
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
-
-      return (Clear(evp::symmetric::decrypt(code.buffer(),
-                                            this->_password,
-                                            function_cipher,
-                                            function_oneway)));
-    }
-
     elle::Natural32
     SecretKey::size() const
     {

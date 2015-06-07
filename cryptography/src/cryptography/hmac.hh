@@ -23,7 +23,7 @@ namespace infinit
 
       /// HMAC any serializable data, including plain texts i.e Plain
       /// with a string-based key.
-      template <typename T>
+      template <typename T = Plain>
       Digest
       sign(T const& value,
            elle::String const& key,
@@ -33,7 +33,7 @@ namespace infinit
       ///   rsa::PrivateKey k;
       ///
       ///   hmac::sign(value, k, Oneway::sha1);
-      template <typename T,
+      template <typename T = Plain,
                 typename K>
       Digest
       sign(T const& value,
@@ -41,7 +41,7 @@ namespace infinit
            Oneway const oneway);
       /// Verify any serializable data, include plain texts with a
       /// string-based key.
-      template <typename T>
+      template <typename T = Plain>
       elle::Boolean
       verify(Digest const& digest,
              T const& value,
@@ -49,7 +49,7 @@ namespace infinit
              Oneway const oneway);
       /// Verify a HMAC signature with the public key associated with
       /// the private key used to sign.
-      template <typename T,
+      template <typename T = Plain,
                 typename K>
       elle::Boolean
       verify(Digest const& digest,

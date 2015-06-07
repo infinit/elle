@@ -306,17 +306,6 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-      Clear
-      PrivateKey::decrypt(Code const& code) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("code: %x", code);
-
-        return (Clear(evp::asymmetric::decrypt(code.buffer(),
-                                               this->_context.decrypt.get(),
-                                               ::EVP_PKEY_decrypt)));
-      }
-
       Signature
       PrivateKey::sign(Digest const& digest) const
       {

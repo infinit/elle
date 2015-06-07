@@ -79,7 +79,7 @@ namespace infinit
                Digest const& digest) const;
         /// Return true if the given signature matches with the serializable
         /// value.
-        template <typename T>
+        template <typename T = Plain>
         elle::Boolean
         verify(Signature const& signature,
                T const& value) const;

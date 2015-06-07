@@ -13,6 +13,8 @@ namespace infinit
     | Functions |
     `----------*/
 
+    /// WARNING: this is not optimized as the buffer is cloned! To be
+    ///          improved through streams.
     elle::Buffer
     serialize(Plain const& plain)
     {
@@ -20,6 +22,17 @@ namespace infinit
       ELLE_DUMP("plain: %x", plain);
 
       return (elle::Buffer(plain.buffer().contents(), plain.buffer().size()));
+    }
+
+    /// WARNING: this is not optimized as the buffer is cloned! To be
+    ///          improved through streams.
+    template <>
+    Clear
+    deserialize<Clear>(elle::ConstWeakBuffer const& archive)
+    {
+      elle::Buffer buffer(archive.contents(), archive.size());
+
+      return (Clear(buffer));
     }
   }
 }

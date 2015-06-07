@@ -39,6 +39,31 @@ namespace infinit
 
       return (archive);
     }
+
+    template <typename T>
+    T
+    deserialize(elle::ConstWeakBuffer const& archive)
+    {
+      ELLE_LOG_COMPONENT("infinit.cryptography");
+      ELLE_DEBUG_FUNCTION("T");
+      ELLE_DUMP("archive: %x", archive);
+
+      static_assert(std::is_same<T, Clear>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::Buffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::WeakBuffer>::value == false,
+                    "this call should never have occured");
+      static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
+                    "this call should never have occured");
+
+      // XXX[this is should be used] T value(clear.buffer().reader());
+      T value;
+
+      archive.reader() >> value;
+
+      return (value);
+    }
   }
 }
 
