@@ -339,7 +339,7 @@ namespace infinit
         agree(::EVP_PKEY_CTX* context,
               ::EVP_PKEY* peer)
         {
-          ELLE_DEBUG_FUNCTION(context, peer;
+          ELLE_DEBUG_FUNCTION(context, peer);
 
           // Set the peer key.
           if (::EVP_PKEY_derive_set_peer(context, peer) <= 0)
