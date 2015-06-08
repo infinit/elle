@@ -60,6 +60,11 @@ namespace infinit
         ELLE_ASSERT_NEQ(key->pkey.rsa->dmq1, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->iqmp, nullptr);
 
+        if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_RSA)
+          throw Exception(
+            elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
+                          ::EVP_PKEY_type(this->_key->type)));
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
 

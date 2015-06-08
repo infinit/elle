@@ -61,6 +61,11 @@ namespace infinit
         ELLE_ASSERT_NEQ(dsa->pub_key, nullptr);
         ELLE_ASSERT_NEQ(dsa->priv_key, nullptr);
 
+        if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_DSA)
+          throw Exception(
+            elle::sprintf("the EVP_PKEY key is not of type DSA: %s",
+                          ::EVP_PKEY_type(this->_key->type)));
+
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
