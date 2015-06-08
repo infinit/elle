@@ -76,9 +76,6 @@ namespace infinit
         template <typename T = Plain>
         Signature
         sign(T const& value) const;
-
-        // XXX derive
-
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;

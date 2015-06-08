@@ -24,6 +24,7 @@
 # include <cryptography/hmac.hh>
 # include <cryptography/pem.hh>
 # include <cryptography/serialize.hh>
+# include <cryptography/context.hh>
 
 # include <cryptography/rsa/all.hh>
 

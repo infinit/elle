@@ -12,7 +12,7 @@
 #include <cryptography/dsa/PublicKey.hh>
 #include <cryptography/dsa/PrivateKey.hh>
 #include <cryptography/dsa/KeyPair.hh>
-#include <cryptography/dsa/context.hh>
+#include <cryptography/context.hh>
 #include <cryptography/low.hh>
 #include <cryptography/Digest.hh>
 #include <cryptography/Code.hh>

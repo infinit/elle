@@ -1,4 +1,5 @@
 #include <cryptography/rsa/context.hh>
+#include <cryptography/context.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 
@@ -24,19 +25,9 @@ namespace infinit
                int (*function)(EVP_PKEY_CTX*),
                Padding const padding)
         {
-          EVP_PKEY_CTX* context;
+          EVP_PKEY_CTX* context = cryptography::context::create(key, function);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
-
-          if ((context = ::EVP_PKEY_CTX_new(key, nullptr)) == nullptr)
-            throw Exception(
-              elle::sprintf("unable to allocate a EVP_PKEY context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          if (function(context) <= 0)
-            throw Exception(
-              elle::sprintf("unable to initialize the EVP_PKEY context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
 
           int _padding = padding::resolve(padding);
 

@@ -1,6 +1,6 @@
 #include <cryptography/dsa/PrivateKey.hh>
 #include <cryptography/dsa/KeyPair.hh>
-#include <cryptography/dsa/context.hh>
+#include <cryptography/context.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
@@ -181,8 +181,6 @@ namespace infinit
                                                 this->_context.sign.get(),
                                                 ::EVP_PKEY_sign)));
       }
-
-      // XXX derive
 
       elle::Natural32
       PrivateKey::size() const

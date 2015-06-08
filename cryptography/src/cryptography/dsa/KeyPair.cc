@@ -178,6 +178,8 @@ namespace infinit
 
           ::EVP_PKEY* parameters = nullptr;
 
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
+
           // Generate the parameters for the DSA key.
           {
             ::EVP_PKEY_CTX* context;
@@ -212,9 +214,9 @@ namespace infinit
             ::EVP_PKEY_CTX_free(context);
           }
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
-
           ::EVP_PKEY* key = nullptr;
+
+          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           // Generate the DSA key pair.
           {
@@ -243,8 +245,6 @@ namespace infinit
             INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
             ::EVP_PKEY_CTX_free(context);
           }
-
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           ELLE_ASSERT_NEQ(key, nullptr);
 
