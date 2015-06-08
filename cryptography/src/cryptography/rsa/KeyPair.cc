@@ -271,6 +271,10 @@ namespace infinit
                               digest_algorithm,
                               envelope_cipher, envelope_mode);
 
+          if ((length % 8) != 0)
+            throw Exception(
+              elle::sprintf("the keypair length must be a multiple of 8"));
+
           // Make sure the cryptographic system is set up.
           cryptography::require();
 

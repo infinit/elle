@@ -21,7 +21,8 @@ namespace infinit
     SecretKey::encrypt(T const& value) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_DEBUG_FUNCTION(value);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("value: %x", value);
 
       elle::Buffer archive = cryptography::serialize(value);
 
@@ -41,7 +42,8 @@ namespace infinit
     SecretKey::decrypt(Code const& code) const
     {
       ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-      ELLE_DEBUG_FUNCTION(code);
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("code: %x", code);
 
       ::EVP_CIPHER const* function_cipher =
           cipher::resolve(this->_cipher, this->_mode);

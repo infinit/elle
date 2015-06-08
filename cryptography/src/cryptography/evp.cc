@@ -223,7 +223,7 @@ namespace infinit
           elle::Buffer buffer;
           buffer.writer() << secret;
 
-          ELLE_ASSERT_GT(buffer.size(), 0u);
+          ELLE_ASSERT_EQ(buffer.size() * 8, length + overhead);
 
           // Encrypt the secret key's archive.
           Code key = Code(apply(buffer, context, function));

@@ -107,7 +107,7 @@ namespace infinit
       | Attributes |
       `-----------*/
     private:
-      ELLE_ATTRIBUTE(elle::Buffer, password);
+      ELLE_ATTRIBUTE_R(elle::Buffer, password);
       ELLE_ATTRIBUTE_R(Cipher, cipher);
       ELLE_ATTRIBUTE_R(Mode, mode)
       ELLE_ATTRIBUTE_R(Oneway, oneway);
