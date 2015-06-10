@@ -13,6 +13,22 @@
 # include <elle/print.hh>
 # include <elle/sfinae.hh>
 
+# if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+#  include <objc/runtime.h>
+#  ifdef __OBJC__
+#   define OBJC_CLASS(name) @class name
+#  else
+#   define OBJC_CLASS(name) typedef struct objc_object name
+#  endif
+
+OBJC_CLASS(NSArray);
+OBJC_CLASS(NSDictionary);
+OBJC_CLASS(NSError);
+OBJC_CLASS(NSNumber);
+OBJC_CLASS(NSString);
+
+# endif
+
 namespace elle
 {
   namespace _details
@@ -61,6 +77,25 @@ namespace elle
       format % reinterpret_cast<const void*>(&value);
       fmt % str(format);
     }
+
+# if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+
+    void
+    feed(boost::format& fmt, NSArray* value);
+
+    void
+    feed(boost::format& fmt, NSDictionary* value);
+
+    void
+    feed(boost::format& fmt, NSError* value);
+
+    void
+    feed(boost::format& fmt, NSNumber* value);
+
+    void
+    feed(boost::format& fmt, NSString* value);
+
+# endif
 
     inline
     void
