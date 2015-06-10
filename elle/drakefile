@@ -621,6 +621,8 @@ def configure(zlib_lib,
       'threading/monitor.cc',
       'threading/rw-mutex.cc',
     ])
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
+    tests.append('printf_objc.mm')
   process_helpers = [
     drake.cxx.Executable('tests/system/%s' % name,
                          drake.nodes('tests/system/%s.cc' % name),
@@ -636,6 +638,15 @@ def configure(zlib_lib,
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
+    # Compiling with ARC ensures that uninitialized variables are nil.
+    # Both iOS and OS X applications are compiled to use ARC so this test mimics
+    # their behaviour.
+    cxx_config_tests.flag('-fobjc-arc')
+    cxx_config_tests.flag('-framework')
+    cxx_config_tests.flag('CoreFoundation')
+    cxx_config_tests.flag('-framework')
+    cxx_config_tests.flag('Foundation')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
   else:
