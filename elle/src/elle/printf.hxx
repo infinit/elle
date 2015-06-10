@@ -101,9 +101,11 @@ namespace elle
     catch (boost::io::format_error const& e)
     {
       ELLE_LOG_COMPONENT("elle.printf");
-      auto msg = elle::sprintf("format error with \"%s\": %s", fmt, e.what());
-      ELLE_ERR("%s", msg);
-      throw elle::Exception(msg);
+      // Don't use printf to handle printf fatal errors.
+      std::stringstream ss;
+      ss << "format error with \"" << fmt << "\": " << e.what();
+      ELLE_ERR("%s", ss.str());
+      throw elle::Exception(ss.str());
     }
   }
 
