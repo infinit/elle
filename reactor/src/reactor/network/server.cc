@@ -13,7 +13,7 @@ namespace reactor
     | Construction |
     `-------------*/
     Server::Server():
-      Server(*reactor::Scheduler::scheduler())
+      Server(reactor::scheduler())
     {}
 
     Server::Server(Scheduler& scheduler):
