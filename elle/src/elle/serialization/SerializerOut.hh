@@ -37,6 +37,9 @@ namespace elle
       template <typename T>
       void
       serialize_forward(T const& v);
+      template <typename T>
+      void
+      serialize(std::string const& name, T const& v);
 
     /*--------.
     | Details |

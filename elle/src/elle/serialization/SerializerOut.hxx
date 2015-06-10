@@ -11,6 +11,13 @@ namespace elle
     {
       this->Serializer::serialize_forward(const_cast<T&>(v));
     }
+
+    template <typename T>
+    void
+    SerializerOut::serialize(std::string const& name, T const& v)
+    {
+      this->Serializer::serialize(name, const_cast<T&>(v));
+    }
   }
 }
 
