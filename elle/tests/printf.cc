@@ -63,6 +63,13 @@ scoped()
   BOOST_CHECK_EQUAL(str, "foo(i = 5)");
 }
 
+static
+void
+test_bool()
+{
+  BOOST_CHECK_EQUAL(elle::sprintf("%s %s", true, false), "true false");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -72,5 +79,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(test_empty));
   suite.add(BOOST_TEST_CASE(test_too_many));
   suite.add(BOOST_TEST_CASE(test_no_param));
+  suite.add(BOOST_TEST_CASE(test_bool));
 }
-

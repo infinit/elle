@@ -62,6 +62,13 @@ namespace elle
       fmt % str(format);
     }
 
+    inline
+    void
+    feed(boost::format& fmt, bool value)
+    {
+      fmt % (value ? "true" : "false");
+    }
+
     template <typename ... T>
     struct Feed
     {
