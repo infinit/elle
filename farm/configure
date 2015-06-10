@@ -38,10 +38,10 @@ for f in %(flags)r:
 extra_args = {}
 
 qt = %(qt)r
-if qt is not None:
+if qt:
   import drake.cxx.qt
   qt = drake.cxx.qt.Qt(qt)
-  extra_args['qt'] = qt
+extra_args['qt'] = qt
 
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
@@ -92,6 +92,7 @@ elif osyst == 'osx':
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
+  parameters['qt'] = False
 elif osyst == 'win':
   parameters['compiler'] = '%s-w64-mingw32-g++' % arch
   parameters['boost_shared'] = False
