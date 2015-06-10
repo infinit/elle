@@ -70,7 +70,8 @@ def configure(cxx_toolkit = None,
               prefix = '/usr',
               valgrind = None,
               valgrind_tests = False,
-              build_openssl_eay = False
+              build_openssl_eay = False,
+              qt = None,
   ):
 
   global asio_udt
