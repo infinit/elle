@@ -19,7 +19,10 @@ namespace infinit
      * to via the stream API, and may not be written to anymore as
      * soon as any other method has been called.
      */
-    class Packet: public elle::IOStream, public boost::noncopyable
+    class Packet
+      : public elle::IOStream
+      , public elle::Printable
+      , public boost::noncopyable
     {
     /*-------------.
     | Construction |
@@ -46,6 +49,14 @@ namespace infinit
       /// The size of the contained data.
       elle::Size size() const;
 
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& output) const override;
+
     /*--------.
     | Details |
     `--------*/
@@ -66,13 +77,6 @@ namespace infinit
       // The size of the data array.
       elle::Size _data_size;
     };
-
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    // FIXME: use a printable interface
-    std::ostream& operator << (std::ostream& stream, Packet const& p);
   }
 }
 

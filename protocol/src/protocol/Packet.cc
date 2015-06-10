@@ -149,6 +149,17 @@ namespace infinit
       return this->_data_size;
     }
 
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Packet::print(std::ostream& output) const
+    {
+      elle::fprintf(output, "Packet(%s)",
+                    elle::WeakBuffer(this->_data, this->_data_size));
+    }
+
     /*--------.
     | Details |
     `--------*/
@@ -160,17 +171,6 @@ namespace infinit
     {
       if (!_data)
         throw std::bad_alloc();
-    }
-
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-
-    std::ostream&
-    operator << (std::ostream& stream, Packet const& p)
-    {
-      stream << "packet of size " << p.size();
-      return stream;
     }
   }
 }
