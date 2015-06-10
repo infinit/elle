@@ -18,22 +18,48 @@ namespace elle
   namespace _details
   {
     template <typename T>
+    constexpr
+    typename std::enable_if<
+      sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
+    _is_streamable(int)
+    {
+      return true;
+    };
+
+    template <typename T>
+    constexpr
+    bool
+    _is_streamable(unsigned int)
+    {
+      return false;
+    };
+
+    template <typename T>
+    constexpr
+    bool
+    is_streamable()
+    {
+      return _is_streamable<T>(42);
+    };
+
+    template <typename T>
     static
-    void
-    feed(boost::format& fmt, T&& value,
-           ELLE_SFINAE_IF_WORKS(std::cout << std::forward<T>(value)))
+    typename std::enable_if<is_streamable<T>(), void>::type
+    feed(boost::format& fmt, T&& value)
     {
       fmt % std::forward<T>(value);
     }
 
     template <typename T>
     static
-    void
-    feed(boost::format& fmt, T&& value, ELLE_SFINAE_OTHERWISE())
+    typename std::enable_if<!is_streamable<T>(), void>::type
+    feed(boost::format& fmt, T&& value)
     {
       static boost::format parsed("%s(%x)");
       boost::format format(parsed);
-      fmt % str(format % demangle(typeid(T).name()) % reinterpret_cast<const void*>(&value));
+      format % demangle(typeid(T).name());
+      format % reinterpret_cast<const void*>(&value);
+      fmt % str(format);
     }
 
     template <typename ... T>
@@ -52,7 +78,7 @@ namespace elle
       void
       args(boost::format& fmt, T&& value, Rest&& ... values)
       {
-        feed(fmt, std::forward<T>(value), ELLE_SFINAE_TRY());
+        feed(fmt, std::forward<T>(value));
         Feed<Rest ...>::args(fmt, std::forward<Rest>(values) ...);
       }
     };
