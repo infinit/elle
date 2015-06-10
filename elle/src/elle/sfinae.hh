@@ -26,6 +26,6 @@ namespace elle
   42
 
 # define ELLE_SFINAE_INSTANCE(Type)             \
-  (*reinterpret_cast<Type*>((void*)(0)))
+  (*reinterpret_cast<typename std::remove_reference<Type>::type*>((void*)(0)))
 
 #endif
