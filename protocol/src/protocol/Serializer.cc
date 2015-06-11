@@ -4,9 +4,11 @@
 # include <arpa/inet.h>
 #endif
 
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <cryptography/oneway.hh>
+#include <cryptography/Oneway.hh>
+#include <cryptography/hash.hh>
 
 #include <reactor/scheduler.hh>
 
@@ -62,10 +64,10 @@ namespace infinit
         ELLE_DUMP("%s: packet data %s", *this, packet);
 
         // Check hash.
-        auto hash_local = cryptography::oneway::hash(
+        auto hash_local = cryptography::hash(
           cryptography::Plain(elle::WeakBuffer(packet._data,
                                                packet._data_size)),
-          cryptography::oneway::Algorithm::sha1);
+          cryptography::Oneway::sha1);
         ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
         if (hash_local.buffer() != hash)
         {
@@ -88,10 +90,10 @@ namespace infinit
       elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: send %s", *this, packet)
       {
-        auto hash = cryptography::oneway::hash(
+        auto hash = cryptography::hash(
           cryptography::Plain(elle::WeakBuffer(packet._data,
                                                packet._data_size)),
-          cryptography::oneway::Algorithm::sha1);
+          cryptography::Oneway::sha1);
           auto hash_size = hash.buffer().size();
         ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
           _uint32_put(_stream, hash_size);
