@@ -654,21 +654,6 @@ def configure(zlib_lib,
       'tests/%s' % os.path.splitext(test)[0],
       drake.nodes('tests/%s' % test) + [library, zlib_lib, libarchive_lib],
       cxx_toolkit, config_test)
-    if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
-      # Compiling with ARC ensures that uninitialized variables are nil.
-      # Both iOS and OS X applications are compiled to use ARC so this test mimics
-      # their behaviour.
-      objc_cxx_config_tests = drake.cxx.Config(cxx_config_tests)
-      objc_cxx_config_tests.flag('-fobjc-arc')
-      objc_cxx_config_tests.flag('-framework')
-      objc_cxx_config_tests.flag('CoreFoundation')
-      objc_cxx_config_tests.flag('-framework')
-      objc_cxx_config_tests.flag('Foundation')
-      objc_test = drake.cxx.Executable(
-        'tests/printf_objc',
-        [drake.node('tests/printf_objc.mm'), library, zlib_lib, libarchive_lib],
-        cxx_toolkit, objc_cxx_config_tests)
-      rule_tests << objc_test
     for dep in dependencies:
       test.dependency_add(dep)
     rule_tests << test
@@ -683,6 +668,32 @@ def configure(zlib_lib,
       runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
+    # Compiling with ARC ensures that uninitialized variables are nil.
+    # Both iOS and OS X applications are compiled to use ARC so this test mimics
+    # their behaviour.
+    objc_cxx_config_tests = drake.cxx.Config(cxx_config_tests)
+    objc_cxx_config_tests.flag('-fobjc-arc')
+    objc_cxx_config_tests.flag('-framework')
+    objc_cxx_config_tests.flag('CoreFoundation')
+    objc_cxx_config_tests.flag('-framework')
+    objc_cxx_config_tests.flag('Foundation')
+    env = {
+      'BUILD_DIR': str(drake.path_build()),
+    }
+    objc_test_names = [
+      'Logger_objc',
+      'printf_objc',
+    ]
+    for test_name in objc_test_names:
+      objc_cxx_config_tests.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
+      objc_test = drake.cxx.Executable(
+        'tests/%s' % test_name,
+        drake.nodes('tests/%s.mm' % test_name) + [library, zlib_lib, libarchive_lib],
+        cxx_toolkit, objc_cxx_config_tests)
+      rule_tests << objc_test
+      runner = drake.Runner(exe = objc_test, env = env)
+      rule_check << runner.status
 
   # Install
 
