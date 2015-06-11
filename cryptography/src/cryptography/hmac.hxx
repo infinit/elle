@@ -5,6 +5,7 @@
 # include <cryptography/evp.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/serialization.hh>
+# include <cryptography/Exception.hh>
 
 # include <elle/serialize/BaseArchive.hxx>
 
