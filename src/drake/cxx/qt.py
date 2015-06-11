@@ -73,7 +73,11 @@ class Qt(drake.Configuration):
                prefix = None,
                version = drake.Version(),
                version_effective = None,
-               prefer_shared = True):
+               prefer_shared = True,
+               rcc = None,
+               qmake = None,
+               uic = None,
+               moc = None):
     """Find and create a configuration for Qt.
 
     prefix -- Where to find Qt, should contain
@@ -83,6 +87,10 @@ class Qt(drake.Configuration):
     version -- Requested version.
     prefer_shared -- Check dynamic libraries first.
     """
+    self.__rcc = rcc
+    self.__qmake = qmake
+    self.__uic = uic
+    self.__moc = moc
     self.__moc_cache = {}
     self.__dependencies = {}
     cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -118,10 +126,12 @@ class Qt(drake.Configuration):
 
       # Create basic configuration for version checking.
       cfg = Config()
-      cfg.add_system_include_path(path.without_prefix(
-        drake.path_build()) / include_subdir)
       self.__lib_path = path / 'lib'
-      cfg.lib_path(path.without_prefix(drake.path_build()) / 'lib')
+      path = path if path.absolute() else path.without_prefix(drake.path_build())
+      cfg.add_system_include_path(path / include_subdir)
+      cfg.lib_path(path / 'lib')
+      if version_effective is None:
+        version_effective = drake.Version(4, 8, 6)
       # XXX: Check the version.
       if version_effective not in version:
         miss.append(version_effective)
@@ -138,13 +148,37 @@ class Qt(drake.Configuration):
         setattr(self, '_Qt__%s_static' % prop, None)
       self.__version = version_effective
       self.plug(cxx_toolkit)
-      Qt.__include_dir = path.without_prefix(drake.path_build()) / include_subdir
+      Qt.__include_dir = path / include_subdir
       return
 
     raise Exception('no matching Qt for the requested version '
                     '(%s) in %s. Found versions: %s.' % \
                     (version, self._format_search([path for path, include_subdir in prefixes]),
                      ', '.join(map(str, miss))))
+
+  @property
+  def moc(self):
+    if self.__moc is None:
+      self.__moc = drake.Node('%s/bin/moc' % self.__prefix)
+    return self.__moc
+
+  @property
+  def uic(self):
+    if self.__uic is None:
+      self.__uic = drake.Node('%s/bin/uic' % self.__prefix)
+    return self.__uic
+
+  @property
+  def rcc(self):
+    if self.__rcc is None:
+      self.__rcc = drake.Node('%s/bin/rcc' % self.__prefix)
+    return self.__rcc
+
+  @property
+  def qmake(self):
+    if self.__qmake is None:
+      self.__qmake = drake.Node('%s/bin/qmake' % self.__prefix)
+    return self.__qmake
 
   def __find_lib(self, lib, lib_path, cxx_toolkit, static):
     suffixes = ['', '-mt']
@@ -329,20 +363,30 @@ Node.extensions['moc.cc'] = Source
 class Moc(Builder):
 
   def __init__(self, qt, src, tgt):
-    Builder.__init__(self, [src], [tgt])
+    Builder.__init__(self, [src, qt.moc], [tgt])
     self.qt = qt
     self.src = src
     self.tgt = tgt
 
+  @property
+  def command(self):
+    return [str(self.qt.moc),
+            str(self.src.path()),
+            '-o', str(self.tgt.path()),
+            '-f%s' % str(self.src.path())]
+
   def execute(self):
     return self.cmd(
       'Moc %s' % self.tgt.path(),
-      ['%s/bin/moc' % self.qt.prefix,
-       str(self.src.path()),
-       '-o', str(self.tgt.path())])
+      self.command)
 
   def __str__(self):
     return 'Moc of %s' % self.src
+
+  def hash(self):
+    """A hash for this builder"""
+    return self.command
+
 
 class Ui(Node):
 
@@ -355,14 +399,14 @@ class Uic(Builder):
     name = 'Qt UI compilation'
 
     def __init__(self, qt, src, tgt):
-      Builder.__init__(self, [src], [tgt])
+      Builder.__init__(self, [src, qt.uic], [tgt])
       self.qt = qt
       self.src = src
       self.tgt = tgt
 
     def execute(self):
       return self.cmd('Uic %s' % self.tgt,
-                      ['%s/bin/uic' % self.qt.prefix,
+                      [str(self.qt.uic),
                        self.src.path(),
                        '-o',
                        self.tgt.path()])
@@ -379,14 +423,14 @@ class Rcc(Builder):
   name = 'Qt resources compilation'
 
   def __init__(self, qt, src, tgt):
-    Builder.__init__(self, [src], [tgt])
+    Builder.__init__(self, [src, qt.rcc], [tgt])
     self.qt = qt
     self.src = src
     self.tgt = tgt
 
   @property
   def command(self):
-    return ['%s/bin/rcc' % self.qt.prefix,
+    return [str(self.qt.rcc),
             '-name',
             'resources',
             self.src.path(),
