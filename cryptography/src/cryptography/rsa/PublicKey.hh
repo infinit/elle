@@ -11,6 +11,7 @@
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/defaults.hh>
 
+# include <elle/concept/Uniquable.hh>
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
@@ -34,7 +35,8 @@ namespace infinit
     {
       /// Represent a public key in the RSA asymmetric cryptosystem.
       class PublicKey:
-        public elle::Printable
+        public elle::Printable,
+        public elle::concept::MakeUniquable<PublicKey>
       {
         /*-------------.
         | Construction |
@@ -143,6 +145,8 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(PublicKey const& other) const;
+        elle::Boolean
+        operator <(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 
         /*----------.
