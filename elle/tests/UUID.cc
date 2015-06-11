@@ -6,9 +6,10 @@
 
 namespace uuid
 {
+  // 'nil' is defined by Objective-C to be nullptr (see <objc/runtime.h>).
   static
   void
-  nil()
+  nil_()
   {
     BOOST_CHECK_EQUAL(elle::UUID(),
                       elle::UUID("00000000-0000-0000-0000-000000000000"));
@@ -80,7 +81,7 @@ ELLE_TEST_SUITE()
 {
   using namespace uuid;
   auto& master = boost::unit_test::framework::master_test_suite();
-  master.add(BOOST_TEST_CASE(nil));
+  master.add(BOOST_TEST_CASE(nil_));
   master.add(BOOST_TEST_CASE(from_boost));
   master.add(BOOST_TEST_CASE(from_string));
   auto random = &uuid::random;
