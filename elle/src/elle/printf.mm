@@ -10,7 +10,7 @@ namespace elle
     bool
     _was_nil(boost::format& fmt, id value)
     {
-      if (value == nullptr)
+      if (value == nil)
       {
         fmt % "<nil>";
         return true;

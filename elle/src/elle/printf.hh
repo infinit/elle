@@ -25,8 +25,4 @@ namespace elle
 
 # include <elle/printf.hxx>
 
-# ifdef nil
-#  undef nil
-# endif
-
 #endif
