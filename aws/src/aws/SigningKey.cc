@@ -3,8 +3,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/printf.hh>
 
-#include <cryptography/hash.hh>
-#include <cryptography/hmac.hh>
+#include <cryptography/oneway.hh>
 
 namespace aws
 {
@@ -14,8 +13,8 @@ namespace aws
             infinit::cryptography::Digest const& key)
   {
     using namespace infinit::cryptography;
-    Digest res = hmac::sign(
-      Plain(elle::ConstWeakBuffer(message)), key.buffer().string(), Oneway::sha256);
+    Digest res = oneway::hmac(
+      Plain(elle::ConstWeakBuffer(message)), key, oneway::Algorithm::sha256);
     return res;
   }
 

@@ -6,7 +6,7 @@
 
 #include <reactor/http/EscapedString.hh>
 
-#include <cryptography/hash.hh>
+#include <cryptography/oneway.hh>
 
 // ELLE_LOG_COMPONENT("aws.CanonicalRequest");
 
@@ -34,9 +34,9 @@ namespace aws
   CanonicalRequest::sha256_hash() const
   {
     using namespace infinit::cryptography;
-    Digest digest = hash(
+    Digest digest = oneway::hash(
       Plain(elle::ConstWeakBuffer(this->_canonical_request)),
-      Oneway::sha256
+      oneway::Algorithm::sha256
     );
     return elle::format::hexadecimal::encode(digest.buffer());
   }

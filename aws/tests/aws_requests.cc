@@ -16,7 +16,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-#include <cryptography/hash.hh>
+#include <cryptography/oneway.hh>
 
 ELLE_LOG_COMPONENT("aws.test");
 
@@ -95,9 +95,9 @@ _make_canonical_request()
   query["X-Amz-SignedHeaders"] = signed_headers_str;
 
   std::string content("Action=ListUsers&Version=2010-05-08");
-  infinit::cryptography::Digest digest = infinit::cryptography::hash(
+  infinit::cryptography::Digest digest = infinit::cryptography::oneway::hash(
     infinit::cryptography::Plain(elle::ConstWeakBuffer(content)),
-    infinit::cryptography::Oneway::sha256
+    infinit::cryptography::oneway::Algorithm::sha256
   );
 
   aws::CanonicalRequest request(
