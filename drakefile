@@ -289,12 +289,15 @@ def configure(cxx_toolkit = None,
   ## OpenSSL ##
   ## ------- ##
   openssl_rule = drake.Rule('openssl')
-  openssl_basename = 'openssl-1.0.2a'
+  openssl_version = '1.0.2'
+  openssl_release_tag = 'a'
+  openssl_basename = 'openssl-%s' % (openssl_version + openssl_release_tag)
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
   openssl_build = openssl_prefix / openssl_basename
   openssl_url = \
-    'http://www.openssl.org/source/%s.tar.gz' % openssl_basename
+    'http://www.openssl.org/source/old/%s/%s.tar.gz' % (openssl_version,
+            openssl_basename)
   drake.HTTPDownload(openssl_url, openssl_tarball,
                      fingerprint = 'a06c547dac9044161a477211049f60ef')
   openssl_headers = [

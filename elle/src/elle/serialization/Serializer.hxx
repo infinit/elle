@@ -11,7 +11,7 @@ namespace elle
 {
   namespace serialization
   {
-    namespace _detail
+    namespace
     {
       template <typename T>
       typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
@@ -110,6 +110,49 @@ namespace elle
         Wrapper wrapper(v);
         _serialize_switch<Wrapper>(s, name, wrapper, ELLE_SFINAE_TRY());
       }
+
+      template <typename T>
+      constexpr
+      typename std::enable_if<sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
+      _is_unserializable_inplace(int)
+      {
+        return true;
+      };
+
+      template <typename T>
+      constexpr
+      bool
+      _is_unserializable_inplace(unsigned int)
+      {
+        return false;
+      };
+
+      template <typename T>
+      constexpr
+      bool
+      is_unserializable_inplace()
+      {
+        return _is_unserializable_inplace<T>(42);
+      };
+
+      template <typename T>
+      typename std::enable_if<!is_unserializable_inplace<T>(), T>::type
+      _deserialize(elle::serialization::SerializerIn& input,
+                   std::string const& name)
+      {
+        T res;
+        input.serialize_forward(res);
+        return res;
+      }
+
+      template <typename T>
+      typename std::enable_if<is_unserializable_inplace<T>(), T>::type
+      _deserialize(elle::serialization::SerializerIn& input,
+                   std::string const& name)
+      {
+        return T(input);
+      }
+
     }
 
     template <typename T>
@@ -147,30 +190,6 @@ namespace elle
                                   opt = std::move(value);
                                 });
     }
-
-    template <typename T>
-    constexpr
-    typename std::enable_if<sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
-    _is_unserializable_inplace(int)
-    {
-      return true;
-    };
-
-    template <typename T>
-    constexpr
-    bool
-    _is_unserializable_inplace(unsigned int)
-    {
-      return false;
-    };
-
-    template <typename T>
-    constexpr
-    bool
-    is_unserializable_inplace()
-    {
-      return _is_unserializable_inplace<T>(42);
-    };
 
     class Serializer::Details
     {
@@ -458,7 +477,7 @@ namespace elle
     void
     Serializer::_serialize_anonymous(std::string const& name, T& v)
     {
-      _detail::_serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
+      _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
     template <template <typename, typename> class C, typename T, typename A>
@@ -584,6 +603,15 @@ namespace elle
         return res;
       }
     };
+
+    template <typename T>
+    T
+    SerializerIn::deserialize(std::string const& name)
+    {
+      ELLE_ENFORCE(this->_enter(name));
+      elle::SafeFinally leave([this, &name] { this->_leave(name); });
+      return _deserialize<T>(*this, name);
+    }
   }
 }
 
