@@ -31,6 +31,14 @@ namespace elle
                    bool versioned);
 
     /*--------.
+    | Helpers |
+    `--------*/
+    public:
+      template <typename T>
+      T
+      deserialize(std::string const& name);
+
+    /*--------.
     | Details |
     `--------*/
     protected:
