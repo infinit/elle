@@ -3073,10 +3073,10 @@ class Configuration:
         if path.absolute():
           drake_path = path.without_prefix(drake.path_root())
         else:
-          drake_path = path
-        node = drake.Drake.current.nodes.get(drake_path, None)
+          drake_path = drake.path_build(path)
+        node = drake.Drake.current.nodes.get(drake_path)
         if node is not None:
-          res.append(root.without_prefix(drake.path_root()))
+          res.append(root)
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \

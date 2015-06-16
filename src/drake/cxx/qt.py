@@ -72,7 +72,6 @@ class Qt(drake.Configuration):
                cxx_toolkit = None,
                prefix = None,
                version = drake.Version(),
-               version_effective = None,
                prefer_shared = True,
                rcc = None,
                qmake = None,
@@ -107,31 +106,26 @@ class Qt(drake.Configuration):
       if not test[i].absolute():
         test[i] = drake.path_source() / test[i]
     token = drake.Path('Qt/qglobal.h')
-    include_subdirs = {drake.Path('include')}
-    for prefix in test:
-      for subdir in include_subdirs:
-        if not (prefix / subdir).exists():
-          continue
-        include_subdirs = include_subdirs.union(
-          (subdir / p for p in (prefix / subdir).list()
-           if p.startswith('Qt')))
-    tokens = map(lambda p: p / token, include_subdirs)
-    prefixes = self._search_many_all(list(tokens), test)
+    tokens = list(map(lambda p: p / token, include_subdirs))
+    prefixes = self._search_many_all(tokens, test)
     miss = []
-    if version_effective is not None:
-      assert prefix is not None
     # Try every search path
     for path, include_subdir in prefixes:
       include_subdir = include_subdir.without_suffix(token)
 
       # Create basic configuration for version checking.
       cfg = Config()
-      self.__lib_path = path / 'lib'
-      path = path if path.absolute() else path.without_prefix(drake.path_build())
+      if not path.absolute():
+        path = path.without_prefix(drake.path_build())
       cfg.add_system_include_path(path / include_subdir)
-      cfg.lib_path(path / 'lib')
-      if version_effective is None:
-        version_effective = drake.Version(4, 8, 6)
+      version_effective = int(cxx_toolkit.preprocess(
+        '#include <Qt/qglobal.h>\nQT_VERSION',
+        config = cfg).split('\n')[-2].strip(), 16)
+      version_effective = drake.Version(
+        version_effective >> 16,
+        (version_effective >> 8) % 256,
+        version_effective % 256,
+      )
       # XXX: Check the version.
       if version_effective not in version:
         miss.append(version_effective)
@@ -180,7 +174,7 @@ class Qt(drake.Configuration):
       self.__qmake = drake.Node('%s/bin/qmake' % self.__prefix)
     return self.__qmake
 
-  def __find_lib(self, lib, lib_path, cxx_toolkit, static):
+  def __find_lib(self, lib, cxx_toolkit, static):
     suffixes = ['', '-mt']
     # Suffixes
     if static:
@@ -195,41 +189,33 @@ class Qt(drake.Configuration):
       suffixes = [suffix] + suffixes
       mgw = '-mgw-mt-%s_%s' % (self.version.major, self.version.minor)
       suffixes += [mgw]
-
     # Variants
     variants = ['']
     if isinstance(lib, str):
       lib = (lib,)
+    tests = []
     for lib, suffix, variant in itertools.product(lib, suffixes, variants):
       libname = '%s%s%s' % (lib, variant, suffix)
-      tests = []
       if static:
         filename = cxx_toolkit.libname_static(self.__cfg, libname)
-        tests.append(lib_path / filename)
+        tests.append(filename)
       else:
         prefix = '' if cxx_toolkit.os == drake.os.windows else 'lib'
-        filename = cxx_toolkit.libname_dyn(libname, self.__cfg, prefix)
-        tests.append(lib_path / ('%s.%s' % (filename, self.__version.major)))
-        tests.append(lib_path / filename)
-      for test in  tests:
-        # Look for a node if we build our own Qt.
-        if test.absolute():
-          drake_path = test.without_prefix(drake.path_root())
-        else:
-          drake_path = test
-        node = drake.Drake.current.nodes.get(drake_path, None)
-        if node is not None:
-          return node
-        # Otherwise look on the filesystem.
-        if test.exists():
-          path = os.path.realpath(str(test))
-          if static:
-            return drake.cxx.StaticLib(path)
-          else:
-            return drake.cxx.DynLib(path)
-    raise Exception(
-      'Unable to find %s Qt %s library in %s' % \
-      ('static' if static else 'dynamic', lib, lib_path))
+        filename = cxx_toolkit.libname_dyn(libname,
+                                           self.__cfg, prefix)
+        tests.append(drake.Path('%s.%s' % (filename, self.__version)))
+        tests.append(drake.Path('%s.%s.%s' % (filename,
+                                              self.__version.major,
+                                              self.__version.minor)))
+        tests.append(drake.Path('%s.%s' % (filename,
+                                           self.__version.major)))
+        tests.append(filename)
+    search_path = [self.__prefix / p for p in ['lib/qt4', 'lib']]
+    prefix, lib = self._search_many_all(tests, search_path)[0]
+    if static:
+      return drake.cxx.StaticLib(prefix / lib)
+    else:
+      return drake.cxx.DynLib(prefix / lib)
 
   def config(self):
       return self.__cfg
@@ -305,7 +291,6 @@ for prop, library in Qt._Qt__libraries.items():
       name = '_Qt__%s_%s' % (prop, 'static' if static else 'dynamic')
       if getattr(self, name) is None:
         lib = self._Qt__find_lib(library,
-                                 self._Qt__lib_path,
                                  self._Qt__cxx_toolkit,
                                  static = static)
         setattr(self, name, lib)
