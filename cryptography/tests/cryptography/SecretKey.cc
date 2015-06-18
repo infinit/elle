@@ -275,7 +275,7 @@ _test_operate_idea()
 
   // Encrypt/decrypt with plain.
   {
-    elle::String const input = "Chier du foutre!";
+    elle::String const input = "Chie du foutre!";
     infinit::cryptography::Code code =
       key.encrypt(
         infinit::cryptography::Plain{input});
@@ -308,18 +308,70 @@ test_operate()
 | Serialize |
 `----------*/
 
+// Legacy testing function for the SecretKey class in its format 0.
+template <infinit::cryptography::Cipher C,
+          elle::Natural32 L>
+void
+test_serialize_x_0(elle::String const& R)
+{
+  // Serialize/deserialize.
+  {
+    infinit::cryptography::SecretKey key1 =
+      test_generate_x<L,
+                      C,
+                      infinit::cryptography::Mode::cbc,
+                      infinit::cryptography::Oneway::sha256>();
+
+    elle::String archive;
+    elle::serialize::to_string(archive) << key1;
+
+    auto extractor = elle::serialize::from_string(archive);
+    infinit::cryptography::SecretKey key2(extractor);
+
+    BOOST_CHECK_EQUAL(key1, key2);
+  }
+
+  // Deserialize from the hard-coded R representation: useful for detecting
+  // changes in formats.
+  {
+    elle::String archive1 = R;
+
+    auto extractor1 =
+      elle::serialize::from_string<
+        elle::serialize::InputBase64Archive>(archive1);
+    infinit::cryptography::SecretKey key1(extractor1);
+
+    infinit::cryptography::Code code = key1.encrypt(_message);
+    elle::String clear = key1.decrypt<elle::String>(code);
+
+    BOOST_CHECK_EQUAL(_message, clear);
+
+    elle::String archive2;
+    elle::serialize::to_string<
+      elle::serialize::OutputBase64Archive>(archive2) << key1;
+
+    auto extractor2 =
+      elle::serialize::from_string<
+        elle::serialize::InputBase64Archive>(archive2);
+    infinit::cryptography::SecretKey key2(extractor2);
+
+    BOOST_CHECK_EQUAL(key1, key2);
+  }
+}
+
+// Testing function for the newer formats of SecretKey.
 static
 void
-test_serialize_x(elle::String const& R1,
-                 elle::String const& R2)
+test_serialize_x_n(elle::String const& R1,
+                   elle::String const& R2)
 {
-  // Deserialize the key from [representation R.1].
+  // Deserialize the key from R1.
   auto extractor1 =
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(R1);
   infinit::cryptography::SecretKey key(extractor1);
 
-  // Deserialize the code from [representation R.2].
+  // Deserialize the code from R2.
   auto extractor2 =
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(R2);
@@ -335,39 +387,70 @@ static
 void
 test_serialize()
 {
-  // DES based on [representation 1].
-  test_serialize_x("AAAAAA8AAAAAAAAAhjxWOwxDpDWVKyDzDnSXAQAEAAAA",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX18HX/dWoDGDYDpuQqSY+LHyVrq7DBIJRH0EuDQyCOGdWyM0bD8kiKBIA7W3PhuUascXEQ==");
-  // 2-DES based on [representation 2].
-  test_serialize_x("AAAAAAMAAAAAAAAAI+b/AgACAAIA",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX190LWXKvrQGMni/AB9WPhGbwXGrbOQxfrZ8rXQFKgio0qqEjVQKIfOdS/KSTyiTufeEMUuheD7YHA==");
-  // Triple DES based on [representation 3].
-  test_serialize_x("AAAAABcAAAAAAAAAeX0h9z2RKj7GHgJ1eaIyIt4C83W8V98DAAMABQA=",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX1/4r+Myw6DHvO3aoq4etEQw2UpRJkn6m1fVJkaoPbsb2asR3BLnd+Oy7Uyq/G+RJ5Rm7Q==");
-  // DES X based on [representation 4].
-  test_serialize_x("AAAAAP8BAAAAAAAA8fBsCsToxlR3l2wM3BBzAPG7aHGOoxn2mnjraVhEjC21Eo6hbGRHf9aTWTb1bgdlHMkQ+dPevnqbHXGTEGpoYaT1ZuBnk5McDUoNIA0+KRTQsnkj9KuM1GibT8cT0jnqCSAp07cjfulXLjqKat27lqsojHhAo2xhQSCUIl3pTymnLMHWQjVQ9jrG+WbTEunKxOoIF8VrOmXxiTThqqyrrEn4ite3RUAGVc/0MTOfcwkGN4HoQor+3j+8AyBod8Ks58LVgmBhfYdj7hnnMLNSXbiUwQEBStGW3JIevPE1lz5HvMXkpA8xFu69HAf85CcDWBQ7It+LtLP5vhqgMm3yhfM1DWwOqARlcYk1AKqkZdJO/JPpH2hdMQhev+qdxk9f/tivX5McyWK5aoIWpJpw+RM8w6jT2HcyxRXlEiD5KZW93g77wxuJhtmKl5cqNB9NTs3pBzGD2GEVGInHc5G4Sey6jesxTJgOcEOfO+EdvtpQ1gM5usD0sa5dfyy89quZQsNH6W9ZcHSvCUfaALdkOPdPZyV4c7aLQNahj1yv5UBEzuiVF1QEBG/8eE6QbU0ic2Wcr0+NDbrmb2VJyVMjvEd1/RYhUhgX87IieXw4WlZgxLk27dpmwa+nYJPgFuCcWeSh2tGoQ6G26lyHKiRXlnJadTiAbAsJKePuFGk+mgQAAQABAA==",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX19zqhOGDZ007tb7twNbBHr/xQmji3xhHBkxqltzD8lkl8tVhRZyaXSBK+ve5JcSr40bjzlQ954G5g==");
-  // IDEA based on [representation 5].
-  test_serialize_x("AAAAAAEBAAAAAAAAYyS5HumWAwFBFTf+9wSvPuyz4YiaiHwMvsZDBpFF5UYb9f3lZiZBIsQ/mA/X6sB/Hd/m8EzBGh/qI97My7IXaAmQR//OktA8gfX9d3rbHmnupQ1WV2w+QDHD22pOmmkGrG/jCjZkCZkzQroYz30G6GSuZY0XQaSckJz1PqCPhIxWvTAVDV4AJVSBkgHn6ZuMnlOCtCq6XN/Dw+2uHIDzKFqGCmKHkWFoT8YSdZap3mkKu2zLLjl0y+mKFxtSo4PURFyOXb/e+zTECioN4XWyybDsE1W8aSh4eEuTiaY91cch7iGyspKlAV60C6XrMuUQXvTaSMKvk3rUpu47mX5JA9EFAAIAAwA=",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX1+4eforYRhPaJ1a5+3fgmOQf2aB6qg4kwTKoV6Svef0SpGorZytj2Pq9be/BeUdOo4dLXNEV/aenA==");
-  // RC2 based on [representation 6].
-  test_serialize_x("AAAAAAMAAAAAAAAAKvDEBgAEAAYA",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX1+18DzzbcUKTCY78b68kbZ0VWX4u3yUmZlNTHxL3m/EhLNzuHNJ78lT9jRqcvx1fGbYNw==");
-  // Blowfish based on [representation 7].
-  test_serialize_x("AAAAAAgAAAAAAAAAYUjMnTbpeMgHAAEAAgA=",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX19ccMFZDjIhjh8AlJ9UxwF6iW/v22OLbvdgO5A9lXfjiNOyTWKITkoDZMWovEaaFCTxMICx+VjwYw==");
-  // CAST5 based on [representation 8].
-  test_serialize_x("AAAAAE4CAAAAAAAARhodZUPoqySbIalZsCphbPWWx0y1FPEZApMOZ6DADOVaMgxHMDDhc/xqDxOYL9oJMKV9JP1SnODHZuPRolCSjnXwzfZNOXj/O4jxpeXAMqTg98nPIv67l6Fs7K3ggR9o+wNeySwNcjNh4ps5iMoxQ4PjBtkcQ7TOnxYZYpbt4sYT3RfxWZMTfJMBht/XXmM4uQ6xm83APo2xKgSX28MHCWzeFa+4JGAX/XSCMelrqFfiGXmbWmHrAyF7EmbqUytcAzg6Sm5oJ0uMM8fvkRlMVKQAG+OkOUq6wm7Kx+1mBOihxSIRfE7RppRS2RyYyrmbBNlAGxbMNi/9NdC2MXPJD9QrzwRna0Q7Ulwq2+G844HP1Kt7AsN3+Nys3uP6kYeCI2PoSuQUXFbM99qq9vn5A+aQV8MQQb8C3tffOKaCO0pEPes9s3q11YDdpZZCcZMwosgQ9gHWLanVJsqavqdi8pJLwflvFr71eI1Czl5Z8D/ZhPSGdpN68ZtsQGndGQhuQhhsDPrrhIqW2wOpI+zyvS0UHwZG6Dr55HS5OuVfS1aUDwx4Kc+V0zQgizukhveUhuO01vCbWl6Tm9TkQdM2ExBS58xCh88mgAWbnt3Nz5hHz2jPhSAfSCQ5c0vo7pEHGe2oT/MUXHigysbBJ9UrjHB3ktt9+GL0y1XgcNsbfinaNZiR1mBIyu2K8Z0YBJlDQoUWnh5aellJA5h9UgNUWX5nQbb9594FGCxkNTFKSwvkcPDMGTxpmjjmVQxX0rs8CjeAKr6mMBr1vlSbirYIAAMAAQA=",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX19JDwFg2cOr0WfM3BL9xpj+BseUsvsetlOd7hT7HonL2zOsqRS9GYUpwpUOpdB3ebpdgQ==");
-  // AES128 based on [representation 9].
-  test_serialize_x("AAAAAGcAAAAAAAAA/eShf52RTcdsqwS6ySPk7wsCbH5r7PWJg4sBAI6n6vfxlCTLv8BlnMftmaRal4WuLB/oxdBuYZoczvC6zAa+hucRMBpMFHrycn3Lo0BE0MEOzU3mp8gUlPYOEmKON4DDoTHsPRk0twkAAQAAAA==",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX19RtYDVFjUDoFYTZJU1sGuoK66/MMHuoFAlmf+QE30rxlFY2xHTd+7cszCJVUUNUX1sgIi9THnihg==");
-  // AES192 based on [representation 10].
-  test_serialize_x("AAAAAHMAAAAAAAAAOOKm3nj4GxCgc4sigWw3TWN0alofAcpLlsjXEVODwjZS0rI2m/iIMjKYi9hi7yuLHmX4WF1WQk3Ag7CGDrKSyJ7B7tuZjKR7aWt4sZ0MQRQ7HX8SzSB1CEcLZFVgN0s2mjqUuBNsc5vvW3ESg5LPOXpInwoABAADAA==",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX18stpxDR0y0FWCadhaCVNMNzE78UYYWgX3TN2yAfi/OU6nbGUG4g/5GtM+I3WuKIPwrBw==");
-  // AES256 based on [representation 11].
-  test_serialize_x("AAAAABIAAAAAAAAAHtcyJIvNDkqy+8h23rxJ/KWqCwACAAUA",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX18+IYWmcnMsaJLPSk0HvTWZUyt+HgnyF9qu5WxvWkfMd91+myPqbs4+ZKhqVv6LyUgax7U0r6vJjg==");
+  // Old format: 0
+  {
+    // DES.
+    test_serialize_x_0<infinit::cryptography::Cipher::des, 491>("AAAAAAAADwAAAAAAAAAaPkHuqG5X3Y8nlvJ2vP4EAA==");
+    // 2-DES.
+    test_serialize_x_0<infinit::cryptography::Cipher::des2, 82>("AAABAAAAAwAAAAAAAACtSXgEAA==");
+    // Triple DES.
+    test_serialize_x_0<infinit::cryptography::Cipher::des3, 1074>("AAACAAAAFwAAAAAAAADj47h5QvqrtSt5tv1Pc7OE8INIaVJH7AQA");
+    // DES X.
+    test_serialize_x_0<infinit::cryptography::Cipher::desx, 193>("AAADAAAA/wEAAAAAAACKo7CcohFWQOXJgZgjzKYWULWovcX4UwmfFKNBo/s+BfOg8zhVXwmpSrvyUP8SKa7vdl4pMslP53sJmy3QqNl/QulgeNwcLXYJIcuAQZyUk2igh/2DI3d6mxP1BlaU6yluH66Zza+lzDmy986reL4AdVo54d5W8tRgbUqzyAiz2RlQFfyuW3iQEXDxqjK5mLeVkv5PGVSVDlbbWNG9oDHtfGLfequyoz/JYuXZxZNl55EbyKCezRJ0zuv2eskolRwALmbLV2crmW548FOrAoCAgxw4M+9SQzXq8ZSZiL8ARoDP3tlVsuy8+yWcXI+VR0y0ihbnxdTT+FvInk9wZoJ81xm8fMmYpEdayXCb3p+yBl6xZYTaIyhzSyVX+BDrBgpu5U5lRS3drNXcE4LOYf11IOJTEtAPjAiMfN6uSFpdljFUjBznvKb1DVGjObJqUlPb3h5BwYADIwnY+HbgqwKfLmnOSwzp06WAeC8y1zanzb7/yHclXQqeDoy4oTQ6QdZ5GXsgnmS0wnhsVVmpfvQdOgHRXpjLwVLW8oRkDpxvPSyIBzkgEIgd9A/vB6D1sC0HU/cTv5Kl5U59tW9X0yFulVd0MMeLcEcLSsZ1Us5bgb0jZyYCjQaAd1L5Twn1wVpmJfbBCC2b76AmO4svoSlQGfCSwA0PSc48X2JqWCjwBAA=");
+    // IDEA.
+    test_serialize_x_0<infinit::cryptography::Cipher::idea, 4091>("AAAEAAAAAQEAAAAAAADbEcfxyz7gmMhd4DaPeA5J/mflfdqhrRDno0Z47ndrodiBq95cJCr4GaS9LxmGq6A8Wfb6AJB2oc8YAiPa9ZSvMZK3vQ8XlYSMBFL3172XigIFW1VfAql9MGAmnYM1Ush9W5UKfdwWpo1BwYCxTJU9SOB3ytP7H8dnBTs5UevvGwh2sFY3A3rv6MOv5M0J9dyrdJ7O86QZzPlfwUdJsEBXc86ZlUjYpwvGnTZeMapT6ArsUovFNkkzBEUc95I4z2GT9tUlKq2QGiv8gExKCHam8hOJMRDbppvj+KXPSWLz9q13i1P8hUWKS/0lkiEksGI1JYjhkTN7UwxhfQkGRohaGQQA");
+    // RC2.
+    test_serialize_x_0<infinit::cryptography::Cipher::rc2, 12>("AAAFAAAAAwAAAAAAAADgQysEAA==");
+    // Blowfish.
+    test_serialize_x_0<infinit::cryptography::Cipher::blowfish, 223>("AAAGAAAACAAAAAAAAAAUeiXrxAx9uQQA");
+    // CAST5.
+    test_serialize_x_0<infinit::cryptography::Cipher::cast5, 1398>("AAAHAAAATgIAAAAAAAC08hK1AsxQluKL93G+RjB+XgRS16kFZtn37mVxAbrJOwPbVxeQTS5nysGqv4gcuFFQTJTnrVJ049ctC1txpO9Maj/KCnoiFGbn4Lz7i6xeHZ873WbeeIy3RoRh+YynKFtas8Y18Z5tdNYHJ/wKPpWKiZXStOjHzk7zGb2S/OPEg5KaFJT3Pa7Zu34yMfFLZfu9tiUBCiyKSYg3GVP5f3lcc3szHXIk5dUxxoKYC7wAWlyQ/vjwtCNCSJ8Sqt/AbDAjaFikYDLOMquinxq8Wkgb/7y5jgz+Diof6+VTdhG1+6xgUdJJXJ2Oe3hKCW0Z/qIzSxw1xXJhxJl4FQVso4UiQKTmM6y/ALRfSOIVpu4tT0Cpw3V+kKN0PDHLl5i93W/W5v3LjbJZdV7dwNlwCaXbkUpKTJcf4oilM9T5aOfZ78Bi7+SY8zjWDX+ylbPgx9tYsJihGgzcamG4rO7UsmzMrJq5yg/DnJcJ8QFzw9MLOlgHcyH3CX9TI5wGxOyejP3K3D/wwVZC+Mhup9aa5kkmARcLPwQEpUEJsXNrIccAhXaRfXgA2aAbpGdVb3DaJVOAd9zsO20D1dn9gmiDjzJifwwcyW4dBRzXuDD5eRhl4ivm1KWMKv3vt5nr0SgSxACEJI8NjZLEnZPc7++QFpPnqr1Ys3sAz/uUszrb58y9XsZvO4aZakWZhqGBIh4pOvq09nyuu1BDzFFz0zaLZuvR6qCOCFEg8LC8CsqgwfhToy/Xfz+760scAhEyhf4U836hmiIXNhcszIvbtH3ElwQA");
+    // AES128.
+    test_serialize_x_0<infinit::cryptography::Cipher::aes128, 94>("AAAIAAAAZwAAAAAAAADUoRvMwLoz7hV00rAlsTIHW9zEMnZwihNGMLomB0a4J4AxO4nXtk1mlWVehhjcjHW\
+6E1RzsTVKNsa9mcGy/i0NoyIh6ZbmCVpgXuh+ognaO4U2lam2ViOicPAsp7hIOIKGnXYZpwxPBAA=");
+    // AES192.
+    test_serialize_x_0<infinit::cryptography::Cipher::aes192, 320>("AAAJAAAAcwAAAAAAAABHweCXb7/EjZXX7TWZJxZSxy91PdB/qziAweoTJ+TEVAOwMZdGms4anNwYUkr2eH\
+vg0gnksWDrEmjq7HZa+qbtt8NDcaoAtvJAowbf7doVV+zOQg7LmIDPdXu5HJ6Fd/MdsCCplXN55WBmwZ2UiNZS5MCGBAA=");
+    // AES256.
+    test_serialize_x_0<infinit::cryptography::Cipher::aes256, 2338>("AAAKAAAAEgAAAAAAAADxKyeb9Ypn4DNuuMihYjzNvDQEAA==");
+  }
+
+  // Newer formats: >= 1
+  {
+    // DES based on [representation 1].
+    test_serialize_x_n("AQAAAA8AAAAAAAAAjMVaoAHoNFWNZ9VnHhJKAQAEAAAA",
+                       "AAAAADoAAAAAAAAAU2FsdGVkX18xfk15z14820K4tfRK+eeO1kM55c5Yx36hE405BqR+JGFj6FdkylyTwvt07CItLOwWyQ==");
+    // 2-DES based on [representation 2].
+    test_serialize_x_n("AQAAAAMAAAAAAAAAAkkMAgACAAIA",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX1/RYG5MihXMO5ealwQ7g0bAG1jLFEDHjEzhXWOrad7HQXxL5VvXafhURayZ5YjDYhwGKafUrWD71g==");
+    // Triple DES based on [representation 3].
+    test_serialize_x_n("AQAAABcAAAAAAAAAscHzIgUJPHkmhrs1NgEt8rltPpgS32oDAAMABQA=",
+                       "AAAAADoAAAAAAAAAU2FsdGVkX1/gl8Gl2Lo1OcN1H3I/jKZhgQGUJw2jatOChks8rzP4TW28MX1KekpgODwCtfD+J5iYEw==");
+    // DES X based on [representation 4].
+    test_serialize_x_n("AQAAAP8BAAAAAAAACYbt6vJUYIXI9rQEctOYpr419U1ofXc4aEBELa19CXaPlKeZgEFQoOXJAOf93IjG2BcZ5dDVX0p1tne0UB1l0bW2kfOSMdPOUDe9H00qnpw8bqMlSHYXaByRvkB5UvHs+yB+uM/NiqJ8FcnC+R0Bg3ov2ad9RZLN+SQ8IbRu77RSM7z79XOWIur01iRr3Z1Ee8sSHrmbKn/S9ojM8CXX9Skf7nUwawrikICTbaiJBYLCOSDyE7v1agvPJgaOmhk6VfNzewRvbgBd9u1VzDGR84bAUTTXB3YFOMnaXLMOMPS+ZgWakVPL3F8KILBvw2Ecvb14yAVHx/v38D/COnP2XxrICijBA7hx7K4tf4ln8CLjXhzKuiJJzZTVDz5VJa+mkfGQ+Vc2Cjfjn+ySrWfjoGqnTwzusTFoTqqvpd0VtMBJzGDbzgHKio1U1JNChkAHha11LEaXmKTdwi1y2ThSNNprRBoDwsZZo8C55aFtrhx9qsEcnM9kVVPI5pg5xRs/7XFn5lc/zgm7AQF/sQXA9dDuamNf/8GM68P7GpBWtuGdxSlOsAhBzPpe6PemIUCLXLI6QUYMSQ+6gw6Q84dW1sx6TBgooyNFecPYetiaPpmFUvjDaRDD035BiPj9HyrXnq07qKiSDekUnMlS7tgMPH1Z/P5LS+HhHwLxYpBoLQQAAQABAA==",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX1/FlXIoYKWY2C5ucJmFbRqdxYiwminM3TmoSbd1jnO+YJAAXDz/ddgtDLNWQNHTGhxzziqvxc6U5w==");
+    // IDEA based on [representation 5].
+    test_serialize_x_n("AQAAAAEBAAAAAAAAQLVvIab7pao//lwKjrNmEN5MDBI5Mi6ermp3OSUtCchGfVgykaA8f3RWA+igCm7k+M/NNMqq89RRJJmiCjun5L7mk7+T4xamnznfeNP80C35avSAj/t2hqAz9ywd3Hmj8vtnuX98CfW6EIDGauws1/ybGjXyPCpC+djt3oiNeCV16hoVK5TgMJkRq8nEO/VU3ZULL5ppA7tRWObSGofJ3NKV8eS7FEHAAgXA6/9V2UsyynYJn+/cGlcTYP2zcYdbtlSzteVs8RGBxFqRgV7DxCUTCF54Yigtix2tin0lBULRJZxKu7hkmZfmkLFTIv0hBRLGrkvk12OH5GA5F89U1TAFAAIAAwA=",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX19fnDB+md/7HFIq1qat9fyXuMtrHv/i0aKfn1Sjd9sksRZMD1MQGZLsaUROoN8Y2m44X+h0xgExVw==");
+    // RC2 based on [representation 6].
+    test_serialize_x_n("AQAAAAMAAAAAAAAAPX+rBgAEAAYA",
+                       "AAAAADoAAAAAAAAAU2FsdGVkX1+5nB653wIJSBnI9hDqAcyU7uymuJFxsOTC9R2wHVsgko7PqkMcZ9u7fHTwTmxi+KDueg==");
+    // Blowfish based on [representation 7].
+    test_serialize_x_n("AQAAAAgAAAAAAAAAjiGXG+PY5iYHAAEAAgA=",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX1/GeZaFojF/fGNk6S10UizTANiozkJNOwpdH6TWTReXKkuuA615DvieJ29i/2eKZ2DyojLEmEnEzQ==");
+    // CAST5 based on [representation 8].
+    test_serialize_x_n("AQAAAE4CAAAAAAAAKV3P70YypjdjycGDUUG/LnK8LzMuwt1K4WXPIQ+Vg9JDSCBx8YvErBk+IlkZKYmchCERMcajIO63Do1pvZvUEVjLIwxtWVTs/i2UZ3Iv4OY9zyiqnggZRieXoVoy2Tj9fp7U0lPE+sGkm1wmVUNEZnDBGNPaaegZoEDA5JP5KYaGybPtiwrPS/cahXKvfMudgPEwBZ0ucf91VbuF7GFfFn2tLaKwSlji0vdTmA9dQECnq5zbufap7S7MUZoMqjrurd++xSoPq4vmCCYnks3z2Wztde7DBY0V7I5LQaZjFWJCnHAHf+jAotccXiqvnUMkMRhsLSl7qrTOiCPO2deQ/bqPsw+nIDrL28ha7JC/mwi+3QlCWakReuTDQBJmIptumko2XDmqnrQDeM42Qewa481KKGrnfeR+xzmcZYsn/Xe/FwPTHCfydoQwC6eGhUebhFrA4xPVpPlXSFNlSd9TzYW0tE2VxVEbDRKXBHjtnXztw/5uz3zTzQywkE1tZj3CoOVJI15RQy/FFhoEbxtamYtupvNb2wfNnlFWkia7dcNs/8MQBZ0eJVCl6LlQHnUSE6QZ24NPjcQ0O06IT/Z/mew9qtkXfQXCEyPdTAWewoHQcGWYM1oX2mJ3oDbJX6P6L31PKtTIo25CdqX/mKUC58SEsthL3vfMFugEXYTPUc3xfrGQf09LdwDuYp5B3sOfYpjKSgha9hDvq6gs2U0MUtAhCku0GLupHiGXm2XE4sYfINlVdc3M6kWQcpInjW47GALVKLl8NDsMl5cC0aUIAAMAAQA=",
+                       "AAAAADoAAAAAAAAAU2FsdGVkX1/Yz02jGE/raHWUu6TBFGlSoS7yHo409ZIC8Clr+GZM2b9XOf8LSUjJQdW4T27ZnR52Vg==");
+    // AES128 based on [representation 9].
+    test_serialize_x_n("AQAAAGcAAAAAAAAALYIclorj5wkAjZ4yyHxZ7fxlTTkDK0ViYzVkRrsFa1JwfWW5m9Of1OExlhtfZer6F0DLLlrmZ18j0E4mgexYr9X5coRHc5arS5Cis7eRv2pu0hV9TyY2LPBQ6irPNVyhS+c7yXz/oQkAAQAAAA==",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX1+s85eUWu1Knoe0WohZLRNMyY1F7F5K+yPNlU6DNHIK40E3GWdfaXfaPX9qSCSnQQ+oxrv24brr+w==");
+    // AES192 based on [representation 10].
+    test_serialize_x_n("AQAAAHMAAAAAAAAAdhEnTprkprmTv3RJ4WJ9nIuAq9xllP0bov4LsP0p3WWAlLF9c1hLzujWftQ0kMIqCt1SZTxmY+S4x82zKGA7o8CKbqm7zSZbxx+XGvRveQ44TmyB6JTTUen/ITefUa6Ssj4+Wot9hH754ig+Um6TOe6QRAoABAADAA==",
+                       "AAAAADoAAAAAAAAAU2FsdGVkX19TGLi4RClRT2ddJ9oci9VfyEjCDJTK3ngBOMQ8SWF1n8W7UAl8BvRO6LtcFc3t1G2fKQ==");
+    // AES256 based on [representation 11].
+    test_serialize_x_n("AQAAABIAAAAAAAAAPQIIM2i04XmvufB0O0gX7hLrCwACAAUA",
+                       "AAAAAEAAAAAAAAAAU2FsdGVkX18HwvtxMF/XpVERWO5zxf7taEBfqMprPBO5qyyOBIrY0vfD6c9pW8/2BK40U9jDitdT/d5Uz8GolA==");
+  }
 }
 
 /*-----.
