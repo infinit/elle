@@ -37,6 +37,9 @@ namespace elle
       template <typename T>
       T
       deserialize(std::string const& name);
+      template <typename T>
+      T
+      deserialize();
 
     /*--------.
     | Details |

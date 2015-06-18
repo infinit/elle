@@ -137,8 +137,7 @@ namespace elle
 
       template <typename T>
       typename std::enable_if<!is_unserializable_inplace<T>(), T>::type
-      _deserialize(elle::serialization::SerializerIn& input,
-                   std::string const& name)
+      _deserialize(elle::serialization::SerializerIn& input)
       {
         T res;
         input.serialize_forward(res);
@@ -147,8 +146,7 @@ namespace elle
 
       template <typename T>
       typename std::enable_if<is_unserializable_inplace<T>(), T>::type
-      _deserialize(elle::serialization::SerializerIn& input,
-                   std::string const& name)
+      _deserialize(elle::serialization::SerializerIn& input)
       {
         return T(input);
       }
@@ -610,7 +608,14 @@ namespace elle
     {
       ELLE_ENFORCE(this->_enter(name));
       elle::SafeFinally leave([this, &name] { this->_leave(name); });
-      return _deserialize<T>(*this, name);
+      return this->deserialize<T>();
+    }
+
+    template <typename T>
+    T
+    SerializerIn::deserialize()
+    {
+      return _deserialize<T>(*this);
     }
   }
 }
