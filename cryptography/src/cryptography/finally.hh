@@ -19,6 +19,11 @@
   elle::SafeFinally _finally_##V(                               \
     [&] () { ::DSA_free(V); });                                 \
 
+/// Make it easy to free an DH key on leaving the scope.
+# define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(V)         \
+  elle::SafeFinally _finally_##V(                               \
+    [&] () { ::DH_free(V); });                                  \
+
 /// Make it simply to free a BINUM.
 # define INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(V) \
   elle::SafeFinally _finally_##V(                       \

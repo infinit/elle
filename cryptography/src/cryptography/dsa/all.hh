@@ -6,5 +6,6 @@
 # include <cryptography/dsa/PublicKey.hh>
 # include <cryptography/dsa/pem.hh>
 # include <cryptography/dsa/der.hh>
+# include <cryptography/dsa/defaults.hh>
 
 #endif

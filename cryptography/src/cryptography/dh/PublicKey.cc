@@ -1,6 +1,6 @@
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
-#include <openssl/dsa.h>
+#include <openssl/dh.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
 
@@ -9,9 +9,9 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
-#include <cryptography/dsa/PublicKey.hh>
-#include <cryptography/dsa/PrivateKey.hh>
-#include <cryptography/dsa/KeyPair.hh>
+#include <cryptography/dh/PublicKey.hh>
+#include <cryptography/dh/PrivateKey.hh>
+#include <cryptography/dh/KeyPair.hh>
 #include <cryptography/context.hh>
 #include <cryptography/low.hh>
 #include <cryptography/Digest.hh>
@@ -19,10 +19,11 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
+#include <cryptography/finally.hh>
 #include <cryptography/evp.hh>
 #include <cryptography/hash.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PublicKey");
+ELLE_LOG_COMPONENT("infinit.cryptography.dh.PublicKey");
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -32,7 +33,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace dsa
+    namespace dh
     {
       /*-------------.
       | Construction |
@@ -49,100 +50,75 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Set the key parameters.
-        this->_digest_algorithm = k.digest_algorithm();
-
         // Extract the public key only.
-        DSA* _dsa = low::DSA_priv2pub(k.key().get()->pkey.dsa);
+        DH* _dh = low::DH_priv2pub(k.key().get()->pkey.dh);
 
-        ELLE_ASSERT_NEQ(_dsa->pub_key, nullptr);
-        ELLE_ASSERT_EQ(_dsa->priv_key, nullptr);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
-
-        // Construct the public key based on the given DSA structure whose
+        // Construct the public key based on the given DH structure whose
         // ownership is retained.
-        this->_construct(_dsa);
+        this->_construct(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
         this->_check();
       }
 
-      PublicKey::PublicKey(::EVP_PKEY* key,
-                           Oneway const digest_algorithm):
-        _key(key),
-        _digest_algorithm(digest_algorithm)
+      PublicKey::PublicKey(::EVP_PKEY* key):
+        _key(key)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.dsa->priv_key, nullptr);
+        ELLE_ASSERT_NEQ(key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT_EQ(key->pkey.dh->priv_key, nullptr);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_DSA)
+        if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_DH)
           throw Exception(
-            elle::sprintf("the EVP_PKEY key is not of type DSA: %s",
+            elle::sprintf("the EVP_PKEY key is not of type DH: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
-      PublicKey::PublicKey(::DSA* dsa,
-                           Oneway const digest_algorithm):
-        _digest_algorithm(digest_algorithm)
+      PublicKey::PublicKey(::DH* dh)
       {
-        ELLE_ASSERT_NEQ(dsa, nullptr);
-        ELLE_ASSERT_NEQ(dsa->pub_key, nullptr);
-        ELLE_ASSERT_EQ(dsa->priv_key, nullptr);
+        ELLE_ASSERT_NEQ(dh, nullptr);
+        ELLE_ASSERT_NEQ(dh->pub_key, nullptr);
+        ELLE_ASSERT_EQ(dh->priv_key, nullptr);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Construct the public key based on the given DSA structure.
-        this->_construct(dsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
+        // Construct the public key based on the given DH structure.
+        this->_construct(dh);
 
         this->_check();
       }
 
-      PublicKey::PublicKey(PublicKey const& other):
-        _digest_algorithm(other._digest_algorithm)
+      PublicKey::PublicKey(PublicKey const& other)
       {
-        ELLE_ASSERT_NEQ(other._key->pkey.dsa->pub_key, nullptr);
+        ELLE_ASSERT_NEQ(other._key->pkey.dh->pub_key, nullptr);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Duplicate the DSA structure.
-        DSA* _dsa = low::DSA_dup(other._key->pkey.dsa);
+        // Duplicate the DH structure.
+        DH* _dh = low::DH_dup(other._key->pkey.dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
 
-        this->_construct(_dsa);
+        this->_construct(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
-
-        this->_prepare();
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
         this->_check();
       }
 
       PublicKey::PublicKey(PublicKey&& other):
-        _key(std::move(other._key)),
-        _digest_algorithm(std::move(other._digest_algorithm))
+        _key(std::move(other._key))
       {
-        this->_context.verify = std::move(other._context.verify);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -160,11 +136,11 @@ namespace infinit
       `--------*/
 
       void
-      PublicKey::_construct(::DSA* dsa)
+      PublicKey::_construct(::DH* dh)
       {
-        ELLE_DEBUG_FUNCTION(dsa);
+        ELLE_DEBUG_FUNCTION(dh);
 
-        ELLE_ASSERT_NEQ(dsa, nullptr);
+        ELLE_ASSERT_NEQ(dh, nullptr);
 
         // Initialise the public key structure.
         ELLE_ASSERT_EQ(this->_key, nullptr);
@@ -175,49 +151,21 @@ namespace infinit
             elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        // Set the dsa structure into the public key.
-        if (::EVP_PKEY_assign_DSA(this->_key.get(), dsa) <= 0)
+        // Set the dh structure into the public key.
+        if (::EVP_PKEY_assign_DH(this->_key.get(), dh) <= 0)
           throw Exception(
-            elle::sprintf("unable to assign the DSA key to the EVP_PKEY "
+            elle::sprintf("unable to assign the DH key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      void
-      PublicKey::_prepare()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-
-        // Prepare the verify context.
-        ELLE_ASSERT_EQ(this->_context.verify, nullptr);
-        this->_context.verify.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_verify_init));
       }
 
       void
       PublicKey::_check() const
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_EQ(this->_key->pkey.dsa->priv_key, nullptr);
-      }
-
-      elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Digest const& digest) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("digest: %x", digest);
-
-        return (evp::asymmetric::verify(signature.buffer(),
-                                        digest.buffer(),
-                                        this->_context.verify.get(),
-                                        ::EVP_PKEY_verify));
+        ELLE_ASSERT_NEQ(this->_key->pkey.dh, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT_EQ(this->_key->pkey.dh->priv_key, nullptr);
       }
 
       elle::Natural32
@@ -257,17 +205,16 @@ namespace infinit
       PublicKey::PublicKey(elle::serialization::SerializerIn& serializer):
         _key(::EVP_PKEY_new())
       {
-        auto dsa = ::DSA_new();
-        if (!dsa)
+        auto dh = ::DH_new();
+        if (!dh)
           throw elle::Error(
-            elle::sprintf("unable to initialize DSA: %s",
+            elle::sprintf("unable to initialize DH: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_DSA(this->_key.get(), dsa) <= 0)
+        if (::EVP_PKEY_assign_DH(this->_key.get(), dh) <= 0)
           throw elle::Error(
-            elle::sprintf("unable to assign the DSA: %s",
+            elle::sprintf("unable to assign the DH: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
         this->serialize(serializer);
-        this->_prepare();
       }
 
       void
@@ -284,19 +231,15 @@ namespace infinit
       PublicKey::print(std::ostream& stream) const
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->pub_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.dh, nullptr);
+        ELLE_ASSERT_NEQ(this->_key->pkey.dh->pub_key, nullptr);
 
         /* XXX
         stream << "("
-               << *this->_key->pkey.dsa->n
+               << *this->_key->pkey.dh->n
                << ", "
-               << *this->_key->pkey.dsa->e
+               << *this->_key->pkey.dh->e
                << ")";
-
-        stream << "["
-               << this->_digest_algorithm
-               << "]";
         */
       }
     }

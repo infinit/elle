@@ -28,6 +28,13 @@ namespace infinit
       // Duplicate a DSA key.
       ::DSA*
       DSA_dup(::DSA* key);
+      /// Return a copy of the given private key that has been transformed
+      /// into a DH public key.
+      ::DH*
+      DH_priv2pub(::DH* private_key);
+      // Duplicate a DH key.
+      ::DH*
+      DH_dup(::DH* key);
     }
   }
 }

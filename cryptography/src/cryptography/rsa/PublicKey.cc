@@ -67,6 +67,15 @@ namespace infinit
         // Extract the public key only.
         RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
 
+        ELLE_ASSERT_NEQ(_rsa->n, nullptr);
+        ELLE_ASSERT_NEQ(_rsa->e, nullptr);
+        ELLE_ASSERT_EQ(_rsa->d, nullptr);
+        ELLE_ASSERT_EQ(_rsa->p, nullptr);
+        ELLE_ASSERT_EQ(_rsa->q, nullptr);
+        ELLE_ASSERT_EQ(_rsa->dmp1, nullptr);
+        ELLE_ASSERT_EQ(_rsa->dmq1, nullptr);
+        ELLE_ASSERT_EQ(_rsa->iqmp, nullptr);
+
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
 
         // Construct the public key based on the given RSA structure whose
@@ -104,13 +113,13 @@ namespace infinit
         ELLE_ASSERT_EQ(key->pkey.rsa->dmq1, nullptr);
         ELLE_ASSERT_EQ(key->pkey.rsa->iqmp, nullptr);
 
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
         if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_RSA)
           throw Exception(
             elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
-
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
 
         // Prepare the cryptographic contexts.
         this->_prepare();

@@ -188,6 +188,17 @@ def configure(openssl_config,
     'src/cryptography/dsa/pem.hh',
     'src/cryptography/dsa/der.cc',
     'src/cryptography/dsa/der.hh',
+    'src/cryptography/dh/PrivateKey.cc',
+    'src/cryptography/dh/PrivateKey.hh',
+    'src/cryptography/dh/PrivateKey.hxx',
+    'src/cryptography/dh/PublicKey.cc',
+    'src/cryptography/dh/PublicKey.hh',
+    'src/cryptography/dh/PublicKey.hxx',
+    'src/cryptography/dh/all.hh',
+    'src/cryptography/dh/fwd.hh',
+    'src/cryptography/dh/KeyPair.cc',
+    'src/cryptography/dh/KeyPair.hh',
+    'src/cryptography/dh/KeyPair.hxx',
     )
 
   if enable_rotation:
@@ -237,6 +248,9 @@ def configure(openssl_config,
     "dsa/PrivateKey.cc",
     "dsa/PublicKey.cc",
 #    "dsa/pem.cc",
+    "dh/KeyPair.cc",
+    "dh/PrivateKey.cc",
+    "dh/PublicKey.cc",
      ]
   if enable_rotation:
     tests += [ "rsa/Seed.cc",
