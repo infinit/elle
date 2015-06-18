@@ -10,7 +10,8 @@
 # else
 
 #  define ELLE_LOG_COMPONENT(_component_)                               \
-    static char const* _trace_component_ = _component_;
+  static char const* __attribute__((unused))                            \
+    _trace_component_ = _component_;                                    \
 
 #  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
