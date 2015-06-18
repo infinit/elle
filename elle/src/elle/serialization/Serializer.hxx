@@ -457,7 +457,7 @@ namespace elle
         {
           ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, this->_version);
           auto guard = scoped_assignment(this->_versioned, false);
-          this->serialize("version", v);
+          this->serialize(".version", v);
         }
         _version_switch(*this, object, std::move(v), ELLE_SFINAE_TRY());
       }

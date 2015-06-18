@@ -58,7 +58,7 @@ namespace elle
           auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
-          if (name == "version" && object.find(name) != object.end())
+          if (name == ".version" && object.find(name) != object.end())
             return false;
           auto it = object.insert(std::make_pair(name, boost::any()));
           this->_current.push_back(&it.first->second);
