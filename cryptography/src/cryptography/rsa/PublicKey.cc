@@ -330,7 +330,6 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
         }
 
-
         if (::EVP_PKEY_CTX_set_signature_md(
               this->_context.verify.get(),
               (void*)oneway::resolve(this->_digest_algorithm)) <= 0)

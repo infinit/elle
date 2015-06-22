@@ -36,6 +36,7 @@ namespace infinit
       /// Represent a public key in the RSA asymmetric cryptosystem.
       class PublicKey:
         public elle::Printable,
+        public elle::serialize::DynamicFormat<PublicKey>,
         public elle::concept::MakeUniquable<PublicKey>
       {
         /*-------------.
@@ -117,13 +118,6 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                T const& value) const;
-        /// Decrypt the given code.
-        ///
-        /// Although unusual, the public key can very well be used for
-        /// decrypting in which case the private key would be used for
-        /// encrypting.
-        Clear
-        decrypt(Code const& code) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once rotated by the public key.
         Seed
@@ -161,6 +155,10 @@ namespace infinit
         `-------------*/
       public:
         ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
+        // To prevent the compile conflict with Uniquable's serialize() method.
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::rsa::PublicKey,
+          elle::serialize::Base64Archive>::serialize;
 
         /*--------------.
         | Serialization |

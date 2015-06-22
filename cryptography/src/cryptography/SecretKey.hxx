@@ -87,10 +87,10 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::SecretKey,
           elle::sprintf("unable to serialize a null cipher in an old format: "
                         "%s", format));
 
-      elle::Natural16 algorithm =
+      elle::Natural16 _cipher =
         static_cast<elle::Natural16>(value._cipher) - 1;
 
-      archive << algorithm;
+      archive << _cipher;
       archive << value._password;
       archive << value._oneway;
 
@@ -125,12 +125,11 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::SecretKey,
   {
     case 0:
     {
-      elle::Natural16 algorithm;
-      archive >> algorithm;
-
+      elle::Natural16 _cipher;
+      archive >> _cipher;
       // This comes from the fact that the Cipher enumeration
       // now includes a null value at the very beginning i.e value 0.
-      value._cipher = static_cast<infinit::cryptography::Cipher>(algorithm + 1);
+      value._cipher = static_cast<infinit::cryptography::Cipher>(_cipher + 1);
 
       archive >> value._password;
       archive >> value._oneway;

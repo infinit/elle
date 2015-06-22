@@ -262,12 +262,8 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
         }
 
-        if (::EVP_PKEY_CTX_ctrl(
+        if (::EVP_PKEY_CTX_set_signature_md(
               this->_context.sign.get(),
-              EVP_PKEY_RSA,
-              EVP_PKEY_OP_TYPE_SIG,
-              EVP_PKEY_CTRL_MD,
-              0,
               (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
           throw Exception(
             elle::sprintf("unable to set the EVP_PKEY context's digest "

@@ -14,6 +14,7 @@
 # include <elle/operator.hh>
 # include <elle/serialize/fwd.hh>
 # include <elle/serialize/construct.hh>
+# include <elle/concept/Uniquable.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -32,7 +33,8 @@ namespace infinit
     {
       /// Represent a public key in the DSA asymmetric cryptosystem.
       class PublicKey:
-        public elle::Printable
+        public elle::Printable,
+        public elle::concept::MakeUniquable<PublicKey>
       {
         /*-------------.
         | Construction |
@@ -110,6 +112,10 @@ namespace infinit
         `-------------*/
       public:
         ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
+        // To prevent the compile conflict with Uniquable's serialize() method.
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::dsa::PublicKey,
+          elle::serialize::Base64Archive>::serialize;
 
         /*--------------.
         | Serialization |

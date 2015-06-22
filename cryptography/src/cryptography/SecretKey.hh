@@ -26,8 +26,9 @@ namespace infinit
   {
     /// Represent a secret key for symmetric cryptosystem operations.
     class SecretKey:
-      public elle::concept::MakeUniquable<SecretKey>,
-      public elle::Printable
+      public elle::Printable,
+      public elle::serialize::DynamicFormat<SecretKey>,
+      public elle::concept::MakeUniquable<SecretKey>
     {
       /*---------------.
       | Default Values |

@@ -109,12 +109,6 @@ namespace infinit
         this->_check();
       }
 
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       /*--------.
       | Methods |
       `--------*/
@@ -205,33 +199,6 @@ namespace infinit
         // Compare the public components because it is sufficient to
         // uniquely distinguish keys.
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
-      }
-
-      /*--------------.
-      | Serialization |
-      `--------------*/
-
-      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
-      {
-        std::unique_ptr<DH, void (*) (::DH*)> dh(::DH_new(), &::DH_free);
-        if (!dh)
-          throw elle::Error(
-            elle::sprintf("unable to initialize DH: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_DH(this->_key.get(), dh.get()) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the DH: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        dh.release();
-        this->serialize(serializer);
-        this->_prepare();
-      }
-
-      void
-      PrivateKey::serialize(elle::serialization::Serializer& serializer)
-      {
-        // XXX
       }
 
       /*----------.

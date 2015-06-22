@@ -6,11 +6,16 @@
 //
 
 # include <cryptography/serialization.hh>
-# include <cryptography/hash.hh>
+# include <cryptography/Cryptosystem.hh>
 # include <cryptography/Plain.hh>
+# include <cryptography/Exception.hh>
+# include <cryptography/hash.hh>
+# include <cryptography/rsa/legacy.hh>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
+
+# include <openssl/err.h>
 
 namespace infinit
 {
@@ -68,6 +73,8 @@ namespace infinit
 # include <cryptography/finally.hh>
 # include <cryptography/rsa/der.hh>
 
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PrivateKey, 2);
+
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PrivateKey)
 
 ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
@@ -75,15 +82,47 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
                           value,
                           format)
 {
-  ELLE_ASSERT_NEQ(value._key, nullptr);
+  switch (format)
+  {
+    case 0:
+    case 1:
+    {
+      infinit::cryptography::Cryptosystem cryptosystem =
+        infinit::cryptography::Cryptosystem::rsa;
+      archive << cryptosystem;
 
-  elle::Buffer buffer =
-    infinit::cryptography::rsa::der::encode_private(value._key->pkey.rsa);
+      infinit::cryptography::legacy::Dummy implementation;
+      archive << implementation;
 
-  archive << buffer;
-  archive << value._encryption_padding;
-  archive << value._signature_padding;
-  archive << value._digest_algorithm;
+      archive << *value._key->pkey.rsa->n
+              << *value._key->pkey.rsa->e
+              << *value._key->pkey.rsa->d
+              << *value._key->pkey.rsa->p
+              << *value._key->pkey.rsa->q
+              << *value._key->pkey.rsa->dmp1
+              << *value._key->pkey.rsa->dmq1
+              << *value._key->pkey.rsa->iqmp;
+
+      break;
+    }
+    case 2:
+    {
+      ELLE_ASSERT_NEQ(value._key, nullptr);
+
+      elle::Buffer buffer =
+        infinit::cryptography::rsa::der::encode_private(value._key->pkey.rsa);
+
+      archive << buffer;
+      archive << value._encryption_padding;
+      archive << value._signature_padding;
+      archive << value._digest_algorithm;
+
+      break;
+    }
+    default:
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
+  }
 }
 
 ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
@@ -91,25 +130,159 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
                           value,
                           format)
 {
-  elle::Buffer buffer;
+  switch (format)
+  {
+    case 0:
+    case 1:
+    {
+      // Extract the cryptosystem.
+      infinit::cryptography::Cryptosystem cryptosystem;
+      archive >> cryptosystem;
 
-  archive >> buffer;
-  archive >> value._encryption_padding;
-  archive >> value._signature_padding;
-  archive >> value._digest_algorithm;
+      // Emulate deserializing a subclass.
+      infinit::cryptography::legacy::Dummy implementation;
+      archive >> implementation;
 
-  ::RSA* rsa =
-      infinit::cryptography::rsa::der::decode_private(buffer);
+      // Extract the big numbers.
+      ::BIGNUM *n = ::BN_new();
+      ::BIGNUM *e = ::BN_new();
+      ::BIGNUM *d = ::BN_new();
+      ::BIGNUM *p = ::BN_new();
+      ::BIGNUM *q = ::BN_new();
+      ::BIGNUM *dmp1 = ::BN_new();
+      ::BIGNUM *dmq1 = ::BN_new();
+      ::BIGNUM *iqmp = ::BN_new();
 
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+      ELLE_ASSERT_NEQ(n, nullptr);
+      ELLE_ASSERT_NEQ(e, nullptr);
+      ELLE_ASSERT_NEQ(d, nullptr);
+      ELLE_ASSERT_NEQ(p, nullptr);
+      ELLE_ASSERT_NEQ(q, nullptr);
+      ELLE_ASSERT_NEQ(dmp1, nullptr);
+      ELLE_ASSERT_NEQ(dmq1, nullptr);
+      ELLE_ASSERT_NEQ(iqmp, nullptr);
 
-  value._construct(rsa);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(n);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(e);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(d);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(p);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(q);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmp1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(dmq1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(iqmp);
 
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+      archive >> *n
+              >> *e
+              >> *d
+              >> *p
+              >> *q
+              >> *dmp1
+              >> *dmq1
+              >> *iqmp;
 
-  value._prepare();
+      // Build the RSA object.
+      ::RSA* rsa = ::RSA_new();
 
-  value._check();
+      ELLE_ASSERT_NEQ(rsa, nullptr);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+      rsa->n = n;
+      rsa->e = e;
+      rsa->d = d;
+      rsa->p = p;
+      rsa->q = q;
+      rsa->dmp1 = dmp1;
+      rsa->dmq1 = dmq1;
+      rsa->iqmp = iqmp;
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(n);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(d);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(p);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(q);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmp1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dmq1);
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iqmp);
+
+      // Set the default configuration values.
+      switch (format)
+      {
+        case 0:
+        {
+          value._encryption_padding =
+            infinit::cryptography::rsa::Padding::oaep;
+          value._signature_padding =
+            infinit::cryptography::rsa::Padding::pkcs1;
+          value._digest_algorithm =
+            infinit::cryptography::Oneway::sha256;
+
+          break;
+        }
+        case 1:
+        {
+          value._encryption_padding =
+            infinit::cryptography::rsa::Padding::pkcs1;
+          value._signature_padding =
+            infinit::cryptography::rsa::Padding::pkcs1;
+          value._digest_algorithm =
+            infinit::cryptography::Oneway::sha256;
+
+          break;
+        }
+        default:
+          unreachable();
+      }
+
+      // Construct and prepare the final object.
+      value._construct(rsa);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+      value._prepare();
+
+      // Specifically set the signature digest method to null
+      // because it was not set in the versions 0 and 1.
+      if (::EVP_PKEY_CTX_set_signature_md(value._context.sign.get(),
+                                          nullptr) <= 0)
+        throw Exception(
+          elle::sprintf("unable to set the EVP_PKEY context's digest "
+                        "function: %s",
+                        ::ERR_error_string(ERR_get_error(), nullptr)));
+
+      // Validate the key.
+      value._check();
+
+      break;
+    }
+    case 2:
+    {
+      elle::Buffer buffer;
+
+      archive >> buffer;
+      archive >> value._encryption_padding;
+      archive >> value._signature_padding;
+      archive >> value._digest_algorithm;
+
+      ::RSA* rsa =
+          infinit::cryptography::rsa::der::decode_private(buffer);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+      value._construct(rsa);
+
+      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+      value._prepare();
+
+      value._check();
+
+      break;
+    }
+    default:
+      throw infinit::cryptography::Exception(
+        elle::sprintf("unknown format '%s'", format));
+  }
 }
 
 //

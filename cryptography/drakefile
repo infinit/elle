@@ -251,6 +251,14 @@ def configure(openssl_config,
     "dh/KeyPair.cc",
     "dh/PrivateKey.cc",
     "dh/PublicKey.cc",
+
+    "legacy/bn.cc",
+    "legacy/oneway.cc",
+    "legacy/KeyPair.cc",
+    "legacy/PublicKey.cc",
+    "legacy/PrivateKey.cc",
+    "legacy/Output.cc",
+    "legacy/SecretKey.cc",
      ]
   if enable_rotation:
     tests += [ "rsa/Seed.cc",

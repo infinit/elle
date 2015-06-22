@@ -118,7 +118,7 @@ void
 test_operate()
 {
   // Construct a public key from [representation 1]
-  elle::String representation("AAAAAA4BAAAAAAAAMIIBCgKCAQEA7pNuopCQXfvUCCjJFKXgACIKu3bwGM77rCreRpv2+VW7mcv1tij1Q4Gsl5ArBfSSmMTWHhmLMhPJCR6MF8QGVlB10w49ED2OxNxoSz35VrUIkmbpCNqGXsySS/d4V0rjPQZUugPngBELJzvrNnwfinuWfK5cwZBLBEz0y/Ugcx1qdyXxvqmRfWhF/dP2IgGxm52gnRmSb78Mydzcgnaxf4808a+X6cp45VuEDFsRli4EIRte144V+fEFjt/gRyjUWXlqfYzPsBLaSaGfEqL8Oiy322/cNNaxsS74+n9tmMPOLGDtzEF01lGVBplKZx9OX6lD4JjnCyNOTuK2TWAbcQIDAQABAwAFAAQACwABAA==");
+  elle::String representation("AgAAAA4BAAAAAAAAMIIBCgKCAQEAsqtJHBydi4nQZVQFQqb1IawQiA4d/JWXXWZihq2PSroyC4dzDo8V410W9gQ9iQRyBeUdPWDXWxJeMwTZ94kcBMn2De0vtViDYr1O+0UT1Ka+pAMxXV4csDDD8v6h8QqnNXkf734fEcNp6a1O+QtzypnxJnLmoC7VbLFmrJ5uCNMH2spgqfaSF9Y9/5CFGiWuq0DWIbteTjUWAfDqGQsDEJiW6WiwqOqkKMswA0uU9psznu6yoH1OLkVbH/FYGNqfzow1FnbuAunSfC2d2AIbljrPpWaanD6xQ6MzNFRUOcg6QQ5QDa+l1z79BUv8eu4eMgBpz5gm3/KWxnPA3E9SDwIDAQABAwAFAAQACwABAA==");
 
   auto extractor =
     elle::serialize::from_string<
@@ -130,7 +130,7 @@ test_operate()
 
   // Verify plain from [representation 2].
   {
-    elle::String archive("AAAAAAABAAAAAAAAHckJcfuSWQeSsKOmq5sHktw0Ann2mcnpUvjghUHVK/Nj3rc9I5tyetRJts6jBx9nY7yIvuX0doNHIu39uDvISnR9p6598ncAxZm9Q9F9ClWYilrlnLfA76y+gFtOT4C8fmzbjnaGAFa3cRG7ypk8K2NEXdKCYb3MwU1XrqYM9QmNlEPFfbYretJb2V914JcrzHvJeb/xlGbNF+3B1914qJtRJ/fHhBM0AB6jtkuyMYqNZD5NcnFDWvQElDHHjUEwHzMqN108A+8R98lO+ZOvRoz/n9x1/BI4OUYBLynoK5wVjrFKM9B2uKs6rpBNLCNz2m3B+p+WY9qtYQwjh1kVOA==");
+    elle::String archive("AAAAAAABAAAAAAAAb+eObSV2/U08nAwsBNQE7/XOSrq6r/IH36g/3RecZy5m3xm02h6U1KwWfA31cRrz+IKD5PdMeqlnz+mZvJvugnIq5/LHLIquII+bDEntxGpRZfIddL14ijYtvO57tNnrejW+N9K7rh5a2DpVVoc4qC/cG9KlLF/zqg4BeMPf9oA1VIHXbQhNjR0t1W3rr2GpOII5gxgRc39KhngJ+FysEv2Qb3q7q59BcwkoXcjGNXSw8qRuJPn2deUEUMqvJsMfNS5Mew954e4Z7NJY3Glo7038lVi2LHNIQDTaCHUlQ3tGJ8GcRHPPl4jY8JKF4iK/quU+VPewcuzIB2p/yfVChw==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -146,7 +146,7 @@ test_operate()
 
   // Verify plain from [representation 3].
   {
-    elle::String archive("AAAAAAABAAAAAAAAt3jeL8l6tceatgjmwwvnpppobTNql1SZY5scB2UIqJZzuEF7V7jNYYrCGBeppjWZrYQOEI270faJBLDsRy8QlYq3ZlGOCVbWVJfLlaYRqHGv1+YkH7RHDtJ9FECdRrk7Pjhd88yrwAghruNbjPg/TwZ5MWE6MLDD7tJXdHOE1Nb9QlYY0dxIZ/LGSXm267Jeq7whAp6pCFEqnfJABcunA7Ei8jFbVJP1G18tCrjqOr+26K0gcr4HdS/RR8VNnHdOnR7ZVX6k+81fehv80tz+7vufY2eV5umwSOsWUnUcO28NFwbvnfCQpImfEUndY+ykZzXSLhnPhdbpR+dm2v7FCg==");
+    elle::String archive("AAAAAAABAAAAAAAAZW0IAT7dLizK21ZGQoZZNv/UpDmyxMEE9X/Sy/VmfFO/oexDr8Y1b9tO6FPxJywQsE3S6OWWbiLIZZ0xR0g1q9jrklYZ1UjAHNNZoErskD7LsDP5fFupCMDlwoPoegX2mK7u95fxYdZo2Rz2N/uJ6gxEDMKkypmVlbUZRB5ozHVHVUadQ/j0JjgtXMfXbrZrsi1vP24IplxWDcGNOHfIWcd0eerUEWNuwvMW5WXzQtq4H1nmSaFQ8NRMkU80EYm88BJkFAnn/Q1ailQ4eeiskiaAic+Ti7Ab6ztr5K3V+5wY7H24OX4u3B83Dch6hrIfhGFx9J1n6AUTjtTmcew0dQ==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -203,8 +203,12 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAA4BAAAAAAAAMIIBCgKCAQEA7pNuopCQXfvUCCjJFKXgACIKu3bwGM77rCreRpv2+VW7mcv1tij1Q4Gsl5ArBfSSmMTWHhmLMhPJCR6MF8QGVlB10w49ED2OxNxoSz35VrUIkmbpCNqGXsySS/d4V0rjPQZUugPngBELJzvrNnwfinuWfK5cwZBLBEz0y/Ugcx1qdyXxvqmRfWhF/dP2IgGxm52gnRmSb78Mydzcgnaxf4808a+X6cp45VuEDFsRli4EIRte144V+fEFjt/gRyjUWXlqfYzPsBLaSaGfEqL8Oiy322/cNNaxsS74+n9tmMPOLGDtzEF01lGVBplKZx9OX6lD4JjnCyNOTuK2TWAbcQIDAQABAwAFAAQACwABAA=="
-    };
+      "AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=",
+      // format 1
+      "AAAAAAEAAAAAAQAAzJcO4BIlHIdoQUYGiMvjSG+U4434tyZOhRnfRJUxd9tK/zxezIwPQOBShjU5zin4rhXholbVKJxOLrMN29AoF+wJi3c8+GCFQFBH5sJAQwf66M6kIOdtY2rtIIUd8H4SxWNe9j7MpYQxaYWpMlJE578oZ2/X4aYOO/5Ki4jA4X+afRjaN3yJnikG7OkkwndRLzQzR2BTmG6zT5hGrOZQ13G1SmeMxI5REK6rjrAsrbNPi9yojrjGK5UyityKy2yjiJSf7br7f34sG1xIhKcUW1MWUxi0gaFR4X/6TbTeIxXuuRIgyY3OLWZx3O8Vlx7jwcWcPG/kY5RPbdfU29x9lwAAAwAAAAEAAQ==",
+      // format 2
+      "AgAAAA4BAAAAAAAAMIIBCgKCAQEAsqtJHBydi4nQZVQFQqb1IawQiA4d/JWXXWZihq2PSroyC4dzDo8V410W9gQ9iQRyBeUdPWDXWxJeMwTZ94kcBMn2De0vtViDYr1O+0UT1Ka+pAMxXV4csDDD8v6h8QqnNXkf734fEcNp6a1O+QtzypnxJnLmoC7VbLFmrJ5uCNMH2spgqfaSF9Y9/5CFGiWuq0DWIbteTjUWAfDqGQsDEJiW6WiwqOqkKMswA0uU9psznu6yoH1OLkVbH/FYGNqfzow1FnbuAunSfC2d2AIbljrPpWaanD6xQ6MzNFRUOcg6QQ5QDa+l1z79BUv8eu4eMgBpz5gm3/KWxnPA3E9SDwIDAQABAwAFAAQACwABAA=="
+      };
 
     infinit::cryptography::test::formats<
       infinit::cryptography::rsa::PublicKey>(archives);

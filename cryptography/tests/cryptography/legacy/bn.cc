@@ -10,39 +10,6 @@
 #include <openssl/err.h>
 
 /*----------.
-| Represent |
-`----------*/
-
-static
-void
-test_represent()
-{
-  // WARNING: To uncomment only if one wants to update the representations.
-  return;
-
-  // These generate base64-based representations which can be used in
-  // other tests.
-
-  // 1)
-  {
-    ::BIGNUM bn;
-    ::BN_init(&bn);
-
-    if (::BN_pseudo_rand(&bn, 1024, -1, 0) == 0)
-      throw infinit::cryptography::Exception(
-        elle::sprintf("unable to randomly generate a big number: %s",
-                      ::ERR_error_string(ERR_get_error(), nullptr)));
-
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << bn;
-    elle::printf("[representation 1] %s\n", archive);
-
-    ::BN_free(&bn);
-  }
-}
-
-/*----------.
 | Serialize |
 `----------*/
 
@@ -64,6 +31,8 @@ test_serialize()
     elle::String archive2;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << bn;
+
+    BOOST_CHECK_EQUAL(archive1, archive2);
 
     ::BN_free(&bn);
   }
@@ -89,9 +58,8 @@ test_serialize()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("bn");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("_legacy/bn");
 
-  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);

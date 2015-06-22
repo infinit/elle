@@ -12,8 +12,6 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/fwd.hh>
-# include <elle/serialize/construct.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -52,7 +50,6 @@ namespace infinit
         PublicKey(::DH* dh);
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
         virtual
         ~PublicKey() = default;
 
@@ -92,20 +89,6 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
-
-        /*-------------.
-        | Serializable |
-        `-------------*/
-      public:
-        ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
-
-        /*--------------.
-        | Serialization |
-        `--------------*/
-      public:
-        PublicKey(elle::serialization::SerializerIn& serializer);
-        void
-        serialize(elle::serialization::Serializer& serializer);
 
         /*-----------.
         | Attributes |

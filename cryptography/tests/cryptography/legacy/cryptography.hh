@@ -33,10 +33,10 @@ namespace infinit
         // reserializing the object generates the same archive.
         for (elle::Natural32 i = 0; i < archives.size(); ++i)
         {
-          auto extractor =
+          auto extractor1 =
             elle::serialize::from_string<
               elle::serialize::InputBase64Archive>(archives[i]);
-          objects[i].reset(new T(extractor));
+          objects[i].reset(new T(extractor1));
 
           if (operate != nullptr)
             operate(*objects[i]);

@@ -12,6 +12,7 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <iosfwd>
 
+# include <elle/concept/Uniquable.hh>
 # include <elle/serialize/construct.hh>
 # include <elle/serialization/Serializer.hh>
 # include <elle/types.hh>
@@ -28,7 +29,9 @@ namespace infinit
       /// Note that the public key is always written as a capital 'K'
       /// while a private key is noted with a lower-case 'k'.
       class KeyPair:
-        public elle::Printable
+        public elle::Printable,
+        public elle::serialize::DynamicFormat<KeyPair>,
+        public elle::concept::MakeUniquable<KeyPair>
       {
       public:
         /*-------------.
@@ -103,6 +106,10 @@ namespace infinit
       public:
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
+        // To prevent the compile conflict with Uniquable's serialize() method.
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::rsa::KeyPair,
+          elle::serialize::Base64Archive>::serialize;
 
         /*-----------.
         | Attributes |

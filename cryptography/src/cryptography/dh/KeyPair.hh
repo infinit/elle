@@ -16,8 +16,6 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <iosfwd>
 
-# include <elle/serialize/construct.hh>
-# include <elle/serialization/Serializer.hh>
 # include <elle/types.hh>
 
 namespace infinit
@@ -47,7 +45,6 @@ namespace infinit
         explicit
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
         virtual
         ~KeyPair() = default;
 
@@ -83,21 +80,6 @@ namespace infinit
         // printable
         void
         print(std::ostream& stream) const override;
-
-        /*--------------.
-        | Serialization |
-        `--------------*/
-      public:
-        KeyPair(elle::serialization::SerializerIn& serializer);
-        void
-        serialize(elle::serialization::Serializer& serializer);
-
-        /*----------.
-        | Serialize |
-        `----------*/
-      public:
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
 
         /*-----------.
         | Attributes |

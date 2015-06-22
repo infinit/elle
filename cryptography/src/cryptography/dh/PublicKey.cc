@@ -125,12 +125,6 @@ namespace infinit
         this->_check();
       }
 
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       /*--------.
       | Methods |
       `--------*/
@@ -196,31 +190,6 @@ namespace infinit
         ELLE_ASSERT_NEQ(other._key, nullptr);
 
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
-      }
-
-      /*--------------.
-      | Serialization |
-      `--------------*/
-
-      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
-      {
-        auto dh = ::DH_new();
-        if (!dh)
-          throw elle::Error(
-            elle::sprintf("unable to initialize DH: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_DH(this->_key.get(), dh) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the DH: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        this->serialize(serializer);
-      }
-
-      void
-      PublicKey::serialize(elle::serialization::Serializer& serializer)
-      {
-        // XXX
       }
 
       /*----------.

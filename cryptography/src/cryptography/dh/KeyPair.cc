@@ -55,10 +55,6 @@ namespace infinit
       {
       }
 
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
-      {
-      }
-
       /*--------.
       | Methods |
       `--------*/
@@ -114,24 +110,6 @@ namespace infinit
 
         // The public component is enough to uniquely identify a key pair.
         return (*this->_K == *other._K);
-      }
-
-      /*--------------.
-      | Serialization |
-      `--------------*/
-
-      KeyPair::KeyPair(elle::serialization::SerializerIn& serializer):
-        _K(),
-        _k()
-      {
-        this->serialize(serializer);
-      }
-
-      void
-      KeyPair::serialize(elle::serialization::Serializer& s)
-      {
-        s.serialize("public_key", this->_K);
-        s.serialize("private_key", this->_k);
       }
 
       /*----------.

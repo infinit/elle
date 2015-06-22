@@ -9,31 +9,6 @@
 #include <elle/serialize/Base64Archive.hh>
 
 /*----------.
-| Represent |
-`----------*/
-
-static
-void
-test_represent()
-{
-  // WARNING: To uncomment only if one wants to update the representations.
-  return;
-
-  // These generate base64-based representations which can be used in
-  // other tests.
-
-  // 1)
-  {
-    infinit::cryptography::Output output(
-      infinit::cryptography::random::generate<elle::Buffer>(128));
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << output;
-    elle::printf("[representation 1] %s\n", archive);
-  }
-}
-
-/*----------.
 | Construct |
 `----------*/
 
@@ -107,21 +82,16 @@ test_serialize()
   {
     elle::String archive1("AAAAAIAAAAAAAAAAYVS/sqT6qs+lo+MdcB1jaZY8gwFx6a10mr1+MjW8to4nvK1hjewkupo66RFvioIZ59hITeuy4CvfQNJSqvdVJ4xLEyWKED9oeuji8jxe1nGOt068HlVyFJ9RkZT4cN6WC8RJXekhokXjI4yr89ad0Vw8KaB5mw5U79CUKaxBVnU=");
 
-    auto extractor1 =
+    auto extractor =
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive1);
-    infinit::cryptography::Output output1(extractor1);
+    infinit::cryptography::Output output(extractor);
 
     elle::String archive2;
     elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive2) << output1;
+      elle::serialize::OutputBase64Archive>(archive2) << output;
 
-    auto extractor2 =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive2);
-    infinit::cryptography::Output output2(extractor2);
-
-    BOOST_CHECK_EQUAL(output1, output2);
+    BOOST_CHECK_EQUAL(archive1, archive2);
   }
 }
 
@@ -159,7 +129,7 @@ test_compare()
   }
 
   // Output/input.
-  infinit::cryptography::Input input2(output2.buffer());
+  infinit::cryptography::Input input2(elle::WeakBuffer{output2.buffer()});
 
   BOOST_CHECK(output1 != input2);
   BOOST_CHECK(!(output1 == input2));
@@ -184,9 +154,8 @@ test_compare()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("Output");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("_legacy/Output");
 
-  suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_serialize));
   suite->add(BOOST_TEST_CASE(test_compare));
