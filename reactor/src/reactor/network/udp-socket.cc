@@ -25,9 +25,8 @@ namespace reactor
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
                          const std::string& port):
-      Super(sched,
-            elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
-            resolve_udp(sched, hostname, port),
+      Super(elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
+            resolve_udp(hostname, port),
             DurationOpt())
     {}
 
@@ -37,6 +36,9 @@ namespace reactor
       UDPSocket(sched, hostname, std::to_string(port))
     {}
 
+    UDPSocket::UDPSocket():
+      UDPSocket(reactor::scheduler(), "", 0)
+    {}
     // UDPSocket::UDPSocket(Scheduler& sched,
     //                      int local_port,
     //                      const std::string& hostname,
@@ -98,7 +100,7 @@ namespace reactor
         UDPRead(Scheduler& scheduler,
                 PlainSocket<AsioSocket>* socket,
                 Buffer& buffer):
-          Super(scheduler, *socket->socket()),
+          Super(*socket->socket()),
           _buffer(buffer),
           _read(0)
         {}
@@ -170,7 +172,7 @@ namespace reactor
                     PlainSocket<AsioSocket>* socket,
                     Buffer& buffer,
                     boost::asio::ip::udp::endpoint & endpoint)
-          : Super(scheduler, *socket->socket())
+          : Super(*socket->socket())
           , _buffer(buffer)
           , _read(0)
           , _endpoint(endpoint)
@@ -252,7 +254,7 @@ namespace reactor
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
                  elle::ConstWeakBuffer& buffer):
-          Super(scheduler, *socket->socket()),
+          Super(*socket->socket()),
           _buffer(buffer),
           _written(0)
         {}
@@ -291,7 +293,7 @@ namespace reactor
                   PlainSocket<AsioSocket>* socket,
                   Buffer& buffer,
                   EndPoint const & endpoint):
-          Super(scheduler, *socket->socket()),
+          Super(*socket->socket()),
           _buffer(buffer),
           _written(0),
           _endpoint(endpoint)
@@ -328,7 +330,7 @@ namespace reactor
     UDPSocket::write(elle::ConstWeakBuffer buffer)
     {
       ELLE_TRACE("%s: write %s bytes to %s",
-                     *this, buffer.size(), _socket->remote_endpoint());
+                     *this, buffer.size(), socket()->remote_endpoint());
       UDPWrite write(scheduler(), this, buffer);
       write.run();
     }
@@ -350,7 +352,14 @@ namespace reactor
     void
     UDPSocket::print(std::ostream& s) const
     {
-      s << "UDP Socket " << _socket->local_endpoint();
+      s << "UDP Socket " << socket()->local_endpoint();
+    }
+
+    elle::Buffer
+    UDPSocket::read_until(std::string const& delimiter,
+               DurationOpt opt)
+    {
+      throw std::runtime_error("Not implemented.");
     }
   }
 }

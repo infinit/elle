@@ -165,10 +165,10 @@ namespace reactor
     | Properties |
     `-----------*/
     public:
-      EndPoint
+      boost::asio::ip::tcp::endpoint
       peer() const;
 
-      EndPoint
+      boost::asio::ip::tcp::endpoint
       local_endpoint() const;
 
     /*----------------.

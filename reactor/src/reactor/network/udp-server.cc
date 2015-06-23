@@ -86,6 +86,15 @@ namespace reactor
       return res;
     }
 
+    std::size_t
+    HashEndpoint::operator()(const boost::asio::ip::tcp::endpoint& e) const
+    {
+      // FIXME: this kinda sucks.
+      std::size_t res = boost::hash_value(e.address().to_string());
+      boost::hash_combine(res, boost::hash_value(e.port()));
+      return res;
+    }
+
     void
     UDPServer::_receive_handle(const boost::system::error_code& error,
                                std::size_t bytes)

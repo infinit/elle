@@ -22,6 +22,7 @@ namespace reactor
       | Construction |
       `-------------*/
       public:
+        UDPSocket();
         UDPSocket(Scheduler& sched,
                   const std::string& hostname,
                   const std::string& port);
@@ -59,6 +60,9 @@ namespace reactor
       `------*/
       public:
         virtual void write(elle::ConstWeakBuffer buffer);
+        virtual elle::Buffer read_until(std::string const& delimiter,
+                                        DurationOpt opt = DurationOpt());
+
         void send_to(Buffer buffer,
                      EndPoint endpoint);
 

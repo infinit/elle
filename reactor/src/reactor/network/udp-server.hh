@@ -15,6 +15,7 @@ namespace reactor
     struct HashEndpoint
     {
         std::size_t operator()(const boost::asio::ip::udp::endpoint&) const;
+        std::size_t operator()(const boost::asio::ip::tcp::endpoint&) const;
     };
 
     class UDPServer: public Server, public ProtoServer<UDPSocket>

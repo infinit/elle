@@ -328,18 +328,19 @@ namespace reactor
     `-----------*/
 
     template <typename AsioSocket, typename EndPoint>
-    EndPoint
+    boost::asio::ip::tcp::endpoint
     PlainSocket<AsioSocket, EndPoint>::peer() const
     {
-      return this->_peer;
+      return boost::asio::ip::tcp::endpoint(_peer.address(), _peer.port());
     }
 
     template <typename AsioSocket, typename EndPoint>
-    EndPoint
+    boost::asio::ip::tcp::endpoint
     PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
       typedef SocketSpecialization<AsioSocket> Spe;
-      return Spe::socket(*this->_socket).local_endpoint();
+      auto ep = Spe::socket(*this->_socket).local_endpoint();
+      return boost::asio::ip::tcp::endpoint(ep.address(), ep.port());
     }
 
     /*-------------.
@@ -690,8 +691,8 @@ namespace reactor
     class StreamSocket<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>,
                        boost::asio::ip::tcp::socket::endpoint_type>;
     // UDP
-    // template
-    // class PlainSocket<boost::asio::ip::udp::socket>;
+    template
+    class PlainSocket<boost::asio::ip::udp::socket>;
     // UDT
     // template
     // class PlainSocket<boost::asio::ip::udt::socket>;
