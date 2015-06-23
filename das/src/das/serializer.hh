@@ -35,4 +35,18 @@ namespace das
   };
 }
 
+#define DAS_MODEL_SERIALIZE(Class)              \
+  namespace elle                                \
+  {                                             \
+    namespace serialization                     \
+    {                                           \
+      template <>                               \
+        struct Serialize<Class>                 \
+      {                                         \
+        typedef das::Serializer<Class> Wrapper; \
+      };                                        \
+    }                                           \
+  }                                             \
+
+
 #endif
