@@ -259,14 +259,14 @@ namespace das
       };                                                                \
                                                                         \
       static                                                            \
-      decltype(((Class*)(nullptr))->Name)&                              \
+      decltype(Class::Name)&                                            \
       get(Class& o)                                                     \
       {                                                                 \
         return o.Name;                                                  \
       };                                                                \
                                                                         \
       static                                                            \
-      decltype(((Class*)(nullptr))->Name) const&                        \
+      decltype(Class::Name) const&                                      \
       get(Class const& o)                                               \
       {                                                                 \
         return o.Name;                                                  \
