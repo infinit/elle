@@ -3,9 +3,7 @@
 #include <cryptography/bn.hh>
 #include <cryptography/Exception.hh>
 
-#include <elle/serialize/Base64Archive.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
+#include <elle/serialization/json.hh>
 
 #include <openssl/err.h>
 
@@ -27,18 +25,19 @@ test_represent()
   {
     ::BIGNUM bn;
     ::BN_init(&bn);
-
     if (::BN_pseudo_rand(&bn, 1024, -1, 0) == 0)
       throw infinit::cryptography::Exception(
         elle::sprintf("unable to randomly generate a big number: %s",
                       ::ERR_error_string(ERR_get_error(), nullptr)));
 
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << bn;
-    elle::printf("[representation 1] %s\n", archive);
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      output.serialize("bignum", &bn);
+    }
 
     ::BN_free(&bn);
+    elle::printf("[representation 1] %s\n", stream.str());
   }
 }
 
@@ -53,33 +52,32 @@ test_serialize()
   // Deserialize from the hard-coded [representation 1]: useful for detecting
   // changes in formats.
   {
-    elle::String archive1("AACAAAAA8DGAteEiGfhKAnwaPaIUxWWrkOxUQs7RMq2emyWnc2aPpjWY+PwcSFP1nsz4FU7hFAK3l/dh9p1uw50vp6mzhXZdXAAAqkiaHRqrJ2ckfj7mPF9ikKk88dmSmqZGsnFtVhuD2/bOGbdgGPzSRnJ8vNj77zzxRAMF88vwjliHR2s=");
+    elle::String archive1(R"JSON({"bignum":"LxS0y2asiXs/vUKwfLzM7oMpbmwdKiHO6Rs4HUK2I6HbCNMxfRW0rd+ND/+UtWoa4bmhfYOcntYsZlkUTA65OSAPGVhMx4tyROtOAAo4e7mNu9A78ZEpFFOyHQfg9sOSbVIVq14+94D/w2TAbRCh/eKxfA0zXmvaI1AQZFlmQ80="})JSON");
 
-    ::BIGNUM bn;
-    ::BN_init(&bn);
+    ::BIGNUM* bn = nullptr;
 
-    elle::serialize::from_string<
-      elle::serialize::InputBase64Archive>(archive1) >> bn;
+    std::stringstream stream1(archive1);
+    {
+      typename elle::serialization::Json::SerializerIn input(stream1);
+      input.serialize("bignum", bn);
+    }
+    std::stringstream stream2;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream2);
+      output.serialize("bignum", bn);
+    }
 
-    elle::String archive2;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive2) << bn;
+    ::BIGNUM* _bn = nullptr;
 
-    ::BN_free(&bn);
-  }
+    {
+      typename elle::serialization::Json::SerializerIn input(stream2);
+      input.serialize("bignum", _bn);
+    }
 
-  // Deserialize an invalid representation.
-  {
-    elle::String archive("EWDqiqwd9032eajnoIAijfwofqaaaodQEJFAOW");
+    BOOST_CHECK_EQUAL(*bn, *_bn);
 
-    ::BIGNUM bn;
-    ::BN_init(&bn);
-
-    BOOST_CHECK_THROW(elle::serialize::from_string<
-                        elle::serialize::InputBase64Archive>(archive) >> bn,
-                      elle::serialize::Exception);
-
-    ::BN_free(&bn);
+    ::BN_free(bn);
+    ::BN_free(_bn);
   }
 }
 

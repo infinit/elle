@@ -1,11 +1,14 @@
 #ifndef INFINIT_CRYPTOGRAPHY_BN_HH
 # define INFINIT_CRYPTOGRAPHY_BN_HH
 
-# include <iosfwd>
-
 # include <openssl/bn.h>
 
 # include <elle/serialization/Serializer.hh>
+# include <elle/operator.hh>
+
+# include <iosfwd>
+# include <utility>
+ELLE_OPERATOR_RELATIONALS();
 
 /*----------.
 | Operators |
@@ -15,10 +18,19 @@ std::ostream&
 operator <<(std::ostream& stream,
             ::BIGNUM const& bignum);
 
+elle::Boolean
+operator ==(::BIGNUM const& a,
+            ::BIGNUM const& b);
+elle::Boolean
+operator <(::BIGNUM const& a,
+           ::BIGNUM const& b);
+
 /*--------------.
 | Serialization |
 `--------------*/
 
+// Note that another specialization for BIGNUM-smartpointers
+// should also be written.
 namespace elle
 {
   namespace serialization
@@ -26,13 +38,13 @@ namespace elle
     template <>
     struct Serialize<BIGNUM*>
     {
-      typedef std::string Type;
+      typedef elle::Buffer Type;
       static
-      std::string
-      convert(BIGNUM*& bignum);
+      Type
+      convert(::BIGNUM* const& value);
       static
-      BIGNUM*
-      convert(std::string& repr);
+      ::BIGNUM*
+      convert(Type const& representation);
     };
   }
 }
