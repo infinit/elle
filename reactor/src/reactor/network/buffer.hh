@@ -27,7 +27,7 @@ namespace reactor
         {}
 
         Buffer(const std::string& data)
-          : _data(reinterpret_cast<Byte*>(const_cast<char*>(data.c_str())))
+          : _data(reinterpret_cast<Byte*>(const_cast<char*>(data.data())))
           , _size(data.size())
         {}
 
