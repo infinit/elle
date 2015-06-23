@@ -21,12 +21,6 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    SecretKey::SecretKey()
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-
     SecretKey::SecretKey(elle::String const& password,
                          Cipher const cipher,
                          Mode const mode,
@@ -74,12 +68,14 @@ namespace infinit
       cryptography::require();
     }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey,
                                     _password)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
+#endif
 
     /*--------.
     | Methods |
@@ -97,6 +93,7 @@ namespace infinit
       return (this->_password.size() * 8);
     }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     /*-------.
     | Legacy |
     `-------*/
@@ -126,6 +123,7 @@ namespace infinit
 
       return (value);
     }
+#endif
 
     /*----------.
     | Operators |

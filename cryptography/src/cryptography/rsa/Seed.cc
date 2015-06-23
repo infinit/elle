@@ -24,10 +24,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      Seed::Seed()
-      {
-      }
-
       Seed::Seed(elle::Buffer const& buffer,
                  elle::Natural32 const length):
         _buffer(buffer),
@@ -51,10 +47,6 @@ namespace infinit
       Seed::Seed(Seed&& other):
         _buffer(std::move(other._buffer)),
         _length(other._length)
-      {
-      }
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(Seed)
       {
       }
 

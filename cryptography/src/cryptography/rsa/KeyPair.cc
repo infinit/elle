@@ -32,10 +32,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      KeyPair::KeyPair()
-      {
-      }
-
       KeyPair::KeyPair(PublicKey const& K,
                        PrivateKey const& k):
         _K(new PublicKey(K)),
@@ -99,9 +95,11 @@ namespace infinit
       {
       }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
       {
       }
+#endif
 
       /*--------.
       | Methods |

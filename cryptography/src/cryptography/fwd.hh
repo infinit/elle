@@ -28,5 +28,7 @@ namespace infinit
 }
 
 # include <cryptography/rsa/fwd.hh>
+# include <cryptography/dsa/fwd.hh>
+# include <cryptography/dh/fwd.hh>
 
 #endif

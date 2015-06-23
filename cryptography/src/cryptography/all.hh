@@ -27,5 +27,7 @@
 # include <cryptography/context.hh>
 
 # include <cryptography/rsa/all.hh>
+# include <cryptography/dsa/all.hh>
+# include <cryptography/dh/all.hh>
 
 #endif

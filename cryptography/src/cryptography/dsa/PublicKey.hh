@@ -12,9 +12,6 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/fwd.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/concept/Uniquable.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -33,14 +30,12 @@ namespace infinit
     {
       /// Represent a public key in the DSA asymmetric cryptosystem.
       class PublicKey:
-        public elle::Printable,
-        public elle::concept::MakeUniquable<PublicKey>
+        public elle::Printable
       {
         /*-------------.
         | Construction |
         `-------------*/
       public:
-        PublicKey(); // XXX[to deserialize]
         /// Construct a public key out of its private counterpart.
         explicit
         PublicKey(PrivateKey const& k);
@@ -56,7 +51,6 @@ namespace infinit
                   Oneway const digest_algorithm);
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
         virtual
         ~PublicKey() = default;
 
@@ -106,16 +100,6 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
-
-        /*-------------.
-        | Serializable |
-        `-------------*/
-      public:
-        ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
-        // To prevent the compile conflict with Uniquable's serialize() method.
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::dsa::PublicKey,
-          elle::serialize::Base64Archive>::serialize;
 
         /*--------------.
         | Serialization |

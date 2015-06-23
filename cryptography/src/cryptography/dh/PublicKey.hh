@@ -36,7 +36,6 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-        PublicKey(); // XXX[to deserialize]
         /// Construct a public key out of its private counterpart.
         explicit
         PublicKey(PrivateKey const& k);

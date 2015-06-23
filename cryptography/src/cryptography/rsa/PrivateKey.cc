@@ -35,12 +35,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PrivateKey::PrivateKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       PrivateKey::PrivateKey(::EVP_PKEY* key,
                              Padding const encryption_padding,
                              Padding const signature_padding,
@@ -193,11 +187,13 @@ namespace infinit
         this->_check();
       }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
       }
+#endif
 
       /*--------.
       | Methods |

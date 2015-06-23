@@ -25,10 +25,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      KeyPair::KeyPair()
-      {
-      }
-
       KeyPair::KeyPair(PublicKey const& K,
                        PrivateKey const& k):
         _K(new PublicKey(K)),
@@ -52,10 +48,6 @@ namespace infinit
       KeyPair::KeyPair(KeyPair&& other):
         _K(std::move(other._K)),
         _k(std::move(other._k))
-      {
-      }
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
       {
       }
 
@@ -124,14 +116,16 @@ namespace infinit
         _K(),
         _k()
       {
-        this->serialize(serializer);
+        // XXX this->serialize(serializer);
       }
 
       void
       KeyPair::serialize(elle::serialization::Serializer& s)
       {
+        /* XXX
         s.serialize("public_key", this->_K);
         s.serialize("private_key", this->_k);
+        */
       }
 
       /*----------.

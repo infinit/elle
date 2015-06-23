@@ -12,5 +12,8 @@
 # include <cryptography/rsa/pem.hh>
 # include <cryptography/rsa/der.hh>
 # include <cryptography/rsa/defaults.hh>
+# if define(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <cryptography/rsa/legacy.hh>
+# endif
 
 #endif

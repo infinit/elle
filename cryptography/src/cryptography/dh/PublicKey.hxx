@@ -13,6 +13,7 @@ namespace std
     size_t
     operator ()(infinit::cryptography::dh::PublicKey const& value) const
     {
+      /* XXX replace with new serialization
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);
 
@@ -26,6 +27,8 @@ namespace std
       size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
+      */
+      return (0);
     }
   };
 }

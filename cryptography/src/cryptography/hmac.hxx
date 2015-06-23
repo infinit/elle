@@ -7,11 +7,8 @@
 # include <cryptography/serialization.hh>
 # include <cryptography/Exception.hh>
 
-# include <elle/serialize/BaseArchive.hxx>
-
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
-# include <elle/Measure.hh>
 
 # include <utility>
 

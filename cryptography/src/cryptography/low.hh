@@ -2,6 +2,8 @@
 # define INFINIT_CRYPTOGRAPHY_LOW_HH
 
 # include <openssl/rsa.h>
+# include <openssl/dsa.h>
+# include <openssl/dh.h>
 
 namespace infinit
 {

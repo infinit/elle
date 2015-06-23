@@ -44,12 +44,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PublicKey::PublicKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       PublicKey::PublicKey(PrivateKey const& k,
                            Cipher const envelope_cipher,
                            Mode const envelope_mode)
@@ -262,11 +256,13 @@ namespace infinit
         this->_check();
       }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
       }
+# endif
 
       /*--------.
       | Methods |
@@ -477,6 +473,7 @@ namespace infinit
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Boolean
       PublicKey::operator <(PublicKey const& other) const
       {
@@ -487,6 +484,7 @@ namespace infinit
         return boost::lexical_cast<std::string>(*this)
           < boost::lexical_cast<std::string>(other);
       }
+#endif
 
       /*--------------.
       | Serialization |

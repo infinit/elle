@@ -45,56 +45,6 @@ namespace infinit
   }
 }
 
-/*-------------.
-| Serializable |
-`-------------*/
-
-# include <elle/serialize/Serializer.hh>
-# include <elle/serialize/StaticFormat.hh>
-
-# include <cryptography/finally.hh>
-# include <cryptography/dsa/der.hh>
-
-ELLE_SERIALIZE_SPLIT(infinit::cryptography::dsa::PublicKey)
-
-ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::dsa::PublicKey,
-                          archive,
-                          value,
-                          format)
-{
-  ELLE_ASSERT_NEQ(value._key, nullptr);
-
-  elle::Buffer buffer =
-    infinit::cryptography::dsa::der::encode_public(value._key->pkey.dsa);
-
-  archive << buffer;
-  archive << value._digest_algorithm;
-}
-
-ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::dsa::PublicKey,
-                          archive,
-                          value,
-                          format)
-{
-  elle::Buffer buffer;
-
-  archive >> buffer;
-  archive >> value._digest_algorithm;
-
-  ::DSA* dsa =
-      infinit::cryptography::dsa::der::decode_public(buffer);
-
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(dsa);
-
-  value._construct(dsa);
-
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(dsa);
-
-  value._prepare();
-
-  value._check();
-}
-
 //
 // ---------- Hash ------------------------------------------------------------
 //
@@ -107,14 +57,16 @@ namespace std
     size_t
     operator ()(infinit::cryptography::dsa::PublicKey const& value) const
     {
+      /* XXX replace with new serialization
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);
-
       archive << value;
 
       size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
+      */
+      return (0);
     }
   };
 }

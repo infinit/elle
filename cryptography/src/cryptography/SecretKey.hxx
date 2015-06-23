@@ -60,14 +60,15 @@ namespace infinit
   }
 }
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------------.
 | Serializable |
 `-------------*/
 
-# include <elle/serialize/Serializer.hh>
-# include <elle/serialize/StaticFormat.hh>
+#  include <elle/serialize/Serializer.hh>
+#  include <elle/serialize/StaticFormat.hh>
 
-# include <cryptography/Exception.hh>
+#  include <cryptography/Exception.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::SecretKey, 1);
 
@@ -152,5 +153,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::SecretKey,
         elle::sprintf("unknown format '%s'", format));
   }
 }
+# endif
 
 #endif

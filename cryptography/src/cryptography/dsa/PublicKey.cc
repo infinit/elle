@@ -19,6 +19,7 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
+#include <cryptography/finally.hh>
 #include <cryptography/evp.hh>
 #include <cryptography/hash.hh>
 
@@ -37,12 +38,6 @@ namespace infinit
       /*-------------.
       | Construction |
       `-------------*/
-
-      PublicKey::PublicKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
 
       PublicKey::PublicKey(PrivateKey const& k)
       {
@@ -147,12 +142,6 @@ namespace infinit
         cryptography::require();
 
         this->_check();
-      }
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
       }
 
       /*--------.

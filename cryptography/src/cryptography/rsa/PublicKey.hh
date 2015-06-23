@@ -11,12 +11,15 @@
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/defaults.hh>
 
-# include <elle/concept/Uniquable.hh>
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/fwd.hh>
-# include <elle/serialize/construct.hh>
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/serialize/fwd.hh>
+#  include <elle/serialize/construct.hh>
+#  include <elle/concept/Uniquable.hh>
+# endif
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -35,15 +38,20 @@ namespace infinit
     {
       /// Represent a public key in the RSA asymmetric cryptosystem.
       class PublicKey:
-        public elle::Printable,
-        public elle::serialize::DynamicFormat<PublicKey>,
-        public elle::concept::MakeUniquable<PublicKey>
+        public elle::Printable
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , public elle::serialize::DynamicFormat<PublicKey>
+        , public elle::concept::MakeUniquable<PublicKey>
+# endif
       {
         /*-------------.
         | Construction |
         `-------------*/
       public:
-        PublicKey(); // XXX[to deserialize]
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        PublicKey() {} // XXX[to deserialize]
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
+# endif
         /// Construct a public key out of its private counterpart.
         explicit
         PublicKey(PrivateKey const& k,
@@ -85,7 +93,6 @@ namespace infinit
 # endif
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
         virtual
         ~PublicKey() = default;
 
@@ -139,9 +146,11 @@ namespace infinit
       public:
         elle::Boolean
         operator ==(PublicKey const& other) const;
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::Boolean
         operator <(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
+# endif
 
         /*----------.
         | Printable |
@@ -150,6 +159,7 @@ namespace infinit
         void
         print(std::ostream& stream) const override;
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*-------------.
         | Serializable |
         `-------------*/
@@ -159,6 +169,7 @@ namespace infinit
         using elle::serialize::SerializableMixin<
           infinit::cryptography::rsa::PublicKey,
           elle::serialize::Base64Archive>::serialize;
+# endif
 
         /*--------------.
         | Serialization |

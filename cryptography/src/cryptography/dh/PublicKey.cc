@@ -39,12 +39,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PublicKey::PublicKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       PublicKey::PublicKey(PrivateKey const& k)
       {
         // Make sure the cryptographic system is set up.

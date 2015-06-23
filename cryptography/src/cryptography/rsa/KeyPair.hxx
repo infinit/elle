@@ -5,15 +5,16 @@
 // ---------- Class -----------------------------------------------------------
 //
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------------.
 | Serializable |
 `-------------*/
 
-# include <cryptography/Exception.hh>
-# include <cryptography/rsa/PublicKey.hh>
-# include <cryptography/rsa/PrivateKey.hh>
+#  include <cryptography/Exception.hh>
+#  include <cryptography/rsa/PublicKey.hh>
+#  include <cryptography/rsa/PrivateKey.hh>
 
-# include <elle/serialize/Serializer.hh>
+#  include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::KeyPair, 2);
 
@@ -95,6 +96,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
   ELLE_ASSERT_NEQ(value._K, nullptr);
   ELLE_ASSERT_NEQ(value._k, nullptr);
 }
+# endif
 
 //
 // ---------- Hash ------------------------------------------------------------

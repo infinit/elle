@@ -76,8 +76,12 @@ namespace infinit
           Oneway oneway = Oneway::sha256;
           SecretKey secret(password, cipher, mode, oneway);
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           elle::Buffer buffer;
           buffer.writer() << secret;
+#else
+# error "XXX new serialization"
+#endif
 
           elle::Natural32 length_final = buffer.size() * 8;
 
@@ -220,9 +224,12 @@ namespace infinit
           //    and encryption context.
 
           // Serialize the secret.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           elle::Buffer buffer;
           buffer.writer() << secret;
-
+#else
+# error "XXX new serialization"
+#endif
           ELLE_ASSERT_EQ(buffer.size() * 8, length + overhead);
 
           // Encrypt the secret key's archive.
@@ -230,8 +237,12 @@ namespace infinit
 
           // 5) Serialize the asymmetrically encrypted key and the symmetrically
           //    encrypted data.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           elle::Buffer code;
           code.writer() << key << data;
+#else
+# error "XXX new serialization"
+#endif
 
           return (code);
         }
@@ -253,9 +264,13 @@ namespace infinit
 
           // 1) Extract the key and ciphered data from the code which
           //    is supposed to be an archive.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           auto extractor = code.reader();
           Code key(extractor);
           Code data(extractor);
+#else
+# error "XXX new serialization"
+#endif
 
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
@@ -263,7 +278,11 @@ namespace infinit
           elle::Buffer buffer = apply(key.buffer(), context, function);
 
           // Finally extract the secret key since decrypted.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           SecretKey secret(buffer.reader());
+#else
+# error "XXX new serialization"
+#endif
 
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);

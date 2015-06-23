@@ -6,8 +6,11 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/Printable.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/concept/Uniquable.hh>
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/serialize/construct.hh>
+#  include <elle/concept/Uniquable.hh>
+# endif
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
@@ -26,9 +29,11 @@ namespace infinit
   {
     /// Represent a secret key for symmetric cryptosystem operations.
     class SecretKey:
-      public elle::Printable,
-      public elle::serialize::DynamicFormat<SecretKey>,
-      public elle::concept::MakeUniquable<SecretKey>
+      public elle::Printable
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      , public elle::serialize::DynamicFormat<SecretKey>
+      , public elle::concept::MakeUniquable<SecretKey>
+# endif
     {
       /*---------------.
       | Default Values |
@@ -45,7 +50,10 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      SecretKey(); // XXX[to deserialize]
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      SecretKey() {} // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
+# endif
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
       SecretKey(elle::String const& password,
@@ -59,8 +67,6 @@ namespace infinit
                 Oneway const oneway = defaults::oneway);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
-      /// Derialization constructor.
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
       virtual
       ~SecretKey() = default;
 
@@ -86,6 +92,7 @@ namespace infinit
       elle::Natural32
       length() const;
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       /*-------.
       | Legacy |
       `-------*/
@@ -94,6 +101,7 @@ namespace infinit
       legacy_encrypt_buffer(elle::Buffer const& buffer) const;
       elle::Buffer
       legacy_decrypt_buffer(Code const& code) const;
+# endif
 
       /*----------.
       | Operators |
@@ -103,15 +111,17 @@ namespace infinit
       operator ==(SecretKey const&) const;
       ELLE_OPERATOR_NO_ASSIGNMENT(SecretKey);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+      /*----------.
+      | Printable |
+      `----------*/
     public:
-      // printable
       void
       print(std::ostream& stream) const override;
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
+# endif
 
       /*-----------.
       | Attributes |

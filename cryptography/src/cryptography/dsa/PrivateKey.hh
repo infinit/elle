@@ -12,8 +12,6 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/concept/Uniquable.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -32,14 +30,12 @@ namespace infinit
     {
       /// Represent a private key in the DSA asymmetric cryptosystem.
       class PrivateKey:
-        public elle::Printable,
-        public elle::concept::MakeUniquable<PrivateKey>
+        public elle::Printable
       {
         /*-------------.
         | Construction |
         `-------------*/
       public:
-        PrivateKey(); // XXX[deserialize]
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -52,7 +48,6 @@ namespace infinit
                    Oneway const digest_algorithm);
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
         virtual
         ~PrivateKey() = default;
 
@@ -99,16 +94,6 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
-
-        /*----------.
-        | Serialize |
-        `----------*/
-      public:
-        ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
-        // To prevent the compile conflict with Uniquable's serialize() method.
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::dsa::PrivateKey,
-          elle::serialize::Base64Archive>::serialize;
 
         /*-------------.
         | Serializable |

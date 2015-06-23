@@ -7,7 +7,10 @@
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
 # include <elle/serialization/fwd.hh>
-# include <elle/serialize/construct.hh>
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/serialize/construct.hh>
+# endif
 
 # include <cryptography/fwd.hh>
 
@@ -25,8 +28,10 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-      Output() // XXX[to deserialize]
-      {}
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      Output() {} // XXX[to deserialize]
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
+#endif
       explicit
       Output(elle::Natural64 const size);
       explicit
@@ -35,7 +40,6 @@ namespace infinit
       Output(elle::Buffer&& buffer);
       Output(Output const& other);
       Output(Output&& other);
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
       virtual
       ~Output() = default;
 
@@ -67,12 +71,11 @@ namespace infinit
       ELLE_OPERATOR_GT(Input);
       ELLE_OPERATOR_GTE(Input);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     public:
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
+# endif
 
     /*----------.
     | Printable |

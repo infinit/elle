@@ -8,7 +8,6 @@
 # include <cryptography/Plain.hh>
 # include <cryptography/serialization.hh>
 # include <cryptography/hash.hh>
-# include <cryptography/rsa/legacy.hh>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
@@ -66,20 +65,22 @@ namespace infinit
   }
 }
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------------.
 | Serializable |
 `-------------*/
 
-# include <elle/serialize/Serializer.hh>
-# include <elle/serialize/StaticFormat.hh>
+#  include <elle/serialize/Serializer.hh>
+#  include <elle/serialize/StaticFormat.hh>
 
-# include <cryptography/finally.hh>
-# include <cryptography/Cryptosystem.hh>
-# include <cryptography/bn.hh>
-# include <cryptography/Exception.hh>
-# include <cryptography/Cipher.hh>
-# include <cryptography/rsa/der.hh>
-# include <cryptography/rsa/Padding.hh>
+#  include <cryptography/finally.hh>
+#  include <cryptography/Cryptosystem.hh>
+#  include <cryptography/bn.hh>
+#  include <cryptography/Exception.hh>
+#  include <cryptography/Cipher.hh>
+#  include <cryptography/rsa/der.hh>
+#  include <cryptography/rsa/Padding.hh>
+#  include <cryptography/rsa/legacy.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 2);
 
@@ -262,6 +263,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
         elle::sprintf("unknown format '%s'", format));
   }
 }
+# endif
 
 //
 // ---------- Hash ------------------------------------------------------------
@@ -275,10 +277,13 @@ namespace std
     size_t
     operator ()(infinit::cryptography::rsa::PublicKey const& value) const
     {
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);
-
       archive << value;
+# else
+#  error "XXX new serialization"
+# endif
 
       size_t result = std::hash<std::string>()(stream.str());
 

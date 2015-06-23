@@ -10,12 +10,15 @@
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
+# include <elle/types.hh>
+# include <elle/serialization/Serializer.hh>
+
 # include <iosfwd>
 
-# include <elle/concept/Uniquable.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/serialization/Serializer.hh>
-# include <elle/types.hh>
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/concept/Uniquable.hh>
+#  include <elle/serialize/construct.hh>
+# endif
 
 namespace infinit
 {
@@ -29,16 +32,21 @@ namespace infinit
       /// Note that the public key is always written as a capital 'K'
       /// while a private key is noted with a lower-case 'k'.
       class KeyPair:
-        public elle::Printable,
-        public elle::serialize::DynamicFormat<KeyPair>,
-        public elle::concept::MakeUniquable<KeyPair>
+        public elle::Printable
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , public elle::serialize::DynamicFormat<KeyPair>
+        , public elle::concept::MakeUniquable<KeyPair>
+# endif
       {
       public:
         /*-------------.
         | Construction |
         `-------------*/
       public:
-        KeyPair(); // XXX[to deserialize]
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        KeyPair() {} // XXX[to deserialize]
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+# endif
         KeyPair(PublicKey const& K,
                 PrivateKey const& k);
         KeyPair(PublicKey&& K,
@@ -55,7 +63,6 @@ namespace infinit
 # endif
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
         virtual
         ~KeyPair() = default;
 
@@ -100,6 +107,7 @@ namespace infinit
         void
         serialize(elle::serialization::Serializer& serializer);
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*----------.
         | Serialize |
         `----------*/
@@ -110,6 +118,7 @@ namespace infinit
         using elle::serialize::SerializableMixin<
           infinit::cryptography::rsa::KeyPair,
           elle::serialize::Base64Archive>::serialize;
+# endif
 
         /*-----------.
         | Attributes |

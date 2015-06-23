@@ -1,6 +1,6 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/random.hh>
-# include <cryptography/Exception.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/log.hh>
 

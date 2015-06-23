@@ -38,7 +38,6 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-        PrivateKey(); // XXX[deserialize]
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit

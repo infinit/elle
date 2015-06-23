@@ -30,12 +30,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PrivateKey::PrivateKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       PrivateKey::PrivateKey(::EVP_PKEY* key):
         _key(key)
       {

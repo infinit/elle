@@ -1,9 +1,15 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+
+# ifndef INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
+#  define INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
 
 //
-// ---------- Class -----------------------------------------------------------
+// ---------- Dummy -----------------------------------------------------------
 //
+
+/*------.
+| Class |
+`------*/
 
 namespace infinit
 {
@@ -11,10 +17,6 @@ namespace infinit
   {
     namespace legacy
     {
-      /*------.
-      | Dummy |
-      `------*/
-
       class Dummy:
         public elle::serialize::SerializableMixin<Dummy>,
         public elle::serialize::DynamicFormat<Dummy>
@@ -33,4 +35,5 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::legacy::Dummy,
                       format)
 {}
 
+# endif
 #endif

@@ -15,8 +15,11 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/concept/Uniquable.hh>
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/serialize/construct.hh>
+#  include <elle/concept/Uniquable.hh>
+# endif
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -35,15 +38,20 @@ namespace infinit
     {
       /// Represent a private key in the RSA asymmetric cryptosystem.
       class PrivateKey:
-        public elle::Printable,
-        public elle::serialize::DynamicFormat<PrivateKey>,
-        public elle::concept::MakeUniquable<PrivateKey>
+        public elle::Printable
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , public elle::serialize::DynamicFormat<PrivateKey>
+        , public elle::concept::MakeUniquable<PrivateKey>
+# endif
       {
         /*-------------.
         | Construction |
         `-------------*/
       public:
-        PrivateKey(); // XXX[deserialize]
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        PrivateKey() {} // XXX[deserialize]
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
+# endif
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -72,7 +80,6 @@ namespace infinit
 # endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
         virtual
         ~PrivateKey() = default;
 
@@ -136,6 +143,7 @@ namespace infinit
         void
         print(std::ostream& stream) const override;
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*----------.
         | Serialize |
         `----------*/
@@ -145,6 +153,7 @@ namespace infinit
         using elle::serialize::SerializableMixin<
           infinit::cryptography::rsa::PrivateKey,
           elle::serialize::Base64Archive>::serialize;
+# endif
 
         /*-------------.
         | Serializable |

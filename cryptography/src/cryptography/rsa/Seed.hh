@@ -11,8 +11,6 @@
 #  include <elle/operator.hh>
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
-#  include <elle/serialize/fwd.hh>
-#  include <elle/serialize/construct.hh>
 
 #  include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -36,7 +34,6 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-        Seed(); // XXX[to deserialize]
         /// Construct an RSA seed based on a buffer and the length of the
         /// keys' modulus it will allow generating.
         ///
@@ -51,7 +48,6 @@ namespace infinit
              elle::Natural32 const length);
         Seed(Seed const& seed);
         Seed(Seed&& other);
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(Seed);
         virtual
         ~Seed() = default;
 
@@ -63,15 +59,12 @@ namespace infinit
         operator ==(Seed const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(Seed);
 
-        /*-----------.
-        | Interfaces |
-        `-----------*/
+        /*----------.
+        | Printable |
+        `----------*/
       public:
-        // printable
         void
         print(std::ostream& stream) const override;
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(Seed);
 
         /*-----------.
         | Attributes |
@@ -112,8 +105,6 @@ namespace infinit
     }
   }
 }
-
-#  include <cryptography/rsa/Seed.hxx>
 
 # endif
 

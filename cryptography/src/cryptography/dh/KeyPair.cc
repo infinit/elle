@@ -25,10 +25,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      KeyPair::KeyPair()
-      {
-      }
-
       KeyPair::KeyPair(PublicKey const& K,
                        PrivateKey const& k):
         _K(new PublicKey(K)),

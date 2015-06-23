@@ -1,17 +1,18 @@
 #ifndef INFINIT_CRYPTOGRAPHY_BN_HXX
 # define INFINIT_CRYPTOGRAPHY_BN_HXX
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-----------.
 | Serializer |
 `-----------*/
 
-# include <elle/types.hh>
-# include <elle/finally.hh>
-# include <elle/serialize/Serializer.hh>
+#  include <elle/types.hh>
+#  include <elle/finally.hh>
+#  include <elle/serialize/Serializer.hh>
 
-# include <cryptography/Exception.hh>
+#  include <cryptography/Exception.hh>
 
-# include <openssl/err.h>
+#  include <openssl/err.h>
 
 ELLE_SERIALIZE_SPLIT(::BIGNUM)
 
@@ -67,5 +68,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
       elle::sprintf("unable to convert the binary data into a big number: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 }
+# endif
 
 #endif

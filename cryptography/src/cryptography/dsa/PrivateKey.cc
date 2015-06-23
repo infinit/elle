@@ -29,12 +29,6 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PrivateKey::PrivateKey()
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       PrivateKey::PrivateKey(::EVP_PKEY* key,
                              Oneway const digest_algorithm):
         _key(key),
@@ -112,12 +106,6 @@ namespace infinit
         cryptography::require();
 
         this->_check();
-      }
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
       }
 
       /*--------.

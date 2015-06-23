@@ -38,10 +38,11 @@ namespace infinit
     {
     }
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output,
                                     _buffer)
-    {
-    }
+    {}
+#endif
 
     /*----------.
     | Operators |
@@ -114,7 +115,7 @@ namespace infinit
     void
     Output::serialize(elle::serialization::Serializer& s)
     {
-      s.serialize("data", this->_buffer);
+      s.serialize("buffer", this->_buffer);
     }
   }
 }
