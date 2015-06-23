@@ -1,16 +1,17 @@
-#include "Buffer.hh"
+#include <elle/Buffer.hh>
 
-#include <elle/assert.hh>
-#include <elle/Exception.hh>
-#include <elle/IOStream.hh>
-#include <elle/log.hh>
-
-#include <elle/format/hexadecimal.hh>
-
-#include <elle/io/Dumpable.hh>
-
+#include <algorithm> // std::count_if
 #include <iomanip>
 #include <iostream>
+#include <locale> // std::isprint
+
+#include <elle/Exception.hh>
+#include <elle/IOStream.hh>
+#include <elle/assert.hh>
+#include <elle/finally.hh>
+#include <elle/format/hexadecimal.hh>
+#include <elle/io/Dumpable.hh>
+#include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("elle.Buffer");
 
@@ -631,7 +632,9 @@ namespace elle
       bool hex)
   {
     if (hex)
-      stream << format::hexadecimal::encode(buffer);
+    {
+      stream << "0x" << format::hexadecimal::encode(buffer);
+    }
     else
       stream.write(reinterpret_cast<const char*>(buffer.contents()),
                    buffer.size());
@@ -644,8 +647,13 @@ namespace elle
     static int const max_length = 20;
     bool hex = stream.flags() & std::ios::hex;
     bool fixed = stream.flags() & std::ios::fixed;
-    if (hex)
-      stream << "0x";
+    int printable = std::count_if(buffer.begin(), buffer.end(),
+                                  [] (char c) { return std::isprint(c); });
+    std::ios state(nullptr);
+    state.copyfmt(stream);
+    elle::SafeFinally restore_stream_state([&] { std::cout.copyfmt(state); });
+    if (float(printable) / buffer.size() < 0.9)
+      hex = true;
     if (fixed && buffer.size() > max_length)
     {
       put(stream, buffer.range(0, max_length / 2), hex);
