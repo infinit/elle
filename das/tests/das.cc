@@ -36,7 +36,7 @@ typedef das::Object<
   >
 DasDevice;
 
-DAS_MODEL(Device, DasDevice);
+DAS_MODEL_DEFAULT(Device, DasDevice);
 
 static
 void
