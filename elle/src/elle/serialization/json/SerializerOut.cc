@@ -88,6 +88,7 @@ namespace elle
 
       void
       SerializerOut::_serialize_array(std::string const& name,
+                                      int size,
                                       std::function<void ()> const& f)
       {
         ELLE_TRACE_SCOPE("%s: create array", *this);

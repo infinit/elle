@@ -108,6 +108,7 @@ namespace elle
       virtual
       void
       _serialize_array(std::string const& name,
+                       int size, // -1 for in(), array size for out()
                        std::function<void ()> const& f) = 0;
       virtual
       void

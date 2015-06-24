@@ -342,6 +342,7 @@ namespace elle
       {
         this->_serialize_array(
           name,
+          map.size(),
           [&] ()
           {
             for (std::pair<K, V> pair: map)
@@ -358,6 +359,7 @@ namespace elle
       {
         this->_serialize_array(
           name,
+          -1,
           [&] ()
           {
             // FIXME: Use emplace if possible.
@@ -487,6 +489,7 @@ namespace elle
       {
         this->_serialize_array(
           name,
+          collection.size(),
           [&] ()
           {
             for (auto& elt: collection)
@@ -503,6 +506,7 @@ namespace elle
       {
         this->_serialize_array(
           name,
+          -1,
           [&] ()
           {
             // FIXME: Use array.emplace_back(*this) if possible.
@@ -520,6 +524,7 @@ namespace elle
       {
         this->_serialize_array(
           name,
+          2,
           [&] ()
           {
             if (this->_enter(name))
@@ -539,6 +544,7 @@ namespace elle
         int i = 0;
         this->_serialize_array(
           name,
+          -1,
           [&] ()
           {
             if (i == 0)

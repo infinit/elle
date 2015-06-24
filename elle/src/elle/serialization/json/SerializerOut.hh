@@ -48,6 +48,7 @@ namespace elle
         virtual
         void
         _serialize_array(std::string const& name,
+                         int size,
                          std::function<void ()> const& f) override;
         virtual
         void

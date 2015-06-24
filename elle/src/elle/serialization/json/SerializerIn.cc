@@ -238,6 +238,7 @@ namespace elle
       void
       SerializerIn::_serialize_array(
         std::string const& name,
+        int size,
         std::function<void ()> const& serialize_element)
       {
         ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
