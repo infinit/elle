@@ -32,7 +32,7 @@ fundamentals()
     output.serialize("double", d);
     double round = 51.;
     output.serialize("round", round);
-    std::vector<long> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
+    std::vector<int64_t> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
     output.serialize("values", values);
   }
   {
@@ -48,8 +48,8 @@ fundamentals()
     BOOST_CHECK_EQUAL(d, 51.51);
     double round = 0;
     input.serialize("round", round);
-    std::vector<long> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
-    std::vector<long> ovalues;
+    std::vector<int64_t> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
+    std::vector<int64_t> ovalues;
     input.serialize("values", ovalues);
     BOOST_CHECK_EQUAL(ovalues, values);
   }
