@@ -424,6 +424,11 @@ def configure(zlib_lib,
     'src/elle/serialization/json/SerializerOut.hh',
     'src/elle/serialization/json/TypeError.cc',
     'src/elle/serialization/json/TypeError.hh',
+    'src/elle/serialization/binary/SerializerIn.hh',
+    'src/elle/serialization/binary/SerializerIn.cc',
+    'src/elle/serialization/binary/SerializerOut.hh',
+    'src/elle/serialization/binary/SerializerOut.cc',
+    'src/elle/serialization/binary.hh',
   )
 
   sources += drake.nodes(

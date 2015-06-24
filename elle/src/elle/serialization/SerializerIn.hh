@@ -45,7 +45,7 @@ namespace elle
     | Details |
     `--------*/
     protected:
-      ELLE_ATTRIBUTE(std::istream&, input);
+      ELLE_ATTRIBUTE_R(std::istream&, input);
     };
   }
 }

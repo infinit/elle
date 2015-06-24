@@ -9,6 +9,7 @@
 #include <elle/container/deque.hh>
 #include <elle/container/list.hh>
 #include <elle/container/map.hh>
+#include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
 #include <elle/serialization/json/Overflow.hh>
@@ -31,6 +32,8 @@ fundamentals()
     output.serialize("double", d);
     double round = 51.;
     output.serialize("round", round);
+    std::vector<long> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
+    output.serialize("values", values);
   }
   {
     typename Format::SerializerIn input(stream);
@@ -45,7 +48,10 @@ fundamentals()
     BOOST_CHECK_EQUAL(d, 51.51);
     double round = 0;
     input.serialize("round", round);
-    BOOST_CHECK_EQUAL(round, 51.);
+    std::vector<long> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
+    std::vector<long> ovalues;
+    input.serialize("values", ovalues);
+    BOOST_CHECK_EQUAL(ovalues, values);
   }
 }
 
@@ -474,7 +480,7 @@ hierarchy()
 {
   std::stringstream stream;
   {
-    typename Format::SerializerOut output(stream);
+    typename Format::SerializerOut output(stream, false);
     std::unique_ptr<Super> super(new Super(0));
     std::unique_ptr<Super> s1(new Sub1(2));
     std::unique_ptr<Super> s2(new Sub2(3));
@@ -483,7 +489,7 @@ hierarchy()
     output.serialize("sub2", s2);
   }
   {
-    typename Format::SerializerIn output(stream);
+    typename Format::SerializerIn output(stream, false);
     std::shared_ptr<Super> ptr;
     output.serialize("super", ptr);
     BOOST_CHECK_EQUAL(ptr->type(), 0);
@@ -813,4 +819,24 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_overflows));
   suite.add(BOOST_TEST_CASE(json_iso8601));
   suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
+
+  {
+  suite.add(BOOST_TEST_CASE(fundamentals<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(object<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Binary>));
+  auto list = &array<elle::serialization::Binary, std::list>;
+  suite.add(BOOST_TEST_CASE(list));
+  auto deque = &array<elle::serialization::Binary, std::deque>;
+  suite.add(BOOST_TEST_CASE(deque));
+  auto vector = &array<elle::serialization::Binary, std::vector>;
+  suite.add(BOOST_TEST_CASE(vector));
+  suite.add(BOOST_TEST_CASE(pair<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(option<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(date<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Binary>));
+  }
 }

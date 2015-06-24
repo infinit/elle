@@ -21,7 +21,6 @@ namespace elle
         T& obj,
         ELLE_SFINAE_IF_WORKS(obj.serialize(ELLE_SFINAE_INSTANCE(Serializer))))
       {
-        s.serialize_object(name, obj);
         if (s.out())
         {
           std::type_info const* id = &typeid(obj);
@@ -39,6 +38,7 @@ namespace elle
           auto type_name = it->second;
           s.serialize(T::virtually_serializable_key, type_name);
         }
+        s.serialize_object(name, obj);
       }
 
       template <typename T>
