@@ -72,6 +72,7 @@ class Qt(drake.Configuration):
                cxx_toolkit = None,
                prefix = None,
                version = drake.Version(),
+               version_effective = None,
                prefer_shared = True,
                rcc = None,
                qmake = None,
@@ -118,17 +119,23 @@ class Qt(drake.Configuration):
       if not path.absolute():
         path = path.without_prefix(drake.path_build())
       cfg.add_system_include_path(path / include_subdir)
-      version_effective = int(cxx_toolkit.preprocess(
-        '#include <Qt/qglobal.h>\nQT_VERSION',
-        config = cfg).split('\n')[-2].strip(), 16)
-      version_effective = drake.Version(
-        version_effective >> 16,
-        (version_effective >> 8) % 256,
-        version_effective % 256,
-      )
-      # XXX: Check the version.
-      if version_effective not in version:
-        miss.append(version_effective)
+      if version_effective is None:
+        try:
+          version_eff = int(cxx_toolkit.preprocess(
+            '#include <Qt/qglobal.h>\nQT_VERSION',
+            config = cfg).split('\n')[-2].strip(), 16)
+          version_eff = drake.Version(
+            version_eff >> 16,
+            (version_eff >> 8) % 256,
+            version_eff % 256,
+          )
+        # If the token doesn't exists, ignore.
+        except drake.Exception:
+          continue
+      else:
+        version_eff = version_effective
+      if version_eff not in version:
+        miss.append(version_eff)
         continue
       # Fill configuration
       self.__prefix = path
@@ -140,7 +147,7 @@ class Qt(drake.Configuration):
         setattr(self, '_Qt__config_%s_static_header' % prop, None)
         setattr(self, '_Qt__%s_dynamic' % prop, None)
         setattr(self, '_Qt__%s_static' % prop, None)
-      self.__version = version_effective
+      self.__version = version_eff
       self.plug(cxx_toolkit)
       Qt.__include_dir = path / include_subdir
       return
