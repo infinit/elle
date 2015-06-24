@@ -125,3 +125,27 @@ namespace infinit
     }
   }
 }
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    elle::Natural8
+    Serialize<infinit::cryptography::Oneway>::convert(
+      infinit::cryptography::Oneway const& value)
+    {
+      return (static_cast<elle::Natural8>(value));
+    }
+
+    infinit::cryptography::Oneway
+    Serialize<infinit::cryptography::Oneway>::convert(
+      elle::Natural8 const& representation)
+    {
+      return (static_cast<infinit::cryptography::Oneway>(representation));
+    }
+  }
+}

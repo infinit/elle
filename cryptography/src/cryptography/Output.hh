@@ -28,10 +28,6 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      Output() {} // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
-#endif
       explicit
       Output(elle::Natural64 const size);
       explicit
@@ -71,32 +67,38 @@ namespace infinit
       ELLE_OPERATOR_GT(Input);
       ELLE_OPERATOR_GTE(Input);
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    public:
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(Output);
-# endif
-
-    /*----------.
-    | Printable |
-    `----------*/
+      /*----------.
+      | Printable |
+      `----------*/
     public:
       void
       print(std::ostream& stream) const override;
 
-    /*--------------.
-    | Serialization |
-    `--------------*/
+      /*--------------.
+      | Serialization |
+      `--------------*/
     public:
-      Output(elle::serialization::SerializerIn& input);
+      Output(elle::serialization::SerializerIn& serializer);
       void
       serialize(elle::serialization::Serializer& serializer);
 
-    /*-----------.
-    | Attributes |
-    `-----------*/
+      /*-----------.
+      | Attributes |
+      `-----------*/
     private:
       ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /*-------.
+      | Legacy |
+      `-------*/
+    public:
+      // construction
+      Output() {}
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(Output);
+# endif
     };
   }
 }

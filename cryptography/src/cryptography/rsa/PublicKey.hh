@@ -111,20 +111,22 @@ namespace infinit
         void
         _check() const;
       public:
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Encrypt any serializable type, including Plain.
         template <typename T = Plain>
         Code
         encrypt(T const& value) const;
-        /// Return true if the given signature matches with the digest.
-        elle::Boolean
-        verify(Signature const& signature,
-               Digest const& digest) const;
         /// Return true if the given signature matches with the serializable
         /// value.
         template <typename T = Plain>
         elle::Boolean
         verify(Signature const& signature,
                T const& value) const;
+# endif
+        /// Return true if the given signature matches with the digest.
+        elle::Boolean
+        verify(Signature const& signature,
+               Digest const& digest) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once rotated by the public key.
         Seed

@@ -1,5 +1,4 @@
 #include "cryptography.hh"
-#include "Sample.hh"
 
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
@@ -7,8 +6,7 @@
 #include <cryptography/Oneway.hh>
 #include <cryptography/random.hh>
 
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
+#include <elle/serialization/json.hh>
 
 /*----------.
 | Represent |
@@ -29,20 +27,27 @@ test_represent_n()
 
   // N.1)
   {
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << key;
-    elle::printf("[representation %s.1] %s\n", N, archive);
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      key.serialize(output);
+    }
+
+    elle::printf("[representation %s.1] %s\n", N, stream.str());
   }
 
   // N.2)
   {
-    infinit::cryptography::Code code = key.encrypt(_message);
+    infinit::cryptography::Code code =
+      key.encrypt(infinit::cryptography::Plain(_message));
 
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << code;
-    elle::printf("[representation %s.2] %s\n", N, archive);
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      code.serialize(output);
+    }
+
+    elle::printf("[representation %s.2] %s\n", N, stream.str());
   }
 }
 
@@ -273,27 +278,14 @@ _test_operate_idea()
                     infinit::cryptography::Mode::cbc,
                     infinit::cryptography::Oneway::sha256>();
 
-  // Encrypt/decrypt with plain.
-  {
-    elle::String const input = "Chie du foutre!";
-    infinit::cryptography::Code code =
-      key.encrypt(
-        infinit::cryptography::Plain{input});
-    infinit::cryptography::Clear clear = key.decrypt(code);
-    elle::String const output(clear.buffer().string());
+  elle::String const input = "Chie du foutre!";
+  infinit::cryptography::Code code =
+    key.encrypt(
+      infinit::cryptography::Plain(input));
+  infinit::cryptography::Clear clear = key.decrypt(code);
+  elle::String const output(clear.buffer().string());
 
-    BOOST_CHECK_EQUAL(input, output);
-  }
-
-  // Encrypt/decrypt with complex type.
-  {
-    Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(32893));
-    infinit::cryptography::Code code = key.encrypt(input);
-    Sample const output = key.decrypt<Sample>(code);
-
-    BOOST_CHECK_EQUAL(input, output);
-  }
+  BOOST_CHECK_EQUAL(input, output);
 }
 
 static
@@ -313,22 +305,17 @@ void
 test_serialize_x(elle::String const& R1,
                  elle::String const& R2)
 {
-  // Deserialize the key from R1.
-  auto extractor1 =
-    elle::serialize::from_string<
-      elle::serialize::InputBase64Archive>(R1);
-  infinit::cryptography::SecretKey key(extractor1);
+  std::stringstream stream1(R1);
+  typename elle::serialization::Json::SerializerIn input1(stream1);
+  infinit::cryptography::SecretKey key(input1);
 
-  // Deserialize the code from R2.
-  auto extractor2 =
-    elle::serialize::from_string<
-      elle::serialize::InputBase64Archive>(R2);
-  infinit::cryptography::Code code(extractor2);
+  std::stringstream stream2(R2);
+  typename elle::serialization::Json::SerializerIn input2(stream2);
+  infinit::cryptography::Code code(input2);
 
-  // Decrypt the code.
-  elle::String message = key.decrypt<elle::String>(code);
+  infinit::cryptography::Clear clear = key.decrypt(code);
 
-  BOOST_CHECK_EQUAL(_message, message);
+  BOOST_CHECK_EQUAL(_message, clear.buffer().string());
 }
 
 static
@@ -336,38 +323,38 @@ void
 test_serialize()
 {
   // DES based on [representation 1].
-  test_serialize_x("AQAAAA8AAAAAAAAAgRKSfrv7dcIvOviBNRt7AQAEAAAA",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX1/covAbhggD4IvRV7f++2/IlV7dEGh61c06eMV8q7Hf5g3oecy9OCaSJSHvgbK8fRpgjA==");
+  test_serialize_x(R"JSON({"cipher":1,"mode":4,"oneway":0,"password":"qExjMaMn9dtbg3qzQDvn"})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX19BJmEt9cGFrHQEPoDofWmigVSJgUX0+izgvU6Ay6DFrJ9Sywcdu+yWIP3H3QFc"})JSON");
   // 2-DES based on [representation 2].
-  test_serialize_x("AQAAAAMAAAAAAAAAuz7dAgACAAIA",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX19XYFP8itd8ey0klWDRE0Y2pxnNgVkQWgQTG90cuphi7B4gVYFXvMTW6scyT+gE8dSv5rnTqYaFpA==");
+  test_serialize_x(R"JSON({"cipher":2,"mode":2,"oneway":2,"password":"Ph+3"})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX1/w0okCpBBhjauVH2800c8fLMuinffa0WbEfebJOZmrnXHSieIE4wU6xHgdj+B9xEs="})JSON");
   // Triple DES based on [representation 3].
-  test_serialize_x("AQAAABcAAAAAAAAA+6TSXsyqUW8TFuv4We+qSeerBPGOKfADAAMABQA=",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX19hnfKXeA8pXmKv9ES0xNPObhOOM5QvX3t4x9c0RxG0LEekFT4YEQ4afL7ZQ7UAppVX6w==");
+  test_serialize_x(R"JSON({"cipher":3,"mode":3,"oneway":5,"password":"7tJCWuLp5HbwZu54Kfv/fyBXT4Agxl0="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX1+A3z6bu04s3mvEoBmyK2ooTZVBTlgbEUGamVIY8NiABYznOd/t7lBfBiAywyve"})JSON");
   // DES X based on [representation 4].
-  test_serialize_x("AQAAAP8BAAAAAAAAqolxdsot8TNgBmoIDoiXpfaoYaUjgYgXwIUwRCppYzoxvYayLt3a9DekiBxMXRrimvLxKScQABNtM2XyYiRraEfccnl+3qrlE0igu7v9tD2vwz29dRll2tHWIiMKokkEec/8xGcrboGzVkIt0F+t/GXO7bTGgcjfhsCVqi/vd9WQZLmMhsMm6d9ZV8yujhDSbfotMzxbKMBbG7+VIASKa/ixZ5c3X61GzWLIxmu+4wWiHsoAVHkOewcTnFwOEc84gfsJxm8Y+B9PusJMOnJqBe3087r/gmtmVZiWOA54pQ1UBf/yGqjFOV5MgFAc9yRUBvHpOIVC3D9kfCnvvikgKC52qPloYxIU5r0B8njNwJ2kjivxShSax53wTCftFfbuepHAsHaJJ2FzIabvt7ByVAcD+ddgKpgfKCuYM7PkubYzMnRU2N5NhO//YWJ+oY2svFP5cdEhiwF5hWbK/GyfWDt+vv7pM5Kw8Hljq88EcZFaKv5UksnEsW1qV5ZgZ91qIqXOU2xEFNS96gt+kN2HNiJYI3/GiFp2MTO58FxI7duvcBTKPB8wwVglEeBVyOjtUrDmCUdeC7wz9GpzjYVfONMBO3nSArxmGPtEIDtSF50/KCPq5p7GgXJt/4bUXmfmGmk6GkH5tsf8bnA3zDZ5A3SExKAhxq5u74Oo3xTjZwQAAQABAA==",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX1+LO/a2oO427jkHvodl7rtn3vkBRIghvKaj00amld8c3JN+TtBdbpCBlLqVUR6ly2T9vToTvfHKIQ==");
+  test_serialize_x(R"JSON({"cipher":4,"mode":1,"oneway":1,"password":"AefWhYcagQEHGLI/VB9xk4jjEBiOzXiqlvDcsjdIOsZaK+CuBN98EhHf5cSc0G1HNgQJlzck+w2cvSIPuMInlk5y6CMWIUQwVVDjCN/HUMhSVhc7h0y3TOOy+y/lFNRbPP+mWfV9slroea5doRNXkakBOjR1VpXZQMFh9cxwaISjnYbkRhmNu0qytWEJmuMQmn7FRBNF/LuGqBrExSMRmiJe3FYUp09RHIySQfmwxnr860/pd4L7RQpNgfZI7P8mpvcEhBKE2v13sPNY3iPOuVzFFRA6zikYUVIbcoXhO/bSOWlQF0eEEF8eCenQjWpgdyFV0jf49mELJ5YoK0JFiwfp5eqfLUREm1DWX3VdI1/9GSh+zbQev71olVdXRjvL5Y9qR61jccVWt6R5IXlyFJ03XCfqhljKCfbvK0y1XN1Ib4wtMv5sOZ4aXZyXojJE6q5TASyLtm2WiEpuZK1h2/a3Ca8gq+RjmVYoB84pIGQQKdgi3/4/sOwR34EoxES7lO8OKmdVxoxR44HYtMyxDNzaUOWcIYpyrG5T5rl8fmtuI5mclraAPzNask+VSn4BMks2iQoa6ruyhQrr5bRBX9OMbYLNfpIK4Us99Il2wBGT1fqOBMw/hKAHdprfSzYfaude7ASncHcapHuRnNYrWMh3+gvh1UyD18m0v6RoBw=="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX19mp53BhfFOUufvpDUYph59t27CnqCgATQ1SBoyqHNsLfI1ZOXID8JUkQ0+khEQ9Ys="})JSON");
   // IDEA based on [representation 5].
-  test_serialize_x("AQAAAAEBAAAAAAAA0QEkZ42azav9YWVfjpfyV6v5sf9rDeo4eTiwj8739Avm7nlo1gPI+O5TVpKAzWlAzEjzkiyjgVWjVTQdAHpH6KmSAeMeOIA+WzZ+LMaMzMyPRVCDsRsOVf8Db1pH4EoNbQVw62aFcCkiXMo7wrDSuhx7Ov1t5fpvyqI/y1r7kMGHXDoVWnPz2+/sZaYs3OFbFUDNTdJ5N4zR4UfHuu3pP6BpD2NWGKAKYxOQR1wuNBLkDiudWQ8WhjKS3zXV9mzirw/2kKHFkcsgOD3YfnNPdN65EdxnS1EnC3dJA7BSko8xRtHTgqcxUspDSfPsxvq2a78LxyK7KeRluGu31cw0288FAAIAAwA=",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX19BcRcDzaeNqWSMkTsYMBnfPBVs+gHszUyft8kBdxNUDxXmhkTtgM6ffzL1vEdzVm2fRiBuL5aLHA==");
+  test_serialize_x(R"JSON({"cipher":5,"mode":2,"oneway":3,"password":"jpRAwK/cmaccGdhdDU6CZRvvnJqz8+EMgKGeml1TQ4Mc8o9bDAHliLm0Z9JGizlnOlkrrNu7X3Luo++2S/Y/0QCgPMO4z7P+8n82VhesUGueYfplnIUxAw09q11wqXo+0eOKjhrovpgfEx77JULwXP1Nm64Yd7Oq8k2JYuMPYYyV0SIwYP1eXBf5Cxuoj//38cuWXzx6YkBAvmnAG0Xy+ywpJIvVBjgGnQ0yddlMl8HZKfeY8Ce02/RlRB9boDvXQzwGyDMp/N1k1sUggRDqyfHDTea21+GNtAGVKM8hIe1bpI5fl5gxclmp4xXyEvsPF6yJokcedrCYd3x4K0XxsCQ="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX19RAulp33SqeVl5elk0z1rmBhvwQBAaX+KITT/ZErMnzpqlEwDIhYDuDJmSiPC4JqQ="})JSON");
   // RC2 based on [representation 6].
-  test_serialize_x("AQAAAAMAAAAAAAAAoW28BgAEAAYA",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX19suoqAaBTGWm/FPIGtp3fi821SO1Q3RHWHoCkjFsjTJ0wCoKRi2thgZ5Z7ke3ia6IjcQ==");
+  test_serialize_x(R"JSON({"cipher":6,"mode":4,"oneway":6,"password":"jXTY"})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX1/gbxUcPpazj52DwCzgij3GAm5c5LZ6xbON+h9/WqYJ4tAVWc9B1/AY2Tq8HEof"})JSON");
   // Blowfish based on [representation 7].
-  test_serialize_x("AQAAAAgAAAAAAAAALPc0McD6h54HAAEAAgA=",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX1+ithCbTdvjDbB+Fpazk9laiPeD9yQl2nCzl9lfqcvmdlqMXnTWeu1Chy8DJ/0QRF/pjD+jpUFaiQ==");
+  test_serialize_x(R"JSON({"cipher":7,"mode":1,"oneway":2,"password":"N6rTUe3HCak="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX1/7flbuLH+RGgIy19goe3mlUUbeoH2AsDhK/yZcG0J+kBohGYPDwV+W7kGjdOx8+3E="})JSON");
   // CAST5 based on [representation 8].
-  test_serialize_x("AQAAAE4CAAAAAAAAHEUfxgp0G9n3tdGv7MIO5wrK1GqfjpNOzlTiIrgj2RtFC0MORn+YsZIx4Zb/S9ihLp1GDsASavGq9SQAvSIczZyDR0KbUxEIfRZKPvtTaL6zZcR4U0gW03CQH2oVCwgxg5zEg8cdp9jrTHbJsYOK0iElF5a8rUHOqxiEDtiTOHkSpGZPpgChIS/88uKbtnCmuwupC0PzlOjUB3ZsctiRcxkcldVOLReLNdjFxMqDYuVAS64boghd+0exsHcnb5X/GV9EEeF5q7P8JnENt5LQ0rbveppppYAFcF8aPYADTNhHslKLz9qCoYwu48tCR30cn1LVuyw5E+9uEhBbRiVGWbqYO4FB2WBHhaNXxAc8oiXpO1ITrJTEjuDUp+HRmV5TVtXClFIeAt0GJhLeCpkgUYSS9XOEyrHF0Hq1QCsPWM51v5yK5ZMRg2oz6VeHYGjuelhWKuEhM8p6ko/W3dl1a8I5B7ltdGrXZggQ9MVjrQoneJ+t90gtCg7e5rerRfbas/FKCHnXlvAjCnyeKUD63sLDbfvxnyxVIQSlSgE4YMIHYyC4aVcg/VaomwGwW2/cYbyvhhpsnFttcwAw2Lxh8VuYNqz6mtVgS1rS6ZeD9j6Amv/VspiII/3vFo2N2NDCv6a1mcyXBW91ELLo36x97sWWHp9kniIrJbSctgNIlMrAHPI41HPMIeldYdwie0l3QSJxh6ZMdSfcV6978EkdoJOm2B9sfq6rN4WnOJXqM1+dQkjb0J+8UEN9T+iOguBqI0e5ZCQa4DQ8MeqoQyMIAAMAAQA=",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX1/0LI4kKFVZAsTE5qtvzhwQKhaBXfSs0XnZiRrBmKiGZwXVHUfrWGEI9ZVS7aU2sFvx6w==");
+  test_serialize_x(R"JSON({"cipher":8,"mode":3,"oneway":1,"password":"rV3rzCsVYTjfi8WlNxOtKYGOuHw+IWlPFpJIMV0i7O71QCWfEJD4lsvhyNFWnn2tVw7HQwi6iI/BmWCtRfATNmgMuoQ/GSHzUSOu7SqBDzJVT+WL0Act7QEPXKEqRhny55PASkzq6Xsax8alxBiGeXcsfUOArUH4Yx05Txir/GmTioWUUGZURWjPuj23Q/mOXNh9bf9lYMO/Wy84iDYhXs9U5E94iDly0m2O22o9E3YOIDTnCrt3zwxo9MNcd+ROJLCXS8UUcSiB59T/zwd20gpkE/pCpuo5lv370VD7edRYLBH7ggOyX+XtdM7TbLKLVv/D7pEZ8k6jots/TjP7wArmGcGf/LffMDwX+DTfaPAE1cIYFgi4YPgtxGZnrFnDFOSOz0rmhPASbSFIh7P1mm2zzQZGWe8Ib8ZC9uJjq5tgHkuMs1SzNEnsgbkBZy62sOKyf26pWiX0Fl5Ttat+5fff1yc71z1uWd/v2mM25RMX0yj4sBDZt1JzrsC8/QlmFbUj9H4j5FH35JYVLvf2VTymg8NZ2e8DfrHdaMwZPluQGuKobU18CG7o7Zw26GSAPdnVCYAL36zLGjWqrTjgXYY8OnYSm3ZAzz4Hd8DoPwuXs7ao8g9ZLp13VZ9uk42ZFo4ejKHZ2EnlEKWd4voMbdPey2l4emUg0ff5yhkMWPy/ykmqiuaKvwTfBRt2+/cHLy2YMCyq8zeK7nr1aEkm2gc/2i5MydXag2mzpYla+l0oGawoj+lp0CpUtGjtYpL03218S0l6ksVhy8dYcWg="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX19zCtln/H3DU0ihatOcBMgu0oPafHwNmSG1Fluwe7+wQmJEtLK129FNkFbxQX72"})JSON");
   // AES128 based on [representation 9].
-  test_serialize_x("AQAAAGcAAAAAAAAAgBBmom7ShMu5z23Iv1v4PPYgDp2POgY0vOhLQa0+IbaSNz8xDg6PEhW7Bf2Vid6tumBAzIxLaBnuUHI4TTNW8qknSMSBOlrPsIE48kvvt4i7UIZR4SqHf411eHRqj73O6YLO8/PMjwkAAQAAAA==",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX18GwuLUHh9wARTox0O/FA1GHRy6gUFUBtF2Dd0/O0WoujqEt/VqZ9f/1pm0dOR9qrNa7v4QMoTWAA==");
+  test_serialize_x(R"JSON({"cipher":9,"mode":1,"oneway":0,"password":"pRJ57hEE2Fvkt+RM1isUtVvDL7KNqgv7KF25QMkm+NSwHQVFzhduBLvsNPe/fCeT04q5k6sdByGQ/dCqN8NI56wNs33+YuFv1xGwbo3EQZzHsmJ35MlWgl9dnbMPdSVLMr2sPk4MKA=="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX188pjfzbZuEtLMTDottclYaKWU+zXEU5ijxhk0ZUnurRN0kAdRelPyyUbMhzg1qmO4JuT84PIsrwQ=="})JSON");
   // AES192 based on [representation 10].
-  test_serialize_x("AQAAAHMAAAAAAAAAEVenRzR41PCt83zF0kzddEOK7DgG8G/Bqz+FrBU7Wo+nmv7/GRd9GcpMJhdn4ISXZ2K4XAvdENyJwr5rMfMQeYG/uurPvxrTdtNVqsJgItwnM2dsuJSxvM5jcZs8VS2oPvwPvtwsrmkJmpI3XBoxHcWaDwoABAADAA==",
-                   "AAAAADoAAAAAAAAAU2FsdGVkX182cNlusZDOb97+MAlOE6CKXZm1V469Hp37mHVCXF5ypBZCO9Yee4J4gpWEOitDhPpCEg==");
+  test_serialize_x(R"JSON({"cipher":10,"mode":4,"oneway":3,"password":"k1yiX1a0hkpnnoe2ko6jq/HNM6OSJHAcfzQEPKOLRdJPJW/cWvQFCrlECOLaImqi7ouiVtj9oBox/mfdm6ZFXC7cU9xIoOk8wts5IUFLFTAvR3TYGX4oez5Fh9w2VEdLTg95e8PF8RZ3WUDitxHeEeIOkw=="})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX19QfjndNx+8rDjLXSjWa3BqeuqzY0HHxxibR99031wTuugCtXO36pG8Ds2/Kj8O"})JSON");
   // AES256 based on [representation 11].
-  test_serialize_x("AQAAABIAAAAAAAAAKBJFnW8oPO1WaSig8CeTrkyCCwACAAUA",
-                   "AAAAAEAAAAAAAAAAU2FsdGVkX1+XSmhx5v23fJrI1OUfSUhr1GBRKXAn6qjU1nsEeb4VJJfBg6l2ID8UkFtTa+PhKVZQOyMtCnNSZA==");
+  test_serialize_x(R"JSON({"cipher":11,"mode":2,"oneway":5,"password":"MLG20WdnAOQA9h0cbnqhDCK7"})JSON",
+                   R"JSON({"buffer":"U2FsdGVkX199hXW/lN1gytAiR6YVopESdZ08lYPpNC23RolSBdZ56prRgYPT4PQTzNhS1u2YvJHf5cCNyDO/zQ=="})JSON");
 }
 
 /*-----.

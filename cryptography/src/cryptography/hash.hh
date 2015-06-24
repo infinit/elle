@@ -18,12 +18,23 @@ namespace infinit
     /*----------.
     | Functions |
     `----------*/
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+    /// Hash a plain text and return a digest message.
+    Digest
+    hash(Plain const& plain,
+         Oneway const oneway);
+# endif
 
-    /// Hash anything serializable and return a digest.
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+    /*-------.
+    | Legacy |
+    `-------*/
+
     template <typename T = Plain>
     Digest
     hash(T const& value,
          Oneway oneway);
+# endif
   }
 }
 

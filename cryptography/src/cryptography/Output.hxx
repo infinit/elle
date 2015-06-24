@@ -2,9 +2,9 @@
 # define INFINIT_CRYPTOGRAPHY_OUTPUT_HXX
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-/*-------------.
-| Serializable |
-`-------------*/
+/*-------.
+| Legacy |
+`-------*/
 
 ELLE_SERIALIZE_SIMPLE(infinit::cryptography::Output,
                       archive,

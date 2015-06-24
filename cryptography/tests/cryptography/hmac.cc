@@ -1,5 +1,4 @@
 #include "cryptography.hh"
-#include "Sample.hh"
 
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
@@ -7,10 +6,7 @@
 #include <cryptography/hmac.hh>
 #include <cryptography/random.hh>
 
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
-#include <elle/serialize/HexadecimalArchive.hh>
-#include <elle/format/hexadecimal.hh>
+#include <elle/serialization/json.hh>
 
 static std::string const _input(
   "- Back off Susan Boyle!");
@@ -31,9 +27,14 @@ test_represent_n(elle::String const& K)
         infinit::cryptography::Plain(_input),
         K,
         O);
-    std::string representation =
-      elle::format::hexadecimal::encode(digest.buffer());
-    elle::printf("[representation %s] %s\n", N, representation);
+
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      digest.serialize(output);
+    }
+
+    elle::printf("[representation %s] %s\n", N, stream.str());
   }
 }
 
@@ -67,41 +68,29 @@ test_represent()
 | Operate |
 `--------*/
 
-template <infinit::cryptography::Oneway O,
-          elle::Natural32 S>
 void
-test_operate_x(elle::String const& K,
-               elle::String const& R)
+test_operate()
 {
-  // Verify a HMAC digest.
-  {
-    elle::Buffer buffer = elle::format::hexadecimal::decode(R);
+  elle::String key =
+    infinit::cryptography::random::generate<elle::String>(32);
 
-    BOOST_CHECK_EQUAL(
-      infinit::cryptography::hmac::verify(
-        infinit::cryptography::Digest(buffer),
-        infinit::cryptography::Plain(_input),
-        K,
-        O),
-      true);
-  }
-
-  // HMAC a complex type.
+  // HMAC sign/verify a random content.
   {
-    Sample const input(
-      42,
-      infinit::cryptography::random::generate<elle::String>(S));
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(49);
 
     infinit::cryptography::Digest digest =
-      infinit::cryptography::hmac::sign(input, K, O);
+      infinit::cryptography::hmac::sign(
+        infinit::cryptography::Plain(buffer),
+        key,
+        infinit::cryptography::Oneway::sha1);
 
-    BOOST_CHECK_EQUAL(
-      infinit::cryptography::hmac::verify(
-        digest,
-        input,
-        K,
-        O),
-      true);
+    BOOST_CHECK_EQUAL(infinit::cryptography::hmac::verify(
+                        digest,
+                        infinit::cryptography::Plain(buffer),
+                        key,
+                        infinit::cryptography::Oneway::sha1),
+                      true);
   }
 
   // Try to verify an invalid HMAC.
@@ -113,37 +102,66 @@ test_operate_x(elle::String const& K,
       infinit::cryptography::hmac::verify(
         infinit::cryptography::Digest(buffer),
         infinit::cryptography::Plain(_input),
-        K,
-        O),
+        key,
+        infinit::cryptography::Oneway::md5),
       false);
   }
 }
 
+/*----------.
+| Serialize |
+`----------*/
+
+template <infinit::cryptography::Oneway O>
+void
+test_serialize_x(elle::String const& key,
+                 elle::String const& R)
+{
+  std::stringstream stream(R);
+  typename elle::serialization::Json::SerializerIn input(stream);
+  infinit::cryptography::Digest digest(input);
+
+  BOOST_CHECK_EQUAL(
+    infinit::cryptography::hmac::verify(
+      digest,
+      infinit::cryptography::Plain(_input),
+      key,
+      O),
+    true);
+}
+
 static
 void
-test_operate()
+test_serialize()
 {
   // MD5 based on [representation 1].
-  test_operate_x<infinit::cryptography::Oneway::md5, 820>("one",
-                                                          "89f94dc2a07e5f98ccb0895faedb8597");
+  test_serialize_x<infinit::cryptography::Oneway::md5>(
+    "one",
+    R"JSON({"buffer":"iflNwqB+X5jMsIlfrtuFlw=="})JSON");
   // SHA based on [representation 2].
-  test_operate_x<infinit::cryptography::Oneway::sha, 31>("deux",
-                                                         "e9ccd70278f254a0d4a74e1806e8ca6fb0671e1a");
+  test_serialize_x<infinit::cryptography::Oneway::sha>(
+    "deux",
+    R"JSON({"buffer":"6czXAnjyVKDUp04YBujKb7BnHho="})JSON");
   // SHA-1 based on [representation 3].
-  test_operate_x<infinit::cryptography::Oneway::sha1, 9028>("san",
-                                                            "55362be05530fe6359fe980db363232fc02473c8");
+  test_serialize_x<infinit::cryptography::Oneway::sha1>(
+    "san",
+    R"JSON({"buffer":"VTYr4FUw/mNZ/pgNs2MjL8Akc8g="})JSON");
   // SHA-224 based on [representation 4].
-  test_operate_x<infinit::cryptography::Oneway::sha224, 630>("cetiri",
-                                                             "b2dcadd118569cc8f7076bbbf9b13446cd7f0285b3b7a72d41911545");
+  test_serialize_x<infinit::cryptography::Oneway::sha224>(
+    "cetiri",
+    R"JSON({"buffer":"styt0RhWnMj3B2u7+bE0Rs1/AoWzt6ctQZEVRQ=="})JSON");
   // SHA-256 based on [representation 5].
-  test_operate_x<infinit::cryptography::Oneway::sha256, 73>("négy",
-                                                            "6bead92026badb1e4102806a2277d143407a98a5c8265016e1b81b63b8436802");
+  test_serialize_x<infinit::cryptography::Oneway::sha256>(
+    "négy",
+    R"JSON({"buffer":"a+rZICa62x5BAoBqInfRQ0B6mKXIJlAW4bgbY7hDaAI="})JSON");
   // SHA-384 based on [representation 6].
-  test_operate_x<infinit::cryptography::Oneway::sha384, 933>("seis",
-                                                             "10c4a8a6b5ab4168092a8c832d6076b7622bf541b8f2835556cfc6a5767d2c42ec7eb688ed12978ba0f1cfcd856837d9");
+  test_serialize_x<infinit::cryptography::Oneway::sha384>(
+    "seis",
+    R"JSON({"buffer":"EMSoprWrQWgJKoyDLWB2t2Ir9UG48oNVVs/GpXZ9LELsfraI7RKXi6Dxz82FaDfZ"})JSON");
   // SHA-512 based on [representation 7].
-  test_operate_x<infinit::cryptography::Oneway::sha512, 9223>("yedi",
-                                                              "7bbc550b1459ac1b503c9ecb170863ef66ade07372c53f938cdf091d27b94d583282fc8d0a411fffcabbf1596ea2e42eef5dab879b3ec670adc2b6b277ce892c");
+  test_serialize_x<infinit::cryptography::Oneway::sha512>(
+    "yedi",
+    R"JSON({"buffer":"e7xVCxRZrBtQPJ7LFwhj72at4HNyxT+TjN8JHSe5TVgygvyNCkEf/8q78VluouQu712rh5s+xnCtwrayd86JLA=="})JSON");
 }
 
 /*-----.
@@ -156,6 +174,7 @@ ELLE_TEST_SUITE()
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
+  suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

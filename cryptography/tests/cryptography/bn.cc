@@ -33,7 +33,7 @@ test_represent()
     std::stringstream stream;
     {
       typename elle::serialization::Json::SerializerOut output(stream);
-      output.serialize("bignum", &bn);
+      output.serialize("data", &bn);
     }
 
     ::BN_free(&bn);
@@ -52,27 +52,24 @@ test_serialize()
   // Deserialize from the hard-coded [representation 1]: useful for detecting
   // changes in formats.
   {
-    elle::String archive1(R"JSON({"bignum":"LxS0y2asiXs/vUKwfLzM7oMpbmwdKiHO6Rs4HUK2I6HbCNMxfRW0rd+ND/+UtWoa4bmhfYOcntYsZlkUTA65OSAPGVhMx4tyROtOAAo4e7mNu9A78ZEpFFOyHQfg9sOSbVIVq14+94D/w2TAbRCh/eKxfA0zXmvaI1AQZFlmQ80="})JSON");
+    elle::String archive1(R"JSON({"data":"LxS0y2asiXs/vUKwfLzM7oMpbmwdKiHO6Rs4HUK2I6HbCNMxfRW0rd+ND/+UtWoa4bmhfYOcntYsZlkUTA65OSAPGVhMx4tyROtOAAo4e7mNu9A78ZEpFFOyHQfg9sOSbVIVq14+94D/w2TAbRCh/eKxfA0zXmvaI1AQZFlmQ80="})JSON");
 
     ::BIGNUM* bn = nullptr;
 
     std::stringstream stream1(archive1);
-    {
-      typename elle::serialization::Json::SerializerIn input(stream1);
-      input.serialize("bignum", bn);
-    }
+    typename elle::serialization::Json::SerializerIn input1(stream1);
+    input1.serialize("data", bn);
+
     std::stringstream stream2;
     {
       typename elle::serialization::Json::SerializerOut output(stream2);
-      output.serialize("bignum", bn);
+      output.serialize("data", bn);
     }
 
     ::BIGNUM* _bn = nullptr;
 
-    {
-      typename elle::serialization::Json::SerializerIn input(stream2);
-      input.serialize("bignum", _bn);
-    }
+    typename elle::serialization::Json::SerializerIn input2(stream2);
+    input2.serialize("data", _bn);
 
     BOOST_CHECK_EQUAL(*bn, *_bn);
 

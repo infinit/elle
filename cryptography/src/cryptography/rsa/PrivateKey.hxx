@@ -5,16 +5,19 @@
 // ---------- Class -----------------------------------------------------------
 //
 
-# include <cryptography/serialization.hh>
-# include <cryptography/Cryptosystem.hh>
-# include <cryptography/Plain.hh>
-# include <cryptography/Exception.hh>
-# include <cryptography/hash.hh>
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 
-# include <elle/Buffer.hh>
-# include <elle/log.hh>
+#  include <cryptography/serialization.hh>
+#  include <cryptography/Cryptosystem.hh>
+#  include <cryptography/Plain.hh>
+#  include <cryptography/Exception.hh>
+#  include <cryptography/hash.hh>
+#  include <cryptography/evp.hh>
 
-# include <openssl/err.h>
+#  include <elle/Buffer.hh>
+#  include <elle/log.hh>
+
+#  include <openssl/err.h>
 
 namespace infinit
 {
@@ -62,7 +65,6 @@ namespace infinit
   }
 }
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------------.
 | Serializable |
 `-------------*/
@@ -303,13 +305,15 @@ namespace std
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);
       archive << value;
-# else
-#  error "XXX new serialization"
-# endif
 
       size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
+# else
+#  warning "XXX new serialization"
+# endif
+
+      return (0); // XXX
     }
   };
 }

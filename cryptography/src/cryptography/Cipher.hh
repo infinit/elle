@@ -3,6 +3,8 @@
 
 # include <cryptography/Output.hh>
 
+# include <elle/serialization/Serializer.hh>
+
 # include <openssl/evp.h>
 
 namespace infinit
@@ -66,6 +68,42 @@ namespace infinit
       std::pair<Cipher, Mode>
       resolve(::EVP_CIPHER const* function);
     }
+  }
+}
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    // Cipher
+    template <>
+    struct Serialize<infinit::cryptography::Cipher>
+    {
+      typedef elle::Natural8 Type;
+      static
+      elle::Natural8
+      convert(infinit::cryptography::Cipher const& value);
+      static
+      infinit::cryptography::Cipher
+      convert(elle::Natural8 const& representation);
+    };
+
+    // Mode
+    template <>
+    struct Serialize<infinit::cryptography::Mode>
+    {
+      typedef elle::Natural8 Type;
+      static
+      elle::Natural8
+      convert(infinit::cryptography::Mode const& value);
+      static
+      infinit::cryptography::Mode
+      convert(elle::Natural8 const& representation);
+    };
   }
 }
 

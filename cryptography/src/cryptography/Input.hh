@@ -58,11 +58,10 @@ namespace infinit
       ELLE_OPERATOR_GT(Output);
       ELLE_OPERATOR_GTE(Output);
 
-      /*-----------.
-      | Interfaces |
-      `-----------*/
+      /*----------.
+      | Printable |
+      `----------*/
     public:
-      // printable
       void
       print(std::ostream& stream) const override;
 

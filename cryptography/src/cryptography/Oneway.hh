@@ -4,6 +4,7 @@
 # include <cryptography/fwd.hh>
 
 # include <elle/types.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>
 
@@ -50,6 +51,28 @@ namespace infinit
       Oneway
       resolve(::EVP_MD const* function);
     }
+  }
+}
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    template <>
+    struct Serialize<infinit::cryptography::Oneway>
+    {
+      typedef elle::Natural8 Type;
+      static
+      elle::Natural8
+      convert(infinit::cryptography::Oneway const& value);
+      static
+      infinit::cryptography::Oneway
+      convert(elle::Natural8 const& representation);
+    };
   }
 }
 

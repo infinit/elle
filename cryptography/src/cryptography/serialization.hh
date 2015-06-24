@@ -1,12 +1,13 @@
-#ifndef INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
-# define INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# ifndef INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
+#  define INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
 
-# include <cryptography/fwd.hh>
+#  include <cryptography/fwd.hh>
 
-# include <elle/types.hh>
-# include <elle/Buffer.hh>
+#  include <elle/types.hh>
+#  include <elle/Buffer.hh>
 
-# include <iosfwd>
+#  include <iosfwd>
 
 namespace infinit
 {
@@ -34,6 +35,7 @@ namespace infinit
   }
 }
 
-# include <cryptography/serialization.hxx>
+#  include <cryptography/serialization.hxx>
 
+# endif
 #endif

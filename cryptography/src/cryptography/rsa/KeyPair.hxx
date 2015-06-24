@@ -110,7 +110,8 @@ namespace std
     size_t
     operator ()(infinit::cryptography::rsa::KeyPair const& value) const
     {
-      return (std::hash<infinit::cryptography::rsa::PublicKey>()(value.K()));
+      // XXX return (std::hash<infinit::cryptography::rsa::PublicKey>()(value.K()));
+      return (0);
     }
   };
 }

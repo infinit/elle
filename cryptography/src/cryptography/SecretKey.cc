@@ -5,6 +5,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/evp.hh>
 
+#include <elle/serialization/Serializer.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
@@ -68,18 +69,45 @@ namespace infinit
       cryptography::require();
     }
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey,
-                                    _password)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-#endif
-
     /*--------.
     | Methods |
     `--------*/
+
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+    Code
+    SecretKey::encrypt(Plain const& plain) const
+    {
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("plain: %x", plain);
+
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
+
+      return (Code(evp::symmetric::encrypt(plain.buffer(),
+                                           this->_password,
+                                           function_cipher,
+                                           function_oneway)));
+    }
+
+    Clear
+    SecretKey::decrypt(Code const& code) const
+    {
+      ELLE_TRACE_METHOD("");
+      ELLE_DUMP("code: %x", code);
+
+      ::EVP_CIPHER const* function_cipher =
+          cipher::resolve(this->_cipher, this->_mode);
+      ::EVP_MD const* function_oneway =
+          oneway::resolve(this->_oneway);
+
+      return (Clear(evp::symmetric::decrypt(code.buffer(),
+                                            this->_password,
+                                            function_cipher,
+                                            function_oneway)));
+    }
+#endif
 
     elle::Natural32
     SecretKey::size() const
@@ -92,38 +120,6 @@ namespace infinit
     {
       return (this->_password.size() * 8);
     }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    /*-------.
-    | Legacy |
-    `-------*/
-
-    Code
-    SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
-    {
-      ELLE_DEBUG_METHOD("");
-      ELLE_DUMP("plain: %x", plain);
-
-      elle::Buffer buffer;
-      buffer.writer() << plain;
-
-      return (this->encrypt(Plain(buffer)));
-    }
-
-    elle::Buffer
-    SecretKey::legacy_decrypt_buffer(Code const& code) const
-    {
-      ELLE_DEBUG_METHOD("");
-      ELLE_DUMP("code: %x", code);
-
-      Clear clear(this->decrypt(code));
-
-      elle::Buffer value;
-      clear.buffer().reader() >> value;
-
-      return (value);
-    }
-#endif
 
     /*----------.
     | Operators |
@@ -153,6 +149,63 @@ namespace infinit
                     this->_password,
                     this->_cipher, this->_mode, this->_oneway);
     }
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    SecretKey::SecretKey(elle::serialization::SerializerIn& serializer)
+    {
+      this->serialize(serializer);
+    }
+
+    void
+    SecretKey::serialize(elle::serialization::Serializer& serializer)
+    {
+      serializer.serialize("password", this->_password);
+      serializer.serialize("cipher", this->_cipher);
+      serializer.serialize("mode", this->_mode);
+      serializer.serialize("oneway", this->_oneway);
+    }
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+    /*-------.
+    | Legacy |
+    `-------*/
+
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey,
+                                    _password)
+    {
+      // Make sure the cryptographic system is set up.
+      cryptography::require();
+    }
+
+    Code
+    SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
+    {
+      ELLE_DEBUG_METHOD("");
+      ELLE_DUMP("plain: %x", plain);
+
+      elle::Buffer buffer;
+      buffer.writer() << plain;
+
+      return (this->encrypt(Plain(buffer)));
+    }
+
+    elle::Buffer
+    SecretKey::legacy_decrypt_buffer(Code const& code) const
+    {
+      ELLE_DEBUG_METHOD("");
+      ELLE_DUMP("code: %x", code);
+
+      Clear clear(this->decrypt(code));
+
+      elle::Buffer value;
+      clear.buffer().reader() >> value;
+
+      return (value);
+    }
+#endif
   }
 }
 

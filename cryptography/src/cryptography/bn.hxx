@@ -2,9 +2,9 @@
 # define INFINIT_CRYPTOGRAPHY_BN_HXX
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-/*-----------.
-| Serializer |
-`-----------*/
+/*-------.
+| Legacy |
+`-------*/
 
 #  include <elle/types.hh>
 #  include <elle/finally.hh>

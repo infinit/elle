@@ -8,14 +8,15 @@
 # include <cryptography/serialization.hh>
 # include <cryptography/evp.hh>
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+/*-------.
+| Legacy |
+`-------*/
+
 namespace infinit
 {
   namespace cryptography
   {
-    /*--------.
-    | Methods |
-    `--------*/
-
     template <typename T>
     Code
     SecretKey::encrypt(T const& value) const
@@ -59,11 +60,6 @@ namespace infinit
     }
   }
 }
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-/*-------------.
-| Serializable |
-`-------------*/
 
 #  include <elle/serialize/Serializer.hh>
 #  include <elle/serialize/StaticFormat.hh>

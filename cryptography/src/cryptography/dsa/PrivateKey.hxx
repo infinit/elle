@@ -27,6 +27,7 @@ namespace infinit
       Signature
       PrivateKey::sign(T const& value) const
       {
+        /* XXX
         ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PrivateKey");
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("value: %x", value);
@@ -39,6 +40,8 @@ namespace infinit
         Digest digest = hash(Plain(_value), this->_digest_algorithm);
 
         return (this->sign(digest));
+        */
+        elle::unreachable();
       }
     }
   }

@@ -38,12 +38,6 @@ namespace infinit
     {
     }
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output,
-                                    _buffer)
-    {}
-#endif
-
     /*----------.
     | Operators |
     `----------*/
@@ -107,15 +101,25 @@ namespace infinit
     | Serialization |
     `--------------*/
 
-    Output::Output(elle::serialization::SerializerIn& input)
+    Output::Output(elle::serialization::SerializerIn& serializer)
     {
-      this->serialize(input);
+      this->serialize(serializer);
     }
 
     void
-    Output::serialize(elle::serialization::Serializer& s)
+    Output::serialize(elle::serialization::Serializer& serializer)
     {
-      s.serialize("buffer", this->_buffer);
+      serializer.serialize("buffer", this->_buffer);
     }
+
+    /*-------.
+    | Legacy |
+    `-------*/
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output,
+                                    _buffer)
+    {}
+#endif
   }
 }

@@ -1,22 +1,21 @@
 #ifndef INFINIT_CRYPTOGRAPHY_HASH_HXX
 # define INFINIT_CRYPTOGRAPHY_HASH_HXX
 
-# include <cryptography/Plain.hh>
-# include <cryptography/serialization.hh>
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+/*-------.
+| Legacy |
+`-------*/
 
-# include <elle/serialize/BaseArchive.hxx>
+#  include <cryptography/Plain.hh>
+#  include <cryptography/serialization.hh>
 
-# include <elle/Buffer.hh>
-# include <elle/log.hh>
+#  include <elle/Buffer.hh>
+#  include <elle/log.hh>
 
 namespace infinit
 {
   namespace cryptography
   {
-    /*----------.
-    | Functions |
-    `----------*/
-
     template <typename T>
     Digest
     hash(T const& value,
@@ -34,5 +33,6 @@ namespace infinit
     }
   }
 }
+# endif
 
 #endif

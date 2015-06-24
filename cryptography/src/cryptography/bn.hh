@@ -40,11 +40,11 @@ namespace elle
     {
       typedef elle::Buffer Type;
       static
-      Type
+      elle::Buffer
       convert(::BIGNUM* const& value);
       static
       ::BIGNUM*
-      convert(Type const& representation);
+      convert(elle::Buffer const& representation);
     };
   }
 }

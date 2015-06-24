@@ -98,6 +98,7 @@ namespace infinit
         void
         _check() const;
       public:
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Decrypt a code and returns the original clear text.
         ///
         /// Note that the code is, in practice, an archive containing both
@@ -106,13 +107,14 @@ namespace infinit
         template <typename T = Clear>
         T
         decrypt(Code const& code) const;
-        /// Return a signature of the given digest.
-        Signature
-        sign(Digest const& digest) const;
         /// Return a signature of any given serializable type.
         template <typename T = Plain>
         Signature
         sign(T const& value) const;
+# endif
+        /// Return a signature of the given digest.
+        Signature
+        sign(Digest const& digest) const;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Return the seed once unrotated by the private key.
         Seed

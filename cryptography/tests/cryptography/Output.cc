@@ -4,9 +4,7 @@
 #include <cryptography/Input.hh>
 #include <cryptography/random.hh>
 
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
-#include <elle/serialize/Base64Archive.hh>
+#include <elle/serialization/json.hh>
 
 /*----------.
 | Represent |

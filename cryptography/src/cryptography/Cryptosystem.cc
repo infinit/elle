@@ -48,3 +48,27 @@ namespace infinit
     }
   }
 }
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    elle::Natural8
+    Serialize<infinit::cryptography::Cryptosystem>::convert(
+      infinit::cryptography::Cryptosystem const& value)
+    {
+      return (static_cast<elle::Natural8>(value));
+    }
+
+    infinit::cryptography::Cryptosystem
+    Serialize<infinit::cryptography::Cryptosystem>::convert(
+      elle::Natural8 const& representation)
+    {
+      return (static_cast<infinit::cryptography::Cryptosystem>(representation));
+    }
+  }
+}

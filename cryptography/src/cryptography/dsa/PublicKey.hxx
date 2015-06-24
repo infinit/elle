@@ -27,6 +27,7 @@ namespace infinit
       PublicKey::verify(Signature const& signature,
                         T const& value) const
       {
+        /* XXX
         ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PublicKey");
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
@@ -40,6 +41,8 @@ namespace infinit
         Digest digest = hash(Plain(_value), this->_digest_algorithm);
 
         return (this->verify(signature, digest));
+        */
+        elle::unreachable();
       }
     }
   }

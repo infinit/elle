@@ -50,10 +50,6 @@ namespace infinit
       | Construction |
       `-------------*/
     public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      SecretKey() {} // XXX[to deserialize]
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
-# endif
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
       SecretKey(elle::String const& password,
@@ -74,34 +70,20 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-      /// Encrypt any serializable object and return a ciphered text
-      /// of its archive.
-      template <typename T = Plain>
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /// Encrypt a given plain text.
       Code
-      encrypt(T const& value) const;
-      /// Decrypt the given code and return a clear text i.e the
-      /// equivalent of the plain text provided as input to the
-      /// encryption process.
-      template <typename T = Clear>
-      T
+      encrypt(Plain const& value) const;
+      /// Decrypt a given code.
+      Clear
       decrypt(Code const& code) const;
+# endif
       /// Return the size, in bytes, of the secret key.
       elle::Natural32
       size() const;
       /// Return the length, in bits, of the secret key.
       elle::Natural32
       length() const;
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /*-------.
-      | Legacy |
-      `-------*/
-    public:
-      Code
-      legacy_encrypt_buffer(elle::Buffer const& buffer) const;
-      elle::Buffer
-      legacy_decrypt_buffer(Code const& code) const;
-# endif
 
       /*----------.
       | Operators |
@@ -118,10 +100,13 @@ namespace infinit
       void
       print(std::ostream& stream) const override;
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
-# endif
+      /*--------------.
+      | Serialization |
+      `--------------*/
+    public:
+      SecretKey(elle::serialization::SerializerIn& serializer);
+      void
+      serialize(elle::serialization::Serializer& serializer);
 
       /*-----------.
       | Attributes |
@@ -131,6 +116,32 @@ namespace infinit
       ELLE_ATTRIBUTE_R(Cipher, cipher);
       ELLE_ATTRIBUTE_R(Mode, mode)
       ELLE_ATTRIBUTE_R(Oneway, oneway);
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /*-------.
+      | Legacy |
+      `-------*/
+    public:
+      // construction
+      SecretKey() {}
+      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
+      // methods
+      template <typename T = Plain>
+      Code
+      encrypt(T const& value) const;
+      template <typename T = Clear>
+      T
+      decrypt(Code const& code) const;
+      Code
+      legacy_encrypt_buffer(elle::Buffer const& buffer) const;
+      elle::Buffer
+      legacy_decrypt_buffer(Code const& code) const;
+      // serializable
+      ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
+      using elle::serialize::SerializableMixin<
+        infinit::cryptography::SecretKey,
+        elle::serialize::Base64Archive>::serialize;
+# endif
     };
   }
 }

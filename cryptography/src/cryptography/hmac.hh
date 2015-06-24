@@ -20,35 +20,51 @@ namespace infinit
       /*----------.
       | Functions |
       `----------*/
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      Digest
+      sign(Plain const& plain,
+           elle::String const& key,
+           Oneway const oneway);
+      template <typename K>
+      Digest
+      sign(Plain const& plain,
+           K const& key,
+           Oneway const oneway);
+      elle::Boolean
+      verify(Digest const& digest,
+             Plain const& plain,
+             elle::String const& key,
+             Oneway const oneway);
+      template <typename K>
+      elle::Boolean
+      verify(Digest const& digest,
+             Plain const& plain,
+             K const& key,
+             Oneway const oneway);
+# endif
 
-      /// HMAC any serializable data, including plain texts i.e Plain
-      /// with a string-based key.
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /*-------.
+      | Legacy |
+      `-------*/
+
       template <typename T = Plain>
       Digest
       sign(T const& value,
            elle::String const& key,
            Oneway const oneway);
-      /// HMAC with a private key, no matter the algorithm. Example:
-      ///
-      ///   rsa::PrivateKey k;
-      ///
-      ///   hmac::sign(value, k, Oneway::sha1);
       template <typename T = Plain,
                 typename K>
       Digest
       sign(T const& value,
            K const& key,
            Oneway const oneway);
-      /// Verify any serializable data, include plain texts with a
-      /// string-based key.
       template <typename T = Plain>
       elle::Boolean
       verify(Digest const& digest,
              T const& value,
              elle::String const& key,
              Oneway const oneway);
-      /// Verify a HMAC signature with the public key associated with
-      /// the private key used to sign.
       template <typename T = Plain,
                 typename K>
       elle::Boolean
@@ -56,6 +72,7 @@ namespace infinit
              T const& value,
              K const& key,
              Oneway const oneway);
+# endif
     }
   }
 }

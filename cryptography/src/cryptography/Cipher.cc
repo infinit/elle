@@ -471,3 +471,43 @@ namespace infinit
     }
   }
 }
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    // Cipher
+    elle::Natural8
+    Serialize<infinit::cryptography::Cipher>::convert(
+      infinit::cryptography::Cipher const& value)
+    {
+      return (static_cast<elle::Natural8>(value));
+    }
+
+    infinit::cryptography::Cipher
+    Serialize<infinit::cryptography::Cipher>::convert(
+      elle::Natural8 const& representation)
+    {
+      return (static_cast<infinit::cryptography::Cipher>(representation));
+    }
+
+    // Mode
+    elle::Natural8
+    Serialize<infinit::cryptography::Mode>::convert(
+      infinit::cryptography::Mode const& value)
+    {
+      return (static_cast<elle::Natural8>(value));
+    }
+
+    infinit::cryptography::Mode
+    Serialize<infinit::cryptography::Mode>::convert(
+      elle::Natural8 const& representation)
+    {
+      return (static_cast<infinit::cryptography::Mode>(representation));
+    }
+  }
+}
