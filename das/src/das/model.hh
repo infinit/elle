@@ -42,11 +42,10 @@ namespace das
     };                                          \
   }
 
-#define DAS_MODEL(Class, Fields)                                        \
+#define DAS_MODEL(Class, Fields, Name)                                  \
   BOOST_PP_SEQ_FOR_EACH(DAS_MODEL_HELPER,                               \
                         Class, BOOST_PP_VARIADIC_TO_SEQ Fields)         \
-  DAS_MODEL_DEFINE(Class, Fields, BOOST_PP_CAT(Das, Class));            \
-  DAS_MODEL_DEFAULT(Class, BOOST_PP_CAT(Das, Class));                   \
+  DAS_MODEL_DEFINE(Class, Fields, Name);                                \
 
 #define DAS_MODEL_HELPER(R, Class, Name)        \
   DAS_MODEL_FIELD(Class, Name)                  \
