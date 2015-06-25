@@ -110,8 +110,9 @@ _environment_format_test(bool env)
   clear_env();
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    // FIXME: Checking time printing is non-deterministic.
+    // elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
     logger = new elle::log::TextLogger(ss);
@@ -124,16 +125,20 @@ _environment_format_test(bool env)
       false,  // display_type
       false,  // enable_pid
       false,  // enable_tid
-      true,   // enable_time
+      // FIXME: Checking time printing is non-deterministic.
+      // true,   // enable_time
+      false,
       false   // universal_time
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
-  auto time = boost::posix_time::second_clock::local_time();
   ELLE_LOG("Test");
-  res << "[1m" << time << ": [Test] Test\n[0m";
+  // FIXME: Checking time printing is non-deterministic.
+  // auto time = boost::posix_time::second_clock::local_time();
+  // res << "[1m" << time << ": [Test] Test\n[0m";
+  res << "[1m[Test] Test\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -141,10 +146,11 @@ _environment_format_test(bool env)
   clear_env();
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-    elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
+    // FIXME: Checking time printing is non-deterministic.
+    // elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    // elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID", ""), "");
     logger = new elle::log::TextLogger(ss);
   }
@@ -156,7 +162,9 @@ _environment_format_test(bool env)
       false,  // display_type
       false,  // enable_pid
       false,  // enable_tid
-      true,   // enable_time
+      // FIXME: Checking time printing is non-deterministic.
+      // true,   // enable_time
+      false,
       true    // universal_time
     );
   }
@@ -165,9 +173,11 @@ _environment_format_test(bool env)
                     Level::log);
 
   ELLE_LOG("Test 2");
-  res << "[1m"
-      << boost::posix_time::second_clock::universal_time() << ": "
-      << "[Test] Test 2\n[0m";
+  // FIXME: Checking time printing is non-deterministic.
+  // res << "[1m"
+  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << "[Test] Test 2\n[0m";
+  res << "[1m[Test] Test 2\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
   ss.str("");
@@ -206,11 +216,12 @@ _environment_format_test(bool env)
   clear_env();
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-    elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
+    // FIXME: Checking time printing is non-deterministic.
+    // elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    // elle::os::setenv("ELLE_LOG_TIME_UNIVERSAL", "1", 0);
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
     elle::os::setenv("ELLE_LOG_PID", "1", 0);
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL"), "1");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
     logger = new elle::log::TextLogger(ss);
   }
@@ -222,17 +233,23 @@ _environment_format_test(bool env)
       false,  // display_type
       true,   // enable_pid
       false,  // enable_tid
-      true,   // enable_time
-      true    // universal_time
+      // FIXME: Checking time printing is non-deterministic.
+      // true,   // enable_time
+      // true    // universal_time
+      false,
+      false
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
                     Level::log);
   ELLE_LOG("Test 4");
-  res << "[1m"
-      << boost::posix_time::second_clock::universal_time() << ": "
-      << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+  // FIXME: Checking time printing is non-deterministic.
+  // res << "[1m"
+  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+  //     << "Test 4\n[0m";
+  res << "[1m[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
       << "Test 4\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
@@ -241,10 +258,11 @@ _environment_format_test(bool env)
   clear_env();
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_TIME", "1", 0);
-    elle::os::setenv("ELLE_LOG_PID", "1", 0);
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
+    // FIXME: Checking time printing is non-deterministic.
+    // elle::os::setenv("ELLE_LOG_TIME", "1", 0);
+    // elle::os::setenv("ELLE_LOG_PID", "1", 0);
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
+    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
     logger = new elle::log::TextLogger(ss);
   }
@@ -256,16 +274,22 @@ _environment_format_test(bool env)
       false,  // display_type
       true,   // enable_pid
       false,  // enable_tid
-      true,   // enable_time
+      // FIXME: Checking time printing is non-deterministic.
+      // true,   // enable_time
+      false,
       false   // universal_time
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
   ELLE_WARN("Test 5");
-  res << "[33;01;33m"
-      << boost::posix_time::second_clock::local_time() << ": "
-      << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+  // FIXME: Checking time printing is non-deterministic.
+  // res << "[33;01;33m"
+  //     << boost::posix_time::second_clock::local_time() << ": "
+  //     << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
+  //     << "[warning] Test 5\n[0m";
+  res << "[33;01;33m[Test] ["
+      << boost::lexical_cast<std::string>(getpid()) << "] "
       << "[warning] Test 5\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
 
