@@ -1,11 +1,10 @@
-#include "cryptography.hh"
-
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/random.hh>
 
+#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 /*----------.

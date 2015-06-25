@@ -2,6 +2,7 @@
 # define INFINIT_CRYPTOGRAPHY_RSA_PADDING_HH
 
 # include <elle/types.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>
 
@@ -59,6 +60,28 @@ namespace infinit
         footprint(::EVP_PKEY_CTX* context);
       }
     }
+  }
+}
+
+/*--------------.
+| Serialization |
+`--------------*/
+
+namespace elle
+{
+  namespace serialization
+  {
+    template <>
+    struct Serialize<infinit::cryptography::rsa::Padding>
+    {
+      typedef elle::Natural8 Type;
+      static
+      elle::Natural8
+      convert(infinit::cryptography::rsa::Padding const& value);
+      static
+      infinit::cryptography::rsa::Padding
+      convert(elle::Natural8 const& representation);
+    };
   }
 }
 

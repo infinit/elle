@@ -1,4 +1,4 @@
-#include "cryptography.hh"
+#include <elle/test.hh>
 
 #include <cryptography/Input.hh>
 #include <cryptography/Output.hh>

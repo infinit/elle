@@ -1,4 +1,5 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+
 # ifndef INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
 #  define INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
 
@@ -38,4 +39,5 @@ namespace infinit
 #  include <cryptography/serialization.hxx>
 
 # endif
+
 #endif

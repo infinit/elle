@@ -1,9 +1,8 @@
-#include "cryptography.hh"
-
 #include <cryptography/Output.hh>
 #include <cryptography/Input.hh>
 #include <cryptography/random.hh>
 
+#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 /*----------.
@@ -22,12 +21,16 @@ test_represent()
 
   // 1)
   {
-    infinit::cryptography::Output output(
+    infinit::cryptography::Output object(
       infinit::cryptography::random::generate<elle::Buffer>(128));
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << output;
-    elle::printf("[representation 1] %s\n", archive);
+
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      object.serialize(output);
+    }
+
+    elle::printf("[representation 1] %s\n", stream.str());
   }
 }
 
@@ -40,40 +43,40 @@ void
 test_construct()
 {
   // By size.
-  infinit::cryptography::Output output1(64);
+  infinit::cryptography::Output object1(64);
 
-  BOOST_CHECK_EQUAL(output1.buffer().size(), 64);
+  BOOST_CHECK_EQUAL(object1.buffer().size(), 64);
 
   // By buffer.
-  infinit::cryptography::Output output2(
+  infinit::cryptography::Output object2(
     infinit::cryptography::random::generate<elle::Buffer>(128));
 
   // Output copy.
-  infinit::cryptography::Output output3(output2);
+  infinit::cryptography::Output object3(object2);
 
-  BOOST_CHECK_EQUAL(output2, output3);
+  BOOST_CHECK_EQUAL(object2, object3);
 
-  auto address3 = output3.buffer().contents();
+  auto address3 = object3.buffer().contents();
 
   // Output move.
-  infinit::cryptography::Output output4(std::move(output3));
+  infinit::cryptography::Output object4(std::move(object3));
 
-  BOOST_CHECK_EQUAL(output2, output4);
+  BOOST_CHECK_EQUAL(object2, object4);
 
   // Buffer copy.
-  infinit::cryptography::Output output5(output4.buffer());
+  infinit::cryptography::Output object5(object4.buffer());
 
-  BOOST_CHECK_EQUAL(output2, output4);
-  BOOST_CHECK_EQUAL(output2, output5);
+  BOOST_CHECK_EQUAL(object2, object4);
+  BOOST_CHECK_EQUAL(object2, object5);
 
   // Buffer move.
-  infinit::cryptography::Output output6(std::move(output4.buffer()));
+  infinit::cryptography::Output object6(std::move(object4.buffer()));
 
-  BOOST_CHECK_EQUAL(output2, output5);
-  BOOST_CHECK_EQUAL(output2, output6);
-  BOOST_CHECK_EQUAL(output5, output6);
+  BOOST_CHECK_EQUAL(object2, object5);
+  BOOST_CHECK_EQUAL(object2, object6);
+  BOOST_CHECK_EQUAL(object5, object6);
 
-  auto address6 = output6.buffer().contents();
+  auto address6 = object6.buffer().contents();
 
   BOOST_CHECK_EQUAL(address3, address6);
 }
@@ -88,38 +91,41 @@ test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::Output output1(
+    infinit::cryptography::Output object1(
       infinit::cryptography::random::generate<elle::Buffer>(128));
 
-    elle::String archive;
-    elle::serialize::to_string(archive) << output1;
+    std::stringstream stream1;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream1);
+      object1.serialize(output);
+    }
 
-    auto extractor = elle::serialize::from_string(archive);
-    infinit::cryptography::Output output2(extractor);
+    std::stringstream stream2(stream1.str());
+    typename elle::serialization::Json::SerializerIn input(stream2);
+    infinit::cryptography::Output object2(input);
 
-    BOOST_CHECK_EQUAL(output1, output2);
+    BOOST_CHECK_EQUAL(object1, object2);
   }
 
   // Deserialize from the hard-coded string [representation 1]: useful
   // for detecting changes in formats.
   {
-    elle::String archive1("AAAAAIAAAAAAAAAAYVS/sqT6qs+lo+MdcB1jaZY8gwFx6a10mr1+MjW8to4nvK1hjewkupo66RFvioIZ59hITeuy4CvfQNJSqvdVJ4xLEyWKED9oeuji8jxe1nGOt068HlVyFJ9RkZT4cN6WC8RJXekhokXjI4yr89ad0Vw8KaB5mw5U79CUKaxBVnU=");
+    elle::String archive1(R"JSON({"buffer":"sxR6x3SeZLaNrXnJ1a4bvhL0vw0II76mYG7Siyb9Vjz5PFGIFQQAKhB6wqltt73fI0ydU5lksG7VBKuyJprMYdWhjQ9JIJf/4Otf+CmtPCnlSjGD90wqUdGVjvjDBK7oPjIiKvKLg5ZerpNWB0PEfQTAuj31bqIAbsRe0A6kWBQ="})JSON");
 
-    auto extractor1 =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive1);
-    infinit::cryptography::Output output1(extractor1);
+    std::stringstream stream1(archive1);
+    typename elle::serialization::Json::SerializerIn input1(stream1);
+    infinit::cryptography::Output object1(input1);
 
-    elle::String archive2;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive2) << output1;
+    std::stringstream stream2;
+    {
+      typename elle::serialization::Json::SerializerOut output2(stream2);
+      object1.serialize(output2);
+    }
 
-    auto extractor2 =
-      elle::serialize::from_string<
-        elle::serialize::InputBase64Archive>(archive2);
-    infinit::cryptography::Output output2(extractor2);
+    typename elle::serialization::Json::SerializerIn input2(stream2);
+    infinit::cryptography::Output object2(input2);
 
-    BOOST_CHECK_EQUAL(output1, output2);
+    BOOST_CHECK_EQUAL(object1, object2);
   }
 }
 

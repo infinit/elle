@@ -48,10 +48,6 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        PublicKey() {} // XXX[to deserialize]
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
-# endif
         /// Construct a public key out of its private counterpart.
         explicit
         PublicKey(PrivateKey const& k,
@@ -75,22 +71,6 @@ namespace infinit
                   Oneway const digest_algorithm,
                   Cipher const envelope_cipher,
                   Mode const envelope_mode);
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Construct a public key based on a given seed i.e in a deterministic
-        /// way.
-        explicit
-        PublicKey(Seed const& seed,
-                  Padding const encryption_padding =
-                    defaults::encryption_padding,
-                  Padding const signature_padding =
-                    defaults::signature_padding,
-                  Oneway const digest_algorithm =
-                    defaults::digest_algorithm,
-                  Cipher const envelope_cipher =
-                    defaults::envelope_cipher,
-                  Mode const envelope_mode =
-                    defaults::envelope_mode);
-# endif
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         virtual
@@ -111,30 +91,19 @@ namespace infinit
         void
         _check() const;
       public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Encrypt any serializable type, including Plain.
-        template <typename T = Plain>
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /// Encrypt a plain text.
         Code
-        encrypt(T const& value) const;
-        /// Return true if the given signature matches with the serializable
-        /// value.
-        template <typename T = Plain>
+        encrypt(Plain const& plain) const;
+        /// Verify the given signature against the original plain text.
         elle::Boolean
         verify(Signature const& signature,
-               T const& value) const;
+               Plain const& plain) const;
 # endif
         /// Return true if the given signature matches with the digest.
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const;
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Return the seed once rotated by the public key.
-        Seed
-        rotate(Seed const& seed) const;
-        /// Return the seed once unrotated by the public key.
-        Seed
-        unrotate(Seed const& seed) const;
-# endif
         /// Return the public key's size in bytes.
         elle::Natural32
         size() const;
@@ -142,17 +111,40 @@ namespace infinit
         elle::Natural32
         length() const;
 
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        /*---------.
+        | Rotation |
+        `---------*/
+      public:
+        /// Construct a public key based on a given seed i.e in a deterministic
+        /// way.
+        explicit
+        PublicKey(Seed const& seed,
+                  Padding const encryption_padding =
+                    defaults::encryption_padding,
+                  Padding const signature_padding =
+                    defaults::signature_padding,
+                  Oneway const digest_algorithm =
+                    defaults::digest_algorithm,
+                  Cipher const envelope_cipher =
+                    defaults::envelope_cipher,
+                  Mode const envelope_mode =
+                    defaults::envelope_mode);
+        /// Return the seed once rotated by the public key.
+        Seed
+        rotate(Seed const& seed) const;
+        /// Return the seed once unrotated by the public key.
+        Seed
+        unrotate(Seed const& seed) const;
+# endif
+
         /*----------.
         | Operators |
         `----------*/
       public:
         elle::Boolean
         operator ==(PublicKey const& other) const;
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::Boolean
-        operator <(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
-# endif
 
         /*----------.
         | Printable |
@@ -160,18 +152,6 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*-------------.
-        | Serializable |
-        `-------------*/
-      public:
-        ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
-        // To prevent the compile conflict with Uniquable's serialize() method.
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::PublicKey,
-          elle::serialize::Base64Archive>::serialize;
-# endif
 
         /*--------------.
         | Serialization |
@@ -204,6 +184,32 @@ namespace infinit
           // The encryption padding size expressed in bits.
           elle::Natural32 envelope_padding_size;
         } _context;
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /*-------.
+        | Legacy |
+        `-------*/
+      public:
+        // construction
+        PublicKey() {}
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
+        // methods
+        template <typename T = Plain>
+        Code
+        encrypt(T const& value) const;
+        template <typename T = Plain>
+        elle::Boolean
+        verify(Signature const& signature,
+               T const& value) const;
+        // operators
+        elle::Boolean
+        operator <(PublicKey const& other) const;
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::rsa::PublicKey,
+          elle::serialize::Base64Archive>::serialize;
+# endif
       };
     }
   }

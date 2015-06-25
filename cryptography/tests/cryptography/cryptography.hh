@@ -2,11 +2,8 @@
 # define CRYPTOGRAPHY_HH
 
 # include <elle/types.hh>
-# include <elle/serialize/insert.hh>
-# include <elle/serialize/extract.hh>
-# include <elle/serialize/Base64Archive.hh>
-# include <elle/serialize/JSONArchive.hh>
 # include <elle/test.hh>
+# include <elle/serialization/json.hh>
 
 # include <functional>
 
@@ -33,22 +30,21 @@ namespace infinit
         // reserializing the object generates the same archive.
         for (elle::Natural32 i = 0; i < archives.size(); ++i)
         {
-          auto extractor =
-            elle::serialize::from_string<
-              elle::serialize::InputBase64Archive>(archives[i]);
-          objects[i].reset(new T(extractor));
+          std::stringstream stream1(archives[i]);
+          typename elle::serialization::Json::SerializerIn input1(stream1);
+          objects[i].reset(new T(input1));
 
           if (operate != nullptr)
             operate(*objects[i]);
 
-          elle::String archive;
-            elle::serialize::to_string<
-              elle::serialize::OutputBase64Archive>(archive) << *objects[i];
+          std::stringstream stream2;
+          {
+            typename elle::serialization::Json::SerializerOut output2(stream2);
+            objects[i]->serialize(output2);
+          }
 
-          auto extractor2 =
-            elle::serialize::from_string<
-              elle::serialize::InputBase64Archive>(archive);
-          T _o(extractor2);
+          typename elle::serialization::Json::SerializerIn input3(stream2);
+          T _o(input3);
 
           BOOST_CHECK_EQUAL(*objects[i], _o);
         }

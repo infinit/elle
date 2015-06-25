@@ -20,6 +20,10 @@ ELLE_OPERATOR_RELATIONALS();
 #  include <elle/serialize/construct.hh>
 # endif
 
+//
+// ---------- Class -----------------------------------------------------------
+//
+
 namespace infinit
 {
   namespace cryptography
@@ -43,24 +47,10 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        KeyPair() {} // XXX[to deserialize]
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
-# endif
         KeyPair(PublicKey const& K,
                 PrivateKey const& k);
         KeyPair(PublicKey&& K,
                 PrivateKey&& k);
-        explicit
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Deduce a keypair based out of the given seed.
-        KeyPair(Seed const& seed,
-                Padding const encryption_padding = defaults::encryption_padding,
-                Padding const signature_padding = defaults::signature_padding,
-                Oneway const digest_algorithm = defaults::digest_algorithm,
-                Cipher const envelope_cipher = defaults::envelope_cipher,
-                Mode const envelope_mode = defaults::envelope_mode);
-# endif
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
         virtual
@@ -83,6 +73,21 @@ namespace infinit
         elle::Natural32
         length() const;
 
+# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        /*---------.
+        | Rotation |
+        `---------*/
+      public:
+        explicit
+        /// Deduce a keypair based out of the given seed.
+        KeyPair(Seed const& seed,
+                Padding const encryption_padding = defaults::encryption_padding,
+                Padding const signature_padding = defaults::signature_padding,
+                Oneway const digest_algorithm = defaults::digest_algorithm,
+                Cipher const envelope_cipher = defaults::envelope_cipher,
+                Mode const envelope_mode = defaults::envelope_mode);
+# endif
+
         /*----------.
         | Operators |
         `----------*/
@@ -95,7 +100,6 @@ namespace infinit
         | Printable |
         `----------*/
       public:
-        // printable
         void
         print(std::ostream& stream) const override;
 
@@ -107,19 +111,6 @@ namespace infinit
         void
         serialize(elle::serialization::Serializer& serializer);
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*----------.
-        | Serialize |
-        `----------*/
-      public:
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
-        // To prevent the compile conflict with Uniquable's serialize() method.
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::KeyPair,
-          elle::serialize::Base64Archive>::serialize;
-# endif
-
         /*-----------.
         | Attributes |
         `-----------*/
@@ -128,6 +119,21 @@ namespace infinit
         ELLE_ATTRIBUTE(std::unique_ptr<PublicKey>, K);
         /// The private key.
         ELLE_ATTRIBUTE(std::unique_ptr<PrivateKey>, k);
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /*-------.
+        | Legacy |
+        `-------*/
+      public:
+        // construction
+        KeyPair() {}
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::rsa::KeyPair,
+          elle::serialize::Base64Archive>::serialize;
+# endif
       };
     }
   }

@@ -36,4 +36,5 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::legacy::Dummy,
 {}
 
 # endif
+
 #endif

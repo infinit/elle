@@ -48,10 +48,6 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        PrivateKey() {} // XXX[deserialize]
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
-# endif
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -66,18 +62,6 @@ namespace infinit
                    Padding const encryption_padding,
                    Padding const signature_padding,
                    Oneway const digest_algorithm);
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        /// Construct a private key based on a given seed i.e in a deterministic
-        /// way.
-        explicit
-        PrivateKey(Seed const& seed,
-                   Padding const encryption_padding =
-                     defaults::encryption_padding,
-                   Padding const signature_padding =
-                     defaults::signature_padding,
-                   Oneway const digest_algorithm =
-                     defaults::digest_algorithm);
-# endif
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         virtual
@@ -98,24 +82,39 @@ namespace infinit
         void
         _check() const;
       public:
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Decrypt a code and returns the original clear text.
-        ///
-        /// Note that the code is, in practice, an archive containing both
-        /// a temporarily-generated secret key and the plain text encrypted
-        /// with the secret key.
-        template <typename T = Clear>
-        T
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /// Decrypt and return the original plan text.
+        Clear
         decrypt(Code const& code) const;
-        /// Return a signature of any given serializable type.
-        template <typename T = Plain>
+        /// Sign the given plain text.
         Signature
-        sign(T const& value) const;
+        sign(Plain const& plain) const;
 # endif
         /// Return a signature of the given digest.
         Signature
         sign(Digest const& digest) const;
+        /// Return the private key's size in bytes.
+        elle::Natural32
+        size() const;
+        /// Return the private key's length in bits.
+        elle::Natural32
+        length() const;
+
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+        /*---------.
+        | Rotation |
+        `---------*/
+      public:
+        /// Construct a private key based on a given seed i.e in a deterministic
+        /// way.
+        explicit
+        PrivateKey(Seed const& seed,
+                   Padding const encryption_padding =
+                     defaults::encryption_padding,
+                   Padding const signature_padding =
+                     defaults::signature_padding,
+                   Oneway const digest_algorithm =
+                     defaults::digest_algorithm);
         /// Return the seed once unrotated by the private key.
         Seed
         unrotate(Seed const& seed) const;
@@ -123,12 +122,6 @@ namespace infinit
         Seed
         rotate(Seed const& seed) const;
 # endif
-        /// Return the private key's size in bytes.
-        elle::Natural32
-        size() const;
-        /// Return the private key's length in bits.
-        elle::Natural32
-        length() const;
 
         /*----------.
         | Operators |
@@ -144,18 +137,6 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*----------.
-        | Serialize |
-        `----------*/
-      public:
-        ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
-        // To prevent the compile conflict with Uniquable's serialize() method.
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::PrivateKey,
-          elle::serialize::Base64Archive>::serialize;
-# endif
 
         /*-------------.
         | Serializable |
@@ -184,6 +165,29 @@ namespace infinit
           types::EVP_PKEY_CTX rotate;
 # endif
         } _context;
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /*-------.
+        | Legacy |
+        `-------*/
+      public:
+        // construction
+        PrivateKey() {}
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
+        // methods
+        template <typename T = Clear>
+        T
+        decrypt(Code const& code) const;
+        template <typename T = Plain>
+        Signature
+        sign(T const& value) const;
+        // serializable
+        ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
+        using elle::serialize::SerializableMixin<
+          infinit::cryptography::rsa::PrivateKey,
+          elle::serialize::Base64Archive>::serialize;
+# endif
+
       };
     }
   }

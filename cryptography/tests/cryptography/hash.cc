@@ -1,11 +1,10 @@
-#include "cryptography.hh"
-
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/hash.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/random.hh>
 
+#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 static std::string const _input(

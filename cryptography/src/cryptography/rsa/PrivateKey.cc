@@ -3,13 +3,14 @@
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/rsa/Padding.hh>
 #include <cryptography/rsa/context.hh>
+#include <cryptography/rsa/low.hh>
+#include <cryptography/rsa/serialization.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
-#include <cryptography/low.hh>
 #include <cryptography/hash.hh>
 
 #include <elle/log.hh>
@@ -98,44 +99,6 @@ namespace infinit
         this->_check();
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-      PrivateKey::PrivateKey(Seed const& seed,
-                             Padding const encryption_padding,
-                             Padding const signature_padding,
-                             Oneway const digest_algorithm):
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Deduce the RSA key from the given seed.
-        ::RSA* rsa = nullptr;
-
-        if ((rsa = ::dRSA_deduce_privatekey(
-               seed.length(),
-               static_cast<unsigned char const*>(seed.buffer().contents()),
-               seed.buffer().size())) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to deduce the RSA key from the given "
-                          "seed: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Construct the private key based on the given RSA structure.
-        this->_construct(rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
-        this->_check();
-      }
-#endif
-
       PrivateKey::PrivateKey(PrivateKey const& other):
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
@@ -186,14 +149,6 @@ namespace infinit
 
         this->_check();
       }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-#endif
 
       /*--------.
       | Methods |
@@ -291,6 +246,8 @@ namespace infinit
       void
       PrivateKey::_check() const
       {
+        ELLE_DEBUG_FUNCTION("");
+
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
@@ -303,6 +260,30 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      Clear
+      PrivateKey::decrypt(Code const& code) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("code: %x", code);
+
+        return (Clear(evp::asymmetric::decrypt(code.buffer(),
+                                               this->_context.decrypt.get(),
+                                               ::EVP_PKEY_decrypt)));
+      }
+
+      Signature
+      PrivateKey::sign(Plain const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("plain: %x", plain);
+
+        Digest digest = hash(plain, this->_digest_algorithm);
+
+        return (this->sign(digest));
+      }
+# endif
+
       Signature
       PrivateKey::sign(Digest const& digest) const
       {
@@ -314,7 +295,61 @@ namespace infinit
                                                 ::EVP_PKEY_sign)));
       }
 
+      elle::Natural32
+      PrivateKey::size() const
+      {
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_size(this->_key.get())));
+      }
+
+      elle::Natural32
+      PrivateKey::length() const
+      {
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_bits(this->_key.get())));
+      }
+
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+      /*---------.
+      | Rotation |
+      `---------*/
+
+      PrivateKey::PrivateKey(Seed const& seed,
+                             Padding const encryption_padding,
+                             Padding const signature_padding,
+                             Oneway const digest_algorithm):
+        _encryption_padding(encryption_padding),
+        _signature_padding(signature_padding),
+        _digest_algorithm(digest_algorithm)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Deduce the RSA key from the given seed.
+        ::RSA* rsa = nullptr;
+
+        if ((rsa = ::dRSA_deduce_privatekey(
+               seed.length(),
+               static_cast<unsigned char const*>(seed.buffer().contents()),
+               seed.buffer().size())) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to deduce the RSA key from the given "
+                          "seed: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+        // Construct the private key based on the given RSA structure.
+        this->_construct(rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+        // Prepare the cryptographic contexts.
+        this->_prepare();
+
+        this->_check();
+      }
+
       Seed
       PrivateKey::unrotate(Seed const& seed) const
       {
@@ -372,20 +407,6 @@ namespace infinit
       }
 #endif
 
-      elle::Natural32
-      PrivateKey::size() const
-      {
-        return (static_cast<elle::Natural32>(
-                  ::EVP_PKEY_size(this->_key.get())));
-      }
-
-      elle::Natural32
-      PrivateKey::length() const
-      {
-        return (static_cast<elle::Natural32>(
-                  ::EVP_PKEY_bits(this->_key.get())));
-      }
-
       /*----------.
       | Operators |
       `----------*/
@@ -408,37 +429,36 @@ namespace infinit
       | Serialization |
       `--------------*/
 
-      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
+      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer)
       {
-        std::unique_ptr<RSA, void (*) (::RSA*)> rsa(::RSA_new(), &::RSA_free);
-        if (!rsa)
-          throw elle::Error(
-            elle::sprintf("unable to initialize RSA: %s",
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Allocate the EVP key to receive the deserialized's RSA structure.
+        this->_key.reset(::EVP_PKEY_new());
+
+        // Set the EVP key as being of type RSA.
+        if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_RSA) <= 0)
+          throw Exception(
+            elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa.get()) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the RSA: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        rsa.release();
+
         this->serialize(serializer);
+
         this->_prepare();
+        this->_check();
       }
 
       void
       PrivateKey::serialize(elle::serialization::Serializer& serializer)
       {
-        serializer.serialize("modulus", this->_key->pkey.rsa->n);
-        serializer.serialize("public_exponent", this->_key->pkey.rsa->e);
-        serializer.serialize("private_exponent", this->_key->pkey.rsa->d);
-        // FIXME: https://www.openssl.org/docs/crypto/rsa.html
-        // p, q, dmp1, dmq1 and iqmp may be NULL in private keys, but the RSA
-        // operations are much faster when these values are available.
-        // serializer.serialize("p", this->_key->pkey.rsa->p);
-        // serializer.serialize("q", this->_key->pkey.rsa->q);
-        // serializer.serialize("dmp1", this->_key->pkey.rsa->dmp1);
-        // serializer.serialize("dmq1", this->_key->pkey.rsa->dmq1);
-        // serializer.serialize("iqmp;", this->_key->pkey.rsa->iqmp);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+
+        rsa::serialize_private(serializer, this->_key->pkey.rsa);
+
+        serializer.serialize("encryption padding", this->_encryption_padding);
+        serializer.serialize("signature padding", this->_signature_padding);
+        serializer.serialize("digest algorithm", this->_digest_algorithm);
       }
 
       /*----------.
@@ -470,6 +490,18 @@ namespace infinit
                << this->_digest_algorithm
                << "]";
       }
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /*-------.
+      | Legacy |
+      `-------*/
+
+      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+      }
+#endif
     }
   }
 }

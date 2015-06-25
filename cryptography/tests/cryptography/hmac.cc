@@ -1,11 +1,10 @@
-#include "cryptography.hh"
-
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/hmac.hh>
 #include <cryptography/random.hh>
 
+#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 static std::string const _input(
@@ -18,14 +17,14 @@ static std::string const _input(
 template <elle::Natural32 N,
           infinit::cryptography::Oneway O>
 void
-test_represent_n(elle::String const& K)
+test_represent_n(elle::String const& key)
 {
   // N)
   {
     infinit::cryptography::Digest digest =
       infinit::cryptography::hmac::sign(
         infinit::cryptography::Plain(_input),
-        K,
+        key,
         O);
 
     std::stringstream stream;

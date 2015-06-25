@@ -6,6 +6,7 @@
 //
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+
 /*-------------.
 | Serializable |
 `-------------*/
@@ -96,6 +97,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
   ELLE_ASSERT_NEQ(value._K, nullptr);
   ELLE_ASSERT_NEQ(value._k, nullptr);
 }
+
 # endif
 
 //

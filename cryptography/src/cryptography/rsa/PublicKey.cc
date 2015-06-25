@@ -19,7 +19,8 @@
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/rsa/Padding.hh>
 #include <cryptography/rsa/context.hh>
-#include <cryptography/low.hh>
+#include <cryptography/rsa/low.hh>
+#include <cryptography/rsa/serialization.hh>
 #include <cryptography/Digest.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -156,57 +157,6 @@ namespace infinit
         this->_check();
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-      PublicKey::PublicKey(Seed const& seed,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const digest_algorithm,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode):
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm),
-        _envelope_cipher(envelope_cipher),
-        _envelope_mode(envelope_mode)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Deduce the RSA key from the given seed.
-        ::RSA* rsa = nullptr;
-
-        if ((rsa = ::dRSA_deduce_privatekey(
-               seed.length(),
-               static_cast<unsigned char const*>(seed.buffer().contents()),
-               seed.buffer().size())) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to deduce the RSA key from the given "
-                          "seed: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Extract the public key only.
-        RSA* _rsa = low::RSA_priv2pub(rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-        ::RSA_free(rsa);
-
-        // Construct the public key based on the given RSA structure whose
-        // ownership is retained.
-        this->_construct(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
-        this->_check();
-      }
-#endif
-
       PublicKey::PublicKey(PublicKey const& other):
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
@@ -256,14 +206,6 @@ namespace infinit
 
         this->_check();
       }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-# endif
 
       /*--------.
       | Methods |
@@ -360,6 +302,8 @@ namespace infinit
       void
       PublicKey::_check() const
       {
+        ELLE_DEBUG_FUNCTION("");
+
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
@@ -371,6 +315,37 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->dmq1, nullptr);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
+
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      Code
+      PublicKey::encrypt(Plain const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("plain: %x", plain);
+
+        return (Code(evp::asymmetric::encrypt(
+                       plain.buffer(),
+                       this->_context.encrypt.get(),
+                       ::EVP_PKEY_encrypt,
+                       cipher::resolve(this->_envelope_cipher,
+                                       this->_envelope_mode),
+                       oneway::resolve(this->_digest_algorithm),
+                       this->_context.envelope_padding_size)));
+      }
+
+      elle::Boolean
+      PublicKey::verify(Signature const& signature,
+                        Plain const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("signature: %x", signature);
+        ELLE_DUMP("plain: %x", plain);
+
+        Digest digest = hash(plain, this->_digest_algorithm);
+
+        return (this->verify(signature, digest));
+      }
+#endif
 
       elle::Boolean
       PublicKey::verify(Signature const& signature,
@@ -386,7 +361,74 @@ namespace infinit
                                         ::EVP_PKEY_verify));
       }
 
+      elle::Natural32
+      PublicKey::size() const
+      {
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_size(this->_key.get())));
+      }
+
+      elle::Natural32
+      PublicKey::length() const
+      {
+        return (static_cast<elle::Natural32>(
+                  ::EVP_PKEY_bits(this->_key.get())));
+      }
+
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+      /*---------.
+      | Rotation |
+      `---------*/
+
+      PublicKey::PublicKey(Seed const& seed,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const digest_algorithm,
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode):
+        _encryption_padding(encryption_padding),
+        _signature_padding(signature_padding),
+        _digest_algorithm(digest_algorithm),
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Deduce the RSA key from the given seed.
+        ::RSA* rsa = nullptr;
+
+        if ((rsa = ::dRSA_deduce_privatekey(
+               seed.length(),
+               static_cast<unsigned char const*>(seed.buffer().contents()),
+               seed.buffer().size())) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to deduce the RSA key from the given "
+                          "seed: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+        // Extract the public key only.
+        RSA* _rsa = low::RSA_priv2pub(rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+        ::RSA_free(rsa);
+
+        // Construct the public key based on the given RSA structure whose
+        // ownership is retained.
+        this->_construct(_rsa);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
+
+        // Prepare the cryptographic contexts.
+        this->_prepare();
+
+        this->_check();
+      }
+
       Seed
       PublicKey::rotate(Seed const& seed) const
       {
@@ -444,20 +486,6 @@ namespace infinit
       }
 #endif
 
-      elle::Natural32
-      PublicKey::size() const
-      {
-        return (static_cast<elle::Natural32>(
-                  ::EVP_PKEY_size(this->_key.get())));
-      }
-
-      elle::Natural32
-      PublicKey::length() const
-      {
-        return (static_cast<elle::Natural32>(
-                  ::EVP_PKEY_bits(this->_key.get())));
-      }
-
       /*----------.
       | Operators |
       `----------*/
@@ -474,44 +502,42 @@ namespace infinit
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      elle::Boolean
-      PublicKey::operator <(PublicKey const& other) const
-      {
-        if (this == &other)
-          return (false);
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
-        return boost::lexical_cast<std::string>(*this)
-          < boost::lexical_cast<std::string>(other);
-      }
-#endif
-
       /*--------------.
       | Serialization |
       `--------------*/
 
-      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
+      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer)
       {
-        auto rsa = ::RSA_new();
-        if (!rsa)
-          throw elle::Error(
-            elle::sprintf("unable to initialize RSA: %s",
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Allocate the EVP key to receive the deserialized's RSA structure.
+        this->_key.reset(::EVP_PKEY_new());
+
+        // Set the EVP key as being of type RSA.
+        if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_RSA) <= 0)
+          throw Exception(
+            elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the RSA: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
         this->serialize(serializer);
+
         this->_prepare();
+        this->_check();
       }
 
       void
       PublicKey::serialize(elle::serialization::Serializer& serializer)
       {
-        serializer.serialize("modulus", this->_key->pkey.rsa->n);
-        serializer.serialize("public_exponent", this->_key->pkey.rsa->e);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+
+        rsa::serialize_public(serializer, this->_key->pkey.rsa);
+
+        serializer.serialize("encryption padding", this->_encryption_padding);
+        serializer.serialize("signature padding", this->_signature_padding);
+        serializer.serialize("digest algorithm", this->_digest_algorithm);
+        serializer.serialize("envelope cipher", this->_envelope_cipher);
+        serializer.serialize("envelope mode", this->_envelope_mode);
       }
 
       /*----------.
@@ -544,6 +570,29 @@ namespace infinit
                << this->_envelope_mode
                << "]";
       }
+
+      /*-------.
+      | Legacy |
+      `-------*/
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+      }
+
+      elle::Boolean
+      PublicKey::operator <(PublicKey const& other) const
+      {
+        if (this == &other)
+          return (false);
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT_NEQ(other._key, nullptr);
+        return boost::lexical_cast<std::string>(*this)
+          < boost::lexical_cast<std::string>(other);
+      }
+#endif
     }
   }
 }

@@ -1,4 +1,5 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+
 # include <cryptography/serialization.hh>
 # include <cryptography/Plain.hh>
 

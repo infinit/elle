@@ -46,43 +46,6 @@ namespace infinit
       {
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-      KeyPair::KeyPair(Seed const& seed,
-                       Padding const encryption_padding,
-                       Padding const signature_padding,
-                       Oneway const digest_algorithm,
-                       Cipher const envelope_cipher,
-                       Mode const envelope_mode)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Deduce the RSA key from the given seed.
-        ::RSA* rsa = nullptr;
-
-        if ((rsa = ::dRSA_deduce_privatekey(
-               seed.length(),
-               static_cast<unsigned char const*>(seed.buffer().contents()),
-               seed.buffer().size())) == nullptr)
-          throw Exception(
-            elle::sprintf("unable to deduce the RSA key from the given "
-                          "seed: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Instanciate both a RSA public and private key based on the RSA
-        // structure.
-        this->_k.reset(new PrivateKey(rsa,
-                                      encryption_padding, signature_padding,
-                                      digest_algorithm));
-        this->_K.reset(new PublicKey(*this->_k,
-                                     envelope_cipher, envelope_mode));
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-      }
-#endif
-
       KeyPair::KeyPair(KeyPair const& other):
         _K(new PublicKey(*other._K)),
         _k(new PrivateKey(*other._k))
@@ -94,12 +57,6 @@ namespace infinit
         _k(std::move(other._k))
       {
       }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
-      {
-      }
-#endif
 
       /*--------.
       | Methods |
@@ -141,6 +98,47 @@ namespace infinit
         return (this->_K->length());
       }
 
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+      /*---------.
+      | Rotation |
+      `---------*/
+
+      KeyPair::KeyPair(Seed const& seed,
+                       Padding const encryption_padding,
+                       Padding const signature_padding,
+                       Oneway const digest_algorithm,
+                       Cipher const envelope_cipher,
+                       Mode const envelope_mode)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Deduce the RSA key from the given seed.
+        ::RSA* rsa = nullptr;
+
+        if ((rsa = ::dRSA_deduce_privatekey(
+               seed.length(),
+               static_cast<unsigned char const*>(seed.buffer().contents()),
+               seed.buffer().size())) == nullptr)
+          throw Exception(
+            elle::sprintf("unable to deduce the RSA key from the given "
+                          "seed: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+        // Instanciate both a RSA public and private key based on the RSA
+        // structure.
+        this->_k.reset(new PrivateKey(rsa,
+                                      encryption_padding, signature_padding,
+                                      digest_algorithm));
+        this->_K.reset(new PublicKey(*this->_k,
+                                     envelope_cipher, envelope_mode));
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+      }
+#endif
+
       /*----------.
       | Operators |
       `----------*/
@@ -170,10 +168,10 @@ namespace infinit
       }
 
       void
-      KeyPair::serialize(elle::serialization::Serializer& s)
+      KeyPair::serialize(elle::serialization::Serializer& serializer)
       {
-        s.serialize("public_key", this->_K);
-        s.serialize("private_key", this->_k);
+        serializer.serialize("public key", this->_K);
+        serializer.serialize("private key", this->_k);
       }
 
       /*----------.
@@ -188,6 +186,15 @@ namespace infinit
 
         stream << "(" << *this->_K << ", " << *this->_k << ")";
       }
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      /*-------.
+      | Legacy |
+      `-------*/
+
+      ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
+      {}
+#endif
     }
   }
 }

@@ -1,20 +1,17 @@
-#include "../cryptography.hh"
-#include "../Sample.hh"
-
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/Plain.hh>
-#include <cryptography/random.hh>
 #include <cryptography/hmac.hh>
+#include <cryptography/random.hh>
 #include <cryptography/rsa/KeyPair.hh>
+#include <cryptography/rsa/PublicKey.hh>
+#include <cryptography/rsa/PrivateKey.hh>
 
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
-#include <elle/serialize/HexadecimalArchive.hh>
-#include <elle/format/hexadecimal.hh>
+#include <elle/test.hh>
+#include <elle/serialization/json.hh>
 
 static std::string const _input(
-  "- Suck it Gill!");
+  "- Back off Susan Boyle!");
 
 /*----------.
 | Represent |
@@ -32,9 +29,14 @@ test_represent_n(infinit::cryptography::rsa::PrivateKey const& k)
         infinit::cryptography::Plain(_input),
         k,
         O);
-    std::string representation =
-      elle::format::hexadecimal::encode(digest.buffer());
-    elle::printf("[representation %s] %s\n", N, representation);
+
+    std::stringstream stream;
+    {
+      typename elle::serialization::Json::SerializerOut output(stream);
+      digest.serialize(output);
+    }
+
+    elle::printf("[representation %s] %s\n", N, stream.str());
   }
 }
 
@@ -51,10 +53,13 @@ test_represent()
   // 0)
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(2048);
-  elle::String archive;
-  elle::serialize::to_string<
-    elle::serialize::OutputBase64Archive>(archive) << keypair;
-  elle::printf("[representation 0] %s\n", archive);
+
+  std::stringstream stream;
+  {
+    typename elle::serialization::Json::SerializerOut output(stream);
+    keypair.K().serialize(output);
+  }
+  elle::printf("[representation 0] %s\n", stream.str());
 
   // MD5.
   test_represent_n<1, infinit::cryptography::Oneway::md5>(keypair.k());
@@ -76,41 +81,29 @@ test_represent()
 | Operate |
 `--------*/
 
-template <infinit::cryptography::Oneway O,
-          elle::Natural32 S>
 void
-test_operate_x(infinit::cryptography::rsa::KeyPair const& keypair,
-               elle::String const& R)
+test_operate()
 {
-  // Verify a HMAC digest.
-  {
-    elle::Buffer buffer = elle::format::hexadecimal::decode(R);
+  infinit::cryptography::rsa::KeyPair keypair =
+    infinit::cryptography::rsa::keypair::generate(2048);
 
-    BOOST_CHECK_EQUAL(
-      infinit::cryptography::hmac::verify(
-        infinit::cryptography::Digest(buffer),
-        infinit::cryptography::Plain(_input),
-        keypair.K(),
-        O),
-      true);
-  }
-
-  // HMAC a complex type.
+  // HMAC sign/verify a random content.
   {
-    Sample const input(
-      42,
-      infinit::cryptography::random::generate<elle::String>(S));
+    elle::Buffer buffer =
+      infinit::cryptography::random::generate<elle::Buffer>(49);
 
     infinit::cryptography::Digest digest =
-      infinit::cryptography::hmac::sign(input, keypair.k(), O);
+      infinit::cryptography::hmac::sign(
+        infinit::cryptography::Plain(buffer),
+        keypair.k(),
+        infinit::cryptography::Oneway::sha1);
 
-    BOOST_CHECK_EQUAL(
-      infinit::cryptography::hmac::verify(
-        digest,
-        input,
-        keypair.K(),
-        O),
-      true);
+    BOOST_CHECK_EQUAL(infinit::cryptography::hmac::verify(
+                        digest,
+                        infinit::cryptography::Plain(buffer),
+                        keypair.K(),
+                        infinit::cryptography::Oneway::sha1),
+                      true);
   }
 
   // Try to verify an invalid HMAC.
@@ -123,43 +116,72 @@ test_operate_x(infinit::cryptography::rsa::KeyPair const& keypair,
         infinit::cryptography::Digest(buffer),
         infinit::cryptography::Plain(_input),
         keypair.K(),
-        O),
+        infinit::cryptography::Oneway::md5),
       false);
   }
 }
 
+/*----------.
+| Serialize |
+`----------*/
+
+template <infinit::cryptography::Oneway O>
+void
+test_serialize_x(infinit::cryptography::rsa::PublicKey const& K,
+                 elle::String const& R)
+{
+  std::stringstream stream(R);
+  typename elle::serialization::Json::SerializerIn input(stream);
+  infinit::cryptography::Digest digest(input);
+
+  BOOST_CHECK_EQUAL(
+    infinit::cryptography::hmac::verify(
+      digest,
+      infinit::cryptography::Plain(_input),
+      K,
+      O),
+    true);
+}
+
 static
 void
-test_operate()
+test_serialize()
 {
-  // Extract the key pair from [representation 0]
-  elle::String representation("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");
-  auto extractor =
-    elle::serialize::from_string<
-      elle::serialize::InputBase64Archive>(representation);
-  infinit::cryptography::rsa::KeyPair keypair(extractor);
+  // Extract the key pair from [representation 0].
+  elle::String representation0(R"JSON({"private key":{"digest algorithm":4,"encryption padding":3,"rsa":"MIIEpAIBAAKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQABAoIBABBc0hTwl+S5GhGermSbU0x+WFQqa4486BavpFbUFj4hSk/F8evujFmNbtTbJZEfiRE9McGoecx/rlmcskMdKvpZ0tRqvLElMLi20utO82X/Y+jyDtKTEkNAHtx5NY6qTQ6Gf8VHjk8XFBFr+wF2q3DZQaRki5TnMPszCIbcbQAKGxQ1Fn0FhnIRT4hjHXVlA3Oyy7Sz5JiLmQj4hBLyDeC2eojDOi5F9/HGiI3xXdS5TGBMY2SJdvFUKocEv5V4LcZpmEgOppgIrnPCWiI9je9sAv/9ZiS41c25xQjV/e28qdOdurQUSHnUdPvjLutZPGMN9Fu1P75zKjdNOGusWjECgYEA/JYMNo3cDXYrs7rFoOdN+Gf0fJE75JhJuchxvWDw4S6OovGbJWisYvvvaNgMW4xCK1KNcGbiw36gULP+lXPuyFS6s5RK44jkMVOyZFspufIfGI3DD94csB+qGE9eaPf4mUfz6NKsMttGhtCvM65i8uc03nFP1LIhLkzWg627aAkCgYEAxCWEkd0M0xs/MbF7slw7tzWjtqLF4viC9gkv0lFJvJeKvoGu+1PVL7nNtctzBlH5b4lzGJqlvXwutJyxXKTR6YBhzuiFSiTNzgIUja6wiFJaItWk/kVP7+RV+vRCF+Srunlu8EUT7Cr8Qz3ggN2vqLkrhZGleOL2vmT/kNPiIU8CgYEA6gBsgiH8anA+3nw62O1RG7/bDYhTT10SeE5NqR/lKQjD1gs1K3wEsJMsYho9oJaZOp95L1fx3yExjnKieXz1C50LdpD8rD1HArfCfhzC1GSOEGZM/ydLtpMvNuRY17BbHE4/lkOOinMArKcqmRuGyfgOz8F0Lt1zxfwjg8xw4VkCgYEAjCMd9zTOX9l8qd1bOhBJndjV8buT1FinAG+J2iK3ouVGfFudD/VSP/no7fTAZoiUxMqYD8EVny6lE+dLlJwxWTmfJ7va1yE6ZO/5jUx81bi4q2CmtAADX6psf5KZ0gZPZzgxObqwxC/l8Yi46Hj6cnpxjMmFRrwpe9ge+3NWgWMCgYAJlOQmdZGMijemfSO29jDHpUQIsKwJiRBFoS3+uz0RoQ3cDW0GKol0IwoRHQfLNzeWxt5fP6ftH0uE5RGum9jC1ah4w5Oc/yiu6s1m7X5zkvsHW2lULutktuo5mxj+C+aN8TxKOlqQv4hmdM51/DqzhJcxVfTzdPBVFuzXb229bA==","signature padding":5,"version":{"major":0,"minor":0,"subminor":0}},"public key":{"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIIBCgKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQAB","signature padding":5,"version":{"major":0,"minor":0,"subminor":0}}})JSON");
+
+  std::stringstream stream(representation0);
+  typename elle::serialization::Json::SerializerIn input(stream);
+  infinit::cryptography::rsa::KeyPair keypair(input);
 
   // MD5 based on [representation 1].
-  test_operate_x<infinit::cryptography::Oneway::md5, 820>(keypair,
-                                                          "1c4c2fc76c0c904b7fc675bc3f25c6e09f205a69f1434b1a84ba120213ffb49d5cb086247e366dac74d08c53f89fbeb781053cabbbe88f92810a076d084d76f05cbd5e487ff00951afb60ec0aece2e1281a5a2d4318d3d8d5c23cc86d8186ae3fc7652b8f1ea1cb1e46c156e0eb84adf539444c996b9b52c16411bbe85955638fbadd2aca4a5ffab207b73afae9a45fcc029357a746b0e70455b78ae816facacf7bbdc0112121d2fa58b336fcf1bd76a53ae06049f7e430a16d0e5b70a4f2bd758a8a5e977f2b9f89e863d421646ad023fe80a649acd6160d8fc37d53ab19b78e855dd13abdf069d62b65c2fd65a103425faf7b080b9fc09a3515a91f29136b6");
+  test_serialize_x<infinit::cryptography::Oneway::md5>(
+    keypair.K(),
+    R"JSON({"buffer":"dNVxHTiiXhMdOvRcoDTkNOAYJXXQfDGhB4OsZqFxz4AXF6Qbb31Va3M/uSSgxHrOpAd1H/phNlkwDhdzam1kSOoH7ENvVzsZQRvNOJ6SG2hISNkbn4j+4rlf7yNSJNlxCDyqJaMviahJmjWZM8GPBL3BhtdGnOQkJRcOo3nPaIeY4GX9V8gcx3Pl6r8NoYVnTTxayyIXCXIrJSHC38DAbGLDHlh7wYNOzSyY63HK1XBhFnlF1KWDUlhVD3szLJFwXPHNkhEZuP2p/JeCnNgLSVTBzk2VMpke9SOlmXF2HBcqgXKhyNpiFJ82LCMsRs6DBobwNKYageVCLsKKVj+iaA=="})JSON");
   // SHA based on [representation 2].
-  test_operate_x<infinit::cryptography::Oneway::sha, 31>(keypair,
-                                                         "0646d811820c7e3fce73f50aa4bbc18f29b2f3c643fe672436df12b5e30c6f0fc0831b7fbc09a6724c6e7046b99ba1be45acaafafa09f932db4b2ef4bdc8d438849d19f00e84e86ac5c18c979c71a99cc8995780e64307ef4caff635a3f50c43a8972e1bab718eb1183428b03960a1336c196ac655105d8181a6486414991ad8e417c0f3cd43ff3e55eabf964d4b1d92c7a6ae8dd71d9e3b40aab932c7ea6095a6483081c5ea3b9dd925d50c1eb16d8059020b693623d43c18ece33a55735bd078ec28c9255ed62a48f958fef9f0ec6f9810d8a35dfb51a5bb7e5ead1131d7ebd48d21a9824b3f83490ccf8f6b86a5e1ed753cd5dc849b601734c0d3b6f4d836");
+  test_serialize_x<infinit::cryptography::Oneway::sha>(
+    keypair.K(),
+    R"JSON({"buffer":"r0DBmCfew4go5NVXV0IF9UjNYmVZ7KiyshI+JEyWpXhlc6PNCyz3DkMs+SPV03iOFN0iIUZ3DaKkEzTr3QEZvJWgZSi7opJ4O9Q5J1ytopgPeZBjadq8k7lZ6k/CJvIs9ZvR/gNST0k9Z5xckLgaCdfb0GOj16zQKt+Lj2NYgfzrWDNK360woyz51h34+E/9bRemBMM5KT29J8u6eprwVQRKyEYKPXX1Ub5bhUoePlC5guN2uKjoDAwv+p6pSlTuCm80FVwngJdqVcsme14QLBJRv/46yCIOw/Gbs4KIsA+xX7CmH2rxB6VqBvzv+ZlILFyehc5J53ZHNIEnwxmFIw=="})JSON");
   // SHA-1 based on [representation 3].
-  test_operate_x<infinit::cryptography::Oneway::sha1, 9028>(keypair,
-                                                            "c6017ba3761c43c28a3e98e2cfc1fddd2c7091616ebf7975d4601f38c47a5aa6f33769446837cdf5d9f5b3fbf3b71c5b829d071686abb07ef46a591184aae17fe38ff851b087063df8b40c54925b19f9c815ef0590d7d4e7340340900d53b18a4bea88518dd3c1c9267d600cfab9f5dce77bcbb405c0ac2bb00c45e761fb6607922a8ff49828d9808d801cd08ee9c32bd3a09843b35aa7664d14dd09411d17aa6ead218f637bc7d0365af5a09944916361af31f7ef1bbf9ef274b4aba2960d303055ed5ee866b7e7a469f047eb60fcb73f02bea54db42b1e52b481b6c1fde0f7ddea3b87f19d6920747335bf7a24717fee1ce59d6d72ccf22d4944146782fe2a");
+  test_serialize_x<infinit::cryptography::Oneway::sha1>(
+    keypair.K(),
+    R"JSON({"buffer":"NMVEiMQsSqjqQQdCsLuyQ2Me5LlfSoAVWdC2q9PpswxYFoJdfNPEwUnwGjC68YB6JrY0XQESZq4n5ID1iu6DCMDchSBxVb+uZrWmoy0wRljQtwsbUQ+XbOJgnMTRkR76KfliytBLzJELXF5vPKN9g65nQeb6+emslfcpqfh/Xey9lzOLya23HkaCVHq+4YXdTT6hQLiEZcejVHnvIawyg2/DqU5da9/od7WoqyhhEXxB/b5PpFCTX8QIbLa5/oYrRsIxrvD2sunb48GlRkLuHDOisnx4dWI7Fkr5hTCWQwWlpl5QIPgqVf7GHXb+iqaQcNuhkfQ60sQbbUTW39kktg=="})JSON");
   // SHA-224 based on [representation 4].
-  test_operate_x<infinit::cryptography::Oneway::sha224, 630>(keypair,
-                                                             "aae61d693b45032cc23064ae91b0a61093ee68bdae6380658702ef4da7b8d4f57c9b137aa34c663a0e13b932c33f160ad42c4896ae8860f13ba71e49ce5118888ce8793d9df0e6ab7102a182bba0ace3dd8f5f92aed38e6f883959848c4cdc51c217ff174c8c51bc6effd92f5f7dba2b76db1330ef27e8ff8c93cd6861df8db153e5c617489b737207f82627c2c4bcb1cbf18e719a96476aa7ede8cbf6a27a793cd47d068b69e8b38f69d528c1b8da88b3d9ffad2a87ef456aded226badf7b0857fe1122084f824467c1cf62fc4da0b326e205040512527701fee5aab202a6731336f332cca0d4ee46664387f852187ae6e28737f88f19e6bbfbaa47fd4117bb");
+  test_serialize_x<infinit::cryptography::Oneway::sha224>(
+    keypair.K(),
+    R"JSON({"buffer":"K/o4ZGpa5uEED76Ln9c4oQi/V2/DarjuoZ0nIZBy9J1FRRWNrILt5A8YHYC5A4ECHOygynfoNdLytXgw3KxZvhC2vWruckWrL2ByypfGkT/Unest/CFZw4KuR2xCwJVw7z53NwxFYolxJbkOgAUjwKNSqQEHLN4xq5xOzpBb0Il+Y8wblvdPfei7DQi5+l8AzT4M/esLCd0V+IPWjWFOqQ8k4ac96y/jMcslGz5yYSE3Z7gUvSycgdswq8t5I36aXan8UA78p2b3ZyMhcONPPQRU9EEiIaRBpxhVYiWjrAON9sWxh3+EU8neOXUVH83QtfEK2b07EmHllhU5ChHX+Q=="})JSON");
   // SHA-256 based on [representation 5].
-  test_operate_x<infinit::cryptography::Oneway::sha256, 73>(keypair,
-                                                            "8d41670652058a9acb2c09e2d9b87221668cc5bf45f6bf6360b7d53d7a7aa9d16d71f6f62ebb3010afc3962451701412fb4f16760ae9baf4a8b990d4da0df75fc1c436490bd14b21435f312cbe69affe574e35ed3a47bc939d03a02fd8173f56ccf110244f12cf0bec203ca0d398ade0eca04dfe748bad14152d0419c9f5e96d03c5be3d8f030df1564ef53037394d9f376a87b8d5a6f45c601016dabbf1da32bdfbfeffec2f091e18f39456854829f4a3215cfb2e9748a02e34f3c9aea9a54ef4e2a34129735a159ca7f0bf0c6934ac54243e403f60ff9ae0aff36f4c9a5f5f024a975eac51478469b9300ec7428d5e68a6c6fa77a44eafa09ae83966b3a2ec");
+  test_serialize_x<infinit::cryptography::Oneway::sha256>(
+    keypair.K(),
+    R"JSON({"buffer":"tXhoH1bA5GGBzXGreSL+I6qIt8tHpMtos0av1s67CCipIBhEZdWSYGR0VaEX7bmDvP97hokR+hoPz4z20OPQpNBRLvQJZ4ci2KbgdD9WGj+lv1SBo4OCrWd6r7GCGIGEW9bJyWM5XHucfYP5pws/uKRbCL536SjmrTXy8FnbwlJyq/iouVKQBGV8XoyM7knpA/TifxqYmAbBWUNohr6S9Bx+sGW5hRr2jWaBWcxYupKTXEAoCNFPz/iDnBAp0I9Td4zlqj/0MUDp5IU2hTDY3c33AUWftwKbRNuIxyUhaPF09/9PnjeS15NHj4Nwb6VuIa7kX4/NOSVCuCKwegOBgQ=="})JSON");
   // SHA-384 based on [representation 6].
-  test_operate_x<infinit::cryptography::Oneway::sha384, 933>(keypair,
-                                                             "809df9c03e8542ae8bbe963c7875a1a6cf6588ffe29252f5cd7062a58f6f285cefe934330ea780bd262bf6301136cbbd75bb1233dedc0dc6f7cb8666f361623ab2d74415eaff5cc6af6efb17c2437edbb9861daa6ac66e34acbad61ea8aff6fc8f2a3127b6dfb6b99458abd76e16b817eee45d8b6e1e6e745291aa3855652476744efb47171a1dcca7f4e60f814f3610d58a3b870ed1eb13b8214ef59a61f134d0aebb959b04041e1279e544e57b2e320060952ed6af5aea7f728f0b353d426278925af76c0f4632b3d7c5bf5b2db6c043d7b3e0f783548349c874f6ccc3702013e398e64aef16eaa783c24ac9caa2e7c50e1cd222d40c6947268e34fedb807d");
+  test_serialize_x<infinit::cryptography::Oneway::sha384>(
+    keypair.K(),
+    R"JSON({"buffer":"qDX75p0BPpZGm+snpBCcCJG1Zo+UnGVFRfTYVFTwQahpvIlW9wOHPq7LPe5LMuAi+B0EXH3gL8yDh3ezYAAeZcJE/XLVdijkCbdfBJHcXSPuKVDXZaELtphZbomxMtZh6Hp0b+Qt3l4uq58yGAmuSJiBYwh7RZbg5u26xIuqhdNvgUQhGO60V6YzmRsO2sRlN4JHUpKrwAJKR7eZmYNjwyTR/K9GXlNX+VRHWBPPlG/PGTm6TZSEPlu1UGalC/4Mqqpgy4kQtkTxnrmXBsoeXvmByQwnCwgcKEzArlPqh4tC+l8oz8Gz9RVmD+9nM7BXtN2nw+vMIC0TT92xeEd49A=="})JSON");
   // SHA-512 based on [representation 7].
-  test_operate_x<infinit::cryptography::Oneway::sha512, 9223>(keypair,
-                                                              "3158f2ceea235b2142d143c3554eb614e4f5c966743bbdc04fd11a4eb838a642ce1153f9623514fefcc2c5c59acd7beb723b8485d7d054baaac28045b195c53c88d93daaf398415555c0ce53a82ef1d25bbf469207516b4890499cedd531e87922cfeae4386e5c54d98921bc445835cf48485ec1fc8fe2863435a3096003036f65059ebe87f47eaef1c3f44c313adfe331387934a16146ec44d8ecb62d0b6c1cb7af73817ac65f0d6952761ef80ed86d7bf122caa388bdfb2e92e065f741a00ebc88000e69f9ec6d1bde0f43e4fcbf6b1377b80e7f9214963d8dfb2f38a04af4811887554851262e6f34eaa3fbbc6ac8b919465c177d07401a9e824ecdf3b949");
+  test_serialize_x<infinit::cryptography::Oneway::sha512>(
+    keypair.K(),
+    R"JSON({"buffer":"is9tKGJsbLDNr31veOtsV6bVuEYyfLjOoyInxaq9v16H5a8rt4sXkXmJ6vrFWPaPx8IfCauaTkZMoCyo82J11te2MhnL1Wp9LgJOokQ2g5SquBwV9uCAMC89fYB23aNhwWquK7o8HHceiwaWIG76dyBPEFoSXBg8TC2a1JS8XdXaKwku84SAqmkscXautjlfyO6itrWwlKuFaZSFJbrUnyt3ggV2U24G/h1O/t07A8M+I7CucOAM5WrvBP+WW3YZUSK3uWFGsM4gAGIKstBG4rjKVphlzSJSOu9WhrVYMHNMJpLZ05/7+d8w8JDpiDhipMQRKeW41fF4c1KdL4IpJg=="})JSON");
 }
 
 /*-----.
@@ -172,6 +194,7 @@ ELLE_TEST_SUITE()
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
+  suite->add(BOOST_TEST_CASE(test_serialize));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

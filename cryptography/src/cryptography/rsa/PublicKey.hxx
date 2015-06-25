@@ -1,11 +1,11 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
 # define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
 
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+
 //
 // ---------- Class -----------------------------------------------------------
 //
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 
 #  include <cryptography/Plain.hh>
 #  include <cryptography/serialization.hh>
@@ -265,6 +265,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
         elle::sprintf("unknown format '%s'", format));
   }
 }
+
 # endif
 
 //

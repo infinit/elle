@@ -15,5 +15,7 @@
 # if define(INFINIT_CRYPTOGRAPHY_LEGACY)
 #  include <cryptography/rsa/legacy.hh>
 # endif
+# include <cryptography/rsa/low.hh>
+# include <cryptography/rsa/serialization.hh>
 
 #endif
