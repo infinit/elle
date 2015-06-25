@@ -33,6 +33,30 @@ namespace das
     }
     ELLE_ATTRIBUTE_R(T&, object);
   };
+
+  template <typename T, typename ... Fields>
+  class Serializer<das::Object<T, Fields ...>>
+  {
+  public:
+    typedef typename das::Object<T, Fields ...>::Model Model;
+    Serializer(Model& o)
+      : _object(o)
+    {}
+
+    Serializer()
+      : _object(*(Model*)(nullptr))
+    {
+      ELLE_ABORT("not handled yet");
+    }
+
+    void
+    serialize(elle::serialization::Serializer& s)
+    {
+      das::Object<T, Fields...>::template each_field<das::SerializeMember>(
+        this->_object, s);
+    }
+    ELLE_ATTRIBUTE_R(Model&, object);
+  };
 }
 
 #define DAS_MODEL_SERIALIZE(Class)              \
