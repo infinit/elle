@@ -85,9 +85,15 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, std::shared_ptr<T>& opt);
-      template <typename T, typename A>
+      template <typename T, typename As>
       void
-      serialize(std::string const& name, T& v, as<A>);
+      serialize(std::string const& name, T& v, as<As>);
+      template <typename As,
+                template <typename, typename> class C,
+                typename T,
+                typename A>
+      void
+      serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T>
       void
       serialize_object(std::string const& name, T& v);
@@ -153,6 +159,10 @@ namespace elle
       template <template <typename, typename> class C, typename T, typename A>
       void
       _serialize(std::string const& name, C<T, A>& collection);
+      template <typename As,
+                template <typename, typename> class C, typename T, typename A>
+      void
+      _serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T1, typename T2>
       void
       _serialize(std::string const& name, std::pair<T1, T2>& collection);

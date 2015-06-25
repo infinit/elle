@@ -380,6 +380,20 @@ namespace elle
       v = T(actual);
     }
 
+    template <typename As,
+              template <typename, typename> class C,
+              typename T,
+              typename A>
+    void
+    Serializer::serialize(std::string const& name, C<T, A>& collection, as<As>)
+    {
+      if (this->_enter(name))
+      {
+        elle::SafeFinally leave([&] { this->_leave(name); });
+        this->_serialize(name, collection, as<As>());
+      }
+    }
+
     template <typename T>
     void
     _version_switch(
@@ -512,6 +526,48 @@ namespace elle
             // FIXME: Use array.emplace_back(*this) if possible.
             collection.emplace_back();
             this->_serialize_anonymous(name, collection.back());
+          });
+      }
+    }
+
+    template <typename As,
+              template <typename, typename> class C,
+              typename T,
+              typename A>
+    void
+    Serializer::_serialize(std::string const& name,
+                           C<T, A>& collection,
+                           as<As>)
+    {
+      if (this->out())
+      {
+        this->_serialize_array(
+          name,
+          collection.size(),
+          [&] ()
+          {
+            for (auto& elt: collection)
+            {
+              if (this->_enter(name))
+              {
+                elle::SafeFinally leave([&] { this->_leave(name); });
+                As a(elt);
+                this->_serialize_anonymous(name, a);
+              }
+            }
+          });
+      }
+      else
+      {
+        this->_serialize_array(
+          name,
+          -1,
+          [&] ()
+          {
+            // FIXME: Use array.emplace_back(*this) if possible.
+            collection.emplace_back();
+            As a(collection.back());
+            this->_serialize_anonymous(name, a);
           });
       }
     }
