@@ -771,10 +771,11 @@ namespace elle
   WeakBuffer
   OutputStreamBuffer<BufferType>::write_buffer()
   {
-    _buffer.size(_old_size + 512);
-    ELLE_DEBUG("Grow stream buffer from %s to %s bytes", _old_size, _buffer.size());
+    _buffer.capacity(this->_old_size + 512);
+    ELLE_DEBUG("%s: grow buffer capacity from %s to %s bytes",
+               *this, this->_old_size, this->_buffer.capacity());
     return WeakBuffer(
-      (char*)_buffer.mutable_contents() + _old_size,
+      (char*)_buffer.mutable_contents() + this->_old_size,
       512
       );
   }
@@ -783,14 +784,14 @@ namespace elle
   WeakBuffer
   OutputStreamBuffer<BufferType>::read_buffer()
   {
-    throw Exception("the buffer is in output mode");
+    throw Exception("buffer is in output mode");
   }
 
   template <typename BufferType>
   void
   OutputStreamBuffer<BufferType>::flush(Size size)
   {
-    ELLE_DEBUG("Flush buffer stream size: %s", size);
+    ELLE_DEBUG("%s: flush buffer stream size: %s", *this, size);
     _old_size += size;
     _buffer.size(_old_size);
   }

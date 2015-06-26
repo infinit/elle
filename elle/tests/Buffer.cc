@@ -294,6 +294,19 @@ range()
   BOOST_CHECK_EQUAL(buffer.range(-5, -3), "56");
 }
 
+static
+void
+output()
+{
+  elle::Buffer buffer;
+  {
+    elle::IOStream stream(buffer.ostreambuf());
+    stream << 42;
+    BOOST_CHECK_EQUAL(buffer.size(), 0);
+  }
+  BOOST_CHECK_EQUAL(buffer, "42");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -329,6 +342,9 @@ ELLE_TEST_SUITE()
   memory->add(BOOST_TEST_CASE(test_release));
   memory->add(BOOST_TEST_CASE(test_assign));
 
+  boost::unit_test::test_suite* streams = BOOST_TEST_SUITE("streams");
+  buffer->add(streams);
+  streams->add(BOOST_TEST_CASE(output));
 
   // WeakBuffer
   boost::unit_test::test_suite* weakbuffer = BOOST_TEST_SUITE("WeakBuffer");
