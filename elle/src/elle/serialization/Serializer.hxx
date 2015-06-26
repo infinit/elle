@@ -338,6 +338,24 @@ namespace elle
     Serializer::_serialize(std::string const& name,
                            std::unordered_map<K, V, Rest...>& map)
     {
+      _serialize_assoc(name, map);
+    }
+
+    template <typename K, typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::unordered_multimap<K, V, Rest...>& map)
+    {
+      _serialize_assoc(name, map);
+    }
+
+    template <typename C>
+    void
+    Serializer::_serialize_assoc(std::string const& name,
+                           C& map)
+    {
+      typedef typename C::key_type K;
+      typedef typename C::mapped_type V;
       if (this->_out())
       {
         this->_serialize_array(
