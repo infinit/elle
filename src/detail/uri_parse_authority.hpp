@@ -4,8 +4,8 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 
-#ifndef NETWORK_DETAIL_URI_PARSE_INC
-#define NETWORK_DETAIL_URI_PARSE_INC
+#ifndef NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
+#define NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 
 #include <network/uri/uri.hpp>
 
@@ -19,4 +19,4 @@ namespace network {
   } // namespace detail
 } // namespace network
 
-#endif // NETWORK_DETAIL_URI_PARSE_INC
+#endif // NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
