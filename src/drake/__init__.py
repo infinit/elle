@@ -1502,7 +1502,7 @@ class Node(BaseNode):
     return self.__mtime
 
   def touch(self):
-    _OS.utime(str(self.path()))
+    _OS.utime(str(self.path()), times = None)
     self.__mtime = time.time()
 
 
