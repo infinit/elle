@@ -3066,8 +3066,8 @@ class Configuration:
     res = []
     for root in where:
       path = root / what
+      rel = root.without_prefix(drake.path_root(), force = False)
       if path.exists():
-        rel = root.without_prefix(drake.path_root(), force = False)
         res.append(rel)
       else:
         if path.absolute():
@@ -3076,7 +3076,7 @@ class Configuration:
           drake_path = drake.path_build(path)
         node = drake.Drake.current.nodes.get(drake_path)
         if node is not None:
-          res.append(root)
+          res.append(rel)
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
