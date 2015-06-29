@@ -1,10 +1,11 @@
+#include "cryptography.hh"
+
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/random.hh>
 
-#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 /*----------.
@@ -28,7 +29,7 @@ test_represent_n()
   {
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       key.serialize(output);
     }
 
@@ -42,7 +43,7 @@ test_represent_n()
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       code.serialize(output);
     }
 
@@ -305,11 +306,11 @@ test_serialize_x(elle::String const& R1,
                  elle::String const& R2)
 {
   std::stringstream stream1(R1);
-  typename elle::serialization::Json::SerializerIn input1(stream1);
+  typename elle::serialization::json::SerializerIn input1(stream1);
   infinit::cryptography::SecretKey key(input1);
 
   std::stringstream stream2(R2);
-  typename elle::serialization::Json::SerializerIn input2(stream2);
+  typename elle::serialization::json::SerializerIn input2(stream2);
   infinit::cryptography::Code code(input2);
 
   infinit::cryptography::Clear clear = key.decrypt(code);

@@ -1,10 +1,11 @@
+#include "cryptography.hh"
+
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/hash.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/random.hh>
 
-#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 static std::string const _input(
@@ -29,7 +30,7 @@ test_represent_n()
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       digest.serialize(output);
     }
 
@@ -94,7 +95,7 @@ void
 test_serialize_x(elle::String const& R)
 {
   std::stringstream stream(R);
-  typename elle::serialization::Json::SerializerIn input(stream);
+  typename elle::serialization::json::SerializerIn input(stream);
   infinit::cryptography::Digest digest(input);
 
   infinit::cryptography::Digest _digest =

@@ -145,8 +145,9 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      elle::fprintf(stream, "%x[%s, %s, %s]",
+      elle::fprintf(stream, "%x(%s)[%s, %s, %s]",
                     this->_password,
+                    this->_password.size(),
                     this->_cipher, this->_mode, this->_oneway);
     }
 

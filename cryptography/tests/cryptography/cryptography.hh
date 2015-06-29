@@ -31,7 +31,7 @@ namespace infinit
         for (elle::Natural32 i = 0; i < archives.size(); ++i)
         {
           std::stringstream stream1(archives[i]);
-          typename elle::serialization::Json::SerializerIn input1(stream1);
+          typename elle::serialization::json::SerializerIn input1(stream1);
           objects[i].reset(new T(input1));
 
           if (operate != nullptr)
@@ -39,11 +39,11 @@ namespace infinit
 
           std::stringstream stream2;
           {
-            typename elle::serialization::Json::SerializerOut output2(stream2);
+            typename elle::serialization::json::SerializerOut output2(stream2);
             objects[i]->serialize(output2);
           }
 
-          typename elle::serialization::Json::SerializerIn input3(stream2);
+          typename elle::serialization::json::SerializerIn input3(stream2);
           T _o(input3);
 
           BOOST_CHECK_EQUAL(*objects[i], _o);

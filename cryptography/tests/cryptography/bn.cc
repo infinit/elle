@@ -1,7 +1,8 @@
+#include "cryptography.hh"
+
 #include <cryptography/bn.hh>
 #include <cryptography/Exception.hh>
 
-#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 #include <openssl/err.h>
@@ -31,7 +32,7 @@ test_represent()
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       output.serialize("data", &bn);
     }
 
@@ -56,18 +57,18 @@ test_serialize()
     ::BIGNUM* bn = nullptr;
 
     std::stringstream stream1(archive1);
-    typename elle::serialization::Json::SerializerIn input1(stream1);
+    typename elle::serialization::json::SerializerIn input1(stream1);
     input1.serialize("data", bn);
 
     std::stringstream stream2;
     {
-      typename elle::serialization::Json::SerializerOut output(stream2);
+      typename elle::serialization::json::SerializerOut output(stream2);
       output.serialize("data", bn);
     }
 
     ::BIGNUM* _bn = nullptr;
 
-    typename elle::serialization::Json::SerializerIn input2(stream2);
+    typename elle::serialization::json::SerializerIn input2(stream2);
     input2.serialize("data", _bn);
 
     BOOST_CHECK_EQUAL(*bn, *_bn);

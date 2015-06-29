@@ -11,7 +11,6 @@
 
 #include <elle/printf.hh>
 #include <elle/types.hh>
-#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 /*----------.
@@ -39,7 +38,7 @@ _test_represent(elle::Natural32 const length,
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       keypair.serialize(output);
     }
 
@@ -158,16 +157,12 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 {
   // Public/private encryption/decryption with plain.
   {
-    printf("HERE\n");
-
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(9128);
     infinit::cryptography::Code code =
       keypair.K().encrypt(infinit::cryptography::Plain(input));
     infinit::cryptography::Clear clear = keypair.k().decrypt(code);
     elle::String const output(clear.buffer().string());
-
-    printf("HERE\n");
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -221,11 +216,11 @@ test_serialize()
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       keypair1.serialize(output);
     }
 
-    typename elle::serialization::Json::SerializerIn input(stream.str());
+    typename elle::serialization::json::SerializerIn input(stream);
     infinit::cryptography::rsa::KeyPair keypair2(input);
 
     BOOST_CHECK_EQUAL(keypair1, keypair2);

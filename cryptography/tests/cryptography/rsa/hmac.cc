@@ -32,7 +32,7 @@ test_represent_n(infinit::cryptography::rsa::PrivateKey const& k)
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       digest.serialize(output);
     }
 
@@ -56,8 +56,9 @@ test_represent()
 
   std::stringstream stream;
   {
-    typename elle::serialization::Json::SerializerOut output(stream);
-    keypair.K().serialize(output);
+    typename elle::serialization::json::SerializerOut output(stream);
+    infinit::cryptography::rsa::PublicKey K = keypair.K();
+    K.serialize(output);
   }
   elle::printf("[representation 0] %s\n", stream.str());
 
@@ -131,7 +132,7 @@ test_serialize_x(infinit::cryptography::rsa::PublicKey const& K,
                  elle::String const& R)
 {
   std::stringstream stream(R);
-  typename elle::serialization::Json::SerializerIn input(stream);
+  typename elle::serialization::json::SerializerIn input(stream);
   infinit::cryptography::Digest digest(input);
 
   BOOST_CHECK_EQUAL(
@@ -151,7 +152,7 @@ test_serialize()
   elle::String representation0(R"JSON({"private key":{"digest algorithm":4,"encryption padding":3,"rsa":"MIIEpAIBAAKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQABAoIBABBc0hTwl+S5GhGermSbU0x+WFQqa4486BavpFbUFj4hSk/F8evujFmNbtTbJZEfiRE9McGoecx/rlmcskMdKvpZ0tRqvLElMLi20utO82X/Y+jyDtKTEkNAHtx5NY6qTQ6Gf8VHjk8XFBFr+wF2q3DZQaRki5TnMPszCIbcbQAKGxQ1Fn0FhnIRT4hjHXVlA3Oyy7Sz5JiLmQj4hBLyDeC2eojDOi5F9/HGiI3xXdS5TGBMY2SJdvFUKocEv5V4LcZpmEgOppgIrnPCWiI9je9sAv/9ZiS41c25xQjV/e28qdOdurQUSHnUdPvjLutZPGMN9Fu1P75zKjdNOGusWjECgYEA/JYMNo3cDXYrs7rFoOdN+Gf0fJE75JhJuchxvWDw4S6OovGbJWisYvvvaNgMW4xCK1KNcGbiw36gULP+lXPuyFS6s5RK44jkMVOyZFspufIfGI3DD94csB+qGE9eaPf4mUfz6NKsMttGhtCvM65i8uc03nFP1LIhLkzWg627aAkCgYEAxCWEkd0M0xs/MbF7slw7tzWjtqLF4viC9gkv0lFJvJeKvoGu+1PVL7nNtctzBlH5b4lzGJqlvXwutJyxXKTR6YBhzuiFSiTNzgIUja6wiFJaItWk/kVP7+RV+vRCF+Srunlu8EUT7Cr8Qz3ggN2vqLkrhZGleOL2vmT/kNPiIU8CgYEA6gBsgiH8anA+3nw62O1RG7/bDYhTT10SeE5NqR/lKQjD1gs1K3wEsJMsYho9oJaZOp95L1fx3yExjnKieXz1C50LdpD8rD1HArfCfhzC1GSOEGZM/ydLtpMvNuRY17BbHE4/lkOOinMArKcqmRuGyfgOz8F0Lt1zxfwjg8xw4VkCgYEAjCMd9zTOX9l8qd1bOhBJndjV8buT1FinAG+J2iK3ouVGfFudD/VSP/no7fTAZoiUxMqYD8EVny6lE+dLlJwxWTmfJ7va1yE6ZO/5jUx81bi4q2CmtAADX6psf5KZ0gZPZzgxObqwxC/l8Yi46Hj6cnpxjMmFRrwpe9ge+3NWgWMCgYAJlOQmdZGMijemfSO29jDHpUQIsKwJiRBFoS3+uz0RoQ3cDW0GKol0IwoRHQfLNzeWxt5fP6ftH0uE5RGum9jC1ah4w5Oc/yiu6s1m7X5zkvsHW2lULutktuo5mxj+C+aN8TxKOlqQv4hmdM51/DqzhJcxVfTzdPBVFuzXb229bA==","signature padding":5,"version":{"major":0,"minor":0,"subminor":0}},"public key":{"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIIBCgKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQAB","signature padding":5,"version":{"major":0,"minor":0,"subminor":0}}})JSON");
 
   std::stringstream stream(representation0);
-  typename elle::serialization::Json::SerializerIn input(stream);
+  typename elle::serialization::json::SerializerIn input(stream);
   infinit::cryptography::rsa::KeyPair keypair(input);
 
   // MD5 based on [representation 1].

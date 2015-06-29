@@ -10,6 +10,7 @@
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
+#include <elle/serialization/binary.hh>
 
 #include <openssl/crypto.h>
 #include <openssl/engine.h>
@@ -62,6 +63,8 @@ namespace infinit
         elle::Natural32
         _overhead()
         {
+          ELLE_DEBUG_FUNCTION("");
+
           // The static password used to construct this dummy secret key
           // whose only purpose is to calculate the serialization overhead.
           elle::String password =
@@ -81,7 +84,11 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           buffer.writer() << secret;
 #else
-# warning "XXX new serialization"
+          {
+            elle::IOStream stream(buffer.ostreambuf());
+            elle::serialization::binary::SerializerOut output(stream, false); // XXX
+            output.serialize("secret", secret);
+          }
 #endif
 
           elle::Natural32 length_final = buffer.size() * 8;
@@ -90,7 +97,9 @@ namespace infinit
 
           // Return the difference between the requested secret length and
           // the actual one.
-          return (length_final - length_original);
+          elle::Natural32 overhead = length_final - length_original;
+          ELLE_DEBUG("overhead: %s", overhead);
+          return (overhead);
         }
 
         /*----------.
@@ -230,9 +239,14 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           buffer.writer() << secret;
 #else
-# warning "XXX new serialization"
+          {
+            elle::IOStream stream(buffer.ostreambuf());
+            elle::serialization::binary::SerializerOut output(stream, false); // XXX
+            output.serialize("secret", secret);
+          }
 #endif
-          ELLE_ASSERT_EQ(buffer.size() * 8, length + overhead);
+
+          ELLE_ASSERT_LTE(buffer.size() * 8, length + overhead);
 
           // Encrypt the secret key's archive.
           Code key = Code(apply(buffer, context, function));
@@ -244,7 +258,12 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           code.writer() << key << data;
 #else
-# warning "XXX new serialization"
+          {
+            elle::IOStream _stream(code.ostreambuf());
+            elle::serialization::binary::SerializerOut _output(_stream, false); // XXX
+            _output.serialize("key", key);
+            _output.serialize("data", data);
+          }
 #endif
 
           return (code);
@@ -272,28 +291,32 @@ namespace infinit
           Code key(extractor);
           Code data(extractor);
 #else
-# warning "XXX new serialization"
+          elle::IOStream stream(code.istreambuf());
+          elle::serialization::binary::SerializerIn input(stream);
+          Code key = input.deserialize<Code>("key");
+          Code data = input.deserialize<Code>("data");
 #endif
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           // 2) Decrypt the key so as to reveal the symmetric secret key.
 
           // Decrypt the key.
           elle::Buffer buffer = apply(key.buffer(), context, function);
 
           // Finally extract the secret key since decrypted.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           SecretKey secret(buffer.reader());
+#else
+          elle::IOStream _stream(buffer.istreambuf());
+          elle::serialization::binary::SerializerIn _input(_stream);
+          SecretKey secret = _input.deserialize<SecretKey>("secret");
+#endif
 
           // 3) Decrypt the data with the secret key.
           Clear clear = secret.decrypt(data);
 
-          return (clear.buffer());
-#else
-# warning "XXX new serialization"
-#endif
+          ELLE_DUMP("clear: %s", clear.buffer());
 
-          // XXX
-          return (elle::Buffer());
+          return (clear.buffer());
         }
 
         elle::Buffer

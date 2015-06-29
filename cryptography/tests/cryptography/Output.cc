@@ -1,8 +1,9 @@
+#include "cryptography.hh"
+
 #include <cryptography/Output.hh>
 #include <cryptography/Input.hh>
 #include <cryptography/random.hh>
 
-#include <elle/test.hh>
 #include <elle/serialization/json.hh>
 
 /*----------.
@@ -26,7 +27,7 @@ test_represent()
 
     std::stringstream stream;
     {
-      typename elle::serialization::Json::SerializerOut output(stream);
+      typename elle::serialization::json::SerializerOut output(stream);
       object.serialize(output);
     }
 
@@ -96,12 +97,12 @@ test_serialize()
 
     std::stringstream stream1;
     {
-      typename elle::serialization::Json::SerializerOut output(stream1);
+      typename elle::serialization::json::SerializerOut output(stream1);
       object1.serialize(output);
     }
 
     std::stringstream stream2(stream1.str());
-    typename elle::serialization::Json::SerializerIn input(stream2);
+    typename elle::serialization::json::SerializerIn input(stream2);
     infinit::cryptography::Output object2(input);
 
     BOOST_CHECK_EQUAL(object1, object2);
@@ -113,16 +114,16 @@ test_serialize()
     elle::String archive1(R"JSON({"buffer":"sxR6x3SeZLaNrXnJ1a4bvhL0vw0II76mYG7Siyb9Vjz5PFGIFQQAKhB6wqltt73fI0ydU5lksG7VBKuyJprMYdWhjQ9JIJf/4Otf+CmtPCnlSjGD90wqUdGVjvjDBK7oPjIiKvKLg5ZerpNWB0PEfQTAuj31bqIAbsRe0A6kWBQ="})JSON");
 
     std::stringstream stream1(archive1);
-    typename elle::serialization::Json::SerializerIn input1(stream1);
+    typename elle::serialization::json::SerializerIn input1(stream1);
     infinit::cryptography::Output object1(input1);
 
     std::stringstream stream2;
     {
-      typename elle::serialization::Json::SerializerOut output2(stream2);
+      typename elle::serialization::json::SerializerOut output2(stream2);
       object1.serialize(output2);
     }
 
-    typename elle::serialization::Json::SerializerIn input2(stream2);
+    typename elle::serialization::json::SerializerIn input2(stream2);
     infinit::cryptography::Output object2(input2);
 
     BOOST_CHECK_EQUAL(object1, object2);
