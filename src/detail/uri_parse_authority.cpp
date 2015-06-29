@@ -8,7 +8,7 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
-#include "detail/uri_parse_authority.hpp"
+#include "uri_parse_authority.hpp"
 
 namespace network {
   namespace detail {
