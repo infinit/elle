@@ -13,6 +13,7 @@ namespace std
     size_t
     operator ()(infinit::cryptography::dh::PublicKey const& value) const
     {
+#  warning "XXX new serialization"
       /* XXX replace with new serialization
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);

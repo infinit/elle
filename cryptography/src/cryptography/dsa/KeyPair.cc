@@ -116,16 +116,14 @@ namespace infinit
         _K(),
         _k()
       {
-        // XXX this->serialize(serializer);
+        this->serialize(serializer);
       }
 
       void
-      KeyPair::serialize(elle::serialization::Serializer& s)
+      KeyPair::serialize(elle::serialization::Serializer& serializer)
       {
-        /* XXX
-        s.serialize("public_key", this->_K);
-        s.serialize("private_key", this->_k);
-        */
+        serializer.serialize("public key", this->_K);
+        serializer.serialize("private key", this->_k);
       }
 
       /*----------.

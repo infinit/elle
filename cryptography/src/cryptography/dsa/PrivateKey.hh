@@ -66,13 +66,12 @@ namespace infinit
         void
         _check() const;
       public:
+        /// Return a signature of any given serializable type, including Plain.
+        Signature
+        sign(Plain const& value) const;
         /// Return a signature of the given digest.
         Signature
         sign(Digest const& digest) const;
-        /// Return a signature of any given serializable type, including Plain.
-        template <typename T = Plain>
-        Signature
-        sign(T const& value) const;
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;

@@ -12,6 +12,7 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -73,12 +74,10 @@ namespace infinit
         elle::Boolean
         verify(Signature const& signature,
                Digest const& digest) const;
-        /// Return true if the given signature matches with the serializable
-        /// value.
-        template <typename T = Plain>
+        /// Return true if the given signature matches with the plain text.
         elle::Boolean
         verify(Signature const& signature,
-               T const& value) const;
+               Plain const& value) const;
         /// Return the public key's size in bytes.
         elle::Natural32
         size() const;

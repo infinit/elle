@@ -1,7 +1,7 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
+#ifndef INFINIT_CRYPTOGRAPHY_DSA_SERIALIZATION_HH
+# define INFINIT_CRYPTOGRAPHY_DSA_SERIALIZATION_HH
 
-# include <openssl/rsa.h>
+# include <openssl/dsa.h>
 
 # include <cryptography/serialization.hh>
 
@@ -9,7 +9,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace rsa
+    namespace dsa
     {
       namespace serialization
       {
@@ -17,10 +17,10 @@ namespace infinit
         | Structures |
         `-----------*/
 
-        struct RSA
+        struct DSA
         {
-          typedef ::RSA Type;
-          static constexpr const char* identifier = "rsa";
+          typedef ::DSA Type;
+          static constexpr const char* identifier = "dsa";
         };
       }
     }

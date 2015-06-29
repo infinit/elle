@@ -12,6 +12,8 @@
 #include <cryptography/dsa/PublicKey.hh>
 #include <cryptography/dsa/PrivateKey.hh>
 #include <cryptography/dsa/KeyPair.hh>
+#include <cryptography/dsa/der.hh>
+#include <cryptography/dsa/serialization.hh>
 #include <cryptography/context.hh>
 #include <cryptography/low.hh>
 #include <cryptography/Digest.hh>
@@ -35,6 +37,31 @@ namespace infinit
   {
     namespace dsa
     {
+      namespace publickey
+      {
+        /*--------------.
+        | Serialization |
+        `--------------*/
+
+        struct Serialization:
+          public dsa::serialization::DSA
+        {
+          static
+          elle::Buffer
+          encode(::DSA* dsa)
+          {
+            return der::encode_public(dsa);
+          }
+
+          static
+          ::DSA*
+          decode(elle::ConstWeakBuffer const& buffer)
+          {
+            return der::decode_public(buffer);
+          }
+        };
+      }
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -197,6 +224,19 @@ namespace infinit
 
       elle::Boolean
       PublicKey::verify(Signature const& signature,
+                        Plain const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("signature: %x", signature);
+        ELLE_DUMP("plain: %x", plain);
+
+        Digest digest = hash(plain, this->_digest_algorithm);
+
+        return (this->verify(signature, digest));
+      }
+
+      elle::Boolean
+      PublicKey::verify(Signature const& signature,
                         Digest const& digest) const
       {
         ELLE_TRACE_METHOD("");
@@ -243,26 +283,36 @@ namespace infinit
       | Serialization |
       `--------------*/
 
-      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
+      PublicKey::PublicKey(elle::serialization::SerializerIn& serializer)
       {
-        auto dsa = ::DSA_new();
-        if (!dsa)
-          throw elle::Error(
-            elle::sprintf("unable to initialize DSA: %s",
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Allocate the EVP key to receive the deserialized's DSA structure.
+        this->_key.reset(::EVP_PKEY_new());
+
+        // Set the EVP key as being of type DSA.
+        if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_DSA) <= 0)
+          throw Exception(
+            elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_DSA(this->_key.get(), dsa) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the DSA: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
         this->serialize(serializer);
+
         this->_prepare();
+        this->_check();
       }
 
       void
       PublicKey::serialize(elle::serialization::Serializer& serializer)
       {
-        // XXX
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+
+        cryptography::serialize<publickey::Serialization>(
+          serializer,
+          this->_key->pkey.dsa);
+
+        serializer.serialize("digest algorithm", this->_digest_algorithm);
       }
 
       /*----------.

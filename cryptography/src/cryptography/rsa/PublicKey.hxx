@@ -281,6 +281,7 @@ namespace std
     operator ()(infinit::cryptography::rsa::PublicKey const& value) const
     {
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      // XXX destroy since not used before
       std::stringstream stream;
       elle::serialize::OutputBinaryArchive archive(stream);
       archive << value;

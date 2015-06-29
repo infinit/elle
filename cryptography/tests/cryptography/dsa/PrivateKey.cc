@@ -6,8 +6,7 @@
 #include <cryptography/Exception.hh>
 
 #include <elle/printf.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
+#include <elle/serialization/json.hh>
 
 /*----------.
 | Represent |
@@ -22,10 +21,14 @@ _test_represent()
 
   // 1)
   {
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << keypair.k();
-    elle::printf("[representation 1] %s\n", archive);
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      infinit::cryptography::dsa::PrivateKey k = keypair.k();
+      k.serialize(output);
+    }
+
+    elle::printf("[representation 1] %s\n", stream.str());
   }
 }
 
@@ -115,11 +118,14 @@ test_serialize()
   {
     infinit::cryptography::dsa::PrivateKey k1 = _test_generate(2048);
 
-    elle::String archive;
-    elle::serialize::to_string(archive) << k1;
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      k1.serialize(output);
+    }
 
-    auto extractor = elle::serialize::from_string(archive);
-    infinit::cryptography::dsa::PrivateKey k2(extractor);
+    typename elle::serialization::json::SerializerIn input(stream);
+    infinit::cryptography::dsa::PrivateKey k2(input);
 
     BOOST_CHECK_EQUAL(k1, k2);
   }
@@ -130,7 +136,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAL4BAAAAAAAAMIIBugIBAAKBgQDF8rYSAqWqVtZVdKuFdptTmF9+KzUziuU3oGJjDDcyi7T4T08eYSULJPgWsYk23nvjkg4PzRZIAKt6gFRSrTmqXojjLqo+KZ2ysoP+Pia0UPmhGr0PNMyw1dEwojDTib1M3Y55S3K1zRtmhP2jLHh3JjwSbsVKWzxWo4mVHFx48QIVALjelZay31w+gs2F/zMhNTMk4D+jAoGAcbDW58U3jmviB26T7Rz5zRbujg+Pfui5hUL0QFA4pCfEzNtSain32zbKTM/c5JblvifxmwfhM+itbwUsyIKDkf5yGs6L6UsDiqgD+C36kCoYqk24qeFvzwJ0S+sLfGjtxckJ8yvG2/Dp6RwUOTg0Isfjk8kqKr3ov0WB/CkdJkkCgYAt7nVHMzGa8+r9iAId4fPR5+ibm7Rl4kvhuoQqOBplGM/QrsJpAtyAQ2Hk4pw+TuYvVSs5W4zxRLinBbucZaSjw8n9uG0VKN20RFDCgCEPGyEq/XtMgHXAWb61CzLPqQ01QtvJyMByh2QHdy8lGZeXfNRFSPi/VD4baw7s0nSjggIUWGE4vWLksXgl7QQ7rQ3IfV0BlgcEAA=="
+      R"JSON({"digest algorithm":4,"dsa":"MIIBuwIBAAKBgQDTqOWZ7rSD+2LLZAae5TnEH576/xpwKNWU0KJ1bw1vrFO6i1zlxstE0JLl++tkWFuklbU5an3oGqOhfw0ClryxBWOfMVVPQ3+MWEvn/heU9q+1odOaTrm985KZp6aqmHRqXnLGWnVN5yuO/JwwzS/Gz6mtPMIq00/C2RjvVkeCYwIVAJ9b7Z4C5+cy9dxkRHIObd2jqpX5AoGBAIhF3LRrhlkD37PGzirFmVxkg/mz1r1FNHDNqzUFJpTey8JdUEvyKecx+H2yI6YLM37BjzujWWn75J37ZQ3EuA1mmQ08zdUJKEyiKh297Nibx/rnYVmhFol1OAl5LVn18IYICALVfpTvusiNlPaJ5ai2SjALEBHfPfyGjqPDfAqGAoGAet+hjm07E01WdO76jF1SHAIcbU2WYkjNqovmiHuxd6AZcjQU8r7EFCRVG6Chge89pXVqr7vqfci5VY44LUh4gA1opIx3dIggL0W66DJUvrDmGMvshwRL0vw+/nHtIRvbrmfad443Ghdl5wqLC3Mg0C6DmkKkY6vd2asfjiqQjjQCFC8088Cg7wtkCCZ6MfHlFd679Vyy"})JSON"
     };
 
     infinit::cryptography::test::formats<

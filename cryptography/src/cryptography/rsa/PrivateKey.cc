@@ -5,6 +5,7 @@
 #include <cryptography/rsa/context.hh>
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/serialization.hh>
+#include <cryptography/rsa/der.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
@@ -32,6 +33,31 @@ namespace infinit
   {
     namespace rsa
     {
+      namespace privatekey
+      {
+        /*--------------.
+        | Serialization |
+        `--------------*/
+
+        struct Serialization:
+          public rsa::serialization::RSA
+        {
+          static
+          elle::Buffer
+          encode(::RSA* rsa)
+          {
+            return der::encode_private(rsa);
+          }
+
+          static
+          ::RSA*
+          decode(elle::ConstWeakBuffer const& buffer)
+          {
+            return der::decode_private(buffer);
+          }
+        };
+      }
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -454,7 +480,9 @@ namespace infinit
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
 
-        rsa::serialize_private(serializer, this->_key->pkey.rsa);
+        cryptography::serialize<privatekey::Serialization>(
+          serializer,
+          this->_key->pkey.rsa);
 
         serializer.serialize("encryption padding", this->_encryption_padding);
         serializer.serialize("signature padding", this->_signature_padding);

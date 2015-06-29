@@ -1,5 +1,4 @@
 #include "../cryptography.hh"
-#include "../Sample.hh"
 
 #include <cryptography/dsa/KeyPair.hh>
 #include <cryptography/dsa/PublicKey.hh>
@@ -11,8 +10,7 @@
 
 #include <elle/printf.hh>
 #include <elle/types.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
+#include <elle/serialization/json.hh>
 
 /*----------.
 | Represent |
@@ -29,10 +27,13 @@ _test_represent(elle::Natural32 const length,
       infinit::cryptography::dsa::keypair::generate(length,
                                                     digest_algorithm);
 
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << keypair;
-    elle::printf("[representation 1] %s\n", archive);
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      keypair.serialize(output);
+    }
+
+    elle::printf("[representation 1] %s\n", stream.str());
   }
 }
 
@@ -138,16 +139,6 @@ _test_operate(infinit::cryptography::dsa::KeyPair const& keypair)
 
     BOOST_CHECK_EQUAL(result, true);
   }
-
-  // Sign a complex type.
-  {
-    Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(10329));
-    infinit::cryptography::Signature signature = keypair.k().sign(input);
-    auto result = keypair.K().verify(signature, input);
-
-    BOOST_CHECK_EQUAL(result, true);
-  }
 }
 
 static
@@ -175,12 +166,14 @@ test_serialize()
       _test_generate(1024,
                      infinit::cryptography::Oneway::sha512);
 
-    elle::String archive;
-    elle::serialize::to_string(archive) << keypair1;
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      keypair1.serialize(output);
+    }
 
-    auto extractor = elle::serialize::from_string(archive);
-
-    infinit::cryptography::dsa::KeyPair keypair2(extractor);
+    typename elle::serialization::json::SerializerIn input(stream);
+    infinit::cryptography::dsa::KeyPair keypair2(input);
 
     BOOST_CHECK_EQUAL(keypair1, keypair2);
 
@@ -193,7 +186,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAAAApgEAAAAAAAAwggGiAoGBAOmtrh0566Wu8Ge1c5caV7y9Kj/CmyjLAbhn7td6crPfEn1Q+pn1KuNaBNmhZPgLdjLw/g5n39DExYqc8hfOekTInkNWWpZK/VEhzhZ41a9qIh7Rw7X/J95wOMdbEYhVWpDXpXxdtZQpdiqRAr5iV8rgcNopYZ0Hn6hJ5iUMNiQCAoGBAPYwBRFPaqPWkQRpJ9UhH6rZ8hjqI0n6osjzx4kkwPoNnN/LhzBjFZYE+otKW4tEObvS8z+WMdV9rrCNPi6TjSjXJwoBfn51JPjXgKz83lOSy/mjWcQdGVFp6mDSy21o5juqfuu78+K1Qi8jAkqt0YvCpvkTJfae6mP6A9Y/xjHrAhUAnmSNTdr6Npof5hA+BlAMdFd4CiMCgYBBusC/3HKxzGu7xffT6AnGLxM2sH4IgyLD9oD0LHu4qjSvCjsuuQ408NPQteNCE/h/F4rnq7UWwBnL7uC2LZZ4Y8/8x0/M5TcNfwh56wy2DlnIM7g8IxiCTJ86aPYU7bqJdxWM66kZ0G+LHWSZvs8aYDeB7EQPss6nlObLuYC6LgIAAAAAAL8BAAAAAAAAMIIBuwIBAAKBgQD2MAURT2qj1pEEaSfVIR+q2fIY6iNJ+qLI88eJJMD6DZzfy4cwYxWWBPqLSluLRDm70vM/ljHVfa6wjT4uk40o1ycKAX5+dST414Cs/N5Tksv5o1nEHRlRaepg0sttaOY7qn7ru/PitUIvIwJKrdGLwqb5EyX2nupj+gPWP8Yx6wIVAJ5kjU3a+jaaH+YQPgZQDHRXeAojAoGAQbrAv9xyscxru8X30+gJxi8TNrB+CIMiw/aA9Cx7uKo0rwo7LrkONPDT0LXjQhP4fxeK56u1FsAZy+7gti2WeGPP/MdPzOU3DX8IeesMtg5ZyDO4PCMYgkyfOmj2FO26iXcVjOupGdBvix1kmb7PGmA3gexED7LOp5Tmy7mAui4CgYEA6a2uHTnrpa7wZ7VzlxpXvL0qP8KbKMsBuGfu13pys98SfVD6mfUq41oE2aFk+At2MvD+Dmff0MTFipzyF856RMieQ1Zalkr9USHOFnjVr2oiHtHDtf8n3nA4x1sRiFVakNelfF21lCl2KpECvmJXyuBw2ilhnQefqEnmJQw2JAICFCH+rQAmB2cw0guwMDinVd6z4IXpAgA="
+      R"JSON({"private key":{".version":{"major":0,"minor":0,"subminor":0},"digest algorithm":2,"dsa":"MIIBvAIBAAKBgQDV69tk+qVpwiPeiBUVfesOjjGfBFdR8naWQKCYlkfn/yw/qnf0ay8HLB1MG6hoxo3Nh3jqJJpwEEAgTX6N/6nvkYnDQYsKXEu/xPoe9r0B6IJ8ZMT3n3rOtBJV0ttFzYWgDm3wE1M1Wy2Fy+qLUBlQIKFlnp/UWTh1TO1CubJ91QIVANymO3Ihghaz2O9w7LTfapBEL8oXAoGAPD05GSgCYNFyd7RcAGyOPYnTQlMnP67uUj4Yc8j+LYDwfN+YVXLyTe9cj8F9tWRS/n5P+wBygDxWGFq5Z4kLORnZAKmat82qLWNtkkB/FxGwXbWsC2dYY+e/37gWacMHWIwz+acCr7f2sfKw8LECBiMhhQnXg8XKNrH6oPIZOqMCgYEA0QHTFEkzlE5PQmnqG48KB43vFvsi2BdH11Ub4wFhGfZ0vt92EQjyv2dfXE6grPYqWJdxOaG+acr6h1wBemOMxieTwdJ1742wMk73OnMB6D0PKUvtIeyyetIc1p/htvVpBD6iX92WMsOwYq/FHrZr77bVQNVsqATOm0frsLhZeRMCFQDBVIxc53gmioEw4xz1bgO5iohUEQ=="},"public key":{".version":{"major":0,"minor":0,"subminor":0},"digest algorithm":2,"dsa":"MIIBogKBgQDRAdMUSTOUTk9CaeobjwoHje8W+yLYF0fXVRvjAWEZ9nS+33YRCPK/Z19cTqCs9ipYl3E5ob5pyvqHXAF6Y4zGJ5PB0nXvjbAyTvc6cwHoPQ8pS+0h7LJ60hzWn+G29WkEPqJf3ZYyw7Bir8UetmvvttVA1WyoBM6bR+uwuFl5EwKBgQDV69tk+qVpwiPeiBUVfesOjjGfBFdR8naWQKCYlkfn/yw/qnf0ay8HLB1MG6hoxo3Nh3jqJJpwEEAgTX6N/6nvkYnDQYsKXEu/xPoe9r0B6IJ8ZMT3n3rOtBJV0ttFzYWgDm3wE1M1Wy2Fy+qLUBlQIKFlnp/UWTh1TO1CubJ91QIVANymO3Ihghaz2O9w7LTfapBEL8oXAoGAPD05GSgCYNFyd7RcAGyOPYnTQlMnP67uUj4Yc8j+LYDwfN+YVXLyTe9cj8F9tWRS/n5P+wBygDxWGFq5Z4kLORnZAKmat82qLWNtkkB/FxGwXbWsC2dYY+e/37gWacMHWIwz+acCr7f2sfKw8LECBiMhhQnXg8XKNrH6oPIZOqM="}})JSON"
       };
 
     infinit::cryptography::test::formats<infinit::cryptography::dsa::KeyPair>(

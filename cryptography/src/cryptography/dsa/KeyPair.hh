@@ -14,6 +14,7 @@ ELLE_OPERATOR_RELATIONALS();
 # include <iosfwd>
 
 # include <elle/types.hh>
+# include <elle/serialization/Serializer.hh>
 
 namespace infinit
 {
@@ -73,7 +74,6 @@ namespace infinit
         | Printable |
         `----------*/
       public:
-        // printable
         void
         print(std::ostream& stream) const override;
 

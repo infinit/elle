@@ -1,5 +1,7 @@
 #include <cryptography/dsa/PrivateKey.hh>
 #include <cryptography/dsa/KeyPair.hh>
+#include <cryptography/dsa/serialization.hh>
+#include <cryptography/dsa/der.hh>
 #include <cryptography/context.hh>
 #include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
@@ -25,6 +27,31 @@ namespace infinit
   {
     namespace dsa
     {
+      namespace privatekey
+      {
+        /*--------------.
+        | Serialization |
+        `--------------*/
+
+        struct Serialization:
+          public dsa::serialization::DSA
+        {
+          static
+          elle::Buffer
+          encode(::DSA* dsa)
+          {
+            return der::encode_private(dsa);
+          }
+
+          static
+          ::DSA*
+          decode(elle::ConstWeakBuffer const& buffer)
+          {
+            return der::decode_private(buffer);
+          }
+        };
+      }
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -160,6 +187,17 @@ namespace infinit
       }
 
       Signature
+      PrivateKey::sign(Plain const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("plain: %x", plain);
+
+        Digest digest = hash(plain, this->_digest_algorithm);
+
+        return (this->sign(digest));
+      }
+
+      Signature
       PrivateKey::sign(Digest const& digest) const
       {
         ELLE_TRACE_METHOD("");
@@ -206,27 +244,36 @@ namespace infinit
       | Serialization |
       `--------------*/
 
-      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer):
-        _key(::EVP_PKEY_new())
+      PrivateKey::PrivateKey(elle::serialization::SerializerIn& serializer)
       {
-        std::unique_ptr<DSA, void (*) (::DSA*)> dsa(::DSA_new(), &::DSA_free);
-        if (!dsa)
-          throw elle::Error(
-            elle::sprintf("unable to initialize DSA: %s",
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Allocate the EVP key to receive the deserialized's DSA structure.
+        this->_key.reset(::EVP_PKEY_new());
+
+        // Set the EVP key as being of type DSA.
+        if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_DSA) <= 0)
+          throw Exception(
+            elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        if (::EVP_PKEY_assign_DSA(this->_key.get(), dsa.get()) <= 0)
-          throw elle::Error(
-            elle::sprintf("unable to assign the DSA: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-        dsa.release();
+
         this->serialize(serializer);
+
         this->_prepare();
+        this->_check();
       }
 
       void
       PrivateKey::serialize(elle::serialization::Serializer& serializer)
       {
-        // XXX
+        ELLE_ASSERT_NEQ(this->_key, nullptr);
+
+        cryptography::serialize<privatekey::Serialization>(
+          serializer,
+          this->_key->pkey.dsa);
+
+        serializer.serialize("digest algorithm", this->_digest_algorithm);
       }
 
       /*----------.
