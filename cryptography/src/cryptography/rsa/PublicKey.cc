@@ -9,6 +9,8 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
+#include <functional>
+
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
@@ -609,7 +611,7 @@ namespace infinit
       {
         if (this == &other)
           return (false);
-        return std::hash(*this) < std::hash(other);
+        return std::hash<PublicKey>()(*this) < std::hash<PublicKey>()(other);
       }
 #endif
     }
