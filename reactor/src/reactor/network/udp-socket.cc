@@ -162,12 +162,12 @@ namespace reactor
     }
 
 
-    class UDPRecvFrom: public SocketOperation<boost::asio::ip::udp::socket>
+    class UDPRecvFrom: public DataOperation<boost::asio::ip::udp::socket>
     {
       public:
         typedef boost::asio::ip::udp::socket AsioSocket;
         typedef boost::asio::ip::udp::endpoint EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
+        typedef DataOperation<AsioSocket> Super;
         UDPRecvFrom(Scheduler& scheduler,
                     PlainSocket<AsioSocket>* socket,
                     Buffer& buffer,
@@ -209,13 +209,17 @@ namespace reactor
                      std::size_t read)
         {
           if (error == boost::system::errc::operation_canceled)
+          {
+            Super::_wakeup(error);
             return;
+          }
           _read = read;
           if (error == boost::asio::error::eof)
             this->_raise<ConnectionClosed>();
           else if (error)
             this->_raise<Exception>(error.message());
           this->_signal();
+          Super::_wakeup(error);
         }
 
         Buffer& _buffer;
@@ -245,12 +249,12 @@ namespace reactor
     | Write |
     `------*/
 
-    class UDPWrite: public SocketOperation<boost::asio::ip::udp::socket>
+    class UDPWrite: public DataOperation<boost::asio::ip::udp::socket>
     {
       public:
         typedef boost::asio::ip::udp::socket AsioSocket;
         typedef boost::asio::ip::udp::endpoint EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
+        typedef DataOperation<AsioSocket> Super;
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
                  elle::ConstWeakBuffer& buffer):
@@ -277,18 +281,19 @@ namespace reactor
           else if (error)
             this->_raise<Exception>(error.message());
           this->_signal();
+          Super::_wakeup(error);
         }
 
         elle::ConstWeakBuffer _buffer;
         Size _written;
     };
 
-    class UDPSendTo: public SocketOperation<boost::asio::ip::udp::socket>
+    class UDPSendTo: public DataOperation<boost::asio::ip::udp::socket>
     {
       public:
         typedef boost::asio::ip::udp::socket AsioSocket;
         typedef boost::asio::ip::udp::endpoint EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
+        typedef DataOperation<AsioSocket> Super;
         UDPSendTo(Scheduler& scheduler,
                   PlainSocket<AsioSocket>* socket,
                   Buffer& buffer,
@@ -319,6 +324,7 @@ namespace reactor
           else if (error)
             this->_raise<Exception>(error.message());
           this->_signal();
+          Super::_wakeup(error);
         }
 
         Buffer& _buffer;
