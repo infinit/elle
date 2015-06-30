@@ -326,17 +326,13 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.dsa->pub_key, nullptr);
 
-        /* XXX
         stream << "("
-               << *this->_key->pkey.dsa->n
-               << ", "
-               << *this->_key->pkey.dsa->e
+               << *this->_key->pkey.dsa->pub_key
                << ")";
 
         stream << "["
                << this->_digest_algorithm
                << "]";
-        */
       }
     }
   }

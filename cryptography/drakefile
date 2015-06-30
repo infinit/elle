@@ -272,8 +272,8 @@ def configure(openssl_config,
       "dh/PrivateKey.cc",
       "dh/PublicKey.cc",
       # XXX    "challenge.cc",
-      # XXX   "rsa/pem.cc",
-      # XXX    "dsa/pem.cc",
+      "rsa/pem.cc",
+      "dsa/pem.cc",
       ]
     if enable_rotation:
       tests += [ "rsa/Seed.cc",

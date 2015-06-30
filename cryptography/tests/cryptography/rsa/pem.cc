@@ -28,7 +28,6 @@ static
 boost::filesystem::path
 _temporary(elle::String const& content = "")
 {
-  /* XXX
   char path[L_tmpnam];
 
   ::strncpy(path, "/tmp/infinit-cryptography-rsa-pem-XXXXX", L_tmpnam);
@@ -44,85 +43,49 @@ _temporary(elle::String const& content = "")
   stream.close();
 
   return (boost::filesystem::path(path));
-  */
-  boost::filesystem::path path("/");
-  return path;
 }
 
 /*--------.
 | Operate |
 `--------*/
 
-// XXX explain how to generate those
+// One can generate this key through the following command:
+//
+//   $> ssh-keygen -t rsa -f output
+//
+// This will generate 'output' and 'output.pub' files.
 
-static elle::String const private_key_encrypted("-----BEGIN RSA PRIVATE KEY-----\n\
-Proc-Type: 4,ENCRYPTED\n\
-DEK-Info: DES-EDE3-CBC,2D218A3959EC071F\n\
-\n\
-CJOZS++AFia6Z8DV/wPhtx+LMaJZMOVDONeCS+FpRp+dEFK0FRshm8PI5VOg65+d\n\
-Y8xbekOLEix70QtRMFUjDekE9fbLUzqYzyK8gIz8nyhc3BcUksM3ghcUep51FcJX\n\
-a+C4bPK3rPsMtep3WGV1NM8owniOFgS+atjr9iLhJiEiB659O1idLHw1hvBL0lzt\n\
-euobka+2q4LFSG/eO3YDV/JG3oOGDiZRAvUbYaI2X+o2ri0MeJJq1lAuBEnU0TiU\n\
-2p3ZE0I8eZpRRfQiNrSqcpuq4qt1xD4pC2Wl38JU8yNiA3nEVrlFUaeW9qIRgqdT\n\
-9ZksUjjLT8OC6wQ+SAVm3glXcR7NVXmYt8BxMmCqZNJ8LdGsUnI7fPmHcOipxZ6K\n\
-n6N+VdtxsEAqp0kS6iIaEYSTvFlPUU6t/HxFH7zFCgJKmEq2TuDHuUmhLRiDJrFn\n\
-N2sd8G50seQnzZbAW+g7dYWWmgg73WAhmnM2MrSATIRyo1gyr1oju5uFqoLbvTOg\n\
-ZOms2PT2nlOi8SDqnR0/Dr+6/Q0gbyPjM4qeiqp3sMgn4i+Zwq9BPC/YiklQpThj\n\
-p7dCK89F+XYSNpedQ6OeKWUVcbLdSffHXPcNerB28DrpYeq60yu+7G/svhrGJQq3\n\
-qcEcodf5yajoVD8Yf0sCyFtJLO2rEeBVyVWixv6Wab4mHEg/f0wRBH4IUXNJw9nw\n\
-Avvy6S4sS1Jt8aUMvTtOTmf1DFL/trzWDnAhZ+vNi9cDblUYlH7lmpaPLOTDZrcz\n\
-E3UKfgF/6MPc8/pZD6GFUleSRHLZlfEwg331JXMZyCMcZVw50cwZwCHPmMBVkz7j\n\
-T4FYfdPILIdJuo+gG142JAW5OXSlSE1Q4GEPBO/7SegFJzGg4kZGmF7rKbdAyR1y\n\
-k1XYflo3lLzowlcvNAAXS2oWUnU8QZuruYB6sV1lefNEezSeQnyuufX7R9UY+c7v\n\
-3zGT+2DG3mkcaQi/SMTHGuT7kRtcowlj1VNhN8vdsUfp3PlOZLzal6bRDrHVrwvG\n\
-3GdTxqwmDGbU+Jqph62Xwf73YqM2M+02pDCAPBVj4nJIbKYE8HUjnh9H52Zk42+7\n\
-nQb4GZqP5NJ05UU8sSEILH6KzdzHIjRuOvXLKD3m9LuzNirDE8/hlQlUd+300wVZ\n\
-wdWMWai4yB4FxTXKRw/ykGqTZHtnHYYcZzRxbkdjx3MQZKN+FT3SXtiIPc1uBZr6\n\
-eZjVZSRuaCCw7QA/l0TgUMi9HoaTAr/iqsMQBLjZ5gEKlHlEkHFlP8K4VDWwKVoX\n\
-UzlACO5BEbG4IZVYgnlOLfbYKaMVK5cSX1gPRgyw57zIHVBoMx+MebVvN/B75MGj\n\
-jeXXp7SsY+YkNVPtT7Erf/hJy2V6NzZ0lN1pI7Nc3+RWICzYkC+lxt5QU3LqL1zk\n\
-x6W+mbaRqv9d0TUfqbygTPoHVm/eZWA4fOxpwGTM1fG1vhlPwEsPx/s/PnuU7YyE\n\
-BWK0lHQXQNJ2SDVT9kfwzTuvIMevmXfQH+A7awoTPPB0/w6t3yV4KeTTSwXecLRI\n\
-TgAyfYUkbOvUACq0Re551wLhKI48Frh9dgqt57DfKnX0eD+Gu7/5Q1V83Y0HZFCa\n\
------END RSA PRIVATE KEY-----");
+elle::String private_key(
+R"PRIVATEKEY(-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,BB839C89C20C17C5F7089433A3AB728C
 
-static elle::String const private_key_unencrypted("-----BEGIN RSA PRIVATE KEY-----\n\
-MIIEpQIBAAKCAQEAueF3c1cNjDEzRrRNEIMgMC1wXUqu6W8x+0GBiNVqBuvfo1RW\n\
-turhyAEkBRDQ9OfqWqvVPEsE3A/aARo+sn7j9vauQe7m3INmxYKGXVDWKoNNOoSv\n\
-b5C56wbYx36+8Bamxua7/ga2PiSFlhp+ajn4mknRM+YQI3SFrS0LV/Fgwb+SL8nL\n\
-Mp0QRKna1Wz7l8T4Fa3SSfwe+YZDCy35EJajb6gknHVgavtEVT+zgvzcQ+FTBRoJ\n\
-JCNHSygvBbaOCRBwEk4nvCgPpG415m20Toev5AVQvG2FC4CH5KMa7ntAiWvDPRWY\n\
-h4VWkDQiDEEhKgDCq5AMjRgZexHD3V7IrdG3JQIDAQABAoIBAQCeFo37AJy7ENUl\n\
-Ww737i2gC+U20t+0FSgTIwFCGQ/V1yIazQ37AAUKjz3NOSIeSGfeuanfX4ZAixLE\n\
-QUf1k0narq5B0SdzgCYV8Q7JqoibG5TBIjv6zMHyi54u/TLzCrDJFU/pmlfAvlsG\n\
-8H13ZtpyjjloxFARd3aBdH/jSZ0a6Zmafd6eZNYjQy706aT1N9naUcChmnJafUw3\n\
-iSqIlPw4uB5hf0E1G9vzDb4/aOKbY6w9j6z4AuHYCx2Qv79gV0A4PsNgrSg0xYok\n\
-tWhuJoYduwu9hPmvov43kOpsqbULpBcGWfUKvj64N0P0kj4xyUUgmjmWkG6Lej+X\n\
-T2rGfQS5AoGBAOYm74HycFOqMBk4WSSVtEfHXJAuodWhWjaNb7sgUahFc2MiJlKi\n\
-mjdGaP+OGTEvBJgUbiNjMVkMshTr1MbQmNScEolOvxQY7O5PffijG9gJw90PCz5i\n\
-tWV/OPXy2Ms6lZcQAWLwY6dP1XF7jFcs/FddZl0BXMProOqUgnJHgJ1rAoGBAM7B\n\
-sUQrceBFhNoOgFymF8jQHXR3b4rvqEGi94r43ESicBmzRZbVbWH6D84okqPVJeNO\n\
-Yr+NHodNpB/xpFfABQn6mvzoAHP0A231KrNulEAcUJoLPc/Y0radvwMuVv0fncAH\n\
-fGqNewTvThJeGbzhSaYKRffQ+9KnRj/IPGvB1hGvAoGBANm3g2J+IVxD5nQ1Jb7C\n\
-D2THZvzN4DHjDSAF8+gkzppL+LeSmoYZY6Febf0yQwqP29yxlu7K6ue+Zsf7v7DD\n\
-q4+UhMR3RbKRUbCuahBG3BQmSK5ZiN1fKxH0o8GmFQdLSC866NTbaqnfj55mrX/a\n\
-Amvy4t6gZ0y/Hd5K1oucsEI5AoGBAI9lPNmHvCIMdRh7CEG5nDNVS6h0EXNtxedH\n\
-7KGA+dvMQS1B7ZiwC33xXbbg4tsnwHBG9Cvf5vV2Psc843tMnPIP0iBnk7DX4u0H\n\
-JYduwPk56hj8hPE7cuDexRSitgg2PkVpq7uGxnRkuGP6yaT7JwY2h9JZKd4uz4T7\n\
-DhS6SgrXAoGABP8ZUzDl8fXhRMNq9g2I7aJDf3kNijKxJogZfxMFTLf+xQJ+vfB2\n\
-uRGEU3h3r5KbCqoMpWnJIzgCzDdlfnTlusrAcUrqRvjur39Sub3znKbdYL3k6FxA\n\
-nokA57DSVZTi8Ayp+QRIQ4zjd8ni8u3yNOxEvaAEaYsHWmfZVVMDVo0=\n\
------END RSA PRIVATE KEY-----");
-
-static elle::String const public_key("-----BEGIN PUBLIC KEY-----\n\
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAueF3c1cNjDEzRrRNEIMg\n\
-MC1wXUqu6W8x+0GBiNVqBuvfo1RWturhyAEkBRDQ9OfqWqvVPEsE3A/aARo+sn7j\n\
-9vauQe7m3INmxYKGXVDWKoNNOoSvb5C56wbYx36+8Bamxua7/ga2PiSFlhp+ajn4\n\
-mknRM+YQI3SFrS0LV/Fgwb+SL8nLMp0QRKna1Wz7l8T4Fa3SSfwe+YZDCy35EJaj\n\
-b6gknHVgavtEVT+zgvzcQ+FTBRoJJCNHSygvBbaOCRBwEk4nvCgPpG415m20Toev\n\
-5AVQvG2FC4CH5KMa7ntAiWvDPRWYh4VWkDQiDEEhKgDCq5AMjRgZexHD3V7IrdG3\n\
-JQIDAQAB\n\
------END PUBLIC KEY-----");
+0O8JC+Y2hnAeS//NJGBKFdGVdTF34oS4J/nmSQ3JGRXmYQDx5Ixj0rqJRLNH9I45
+j0H9bGBycrtas6KbgpK5d4pwpy2wFnL5W9gSFAuyt5f/IMpvhtxo1/S+CnZPTEEU
+sfffhGnzkWNy7myyijCbIqoKTWh9AEtG+m8fayaFpgmQ0HqzXUkuPYE78PZbVg5b
+Wb+cq0hrexIbQove2NbzYN0iTzr5DRnn6UWkE4ed45bynMMV+LzNaZAZ1CQppQQB
+ib1mbmBPVCOSAz8TUKrH/PN4OwIvxyO6VlXf4Y8uXjy3xDDDih1w/68SUwv9v37O
+U20b27Pi31Ezv+SZmRhEvy6hq36MedbdbeCeYTYMVsZC/ePpx8XBtvRlhJkkLGlS
+cb2JtEd6Emch30ib9gtZkc/ywyNCNLZu/B6Mlc3VY6K4qWaxZBZu+pdUrw1os2xE
+1+yVLyF8FOSI14AN4POEPiT2HiETFnpqFN0Qh8Bm2A1TKnY4VMxnqp0emskaDAM2
+JB85+nh7K65WmMPwMtkjN1Q5Mh3D7DZzhtYQOUehWaon1PxCTiXhL0EiBQ2PhprC
+rAsbU5B9XV6rcVDD48DiDOGuXwt4fmczh4dpzTCPRds+6H4vuPS58ekeeOt9YMrX
+v3Zrs9VM7hnCFqRMS4MoqzZGcmX+I0PVuDAmYOZ5BWluxrIMxcltCZnAmOap7Ap2
+UmKfXOkX3FD+eibUt/7OS+EZf+phExwOCrUtckyN82SrJbpj5UtNao7O2KHie5qA
+Xmwj7dUsBh/VsXy834elU4zdA+5GdNKbArEodxCJWQR7UtmV8sHGkjNGrvD5xocf
+owLlcKA726NBAQrX9eCrZ6NYYW5VenFN0O5UzFCZkziipMZOx5fBL7ixQIn+sQFF
+17E1l8r4y02GgzD+bmnhPemF+6aftaI3Lqg9cpQotd7SvRBEuYdkpYxpXnjJO5Ik
+VfoeiIadUVj0gUYUBsJtUN+84QhjJ14kP16FBGltT8qKp8DotP8dSSKebGv2znLj
+yKXQayPmJ+waN1T9w34yMpFq1O14C8f+mMN3gIOJEYrlLh7hYD9hjl4R1FobsBQp
+BcUFAXcJm1UT8gmObNE+mkasertpNYk+IU5+ONzF99rCdMcEWiioW9KtDJZBau5o
+gbv/L64YZkGCZOUBz2GFsAjN6M3wjZ2g5TLjPJsvLa5deilX2zcwmoBLe5zn+9Zs
+aoXbqn1et1UC2e91zBCIRRM2Qt89iZwKck6Ezlp5s6qFn4MTtZ/mIJsq5dK07axU
+A/13vu0dOsx3FOBxlLq6RhfI5Pz1799Ulaf420iVC3l/SbpdX8zYaVI1opvZuasA
+ATnBnK7/+rGj7h3BEvxrGubDz7CiLR1x8EpRF3pZfGN6itHH8zS79qpKfBcu6TlP
+d9p2wSK59YkJZTtmOKaBb+UxLxz/vE9TpdkYix+b4Jc5kzxncM3ONoG/pSfT9IaY
+QXlBOuwTPq2wfTW2gw3qmqhd8WxNYISLmlKf4UzQshI0inIDeJ8Q2CFWjLpEwL8z
+wNZmGhEhd9KiAbd0nY6M5dHgnXHZSwfY2fnePQ2v4UxsFCLgKNJ0fzSp+uktrY2u
+-----END RSA PRIVATE KEY-----)PRIVATEKEY");
 
 static
 void
@@ -130,54 +93,36 @@ test_operate_import()
 {
   elle::String const passphrase = "Sancho";
 
-  // Load RSA public key.
-  boost::filesystem::path path_public_key =
-    _temporary(public_key);
-
-  infinit::cryptography::rsa::PublicKey K =
-    infinit::cryptography::rsa::pem::import_K(path_public_key);
-
-  boost::filesystem::remove(path_public_key);
-
   // 1) Try to load the RSA private key with an incorrect
   // passphrase 2) Load RSA private key in its encrypted form.
-  boost::filesystem::path path_private_key_encrypted =
-    _temporary(private_key_encrypted);
+  boost::filesystem::path path_private_key =
+    _temporary(private_key);
 
   // 1)
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_k(path_private_key_encrypted,
+    infinit::cryptography::rsa::pem::import_k(path_private_key,
                                               "wrong passphrase"),
     infinit::cryptography::Exception);
 
   // 2)
   infinit::cryptography::rsa::PrivateKey k =
-    infinit::cryptography::rsa::pem::import_k(path_private_key_encrypted,
+    infinit::cryptography::rsa::pem::import_k(path_private_key,
                                               passphrase);
+  infinit::cryptography::rsa::PublicKey K(
+    k,
+    infinit::cryptography::rsa::defaults::envelope_cipher,
+    infinit::cryptography::rsa::defaults::envelope_mode);
 
-  boost::filesystem::remove(path_private_key_encrypted);
-
-  // Load RSA keypair through the private key in its unencrypted form.
-  boost::filesystem::path path_private_key_unencrypted =
-    _temporary(private_key_unencrypted);
-
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::pem::import_keypair(
-      path_private_key_unencrypted,
-      "");
-
-  boost::filesystem::remove(path_private_key_encrypted);
-
-  BOOST_CHECK_EQUAL(K, keypair.K());
-  BOOST_CHECK_EQUAL(k, keypair.k());
+  boost::filesystem::remove(path_private_key);
 
   // Encrypt and decrypt data to make sure the keys are valid.
   elle::String const data("N'est pas Sancho qui veut!");
 
-  infinit::cryptography::Code code = K.encrypt(data);
-  elle::String _data = k.decrypt<elle::String>(code);
+  infinit::cryptography::Code code =
+    K.encrypt(infinit::cryptography::Plain(data));
+  infinit::cryptography::Clear clear = k.decrypt(code);
 
-  BOOST_CHECK_EQUAL(data, _data);
+  BOOST_CHECK_EQUAL(data, clear.buffer().string());
 }
 
 static
