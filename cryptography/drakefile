@@ -244,13 +244,13 @@ def configure(openssl_config,
   # Tests
   if legacy_mode:
     tests = [
-      "legacy/bn.cc",
-      "legacy/oneway.cc",
-      "legacy/KeyPair.cc",
-      "legacy/PublicKey.cc",
-      "legacy/PrivateKey.cc",
-      "legacy/Output.cc",
-      "legacy/SecretKey.cc",
+      "_legacy/bn.cc",
+      "_legacy/oneway.cc",
+      "_legacy/KeyPair.cc",
+      "_legacy/PublicKey.cc",
+      "_legacy/PrivateKey.cc",
+      "_legacy/Output.cc",
+      "_legacy/SecretKey.cc",
       ]
   else:
     tests = [
