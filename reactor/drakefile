@@ -354,6 +354,10 @@ def configure(curl_config,
   miniupnpc = miniupnp.miniupnpc
   local_cxx_config += miniupnpc.config
 
+  # UTP
+  utp = drake.include('libutp', cxx_toolkit, archs = archs)
+  utp_lib = utp.library
+
   # Build
   rule_build = drake.Rule('build')
 
@@ -438,6 +442,8 @@ def configure(curl_config,
     'src/reactor/network/ssl-server.hh',
     'src/reactor/network/udp-socket.cc',
     'src/reactor/network/udp-socket.hh',
+    'src/reactor/network/utp-socket.cc',
+    'src/reactor/network/utp-socket.hh',
     'src/reactor/network/upnp.cc',
     'src/reactor/network/upnp.hh',
     # 'src/reactor/network/udt-rdv-server.cc',
@@ -524,6 +530,7 @@ def configure(curl_config,
   else:
     backend_coro_io = None
 
+  lib_cxx_config.add_local_include_path('libutp')
   backend_boost_context_cxx_config = drake.cxx.Config(lib_cxx_config)
   backend_boost_context = drake.cxx.StaticLib(
     'lib/reactor/backend_boost_context',
@@ -538,11 +545,13 @@ def configure(curl_config,
     curl_lib,
     elle_lib,
     miniupnpc.library,
+    utp_lib,
   ]
   lib_static_link_libs = [
     curl_lib,
     elle.lib_static,
     miniupnpc.library,
+    utp_lib,
   ]
   if backend_coro_io is not None:
     lib_dynamic_link_libs.append(backend_coro_io)
@@ -562,6 +571,7 @@ def configure(curl_config,
     curl_lib,
     elle_lib,
     miniupnpc.library,
+    utp_lib,
   ]
   if cxx_toolkit.os is drake.os.windows:
     lib_dynamic_link_libs.append(libcoroutine)
@@ -620,6 +630,7 @@ def configure(curl_config,
     ('reactor', []),
     ('upnp', []), # Not an auto test, just an utility.
     ('ssl', openssl_libs),
+    ('utpcat', [utp_lib]),
     # 'reactor/file',
     ]
   if cxx_toolkit.os is drake.os.linux or (cxx_toolkit.os is drake.os.macos and fuse):
