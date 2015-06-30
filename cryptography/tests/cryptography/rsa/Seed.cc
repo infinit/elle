@@ -10,8 +10,7 @@
 # include <cryptography/rsa/PublicKey.hh>
 # include <cryptography/rsa/PrivateKey.hh>
 
-# include <elle/serialize/insert.hh>
-# include <elle/serialize/extract.hh>
+# include <elle/serialization/Serializer.hh>
 
 /*----------.
 | Represent |
@@ -25,10 +24,14 @@ _test_represent()
   {
     infinit::cryptography::rsa::Seed seed =
       infinit::cryptography::rsa::seed::generate(1024);
-    elle::String archive;
-    elle::serialize::to_string<
-      elle::serialize::OutputBase64Archive>(archive) << seed;
-    elle::printf("[representation 1] %s\n", archive);
+
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      seed.serialize(output);
+    }
+
+    elle::printf("[representation 1] %s\n", stream.str());
   }
 }
 
@@ -204,11 +207,14 @@ test_serialize()
   {
     infinit::cryptography::rsa::Seed seed1 = _test_generate(2048);
 
-    elle::String archive;
-    elle::serialize::to_string(archive) << seed1;
+    std::stringstream stream;
+    {
+      typename elle::serialization::json::SerializerOut output(stream);
+      seed1.serialize(output);
+    }
 
-    auto extractor = elle::serialize::from_string(archive);
-    infinit::cryptography::rsa::Seed seed2(extractor);
+    typename elle::serialization::json::SerializerIn input(stream);
+    infinit::cryptography::rsa::Seed seed2(input);
 
     BOOST_CHECK_EQUAL(seed1, seed2);
   }
@@ -219,7 +225,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      "AAAAAIAAAAAAAAAAAB83sIHjkCPMGTLRIeUwyJvKbCp3RKsV0T0g62XMJMnc3B1ZxyhxHcZ6iYPmcKvUsJQVfQ7VoYhH4YBeoHPIZHCX4PF7erfDphNkNa/FsoUHQQCatD+h5pfNYD0NfYODwp7FhCWqmcrpm08eP5zpQpbwBmgIMMPuiXATsJ1JAHIABAAA"
+      R"JSON({"buffer":"ACbE7eMBCuKT36AzLzoYlxtCKbUH6bMTgBhNu+3jLByV8QqqnsTTclL6El/d6dfnaqcPalMiHSzoQITIIoputmGyVIttWr5ZuP5tdHRZhq3kFcsZ4YP6+x2P5TJi+R67t50bO8nJdw3nRIbtrYHIEYhvDHYwtxBjQaYltwgbU3A=","length":1024})JSON"
     };
 
     infinit::cryptography::test::formats<

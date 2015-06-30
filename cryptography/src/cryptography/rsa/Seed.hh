@@ -11,6 +11,7 @@
 #  include <elle/operator.hh>
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
+#  include <elle/serialization/Serializer.hh>
 
 #  include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -65,6 +66,14 @@ namespace infinit
       public:
         void
         print(std::ostream& stream) const override;
+
+        /*--------------.
+        | Serialization |
+        `--------------*/
+      public:
+        Seed(elle::serialization::SerializerIn& serializer);
+        void
+        serialize(elle::serialization::Serializer& serializer);
 
         /*-----------.
         | Attributes |

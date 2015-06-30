@@ -1,13 +1,11 @@
 #include "../cryptography.hh"
 
-#include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/dh/PrivateKey.hh>
 #include <cryptography/dh/PublicKey.hh>
 #include <cryptography/dh/KeyPair.hh>
 #include <cryptography/Exception.hh>
 
 #include <elle/printf.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
 
 /*---------.
 | Generate |

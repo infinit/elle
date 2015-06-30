@@ -11,8 +11,6 @@
 
 #include <elle/printf.hh>
 #include <elle/types.hh>
-#include <elle/serialize/insert.hh>
-#include <elle/serialize/extract.hh>
 #include <elle/Exception.hh>
 
 #include <cstdio>

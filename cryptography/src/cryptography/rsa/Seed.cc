@@ -78,6 +78,22 @@ namespace infinit
       {
         stream << this->_buffer;
       }
+
+      /*--------------.
+      | Serialization |
+      `--------------*/
+
+      Seed::Seed(elle::serialization::SerializerIn& serializer)
+      {
+        this->serialize(serializer);
+      }
+
+      void
+      Seed::serialize(elle::serialization::Serializer& serializer)
+      {
+        serializer.serialize("buffer", this->_buffer);
+        serializer.serialize("length", this->_length);
+      }
     }
   }
 }

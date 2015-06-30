@@ -10,6 +10,8 @@
 #  include <cryptography/random.hh>
 #  include <cryptography/rsa/Seed.hh>
 #  include <cryptography/rsa/KeyPair.hh>
+#  include <cryptography/rsa/PublicKey.hh>
+#  include <cryptography/rsa/PrivateKey.hh>
 
 //
 // ---------- Entry -----------------------------------------------------------

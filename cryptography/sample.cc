@@ -11,7 +11,6 @@
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/Serializer.hh>
 # include <elle/format/hexadecimal.hh>
 
 # include <cryptography/fwd.hh>
@@ -19,6 +18,7 @@
 # include <cryptography/SecretKey.hh>
 # include <cryptography/rsa/KeyPair.hh>
 # include <cryptography/dsa/KeyPair.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <iostream>
 
@@ -32,24 +32,25 @@ class Sample
   | Construction |
   `-------------*/
 public:
-  Sample()
-  {
-    // XXX[virer pour le load constructor]
-  }
-
   Sample(std::string const& string):
     _salt(0.91283173),
     _string(string)
   {
   }
 
-  Sample(Sample const&) = default;
+  Sample(elle::serialization::SerializerIn& serializer)
+  {
+    this->serialize(serializer);
+  }
 
-  /*-----------.
-  | Interfaces |
-  `-----------*/
-public:
-  ELLE_SERIALIZE_FRIEND_FOR(Sample);
+  void
+  Sample(elle::serialization::Serializer& serializer)
+  {
+    serializer.serialize("salt", this->_salt);
+    serializer.serialize("string", this->_string);
+  }
+
+  Sample(Sample const&) = default;
 
   /*-----------.
   | Attributes |
@@ -58,21 +59,6 @@ private:
   ELLE_ATTRIBUTE_R(double, salt);
   ELLE_ATTRIBUTE_R(std::string, string);
 };
-
-/*-------------.
-| Serializable |
-`-------------*/
-
-ELLE_SERIALIZE_SIMPLE(Sample,
-                      archive,
-                      value,
-                      format)
-{
-  enforce(format == 0);
-
-  archive & value._salt;
-  archive & value._string;
-}
 
 //
 // ---------- Main ------------------------------------------------------------
