@@ -294,6 +294,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
 // ---------- Hash ------------------------------------------------------------
 //
 
+# include <elle/serialization/binary.hh>
+
 namespace std
 {
   template <>
@@ -302,20 +304,15 @@ namespace std
     size_t
     operator ()(infinit::cryptography::rsa::PrivateKey const& value) const
     {
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      // XXX destroy since not used before
       std::stringstream stream;
-      elle::serialize::OutputBinaryArchive archive(stream);
-      archive << value;
+      {
+        elle::serialization::binary::SerializerOut output(stream);
+        output.serialize("value", value);
+      }
 
       size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
-# else
-#  warning "XXX new serialization"
-# endif
-
-      return (0); // XXX
     }
   };
 }

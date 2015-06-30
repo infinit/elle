@@ -5,6 +5,8 @@
 // ---------- Hash ------------------------------------------------------------
 //
 
+# include <elle/serialization/binary.hh>
+
 namespace std
 {
   template <>
@@ -13,17 +15,15 @@ namespace std
     size_t
     operator ()(infinit::cryptography::dsa::PrivateKey const& value) const
     {
-#  warning "XXX new serialization"
-      /* XXX replace with new serialization
       std::stringstream stream;
-      elle::serialize::OutputBinaryArchive archive(stream);
-      archive << value;
+      {
+        elle::serialization::binary::SerializerOut output(stream);
+        output.serialize("value", value);
+      }
 
       size_t result = std::hash<std::string>()(stream.str());
 
       return (result);
-      */
-      return (0);
     }
   };
 }

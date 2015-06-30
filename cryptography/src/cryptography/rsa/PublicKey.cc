@@ -609,10 +609,7 @@ namespace infinit
       {
         if (this == &other)
           return (false);
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
-        return boost::lexical_cast<std::string>(*this)
-          < boost::lexical_cast<std::string>(other);
+        return std::hash(*this) < std::hash(other);
       }
 #endif
     }

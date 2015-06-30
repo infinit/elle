@@ -104,6 +104,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
 // ---------- Hash ------------------------------------------------------------
 //
 
+# include <cryptography/rsa/PublicKey.hh>
+
 namespace std
 {
   template <>
@@ -112,8 +114,7 @@ namespace std
     size_t
     operator ()(infinit::cryptography::rsa::KeyPair const& value) const
     {
-      // XXX return (std::hash<infinit::cryptography::rsa::PublicKey>()(value.K()));
-      return (0);
+      return (std::hash<infinit::cryptography::rsa::PublicKey>()(value.K()));
     }
   };
 }
