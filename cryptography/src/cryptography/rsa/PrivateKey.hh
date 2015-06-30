@@ -173,7 +173,8 @@ namespace infinit
       public:
         // construction
         PrivateKey() {}
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey);
+        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey)
+        {}
         // methods
         template <typename T = Clear>
         T

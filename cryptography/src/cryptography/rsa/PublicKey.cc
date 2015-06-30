@@ -604,12 +604,6 @@ namespace infinit
       `-------*/
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PublicKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-
       elle::Boolean
       PublicKey::operator <(PublicKey const& other) const
       {

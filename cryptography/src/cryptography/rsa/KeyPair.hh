@@ -127,7 +127,8 @@ namespace infinit
       public:
         // construction
         KeyPair() {}
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(KeyPair);
+        ELLE_SERIALIZE_CONSTRUCT(KeyPair)
+        {}
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
         using elle::serialize::SerializableMixin<

@@ -174,13 +174,6 @@ namespace infinit
     | Legacy |
     `-------*/
 
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(SecretKey,
-                                    _password)
-    {
-      // Make sure the cryptographic system is set up.
-      cryptography::require();
-    }
-
     Code
     SecretKey::legacy_encrypt_buffer(elle::Buffer const& plain) const
     {

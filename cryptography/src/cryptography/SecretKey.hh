@@ -124,7 +124,9 @@ namespace infinit
     public:
       // construction
       SecretKey() {}
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(SecretKey);
+      ELLE_SERIALIZE_CONSTRUCT(SecretKey,
+                               _password)
+      {}
       // methods
       template <typename T = Plain>
       Code

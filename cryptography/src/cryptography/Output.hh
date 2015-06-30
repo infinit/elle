@@ -95,7 +95,9 @@ namespace infinit
     public:
       // construction
       Output() {}
-      ELLE_SERIALIZE_CONSTRUCT_DECLARE(Output);
+      ELLE_SERIALIZE_CONSTRUCT(Output,
+                               _buffer)
+      {}
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
 # endif

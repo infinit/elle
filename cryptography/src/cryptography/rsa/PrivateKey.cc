@@ -518,18 +518,6 @@ namespace infinit
                << this->_digest_algorithm
                << "]";
       }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /*-------.
-      | Legacy |
-      `-------*/
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(PrivateKey)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-      }
-#endif
     }
   }
 }

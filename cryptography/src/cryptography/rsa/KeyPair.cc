@@ -186,15 +186,6 @@ namespace infinit
 
         stream << "(" << *this->_K << ", " << *this->_k << ")";
       }
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /*-------.
-      | Legacy |
-      `-------*/
-
-      ELLE_SERIALIZE_CONSTRUCT_DEFINE(KeyPair)
-      {}
-#endif
     }
   }
 }

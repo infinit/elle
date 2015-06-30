@@ -192,7 +192,8 @@ namespace infinit
       public:
         // construction
         PublicKey() {}
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PublicKey);
+        ELLE_SERIALIZE_CONSTRUCT(PublicKey)
+        {}
         // methods
         template <typename T = Plain>
         Code

@@ -111,15 +111,5 @@ namespace infinit
     {
       serializer.serialize("buffer", this->_buffer);
     }
-
-    /*-------.
-    | Legacy |
-    `-------*/
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    ELLE_SERIALIZE_CONSTRUCT_DEFINE(Output,
-                                    _buffer)
-    {}
-#endif
   }
 }
