@@ -16,3 +16,6 @@
 [submodule "cryptography"]
 	path = cryptography
 	url = git@git.infinit.io:cryptography
+[submodule "reactor/libutp"]
+	path = reactor/libutp
+	url = git@git.infinit.io:libutp
