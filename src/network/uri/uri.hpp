@@ -95,7 +95,7 @@ namespace network {
    * assert("/" == *instance.path());
    * \endcode
    */
-  class NETWORK_URI_DECL uri {
+  class uri {
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri_builder;
@@ -142,7 +142,7 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    uri();
+    NETWORK_URI_DECL uri();
 
     /**
      * \brief Constructor.
@@ -190,74 +190,74 @@ namespace network {
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    explicit uri(const uri_builder &builder);
+    NETWORK_URI_DECL explicit uri(const uri_builder &builder);
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
      * \brief Copy constructor.
      * \throws std::bad_alloc If the underlying string cannot be allocated.
      */
-    uri(const uri &other);
+    NETWORK_URI_DECL uri(const uri &other);
 
     /**
      * \brief Move constructor.
      */
-    uri(uri &&other) NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL uri(uri &&other) NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Destructor.
      */
-    ~uri() NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL ~uri() NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Assignment operator.
      * \throws std::bad_alloc If the underlying string cannot be allocated.
      */
-    uri &operator=(uri other);
+    NETWORK_URI_DECL uri &operator=(uri other);
 
     /**
      * \brief Swaps one uri object with another.
      * \param other The other uri object.
      */
-    void swap(uri &other) NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Returns an iterator at the first element in the
      *        underlying sequence.
      * \return An iterator starting at the first element.
      */
-    const_iterator begin() const;
+    NETWORK_URI_DECL const_iterator begin() const;
 
     /**
      * \brief Returns an iterator at the end + 1th element in the
      *        underlying sequence.
      * \return An iterator starting at the end + 1th element.
      */
-    const_iterator end() const;
+    NETWORK_URI_DECL const_iterator end() const;
 
     /**
      * \brief Returns the URI scheme.
      * \return The scheme, if it exists, or boost::none.
      */
-    boost::optional<string_view> scheme() const;
+    NETWORK_URI_DECL boost::optional<string_view> scheme() const;
 
     /**
      * \brief Returns the URI user info.
      * \return The user info, if it exists, or boost::none.
      */
-    boost::optional<string_view> user_info() const;
+    NETWORK_URI_DECL boost::optional<string_view> user_info() const;
 
     /**
      * \brief Returns the URI host.
      * \return The host, if it exists, or boost::none.
      */
-    boost::optional<string_view> host() const;
+    NETWORK_URI_DECL boost::optional<string_view> host() const;
 
     /**
      * \brief Returns the URI port.
      * \return The port, if it exists, or boost::none.
      */
-    boost::optional<string_view> port() const;
+    NETWORK_URI_DECL boost::optional<string_view> port() const;
 
     /**
      * \brief Returns the URI port as an integer.
@@ -280,25 +280,25 @@ namespace network {
      * \brief Returns the URI path.
      * \return The path, if it exists, or boost::none.
      */
-    boost::optional<string_view> path() const;
+    NETWORK_URI_DECL boost::optional<string_view> path() const;
 
     /**
      * \brief Returns the URI query.
      * \return The query, if it exists, or boost::none.
      */
-    boost::optional<string_view> query() const;
+    NETWORK_URI_DECL boost::optional<string_view> query() const;
 
     /**
      * \brief Returns the URI fragment.
      * \return The fragment, if it exists, or boost::none.
      */
-    boost::optional<string_view> fragment() const;
+    NETWORK_URI_DECL boost::optional<string_view> fragment() const;
 
     /**
      * \brief Returns the URI authority.
      * \return The authority, if it exists, or boost::none.
      */
-    boost::optional<string_view> authority() const;
+    NETWORK_URI_DECL boost::optional<string_view> authority() const;
 
 #if !defined(_MSC_VER)
     /**
@@ -341,44 +341,44 @@ namespace network {
      * \brief Returns the URI as a std::string object.
      * \returns A URI string.
      */
-    std::string string() const;
+    NETWORK_URI_DECL std::string string() const;
 
     /**
      * \brief Returns the URI as a std::wstring object.
      * \returns A URI string.
      */
-    std::wstring wstring() const;
+    NETWORK_URI_DECL std::wstring wstring() const;
 
     /**
      * \brief Returns the URI as a std::u16string object.
      * \returns A URI string.
      */
-    std::u16string u16string() const;
+    NETWORK_URI_DECL std::u16string u16string() const;
 
     /**
      * \brief Returns the URI as a std::u32string object.
      * \returns A URI string.
      */
-    std::u32string u32string() const;
+    NETWORK_URI_DECL std::u32string u32string() const;
 
     /**
      * \brief Checks if the uri object is empty, i.e. it has no parts.
      * \returns \c true if there are no parts, \c false otherwise.
      */
-    bool empty() const NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL bool empty() const NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Checks if the uri is absolute, i.e. it has a scheme.
      * \returns \c true if it is absolute, \c false if it is relative.
      */
-    bool is_absolute() const;
+    NETWORK_URI_DECL bool is_absolute() const;
 
     /**
      * \brief Checks if the uri is opaque, i.e. if it doesn't have an
      *        authority.
      * \returns \c true if it is opaque, \c false if it is hierarchical.
      */
-    bool is_opaque() const;
+    NETWORK_URI_DECL bool is_opaque() const;
 
     /**
      * \brief Normalizes a uri object at a given level in the
@@ -388,7 +388,7 @@ namespace network {
      * \post compare(normalize(uri, level), level) == 0
      * \throws std::bad_alloc
      */
-    uri normalize(uri_comparison_level level) const;
+    NETWORK_URI_DECL uri normalize(uri_comparison_level level) const;
 
     /**
      * \brief Returns a relative reference against the base URI.
@@ -396,10 +396,10 @@ namespace network {
      * \returns A relative reference of this URI against the base.
      * \throws std::bad_alloc
      */
-    uri make_relative(const uri &base) const;
+    NETWORK_URI_DECL uri make_relative(const uri &base) const;
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    uri make_reference(const uri &base) const { return make_relative(base); }
+    NETWORK_URI_DECL uri make_reference(const uri &base) const { return make_relative(base); }
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
@@ -408,7 +408,7 @@ namespace network {
      * \returns An absolute URI.
      * \throws std::bad_alloc
      */
-    uri resolve(const uri &base) const;
+    NETWORK_URI_DECL uri resolve(const uri &base) const;
 
     /**
      * \brief Compares this URI against another, corresponding to the
@@ -419,7 +419,7 @@ namespace network {
      *         less than other and and 1 if this is greater than
      *         other.
      */
-    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Encodes a sequence according to the rules for encoding a
@@ -541,7 +541,7 @@ namespace network {
 
    private:
 
-    bool initialize(const string_type &uri);
+    NETWORK_URI_DECL bool initialize(const string_type &uri);
 
     string_type uri_;
     detail::uri_parts<string_type::iterator> uri_parts_;
@@ -573,17 +573,17 @@ namespace network {
   /**
    * \brief Swaps one uri object with another.
    */
-   void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
 
    /**
    * \brief Equality operator for the \c uri.
    */
-  bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT;
 
   /**
    * \brief Equality operator for the \c uri.
@@ -602,7 +602,7 @@ namespace network {
   /**
    * \brief Less-than operator for the \c uri.
    */
-  bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT ;
+  NETWORK_URI_DECL bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT ;
 
   /**
    * \brief Greater-than operator for the \c uri.

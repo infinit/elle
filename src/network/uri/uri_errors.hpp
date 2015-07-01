@@ -39,9 +39,9 @@ namespace network {
     conversion_failed,
   };
 
-  const std::error_category &uri_category();
+  NETWORK_URI_DECL const std::error_category &uri_category();
 
-  std::error_code make_error_code(uri_error e);
+  NETWORK_URI_DECL std::error_code make_error_code(uri_error e);
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   /**
@@ -56,12 +56,12 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    uri_syntax_error();
+    NETWORK_URI_DECL uri_syntax_error();
 
     /**
      * \brief Destructor.
      */
-    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
 
   };
 
@@ -77,12 +77,12 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    uri_builder_error();
+    NETWORK_URI_DECL uri_builder_error();
 
     /**
      * \brief Destructor.
      */
-    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
 
   };
 
@@ -97,12 +97,12 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    explicit percent_decoding_error(uri_error error);
+    NETWORK_URI_DECL explicit percent_decoding_error(uri_error error);
 
     /**
      * \brief Destructor.
      */
-    virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
+    NETWORK_URI_DECL virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
 
   };
 } // namespace network
