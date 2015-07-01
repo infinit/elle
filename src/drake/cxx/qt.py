@@ -317,9 +317,10 @@ for prop, library in Qt._Qt__libraries.items():
         macro = prop.upper()
         macro += static and '_STATIC' or '_DYN'
         c.define('Qt_%s_LINK' % macro, 1)
+        c.add_system_include_path(
+          Qt._Qt__include_dir / Qt._Qt__libraries[prop])
         setattr(self, name + '_header', Config(c))
         c.library_add(lib)
-        c.add_system_include_path(Qt._Qt__include_dir /  Qt._Qt__libraries[prop])
         setattr(self, name, Config(c))
       return getattr(self, name + ('_header' if not link else ''))
     setattr(Qt, 'config_%s' % prop, config_getter)
