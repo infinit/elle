@@ -1040,11 +1040,11 @@ class DepFile:
 
     def __repr__(self):
         """Python representation."""
-        return 'DepFile(%s)' % repr(self.__builder)
+        return 'DepFile(%r, %r)' % (self.name, self.__builder)
 
     def __str__(self):
         """String representation."""
-        return 'DepFile(%s)' % self.__builder
+        return repr(self)
 
 def path_build(path = None, absolute = False):
   """Return path as found in the build directory.
