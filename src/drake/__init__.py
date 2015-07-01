@@ -2047,8 +2047,13 @@ class Builder:
             '%s: consider dependencies file %s', self, f):
           for path, (hash, data) in depfile.hashes.items():
             if path not in self.__sources and path not in self.__sources_dyn:
-              handler(self, path, self.get_type(data), None)
-
+              node = handler(self, path, self.get_type(data), None)
+              if node is not None:
+                sched.logger.log(
+                  'drake.Builder',
+                  drake.log.LogLevel.dump,
+                  '%s: add %s to sources', self, path)
+                self.__sources_dyn[node.path()] = node
 
   def execute(self):
     """Generate target nodes from source node.
