@@ -26,6 +26,11 @@
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4251 4231 4660)
+#endif
+
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
@@ -95,7 +100,7 @@ namespace network {
    * assert("/" == *instance.path());
    * \endcode
    */
-  class uri {
+  class NETWORK_URI_DECL uri {
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri_builder;
@@ -142,7 +147,7 @@ namespace network {
     /**
      * \brief Constructor.
      */
-    NETWORK_URI_DECL uri();
+    uri();
 
     /**
      * \brief Constructor.
@@ -190,74 +195,74 @@ namespace network {
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    NETWORK_URI_DECL explicit uri(const uri_builder &builder);
+    explicit uri(const uri_builder &builder);
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
      * \brief Copy constructor.
      * \throws std::bad_alloc If the underlying string cannot be allocated.
      */
-    NETWORK_URI_DECL uri(const uri &other);
+    uri(const uri &other);
 
     /**
      * \brief Move constructor.
      */
-    NETWORK_URI_DECL uri(uri &&other) NETWORK_URI_NOEXCEPT;
+    uri(uri &&other) NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Destructor.
      */
-    NETWORK_URI_DECL ~uri() NETWORK_URI_NOEXCEPT;
+    ~uri() NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Assignment operator.
      * \throws std::bad_alloc If the underlying string cannot be allocated.
      */
-    NETWORK_URI_DECL uri &operator=(uri other);
+    uri &operator=(uri other);
 
     /**
      * \brief Swaps one uri object with another.
      * \param other The other uri object.
      */
-    NETWORK_URI_DECL void swap(uri &other) NETWORK_URI_NOEXCEPT;
+    void swap(uri &other) NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Returns an iterator at the first element in the
      *        underlying sequence.
      * \return An iterator starting at the first element.
      */
-    NETWORK_URI_DECL const_iterator begin() const;
+    const_iterator begin() const;
 
     /**
      * \brief Returns an iterator at the end + 1th element in the
      *        underlying sequence.
      * \return An iterator starting at the end + 1th element.
      */
-    NETWORK_URI_DECL const_iterator end() const;
+    const_iterator end() const;
 
     /**
      * \brief Returns the URI scheme.
      * \return The scheme, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> scheme() const;
+    boost::optional<string_view> scheme() const;
 
     /**
      * \brief Returns the URI user info.
      * \return The user info, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> user_info() const;
+    boost::optional<string_view> user_info() const;
 
     /**
      * \brief Returns the URI host.
      * \return The host, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> host() const;
+    boost::optional<string_view> host() const;
 
     /**
      * \brief Returns the URI port.
      * \return The port, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> port() const;
+    boost::optional<string_view> port() const;
 
     /**
      * \brief Returns the URI port as an integer.
@@ -280,25 +285,25 @@ namespace network {
      * \brief Returns the URI path.
      * \return The path, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> path() const;
+    boost::optional<string_view> path() const;
 
     /**
      * \brief Returns the URI query.
      * \return The query, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> query() const;
+    boost::optional<string_view> query() const;
 
     /**
      * \brief Returns the URI fragment.
      * \return The fragment, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> fragment() const;
+    boost::optional<string_view> fragment() const;
 
     /**
      * \brief Returns the URI authority.
      * \return The authority, if it exists, or boost::none.
      */
-    NETWORK_URI_DECL boost::optional<string_view> authority() const;
+    boost::optional<string_view> authority() const;
 
 #if !defined(_MSC_VER)
     /**
@@ -341,44 +346,44 @@ namespace network {
      * \brief Returns the URI as a std::string object.
      * \returns A URI string.
      */
-    NETWORK_URI_DECL std::string string() const;
+    std::string string() const;
 
     /**
      * \brief Returns the URI as a std::wstring object.
      * \returns A URI string.
      */
-    NETWORK_URI_DECL std::wstring wstring() const;
+    std::wstring wstring() const;
 
     /**
      * \brief Returns the URI as a std::u16string object.
      * \returns A URI string.
      */
-    NETWORK_URI_DECL std::u16string u16string() const;
+    std::u16string u16string() const;
 
     /**
      * \brief Returns the URI as a std::u32string object.
      * \returns A URI string.
      */
-    NETWORK_URI_DECL std::u32string u32string() const;
+    std::u32string u32string() const;
 
     /**
      * \brief Checks if the uri object is empty, i.e. it has no parts.
      * \returns \c true if there are no parts, \c false otherwise.
      */
-    NETWORK_URI_DECL bool empty() const NETWORK_URI_NOEXCEPT;
+    bool empty() const NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Checks if the uri is absolute, i.e. it has a scheme.
      * \returns \c true if it is absolute, \c false if it is relative.
      */
-    NETWORK_URI_DECL bool is_absolute() const;
+    bool is_absolute() const;
 
     /**
      * \brief Checks if the uri is opaque, i.e. if it doesn't have an
      *        authority.
      * \returns \c true if it is opaque, \c false if it is hierarchical.
      */
-    NETWORK_URI_DECL bool is_opaque() const;
+    bool is_opaque() const;
 
     /**
      * \brief Normalizes a uri object at a given level in the
@@ -388,7 +393,7 @@ namespace network {
      * \post compare(normalize(uri, level), level) == 0
      * \throws std::bad_alloc
      */
-    NETWORK_URI_DECL uri normalize(uri_comparison_level level) const;
+    uri normalize(uri_comparison_level level) const;
 
     /**
      * \brief Returns a relative reference against the base URI.
@@ -396,10 +401,10 @@ namespace network {
      * \returns A relative reference of this URI against the base.
      * \throws std::bad_alloc
      */
-    NETWORK_URI_DECL uri make_relative(const uri &base) const;
+    uri make_relative(const uri &base) const;
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    NETWORK_URI_DECL uri make_reference(const uri &base) const { return make_relative(base); }
+    uri make_reference(const uri &base) const { return make_relative(base); }
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
@@ -408,7 +413,7 @@ namespace network {
      * \returns An absolute URI.
      * \throws std::bad_alloc
      */
-    NETWORK_URI_DECL uri resolve(const uri &base) const;
+    uri resolve(const uri &base) const;
 
     /**
      * \brief Compares this URI against another, corresponding to the
@@ -419,7 +424,7 @@ namespace network {
      *         less than other and and 1 if this is greater than
      *         other.
      */
-    NETWORK_URI_DECL int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
+    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Encodes a sequence according to the rules for encoding a
@@ -541,7 +546,7 @@ namespace network {
 
    private:
 
-    NETWORK_URI_DECL bool initialize(const string_type &uri);
+    bool initialize(const string_type &uri);
 
     string_type uri_;
     detail::uri_parts<string_type::iterator> uri_parts_;
@@ -648,6 +653,10 @@ namespace std {
   };
 }  // namespace std
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
+
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
 
 #include <network/uri/uri_builder.hpp>
 

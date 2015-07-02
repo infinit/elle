@@ -21,6 +21,11 @@
 #include <boost/filesystem/path.hpp>
 #endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4251 4231 4660)
+#endif
+
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
@@ -105,7 +110,7 @@ namespace network {
    * \brief A class that allows complex uri objects to be constructed.
    * \sa uri
    */
-  class uri_builder {
+  class NETWORK_URI_DECL uri_builder {
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri;
@@ -130,12 +135,12 @@ namespace network {
      * \brief Constructor.
      * \param base A URI that is the base on which a new URI is built.
      */
-    NETWORK_URI_DECL explicit uri_builder(const uri &base);
+    explicit uri_builder(const uri &base);
 
     /**
      * \brief Destructor.
      */
-    NETWORK_URI_DECL ~uri_builder() NETWORK_URI_NOEXCEPT;
+    ~uri_builder() NETWORK_URI_NOEXCEPT;
 
     /**
      * \brief Adds a new scheme to the uri_builder.
@@ -163,7 +168,7 @@ namespace network {
      * \brief Clears the URI user_info part.
      * \returns \c *this
      */
-    NETWORK_URI_DECL uri_builder &clear_user_info();
+    uri_builder &clear_user_info();
 
     /**
      * \brief Adds a new host to the uri_builder.
@@ -193,7 +198,7 @@ namespace network {
      * \brief Clears the URI port part.
      * \returns \c *this
      */
-    NETWORK_URI_DECL uri_builder &clear_port();
+    uri_builder &clear_port();
 
     /**
      * \brief Adds a new authority to the uri_builder.
@@ -222,7 +227,7 @@ namespace network {
      * \brief Clears the URI path part.
      * \returns \c *this
      */
-    NETWORK_URI_DECL uri_builder &clear_path();
+    uri_builder &clear_path();
 
     /**
      * \brief Adds a new query to the uri_builder.
@@ -239,7 +244,7 @@ namespace network {
      * \brief Clears the URI query part.
      * \returns \c *this
      */
-    NETWORK_URI_DECL uri_builder &clear_query();
+    uri_builder &clear_query();
 
     /**
      * \brief Adds a new query to the uri_builder.
@@ -276,7 +281,7 @@ namespace network {
      * \brief Clears the URI fragment part.
      * \returns \c *this
      */
-    NETWORK_URI_DECL uri_builder &clear_fragment();
+    uri_builder &clear_fragment();
 
     /**
      * \brief Builds a new uri object.
@@ -286,23 +291,26 @@ namespace network {
      * \throws std::bad_alloc If the underlying string cannot be
      *         allocated.
      */
-    NETWORK_URI_DECL network::uri uri() const;
+    network::uri uri() const;
 
   private:
 
-    NETWORK_URI_DECL void set_scheme(string_type scheme);
-    NETWORK_URI_DECL void set_user_info(string_type user_info);
-    NETWORK_URI_DECL void set_host(string_type host);
-    NETWORK_URI_DECL void set_port(string_type port);
-    NETWORK_URI_DECL void set_authority(string_type authority);
-    NETWORK_URI_DECL void set_path(string_type path);
-    NETWORK_URI_DECL void set_query(string_type query);
-    NETWORK_URI_DECL void set_fragment(string_type fragment);
+    void set_scheme(string_type scheme);
+    void set_user_info(string_type user_info);
+    void set_host(string_type host);
+    void set_port(string_type port);
+    void set_authority(string_type authority);
+    void set_path(string_type path);
+    void set_query(string_type query);
+    void set_fragment(string_type fragment);
 
     boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_, fragment_;
 
   };
 } // namespace network
 
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
 
 #endif // NETWORK_URI_BUILDER_INC
