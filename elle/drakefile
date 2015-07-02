@@ -19,8 +19,6 @@ rule_tests = None
 
 python_plugin_datetime = None
 
-dpkg_preload = None
-
 # XXX
 with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
@@ -548,12 +546,6 @@ def configure(zlib_lib,
         drake.nodes('src/elle/python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
-
-  global dpkg_preload
-  dpkg_preload = drake.cxx.Module('dpkg_preload',
-                                  drake.nodes('dpkg_preload.cc'),
-                                  cxx_toolkit, drake.cxx.Config())
-
 
   # Tests
 
