@@ -21,6 +21,19 @@ import drake.cxx
 
 deps_handler_name = 'drake.cxx.qt.moc'
 
+def soname(path):
+  import elftools.elf.elffile
+  import elftools.elf.dynamic
+  with open(str(path), 'rb') as so:
+    elf = elftools.elf.elffile.ELFFile(so)
+    for section in elf.iter_sections():
+      if not isinstance(section,
+                        elftools.elf.dynamic.DynamicSection):
+        continue
+      for tag in section.iter_tags():
+        if tag.entry.d_tag == 'DT_SONAME':
+          return tag.soname.decode('latin-1')
+
 def moc_file(linker, header):
   for i in linker.config.system_include_path:
     if header.name_relative.dirname() == i:
@@ -210,15 +223,16 @@ class Qt(drake.Configuration):
         prefix = '' if cxx_toolkit.os == drake.os.windows else 'lib'
         filename = cxx_toolkit.libname_dyn(libname,
                                            self.__cfg, prefix)
+        # Test .so.$major first as it is the SONAME.
+        tests.append(drake.Path('%s.%s' % (filename,
+                                           self.__version.major)))
         tests.append(drake.Path('%s.%s' % (filename, self.__version)))
         tests.append(drake.Path('%s.%s.%s' % (filename,
                                               self.__version.major,
                                               self.__version.minor)))
-        tests.append(drake.Path('%s.%s' % (filename,
-                                           self.__version.major)))
         tests.append(filename)
     search_path = [self.__prefix / p for p in ['lib/qt4', 'lib']]
-    prefix, lib = self._search_many_all(tests, search_path)[0]
+    prefix, lib = self._search_many_one(tests, search_path)
     if static:
       return drake.cxx.StaticLib(prefix / lib)
     else:
