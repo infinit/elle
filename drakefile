@@ -1,0 +1,28 @@
+import drake
+import drake.cxx
+
+import os
+import sys
+
+library = None
+
+
+def configure(cxx_toolkit = None,
+              cxx_config = drake.cxx.Config(),
+              archs = []):
+  global library
+  sources = drake.nodes(
+     'utp_internal.cpp',
+     'utp_utils.cpp',
+     'utp_hash.cpp',
+     'utp_callbacks.cpp',
+     'utp_api.cpp',
+     'utp_packedsockaddr.cpp',
+  )
+  local_config = drake.cxx.Config(cxx_config)
+  local_config.define('POSIX')
+  local_config.define('_DEBUG') # for libutp stats
+  library = drake.cxx.StaticLib(
+    'lib/utp',
+    sources,
+    cxx_toolkit, local_config)
