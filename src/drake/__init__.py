@@ -3109,14 +3109,17 @@ class Configuration:
                               for what in whats)),
          self._format_search(where)))
 
-  def _search_all(self, what, where):
+  def __search(self, what, where, all):
     what = Path(what)
     res = []
     for root in where:
       path = root / what
       rel = root.without_prefix(drake.path_root(), force = False)
       if path.exists():
-        res.append(rel)
+        if all:
+          res.append(rel)
+        else:
+          return rel
       else:
         if path.absolute():
           drake_path = path.without_prefix(drake.path_root())
@@ -3124,24 +3127,49 @@ class Configuration:
           drake_path = drake.path_build(path)
         node = drake.Drake.current.nodes.get(drake_path)
         if node is not None:
-          res.append(rel)
+          if all:
+            res.append(rel)
+          else:
+            return rel
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
                     (what, self._format_search(where)))
 
-  def _search_many_all(self, whats, where):
+  def _search_all(self, what, where):
+    return self.__search(what, where, all = True)
+
+  def _search_one(self, what, where):
+    return self.__search(what, where, all = False)
+
+  def _search_many(self, whats, where, all, prefer):
     res = []
     for what in whats:
       try:
         res += [(res, what) for res in self._search_all(what, where)]
+        if not all and prefer is None and res:
+          return res[0]
       except:
         pass
     if len(res) == 0:
       raise Exception('Unable to find %s in %s.' % \
                       (self._format_search(whats),
                        self._format_search(where)))
+    if not all:
+      assert prefer is not None
+      for prefix, what in res:
+        if prefer(prefix, what):
+          return prefix, what
+      return res[0]
     return res
+
+  def _search_many_all(self, whats, where, prefer = None):
+    return self._search_many(whats, where,
+                             all = True, prefer = prefer)
+
+  def _search_many_one(self, whats, where, prefer = None):
+    return self._search_many(whats, where,
+                             all = False, prefer = prefer)
 
   def _format_search(self, where):
     import types
