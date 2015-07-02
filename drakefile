@@ -19,6 +19,8 @@ def configure(cxx_toolkit = None,
      'utp_api.cpp',
      'utp_packedsockaddr.cpp',
   )
+  if cxx_toolkit.os is drake.os.windows:
+    sources += drake.nodes('libutp_inet_ntop.cpp')
   local_config = drake.cxx.Config(cxx_config)
   local_config.define('POSIX')
   local_config.define('_DEBUG') # for libutp stats
