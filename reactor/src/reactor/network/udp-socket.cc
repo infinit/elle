@@ -37,7 +37,7 @@ namespace reactor
     {}
 
     UDPSocket::UDPSocket():
-      UDPSocket(reactor::scheduler(), "", 0)
+      UDPSocket(reactor::scheduler(), "127.0.0.1", 60000)
     {}
     // UDPSocket::UDPSocket(Scheduler& sched,
     //                      int local_port,
