@@ -36,10 +36,15 @@ static uint64 on_read(utp_callback_arguments* args)
   UTPSocket* sock = (UTPSocket*)utp_get_userdata(args->socket);
   if (!sock)
     return 0;
-  sock->_read_buffer.append(args->buf, args->len);
-  utp_read_drained(args->socket);
-  sock->_read();
+  sock->on_read(elle::ConstWeakBuffer(args->buf, args->len));
   return 0;
+}
+
+void UTPSocket::on_read(elle::ConstWeakBuffer const& data)
+{
+  _read_buffer.append(data.contents(), data.size());
+  utp_read_drained(_socket);
+  _read();
 }
 
 static uint64 on_firewall(utp_callback_arguments *a)
@@ -51,9 +56,14 @@ static uint64 on_accept(utp_callback_arguments* args)
 {
   ELLE_DEBUG("on_accept");
   UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
-  server->_accept_queue.emplace_back(new UTPSocket(*server, args->socket));
-  server->_accept_barrier.open();
+  server->on_accept(args->socket);
   return 0;
+}
+
+void UTPServer::on_accept(utp_socket* s)
+{
+  _accept_queue.emplace_back(new UTPSocket(*this, s));
+  _accept_barrier.open();
 }
 
 static uint64 on_error(utp_callback_arguments* args)
@@ -62,7 +72,7 @@ static uint64 on_error(utp_callback_arguments* args)
   UTPSocket* s = (UTPSocket*) utp_get_userdata(args->socket);
   if (!s)
     return 0;
-  s->_close();
+  s->on_close();
   return 0;
 }
 
@@ -76,42 +86,52 @@ static uint64 on_state_change(utp_callback_arguments* args)
   {
     case UTP_STATE_CONNECT:
 		case UTP_STATE_WRITABLE:
-		  if (s->_write.size())
-		  {
-		    unsigned char* data = const_cast<unsigned char*>(s->_write.contents());
-		    int sz = s->_write.size();
-		    while (s->_write_pos < sz)
-		    {
-		      ssize_t len = utp_write(s->_socket, data + s->_write_pos, sz - s->_write_pos);
-		      if (!len)
-		      {
-		        ELLE_DEBUG("from status: write buffer full");
-		        break;
-		      }
-		      s->_write_pos += len;
-		    }
-		    if (s->_write_pos == sz)
-		      s->_write_barrier.open();
-		  }
+		  s->write_cont();
 		  //s->_write_barrier.open();
 		  break;
 		case UTP_STATE_EOF:
-		  s->_close();
+		  s->on_close();
 		  break;
 		case UTP_STATE_DESTROYING:
-		  s->_close();
+		  s->on_close();
 		  break;
   }
   return 0;
+}
+
+void UTPSocket::write_cont()
+{
+  if (_write.size())
+  {
+    unsigned char* data = const_cast<unsigned char*>(_write.contents());
+    int sz = _write.size();
+    while (_write_pos < sz)
+    {
+      ssize_t len = utp_write(_socket, data + _write_pos, sz - _write_pos);
+      if (!len)
+      {
+        ELLE_DEBUG("from status: write buffer full");
+        break;
+      }
+      _write_pos += len;
+    }
+    if (_write_pos == sz)
+      _write_barrier.open();
+  }
 }
 
 static uint64 on_connect(utp_callback_arguments* args)
 {
   ELLE_DEBUG("on_connect");
   UTPSocket* s = (UTPSocket*) utp_get_userdata(args->socket);
-  s->_connect_barrier.open();
-  s->_write_barrier.open();
+  s->on_connect();
   return 0;
+}
+
+void UTPSocket::on_connect()
+{
+  _connect_barrier.open();
+  _write_barrier.open();
 }
 
 static uint64 on_log(utp_callback_arguments* args)
@@ -137,7 +157,7 @@ UTPServer::UTPServer()
   ctx = utp_init(2);
   utp_context_set_userdata(ctx, this);
   utp_set_callback(ctx, UTP_ON_FIREWALL, &on_firewall);
-  utp_set_callback(ctx, UTP_ON_ACCEPT, &on_accept);
+  utp_set_callback(ctx, UTP_ON_ACCEPT, &::reactor::network::on_accept);
   utp_set_callback(ctx, UTP_ON_ERROR, &on_error);
   utp_set_callback(ctx, UTP_ON_STATE_CHANGE, &on_state_change);
   utp_set_callback(ctx, UTP_ON_READ, &on_read);
@@ -217,11 +237,11 @@ UTPSocket::UTPSocket(UTPServer& server)
 UTPSocket::~UTPSocket()
 {
   ELLE_DEBUG("~UTPSocket");
-  _close();
+  on_close();
   ELLE_DEBUG("~UTPSocket finished");
 }
 
-void UTPSocket::_close()
+void UTPSocket::on_close()
 {
   if (!_socket)
     return;
@@ -271,7 +291,7 @@ UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket)
 
 void UTPSocket::close()
 {
-  _close();
+  on_close();
 }
 
 void UTPSocket::connect(std::string const& host, int port)

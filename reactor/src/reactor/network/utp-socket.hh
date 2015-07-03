@@ -9,7 +9,6 @@
 
 typedef struct UTPSocket					utp_socket;
 typedef struct struct_utp_context			utp_context;
-
 namespace reactor
 {
   namespace network
@@ -21,13 +20,23 @@ namespace reactor
       UTPServer();
       ~UTPServer();
       typedef boost::asio::ip::udp::endpoint EndPoint;
-      void listen(int port);
-      void listen(EndPoint const& end_point);
-      EndPoint local_endpoint();
-      std::unique_ptr<UTPSocket> accept();
-    public:
-      void send_to(Buffer buf, EndPoint where);
-      void _check_icmp();
+      void
+      listen(int port);
+      void
+      listen(EndPoint const& end_point);
+      EndPoint
+      local_endpoint();
+      std::unique_ptr<UTPSocket>
+      accept();
+
+      // For internal use
+      void
+      send_to(Buffer buf, EndPoint where);
+      void
+      on_accept(utp_socket* s);
+    private:
+      void
+      _check_icmp();
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
       std::unique_ptr<UDPSocket> _socket;
@@ -37,6 +46,7 @@ namespace reactor
       std::unique_ptr<Thread> _checker;
       std::deque<std::pair<elle::Buffer, EndPoint>> _send_buffer;
       bool _sending;
+      friend class UTPSocket;
     };
 
     class UTPSocket: public elle::IOStream
@@ -45,19 +55,32 @@ namespace reactor
       UTPSocket(UTPServer& server);
       UTPSocket(UTPServer& server, utp_socket* socket);
       ~UTPSocket();
-      void connect(std::string const& host, int port);
-      void write(elle::ConstWeakBuffer const& data, DurationOpt timeout = DurationOpt());
+      void
+      connect(std::string const& host, int port);
+      void
+      write(elle::ConstWeakBuffer const& data, DurationOpt timeout = DurationOpt());
       elle::Buffer
       read(size_t sz, DurationOpt timeout = DurationOpt());
       elle::Buffer
       read_some(size_t sz, DurationOpt timeout = DurationOpt());
       elle::Buffer
       read_until(std::string const& delimiter, DurationOpt opt = DurationOpt());
-      void close();
-      void stats();
-    public:
-      void _read();
-      void _close();
+      void
+      close();
+      void
+      stats();
+      // For internal use
+      void
+      write_cont();
+      void
+      on_connect();
+      void
+      on_close();
+      void
+      on_read(elle::ConstWeakBuffer const&);
+    private:
+      void
+      _read();
       elle::Buffer _read_buffer;
       Barrier _read_barrier;
       Barrier _write_barrier;
