@@ -283,7 +283,9 @@ ELLE_TEST_SUITE()
   basics->add(BOOST_TEST_CASE(utp_close), 0, 5);
   basics->add(BOOST_TEST_CASE(basic), 0, 5);
   basics->add(BOOST_TEST_CASE(utp_timeout), 0, 5);
+#ifdef INFINIT_LINUX
   basics->add(BOOST_TEST_CASE(utp_failures), 0, 5);
+#endif
   basics->add(BOOST_TEST_CASE(streams), 0, 5);
   basics->add(BOOST_TEST_CASE(big), 0, 5);
   basics->add(BOOST_TEST_CASE(many), 0, 20);
