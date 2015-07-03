@@ -20,7 +20,6 @@ namespace infinit
       /*----------.
       | Functions |
       `----------*/
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       Digest
       sign(Plain const& plain,
            elle::String const& key,
@@ -41,38 +40,6 @@ namespace infinit
              Plain const& plain,
              K const& key,
              Oneway const oneway);
-# endif
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /*-------.
-      | Legacy |
-      `-------*/
-
-      template <typename T = Plain>
-      Digest
-      sign(T const& value,
-           elle::String const& key,
-           Oneway const oneway);
-      template <typename T = Plain,
-                typename K>
-      Digest
-      sign(T const& value,
-           K const& key,
-           Oneway const oneway);
-      template <typename T = Plain>
-      elle::Boolean
-      verify(Digest const& digest,
-             T const& value,
-             elle::String const& key,
-             Oneway const oneway);
-      template <typename T = Plain,
-                typename K>
-      elle::Boolean
-      verify(Digest const& digest,
-             T const& value,
-             K const& key,
-             Oneway const oneway);
-# endif
     }
   }
 }

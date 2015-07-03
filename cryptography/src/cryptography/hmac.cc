@@ -2,9 +2,13 @@
 #include <cryptography/evp.hh>
 #include <cryptography/Plain.hh>
 #include <cryptography/Digest.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/Exception.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
+
+#include <openssl/err.h>
 
 namespace infinit
 {
@@ -16,7 +20,6 @@ namespace infinit
       | Functions |
       `----------*/
 
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       Digest
       sign(Plain const& plain,
            elle::String const& key,
@@ -73,7 +76,6 @@ namespace infinit
 
         return (true);
       }
-#endif
     }
   }
 }
