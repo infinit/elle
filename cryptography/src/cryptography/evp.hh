@@ -136,9 +136,9 @@ namespace infinit
   {
     namespace evp
     {
-      /// Hash the given plain text with the message digest function.
+      /// Hash the given plain text and return a message digest.
       elle::Buffer
-      hash(elle::ConstWeakBuffer const& plain,
+      hash(std::istream& plain,
            ::EVP_MD const* function);
     }
   }

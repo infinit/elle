@@ -230,7 +230,7 @@ namespace infinit
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = hash(plain, this->_digest_algorithm);
+        Digest digest(hash(plain.buffer(), this->_digest_algorithm)); // XXX
 
         return (this->verify(signature, digest));
       }

@@ -304,7 +304,7 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest = hash(plain, this->_digest_algorithm);
+        Digest digest(hash(plain.buffer(), this->_digest_algorithm)); // XXX
 
         return (this->sign(digest));
       }

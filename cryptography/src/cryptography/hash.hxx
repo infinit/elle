@@ -27,9 +27,9 @@ namespace infinit
 
       elle::Buffer archive = cryptography::serialize(value);
 
-      ::EVP_MD const* function = oneway::resolve(oneway);
+      elle::IOStream input(archive.istreambuf());
 
-      return (Digest(evp::hash(archive, function)));
+      return (Digest(hash(static_cast<std::istream&>(input), oneway)));
     }
   }
 }

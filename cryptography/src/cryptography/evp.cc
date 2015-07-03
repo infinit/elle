@@ -20,6 +20,13 @@
 
 ELLE_LOG_COMPONENT("infinit.cryptography.evp");
 
+/*----------.
+| Constants |
+`----------*/
+
+/// The size of the chunk to process iteratively from the streams.
+static elle::Natural32 const chunk_size = 524288;
+
 //
 // ---------- Asymmetric ------------------------------------------------------
 //
@@ -536,10 +543,8 @@ namespace infinit
           ELLE_DEBUG("block size: %s", block_size);
 
           // Encrypt the input stream.
-          static elle::Natural32 const capacity = 524288;
-
-          std::vector<unsigned char> _input(capacity);
-          std::vector<unsigned char> _output(capacity + block_size);
+          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _output(chunk_size + block_size);
 
           while (!plain.eof())
           {
@@ -593,7 +598,11 @@ namespace infinit
                             code.rdstate()));
 
           // Clean up the cipher context.
-          ::EVP_CIPHER_CTX_cleanup(&context);
+          if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
+            throw Exception(
+              elle::sprintf("unable to clean the cipher context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
         }
 
@@ -671,10 +680,8 @@ namespace infinit
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
           // Decipher the code's stream.
-          static elle::Natural32 const capacity = 524288;
-
-          std::vector<unsigned char> _input(capacity);
-          std::vector<unsigned char> _output(capacity + block_size);
+          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _output(chunk_size + block_size);
 
           while (!code.eof())
           {
@@ -728,7 +735,10 @@ namespace infinit
                             plain.rdstate()));
 
           // Clean up the cipher context.
-          ::EVP_CIPHER_CTX_cleanup(&context);
+          if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
+            throw Exception(
+              elle::sprintf("unable to clean the cipher context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
         }
@@ -748,19 +758,13 @@ namespace infinit
     namespace evp
     {
       elle::Buffer
-      hash(elle::ConstWeakBuffer const& plain,
+      hash(std::istream& plain,
            ::EVP_MD const* function)
       {
         ELLE_DEBUG_FUNCTION(function);
-        ELLE_DUMP("plain: %s", plain);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
-        // Normalize the plain buffer.
-        elle::ConstWeakBuffer const _plain = _normalize(plain);
-
-        elle::Buffer digest(EVP_MD_size(function));
 
         // Initialise the context.
         ::EVP_MD_CTX context;
@@ -775,13 +779,30 @@ namespace infinit
             elle::sprintf("unable to initialize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        // Update the digest with the given plain's data.
-        if (::EVP_DigestUpdate(&context,
-                               _plain.contents(),
-                               _plain.size()) <= 0)
-          throw Exception(
-            elle::sprintf("unable to apply the digest process: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        // Hash the plain's stream.
+        std::vector<unsigned char> _input(chunk_size);
+
+        while (!plain.eof())
+        {
+          // Read the plain's input stream and put a block of data in a
+          // temporary buffer.
+          plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+          if (plain.bad())
+            throw Exception(
+              elle::sprintf("unable to read the plain's input stream: %s",
+                            plain.rdstate()));
+
+          // Update the digest context.
+          if (::EVP_DigestUpdate(&context,
+                                 _input.data(),
+                                 plain.gcount()) <= 0)
+            throw Exception(
+              elle::sprintf("unable to apply the digest function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+        }
+
+        // Allocate the output digest.
+        elle::Buffer digest(EVP_MD_size(function));
 
         // Finalise the digest.
         unsigned int size(0);

@@ -20,10 +20,14 @@ namespace infinit
     `----------*/
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     /// Hash a plain text and return a digest message.
-    Digest
-    hash(Plain const& plain,
+    elle::Buffer
+    hash(elle::ConstWeakBuffer const& plain,
          Oneway const oneway);
 # endif
+    /// Hash an input stream and return a digest message.
+    elle::Buffer
+    hash(std::istream& plain,
+         Oneway const oneway);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     /*-------.
