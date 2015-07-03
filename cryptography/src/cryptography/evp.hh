@@ -107,15 +107,17 @@ namespace infinit
       namespace symmetric
       {
         /// Encrypt the plain text according to the given secret and functions.
-        elle::Buffer
-        encrypt(elle::ConstWeakBuffer const& plain,
+        void
+        encrypt(std::istream& input,
+                std::ostream& output,
                 elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway);
         /// Decrypt the ciphered text according to the given secret and
         /// functions.
-        elle::Buffer
-        decrypt(elle::ConstWeakBuffer const& code,
+        void
+        decrypt(std::istream& code,
+                std::ostream& plain,
                 elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway);

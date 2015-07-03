@@ -228,7 +228,13 @@ namespace infinit
             secretkey::generate(length, _cipher.first, _cipher.second, _oneway);
 
           // 3) Cipher the plain text with the secret key.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           Code data = secret.encrypt(Plain(plain));
+#else
+          // XXX[use the input/output streams to be able to encrypt large amount of data]
+          elle::Buffer _data = secret.encrypt(plain);
+          Code data(_data); // XXX not to be used any longer in non-legacy
+#endif
 
           // 4) Asymmetrically encrypt the secret with the given function
           //    and encryption context.
@@ -312,7 +318,12 @@ namespace infinit
 #endif
 
           // 3) Decrypt the data with the secret key.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
           Clear clear = secret.decrypt(data);
+#else
+          // XXX to use streams
+          Clear clear(secret.decrypt(data.buffer()));
+#endif
 
           ELLE_DUMP("clear: %s", clear.buffer());
 
@@ -451,21 +462,18 @@ namespace infinit
         | Functions |
         `----------*/
 
-        elle::Buffer
-        encrypt(elle::ConstWeakBuffer const& plain,
+        void
+        encrypt(std::istream& plain,
+                std::ostream& code,
                 elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
           ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
-          ELLE_DUMP("plain: %s", plain);
           ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
-
-          // Normalize the plain text.
-          elle::ConstWeakBuffer const _plain = _normalize(plain);
 
           // Generate a salt.
           unsigned char salt[PKCS5_SALT_LEN];
@@ -512,99 +520,121 @@ namespace infinit
               elle::sprintf("unable to initialize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Retreive the cipher-specific block size.
-          int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-
-          elle::Buffer code(sizeof (magic) -
-                            1 +
-                            sizeof (salt) +
-                            _plain.size() +
-                            block_size);
-
-          // Embed the magic directly into the code.
-          ::memcpy(code.mutable_contents(),
-                   magic,
-                   sizeof (magic) - 1);
-
-          // Copy the salt directly into the code.
-          ::memcpy(code.mutable_contents() +
-                   sizeof (magic) - 1,
-                   salt,
-                   sizeof (salt));
-
-          // Initialise the code's size.
-          int size_header(sizeof (magic) - 1 + sizeof (salt));
-
-          // Cipher the plain text.
-          int size_update(0);
-
-          ELLE_ASSERT_NEQ(_plain.contents(), nullptr);
-
-          if (::EVP_EncryptUpdate(&context,
-                                  code.mutable_contents() +
-                                  size_header,
-                                  &size_update,
-                                  _plain.contents(),
-                                  _plain.size()) == 0)
+          // Embed the magic and salt directly into the output code.
+          code.write(magic, sizeof (magic) - 1);
+          code.write(reinterpret_cast<const char*>(salt), sizeof (salt));
+          if (!code.good())
             throw Exception(
-              elle::sprintf("unable to apply the encryption process: %s",
+              elle::sprintf("unable to write the magic and salt to the code's "
+                            "output stream: %s",
+                            code.rdstate()));
+
+          // Retreive the cipher-specific block size. This is the maximum size
+          // that the algorithm can output on top of the encrypted input
+          // plain text.
+          int block_size = ::EVP_CIPHER_CTX_block_size(&context);
+          ELLE_DEBUG("block size: %s", block_size);
+
+          // Encrypt the input stream.
+          static elle::Natural32 const capacity = 524288;
+
+          std::vector<unsigned char> _input(capacity);
+          std::vector<unsigned char> _output(capacity + block_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Exception(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            int size_update(0);
+
+            // Encrypt the input buffer.
+            if (::EVP_EncryptUpdate(&context,
+                                    _output.data(),
+                                    &size_update,
+                                    _input.data(),
+                                    plain.gcount()) == 0)
+            throw Exception(
+              elle::sprintf("unable to apply the encryption function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Finialise the ciphering process.
-          int size_finalize(0);
+            // Write the output buffer to the code stream.
+            code.write(reinterpret_cast<const char *>(_output.data()),
+                       size_update);
+            if (!code.good())
+              throw Exception(
+                elle::sprintf("unable to write the encrypted data to the "
+                              "code's output stream: %s",
+                              code.rdstate()));
+          }
+
+          // Finalize the encryption process.
+          int size_final(0);
 
           if (::EVP_EncryptFinal_ex(&context,
-                                    code.mutable_contents() +
-                                    size_header + size_update,
-                                    &size_finalize) == 0)
+                                    _output.data(),
+                                    &size_final) == 0)
             throw Exception(
               elle::sprintf("unable to finalize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Update the code size with the actual size of the generated data.
-          code.size(size_header + size_update + size_finalize);
-          code.shrink_to_fit();
+          // Write the final output buffer to the code's output stream.
+          code.write(reinterpret_cast<const char *>(_output.data()),
+                     size_final);
+          if (!code.good())
+            throw Exception(
+              elle::sprintf("unable to write the encrypted data to the "
+                            "code's output stream: %s",
+                            code.rdstate()));
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
-
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-          return (code);
         }
 
-        elle::Buffer
-        decrypt(elle::ConstWeakBuffer const& code,
+        void
+        decrypt(std::istream& code,
+                std::ostream& plain,
                 elle::ConstWeakBuffer const& secret,
                 ::EVP_CIPHER const* function_cipher,
                 ::EVP_MD const* function_oneway)
         {
           ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
-          ELLE_DUMP("code: %s", code);
           ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
           // Check whether the code was produced with a salt.
-          ELLE_ASSERT_NEQ(code.contents(), nullptr);
+          elle::Character _magic[sizeof (magic)];
 
-          if (::memcmp(magic,
-                       code.contents(),
+          code.read(reinterpret_cast<char*>(_magic), sizeof (magic) - 1);
+          if (!code.good())
+            throw Exception(
+              elle::sprintf("unable to read the magic from the code's "
+                            "input stream: %s",
+                            code.rdstate()));
+
+          if (::memcmp(_magic,
+                       magic,
                        sizeof (magic) - 1) != 0)
-            throw Exception("the code was produced without any salt");
+            throw Exception("the code was produced without any or an invalid "
+                            "salt");
 
           // Copy the salt for the sack of clarity.
-          unsigned char salt[PKCS5_SALT_LEN];
+          unsigned char _salt[PKCS5_SALT_LEN];
 
-          ::memcpy(salt,
-                   code.contents() + sizeof (magic) - 1,
-                   sizeof (salt));
-
-          // Check that the secret key's buffer has a non-null address.
-          //
-          // Otherwise, EVP_BytesToKey() is non-deterministic :(
-          ELLE_ASSERT_NEQ(secret.contents(), nullptr);
+          code.read(reinterpret_cast<char*>(_salt), sizeof (_salt));
+          if (!code.good())
+            throw Exception(
+              elle::sprintf("unable to read the salt from the code's "
+                            "input stream: %s",
+                            code.rdstate()));
 
           // Generate the key/IV tuple based on the salt.
           unsigned char key[EVP_MAX_KEY_LENGTH];
@@ -612,7 +642,7 @@ namespace infinit
 
           if (::EVP_BytesToKey(function_cipher,
                                function_oneway,
-                               salt,
+                               _salt,
                                secret.contents(),
                                secret.size(),
                                1,
@@ -640,45 +670,67 @@ namespace infinit
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
-          elle::Buffer clear(code.size() -
-                             (sizeof (magic) - 1 + sizeof (salt)) +
-                             block_size);
+          // Decipher the code's stream.
+          static elle::Natural32 const capacity = 524288;
 
-          // Decipher the code.
-          int size_update(0);
+          std::vector<unsigned char> _input(capacity);
+          std::vector<unsigned char> _output(capacity + block_size);
 
-          if (::EVP_DecryptUpdate(&context,
-                                  clear.mutable_contents(),
-                                  &size_update,
-                                  code.contents() +
-                                  sizeof (magic) - 1 + sizeof (salt),
-                                  code.size() -
-                                  (sizeof (magic) - 1 + sizeof (salt))) == 0)
-            throw Exception(
-              elle::sprintf("unable to apply the decryption process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          while (!code.eof())
+          {
+            // Read the code's input stream and put a block of data in a
+            // temporary buffer.
+            code.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (code.bad())
+              throw Exception(
+                elle::sprintf("unable to read the code's input stream: %s",
+                              code.rdstate()));
 
-          // Finalise the ciphering process.
+            // Decrypt the input buffer.
+            int size_update(0);
+
+            if (::EVP_DecryptUpdate(&context,
+                                    _output.data(),
+                                    &size_update,
+                                    _input.data(),
+                                    code.gcount()) == 0)
+              throw Exception(
+                elle::sprintf("unable to apply the decryption function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+
+            // Write the output buffer to the plain stream.
+            plain.write(reinterpret_cast<const char *>(_output.data()),
+                        size_update);
+            if (!plain.good())
+              throw Exception(
+                elle::sprintf("unable to write the decrypted data to the "
+                              "plain's output stream: %s",
+                              plain.rdstate()));
+          }
+
+          // Finalise the deciphering process.
           int size_final(0);
 
           if (::EVP_DecryptFinal_ex(&context,
-                                    clear.mutable_contents() +
-                                    size_update,
+                                    _output.data(),
                                     &size_final) == 0)
             throw Exception(
               elle::sprintf("unable to finalize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Update the clear size with the actual size of the data decrypted.
-          clear.size(size_update + size_final);
-          clear.shrink_to_fit();
+          // Write the final output buffer to the plain's output stream.
+          plain.write(reinterpret_cast<const char *>(_output.data()),
+                      size_final);
+          if (!plain.good())
+            throw Exception(
+              elle::sprintf("unable to write the decrypted data to the "
+                            "plain's output stream: %s",
+                            plain.rdstate()));
 
           // Clean up the cipher context.
           ::EVP_CIPHER_CTX_cleanup(&context);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-          return (clear);
         }
       }
     }

@@ -27,15 +27,14 @@ namespace infinit
 
       elle::Buffer archive = cryptography::serialize(value);
 
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
+      elle::IOStream input(archive.istreambuf());
+      std::stringstream output;
 
-      return (Code(evp::symmetric::encrypt(archive,
-                                           this->_password,
-                                           function_cipher,
-                                           function_oneway)));
+      this->encrypt(input, output);
+
+      elle::Buffer buffer(output.str().data(), output.str().length());
+
+      return (Code(buffer));
     }
 
     template <typename T>
@@ -46,17 +45,14 @@ namespace infinit
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("code: %x", code);
 
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
+      elle::IOStream input(code.buffer().istreambuf());
+      std::stringstream output;
 
-      Clear clear(evp::symmetric::decrypt(code.buffer(),
-                                          this->_password,
-                                          function_cipher,
-                                          function_oneway));
+      this->decrypt(input, output);
 
-      return (cryptography::deserialize<T>(clear.buffer()));
+      elle::Buffer buffer(output.str().data(), output.str().length());
+
+      return (cryptography::deserialize<T>(buffer));
     }
   }
 }

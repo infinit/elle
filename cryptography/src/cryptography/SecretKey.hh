@@ -71,13 +71,23 @@ namespace infinit
       `--------*/
     public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /// Encrypt a given plain text.
-      Code
-      encrypt(Plain const& value) const;
-      /// Decrypt a given code.
-      Clear
-      decrypt(Code const& code) const;
+      /// Encrypt a given plain text and return the encrypted text.
+      elle::Buffer
+      encrypt(elle::ConstWeakBuffer const& plain) const;
+      /// Decrypt a given code and return the original plain text.
+      elle::Buffer
+      decrypt(elle::ConstWeakBuffer const& code) const;
 # endif
+      /// Encrypt an input stream and put the encrypted text in the
+      /// output stream.
+      void
+      encrypt(std::istream& plain,
+              std::ostream& code) const;
+      /// Decrypt an input stream and put the decrypted text in the
+      /// output stream.
+      void
+      decrypt(std::istream& code,
+              std::ostream& plain) const;
       /// Return the size, in bytes, of the secret key.
       elle::Natural32
       size() const;
