@@ -2519,7 +2519,7 @@ utp_socket*	utp_create_socket(utp_context *ctx)
 	if (!ctx) return NULL;
 
 	UTPSocket *conn = new UTPSocket; // TODO: UTPSocket should have a constructor
-
+	memset(conn, 0, sizeof(UTPSocket));
 	conn->state					= CS_UNINITIALIZED;
 	conn->ctx					= ctx;
 	conn->userdata				= NULL;
