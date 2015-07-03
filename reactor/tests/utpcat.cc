@@ -74,6 +74,7 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   BOOST_CHECK_THROW(sp.s1->write(elle::ConstWeakBuffer(megabuf, 10000000),
                                  100_ms),
                     reactor::network::TimeOut);
+  free(megabuf);
 }
 
 ELLE_TEST_SCHEDULED(streams)
