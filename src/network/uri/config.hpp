@@ -13,7 +13,11 @@
 #include <boost/detail/workaround.hpp>
 
 #if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_URI_DYN_LINK)
+#if defined(NETWORK_URI_EXPORTS)
 #define NETWORK_URI_DECL BOOST_SYMBOL_EXPORT
+#else
+#define NETWORK_URI_DECL BOOST_SYMBOL_IMPORT
+#endif
 #else
 #define NETWORK_URI_DECL
 #endif // defined(BOOST_ALL_DYN_LINK) || defined(BOOST_URI_DYN_LINK)

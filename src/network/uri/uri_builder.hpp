@@ -21,6 +21,11 @@
 #include <boost/filesystem/path.hpp>
 #endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable : 4251 4231 4660)
+#endif
+
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
@@ -304,5 +309,8 @@ namespace network {
   };
 } // namespace network
 
+#ifdef BOOST_MSVC
+#pragma warning(pop)
+#endif
 
 #endif // NETWORK_URI_BUILDER_INC

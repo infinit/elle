@@ -167,9 +167,15 @@ namespace network {
     if (scheme) {
       uri_parts_.scheme =
           copy_range(std::begin(*scheme), std::end(*scheme), it);
-      // ignore ://
-      while ((':' == *it) || ('/' == *it)) {
+      // ignore : and ://
+      if (':' == *it) {
         ++it;
+      }
+      if ('/' == *it) {
+        ++it;
+        if ('/' == *it) {
+          ++it;
+        }
       }
     }
 

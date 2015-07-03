@@ -8,7 +8,7 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
-#include "detail/uri_parse.hpp"
+#include "uri_parse.hpp"
 
 BOOST_FUSION_ADAPT_TPL_STRUCT(
     (FwdIter), (network::detail::hierarchical_part)(FwdIter),
