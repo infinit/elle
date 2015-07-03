@@ -27,6 +27,7 @@ namespace reactor
       std::unique_ptr<UTPSocket> accept();
     public:
       void send_to(Buffer buf, EndPoint where);
+      void _check_icmp();
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
       std::unique_ptr<UDPSocket> _socket;

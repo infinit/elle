@@ -78,6 +78,18 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   free(megabuf);
 }
 
+ELLE_TEST_SCHEDULED(utp_failures)
+{
+  SocketPair sp;
+  reactor::network::UTPSocket socket(sp.srv1);
+  ELLE_LOG("connect");
+  BOOST_CHECK_THROW(socket.connect("127.0.0.1", 65530), SocketClosed);
+  // check other sockets are unaffected
+  sp.s1->write("foo");
+  ELLE_LOG("read");
+  ELLE_ASSERT_EQ(sp.s2->read(3), "foo");
+}
+
 ELLE_TEST_SCHEDULED(streams)
 {
   SocketPair sp;
@@ -271,6 +283,7 @@ ELLE_TEST_SUITE()
   basics->add(BOOST_TEST_CASE(utp_close), 0, 5);
   basics->add(BOOST_TEST_CASE(basic), 0, 5);
   basics->add(BOOST_TEST_CASE(utp_timeout), 0, 5);
+  basics->add(BOOST_TEST_CASE(utp_failures), 0, 5);
   basics->add(BOOST_TEST_CASE(streams), 0, 5);
   basics->add(BOOST_TEST_CASE(big), 0, 5);
   basics->add(BOOST_TEST_CASE(many), 0, 20);
