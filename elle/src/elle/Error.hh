@@ -22,6 +22,12 @@ namespace elle
   public:
     Error(std::string const& format);
     Error(elle::Backtrace const& bt, std::string const& format);
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    Error(elle::serialization::SerializerIn& input);
   };
 }
 

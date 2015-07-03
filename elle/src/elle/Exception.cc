@@ -2,6 +2,7 @@
 
 # include <elle/assert.hh>
 # include <elle/print.hh>
+# include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -9,15 +10,15 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Exception::Exception(std::string const& message):
-    Exception(Backtrace::current(1), message)
+  Exception::Exception(std::string const& message)
+    : Exception(Backtrace::current(1), message)
   {}
 
   Exception::Exception(elle::Backtrace const& bt,
-                       std::string const& message):
-    std::runtime_error(message),
-    _backtrace(bt),
-    _inner_exception(nullptr)
+                       std::string const& message)
+    : std::runtime_error(message)
+    , _backtrace(bt)
+    , _inner_exception(nullptr)
   {}
 
   void
@@ -25,6 +26,25 @@ namespace elle
   {
     this->_inner_exception = std::move(exception);
   }
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+
+  Exception::Exception(elle::serialization::SerializerIn& input)
+    : std::runtime_error(input.deserialize<std::string>("message"))
+  {}
+
+  void
+  Exception::serialize(elle::serialization::Serializer& s)
+  {
+    std::string message = this->what();
+    s.serialize("message", message);
+  }
+
+  /*--------.
+  | Helpers |
+  `--------*/
 
   std::ostream&
   operator <<(std::ostream& s,

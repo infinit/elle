@@ -6,12 +6,15 @@
 
 # include <elle/attribute.hh>
 # include <elle/Backtrace.hh>
+# include <elle/serialization/fwd.hh>
 # include <elle/types.hh>
 
 namespace elle
 {
   /// Base class for exception, with backtrace.
-  class Exception: public std::runtime_error
+  class Exception
+    : public std::runtime_error
+    , public elle::serialization::VirtuallySerializable
   {
   /*-------------.
   | Construction |
@@ -21,6 +24,15 @@ namespace elle
     Exception(elle::Backtrace const& bt, std::string const& format);
     void
     inner_exception(std::unique_ptr<Exception>&& exception);
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    Exception(elle::serialization::SerializerIn& input);
+    virtual
+    void
+    serialize(elle::serialization::Serializer& s);
 
   private:
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);
