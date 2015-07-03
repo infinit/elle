@@ -15,12 +15,15 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace legacy
+    namespace rsa
     {
-      class Dummy:
-        public elle::serialize::SerializableMixin<Dummy>,
-        public elle::serialize::DynamicFormat<Dummy>
-      {};
+      namespace legacy
+      {
+        class Dummy:
+          public elle::serialize::SerializableMixin<Dummy>,
+          public elle::serialize::DynamicFormat<Dummy>
+        {};
+      }
     }
   }
 }
@@ -29,7 +32,7 @@ namespace infinit
 | Serialization |
 `--------------*/
 
-ELLE_SERIALIZE_SIMPLE(infinit::cryptography::legacy::Dummy,
+ELLE_SERIALIZE_SIMPLE(infinit::cryptography::rsa::legacy::Dummy,
                       archive,
                       value,
                       format)

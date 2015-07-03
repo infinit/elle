@@ -102,7 +102,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
         infinit::cryptography::Cryptosystem::rsa;
       archive << cryptosystem;
 
-      infinit::cryptography::legacy::Dummy implementation;
+      infinit::cryptography::rsa::legacy::Dummy implementation;
       archive << implementation;
 
       archive << *value._key->pkey.rsa->n
@@ -147,7 +147,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       archive >> cryptosystem;
 
       // Emulate deserializing a subclass.
-      infinit::cryptography::legacy::Dummy implementation;
+      infinit::cryptography::rsa::legacy::Dummy implementation;
       archive >> implementation;
 
       // Extract the big numbers.
