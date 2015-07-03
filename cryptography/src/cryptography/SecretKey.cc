@@ -80,12 +80,12 @@ namespace infinit
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("plain: %x", plain);
 
-      elle::IOStream input(plain.istreambuf());
-      std::stringstream output;
+      elle::IOStream _plain(plain.istreambuf());
+      std::stringstream _code;
 
-      this->encrypt(input, output);
+      this->encrypt(_plain, _code);
 
-      elle::Buffer code(output.str().data(), output.str().length());
+      elle::Buffer code(_code.str().data(), _code.str().length());
 
       return (code);
     }
@@ -96,12 +96,12 @@ namespace infinit
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("code: %x", code);
 
-      elle::IOStream input(code.istreambuf());
-      std::stringstream output;
+      elle::IOStream _code(code.istreambuf());
+      std::stringstream _plain;
 
-      this->decrypt(input, output);
+      this->decrypt(_code, _plain);
 
-      elle::Buffer plain(output.str().data(), output.str().length());
+      elle::Buffer plain(_plain.str().data(), _plain.str().length());
 
       return (plain);
     }

@@ -20,24 +20,54 @@ namespace infinit
       /*----------.
       | Functions |
       `----------*/
-      Digest
-      sign(Plain const& plain,
+
+      /// Sign a buffer with a string-based key.
+      elle::Buffer
+      sign(elle::ConstWeakBuffer const& plain,
            elle::String const& key,
            Oneway const oneway);
-      template <typename K>
-      Digest
-      sign(Plain const& plain,
-           K const& key,
-           Oneway const oneway);
+      /// Verify a buffer-based HMAC with string-based key.
       elle::Boolean
-      verify(Digest const& digest,
-             Plain const& plain,
+      verify(elle::ConstWeakBuffer const& digest,
+             elle::ConstWeakBuffer const& plain,
              elle::String const& key,
              Oneway const oneway);
+      /// Sign a stream with a string-based key.
+      elle::Buffer
+      sign(std::istream& plain,
+           elle::String const& key,
+           Oneway const oneway);
+      /// Verify a stream-based HMAC with a string-based key.
+      elle::Boolean
+      verify(elle::ConstWeakBuffer const& digest,
+             std::istream& plain,
+             elle::String const& key,
+             Oneway const oneway);
+
+      /// Sign a buffer with an asymmetric key.
+      template <typename K>
+      elle::Buffer
+      sign(elle::ConstWeakBuffer const& plain,
+           K const& key,
+           Oneway const oneway);
+      /// Verify a buffer-based HMAC with an asymmetric key.
       template <typename K>
       elle::Boolean
-      verify(Digest const& digest,
-             Plain const& plain,
+      verify(elle::ConstWeakBuffer const& digest,
+             elle::ConstWeakBuffer const& plain,
+             K const& key,
+             Oneway const oneway);
+      /// Sign a stream with an asymmetric key.
+      template <typename K>
+      elle::Buffer
+      sign(std::istream& plain,
+           K const& key,
+           Oneway const oneway);
+      /// Verify a stream-based HMAC with an asymmetric key.
+      template <typename K>
+      elle::Boolean
+      verify(elle::ConstWeakBuffer const& digest,
+             std::istream& plain,
              K const& key,
              Oneway const oneway);
     }

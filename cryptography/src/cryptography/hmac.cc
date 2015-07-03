@@ -10,6 +10,8 @@
 
 #include <openssl/err.h>
 
+ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+
 namespace infinit
 {
   namespace cryptography
@@ -20,14 +22,40 @@ namespace infinit
       | Functions |
       `----------*/
 
-      Digest
-      sign(Plain const& plain,
+      elle::Buffer
+      sign(elle::ConstWeakBuffer const& plain,
            elle::String const& key,
            Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
         ELLE_TRACE_FUNCTION(key, oneway);
         ELLE_DUMP("plain: %x", plain);
+
+        elle::IOStream _plain(plain.istreambuf());
+
+        return (sign(_plain, key, oneway));
+      }
+
+      elle::Boolean
+      verify(elle::ConstWeakBuffer const& digest,
+             elle::ConstWeakBuffer const& plain,
+             elle::String const& key,
+             Oneway const oneway)
+      {
+        ELLE_TRACE_FUNCTION(key, oneway);
+        ELLE_DUMP("digest: %x", digest);
+        ELLE_DUMP("plain: %x", plain);
+
+        elle::IOStream _plain(plain.istreambuf());
+
+        return (verify(digest, _plain, key, oneway));
+      }
+
+      elle::Buffer
+      sign(std::istream& plain,
+           elle::String const& key,
+           Oneway const oneway)
+      {
+        ELLE_TRACE_FUNCTION(key, oneway);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
@@ -44,37 +72,35 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
 
         // Apply the HMAC function with the given key.
-        elle::Buffer output = evp::hmac::sign(plain.buffer(), _key, function);
+        elle::Buffer digest = evp::hmac::sign(plain, _key, function);
 
         ::EVP_PKEY_free(_key);
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_key);
 
-        return (Digest(output));
+        return (digest);
       }
 
       elle::Boolean
-      verify(Digest const& digest,
-             Plain const& plain,
+      verify(elle::ConstWeakBuffer const& digest,
+             std::istream& plain,
              elle::String const& key,
              Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
         ELLE_TRACE_FUNCTION(key, oneway);
-        ELLE_DUMP("digest: %x", digest);
-        ELLE_DUMP("plain: %x", plain);
 
-        Digest _digest = sign(plain, key, oneway);
+        elle::Buffer _digest = sign(plain, key, oneway);
 
-        if (digest.buffer().size() != _digest.buffer().size())
+        if (digest.size() != _digest.size())
           return (false);
 
         // Compare using low-level OpenSSL functions to prevent timing attacks.
-        if (CRYPTO_memcmp(digest.buffer().contents(),
-                          _digest.buffer().contents(),
-                          _digest.buffer().size()) != 0)
+        if (CRYPTO_memcmp(digest.contents(),
+                          _digest.contents(),
+                          _digest.size()) != 0)
           return (false);
 
         return (true);
+
       }
     }
   }

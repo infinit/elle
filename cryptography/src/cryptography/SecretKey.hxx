@@ -27,14 +27,14 @@ namespace infinit
 
       elle::Buffer archive = cryptography::serialize(value);
 
-      elle::IOStream input(archive.istreambuf());
-      std::stringstream output;
+      elle::IOStream _archive(archive.istreambuf());
+      std::stringstream _code;
 
-      this->encrypt(input, output);
+      this->encrypt(_archive, _code);
 
-      elle::Buffer buffer(output.str().data(), output.str().length());
+      elle::Buffer code(_code.str().data(), _code.str().length());
 
-      return (Code(buffer));
+      return (Code(code));
     }
 
     template <typename T>
@@ -45,14 +45,14 @@ namespace infinit
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("code: %x", code);
 
-      elle::IOStream input(code.buffer().istreambuf());
-      std::stringstream output;
+      elle::IOStream _code(code.buffer().istreambuf());
+      std::stringstream _archive;
 
-      this->decrypt(input, output);
+      this->decrypt(_code, _archive);
 
-      elle::Buffer buffer(output.str().data(), output.str().length());
+      elle::Buffer archive(_archive.str().data(), _archive.str().length());
 
-      return (cryptography::deserialize<T>(buffer));
+      return (cryptography::deserialize<T>(archive));
     }
   }
 }

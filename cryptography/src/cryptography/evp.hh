@@ -158,13 +158,13 @@ namespace infinit
       {
         /// HMAC the given plain text using a key and digest function.
         elle::Buffer
-        sign(elle::ConstWeakBuffer const& plain,
+        sign(std::istream& plain,
              ::EVP_PKEY* key,
              ::EVP_MD const* function);
         /// Verify a HMAC digest.
         elle::Boolean
         verify(elle::ConstWeakBuffer const& digest,
-               elle::ConstWeakBuffer const& plain,
+               std::istream& plain,
                ::EVP_PKEY* key,
                ::EVP_MD const* function);
       }

@@ -845,18 +845,14 @@ namespace infinit
       namespace hmac
       {
         elle::Buffer
-        sign(elle::ConstWeakBuffer const& plain,
+        sign(std::istream& plain,
              ::EVP_PKEY* key,
              ::EVP_MD const* function)
         {
           ELLE_DEBUG_FUNCTION(key, function);
-          ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
-
-          // Normalize the plain buffer.
-          elle::ConstWeakBuffer const _plain = _normalize(plain);
 
           // Initialise the context.
           ::EVP_MD_CTX context;
@@ -875,12 +871,27 @@ namespace infinit
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          if (::EVP_DigestSignUpdate(&context,
-                                     _plain.contents(),
-                                     _plain.size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to apply the HMAC function: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          // HMAC-sign the plain's stream.
+          std::vector<unsigned char> _input(chunk_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Exception(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the HMAC.
+            if (::EVP_DigestSignUpdate(&context,
+                                       _input.data(),
+                                       plain.gcount()) <= 0)
+              throw Exception(
+                elle::sprintf("unable to apply the HMAC function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
 
           // Compute the output length.
           unsigned long size(0);
@@ -921,19 +932,14 @@ namespace infinit
 
         elle::Boolean
         verify(elle::ConstWeakBuffer const& digest,
-               elle::ConstWeakBuffer const& plain,
+               std::istream& plain,
                ::EVP_PKEY* key,
                ::EVP_MD const* function)
         {
           ELLE_DEBUG_FUNCTION(key, function);
-          ELLE_DUMP("digest: %s", digest);
-          ELLE_DUMP("plain: %s", plain);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
-
-          // Normalize the plain buffer.
-          elle::ConstWeakBuffer const _plain = _normalize(plain);
 
           // Initialise the context.
           ::EVP_MD_CTX context;
@@ -952,13 +958,29 @@ namespace infinit
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          if (::EVP_DigestVerifyUpdate(&context,
-                                       _plain.contents(),
-                                       _plain.size()) <= 0)
-            throw Exception(
-              elle::sprintf("unable to apply the HMAC function: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          // HMAC-verify the plain's stream against the digest.
+          std::vector<unsigned char> _input(chunk_size);
 
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Exception(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the HMAC.
+            if (::EVP_DigestVerifyUpdate(&context,
+                                         _input.data(),
+                                         plain.gcount()) <= 0)
+              throw Exception(
+                elle::sprintf("unable to apply the HMAC function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          // Verify the context's data against the given digest.
           if (::EVP_DigestVerifyFinal(&context,
                                       digest.contents(),
                                       digest.size()) == 0)

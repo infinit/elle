@@ -22,10 +22,10 @@ namespace infinit
       ELLE_TRACE_FUNCTION(oneway);
       ELLE_DUMP("plain: %x", plain);
 
-      elle::IOStream input(plain.istreambuf());
+      elle::IOStream _plain(plain.istreambuf());
 
       // The cast is required because of the legacy functions.
-      return (hash(static_cast<std::istream&>(input), oneway));
+      return (hash(static_cast<std::istream&>(_plain), oneway));
     }
 
     elle::Buffer

@@ -8,7 +8,7 @@
 
 #include <elle/serialization/json.hh>
 
-static std::string const _input(
+static std::string const _message(
   "- Back off Susan Boyle!");
 
 /*----------.
@@ -22,16 +22,12 @@ test_represent_n(elle::String const& key)
 {
   // N)
   {
-    infinit::cryptography::Digest digest =
-      infinit::cryptography::hmac::sign(
-        infinit::cryptography::Plain(_input),
-        key,
-        O);
+    elle::Buffer digest = infinit::cryptography::hmac::sign(_message, key, O);
 
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      digest.serialize(output);
+      output.serialize("digest", digest);
     }
 
     elle::printf("[representation %s] %s\n", N, stream.str());
@@ -79,15 +75,15 @@ test_operate()
     elle::Buffer buffer =
       infinit::cryptography::random::generate<elle::Buffer>(49);
 
-    infinit::cryptography::Digest digest =
+    elle::Buffer digest =
       infinit::cryptography::hmac::sign(
-        infinit::cryptography::Plain(buffer),
+        buffer,
         key,
         infinit::cryptography::Oneway::sha1);
 
     BOOST_CHECK_EQUAL(infinit::cryptography::hmac::verify(
                         digest,
-                        infinit::cryptography::Plain(buffer),
+                        buffer,
                         key,
                         infinit::cryptography::Oneway::sha1),
                       true);
@@ -100,8 +96,8 @@ test_operate()
 
     BOOST_CHECK_EQUAL(
       infinit::cryptography::hmac::verify(
-        infinit::cryptography::Digest(buffer),
-        infinit::cryptography::Plain(_input),
+        buffer,
+        _message,
         key,
         infinit::cryptography::Oneway::md5),
       false);
@@ -119,12 +115,13 @@ test_serialize_x(elle::String const& key,
 {
   std::stringstream stream(R);
   typename elle::serialization::json::SerializerIn input(stream);
-  infinit::cryptography::Digest digest(input);
+  elle::Buffer digest;
+  input.serialize("digest", digest);
 
   BOOST_CHECK_EQUAL(
     infinit::cryptography::hmac::verify(
       digest,
-      infinit::cryptography::Plain(_input),
+      _message,
       key,
       O),
     true);
@@ -137,31 +134,31 @@ test_serialize()
   // MD5 based on [representation 1].
   test_serialize_x<infinit::cryptography::Oneway::md5>(
     "one",
-    R"JSON({"buffer":"iflNwqB+X5jMsIlfrtuFlw=="})JSON");
+    R"JSON({"digest":"iflNwqB+X5jMsIlfrtuFlw=="})JSON");
   // SHA based on [representation 2].
   test_serialize_x<infinit::cryptography::Oneway::sha>(
     "deux",
-    R"JSON({"buffer":"6czXAnjyVKDUp04YBujKb7BnHho="})JSON");
+    R"JSON({"digest":"6czXAnjyVKDUp04YBujKb7BnHho="})JSON");
   // SHA-1 based on [representation 3].
   test_serialize_x<infinit::cryptography::Oneway::sha1>(
     "san",
-    R"JSON({"buffer":"VTYr4FUw/mNZ/pgNs2MjL8Akc8g="})JSON");
+    R"JSON({"digest":"VTYr4FUw/mNZ/pgNs2MjL8Akc8g="})JSON");
   // SHA-224 based on [representation 4].
   test_serialize_x<infinit::cryptography::Oneway::sha224>(
     "cetiri",
-    R"JSON({"buffer":"styt0RhWnMj3B2u7+bE0Rs1/AoWzt6ctQZEVRQ=="})JSON");
+    R"JSON({"digest":"styt0RhWnMj3B2u7+bE0Rs1/AoWzt6ctQZEVRQ=="})JSON");
   // SHA-256 based on [representation 5].
   test_serialize_x<infinit::cryptography::Oneway::sha256>(
     "négy",
-    R"JSON({"buffer":"a+rZICa62x5BAoBqInfRQ0B6mKXIJlAW4bgbY7hDaAI="})JSON");
+    R"JSON({"digest":"a+rZICa62x5BAoBqInfRQ0B6mKXIJlAW4bgbY7hDaAI="})JSON");
   // SHA-384 based on [representation 6].
   test_serialize_x<infinit::cryptography::Oneway::sha384>(
     "seis",
-    R"JSON({"buffer":"EMSoprWrQWgJKoyDLWB2t2Ir9UG48oNVVs/GpXZ9LELsfraI7RKXi6Dxz82FaDfZ"})JSON");
+    R"JSON({"digest":"EMSoprWrQWgJKoyDLWB2t2Ir9UG48oNVVs/GpXZ9LELsfraI7RKXi6Dxz82FaDfZ"})JSON");
   // SHA-512 based on [representation 7].
   test_serialize_x<infinit::cryptography::Oneway::sha512>(
     "yedi",
-    R"JSON({"buffer":"e7xVCxRZrBtQPJ7LFwhj72at4HNyxT+TjN8JHSe5TVgygvyNCkEf/8q78VluouQu712rh5s+xnCtwrayd86JLA=="})JSON");
+    R"JSON({"digest":"e7xVCxRZrBtQPJ7LFwhj72at4HNyxT+TjN8JHSe5TVgygvyNCkEf/8q78VluouQu712rh5s+xnCtwrayd86JLA=="})JSON");
 }
 
 /*-----.

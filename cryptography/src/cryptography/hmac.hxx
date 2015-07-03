@@ -27,42 +27,70 @@ namespace infinit
       `----------*/
 
       template <typename K>
-      Digest
-      sign(Plain const& plain,
+      elle::Buffer
+      sign(elle::ConstWeakBuffer const& plain,
            K const& key,
            Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
         ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("plain: %x", plain);
         ELLE_DUMP("key: %x", key);
 
-        ::EVP_MD const* function = oneway::resolve(oneway);
+        elle::IOStream _plain(plain.istreambuf());
 
-        // Apply the HMAC function with the given key.
-        elle::Buffer output =
-          evp::hmac::sign(plain.buffer(), key.key().get(), function);
-
-        return (Digest(output));
+        return (sign(_plain, key, oneway));
       }
 
       template <typename K>
       elle::Boolean
-      verify(Digest const& digest,
-             Plain const& plain,
+      verify(elle::ConstWeakBuffer const& digest,
+             elle::ConstWeakBuffer const& plain,
              K const& key,
              Oneway const oneway)
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
         ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("digest: %x", digest);
-        ELLE_DUMP("plain: %x", plain);
+        ELLE_DUMP("key: %x", key);
+
+        elle::IOStream _plain(plain.istreambuf());
+
+        return (verify(digest, _plain, key, oneway));
+      }
+
+      template <typename K>
+      elle::Buffer
+      sign(std::istream& plain,
+           K const& key,
+           Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_TRACE_FUNCTION(oneway);
         ELLE_DUMP("key: %x", key);
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
-        return (evp::hmac::verify(digest.buffer(),
-                                  plain.buffer(),
+        // Apply the HMAC function with the given key.
+        elle::Buffer digest =
+          evp::hmac::sign(plain, key.key().get(), function);
+
+        return (digest);
+      }
+
+      template <typename K>
+      elle::Boolean
+      verify(elle::ConstWeakBuffer const& digest,
+             std::istream& plain,
+             K const& key,
+             Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_TRACE_FUNCTION(oneway);
+        ELLE_DUMP("key: %x", key);
+
+        ::EVP_MD const* function = oneway::resolve(oneway);
+
+        return (evp::hmac::verify(digest,
+                                  plain,
                                   key.key().get(),
                                   function));
       }

@@ -27,9 +27,9 @@ namespace infinit
 
       elle::Buffer archive = cryptography::serialize(value);
 
-      elle::IOStream input(archive.istreambuf());
+      elle::IOStream _archive(archive.istreambuf());
 
-      return (Digest(hash(static_cast<std::istream&>(input), oneway)));
+      return (Digest(hash(static_cast<std::istream&>(_archive), oneway)));
     }
   }
 }
