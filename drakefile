@@ -976,7 +976,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
       boost_bootstrap_env = {}
     else:
-      boost_bootstrap_env = os.environ
+      boost_bootstrap_env = None
     drake.ShellCommand(
       sources = [boost_bootstrap, boost_user_config],
       targets = [boost_bjam],
