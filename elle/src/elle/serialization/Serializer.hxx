@@ -703,7 +703,7 @@ namespace elle
     deserialize(std::istream& input)
     {
       typename Serialization::SerializerIn s(input);
-      return s.deserialize<T>();
+      return s.template deserialize<T>();
     }
 
     template <typename T, typename Serialization>
@@ -711,7 +711,7 @@ namespace elle
     deserialize(std::istream& input, std::string const& name)
     {
       typename Serialization::SerializerIn s(input);
-      return s.deserialize<T>(name);
+      return s.template deserialize<T>(name);
     }
 
     template <typename T, typename Serialization>
