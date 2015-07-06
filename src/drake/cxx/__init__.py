@@ -1101,8 +1101,6 @@ def inclusion_dependencies(n, toolkit, config):
         ((path, True) for path in config.local_include_path),
         ((path, False) for path in config.system_include_path)):
       search_path.append((path, True, local))
-      if not path.absolute():
-        search_path.append((drake.path_source() / path, False, local))
     search_path += [(path, False, False)
                     for path in toolkit.include_path]
     cycles_map = dict()
@@ -1220,10 +1218,10 @@ def _mkdeps(explored_node, search, marks, cycles_map, owner_map, user = True):
         if not found:# or drake.path_source() != Path('.'):
           test = drake.path_source() / test
           if test.is_file():
-            found = drake.node(name, Header)
             logger.log('drake.cxx.dependencies',
                        drake.log.LogLevel.debug,
-                       'found %s in sources', found)
+                       'found %s in sources', name)
+            found = drake.node(name, Header)
             break
       if found is not None:
         try:
