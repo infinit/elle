@@ -16,6 +16,7 @@
 # include <cryptography/bn.hh>
 # include <cryptography/cryptography.hh>
 # include <cryptography/evp.hh>
+# include <cryptography/envelope.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/random.hh>
 # include <cryptography/types.hh>

@@ -12,6 +12,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
+#include <cryptography/envelope.hh>
 #include <cryptography/hash.hh>
 
 #include <elle/log.hh>
@@ -293,9 +294,9 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        return (Clear(evp::asymmetric::decrypt(code.buffer(),
-                                               this->_context.decrypt.get(),
-                                               ::EVP_PKEY_decrypt)));
+        return (Clear(envelope::open(code.buffer(),
+                                     this->_context.decrypt.get(),
+                                     ::EVP_PKEY_decrypt)));
       }
 
       Signature

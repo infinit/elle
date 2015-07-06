@@ -12,7 +12,7 @@
 #  include <cryptography/Plain.hh>
 #  include <cryptography/Exception.hh>
 #  include <cryptography/hash.hh>
-#  include <cryptography/evp.hh>
+#  include <cryptography/envelope.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>
@@ -37,9 +37,9 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        Clear clear(evp::asymmetric::decrypt(code.buffer(),
-                                             this->_context.decrypt.get(),
-                                             ::EVP_PKEY_decrypt));
+        Clear clear(envelope::open(code.buffer(),
+                                   this->_context.decrypt.get(),
+                                   ::EVP_PKEY_decrypt));
 
         return (cryptography::deserialize<T>(clear.buffer()));
       }

@@ -30,6 +30,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/evp.hh>
+#include <cryptography/envelope.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/hash.hh>
 
@@ -351,14 +352,13 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (Code(evp::asymmetric::encrypt(
-                       plain.buffer(),
-                       this->_context.encrypt.get(),
-                       ::EVP_PKEY_encrypt,
-                       cipher::resolve(this->_envelope_cipher,
-                                       this->_envelope_mode),
-                       oneway::resolve(this->_digest_algorithm),
-                       this->_context.envelope_padding_size)));
+        return (Code(envelope::seal(plain.buffer(),
+                                    this->_context.encrypt.get(),
+                                    ::EVP_PKEY_encrypt,
+                                    cipher::resolve(this->_envelope_cipher,
+                                                    this->_envelope_mode),
+                                    oneway::resolve(this->_digest_algorithm),
+                                    this->_context.envelope_padding_size)));
       }
 
       elle::Boolean
@@ -466,7 +466,7 @@ namespace infinit
         // Ensure the size of the seed equals the modulus.
         //
         // If the seed is too large, the algorithm would need to encrypt
-        // it with a symmetric key etc. (as the encrypt() method does) which
+        // it with a symmetric key etc. (as the seal() method does) which
         // would result in a future seed larger than the original.
         //
         // If it is too small, an attack could be performed against textbook

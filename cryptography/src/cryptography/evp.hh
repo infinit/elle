@@ -51,10 +51,7 @@ namespace infinit
                                 unsigned char*,
                                 size_t*,
                                 const unsigned char*,
-                                size_t),
-                ::EVP_CIPHER const* cipher,
-                ::EVP_MD const* oneway,
-                elle::Natural32 const padding_size);
+                                size_t));
         /// Decrypt the code with the provided context and function.
         elle::Buffer
         decrypt(elle::ConstWeakBuffer const& code,

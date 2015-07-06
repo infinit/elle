@@ -10,7 +10,7 @@
 #  include <cryptography/Plain.hh>
 #  include <cryptography/serialization.hh>
 #  include <cryptography/hash.hh>
-#  include <cryptography/evp.hh>
+#  include <cryptography/envelope.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>
@@ -35,14 +35,13 @@ namespace infinit
 
         elle::Buffer _value = cryptography::serialize(value);
 
-        return (Code(evp::asymmetric::encrypt(
-                       _value,
-                       this->_context.encrypt.get(),
-                       ::EVP_PKEY_encrypt,
-                       cipher::resolve(this->_envelope_cipher,
-                                       this->_envelope_mode),
-                       oneway::resolve(this->_digest_algorithm),
-                       this->_context.envelope_padding_size)));
+        return (Code(envelope::seal(_value,
+                                    this->_context.encrypt.get(),
+                                    ::EVP_PKEY_encrypt,
+                                    cipher::resolve(this->_envelope_cipher,
+                                                    this->_envelope_mode),
+                                    oneway::resolve(this->_digest_algorithm),
+                                    this->_context.envelope_padding_size)));
       }
 
       template <typename T>
