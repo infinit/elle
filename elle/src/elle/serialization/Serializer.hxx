@@ -697,6 +697,51 @@ namespace elle
     {
       return _deserialize<T>(*this);
     }
+
+    template <typename T, typename Serialization>
+    T
+    deserialize(std::istream& input)
+    {
+      typename Serialization::SerializerIn s(input);
+      return s.deserialize<T>();
+    }
+
+    template <typename T, typename Serialization>
+    T
+    deserialize(std::istream& input, std::string const& name)
+    {
+      typename Serialization::SerializerIn s(input);
+      return s.deserialize<T>(name);
+    }
+
+    template <typename T, typename Serialization>
+    T
+    deserialize(elle::Buffer const& input)
+    {
+      elle::IOStream s(input.istreambuf());
+      return deserialize<T, Serialization>(s);
+    }
+
+    template <typename T, typename Serialization>
+    T
+    deserialize(elle::Buffer const& input, std::string const& name)
+    {
+      elle::IOStream s(input.istreambuf());
+      return deserialize<T, Serialization>(s, name);
+    }
+
+    template <typename T, typename Serialization>
+    elle::Buffer
+    serialize(T const& o, std::string const& name)
+    {
+      elle::Buffer res;
+      {
+        elle::IOStream s(res.ostreambuf());
+        typename Serialization::SerializerOut output(s);
+        output.serialize(name, o);
+      }
+      return res;
+    }
   }
 }
 
