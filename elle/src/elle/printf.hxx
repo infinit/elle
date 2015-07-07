@@ -13,38 +13,47 @@
 # include <elle/print.hh>
 # include <elle/sfinae.hh>
 
+// Work around Clang 3.5.0 bug where having this helper in the elle namespace
+// will find a << overload for elle::serialization::Serializer::SerializerIn
+// (and only that type). If such an overload existed, ADL would find it anyway
+// no matter where it's called from.
+namespace _elle_printf_details
+{
+  template <typename T>
+  constexpr
+  typename std::enable_if<
+    sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
+  _is_streamable(int)
+  {
+    return true;
+  };
+
+  template <typename T>
+  constexpr
+  bool
+  _is_streamable(unsigned int)
+  {
+    return false;
+  };
+
+  template <typename T>
+  constexpr
+  bool
+  is_streamable()
+  {
+    return _is_streamable<T>(42);
+  };
+}
+
 namespace elle
 {
   namespace _details
   {
-    template <typename T>
-    constexpr
-    typename std::enable_if<
-      sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
-    _is_streamable(int)
-    {
-      return true;
-    };
-
-    template <typename T>
-    constexpr
-    bool
-    _is_streamable(unsigned int)
-    {
-      return false;
-    };
-
-    template <typename T>
-    constexpr
-    bool
-    is_streamable()
-    {
-      return _is_streamable<T>(42);
-    };
 
     template <typename T>
     static
-    typename std::enable_if<is_streamable<T>(), void>::type
+    typename std::enable_if<
+      _elle_printf_details::is_streamable<T>(), void>::type
     feed(boost::format& fmt, T&& value)
     {
       fmt % std::forward<T>(value);
@@ -52,7 +61,8 @@ namespace elle
 
     template <typename T>
     static
-    typename std::enable_if<!is_streamable<T>(), void>::type
+    typename std::enable_if<
+      !_elle_printf_details::is_streamable<T>(), void>::type
     feed(boost::format& fmt, T&& value)
     {
       static boost::format parsed("%s(%x)");
