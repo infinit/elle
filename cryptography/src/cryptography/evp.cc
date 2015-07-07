@@ -62,13 +62,13 @@ namespace infinit
         `-----------------*/
 
         elle::Buffer
-        apply(elle::ConstWeakBuffer const& input,
-              ::EVP_PKEY_CTX* context,
-              int (*function)(EVP_PKEY_CTX*,
-                              unsigned char*,
-                              size_t*,
-                              const unsigned char*,
-                              size_t))
+        _apply(elle::ConstWeakBuffer const& input,
+               ::EVP_PKEY_CTX* context,
+               int (*function)(EVP_PKEY_CTX*,
+                               unsigned char*,
+                               size_t*,
+                               const unsigned char*,
+                               size_t))
         {
           ELLE_DEBUG_FUNCTION(context, function);
           ELLE_DUMP("input: %s", input);
@@ -138,7 +138,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          return (apply(plain, context, function));
+          return (_apply(plain, context, function));
         }
 
         elle::Buffer
@@ -156,7 +156,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          return (apply(code, context, function));
+          return (_apply(code, context, function));
         }
 
         elle::Buffer
@@ -174,7 +174,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          return (apply(digest, context, function));
+          return (_apply(digest, context, function));
         }
 
         elle::Boolean
@@ -258,6 +258,68 @@ namespace infinit
           // Update the code size with the actual size of the generated data.
           buffer.size(size);
           buffer.shrink_to_fit();
+
+          return (buffer);
+        }
+
+        elle::Buffer
+        rotate(elle::ConstWeakBuffer const& seed,
+               ::EVP_PKEY_CTX* context,
+               int (*function)(EVP_PKEY_CTX*,
+                               unsigned char*,
+                               size_t*,
+                               const unsigned char*,
+                               size_t))
+        {
+          // Ensure the size of the seed equals the modulus.
+          //
+          // If the seed is too large, the algorithm would need to encrypt
+          // it with a symmetric key etc. (as the seal() method does) which
+          // would result in a future seed larger than the original.
+          //
+          // If it is too small, an attack could be performed against textbook
+          // RSA, assuming it is the algorithm used in this case.
+          if (::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)) !=
+              seed.size())
+            throw Exception(
+              elle::sprintf("unable to rotate a seed whose length does not "
+                            "match the key's modulus: %s versus %s",
+                            ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
+                            seed.size()));
+
+          elle::Buffer buffer =
+            evp::asymmetric::_apply(seed, context, function);
+
+          // Make sure the seed does not grow over time.
+          ELLE_ASSERT_EQ(seed.size(), buffer.size());
+
+          return (buffer);
+        }
+
+        elle::Buffer
+        unrotate(elle::ConstWeakBuffer const& seed,
+                 ::EVP_PKEY_CTX* context,
+                 int (*function)(EVP_PKEY_CTX*,
+                                 unsigned char*,
+                                 size_t*,
+                                 const unsigned char*,
+                                 size_t))
+        {
+          // As for the rotation mechanism, ensure the size of the seed
+          // equals the modulus.
+          if (::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)) !=
+              seed.size())
+            throw Exception(
+              elle::sprintf("unable to unrotate a seed whose length does not "
+                            "match the key's modulus: %s versus %s",
+                            ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
+                            seed.size()));
+
+          elle::Buffer buffer =
+            evp::asymmetric::_apply(seed, context, function);
+
+          // Make sure the unrotated seed has the same size as the original.
+          ELLE_ASSERT_EQ(seed.size(), buffer.size());
 
           return (buffer);
         }

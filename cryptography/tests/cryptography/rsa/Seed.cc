@@ -159,15 +159,6 @@ static
 void
 test_operate()
 {
-  // 512-bit K-rotate/k-unrotate.
-  {
-    elle::Natural32 const length = 512;
-    infinit::cryptography::rsa::KeyPair keypair =
-      infinit::cryptography::rsa::keypair::generate(length);
-
-    _test_operate(keypair.K(), keypair.k(), length);
-  }
-
   // 2048-bit k-rotate/K-unrotate.
   //
   // Note that since the rotation/derivation process performs a textbook

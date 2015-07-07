@@ -130,9 +130,6 @@ namespace infinit
                     defaults::envelope_cipher,
                   Mode const envelope_mode =
                     defaults::envelope_mode);
-        /// Return the seed once rotated by the public key.
-        Seed
-        rotate(Seed const& seed) const;
         /// Return the seed once unrotated by the public key.
         Seed
         unrotate(Seed const& seed) const;
@@ -178,7 +175,6 @@ namespace infinit
           types::EVP_PKEY_CTX encrypt;
           types::EVP_PKEY_CTX verify;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-          types::EVP_PKEY_CTX rotate;
           types::EVP_PKEY_CTX unrotate;
 # endif
           // The encryption padding size expressed in bits.

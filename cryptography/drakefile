@@ -283,7 +283,7 @@ def configure(openssl_config,
       ]
     if enable_rotation:
       tests += [ "rsa/Seed.cc",
-                 "rsa/scenario.cc"
+# XXX                 "rsa/scenario.cc"
                  ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)

@@ -30,15 +30,6 @@ namespace infinit
         | Functions |
         `----------*/
 
-        /// Apply the given cryptographic function/context on the buffer.
-        elle::Buffer
-        apply(elle::ConstWeakBuffer const& input,
-              ::EVP_PKEY_CTX* context,
-              int (*function)(EVP_PKEY_CTX*,
-                              unsigned char*,
-                              size_t*,
-                              const unsigned char*,
-                              size_t));
         /// Encrypt the given plain with the provided encryption context and
         /// function.
         ///
@@ -85,6 +76,25 @@ namespace infinit
         elle::Buffer
         agree(::EVP_PKEY_CTX* context,
               ::EVP_PKEY* peer);
+        /// Rotate the given seed with the context and according to the
+        /// given function.
+        elle::Buffer
+        rotate(elle::ConstWeakBuffer const& seed,
+               ::EVP_PKEY_CTX* context,
+               int (*function)(EVP_PKEY_CTX*,
+                               unsigned char*,
+                               size_t*,
+                               const unsigned char*,
+                               size_t));
+        /// Unrotate the given seed according to the context and function.
+        elle::Buffer
+        unrotate(elle::ConstWeakBuffer const& seed,
+                 ::EVP_PKEY_CTX* context,
+                 int (*function)(EVP_PKEY_CTX*,
+                                 unsigned char*,
+                                 size_t*,
+                                 const unsigned char*,
+                                 size_t));
       }
     }
   }

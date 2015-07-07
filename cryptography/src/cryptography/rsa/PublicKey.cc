@@ -224,7 +224,6 @@ namespace infinit
         this->_context.encrypt = std::move(other._context.encrypt);
         this->_context.verify = std::move(other._context.verify);
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        this->_context.rotate = std::move(other._context.rotate);
         this->_context.unrotate = std::move(other._context.unrotate);
 #endif
         this->_context.envelope_padding_size =
@@ -311,13 +310,6 @@ namespace infinit
         // RSA is considered foolish. In this case however, restricting the
         // rotation/derivation to content of the size of the RSA key's modulus
         // makes it secure.
-
-        // Prepare the rotation context.
-        ELLE_ASSERT_EQ(this->_context.rotate, nullptr);
-        this->_context.rotate.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_encrypt_init,
-                          Padding::none));
 
         // Prepare the unrotate context.
         ELLE_ASSERT_EQ(this->_context.unrotate, nullptr);
@@ -458,59 +450,15 @@ namespace infinit
       }
 
       Seed
-      PublicKey::rotate(Seed const& seed) const
-      {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("seed: %x", seed);
-
-        // Ensure the size of the seed equals the modulus.
-        //
-        // If the seed is too large, the algorithm would need to encrypt
-        // it with a symmetric key etc. (as the seal() method does) which
-        // would result in a future seed larger than the original.
-        //
-        // If it is too small, an attack could be performed against textbook
-        // RSA which is the algorithm used in this case.
-        if (seed.length() != this->length())
-          throw Exception(
-            elle::sprintf("unable to rotate a seed whose length does not match "
-                          "the RSA key's modulus: %s versus %s",
-                          seed.length(), this->length()));
-
-        elle::Buffer buffer =
-          evp::asymmetric::apply(seed.buffer(),
-                                 this->_context.rotate.get(),
-                                 ::EVP_PKEY_encrypt);
-
-        // Make sure the seed does not grow over time.
-        ELLE_ASSERT_EQ(seed.buffer().size(), buffer.size());
-
-        return (Seed(std::move(buffer), seed.length()));
-      }
-
-      Seed
       PublicKey::unrotate(Seed const& seed) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
-        // As for the rotation mechanism, ensure the size of the seed
-        // equals the modulus.
-        if (seed.length() != this->length())
-          throw Exception(
-            elle::sprintf("unable to unrotate a seed whose length does not "
-                          "match the RSA key's modulus: %s versus %s",
-                          seed.length(), this->length()));
-
-        elle::Buffer buffer =
-          evp::asymmetric::apply(seed.buffer(),
-                                 this->_context.unrotate.get(),
-                                 ::EVP_PKEY_verify_recover);
-
-        // Make sure the unrotated seed has the same size as the original.
-        ELLE_ASSERT_EQ(seed.buffer().size(), buffer.size());
-
-        return (Seed(std::move(buffer), seed.length()));
+        return (Seed(evp::asymmetric::unrotate(seed.buffer(),
+                                               this->_context.unrotate.get(),
+                                               ::EVP_PKEY_verify_recover),
+                     seed.length()));
       }
 #endif
 

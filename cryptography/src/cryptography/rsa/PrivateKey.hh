@@ -115,9 +115,6 @@ namespace infinit
                      defaults::signature_padding,
                    Oneway const digest_algorithm =
                      defaults::digest_algorithm);
-        /// Return the seed once unrotated by the private key.
-        Seed
-        unrotate(Seed const& seed) const;
         /// Return the seed once rotated by the private key.
         Seed
         rotate(Seed const& seed) const;
@@ -161,7 +158,6 @@ namespace infinit
           types::EVP_PKEY_CTX decrypt;
           types::EVP_PKEY_CTX sign;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-          types::EVP_PKEY_CTX unrotate;
           types::EVP_PKEY_CTX rotate;
 # endif
         } _context;
