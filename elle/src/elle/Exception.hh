@@ -22,6 +22,7 @@ namespace elle
   public:
     Exception(std::string const& format);
     Exception(elle::Backtrace const& bt, std::string const& format);
+    ~Exception() noexcept (true);
     void
     inner_exception(std::unique_ptr<Exception>&& exception);
 

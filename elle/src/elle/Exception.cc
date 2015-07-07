@@ -21,6 +21,9 @@ namespace elle
     , _inner_exception(nullptr)
   {}
 
+  Exception::~Exception()
+  {}
+
   void
   Exception::inner_exception(std::unique_ptr<Exception>&& exception)
   {
