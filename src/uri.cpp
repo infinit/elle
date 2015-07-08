@@ -325,7 +325,11 @@ namespace network {
 
     auto port = this->port();
     if (port) {
-      last = std::end(*port);
+      if (port->empty()) {
+        ++last;
+      } else {
+        last = std::end(*port);
+      }
     }
 
     return to_string_ref(first, last);
