@@ -2,7 +2,6 @@
 #include <cryptography/dh/PublicKey.hh>
 #include <cryptography/dh/KeyPair.hh>
 #include <cryptography/context.hh>
-#include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
