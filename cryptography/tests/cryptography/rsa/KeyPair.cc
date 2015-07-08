@@ -155,16 +155,25 @@ static
 void
 _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 {
-  // Public/private encryption/decryption with plain.
+  // Public/private seal/open.
   {
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(9128);
     infinit::cryptography::Code code =
-      keypair.K().encrypt(infinit::cryptography::Plain(input));
-    infinit::cryptography::Clear clear = keypair.k().decrypt(code);
+      keypair.K().seal(infinit::cryptography::Plain(input));
+    infinit::cryptography::Clear clear = keypair.k().open(code);
     elle::String const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
+  }
+
+  // Public/private encryption/decryption.
+  {
+    elle::String input = "a short string";
+    elle::Buffer code = keypair.K().encrypt(input);
+    elle::Buffer clear = keypair.k().decrypt(code);
+
+    BOOST_CHECK_EQUAL(input, clear.string());
   }
 
   // Sign/verify a plain text.

@@ -119,8 +119,8 @@ test_operate_import()
   elle::String const data("N'est pas Sancho qui veut!");
 
   infinit::cryptography::Code code =
-    K.encrypt(infinit::cryptography::Plain(data));
-  infinit::cryptography::Clear clear = k.decrypt(code);
+    K.seal(infinit::cryptography::Plain(data));
+  infinit::cryptography::Clear clear = k.open(code);
 
   BOOST_CHECK_EQUAL(data, clear.buffer().string());
 }

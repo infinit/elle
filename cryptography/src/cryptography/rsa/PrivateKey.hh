@@ -83,9 +83,17 @@ namespace infinit
         _check() const;
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Decrypt and return the original plan text.
+        /// Open the envelope, decrypt its content and return the
+        /// original plan text.
         Clear
-        decrypt(Code const& code) const;
+        open(Code const& code) const;
+        /// Decrypt a code with the raw public key.
+        ///
+        /// WARNING: This method cannot be used to decrypt large amount of
+        ///          data as constrained by the key's modulus. Please refer
+        ///          to the seal()/open() methods.
+        elle::Buffer
+        decrypt(elle::ConstWeakBuffer const& code) const;
         /// Sign the given plain text.
         Signature
         sign(Plain const& plain) const;

@@ -93,9 +93,16 @@ namespace infinit
         _check() const;
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Encrypt a plain text.
+        /// Encrypt the plain text and seal it in an envelope.
         Code
-        encrypt(Plain const& plain) const;
+        seal(Plain const& plain) const;
+        /// Encrypt a plain text using the raw public key.
+        ///
+        /// WARNING: This method cannot be used to encrypt large amount of
+        ///          data as constrained by the key's modulus. Please refer
+        ///          to the seal()/open() methods.
+        elle::Buffer
+        encrypt(elle::ConstWeakBuffer const& plain) const;
         /// Verify the given signature against the original plain text.
         elle::Boolean
         verify(Signature const& signature,

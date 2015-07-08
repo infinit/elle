@@ -36,7 +36,7 @@ _test_represent()
   // 2)
   {
     infinit::cryptography::Code code =
-      keypair.K().encrypt(
+      keypair.K().seal(
         infinit::cryptography::Plain(_input));
 
     std::stringstream stream;
@@ -132,7 +132,7 @@ test_operate()
     typename elle::serialization::json::SerializerIn input(stream);
     infinit::cryptography::Code code(input);
 
-    infinit::cryptography::Clear clear = k.decrypt(code);
+    infinit::cryptography::Clear clear = k.open(code);
 
     BOOST_CHECK_EQUAL(_input, clear.buffer().string());
   }

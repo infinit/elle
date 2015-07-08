@@ -339,7 +339,7 @@ namespace infinit
 
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       Code
-      PublicKey::encrypt(Plain const& plain) const
+      PublicKey::seal(Plain const& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
@@ -351,6 +351,17 @@ namespace infinit
                                                     this->_envelope_mode),
                                     oneway::resolve(this->_digest_algorithm),
                                     this->_context.envelope_padding_size)));
+      }
+
+      elle::Buffer
+      PublicKey::encrypt(elle::ConstWeakBuffer const& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("plain: %x", plain);
+
+        return (evp::asymmetric::encrypt(plain,
+                                         this->_context.encrypt.get(),
+                                         ::EVP_PKEY_encrypt));
       }
 
       elle::Boolean

@@ -281,7 +281,7 @@ namespace infinit
 
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       Clear
-      PrivateKey::decrypt(Code const& code) const
+      PrivateKey::open(Code const& code) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
@@ -289,6 +289,17 @@ namespace infinit
         return (Clear(envelope::open(code.buffer(),
                                      this->_context.decrypt.get(),
                                      ::EVP_PKEY_decrypt)));
+      }
+
+      elle::Buffer
+      PrivateKey::decrypt(elle::ConstWeakBuffer const& code) const
+      {
+        ELLE_TRACE_METHOD("");
+        ELLE_DUMP("code: %x", code);
+
+        return (evp::asymmetric::decrypt(code,
+                                         this->_context.decrypt.get(),
+                                         ::EVP_PKEY_decrypt));
       }
 
       Signature

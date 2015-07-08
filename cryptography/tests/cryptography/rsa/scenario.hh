@@ -76,7 +76,7 @@ public:
     this->_entries[address] =
       new Entry(version,
                 pass_K,
-                pass_K.encrypt(infinit::cryptography::Plain(archive)));
+                pass_K.seal(infinit::cryptography::Plain(archive)));
   }
 
   void
@@ -106,8 +106,7 @@ public:
   {
     Entry* entry = this->retrieve(address);
 
-    infinit::cryptography::Clear archive =
-      pass_k.decrypt(entry->key());
+    infinit::cryptography::Clear archive = pass_k.open(entry->key());
 
     infinit::cryptography::SecretKey _key =
       elle::serialization::deserialize<
@@ -131,7 +130,7 @@ public:
     this->_entries[address] =
       new Entry(version,
                 pass_K,
-                pass_K.encrypt(infinit::cryptography::Plain(archive)));
+                pass_K.seal(infinit::cryptography::Plain(archive)));
 
     delete _entry;
   }
@@ -158,7 +157,7 @@ public:
       entry =
         new Entry(_entry->version(),
                   _entry->pass_K(),
-                  _entry->pass_K().encrypt(infinit::cryptography::Plain(archive)));
+                  _entry->pass_K().seal(infinit::cryptography::Plain(archive)));
 
       delete _entry;
     }
@@ -205,7 +204,7 @@ private:
          elle::Buffer const& key,
          elle::Buffer const& content):
     _owner_K(owner_K),
-    _key(owner_K.encrypt(infinit::cryptography::Plain(key))),
+    _key(owner_K.seal(infinit::cryptography::Plain(key))),
     _content(content)
   {}
 
@@ -221,7 +220,7 @@ private:
          elle::Buffer const& key,
          elle::Buffer const& content):
     _owner_K(object._owner_K),
-    _key(object._owner_K.encrypt(infinit::cryptography::Plain(key))),
+    _key(object._owner_K.seal(infinit::cryptography::Plain(key))),
     _content(content),
     _acl(object._acl)
   {}
@@ -254,8 +253,7 @@ public:
   infinit::cryptography::SecretKey
   key(infinit::cryptography::rsa::PrivateKey const& owner_k) const
   {
-    infinit::cryptography::Clear archive =
-      owner_k.decrypt(this->_key);
+    infinit::cryptography::Clear archive = owner_k.open(this->_key);
 
     infinit::cryptography::SecretKey __key =
       elle::serialization::deserialize<
@@ -316,8 +314,9 @@ public:
     elle::Buffer _seed =
       elle::serialization::serialize<elle::serialization::Json>(seed);
 
-    this->_members[user_K] = new Member(user_K.encrypt(infinit::cryptography::Plain(_pass_k)),
-                                        user_K.encrypt(infinit::cryptography::Plain(_seed)));
+    this->_members[user_K] =
+      new Member(user_K.seal(infinit::cryptography::Plain(_pass_k)),
+                 user_K.seal(infinit::cryptography::Plain(_seed)));
   }
 
   void
@@ -347,7 +346,7 @@ public:
     Member* member = this->retrieve(user_keypair.K());
 
     infinit::cryptography::Clear archive =
-      user_keypair.k().decrypt(member->pass_k());
+      user_keypair.k().open(member->pass_k());
 
     infinit::cryptography::rsa::PrivateKey _k =
       elle::serialization::deserialize<
@@ -363,7 +362,7 @@ public:
     Member* member = this->retrieve(user_keypair.K());
 
     infinit::cryptography::Clear archive =
-      user_keypair.k().decrypt(member->seed());
+      user_keypair.k().open(member->seed());
 
     infinit::cryptography::rsa::Seed _seed =
       elle::serialization::deserialize<
@@ -391,8 +390,8 @@ public:
       Member* _member = member;
 
       member =
-        new Member(user_K.encrypt(infinit::cryptography::Plain(_pass_k)),
-                   user_K.encrypt(infinit::cryptography::Plain(_seed)));
+        new Member(user_K.seal(infinit::cryptography::Plain(_pass_k)),
+                   user_K.seal(infinit::cryptography::Plain(_seed)));
 
       delete _member;
     }
@@ -470,9 +469,9 @@ private:
     _address(address),
     _version(version),
     _manager_K(manager_K),
-    _seed(manager_K.encrypt(infinit::cryptography::Plain(seed))),
+    _seed(manager_K.seal(infinit::cryptography::Plain(seed))),
     _pass_K(pass_K),
-    _pass_k(manager_K.encrypt(infinit::cryptography::Plain(pass_k))),
+    _pass_k(manager_K.seal(infinit::cryptography::Plain(pass_k))),
     _members(members)
   {}
 
@@ -489,8 +488,7 @@ public:
   infinit::cryptography::rsa::PrivateKey
   pass_k(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
-    infinit::cryptography::Clear archive =
-      manager_k.decrypt(this->_pass_k);
+    infinit::cryptography::Clear archive = manager_k.open(this->_pass_k);
 
     infinit::cryptography::rsa::PrivateKey _key =
       elle::serialization::deserialize<
@@ -503,8 +501,7 @@ public:
   infinit::cryptography::rsa::Seed
   seed(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
-    infinit::cryptography::Clear archive =
-      manager_k.decrypt(this->_seed);
+    infinit::cryptography::Clear archive = manager_k.open(this->_seed);
 
     infinit::cryptography::rsa::Seed __seed =
       elle::serialization::deserialize<
@@ -517,8 +514,7 @@ public:
   Group
   rotate(infinit::cryptography::rsa::PrivateKey const& manager_k)
   {
-    infinit::cryptography::Clear archive =
-      manager_k.decrypt(this->_seed);
+    infinit::cryptography::Clear archive = manager_k.open(this->_seed);
     infinit::cryptography::rsa::Seed __seed =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::Seed,
