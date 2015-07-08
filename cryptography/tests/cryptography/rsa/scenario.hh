@@ -197,7 +197,7 @@ private:
          elle::String const& content):
     Object(owner_K,
            elle::serialization::serialize<elle::serialization::Json>(key),
-           key.encrypt(content))
+           key.encipher(content))
   {}
 
   Object(infinit::cryptography::rsa::PublicKey const& owner_K,
@@ -213,7 +213,7 @@ private:
          elle::String const& content):
     Object(object,
            elle::serialization::serialize<elle::serialization::Json>(key),
-           key.encrypt(content))
+           key.encipher(content))
   {}
 
   Object(Object const& object,
@@ -247,7 +247,7 @@ public:
   elle::String
   read(infinit::cryptography::SecretKey const& key) const
   {
-    return (key.decrypt(this->_content.buffer()).string());
+    return (key.decipher(this->_content.buffer()).string());
   }
 
   infinit::cryptography::SecretKey

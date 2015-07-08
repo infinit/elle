@@ -148,7 +148,7 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         Code data = secret.encrypt(Plain(plain));
 #else
-        elle::Buffer _data = secret.encrypt(plain);
+        elle::Buffer _data = secret.encipher(plain);
         Code data(_data); // XXX not to be used any longer in non-legacy
 #endif
 
@@ -238,7 +238,7 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         Clear clear = secret.decrypt(data);
 #else
-        Clear clear(secret.decrypt(data.buffer())); // XXX no longer use Clear
+        Clear clear(secret.decipher(data.buffer())); // XXX no longer use Clear
 #endif
 
         ELLE_DUMP("clear: %s", clear.buffer());

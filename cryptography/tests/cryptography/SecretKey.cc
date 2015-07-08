@@ -38,7 +38,7 @@ test_represent_n()
 
   // N.2)
   {
-    elle::Buffer code = key.encrypt(_message);
+    elle::Buffer code = key.encipher(_message);
 
     std::stringstream stream;
     {
@@ -279,8 +279,8 @@ _test_operate_idea()
 
   elle::String const input = "Chie du foutre!";
 
-  elle::Buffer code = key.encrypt(input);
-  elle::Buffer plain = key.decrypt(code);
+  elle::Buffer code = key.encipher(input);
+  elle::Buffer plain = key.decipher(code);
 
   elle::String const output(plain.string());
 
@@ -313,7 +313,7 @@ test_serialize_x(elle::String const& R1,
   elle::Buffer code;
   input2.serialize("code", code);
 
-  elle::Buffer plain = key.decrypt(code);
+  elle::Buffer plain = key.decipher(code);
 
   BOOST_CHECK_EQUAL(_message, plain.string());
 }

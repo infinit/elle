@@ -113,21 +113,21 @@ namespace infinit
       /// Contain the operations related to symmetric algorithms.
       namespace symmetric
       {
-        /// Encrypt the plain text according to the given secret and functions.
+        /// Encipher the plain text according to the given secret and functions.
         void
-        encrypt(std::istream& input,
-                std::ostream& output,
-                elle::ConstWeakBuffer const& secret,
-                ::EVP_CIPHER const* function_cipher,
-                ::EVP_MD const* function_oneway);
-        /// Decrypt the ciphered text according to the given secret and
+        encipher(std::istream& input,
+                 std::ostream& output,
+                 elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* function_cipher,
+                 ::EVP_MD const* function_oneway);
+        /// Decipher the cipher text according to the given secret and
         /// functions.
         void
-        decrypt(std::istream& code,
-                std::ostream& plain,
-                elle::ConstWeakBuffer const& secret,
-                ::EVP_CIPHER const* function_cipher,
-                ::EVP_MD const* function_oneway);
+        decipher(std::istream& code,
+                 std::ostream& plain,
+                 elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* function_cipher,
+                 ::EVP_MD const* function_oneway);
       }
     }
   }

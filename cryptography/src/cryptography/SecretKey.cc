@@ -75,7 +75,7 @@ namespace infinit
 
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     elle::Buffer
-    SecretKey::encrypt(elle::ConstWeakBuffer const& plain) const
+    SecretKey::encipher(elle::ConstWeakBuffer const& plain) const
     {
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("plain: %x", plain);
@@ -83,7 +83,7 @@ namespace infinit
       elle::IOStream _plain(plain.istreambuf());
       std::stringstream _code;
 
-      this->encrypt(_plain, _code);
+      this->encipher(_plain, _code);
 
       elle::Buffer code(_code.str().data(), _code.str().length());
 
@@ -91,7 +91,7 @@ namespace infinit
     }
 
     elle::Buffer
-    SecretKey::decrypt(elle::ConstWeakBuffer const& code) const
+    SecretKey::decipher(elle::ConstWeakBuffer const& code) const
     {
       ELLE_TRACE_METHOD("");
       ELLE_DUMP("code: %x", code);
@@ -99,7 +99,7 @@ namespace infinit
       elle::IOStream _code(code.istreambuf());
       std::stringstream _plain;
 
-      this->decrypt(_code, _plain);
+      this->decipher(_code, _plain);
 
       elle::Buffer plain(_plain.str().data(), _plain.str().length());
 
@@ -108,8 +108,8 @@ namespace infinit
 #endif
 
     void
-    SecretKey::encrypt(std::istream& plain,
-                       std::ostream& code) const
+    SecretKey::encipher(std::istream& plain,
+                        std::ostream& code) const
     {
       ELLE_TRACE_METHOD("");
 
@@ -118,16 +118,16 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      evp::symmetric::encrypt(plain,
-                              code,
-                              this->_password,
-                              function_cipher,
-                              function_oneway);
+      evp::symmetric::encipher(plain,
+                               code,
+                               this->_password,
+                               function_cipher,
+                               function_oneway);
     }
 
     void
-    SecretKey::decrypt(std::istream& code,
-                       std::ostream& plain) const
+    SecretKey::decipher(std::istream& code,
+                        std::ostream& plain) const
     {
       ELLE_TRACE_METHOD("");
 
@@ -136,11 +136,11 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      evp::symmetric::decrypt(code,
-                              plain,
-                              this->_password,
-                              function_cipher,
-                              function_oneway);
+      evp::symmetric::decipher(code,
+                               plain,
+                               this->_password,
+                               function_cipher,
+                               function_oneway);
     }
 
     elle::Natural32

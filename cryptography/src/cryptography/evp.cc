@@ -354,11 +354,11 @@ namespace infinit
         `----------*/
 
         void
-        encrypt(std::istream& plain,
-                std::ostream& code,
-                elle::ConstWeakBuffer const& secret,
-                ::EVP_CIPHER const* function_cipher,
-                ::EVP_MD const* function_oneway)
+        encipher(std::istream& plain,
+                 std::ostream& code,
+                 elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* function_cipher,
+                 ::EVP_MD const* function_oneway)
         {
           ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
           ELLE_DUMP("secret: %s", secret);
@@ -491,11 +491,11 @@ namespace infinit
         }
 
         void
-        decrypt(std::istream& code,
-                std::ostream& plain,
-                elle::ConstWeakBuffer const& secret,
-                ::EVP_CIPHER const* function_cipher,
-                ::EVP_MD const* function_oneway)
+        decipher(std::istream& code,
+                 std::ostream& plain,
+                 elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* function_cipher,
+                 ::EVP_MD const* function_oneway)
         {
           ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
           ELLE_DUMP("secret: %s", secret);
