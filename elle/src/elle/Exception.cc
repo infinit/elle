@@ -21,7 +21,7 @@ namespace elle
     , _inner_exception(nullptr)
   {}
 
-  Exception::~Exception()
+  Exception::~Exception() noexcept (true)
   {}
 
   void
