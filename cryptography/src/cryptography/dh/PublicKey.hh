@@ -4,8 +4,6 @@
 # include <cryptography/dh/PrivateKey.hh>
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
-# include <cryptography/Code.hh>
-# include <cryptography/Clear.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 

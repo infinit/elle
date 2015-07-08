@@ -14,8 +14,6 @@
 #include <cryptography/dh/KeyPair.hh>
 #include <cryptography/context.hh>
 #include <cryptography/low.hh>
-#include <cryptography/Digest.hh>
-#include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
