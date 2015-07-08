@@ -680,13 +680,22 @@ TEST(builder_test, build_from_existing_uri) {
   ASSERT_EQ("http://www.example.com/?a=1&b=2#fragment", builder.uri());
 }
 
-TEST(builder_test, authority_port_test) {
+TEST(builder_test, authority_without_port_test) {
   network::uri_builder builder;
   builder
     .scheme("https")
     .authority("www.example.com")
     ;
   ASSERT_EQ("www.example.com", *builder.uri().authority());
+}
+
+TEST(builder_test, authority_with_port_test) {
+  network::uri_builder builder;
+  builder
+    .scheme("https")
+    .authority("www.example.com:")
+    ;
+  ASSERT_EQ("www.example.com:", *builder.uri().authority());
 }
 
 TEST(builder_test, clear_user_info_test) {
