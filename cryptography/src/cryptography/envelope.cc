@@ -214,7 +214,7 @@ namespace infinit
         Code data(extractor);
 #else
         elle::IOStream stream(code.istreambuf());
-        elle::serialization::binary::SerializerIn input(stream);
+        elle::serialization::binary::SerializerIn input(stream, false); // XXX
         Code key = input.deserialize<Code>("key");
         Code data = input.deserialize<Code>("data");
 #endif
@@ -230,7 +230,7 @@ namespace infinit
         SecretKey secret(buffer.reader());
 #else
         elle::IOStream _stream(buffer.istreambuf());
-        elle::serialization::binary::SerializerIn _input(_stream);
+        elle::serialization::binary::SerializerIn _input(_stream, false); // XXX
         SecretKey secret = _input.deserialize<SecretKey>("secret");
 #endif
 

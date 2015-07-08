@@ -17,7 +17,7 @@ namespace std
     {
       std::stringstream stream;
       {
-        elle::serialization::binary::SerializerOut output(stream);
+        elle::serialization::binary::SerializerOut output(stream, false); // XXX
         output.serialize("value", value);
       }
 

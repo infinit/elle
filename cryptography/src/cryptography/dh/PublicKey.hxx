@@ -21,7 +21,7 @@ namespace std
     {
       std::stringstream stream;
       {
-        elle::serialization::binary::SerializerOut output(stream);
+        elle::serialization::binary::SerializerOut output(stream, false); // XXX
 
         // Note that this is not a great way to represent a key but OpenSSL
         // does not provide DH-specific DER functions while Diffie Hellman keys

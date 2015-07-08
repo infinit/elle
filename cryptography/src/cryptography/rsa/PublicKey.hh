@@ -5,6 +5,7 @@
 # include <cryptography/types.hh>
 # include <cryptography/Code.hh>
 # include <cryptography/Clear.hh>
+# include <cryptography/Plain.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
