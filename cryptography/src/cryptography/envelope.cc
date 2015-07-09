@@ -1,3 +1,48 @@
+/*
+// XXX
+#include <openssl/evp.h>
+#include <openssl/rsa.h>
+
+
+  // XXX
+  {
+    infinit::cryptography::rsa::KeyPair keypair =
+      infinit::cryptography::rsa::keypair::generate(2048);
+
+    ::EVP_PKEY* pkey = keypair.k().key().get();
+    EVP_CIPHER_CTX ctx;
+    int outlen;
+
+    EVP_CIPHER_CTX_init(&ctx);
+
+    elle::Buffer out(EVP_PKEY_size(pkey));
+    unsigned char* _out = out.mutable_contents();
+
+    elle::Buffer iv(EVP_CIPHER_iv_length(EVP_aes_128_cbc()));
+
+    if (!EVP_SealInit(&ctx,
+                      EVP_aes_128_cbc(),
+                      &_out,
+                      &outlen,
+                      iv.mutable_contents(),
+                      &pkey,
+                      1))
+    {
+      fprintf(stderr, "EVP_SealInit: failed.\n");
+      exit(84);
+    }
+
+    ELLE_ASSERT_EQ(_out, out.mutable_contents());
+
+    // serialize buffer 'out'
+    // write buffer 'out'
+
+    // serialize buffer 'iv'
+    // write buffer 'iv'
+  }
+  exit(42);
+*/
+
 #include <cryptography/envelope.hh>
 #include <cryptography/raw.hh>
 #include <cryptography/cryptography.hh>

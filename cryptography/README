@@ -2,8 +2,7 @@ Presentation
 ============
 
 The infinit cryptography library provides a set of functions and abstractions
-for performing high-level cryptographic operations on buffers (i.e this library
-is not stream-oriented).
+for performing high-level cryptographic operations on buffers and streams.
 
 Dependencies
 ============
