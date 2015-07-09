@@ -33,6 +33,9 @@ def configure(openssl_config,
   global lib_static, lib_dynamic, library
   global rule_build, rule_install
 
+  if legacy_mode:
+    enable_rotation = False
+
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config)
