@@ -2,10 +2,10 @@
 // way.
 //
 // $ ./sample
-// 1) i = 42
+// 1) i = chang'daile
 // 2) signature valid
 // 3) Answer to The Ultimate Question of Life, the Universe, and Everything
-// 4) 8cd41971112b255c3106f073d7a010f672af99b3
+// 4) 76b4075f7b0aab59942335e4497b42ecfa9e3e0f
 // $>
 
 # include <elle/types.hh>
@@ -22,77 +22,36 @@
 
 # include <iostream>
 
-//
-// ---------- Sample Data Structure -------------------------------------------
-//
-
-class Sample
-{
-  /*-------------.
-  | Construction |
-  `-------------*/
-public:
-  Sample(std::string const& string):
-    _salt(0.91283173),
-    _string(string)
-  {
-  }
-
-  Sample(elle::serialization::SerializerIn& serializer)
-  {
-    this->serialize(serializer);
-  }
-
-  void
-  Sample(elle::serialization::Serializer& serializer)
-  {
-    serializer.serialize("salt", this->_salt);
-    serializer.serialize("string", this->_string);
-  }
-
-  Sample(Sample const&) = default;
-
-  /*-----------.
-  | Attributes |
-  `-----------*/
-private:
-  ELLE_ATTRIBUTE_R(double, salt);
-  ELLE_ATTRIBUTE_R(std::string, string);
-};
-
-//
-// ---------- Main ------------------------------------------------------------
-//
-
 int
 main()
 {
-  Sample sample("this is a sample complex data structure");
-
   /*----------------------.
   | Asymmetric encryption |
   `----------------------*/
   {
-    // Encrypt/decrypt with RSA.
+    // Seal/open with RSA.
     {
+      std::string data("chang'daile!");
+
       infinit::cryptography::rsa::KeyPair keypair =
         infinit::cryptography::rsa::keypair::generate(2048);
 
-      infinit::cryptography::Code code = keypair.K().encrypt(42);
+      elle::Buffer code = keypair.K().seal(data);
+      elle::Buffer clear = keypair.k().open(code);
 
-      uint32_t i = keypair.k().decrypt<uint32_t>(code);
-
-      elle::printf("1) i = %s\n", i);
+      elle::printf("1) i = %s\n", clear.string());
     }
 
     // Sign/verify with DSA.
     {
+      std::string data("lap'ara'deuh michel!");
+
       infinit::cryptography::dsa::KeyPair keypair =
         infinit::cryptography::dsa::keypair::generate(1024);
 
-      infinit::cryptography::Signature signature = keypair.k().sign(sample);
+      elle::Buffer signature = keypair.k().sign(data);
 
-      if (keypair.K().verify(signature, sample) == true)
+      if (keypair.K().verify(signature, data) == true)
         elle::printf("2) signature valid\n");
       else
         elle::printf("2) signature invalid\n");
@@ -104,18 +63,18 @@ main()
   `---------------------*/
   {
     // Encrypt/decrypt with AES-128.
+    std::string data("Answer to The Ultimate Question of Life, "
+                     "the Universe, and Everything");
+
     infinit::cryptography::SecretKey key =
       infinit::cryptography::secretkey::generate(
         256,
         infinit::cryptography::Cipher::aes128);
 
-    std::string data("Answer to The Ultimate Question of Life, "
-                     "the Universe, and Everything");
+    elle::Buffer code = key.encrypt(data);
+    elle::Buffer clear = key.decrypt(code);
 
-    infinit::cryptography::Code code = key.encrypt(data);
-    std::string _data = key.decrypt<std::string>(code);
-
-    elle::printf("3) %s\n", _data);
+    elle::printf("3) %s\n", clear.string());
   }
 
   /*-----.
@@ -123,8 +82,10 @@ main()
   `-----*/
   {
     // Hash with SHA-1
-    infinit::cryptography::Digest digest =
-      infinit::cryptography::hash(sample,
+    std::string data("mange mon fion");
+
+    elle::Buffer digest =
+      infinit::cryptography::hash(data,
                                   infinit::cryptography::Oneway::sha1);
 
     elle::printf("4) %s\n", elle::format::hexadecimal::encode(digest.buffer()));
