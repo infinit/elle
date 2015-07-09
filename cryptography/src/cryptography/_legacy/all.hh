@@ -9,5 +9,6 @@
 # include <cryptography/_legacy/Plain.hh>
 # include <cryptography/_legacy/Signature.hh>
 # include <cryptography/_legacy/serialization.hh>
+# include <cryptography/_legacy/envelope.hh>
 
 #endif
