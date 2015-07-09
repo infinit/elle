@@ -1,48 +1,3 @@
-/*
-// XXX
-#include <openssl/evp.h>
-#include <openssl/rsa.h>
-
-
-  // XXX
-  {
-    infinit::cryptography::rsa::KeyPair keypair =
-      infinit::cryptography::rsa::keypair::generate(2048);
-
-    ::EVP_PKEY* pkey = keypair.k().key().get();
-    EVP_CIPHER_CTX ctx;
-    int outlen;
-
-    EVP_CIPHER_CTX_init(&ctx);
-
-    elle::Buffer out(EVP_PKEY_size(pkey));
-    unsigned char* _out = out.mutable_contents();
-
-    elle::Buffer iv(EVP_CIPHER_iv_length(EVP_aes_128_cbc()));
-
-    if (!EVP_SealInit(&ctx,
-                      EVP_aes_128_cbc(),
-                      &_out,
-                      &outlen,
-                      iv.mutable_contents(),
-                      &pkey,
-                      1))
-    {
-      fprintf(stderr, "EVP_SealInit: failed.\n");
-      exit(84);
-    }
-
-    ELLE_ASSERT_EQ(_out, out.mutable_contents());
-
-    // serialize buffer 'out'
-    // write buffer 'out'
-
-    // serialize buffer 'iv'
-    // write buffer 'iv'
-  }
-  exit(42);
-*/
-
 #include <cryptography/envelope.hh>
 #include <cryptography/raw.hh>
 #include <cryptography/cryptography.hh>
@@ -101,15 +56,11 @@ namespace infinit
 
         elle::Buffer buffer;
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        buffer.writer() << secret;
-#else
         {
           elle::IOStream stream(buffer.ostreambuf());
           elle::serialization::binary::SerializerOut output(stream, false); // XXX
           output.serialize("secret", secret);
         }
-#endif
 
         elle::Natural32 length_final = buffer.size() * 8;
 
@@ -190,11 +141,7 @@ namespace infinit
           secretkey::generate(length, _cipher.first, _cipher.second, _oneway);
 
         // 3) Cipher the plain text with the secret key.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        Code data = secret.encrypt(Plain(plain));
-#else
         elle::Buffer data = secret.encipher(plain);
-#endif
 
         // 4) Asymmetrically encrypt the secret with the given function
         //    and encryption context.
@@ -202,39 +149,27 @@ namespace infinit
         // Serialize the secret.
         elle::Buffer buffer;
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        buffer.writer() << secret;
-#else
         {
           elle::IOStream stream(buffer.ostreambuf());
           elle::serialization::binary::SerializerOut output(stream, false); // XXX
           output.serialize("secret", secret);
         }
-#endif
 
         ELLE_ASSERT_LTE(buffer.size() * 8, length + overhead);
 
         // Encrypt the secret key's archive.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        Code key = Code(raw::asymmetric::encrypt(buffer, context, function));
-#else
         elle::Buffer key = raw::asymmetric::encrypt(buffer, context, function);
-#endif
 
         // 5) Serialize the asymmetrically encrypted key and the symmetrically
         //    encrypted data.
         elle::Buffer code;
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        code.writer() << key << data;
-#else
         {
           elle::IOStream _stream(code.ostreambuf());
           elle::serialization::binary::SerializerOut _output(_stream, false); // XXX
           _output.serialize("key", key);
           _output.serialize("data", data);
         }
-#endif
 
         return (code);
       }
@@ -256,13 +191,6 @@ namespace infinit
 
         // 1) Extract the key and ciphered data from the code which
         //    is supposed to be an archive.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto extractor = code.reader();
-        Code key(extractor);
-        Code data(extractor);
-
-        elle::ConstWeakBuffer _key(key.buffer());
-#else
         elle::Buffer key;
         elle::Buffer data;
 
@@ -272,35 +200,22 @@ namespace infinit
         input.serialize("key", key);
         input.serialize("data", data);
 
-        elle::ConstWeakBuffer _key(key);
-#endif
-
         // 2) Decrypt the key so as to reveal the symmetric secret key.
 
         // Decrypt the key.
-        elle::Buffer buffer = raw::asymmetric::decrypt(_key, context, function);
+        elle::Buffer buffer = raw::asymmetric::decrypt(key, context, function);
 
         // Finally extract the secret key since decrypted.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        SecretKey secret(buffer.reader());
-#else
         elle::IOStream _stream(buffer.istreambuf());
         elle::serialization::binary::SerializerIn _input(_stream, false); // XXX
         SecretKey secret = _input.deserialize<SecretKey>("secret");
-#endif
 
         // 3) Decrypt the data with the secret key.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        Clear clear = secret.decrypt(data);
-        elle::Buffer _clear(clear.buffer());
-#else
         elle::Buffer clear = secret.decipher(data);
-        elle::Buffer _clear(clear);
-#endif
 
-        ELLE_DUMP("clear: %s", _clear);
+        ELLE_DUMP("clear: %s", clear);
 
-        return (_clear);
+        return (clear);
       }
     }
   }

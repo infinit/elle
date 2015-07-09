@@ -23,6 +23,13 @@ namespace infinit
     /// Contains high-level cryptographic operation known as envelope
     /// sealing/opening which concretely are encryption/decryption processes
     /// to handle larger amount of data than the asymmetric keys support.
+    ///
+    /// Note that the asymmetric cryptosystems do not provide stream-based
+    /// cryptographic methods (encryption, signature etc.) unlike symmetric
+    /// and oneway algorithms. Consider creating the envelope yourself should
+    /// you want to encrypt a large amount of data: generate a temporary
+    /// key, encrypt the data with a symmetric algorithm (e.g AES) and encrypt
+    /// the temporary key with the asymmetric algorithm.
     namespace envelope
     {
       /*----------.
