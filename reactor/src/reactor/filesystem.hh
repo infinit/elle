@@ -86,6 +86,10 @@ namespace reactor
       virtual void statfs(struct statvfs *);
       virtual void utimens(const struct timespec tv[2]);
       virtual void truncate(off_t new_size);
+      virtual void setxattr(std::string const& name, std::string const& value, int flags);
+      virtual std::string getxattr(std::string const& name);
+      virtual std::vector<std::string> listxattr();
+      virtual void removexattr(std::string const& name);
       /// Return a Path for given child name.
       virtual std::shared_ptr<Path> child(std::string const& name) = 0;
       /// Return true to allow the filesystem to keep this Path in cache.

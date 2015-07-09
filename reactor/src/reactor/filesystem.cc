@@ -69,6 +69,10 @@ namespace reactor
     void Path::utimens(const struct timespec tv[2])         { throw Error(EPERM, "Not implemented");}
     void Path::truncate(off_t new_size)                     { throw Error(EPERM, "Not implemented");}
     void Handle::ftruncate(off_t new_size)                  { throw Error(EPERM, "Not implemented");}
+    void Path::setxattr(std::string const& name, std::string const& value, int flags) { throw Error(EPERM, "Not implemented");}
+    std::string Path::getxattr(std::string const& name) { throw Error(EPERM, "Not implemented");}
+    std::vector<std::string> Path::listxattr()          { throw Error(EPERM, "Not implemented");}
+    void Path::removexattr(std::string const& name)     { throw Error(EPERM, "Not implemented");}
 
     namespace bfs = boost::filesystem;
 

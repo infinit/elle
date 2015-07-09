@@ -399,7 +399,83 @@ namespace reactor
       }
       return 0;
     }
-
+    static int fusop_setxattr(const char *path, const char *key,
+                               const char *val, size_t valsize , int flags)
+    {
+            ELLE_DEBUG_SCOPE("fusop_setxattr %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        PathPtr p = fs->path(path);
+        p->setxattr(key, std::string(val, valsize), flags);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on setxattr %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_getxattr(const char *path, const char *key,
+                              char *val, size_t valsize)
+    {
+      ELLE_DEBUG_SCOPE("fusop_getxattr %s buf %s", path, valsize);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        PathPtr p = fs->path(path);
+        std::string res = p->getxattr(key);
+        if (val)
+          memcpy(val, res.c_str(), std::min(res.size()+1, valsize));
+        return res.size();
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on getxattr %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_listxattr(const char* path, char* buf, size_t size)
+    {
+      ELLE_DEBUG_SCOPE("fusop_listxattr %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        PathPtr p = fs->path(path);
+        std::vector<std::string> res = p->listxattr();
+        std::string packed;
+        for (auto const& s: res)
+        {
+          packed += s + (char)0;
+        }
+        if (buf)
+          memcpy(buf, packed.data(), std::min(size, packed.size()));
+        return packed.size();
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on listxattr %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+    static int fusop_removexattr(const char *path, const char *key)
+    {
+      ELLE_DEBUG_SCOPE("fusop_removexattr %s", path);
+      try
+      {
+        FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+        PathPtr p = fs->path(path);
+        p->removexattr(key);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on removexattr %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
     class FileSystemImpl
     {
     public:
@@ -450,6 +526,10 @@ namespace reactor
       ops.utimens = fusop_utimens;
       ops.truncate = fusop_truncate;
       ops.ftruncate = fusop_ftruncate;
+      ops.setxattr = fusop_setxattr;
+      ops.getxattr = fusop_getxattr;
+      ops.listxattr = fusop_listxattr;
+      ops.removexattr = fusop_removexattr;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
       _impl->_fuse.on_loop_exited([this] { this->unmount();});
       if (!elle::os::getenv("INFINIT_FUSE_MONOTHREAD", "").empty())
