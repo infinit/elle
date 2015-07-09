@@ -8,5 +8,6 @@
 # include <cryptography/dsa/der.hh>
 # include <cryptography/dsa/defaults.hh>
 # include <cryptography/dsa/serialization.hh>
+# include <cryptography/dsa/low.hh>
 
 #endif

@@ -1,25 +1,24 @@
-#include <cryptography/rsa/low.hh>
-#include <cryptography/rsa/der.hh>
+#include <cryptography/dh/low.hh>
+#include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 
 #include <elle/log.hh>
 #include <elle/Buffer.hh>
 
-#include <openssl/rsa.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.low");
+ELLE_LOG_COMPONENT("infinit.cryptography.dh.low");
 
 namespace infinit
 {
   namespace cryptography
   {
-    namespace rsa
+    namespace dh
     {
       namespace low
       {
@@ -27,26 +26,30 @@ namespace infinit
         | Functions |
         `----------*/
 
-        ::RSA*
-        RSA_priv2pub(::RSA* private_key)
+        ::DH*
+        DH_priv2pub(::DH* private_key)
         {
           ELLE_TRACE_FUNCTION(private_key);
 
           ELLE_ASSERT_NEQ(private_key, nullptr);
 
-          return (::RSAPublicKey_dup(private_key));
+          // Duplicate the parameters and manually copy the public key.
+          //
+          // Note that OpenSSL does not provide a better way to do that ;(
+          DH* _dh = ::DHparams_dup(private_key);
+          _dh->pub_key = BN_dup(private_key->pub_key);
+
+          return (_dh);
         }
 
-        ::RSA*
-        RSA_dup(::RSA* key)
+        ::DH*
+        DH_dup(::DH* key)
         {
           ELLE_TRACE_FUNCTION(key);
 
           ELLE_ASSERT_NEQ(key, nullptr);
 
-          // Increase the reference counter on this object rather
-          // than duplicating the structure.
-          ::RSA_up_ref(key);
+          ::DH_up_ref(key);
 
           return (key);
         }

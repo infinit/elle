@@ -2,13 +2,13 @@
 #include <cryptography/dsa/KeyPair.hh>
 #include <cryptography/dsa/serialization.hh>
 #include <cryptography/dsa/der.hh>
+#include <cryptography/dsa/low.hh>
 #include <cryptography/context.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/raw.hh>
-#include <cryptography/low.hh>
 #include <cryptography/hash.hh>
 
 #include <elle/log.hh>
