@@ -4,14 +4,15 @@
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
-# include <cryptography/Plain.hh>
-# include <cryptography/serialization.hh>
 # include <cryptography/evp.hh>
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------.
 | Legacy |
 `-------*/
+
+# include <cryptography/_legacy/serialization.hh>
+# include <cryptography/_legacy/Code.hh>
 
 namespace infinit
 {

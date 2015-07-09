@@ -1,7 +1,5 @@
 #include <cryptography/hmac.hh>
 #include <cryptography/evp.hh>
-#include <cryptography/Plain.hh>
-#include <cryptography/Digest.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 

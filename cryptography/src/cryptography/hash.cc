@@ -1,6 +1,5 @@
 #include <cryptography/hash.hh>
 #include <cryptography/evp.hh>
-#include <cryptography/Plain.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>

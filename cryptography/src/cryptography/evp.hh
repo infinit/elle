@@ -2,7 +2,6 @@
 # define INFINIT_CRYPTOGRAPHY_EVP_HH
 
 # include <cryptography/fwd.hh>
-# include <cryptography/Code.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/Oneway.hh>
 

@@ -6,8 +6,8 @@
 | Legacy |
 `-------*/
 
-#  include <cryptography/Plain.hh>
-#  include <cryptography/serialization.hh>
+#  include <cryptography/_legacy/Digest.hh>
+#  include <cryptography/_legacy/serialization.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>

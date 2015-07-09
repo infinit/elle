@@ -2,11 +2,14 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Cipher.hh>
-#include <cryptography/Plain.hh>
-#include <cryptography/Signature.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/_legacy/Plain.hh>
+# include <cryptography/_legacy/Signature.hh>
+#endif
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>

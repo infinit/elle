@@ -1,11 +1,6 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-
-# ifndef INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
-#  define INFINIT_CRYPTOGRAPHY_RSA_LEGACY_HH
-
-//
-// ---------- Dummy -----------------------------------------------------------
-//
+# ifndef INFINIT_CRYPTOGRAPHY_LEGACY_RSA_HH
+#  define INFINIT_CRYPTOGRAPHY_LEGACY_RSA_HH
 
 /*------.
 | Class |
@@ -15,9 +10,9 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace rsa
+    namespace legacy
     {
-      namespace legacy
+      namespace rsa
       {
         class Dummy:
           public elle::serialize::SerializableMixin<Dummy>,
@@ -28,11 +23,11 @@ namespace infinit
   }
 }
 
-/*--------------.
-| Serialization |
-`--------------*/
+/*----------.
+| Serialize |
+`----------*/
 
-ELLE_SERIALIZE_SIMPLE(infinit::cryptography::rsa::legacy::Dummy,
+ELLE_SERIALIZE_SIMPLE(infinit::cryptography::legacy::rsa::Dummy,
                       archive,
                       value,
                       format)
@@ -40,4 +35,6 @@ ELLE_SERIALIZE_SIMPLE(infinit::cryptography::rsa::legacy::Dummy,
 
 # endif
 
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

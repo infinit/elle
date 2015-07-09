@@ -3,7 +3,6 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/hash.hh>
-#include <cryptography/Plain.hh>
 #include <cryptography/random.hh>
 
 #include <elle/serialization/json.hh>

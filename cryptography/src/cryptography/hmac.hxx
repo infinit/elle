@@ -1,11 +1,9 @@
 #ifndef INFINIT_CRYPTOGRAPHY_HMAC_HXX
 # define INFINIT_CRYPTOGRAPHY_HMAC_HXX
 
-# include <cryptography/Plain.hh>
 # include <cryptography/evp.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/Exception.hh>
-# include <cryptography/serialization.hh>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>

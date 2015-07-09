@@ -1,10 +1,6 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/Output.hh>
-
-# include <elle/serialization/SerializerIn.hh>
-# include <elle/serialization/SerializerOut.hh>
-
-# include <cryptography/Input.hh>
+# include <cryptography/_legacy/Output.hh>
+# include <cryptography/_legacy/Input.hh>
 
 namespace infinit
 {
@@ -97,22 +93,9 @@ namespace infinit
     {
       stream << this->_buffer;
     }
-
-    /*--------------.
-    | Serialization |
-    `--------------*/
-
-    Output::Output(elle::serialization::SerializerIn& serializer)
-    {
-      this->serialize(serializer);
-    }
-
-    void
-    Output::serialize(elle::serialization::Serializer& serializer)
-    {
-      serializer.serialize("buffer", this->_buffer);
-    }
   }
 }
 
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

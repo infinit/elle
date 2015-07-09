@@ -9,10 +9,10 @@
 
 #  include <cryptography/serialization.hh>
 #  include <cryptography/Cryptosystem.hh>
-#  include <cryptography/Plain.hh>
 #  include <cryptography/Exception.hh>
 #  include <cryptography/hash.hh>
 #  include <cryptography/envelope.hh>
+#  include <cryptography/_legacy/Clear.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>
@@ -74,7 +74,7 @@ namespace infinit
 
 #  include <cryptography/finally.hh>
 #  include <cryptography/rsa/der.hh>
-#  include <cryptography/rsa/legacy.hh>
+#  include <cryptography/_legacy/rsa.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PrivateKey, 2);
 
@@ -94,7 +94,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
         infinit::cryptography::Cryptosystem::rsa;
       archive << cryptosystem;
 
-      infinit::cryptography::rsa::legacy::Dummy implementation;
+      infinit::cryptography::legacy::rsa::Dummy implementation;
       archive << implementation;
 
       archive << *value._key->pkey.rsa->n
@@ -143,7 +143,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
       archive >> cryptosystem;
 
       // Emulate deserializing a subclass.
-      infinit::cryptography::rsa::legacy::Dummy implementation;
+      infinit::cryptography::legacy::rsa::Dummy implementation;
       archive >> implementation;
 
       // Extract the big numbers.

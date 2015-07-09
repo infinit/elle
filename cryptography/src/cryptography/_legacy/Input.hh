@@ -1,6 +1,6 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# ifndef INFINIT_CRYPTOGRAPHY_INPUT_HH
-#  define INFINIT_CRYPTOGRAPHY_INPUT_HH
+# ifndef INFINIT_CRYPTOGRAPHY_LEGACY_INPUT_HH
+#  define INFINIT_CRYPTOGRAPHY_LEGACY_INPUT_HH
 
 #  include <cryptography/fwd.hh>
 
@@ -76,4 +76,6 @@ namespace infinit
 }
 
 # endif
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

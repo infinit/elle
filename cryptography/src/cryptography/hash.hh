@@ -3,7 +3,10 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
-# include <cryptography/Digest.hh>
+
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <cryptography/_legacy/Digest.hh>
+# endif
 
 # include <elle/types.hh>
 

@@ -1,5 +1,4 @@
 #include <cryptography/SecretKey.hh>
-#include <cryptography/Digest.hh>
 #include <cryptography/random.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>

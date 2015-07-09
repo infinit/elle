@@ -1,11 +1,11 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-
-# include <cryptography/serialization.hh>
-# include <cryptography/Plain.hh>
+# include <cryptography/_legacy/serialization.hh>
+# include <cryptography/_legacy/Plain.hh>
+# include <cryptography/_legacy/Clear.hh>
 
 # include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography");
+ELLE_LOG_COMPONENT("infinit.cryptography.legacy");
 
 namespace infinit
 {
@@ -39,4 +39,6 @@ namespace infinit
   }
 }
 
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

@@ -3,7 +3,6 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
-# include <cryptography/Digest.hh>
 
 # include <elle/types.hh>
 

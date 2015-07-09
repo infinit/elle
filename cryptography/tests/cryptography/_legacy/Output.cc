@@ -1,7 +1,7 @@
 #include "cryptography.hh"
 
-#include <cryptography/Output.hh>
-#include <cryptography/Input.hh>
+#include <cryptography/_legacy/Output.hh>
+#include <cryptography/_legacy/Input.hh>
 #include <cryptography/random.hh>
 
 #include <elle/serialize/insert.hh>

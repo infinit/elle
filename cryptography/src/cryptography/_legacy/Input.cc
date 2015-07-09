@@ -1,6 +1,6 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/Input.hh>
-# include <cryptography/Output.hh>
+# include <cryptography/_legacy/Input.hh>
+# include <cryptography/_legacy/Output.hh>
 
 namespace infinit
 {
@@ -75,4 +75,6 @@ namespace infinit
   }
 }
 
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

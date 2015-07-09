@@ -1,13 +1,12 @@
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# ifndef INFINIT_CRYPTOGRAPHY_OUTPUT_HH
-#  define INFINIT_CRYPTOGRAPHY_OUTPUT_HH
+# ifndef INFINIT_CRYPTOGRAPHY_LEGACY_OUTPUT_HH
+#  define INFINIT_CRYPTOGRAPHY_LEGACY_OUTPUT_HH
 
 #  include <elle/types.hh>
 #  include <elle/attribute.hh>
 #  include <elle/operator.hh>
 #  include <elle/Buffer.hh>
 #  include <elle/Printable.hh>
-#  include <elle/serialization/fwd.hh>
 
 #  include <elle/serialize/construct.hh>
 
@@ -73,36 +72,28 @@ namespace infinit
       void
       print(std::ostream& stream) const override;
 
-      /*--------------.
-      | Serialization |
-      `--------------*/
-    public:
-      Output(elle::serialization::SerializerIn& serializer);
-      void
-      serialize(elle::serialization::Serializer& serializer);
-
       /*-----------.
       | Attributes |
       `-----------*/
     private:
       ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
 
-      /*-------.
-      | Legacy |
-      `-------*/
+      /*----------.
+      | Serialize |
+      `----------*/
     public:
-      // construction
       Output() {}
       ELLE_SERIALIZE_CONSTRUCT(Output,
                                _buffer)
       {}
-      // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
     };
   }
 }
 
-#  include <cryptography/Output.hxx>
+#  include <cryptography/_legacy/Output.hxx>
 
 # endif
+#else
+# warning "LEGACY: this file should not have been included"
 #endif

@@ -1,8 +1,6 @@
 #ifndef INFINIT_CRYPTOGRAPHY_CIPHER_HH
 # define INFINIT_CRYPTOGRAPHY_CIPHER_HH
 
-# include <cryptography/Output.hh>
-
 # include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>
