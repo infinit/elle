@@ -1,5 +1,5 @@
 #include <cryptography/hash.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
@@ -35,7 +35,7 @@ namespace infinit
 
       ::EVP_MD const* function = oneway::resolve(oneway);
 
-      return (evp::hash(plain, function));
+      return (raw::hash(plain, function));
     }
   }
 }

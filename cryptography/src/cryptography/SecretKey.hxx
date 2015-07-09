@@ -4,8 +4,6 @@
 # include <elle/Buffer.hh>
 # include <elle/log.hh>
 
-# include <cryptography/evp.hh>
-
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 /*-------.
 | Legacy |

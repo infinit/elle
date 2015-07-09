@@ -6,7 +6,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/bn.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/low.hh>
 #include <cryptography/hash.hh>
 
@@ -158,7 +158,7 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(peer_K);
 
-        return (evp::asymmetric::agree(this->_context.agree.get(),
+        return (raw::asymmetric::agree(this->_context.agree.get(),
                                        peer_K.key().get()));
       }
 

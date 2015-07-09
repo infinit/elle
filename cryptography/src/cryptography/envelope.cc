@@ -1,5 +1,5 @@
 #include <cryptography/envelope.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Cipher.hh>
@@ -171,9 +171,9 @@ namespace infinit
 
         // Encrypt the secret key's archive.
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        Code key = Code(evp::asymmetric::encrypt(buffer, context, function));
+        Code key = Code(raw::asymmetric::encrypt(buffer, context, function));
 #else
-        elle::Buffer key = evp::asymmetric::encrypt(buffer, context, function);
+        elle::Buffer key = raw::asymmetric::encrypt(buffer, context, function);
 #endif
 
         // 5) Serialize the asymmetrically encrypted key and the symmetrically
@@ -233,7 +233,7 @@ namespace infinit
         // 2) Decrypt the key so as to reveal the symmetric secret key.
 
         // Decrypt the key.
-        elle::Buffer buffer = evp::asymmetric::decrypt(_key, context, function);
+        elle::Buffer buffer = raw::asymmetric::decrypt(_key, context, function);
 
         // Finally extract the secret key since decrypted.
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)

@@ -18,7 +18,6 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/evp.hh>
 #include <cryptography/hash.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.dh.PublicKey");

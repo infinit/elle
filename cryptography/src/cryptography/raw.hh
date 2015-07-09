@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_EVP_HH
-# define INFINIT_CRYPTOGRAPHY_EVP_HH
+#ifndef INFINIT_CRYPTOGRAPHY_RAW_HH
+# define INFINIT_CRYPTOGRAPHY_RAW_HH
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Cipher.hh>
@@ -20,9 +20,13 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       /// Contain the operations related to asymmetric cryptosystems.
+      ///
+      /// Note that these functions do not operate on streams because
+      /// such operations are limited due to the nature of asymmetric
+      /// cryptosystems.
       namespace asymmetric
       {
         /*----------.
@@ -107,7 +111,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       /// Contain the operations related to symmetric algorithms.
       namespace symmetric
@@ -140,7 +144,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       /// Hash the given plain text and return a message digest.
       elle::Buffer
@@ -158,7 +162,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       namespace hmac
       {

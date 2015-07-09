@@ -20,7 +20,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/hash.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PublicKey");
@@ -242,7 +242,7 @@ namespace infinit
 
         elle::Buffer digest = hash(plain, this->_digest_algorithm);
 
-        return (evp::asymmetric::verify(signature,
+        return (raw::asymmetric::verify(signature,
                                         digest,
                                         this->_context.verify.get(),
                                         ::EVP_PKEY_verify));

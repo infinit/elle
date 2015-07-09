@@ -2,7 +2,7 @@
 #include <cryptography/random.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/cryptography.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 
 #include <elle/serialization/Serializer.hh>
 #include <elle/log.hh>
@@ -117,7 +117,7 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      evp::symmetric::encipher(plain,
+      raw::symmetric::encipher(plain,
                                code,
                                this->_password,
                                function_cipher,
@@ -135,7 +135,7 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      evp::symmetric::decipher(code,
+      raw::symmetric::decipher(code,
                                plain,
                                this->_password,
                                function_cipher,

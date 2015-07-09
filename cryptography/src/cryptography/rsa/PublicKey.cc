@@ -27,7 +27,7 @@
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/envelope.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/hash.hh>
@@ -357,7 +357,7 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (evp::asymmetric::encrypt(plain,
+        return (raw::asymmetric::encrypt(plain,
                                          this->_context.encrypt.get(),
                                          ::EVP_PKEY_encrypt));
       }
@@ -385,7 +385,7 @@ namespace infinit
 
         elle::Buffer digest = hash(plain, this->_digest_algorithm);
 
-        return (evp::asymmetric::verify(signature,
+        return (raw::asymmetric::verify(signature,
                                         digest,
                                         this->_context.verify.get(),
                                         ::EVP_PKEY_verify));
@@ -465,7 +465,7 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
-        return (Seed(evp::asymmetric::unrotate(seed.buffer(),
+        return (Seed(raw::asymmetric::unrotate(seed.buffer(),
                                                this->_context.unrotate.get(),
                                                ::EVP_PKEY_verify_recover),
                      seed.length()));

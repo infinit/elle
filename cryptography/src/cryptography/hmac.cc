@@ -1,5 +1,5 @@
 #include <cryptography/hmac.hh>
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
 
@@ -70,7 +70,7 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
 
         // Apply the HMAC function with the given key.
-        elle::Buffer digest = evp::hmac::sign(plain, _key, function);
+        elle::Buffer digest = raw::hmac::sign(plain, _key, function);
 
         ::EVP_PKEY_free(_key);
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_key);

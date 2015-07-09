@@ -1,7 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_HMAC_HXX
 # define INFINIT_CRYPTOGRAPHY_HMAC_HXX
 
-# include <cryptography/evp.hh>
+# include <cryptography/raw.hh>
 # include <cryptography/finally.hh>
 # include <cryptography/Exception.hh>
 
@@ -69,7 +69,7 @@ namespace infinit
 
         // Apply the HMAC function with the given key.
         elle::Buffer digest =
-          evp::hmac::sign(plain, key.key().get(), function);
+          raw::hmac::sign(plain, key.key().get(), function);
 
         return (digest);
       }
@@ -87,7 +87,7 @@ namespace infinit
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
-        return (evp::hmac::verify(digest,
+        return (raw::hmac::verify(digest,
                                   plain,
                                   key.key().get(),
                                   function));

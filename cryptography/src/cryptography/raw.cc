@@ -1,15 +1,10 @@
-#include <cryptography/evp.hh>
+#include <cryptography/raw.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Exception.hh>
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/_legacy/Plain.hh>
-# include <cryptography/_legacy/Signature.hh>
-#endif
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
@@ -38,7 +33,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       /*-----------------.
       | Static Functions |
@@ -291,7 +286,7 @@ namespace infinit
                             seed.size()));
 
           elle::Buffer buffer =
-            evp::asymmetric::_apply(seed, context, function);
+            raw::asymmetric::_apply(seed, context, function);
 
           // Make sure the seed does not grow over time.
           ELLE_ASSERT_EQ(seed.size(), buffer.size());
@@ -319,7 +314,7 @@ namespace infinit
                             seed.size()));
 
           elle::Buffer buffer =
-            evp::asymmetric::_apply(seed, context, function);
+            raw::asymmetric::_apply(seed, context, function);
 
           // Make sure the unrotated seed has the same size as the original.
           ELLE_ASSERT_EQ(seed.size(), buffer.size());
@@ -339,7 +334,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       namespace symmetric
       {
@@ -642,7 +637,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       elle::Buffer
       hash(std::istream& plain,
@@ -727,7 +722,7 @@ namespace infinit
 {
   namespace cryptography
   {
-    namespace evp
+    namespace raw
     {
       namespace hmac
       {
