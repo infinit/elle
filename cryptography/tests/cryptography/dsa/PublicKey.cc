@@ -34,14 +34,12 @@ _test_represent()
 
   // 2)
   {
-    infinit::cryptography::Signature signature =
-      keypair.k().sign(
-        infinit::cryptography::Plain(_input));
+    elle::Buffer signature = keypair.k().sign(_input);
 
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      signature.serialize(output);
+      output.serialize("signature", signature);
     }
 
     elle::printf("[representation 2] %s\n", stream.str());
@@ -125,15 +123,14 @@ test_operate()
 
   // Verify plain from [representation 2].
   {
-    elle::String archive(R"JSON({"buffer":"MC0CFFOtibJJmEq4lq0DxGv/zRMPNEC+AhUA0GzN1zjs1NCmT78Cm8bp9c8zeYg="})JSON");
+    elle::String archive(R"JSON({"signature":"MC0CFFOtibJJmEq4lq0DxGv/zRMPNEC+AhUA0GzN1zjs1NCmT78Cm8bp9c8zeYg="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::Signature signature(input);
+    elle::Buffer signature;
+    input.serialize("signature", signature);
 
-    auto result =
-      K.verify(signature,
-               infinit::cryptography::Plain(_input));
+    auto result = K.verify(signature, _input);
 
     BOOST_CHECK_EQUAL(result, true);
   }

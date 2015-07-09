@@ -3,9 +3,6 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
-# include <cryptography/Plain.hh>
-# include <cryptography/Clear.hh>
-# include <cryptography/Signature.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
@@ -85,8 +82,8 @@ namespace infinit
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Open the envelope, decrypt its content and return the
         /// original plan text.
-        Clear
-        open(Code const& code) const;
+        elle::Buffer
+        open(elle::ConstWeakBuffer const& code) const;
         /// Decrypt a code with the raw public key.
         ///
         /// WARNING: This method cannot be used to decrypt large amount of
@@ -95,12 +92,12 @@ namespace infinit
         elle::Buffer
         decrypt(elle::ConstWeakBuffer const& code) const;
         /// Sign the given plain text.
-        Signature
-        sign(Plain const& plain) const;
+        elle::Buffer
+        sign(elle::ConstWeakBuffer const& plain) const;
 # endif
-        /// Return a signature of the given digest.
-        Signature
-        sign(Digest const& digest) const;
+        /// Return a signature of the given stream-based plain text.
+        elle::Buffer
+        sign(std::istream& digest) const;
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;

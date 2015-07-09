@@ -148,8 +148,7 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         Code data = secret.encrypt(Plain(plain));
 #else
-        elle::Buffer _data = secret.encipher(plain);
-        Code data(_data); // XXX not to be used any longer in non-legacy
+        elle::Buffer data = secret.encipher(plain);
 #endif
 
         // 4) Asymmetrically encrypt the secret with the given function
@@ -171,7 +170,11 @@ namespace infinit
         ELLE_ASSERT_LTE(buffer.size() * 8, length + overhead);
 
         // Encrypt the secret key's archive.
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         Code key = Code(evp::asymmetric::encrypt(buffer, context, function));
+#else
+        elle::Buffer key = evp::asymmetric::encrypt(buffer, context, function);
+#endif
 
         // 5) Serialize the asymmetrically encrypted key and the symmetrically
         //    encrypted data.
@@ -212,18 +215,25 @@ namespace infinit
         auto extractor = code.reader();
         Code key(extractor);
         Code data(extractor);
+
+        elle::ConstWeakBuffer _key(key.buffer());
 #else
+        elle::Buffer key;
+        elle::Buffer data;
+
         elle::IOStream stream(code.istreambuf());
         elle::serialization::binary::SerializerIn input(stream, false); // XXX
-        Code key = input.deserialize<Code>("key");
-        Code data = input.deserialize<Code>("data");
+
+        input.serialize("key", key);
+        input.serialize("data", data);
+
+        elle::ConstWeakBuffer _key(key);
 #endif
 
         // 2) Decrypt the key so as to reveal the symmetric secret key.
 
         // Decrypt the key.
-        elle::Buffer buffer =
-          evp::asymmetric::decrypt(key.buffer(), context, function);
+        elle::Buffer buffer = evp::asymmetric::decrypt(_key, context, function);
 
         // Finally extract the secret key since decrypted.
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -237,13 +247,15 @@ namespace infinit
         // 3) Decrypt the data with the secret key.
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         Clear clear = secret.decrypt(data);
+        elle::Buffer _clear(clear.buffer());
 #else
-        Clear clear(secret.decipher(data.buffer())); // XXX no longer use Clear
+        elle::Buffer clear = secret.decipher(data);
+        elle::Buffer _clear(clear);
 #endif
 
-        ELLE_DUMP("clear: %s", clear.buffer());
+        ELLE_DUMP("clear: %s", _clear);
 
-        return (clear.buffer());
+        return (_clear);
       }
     }
   }

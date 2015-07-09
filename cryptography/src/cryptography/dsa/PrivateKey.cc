@@ -3,7 +3,6 @@
 #include <cryptography/dsa/serialization.hh>
 #include <cryptography/dsa/der.hh>
 #include <cryptography/context.hh>
-#include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
@@ -186,26 +185,27 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.dsa->priv_key, nullptr);
       }
 
-      Signature
-      PrivateKey::sign(Plain const& plain) const
+      elle::Buffer
+      PrivateKey::sign(elle::ConstWeakBuffer const& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest(hash(plain.buffer(), this->_digest_algorithm)); // XXX
+        elle::IOStream _plain(plain.istreambuf());
 
-        return (this->sign(digest));
+        return (this->sign(_plain));
       }
 
-      Signature
-      PrivateKey::sign(Digest const& digest) const
+      elle::Buffer
+      PrivateKey::sign(std::istream& plain) const
       {
         ELLE_TRACE_METHOD("");
-        ELLE_DUMP("digest: %x", digest);
 
-        return (Signature(evp::asymmetric::sign(digest.buffer(),
-                                                this->_context.sign.get(),
-                                                ::EVP_PKEY_sign)));
+        elle::Buffer digest = hash(plain, this->_digest_algorithm);
+
+        return (evp::asymmetric::sign(digest,
+                                      this->_context.sign.get(),
+                                      ::EVP_PKEY_sign));
       }
 
       elle::Natural32

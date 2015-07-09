@@ -1,18 +1,17 @@
-#ifndef INFINIT_CRYPTOGRAPHY_OUTPUT_HH
-# define INFINIT_CRYPTOGRAPHY_OUTPUT_HH
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# ifndef INFINIT_CRYPTOGRAPHY_OUTPUT_HH
+#  define INFINIT_CRYPTOGRAPHY_OUTPUT_HH
 
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/Buffer.hh>
-# include <elle/Printable.hh>
-# include <elle/serialization/fwd.hh>
+#  include <elle/types.hh>
+#  include <elle/attribute.hh>
+#  include <elle/operator.hh>
+#  include <elle/Buffer.hh>
+#  include <elle/Printable.hh>
+#  include <elle/serialization/fwd.hh>
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 #  include <elle/serialize/construct.hh>
-# endif
 
-# include <cryptography/fwd.hh>
+#  include <cryptography/fwd.hh>
 
 namespace infinit
 {
@@ -88,7 +87,6 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE_RX(elle::Buffer, buffer);
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       /*-------.
       | Legacy |
       `-------*/
@@ -100,11 +98,11 @@ namespace infinit
       {}
       // serializable
       ELLE_SERIALIZE_FRIEND_FOR(Output);
-# endif
     };
   }
 }
 
-# include <cryptography/Output.hxx>
+#  include <cryptography/Output.hxx>
 
+# endif
 #endif

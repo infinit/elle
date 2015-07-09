@@ -1,13 +1,14 @@
-#ifndef INFINIT_CRYPTOGRAPHY_INPUT_HH
-# define INFINIT_CRYPTOGRAPHY_INPUT_HH
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# ifndef INFINIT_CRYPTOGRAPHY_INPUT_HH
+#  define INFINIT_CRYPTOGRAPHY_INPUT_HH
 
-# include <cryptography/fwd.hh>
+#  include <cryptography/fwd.hh>
 
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/Buffer.hh>
-# include <elle/Printable.hh>
+#  include <elle/types.hh>
+#  include <elle/attribute.hh>
+#  include <elle/operator.hh>
+#  include <elle/Buffer.hh>
+#  include <elle/Printable.hh>
 
 namespace infinit
 {
@@ -74,4 +75,5 @@ namespace infinit
   }
 }
 
+# endif
 #endif

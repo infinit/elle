@@ -28,7 +28,7 @@ class Entry
 public:
   Entry(elle::Natural32 version,
         infinit::cryptography::rsa::PublicKey const& pass_K,
-        infinit::cryptography::Code const& key):
+        elle::Buffer const& key):
     _version(version),
     _pass_K(pass_K),
     _key(key)
@@ -43,7 +43,7 @@ public:
 private:
   ELLE_ATTRIBUTE_R(elle::Natural32 const, version);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, pass_K);
-  ELLE_ATTRIBUTE_R(infinit::cryptography::Code const, key);
+  ELLE_ATTRIBUTE_R(elle::Buffer const, key);
 };
 
 //
@@ -76,7 +76,7 @@ public:
     this->_entries[address] =
       new Entry(version,
                 pass_K,
-                pass_K.seal(infinit::cryptography::Plain(archive)));
+                pass_K.seal(archive));
   }
 
   void
@@ -106,12 +106,12 @@ public:
   {
     Entry* entry = this->retrieve(address);
 
-    infinit::cryptography::Clear archive = pass_k.open(entry->key());
+    elle::Buffer archive = pass_k.open(entry->key());
 
     infinit::cryptography::SecretKey _key =
       elle::serialization::deserialize<
         infinit::cryptography::SecretKey,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (_key);
   }
@@ -130,7 +130,7 @@ public:
     this->_entries[address] =
       new Entry(version,
                 pass_K,
-                pass_K.seal(infinit::cryptography::Plain(archive)));
+                pass_K.seal(archive));
 
     delete _entry;
   }
@@ -157,7 +157,7 @@ public:
       entry =
         new Entry(_entry->version(),
                   _entry->pass_K(),
-                  _entry->pass_K().seal(infinit::cryptography::Plain(archive)));
+                  _entry->pass_K().seal(archive));
 
       delete _entry;
     }
@@ -204,7 +204,7 @@ private:
          elle::Buffer const& key,
          elle::Buffer const& content):
     _owner_K(owner_K),
-    _key(owner_K.seal(infinit::cryptography::Plain(key))),
+    _key(owner_K.seal(key)),
     _content(content)
   {}
 
@@ -220,7 +220,7 @@ private:
          elle::Buffer const& key,
          elle::Buffer const& content):
     _owner_K(object._owner_K),
-    _key(object._owner_K.seal(infinit::cryptography::Plain(key))),
+    _key(object._owner_K.seal(key)),
     _content(content),
     _acl(object._acl)
   {}
@@ -247,26 +247,26 @@ public:
   elle::String
   read(infinit::cryptography::SecretKey const& key) const
   {
-    return (key.decipher(this->_content.buffer()).string());
+    return (key.decipher(this->_content).string());
   }
 
   infinit::cryptography::SecretKey
   key(infinit::cryptography::rsa::PrivateKey const& owner_k) const
   {
-    infinit::cryptography::Clear archive = owner_k.open(this->_key);
+    elle::Buffer archive = owner_k.open(this->_key);
 
     infinit::cryptography::SecretKey __key =
       elle::serialization::deserialize<
         infinit::cryptography::SecretKey,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (__key);
   }
 
 private:
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, owner_K);
-  ELLE_ATTRIBUTE(infinit::cryptography::Code, key);
-  ELLE_ATTRIBUTE(infinit::cryptography::Code, content);
+  ELLE_ATTRIBUTE(elle::Buffer, key);
+  ELLE_ATTRIBUTE(elle::Buffer, content);
   ELLE_ATTRIBUTE_RX(ACL, acl);
 };
 
@@ -280,8 +280,8 @@ private:
 class Member
 {
 public:
-  Member(infinit::cryptography::Code const& pass_k,
-         infinit::cryptography::Code const& seed):
+  Member(elle::Buffer const& pass_k,
+         elle::Buffer const& seed):
     _pass_k(pass_k),
     _seed(seed)
   {}
@@ -292,8 +292,8 @@ public:
   {}
 
 private:
-  ELLE_ATTRIBUTE_R(infinit::cryptography::Code const, pass_k);
-  ELLE_ATTRIBUTE_R(infinit::cryptography::Code const, seed);
+  ELLE_ATTRIBUTE_R(elle::Buffer const, pass_k);
+  ELLE_ATTRIBUTE_R(elle::Buffer const, seed);
 };
 
 //
@@ -315,8 +315,8 @@ public:
       elle::serialization::serialize<elle::serialization::Json>(seed);
 
     this->_members[user_K] =
-      new Member(user_K.seal(infinit::cryptography::Plain(_pass_k)),
-                 user_K.seal(infinit::cryptography::Plain(_seed)));
+      new Member(user_K.seal(_pass_k),
+                 user_K.seal(_seed));
   }
 
   void
@@ -345,13 +345,12 @@ public:
   {
     Member* member = this->retrieve(user_keypair.K());
 
-    infinit::cryptography::Clear archive =
-      user_keypair.k().open(member->pass_k());
+    elle::Buffer archive = user_keypair.k().open(member->pass_k());
 
     infinit::cryptography::rsa::PrivateKey _k =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::PrivateKey,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (_k);
   }
@@ -361,13 +360,12 @@ public:
   {
     Member* member = this->retrieve(user_keypair.K());
 
-    infinit::cryptography::Clear archive =
-      user_keypair.k().open(member->seed());
+    elle::Buffer archive = user_keypair.k().open(member->seed());
 
     infinit::cryptography::rsa::Seed _seed =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::Seed,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (_seed);
   }
@@ -390,8 +388,8 @@ public:
       Member* _member = member;
 
       member =
-        new Member(user_K.seal(infinit::cryptography::Plain(_pass_k)),
-                   user_K.seal(infinit::cryptography::Plain(_seed)));
+        new Member(user_K.seal(_pass_k),
+                   user_K.seal(_seed));
 
       delete _member;
     }
@@ -469,9 +467,9 @@ private:
     _address(address),
     _version(version),
     _manager_K(manager_K),
-    _seed(manager_K.seal(infinit::cryptography::Plain(seed))),
+    _seed(manager_K.seal(seed)),
     _pass_K(pass_K),
-    _pass_k(manager_K.seal(infinit::cryptography::Plain(pass_k))),
+    _pass_k(manager_K.seal(pass_k)),
     _members(members)
   {}
 
@@ -488,12 +486,12 @@ public:
   infinit::cryptography::rsa::PrivateKey
   pass_k(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
-    infinit::cryptography::Clear archive = manager_k.open(this->_pass_k);
+    elle::Buffer archive = manager_k.open(this->_pass_k);
 
     infinit::cryptography::rsa::PrivateKey _key =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::PrivateKey,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (_key);
   }
@@ -501,12 +499,12 @@ public:
   infinit::cryptography::rsa::Seed
   seed(infinit::cryptography::rsa::PrivateKey const& manager_k) const
   {
-    infinit::cryptography::Clear archive = manager_k.open(this->_seed);
+    elle::Buffer archive = manager_k.open(this->_seed);
 
     infinit::cryptography::rsa::Seed __seed =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::Seed,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     return (__seed);
   }
@@ -514,11 +512,11 @@ public:
   Group
   rotate(infinit::cryptography::rsa::PrivateKey const& manager_k)
   {
-    infinit::cryptography::Clear archive = manager_k.open(this->_seed);
+    elle::Buffer archive = manager_k.open(this->_seed);
     infinit::cryptography::rsa::Seed __seed =
       elle::serialization::deserialize<
         infinit::cryptography::rsa::Seed,
-        elle::serialization::Json>(archive.buffer());
+        elle::serialization::Json>(archive);
 
     infinit::cryptography::rsa::Seed _seed = manager_k.rotate(__seed);
 
@@ -535,9 +533,9 @@ private:
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, address);
   ELLE_ATTRIBUTE_R(elle::Natural32, version);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, manager_K);
-  ELLE_ATTRIBUTE(infinit::cryptography::Code, seed);
+  ELLE_ATTRIBUTE(elle::Buffer, seed);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, pass_K);
-  ELLE_ATTRIBUTE(infinit::cryptography::Code, pass_k);
+  ELLE_ATTRIBUTE(elle::Buffer, pass_k);
   ELLE_ATTRIBUTE_RX(Members, members);
 };
 

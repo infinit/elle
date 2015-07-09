@@ -35,14 +35,12 @@ _test_represent()
 
   // 2)
   {
-    infinit::cryptography::Code code =
-      keypair.K().seal(
-        infinit::cryptography::Plain(_input));
+    elle::Buffer code = keypair.K().seal(_input);
 
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      code.serialize(output);
+      output.serialize("code", code);
     }
 
     elle::printf("[representation 2] %s\n", stream.str());
@@ -126,15 +124,16 @@ test_operate()
 
   // Decrypt plain from [representation 2]
   {
-    elle::String archive(R"JSON({"buffer":"QIBrD4Vau4w2OMzScnQXTJ2J807E4Wa52PAbEQEQfnK9dqC4GipZ8Ust+hzLx4RZPuEsupdUldSYA5AqZn2W4g1TFipDuC30ecXNYW6DEVwdKsqPsBTpsOOwu8BDsnagoU/g5G8rFDqop9fB5liJU2RR0s0fV/DAwcfUKzlwVLC9HTBTYWx0ZWRfXxP/oCAZe8E9a0zF6qExi9ZfcrPdGHOtujp1D4Nejd9ZvnZCKun/U/M="})JSON");
+    elle::String archive(R"JSON({"code":"QIBrD4Vau4w2OMzScnQXTJ2J807E4Wa52PAbEQEQfnK9dqC4GipZ8Ust+hzLx4RZPuEsupdUldSYA5AqZn2W4g1TFipDuC30ecXNYW6DEVwdKsqPsBTpsOOwu8BDsnagoU/g5G8rFDqop9fB5liJU2RR0s0fV/DAwcfUKzlwVLC9HTBTYWx0ZWRfXxP/oCAZe8E9a0zF6qExi9ZfcrPdGHOtujp1D4Nejd9ZvnZCKun/U/M="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::Code code(input);
+    elle::Buffer code;
+    input.serialize("code", code);
 
-    infinit::cryptography::Clear clear = k.open(code);
+    elle::Buffer clear = k.open(code);
 
-    BOOST_CHECK_EQUAL(_input, clear.buffer().string());
+    BOOST_CHECK_EQUAL(_input, clear.string());
   }
 }
 

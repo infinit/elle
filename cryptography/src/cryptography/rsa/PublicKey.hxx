@@ -59,9 +59,10 @@ namespace infinit
 
         elle::Buffer _value = cryptography::serialize(value);
 
-        Digest digest = hash(Plain(_value), this->_digest_algorithm);
+        elle::IOStream _plain(_value.istreambuf());
 
-        return (this->verify(signature, digest));
+        return (this->verify(signature.buffer(),
+                             static_cast<std::istream&>(_plain)));
       }
     }
   }

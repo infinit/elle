@@ -108,24 +108,15 @@ def configure(openssl_config,
   sources = drake.nodes(
     'src/cryptography/Cipher.cc',
     'src/cryptography/Cipher.hh',
-    'src/cryptography/Clear.hh',
-    'src/cryptography/Code.hh',
     'src/cryptography/Cryptosystem.cc',
     'src/cryptography/Cryptosystem.hh',
     'src/cryptography/deleter.cc',
     'src/cryptography/deleter.hh',
-    'src/cryptography/Digest.hh',
     'src/cryptography/Exception.hh',
     'src/cryptography/Exception.cc',
-    'src/cryptography/Input.cc',
-    'src/cryptography/Input.hh',
     'src/cryptography/Oneway.cc',
     'src/cryptography/Oneway.hh',
     'src/cryptography/Oneway.hxx',
-    'src/cryptography/Output.cc',
-    'src/cryptography/Output.hh',
-    'src/cryptography/Output.hxx',
-    'src/cryptography/Plain.hh',
     'src/cryptography/SecretKey.cc',
     'src/cryptography/SecretKey.hh',
     'src/cryptography/SecretKey.hxx',
@@ -188,7 +179,19 @@ def configure(openssl_config,
     'src/cryptography/rsa/serialization.hxx',
     )
 
-  if not legacy_mode:
+  if legacy_mode:
+    sources += drake.nodes(
+      'src/cryptography/Clear.hh',
+      'src/cryptography/Code.hh',
+      'src/cryptography/Digest.hh',
+      'src/cryptography/Input.cc',
+      'src/cryptography/Input.hh',
+      'src/cryptography/Output.cc',
+      'src/cryptography/Output.hh',
+      'src/cryptography/Output.hxx',
+      'src/cryptography/Plain.hh',
+      )
+  else:
     sources += drake.nodes(
       'src/cryptography/dsa/PrivateKey.cc',
       'src/cryptography/dsa/PrivateKey.hh',
@@ -257,11 +260,11 @@ def configure(openssl_config,
       "_legacy/PrivateKey.cc",
       "_legacy/Output.cc",
       "_legacy/SecretKey.cc",
+      "Input.cc", # XXX
+      "Output.cc",
       ]
   else:
     tests = [
-      "Input.cc",
-      "Output.cc",
       "SecretKey.cc",
       "bn.cc",
       "hash.cc",

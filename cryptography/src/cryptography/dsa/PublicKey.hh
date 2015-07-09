@@ -4,8 +4,6 @@
 # include <cryptography/dsa/PrivateKey.hh>
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
-# include <cryptography/Code.hh>
-# include <cryptography/Clear.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 
@@ -70,14 +68,14 @@ namespace infinit
         void
         _check() const;
       public:
-        /// Return true if the given signature matches with the digest.
-        elle::Boolean
-        verify(Signature const& signature,
-               Digest const& digest) const;
         /// Return true if the given signature matches with the plain text.
         elle::Boolean
-        verify(Signature const& signature,
-               Plain const& value) const;
+        verify(elle::ConstWeakBuffer const& signature,
+               elle::ConstWeakBuffer const& plain) const;
+        /// Verify a signature against a stream-based plain text.
+        elle::Boolean
+        verify(elle::ConstWeakBuffer const& signature,
+               std::istream& plain) const;
         /// Return the public key's size in bytes.
         elle::Natural32
         size() const;

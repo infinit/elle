@@ -1,5 +1,6 @@
-#include <cryptography/Input.hh>
-#include <cryptography/Output.hh>
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/Input.hh>
+# include <cryptography/Output.hh>
 
 namespace infinit
 {
@@ -73,3 +74,5 @@ namespace infinit
     }
   }
 }
+
+#endif

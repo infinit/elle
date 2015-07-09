@@ -96,11 +96,8 @@ test_operate_import()
   // Sign and verify data to make sure the keys are valid.
   elle::String const data("N'est pas Sancho qui veut!");
 
-  infinit::cryptography::Signature signature =
-    k.sign(infinit::cryptography::Plain(data));
-  BOOST_CHECK_EQUAL(K.verify(signature,
-                             infinit::cryptography::Plain(data)),
-                    true);
+  elle::Buffer signature = k.sign(data);
+  BOOST_CHECK_EQUAL(K.verify(signature, data), true);
 }
 
 static

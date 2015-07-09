@@ -1,9 +1,10 @@
-#include <cryptography/Output.hh>
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/Output.hh>
 
-#include <elle/serialization/SerializerIn.hh>
-#include <elle/serialization/SerializerOut.hh>
+# include <elle/serialization/SerializerIn.hh>
+# include <elle/serialization/SerializerOut.hh>
 
-#include <cryptography/Input.hh>
+# include <cryptography/Input.hh>
 
 namespace infinit
 {
@@ -113,3 +114,5 @@ namespace infinit
     }
   }
 }
+
+#endif

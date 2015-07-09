@@ -159,10 +159,9 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
   {
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(9128);
-    infinit::cryptography::Code code =
-      keypair.K().seal(infinit::cryptography::Plain(input));
-    infinit::cryptography::Clear clear = keypair.k().open(code);
-    elle::String const output(clear.buffer().string());
+    elle::Buffer code = keypair.K().seal(input);
+    elle::Buffer clear = keypair.k().open(code);
+    elle::String const output(clear.string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -180,11 +179,9 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
   {
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(1493);
-    infinit::cryptography::Signature signature =
-      keypair.k().sign(infinit::cryptography::Plain(input));
+    elle::Buffer signature = keypair.k().sign(input);
     auto result =
-      keypair.K().verify(signature,
-                         infinit::cryptography::Plain(input));
+      keypair.K().verify(signature, input);
 
     BOOST_CHECK_EQUAL(result, true);
   }

@@ -6,7 +6,6 @@
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/serialization.hh>
 #include <cryptography/rsa/der.hh>
-#include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
@@ -280,15 +279,15 @@ namespace infinit
       }
 
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      Clear
-      PrivateKey::open(Code const& code) const
+      elle::Buffer
+      PrivateKey::open(elle::ConstWeakBuffer const& code) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        return (Clear(envelope::open(code.buffer(),
-                                     this->_context.decrypt.get(),
-                                     ::EVP_PKEY_decrypt)));
+        return (envelope::open(code,
+                               this->_context.decrypt.get(),
+                               ::EVP_PKEY_decrypt));
       }
 
       elle::Buffer
@@ -302,27 +301,28 @@ namespace infinit
                                          ::EVP_PKEY_decrypt));
       }
 
-      Signature
-      PrivateKey::sign(Plain const& plain) const
+      elle::Buffer
+      PrivateKey::sign(elle::ConstWeakBuffer const& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest(hash(plain.buffer(), this->_digest_algorithm)); // XXX
+        elle::IOStream _plain(plain.istreambuf());
 
-        return (this->sign(digest));
+        return (this->sign(_plain));
       }
 # endif
 
-      Signature
-      PrivateKey::sign(Digest const& digest) const
+      elle::Buffer
+      PrivateKey::sign(std::istream& plain) const
       {
         ELLE_TRACE_METHOD("");
-        ELLE_DUMP("digest: %x", digest);
 
-        return (Signature(evp::asymmetric::sign(digest.buffer(),
-                                                this->_context.sign.get(),
-                                                ::EVP_PKEY_sign)));
+        elle::Buffer digest = hash(plain, this->_digest_algorithm);
+
+        return (evp::asymmetric::sign(digest,
+                                      this->_context.sign.get(),
+                                      ::EVP_PKEY_sign));
       }
 
       elle::Natural32

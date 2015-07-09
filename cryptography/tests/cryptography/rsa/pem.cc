@@ -118,11 +118,10 @@ test_operate_import()
   // Encrypt and decrypt data to make sure the keys are valid.
   elle::String const data("N'est pas Sancho qui veut!");
 
-  infinit::cryptography::Code code =
-    K.seal(infinit::cryptography::Plain(data));
-  infinit::cryptography::Clear clear = k.open(code);
+  elle::Buffer code = K.seal(data);
+  elle::Buffer clear = k.open(code);
 
-  BOOST_CHECK_EQUAL(data, clear.buffer().string());
+  BOOST_CHECK_EQUAL(data, clear.string());
 }
 
 static

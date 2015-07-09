@@ -3,9 +3,6 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
-# include <cryptography/Plain.hh>
-# include <cryptography/Clear.hh>
-# include <cryptography/Signature.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 
@@ -66,12 +63,12 @@ namespace infinit
         void
         _check() const;
       public:
-        /// Return a signature of any given serializable type, including Plain.
-        Signature
-        sign(Plain const& value) const;
-        /// Return a signature of the given digest.
-        Signature
-        sign(Digest const& digest) const;
+        /// Return a signature of the given plain text.
+        elle::Buffer
+        sign(elle::ConstWeakBuffer const& plain) const;
+        /// Sign a stream-based plain text.
+        elle::Buffer
+        sign(std::istream& plain) const;
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;

@@ -3,9 +3,6 @@
 
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
-# include <cryptography/Code.hh>
-# include <cryptography/Clear.hh>
-# include <cryptography/Plain.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/Seed.hh>
@@ -94,8 +91,8 @@ namespace infinit
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Encrypt the plain text and seal it in an envelope.
-        Code
-        seal(Plain const& plain) const;
+        elle::Buffer
+        seal(elle::ConstWeakBuffer const& plain) const;
         /// Encrypt a plain text using the raw public key.
         ///
         /// WARNING: This method cannot be used to encrypt large amount of
@@ -105,13 +102,13 @@ namespace infinit
         encrypt(elle::ConstWeakBuffer const& plain) const;
         /// Verify the given signature against the original plain text.
         elle::Boolean
-        verify(Signature const& signature,
-               Plain const& plain) const;
+        verify(elle::ConstWeakBuffer const& signature,
+               elle::ConstWeakBuffer const& plain) const;
 # endif
-        /// Return true if the given signature matches with the digest.
+        /// Return true if the given signature matches the stream-based plain.
         elle::Boolean
-        verify(Signature const& signature,
-               Digest const& digest) const;
+        verify(elle::ConstWeakBuffer const& signature,
+               std::istream& plain) const;
         /// Return the public key's size in bytes.
         elle::Natural32
         size() const;

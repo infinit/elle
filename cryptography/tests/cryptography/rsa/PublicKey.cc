@@ -34,14 +34,12 @@ _test_represent()
 
   // 2)
   {
-    infinit::cryptography::Signature signature =
-      keypair.k().sign(
-        infinit::cryptography::Plain(_input));
+    elle::Buffer signature = keypair.k().sign(_input);
 
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      signature.serialize(output);
+      output.serialize("signature", signature);
     }
 
     elle::printf("[representation 2] %s\n", stream.str());
@@ -125,15 +123,14 @@ test_operate()
 
   // Verify plain from [representation 2].
   {
-    elle::String archive(R"JSON({"buffer":"d483mVIqqV5b/UGAP54stJrV9m55eAurgxAvh7OGfNv8XG4QnAqmjOPgLa/H1vOMAWTxd/HHCP4sLTKYmRhHwLXPKFDGrBhyVBMh/PgVsiF0keHFLbmpTP42PEWF4H/xt8Z3NeOH87F5RPdyqaAhW8LcA4MNILo+S6KPJPvw9jtH3seNsTJfHaoGl0n3uVJS1EMbEiQB8Cu+GGnLe3DGgg/4YV2vFiM/v0Cfc1UKWmfYlnaGfb3hbq2KunMRLb5t2WgjM6qyZKtdSKhIDEenr279hD8JrD89iVw4I7ZV64pw9SG1B37ms0IqkY1zG51MMv9SPNNYtuSFOix4w2IpHg=="})JSON");
+    elle::String archive(R"JSON({"signature":"d483mVIqqV5b/UGAP54stJrV9m55eAurgxAvh7OGfNv8XG4QnAqmjOPgLa/H1vOMAWTxd/HHCP4sLTKYmRhHwLXPKFDGrBhyVBMh/PgVsiF0keHFLbmpTP42PEWF4H/xt8Z3NeOH87F5RPdyqaAhW8LcA4MNILo+S6KPJPvw9jtH3seNsTJfHaoGl0n3uVJS1EMbEiQB8Cu+GGnLe3DGgg/4YV2vFiM/v0Cfc1UKWmfYlnaGfb3hbq2KunMRLb5t2WgjM6qyZKtdSKhIDEenr279hD8JrD89iVw4I7ZV64pw9SG1B37ms0IqkY1zG51MMv9SPNNYtuSFOix4w2IpHg=="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::Signature signature(input);
+    elle::Buffer signature;
+    input.serialize("signature", signature);
 
-    auto result =
-      K.verify(signature,
-               infinit::cryptography::Plain(_input));
+    auto result = K.verify(signature, _input);
 
     BOOST_CHECK_EQUAL(result, true);
   }

@@ -24,8 +24,6 @@
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/serialization.hh>
 #include <cryptography/rsa/der.hh>
-#include <cryptography/Digest.hh>
-#include <cryptography/Code.hh>
 #include <cryptography/Exception.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
@@ -338,19 +336,19 @@ namespace infinit
       }
 
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      Code
-      PublicKey::seal(Plain const& plain) const
+      elle::Buffer
+      PublicKey::seal(elle::ConstWeakBuffer const& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (Code(envelope::seal(plain.buffer(),
-                                    this->_context.encrypt.get(),
-                                    ::EVP_PKEY_encrypt,
-                                    cipher::resolve(this->_envelope_cipher,
-                                                    this->_envelope_mode),
-                                    oneway::resolve(this->_digest_algorithm),
-                                    this->_context.envelope_padding_size)));
+        return (envelope::seal(plain,
+                               this->_context.encrypt.get(),
+                               ::EVP_PKEY_encrypt,
+                               cipher::resolve(this->_envelope_cipher,
+                                               this->_envelope_mode),
+                               oneway::resolve(this->_digest_algorithm),
+                               this->_context.envelope_padding_size));
       }
 
       elle::Buffer
@@ -365,29 +363,30 @@ namespace infinit
       }
 
       elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Plain const& plain) const
+      PublicKey::verify(elle::ConstWeakBuffer const& signature,
+                        elle::ConstWeakBuffer const& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
-        Digest digest(hash(plain.buffer(), this->_digest_algorithm)); // XXX
+        elle::IOStream _plain(plain.istreambuf());
 
-        return (this->verify(signature, digest));
+        return (this->verify(signature, _plain));
       }
 #endif
 
       elle::Boolean
-      PublicKey::verify(Signature const& signature,
-                        Digest const& digest) const
+      PublicKey::verify(elle::ConstWeakBuffer const& signature,
+                        std::istream& plain) const
       {
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("digest: %x", digest);
 
-        return (evp::asymmetric::verify(signature.buffer(),
-                                        digest.buffer(),
+        elle::Buffer digest = hash(plain, this->_digest_algorithm);
+
+        return (evp::asymmetric::verify(signature,
+                                        digest,
                                         this->_context.verify.get(),
                                         ::EVP_PKEY_verify));
       }

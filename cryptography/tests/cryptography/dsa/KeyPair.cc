@@ -130,12 +130,8 @@ _test_operate(infinit::cryptography::dsa::KeyPair const& keypair)
   {
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(1493);
-    infinit::cryptography::Signature signature =
-      keypair.k().sign(
-        infinit::cryptography::Plain{input});
-    auto result =
-      keypair.K().verify(signature,
-                         infinit::cryptography::Plain{input});
+    elle::Buffer signature = keypair.k().sign(input);
+    auto result = keypair.K().verify(signature, input);
 
     BOOST_CHECK_EQUAL(result, true);
   }
