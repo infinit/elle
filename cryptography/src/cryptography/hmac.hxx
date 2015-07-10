@@ -14,6 +14,7 @@
 # include <openssl/err.h>
 # include <openssl/hmac.h>
 
+# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 namespace infinit
 {
   namespace cryptography
@@ -95,5 +96,37 @@ namespace infinit
     }
   }
 }
+# else
+#  include <cryptography/_legacy/Digest.hh>
+#  include <cryptography/_legacy/serialization.hh>
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace hmac
+    {
+      template <typename T>
+      Digest
+      sign(T const& value,
+           elle::ConstWeakBuffer const& key,
+           Oneway const oneway)
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
+        ELLE_TRACE_FUNCTION(oneway);
+        ELLE_DUMP("value: %x", value);
+
+        elle::Buffer archive = cryptography::serialize(value);
+
+        elle::IOStream _archive(archive.istreambuf());
+
+        return (Digest(sign(static_cast<std::istream&>(_archive),
+                            key.string(),
+                            oneway)));
+      }
+    }
+  }
+}
+# endif
 
 #endif

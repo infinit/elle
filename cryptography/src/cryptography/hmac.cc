@@ -20,6 +20,7 @@ namespace infinit
       | Functions |
       `----------*/
 
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Buffer
       sign(elle::ConstWeakBuffer const& plain,
            elle::String const& key,
@@ -47,6 +48,7 @@ namespace infinit
 
         return (verify(digest, _plain, key, oneway));
       }
+#endif
 
       elle::Buffer
       sign(std::istream& plain,
