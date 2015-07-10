@@ -126,6 +126,9 @@ namespace infinit
       }
 
       PrivateKey::PrivateKey(PrivateKey const& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<PrivateKey>(other),
+#endif
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
         _digest_algorithm(other._digest_algorithm)
@@ -158,6 +161,9 @@ namespace infinit
       }
 
       PrivateKey::PrivateKey(PrivateKey&& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<PrivateKey>(other),
+#endif
         _key(std::move(other._key)),
         _encryption_padding(std::move(other._encryption_padding)),
         _signature_padding(std::move(other._signature_padding)),

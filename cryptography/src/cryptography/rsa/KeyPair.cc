@@ -47,12 +47,18 @@ namespace infinit
       }
 
       KeyPair::KeyPair(KeyPair const& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<KeyPair>(other),
+#endif
         _K(new PublicKey(*other._K)),
         _k(new PrivateKey(*other._k))
       {
       }
 
       KeyPair::KeyPair(KeyPair&& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<KeyPair>(other),
+#endif
         _K(std::move(other._K)),
         _k(std::move(other._k))
       {

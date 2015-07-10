@@ -49,6 +49,9 @@ namespace infinit
     }
 
     SecretKey::SecretKey(SecretKey const& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<SecretKey>(other),
+#endif
       _password(other._password.contents(), other._password.size()),
       _cipher(other._cipher),
       _mode(other._mode),
@@ -59,6 +62,9 @@ namespace infinit
     }
 
     SecretKey::SecretKey(SecretKey&& other):
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::serialize::DynamicFormat<SecretKey>(other),
+#endif
       _password(std::move(other._password)),
       _cipher(other._cipher),
       _mode(other._mode),
