@@ -44,11 +44,7 @@ def configure(openssl_config,
   openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                             'lib', strip_prefix = True)
 
-  if legacy_mode:
-    cxx_config.define("INFINIT_CRYPTOGRAPHY_LEGACY")
-
   if enable_rotation:
-    cxx_config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
     dopenssl = drake.include(
       'modules/dopenssl',
       cxx_toolkit = cxx_toolkit,
@@ -90,7 +86,11 @@ def configure(openssl_config,
   config.lib_path('lib')
   config += openssl_config
   if enable_rotation:
+    config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
     config += dopenssl.config
+
+  if legacy_mode:
+    config.define("INFINIT_CRYPTOGRAPHY_LEGACY")
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config)
