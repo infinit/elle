@@ -793,6 +793,62 @@ json_unicode_surrogate()
   BOOST_CHECK_EQUAL(res, "éé");
 }
 
+class Context
+{
+public:
+  Context(std::string message, std::string context)
+    : _msg(message)
+  {}
+
+  Context(elle::serialization::SerializerIn& input)
+  {
+    this->serialize(input);
+  }
+
+  void
+  serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize_context<std::string>(this->_ctx);
+    s.serialize("msg", this->_msg);
+  }
+
+  ELLE_ATTRIBUTE_R(std::string, msg);
+  ELLE_ATTRIBUTE_R(std::string, ctx);
+};
+
+template <typename Format>
+static
+void
+context()
+{
+  // Not binary friendly
+  // {
+  //   std::stringstream stream(
+  //     "{"
+  //     "  \"msg\": \"/r/nocontext\""
+  //     "}"
+  //     );
+  //   typename Format::SerializerIn serializer(stream, false);
+  //   serializer.template set_context<std::string>("/r/withcontext");
+  //   Context ctx(serializer);
+  //   BOOST_CHECK_EQUAL(ctx.msg(), "/r/nocontext");
+  //   BOOST_CHECK_EQUAL(ctx.ctx(), "/r/withcontext");
+  // }
+  {
+    Context source("message", "nope");
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut serializer(stream, false);
+      serializer.serialize_forward(source);
+    }
+    typename Format::SerializerIn serializer(stream, false);
+    serializer.template set_context<std::string>("yes");
+    Context ctx(serializer);
+    BOOST_CHECK_EQUAL(ctx.msg(), source.msg());
+    BOOST_CHECK_EQUAL(ctx.ctx(), "yes");
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -813,6 +869,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(date<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Json>));
+  suite.add(BOOST_TEST_CASE(context<elle::serialization::Json>));
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
@@ -838,5 +895,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(date<elle::serialization::Binary>));
   suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Binary>));
   suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Binary>));
+  suite.add(BOOST_TEST_CASE(context<elle::serialization::Binary>));
   }
 }

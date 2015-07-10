@@ -5,10 +5,12 @@
 # include <list>
 # include <memory>
 # include <string>
+# include <typeinfo>
 # include <unordered_map>
 
-# include <boost/optional.hpp>
+# include <boost/any.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
+# include <boost/optional.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/Version.hh>
@@ -89,6 +91,14 @@ namespace elle
       template <typename T>
       void
       serialize_forward(T& v);
+      template <typename T>
+      void
+      serialize_context(T& value);
+      template <typename T>
+      void
+      set_context(T value);
+      typedef std::unordered_map<std::type_info const*, boost::any> Context;
+      ELLE_ATTRIBUTE(Context, context);
 
     protected:
       virtual

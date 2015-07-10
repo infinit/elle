@@ -640,6 +640,27 @@ namespace elle
     }
 
     template <typename T>
+    void
+    Serializer::serialize_context(T& value)
+    {
+      if (this->in())
+      {
+        auto it = this->_context.find(&typeid(T));
+        if (it == this->_context.end())
+          throw Error(elle::sprintf("missing serialization context for %s",
+                                    elle::demangle(typeid(T).name())));
+        value = boost::any_cast<T>(it->second);
+      }
+    }
+
+    template <typename T>
+    void
+    Serializer::set_context(T value)
+    {
+      this->_context[&typeid(T)] = std::move(value);
+    }
+
+    template <typename T>
     class Hierarchy
     {
     public:
