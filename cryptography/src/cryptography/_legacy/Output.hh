@@ -9,6 +9,7 @@
 #  include <elle/Printable.hh>
 
 #  include <elle/serialize/construct.hh>
+#  include <elle/serialization/Serializer.hh>
 
 #  include <cryptography/fwd.hh>
 
@@ -71,6 +72,14 @@ namespace infinit
     public:
       void
       print(std::ostream& stream) const override;
+
+      /*--------------.
+      | Serialization |
+      `--------------*/
+    public:
+      Output(elle::serialization::SerializerIn& serializer);
+      void
+      serialize(elle::serialization::Serializer& serializer);
 
       /*-----------.
       | Attributes |

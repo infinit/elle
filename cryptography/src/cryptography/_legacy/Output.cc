@@ -93,6 +93,21 @@ namespace infinit
     {
       stream << this->_buffer;
     }
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    Output::Output(elle::serialization::SerializerIn& serializer)
+    {
+      this->serialize(serializer);
+    }
+
+    void
+    Output::serialize(elle::serialization::Serializer& serializer)
+    {
+      serializer.serialize("data", this->_buffer);
+    }
   }
 }
 
