@@ -698,6 +698,15 @@ TEST(builder_test, authority_with_port_test) {
   ASSERT_EQ("www.example.com:", *builder.uri().authority());
 }
 
+TEST(builder_test, authority_without_host_test) {
+  network::uri_builder builder;
+  builder
+    .scheme("https")
+    .authority(":1234")
+    ;
+  ASSERT_EQ(":1234", *builder.uri().authority());
+}
+
 TEST(builder_test, clear_user_info_test) {
   network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);

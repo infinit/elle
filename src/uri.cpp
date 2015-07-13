@@ -319,14 +319,24 @@ namespace network {
 
     auto first = std::begin(*host), last = std::end(*host);
     auto user_info = this->user_info();
-    if (user_info) {
+    auto port = this->port();
+    if (user_info && !user_info->empty()) {
       first = std::begin(*user_info);
+    } else if (host->empty() && port && !port->empty()) {
+      first = std::begin(*port);
+      --first; // include ':' before port
     }
 
-    auto port = this->port();
-    if (port) {
+    if (host->empty()) {
+      if (port && !port->empty()) {
+        last = std::end(*port);
+      } else if (user_info && !user_info->empty()) {
+        last = std::end(*user_info);
+        ++last; // include '@'
+      }
+    } else if (port) {
       if (port->empty()) {
-        ++last;
+        ++last; // include ':' after host
       } else {
         last = std::end(*port);
       }
