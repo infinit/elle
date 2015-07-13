@@ -58,5 +58,11 @@ namespace elle
         this->_serialize(name, buf);
       }
     }
+
+    void
+    Serializer::set_context(Context const& context)
+    {
+      this->_context += context;
+    }
   }
 }

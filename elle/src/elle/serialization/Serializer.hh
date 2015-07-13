@@ -13,6 +13,7 @@
 # include <boost/optional.hpp>
 
 # include <elle/Buffer.hh>
+# include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
@@ -27,6 +28,45 @@ namespace elle
     template <typename T>
     struct Serialize
     {};
+
+    class Context
+    {
+    public:
+      template <typename T>
+      void
+      set(T value)
+      {
+        this->_value[type_info<T>()] = std::move(value);
+      }
+
+      template <typename T>
+      void
+      get(T& value)
+      {
+        auto ti = type_info<T>();
+        auto it = this->_value.find(ti);
+        if (it == this->_value.end())
+          throw Error(
+            elle::sprintf("missing serialization context for %s", ti.name()));
+        value = boost::any_cast<T>(it->second);
+      }
+
+      Context&
+      operator += (Context const& source)
+      {
+        for (auto const& e: source._value)
+          this->_value.insert(e);
+        return *this;
+      }
+
+      size_t
+      size() const
+      {
+        return this->_value.size();
+      }
+
+      ELLE_ATTRIBUTE((std::map<TypeInfo, boost::any>), value);
+    };
 
     class Serializer
     {
@@ -97,8 +137,9 @@ namespace elle
       template <typename T>
       void
       set_context(T value);
-      typedef std::unordered_map<std::type_info const*, boost::any> Context;
-      ELLE_ATTRIBUTE(Context, context);
+      void
+      set_context(Context const& context);
+      ELLE_ATTRIBUTE_R(Context, context);
 
     protected:
       virtual

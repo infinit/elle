@@ -644,20 +644,14 @@ namespace elle
     Serializer::serialize_context(T& value)
     {
       if (this->in())
-      {
-        auto it = this->_context.find(&typeid(T));
-        if (it == this->_context.end())
-          throw Error(elle::sprintf("missing serialization context for %s",
-                                    elle::demangle(typeid(T).name())));
-        value = boost::any_cast<T>(it->second);
-      }
+        this->_context.get<T>(value);
     }
 
     template <typename T>
     void
     Serializer::set_context(T value)
     {
-      this->_context[&typeid(T)] = std::move(value);
+      this->_context.set<T>(value);
     }
 
     template <typename T>
