@@ -50,7 +50,7 @@ namespace infinit
 
     SecretKey::SecretKey(SecretKey const& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<SecretKey>(other),
+      elle::serialize::DynamicFormat<SecretKey>(other),
 #endif
       _password(other._password.contents(), other._password.size()),
       _cipher(other._cipher),

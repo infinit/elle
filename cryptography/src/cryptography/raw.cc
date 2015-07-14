@@ -779,7 +779,7 @@ namespace infinit
           }
 
           // Compute the output length.
-          unsigned long size(0);
+          size_t size(0);
 
           if (::EVP_DigestSignFinal(&context,
                                     nullptr,
