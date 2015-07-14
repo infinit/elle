@@ -5,6 +5,8 @@
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 # include <cryptography/rsa/KeyPair.hh>
+# include <cryptography/rsa/PublicKey.hh>
+# include <cryptography/rsa/PrivateKey.hh>
 # include <cryptography/rsa/defaults.hh>
 
 # include <utility>
