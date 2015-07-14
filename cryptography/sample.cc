@@ -18,7 +18,6 @@
 # include <cryptography/SecretKey.hh>
 # include <cryptography/rsa/KeyPair.hh>
 # include <cryptography/dsa/KeyPair.hh>
-# include <elle/serialization/Serializer.hh>
 
 # include <iostream>
 
