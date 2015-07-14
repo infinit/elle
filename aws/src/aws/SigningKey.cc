@@ -3,7 +3,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/printf.hh>
 
-#include <cryptography/oneway.hh>
+#include <cryptography/hmac.hh>
 
 namespace aws
 {
@@ -12,9 +12,12 @@ namespace aws
   _aws_hmac(std::string const& message,
             infinit::cryptography::Digest const& key)
   {
-    using namespace infinit::cryptography;
-    Digest res = oneway::hmac(
-      Plain(elle::ConstWeakBuffer(message)), key, oneway::Algorithm::sha256);
+    infinit::cryptography::Digest res =
+      infinit::cryptography::hmac::sign(
+        infinit::cryptography::Plain(
+          elle::ConstWeakBuffer(message)),
+          key.buffer(),
+          infinit::cryptography::Oneway::sha256);
     return res;
   }
 
@@ -28,13 +31,16 @@ namespace aws
     std::string date_str = boost::posix_time::to_iso_string(request_time);
     date_str = date_str.substr(0, 8);
     std::string secret_str(elle::sprintf("AWS4%s", aws_secret));
-    using namespace infinit::cryptography;
-    Digest k_secret(elle::Buffer(secret_str.data(), secret_str.size()));
-    Digest k_date = _aws_hmac(date_str, k_secret);
-    Digest k_region = _aws_hmac(elle::sprintf("%s", aws_region), k_date);
-    Digest k_service = _aws_hmac(elle::sprintf("%s", aws_service), k_region);
-    Digest k_signing = _aws_hmac(elle::sprintf("%s", RequestType::aws4),
-                                 k_service);
+    infinit::cryptography::Digest k_secret(
+      elle::Buffer(secret_str.data(), secret_str.size()));
+    infinit::cryptography::Digest k_date =
+      _aws_hmac(date_str, k_secret);
+    infinit::cryptography::Digest k_region =
+      _aws_hmac(elle::sprintf("%s", aws_region), k_date);
+    infinit::cryptography::Digest k_service =
+      _aws_hmac(elle::sprintf("%s", aws_service), k_region);
+    infinit::cryptography::Digest k_signing =
+      _aws_hmac(elle::sprintf("%s", RequestType::aws4), k_service);
     return k_signing;
   }
 

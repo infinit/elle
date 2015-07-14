@@ -16,7 +16,7 @@
 #include <reactor/http/Request.hh>
 #include <reactor/scheduler.hh>
 
-#include <cryptography/oneway.hh>
+#include <cryptography/hash.hh>
 
 #include <aws/SigningKey.hh>
 #include <aws/Keys.hh>
@@ -264,9 +264,9 @@ namespace aws
       // build the request
       RequestHeaders headers;
       headers["Content-MD5"] = elle::format::base64::encode(
-          infinit::cryptography::oneway::hash(
-          infinit::cryptography::Plain(payload),
-          infinit::cryptography::oneway::Algorithm::md5).buffer()).string();
+          infinit::cryptography::hash(
+            infinit::cryptography::Plain(payload),
+            infinit::cryptography::Oneway::md5).buffer()).string();
 
       RequestQuery query;
       query["delete"] = "";
@@ -456,9 +456,9 @@ namespace aws
   S3::_md5_digest(elle::ConstWeakBuffer const& buffer)
   {
     std::string res = elle::format::hexadecimal::encode(
-      infinit::cryptography::oneway::hash(
+      infinit::cryptography::hash(
         infinit::cryptography::Plain(buffer),
-        infinit::cryptography::oneway::Algorithm::md5).buffer()
+        infinit::cryptography::Oneway::md5).buffer()
     );
     return res;
   }
@@ -467,9 +467,9 @@ namespace aws
   S3::_sha256_hexdigest(elle::ConstWeakBuffer const& buffer)
   {
     std::string res = elle::format::hexadecimal::encode(
-      infinit::cryptography::oneway::hash(
+      infinit::cryptography::hash(
         infinit::cryptography::Plain(buffer),
-        infinit::cryptography::oneway::Algorithm::sha256).buffer()
+        infinit::cryptography::Oneway::sha256).buffer()
     );
     return res;
   }

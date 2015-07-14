@@ -8,7 +8,7 @@
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 
-# include <cryptography/Digest.hh>
+# include <cryptography/_legacy/Digest.hh>
 
 # include <aws/Keys.hh>
 
