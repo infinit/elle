@@ -59,6 +59,7 @@ namespace infinit
         | Static Functions |
         `-----------------*/
 
+        static
         elle::Buffer
         _apply(elle::ConstWeakBuffer const& input,
                ::EVP_PKEY_CTX* context,
@@ -277,7 +278,8 @@ namespace infinit
           //
           // If it is too small, an attack could be performed against textbook
           // RSA, assuming it is the algorithm used in this case.
-          if (::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)) !=
+          if (static_cast<typename elle::Buffer::Size>(
+                ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
               seed.size())
             throw Exception(
               elle::sprintf("unable to rotate a seed whose length does not "
@@ -305,7 +307,8 @@ namespace infinit
         {
           // As for the rotation mechanism, ensure the size of the seed
           // equals the modulus.
-          if (::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)) !=
+          if (static_cast<typename elle::Buffer::Size>(
+                ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
               seed.size())
             throw Exception(
               elle::sprintf("unable to unrotate a seed whose length does not "

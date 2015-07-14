@@ -14,6 +14,7 @@ namespace infinit
     | Functions |
     `----------*/
 
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     elle::Buffer
     hash(elle::ConstWeakBuffer const& plain,
          Oneway const oneway)
@@ -26,6 +27,7 @@ namespace infinit
       // The cast is required because of the legacy functions.
       return (hash(static_cast<std::istream&>(_plain), oneway));
     }
+#endif
 
     elle::Buffer
     hash(std::istream& plain,
