@@ -102,7 +102,7 @@ namespace infinit
       {
         ELLE_TRACE_FUNCTION(function);
 
-        static std::map<::EVP_MD const*, Oneway> const functions =
+        static std::map< ::EVP_MD const*, Oneway > const functions =
           {
             { ::EVP_md5(), Oneway::md5 },
             { ::EVP_sha(), Oneway::sha },
