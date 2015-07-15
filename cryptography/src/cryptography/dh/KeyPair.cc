@@ -143,7 +143,7 @@ namespace infinit
         KeyPair
         generate()
         {
-          ELLE_TRACE_FUNCTION();
+          ELLE_TRACE_FUNCTION("");
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
