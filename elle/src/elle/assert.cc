@@ -31,20 +31,17 @@ namespace elle
          char const* file,
          int line)
   {
-    if (std::current_exception() != std::exception_ptr{})
+    if (std::uncaught_exception())
     {
-      // There is already an exception happening.
-      auto e = std::current_exception();
-      ELLE_ERR("raising an assert (%s at %s:%s) with an exception already in flight: %s",
-               message, file, line, elle::exception_string());
+      ELLE_WARN(
+        "raising an assert (%s at %s:%s) with an exception already in flight",
+        message, file, line);
     }
-
     if (elle::os::inenv("ELLE_REAL_ASSERT"))
     {
       ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
       std::abort();
     }
-
     throw elle::AssertError(message.c_str(), file, line);
   }
 
