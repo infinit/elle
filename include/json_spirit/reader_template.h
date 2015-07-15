@@ -569,7 +569,7 @@ namespace json_spirit
                     ;
 
                 members_
-                    = pair_ >> *( ',' >> pair_ )
+                    = pair_ >> *( ',' >> pair_ ) >> !ch_p(',')
                     ;
 
                 pair_
