@@ -12,6 +12,7 @@
 #include <elle/printf.hh>
 #include <elle/types.hh>
 #include <elle/Exception.hh>
+#include <elle/filesystem/TemporaryFile.hh>
 
 #include <boost/filesystem.hpp>
 
@@ -25,23 +26,14 @@
 `----------*/
 
 static
-boost::filesystem::path
-_temporary(elle::String const& content = "")
+void
+_fill(boost::filesystem::path const& path,
+      elle::String const& content = "")
 {
-  char path[L_tmpnam];
-  ::strncpy(path, "/tmp/infinit-cryptography-rsa-pem-XXXXX", L_tmpnam);
-
-  if (::mkstemp(path) == -1)
-    throw elle::Exception(
-      elle::sprintf("unable to create a temporary file: %s",
-                    std::error_code(errno,
-                                    std::system_category()).message()));
-
-  std::ofstream stream(path, std::ofstream::out);
+  std::ofstream stream(path.generic_string(),
+                       std::ofstream::out);
   stream << content;
   stream.close();
-
-  return (boost::filesystem::path(path));
 }
 
 /*--------.
@@ -94,25 +86,23 @@ test_operate_import()
 
   // 1) Try to load the RSA private key with an incorrect
   // passphrase 2) Load RSA private key in its encrypted form.
-  boost::filesystem::path path_private_key =
-    _temporary(private_key);
+  elle::filesystem::TemporaryFile path_private_key("path_private_key");
+  _fill(path_private_key.path(), private_key);
 
   // 1)
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_k(path_private_key,
+    infinit::cryptography::rsa::pem::import_k(path_private_key.path(),
                                               "wrong passphrase"),
     infinit::cryptography::Exception);
 
   // 2)
   infinit::cryptography::rsa::PrivateKey k =
-    infinit::cryptography::rsa::pem::import_k(path_private_key,
+    infinit::cryptography::rsa::pem::import_k(path_private_key.path(),
                                               passphrase);
   infinit::cryptography::rsa::PublicKey K(
     k,
     infinit::cryptography::rsa::defaults::envelope_cipher,
     infinit::cryptography::rsa::defaults::envelope_mode);
-
-  boost::filesystem::remove(path_private_key);
 
   // Encrypt and decrypt data to make sure the keys are valid.
   elle::String const data("N'est pas Sancho qui veut!");
@@ -130,14 +120,14 @@ test_operate_export()
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(2048);
 
-  boost::filesystem::path path = _temporary();
+  elle::filesystem::TemporaryFile path("path");
 
   elle::String const passphrase = "Dave";
 
   // Export keypair.
   infinit::cryptography::rsa::pem::export_keypair(
     keypair,
-    path,
+    path.path(),
     passphrase,
     infinit::cryptography::Cipher::aes256,
     infinit::cryptography::Mode::cbc);
@@ -146,13 +136,13 @@ test_operate_export()
 
   // 1)
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_k(path,
+    infinit::cryptography::rsa::pem::import_k(path.path(),
                                               "wrong passphrase"),
     infinit::cryptography::Exception);
 
   // 2)
   infinit::cryptography::rsa::PrivateKey k =
-    infinit::cryptography::rsa::pem::import_k(path,
+    infinit::cryptography::rsa::pem::import_k(path.path(),
                                               passphrase);
 
   BOOST_CHECK_EQUAL(keypair.k(), k);
@@ -160,7 +150,7 @@ test_operate_export()
   // Try to import only the public part of the key from a private key file
   // which is encrypted.
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_K(path),
+    infinit::cryptography::rsa::pem::import_K(path.path()),
     infinit::cryptography::Exception);
 
   // Extract the public key from the private key.
