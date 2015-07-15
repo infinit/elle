@@ -4,25 +4,35 @@
 #include <elle/printf.hh>
 
 #include <cryptography/hmac.hh>
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/_legacy/Digest.hh>
+#endif
 
 namespace aws
 {
   static
-  infinit::cryptography::Digest
+  elle::Buffer
   _aws_hmac(std::string const& message,
-            infinit::cryptography::Digest const& key)
+            elle::Buffer const& key)
   {
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     infinit::cryptography::Digest res =
       infinit::cryptography::hmac::sign(
         infinit::cryptography::Plain(
           elle::ConstWeakBuffer(message)),
-          key.buffer(),
-          infinit::cryptography::Oneway::sha256);
-    return res;
+        key,
+        infinit::cryptography::Oneway::sha256);
+    return res.buffer();
+#else
+    return (infinit::cryptography::hmac::sign(
+              message,
+              key.string(),
+              infinit::cryptography::Oneway::sha256));
+#endif
   }
 
   static
-  infinit::cryptography::Digest
+  elle::Buffer
   _create_digest(std::string const& aws_secret,
                  RequestTime const& request_time,
                  std::string const& aws_region,
@@ -31,16 +41,14 @@ namespace aws
     std::string date_str = boost::posix_time::to_iso_string(request_time);
     date_str = date_str.substr(0, 8);
     std::string secret_str(elle::sprintf("AWS4%s", aws_secret));
-    infinit::cryptography::Digest k_secret(
-      elle::Buffer(secret_str.data(), secret_str.size()));
-    infinit::cryptography::Digest k_date =
-      _aws_hmac(date_str, k_secret);
-    infinit::cryptography::Digest k_region =
-      _aws_hmac(elle::sprintf("%s", aws_region), k_date);
-    infinit::cryptography::Digest k_service =
+    elle::Buffer k_secret(secret_str.data(), secret_str.size());
+    elle::Buffer k_date = _aws_hmac(date_str, k_secret);
+    elle::Buffer k_region = _aws_hmac(elle::sprintf("%s", aws_region), k_date);
+    elle::Buffer k_service =
       _aws_hmac(elle::sprintf("%s", aws_service), k_region);
-    infinit::cryptography::Digest k_signing =
+    elle::Buffer k_signing =
       _aws_hmac(elle::sprintf("%s", RequestType::aws4), k_service);
+
     return k_signing;
   }
 
@@ -54,14 +62,14 @@ namespace aws
   std::string
   SigningKey::sign_message(std::string const& message)
   {
-    infinit::cryptography::Digest digest = _aws_hmac(message, this->_key);
-    return elle::format::hexadecimal::encode(digest.buffer());
+    elle::Buffer digest = _aws_hmac(message, this->_key);
+    return elle::format::hexadecimal::encode(digest);
   }
 
   void
   SigningKey::print(std::ostream& stream) const
   {
     stream << "AWS signing key hex digest: "
-           << elle::format::hexadecimal::encode(this->_key.buffer());
+           << elle::format::hexadecimal::encode(this->_key);
   }
 }

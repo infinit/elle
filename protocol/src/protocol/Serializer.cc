@@ -62,14 +62,23 @@ namespace infinit
         ELLE_DUMP("%s: packet data %s", *this, packet);
 
         // Check hash.
-        auto hash_local =
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        auto _hash_local =
           infinit::cryptography::hash(
             infinit::cryptography::Plain(
               elle::WeakBuffer(packet._data,
                                packet._data_size)),
             infinit::cryptography::Oneway::sha1);
+        auto hash_local(_hash_local.buffer());
+#else
+        auto hash_local =
+          infinit::cryptography::hash(
+            elle::ConstWeakBuffer(packet._data,
+                                  packet._data_size),
+            infinit::cryptography::Oneway::sha1);
+#endif
         ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
-        if (hash_local.buffer() != hash)
+        if (hash_local != hash)
         {
           ELLE_ERR("%s: wrong packet checksum", *this);
           throw ChecksumError();
@@ -90,18 +99,27 @@ namespace infinit
       elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: send %s", *this, packet)
       {
-        auto hash =
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        auto _hash =
           infinit::cryptography::hash(
             infinit::cryptography::Plain(
               elle::WeakBuffer(packet._data,
                                packet._data_size)),
             infinit::cryptography::Oneway::sha1);
-          auto hash_size = hash.buffer().size();
+        auto hash(_hash.buffer());
+#else
+        auto hash =
+          infinit::cryptography::hash(
+            elle::ConstWeakBuffer(packet._data,
+                                  packet._data_size),
+            infinit::cryptography::Oneway::sha1);
+#endif
+          auto hash_size = hash.size();
         ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
           _uint32_put(_stream, hash_size);
-        ELLE_DUMP("%s: send checksum: %s", *this, hash.buffer())
+        ELLE_DUMP("%s: send checksum: %s", *this, hash)
         {
-          auto data = reinterpret_cast<char*>(hash.buffer().mutable_contents());
+          auto data = reinterpret_cast<char*>(hash.mutable_contents());
           _stream.write(data, hash_size);
         }
         auto size = packet._data_size;

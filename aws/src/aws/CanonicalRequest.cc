@@ -7,7 +7,9 @@
 #include <reactor/http/EscapedString.hh>
 
 #include <cryptography/hash.hh>
-#include <cryptography/_legacy/Digest.hh>
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/_legacy/Digest.hh>
+#endif
 
 // ELLE_LOG_COMPONENT("aws.CanonicalRequest");
 
@@ -34,12 +36,20 @@ namespace aws
   std::string
   CanonicalRequest::sha256_hash() const
   {
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     infinit::cryptography::Digest digest =
       infinit::cryptography::hash(
         infinit::cryptography::Plain(
           elle::ConstWeakBuffer(this->_canonical_request)),
         infinit::cryptography::Oneway::sha256);
     return elle::format::hexadecimal::encode(digest.buffer());
+#else
+    elle::Buffer digest =
+      infinit::cryptography::hash(
+        elle::ConstWeakBuffer(this->_canonical_request),
+        infinit::cryptography::Oneway::sha256);
+    return elle::format::hexadecimal::encode(digest);
+#endif
   }
 
   std::string

@@ -7,8 +7,7 @@
 
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
-
-# include <cryptography/_legacy/Digest.hh>
+# include <elle/Buffer.hh>
 
 # include <aws/Keys.hh>
 
@@ -29,7 +28,7 @@ namespace aws
     std::string
     sign_message(std::string const& message);
 
-    ELLE_ATTRIBUTE_R(infinit::cryptography::Digest, key);
+    ELLE_ATTRIBUTE_R(elle::Buffer, key);
 
     /*----------.
     | Printable |

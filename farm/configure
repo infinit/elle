@@ -57,7 +57,6 @@ with drake.Drake(%(dir_source)r) as d:
   d.run(cxx_toolkit,
         cxx_config = cxx_config,
         python3 = python,
-        cryptographic_legacy_mode = True,
         php = %(php)r,
         valgrind = valgrind,
         valgrind_tests = valgrind_tests,

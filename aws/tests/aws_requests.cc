@@ -95,10 +95,18 @@ _make_canonical_request()
   query["X-Amz-SignedHeaders"] = signed_headers_str;
 
   std::string content("Action=ListUsers&Version=2010-05-08");
-  infinit::cryptography::Digest digest =
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+  infinit::cryptography::Digest _digest =
     infinit::cryptography::hash(
       infinit::cryptography::Plain(elle::ConstWeakBuffer(content)),
       infinit::cryptography::Oneway::sha256);
+  elle::Buffer digest(_digest.buffer());
+#else
+  elle::Buffer digest =
+    infinit::cryptography::hash(
+      content,
+      infinit::cryptography::Oneway::sha256);
+#endif
 
   aws::CanonicalRequest request(
     reactor::http::Method::POST,
@@ -106,7 +114,7 @@ _make_canonical_request()
     query,
     headers,
     signed_headers,
-    elle::format::hexadecimal::encode(digest.buffer())
+    elle::format::hexadecimal::encode(digest)
   );
   ELLE_DEBUG("canonical request: %s", request);
   return request;
@@ -157,7 +165,7 @@ ELLE_TEST_SCHEDULED(signing_key)
                               "us-east-1",
                               aws::Service::iam);
   BOOST_CHECK_EQUAL(
-    elle::format::hexadecimal::encode(signing_key.key().buffer()),
+    elle::format::hexadecimal::encode(signing_key.key()),
     "f4780e2d9f65fa895f9c67b32ce1baf0b0d8a43505a000a1a9e090d414db404d");
 }
 
