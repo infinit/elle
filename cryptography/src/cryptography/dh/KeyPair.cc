@@ -158,9 +158,7 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
 
-          // The EVP_PKEY_set1 function is used in order to increase the
-          // reference counter on the passed argument which is static.
-          if (::EVP_PKEY_set1_DH(parameters, ::DH_get_2048_256()) <= 0)
+          if (::EVP_PKEY_assign_DH(parameters, ::DH_get_2048_256()) <= 0)
               throw Exception(
                 elle::sprintf("unable to set the parameters: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
