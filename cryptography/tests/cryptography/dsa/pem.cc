@@ -26,7 +26,7 @@ boost::filesystem::path
 _temporary(elle::String const& content = "")
 {
   char path[L_tmpnam];
-  strcpy(path, "/tmp/infinit-cryptography-dsa-pem-XXXXX");
+  ::strncpy(path, "/tmp/infinit-cryptography-dsa-pem-XXXXX", L_tmpnam);
 
   if (::mkstemp(path) == -1)
     throw elle::Exception(
