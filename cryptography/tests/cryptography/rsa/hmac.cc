@@ -77,6 +77,7 @@ test_represent()
 | Operate |
 `--------*/
 
+static
 void
 test_operate()
 {
