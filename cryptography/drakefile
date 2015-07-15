@@ -66,11 +66,14 @@ def configure(openssl_config,
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     boost_test = boost.config_test(static = True)
     boost_thread = boost.config_thread(static = True)
+    boost_filesystem = boost.config_filesystem(static = True)
   else:
     boost_test = drake.cxx.Config(boost.config_test(link = False))
     boost_test.library_add(drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
     boost_thread = drake.cxx.Config(boost.config_thread(link = False))
     boost_thread.library_add(drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
+    boost_filesystem = drake.cxx.Config(boost.config_filesystem(link = False))
+    boost_filesystem.library_add(drake.copy(boost.filesystem_dynamic, 'lib', strip_prefix = True))
 
   elle_lib_static = elle.lib_static
   elle_lib_dynamic = drake.copy(elle.lib_dynamic, 'lib', strip_prefix = True)
@@ -309,6 +312,7 @@ def configure(openssl_config,
   tests_cxx_config += boost.config()
   tests_cxx_config += boost_test
   tests_cxx_config += boost_thread
+  tests_cxx_config += boost_filesystem
   tests_cxx_config += openssl_config
   tests_cxx_config += elle.config
 
