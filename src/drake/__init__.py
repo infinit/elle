@@ -1689,12 +1689,12 @@ class Builder:
     printed, except if drake is in raw mode, in which case the
     actual command is printed.
     """
-    if not _RAW and pretty is not None:
-      self.output(pretty)
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     with open(str(self.path_stdout), 'w') as f:
       def fun():
+        if not _RAW and pretty is not None:
+          self.output(pretty)
         for c in cmd:
           c = list(map(str, c))
           if _RAW or pretty is None:
