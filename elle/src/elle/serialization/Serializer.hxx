@@ -655,6 +655,54 @@ namespace elle
     }
 
     template <typename T>
+    struct ExceptionMaker
+    {
+      template <typename U>
+      static
+      void
+      add()
+      {}
+    };
+
+    template <>
+    struct ExceptionMaker<elle::Exception>
+    {
+      typedef ExceptionMaker<elle::Exception> Self;
+
+      template <typename U>
+      static
+      void
+      add()
+      {
+        Self::_map()[type_info<U>()] =
+          [] (elle::Exception const& e) -> std::exception_ptr
+          {
+            return std::make_exception_ptr<U>(static_cast<U const&>(e));
+          };
+      }
+
+      static
+      std::exception_ptr
+      make(elle::Exception& e)
+      {
+        auto it = Self::_map().find(type_info(e));
+        ELLE_ASSERT(it != Self::_map().end());
+        return it->second(e);
+      }
+
+      static
+      std::map<TypeInfo,
+               std::function<std::exception_ptr (elle::Exception const&)> >&
+      _map()
+      {
+        static std::map<
+          TypeInfo,
+          std::function<std::exception_ptr (elle::Exception const&)> > map;
+        return map;
+      }
+    };
+
+    template <typename T>
     class Hierarchy
     {
     public:
@@ -676,6 +724,7 @@ namespace elle
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s) { return elle::make_unique<U>(s); };
           Hierarchy<T>::_rmap()[id] = name;
+          ExceptionMaker<T>::template add<U>();
         }
       };
 

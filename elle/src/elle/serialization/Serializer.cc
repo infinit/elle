@@ -1,5 +1,6 @@
-#include <elle/serialization/SerializerOut.hh>
 #include <elle/serialization/Serializer.hh>
+#include <elle/serialization/SerializerIn.hh>
+#include <elle/serialization/SerializerOut.hh>
 
 namespace elle
 {
@@ -63,6 +64,35 @@ namespace elle
     Serializer::set_context(Context const& context)
     {
       this->_context += context;
+    }
+
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     std::exception_ptr& e)
+    {
+      if (this->out())
+        try
+        {
+          std::rethrow_exception(e);
+        }
+        catch (elle::Exception& e)
+        {
+          this->_serialize_anonymous(name, e);
+        }
+        catch (std::exception const& e)
+        {
+          ELLE_ABORT("not handled yet");
+        }
+        catch (...)
+        {
+          ELLE_ABORT("not handled yet");
+        }
+      else
+      {
+        std::unique_ptr<elle::Exception> exn;
+        this->_serialize_anonymous(name, exn);
+        e = ExceptionMaker<elle::Exception>::make(*exn);
+      }
     }
   }
 }
