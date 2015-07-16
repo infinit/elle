@@ -56,7 +56,7 @@ namespace infinit
         }
         default:
           throw Error(elle::sprintf("unknown one-way algorithm '%s'",
-                                        static_cast<int>(oneway)));
+                                    static_cast<int>(oneway)));
       }
 
       return (stream);
@@ -91,7 +91,7 @@ namespace infinit
             return (::EVP_sha512());
           default:
             throw Error(elle::sprintf("unable to resolve the given one-way "
-                                          "function name '%s'", name));
+                                      "function name '%s'", name));
         }
 
         elle::unreachable();

@@ -3,7 +3,6 @@
 
 #include <elle/log.hh>
 
-#include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/dsa/pem.hh>
 #include <cryptography/finally.hh>

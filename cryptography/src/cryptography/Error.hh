@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_EXCEPTION_HH
-# define INFINIT_CRYPTOGRAPHY_EXCEPTION_HH
+#ifndef INFINIT_CRYPTOGRAPHY_ERROR_HH
+# define INFINIT_CRYPTOGRAPHY_ERROR_HH
 
 # include <elle/types.hh>
 # include <elle/Error.hh>

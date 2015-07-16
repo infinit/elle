@@ -6,7 +6,7 @@
 #  include "../cryptography.hh"
 
 #  include <cryptography/SecretKey.hh>
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 #  include <cryptography/random.hh>
 #  include <cryptography/rsa/Seed.hh>
 #  include <cryptography/rsa/KeyPair.hh>
@@ -83,7 +83,7 @@ public:
   revoke(infinit::cryptography::rsa::PublicKey const& address)
   {
     if (this->_entries.erase(address) != 1)
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unable to remove %s from the entries", address));
   }
 
@@ -92,7 +92,7 @@ public:
   {
     auto iterator = this->_entries.find(address);
     if (iterator == this->_entries.end())
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unable to find the entry for %s", address));
 
     Entry* entry = iterator->second;
@@ -323,7 +323,7 @@ public:
   remove(infinit::cryptography::rsa::PublicKey const& user_K)
   {
     if (this->_members.erase(user_K) != 1)
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unable to remove %s from the members", user_K));
   }
 
@@ -332,7 +332,7 @@ public:
   {
     auto iterator = this->_members.find(user_K);
     if (iterator == this->_members.end())
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unable to find the member for %s", user_K));
 
     Member* member = iterator->second;

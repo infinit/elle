@@ -81,7 +81,7 @@ namespace infinit
         }
         default:
           throw Error(elle::sprintf("unknown cipher '%s'",
-                                        static_cast<int>(cipher)));
+                                    static_cast<int>(cipher)));
       }
 
       return (stream);
@@ -120,7 +120,7 @@ namespace infinit
         }
         default:
           throw Error(elle::sprintf("unknown operation mode '%s'",
-                                        static_cast<int>(mode)));
+                                    static_cast<int>(mode)));
       }
 
       return (stream);

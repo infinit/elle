@@ -3,7 +3,6 @@
 #include <cryptography/dsa/PrivateKey.hh>
 #include <cryptography/dsa/PublicKey.hh>
 #include <cryptography/dsa/KeyPair.hh>
-#include <cryptography/Exception.hh>
 
 #include <elle/printf.hh>
 #include <elle/serialization/json.hh>

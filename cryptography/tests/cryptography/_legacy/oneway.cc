@@ -1,7 +1,6 @@
 #include "cryptography.hh"
 #include "Sample.hh"
 
-#include <cryptography/Exception.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/random.hh>
 #include <cryptography/hash.hh>

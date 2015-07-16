@@ -5,7 +5,6 @@
 #include <cryptography/dh/PrivateKey.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/Cipher.hh>
-#include <cryptography/Exception.hh>
 #include <cryptography/random.hh>
 
 #include <elle/printf.hh>

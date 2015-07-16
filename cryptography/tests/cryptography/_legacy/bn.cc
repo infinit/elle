@@ -1,7 +1,6 @@
 #include "cryptography.hh"
 
 #include <cryptography/bn.hh>
-#include <cryptography/Exception.hh>
 
 #include <elle/serialize/Base64Archive.hh>
 #include <elle/serialize/insert.hh>

@@ -3,7 +3,7 @@
 
 # include <cryptography/Cipher.hh>
 # include <cryptography/Cryptosystem.hh>
-# include <cryptography/Exception.hh>
+# include <cryptography/Error.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/SecretKey.hh>
 # include <cryptography/bn.hh>

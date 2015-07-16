@@ -42,7 +42,7 @@ namespace infinit
     /// authenticated.
     ///
     ///   if (check(response, server_k, nonce) == false)
-    ///     throw Exception("failed challenge");
+    ///     throw Error("failed challenge");
     namespace challenge
     {
       /*----------.

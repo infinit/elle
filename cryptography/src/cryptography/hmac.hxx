@@ -12,7 +12,6 @@
 
 # include <cryptography/raw.hh>
 # include <cryptography/finally.hh>
-# include <cryptography/Error.hh>
 
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 namespace infinit

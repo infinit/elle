@@ -78,7 +78,7 @@ namespace infinit
 #  include <cryptography/finally.hh>
 #  include <cryptography/Cryptosystem.hh>
 #  include <cryptography/bn.hh>
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 #  include <cryptography/Cipher.hh>
 #  include <cryptography/rsa/der.hh>
 #  include <cryptography/rsa/Padding.hh>
@@ -127,7 +127,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }
@@ -224,7 +224,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       // because it was not set in the versions 0 and 1.
       if (::EVP_PKEY_CTX_set_signature_md(value._context.verify.get(),
                                           nullptr) <= 0)
-        throw Exception(
+        throw Error(
           elle::sprintf("unable to set the EVP_PKEY context's digest "
                         "function: %s",
                         ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -261,7 +261,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }

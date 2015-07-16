@@ -1,7 +1,6 @@
 #include "cryptography.hh"
 
 #include <cryptography/random.hh>
-#include <cryptography/Exception.hh>
 
 /*--------.
 | Operate |

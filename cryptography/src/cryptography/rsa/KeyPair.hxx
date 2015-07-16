@@ -11,7 +11,7 @@
 | Serializable |
 `-------------*/
 
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 #  include <cryptography/rsa/PublicKey.hh>
 #  include <cryptography/rsa/PrivateKey.hh>
 
@@ -53,7 +53,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::KeyPair,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }
@@ -90,7 +90,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 

@@ -3,7 +3,7 @@
 # include "../cryptography.hh"
 
 # include <cryptography/SecretKey.hh>
-# include <cryptography/Exception.hh>
+# include <cryptography/Error.hh>
 # include <cryptography/random.hh>
 # include <cryptography/rsa/Seed.hh>
 # include <cryptography/rsa/KeyPair.hh>
@@ -182,7 +182,7 @@ test_operate()
       infinit::cryptography::rsa::seed::generate(512);
 
     BOOST_CHECK_THROW(keypair.k().rotate(seed),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
   }
 }
 

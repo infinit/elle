@@ -1,7 +1,7 @@
 #include "cryptography.hh"
 
 #include <cryptography/bn.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/serialization/json.hh>
 
@@ -26,7 +26,7 @@ test_represent()
     ::BIGNUM bn;
     ::BN_init(&bn);
     if (::BN_pseudo_rand(&bn, 1024, -1, 0) == 0)
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unable to randomly generate a big number: %s",
                       ::ERR_error_string(ERR_get_error(), nullptr)));
 

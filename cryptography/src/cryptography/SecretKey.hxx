@@ -59,7 +59,7 @@ namespace infinit
 #  include <elle/serialize/Serializer.hh>
 #  include <elle/serialize/StaticFormat.hh>
 
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::SecretKey, 1);
 
@@ -75,7 +75,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::SecretKey,
     case 0:
     {
       if (value._cipher == infinit::cryptography::Cipher::null)
-        throw infinit::cryptography::Exception(
+        throw infinit::cryptography::Error(
           elle::sprintf("unable to serialize a null cipher in an old format: "
                         "%s", format));
 
@@ -87,7 +87,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::SecretKey,
       archive << value._oneway;
 
       if (value._mode != infinit::cryptography::Mode::cbc)
-        throw infinit::cryptography::Exception(
+        throw infinit::cryptography::Error(
           elle::sprintf("unable to serialize a non-CBC mode in an old format: "
                         "%s", format));
 
@@ -103,7 +103,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::SecretKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }
@@ -140,7 +140,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::SecretKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }

@@ -4,7 +4,6 @@
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
 #include <cryptography/rsa/KeyPair.hh>
-#include <cryptography/Exception.hh>
 
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>

@@ -1,6 +1,6 @@
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 
-# include <cryptography/Exception.hh>
+# include <cryptography/Error.hh>
 # include <cryptography/random.hh>
 # include <cryptography/bn.hh>
 # include <cryptography/rsa/Seed.hh>
@@ -120,7 +120,7 @@ namespace infinit
           ELLE_TRACE_FUNCTION(length);
 
           if ((length % 8) != 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("the seed length %s is not a multiple of 8",
                             length));
 

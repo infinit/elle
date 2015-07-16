@@ -1,6 +1,6 @@
 #include <cryptography/challenge.hh>
 #include <cryptography/random.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/PublicKey.hh>
 #include <cryptography/PrivateKey.hh>
 #include <cryptography/Code.hh>
@@ -157,7 +157,7 @@ namespace infinit
         if (challenger_K != nullptr)
         {
           if (*challenger_K != _challenge.challenger_K())
-            throw Exception(
+            throw Error(
               elle::sprintf("the challenger does not seem to be the expected "
                             "one: challenger_K(%s) versus in-challenge(%s)",
                             *challenger_K, _challenge.challenger_K()));
@@ -214,7 +214,7 @@ namespace infinit
 
           return (true);
         }
-        catch (Exception const& e)
+        catch (Error const& e)
         {
           return (false);
         }

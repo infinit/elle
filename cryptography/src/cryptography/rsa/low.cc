@@ -1,7 +1,6 @@
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/der.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/Error.hh>
 
 #include <elle/log.hh>
 #include <elle/Buffer.hh>

@@ -7,10 +7,11 @@
 #include <cryptography/Oneway.hh>
 #include <cryptography/Cipher.hh>
 #include <cryptography/random.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/printf.hh>
 #include <elle/types.hh>
-#include <elle/Exception.hh>
+#include <elle/Error.hh>
 #include <elle/filesystem/TemporaryFile.hh>
 
 #include <cstdio>
@@ -75,7 +76,7 @@ test_operate_import()
   BOOST_CHECK_THROW(
     infinit::cryptography::dsa::pem::import_k(path_private_key.path(),
                                               "wrong passphrase"),
-    infinit::cryptography::Exception);
+    infinit::cryptography::Error);
 
   // 2)
   infinit::cryptography::dsa::PrivateKey k =
@@ -115,7 +116,7 @@ test_operate_export()
   BOOST_CHECK_THROW(
     infinit::cryptography::dsa::pem::import_k(path.path(),
                                               "wrong passphrase"),
-    infinit::cryptography::Exception);
+    infinit::cryptography::Error);
 
   // 2)
   infinit::cryptography::dsa::PrivateKey k =
@@ -128,7 +129,7 @@ test_operate_export()
   // which is encrypted.
   BOOST_CHECK_THROW(
     infinit::cryptography::dsa::pem::import_K(path.path()),
-    infinit::cryptography::Exception);
+    infinit::cryptography::Error);
 
   // Extract the public key from the private key.
   infinit::cryptography::dsa::PublicKey K(k);

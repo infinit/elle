@@ -9,7 +9,6 @@
 #include <elle/serialization/binary.hh>
 
 #include <cryptography/Cipher.hh>
-#include <cryptography/Error.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/cryptography.hh>

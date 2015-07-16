@@ -108,8 +108,8 @@ namespace infinit
       {
         if (::RAND_bytes(buffer, size) <= 0)
           throw Error(elle::sprintf("unable to generate random bytes: %s",
-                                        ::ERR_error_string(ERR_get_error(),
-                                                           nullptr)));
+                                    ::ERR_error_string(ERR_get_error(),
+                                                       nullptr)));
       }
     }
   }

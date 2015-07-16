@@ -3,7 +3,6 @@
 #include <cryptography/dh/PrivateKey.hh>
 #include <cryptography/dh/PublicKey.hh>
 #include <cryptography/dh/KeyPair.hh>
-#include <cryptography/Exception.hh>
 
 #include <elle/printf.hh>
 

@@ -10,7 +10,7 @@
 #  include <elle/finally.hh>
 #  include <elle/serialize/Serializer.hh>
 
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 
 #  include <openssl/err.h>
 
@@ -64,7 +64,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
 
   // Load the data binary and convert it into a big number.
   if (::BN_bin2bn(buffer, static_cast<int>(size), &value) == nullptr)
-    throw infinit::cryptography::Exception(
+    throw infinit::cryptography::Error(
       elle::sprintf("unable to convert the binary data into a big number: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 }

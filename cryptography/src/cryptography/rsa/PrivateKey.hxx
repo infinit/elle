@@ -9,7 +9,7 @@
 
 #  include <cryptography/serialization.hh>
 #  include <cryptography/Cryptosystem.hh>
-#  include <cryptography/Exception.hh>
+#  include <cryptography/Error.hh>
 #  include <cryptography/hash.hh>
 #  include <cryptography/envelope.hh>
 #  include <cryptography/_legacy/Clear.hh>
@@ -123,7 +123,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PrivateKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }
@@ -248,7 +248,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
       // because it was not set in the versions 0 and 1.
       if (::EVP_PKEY_CTX_set_signature_md(value._context.sign.get(),
                                           nullptr) <= 0)
-        throw Exception(
+        throw Error(
           elle::sprintf("unable to set the EVP_PKEY context's digest "
                         "function: %s",
                         ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -283,7 +283,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
       break;
     }
     default:
-      throw infinit::cryptography::Exception(
+      throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
   }
 }

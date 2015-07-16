@@ -94,7 +94,7 @@ namespace infinit
               return (RSA_PKCS1_PSS_PADDING);
             default:
               throw Error(elle::sprintf("unable to resolve the given "
-                                            "padding name '%s'", name));
+                                        "padding name '%s'", name));
           }
 
           elle::unreachable();
@@ -121,7 +121,7 @@ namespace infinit
               return (Padding::pss);
             default:
               throw Error(elle::sprintf("unable to resolve the given "
-                                            "padding value '%s'", value));
+                                        "padding value '%s'", value));
           }
 
           elle::unreachable();

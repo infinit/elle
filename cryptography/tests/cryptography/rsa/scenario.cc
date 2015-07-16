@@ -53,7 +53,7 @@ test_scenario()
         infinit::cryptography::Cipher::aes256);
 
     BOOST_CHECK_THROW(object0.read(key),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
   }
 
   // Create two users.
@@ -144,7 +144,7 @@ test_scenario()
       groupB0.members().pass_k(userY);
 
     BOOST_CHECK_THROW(object1.acl().key(groupB0.address(), _passB0_k),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
 
     infinit::cryptography::SecretKey _key0 =
       object0.acl().key(groupB0.address(), _passB0_k);
@@ -201,15 +201,15 @@ test_scenario()
     groupA5.members().retrieve(userZ.K());
 
     BOOST_CHECK_THROW(groupA0.members().retrieve(userZ.K()),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
     BOOST_CHECK_THROW(groupA1.members().retrieve(userZ.K()),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
     BOOST_CHECK_THROW(groupA2.members().retrieve(userZ.K()),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
     BOOST_CHECK_THROW(groupA3.members().retrieve(userZ.K()),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
     BOOST_CHECK_THROW(groupA4.members().retrieve(userZ.K()),
-                      infinit::cryptography::Exception);
+                      infinit::cryptography::Error);
   }
 
   // Even though user Z does not have direct access to the

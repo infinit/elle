@@ -6,7 +6,6 @@
 #include <cryptography/rsa/pem.hh>
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
-#include <cryptography/Error.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/pem.hh>

@@ -6,7 +6,7 @@
 #include <cryptography/rsa/Padding.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/Cipher.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/random.hh>
 
 #include <elle/printf.hh>
@@ -232,6 +232,18 @@ test_serialize()
     BOOST_CHECK_EQUAL(keypair1, keypair2);
 
     _test_operate(keypair2);
+  }
+
+  // Deserialize a wrong key pair (since missing elements)
+  {
+    elle::String representation(R"JSON({"private_key":{"algorithm":"rsa","modulus":"DAE3A85F69DB7C6BDADB252D4BC3025BB7BE26DAB340A3256BEAC35DBE09C0B0332010087B1435D8651B011F255D1A488A5B495B46B7BC2F7CF26F5853FAFBA8534634B839AEE3AACD546045D73A8EBDA1119F75B118764C1399ED201F2BB9410293F1440BC8E4BFDEDF176DA2EE0D91FC7C0A0BE16936F1F93034D7ABEDDEC9","private_exponent":"908F1D99B5FDA094527BBC77C7BB48896E3604CF16E72F57FD8793F30B18C1CB1C58A67E135AEB9CB859374A6C90AA55121AEBBD7E5CC5C9CF0905841E2279A41E7DB542A836D42DDA0E32820E7AA4034BF21ECC74885A2A557F9C0A8DE8E41C8F4557AEBB1D8051C6B292E434E873AFAC9DCD31041ECF0BA0A76E9E20EA8CA1","public_exponent":"010001"},"public_key":{"algorithm":"rsa","modulus":"DAE3A85F69DB7C6BDADB252D4BC3025BB7BE26DAB340A3256BEAC35DBE09C0B0332010087B1435D8651B011F255D1A488A5B495B46B7BC2F7CF26F5853FAFBA8534634B839AEE3AACD546045D73A8EBDA1119F75B118764C1399ED201F2BB9410293F1440BC8E4BFDEDF176DA2EE0D91FC7C0A0BE16936F1F93034D7ABEDDEC9","public_exponent":"010001"}})JSON");
+    std::stringstream stream(representation);
+    typename elle::serialization::json::SerializerIn input(stream);
+
+    /* XXX
+    BOOST_CHECK_THROW(infinit::cryptography::rsa::KeyPair keypair(input),
+                      infinit::cryptography::Error);
+    */
   }
 
   // For every hard-coded strings [representation 1] in every format,

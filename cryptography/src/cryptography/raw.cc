@@ -92,9 +92,9 @@ namespace infinit
                        _input.contents(),
                        _input.size()) <= 0)
             throw Error(elle::sprintf("unable to pre-compute the size of "
-                                          "the encrypted output: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
+                                      "the encrypted output: %s",
+                                      ::ERR_error_string(ERR_get_error(),
+                                                         nullptr)));
 
           // Prepare the output buffer for receiving the encrypted content.
           elle::Buffer output(size);
@@ -107,9 +107,9 @@ namespace infinit
                        _input.contents(),
                        _input.size()) <= 0)
             throw Error(elle::sprintf("unable to apply the cryptographic "
-                                          "function: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
+                                      "function: %s",
+                                      ::ERR_error_string(ERR_get_error(),
+                                                         nullptr)));
 
           // Set the final output buffer size.
           output.size(size);
@@ -372,9 +372,9 @@ namespace infinit
 
           if (::RAND_pseudo_bytes(salt, sizeof (salt)) <= 0)
             throw Error(elle::sprintf("unable to pseudo-randomly generate "
-                                          "a salt: %s",
-                                          ::ERR_error_string(ERR_get_error(),
-                                                             nullptr)));
+                                      "a salt: %s",
+                                      ::ERR_error_string(ERR_get_error(),
+                                                         nullptr)));
 
           // Check that the secret key's buffer has a non-null address.
           //
@@ -518,7 +518,7 @@ namespace infinit
                        magic,
                        sizeof (magic) - 1) != 0)
             throw Error("the code was produced without any or an invalid "
-                            "salt");
+                        "salt");
 
           // Copy the salt for the sack of clarity.
           unsigned char _salt[PKCS5_SALT_LEN];

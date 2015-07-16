@@ -24,7 +24,7 @@ namespace infinit
 
           int _size = ::i2d_RSAPublicKey(rsa, &_buffer);
           if (_size <= 0)
-            throw infinit::cryptography::Error(
+            throw Error(
               elle::sprintf("unable to encode the RSA public key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -46,7 +46,7 @@ namespace infinit
 
           ::RSA* rsa = nullptr;
           if ((rsa = ::d2i_RSAPublicKey(NULL, &_buffer, _size)) == NULL)
-            throw infinit::cryptography::Error(
+            throw Error(
               elle::sprintf("unable to decode the RSA public key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -60,7 +60,7 @@ namespace infinit
 
           int _size = ::i2d_RSAPrivateKey(rsa, &_buffer);
           if (_size <= 0)
-            throw infinit::cryptography::Error(
+            throw Error(
               elle::sprintf("unable to encode the RSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -82,7 +82,7 @@ namespace infinit
 
           ::RSA* rsa = nullptr;
           if ((rsa = ::d2i_RSAPrivateKey(NULL, &_buffer, _size)) == NULL)
-            throw infinit::cryptography::Error(
+            throw Error(
               elle::sprintf("unable to decode the RSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

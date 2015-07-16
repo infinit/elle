@@ -6,7 +6,6 @@
 # include <cryptography/Cipher.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/finally.hh>
-# include <cryptography/Exception.hh>
 
 # include <elle/Buffer.hh>
 # include <elle/log.hh>

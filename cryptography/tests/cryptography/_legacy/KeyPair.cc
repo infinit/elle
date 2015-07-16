@@ -4,7 +4,6 @@
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
-#include <cryptography/Exception.hh>
 #include <cryptography/random.hh>
 
 #include <elle/printf.hh>
