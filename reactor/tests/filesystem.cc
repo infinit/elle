@@ -136,9 +136,13 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
   reactor::Thread t(sched, "mount", [&] {
     reactor::Barrier barrier;
     *b = &barrier;
+    ELLE_TRACE("mounting");
     fs.mount(tmp, {});
+    ELLE_TRACE("waiting on stop barrier");
     barrier.wait();
+    ELLE_TRACE("...unmounting...");
     fs.unmount();
+    ELLE_TRACE("...unmounted");
   });
   sched.run();
 }
@@ -180,6 +184,7 @@ static void test_sum(void)
   BOOST_CHECK_EQUAL(s, 22);
   BOOST_CHECK_EQUAL(directory_count(tmp), 101);
   ELLE_DEBUG("teardown");
+  sched->mt_run<void>("stop", [&] {fs.unmount();});
   sched->mt_run<void>("stop", [&] {barrier->open();});
   ELLE_DEBUG("joining");
   t.join();
@@ -350,6 +355,7 @@ static void test_xor(void)
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   boost::filesystem::remove(tmpmount / "dir");
   ELLE_TRACE("unmounting...");
+  sched->mt_run<void>("stop", [&] {fs.unmount();});
   sched->mt_run<void>("stop", [&] {barrier->open();});
   ELLE_TRACE("joining...");
   t.join();
