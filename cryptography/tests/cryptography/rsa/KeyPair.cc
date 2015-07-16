@@ -240,10 +240,8 @@ test_serialize()
     std::stringstream stream(representation);
     typename elle::serialization::json::SerializerIn input(stream);
 
-    /* XXX
     BOOST_CHECK_THROW(infinit::cryptography::rsa::KeyPair keypair(input),
                       infinit::cryptography::Error);
-    */
   }
 
   // For every hard-coded strings [representation 1] in every format,

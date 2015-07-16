@@ -177,7 +177,14 @@ namespace infinit
       KeyPair::serialize(elle::serialization::Serializer& serializer)
       {
         serializer.serialize("public key", this->_K);
+        if (this->_K == nullptr)
+          throw Error(
+            elle::sprintf("unable to deserialize the 'public key'"));
+
         serializer.serialize("private key", this->_k);
+        if (this->_k == nullptr)
+          throw Error(
+            elle::sprintf("unable to deserialize the 'private key'"));
       }
 
       /*----------.

@@ -450,6 +450,7 @@ namespace infinit
         cryptography::serialize<privatekey::Serialization>(
           serializer,
           this->_key->pkey.rsa);
+        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
 
         serializer.serialize("encryption padding", this->_encryption_padding);
         serializer.serialize("signature padding", this->_signature_padding);

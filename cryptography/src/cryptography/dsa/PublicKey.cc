@@ -310,6 +310,7 @@ namespace infinit
         cryptography::serialize<publickey::Serialization>(
           serializer,
           this->_key->pkey.dsa);
+        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
 
         serializer.serialize("digest algorithm", this->_digest_algorithm);
       }
