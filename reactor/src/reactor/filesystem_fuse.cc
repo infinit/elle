@@ -399,8 +399,13 @@ namespace reactor
       }
       return 0;
     }
+
     static int fusop_setxattr(const char *path, const char *key,
-                               const char *val, size_t valsize , int flags)
+                               const char *val, size_t valsize, int flags
+#ifdef INFINIT_MACOSX
+                              , uint32_t position
+#endif
+                              )
     {
             ELLE_DEBUG_SCOPE("fusop_setxattr %s", path);
       try
@@ -417,7 +422,11 @@ namespace reactor
       return 0;
     }
     static int fusop_getxattr(const char *path, const char *key,
-                              char *val, size_t valsize)
+                              char *val, size_t valsize
+#ifdef INFINIT_MACOSX
+                              , uint32_t position
+#endif
+                             )
     {
       ELLE_DEBUG_SCOPE("fusop_getxattr %s buf %s", path, valsize);
       try
