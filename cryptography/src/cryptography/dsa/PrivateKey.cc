@@ -1,22 +1,22 @@
-#include <cryptography/dsa/PrivateKey.hh>
-#include <cryptography/dsa/KeyPair.hh>
-#include <cryptography/dsa/serialization.hh>
-#include <cryptography/dsa/der.hh>
-#include <cryptography/dsa/low.hh>
-#include <cryptography/context.hh>
-#include <cryptography/Exception.hh>
-#include <cryptography/cryptography.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/bn.hh>
-#include <cryptography/raw.hh>
-#include <cryptography/hash.hh>
-
-#include <elle/log.hh>
-
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/dsa.h>
 #include <openssl/err.h>
+
+#include <elle/log.hh>
+
+#include <cryptography/Error.hh>
+#include <cryptography/bn.hh>
+#include <cryptography/context.hh>
+#include <cryptography/cryptography.hh>
+#include <cryptography/dsa/KeyPair.hh>
+#include <cryptography/dsa/PrivateKey.hh>
+#include <cryptography/dsa/der.hh>
+#include <cryptography/dsa/low.hh>
+#include <cryptography/dsa/serialization.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/hash.hh>
+#include <cryptography/raw.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PrivateKey");
 
@@ -85,7 +85,7 @@ namespace infinit
         cryptography::require();
 
         if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_DSA)
-          throw Exception(
+          throw Error(
             elle::sprintf("the EVP_PKEY key is not of type DSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
@@ -150,13 +150,13 @@ namespace infinit
         this->_key.reset(::EVP_PKEY_new());
 
         if (this->_key == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Set the dsa structure into the private key.
         if (::EVP_PKEY_assign_DSA(this->_key.get(), dsa) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to assign the DSA key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -254,7 +254,7 @@ namespace infinit
 
         // Set the EVP key as being of type DSA.
         if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_DSA) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 

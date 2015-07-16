@@ -1,5 +1,5 @@
 #include <cryptography/dh/KeyPair.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/deleter.hh>
@@ -152,14 +152,14 @@ namespace infinit
           ::EVP_PKEY* parameters = nullptr;
 
           if ((parameters = ::EVP_PKEY_new()) == nullptr)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to allocate a parameters object: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
 
           if (::EVP_PKEY_assign_DH(parameters, ::DH_get_2048_256()) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to set the parameters: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -167,7 +167,7 @@ namespace infinit
           ::EVP_PKEY_CTX* context;
 
           if ((context = ::EVP_PKEY_CTX_new(parameters, nullptr)) == nullptr)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to allocate a keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -175,7 +175,7 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
 
           if (::EVP_PKEY_keygen_init(context) <= 0)
-            throw Exception(
+            throw Error(
                elle::sprintf("unable to initialize the keypair generation "
                             "context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -184,7 +184,7 @@ namespace infinit
           ::EVP_PKEY* key = nullptr;
 
           if (::EVP_PKEY_keygen(context, &key) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to generate a keypair: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

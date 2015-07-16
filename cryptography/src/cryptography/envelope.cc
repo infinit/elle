@@ -1,21 +1,21 @@
-#include <cryptography/envelope.hh>
-#include <cryptography/raw.hh>
-#include <cryptography/cryptography.hh>
-#include <cryptography/SecretKey.hh>
-#include <cryptography/Cipher.hh>
-#include <cryptography/Oneway.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
-
-#include <elle/Buffer.hh>
-#include <elle/log.hh>
-#include <elle/serialization/binary.hh>
-
 #include <openssl/crypto.h>
 #include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
+
+#include <elle/Buffer.hh>
+#include <elle/log.hh>
+#include <elle/serialization/binary.hh>
+
+#include <cryptography/Cipher.hh>
+#include <cryptography/Error.hh>
+#include <cryptography/Oneway.hh>
+#include <cryptography/SecretKey.hh>
+#include <cryptography/cryptography.hh>
+#include <cryptography/envelope.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/raw.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.envelope");
 

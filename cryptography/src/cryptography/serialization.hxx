@@ -24,7 +24,6 @@ namespace infinit
       {
         elle::Buffer representation;
         serializer.serialize(S::identifier, representation);
-        ELLE_ASSERT_EQ(data, nullptr);
         data = S::decode(representation);
       }
     }

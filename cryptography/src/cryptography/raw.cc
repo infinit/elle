@@ -4,7 +4,7 @@
 #include <cryptography/Cipher.hh>
 #include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
@@ -91,7 +91,7 @@ namespace infinit
                        &size,
                        _input.contents(),
                        _input.size()) <= 0)
-            throw Exception(elle::sprintf("unable to pre-compute the size of "
+            throw Error(elle::sprintf("unable to pre-compute the size of "
                                           "the encrypted output: %s",
                                           ::ERR_error_string(ERR_get_error(),
                                                              nullptr)));
@@ -106,7 +106,7 @@ namespace infinit
                        &size,
                        _input.contents(),
                        _input.size()) <= 0)
-            throw Exception(elle::sprintf("unable to apply the cryptographic "
+            throw Error(elle::sprintf("unable to apply the cryptographic "
                                           "function: %s",
                                           ::ERR_error_string(ERR_get_error(),
                                                              nullptr)));
@@ -214,7 +214,7 @@ namespace infinit
             case 0:
               return (false);
             default:
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to verify the signature: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
@@ -230,7 +230,7 @@ namespace infinit
 
           // Set the peer key.
           if (::EVP_PKEY_derive_set_peer(context, peer) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the context for "
                             "derivation: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -239,7 +239,7 @@ namespace infinit
 
           // Compute the shared key's future length.
           if (::EVP_PKEY_derive(context, nullptr, &size) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to compute the output size of the "
                             "shared key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -250,7 +250,7 @@ namespace infinit
           if (::EVP_PKEY_derive(context,
                                 buffer.mutable_contents(),
                                 &size) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to generate the shared key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -281,7 +281,7 @@ namespace infinit
           if (static_cast<typename elle::Buffer::Size>(
                 ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
               seed.size())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to rotate a seed whose length does not "
                             "match the key's modulus: %s versus %s",
                             ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
@@ -310,7 +310,7 @@ namespace infinit
           if (static_cast<typename elle::Buffer::Size>(
                 ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
               seed.size())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to unrotate a seed whose length does not "
                             "match the key's modulus: %s versus %s",
                             ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
@@ -371,7 +371,7 @@ namespace infinit
           unsigned char salt[PKCS5_SALT_LEN];
 
           if (::RAND_pseudo_bytes(salt, sizeof (salt)) <= 0)
-            throw Exception(elle::sprintf("unable to pseudo-randomly generate "
+            throw Error(elle::sprintf("unable to pseudo-randomly generate "
                                           "a salt: %s",
                                           ::ERR_error_string(ERR_get_error(),
                                                              nullptr)));
@@ -393,7 +393,7 @@ namespace infinit
                                1,
                                key,
                                iv) > static_cast<int>(sizeof (key)))
-            throw Exception("the generated key size is too large");
+            throw Error("the generated key size is too large");
 
           // Initialize the cipher context.
           ::EVP_CIPHER_CTX context;
@@ -408,7 +408,7 @@ namespace infinit
                                    nullptr,
                                    key,
                                    iv) == 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -416,7 +416,7 @@ namespace infinit
           code.write(magic, sizeof (magic) - 1);
           code.write(reinterpret_cast<const char*>(salt), sizeof (salt));
           if (!code.good())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to write the magic and salt to the code's "
                             "output stream: %s",
                             code.rdstate()));
@@ -437,7 +437,7 @@ namespace infinit
             // temporary buffer.
             plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
             if (plain.bad())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
                               plain.rdstate()));
 
@@ -449,7 +449,7 @@ namespace infinit
                                     &size_update,
                                     _input.data(),
                                     plain.gcount()) == 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to apply the encryption function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -457,7 +457,7 @@ namespace infinit
             code.write(reinterpret_cast<const char *>(_output.data()),
                        size_update);
             if (!code.good())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to write the encrypted data to the "
                               "code's output stream: %s",
                               code.rdstate()));
@@ -469,7 +469,7 @@ namespace infinit
           if (::EVP_EncryptFinal_ex(&context,
                                     _output.data(),
                                     &size_final) == 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to finalize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -477,14 +477,14 @@ namespace infinit
           code.write(reinterpret_cast<const char *>(_output.data()),
                      size_final);
           if (!code.good())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to write the encrypted data to the "
                             "code's output stream: %s",
                             code.rdstate()));
 
           // Clean up the cipher context.
           if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to clean the cipher context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -509,7 +509,7 @@ namespace infinit
 
           code.read(reinterpret_cast<char*>(_magic), sizeof (magic) - 1);
           if (!code.good())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to read the magic from the code's "
                             "input stream: %s",
                             code.rdstate()));
@@ -517,7 +517,7 @@ namespace infinit
           if (::memcmp(_magic,
                        magic,
                        sizeof (magic) - 1) != 0)
-            throw Exception("the code was produced without any or an invalid "
+            throw Error("the code was produced without any or an invalid "
                             "salt");
 
           // Copy the salt for the sack of clarity.
@@ -525,7 +525,7 @@ namespace infinit
 
           code.read(reinterpret_cast<char*>(_salt), sizeof (_salt));
           if (!code.good())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to read the salt from the code's "
                             "input stream: %s",
                             code.rdstate()));
@@ -542,7 +542,7 @@ namespace infinit
                                1,
                                key,
                                iv) > static_cast<int>(sizeof (key)))
-            throw Exception("the generated key size is too large");
+            throw Error("the generated key size is too large");
 
           // Initialize the cipher context.
           ::EVP_CIPHER_CTX context;
@@ -557,7 +557,7 @@ namespace infinit
                                    nullptr,
                                    key,
                                    iv) == 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -574,7 +574,7 @@ namespace infinit
             // temporary buffer.
             code.read(reinterpret_cast<char*>(_input.data()), _input.size());
             if (code.bad())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to read the code's input stream: %s",
                               code.rdstate()));
 
@@ -586,7 +586,7 @@ namespace infinit
                                     &size_update,
                                     _input.data(),
                                     code.gcount()) == 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to apply the decryption function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -594,7 +594,7 @@ namespace infinit
             plain.write(reinterpret_cast<const char *>(_output.data()),
                         size_update);
             if (!plain.good())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to write the decrypted data to the "
                               "plain's output stream: %s",
                               plain.rdstate()));
@@ -606,7 +606,7 @@ namespace infinit
           if (::EVP_DecryptFinal_ex(&context,
                                     _output.data(),
                                     &size_final) == 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to finalize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -614,14 +614,14 @@ namespace infinit
           plain.write(reinterpret_cast<const char *>(_output.data()),
                       size_final);
           if (!plain.good())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to write the decrypted data to the "
                             "plain's output stream: %s",
                             plain.rdstate()));
 
           // Clean up the cipher context.
           if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to clean the cipher context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -660,7 +660,7 @@ namespace infinit
 
         // Initialise the digest.
         if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to initialize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -673,7 +673,7 @@ namespace infinit
           // temporary buffer.
           plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
           if (plain.bad())
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to read the plain's input stream: %s",
                             plain.rdstate()));
 
@@ -681,7 +681,7 @@ namespace infinit
           if (::EVP_DigestUpdate(&context,
                                  _input.data(),
                                  plain.gcount()) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to apply the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
         }
@@ -695,7 +695,7 @@ namespace infinit
         if (::EVP_DigestFinal_ex(&context,
                                  digest.mutable_contents(),
                                  &size) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to finalize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -705,7 +705,7 @@ namespace infinit
 
         // Clean the context.
         if (::EVP_MD_CTX_cleanup(&context) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to clean the digest context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -747,12 +747,12 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
           if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           if (::EVP_DigestSignInit(&context, NULL, function, NULL, key) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -765,7 +765,7 @@ namespace infinit
             // temporary buffer.
             plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
             if (plain.bad())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
                               plain.rdstate()));
 
@@ -773,7 +773,7 @@ namespace infinit
             if (::EVP_DigestSignUpdate(&context,
                                        _input.data(),
                                        plain.gcount()) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to apply the HMAC function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
@@ -784,7 +784,7 @@ namespace infinit
           if (::EVP_DigestSignFinal(&context,
                                     nullptr,
                                     &size) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to compute the final HMAC size: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -794,7 +794,7 @@ namespace infinit
           if (::EVP_DigestSignFinal(&context,
                                     digest.mutable_contents(),
                                     &size) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to finalize the digest process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -806,7 +806,7 @@ namespace infinit
 
           // Clean the context.
           if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to clean the digest context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -834,12 +834,12 @@ namespace infinit
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
           if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           if (::EVP_DigestVerifyInit(&context, NULL, function, NULL, key) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -852,7 +852,7 @@ namespace infinit
             // temporary buffer.
             plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
             if (plain.bad())
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
                               plain.rdstate()));
 
@@ -860,7 +860,7 @@ namespace infinit
             if (::EVP_DigestVerifyUpdate(&context,
                                          _input.data(),
                                          plain.gcount()) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to apply the HMAC function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
@@ -873,7 +873,7 @@ namespace infinit
 
           // Clean the context.
           if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to clean the digest context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

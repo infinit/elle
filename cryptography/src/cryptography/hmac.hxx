@@ -1,18 +1,18 @@
 #ifndef INFINIT_CRYPTOGRAPHY_HMAC_HXX
 # define INFINIT_CRYPTOGRAPHY_HMAC_HXX
 
-# include <cryptography/raw.hh>
-# include <cryptography/finally.hh>
-# include <cryptography/Exception.hh>
-
-# include <elle/Buffer.hh>
-# include <elle/log.hh>
-
 # include <utility>
 
 # include <openssl/evp.h>
 # include <openssl/err.h>
 # include <openssl/hmac.h>
+
+# include <elle/Buffer.hh>
+# include <elle/log.hh>
+
+# include <cryptography/raw.hh>
+# include <cryptography/finally.hh>
+# include <cryptography/Error.hh>
 
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 namespace infinit

@@ -9,7 +9,7 @@ namespace infinit
     enum class Mode;
     enum class Cryptosystem;
     enum class Oneway;
-    class Exception;
+    class Error;
     class SecretKey;
   }
 }

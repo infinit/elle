@@ -1,12 +1,12 @@
-#include <cryptography/rsa/context.hh>
-#include <cryptography/context.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
-
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
+
+#include <cryptography/Error.hh>
+#include <cryptography/context.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/rsa/context.hh>
 
 namespace infinit
 {
@@ -32,7 +32,7 @@ namespace infinit
           int _padding = padding::resolve(padding);
 
           if (EVP_PKEY_CTX_set_rsa_padding(context, _padding) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to set the EVP_PKEY context's "
                             "padding '%s': %s",
                             _padding,

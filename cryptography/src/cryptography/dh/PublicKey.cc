@@ -14,7 +14,7 @@
 #include <cryptography/dh/KeyPair.hh>
 #include <cryptography/dh/low.hh>
 #include <cryptography/context.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
 #include <cryptography/finally.hh>
@@ -66,7 +66,7 @@ namespace infinit
         cryptography::require();
 
         if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_DH)
-          throw Exception(
+          throw Error(
             elle::sprintf("the EVP_PKEY key is not of type DH: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
@@ -132,13 +132,13 @@ namespace infinit
         this->_key.reset(::EVP_PKEY_new());
 
         if (this->_key == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Set the dh structure into the public key.
         if (::EVP_PKEY_assign_DH(this->_key.get(), dh) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to assign the DH key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));

@@ -3,8 +3,8 @@
 
 # include <cstdlib>
 
+# include <cryptography/Error.hh>
 # include <cryptography/cryptography.hh>
-# include <cryptography/Exception.hh>
 
 # include <elle/Exception.hh>
 # include <elle/Buffer.hh>

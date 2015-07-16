@@ -1,7 +1,7 @@
 #include <cryptography/dsa/low.hh>
 #include <cryptography/dsa/der.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/log.hh>
 #include <elle/Buffer.hh>
@@ -41,7 +41,7 @@ namespace infinit
 
           if ((size = ::i2d_DSAPublicKey(private_key,
                                          &buffer)) <= 0)
-            throw infinit::cryptography::Exception(
+            throw infinit::cryptography::Error(
               elle::sprintf("unable to encode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -53,7 +53,7 @@ namespace infinit
           if ((public_key = ::d2i_DSAPublicKey(NULL,
                                                &_buffer,
                                                size)) == NULL)
-            throw infinit::cryptography::Exception(
+            throw infinit::cryptography::Error(
               elle::sprintf("unable to decode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

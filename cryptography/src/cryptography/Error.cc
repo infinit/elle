@@ -1,4 +1,4 @@
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 namespace infinit
 {
@@ -8,8 +8,8 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Exception::Exception(elle::String const& message):
-      elle::Exception(message)
+    Error::Error(elle::String const& message):
+      elle::Error(message)
     {}
   }
 }

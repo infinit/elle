@@ -1,9 +1,9 @@
-#include <cryptography/dsa/der.hh>
-#include <cryptography/Exception.hh>
-#include <cryptography/finally.hh>
-
 #include <openssl/err.h>
 #include <openssl/x509.h>
+
+#include <cryptography/dsa/der.hh>
+#include <cryptography/Error.hh>
+#include <cryptography/finally.hh>
 
 namespace infinit
 {
@@ -24,7 +24,7 @@ namespace infinit
 
           int _size = ::i2d_DSAPublicKey(dsa, &_buffer);
           if (_size <= 0)
-            throw infinit::cryptography::Exception(
+            throw Error(
               elle::sprintf("unable to encode the DSA public key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -46,7 +46,7 @@ namespace infinit
 
           ::DSA* dsa = nullptr;
           if ((dsa = ::d2i_DSAPublicKey(NULL, &_buffer, _size)) == NULL)
-            throw infinit::cryptography::Exception(
+            throw Error(
               elle::sprintf("unable to decode the DSA public key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -60,7 +60,7 @@ namespace infinit
 
           int _size = ::i2d_DSAPrivateKey(dsa, &_buffer);
           if (_size <= 0)
-            throw infinit::cryptography::Exception(
+            throw Error(
               elle::sprintf("unable to encode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -82,7 +82,7 @@ namespace infinit
 
           ::DSA* dsa = nullptr;
           if ((dsa = ::d2i_DSAPrivateKey(NULL, &_buffer, _size)) == NULL)
-            throw infinit::cryptography::Exception(
+            throw Error(
               elle::sprintf("unable to decode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

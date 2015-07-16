@@ -1,11 +1,11 @@
-#include <cryptography/rsa/KeyPair.hh>
-#include <cryptography/rsa/Seed.hh>
-#include <cryptography/rsa/PublicKey.hh>
-#include <cryptography/rsa/PrivateKey.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
-#include <cryptography/finally.hh>
 #include <cryptography/deleter.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/rsa/KeyPair.hh>
+#include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/rsa/PublicKey.hh>
+#include <cryptography/rsa/Seed.hh>
 #include <cryptography/types.hh>
 
 #include <elle/attribute.hh>
@@ -126,7 +126,7 @@ namespace infinit
                seed.length(),
                static_cast<unsigned char const*>(seed.buffer().contents()),
                seed.buffer().size())) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to deduce the RSA key from the given "
                           "seed: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -223,14 +223,14 @@ namespace infinit
               ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr));
 
             if (this->_context == nullptr)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to allocate a keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             // Initialise the context for key generation.
             if (::EVP_PKEY_keygen_init(this->_context.get()) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to initialize the keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -274,7 +274,7 @@ namespace infinit
                               envelope_cipher, envelope_mode);
 
           if ((length % 8) != 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("the keypair length must be a multiple of 8"));
 
           // Make sure the cryptographic system is set up.
@@ -285,7 +285,7 @@ namespace infinit
 
           // Set the key length in the keypair generation context.
           if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to set the length of the keypair to "
                             "be generated: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -294,7 +294,7 @@ namespace infinit
 
           // Generate the EVP key.
           if (::EVP_PKEY_keygen(context, &key) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to generate a keypair: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 

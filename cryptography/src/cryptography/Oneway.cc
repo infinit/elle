@@ -1,5 +1,5 @@
 #include <cryptography/Oneway.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/log.hh>
 
@@ -55,7 +55,7 @@ namespace infinit
           break;
         }
         default:
-          throw Exception(elle::sprintf("unknown one-way algorithm '%s'",
+          throw Error(elle::sprintf("unknown one-way algorithm '%s'",
                                         static_cast<int>(oneway)));
       }
 
@@ -90,7 +90,7 @@ namespace infinit
           case Oneway::sha512:
             return (::EVP_sha512());
           default:
-            throw Exception(elle::sprintf("unable to resolve the given one-way "
+            throw Error(elle::sprintf("unable to resolve the given one-way "
                                           "function name '%s'", name));
         }
 
@@ -119,8 +119,8 @@ namespace infinit
             return (iterator.second);
         }
 
-        throw Exception(elle::sprintf("unable to resolve the given one-way "
-                                      "function '%s'", function));
+        throw Error(elle::sprintf("unable to resolve the given one-way "
+                                  "function '%s'", function));
       }
     }
   }

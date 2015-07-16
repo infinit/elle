@@ -1,25 +1,26 @@
 #include <cryptography/rsa/PrivateKey.hh>
-#include <cryptography/rsa/KeyPair.hh>
-#include <cryptography/rsa/Seed.hh>
-#include <cryptography/rsa/Padding.hh>
-#include <cryptography/rsa/context.hh>
-#include <cryptography/rsa/low.hh>
-#include <cryptography/rsa/serialization.hh>
-#include <cryptography/rsa/der.hh>
-#include <cryptography/Exception.hh>
-#include <cryptography/cryptography.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/bn.hh>
-#include <cryptography/raw.hh>
-#include <cryptography/envelope.hh>
-#include <cryptography/hash.hh>
-
-#include <elle/log.hh>
 
 #include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
+
+#include <elle/log.hh>
+
+#include <cryptography/Error.hh>
+#include <cryptography/bn.hh>
+#include <cryptography/cryptography.hh>
+#include <cryptography/envelope.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/hash.hh>
+#include <cryptography/raw.hh>
+#include <cryptography/rsa/KeyPair.hh>
+#include <cryptography/rsa/Padding.hh>
+#include <cryptography/rsa/Seed.hh>
+#include <cryptography/rsa/context.hh>
+#include <cryptography/rsa/der.hh>
+#include <cryptography/rsa/low.hh>
+#include <cryptography/rsa/serialization.hh>
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
@@ -85,7 +86,7 @@ namespace infinit
         cryptography::require();
 
         if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_RSA)
-          throw Exception(
+          throw Error(
             elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
@@ -197,13 +198,13 @@ namespace infinit
         this->_key.reset(::EVP_PKEY_new());
 
         if (this->_key == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Set the rsa structure into the private key.
         if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -238,7 +239,7 @@ namespace infinit
                                   EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
                                   -2,
                                   nullptr) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to set the EVP_PKEY context's PSS "
                             "salt length: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -247,7 +248,7 @@ namespace infinit
         if (::EVP_PKEY_CTX_set_signature_md(
               this->_context.sign.get(),
               (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to set the EVP_PKEY context's digest "
                           "function: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -368,7 +369,7 @@ namespace infinit
                seed.length(),
                static_cast<unsigned char const*>(seed.buffer().contents()),
                seed.buffer().size())) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to deduce the RSA key from the given "
                           "seed: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -431,7 +432,7 @@ namespace infinit
 
         // Set the EVP key as being of type RSA.
         if (::EVP_PKEY_set_type(this->_key.get(), EVP_PKEY_RSA) <= 0)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to set the EVP key's type: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 

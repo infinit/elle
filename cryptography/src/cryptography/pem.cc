@@ -1,12 +1,12 @@
-#include <cryptography/pem.hh>
-#include <cryptography/Exception.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/cryptography.hh>
+#include <openssl/pem.h>
+#include <openssl/err.h>
 
 #include <elle/log.hh>
 
-#include <openssl/pem.h>
-#include <openssl/err.h>
+#include <cryptography/pem.hh>
+#include <cryptography/Error.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/cryptography.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.pem");
 
@@ -53,7 +53,7 @@ namespace infinit
         ::EVP_PKEY* key = nullptr;
 
         if ((fd = ::fopen(path.string().c_str(), "r")) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("the PEM file '%s' does not seem to exist",
                           path.string()));
 
@@ -65,7 +65,7 @@ namespace infinit
         {
           ::fclose(fd);
 
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to read the public key from the PEM "
                           "file '%s'; please check the file format: %s",
                           path.string(),
@@ -95,7 +95,7 @@ namespace infinit
         ::EVP_PKEY* key = nullptr;
 
         if ((fd = ::fopen(path.string().c_str(), "r")) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("the PEM file '%s' does not seem to exist",
                           path.string()));
 
@@ -107,7 +107,7 @@ namespace infinit
         {
           ::fclose(fd);
 
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to read the private key from the PEM "
                           "file '%s'; please check the file format or the "
                           "passphrase: %s",
@@ -137,7 +137,7 @@ namespace infinit
         ::FILE* fd = nullptr;
 
         if ((fd = ::fopen(path.string().c_str(), "w")) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to open the file '%s'",
                           path.string()));
 
@@ -146,7 +146,7 @@ namespace infinit
         {
           ::fclose(fd);
 
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to write the public key to the PEM "
                           "file '%s'; please check the type of the key: %s",
                           path.string(),
@@ -171,7 +171,7 @@ namespace infinit
         ::FILE* fd = nullptr;
 
         if ((fd = ::fopen(path.string().c_str(), "w")) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to open the file '%s'",
                           path.string()));
 
@@ -186,7 +186,7 @@ namespace infinit
         {
           ::fclose(fd);
 
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to write the private key to the PEM "
                           "file '%s'; please check the type of the key: %s",
                           path.string(),

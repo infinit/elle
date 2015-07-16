@@ -1,5 +1,5 @@
 #include <cryptography/dsa/KeyPair.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/deleter.hh>
@@ -178,7 +178,7 @@ namespace infinit
 
             if ((context =
                  ::EVP_PKEY_CTX_new_id(EVP_PKEY_DSA, nullptr)) == nullptr)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to allocate a parameters generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -186,19 +186,19 @@ namespace infinit
             INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
 
             if (::EVP_PKEY_paramgen_init(context) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to initialize the parameters generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             if (::EVP_PKEY_CTX_set_dsa_paramgen_bits(context, length) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to set the parameters generation "
                               "context's key length: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             if (::EVP_PKEY_paramgen(context, &parameters) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to generate the parameters: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -216,7 +216,7 @@ namespace infinit
 
             if ((context =
                  ::EVP_PKEY_CTX_new(parameters, nullptr)) == nullptr)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to allocate a keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -224,13 +224,13 @@ namespace infinit
             INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
 
             if (::EVP_PKEY_keygen_init(context) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to initialize the keypair generation "
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             if (::EVP_PKEY_keygen(context, &key) <= 0)
-              throw Exception(
+              throw Error(
                 elle::sprintf("unable to generate a keypair: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 

@@ -1,18 +1,3 @@
-#include <cryptography/random.hh>
-#include <cryptography/Exception.hh>
-
-#include <elle/system/platform.hh>
-#include <elle/os/environ.hh>
-#include <elle/log.hh>
-
-#include <system_error>
-#include <iostream>
-#include <fstream>
-
-#include <openssl/engine.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -23,6 +8,21 @@
 #elif defined(INFINIT_IOS)
 # include <Security/Security.h>
 #endif
+
+#include <system_error>
+#include <iostream>
+#include <fstream>
+
+#include <openssl/engine.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
+
+#include <elle/system/platform.hh>
+#include <elle/os/environ.hh>
+#include <elle/log.hh>
+
+#include <cryptography/random.hh>
+#include <cryptography/Error.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.random");
 
@@ -58,7 +58,7 @@ namespace infinit
           std::ifstream random_source_file(source);
 
           if (random_source_file.good() == false)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to open the random source file '%s': %s",
                             source,
                             std::error_code(errno,
@@ -73,7 +73,7 @@ namespace infinit
           int res = SecRandomCopyBytes(kSecRandomDefault, 256, temporary);
           if (res != 0)
           {
-            throw Exception("unable to get 256 bytes of random data");
+            throw Error("unable to get 256 bytes of random data");
           }
         }
 #elif defined(INFINIT_WINDOWS)
@@ -82,17 +82,17 @@ namespace infinit
 
           if (!::CryptAcquireContextW(&h_provider, 0, 0, PROV_RSA_FULL,
                                       CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
-            throw Exception("unable to acquire a cryptographic context");
+            throw Error("unable to acquire a cryptographic context");
 
           if (!::CryptGenRandom(h_provider, sizeof (temporary), temporary))
           {
             ::CryptReleaseContext(h_provider, 0);
 
-            throw Exception("unable to generate random bytes");
+            throw Error("unable to generate random bytes");
           }
 
           if (!::CryptReleaseContext(h_provider, 0))
-            throw Exception("failed to release cryptographic context");
+            throw Error("failed to release cryptographic context");
         }
 #else
 # error "unsupported platform"
@@ -107,7 +107,7 @@ namespace infinit
            size_t const size)
       {
         if (::RAND_bytes(buffer, size) <= 0)
-          throw Exception(elle::sprintf("unable to generate random bytes: %s",
+          throw Error(elle::sprintf("unable to generate random bytes: %s",
                                         ::ERR_error_string(ERR_get_error(),
                                                            nullptr)));
       }

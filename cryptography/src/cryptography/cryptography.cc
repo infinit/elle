@@ -1,12 +1,12 @@
-#include <cryptography/cryptography.hh>
-#include <cryptography/random.hh>
-#include <cryptography/Exception.hh>
-
-#include <elle/log.hh>
-
 #include <openssl/engine.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+
+#include <elle/log.hh>
+
+#include <cryptography/cryptography.hh>
+#include <cryptography/random.hh>
+#include <cryptography/Error.hh>
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rand.hh>
@@ -44,7 +44,7 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Initialize the deterministic PNRG engine.
         if (::dRAND_init() != 1)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to initialize the deterministic PNRG "
                           "engine: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));

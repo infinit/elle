@@ -1,7 +1,7 @@
-#include <cryptography/Cipher.hh>
-#include <cryptography/Exception.hh>
-
 #include <elle/log.hh>
+
+#include <cryptography/Cipher.hh>
+#include <cryptography/Error.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.cipher");
 
@@ -80,7 +80,7 @@ namespace infinit
           break;
         }
         default:
-          throw Exception(elle::sprintf("unknown cipher '%s'",
+          throw Error(elle::sprintf("unknown cipher '%s'",
                                         static_cast<int>(cipher)));
       }
 
@@ -119,7 +119,7 @@ namespace infinit
           break;
         }
         default:
-          throw Exception(elle::sprintf("unknown operation mode '%s'",
+          throw Error(elle::sprintf("unknown operation mode '%s'",
                                         static_cast<int>(mode)));
       }
 
@@ -345,10 +345,10 @@ namespace infinit
             break;
           }
           default:
-            throw Exception(elle::sprintf("unknown cipher '%s'", cipher));
+            throw Error(elle::sprintf("unknown cipher '%s'", cipher));
         }
 
-        throw Exception(
+        throw Error(
           elle::sprintf("the operation mode '%s' is "
                         "non-compliant with the cipher '%s'",
                         mode, cipher));
@@ -466,7 +466,7 @@ namespace infinit
             return (iterator.second);
         }
 
-        throw Exception(elle::sprintf("unknown function '%s'", function));
+        throw Error(elle::sprintf("unknown function '%s'", function));
       }
     }
   }

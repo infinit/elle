@@ -1,7 +1,7 @@
 #include <cryptography/dh/low.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
+#include <cryptography/Error.hh>
 
 #include <elle/log.hh>
 #include <elle/Buffer.hh>

@@ -1,13 +1,14 @@
 #include <cryptography/rsa/Padding.hh>
-#include <cryptography/Exception.hh>
-
-#include <elle/printf.hh>
-#include <elle/log.hh>
-
-#include <openssl/rsa.h>
-#include <openssl/err.h>
 
 #include <ostream>
+
+#include <openssl/err.h>
+#include <openssl/rsa.h>
+
+#include <elle/log.hh>
+#include <elle/printf.hh>
+
+#include <cryptography/Error.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.Padding");
 
@@ -58,7 +59,7 @@ namespace infinit
             break;
           }
           default:
-            throw Exception(
+            throw Error(
               elle::sprintf("unknown of unssuported padding algorithm '%s'",
                             padding));
         }
@@ -92,7 +93,7 @@ namespace infinit
             case Padding::pss:
               return (RSA_PKCS1_PSS_PADDING);
             default:
-              throw Exception(elle::sprintf("unable to resolve the given "
+              throw Error(elle::sprintf("unable to resolve the given "
                                             "padding name '%s'", name));
           }
 
@@ -119,7 +120,7 @@ namespace infinit
             case RSA_PKCS1_PSS_PADDING:
               return (Padding::pss);
             default:
-              throw Exception(elle::sprintf("unable to resolve the given "
+              throw Error(elle::sprintf("unable to resolve the given "
                                             "padding value '%s'", value));
           }
 
@@ -134,7 +135,7 @@ namespace infinit
 
           if (EVP_PKEY_CTX_get_rsa_padding(context,
                                            static_cast<void*>(&padding)) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to retrieve the RSA padding from "
                             "EVP_PKEY context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -149,7 +150,7 @@ namespace infinit
 
           if (EVP_PKEY_CTX_get_rsa_padding(context,
                                            static_cast<void*>(&padding)) <= 0)
-            throw Exception(
+            throw Error(
               elle::sprintf("unable to retrieve the RSA padding from "
                             "EVP_PKEY context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -174,7 +175,7 @@ namespace infinit
               // bytes = 3 bytes.
               return (24);
             default:
-              throw Exception(
+              throw Error(
                 elle::sprintf("unknown of unsupported padding algorithm '%s'",
                               padding));
           }

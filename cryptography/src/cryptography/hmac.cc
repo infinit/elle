@@ -1,12 +1,12 @@
-#include <cryptography/hmac.hh>
-#include <cryptography/raw.hh>
-#include <cryptography/finally.hh>
-#include <cryptography/Exception.hh>
+#include <openssl/err.h>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <openssl/err.h>
+#include <cryptography/hmac.hh>
+#include <cryptography/raw.hh>
+#include <cryptography/finally.hh>
+#include <cryptography/Error.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
 
@@ -65,7 +65,7 @@ namespace infinit
                                            NULL,
                                            (const unsigned char*)key.data(),
                                            key.size())) == nullptr)
-          throw Exception(
+          throw Error(
             elle::sprintf("unable to generate a MAC key: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
