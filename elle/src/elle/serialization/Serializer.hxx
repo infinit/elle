@@ -514,6 +514,23 @@ namespace elle
     }
 
     template <template <typename, typename> class C, typename T, typename A>
+    typename std::enable_if<is_serializer_constructible<T>(), void>::type
+    Serializer::_deserialize_in_array(std::string const& name,
+                                      C<T, A>& collection)
+    {
+      collection.emplace_back(*this);
+    }
+
+    template <template <typename, typename> class C, typename T, typename A>
+    typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+    Serializer::_deserialize_in_array(std::string const& name,
+                                      C<T, A>& collection)
+    {
+      collection.emplace_back();
+      this->_serialize_anonymous(name, collection.back());
+    }
+
+    template <template <typename, typename> class C, typename T, typename A>
     void
     Serializer::_serialize(std::string const& name,
                            C<T, A>& collection)
@@ -542,9 +559,7 @@ namespace elle
           -1,
           [&] ()
           {
-            // FIXME: Use array.emplace_back(*this) if possible.
-            collection.emplace_back();
-            this->_serialize_anonymous(name, collection.back());
+            this->_deserialize_in_array<C, T, A>(name, collection);
           });
       }
     }
