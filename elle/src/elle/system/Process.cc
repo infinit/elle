@@ -114,7 +114,15 @@ namespace elle
       ELLE_ASSERT(this->_impl->done());
       return this->_impl->status();
     }
-
+     int
+    Process::pid()
+    {
+#ifndef INFINIT_WINDOWS
+      return this->_impl->pid();
+#else
+      return this->_impl->_process_info.dwProcessId;
+#endif
+    }
     Process::~Process()
     {}
   }

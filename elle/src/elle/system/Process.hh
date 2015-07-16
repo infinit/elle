@@ -38,6 +38,7 @@ namespace elle
     `--------*/
     public:
       int wait();
+      int pid();
 
     /*---------------.
     | Implementation |
