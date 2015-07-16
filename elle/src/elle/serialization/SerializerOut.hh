@@ -30,9 +30,9 @@ namespace elle
                     elle::Version version,
                     bool versioned);
 
-    /*----------------.
-    | Const overloads |
-    `----------------*/
+    /*----------.
+    | Overloads |
+    `----------*/
     public:
       template <typename T>
       void
@@ -40,6 +40,17 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, T const& v);
+      template <typename As,
+                template <typename, typename> class C, typename T, typename A>
+      void
+      serialize(std::string const& name, C<T, A>& collection, as<As>);
+    protected:
+      template <typename As,
+                template <typename, typename> class C, typename T, typename A>
+      void
+      _serialize(std::string const& name,
+                 C<T, A>& collection,
+                 as<As>);
 
     /*--------.
     | Details |

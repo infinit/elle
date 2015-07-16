@@ -402,7 +402,8 @@ namespace elle
               template <typename, typename> class C,
               typename T,
               typename A>
-    void
+    typename
+    std::enable_if<std::is_default_constructible<T>::value, void>::type
     Serializer::serialize(std::string const& name, C<T, A>& collection, as<As>)
     {
       if (this->_enter(name))
@@ -552,29 +553,13 @@ namespace elle
               template <typename, typename> class C,
               typename T,
               typename A>
-    void
+    typename std::enable_if<std::is_default_constructible<T>::value, void>::type
     Serializer::_serialize(std::string const& name,
                            C<T, A>& collection,
-                           as<As>)
+                           as<As> as)
     {
       if (this->out())
-      {
-        this->_serialize_array(
-          name,
-          collection.size(),
-          [&] ()
-          {
-            for (auto& elt: collection)
-            {
-              if (this->_enter(name))
-              {
-                elle::SafeFinally leave([&] { this->_leave(name); });
-                As a(elt);
-                this->_serialize_anonymous(name, a);
-              }
-            }
-          });
-      }
+        static_cast<SerializerOut*>(this)->_serialize(name, collection, as);
       else
       {
         this->_serialize_array(
@@ -582,12 +567,53 @@ namespace elle
           -1,
           [&] ()
           {
-            // FIXME: Use array.emplace_back(*this) if possible.
             collection.emplace_back();
             As a(collection.back());
             this->_serialize_anonymous(name, a);
           });
       }
+    }
+
+    template <typename As,
+              template <typename, typename> class C,
+              typename T,
+              typename A>
+    void
+    SerializerOut::serialize(std::string const& name,
+                             C<T, A>& collection,
+                             as<As>)
+    {
+      if (this->_enter(name))
+      {
+        elle::SafeFinally leave([&] { this->_leave(name); });
+        this->_serialize(name, collection, as<As>());
+      }
+    }
+
+    template <typename As,
+              template <typename, typename> class C,
+              typename T,
+              typename A>
+    void
+    SerializerOut::_serialize(std::string const& name,
+                              C<T, A>& collection,
+                              as<As>)
+    {
+      this->_serialize_array(
+        name,
+        collection.size(),
+        [&] ()
+        {
+          for (auto& elt: collection)
+          {
+            if (this->_enter(name))
+            {
+              elle::SafeFinally leave([&] { this->_leave(name); });
+              As a(elt);
+              this->_serialize_anonymous(name, a);
+            }
+          }
+        });
     }
 
     template <typename T1, typename T2>
@@ -803,6 +829,19 @@ namespace elle
         elle::IOStream s(res.ostreambuf());
         typename Serialization::SerializerOut output(s);
         output.serialize(name, o);
+      }
+      return res;
+    }
+
+    template <typename T, typename Serialization>
+    elle::Buffer
+    serialize(T const& o)
+    {
+      elle::Buffer res;
+      {
+        elle::IOStream s(res.ostreambuf());
+        typename Serialization::SerializerOut output(s);
+        output.serialize_forward(o);
       }
       return res;
     }

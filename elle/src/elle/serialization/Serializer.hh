@@ -120,7 +120,8 @@ namespace elle
                 template <typename, typename> class C,
                 typename T,
                 typename A>
-      void
+      typename
+      std::enable_if<std::is_default_constructible<T>::value, void>::type
       serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T>
       void
@@ -198,7 +199,8 @@ namespace elle
       _serialize(std::string const& name, C<T, A>& collection);
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
-      void
+      typename
+      std::enable_if<std::is_default_constructible<T>::value, void>::type
       _serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T1, typename T2>
       void
@@ -214,7 +216,6 @@ namespace elle
       template <typename C>
       void
       _serialize_assoc(std::string const& name, C& map);
-    private:
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
