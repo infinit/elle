@@ -17,6 +17,7 @@ namespace infinit
     `-------------*/
     public:
       Error(elle::String const& message);
+      Error(elle::serialization::SerializerIn& input);
     };
   }
 }
