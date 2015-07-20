@@ -41,6 +41,8 @@ namespace elle
             argv[i++] = arg.c_str();
           argv[i] = nullptr;
           execvp(argv[0], const_cast<char**>(argv.get()));
+          ELLE_ERR("execvp error: %s", strerror(errno));
+          ::exit(1);
         }
 #else
         STARTUPINFO startup_info = {sizeof(STARTUPINFO)};
