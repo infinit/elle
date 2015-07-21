@@ -167,6 +167,26 @@ namespace elle
     }
 
     template <typename T>
+    typename std::enable_if<is_serializer_constructible<T>(), void>::type
+    Serializer::_deserialize_in_option(std::string const& name,
+                                       boost::optional<T>& opt)
+    {
+      ELLE_ENFORCE(this->_enter(name));
+      elle::SafeFinally leave([&] { this->_leave(name); });
+      opt.emplace(static_cast<SerializerIn&>(*this));
+    }
+
+    template <typename T>
+    typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+    Serializer::_deserialize_in_option(std::string const& name,
+                                       boost::optional<T>& opt)
+    {
+      T value;
+      this->serialize(name, value);
+      opt = std::move(value);
+    }
+
+    template <typename T>
     void
     Serializer::serialize(std::string const& name, boost::optional<T>& opt)
     {
@@ -182,10 +202,7 @@ namespace elle
                                 bool(opt),
                                 [&]
                                 {
-                                  // FIXME: no emplace in optional.
-                                  T value;
-                                  this->serialize(name, value);
-                                  opt = std::move(value);
+                                  this->_deserialize_in_option(name, opt);
                                 });
     }
 
