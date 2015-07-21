@@ -61,7 +61,7 @@ namespace reactor
           fuse_session_process(s, (const char*)buffer_data, res, ch);
       });
     }
-    sched.mt_run<void>("exit notifier", _on_loop_exited);
+    sched.run_later("exit notifier", _on_loop_exited);
   }
 
   void FuseContext::_loop_single()
@@ -311,6 +311,11 @@ namespace reactor
   void FuseContext::destroy(DurationOpt graceTime)
   {
     ELLE_TRACE("fuse_destroy");
+    if (!_fuse)
+    {
+      ELLE_TRACE("Already destroyed");
+      return;
+    }
     if (_fuse)
     {
       ::fuse_exit(_fuse);
@@ -322,6 +327,7 @@ namespace reactor
     }
     _socket_barrier.open();
     ELLE_TRACE("terminating...");
+#ifndef INFINIT_MACOSX
     try
     {
       reactor::wait(_mt_barrier, graceTime);
@@ -335,6 +341,7 @@ namespace reactor
         t->terminate_now();
       reactor::wait(_mt_barrier);
     }
+#endif
     if (_loopThread)
       _loopThread->join();
     ELLE_TRACE("done");
@@ -349,10 +356,11 @@ namespace reactor
 #endif
     ELLE_TRACE("unomount");
     ::fuse_destroy(_fuse);
+    _fuse = nullptr;
     ELLE_TRACE("destroy");
 #ifdef INFINIT_MACOSX
     _loop->terminate_now();
 #endif
-
+    ELLE_TRACE("finished");
   }
 }
