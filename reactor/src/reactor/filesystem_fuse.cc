@@ -541,10 +541,14 @@ namespace reactor
       ops.removexattr = fusop_removexattr;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
       _impl->_fuse.on_loop_exited([this] { this->unmount();});
-      if (!elle::os::getenv("INFINIT_FUSE_MONOTHREAD", "").empty())
+      if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
       {
-        ELLE_LOG("Single mode");
-        _impl->_fuse.loop();
+        int nt = 5;
+        std::string nthread = elle::os::getenv("INFINIT_FUSE_POOL", "");
+        if (!nthread.empty())
+          nt = std::stoi(nthread);
+        ELLE_LOG("Pool mode with %s workers", nt);
+        _impl->_fuse.loop_pool(nt);
       }
       else if (!elle::os::getenv("INFINIT_FUSE_THREAD", "").empty())
       {
@@ -553,12 +557,8 @@ namespace reactor
       }
       else
       {
-        int nt = 5;
-        std::string nthread = elle::os::getenv("INFINIT_FUSE_POOL", "");
-        if (!nthread.empty())
-          nt = std::stoi(nthread);
-        ELLE_LOG("Pool mode with %s workers", nt);
-        _impl->_fuse.loop_pool(nt);
+        ELLE_LOG("Single mode");
+        _impl->_fuse.loop();
       }
     }
 
