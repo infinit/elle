@@ -95,7 +95,7 @@ namespace elle
 #ifndef INFINIT_WINDOWS
       ELLE_ATTRIBUTE_R(pid_t, pid);
 #else
-      ELLE_ATTRIBUTE(PROCESS_INFORMATION, process_info)
+      ELLE_ATTRIBUTE_R(PROCESS_INFORMATION, process_info)
 #endif
       ELLE_ATTRIBUTE_R(int, status);
       ELLE_ATTRIBUTE_R(bool, done);
@@ -122,7 +122,7 @@ namespace elle
 #ifndef INFINIT_WINDOWS
       return this->_impl->pid();
 #else
-      return this->_impl->_process_info.dwProcessId;
+      return this->_impl->process_info().dwProcessId;
 #endif
     }
     Process::~Process()
