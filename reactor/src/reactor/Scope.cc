@@ -61,6 +61,7 @@ namespace reactor
                    }
                    catch (...)
                    {
+                     ELLE_ASSERT(!!std::current_exception());
                      ELLE_TRACE_SCOPE("%s: background job %s threw: %s",
                                       *this, name, elle::exception_string());
                      if (!this->_exception)

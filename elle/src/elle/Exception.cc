@@ -64,7 +64,10 @@ namespace elle
   exception_string(std::exception_ptr eptr)
   {
     if (!eptr)
+    {
+      ELLE_ASSERT(!!std::current_exception());
       eptr = std::current_exception();
+    }
     if (!eptr)
       throw Exception{"no current exception present"};
     try
