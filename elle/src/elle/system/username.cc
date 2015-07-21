@@ -1,9 +1,11 @@
 #include <elle/system/username.hh>
 
-#include <pwd.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
+#if !defined(INFINIT_WINDOWS)
+# include <pwd.h>
+# include <stdio.h>
+# include <sys/types.h>
+# include <unistd.h>
+#endif
 
 #include <elle/assert.hh>
 #include <elle/os/environ.hh>
