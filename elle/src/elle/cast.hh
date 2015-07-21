@@ -38,32 +38,27 @@ namespace elle
       return std::unique_ptr<T>(res);
     }
 
-    // XXX[???]
-    // template <typename U>
-    // static T*
-    // static_(U* p)
-    // {
-    //   assert(dynamic_cast<T*>(u));
-    //   return static_cast<T*>(p);
-    // }
+    /// Unconditionnaly cast \a p to type \a T.
+    template <typename U>
+    static std::unique_ptr<T>
+    compiletime(std::unique_ptr<U>& p)
+    {
+      ELLE_ASSERT(dynamic_cast<T*>(p.get()));
+      T* res = static_cast<T*>(p.get());
+      p.release();
+      return std::unique_ptr<T>(res);
+    }
 
-    // XXX[???]
-    // template <typename U>
-    // static std::unique_ptr<T>
-    // static_(std::unique_ptr<U>&& p)
-    // {
-    //   assert(dynamic_cast<T*>(p.get()));
-    //   return std::unique_ptr<T>(static_cast<T*>(p.release()));
-    // }
-
-    // XXX[???]
-    // template <typename U>
-    // static T*
-    // static_(const std::unique_ptr<U>& p)
-    // {
-    //   assert(dynamic_cast<T*>(p.get()));
-    //   static_cast<T*>(p.get());
-    // }
+    /// Unconditionnaly cast \a p to type \a T.
+    template <typename U>
+    static std::unique_ptr<T>
+    compiletime(std::unique_ptr<U>&& p)
+    {
+      ELLE_ASSERT(dynamic_cast<T*>(p.get()));
+      T* res = static_cast<T*>(p.get());
+      p.release();
+      return std::unique_ptr<T>(res);
+    }
   };
 }
 
