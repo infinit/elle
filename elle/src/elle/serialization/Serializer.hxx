@@ -2,6 +2,7 @@
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
 # include <elle/Backtrace.hh>
+# include <elle/TypeInfo.hh>
 # include <elle/finally.hh>
 # include <elle/serialization/Error.hh>
 # include <elle/serialization/SerializerIn.hh>
@@ -23,15 +24,14 @@ namespace elle
       {
         if (s.out())
         {
-          std::type_info const* id = &typeid(obj);
+          auto id = type_info(obj);
           auto const& map = Hierarchy<T>::_rmap();
           auto it = map.find(id);
           if (it == map.end())
           {
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             auto message =
-              elle::sprintf("unable to get serialization name for type %s (%s)",
-                            demangle(id->name()), id);
+              elle::sprintf("unable to get serialization name for type %s", id);
             ELLE_WARN("%s", message);
             throw Error(message);
           }
@@ -234,7 +234,7 @@ namespace elle
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         ELLE_DEBUG_SCOPE("%s: deserialize virtual key %s of type %s",
-                         s, name, demangle(typeid(T).name()));
+                         s, name, type_info<T>());
         auto const& map = Hierarchy<T>::_map();
         std::string type_name;
         s.serialize(T::virtually_serializable_key, type_name);
@@ -754,14 +754,12 @@ namespace elle
         Register(std::string const& name_ = "")
         {
           ELLE_LOG_COMPONENT("elle.serialization");
-          std::type_info const* id = &typeid(U);
+          auto id = type_info<U>();
           if (name_.empty())
-            ELLE_TRACE_SCOPE("register dynamic type %s (%s)",
-                             demangle(id->name()), id);
+            ELLE_TRACE_SCOPE("register dynamic type %s", id);
           else
-            ELLE_TRACE_SCOPE("register dynamic type %s (%s) as %s",
-                             demangle(id->name()), id, name_);
-          std::string name = name_.empty() ? demangle(id->name()) : name_;
+            ELLE_TRACE_SCOPE("register dynamic type %s as %s", id, name_);
+          std::string name = name_.empty() ? id.name() : name_;
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s) { return elle::make_unique<U>(s); };
           Hierarchy<T>::_rmap()[id] = name;
@@ -779,10 +777,10 @@ namespace elle
       }
 
       static
-      std::unordered_map<std::type_info const*, std::string>&
+      std::map<TypeInfo, std::string>&
       _rmap()
       {
-        static std::unordered_map<std::type_info const*, std::string> res;
+        static std::map<TypeInfo, std::string> res;
         return res;
       }
     };
