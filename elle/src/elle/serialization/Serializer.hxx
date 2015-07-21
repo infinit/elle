@@ -518,7 +518,7 @@ namespace elle
     Serializer::_deserialize_in_array(std::string const& name,
                                       C<T, A>& collection)
     {
-      collection.emplace_back(*this);
+      collection.emplace_back(static_cast<SerializerIn&>(*this));
     }
 
     template <template <typename, typename> class C, typename T, typename A>
