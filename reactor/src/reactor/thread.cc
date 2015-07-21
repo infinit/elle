@@ -1,3 +1,5 @@
+#include <reactor/thread.hh>
+
 #include <boost/foreach.hpp>
 
 #include <elle/finally.hh>
@@ -9,7 +11,6 @@
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 #include <reactor/sleep.hh>
-#include <reactor/thread.hh>
 
 ELLE_LOG_COMPONENT("reactor.Thread");
 
@@ -167,24 +168,23 @@ namespace reactor
         this->_exception = std::exception_ptr{};
         std::rethrow_exception(tmp);
       }
-      _backtrace_root = elle::Backtrace::current();
+      this->_backtrace_root = elle::Backtrace::current();
       action();
     }
-    catch (const Terminate&)
+    catch (Terminate const&)
     {}
     catch (elle::Exception const& e)
     {
-      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string())
-      {
-        ELLE_DUMP("exception type: %s", elle::demangle(typeid(e).name()));
-        ELLE_DUMP("backtrace:\n%s", e.backtrace());
-      }
-      _exception_thrown = std::current_exception();
+      ELLE_TRACE_SCOPE("%s: exception escaped: %s",
+                       *this, elle::exception_string());
+      ELLE_DUMP("exception type: %s", elle::demangle(typeid(e).name()));
+      ELLE_DUMP("backtrace:\n%s", e.backtrace());
+      this->_exception_thrown = std::current_exception();
     }
     catch (...)
     {
       ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string());
-      _exception_thrown = std::current_exception();
+      this->_exception_thrown = std::current_exception();
     }
   }
 

@@ -1,6 +1,8 @@
+#include <reactor/scheduler.hh>
+
 #include <elle/Measure.hh>
-#include <elle/attribute.hh>
 #include <elle/assert.hh>
+#include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
@@ -13,7 +15,6 @@
 #endif
 #include <reactor/exception.hh>
 #include <reactor/operation.hh>
-#include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
 #include <boost/foreach.hpp>
@@ -270,11 +271,11 @@ namespace reactor
     }
     catch (...)
     {
-      _current = previous;
+      ELLE_TRACE_SCOPE("%s: exception escaped, terminating: %s",
+                       *this, elle::exception_string());
+      this->_current = previous;
       this->_eptr = std::current_exception();
-      ELLE_WARN("%s: exception escaped, terminating: %s",
-                *this, elle::exception_string())
-        this->terminate();
+      this->terminate();
     }
     if (thread->state() == Thread::state::done)
     {
@@ -678,7 +679,7 @@ namespace reactor
   void
   Scheduler::signal_handle(int signal, std::function<void ()> const& handler)
   {
-    ELLE_LOG("%s: handle signal %s", *this, signal_string(signal));
+    ELLE_TRACE_SCOPE("%s: handle signal %s", *this, signal_string(signal));
     auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
                                                           signal);
     set->async_wait(std::bind(&signal_callback,
