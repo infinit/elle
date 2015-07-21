@@ -178,9 +178,7 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/pem");
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
   suite->add(BOOST_TEST_CASE(test_operate));
-#endif
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

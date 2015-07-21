@@ -73,7 +73,7 @@ test_compare()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("dh/PrivateyKey");
+  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("dh/PrivateKey");
 
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
