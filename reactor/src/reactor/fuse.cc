@@ -13,6 +13,7 @@
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
+#include <elle/system/Process.hh>
 #include <elle/finally.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/semaphore.hh>
@@ -24,7 +25,46 @@ ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
 namespace reactor
 {
+
   void FuseContext::loop()
+  {
+    // Macos can't run async ops on fuse socket, so thread it
+#ifdef INFINIT_MACOSX
+    _loop.reset(new Thread("holder", [&] { reactor::sleep();}));
+    auto& sched = scheduler();
+    _loopThread.reset(new std::thread([&] { this->_loop_one_thread(sched);}));
+#else
+    _loop_single();
+#endif
+  }
+
+  void FuseContext::_loop_one_thread(reactor::Scheduler& sched)
+  {
+    fuse_session* s = fuse_get_session(_fuse);
+    fuse_chan* ch = fuse_session_next_chan(s, NULL);
+    size_t buffer_size = fuse_chan_bufsize(ch);
+    void* buffer_data = malloc(buffer_size);
+    while (!fuse_exited(_fuse))
+    {
+      ELLE_DUMP("Processing command");
+      int res = -EINTR;
+      while(res == -EINTR)
+        res = fuse_chan_recv(&ch, (char*)buffer_data, buffer_size);
+      if (res == -EAGAIN)
+        continue;
+      if (res <= 0)
+      {
+        ELLE_LOG("%s: %s", res, strerror(-res));
+        break;
+      }
+      sched.mt_run<void>("fuse worker", [&] {
+          fuse_session_process(s, (const char*)buffer_data, res, ch);
+      });
+    }
+    sched.mt_run<void>("exit notifier", _on_loop_exited);
+  }
+
+  void FuseContext::_loop_single()
   {
     fuse_session* s = fuse_get_session(_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
@@ -272,7 +312,14 @@ namespace reactor
   {
     ELLE_TRACE("fuse_destroy");
     if (_fuse)
+    {
       ::fuse_exit(_fuse);
+#ifdef INFINIT_MACOSX
+      // This is the only way I found any path that tries to umount
+      // from the inside of the fuse process freezes.
+      elle::system::Process p({"umount", "-f", _mountpoint});
+#endif
+    }
     _socket_barrier.open();
     ELLE_TRACE("terminating...");
     try
@@ -297,16 +344,15 @@ namespace reactor
     ELLE_TRACE("session");
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
     ELLE_TRACE("chan %s", ch);
-#ifdef INFINIT_MACOSX
-    int fd = fuse_chan_fd(ch);
-    if (fd > 0)
-      ::close(fd);
-    ::unmount(_mountpoint.c_str(), MNT_FORCE); // MNT_FORCE
-#else
+#ifndef INFINIT_MACOSX
     ::fuse_unmount(_mountpoint.c_str(), ch);
 #endif
     ELLE_TRACE("unomount");
     ::fuse_destroy(_fuse);
     ELLE_TRACE("destroy");
+#ifdef INFINIT_MACOSX
+    _loop->terminate_now();
+#endif
+
   }
 }

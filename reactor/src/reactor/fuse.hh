@@ -28,6 +28,8 @@ namespace reactor
     void destroy(DurationOpt graceTime = DurationOpt());
     ELLE_ATTRIBUTE_RW(std::function<void()>, on_loop_exited);
   private:
+    void _loop_single();
+    void _loop_one_thread(Scheduler&);
     void _loop_mt(Scheduler&);
     void _loop_pool(int threads, Scheduler&);
     fuse* _fuse;
