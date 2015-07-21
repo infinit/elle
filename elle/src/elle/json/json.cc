@@ -94,29 +94,34 @@ namespace elle
         }
         return res;
       }
-      if (any.type() == typeid(std::string))
+#ifdef __clang__
+  #define CL(a) std::string((a).name())
+#else
+  #define CL(a) (a)
+#endif
+      if (CL(any.type()) == CL(typeid(std::string)))
         return boost::any_cast<std::string>(any);
-      if (any.type() == typeid(char const*))
+      if (CL(any.type()) == CL(typeid(char const*)))
         return std::string(boost::any_cast<char const*>(any));
-      if (any.type() == typeid(bool))
+      if (CL(any.type()) == CL(typeid(bool)))
         return boost::any_cast<bool>(any);
-      if (any.type() == typeid(int16_t))
+      if (CL(any.type()) == CL(typeid(int16_t)))
         return boost::any_cast<int16_t>(any);
-      if (any.type() == typeid(int32_t))
+      if (CL(any.type()) == CL(typeid(int32_t)))
         return boost::any_cast<int32_t>(any);
-      if (any.type() == typeid(int64_t))
+      if (CL(any.type()) == CL(typeid(int64_t)))
         return boost::any_cast<int64_t>(any);
-      if (any.type() == typeid(uint16_t))
+      if (CL(any.type()) == CL(typeid(uint16_t)))
         return boost::any_cast<uint16_t>(any);
-      if (any.type() == typeid(uint32_t))
+      if (CL(any.type()) == CL(typeid(uint32_t)))
         return boost::any_cast<uint32_t>(any);
-      if (any.type() == typeid(uint64_t))
+      if (CL(any.type()) == CL(typeid(uint64_t)))
         return boost::any_cast<uint64_t>(any);
-      if (any.type() == typeid(float))
+      if (CL(any.type()) == CL(typeid(float)))
         return boost::any_cast<float>(any);
-      if (any.type() == typeid(double))
+      if (CL(any.type()) == CL(typeid(double)))
         return boost::any_cast<double>(any);
-      if (any.type() == typeid(NullType))
+      if (CL(any.type()) == CL(typeid(NullType)))
         return json_spirit::Value();
       ELLE_ABORT("unable to make JSON from type: %s",
                  elle::demangle(any.type().name()));
