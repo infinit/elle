@@ -287,6 +287,9 @@ def configure(zlib_lib,
   if cxx_toolkit.os is not drake.os.ios:
     sources += drake.nodes(
       'src/elle/system/home_directory.cc',
+      'src/elle/system/home_directory.hh',
+      'src/elle/system/username.cc',
+      'src/elle/system/username.hh',
       'src/elle/system/platform.cc',
     )
   else:
