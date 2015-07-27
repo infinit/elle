@@ -1,8 +1,15 @@
 #ifndef DAS_PRINTER_HH
 # define DAS_PRINTER_HH
 
+# include <elle/printf.hh>
+
 namespace das
 {
+  template <typename T>
+  typename
+  std::enable_if_exists<typename das::Das<T>::Model, std::ostream>::type&
+  operator << (std::ostream& s, T const& e);
+
   template <typename Field>
   struct PrintMember
   {
@@ -15,20 +22,21 @@ namespace das
         first = false;
       else
         s << ", ";
-      s << Field::name << " = " << Field::get(o);
+      elle::fprintf(s, "%s = %s", Field::getname(), Field::get(o));
     }
   };
-}
 
-template <typename T>
-typename std::enable_if_exists<typename das::Das<T>::Model, std::ostream>::type&
-operator << (std::ostream& s, T const& e)
-{
-  bool first = true;
-  s << elle::demangle(typeid(T).name()) << "(";
-  das::Das<T>::Model::template each_field<das::PrintMember>(e, s, first);
-  s << ")";
-  return s;
+  template <typename T>
+  typename
+  std::enable_if_exists<typename das::Das<T>::Model, std::ostream>::type&
+  operator << (std::ostream& s, T const& e)
+  {
+    bool first = true;
+    s << elle::demangle(typeid(T).name()) << "(";
+    das::Das<T>::Model::template each_field<das::PrintMember>(e, s, first);
+    s << ")";
+    return s;
+  }
 }
 
 #endif
