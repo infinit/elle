@@ -271,6 +271,14 @@ namespace das
       {                                                                 \
         return o.Name;                                                  \
       };                                                                \
+                                                                        \
+      constexpr                                                         \
+      static char const*                                                \
+      getname()                                                         \
+      {                                                                 \
+        return BOOST_PP_STRINGIZE(Name);                                \
+      }                                                                 \
+                                                                        \
     };                                                                  \
     template                                                            \
     class Field<Class, decltype(Class::Name), &Class::Name, void>;      \
