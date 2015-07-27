@@ -251,6 +251,12 @@ namespace elle
         }
       }
 
+      bool
+      SerializerIn::_option_filled()
+      {
+        return this->_current.back()->type() != typeid(::elle::json::NullType);
+      }
+
       template <typename T, typename ... Types>
       struct
       any_casts

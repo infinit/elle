@@ -15,5 +15,11 @@ namespace elle
       : Super(std::move(version), versioned)
       , _input(input)
     {}
+
+    bool
+    SerializerIn::_option_filled()
+    {
+      return true;
+    }
   }
 }

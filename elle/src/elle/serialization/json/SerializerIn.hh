@@ -92,6 +92,10 @@ namespace elle
         virtual
         void
         _leave(std::string const& name);
+        virtual
+        bool
+        _option_filled() override;
+
         ELLE_ATTRIBUTE(boost::any, json);
         ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
 

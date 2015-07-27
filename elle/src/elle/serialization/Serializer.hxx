@@ -323,6 +323,31 @@ namespace elle
       }
     }
 
+    // FIXME: duplicated
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     boost::optional<T>& opt)
+    {
+      if (this->_out())
+      {
+        ELLE_ASSERT(bool(opt));
+        this->_serialize_anonymous(name, *opt);
+      }
+      else
+      {
+        if (static_cast<SerializerIn&>(*this)._option_filled())
+        {
+          // FIXME: emplace
+          T value;
+          this->_serialize_anonymous(name, value);
+          opt = std::move(value);
+        }
+        else
+          opt.reset();
+      }
+    }
+
     template <typename T>
     void
     Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt)
