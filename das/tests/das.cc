@@ -8,14 +8,19 @@ class Device
 {
 public:
   das::Variable<std::string> name;
+  boost::optional<std::string> model;
   elle::UUID id;
-  Device(std::string name_, elle::UUID id_ = elle::UUID::random())
+  Device(std::string name_,
+         boost::optional<std::string> model_ = boost::none,
+         elle::UUID id_ = elle::UUID::random())
     : name(std::move(name_))
+    , model(std::move(model_))
     , id(std::move(id_))
   {}
 
   Device()
     : name()
+    , model()
     , id()
   {}
 
@@ -27,6 +32,7 @@ public:
 };
 
 DAS_MODEL_FIELD(Device, name);
+DAS_MODEL_FIELD(Device, model);
 DAS_MODEL_FIELD(Device, id);
 
 using das::operator <<;
@@ -34,7 +40,8 @@ using das::operator <<;
 typedef das::Object<
   Device,
   das::Field<Device, elle::UUID, &Device::id>,
-  das::Field<Device, das::Variable<std::string>, &Device::name>
+  das::Field<Device, das::Variable<std::string>, &Device::name>,
+  das::Field<Device, boost::optional<std::string>, &Device::model>
   >
 DasDevice;
 
@@ -45,8 +52,8 @@ void
 printer()
 {
   BOOST_CHECK_EQUAL(
-    elle::sprintf("%s", Device("name", elle::UUID())),
-    "Device(id = 00000000-0000-0000-0000-000000000000, name = name)");
+    elle::sprintf("%s", Device("name", std::string("model"), elle::UUID())),
+    "Device(id = 00000000-0000-0000-0000-000000000000, name = name, model = model)");
 }
 
 static
@@ -54,12 +61,13 @@ void
 object_update()
 {
   auto id = elle::UUID::random();
-  Device d("device-name", id);
+  Device d("device-name", std::string("model"), id);
   {
     DasDevice::Update u;
     u.apply(d);
     BOOST_CHECK_EQUAL(d.name.value(), "device-name");
     BOOST_CHECK_EQUAL(d.id, id);
+    BOOST_CHECK_EQUAL(d.model.get(), "model");
   }
   {
     DasDevice::Update u;
@@ -67,6 +75,7 @@ object_update()
     u.apply(d);
     BOOST_CHECK_EQUAL(d.name.value(), "new-name");
     BOOST_CHECK_EQUAL(d.id, id);
+    BOOST_CHECK_EQUAL(d.model.get(), "model");
   }
 }
 
