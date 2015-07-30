@@ -35,7 +35,14 @@ namespace elle
     `--------*/
     public:
       template <typename T>
-      T
+      typename std::enable_if<
+        !std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+        T>::type
+      deserialize(std::string const& name);
+      template <typename T>
+      typename std::enable_if<
+        std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+        T>::type
       deserialize(std::string const& name);
       template <typename T>
       T

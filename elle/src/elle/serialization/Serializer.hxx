@@ -827,12 +827,25 @@ namespace elle
     };
 
     template <typename T>
-    T
+    typename std::enable_if<
+      !std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+      T>::type
     SerializerIn::deserialize(std::string const& name)
     {
       ELLE_ENFORCE(this->_enter(name));
       elle::SafeFinally leave([this, &name] { this->_leave(name); });
       return this->deserialize<T>();
+    }
+
+    template <typename T>
+    typename std::enable_if<
+      std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+      T>::type
+    SerializerIn::deserialize(std::string const& name)
+    {
+      T res;
+      this->serialize(name, res);
+      return res;
     }
 
     template <typename T>
