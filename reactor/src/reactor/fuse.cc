@@ -311,6 +311,7 @@ namespace reactor
   void FuseContext::destroy(DurationOpt graceTime)
   {
     ELLE_TRACE("fuse_destroy");
+    int helper_pid = -1;
     if (!_fuse)
     {
       ELLE_TRACE("Already destroyed");
@@ -320,9 +321,12 @@ namespace reactor
     {
       ::fuse_exit(_fuse);
 #ifdef INFINIT_MACOSX
-      // This is the only way I found any path that tries to umount
+      // This is the only way I found, any path that tries to umount
       // from the inside of the fuse process freezes.
-      elle::system::Process p({"umount", "-f", _mountpoint});
+      //elle::system::Process p({"umount", "-f", _mountpoint});
+      // This call will make the fuse_loop exit, but the subprocess will hang forever.
+      elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
+      helper_pid = p.pid();
 #endif
     }
     _socket_barrier.open();
@@ -360,6 +364,8 @@ namespace reactor
     ELLE_TRACE("destroy");
 #ifdef INFINIT_MACOSX
     _loop->terminate_now();
+    kill(helper_pid, SIGTERM);
+    elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
 #endif
     ELLE_TRACE("finished");
   }
