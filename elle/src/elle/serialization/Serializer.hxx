@@ -114,33 +114,6 @@ namespace elle
       }
 
       template <typename T>
-      constexpr
-      typename std::enable_if<
-        !std::is_base_of<boost::optional_detail::optional_tag, T>::value &&
-        std::is_constructible<T, SerializerIn&>::value,
-        bool>::type
-      _is_unserializable_inplace(int)
-      {
-        return true;
-      };
-
-      template <typename T>
-      constexpr
-      bool
-      _is_unserializable_inplace(unsigned int)
-      {
-        return false;
-      };
-
-      template <typename T>
-      constexpr
-      bool
-      is_unserializable_inplace()
-      {
-        return _is_unserializable_inplace<T>(42);
-      };
-
-      template <typename T>
       typename std::enable_if<!is_unserializable_inplace<T>(), T>::type
       _deserialize(elle::serialization::SerializerIn& input)
       {
@@ -173,7 +146,7 @@ namespace elle
     }
 
     template <typename T>
-    typename std::enable_if<is_serializer_constructible<T>(), void>::type
+    typename std::enable_if<is_unserializable_inplace<T>(), void>::type
     Serializer::_deserialize_in_option(std::string const& name,
                                        boost::optional<T>& opt)
     {
@@ -183,7 +156,7 @@ namespace elle
     }
 
     template <typename T>
-    typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+    typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
     Serializer::_deserialize_in_option(std::string const& name,
                                        boost::optional<T>& opt)
     {
@@ -555,7 +528,7 @@ namespace elle
     }
 
     template <template <typename, typename> class C, typename T, typename A>
-    typename std::enable_if<is_serializer_constructible<T>(), void>::type
+    typename std::enable_if<is_unserializable_inplace<T>(), void>::type
     Serializer::_deserialize_in_array(std::string const& name,
                                       C<T, A>& collection)
     {
@@ -563,7 +536,7 @@ namespace elle
     }
 
     template <template <typename, typename> class C, typename T, typename A>
-    typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+    typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
     Serializer::_deserialize_in_array(std::string const& name,
                                       C<T, A>& collection)
     {

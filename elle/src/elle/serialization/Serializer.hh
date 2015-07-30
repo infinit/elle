@@ -229,18 +229,18 @@ namespace elle
       void
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);
       template <template <typename, typename> class C, typename T, typename A>
-      typename std::enable_if<is_serializer_constructible<T>(), void>::type
+      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
       _deserialize_in_array(std::string const& name,
                             C<T, A>& collection);
       template <template <typename, typename> class C, typename T, typename A>
-      typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
       _deserialize_in_array(std::string const& name,
                             C<T, A>& collection);
       template <typename T>
-      typename std::enable_if<is_serializer_constructible<T>(), void>::type
+      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
       _deserialize_in_option(std::string const& name, boost::optional<T>& opt);
       template <typename T>
-      typename std::enable_if<!is_serializer_constructible<T>(), void>::type
+      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
       _deserialize_in_option(std::string const& name, boost::optional<T>& opt);
       template <typename T>
       friend struct Serialize;

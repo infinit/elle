@@ -10,8 +10,10 @@ namespace elle
       template <typename T>
       constexpr
       typename std::enable_if<
-        sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
-      _is_serializer_constructible(int)
+        !std::is_base_of<boost::optional_detail::optional_tag, T>::value &&
+        std::is_constructible<T, SerializerIn&>::value,
+        bool>::type
+      _is_unserializable_inplace(int)
       {
         return true;
       };
@@ -19,7 +21,7 @@ namespace elle
       template <typename T>
       constexpr
       bool
-      _is_serializer_constructible(unsigned int)
+      _is_unserializable_inplace(unsigned int)
       {
         return false;
       };
@@ -27,9 +29,9 @@ namespace elle
       template <typename T>
       constexpr
       bool
-      is_serializer_constructible()
+      is_unserializable_inplace()
       {
-        return _is_serializer_constructible<T>(42);
+        return _is_unserializable_inplace<T>(42);
       };
     }
   }
