@@ -1,6 +1,7 @@
 #include <elle/UUID.hh>
 #include <elle/serialization/json.hh>
 #include <elle/test.hh>
+#include <elle/optional.hh>
 
 #include <das/model.hh>
 
