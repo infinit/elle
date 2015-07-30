@@ -29,6 +29,8 @@ public:
 DAS_MODEL_FIELD(Device, name);
 DAS_MODEL_FIELD(Device, id);
 
+using das::operator <<;
+
 typedef das::Object<
   Device,
   das::Field<Device, elle::UUID, &Device::id>,
