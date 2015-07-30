@@ -1,12 +1,7 @@
 #ifndef DAS_MODEL_CONVENIENCE_HH
 # define DAS_MODEL_CONVENIENCE_HH
 
-namespace das
-{
-  template <typename T>
-  struct Das
-  {};
-}
+# include <das/fwd.hh>
 
 #define DAS_MODEL_DEFINE(Class, Fields, Type)                           \
   typedef das::Object<                                                  \

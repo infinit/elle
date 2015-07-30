@@ -5,23 +5,34 @@
 # include <ostream>
 # include_next <vector>
 
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
 namespace std
 {
   template <class V, class ... OTHER>
-  std::ostream&
+  ostream&
   operator <<(ostream& out, vector<V, OTHER...> const& v)
   {
-    out << "[";
+    elle::fprintf(out, "[");
     bool first = true;
-    for (auto const& elt: v)
+    for (V const& elt: v)
     {
       if (first)
+      {
         first = false;
+        elle::fprintf(out, "%s", elt);
+      }
       else
-        out << ", ";
-      out << elt;
+        elle::fprintf(out, ", %s", elt);
     }
-    out << "]";
+    elle::fprintf(out, "]");
     return out;
   }
 }

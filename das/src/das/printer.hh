@@ -2,14 +2,10 @@
 # define DAS_PRINTER_HH
 
 # include <elle/printf.hh>
+# include <das/model.hh>
 
 namespace das
 {
-  template <typename T>
-  typename
-  std::enable_if_exists<typename das::Das<T>::Model, std::ostream>::type&
-  operator << (std::ostream& s, T const& e);
-
   template <typename Field>
   struct PrintMember
   {
