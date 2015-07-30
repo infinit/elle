@@ -312,6 +312,7 @@ namespace reactor
   {
     ELLE_TRACE("fuse_destroy");
     int helper_pid = -1;
+    (void)helper_pid;
     if (!_fuse)
     {
       ELLE_TRACE("Already destroyed");
