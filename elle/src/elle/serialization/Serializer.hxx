@@ -1,6 +1,8 @@
 #ifndef ELLE_SERIALIZATION_SERIALIZER_HXX
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
+# include <boost/optional.hpp>
+
 # include <elle/Backtrace.hh>
 # include <elle/TypeInfo.hh>
 # include <elle/finally.hh>
@@ -113,7 +115,10 @@ namespace elle
 
       template <typename T>
       constexpr
-      typename std::enable_if<sizeof(T(ELLE_SFINAE_INSTANCE(SerializerIn))) >= 0, bool>::type
+      typename std::enable_if<
+        !std::is_base_of<boost::optional_detail::optional_tag, T>::value &&
+        std::is_constructible<T, SerializerIn&>::value,
+        bool>::type
       _is_unserializable_inplace(int)
       {
         return true;
@@ -148,6 +153,7 @@ namespace elle
       typename std::enable_if<is_unserializable_inplace<T>(), T>::type
       _deserialize(elle::serialization::SerializerIn& input)
       {
+        static_assert(is_unserializable_inplace<T>(), "");
         return T(input);
       }
 
@@ -335,17 +341,10 @@ namespace elle
         this->_serialize_anonymous(name, *opt);
       }
       else
-      {
         if (static_cast<SerializerIn&>(*this)._option_filled())
-        {
-          // FIXME: emplace
-          T value;
-          this->_serialize_anonymous(name, value);
-          opt = std::move(value);
-        }
+          this->_deserialize_in_option(name, opt);
         else
           opt.reset();
-      }
     }
 
     template <typename T>

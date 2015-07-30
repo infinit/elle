@@ -225,7 +225,7 @@ namespace elle
       _serialize_anonymous(std::string const& name, std::unique_ptr<T>& v);
       template <typename T>
       void
-      _serialize_anonymous(std::string const& name, boost::optional<T>& v);
+      _serialize_anonymous(std::string const& name, boost::optional<T>& opt);
       void
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);
       template <template <typename, typename> class C, typename T, typename A>
