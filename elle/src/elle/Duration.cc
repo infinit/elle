@@ -1,6 +1,6 @@
-#include <reactor/duration.hh>
+#include <elle/Duration.hh>
 
-namespace reactor
+namespace elle
 {
   std::ostream&
   operator << (std::ostream& s, const DurationOpt& opt)
