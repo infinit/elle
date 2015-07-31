@@ -124,7 +124,8 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE_R(elle::Buffer, password);
       ELLE_ATTRIBUTE_R(Cipher, cipher);
-      ELLE_ATTRIBUTE_R(Mode, mode);
+      // XXX FIXME: ELLE_ATTRIBUTE_R of Mode doesn't compile on GCC 4.7.
+      Mode _mode;
       ELLE_ATTRIBUTE_R(Oneway, oneway);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
