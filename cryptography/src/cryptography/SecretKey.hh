@@ -124,7 +124,7 @@ namespace infinit
     private:
       ELLE_ATTRIBUTE_R(elle::Buffer, password);
       ELLE_ATTRIBUTE_R(Cipher, cipher);
-      ELLE_ATTRIBUTE_R(Mode, mode)
+      ELLE_ATTRIBUTE_R(Mode, mode);
       ELLE_ATTRIBUTE_R(Oneway, oneway);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -134,7 +134,9 @@ namespace infinit
     public:
       // construction
       SecretKey() {}
-      ELLE_SERIALIZE_CONSTRUCT(SecretKey) {}
+      ELLE_SERIALIZE_CONSTRUCT(SecretKey,
+                               _password)
+      {}
       // methods
       template <typename T = Plain>
       Code
