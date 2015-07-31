@@ -141,6 +141,11 @@ namespace das
         : Model::Update(std::move(update))
       {}
 
+      ElementUpdate(elle::serialization::Serializer& s)
+      {
+        this->serialize(s);
+      }
+
       void
       serialize(elle::serialization::Serializer& s)
       {
