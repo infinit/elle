@@ -94,6 +94,21 @@ namespace infinit
         this->_prepare();
 
         this->_check();
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        // Set the current object's version to 0 as it was in the legacy
+        // version with the parent class PrivateKey. In addition, keep the
+        // subclass (rsa::PrivateKey) format as the latest possible value
+        // i.e StaticFormat<PrivateKey>.
+        auto _this_dynamic_format =
+          static_cast<
+            elle::serialize::DynamicFormat<
+              infinit::cryptography::rsa::PrivateKey>*>(this);
+        _this_dynamic_format->version(0);
+
+        this->_legacy_format =
+          elle::serialize::StaticFormat<PrivateKey>::version;
+#endif
       }
 
       PrivateKey::PrivateKey(::RSA* rsa,
@@ -124,6 +139,17 @@ namespace infinit
         this->_prepare();
 
         this->_check();
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        auto _this_dynamic_format =
+          static_cast<
+            elle::serialize::DynamicFormat<
+              infinit::cryptography::rsa::PrivateKey>*>(this);
+        _this_dynamic_format->version(0);
+
+        this->_legacy_format =
+          elle::serialize::StaticFormat<PrivateKey>::version;
+#endif
       }
 
       PrivateKey::PrivateKey(PrivateKey const& other):
@@ -133,6 +159,9 @@ namespace infinit
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
         _digest_algorithm(other._digest_algorithm)
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _legacy_format(other._legacy_format)
+#endif
       {
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
@@ -169,6 +198,9 @@ namespace infinit
         _encryption_padding(std::move(other._encryption_padding)),
         _signature_padding(std::move(other._signature_padding)),
         _digest_algorithm(std::move(other._digest_algorithm))
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _legacy_format(other._legacy_format)
+#endif
       {
         this->_context.decrypt = std::move(other._context.decrypt);
         this->_context.sign = std::move(other._context.sign);
@@ -245,6 +277,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
         }
 
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         if (::EVP_PKEY_CTX_set_signature_md(
               this->_context.sign.get(),
               (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
@@ -252,6 +285,7 @@ namespace infinit
             elle::sprintf("unable to set the EVP_PKEY context's digest "
                           "function: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+#endif
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Note that in these cases, using no RSA padding is not dangerous

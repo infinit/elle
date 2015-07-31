@@ -17,7 +17,7 @@
 
 #  include <elle/serialize/Serializer.hh>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::KeyPair, 2);
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::KeyPair, 1);
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::KeyPair);
 
@@ -45,13 +45,6 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::KeyPair,
 
       break;
     }
-    case 2:
-    {
-      archive << *value._K;
-      archive << *value._k;
-
-      break;
-    }
     default:
       throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", format));
@@ -76,16 +69,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
     {
       archive >> value._K;
       archive >> value._k;
-
-      break;
-    }
-    case 2:
-    {
-      value._K.reset(new infinit::cryptography::rsa::PublicKey);
-      value._k.reset(new infinit::cryptography::rsa::PrivateKey);
-
-      archive >> *value._K;
-      archive >> *value._k;
 
       break;
     }

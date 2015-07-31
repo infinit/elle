@@ -188,8 +188,9 @@ namespace infinit
         using elle::serialize::SerializableMixin<
           infinit::cryptography::rsa::PrivateKey,
           elle::serialize::Base64Archive>::serialize;
+        // attributes
+        ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
 # endif
-
       };
     }
   }

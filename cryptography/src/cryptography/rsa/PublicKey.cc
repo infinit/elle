@@ -111,6 +111,21 @@ namespace infinit
         this->_prepare();
 
         this->_check();
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        // Set the current object's version to 0 as it was in the legacy
+        // version with the parent class PublicKey. In addition, keep the
+        // subclass (rsa::PublicKey) format as the latest possible value
+        // i.e StaticFormat<PublicKey>.
+        auto _this_dynamic_format =
+          static_cast<
+            elle::serialize::DynamicFormat<
+              infinit::cryptography::rsa::PublicKey>*>(this);
+        _this_dynamic_format->version(0);
+
+        this->_legacy_format =
+          elle::serialize::StaticFormat<PublicKey>::version;
+#endif
       }
 
       PublicKey::PublicKey(::EVP_PKEY* key,
@@ -148,6 +163,17 @@ namespace infinit
         this->_prepare();
 
         this->_check();
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        auto _this_dynamic_format =
+          static_cast<
+            elle::serialize::DynamicFormat<
+              infinit::cryptography::rsa::PublicKey>*>(this);
+        _this_dynamic_format->version(0);
+
+        this->_legacy_format =
+          elle::serialize::StaticFormat<PublicKey>::version;
+#endif
       }
 
       PublicKey::PublicKey(::RSA* rsa,
@@ -182,6 +208,17 @@ namespace infinit
         this->_prepare();
 
         this->_check();
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        auto _this_dynamic_format =
+          static_cast<
+            elle::serialize::DynamicFormat<
+              infinit::cryptography::rsa::PublicKey>*>(this);
+        _this_dynamic_format->version(0);
+
+        this->_legacy_format =
+          elle::serialize::StaticFormat<PublicKey>::version;
+#endif
       }
 
       PublicKey::PublicKey(PublicKey const& other):
@@ -193,6 +230,9 @@ namespace infinit
         _digest_algorithm(other._digest_algorithm),
         _envelope_cipher(other._envelope_cipher),
         _envelope_mode(other._envelope_mode)
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _legacy_format(other._legacy_format)
+#endif
       {
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
@@ -224,6 +264,9 @@ namespace infinit
         _digest_algorithm(std::move(other._digest_algorithm)),
         _envelope_cipher(std::move(other._envelope_cipher)),
         _envelope_mode(std::move(other._envelope_mode))
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _legacy_format(std::move(other._legacy_format))
+#endif
       {
         this->_context.encrypt = std::move(other._context.encrypt);
         this->_context.verify = std::move(other._context.verify);
@@ -301,6 +344,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
         }
 
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         if (::EVP_PKEY_CTX_set_signature_md(
               this->_context.verify.get(),
               (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
@@ -308,6 +352,7 @@ namespace infinit
             elle::sprintf("unable to set the EVP_PKEY context's digest "
                           "function: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+#endif
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // These contexts do not use paddings. Not that relying on textbook

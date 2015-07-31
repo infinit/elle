@@ -84,7 +84,7 @@ namespace infinit
 #  include <cryptography/rsa/Padding.hh>
 #  include <cryptography/_legacy/rsa.hh>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 2);
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PublicKey);
 
@@ -93,42 +93,35 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::PublicKey,
                           value,
                           format)
 {
-  switch (format)
+  // Since the original class was the parent PublicKey class that was
+  // always in format 0, we can enforce the format's value.
+  enforce(format == 0);
+
+  archive << infinit::cryptography::Cryptosystem::rsa;
+
+  // Create the subclass (i.e originally rsa::PublicKey) and set the
+  // format to the right value.
+  infinit::cryptography::legacy::rsa::Dummy implementation;
+  auto& _implementation_dynamic_format =
+    static_cast<
+      elle::serialize::DynamicFormat<
+        infinit::cryptography::legacy::rsa::Dummy>&>(implementation);
+  _implementation_dynamic_format.version(value._legacy_format);
+  archive << implementation;
+
+  switch (value._legacy_format)
   {
     case 0:
     case 1:
     {
-      infinit::cryptography::Cryptosystem cryptosystem =
-        infinit::cryptography::Cryptosystem::rsa;
-      archive << cryptosystem;
-
-      infinit::cryptography::legacy::rsa::Dummy implementation;
-      archive << implementation;
-
       archive << *value._key->pkey.rsa->n
               << *value._key->pkey.rsa->e;
 
       break;
     }
-    case 2:
-    {
-      ELLE_ASSERT_NEQ(value._key, nullptr);
-
-      elle::Buffer buffer =
-        infinit::cryptography::rsa::der::encode_public(value._key->pkey.rsa);
-
-      archive << buffer;
-      archive << value._encryption_padding;
-      archive << value._signature_padding;
-      archive << value._digest_algorithm;
-      archive << value._envelope_cipher;
-      archive << value._envelope_mode;
-
-      break;
-    }
     default:
       throw infinit::cryptography::Error(
-        elle::sprintf("unknown format '%s'", format));
+        elle::sprintf("unknown format '%s'", value._legacy_format));
   }
 }
 
@@ -137,19 +130,46 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
                           value,
                           format)
 {
-  switch (format)
+  // Emulate deserializing the parent class.
+  //
+  // Note that the original hierarchy was PublicKey embedding the
+  // rsa::PublicKey (this class in practice). Therefore, at the very beginning
+  // of this deserialization, we are theoretically in the parent PublicKey
+  // class. By deserializing the Dummy class, we intend to deserialize the
+  // parent class (that no longer exists: PublicKey). Unfortunately, we are
+  // already in the deserialization mechanism, hence the header of the archive
+  // has already been fetched, which is the header of the parent PublicKey
+  // class. As such, the format provided in this function is not the one for
+  // rsa::PublicKey but for the parent PublicKey.
+  //
+  // The following therefore deserializes Dummy to emulate the hierarchy of
+  // classes, takes its format and stores it in the current object for future
+  // use, in particular in the Save() serialization method, to know how the
+  // object must be saved.
+  enforce(format == 0);
+
+  // Extract the cryptosystem which was in the parent class PublicKey.
+  infinit::cryptography::Cryptosystem cryptosystem;
+  archive >> cryptosystem;
+  ELLE_ASSERT_EQ(cryptosystem, infinit::cryptography::Cryptosystem::rsa);
+
+  // Extract the subclass: rsa::PublicKey.
+  infinit::cryptography::legacy::rsa::Dummy implementation;
+  archive >> implementation;
+
+  // Report the subclass' format in the current one since the modern
+  // rsa::PublicKey class plays the role of both classes.
+  auto& _implementation_dynamic_format =
+    static_cast<
+      elle::serialize::DynamicFormat<
+        infinit::cryptography::legacy::rsa::Dummy>&>(implementation);
+  value._legacy_format = _implementation_dynamic_format.version();
+
+  switch (value._legacy_format)
   {
     case 0:
     case 1:
     {
-      // Extract the cryptosystem.
-      infinit::cryptography::Cryptosystem cryptosystem;
-      archive >> cryptosystem;
-
-      // Emulate deserializing a subclass.
-      infinit::cryptography::legacy::rsa::Dummy implementation;
-      archive >> implementation;
-
       // Extract the big numbers.
       ::BIGNUM *n = ::BN_new();
       ::BIGNUM *e = ::BN_new();
@@ -177,7 +197,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(e);
 
       // Set the default configuration values.
-      switch (format)
+      switch (value._legacy_format)
       {
         case 0:
         {
@@ -219,50 +239,13 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
       value._prepare();
-
-      // Specifically set the signature digest method to null
-      // because it was not set in the versions 0 and 1.
-      if (::EVP_PKEY_CTX_set_signature_md(value._context.verify.get(),
-                                          nullptr) <= 0)
-        throw Error(
-          elle::sprintf("unable to set the EVP_PKEY context's digest "
-                        "function: %s",
-                        ::ERR_error_string(ERR_get_error(), nullptr)));
-
-      // Validate the key.
-      value._check();
-
-      break;
-    }
-    case 2:
-    {
-      elle::Buffer buffer;
-
-      archive >> buffer;
-      archive >> value._encryption_padding;
-      archive >> value._signature_padding;
-      archive >> value._digest_algorithm;
-      archive >> value._envelope_cipher;
-      archive >> value._envelope_mode;
-
-      ::RSA* rsa =
-          infinit::cryptography::rsa::der::decode_public(buffer);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-      value._construct(rsa);
-
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-
-      value._prepare();
-
       value._check();
 
       break;
     }
     default:
       throw infinit::cryptography::Error(
-        elle::sprintf("unknown format '%s'", format));
+        elle::sprintf("unknown format '%s'", value._legacy_format));
   }
 }
 
