@@ -310,6 +310,7 @@ serialization()
     BOOST_CHECK(!u.id);
     BOOST_CHECK(!u.name);
   }
+  // Load model from JSON.
   {
     std::stringstream data(
       elle::sprintf(
@@ -327,6 +328,43 @@ serialization()
     DasModel::Update u(input);
     BOOST_CHECK_EQUAL(u.devices.get().size(), 1u);
     BOOST_CHECK_EQUAL(u.devices.get()[0].name.value(), "das-device");
+  }
+  // Remove device from model using JSON.
+  {
+    std::vector<Device> devices;
+    {
+      DasDevices::Update u;
+      u.apply(devices);
+      BOOST_CHECK(devices.empty());
+    }
+    auto device_id = elle::UUID::random();
+    {
+      DasDevices::Update u;
+      DasDevice::Update du;
+      du.id = device_id;
+      du.name = "device-name-1";
+      u.push_back(std::move(du));
+      u.apply(devices);
+      BOOST_CHECK_EQUAL(devices.size(), 1u);
+      BOOST_CHECK_EQUAL(devices[0].id, device_id);
+      BOOST_CHECK_EQUAL(devices[0].name.value(), "device-name-1");
+    }
+    {
+      DasDevices::Update u;
+      std::stringstream data(
+        elle::sprintf(
+          "{"
+          "  \"$remove\": true,"
+          "  \"id\": \"%s\""
+          "}",
+          device_id
+        ));
+      elle::serialization::json::SerializerIn input(data, false);
+      DasDevices::ElementUpdate du(input);
+      u.push_back(std::move(du));
+      u.apply(devices);
+      BOOST_CHECK_EQUAL(devices.size(), 0u);
+    }
   }
 }
 
