@@ -180,10 +180,12 @@ namespace das
             collection.end(),
             [&](T const& elt) { return elt.*key == k.get(); });
           if (it != collection.end())
-            if (update.remove)
+          {
+            if (update.remove && update.remove.get())
               collection.erase(it);
             else
               update.apply(*it);
+          }
           else
             Inserter<C, ElementUpdate, T>::insert(collection, update);
         }
