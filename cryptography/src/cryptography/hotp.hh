@@ -3,7 +3,6 @@
 
 #include <elle/Buffer.hh>
 
-
 namespace infinit
 {
   namespace cryptography
