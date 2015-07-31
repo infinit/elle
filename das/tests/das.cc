@@ -350,19 +350,25 @@ serialization()
       BOOST_CHECK_EQUAL(devices[0].name.value(), "device-name-1");
     }
     {
-      DasDevices::Update u;
-      std::stringstream data(
-        elle::sprintf(
-          "{"
-          "  \"$remove\": true,"
-          "  \"id\": \"%s\""
-          "}",
-          device_id
-        ));
-      elle::serialization::json::SerializerIn input(data, false);
-      DasDevices::ElementUpdate du(input);
-      u.push_back(std::move(du));
-      u.apply(devices);
+      auto update_device = [&] (bool remove)
+      {
+        DasDevices::Update u;
+        std::stringstream data(
+          elle::sprintf(
+            "{"
+            "  \"$remove\": %s,"
+            "  \"id\": \"%s\""
+            "}",
+            remove ? "true" : "false", device_id
+          ));
+        elle::serialization::json::SerializerIn input(data, false);
+        DasDevices::ElementUpdate du(input);
+        u.push_back(std::move(du));
+        u.apply(devices);
+      };
+      update_device(false);
+      BOOST_CHECK_EQUAL(devices.size(), 1u);
+      update_device(true);
       BOOST_CHECK_EQUAL(devices.size(), 0u);
     }
   }
