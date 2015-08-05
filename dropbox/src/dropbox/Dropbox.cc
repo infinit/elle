@@ -430,14 +430,8 @@ namespace dropbox
   Dropbox::escape_path(boost::filesystem::path const& path)
   {
     std::string res;
-    bool root = true;
     for (auto const& chunk: path)
     {
-      if (root)
-      {
-        root = false;
-        continue;
-      }
       res += "/";
       res += reactor::http::url_encode(chunk.string());
     }
@@ -633,6 +627,8 @@ namespace dropbox
   Delta
   Dropbox::delta(std::string cursor)
   {
+    ELLE_TRACE_SCOPE("%s: get delta from %s",
+                     *this, cursor.empty() ? std::string("scratch") : cursor);
     reactor::http::Request::QueryDict query;
     if (!cursor.empty())
       query["cursor"] = cursor;
