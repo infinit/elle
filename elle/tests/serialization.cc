@@ -793,6 +793,58 @@ json_unicode_surrogate()
   BOOST_CHECK_EQUAL(res, "éé");
 }
 
+static
+void
+json_optionals()
+{
+  boost::optional<std::string> value;
+  BOOST_CHECK(!value);
+  {
+    std::stringstream stream("{}");
+    elle::serialization::json::SerializerIn serializer(stream);
+    serializer.serialize("value", value);
+    BOOST_CHECK(!value);
+  }
+  {
+    std::stringstream stream(
+      "{"
+      "  \"value\": \"castor\""
+      "}");
+    elle::serialization::json::SerializerIn serializer(stream);
+    serializer.serialize("value", value);
+    BOOST_CHECK(value);
+    BOOST_CHECK_EQUAL(value.get(), "castor");
+  }
+  {
+    std::stringstream stream(
+      "{"
+      "}");
+    elle::serialization::json::SerializerIn serializer(stream);
+    serializer.serialize("value", value);
+    BOOST_CHECK(value);
+    BOOST_CHECK_EQUAL(value.get(), "castor");
+  }
+  {
+    std::stringstream stream(
+      "{"
+      "  \"value\": \"polux\""
+      "}");
+    elle::serialization::json::SerializerIn serializer(stream);
+    serializer.serialize("value", value);
+    BOOST_CHECK(value);
+    BOOST_CHECK_EQUAL(value.get(), "polux");
+  }
+  {
+    std::stringstream stream(
+      "{"
+      "  \"value\": null"
+      "}");
+    elle::serialization::json::SerializerIn serializer(stream);
+    serializer.serialize("value", value);
+    BOOST_CHECK(!value);
+  }
+}
+
 class Context
 {
 public:
@@ -938,6 +990,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_overflows));
   suite.add(BOOST_TEST_CASE(json_iso8601));
   suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
+  suite.add(BOOST_TEST_CASE(json_optionals));
 
   {
     suite.add(BOOST_TEST_CASE(fundamentals<elle::serialization::Binary>));
