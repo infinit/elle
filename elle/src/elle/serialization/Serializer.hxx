@@ -150,8 +150,6 @@ namespace elle
     Serializer::_deserialize_in_option(std::string const& name,
                                        boost::optional<T>& opt)
     {
-      ELLE_ENFORCE(this->_enter(name));
-      elle::SafeFinally leave([&] { this->_leave(name); });
       opt.emplace(static_cast<SerializerIn&>(*this));
     }
 
@@ -161,7 +159,7 @@ namespace elle
                                        boost::optional<T>& opt)
     {
       T value;
-      this->serialize(name, value);
+      this->_serialize_anonymous(name, value);
       opt = std::move(value);
     }
 
@@ -170,19 +168,23 @@ namespace elle
     Serializer::serialize(std::string const& name, boost::optional<T>& opt)
     {
       if (this->_out())
-        this->_serialize_option(name,
-                                bool(opt),
-                                [&]
-                                {
-                                  this->serialize(name, opt.get());
-                                });
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            this->serialize(name, opt.get());
+          });
       else
-        this->_serialize_option(name,
-                                bool(opt),
-                                [&]
-                                {
-                                  this->_deserialize_in_option(name, opt);
-                                });
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            ELLE_ENFORCE(this->_enter(name));
+            elle::SafeFinally leave([&] { this->_leave(name); });
+            this->_deserialize_in_option(name, opt);
+          });
     }
 
     class Serializer::Details
@@ -366,8 +368,11 @@ namespace elle
     template <typename C>
     void
     Serializer::_serialize_assoc(std::string const& name,
-                           C& map)
+                                 C& map)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize associative container \"%s\"",
+                       *this, name);
       typedef typename C::key_type K;
       typedef typename C::mapped_type V;
       if (this->_out())
@@ -649,6 +654,8 @@ namespace elle
     void
     Serializer::_serialize(std::string const& name, std::pair<T1, T2>& pair)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize pair \"%s\"", *this, name);
       if (this->_out())
       {
         this->_serialize_array(
@@ -658,11 +665,13 @@ namespace elle
           {
             if (this->_enter(name))
             {
+              ELLE_DEBUG_SCOPE("%s: serialize first member", *this);
               elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.first);
             }
             if (this->_enter(name))
             {
+              ELLE_DEBUG_SCOPE("%s: serialize second member", *this);
               elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.second);
             }
@@ -677,9 +686,15 @@ namespace elle
           [&] ()
           {
             if (i == 0)
+            {
+              ELLE_DEBUG_SCOPE("%s: deserialize first member", *this);
               this->_serialize_anonymous(name, pair.first);
+            }
             else if (i == 1)
+            {
+              ELLE_DEBUG_SCOPE("%s: deserialize second member", *this);
               this->_serialize_anonymous(name, pair.second);
+            }
             else
               throw Error("too many values to unpack for a pair");
             ++i;
