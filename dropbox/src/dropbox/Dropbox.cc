@@ -411,7 +411,10 @@ namespace dropbox
   }
 
   Dropbox::~Dropbox()
-  {}
+  {
+    // Delete the cache first as it uses our fields
+    this->_cache.reset();
+  }
 
   AccountInfo
   Dropbox::account_info()
