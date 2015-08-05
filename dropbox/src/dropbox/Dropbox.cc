@@ -269,15 +269,7 @@ namespace dropbox
         this->_cursor = delta.cursor;
         for (auto const& entry: delta.entries)
           if (entry.second)
-          {
-            for (unsigned char c: entry.first)
-              std::cerr << int(c) << " ";
-            std::cerr << std::endl;
-            for (unsigned char c: entry.second.get().path)
-              std::cerr << int(c) << " ";
-            std::cerr << std::endl;
             this->metadata_update(entry.first, entry.second.get());
-          }
           else
             this->metadata_delete(entry.first);
       }
