@@ -56,7 +56,7 @@ namespace infinit
         KeyPair(KeyPair const& other);
         KeyPair(KeyPair&& other);
         virtual
-        ~KeyPair() = default;
+        ~KeyPair();
 
         /*--------.
         | Methods |

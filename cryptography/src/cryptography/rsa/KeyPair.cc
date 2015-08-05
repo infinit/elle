@@ -36,15 +36,13 @@ namespace infinit
                        PrivateKey const& k):
         _K(new PublicKey(K)),
         _k(new PrivateKey(k))
-      {
-      }
+      {}
 
       KeyPair::KeyPair(PublicKey&& K,
                        PrivateKey&& k):
         _K(new PublicKey(std::move(K))),
         _k(new PrivateKey(std::move(k)))
-      {
-      }
+      {}
 
       KeyPair::KeyPair(KeyPair const& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -52,8 +50,7 @@ namespace infinit
 #endif
         _K(new PublicKey(*other._K)),
         _k(new PrivateKey(*other._k))
-      {
-      }
+      {}
 
       KeyPair::KeyPair(KeyPair&& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -61,8 +58,10 @@ namespace infinit
 #endif
         _K(std::move(other._K)),
         _k(std::move(other._k))
-      {
-      }
+      {}
+
+      KeyPair::~KeyPair()
+      {}
 
       /*--------.
       | Methods |
