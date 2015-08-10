@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include <elle/system/home_directory.hh>
-
 #include <elle/os/environ.hh>
+#include <elle/os/path.hh>
+#include <elle/system/user_paths.hh>
 #ifdef INFINIT_WINDOWS
 # include <elle/windows/string_conversion.hh>
 # include <shlobj.h>
@@ -17,7 +17,9 @@ namespace elle
     boost::filesystem::path
     home_directory()
     {
-#ifdef INFINIT_WINDOWS
+#if defined(INFINIT_IOS) || defined(INFINIT_MACOSX)
+# error Use user_paths.mm on Apple platforms.
+#elif defined(INFINIT_WINDOWS)
       wchar_t path[MAX_PATH];
       if (SUCCEEDED(SHGetSpecialFolderPathW(NULL, path, CSIDL_PROFILE, 0)))
       {
@@ -41,6 +43,16 @@ namespace elle
       else
         return {os::getenv("HOME", "/tmp")};
 #endif
+    }
+
+    boost::filesystem::path
+    download_directory()
+    {
+      auto candiate_dir = elle::path::join(home_directory(), "Downloads");
+      using path = elle::os::path;
+      if (path::exists(candiate_dir) && path::is_directory(candiate_dir))
+        return candiate_dir;
+      return home_directory();
     }
   }
 }

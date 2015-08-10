@@ -106,6 +106,8 @@ def configure(zlib_lib,
   cxx_config += zlib_config
   libarchive_lib = drake.copy(libarchive_lib, 'lib',
                               strip_prefix = True)
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
+    cxx_config.framework_add('Foundation')
 
   sources = drake.nodes(
     'src/elle/finally.cc',
@@ -280,26 +282,30 @@ def configure(zlib_lib,
     'src/elle/sfinae.hh',
     'src/elle/system/getpid.cc',
     'src/elle/system/getpid.hh',
+    'src/elle/system/home_directory.hh',
     'src/elle/system/platform.hh',
     'src/elle/system/signal.cc',
     'src/elle/system/signal.hh',
+    'src/elle/system/user_paths.hh',
     'src/elle/time.hh',
     'src/elle/types.hh',
     )
 
-  # Home Directory
-  if cxx_toolkit.os is not drake.os.ios:
+  # Platform specific.
+  if cxx_toolkit is not drake.os.ios:
     sources += drake.nodes(
-      'src/elle/system/home_directory.cc',
-      'src/elle/system/home_directory.hh',
       'src/elle/system/username.cc',
       'src/elle/system/username.hh',
+    )
+  if cxx_toolkit.os not in [drake.os.macos, drake.os.ios]:
+    sources += drake.nodes(
       'src/elle/system/platform.cc',
+      'src/elle/system/user_paths.cc',
     )
   else:
     sources += drake.nodes(
-      'src/elle/system/home_directory.mm',
       'src/elle/system/platform.mm',
+      'src/elle/system/user_paths.mm',
     )
 
   if cxx_toolkit.os is drake.os.android:
@@ -527,8 +533,7 @@ def configure(zlib_lib,
     python_cxx_config = drake.cxx.Config(cxx_config)
     # Required by python or else the symbol _Gestalt is not found.
     if cxx_toolkit.os is drake.os.macos:
-      python_cxx_config.flag('-framework')
-      python_cxx_config.flag('CoreServices')
+      python_cxx_config.framework_add('CoreServices')
     python_cxx_config += python3
     python_cxx_config.lib_path_runtime('../..')
     python_lib_sources = [drake.node('src/elle/log/python.cc')]
@@ -616,7 +621,7 @@ def configure(zlib_lib,
     'serialize/footprint.cc',
     'serialize/version_change.cc',
     'set.cc',
-    'system/home_directory.cc',
+    'system/user_paths.cc',
     'unordered_map.cc',
     'utility/Suffixes.cc',
     'AtomicFile.cc',
