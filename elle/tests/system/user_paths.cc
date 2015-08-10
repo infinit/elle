@@ -6,7 +6,7 @@ static
 void
 home_directory()
 {
-  auto const& home_dir = elle::system::home_directory().string();
+  std::string home_dir(elle::system::home_directory().string());
   BOOST_CHECK(elle::os::path::exists(home_dir));
   BOOST_CHECK(elle::os::path::is_directory(home_dir));
 }
@@ -15,7 +15,7 @@ static
 void
 download_directory()
 {
-  std::string const& download_dir = elle::system::download_directory().string();
+  std::string download_dir(elle::system::download_directory().string());
   BOOST_CHECK(elle::os::path::exists(download_dir));
   BOOST_CHECK(elle::os::path::is_directory(download_dir));
 #ifdef INFINIT_MACOSX
