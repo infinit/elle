@@ -876,27 +876,42 @@ namespace elle
     }
 
     template <typename T, typename Serialization>
+    void
+    serialize(T const& o, std::string const& name,
+              std::ostream& output, bool version = true)
+    {
+      typename Serialization::SerializerOut s(output, version);
+      s.serialize(name, o);
+    }
+
+    template <typename T, typename Serialization>
+    void
+    serialize(T const& o, std::ostream& output, bool version = true)
+    {
+      typename Serialization::SerializerOut s(output, version);
+      s.serialize_forward(o);
+    }
+
+    template <typename T, typename Serialization>
     elle::Buffer
-    serialize(T const& o, std::string const& name)
+    serialize(T const& o, std::string const& name, bool version = true)
     {
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        typename Serialization::SerializerOut output(s);
-        output.serialize(name, o);
+        serialize<T, Serialization>(o, name, s, version);
       }
       return res;
     }
 
     template <typename T, typename Serialization>
     elle::Buffer
-    serialize(T const& o)
+    serialize(T const& o, bool version = true)
     {
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        typename Serialization::SerializerOut output(s);
-        output.serialize_forward(o);
+        serialize<T, Serialization>(o, s, version);
       }
       return res;
     }

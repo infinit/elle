@@ -14,6 +14,19 @@ namespace elle
       typedef json::SerializerIn SerializerIn;
       typedef json::SerializerOut SerializerOut;
     };
+
+    namespace json
+    {
+      template <typename T, typename ... Args>
+      auto
+      serialize(T const& o, Args&& ... args)
+        -> decltype(elle::serialization::serialize<T, Json>
+                    (o, std::forward<Args>(args)...))
+      {
+        return elle::serialization::serialize<T, Json>
+          (o, std::forward<Args>(args)...);
+      }
+    }
   }
 }
 

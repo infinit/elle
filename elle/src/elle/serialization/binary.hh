@@ -14,6 +14,19 @@ namespace elle
       typedef binary::SerializerIn SerializerIn;
       typedef binary::SerializerOut SerializerOut;
     };
+
+    namespace binary
+    {
+      template <typename T, typename ... Args>
+      auto
+      serialize(T const& o, Args&& ... args)
+        -> decltype(elle::serialization::serialize<T, Binary>
+                    (o, std::forward<Args>(args)...))
+      {
+        return elle::serialization::serialize<T, Binary>
+          (o, std::forward<Args>(args)...);
+      }
+    }
   }
 }
 
