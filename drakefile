@@ -136,9 +136,9 @@ def configure(cxx_toolkit = None,
 
   if python3 is not False:
     if python_version is None:
-      python_version = (drake.Version(3, 2),
+      python_version = (drake.Version(3, 4),
                         drake.Version(3, 3),
-                        drake.Version(3, 4))
+                        drake.Version(3, 2))
     elif not isinstance(python_version, collections.Iterable):
       python_version = (python_version,)
     include_dir = list(itertools.chain(
