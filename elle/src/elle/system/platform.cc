@@ -1,8 +1,6 @@
 #include <elle/system/platform.hh>
 #include <elle/printf.hh>
-#ifdef INFINIT_MACOSX
-# include <CoreServices/CoreServices.h>
-#elif defined INFINIT_WINDOWS
+#ifdef INFINIT_WINDOWS
 # include <elle/system/Windows/version.hh>
 #endif
 
@@ -19,12 +17,10 @@ namespace elle
         return "Windows";
 #elif defined INFINIT_LINUX
         return "Linux";
-#elif defined INFINIT_MACOSX
-        return "MacOSX";
-#elif defined INFINIT_IOS
-        return "iOS";
 #elif defined(INFINIT_ANDROID)
         return "Android";
+#elif defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+# error Use platform.mm instead.
 #else
 # error Please define INFINIT_{OS} according to your platform.
 #endif
@@ -38,18 +34,8 @@ namespace elle
         return version;
 #elif defined INFINIT_LINUX
         return "unknown";
-#elif defined INFINIT_MACOSX
-        int32_t major_version, minor_version, bugfix_version;
-        if (Gestalt(gestaltSystemVersionMajor, &major_version) != noErr)
-          return "unknown";
-        if (Gestalt(gestaltSystemVersionMinor, &minor_version) != noErr)
-          return "unknown";
-        if (Gestalt(gestaltSystemVersionBugFix, &bugfix_version) != noErr)
-          return "unknown";
-        return elle::sprintf("%s.%s.%s",
-                             major_version, minor_version, bugfix_version);
-#elif defined INFINIT_IOS
-        return "unknown";
+#elif defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+# error Use platform.mm instead.
 #elif defined INFINIT_ANDROID
         return "unknown"; // FIXME
 #else
