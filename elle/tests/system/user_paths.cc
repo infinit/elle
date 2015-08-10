@@ -24,7 +24,7 @@ download_directory()
   // Some machines may not have a download directory in which case
   // elle::system::download_directory falls back to the home directory.
   if (download_dir != elle::system::home_directory())
-    BOOST_CHECK(download_dir.find("Downloads") != std::npos);
+    BOOST_CHECK(download_dir.find("Downloads") != std::string::npos);
 #endif
 }
 
