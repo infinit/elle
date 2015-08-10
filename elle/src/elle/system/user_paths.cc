@@ -48,10 +48,13 @@ namespace elle
     boost::filesystem::path
     download_directory()
     {
-      auto candiate_dir = elle::path::join(home_directory(), "Downloads");
-      using path = elle::os::path;
-      if (path::exists(candiate_dir) && path::is_directory(candiate_dir))
+      auto candiate_dir =
+        elle::os::path::join(home_directory().string(), "Downloads");
+      if (elle::os::path::exists(candiate_dir) &&
+          elle::os::path::is_directory(candiate_dir))
+      {
         return candiate_dir;
+      }
       return home_directory();
     }
   }
