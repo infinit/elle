@@ -26,6 +26,16 @@ namespace elle
         return elle::serialization::serialize<T, Json>
           (o, std::forward<Args>(args)...);
       }
+
+      template <typename T, typename ... Args>
+      auto
+      deserialize(Args&& ... args)
+        -> decltype(elle::serialization::deserialize<T, Json>
+                    (std::forward<Args>(args)...))
+      {
+        return elle::serialization::deserialize<T, Json>
+          (std::forward<Args>(args)...);
+      }
     }
   }
 }

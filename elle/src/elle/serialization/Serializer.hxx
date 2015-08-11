@@ -845,34 +845,36 @@ namespace elle
 
     template <typename T, typename Serialization>
     T
-    deserialize(std::istream& input)
+    deserialize(std::istream& input, bool version = true)
     {
-      typename Serialization::SerializerIn s(input);
+      typename Serialization::SerializerIn s(input, version);
       return s.template deserialize<T>();
     }
 
     template <typename T, typename Serialization>
     T
-    deserialize(std::istream& input, std::string const& name)
+    deserialize(std::istream& input, std::string const& name,
+                bool version = true)
     {
-      typename Serialization::SerializerIn s(input);
+      typename Serialization::SerializerIn s(input, version);
       return s.template deserialize<T>(name);
     }
 
     template <typename T, typename Serialization>
     T
-    deserialize(elle::Buffer const& input)
+    deserialize(elle::Buffer const& input, bool version = true)
     {
       elle::IOStream s(input.istreambuf());
-      return deserialize<T, Serialization>(s);
+      return deserialize<T, Serialization>(s, version);
     }
 
     template <typename T, typename Serialization>
     T
-    deserialize(elle::Buffer const& input, std::string const& name)
+    deserialize(elle::Buffer const& input, std::string const& name,
+                bool version = true)
     {
       elle::IOStream s(input.istreambuf());
-      return deserialize<T, Serialization>(s, name);
+      return deserialize<T, Serialization>(s, name, version);
     }
 
     template <typename T, typename Serialization>
