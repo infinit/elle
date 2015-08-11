@@ -100,7 +100,7 @@ namespace elle
     {
       typedef T Type;
       static
-      Type const&
+      typename elle::_detail::attribute_r_type<Type>::type
       convert(das::Variable<T>& v)
       {
         return v.value();
