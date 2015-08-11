@@ -20,7 +20,7 @@ Sources
 Retrieve the dOpenSSL sources on Github as follows
 
 ```Shell
-$> git clone git://github.com/infinitdotio/dopenssl.git
+$> git clone git://github.com/infinit/dopenssl.git
 ```
 
 Build
