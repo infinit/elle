@@ -3005,7 +3005,7 @@ class Rule(VirtualNode):
     >>> rule.build()
     Touch /tmp/.drake.rule.add
     '''
-    if isinstance(nodes, list):
+    if isinstance(nodes, (list, types.GeneratorType)):
       for node in nodes:
         self << node
     else:
