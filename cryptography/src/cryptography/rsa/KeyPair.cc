@@ -320,6 +320,38 @@ namespace infinit
 
           return (KeyPair(std::move(K), std::move(k)));
         }
+
+        namespace der
+        {
+          /*----------.
+          | Functions |
+          `----------*/
+
+          elle::Buffer
+          encode(KeyPair const& keypair)
+          {
+            return (privatekey::der::encode(keypair.k()));
+          }
+
+          KeyPair
+          decode(elle::ConstWeakBuffer const& buffer,
+                 Padding const encryption_padding,
+                 Padding const signature_padding,
+                 Oneway const digest_algorithm,
+                 Cipher const envelope_cipher,
+                 Mode const envelope_mode)
+          {
+            PrivateKey k = privatekey::der::decode(buffer,
+                                                   encryption_padding,
+                                                   signature_padding,
+                                                   digest_algorithm);
+            PublicKey K(k,
+                        envelope_cipher,
+                        envelope_mode);
+
+            return (KeyPair(K, k));
+          }
+        }
       }
     }
   }

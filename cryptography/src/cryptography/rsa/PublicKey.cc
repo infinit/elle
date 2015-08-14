@@ -57,14 +57,14 @@ namespace infinit
           elle::Buffer
           encode(::RSA* rsa)
           {
-            return der::encode_public(rsa);
+            return (rsa::der::encode_public(rsa));
           }
 
           static
           ::RSA*
           decode(elle::ConstWeakBuffer const& buffer)
           {
-            return der::decode_public(buffer);
+            return (rsa::der::decode_public(buffer));
           }
         };
       }
@@ -624,6 +624,53 @@ namespace infinit
         return std::hash<PublicKey>()(*this) < std::hash<PublicKey>()(other);
       }
 #endif
+    }
+  }
+}
+
+//
+// ---------- DER -------------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace publickey
+      {
+        namespace der
+        {
+          /*----------.
+          | Functions |
+          `----------*/
+
+          elle::Buffer
+          encode(PublicKey const& K)
+          {
+            return (rsa::der::encode_public(K.key()->pkey.rsa));
+          }
+
+          PublicKey
+          decode(elle::ConstWeakBuffer const& buffer,
+                 Padding const encryption_padding,
+                 Padding const signature_padding,
+                 Oneway const digest_algorithm,
+                 Cipher const envelope_cipher,
+                 Mode const envelope_mode)
+          {
+            ::RSA* rsa = rsa::der::decode_public(buffer);
+
+            return (PublicKey(rsa,
+                              encryption_padding,
+                              signature_padding,
+                              digest_algorithm,
+                              envelope_cipher,
+                              envelope_mode));
+          }
+        }
+      }
     }
   }
 }

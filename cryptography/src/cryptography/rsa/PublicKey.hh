@@ -219,6 +219,46 @@ namespace infinit
   }
 }
 
+//
+// ---------- DER -------------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace publickey
+      {
+        namespace der
+        {
+          /*----------.
+          | Functions |
+          `----------*/
+
+          /// Encode the public key in DER.
+          elle::Buffer
+          encode(PublicKey const& K);
+          /// Decode the public key from a DER representation.
+          PublicKey
+          decode(elle::ConstWeakBuffer const& buffer,
+                 Padding const encryption_padding =
+                   defaults::encryption_padding,
+                 Padding const signature_padding =
+                   defaults::signature_padding,
+                 Oneway const digest_algorithm =
+                   defaults::digest_algorithm,
+                 Cipher const envelope_cipher =
+                   defaults::envelope_cipher,
+                 Mode const envelope_mode =
+                   defaults::envelope_mode);
+        }
+      }
+    }
+  }
+}
+
 # include <cryptography/rsa/PublicKey.hxx>
 
 #endif

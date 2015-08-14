@@ -196,6 +196,42 @@ namespace infinit
   }
 }
 
+//
+// ---------- DER -------------------------------------------------------------
+//
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      namespace privatekey
+      {
+        namespace der
+        {
+          /*----------.
+          | Functions |
+          `----------*/
+
+          /// Encode the private key in DER.
+          elle::Buffer
+          encode(PrivateKey const& K);
+          /// Decode the private key from a DER representation.
+          PrivateKey
+          decode(elle::ConstWeakBuffer const& buffer,
+                 Padding const encryption_padding =
+                   defaults::encryption_padding,
+                 Padding const signature_padding =
+                   defaults::signature_padding,
+                 Oneway const digest_algorithm =
+                   defaults::digest_algorithm);
+        }
+      }
+    }
+  }
+}
+
 # include <cryptography/rsa/PrivateKey.hxx>
 
 #endif

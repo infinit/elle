@@ -174,6 +174,30 @@ namespace infinit
                    defaults::envelope_cipher,
                  Mode const envelope_mode =
                    defaults::envelope_mode);
+
+        namespace der
+        {
+          /*----------.
+          | Functions |
+          `----------*/
+
+          /// Encode the key pair in DER.
+          elle::Buffer
+          encode(KeyPair const& keypair);
+          /// Decode the key pair from a DER representation.
+          KeyPair
+          decode(elle::ConstWeakBuffer const& buffer,
+                 Padding const encryption_padding =
+                   defaults::encryption_padding,
+                 Padding const signature_padding =
+                   defaults::signature_padding,
+                 Oneway const digest_algorithm =
+                   defaults::digest_algorithm,
+                 Cipher const envelope_cipher =
+                   defaults::envelope_cipher,
+                 Mode const envelope_mode =
+                   defaults::envelope_mode);
+        }
       }
     }
   }
