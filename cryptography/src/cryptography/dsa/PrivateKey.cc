@@ -7,7 +7,6 @@
 
 #include <cryptography/Error.hh>
 #include <cryptography/bn.hh>
-#include <cryptography/context.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/dsa/KeyPair.hh>
 #include <cryptography/dsa/PrivateKey.hh>
@@ -67,9 +66,6 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -92,9 +88,6 @@ namespace infinit
         // Construct the private key based on the given DSA structure.
         this->_construct(dsa);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -116,9 +109,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -126,8 +116,6 @@ namespace infinit
         _key(std::move(other._key)),
         _digest_algorithm(std::move(other._digest_algorithm))
       {
-        this->_context.sign = std::move(other._context.sign);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -163,20 +151,6 @@ namespace infinit
       }
 
       void
-      PrivateKey::_prepare()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-
-        // Prepare the sign context.
-        ELLE_ASSERT_EQ(this->_context.sign, nullptr);
-        this->_context.sign.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_sign_init));
-      }
-
-      void
       PrivateKey::_check() const
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
@@ -201,11 +175,10 @@ namespace infinit
       {
         ELLE_TRACE_METHOD("");
 
-        elle::Buffer digest = hash(plain, this->_digest_algorithm);
-
-        return (raw::asymmetric::sign(digest,
-                                      this->_context.sign.get(),
-                                      ::EVP_PKEY_sign));
+        return (raw::asymmetric::sign(
+                  this->_key.get(),
+                  oneway::resolve(this->_digest_algorithm),
+                  plain));
       }
 
       elle::Natural32
@@ -260,7 +233,6 @@ namespace infinit
 
         this->serialize(serializer);
 
-        this->_prepare();
         this->_check();
       }
 

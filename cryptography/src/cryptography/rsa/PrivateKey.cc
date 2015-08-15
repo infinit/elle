@@ -14,6 +14,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/hash.hh>
 #include <cryptography/raw.hh>
+#include <cryptography/context.hh>
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/Padding.hh>
 #include <cryptography/rsa/Seed.hh>
@@ -24,6 +25,10 @@
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
+#endif
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+# include <cryptography/_legacy/raw.hh>
 #endif
 
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
@@ -203,7 +208,6 @@ namespace infinit
 #endif
       {
         this->_context.decrypt = std::move(other._context.decrypt);
-        this->_context.sign = std::move(other._context.sign);
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         this->_context.rotate = std::move(other._context.rotate);
 #endif
@@ -249,6 +253,8 @@ namespace infinit
 
         ELLE_ASSERT_NEQ(this->_key, nullptr);
 
+        // XXX remove all that stuff
+
         // Prepare the decrypt context.
         ELLE_ASSERT_EQ(this->_context.decrypt, nullptr);
         this->_context.decrypt.reset(
@@ -256,36 +262,7 @@ namespace infinit
                           ::EVP_PKEY_decrypt_init,
                           this->_encryption_padding));
 
-        // Prepare the sign context.
-        ELLE_ASSERT_EQ(this->_context.sign, nullptr);
-        this->_context.sign.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_sign_init,
-                          this->_signature_padding));
-
-        if (this->_signature_padding == Padding::pss)
-        {
-          if (::EVP_PKEY_CTX_ctrl(this->_context.sign.get(),
-                                  EVP_PKEY_RSA,
-                                  -1,
-                                  EVP_PKEY_CTRL_RSA_PSS_SALTLEN,
-                                  -2,
-                                  nullptr) <= 0)
-            throw Error(
-              elle::sprintf("unable to set the EVP_PKEY context's PSS "
-                            "salt length: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-        }
-
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        if (::EVP_PKEY_CTX_set_signature_md(
-              this->_context.sign.get(),
-              (void*)oneway::resolve(this->_digest_algorithm)) <= 0)
-          throw Error(
-            elle::sprintf("unable to set the EVP_PKEY context's digest "
-                          "function: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-#endif
+        // XXX
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         // Note that in these cases, using no RSA padding is not dangerous
@@ -359,11 +336,33 @@ namespace infinit
       {
         ELLE_TRACE_METHOD("");
 
-        elle::Buffer digest = hash(plain, this->_digest_algorithm);
+        auto configure =
+          [this](::EVP_PKEY_CTX* context)
+          {
+            padding::pad(context, this->_signature_padding);
+          };
 
+        // XXX rsa::context could be put in LEGACY or REMOVED
+
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        types::EVP_PKEY_CTX context(
+          cryptography::context::create(this->_key.get(),
+                                        ::EVP_PKEY_sign_init));
+        // XXX rename cryptography::context en context:: (partout)
+
+        configure(context.get());
+
+        elle::Buffer digest = hash(plain, this->_digest_algorithm);
         return (raw::asymmetric::sign(digest,
-                                      this->_context.sign.get(),
+                                      context.get(),
                                       ::EVP_PKEY_sign));
+#else
+        return (raw::asymmetric::sign(
+                  this->_key.get(),
+                  oneway::resolve(this->_digest_algorithm),
+                  plain,
+                  configure));
+#endif
       }
 
       elle::Natural32

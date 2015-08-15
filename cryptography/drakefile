@@ -200,6 +200,8 @@ def configure(openssl_config,
       'src/cryptography/_legacy/serialization.hxx',
       'src/cryptography/_legacy/envelope.cc',
       'src/cryptography/_legacy/envelope.hh',
+      'src/cryptography/_legacy/raw.cc',
+      'src/cryptography/_legacy/raw.hh',
       )
   else:
     sources += drake.nodes(
@@ -292,15 +294,16 @@ def configure(openssl_config,
       "rsa/PrivateKey.cc",
       "rsa/PublicKey.cc",
       "rsa/hmac.cc",
+      "rsa/pem.cc",
       "dsa/KeyPair.cc",
       "dsa/PrivateKey.cc",
       "dsa/PublicKey.cc",
+      "dsa/pem.cc",
       "dh/KeyPair.cc",
       "dh/PrivateKey.cc",
       "dh/PublicKey.cc",
+
       # XXX    "challenge.cc",
-      "rsa/pem.cc",
-      "dsa/pem.cc",
       ]
     if enable_rotation:
       tests += [ "rsa/Seed.cc",

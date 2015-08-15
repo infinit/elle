@@ -56,9 +56,6 @@ namespace infinit
         /// ownership is transferred to the callee.
         void
         _construct(::DSA* dsa);
-        /// Prepare the private key cryptographic contexts.
-        void
-        _prepare();
         /// Check that the key is valid.
         void
         _check() const;
@@ -105,12 +102,6 @@ namespace infinit
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
-        // Note that the contexts are not serialized because they can
-        // be reconstructed out of the paddings and algorithms above.
-        struct
-        {
-          types::EVP_PKEY_CTX sign;
-        } _context;
       };
     }
   }

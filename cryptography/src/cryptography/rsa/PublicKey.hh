@@ -175,10 +175,10 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Mode, envelope_mode);
         // Note that the contexts are not serialized because they can
         // be reconstructed out of the paddings and algorithms above.
+        // XXX remove the contexts
         struct
         {
           types::EVP_PKEY_CTX encrypt;
-          types::EVP_PKEY_CTX verify;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
           types::EVP_PKEY_CTX unrotate;
 # endif

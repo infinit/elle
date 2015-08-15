@@ -180,6 +180,20 @@ namespace infinit
                               padding));
           }
         }
+
+        void
+        pad(::EVP_PKEY_CTX* context,
+            Padding const padding)
+        {
+          int _padding = padding::resolve(padding);
+
+          if (EVP_PKEY_CTX_set_rsa_padding(context, _padding) <= 0)
+            throw Error(
+              elle::sprintf("unable to set the EVP_PKEY context's "
+                            "padding '%s': %s",
+                            _padding,
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+        }
       }
     }
   }

@@ -55,25 +55,23 @@ namespace infinit
                                 size_t*,
                                 const unsigned char*,
                                 size_t));
-        /// Sign the given digest.
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        /// Sign the given plain text.
         elle::Buffer
-        sign(elle::ConstWeakBuffer const& digest,
-             ::EVP_PKEY_CTX* context,
-             int (*function)(EVP_PKEY_CTX*,
-                             unsigned char*,
-                             size_t*,
-                             const unsigned char*,
-                             size_t));
-        /// Return true if the signature is valid according to the given digest.
+        sign(::EVP_PKEY* key,
+             ::EVP_MD const* oneway,
+             std::istream& plain,
+             std::function<void (::EVP_PKEY_CTX*)> configure =
+               [] (::EVP_PKEY_CTX* context) -> void {});
+        /// Return true if the signature is valid according to the given plain.
         elle::Boolean
-        verify(elle::ConstWeakBuffer const& signature,
-               elle::ConstWeakBuffer const& digest,
-               ::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               const unsigned char*,
-                               size_t,
-                               const unsigned char*,
-                               size_t));
+        verify(::EVP_PKEY* key,
+               ::EVP_MD const* oneway,
+               elle::ConstWeakBuffer const& signature,
+               std::istream& plain,
+               std::function<void (::EVP_PKEY_CTX*)> configure =
+                 [] (::EVP_PKEY_CTX* context) -> void {});
+#endif
         /// Agree on a shared key between two key pairs: between a one's private
         /// key and a peer's public key.
         elle::Buffer

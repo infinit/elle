@@ -58,6 +58,10 @@ namespace infinit
         /// context.
         elle::Natural32
         footprint(::EVP_PKEY_CTX* context);
+        /// Pad a context.
+        void
+        pad(::EVP_PKEY_CTX* context,
+            Padding const padding);
       }
     }
   }

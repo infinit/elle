@@ -142,7 +142,7 @@ test_operate()
 {
   infinit::cryptography::dsa::KeyPair keypair =
     _test_generate(512,
-                   infinit::cryptography::Oneway::md5);
+                   infinit::cryptography::Oneway::sha1);
 
   _test_operate(keypair);
 }

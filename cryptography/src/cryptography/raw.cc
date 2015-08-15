@@ -158,54 +158,157 @@ namespace infinit
           return (_apply(code, context, function));
         }
 
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::Buffer
-        sign(elle::ConstWeakBuffer const& digest,
-             ::EVP_PKEY_CTX* context,
-             int (*function)(EVP_PKEY_CTX*,
-                             unsigned char*,
-                             size_t*,
-                             const unsigned char*,
-                             size_t))
+        sign(::EVP_PKEY* key,
+             ::EVP_MD const* oneway,
+             std::istream& plain,
+             std::function<void (::EVP_PKEY_CTX*)> configure)
         {
-          ELLE_DEBUG_FUNCTION(context, function);
-          ELLE_DUMP("digest: %s", digest);
+          ELLE_DEBUG_FUNCTION(key, oneway);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          return (_apply(digest, context, function));
+          ELLE_ASSERT_NEQ(key, nullptr);
+
+          ::EVP_MD_CTX context;
+          ::EVP_PKEY_CTX* ctx = nullptr;
+
+          // Initialize the signature context.
+          ::EVP_MD_CTX_init(&context);
+
+          if (EVP_DigestSignInit(&context, &ctx, oneway, NULL, key) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the context for "
+                            "signature: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Call the configure function with the key context.
+          ELLE_ASSERT_NEQ(ctx, nullptr);
+          configure(ctx);
+
+          // Sign the plain's stream.
+          std::vector<unsigned char> _input(chunk_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Error(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the signature context.
+            if (::EVP_DigestSignUpdate(&context,
+                                       _input.data(),
+                                       plain.gcount()) <= 0)
+              throw Error(
+                elle::sprintf("unable to apply the signature function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          // Finalize the signature.
+          size_t size(0);
+
+          // Determine the size of the signature.
+          if (::EVP_DigestSignFinal(&context, NULL, &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to determine the signature's finale "
+                            "size: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          ELLE_ASSERT_EQ(size, ::EVP_PKEY_size(key));
+
+          // Allocate the output signature.
+          elle::Buffer signature(size);
+
+          if (::EVP_DigestSignFinal(&context,
+                                    signature.mutable_contents(),
+                                    &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to finalize the signature process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Update the signature final size.
+          signature.size(size);
+          signature.shrink_to_fit();
+
+          // Clean the context.
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Error(
+              elle::sprintf("unable to clean the signature context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          return (signature);
         }
 
         elle::Boolean
-        verify(elle::ConstWeakBuffer const& signature,
-               elle::ConstWeakBuffer const& digest,
-               ::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               const unsigned char*,
-                               size_t,
-                               const unsigned char*,
-                               size_t))
+        verify(::EVP_PKEY* key,
+               ::EVP_MD const* oneway,
+               elle::ConstWeakBuffer const& signature,
+               std::istream& plain,
+               std::function<void (::EVP_PKEY_CTX*)> configure)
         {
-          ELLE_DEBUG_FUNCTION(context, function);
+          ELLE_DEBUG_FUNCTION(key, oneway);
           ELLE_DUMP("signature: %s", signature);
-          ELLE_DUMP("digest: %s", digest);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_NEQ(signature.contents(), nullptr);
-          ELLE_ASSERT_NEQ(digest.contents(), nullptr);
+          ELLE_ASSERT_NEQ(key, nullptr);
 
-          // Verify the signature.
+          ::EVP_MD_CTX context;
+          ::EVP_PKEY_CTX* ctx = nullptr;
+
+          // Initialize the verify context.
+          ::EVP_MD_CTX_init(&context);
+
+          if (EVP_DigestVerifyInit(&context, &ctx, oneway, NULL, key) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the context for "
+                            "verify: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Call the configure function with the key context.
+          ELLE_ASSERT_NEQ(ctx, nullptr);
+          configure(ctx);
+
+          // Verify the signature's stream.
+          std::vector<unsigned char> _input(chunk_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Error(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the verify context.
+            if (::EVP_DigestVerifyUpdate(&context,
+                                         _input.data(),
+                                         plain.gcount()) <= 0)
+              throw Error(
+                elle::sprintf("unable to apply the verify function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          // Finalize the verification.
           int result =
-            function(context,
-                     reinterpret_cast<const unsigned char*>(
-                       signature.contents()),
-                     signature.size(),
-                     reinterpret_cast<const unsigned char*>(
-                       digest.contents()),
-                     digest.size());
+            ::EVP_DigestVerifyFinal(&context,
+                                    signature.contents(),
+                                    signature.size());
+
+          // Clean the context.
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Error(
+              elle::sprintf("unable to clean the verify context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
 
           switch (result)
           {
@@ -221,6 +324,7 @@ namespace infinit
 
           elle::unreachable();
         }
+#endif
 
         elle::Buffer
         agree(::EVP_PKEY_CTX* context,
@@ -600,7 +704,7 @@ namespace infinit
                               plain.rdstate()));
           }
 
-          // Finalise the deciphering process.
+          // Finalize the deciphering process.
           int size_final(0);
 
           if (::EVP_DecryptFinal_ex(&context,
@@ -689,7 +793,7 @@ namespace infinit
         // Allocate the output digest.
         elle::Buffer digest(EVP_MD_size(function));
 
-        // Finalise the digest.
+        // Finalize the digest.
         unsigned int size(0);
 
         if (::EVP_DigestFinal_ex(&context,
@@ -788,7 +892,7 @@ namespace infinit
               elle::sprintf("unable to compute the final HMAC size: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          // Finalise the digest.
+          // Finalize the digest.
           elle::Buffer digest(size);
 
           if (::EVP_DigestSignFinal(&context,

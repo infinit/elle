@@ -15,7 +15,6 @@
 #include <cryptography/dsa/der.hh>
 #include <cryptography/dsa/serialization.hh>
 #include <cryptography/dsa/low.hh>
-#include <cryptography/context.hh>
 #include <cryptography/Error.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/bn.hh>
@@ -86,9 +85,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -109,9 +105,6 @@ namespace infinit
             elle::sprintf("the EVP_PKEY key is not of type DSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -128,9 +121,6 @@ namespace infinit
 
         // Construct the public key based on the given DSA structure.
         this->_construct(dsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
 
         this->_check();
       }
@@ -152,8 +142,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
-        this->_prepare();
-
         this->_check();
       }
 
@@ -161,8 +149,6 @@ namespace infinit
         _key(std::move(other._key)),
         _digest_algorithm(std::move(other._digest_algorithm))
       {
-        this->_context.verify = std::move(other._context.verify);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -198,20 +184,6 @@ namespace infinit
       }
 
       void
-      PublicKey::_prepare()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-
-        // Prepare the verify context.
-        ELLE_ASSERT_EQ(this->_context.verify, nullptr);
-        this->_context.verify.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_verify_init));
-      }
-
-      void
       PublicKey::_check() const
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
@@ -240,12 +212,11 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
 
-        elle::Buffer digest = hash(plain, this->_digest_algorithm);
-
-        return (raw::asymmetric::verify(signature,
-                                        digest,
-                                        this->_context.verify.get(),
-                                        ::EVP_PKEY_verify));
+        return (raw::asymmetric::verify(
+                  this->_key.get(),
+                  oneway::resolve(this->_digest_algorithm),
+                  signature,
+                  plain));
       }
 
       elle::Natural32
@@ -298,7 +269,6 @@ namespace infinit
 
         this->serialize(serializer);
 
-        this->_prepare();
         this->_check();
       }
 

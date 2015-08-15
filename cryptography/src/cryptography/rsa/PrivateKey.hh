@@ -91,13 +91,14 @@ namespace infinit
         ///          to the seal()/open() methods.
         elle::Buffer
         decrypt(elle::ConstWeakBuffer const& code) const;
-        /// Sign the given plain text.
+        /// Sign the given plain text and return the signature.
         elle::Buffer
         sign(elle::ConstWeakBuffer const& plain) const;
 # endif
-        /// Return a signature of the given stream-based plain text.
+        /// Write the signature in the output stream given the stream-based
+        /// plain text.
         elle::Buffer
-        sign(std::istream& digest) const;
+        sign(std::istream& plain) const;
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;
@@ -158,10 +159,10 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
         // Note that the contexts are not serialized because they can
         // be reconstructed out of the paddings and algorithms above.
+        // XXX remove the contexts
         struct
         {
           types::EVP_PKEY_CTX decrypt;
-          types::EVP_PKEY_CTX sign;
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
           types::EVP_PKEY_CTX rotate;
 # endif
