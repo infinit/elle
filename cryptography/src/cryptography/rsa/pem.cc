@@ -56,11 +56,14 @@ namespace infinit
                  elle::String const& passphrase,
                  Padding const encryption_padding,
                  Padding const signature_padding,
-                 Oneway const digest_algorithm)
+                 Oneway const digest_algorithm,
+                 Cipher const envelope_cipher,
+                 Mode const envelope_mode)
         {
           ELLE_TRACE_FUNCTION(path, passphrase,
                               encryption_padding, signature_padding,
-                              digest_algorithm);
+                              digest_algorithm,
+                              envelope_cipher, envelope_mode);
 
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
@@ -69,7 +72,8 @@ namespace infinit
 
           PrivateKey k(key,
                        encryption_padding, signature_padding,
-                       digest_algorithm);
+                       digest_algorithm,
+                       envelope_cipher, envelope_mode);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
@@ -92,10 +96,10 @@ namespace infinit
 
           PrivateKey k = import_k(path, passphrase,
                                   encryption_padding, signature_padding,
-                                  digest_algorithm);
+                                  digest_algorithm,
+                                  envelope_cipher, envelope_mode);
 
-          PublicKey K(k,
-                      envelope_cipher, envelope_mode);
+          PublicKey K(k);
 
           return (KeyPair(std::move(K), std::move(k)));
         }

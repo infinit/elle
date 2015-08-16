@@ -227,6 +227,10 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
             infinit::cryptography::rsa::Padding::pkcs1;
           value._digest_algorithm =
             infinit::cryptography::Oneway::sha256;
+          value._envelope_cipher =
+            infinit::cryptography::Cipher::aes256;
+          value._envelope_mode =
+            infinit::cryptography::Mode::cbc;
 
           break;
         }
@@ -238,6 +242,10 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
             infinit::cryptography::rsa::Padding::pkcs1;
           value._digest_algorithm =
             infinit::cryptography::Oneway::sha256;
+          value._envelope_cipher =
+            infinit::cryptography::Cipher::aes256;
+          value._envelope_mode =
+            infinit::cryptography::Mode::cbc;
 
           break;
         }

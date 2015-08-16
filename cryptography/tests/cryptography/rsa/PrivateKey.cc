@@ -112,7 +112,7 @@ void
 test_operate()
 {
   // Construct a private key from [representation 1]
-  elle::String representation(R"JSON({"digest algorithm":4,"encryption padding":3,"rsa":"MIICXQIBAAKBgQCxSKncjZP3iCHw2ktyfAyWBWZVxnPyRdk6eLADFBdSvFVQxBAEyqOXhX/XLRMzJwz9hUT3fJu1oO2B7Rm9aFERfsvTES/XgMbi5VRGq1V+OFZFO3c2DD7iNqZWEibuBN4hyER469jA1GUWpgEF0X1x7Dgzqac0cH6kUUdAm5KG5QIDAQABAoGADbkTNPhcmM+X2P380xrZGo/GcSNQfFN90jHfZg2bFJNxgzP6DXTmHud9ktlxYAdI0SMMyJ+DqhaP6/u/f1Lg23mygS8P1XdgjcC6FYGXxMwQZkaNnOZawmZ2+w7M+at4l6yDmQsWlvbC/EsKO5cLgfFa3RvUmBocSIjAJ8JIM0ECQQDq7TwJOVzgbcMzEasL3DGJopwm7aXGM35poYApLvQEPiCXnRuU5MzVki8PgBp/qoeouR0DsSdcXkNJ3KVAy1IVAkEAwS+9qEibQ/Lt3/z09YzcDpJwQtFZkrcg7P5MqTtfKKEOm59DKkLTE11sZ+ZEoCNNu8+A44qRW5AfX+TnblwlkQJBALnp9FD4bF/PfWK04MAKCcn6Pckw2Lf5mFjPzjTJS6Lv56sUUfeK+e8qOMPzhQTzV1hW5nc9gwC+OFIDo2Obg+ECQFrzJPEDLcXxqrfXGWQ5KqjZnGx4rxj5ilDI8EKEJyqzmHL/qdlNmJ33T8AikpBpzoDrEh0N8Z0P3xWAaMx2KWECQQCdlC2RVeemFXgE6YCB4oWlt9sHd3Rns2upFI4vCBaEeT5FZhCn5AIm5f65AioGlCAUOPqkRvpZVOzYaQVic5fm","signature padding":5})JSON");
+  elle::String representation(R"JSON({"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA==","signature padding":5})JSON");
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
@@ -123,7 +123,7 @@ test_operate()
 
   // Decrypt plain from [representation 2]
   {
-    elle::String archive(R"JSON({"code":"QIBrD4Vau4w2OMzScnQXTJ2J807E4Wa52PAbEQEQfnK9dqC4GipZ8Ust+hzLx4RZPuEsupdUldSYA5AqZn2W4g1TFipDuC30ecXNYW6DEVwdKsqPsBTpsOOwu8BDsnagoU/g5G8rFDqop9fB5liJU2RR0s0fV/DAwcfUKzlwVLC9HTBTYWx0ZWRfXxP/oCAZe8E9a0zF6qExi9ZfcrPdGHOtujp1D4Nejd9ZvnZCKun/U/M="})JSON");
+    elle::String archive(R"JSON({"code":"Lt2x0nEDpsdo7sUU4dI4tGjvfkp0pD8yGDfhTJ/UmtmPMXpisDKCjTBjCvHZqLf7JXH2mkzVI94AAVU9VRJksyvhNMcMr4yXSwCkpnhq2UjILhZsyP43CStDg2Ib624CA2ojSjiKzbrD5OvFyGnJ72pEmUMFuPAjC0+I6hEBMnNh4WKkbec3p0gOqSNAWEGIzK11VIOVq26b4n2s1vcXDhNGy8qpSWdvEtaq42EPjvE="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
@@ -183,7 +183,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      R"JSON({"digest algorithm":4,"encryption padding":3,"rsa":"MIICXQIBAAKBgQCxSKncjZP3iCHw2ktyfAyWBWZVxnPyRdk6eLADFBdSvFVQxBAEyqOXhX/XLRMzJwz9hUT3fJu1oO2B7Rm9aFERfsvTES/XgMbi5VRGq1V+OFZFO3c2DD7iNqZWEibuBN4hyER469jA1GUWpgEF0X1x7Dgzqac0cH6kUUdAm5KG5QIDAQABAoGADbkTNPhcmM+X2P380xrZGo/GcSNQfFN90jHfZg2bFJNxgzP6DXTmHud9ktlxYAdI0SMMyJ+DqhaP6/u/f1Lg23mygS8P1XdgjcC6FYGXxMwQZkaNnOZawmZ2+w7M+at4l6yDmQsWlvbC/EsKO5cLgfFa3RvUmBocSIjAJ8JIM0ECQQDq7TwJOVzgbcMzEasL3DGJopwm7aXGM35poYApLvQEPiCXnRuU5MzVki8PgBp/qoeouR0DsSdcXkNJ3KVAy1IVAkEAwS+9qEibQ/Lt3/z09YzcDpJwQtFZkrcg7P5MqTtfKKEOm59DKkLTE11sZ+ZEoCNNu8+A44qRW5AfX+TnblwlkQJBALnp9FD4bF/PfWK04MAKCcn6Pckw2Lf5mFjPzjTJS6Lv56sUUfeK+e8qOMPzhQTzV1hW5nc9gwC+OFIDo2Obg+ECQFrzJPEDLcXxqrfXGWQ5KqjZnGx4rxj5ilDI8EKEJyqzmHL/qdlNmJ33T8AikpBpzoDrEh0N8Z0P3xWAaMx2KWECQQCdlC2RVeemFXgE6YCB4oWlt9sHd3Rns2upFI4vCBaEeT5FZhCn5AIm5f65AioGlCAUOPqkRvpZVOzYaQVic5fm","signature padding":5})JSON"
+      R"JSON({"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA==","signature padding":5})JSON"
       };
 
     infinit::cryptography::test::formats<

@@ -43,7 +43,11 @@ namespace infinit
                  Padding const signature_padding =
                    defaults::signature_padding,
                  Oneway const digest_algorithm =
-                   defaults::digest_algorithm);
+                   defaults::digest_algorithm,
+                 Cipher const envelope_cipher =
+                   defaults::envelope_cipher,
+                 Mode const envelope_mode =
+                   defaults::envelope_mode);
         /// Import an RSA key pair from a path.
         KeyPair
         import_keypair(boost::filesystem::path const& path,

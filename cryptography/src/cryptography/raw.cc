@@ -5,6 +5,7 @@
 #include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Error.hh>
+#include <cryptography/constants.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
@@ -17,13 +18,6 @@
 #include <openssl/rand.h>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.evp");
-
-/*----------.
-| Constants |
-`----------*/
-
-/// The size of the chunk to process iteratively from the streams.
-static elle::Natural32 const chunk_size = 524288;
 
 //
 // ---------- Asymmetric ------------------------------------------------------
@@ -189,7 +183,7 @@ namespace infinit
           configure(ctx);
 
           // Sign the plain's stream.
-          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
 
           while (!plain.eof())
           {
@@ -277,7 +271,7 @@ namespace infinit
           configure(ctx);
 
           // Verify the signature's stream.
-          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
 
           while (!plain.eof())
           {
@@ -511,7 +505,7 @@ namespace infinit
                                    function_cipher,
                                    nullptr,
                                    key,
-                                   iv) == 0)
+                                   iv) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -532,8 +526,9 @@ namespace infinit
           ELLE_DEBUG("block size: %s", block_size);
 
           // Encrypt the input stream.
-          std::vector<unsigned char> _input(chunk_size);
-          std::vector<unsigned char> _output(chunk_size + block_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
+          std::vector<unsigned char> _output(constants::stream_block_size +
+                                             block_size);
 
           while (!plain.eof())
           {
@@ -552,7 +547,7 @@ namespace infinit
                                     _output.data(),
                                     &size_update,
                                     _input.data(),
-                                    plain.gcount()) == 0)
+                                    plain.gcount()) <= 0)
             throw Error(
               elle::sprintf("unable to apply the encryption function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -572,7 +567,7 @@ namespace infinit
 
           if (::EVP_EncryptFinal_ex(&context,
                                     _output.data(),
-                                    &size_final) == 0)
+                                    &size_final) <= 0)
             throw Error(
               elle::sprintf("unable to finalize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -660,7 +655,7 @@ namespace infinit
                                    function_cipher,
                                    nullptr,
                                    key,
-                                   iv) == 0)
+                                   iv) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -669,8 +664,9 @@ namespace infinit
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
 
           // Decipher the code's stream.
-          std::vector<unsigned char> _input(chunk_size);
-          std::vector<unsigned char> _output(chunk_size + block_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
+          std::vector<unsigned char> _output(constants::stream_block_size +
+                                             block_size);
 
           while (!code.eof())
           {
@@ -689,7 +685,7 @@ namespace infinit
                                     _output.data(),
                                     &size_update,
                                     _input.data(),
-                                    code.gcount()) == 0)
+                                    code.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the decryption function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -709,7 +705,7 @@ namespace infinit
 
           if (::EVP_DecryptFinal_ex(&context,
                                     _output.data(),
-                                    &size_final) == 0)
+                                    &size_final) <= 0)
             throw Error(
               elle::sprintf("unable to finalize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
@@ -769,7 +765,7 @@ namespace infinit
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
         // Hash the plain's stream.
-        std::vector<unsigned char> _input(chunk_size);
+        std::vector<unsigned char> _input(constants::stream_block_size);
 
         while (!plain.eof())
         {
@@ -861,7 +857,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // HMAC-sign the plain's stream.
-          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
 
           while (!plain.eof())
           {
@@ -948,7 +944,7 @@ namespace infinit
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // HMAC-verify the plain's stream against the digest.
-          std::vector<unsigned char> _input(chunk_size);
+          std::vector<unsigned char> _input(constants::stream_block_size);
 
           while (!plain.eof())
           {
@@ -972,7 +968,7 @@ namespace infinit
           // Verify the context's data against the given digest.
           if (::EVP_DigestVerifyFinal(&context,
                                       digest.contents(),
-                                      digest.size()) == 0)
+                                      digest.size()) <= 0)
             return (false);
 
           // Clean the context.

@@ -10,11 +10,13 @@
 
 #include <cryptography/Cipher.hh>
 #include <cryptography/Oneway.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/SecretKey.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/envelope.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/raw.hh>
+#include <cryptography/constants.hh>
 
 ELLE_LOG_COMPONENT("infinit.cryptography.envelope");
 
@@ -24,197 +26,312 @@ namespace infinit
   {
     namespace envelope
     {
-      /*-----------------.
-      | Static Functions |
-      `-----------------*/
-
-      // Return the difference between a secret key in its serialized form
-      // and the originally requested length for this key.
-      //
-      // This overhead therefore represents the additional bits implied by
-      // the serialization mechanism.
-      static
-      elle::Natural32
-      _overhead()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        // The static password used to construct this dummy secret key
-        // whose only purpose is to calculate the serialization overhead.
-        elle::String password =
-          "An equation means nothing to me unless it expresses "
-          "a thought of God. Srinivasa Ramanujan";
-        elle::Natural32 length_original = password.length() * 8;
-
-        // The cipher is not important as it does not impact the
-        // serialization's overhead.
-        Cipher cipher = Cipher::aes256;
-        Mode mode = Mode::cbc;
-        Oneway oneway = Oneway::sha256;
-        SecretKey secret(password, cipher, mode, oneway);
-
-        elle::Buffer buffer;
-
-        {
-          elle::IOStream stream(buffer.ostreambuf());
-          elle::serialization::binary::SerializerOut output(stream, false); // XXX
-          output.serialize("secret", secret);
-        }
-
-        elle::Natural32 length_final = buffer.size() * 8;
-
-        ELLE_ASSERT_GTE(length_final, length_original);
-
-        // Return the difference between the requested secret length and
-        // the actual one.
-        elle::Natural32 overhead = length_final - length_original;
-        ELLE_DEBUG("overhead: %s", overhead);
-        return (overhead);
-      }
-
       /*----------.
       | Functions |
       `----------*/
 
-      elle::Buffer
-      seal(elle::ConstWeakBuffer const& plain,
-           ::EVP_PKEY_CTX* context,
-           int (*function)(EVP_PKEY_CTX*,
-                           unsigned char*,
-                           size_t*,
-                           const unsigned char*,
-                           size_t),
+      void
+      seal(::EVP_PKEY* key,
            ::EVP_CIPHER const* cipher,
-           ::EVP_MD const* oneway,
-           elle::Natural32 const padding_size)
+           std::istream& plain,
+           std::ostream& code)
       {
-        ELLE_DEBUG_FUNCTION(context, function, cipher, oneway, padding_size);
-        ELLE_DUMP("plain: %s", plain);
+        ELLE_DEBUG_FUNCTION(key, cipher);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // The overhead represents the difference between a bare secret
-        // key length and the same key in its serialized form. Note that
-        // the overhead is expressed in bits.
+        // The following variables initialization are more complicated than
+        // necessary but have been made for the reader to understand the way
+        // the SealInit() function takes arguments, arrays and not single
+        // values.
+
+        // Create an array with a single public key since only one recipient
+        // will be allowed to decrypt the data.
+        ::EVP_PKEY* keys[1];
+        keys[0] = key;
+
+        // Create an array with a single secret key.
+        unsigned char* _secret =
+          reinterpret_cast<unsigned char*>(
+            ::OPENSSL_malloc(::EVP_PKEY_size(keys[0])));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_secret);
+
+        unsigned char* secrets[1];
+        secrets[0] = _secret;
+        int lengths[1];
+
+        // Prepare the memory area to receive the IV.
+        unsigned char* iv =
+          reinterpret_cast<unsigned char*>(
+            ::OPENSSL_malloc(EVP_MAX_IV_LENGTH));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
+
+        // Initialize the cipher context.
+        ::EVP_CIPHER_CTX context;
+
+        ::EVP_CIPHER_CTX_init(&context);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+
+        // Initialize the envelope seal operation. This operation generates
+        // a secret key for the provided cipher, and then encrypts that key a
+        // number of times (one for each public key provided in the 'keys'
+        // array, once in our case). This operation also generates an IV and
+        // places it in 'iv'.
+        if (::EVP_SealInit(&context,
+                           cipher,
+                           secrets,
+                           lengths,
+                           iv,
+                           keys,
+                           1) <= 0)
+          throw Error(
+            elle::sprintf("unable to initialize the seal process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        ELLE_ASSERT_EQ(::EVP_PKEY_size(key), lengths[0]);
+
+        // At this point, before writing the encrypted data in the output
+        // stream, the parameters (secret and IV) need to be written for
+        // the recipient to retrieve them.
         //
-        // Without computing this difference, one may think the following
-        // is going to encrypt the temporary secret key with the given
-        // context, ending up with an output code key looking as below:
+        // We could for instance serialize the header (secret and IV) through
+        // a serialization layer on top of the output stream and then use the
+        // bare stream to output the encrypted data. Because the serialization
+        // layer may buffer, it is dangerous. Likewise, the serialization format
+        // may change in the future.
         //
-        //   [symmetrically encrypted secret][padding]
-        //
-        // Unfortunately, before asymmetrically encrypting the secret key,
-        // one must serialize it. Since the serialization mechanism adds
-        // a few bytes itself, the final layout ressembles more the following:
-        //
-        //   [symmetrically encrypted [serialized overhead/secret]][padding]
-        //
-        // The following calculates the overhead generated by serialization to
-        // compute the right length for the secret key.
-        //
-        // Note that this overhead is only calculated once as it does not
-        // depend on the nature of the secret key that will be generated.
-        static elle::Natural32 overhead = _overhead();
-
-        // 1) Compute the size of the secret key to generate by taking
-        //    into account the padding size, if any.
-        ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
-                          ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
-                        (padding_size + overhead));
-
-        // The maximum length, in bits, of the generated symmetric key.
-        elle::Natural32 const ceiling = 512;
-        elle::Natural32 const length =
-          (::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
-           (padding_size + overhead)) < ceiling ?
-          ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
-          (padding_size + overhead) : ceiling;
-
-        // Resolve back the cipher, mode and oneway.
-        std::pair<Cipher, Mode> _cipher = cipher::resolve(cipher);
-        Oneway _oneway = oneway::resolve(oneway);
-
-        // 2) Generate a temporary secret key.
-        SecretKey secret =
-          secretkey::generate(length, _cipher.first, _cipher.second, _oneway);
-
-        // 3) Cipher the plain text with the secret key.
-        elle::Buffer data = secret.encipher(plain);
-
-        // 4) Asymmetrically encrypt the secret with the given function
-        //    and encryption context.
-
-        // Serialize the secret.
-        elle::Buffer buffer;
-
+        // For those reasons, the following simply outputs the secret and IV
+        // whose size is supposed to be known in advanced according to the
+        // cipher used.
         {
-          elle::IOStream stream(buffer.ostreambuf());
-          elle::serialization::binary::SerializerOut output(stream, false); // XXX
-          output.serialize("secret", secret);
+          // Write the secret.
+          code.write(reinterpret_cast<const char *>(_secret),
+                     ::EVP_PKEY_size(key));
+          if (!code.good())
+            throw Error(
+              elle::sprintf("unable to write the secret to the "
+                            "code's output stream: %s",
+                            code.rdstate()));
+
+          // Write the IV.
+          code.write(reinterpret_cast<const char *>(iv),
+                     EVP_MAX_IV_LENGTH);
+          if (!code.good())
+            throw Error(
+              elle::sprintf("unable to write the IV to the "
+                            "code's output stream: %s",
+                            code.rdstate()));
         }
 
-        ELLE_ASSERT_LTE(buffer.size() * 8, length + overhead);
+        // Compute the block size according to the
+        int block_size = ::EVP_CIPHER_CTX_block_size(&context);
+        ELLE_DEBUG("block size: %s", block_size);
 
-        // Encrypt the secret key's archive.
-        elle::Buffer key = raw::asymmetric::encrypt(buffer, context, function);
+        // Encrypt the plain's stream.
+        std::vector<unsigned char> _input(constants::stream_block_size);
+        std::vector<unsigned char> _output(constants::stream_block_size +
+                                           block_size);
 
-        // 5) Serialize the asymmetrically encrypted key and the symmetrically
-        //    encrypted data.
-        elle::Buffer code;
-
+        while (!plain.eof())
         {
-          elle::IOStream _stream(code.ostreambuf());
-          elle::serialization::binary::SerializerOut _output(_stream, false); // XXX
-          _output.serialize("key", key);
-          _output.serialize("data", data);
+          // Read the plain's input stream and put a block of data in a
+          // temporary buffer.
+          plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+          if (plain.bad())
+            throw Error(
+              elle::sprintf("unable to read the plain's input stream: %s",
+                            plain.rdstate()));
+
+          int size_update(0);
+
+          // Encrypt the input buffer.
+          if (::EVP_SealUpdate(&context,
+                               _output.data(),
+                               &size_update,
+                               _input.data(),
+                               plain.gcount()) <= 0)
+            throw Error(
+              elle::sprintf("unable to apply the encryption function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Write the output buffer to the code stream.
+          code.write(reinterpret_cast<const char *>(_output.data()),
+                     size_update);
+          if (!code.good())
+            throw Error(
+              elle::sprintf("unable to write the encrypted data to the "
+                            "code's output stream: %s",
+                            code.rdstate()));
         }
 
-        return (code);
+        // Finalize the encryption process.
+        int size_final(0);
+
+        if (::EVP_SealFinal(&context,
+                            _output.data(),
+                            &size_final) <= 0)
+          throw Error(
+            elle::sprintf("unable to finalize the seal process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Write the final output buffer to the code's output stream.
+        code.write(reinterpret_cast<const char *>(_output.data()),
+                   size_final);
+        if (!code.good())
+          throw Error(
+            elle::sprintf("unable to write the encrypted data to the "
+                          "code's output stream: %s",
+                          code.rdstate()));
+
+        // Clean up the cipher context.
+        if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
+          throw Error(
+            elle::sprintf("unable to clean the cipher context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+        // Release the memory associated with the secret and iv.
+        ::OPENSSL_free(iv);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iv);
+
+        ::OPENSSL_free(_secret);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_secret);
       }
 
-      elle::Buffer
-      open(elle::ConstWeakBuffer const& code,
-           ::EVP_PKEY_CTX* context,
-           int (*function)(EVP_PKEY_CTX*,
-                           unsigned char*,
-                           size_t*,
-                           const unsigned char*,
-                           size_t))
+      void
+      open(::EVP_PKEY* key,
+           ::EVP_CIPHER const* cipher,
+           std::istream& code,
+           std::ostream& plain)
       {
-        ELLE_DEBUG_FUNCTION(context, function);
-        ELLE_DUMP("code: %s", code);
+        ELLE_DEBUG_FUNCTION(key, cipher);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // 1) Extract the key and ciphered data from the code which
-        //    is supposed to be an archive.
-        elle::Buffer key;
-        elle::Buffer data;
+        // Start by extracting the secret and IV from the input
+        // stream.
+        unsigned char* secret =
+          reinterpret_cast<unsigned char*>(
+            ::OPENSSL_malloc(::EVP_PKEY_size(key)));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(secret);
 
-        elle::IOStream stream(code.istreambuf());
-        elle::serialization::binary::SerializerIn input(stream, false); // XXX
+        unsigned char* iv =
+          reinterpret_cast<unsigned char*>(
+            ::OPENSSL_malloc(EVP_MAX_IV_LENGTH));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
 
-        input.serialize("key", key);
-        input.serialize("data", data);
+        {
+          // Read the secret.
+          code.read(reinterpret_cast<char*>(secret), ::EVP_PKEY_size(key));
+          if (!code.good())
+            throw Error(
+              elle::sprintf("unable to read the secret from the code's "
+                            "input stream: %s",
+                            code.rdstate()));
 
-        // 2) Decrypt the key so as to reveal the symmetric secret key.
+          // Read the IV.
+          code.read(reinterpret_cast<char*>(iv), EVP_MAX_IV_LENGTH);
+          if (!code.good())
+            throw Error(
+              elle::sprintf("unable to read the IV from the code's "
+                            "input stream: %s",
+                            code.rdstate()));
+        }
 
-        // Decrypt the key.
-        elle::Buffer buffer = raw::asymmetric::decrypt(key, context, function);
+        // Initialize the cipher context.
+        ::EVP_CIPHER_CTX context;
 
-        // Finally extract the secret key since decrypted.
-        elle::IOStream _stream(buffer.istreambuf());
-        elle::serialization::binary::SerializerIn _input(_stream, false); // XXX
-        SecretKey secret = _input.deserialize<SecretKey>("secret");
+        ::EVP_CIPHER_CTX_init(&context);
 
-        // 3) Decrypt the data with the secret key.
-        elle::Buffer clear = secret.decipher(data);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
-        ELLE_DUMP("clear: %s", clear);
+        // Initialize the envelope open operation.
+        if (::EVP_OpenInit(&context,
+                           cipher,
+                           secret,
+                           ::EVP_PKEY_size(key),
+                           iv,
+                           key) <= 0)
+          throw Error(
+            elle::sprintf("unable to initialize the open process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        return (clear);
+        // Compute the block size according to the
+        int block_size = ::EVP_CIPHER_CTX_block_size(&context);
+        ELLE_DEBUG("block size: %s", block_size);
+
+        // Decrypt the plain's stream.
+        std::vector<unsigned char> _input(constants::stream_block_size);
+        std::vector<unsigned char> _output(constants::stream_block_size +
+                                           block_size);
+
+        while (!code.eof())
+        {
+          // Read the code's input stream and put a block of data in a
+          // temporary buffer.
+          code.read(reinterpret_cast<char*>(_input.data()), _input.size());
+          if (code.bad())
+            throw Error(
+              elle::sprintf("unable to read the code's input stream: %s",
+                            code.rdstate()));
+
+          int size_update(0);
+
+          // Decrypt the input buffer.
+          if (::EVP_OpenUpdate(&context,
+                               _output.data(),
+                               &size_update,
+                               _input.data(),
+                               code.gcount()) <= 0)
+            throw Error(
+              elle::sprintf("unable to apply the decryption function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Write the output buffer to the plain stream.
+          plain.write(reinterpret_cast<const char *>(_output.data()),
+                      size_update);
+          if (!plain.good())
+            throw Error(
+              elle::sprintf("unable to write the decrypted data to the "
+                            "plain's output stream: %s",
+                            plain.rdstate()));
+        }
+
+        // Finalize the decryption process.
+        int size_final(0);
+
+        if (::EVP_OpenFinal(&context,
+                            _output.data(),
+                            &size_final) <= 0)
+          throw Error(
+            elle::sprintf("unable to finalize the open process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        // Write the final output buffer to the plain's output stream.
+        plain.write(reinterpret_cast<const char *>(_output.data()),
+                   size_final);
+        if (!plain.good())
+          throw Error(
+            elle::sprintf("unable to write the decrypted data to the "
+                          "plain's output stream: %s",
+                          plain.rdstate()));
+
+        // Clean up the cipher context.
+        if (::EVP_CIPHER_CTX_cleanup(&context) <= 0)
+          throw Error(
+            elle::sprintf("unable to clean the cipher context: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+        // Release the memory associated with the secret and iv.
+        OPENSSL_free(iv);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iv);
+
+        OPENSSL_free(secret);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(secret);
       }
     }
   }

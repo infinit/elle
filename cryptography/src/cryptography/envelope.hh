@@ -41,26 +41,17 @@ namespace infinit
       ///
       /// Note that a padding size is provided, in bits, representing the
       /// number of bits taken by the padding in the output code.
-      elle::Buffer
-      seal(elle::ConstWeakBuffer const& plain,
-           ::EVP_PKEY_CTX* context,
-           int (*function)(EVP_PKEY_CTX*,
-                           unsigned char*,
-                           size_t*,
-                           const unsigned char*,
-                           size_t),
+      void
+      seal(::EVP_PKEY* key,
            ::EVP_CIPHER const* cipher,
-           ::EVP_MD const* oneway,
-           elle::Natural32 const padding_size);
+           std::istream& plain,
+           std::ostream& code);
       /// Open the envelope with the provided context and function.
-      elle::Buffer
-      open(elle::ConstWeakBuffer const& code,
-           ::EVP_PKEY_CTX* context,
-           int (*function)(EVP_PKEY_CTX*,
-                           unsigned char*,
-                           size_t*,
-                           const unsigned char*,
-                           size_t));
+      void
+      open(::EVP_PKEY* key,
+           ::EVP_CIPHER const* cipher,
+           std::istream& code,
+           std::ostream& plain);
     }
   }
 }

@@ -312,9 +312,9 @@ namespace infinit
           // EVP_PKEY.
           PrivateKey k(key,
                        encryption_padding, signature_padding,
-                       digest_algorithm);
-          PublicKey K(k,
-                      envelope_cipher, envelope_mode);
+                       digest_algorithm,
+                       envelope_cipher, envelope_mode);
+          PublicKey K(k);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
@@ -344,10 +344,10 @@ namespace infinit
             PrivateKey k = privatekey::der::decode(buffer,
                                                    encryption_padding,
                                                    signature_padding,
-                                                   digest_algorithm);
-            PublicKey K(k,
-                        envelope_cipher,
-                        envelope_mode);
+                                                   digest_algorithm,
+                                                   envelope_cipher,
+                                                   envelope_mode);
+            PublicKey K(k);
 
             return (KeyPair(K, k));
           }

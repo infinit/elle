@@ -100,10 +100,7 @@ test_operate_import()
   infinit::cryptography::rsa::PrivateKey k =
     infinit::cryptography::rsa::pem::import_k(path_private_key.path(),
                                               passphrase);
-  infinit::cryptography::rsa::PublicKey K(
-    k,
-    infinit::cryptography::rsa::defaults::envelope_cipher,
-    infinit::cryptography::rsa::defaults::envelope_mode);
+  infinit::cryptography::rsa::PublicKey K(k);
 
   // Encrypt and decrypt data to make sure the keys are valid.
   elle::String const data("N'est pas Sancho qui veut!");
@@ -155,9 +152,7 @@ test_operate_export()
     infinit::cryptography::Error);
 
   // Extract the public key from the private key.
-  infinit::cryptography::rsa::PublicKey K(k,
-                                          infinit::cryptography::Cipher::des,
-                                          infinit::cryptography::Mode::cbc);
+  infinit::cryptography::rsa::PublicKey K(k);
 
   BOOST_CHECK_EQUAL(keypair.K(), K);
 }

@@ -78,9 +78,7 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PublicKey::PublicKey(PrivateKey const& k,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode)
+      PublicKey::PublicKey(PrivateKey const& k)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -89,8 +87,8 @@ namespace infinit
         this->_encryption_padding = k.encryption_padding();
         this->_signature_padding = k.signature_padding();
         this->_digest_algorithm = k.digest_algorithm();
-        this->_envelope_cipher = envelope_cipher;
-        this->_envelope_mode = envelope_mode;
+        this->_envelope_cipher = k.envelope_cipher();
+        this->_envelope_mode = k.envelope_mode();
 
         // Extract the public key only.
         RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
@@ -370,13 +368,27 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (envelope::seal(plain,
-                               this->_context.encrypt.get(),
-                               ::EVP_PKEY_encrypt,
-                               cipher::resolve(this->_envelope_cipher,
-                                               this->_envelope_mode),
-                               oneway::resolve(this->_digest_algorithm),
-                               this->_context.envelope_padding_size));
+        elle::IOStream _plain(plain.istreambuf());
+        std::stringstream _code;
+
+        this->seal(_plain, _code);
+
+        elle::Buffer code(_code.str().data(), _code.str().length());
+
+        return (code);
+      }
+
+      void
+      PublicKey::seal(std::istream& plain,
+                      std::ostream& code) const
+      {
+        ELLE_TRACE_METHOD("");
+
+        envelope::seal(this->_key.get(),
+                       cipher::resolve(this->_envelope_cipher,
+                                       this->_envelope_mode),
+                       plain,
+                       code);
       }
 
       elle::Buffer

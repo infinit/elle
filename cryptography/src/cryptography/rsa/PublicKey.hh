@@ -48,9 +48,7 @@ namespace infinit
       public:
         /// Construct a public key out of its private counterpart.
         explicit
-        PublicKey(PrivateKey const& k,
-                  Cipher const envelope_cipher,
-                  Mode const envelope_mode);
+        PublicKey(PrivateKey const& k);
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
@@ -90,9 +88,13 @@ namespace infinit
         _check() const;
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Encrypt the plain text and seal it in an envelope.
+        /// Encrypt the plain text and return the ciphered text in an envelope.
         elle::Buffer
         seal(elle::ConstWeakBuffer const& plain) const;
+        /// Encrypt the stream-based plain text and seal it in an envelope.
+        void
+        seal(std::istream& plain,
+             std::ostream& code) const;
         /// Encrypt a plain text using the raw public key.
         ///
         /// WARNING: This method cannot be used to encrypt large amount of

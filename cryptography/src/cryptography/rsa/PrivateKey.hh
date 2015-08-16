@@ -51,14 +51,18 @@ namespace infinit
         PrivateKey(::EVP_PKEY* key,
                    Padding const encryption_padding,
                    Padding const signature_padding,
-                   Oneway const digest_algorithm);
+                   Oneway const digest_algorithm,
+                   Cipher const envelope_cipher,
+                   Mode const envelope_mode);
         /// Construct a private key based on the given RSA key whose
         /// ownership is transferred to the private key.
         explicit
         PrivateKey(::RSA* rsa,
                    Padding const encryption_padding,
                    Padding const signature_padding,
-                   Oneway const digest_algorithm);
+                   Oneway const digest_algorithm,
+                   Cipher const envelope_cipher,
+                   Mode const envelope_mode);
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         virtual
@@ -80,10 +84,14 @@ namespace infinit
         _check() const;
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /// Open the envelope, decrypt its content and return the
-        /// original plan text.
+        /// Open the envelope and return the original plain text.
         elle::Buffer
         open(elle::ConstWeakBuffer const& code) const;
+        /// Open the envelope, decrypt its stream-based content and return the
+        /// original plan text in the output stream.
+        void
+        open(std::istream& code,
+             std::ostream& plain) const;
         /// Decrypt a code with the raw public key.
         ///
         /// WARNING: This method cannot be used to decrypt large amount of
@@ -120,7 +128,11 @@ namespace infinit
                    Padding const signature_padding =
                      defaults::signature_padding,
                    Oneway const digest_algorithm =
-                     defaults::digest_algorithm);
+                     defaults::digest_algorithm,
+                   Cipher const envelope_cipher =
+                     defaults::envelope_cipher,
+                   Mode const envelope_mode =
+                     defaults::envelope_mode);
         /// Return the seed once rotated by the private key.
         Seed
         rotate(Seed const& seed) const;
@@ -157,6 +169,8 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Padding, encryption_padding);
         ELLE_ATTRIBUTE_R(Padding, signature_padding);
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
+        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
+        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
         // Note that the contexts are not serialized because they can
         // be reconstructed out of the paddings and algorithms above.
         // XXX remove the contexts
@@ -226,7 +240,11 @@ namespace infinit
                  Padding const signature_padding =
                    defaults::signature_padding,
                  Oneway const digest_algorithm =
-                   defaults::digest_algorithm);
+                   defaults::digest_algorithm,
+                 Cipher const envelope_cipher =
+                   defaults::envelope_cipher,
+                 Mode const envelope_mode =
+                   defaults::envelope_mode);
         }
       }
     }

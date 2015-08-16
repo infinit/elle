@@ -71,11 +71,15 @@ namespace infinit
       PrivateKey::PrivateKey(::EVP_PKEY* key,
                              Padding const encryption_padding,
                              Padding const signature_padding,
-                             Oneway const digest_algorithm):
+                             Oneway const digest_algorithm,
+                             Cipher const envelope_cipher,
+                             Mode const envelope_mode):
         _key(key),
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm)
+        _digest_algorithm(digest_algorithm),
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -119,10 +123,14 @@ namespace infinit
       PrivateKey::PrivateKey(::RSA* rsa,
                              Padding const encryption_padding,
                              Padding const signature_padding,
-                             Oneway const digest_algorithm):
+                             Oneway const digest_algorithm,
+                             Cipher const envelope_cipher,
+                             Mode const envelope_mode):
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm)
+        _digest_algorithm(digest_algorithm),
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -163,7 +171,9 @@ namespace infinit
 #endif
         _encryption_padding(other._encryption_padding),
         _signature_padding(other._signature_padding),
-        _digest_algorithm(other._digest_algorithm)
+        _digest_algorithm(other._digest_algorithm),
+        _envelope_cipher(other._envelope_cipher),
+        _envelope_mode(other._envelope_mode)
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         , _legacy_format(other._legacy_format)
 #endif
@@ -202,7 +212,9 @@ namespace infinit
         _key(std::move(other._key)),
         _encryption_padding(std::move(other._encryption_padding)),
         _signature_padding(std::move(other._signature_padding)),
-        _digest_algorithm(std::move(other._digest_algorithm))
+        _digest_algorithm(std::move(other._digest_algorithm)),
+        _envelope_cipher(std::move(other._envelope_cipher)),
+        _envelope_mode(std::move(other._envelope_mode))
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         , _legacy_format(other._legacy_format)
 #endif
@@ -303,9 +315,27 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
-        return (envelope::open(code,
-                               this->_context.decrypt.get(),
-                               ::EVP_PKEY_decrypt));
+        elle::IOStream _code(code.istreambuf());
+        std::stringstream _plain;
+
+        this->open(_code, _plain);
+
+        elle::Buffer plain(_plain.str().data(), _plain.str().length());
+
+        return (plain);
+      }
+
+      void
+      PrivateKey::open(std::istream& code,
+                       std::ostream& plain) const
+      {
+        ELLE_TRACE_METHOD("");
+
+        envelope::open(this->_key.get(),
+                       cipher::resolve(this->_envelope_cipher,
+                                       this->_envelope_mode),
+                       code,
+                       plain);
       }
 
       elle::Buffer
@@ -387,10 +417,14 @@ namespace infinit
       PrivateKey::PrivateKey(Seed const& seed,
                              Padding const encryption_padding,
                              Padding const signature_padding,
-                             Oneway const digest_algorithm):
+                             Oneway const digest_algorithm,
+                             Cipher const envelope_cipher,
+                             Mode const envelope_mode):
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm)
+        _digest_algorithm(digest_algorithm),
+        _envelope_cipher(envelope_cipher),
+        _envelope_mode(envelope_mode)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -488,6 +522,8 @@ namespace infinit
         serializer.serialize("encryption padding", this->_encryption_padding);
         serializer.serialize("signature padding", this->_signature_padding);
         serializer.serialize("digest algorithm", this->_digest_algorithm);
+        serializer.serialize("envelope cipher", this->_envelope_cipher);
+        serializer.serialize("envelope mode", this->_envelope_mode);
       }
 
       /*----------.
@@ -517,6 +553,10 @@ namespace infinit
                << this->_signature_padding
                << ", "
                << this->_digest_algorithm
+               << ", "
+               << this->_envelope_cipher
+               << ", "
+               << this->_envelope_mode
                << "]";
       }
     }
@@ -551,14 +591,18 @@ namespace infinit
           decode(elle::ConstWeakBuffer const& buffer,
                  Padding const encryption_padding,
                  Padding const signature_padding,
-                 Oneway const digest_algorithm)
+                 Oneway const digest_algorithm,
+                 Cipher const envelope_cipher,
+                 Mode const envelope_mode)
           {
             ::RSA* rsa = rsa::der::decode_private(buffer);
 
             return (PrivateKey(rsa,
                                encryption_padding,
                                signature_padding,
-                               digest_algorithm));
+                               digest_algorithm,
+                               envelope_cipher,
+                               envelope_mode));
           }
         }
       }

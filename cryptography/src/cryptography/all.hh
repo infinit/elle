@@ -18,6 +18,7 @@
 # include <cryptography/pem.hh>
 # include <cryptography/serialization.hh>
 # include <cryptography/context.hh>
+# include <cryptography/constants.hh>
 
 # include <cryptography/rsa/all.hh>
 # include <cryptography/dsa/all.hh>
