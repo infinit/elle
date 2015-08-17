@@ -18,7 +18,8 @@ namespace elle
                  bool enable_pid = false,
                  bool enable_tid = false,
                  bool enable_time = false,
-                 bool universal_time = false);
+                 bool universal_time = false,
+                 bool microsec_time = false);
     protected:
       virtual
       void

@@ -113,6 +113,7 @@ namespace elle
       std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
       ELLE_ATTRIBUTE_RW(bool, time_universal);
+      ELLE_ATTRIBUTE_RW(bool, time_microsec);
 
     /*----------.
     | Messaging |

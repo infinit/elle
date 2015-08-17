@@ -110,6 +110,7 @@ namespace elle
     Logger::Logger(std::string const& log_level)
       : _indentation(new PlainIndentation)
       , _time_universal(false)
+      , _time_microsec(false)
       , _component_patterns()
       , _component_levels()
       , _component_max_size(0)
@@ -198,9 +199,13 @@ namespace elle
       }
 
 
-      auto time = this->_time_universal ?
+      auto time = this->_time_microsec ?
+         ( this->_time_universal ?
+        boost::posix_time::microsec_clock::universal_time() :
+        boost::posix_time::microsec_clock::local_time())
+         :  ( this->_time_universal ?
         boost::posix_time::second_clock::universal_time() :
-        boost::posix_time::second_clock::local_time();
+        boost::posix_time::second_clock::local_time());
       this->_message(level, type, component, time, msg, tags,
                      indent - 1, file, line, function);
     }

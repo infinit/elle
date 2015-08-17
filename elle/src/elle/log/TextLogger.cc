@@ -65,7 +65,8 @@ namespace elle
                            bool enable_pid,
                            bool enable_tid,
                            bool enable_time,
-                           bool universal_time):
+                           bool universal_time,
+                           bool microsec_time):
       Logger(log_level),
       _output(out)
     {
@@ -113,6 +114,15 @@ namespace elle
       else
       {
         this->time_universal(universal_time);
+      }
+      if (elle::os::inenv("ELLE_LOG_TIME_MICROSEC"))
+      {
+        this->time_microsec(boost::lexical_cast<bool>(
+          elle::os::getenv("ELLE_LOG_TIME_MICROSEC")));
+      }
+      else
+      {
+        this->time_microsec(microsec_time);
       }
     }
 
