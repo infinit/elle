@@ -19,7 +19,7 @@
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.evp");
+ELLE_LOG_COMPONENT("infinit.cryptography.raw");
 
 //
 // ---------- Asymmetric ------------------------------------------------------
@@ -51,19 +51,387 @@ namespace infinit
 
       namespace asymmetric
       {
-        /*-----------------.
-        | Static Functions |
-        `-----------------*/
+        /*----------.
+        | Functions |
+        `----------*/
 
-        static
         elle::Buffer
-        _apply(elle::ConstWeakBuffer const& input,
-               ::EVP_PKEY_CTX* context,
+        encrypt(::EVP_PKEY* key,
+                elle::ConstWeakBuffer const& plain,
+                std::function<void (::EVP_PKEY_CTX*)> prolog,
+                std::function<void (::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, key, prolog, epilog);
+          ELLE_DUMP("plain: %s", plain);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(key, ::EVP_PKEY_encrypt_init));
+
+          if (prolog)
+            prolog(context.get());
+
+          elle::Buffer code = apply(context.get(),
+                                    ::EVP_PKEY_encrypt,
+                                    plain);
+
+          if (epilog)
+            epilog(context.get());
+
+          return (code);
+        }
+
+        elle::Buffer
+        decrypt(::EVP_PKEY* key,
+                elle::ConstWeakBuffer const& code,
+                std::function<void (::EVP_PKEY_CTX*)> prolog,
+                std::function<void (::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
+          ELLE_DUMP("code: %s", code);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(key, ::EVP_PKEY_decrypt_init));
+
+          if (prolog)
+            prolog(context.get());
+
+          elle::Buffer plain = apply(context.get(), ::EVP_PKEY_decrypt, code);
+
+          if (epilog)
+            epilog(context.get());
+
+          return (plain);
+        }
+
+#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        elle::Buffer
+        sign(::EVP_PKEY* key,
+             ::EVP_MD const* oneway,
+             std::istream& plain,
+             std::function<void (::EVP_MD_CTX*,
+                                 ::EVP_PKEY_CTX*)> prolog,
+             std::function<void (::EVP_MD_CTX*,
+                                 ::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          ELLE_ASSERT_NEQ(key, nullptr);
+
+          ::EVP_MD_CTX context;
+          ::EVP_PKEY_CTX* ctx = nullptr;
+
+          // Initialize the signature context.
+          ::EVP_MD_CTX_init(&context);
+
+          if (EVP_DigestSignInit(&context, &ctx, oneway, NULL, key) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the context for "
+                            "signature: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          ELLE_ASSERT_NEQ(ctx, nullptr);
+          if (prolog)
+            prolog(&context, ctx);
+
+          // Sign the plain's stream.
+          std::vector<unsigned char> _input(constants::stream_block_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Error(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the signature context.
+            if (::EVP_DigestSignUpdate(&context,
+                                       _input.data(),
+                                       plain.gcount()) <= 0)
+              throw Error(
+                elle::sprintf("unable to apply the signature function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          // Finalize the signature.
+          size_t size(0);
+
+          // Determine the size of the signature.
+          if (::EVP_DigestSignFinal(&context, NULL, &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to determine the signature's finale "
+                            "size: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          ELLE_ASSERT_EQ(size, ::EVP_PKEY_size(key));
+
+          if (epilog)
+            epilog(&context, ctx);
+
+          // Allocate the output signature.
+          elle::Buffer signature(size);
+
+          if (::EVP_DigestSignFinal(&context,
+                                    signature.mutable_contents(),
+                                    &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to finalize the signature process: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Update the signature final size.
+          signature.size(size);
+          signature.shrink_to_fit();
+
+          // Clean the context.
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Error(
+              elle::sprintf("unable to clean the signature context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          return (signature);
+        }
+
+        elle::Boolean
+        verify(::EVP_PKEY* key,
+               ::EVP_MD const* oneway,
+               elle::ConstWeakBuffer const& signature,
+               std::istream& plain,
+               std::function<void (::EVP_MD_CTX*,
+                                   ::EVP_PKEY_CTX*)> prolog,
+               std::function<void (::EVP_MD_CTX*,
+                                   ::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
+          ELLE_DUMP("signature: %s", signature);
+
+          // Make sure the cryptographic system is set up.
+          cryptography::require();
+
+          ELLE_ASSERT_NEQ(key, nullptr);
+
+          ::EVP_MD_CTX context;
+          ::EVP_PKEY_CTX* ctx = nullptr;
+
+          // Initialize the verify context.
+          ::EVP_MD_CTX_init(&context);
+
+          if (EVP_DigestVerifyInit(&context, &ctx, oneway, NULL, key) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the context for "
+                            "verify: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          ELLE_ASSERT_NEQ(ctx, nullptr);
+          if (prolog)
+            prolog(&context, ctx);
+
+          // Verify the signature's stream.
+          std::vector<unsigned char> _input(constants::stream_block_size);
+
+          while (!plain.eof())
+          {
+            // Read the plain's input stream and put a block of data in a
+            // temporary buffer.
+            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            if (plain.bad())
+              throw Error(
+                elle::sprintf("unable to read the plain's input stream: %s",
+                              plain.rdstate()));
+
+            // Update the verify context.
+            if (::EVP_DigestVerifyUpdate(&context,
+                                         _input.data(),
+                                         plain.gcount()) <= 0)
+              throw Error(
+                elle::sprintf("unable to apply the verify function: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          if (epilog)
+            epilog(&context, ctx);
+
+          // Finalize the verification.
+          int result =
+            ::EVP_DigestVerifyFinal(&context,
+                                    signature.contents(),
+                                    signature.size());
+
+          // Clean the context.
+          if (::EVP_MD_CTX_cleanup(&context) <= 0)
+            throw Error(
+              elle::sprintf("unable to clean the verify context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          switch (result)
+          {
+            case 1:
+              return (true);
+            case 0:
+              return (false);
+            default:
+              throw Error(
+                elle::sprintf("unable to verify the signature: %s",
+                              ::ERR_error_string(ERR_get_error(), nullptr)));
+          }
+
+          elle::unreachable();
+        }
+#endif
+
+        elle::Buffer
+        agree(::EVP_PKEY* own,
+              ::EVP_PKEY* peer,
+              std::function<void (::EVP_PKEY_CTX*)> prolog,
+              std::function<void (::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(own, peer, prolog, epilog);
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(own, ::EVP_PKEY_derive_init));
+
+          if (prolog)
+            prolog(context.get());
+
+          // Set the peer key.
+          if (::EVP_PKEY_derive_set_peer(context.get(), peer) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the context for "
+                            "derivation: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          size_t size;
+
+          // Compute the shared key's future length.
+          if (::EVP_PKEY_derive(context.get(), nullptr, &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to compute the output size of the "
+                            "shared key: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          elle::Buffer buffer(size);
+
+          // Generate the shared key.
+          if (::EVP_PKEY_derive(context.get(),
+                                buffer.mutable_contents(),
+                                &size) <= 0)
+            throw Error(
+              elle::sprintf("unable to generate the shared key: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Update the code size with the actual size of the generated data.
+          buffer.size(size);
+          buffer.shrink_to_fit();
+
+          if (epilog)
+            epilog(context.get());
+
+          return (buffer);
+        }
+
+        elle::Buffer
+        rotate(::EVP_PKEY* key,
+               elle::ConstWeakBuffer const& seed,
+               std::function<void (::EVP_PKEY_CTX*)> prolog,
+               std::function<void (::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
+          ELLE_DUMP("seed: %s", seed);
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(key, ::EVP_PKEY_sign_init));
+
+          // Ensure the size of the seed equals the modulus.
+          //
+          // If the seed is too large, the algorithm would need to encrypt
+          // it with a symmetric key etc. (as the seal() method does) which
+          // would result in a future seed larger than the original.
+          //
+          // If it is too small, an attack could be performed against textbook
+          // RSA, assuming it is the algorithm used in this case.
+          if (static_cast<typename elle::Buffer::Size>(::EVP_PKEY_size(key)) !=
+              seed.size())
+            throw Error(
+              elle::sprintf("unable to rotate a seed whose length does not "
+                            "match the key's modulus: %s versus %s",
+                            ::EVP_PKEY_size(key),
+                            seed.size()));
+
+          if (prolog)
+            prolog(context.get());
+
+          elle::Buffer buffer =
+            apply(context.get(), ::EVP_PKEY_sign, seed);
+
+          if (epilog)
+            epilog(context.get());
+
+          // Make sure the seed does not grow over time.
+          ELLE_ASSERT_EQ(seed.size(), buffer.size());
+
+          return (buffer);
+        }
+
+        elle::Buffer
+        unrotate(::EVP_PKEY* key,
+                 elle::ConstWeakBuffer const& seed,
+                 std::function<void (::EVP_PKEY_CTX*)> prolog,
+                 std::function<void (::EVP_PKEY_CTX*)> epilog)
+        {
+          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
+          ELLE_DUMP("seed: %s", seed);
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(key, ::EVP_PKEY_verify_recover_init));
+
+          // As for the rotation mechanism, ensure the size of the seed
+          // equals the modulus.
+          if (static_cast<typename elle::Buffer::Size>(::EVP_PKEY_size(key)) !=
+              seed.size())
+            throw Error(
+              elle::sprintf("unable to unrotate a seed whose length does not "
+                            "match the key's modulus: %s versus %s",
+                            ::EVP_PKEY_size(key),
+                            seed.size()));
+
+          if (prolog)
+            prolog(context.get());
+
+          elle::Buffer buffer =
+            apply(context.get(), ::EVP_PKEY_verify_recover, seed);
+
+          if (epilog)
+            epilog(context.get());
+
+          // Make sure the unrotated seed has the same size as the original.
+          ELLE_ASSERT_EQ(seed.size(), buffer.size());
+
+          return (buffer);
+        }
+
+        elle::Buffer
+        apply(::EVP_PKEY_CTX* context,
                int (*function)(EVP_PKEY_CTX*,
                                unsigned char*,
                                size_t*,
                                const unsigned char*,
-                               size_t))
+                               size_t),
+               elle::ConstWeakBuffer const& input)
         {
           ELLE_DEBUG_FUNCTION(context, function);
           ELLE_DUMP("input: %s", input);
@@ -113,321 +481,6 @@ namespace infinit
 
           return (output);
         }
-
-        /*----------.
-        | Functions |
-        `----------*/
-
-        elle::Buffer
-        encrypt(elle::ConstWeakBuffer const& plain,
-                ::EVP_PKEY_CTX* context,
-                int (*function)(EVP_PKEY_CTX*,
-                                unsigned char*,
-                                size_t*,
-                                const unsigned char*,
-                                size_t))
-        {
-          ELLE_DEBUG_FUNCTION(context, function);
-          ELLE_DUMP("plain: %s", plain);
-
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          return (_apply(plain, context, function));
-        }
-
-        elle::Buffer
-        decrypt(elle::ConstWeakBuffer const& code,
-                ::EVP_PKEY_CTX* context,
-                int (*function)(EVP_PKEY_CTX*,
-                                unsigned char*,
-                                size_t*,
-                                const unsigned char*,
-                                size_t))
-        {
-          ELLE_DEBUG_FUNCTION(context, function);
-          ELLE_DUMP("code: %s", code);
-
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          return (_apply(code, context, function));
-        }
-
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::Buffer
-        sign(::EVP_PKEY* key,
-             ::EVP_MD const* oneway,
-             std::istream& plain,
-             std::function<void (::EVP_PKEY_CTX*)> configure)
-        {
-          ELLE_DEBUG_FUNCTION(key, oneway);
-
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          ELLE_ASSERT_NEQ(key, nullptr);
-
-          ::EVP_MD_CTX context;
-          ::EVP_PKEY_CTX* ctx = nullptr;
-
-          // Initialize the signature context.
-          ::EVP_MD_CTX_init(&context);
-
-          if (EVP_DigestSignInit(&context, &ctx, oneway, NULL, key) <= 0)
-            throw Error(
-              elle::sprintf("unable to initialize the context for "
-                            "signature: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Call the configure function with the key context.
-          ELLE_ASSERT_NEQ(ctx, nullptr);
-          configure(ctx);
-
-          // Sign the plain's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
-
-          while (!plain.eof())
-          {
-            // Read the plain's input stream and put a block of data in a
-            // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
-            if (plain.bad())
-              throw Error(
-                elle::sprintf("unable to read the plain's input stream: %s",
-                              plain.rdstate()));
-
-            // Update the signature context.
-            if (::EVP_DigestSignUpdate(&context,
-                                       _input.data(),
-                                       plain.gcount()) <= 0)
-              throw Error(
-                elle::sprintf("unable to apply the signature function: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          }
-
-          // Finalize the signature.
-          size_t size(0);
-
-          // Determine the size of the signature.
-          if (::EVP_DigestSignFinal(&context, NULL, &size) <= 0)
-            throw Error(
-              elle::sprintf("unable to determine the signature's finale "
-                            "size: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          ELLE_ASSERT_EQ(size, ::EVP_PKEY_size(key));
-
-          // Allocate the output signature.
-          elle::Buffer signature(size);
-
-          if (::EVP_DigestSignFinal(&context,
-                                    signature.mutable_contents(),
-                                    &size) <= 0)
-            throw Error(
-              elle::sprintf("unable to finalize the signature process: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Update the signature final size.
-          signature.size(size);
-          signature.shrink_to_fit();
-
-          // Clean the context.
-          if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Error(
-              elle::sprintf("unable to clean the signature context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          return (signature);
-        }
-
-        elle::Boolean
-        verify(::EVP_PKEY* key,
-               ::EVP_MD const* oneway,
-               elle::ConstWeakBuffer const& signature,
-               std::istream& plain,
-               std::function<void (::EVP_PKEY_CTX*)> configure)
-        {
-          ELLE_DEBUG_FUNCTION(key, oneway);
-          ELLE_DUMP("signature: %s", signature);
-
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          ELLE_ASSERT_NEQ(key, nullptr);
-
-          ::EVP_MD_CTX context;
-          ::EVP_PKEY_CTX* ctx = nullptr;
-
-          // Initialize the verify context.
-          ::EVP_MD_CTX_init(&context);
-
-          if (EVP_DigestVerifyInit(&context, &ctx, oneway, NULL, key) <= 0)
-            throw Error(
-              elle::sprintf("unable to initialize the context for "
-                            "verify: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Call the configure function with the key context.
-          ELLE_ASSERT_NEQ(ctx, nullptr);
-          configure(ctx);
-
-          // Verify the signature's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
-
-          while (!plain.eof())
-          {
-            // Read the plain's input stream and put a block of data in a
-            // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
-            if (plain.bad())
-              throw Error(
-                elle::sprintf("unable to read the plain's input stream: %s",
-                              plain.rdstate()));
-
-            // Update the verify context.
-            if (::EVP_DigestVerifyUpdate(&context,
-                                         _input.data(),
-                                         plain.gcount()) <= 0)
-              throw Error(
-                elle::sprintf("unable to apply the verify function: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          }
-
-          // Finalize the verification.
-          int result =
-            ::EVP_DigestVerifyFinal(&context,
-                                    signature.contents(),
-                                    signature.size());
-
-          // Clean the context.
-          if (::EVP_MD_CTX_cleanup(&context) <= 0)
-            throw Error(
-              elle::sprintf("unable to clean the verify context: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          switch (result)
-          {
-            case 1:
-              return (true);
-            case 0:
-              return (false);
-            default:
-              throw Error(
-                elle::sprintf("unable to verify the signature: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          }
-
-          elle::unreachable();
-        }
-#endif
-
-        elle::Buffer
-        agree(::EVP_PKEY* own,
-              ::EVP_PKEY* peer)
-        {
-          ELLE_DEBUG_FUNCTION(own, peer);
-
-          // Prepare the context.
-          types::EVP_PKEY_CTX context(
-            context::create(own, ::EVP_PKEY_derive_init));
-
-          // Set the peer key.
-          if (::EVP_PKEY_derive_set_peer(context.get(), peer) <= 0)
-            throw Error(
-              elle::sprintf("unable to initialize the context for "
-                            "derivation: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          size_t size;
-
-          // Compute the shared key's future length.
-          if (::EVP_PKEY_derive(context.get(), nullptr, &size) <= 0)
-            throw Error(
-              elle::sprintf("unable to compute the output size of the "
-                            "shared key: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          elle::Buffer buffer(size);
-
-          // Generate the shared key.
-          if (::EVP_PKEY_derive(context.get(),
-                                buffer.mutable_contents(),
-                                &size) <= 0)
-            throw Error(
-              elle::sprintf("unable to generate the shared key: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
-
-          // Update the code size with the actual size of the generated data.
-          buffer.size(size);
-          buffer.shrink_to_fit();
-
-          return (buffer);
-        }
-
-        elle::Buffer
-        rotate(elle::ConstWeakBuffer const& seed,
-               ::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               unsigned char*,
-                               size_t*,
-                               const unsigned char*,
-                               size_t))
-        {
-          // Ensure the size of the seed equals the modulus.
-          //
-          // If the seed is too large, the algorithm would need to encrypt
-          // it with a symmetric key etc. (as the seal() method does) which
-          // would result in a future seed larger than the original.
-          //
-          // If it is too small, an attack could be performed against textbook
-          // RSA, assuming it is the algorithm used in this case.
-          if (static_cast<typename elle::Buffer::Size>(
-                ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
-              seed.size())
-            throw Error(
-              elle::sprintf("unable to rotate a seed whose length does not "
-                            "match the key's modulus: %s versus %s",
-                            ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
-                            seed.size()));
-
-          elle::Buffer buffer =
-            raw::asymmetric::_apply(seed, context, function);
-
-          // Make sure the seed does not grow over time.
-          ELLE_ASSERT_EQ(seed.size(), buffer.size());
-
-          return (buffer);
-        }
-
-        elle::Buffer
-        unrotate(elle::ConstWeakBuffer const& seed,
-                 ::EVP_PKEY_CTX* context,
-                 int (*function)(EVP_PKEY_CTX*,
-                                 unsigned char*,
-                                 size_t*,
-                                 const unsigned char*,
-                                 size_t))
-        {
-          // As for the rotation mechanism, ensure the size of the seed
-          // equals the modulus.
-          if (static_cast<typename elle::Buffer::Size>(
-                ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context))) !=
-              seed.size())
-            throw Error(
-              elle::sprintf("unable to unrotate a seed whose length does not "
-                            "match the key's modulus: %s versus %s",
-                            ::EVP_PKEY_size(::EVP_PKEY_CTX_get0_pkey(context)),
-                            seed.size()));
-
-          elle::Buffer buffer =
-            raw::asymmetric::_apply(seed, context, function);
-
-          // Make sure the unrotated seed has the same size as the original.
-          ELLE_ASSERT_EQ(seed.size(), buffer.size());
-
-          return (buffer);
-        }
       }
     }
   }
@@ -459,13 +512,15 @@ namespace infinit
         `----------*/
 
         void
-        encipher(std::istream& plain,
+        encipher(elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* cipher,
+                 ::EVP_MD const* oneway,
+                 std::istream& plain,
                  std::ostream& code,
-                 elle::ConstWeakBuffer const& secret,
-                 ::EVP_CIPHER const* function_cipher,
-                 ::EVP_MD const* function_oneway)
+                 std::function<void (::EVP_CIPHER_CTX*)> prolog,
+                 std::function<void (::EVP_CIPHER_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
+          ELLE_DEBUG_FUNCTION(cipher, oneway, prolog, epilog);
           ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
@@ -489,8 +544,8 @@ namespace infinit
           unsigned char key[EVP_MAX_KEY_LENGTH];
           unsigned char iv[EVP_MAX_IV_LENGTH];
 
-          if (::EVP_BytesToKey(function_cipher,
-                               function_oneway,
+          if (::EVP_BytesToKey(cipher,
+                               oneway,
                                salt,
                                secret.contents(),
                                secret.size(),
@@ -508,13 +563,16 @@ namespace infinit
 
           // Initialise the ciphering process.
           if (::EVP_EncryptInit_ex(&context,
-                                   function_cipher,
+                                   cipher,
                                    nullptr,
                                    key,
                                    iv) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (prolog)
+            prolog(&context);
 
           // Embed the magic and salt directly into the output code.
           code.write(magic, sizeof (magic) - 1);
@@ -568,6 +626,9 @@ namespace infinit
                               code.rdstate()));
           }
 
+          if (epilog)
+            epilog(&context);
+
           // Finalize the encryption process.
           int size_final(0);
 
@@ -597,13 +658,15 @@ namespace infinit
         }
 
         void
-        decipher(std::istream& code,
+        decipher(elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* cipher,
+                 ::EVP_MD const* oneway,
+                 std::istream& code,
                  std::ostream& plain,
-                 elle::ConstWeakBuffer const& secret,
-                 ::EVP_CIPHER const* function_cipher,
-                 ::EVP_MD const* function_oneway)
+                 std::function<void (::EVP_CIPHER_CTX*)> prolog,
+                 std::function<void (::EVP_CIPHER_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(function_cipher, function_oneway);
+          ELLE_DEBUG_FUNCTION(cipher, oneway, prolog, epilog);
           ELLE_DUMP("secret: %s", secret);
 
           // Make sure the cryptographic system is set up.
@@ -639,8 +702,8 @@ namespace infinit
           unsigned char key[EVP_MAX_KEY_LENGTH];
           unsigned char iv[EVP_MAX_IV_LENGTH];
 
-          if (::EVP_BytesToKey(function_cipher,
-                               function_oneway,
+          if (::EVP_BytesToKey(cipher,
+                               oneway,
                                _salt,
                                secret.contents(),
                                secret.size(),
@@ -658,7 +721,7 @@ namespace infinit
 
           // Initialise the ciphering process.
           if (::EVP_DecryptInit_ex(&context,
-                                   function_cipher,
+                                   cipher,
                                    nullptr,
                                    key,
                                    iv) <= 0)
@@ -666,8 +729,12 @@ namespace infinit
               elle::sprintf("unable to initialize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
+          if (prolog)
+            prolog(&context);
+
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
+          ELLE_DEBUG("block size: %s", block_size);
 
           // Decipher the code's stream.
           std::vector<unsigned char> _input(constants::stream_block_size);
@@ -705,6 +772,9 @@ namespace infinit
                               "plain's output stream: %s",
                               plain.rdstate()));
           }
+
+          if (epilog)
+            epilog(&context);
 
           // Finalize the deciphering process.
           int size_final(0);
@@ -749,10 +819,12 @@ namespace infinit
     namespace raw
     {
       elle::Buffer
-      hash(std::istream& plain,
-           ::EVP_MD const* function)
+      hash(::EVP_MD const* oneway,
+           std::istream& plain,
+           std::function<void (::EVP_MD_CTX*)> prolog,
+           std::function<void (::EVP_MD_CTX*)> epilog)
       {
-        ELLE_DEBUG_FUNCTION(function);
+        ELLE_DEBUG_FUNCTION(oneway, prolog, epilog);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -765,10 +837,13 @@ namespace infinit
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
         // Initialise the digest.
-        if (::EVP_DigestInit_ex(&context, function, nullptr) <= 0)
+        if (::EVP_DigestInit_ex(&context, oneway, nullptr) <= 0)
           throw Error(
             elle::sprintf("unable to initialize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        if (prolog)
+          prolog(&context);
 
         // Hash the plain's stream.
         std::vector<unsigned char> _input(constants::stream_block_size);
@@ -793,7 +868,10 @@ namespace infinit
         }
 
         // Allocate the output digest.
-        elle::Buffer digest(EVP_MD_size(function));
+        elle::Buffer digest(EVP_MD_size(oneway));
+
+        if (epilog)
+          epilog(&context);
 
         // Finalize the digest.
         unsigned int size(0);
@@ -836,11 +914,13 @@ namespace infinit
       namespace hmac
       {
         elle::Buffer
-        sign(std::istream& plain,
-             ::EVP_PKEY* key,
-             ::EVP_MD const* function)
+        sign(::EVP_PKEY* key,
+             ::EVP_MD const* oneway,
+             std::istream& plain,
+             std::function<void (::EVP_MD_CTX*)> prolog,
+             std::function<void (::EVP_MD_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, function);
+          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -852,15 +932,18 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
-          if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
+          if (::EVP_DigestInit_ex(&context, oneway, NULL) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          if (::EVP_DigestSignInit(&context, NULL, function, NULL, key) <= 0)
+          if (::EVP_DigestSignInit(&context, NULL, oneway, NULL, key) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (prolog)
+            prolog(&context);
 
           // HMAC-sign the plain's stream.
           std::vector<unsigned char> _input(constants::stream_block_size);
@@ -883,6 +966,9 @@ namespace infinit
                 elle::sprintf("unable to apply the HMAC function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
+
+          if (epilog)
+            epilog(&context);
 
           // Compute the output length.
           size_t size(0);
@@ -922,12 +1008,15 @@ namespace infinit
         }
 
         elle::Boolean
-        verify(elle::ConstWeakBuffer const& digest,
+        verify(::EVP_PKEY* key,
+               ::EVP_MD const* oneway,
+               elle::ConstWeakBuffer const& digest,
                std::istream& plain,
-               ::EVP_PKEY* key,
-               ::EVP_MD const* function)
+               std::function<void (::EVP_MD_CTX*)> prolog,
+               std::function<void (::EVP_MD_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, function);
+          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
+          ELLE_DUMP("digest: %s", digest);
 
           // Make sure the cryptographic system is set up.
           cryptography::require();
@@ -939,15 +1028,18 @@ namespace infinit
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
-          if (::EVP_DigestInit_ex(&context, function, NULL) <= 0)
+          if (::EVP_DigestInit_ex(&context, oneway, NULL) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the digest function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          if (::EVP_DigestVerifyInit(&context, NULL, function, NULL, key) <= 0)
+          if (::EVP_DigestVerifyInit(&context, NULL, oneway, NULL, key) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the HMAC process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          if (prolog)
+            prolog(&context);
 
           // HMAC-verify the plain's stream against the digest.
           std::vector<unsigned char> _input(constants::stream_block_size);
@@ -970,6 +1062,9 @@ namespace infinit
                 elle::sprintf("unable to apply the HMAC function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
           }
+
+          if (epilog)
+            epilog(&context);
 
           // Verify the context's data against the given digest.
           if (::EVP_DigestVerifyFinal(&context,

@@ -123,11 +123,11 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      raw::symmetric::encipher(plain,
-                               code,
-                               this->_password,
+      raw::symmetric::encipher(this->_password,
                                function_cipher,
-                               function_oneway);
+                               function_oneway,
+                               plain,
+                               code);
     }
 
     void
@@ -141,11 +141,11 @@ namespace infinit
       ::EVP_MD const* function_oneway =
           oneway::resolve(this->_oneway);
 
-      raw::symmetric::decipher(code,
-                               plain,
-                               this->_password,
+      raw::symmetric::decipher(this->_password,
                                function_cipher,
-                               function_oneway);
+                               function_oneway,
+                               code,
+                               plain);
     }
 
     elle::Natural32

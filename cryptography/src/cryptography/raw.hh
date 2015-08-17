@@ -33,69 +33,68 @@ namespace infinit
         | Functions |
         `----------*/
 
-        /// Encrypt the given plain with the provided encryption context and
-        /// function.
-        ///
-        /// Note that a padding size is provided, in bits, representing the
-        /// number of bits taken by the padding in the output code.
+        /// Encrypt the given plain with the provided encryption key.
         elle::Buffer
-        encrypt(elle::ConstWeakBuffer const& plain,
-                ::EVP_PKEY_CTX* context,
-                int (*function)(EVP_PKEY_CTX*,
-                                unsigned char*,
-                                size_t*,
-                                const unsigned char*,
-                                size_t));
-        /// Decrypt the code with the provided context and function.
+        encrypt(::EVP_PKEY* key,
+                elle::ConstWeakBuffer const& plain,
+                std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
+                std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+        /// Decrypt the code with the provided key and function.
         elle::Buffer
-        decrypt(elle::ConstWeakBuffer const& code,
-                ::EVP_PKEY_CTX* context,
-                int (*function)(EVP_PKEY_CTX*,
-                                unsigned char*,
-                                size_t*,
-                                const unsigned char*,
-                                size_t));
+        decrypt(::EVP_PKEY* key,
+                elle::ConstWeakBuffer const& code,
+                std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
+                std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Sign the given plain text.
         elle::Buffer
         sign(::EVP_PKEY* key,
              ::EVP_MD const* oneway,
              std::istream& plain,
-             std::function<void (::EVP_PKEY_CTX*)> configure =
-               [] (::EVP_PKEY_CTX* context) -> void {});
+             std::function<void (::EVP_MD_CTX*,
+                                 ::EVP_PKEY_CTX*)> prolog = nullptr,
+             std::function<void (::EVP_MD_CTX*,
+                                 ::EVP_PKEY_CTX*)> epilog = nullptr);
         /// Return true if the signature is valid according to the given plain.
         elle::Boolean
         verify(::EVP_PKEY* key,
                ::EVP_MD const* oneway,
                elle::ConstWeakBuffer const& signature,
                std::istream& plain,
-               std::function<void (::EVP_PKEY_CTX*)> configure =
-                 [] (::EVP_PKEY_CTX* context) -> void {});
+               std::function<void (::EVP_MD_CTX*,
+                                   ::EVP_PKEY_CTX*)> prolog = nullptr,
+               std::function<void (::EVP_MD_CTX*,
+                                   ::EVP_PKEY_CTX*)> epilog = nullptr);
 #endif
         /// Agree on a shared key between two key pairs: between a one's private
         /// key and a peer's public key.
         elle::Buffer
         agree(::EVP_PKEY* own,
-              ::EVP_PKEY* peer);
-        /// Rotate the given seed with the context and according to the
-        /// given function.
+              ::EVP_PKEY* peer,
+              std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
+              std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+        /// Rotate the given seed with the key.
         elle::Buffer
-        rotate(elle::ConstWeakBuffer const& seed,
-               ::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               unsigned char*,
-                               size_t*,
-                               const unsigned char*,
-                               size_t));
-        /// Unrotate the given seed according to the context and function.
+        rotate(::EVP_PKEY* key,
+               elle::ConstWeakBuffer const& seed,
+               std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
+               std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+        /// Unrotate the given seed according to the key.
         elle::Buffer
-        unrotate(elle::ConstWeakBuffer const& seed,
-                 ::EVP_PKEY_CTX* context,
-                 int (*function)(EVP_PKEY_CTX*,
-                                 unsigned char*,
-                                 size_t*,
-                                 const unsigned char*,
-                                 size_t));
+        unrotate(::EVP_PKEY* key,
+                 elle::ConstWeakBuffer const& seed,
+                 std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
+                 std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+        /// A low-level function that should be used only if you know what
+        /// you are doing.
+        elle::Buffer
+        apply(::EVP_PKEY_CTX* context,
+              int (*function)(EVP_PKEY_CTX*,
+                              unsigned char*,
+                              size_t*,
+                              const unsigned char*,
+                              size_t),
+              elle::ConstWeakBuffer const& input);
       }
     }
   }
@@ -116,19 +115,23 @@ namespace infinit
       {
         /// Encipher the plain text according to the given secret and functions.
         void
-        encipher(std::istream& input,
-                 std::ostream& output,
-                 elle::ConstWeakBuffer const& secret,
-                 ::EVP_CIPHER const* function_cipher,
-                 ::EVP_MD const* function_oneway);
+        encipher(elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* cipher,
+                 ::EVP_MD const* oneway,
+                 std::istream& plain,
+                 std::ostream& code,
+                 std::function<void (::EVP_CIPHER_CTX*)> prolog = nullptr,
+                 std::function<void (::EVP_CIPHER_CTX*)> epilog = nullptr);
         /// Decipher the cipher text according to the given secret and
         /// functions.
         void
-        decipher(std::istream& code,
+        decipher(elle::ConstWeakBuffer const& secret,
+                 ::EVP_CIPHER const* cipher,
+                 ::EVP_MD const* oneway,
+                 std::istream& code,
                  std::ostream& plain,
-                 elle::ConstWeakBuffer const& secret,
-                 ::EVP_CIPHER const* function_cipher,
-                 ::EVP_MD const* function_oneway);
+                 std::function<void (::EVP_CIPHER_CTX*)> prolog = nullptr,
+                 std::function<void (::EVP_CIPHER_CTX*)> epilog = nullptr);
       }
     }
   }
@@ -146,8 +149,10 @@ namespace infinit
     {
       /// Hash the given plain text and return a message digest.
       elle::Buffer
-      hash(std::istream& plain,
-           ::EVP_MD const* function);
+      hash(::EVP_MD const* oneway,
+           std::istream& plain,
+           std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
+           std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
     }
   }
 }
@@ -166,15 +171,19 @@ namespace infinit
       {
         /// HMAC the given plain text using a key and digest function.
         elle::Buffer
-        sign(std::istream& plain,
-             ::EVP_PKEY* key,
-             ::EVP_MD const* function);
+        sign(::EVP_PKEY* key,
+             ::EVP_MD const* oneway,
+             std::istream& plain,
+             std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
+             std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
         /// Verify a HMAC digest.
         elle::Boolean
-        verify(elle::ConstWeakBuffer const& digest,
+        verify(::EVP_PKEY* key,
+               ::EVP_MD const* oneway,
+               elle::ConstWeakBuffer const& digest,
                std::istream& plain,
-               ::EVP_PKEY* key,
-               ::EVP_MD const* function);
+               std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
+               std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
       }
     }
   }

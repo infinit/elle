@@ -106,9 +106,9 @@ test_operate_import()
   elle::String const data("N'est pas Sancho qui veut!");
 
   elle::Buffer code = K.seal(data);
-  elle::Buffer clear = k.open(code);
+  elle::Buffer plain = k.open(code);
 
-  BOOST_CHECK_EQUAL(data, clear.string());
+  BOOST_CHECK_EQUAL(data, plain.string());
 }
 
 static

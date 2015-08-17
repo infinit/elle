@@ -149,7 +149,7 @@ namespace infinit
         ELLE_ASSERT_LTE(buffer.size() * 8, length + overhead);
 
         // Encrypt the secret key's archive.
-        Code key = Code(raw::asymmetric::encrypt(buffer, context, function));
+        Code key = Code(raw::asymmetric::apply(context, function, buffer));
 
         // 5) Serialize the asymmetrically encrypted key and the symmetrically
         //    encrypted data.
@@ -185,7 +185,7 @@ namespace infinit
 
         // Decrypt the key.
         elle::Buffer buffer =
-          raw::asymmetric::decrypt(key.buffer(), context, function);
+          raw::asymmetric::apply(context, function, key.buffer());
 
         // Finally extract the secret key since decrypted.
         SecretKey secret(buffer.reader());

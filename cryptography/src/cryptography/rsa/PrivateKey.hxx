@@ -11,7 +11,8 @@
 #  include <cryptography/Cryptosystem.hh>
 #  include <cryptography/Error.hh>
 #  include <cryptography/hash.hh>
-#  include <cryptography/envelope.hh>
+#  include <cryptography/context.hh>
+#  include <cryptography/_legacy/envelope.hh>
 #  include <cryptography/_legacy/Clear.hh>
 
 #  include <elle/Buffer.hh>
@@ -37,8 +38,12 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("code: %x", code);
 
+        types::EVP_PKEY_CTX context(
+          context::create(this->_key.get(), ::EVP_PKEY_decrypt_init));
+        padding::pad(context.get(), this->_encryption_padding);
+
         Clear clear(envelope::open(code.buffer(),
-                                   this->_context.decrypt.get(),
+                                   context.get(),
                                    ::EVP_PKEY_decrypt));
 
         return (cryptography::deserialize<T>(clear.buffer()));
@@ -258,7 +263,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-      value._prepare();
       value._check();
 
       break;

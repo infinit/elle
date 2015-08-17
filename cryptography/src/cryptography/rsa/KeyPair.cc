@@ -214,54 +214,6 @@ namespace infinit
     {
       namespace keypair
       {
-        /*--------.
-        | Classes |
-        `--------*/
-
-        // The key pair initializer.
-        class Initializer
-        {
-        public:
-          Initializer()
-          {
-            // Create the context for the RSA algorithm.
-            this->_context.reset(
-              ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr));
-
-            if (this->_context == nullptr)
-              throw Error(
-                elle::sprintf("unable to allocate a keypair generation "
-                              "context: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-
-            // Initialise the context for key generation.
-            if (::EVP_PKEY_keygen_init(this->_context.get()) <= 0)
-              throw Error(
-                elle::sprintf("unable to initialize the keypair generation "
-                              "context: %s",
-                              ::ERR_error_string(ERR_get_error(), nullptr)));
-          }
-
-        private:
-          ELLE_ATTRIBUTE_R(types::EVP_PKEY_CTX, context);
-        };
-
-        /*-----------------.
-        | Static Functions |
-        `-----------------*/
-
-        /// Construct the key pair generation context.
-        static
-        ::EVP_PKEY_CTX*
-        _context()
-        {
-          static Initializer initialized;
-
-          ELLE_ASSERT_NEQ(initialized.context(), nullptr);
-
-          return (initialized.context().get());
-        }
-
         /*----------.
         | Functions |
         `----------*/
@@ -287,10 +239,24 @@ namespace infinit
           cryptography::require();
 
           // Retrieve the key pair generation context.
-          static ::EVP_PKEY_CTX* context = _context();
+          types::EVP_PKEY_CTX context(
+            ::EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, nullptr));
+
+          if (context == nullptr)
+            throw Error(
+              elle::sprintf("unable to allocate a keypair generation "
+                            "context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+
+          // Initialise the context for key generation.
+          if (::EVP_PKEY_keygen_init(context.get()) <= 0)
+            throw Error(
+              elle::sprintf("unable to initialize the keypair generation "
+                            "context: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Set the key length in the keypair generation context.
-          if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context, length) <= 0)
+          if (::EVP_PKEY_CTX_set_rsa_keygen_bits(context.get(), length) <= 0)
             throw Error(
               elle::sprintf("unable to set the length of the keypair to "
                             "be generated: %s",
@@ -299,7 +265,7 @@ namespace infinit
           ::EVP_PKEY* key = nullptr;
 
           // Generate the EVP key.
-          if (::EVP_PKEY_keygen(context, &key) <= 0)
+          if (::EVP_PKEY_keygen(context.get(), &key) <= 0)
             throw Error(
               elle::sprintf("unable to generate a keypair: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));

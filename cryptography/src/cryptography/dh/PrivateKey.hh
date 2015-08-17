@@ -56,9 +56,6 @@ namespace infinit
         /// ownership is transferred to the callee.
         void
         _construct(::DH* dh);
-        /// Prepare the private key cryptographic contexts.
-        void
-        _prepare();
         /// Check that the key is valid.
         void
         _check() const;

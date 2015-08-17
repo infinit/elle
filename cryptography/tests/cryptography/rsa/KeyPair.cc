@@ -160,8 +160,8 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
     elle::String input =
       infinit::cryptography::random::generate<elle::String>(9128);
     elle::Buffer code = keypair.K().seal(input);
-    elle::Buffer clear = keypair.k().open(code);
-    elle::String const output(clear.string());
+    elle::Buffer plain = keypair.k().open(code);
+    elle::String const output(plain.string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -170,9 +170,9 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
   {
     elle::String input = "a short string";
     elle::Buffer code = keypair.K().encrypt(input);
-    elle::Buffer clear = keypair.k().decrypt(code);
+    elle::Buffer plain = keypair.k().decrypt(code);
 
-    BOOST_CHECK_EQUAL(input, clear.string());
+    BOOST_CHECK_EQUAL(input, plain.string());
   }
 
   // Sign/verify a plain text.

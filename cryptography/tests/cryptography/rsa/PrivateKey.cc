@@ -130,9 +130,9 @@ test_operate()
     elle::Buffer code;
     input.serialize("code", code);
 
-    elle::Buffer clear = k.open(code);
+    elle::Buffer plain = k.open(code);
 
-    BOOST_CHECK_EQUAL(_input, clear.string());
+    BOOST_CHECK_EQUAL(_input, plain.string());
   }
 }
 

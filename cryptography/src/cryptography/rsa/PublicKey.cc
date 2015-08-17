@@ -16,7 +16,6 @@
 #include <cryptography/rsa/KeyPair.hh>
 #include <cryptography/rsa/Seed.hh>
 #include <cryptography/rsa/Padding.hh>
-#include <cryptography/rsa/context.hh>
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/serialization.hh>
 #include <cryptography/rsa/der.hh>
@@ -110,9 +109,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -162,9 +158,6 @@ namespace infinit
             elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -206,9 +199,6 @@ namespace infinit
 
         // Construct the public key based on the given RSA structure.
         this->_construct(rsa);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
 
         this->_check();
 
@@ -252,8 +242,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
-        this->_prepare();
-
         this->_check();
       }
 
@@ -271,13 +259,6 @@ namespace infinit
         , _legacy_format(std::move(other._legacy_format))
 #endif
       {
-        this->_context.encrypt = std::move(other._context.encrypt);
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        this->_context.unrotate = std::move(other._context.unrotate);
-#endif
-        this->_context.envelope_padding_size =
-          other._context.envelope_padding_size;
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -310,38 +291,6 @@ namespace infinit
             elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
                           "structure: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      void
-      PublicKey::_prepare()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-
-        // Prepare the encrypt context.
-        ELLE_ASSERT_EQ(this->_context.encrypt, nullptr);
-        this->_context.encrypt.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_encrypt_init,
-                          this->_encryption_padding));
-
-        this->_context.envelope_padding_size =
-          padding::footprint(this->_context.encrypt.get());
-
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-        // These contexts do not use paddings. Not that relying on textbook
-        // RSA is considered foolish. In this case however, restricting the
-        // rotation/derivation to content of the size of the RSA key's modulus
-        // makes it secure.
-
-        // Prepare the unrotate context.
-        ELLE_ASSERT_EQ(this->_context.unrotate, nullptr);
-        this->_context.unrotate.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_verify_recover_init,
-                          Padding::none));
-#endif
       }
 
       void
@@ -397,9 +346,15 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("plain: %x", plain);
 
-        return (raw::asymmetric::encrypt(plain,
-                                         this->_context.encrypt.get(),
-                                         ::EVP_PKEY_encrypt));
+        auto prolog =
+          [this](::EVP_PKEY_CTX* context)
+          {
+            padding::pad(context, this->_encryption_padding);
+          };
+
+        return (raw::asymmetric::encrypt(this->_key.get(),
+                                         plain,
+                                         prolog));
       }
 
       elle::Boolean
@@ -423,18 +378,10 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
 
-        auto configure =
-          [this](::EVP_PKEY_CTX* context)
-          {
-            padding::pad(context, this->_signature_padding);
-          };
-
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         types::EVP_PKEY_CTX context(
-          cryptography::context::create(this->_key.get(),
-                                        ::EVP_PKEY_verify_init));
-
-        configure(context.get());
+          context::create(this->_key.get(), ::EVP_PKEY_verify_init));
+        padding::pad(context.get(), this->_signature_padding);
 
         elle::Buffer digest = hash(plain, this->_digest_algorithm);
         return (raw::asymmetric::verify(signature,
@@ -442,12 +389,19 @@ namespace infinit
                                         context.get(),
                                         ::EVP_PKEY_verify));
 #else
+        auto prolog =
+          [this](::EVP_MD_CTX* context,
+                 ::EVP_PKEY_CTX* ctx)
+          {
+            padding::pad(ctx, this->_signature_padding);
+          };
+
         return (raw::asymmetric::verify(
                   this->_key.get(),
                   oneway::resolve(this->_digest_algorithm),
                   signature,
                   plain,
-                  configure));
+                  prolog));
 #endif
       }
 
@@ -513,9 +467,6 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -525,10 +476,14 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
-        return (Seed(raw::asymmetric::unrotate(seed.buffer(),
-                                               this->_context.unrotate.get(),
-                                               ::EVP_PKEY_verify_recover),
-                     seed.length()));
+        // The unrotate operation does not rely on padding. Not that relying on
+        // textbook RSA is considered foolish. In this case however, restricting
+        // the rotation/derivation to content of the size of the RSA key's
+        // modulus makes it secure.
+        elle::Buffer buffer = raw::asymmetric::unrotate(this->_key.get(),
+                                                        seed.buffer());
+
+        return (Seed(buffer, seed.length()));
       }
 #endif
 
@@ -568,7 +523,6 @@ namespace infinit
 
         this->serialize(serializer);
 
-        this->_prepare();
         this->_check();
       }
 

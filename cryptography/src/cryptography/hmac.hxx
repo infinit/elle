@@ -69,7 +69,7 @@ namespace infinit
 
         // Apply the HMAC function with the given key.
         elle::Buffer digest =
-          raw::hmac::sign(plain, key.key().get(), function);
+          raw::hmac::sign(key.key().get(), function, plain);
 
         return (digest);
       }
@@ -87,10 +87,10 @@ namespace infinit
 
         ::EVP_MD const* function = oneway::resolve(oneway);
 
-        return (raw::hmac::verify(digest,
-                                  plain,
-                                  key.key().get(),
-                                  function));
+        return (raw::hmac::verify(key.key().get(),
+                                  function,
+                                  digest,
+                                  plain));
       }
     }
   }

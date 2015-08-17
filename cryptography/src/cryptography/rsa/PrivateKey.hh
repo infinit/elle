@@ -76,9 +76,6 @@ namespace infinit
         /// ownership is transferred to the callee.
         void
         _construct(::RSA* rsa);
-        /// Prepare the private key cryptographic contexts.
-        void
-        _prepare();
         /// Check that the key is valid.
         void
         _check() const;
@@ -171,16 +168,6 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
         ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
         ELLE_ATTRIBUTE_R(Mode, envelope_mode);
-        // Note that the contexts are not serialized because they can
-        // be reconstructed out of the paddings and algorithms above.
-        // XXX remove the contexts
-        struct
-        {
-          types::EVP_PKEY_CTX decrypt;
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-          types::EVP_PKEY_CTX rotate;
-# endif
-        } _context;
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*-------.

@@ -16,7 +16,7 @@
 # include <openssl/hmac.h>
 # include <openssl/rand.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.legacy.evp");
+ELLE_LOG_COMPONENT("infinit.cryptography.legacy.raw");
 
 //
 // ---------- Asymmetric ------------------------------------------------------

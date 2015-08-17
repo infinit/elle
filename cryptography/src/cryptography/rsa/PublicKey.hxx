@@ -10,7 +10,8 @@
 #  include <cryptography/_legacy/Plain.hh>
 #  include <cryptography/_legacy/serialization.hh>
 #  include <cryptography/hash.hh>
-#  include <cryptography/envelope.hh>
+#  include <cryptography/_legacy/envelope.hh>
+#  include <cryptography/context.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>
@@ -35,13 +36,17 @@ namespace infinit
 
         elle::Buffer _value = cryptography::serialize(value);
 
+        types::EVP_PKEY_CTX context(
+          context::create(this->_key.get(), ::EVP_PKEY_encrypt_init));
+        padding::pad(context.get(), this->_encryption_padding);
+
         return (Code(envelope::seal(_value,
-                                    this->_context.encrypt.get(),
+                                    context.get(),
                                     ::EVP_PKEY_encrypt,
                                     cipher::resolve(this->_envelope_cipher,
                                                     this->_envelope_mode),
                                     oneway::resolve(this->_digest_algorithm),
-                                    this->_context.envelope_padding_size)));
+                                    padding::footprint(context.get()))));
       }
 
       template <typename T>
@@ -238,7 +243,6 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
-      value._prepare();
       value._check();
 
       break;
