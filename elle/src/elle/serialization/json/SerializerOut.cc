@@ -18,23 +18,32 @@ namespace elle
       `-------------*/
 
       SerializerOut::SerializerOut(std::ostream& output,
-                                   bool versioned)
-        : SerializerOut(output, elle::Version(), versioned)
+                                   bool versioned,
+                                   bool pretty)
+        : SerializerOut(output, elle::Version(), versioned, pretty)
       {}
 
       SerializerOut::SerializerOut(std::ostream& output,
                                    elle::Version version,
-                                   bool versioned)
+                                   bool versioned,
+                                   bool pretty)
         : Super(output, std::move(version), versioned)
         , _json()
         , _current()
+        , _pretty(pretty)
       {
         this->_current.push_back(&this->_json);
       }
 
       SerializerOut::~SerializerOut() noexcept(false)
       {
-        elle::json::write(this->output(), this->_json);
+        if (_pretty)
+        {
+          std::string res = elle::json::pretty_print(this->_json);
+          this->output() << res;
+        }
+        else
+          elle::json::write(this->output(), this->_json);
       }
 
       /*--------------.

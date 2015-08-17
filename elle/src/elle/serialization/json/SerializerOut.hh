@@ -29,10 +29,12 @@ namespace elle
       `-------------*/
       public:
         SerializerOut(std::ostream& output,
-                      bool versioned = true);
+                      bool versioned = true,
+                      bool pretty = false);
         SerializerOut(std::ostream& output,
                       elle::Version version,
-                      bool versioned = true);
+                      bool versioned = true,
+                      bool pretty = false);
         ~SerializerOut() noexcept(false);
 
       /*--------------.
@@ -99,7 +101,7 @@ namespace elle
       private:
         ELLE_ATTRIBUTE(boost::any, json);
         ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
-
+        ELLE_ATTRIBUTE(bool, pretty);
       };
     }
   }
