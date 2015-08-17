@@ -5,6 +5,8 @@
 #include <cryptography/Oneway.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/Error.hh>
+#include <cryptography/types.hh>
+#include <cryptography/context.hh>
 #include <cryptography/constants.hh>
 
 #include <elle/Buffer.hh>
@@ -321,13 +323,17 @@ namespace infinit
 #endif
 
         elle::Buffer
-        agree(::EVP_PKEY_CTX* context,
+        agree(::EVP_PKEY* own,
               ::EVP_PKEY* peer)
         {
-          ELLE_DEBUG_FUNCTION(context, peer);
+          ELLE_DEBUG_FUNCTION(own, peer);
+
+          // Prepare the context.
+          types::EVP_PKEY_CTX context(
+            context::create(own, ::EVP_PKEY_derive_init));
 
           // Set the peer key.
-          if (::EVP_PKEY_derive_set_peer(context, peer) <= 0)
+          if (::EVP_PKEY_derive_set_peer(context.get(), peer) <= 0)
             throw Error(
               elle::sprintf("unable to initialize the context for "
                             "derivation: %s",
@@ -336,7 +342,7 @@ namespace infinit
           size_t size;
 
           // Compute the shared key's future length.
-          if (::EVP_PKEY_derive(context, nullptr, &size) <= 0)
+          if (::EVP_PKEY_derive(context.get(), nullptr, &size) <= 0)
             throw Error(
               elle::sprintf("unable to compute the output size of the "
                             "shared key: %s",
@@ -345,7 +351,7 @@ namespace infinit
           elle::Buffer buffer(size);
 
           // Generate the shared key.
-          if (::EVP_PKEY_derive(context,
+          if (::EVP_PKEY_derive(context.get(),
                                 buffer.mutable_contents(),
                                 &size) <= 0)
             throw Error(

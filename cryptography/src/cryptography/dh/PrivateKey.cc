@@ -7,7 +7,6 @@
 
 #include <cryptography/Error.hh>
 #include <cryptography/bn.hh>
-#include <cryptography/context.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/dh/KeyPair.hh>
 #include <cryptography/dh/PrivateKey.hh>
@@ -39,9 +38,6 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
@@ -61,9 +57,6 @@ namespace infinit
 
         // Construct the private key based on the given DH structure.
         this->_construct(dh);
-
-        // Prepare the cryptographic contexts.
-        this->_prepare();
 
         this->_check();
       }
@@ -85,17 +78,12 @@ namespace infinit
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
-        // Prepare the cryptographic contexts.
-        this->_prepare();
-
         this->_check();
       }
 
       PrivateKey::PrivateKey(PrivateKey&& other):
         _key(std::move(other._key))
       {
-        this->_context.agree = std::move(other._context.agree);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -131,20 +119,6 @@ namespace infinit
       }
 
       void
-      PrivateKey::_prepare()
-      {
-        ELLE_DEBUG_FUNCTION("");
-
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-
-        // Prepare the agree context.
-        ELLE_ASSERT_EQ(this->_context.agree, nullptr);
-        this->_context.agree.reset(
-          context::create(this->_key.get(),
-                          ::EVP_PKEY_derive_init));
-      }
-
-      void
       PrivateKey::_check() const
       {
         ELLE_ASSERT_NEQ(this->_key, nullptr);
@@ -158,7 +132,7 @@ namespace infinit
       {
         ELLE_TRACE_METHOD(peer_K);
 
-        return (raw::asymmetric::agree(this->_context.agree.get(),
+        return (raw::asymmetric::agree(this->_key.get(),
                                        peer_K.key().get()));
       }
 

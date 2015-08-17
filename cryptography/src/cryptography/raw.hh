@@ -75,7 +75,7 @@ namespace infinit
         /// Agree on a shared key between two key pairs: between a one's private
         /// key and a peer's public key.
         elle::Buffer
-        agree(::EVP_PKEY_CTX* context,
+        agree(::EVP_PKEY* own,
               ::EVP_PKEY* peer);
         /// Rotate the given seed with the context and according to the
         /// given function.

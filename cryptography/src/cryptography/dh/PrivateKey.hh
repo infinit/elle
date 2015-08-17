@@ -95,12 +95,6 @@ namespace infinit
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
         ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
-        // Note that the contexts are not serialized because they can
-        // be reconstructed out of the paddings and algorithms above.
-        struct
-        {
-          types::EVP_PKEY_CTX agree;
-        } _context;
       };
     }
   }
