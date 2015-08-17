@@ -877,6 +877,16 @@ namespace elle
       return deserialize<T, Serialization>(s, name, version);
     }
 
+    // Prevent literal string from being converted to boolean and triggerring
+    // the nameless overload.
+    template <typename T, typename Serialization>
+    T
+    deserialize(elle::Buffer const& input, char const* name,
+                bool version = true)
+    {
+      return deserialize<T, Serialization>(input, std::string(name), version);
+    }
+
     template <typename T, typename Serialization>
     void
     serialize(T const& o, std::string const& name,
@@ -904,6 +914,15 @@ namespace elle
         serialize<T, Serialization>(o, name, s, version);
       }
       return res;
+    }
+
+    // Prevent literal string from being converted to boolean and triggerring
+    // the nameless overload.
+    template <typename T, typename Serialization>
+    elle::Buffer
+    serialize(T const& o, char const* name, bool version = true)
+    {
+      return serialize<T, Serialization>(o, std::string(name), version);
     }
 
     template <typename T, typename Serialization>
