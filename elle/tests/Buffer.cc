@@ -307,6 +307,29 @@ output()
   BOOST_CHECK_EQUAL(buffer, "42");
 }
 
+static
+void
+input()
+{
+  {
+    elle::Buffer b("10 11", 5);
+    elle::IOStream stream(b.istreambuf());
+    int x, y;
+    stream >> x >> y;
+    BOOST_CHECK_EQUAL(x, 10);
+    BOOST_CHECK_EQUAL(y, 11);
+  }
+  elle::Buffer b("10 11 ", 6);
+  elle::Buffer b2("12 13", 5);
+  elle::IOStream stream(b.istreambuf_combine(b2));
+  int x, y, z, a;
+  stream >> x >> y >> z >> a;
+  BOOST_CHECK_EQUAL(x, 10);
+  BOOST_CHECK_EQUAL(y, 11);
+  BOOST_CHECK_EQUAL(z, 12);
+  BOOST_CHECK_EQUAL(a, 13);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -345,6 +368,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* streams = BOOST_TEST_SUITE("streams");
   buffer->add(streams);
   streams->add(BOOST_TEST_CASE(output));
+  streams->add(BOOST_TEST_CASE(input));
 
   // WeakBuffer
   boost::unit_test::test_suite* weakbuffer = BOOST_TEST_SUITE("WeakBuffer");

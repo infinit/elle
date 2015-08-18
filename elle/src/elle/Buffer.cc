@@ -85,7 +85,7 @@ namespace elle
   public:
     explicit
     InputStreamBuffer(BufferType const& buffer);
-
+    void add(BufferType const& buffer);
   protected:
     virtual
     WeakBuffer
@@ -98,8 +98,8 @@ namespace elle
     flush(Size size);
 
   private:
-    BufferType const& _buffer;
-    bool _read;
+    std::vector<BufferType const*> _buffers;
+    int _pos;
   };
 
 //
@@ -439,6 +439,14 @@ namespace elle
       return in_buffer;
   }
 
+  std::streambuf*
+  Buffer::istreambuf_combine(const Buffer& b) const
+  {
+      InputStreamBuffer<elle::Buffer>* in_buffer =
+          new InputStreamBuffer<elle::Buffer>(*this);
+      in_buffer->add(b);
+      return in_buffer;
+  }
 
   std::ostream&
   operator <<(std::ostream& stream,
@@ -689,11 +697,18 @@ namespace elle
 
   template <typename BufferType>
   InputStreamBuffer<BufferType>::InputStreamBuffer(BufferType const& buffer):
-    _buffer(buffer),
-    _read(false)
+    _pos(0)
   {
+    _buffers.push_back(&buffer);
     ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s",
                buffer.size());
+  }
+
+  template <typename BufferType>
+  void
+  InputStreamBuffer<BufferType>::add(BufferType const& buffer)
+  {
+    _buffers.push_back(&buffer);
   }
 
   template <typename BufferType>
@@ -707,10 +722,10 @@ namespace elle
   WeakBuffer
   InputStreamBuffer<BufferType>::read_buffer()
   {
-    if (!this->_read)
+    if (this->_pos < this->_buffers.size())
     {
-      this->_read = true;
-      return WeakBuffer((char*)_buffer.contents(), _buffer.size());
+      this->_pos++;
+      return WeakBuffer((char*)_buffers[_pos-1]->contents(), _buffers[_pos-1]->size());
     }
     else
       return WeakBuffer(nullptr, 0);

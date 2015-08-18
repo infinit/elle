@@ -161,6 +161,8 @@ namespace elle
     /// Construct an input streambuf from the buffer.
     std::streambuf* istreambuf() const;
 
+    /// Construct an input stream buffer from the concatenation of two buffers.
+    std::streambuf* istreambuf_combine(const Buffer& b) const;
   /*---------.
   | Iterable |
   `---------*/
