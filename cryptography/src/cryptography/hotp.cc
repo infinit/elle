@@ -1,7 +1,6 @@
 #include <cryptography/hotp.hh>
 #include <cryptography/hash.hh>
-
-#include <boost/uuid/random_generator.hpp>
+#include <cryptography/random.hh>
 
 namespace infinit
 {
@@ -52,9 +51,9 @@ namespace infinit
     {
       if (key.size() == 0)
       {
-        auto id = boost::uuids::basic_random_generator<boost::mt19937>()();
-        _key = hash(elle::ConstWeakBuffer(id.data, id.static_size()),
-          Oneway::sha1);
+        elle::Buffer password(random::generate<elle::Buffer>(20));
+        _key = hash(password,
+                    Oneway::sha1);
       }
       _seen.resize(_seek * 2, -1); // -1 is not a possible hotp value
     }

@@ -1,15 +1,21 @@
 #include <cryptography/hotp.hh>
 # include <elle/test.hh>
+# include <elle/log.hh>
 
+ELLE_LOG_COMPONENT("test");
 
 using namespace infinit::cryptography;
 static void test_basic()
 {
   HOTPServer server;
+  HOTPServer server2;
+  BOOST_CHECK(server.key() != server2.key());
   HOTPClient client(server.key());
   for (int i=0; i< 1000; ++i)
   {
-    BOOST_CHECK_EQUAL(server.validate(client.next()), HOTPServer::ValidationResult::ok);
+    int32_t cn = client.next();
+    ELLE_DUMP("next: %s", cn);
+    BOOST_CHECK_EQUAL(server.validate(cn), HOTPServer::ValidationResult::ok);
   }
   int32_t v1 = client.next();
   int32_t v2 = client.next();
