@@ -14,7 +14,7 @@
 #  define ELLE_COMPILER_PRETTY_FUNCTION __PRETTY_FUNCTION__
 # endif
 
-# if defined(__GNUC__)
+# if defined(__GNUC__) && !defined(__clang__)
 #  define GCC_VERSION_LTE(Major, Minor)                                 \
   (__GNUC__) < Major || (__GNUC__) == Major && (__GNUC_MINOR__) <= Minor
 #else
