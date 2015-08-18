@@ -183,7 +183,7 @@ namespace elle
           {
             ELLE_ENFORCE(this->_enter(name));
             elle::SafeFinally leave([&] { this->_leave(name); });
-            this->_deserialize_in_option(name, opt);
+            this->_serialize_anonymous(name, opt);
           });
     }
 
