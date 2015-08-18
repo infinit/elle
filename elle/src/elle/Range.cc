@@ -99,15 +99,15 @@ namespace elle
 #endif
   }
 
-  template <typename It>
+  template <typename ... Args>
   static inline
   void
-  emplace(std::set<Range>& set, It start, It end)
+  emplace(std::set<Range>& set, Args&& ... args)
   {
 #if GCC_VERSION_LTE(4, 7)
-    set.insert(start, end);
+    set.insert(Range(std::forward<Args>(args)...));
 #else
-    set.emplace(start, end);
+    set.emplace(std::forward<Args>(args)...);
 #endif
   }
 
