@@ -88,17 +88,40 @@ namespace elle
     : _ranges()
   {}
 
+  static inline
+  void
+  emplace(std::set<Range>& set, Range range)
+  {
+#if GCC_VERSION_LTE(4, 7)
+    set.insert(std::move(range));
+#else
+    set.emplace(std::move(range));
+#endif
+  }
+
+  template <typename It>
+  static inline
+  void
+  emplace(std::set<Range>& set, It start, It end)
+  {
+#if GCC_VERSION_LTE(4, 7)
+    set.insert(start, end);
+#else
+    set.emplace(start, end);
+#endif
+  }
+
   Ranges::Ranges(Range range)
     : _ranges()
   {
-    this->_ranges.emplace(std::move(range));
+    emplace(this->_ranges, std::move(range));
   }
 
   Ranges::Ranges(std::vector<Range> const& ranges)
     : _ranges()
   {
     for (auto const& range: ranges)
-      this->_ranges.emplace(range);
+      emplace(this->_ranges, std::move(range));
   }
 
   Ranges&
@@ -152,7 +175,7 @@ namespace elle
         ELLE_DUMP("%s: overlap", *this);
         if (current.start() > range.start())
         {
-          res._ranges.emplace(range.start(), current.start());
+          emplace(res._ranges, range.start(), current.start());
           this->_ranges.erase(current);
           current.start(range.start());
           // Merge with previous if needed.
@@ -161,7 +184,7 @@ namespace elle
             this->_ranges.erase(previous.get());
             current.start(previous.get().start());
           }
-          this->_ranges.emplace(current);
+          emplace(this->_ranges, current);
         }
         range.start(current.end());
         ELLE_DUMP("%s: leftover is %s", *this, range);
@@ -175,13 +198,13 @@ namespace elle
         ELLE_DUMP("%s: skip %s", *this, current);
       previous = current;
     }
-    res._ranges.emplace(range);
+    emplace(res._ranges, range);
     if (previous && previous.get().end() == range.start())
     {
       this->_ranges.erase(previous.get());
       range.start(previous.get().start());
     }
-    this->_ranges.emplace(range);
+    emplace(this->_ranges, range);
     ELLE_DUMP("%s: added %s", *this, range);
     return res;
   }
