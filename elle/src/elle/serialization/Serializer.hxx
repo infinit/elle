@@ -665,12 +665,14 @@ namespace elle
           {
             if (this->_enter(name))
             {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
               ELLE_DEBUG_SCOPE("%s: serialize first member", *this);
               elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.first);
             }
             if (this->_enter(name))
             {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
               ELLE_DEBUG_SCOPE("%s: serialize second member", *this);
               elle::SafeFinally leave([&] { this->_leave(name); });
               this->_serialize_anonymous(name, pair.second);
@@ -687,11 +689,13 @@ namespace elle
           {
             if (i == 0)
             {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
               ELLE_DEBUG_SCOPE("%s: deserialize first member", *this);
               this->_serialize_anonymous(name, pair.first);
             }
             else if (i == 1)
             {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
               ELLE_DEBUG_SCOPE("%s: deserialize second member", *this);
               this->_serialize_anonymous(name, pair.second);
             }
