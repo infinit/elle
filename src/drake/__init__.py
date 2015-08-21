@@ -998,7 +998,7 @@ class DepFile:
       """Whether all registered files match the stored hash."""
       if self.__invalid:
         return False
-      hashing = True
+      res = True
       for path, (old_hash, data) in self.__hashes.items():
         if old_hash is None:
           continue
@@ -1008,10 +1008,12 @@ class DepFile:
         #   continue
         n = node(path)
         if isinstance(n, Node):
-          if n.mtime < oldest_mtime:
+          mtime = n.mtime
+          if mtime < oldest_mtime:
             continue
           else:
-            hashing = DepFile.Hashed
+            if res is True or res < mtime:
+              res = mtime
         # print('hash %s because %s is older than %s' % (self.__builder, n.path(), oldest_target))
         try:
           h = n.hash()
@@ -1021,7 +1023,7 @@ class DepFile:
         if h != old_hash:
           explain(self.__builder, '%s has changed' % path)
           return False
-      return hashing
+      return res
 
     def update(self):
       """Rehash all files and write to the store file."""
@@ -1501,10 +1503,12 @@ class Node(BaseNode):
       self.__mtime = _OS.path.getmtime(str(self.path()))
     return self.__mtime
 
-  def touch(self):
+  def touch(self, t):
     _OS.utime(str(self.path()), None)
-    self.__mtime = time.time()
-
+    self.__mtime = None
+    while self.mtime <= t:
+      _OS.utime(str(self.path()), None)
+      self.__mtime = None
 
 def node(path, type = None):
   """Create or get a BaseNode.
@@ -1906,17 +1910,14 @@ class Builder:
               execute = True
         # Check if we are up to date wrt all dependencies
         if not execute:
-          hashed = False
           for f in chain((self._depfile,), self._depfiles.values()):
             res = f.up_to_date(oldest_target, oldest_mtime)
             if not res:
               execute = True
-            elif res is DepFile.Hashed:
-              hashed = True
-          if not execute and hashed:
+          if not execute and isinstance(res, float):
             print('adjust mtime for %s' % self)
             for dst in self.__targets:
-              dst.touch()
+              dst.touch(res)
         if execute:
           self._execute(depfile_builder)
         else:
