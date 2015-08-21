@@ -25,6 +25,7 @@ def configure(openssl_config,
               boost = None,
               elle = None,
               prefix = '/usr',
+              python = None,
               valgrind = None,
               valgrind_tests = False,
 ):
@@ -64,10 +65,17 @@ def configure(openssl_config,
 
   boost = boost or drake.cxx.boost.Boost()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    if python is not None:
+      boost_python = boost.config_python(static = True)
+      boost_python += python
     boost_test = boost.config_test(static = True)
     boost_thread = boost.config_thread(static = True)
     boost_filesystem = boost.config_filesystem(static = True)
   else:
+    if python is not None:
+      boost_python = drake.cxx.Config(boost.config_python(link = False))
+      boost_python.library_add(drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+      boost_python += python
     boost_test = drake.cxx.Config(boost.config_test(link = False))
     boost_test.library_add(drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
     boost_thread = drake.cxx.Config(boost.config_thread(link = False))
@@ -110,7 +118,10 @@ def configure(openssl_config,
   if enable_rotation:
     cxx_config += dopenssl.config
 
-  # Sources
+  ## ------- ##
+  ## Library ##
+  ## ------- ##
+
   sources = drake.nodes(
     'src/cryptography/Cipher.cc',
     'src/cryptography/Cipher.hh',
@@ -260,7 +271,24 @@ def configure(openssl_config,
                                  cxx_toolkit,
                                  cxx_config_lib)
 
-  # Build
+  ## ------ ##
+  ## Python ##
+  ## ------ ##
+
+  if python is not None:
+    cxx_config_python = drake.cxx.Config(cxx_config)
+    cxx_config_python.lib_path_runtime('..')
+    cxx_config_python += boost_python
+    python = drake.cxx.Module(
+      'lib/python/cryptography',
+      drake.nodes('src/cryptography/python.cc') + [lib_dynamic],
+      cxx_toolkit,
+      cxx_config_python)
+
+  ## ----- ##
+  ## Build ##
+  ## ----- ##
+
   rule_build = drake.Rule('build')
   rule_build << lib_static
   if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
@@ -269,7 +297,10 @@ def configure(openssl_config,
   else:
     library = lib_static
 
-  # Tests
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
   if legacy_mode:
     tests = [
       "_legacy/bn.cc",
@@ -350,8 +381,17 @@ def configure(openssl_config,
       runner = drake.Runner(exe = bin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+  python_runner = drake.Runner(
+    exe = drake.node('tests/python'),
+    env = {'PYTHONPATH': str(drake.path_build('lib/python'))},
+  )
+  python_runner.reporting = drake.Runner.Reporting.on_failure
+  rule_check << python_runner.status
 
-  # Install
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
   rule_install = drake.Rule('install')
   prefix = drake.Path(prefix)
   if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
