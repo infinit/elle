@@ -79,6 +79,8 @@ namespace reactor
       socket.async_read_some(boost::asio::null_buffers(),
         [&](boost::system::error_code const&, std::size_t)
         {
+          if (!_fuse)
+            return;
           _socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
