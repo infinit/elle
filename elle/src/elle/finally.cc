@@ -7,17 +7,17 @@ namespace elle
 {
   ELLE_LOG_COMPONENT("elle.Finally");
 
-  SafeFinally::SafeFinally():
-    _action([] {})
+  SafeFinally::SafeFinally()
+    : _action([] {})
   {}
 
-  SafeFinally::SafeFinally(std::function<void()> const& action):
-    _action(action)
+  SafeFinally::SafeFinally(Action const& action)
+    : _action(action)
   {}
 
   SafeFinally::~SafeFinally()
   {
-    if (!this->_action)
+    if (this->aborted())
       return;
     try
     {
@@ -34,7 +34,13 @@ namespace elle
   SafeFinally::abort()
   {
     ELLE_TRACE("%s: abort", *this);
-    this->_action = std::function<void()>();
+    this->_action = Action();
+  }
+
+  bool
+  SafeFinally::aborted() const
+  {
+    return !this->_action;
   }
 
   Finally::Finally():

@@ -61,11 +61,25 @@ test_abort()
   BOOST_CHECK(TestObject::i == 0);
 }
 
+static
+void
+test_aborted()
+{
+  bool beacon = true;
+  {
+    elle::SafeFinally finally([&] { beacon = false; });
+    BOOST_CHECK_EQUAL(finally.aborted(), false);
+    finally.abort();
+    BOOST_CHECK_EQUAL(finally.aborted(), true);
+  }
+  BOOST_CHECK(beacon);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(test_lambda));
   suite.add(BOOST_TEST_CASE(test_delete));
   suite.add(BOOST_TEST_CASE(test_abort));
+  suite.add(BOOST_TEST_CASE(test_aborted));
 }
-

@@ -13,12 +13,13 @@ namespace elle
 {
   class SafeFinally
   {
+    typedef std::function<void()> Action;
   /*-------------.
   | Construction |
   `-------------*/
   public:
     SafeFinally();
-    SafeFinally(std::function<void()> const& action);
+    SafeFinally(Action const& action);
     ~SafeFinally();
     SafeFinally(SafeFinally&& f) = delete;
     SafeFinally(SafeFinally const& f) = delete;
@@ -30,11 +31,13 @@ namespace elle
     void
     abort();
 
+    bool
+    aborted() const;
   /*-----------.
   | Attributes |
   `-----------*/
   private:
-    ELLE_ATTRIBUTE_RW(std::function<void()>, action);
+    ELLE_ATTRIBUTE_RW(Action, action);
   };
 
   /// Provide a way for a final action to be performed i.e when leaving the
