@@ -665,7 +665,7 @@ namespace dropbox
     reactor::http::Request::QueryDict query;
     ELLE_ASSERT(!cursor.empty());
     query["cursor"] = cursor;
-    auto r = this->_request("https://api.dropbox.com/1/longpoll_delta",
+    auto r = this->_request("https://api-notify.dropbox.com/1/longpoll_delta",
                             reactor::http::Method::GET,
                             std::move(query));
     r.finalize();
