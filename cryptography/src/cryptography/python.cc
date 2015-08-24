@@ -3,8 +3,10 @@
 
 #include <elle/serialization/json.hh>
 
-#include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/hash.hh>
+#include <cryptography/rsa/KeyPair.hh>
+#include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/rsa/PublicKey.hh>
 
 using namespace boost::python;
 namespace crypto = infinit::cryptography;
@@ -72,12 +74,23 @@ hash(elle::ConstWeakBuffer input)
 
 BOOST_PYTHON_MODULE(cryptography)
 {
-  class_<PublicKey>("PublicKey", init<std::string>())
+  class_<crypto::rsa::PublicKey>("PublicKey", no_init)
+    ;
+  class_<crypto::rsa::PrivateKey>("PrivateKey", no_init)
+    ;
+  class_<crypto::rsa::KeyPair>("KeyPair", no_init)
+    .add_property(
+      "public_key",
+      make_function(&crypto::rsa::KeyPair::K, return_internal_reference<1>()))
+    .add_property(
+      "private_key",
+      make_function(&crypto::rsa::KeyPair::k, return_internal_reference<1>()))
     ;
 
+  def("der_decode", &crypto::rsa::publickey::der::decode);
+  def("der_encode", &crypto::rsa::publickey::der::encode);
+  def("generate", &crypto::rsa::keypair::generate);
   def("hash", &hash);
-
-  elle::Buffer empty;
 
   boost::python::to_python_converter<
     elle::Buffer,
