@@ -3,15 +3,11 @@
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 
-//
-// ---------- Class -----------------------------------------------------------
-//
-
 #  include <cryptography/_legacy/Plain.hh>
-#  include <cryptography/_legacy/serialization.hh>
-#  include <cryptography/hash.hh>
 #  include <cryptography/_legacy/envelope.hh>
+#  include <cryptography/_legacy/serialization.hh>
 #  include <cryptography/context.hh>
+#  include <cryptography/hash.hh>
 
 #  include <elle/Buffer.hh>
 #  include <elle/log.hh>
@@ -90,8 +86,6 @@ namespace infinit
 #  include <cryptography/rsa/der.hh>
 #  include <cryptography/rsa/Padding.hh>
 #  include <cryptography/_legacy/rsa.hh>
-
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
 
 ELLE_SERIALIZE_SPLIT(infinit::cryptography::rsa::PublicKey);
 
@@ -241,7 +235,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
       }
 
       // Construct and prepare the final object.
-      value._construct(rsa);
+      value._key = infinit::cryptography::rsa::_details::build_evp(rsa);
 
       INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 

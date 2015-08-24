@@ -24,9 +24,7 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <openssl/evp.h>
 
-//
-// ---------- Class -----------------------------------------------------------
-//
+ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
 
 namespace infinit
 {
@@ -42,9 +40,9 @@ namespace infinit
         , public elle::concept::MakeUniquable<PublicKey>
 # endif
       {
-        /*-------------.
-        | Construction |
-        `-------------*/
+      /*-------------.
+      | Construction |
+      `-------------*/
       public:
         /// Construct a public key out of its private counterpart.
         explicit
@@ -64,6 +62,9 @@ namespace infinit
                     defaults::envelope_cipher
                   , Mode const envelope_mode =
                     defaults::envelope_mode
+                  , elle::Natural16 legacy_format =
+                    elle::serialize::StaticFormat<PublicKey>::version
+                  , elle::Natural16 dynamic_format = 0
 # endif
                  );
         /// Construct a public key based on the given RSA key whose
@@ -92,10 +93,6 @@ namespace infinit
         | Methods |
         `--------*/
       private:
-        /// Construct the object based on the given RSA structure whose
-        /// ownership is transferred to the callee.
-        void
-        _construct(::RSA* rsa);
         /// Check that the key is valid.
         void
         _check() const;
@@ -217,6 +214,14 @@ namespace infinit
         ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
 # endif
       };
+
+      namespace _details
+      {
+        void
+        raise(std::string const& message);
+        types::EVP_PKEY
+        build_evp(::RSA* rsa);
+      }
     }
   }
 }

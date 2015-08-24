@@ -48,6 +48,31 @@ namespace infinit
   {
     namespace rsa
     {
+      namespace _details
+      {
+        void
+        raise(std::string const& message)
+        {
+          throw Error(
+            elle::sprintf(
+              "%s: %s",
+              message, ::ERR_error_string(ERR_get_error(), nullptr)));
+        }
+
+        types::EVP_PKEY
+        build_evp(::RSA* rsa)
+        {
+          cryptography::require();
+          ELLE_ASSERT(rsa);
+          types::EVP_PKEY key(EVP_PKEY_new());
+          if (!key)
+            raise("unable to allocate the EVP_PKEY structure");
+          if (::EVP_PKEY_assign_RSA(key.get(), rsa) <= 0)
+            raise("unable to assign the RSA key to the EVP_PKEY structure");
+          return key;
+        }
+      }
+
       namespace publickey
       {
         /*--------------.
@@ -78,235 +103,121 @@ namespace infinit
       `-------------*/
 
       PublicKey::PublicKey(PrivateKey const& k)
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        // Set the key parameters.
-        this->_encryption_padding = k.encryption_padding();
-        this->_signature_padding = k.signature_padding();
-        this->_oneway = k.oneway();
-        this->_envelope_cipher = k.envelope_cipher();
-        this->_envelope_mode = k.envelope_mode();
+        : PublicKey(
+          _details::build_evp(
+            low::RSA_priv2pub(k.key().get()->pkey.rsa)).release(),
+          k.encryption_padding(),
+          k.signature_padding(),
+          k.oneway(),
+          k.envelope_cipher(),
+          k.envelope_mode())
+#else
+        : PublicKey(
+          _details::build_evp(
+            low::RSA_priv2pub(k.key().get()->pkey.rsa)).release())
 #endif
-
-        // Extract the public key only.
-        RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
-
-        ELLE_ASSERT_NEQ(_rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(_rsa->e, nullptr);
-        ELLE_ASSERT_EQ(_rsa->d, nullptr);
-        ELLE_ASSERT_EQ(_rsa->p, nullptr);
-        ELLE_ASSERT_EQ(_rsa->q, nullptr);
-        ELLE_ASSERT_EQ(_rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(_rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(_rsa->iqmp, nullptr);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
-
-        // Construct the public key based on the given RSA structure whose
-        // ownership is retained.
-        this->_construct(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
-
-        this->_check();
+      {}
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        // Set the current object's version to 0 as it was in the legacy
-        // version with the parent class PublicKey. In addition, keep the
-        // subclass (rsa::PublicKey) format as the latest possible value
-        // i.e StaticFormat<PublicKey>.
-        auto _this_dynamic_format =
-          static_cast<
-            elle::serialize::DynamicFormat<
-              infinit::cryptography::rsa::PublicKey>*>(this);
-        _this_dynamic_format->version(0);
-
-        this->_legacy_format =
-          elle::serialize::StaticFormat<PublicKey>::version;
-#endif
-      }
-
-      PublicKey::PublicKey(::EVP_PKEY* key
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                           , Padding const encryption_padding
-                           , Padding const signature_padding
-                           , Oneway const oneway
-                           , Cipher const envelope_cipher
-                           , Mode const envelope_mode
-#endif
-                          ):
-        _key(key)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      PublicKey::PublicKey(::EVP_PKEY* key,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const oneway,
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode,
+                           elle::Natural16 legacy_format,
+                           elle::Natural16 dynamic_format)
+        : _key(key)
         , _encryption_padding(encryption_padding)
         , _signature_padding(signature_padding)
         , _oneway(oneway)
         , _envelope_cipher(envelope_cipher)
         , _envelope_mode(envelope_mode)
+        , _legacy_format(legacy_format)
+#else
+      PublicKey::PublicKey(::EVP_PKEY* key)
+        : _key(key)
 #endif
       {
-        ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(key->pkey.rsa->iqmp, nullptr);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
         if (::EVP_PKEY_type(this->_key->type) != EVP_PKEY_RSA)
           throw Error(
             elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
-
-        this->_check();
-
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         auto _this_dynamic_format =
           static_cast<
             elle::serialize::DynamicFormat<
               infinit::cryptography::rsa::PublicKey>*>(this);
-        _this_dynamic_format->version(0);
-
-        this->_legacy_format =
-          elle::serialize::StaticFormat<PublicKey>::version;
+        _this_dynamic_format->version(dynamic_format);
 #endif
+        this->_check();
       }
 
-      PublicKey::PublicKey(::RSA* rsa
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                           , Padding const encryption_padding
-                           , Padding const signature_padding
-                           , Oneway const oneway
-                           , Cipher const envelope_cipher
-                           , Mode const envelope_mode):
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _oneway(oneway),
-        _envelope_cipher(envelope_cipher),
-        _envelope_mode(envelope_mode)
+      PublicKey::PublicKey(::RSA* rsa,
+                           Padding const encryption_padding,
+                           Padding const signature_padding,
+                           Oneway const oneway,
+                           Cipher const envelope_cipher,
+                           Mode const envelope_mode)
+        : PublicKey(_details::build_evp(rsa).release(),
+                    encryption_padding,
+                    signature_padding,
+                    oneway,
+                    envelope_cipher,
+                    envelope_mode)
 #else
-                           )
+      PublicKey::PublicKey(::RSA* rsa)
+        : PublicKey(_details::build_evp(rsa).release())
 #endif
-      {
-        ELLE_ASSERT_NEQ(rsa, nullptr);
-        ELLE_ASSERT_NEQ(rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(rsa->e, nullptr);
-        ELLE_ASSERT_EQ(rsa->d, nullptr);
-        ELLE_ASSERT_EQ(rsa->p, nullptr);
-        ELLE_ASSERT_EQ(rsa->q, nullptr);
-        ELLE_ASSERT_EQ(rsa->dmp1, nullptr);
-        ELLE_ASSERT_EQ(rsa->dmq1, nullptr);
-        ELLE_ASSERT_EQ(rsa->iqmp, nullptr);
-
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Construct the public key based on the given RSA structure.
-        this->_construct(rsa);
-
-        this->_check();
+      {}
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _this_dynamic_format =
-          static_cast<
-            elle::serialize::DynamicFormat<
-              infinit::cryptography::rsa::PublicKey>*>(this);
-        _this_dynamic_format->version(0);
-
-        this->_legacy_format =
-          elle::serialize::StaticFormat<PublicKey>::version;
-#endif
-      }
-
       PublicKey::PublicKey(PublicKey const& other)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        : elle::serialize::DynamicFormat<PublicKey>(other)
-        , _encryption_padding(other._encryption_padding)
-        , _signature_padding(other._signature_padding)
-        , _oneway(other._oneway)
-        , _envelope_cipher(other._envelope_cipher)
-        , _envelope_mode(other._envelope_mode)
-        , _legacy_format(other._legacy_format)
+        : PublicKey(_details::build_evp(
+                      low::RSA_dup(other._key->pkey.rsa)).release(),
+                    other._encryption_padding,
+                    other._signature_padding,
+                    other._oneway,
+                    other._envelope_cipher,
+                    other._envelope_mode,
+                    other._legacy_format,
+                    static_cast< elle::serialize::DynamicFormat<
+                      infinit::cryptography::rsa::PublicKey> const&>
+                      (other).version())
+#else
+      PublicKey::PublicKey(PublicKey const& other)
+        : PublicKey(low::RSA_dup(other._key->pkey.rsa))
 #endif
-      {
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
+      {}
 
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Duplicate the RSA structure.
-        RSA* _rsa = low::RSA_dup(other._key->pkey.rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
-
-        this->_construct(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
-
-        this->_check();
-      }
-
-      PublicKey::PublicKey(PublicKey&& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<PublicKey>(other),
+      PublicKey::PublicKey(PublicKey&& other)
+        : PublicKey(other._key.release(),
+                    other._encryption_padding,
+                    other._signature_padding,
+                    other._oneway,
+                    other._envelope_cipher,
+                    other._envelope_mode,
+                    other._legacy_format,
+                    static_cast< elle::serialize::DynamicFormat<
+                      infinit::cryptography::rsa::PublicKey>&>(other).version())
+#else
+      PublicKey::PublicKey(PublicKey&& other)
+        : PublicKey(other._key.release())
 #endif
-        _key(std::move(other._key))
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , _encryption_padding(std::move(other._encryption_padding))
-        , _signature_padding(std::move(other._signature_padding))
-        , _oneway(std::move(other._oneway))
-        , _envelope_cipher(std::move(other._envelope_cipher))
-        , _envelope_mode(std::move(other._envelope_mode))
-        , _legacy_format(std::move(other._legacy_format))
-#endif
-      {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        this->_check();
-      }
+      {}
 
       /*--------.
       | Methods |
       `--------*/
 
       void
-      PublicKey::_construct(::RSA* rsa)
-      {
-        ELLE_DEBUG_FUNCTION(rsa);
-
-        ELLE_ASSERT_NEQ(rsa, nullptr);
-
-        // Initialise the public key structure.
-        ELLE_ASSERT_EQ(this->_key, nullptr);
-        this->_key.reset(::EVP_PKEY_new());
-
-        if (this->_key == nullptr)
-          throw Error(
-            elle::sprintf("unable to allocate the EVP_PKEY structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        // Set the rsa structure into the public key.
-        if (::EVP_PKEY_assign_RSA(this->_key.get(), rsa) <= 0)
-          throw Error(
-            elle::sprintf("unable to assign the RSA key to the EVP_PKEY "
-                          "structure: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      void
       PublicKey::_check() const
       {
-        ELLE_DEBUG_FUNCTION("");
-
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
@@ -443,41 +354,26 @@ namespace infinit
       | Rotation |
       `---------*/
 
-      PublicKey::PublicKey(Seed const& seed)
+      RSA*
+      rsa_from_seed(Seed const& seed)
       {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Deduce the RSA key from the given seed.
+        // Deduce the RSA key from the given seed
         ::RSA* rsa = nullptr;
-
         if ((rsa = ::dRSA_deduce_privatekey(
                seed.length(),
                static_cast<unsigned char const*>(seed.buffer().contents()),
                seed.buffer().size())) == nullptr)
-          throw Error(
-            elle::sprintf("unable to deduce the RSA key from the given "
-                          "seed: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
+          raise("unable to deduce the RSA key from the given seed");
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Extract the public key only.
-        RSA* _rsa = low::RSA_priv2pub(rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+        // Extract the public key
+        RSA* pub = low::RSA_priv2pub(rsa);
         ::RSA_free(rsa);
-
-        // Construct the public key based on the given RSA structure whose
-        // ownership is retained.
-        this->_construct(_rsa);
-
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
-
-        this->_check();
+        return pub;
       }
+
+      PublicKey::PublicKey(Seed const& seed)
+        : PublicKey(build_evp(rsa_from_seed(seed)))
+      {}
 
       Seed
       PublicKey::unrotate(Seed const& seed) const
