@@ -420,7 +420,6 @@ namespace dropbox
   Dropbox::account_info()
   {
     auto r = this->_request("https://api.dropbox.com/1/account/info");
-    r.finalize();
     this->_check_status("getting account info", r);
     {
       // FIXME: deserialize json with helper everywhere
@@ -456,8 +455,9 @@ namespace dropbox
     static boost::format url_fmt("https://api.dropbox.com/1/metadata/auto%s");
     this->_check_path(path);
     auto r = this->_request(
-      str(boost::format(url_fmt) % this->escape_path(path)));
-    r.finalize();
+      str(boost::format(url_fmt) % this->escape_path(path)),
+      reactor::http::Method::GET,
+      {}, {}, {}, "metadata", {reactor::http::StatusCode::Not_Found});
     if (r.status() == reactor::http::StatusCode::OK)
     {
       // FIXME: deserialize json with helper everywhere
@@ -517,8 +517,11 @@ namespace dropbox
       str(boost::format(url_fmt) % this->escape_path(path)),
       reactor::http::Method::GET,
       reactor::http::Request::QueryDict(),
-      std::move(conf));
-    r.finalize();
+      std::move(conf),
+      {}, "get",
+      {reactor::http::StatusCode::Partial_Content,
+        reactor::http::StatusCode::Not_Found});
+
     if (r.status() == reactor::http::StatusCode::OK ||
         r.status() == reactor::http::StatusCode::Partial_Content)
     {
@@ -559,10 +562,9 @@ namespace dropbox
     auto r = this->_request(
       str(boost::format(url_fmt) % this->escape_path(path)),
       reactor::http::Method::PUT,
-      std::move(query));
-    r.write(reinterpret_cast<const char*>(content.contents()),
-            content.size());
-    r.finalize();
+      std::move(query), {}, content, "write",
+      {reactor::http::StatusCode::Conflict});
+
     if (r.status() == reactor::http::StatusCode::OK)
     {
       elle::serialization::json::SerializerIn s(r, false);
@@ -598,7 +600,7 @@ namespace dropbox
   void
   Dropbox::delete_(boost::filesystem::path const& path)
   {
-    auto r = this->_fileop(path, "delete");
+    auto r = this->_fileop(path, "delete", {reactor::http::StatusCode::Not_Found});
     if (r.status() == reactor::http::StatusCode::Not_Found)
     {
       ELLE_TRACE("%s: file not found", *this);
@@ -620,7 +622,9 @@ namespace dropbox
     ELLE_TRACE_SCOPE("%s: move %s to %s", *this, from, to);
     reactor::http::Request::QueryDict query;
     query["to_path"] = to.string();
-    auto r = this->_fileop(from, "move", "from_path", std::move(query));
+    auto r = this->_fileop(from, "move",
+                           { reactor::http::StatusCode::Forbidden},
+                           "from_path", std::move(query));
     if (r.status() == reactor::http::StatusCode::Forbidden)
       throw DestinationExists(to);
     this->_check_status("move", r);
@@ -643,8 +647,8 @@ namespace dropbox
       query["cursor"] = cursor;
     auto r = this->_request("https://api.dropbox.com/1/delta",
                             reactor::http::Method::POST,
-                            std::move(query));
-    r.finalize();
+                            std::move(query),
+                            {}, {}, "delta");
     this->_check_status("fetching delta", r);
     {
       elle::serialization::json::SerializerIn s(r, false);
@@ -656,8 +660,8 @@ namespace dropbox
   Dropbox::delta_latest_cursor()
   {
     auto r = this->_request("https://api.dropbox.com/1/delta/latest_cursor",
-                            reactor::http::Method::POST);
-    r.finalize();
+                            reactor::http::Method::POST,
+                            {}, {}, {}, "delta_latest_cursor");
     this->_check_status("fetching latest cursor", r);
     {
       elle::serialization::json::SerializerIn s(r, false);
@@ -673,8 +677,8 @@ namespace dropbox
     query["cursor"] = cursor;
     auto r = this->_request("https://api-notify.dropbox.com/1/longpoll_delta",
                             reactor::http::Method::GET,
-                            std::move(query));
-    r.finalize();
+                            std::move(query),
+                            {}, {}, "longpoll_delta");
     this->_check_status("longpolling delta", r);
     {
       elle::serialization::json::SerializerIn s(r, false);
@@ -682,25 +686,56 @@ namespace dropbox
     }
   }
 
+  static
+  reactor::Duration
+  delay(int attempt)
+  {
+    if (attempt > 8)
+      attempt = 8;
+    unsigned int factor = pow(2, attempt);
+    return boost::posix_time::milliseconds(factor * 100);
+  }
+
   reactor::http::Request
   Dropbox::_request(std::string url,
                     reactor::http::Method method,
                     reactor::http::Request::QueryDict query,
-                    reactor::http::Request::Configuration conf) const
+                    reactor::http::Request::Configuration conf,
+                    elle::ConstWeakBuffer const& payload,
+                    std::string const& op,
+                    std::vector<reactor::http::StatusCode> expected_codes) const
   {
+    expected_codes.push_back(reactor::http::StatusCode::OK);
     conf.timeout(reactor::DurationOpt()); // Disable timeout
-    reactor::http::Request request(url, method, std::move(conf));
-    ELLE_TRACE_SCOPE("%s: request: %s", *this, request);
-    for (auto const& entry: query)
-      ELLE_DUMP("%s: %s = \"%s\"", *this, entry.first, entry.second);
-    query["access_token"] = this->_token;
-    request.query_string(query);
-    return request;
+    int attempt = 0;
+    while (true)
+    {
+      reactor::http::Request r(url, method, conf);
+      ELLE_TRACE_SCOPE("%s: request: %s", *this, r);
+      for (auto const& entry: query)
+        ELLE_DUMP("%s: %s = \"%s\"", *this, entry.first, entry.second);
+      query["access_token"] = this->_token;
+      r.query_string(query);
+      if (payload.size())
+        r.write(reinterpret_cast<const char*>(payload.contents()),
+                payload.size());
+      r.finalize();
+      if (std::find(expected_codes.begin(), expected_codes.end(), r.status())
+        != expected_codes.end())
+      {
+        return r;
+      }
+      ELLE_WARN("Unexpected dropbox HTTP status on %s: %s, attempt %s",
+                 op, r.status(), attempt+1);
+      ++attempt;
+      reactor::sleep(delay(attempt));
+    }
   }
 
   reactor::http::Request
   Dropbox::_fileop(boost::filesystem::path const& path,
                    std::string const& op,
+                   std::vector<reactor::http::StatusCode> expected_codes,
                    std::string const& path_arg,
                    reactor::http::Request::QueryDict query)
   {
@@ -710,7 +745,8 @@ namespace dropbox
     query[path_arg] = path.string();
     auto r =
       this->_request(str(boost::format(url_fmt) % op),
-                     reactor::http::Method::POST, std::move(query));
+                     reactor::http::Method::POST, std::move(query),
+                     {}, {}, op, expected_codes);
     return r;
   }
 

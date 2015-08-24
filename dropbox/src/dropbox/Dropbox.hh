@@ -130,11 +130,17 @@ namespace dropbox
              reactor::http::Request::QueryDict query =
                reactor::http::Request::QueryDict(),
              reactor::http::Request::Configuration =
-               reactor::http::Request::Configuration()) const;
+               reactor::http::Request::Configuration(),
+             elle::ConstWeakBuffer const& payload = {},
+             std::string const& op = "",
+             std::vector<reactor::http::StatusCode> expected_codes =
+               {} /* OK is automaticalyl added*/
+             ) const;
 
     reactor::http::Request
     _fileop(boost::filesystem::path const& path,
             std::string const& op,
+            std::vector<reactor::http::StatusCode> expected_codes = {},
             std::string const& path_arg = "path",
             reactor::http::Request::QueryDict query =
             reactor::http::Request::QueryDict());
