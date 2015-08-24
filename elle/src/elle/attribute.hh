@@ -191,6 +191,10 @@ namespace elle
   ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)
 
+# define ELLE_ATTRIBUTE_rP(_type_, _name_, _property_)                  \
+  ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
+  ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)
+
 # define ELLE_ATTRIBUTE_WP(_type_, _name_, _property_)                  \
   ELLE_ATTRIBUTE(_property_ _type_, _name_)                             \
   ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)
