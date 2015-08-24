@@ -1173,6 +1173,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     prefix = prefix,
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,
+    python = python3,
   )
   das = drake.include(
     'das',
