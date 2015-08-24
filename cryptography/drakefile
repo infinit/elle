@@ -28,6 +28,7 @@ def configure(openssl_config,
               python = None,
               valgrind = None,
               valgrind_tests = False,
+              build_python_module = True,
 ):
 
   global config
@@ -275,7 +276,7 @@ def configure(openssl_config,
   ## Python ##
   ## ------ ##
 
-  if python is not None:
+  if python is not None and build_python_module:
     cxx_config_python = drake.cxx.Config(cxx_config)
     cxx_config_python.lib_path_runtime('..')
     cxx_config_python += boost_python
@@ -381,14 +382,15 @@ def configure(openssl_config,
       runner = drake.Runner(exe = bin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
-  python_test = drake.node('tests/python')
-  python_test.dependency_add(python_module)
-  python_runner = drake.Runner(
-    exe = python_test,
-    env = {'PYTHONPATH': str(drake.path_build('lib/python'))},
-  )
-  python_runner.reporting = drake.Runner.Reporting.on_failure
-  rule_check << python_runner.status
+  if python is not None and build_python_module:
+    python_test = drake.node('tests/python')
+    python_test.dependency_add(python_module)
+    python_runner = drake.Runner(
+      exe = python_test,
+      env = {'PYTHONPATH': str(drake.path_build('lib/python'))},
+    )
+    python_runner.reporting = drake.Runner.Reporting.on_failure
+    rule_check << python_runner.status
 
   ## ------- ##
   ## Install ##
