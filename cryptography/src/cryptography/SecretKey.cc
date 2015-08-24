@@ -21,28 +21,38 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    SecretKey::SecretKey(elle::String const& password,
-                         Cipher const cipher,
-                         Mode const mode,
-                         Oneway const oneway):
+    SecretKey::SecretKey(elle::String const& password
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                         , Cipher const cipher
+                         , Mode const mode
+                         , Oneway const oneway
+#endif
+                        ):
       _password(reinterpret_cast<elle::Byte const*>(password.c_str()),
-                password.length()),
-      _cipher(cipher),
-      _mode(mode),
-      _oneway(oneway)
+                password.length())
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      , _cipher(cipher)
+      , _mode(mode)
+      , _oneway(oneway)
+#endif
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(elle::Buffer&& password,
-                         Cipher const cipher,
-                         Mode const mode,
-                         Oneway const oneway):
-      _password(std::move(password)),
-      _cipher(cipher),
-      _mode(mode),
-      _oneway(oneway)
+    SecretKey::SecretKey(elle::Buffer&& password
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                         , Cipher const cipher
+                         , Mode const mode
+                         , Oneway const oneway
+#endif
+                        ):
+      _password(std::move(password))
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      , _cipher(cipher)
+      , _mode(mode)
+      , _oneway(oneway)
+#endif
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -52,10 +62,12 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::serialize::DynamicFormat<SecretKey>(other),
 #endif
-      _password(other._password.contents(), other._password.size()),
-      _cipher(other._cipher),
-      _mode(other._mode),
-      _oneway(other._oneway)
+      _password(other._password.contents(), other._password.size())
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      , _cipher(other._cipher)
+      , _mode(other._mode)
+      , _oneway(other._oneway)
+#endif
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -63,12 +75,14 @@ namespace infinit
 
     SecretKey::SecretKey(SecretKey&& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<SecretKey>(other),
+      elle::serialize::DynamicFormat<SecretKey>(other),
 #endif
-      _password(std::move(other._password)),
-      _cipher(other._cipher),
-      _mode(other._mode),
-      _oneway(other._oneway)
+      _password(std::move(other._password))
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      , _cipher(other._cipher)
+      , _mode(other._mode)
+      , _oneway(other._oneway)
+#endif
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -80,15 +94,19 @@ namespace infinit
 
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     elle::Buffer
-    SecretKey::encipher(elle::ConstWeakBuffer const& plain) const
+    SecretKey::encipher(elle::ConstWeakBuffer const& plain,
+                        Cipher const cipher,
+                        Mode const mode,
+                        Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD("");
+      ELLE_TRACE_METHOD(cipher, mode, oneway);
       ELLE_DUMP("plain: %x", plain);
 
       elle::IOStream _plain(plain.istreambuf());
       std::stringstream _code;
 
-      this->encipher(_plain, _code);
+      this->encipher(_plain, _code,
+                     cipher, mode, oneway);
 
       elle::Buffer code(_code.str().data(), _code.str().length());
 
@@ -96,15 +114,19 @@ namespace infinit
     }
 
     elle::Buffer
-    SecretKey::decipher(elle::ConstWeakBuffer const& code) const
+    SecretKey::decipher(elle::ConstWeakBuffer const& code,
+                        Cipher const cipher,
+                        Mode const mode,
+                        Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD("");
+      ELLE_TRACE_METHOD(cipher, mode, oneway);
       ELLE_DUMP("code: %x", code);
 
       elle::IOStream _code(code.istreambuf());
       std::stringstream _plain;
 
-      this->decipher(_code, _plain);
+      this->decipher(_code, _plain,
+                     cipher, mode, oneway);
 
       elle::Buffer plain(_plain.str().data(), _plain.str().length());
 
@@ -114,14 +136,15 @@ namespace infinit
 
     void
     SecretKey::encipher(std::istream& plain,
-                        std::ostream& code) const
+                        std::ostream& code,
+                        Cipher const cipher,
+                        Mode const mode,
+                        Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD("");
+      ELLE_TRACE_METHOD(cipher, mode, oneway);
 
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
+      ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
+      ::EVP_MD const* function_oneway = oneway::resolve(oneway);
 
       raw::symmetric::encipher(this->_password,
                                function_cipher,
@@ -132,14 +155,15 @@ namespace infinit
 
     void
     SecretKey::decipher(std::istream& code,
-                        std::ostream& plain) const
+                        std::ostream& plain,
+                        Cipher const cipher,
+                        Mode const mode,
+                        Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD("");
+      ELLE_TRACE_METHOD(cipher, mode, oneway);
 
-      ::EVP_CIPHER const* function_cipher =
-          cipher::resolve(this->_cipher, this->_mode);
-      ::EVP_MD const* function_oneway =
-          oneway::resolve(this->_oneway);
+      ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
+      ::EVP_MD const* function_oneway = oneway::resolve(oneway);
 
       raw::symmetric::decipher(this->_password,
                                function_cipher,
@@ -167,14 +191,7 @@ namespace infinit
     elle::Boolean
     SecretKey::operator ==(SecretKey const& other) const
     {
-      if (this == &other)
-        return (true);
-
-      // Compare the internal buffer along with the oneways.
-      return ((this->_password == other._password) &&
-              (this->_cipher == other._cipher) &&
-              (this->_mode == other._mode) &&
-              (this->_oneway == other._oneway));
+      return (this->_password == other._password);
     }
 
     /*----------.
@@ -184,10 +201,9 @@ namespace infinit
     void
     SecretKey::print(std::ostream& stream) const
     {
-      elle::fprintf(stream, "%x(%s)[%s, %s, %s]",
+      elle::fprintf(stream, "%x[%s]",
                     this->_password,
-                    this->_password.size(),
-                    this->_cipher, this->_mode, this->_oneway);
+                    this->_password.size());
     }
 
     /*--------------.
@@ -203,9 +219,6 @@ namespace infinit
     SecretKey::serialize(elle::serialization::Serializer& serializer)
     {
       serializer.serialize("password", this->_password);
-      serializer.serialize("cipher", this->_cipher);
-      serializer.serialize("mode", this->_mode);
-      serializer.serialize("oneway", this->_oneway);
     }
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
@@ -257,12 +270,15 @@ namespace infinit
       `----------*/
 
       SecretKey
-      generate(elle::Natural32 const length,
-               Cipher const cipher,
-               Mode const mode,
-               Oneway const oneway)
+      generate(elle::Natural32 const length
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                         , Cipher const cipher
+                         , Mode const mode
+                         , Oneway const oneway
+#endif
+              )
       {
-        ELLE_TRACE_FUNCTION(length, cipher, mode, oneway);
+        ELLE_TRACE_FUNCTION(length);
 
         // Convert the length in a bit-specific size.
         elle::Natural32 size = length / 8;
@@ -271,7 +287,11 @@ namespace infinit
         elle::Buffer password(random::generate<elle::Buffer>(size));
 
         // Return a new secret key.
-        return (SecretKey(std::move(password), cipher, mode, oneway));
+        return (SecretKey(std::move(password)
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                          , cipher, mode, oneway
+#endif
+               ));
       }
     }
   }

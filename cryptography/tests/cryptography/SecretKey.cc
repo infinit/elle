@@ -22,7 +22,7 @@ void
 test_represent_n()
 {
   infinit::cryptography::SecretKey key =
-    infinit::cryptography::secretkey::generate(L, C, M, O);
+    infinit::cryptography::secretkey::generate(L);
 
   // N.1)
   {
@@ -37,7 +37,7 @@ test_represent_n()
 
   // N.2)
   {
-    elle::Buffer code = key.encipher(_message);
+    elle::Buffer code = key.encipher(_message, C, M, O);
 
     std::stringstream stream;
     {
@@ -131,15 +131,12 @@ test_represent()
 | Generate |
 `---------*/
 
-template <elle::Natural32 L,
-          infinit::cryptography::Cipher C,
-          infinit::cryptography::Mode M,
-          infinit::cryptography::Oneway O>
+template <elle::Natural32 L>
 infinit::cryptography::SecretKey
 test_generate_x()
 {
   infinit::cryptography::SecretKey key =
-    infinit::cryptography::secretkey::generate(L, C, M, O);
+    infinit::cryptography::secretkey::generate(L);
 
   return (key);
 }
@@ -149,60 +146,27 @@ void
 test_generate()
 {
   // DES.
-  test_generate_x<251,
-                  infinit::cryptography::Cipher::des,
-                  infinit::cryptography::Mode::cbc,
-                  infinit::cryptography::Oneway::sha>();
+  test_generate_x<251>();
   // 2 DES.
-  test_generate_x<120,
-                  infinit::cryptography::Cipher::des2,
-                  infinit::cryptography::Mode::ofb,
-                  infinit::cryptography::Oneway::sha224>();
+  test_generate_x<120>();
   // Triple DES.
-  test_generate_x<12,
-                  infinit::cryptography::Cipher::des3,
-                  infinit::cryptography::Mode::ecb,
-                  infinit::cryptography::Oneway::md5>();
+  test_generate_x<12>();
   // DES X.
-  test_generate_x<1281,
-                  infinit::cryptography::Cipher::desx,
-                  infinit::cryptography::Mode::cfb,
-                  infinit::cryptography::Oneway::sha1>();
+  test_generate_x<1281>();
   // IDEA.
-  test_generate_x<319,
-                  infinit::cryptography::Cipher::idea,
-                  infinit::cryptography::Mode::ofb,
-                  infinit::cryptography::Oneway::sha256>();
+  test_generate_x<319>();
   // RC2.
-  test_generate_x<3016,
-                  infinit::cryptography::Cipher::rc2,
-                  infinit::cryptography::Mode::cbc,
-                  infinit::cryptography::Oneway::sha>();
+  test_generate_x<3016>();
   // Blowfish.
-  test_generate_x<812,
-                  infinit::cryptography::Cipher::blowfish,
-                  infinit::cryptography::Mode::ecb,
-                  infinit::cryptography::Oneway::md5>();
+  test_generate_x<812>();
   // CAST5.
-  test_generate_x<317,
-                  infinit::cryptography::Cipher::cast5,
-                  infinit::cryptography::Mode::ofb,
-                  infinit::cryptography::Oneway::sha224>();
+  test_generate_x<317>();
   // AES128.
-  test_generate_x<918,
-                  infinit::cryptography::Cipher::aes128,
-                  infinit::cryptography::Mode::cfb,
-                  infinit::cryptography::Oneway::sha1>();
+  test_generate_x<918>();
   // AES192.
-  test_generate_x<124,
-                  infinit::cryptography::Cipher::aes192,
-                  infinit::cryptography::Mode::ecb,
-                  infinit::cryptography::Oneway::sha384>();
+  test_generate_x<124>();
   // AES256.
-  test_generate_x<1083,
-                  infinit::cryptography::Cipher::aes256,
-                  infinit::cryptography::Mode::cfb,
-                  infinit::cryptography::Oneway::sha1>();
+  test_generate_x<1083>();
 }
 
 /*----------.
@@ -213,33 +177,18 @@ static
 infinit::cryptography::SecretKey
 _test_construct_aes128()
 {
-  infinit::cryptography::SecretKey key1(
-    "chiche",
-    infinit::cryptography::Cipher::aes128,
-    infinit::cryptography::Mode::ofb,
-    infinit::cryptography::Oneway::md5);
+  infinit::cryptography::SecretKey key1("chiche");
 
-  infinit::cryptography::SecretKey key2(
-    "chiche",
-    infinit::cryptography::Cipher::aes128,
-    infinit::cryptography::Mode::ecb,
-    infinit::cryptography::Oneway::sha256);
+  infinit::cryptography::SecretKey key2("chechi");
 
   BOOST_CHECK_NE(key1, key2);
 
-  infinit::cryptography::SecretKey key3(
-    "chiche",
-    infinit::cryptography::Cipher::aes128,
-    infinit::cryptography::Mode::ecb,
-    infinit::cryptography::Oneway::sha256);
+  infinit::cryptography::SecretKey key3("chiche");
 
-  BOOST_CHECK_EQUAL(key2, key3);
+  BOOST_CHECK_EQUAL(key1, key3);
 
   infinit::cryptography::SecretKey key4 =
-    test_generate_x<128,
-                    infinit::cryptography::Cipher::aes128,
-                    infinit::cryptography::Mode::cbc,
-                    infinit::cryptography::Oneway::sha256>();
+    test_generate_x<128>();
 
   return (key4);
 }
@@ -271,15 +220,14 @@ void
 _test_operate_idea()
 {
   infinit::cryptography::SecretKey key =
-    test_generate_x<512,
-                    infinit::cryptography::Cipher::idea,
-                    infinit::cryptography::Mode::cbc,
-                    infinit::cryptography::Oneway::sha256>();
+    test_generate_x<512>();
 
   elle::String const input = "Chie du foutre!";
 
-  elle::Buffer code = key.encipher(input);
-  elle::Buffer plain = key.decipher(code);
+  elle::Buffer code = key.encipher(input,
+                                   infinit::cryptography::Cipher::idea);
+  elle::Buffer plain = key.decipher(code,
+                                    infinit::cryptography::Cipher::idea);
 
   elle::String const output(plain.string());
 
@@ -301,7 +249,10 @@ test_operate()
 static
 void
 test_serialize_x(elle::String const& R1,
-                 elle::String const& R2)
+                 elle::String const& R2,
+                 infinit::cryptography::Cipher const cipher,
+                 infinit::cryptography::Mode const mode,
+                 infinit::cryptography::Oneway const oneway)
 {
   std::stringstream stream1(R1);
   typename elle::serialization::json::SerializerIn input1(stream1);
@@ -312,7 +263,8 @@ test_serialize_x(elle::String const& R1,
   elle::Buffer code;
   input2.serialize("code", code);
 
-  elle::Buffer plain = key.decipher(code);
+  elle::Buffer plain = key.decipher(code,
+                                    cipher, mode, oneway);
 
   BOOST_CHECK_EQUAL(_message, plain.string());
 }
@@ -322,38 +274,71 @@ void
 test_serialize()
 {
   // DES based on [representation 1].
-  test_serialize_x(R"JSON({"cipher":1,"mode":4,"oneway":0,"password":"qExjMaMn9dtbg3qzQDvn"})JSON",
-                   R"JSON({"code":"U2FsdGVkX19BJmEt9cGFrHQEPoDofWmigVSJgUX0+izgvU6Ay6DFrJ9Sywcdu+yWIP3H3QFc"})JSON");
+  test_serialize_x(R"JSON({"password":"4qB6U0hb4UmdtnsQr13y"})JSON",
+                   R"JSON({"code":"U2FsdGVkX18V6o42EqPDOb1qiK/b9W387PK4o3R/gB9MpMQlAu4tQDKOWzrsCNBrhEDcYhk4"})JSON",
+                   infinit::cryptography::Cipher::des,
+                   infinit::cryptography::Mode::ofb,
+                   infinit::cryptography::Oneway::md5);
   // 2-DES based on [representation 2].
-  test_serialize_x(R"JSON({"cipher":2,"mode":2,"oneway":2,"password":"Ph+3"})JSON",
-                   R"JSON({"code":"U2FsdGVkX1/w0okCpBBhjauVH2800c8fLMuinffa0WbEfebJOZmrnXHSieIE4wU6xHgdj+B9xEs="})JSON");
+  test_serialize_x(R"JSON({"password":"FFtR"})JSON",
+                   R"JSON({"code":"U2FsdGVkX1/ROIWQ8DGP0oM0NgTvb7EOhnNeeiOtA/mxf4pagRj2FFmUVgOLErdMsVon7qcD1bs="})JSON",
+                   infinit::cryptography::Cipher::des2,
+                   infinit::cryptography::Mode::ecb,
+                   infinit::cryptography::Oneway::sha1);
   // Triple DES based on [representation 3].
-  test_serialize_x(R"JSON({"cipher":3,"mode":3,"oneway":5,"password":"7tJCWuLp5HbwZu54Kfv/fyBXT4Agxl0="})JSON",
-                   R"JSON({"code":"U2FsdGVkX1+A3z6bu04s3mvEoBmyK2ooTZVBTlgbEUGamVIY8NiABYznOd/t7lBfBiAywyve"})JSON");
+  test_serialize_x(R"JSON({"password":"q0k3yuZAGrIFnOELwsqzusnpzs+l3no="})JSON",
+                   R"JSON({"code":"U2FsdGVkX19ww/Mytu3drPqHTDC2fPhPTDkrJ7y8Emk6dEmVSwxI4LrKzWhaGIEC+gdQXc07"})JSON",
+                   infinit::cryptography::Cipher::des3,
+                   infinit::cryptography::Mode::cfb,
+                   infinit::cryptography::Oneway::sha384);
   // DES X based on [representation 4].
-  test_serialize_x(R"JSON({"cipher":4,"mode":1,"oneway":1,"password":"AefWhYcagQEHGLI/VB9xk4jjEBiOzXiqlvDcsjdIOsZaK+CuBN98EhHf5cSc0G1HNgQJlzck+w2cvSIPuMInlk5y6CMWIUQwVVDjCN/HUMhSVhc7h0y3TOOy+y/lFNRbPP+mWfV9slroea5doRNXkakBOjR1VpXZQMFh9cxwaISjnYbkRhmNu0qytWEJmuMQmn7FRBNF/LuGqBrExSMRmiJe3FYUp09RHIySQfmwxnr860/pd4L7RQpNgfZI7P8mpvcEhBKE2v13sPNY3iPOuVzFFRA6zikYUVIbcoXhO/bSOWlQF0eEEF8eCenQjWpgdyFV0jf49mELJ5YoK0JFiwfp5eqfLUREm1DWX3VdI1/9GSh+zbQev71olVdXRjvL5Y9qR61jccVWt6R5IXlyFJ03XCfqhljKCfbvK0y1XN1Ib4wtMv5sOZ4aXZyXojJE6q5TASyLtm2WiEpuZK1h2/a3Ca8gq+RjmVYoB84pIGQQKdgi3/4/sOwR34EoxES7lO8OKmdVxoxR44HYtMyxDNzaUOWcIYpyrG5T5rl8fmtuI5mclraAPzNask+VSn4BMks2iQoa6ruyhQrr5bRBX9OMbYLNfpIK4Us99Il2wBGT1fqOBMw/hKAHdprfSzYfaude7ASncHcapHuRnNYrWMh3+gvh1UyD18m0v6RoBw=="})JSON",
-                   R"JSON({"code":"U2FsdGVkX19mp53BhfFOUufvpDUYph59t27CnqCgATQ1SBoyqHNsLfI1ZOXID8JUkQ0+khEQ9Ys="})JSON");
+  test_serialize_x(R"JSON({"password":"NGU1k9R8VR3vQeJO9CbI0SytThq6a4Vvoz6qRvJ11p0MuXv9XRduY7tO9DcIJImfx8ZslNGdChqczObQ5HlkCPr96aOPY2h3/0Xas1MYy/DQUZSHI5C1p56bFlEXhY9BxCNC2w7nNkjA2T+wHlXMxzCQCt4aRlRVhMBgi16hpHGTUwS3luk7L8b0rSdNan1HYIsnrBRVXIfb1gAR7d1B+fE1IM+9PLRbl7hhJ8fhk+KpAu7qyfh/Hd5v+6h1vsVfLFwv5k+dPUvEz64/VxxNxAXtj0jPgUgVHJM+ZJfiSZ17nJ02vFc0wUpXROQ8TLEc7X3YVwST5uLfwxQtqlFXujDoXNIxO8UYOKDTsQvKzMhDypchUxwg5xX7/Migr3E2u0VG7aqlZ0HYPnuezE5wThryaIS8EBrXfhxG8axgrRq7PLe9otEA/8DlTsmaQ3VmwIEAJaT2G7UdXMp31yqLv0qr879iuKm/czutnzkQhdkMM/rb52JzCngUS8Qsx4rgJ1HY5eUE+9jZJt5SQDdpckxlA07J9BqPuE/XGMdlKiRzNiX5L2+WOvADPjYGsxCQIQ+WvY7Gbc0ez3qMOTKmHdFSbi7aSX+4BeLwxAGcX/31L2nw7L21VSEVW+81Kn7x+fGQkC44Ahj/3Y6hGkfQvKLUDEuuFABtxzRrs+kPpA=="})JSON",
+                   R"JSON({"code":"U2FsdGVkX18i8qa4hvVnpeZRq9DxUEo4qV6NLIEv1kfuYnSuXr2O863ODv3qO4XDtmkUdHWjBl4="})JSON",
+                   infinit::cryptography::Cipher::desx,
+                   infinit::cryptography::Mode::cbc,
+                   infinit::cryptography::Oneway::sha);
   // IDEA based on [representation 5].
-  test_serialize_x(R"JSON({"cipher":5,"mode":2,"oneway":3,"password":"jpRAwK/cmaccGdhdDU6CZRvvnJqz8+EMgKGeml1TQ4Mc8o9bDAHliLm0Z9JGizlnOlkrrNu7X3Luo++2S/Y/0QCgPMO4z7P+8n82VhesUGueYfplnIUxAw09q11wqXo+0eOKjhrovpgfEx77JULwXP1Nm64Yd7Oq8k2JYuMPYYyV0SIwYP1eXBf5Cxuoj//38cuWXzx6YkBAvmnAG0Xy+ywpJIvVBjgGnQ0yddlMl8HZKfeY8Ce02/RlRB9boDvXQzwGyDMp/N1k1sUggRDqyfHDTea21+GNtAGVKM8hIe1bpI5fl5gxclmp4xXyEvsPF6yJokcedrCYd3x4K0XxsCQ="})JSON",
-                   R"JSON({"code":"U2FsdGVkX19RAulp33SqeVl5elk0z1rmBhvwQBAaX+KITT/ZErMnzpqlEwDIhYDuDJmSiPC4JqQ="})JSON");
+  test_serialize_x(R"JSON({"password":"bx5Ll6CAhp8gxu86nHAjaeuOx4eDhvSwRbH4FaIDLxLR/OBsn7dvfaKpNrT/KvumQeCqJ8XHDBxxG4/qYFogaehUT6pkQy23sMwsLoSApLEdv9/X1qqDpohBwAHjOuHcab5qTiLHvAJHgBryxoWMUJ6RNj0NIVcsA2aNO7o64N1IIz/+fhNXVFs9yJXrRuWEJ+ymDiACHnXq83hQ+1O7i/mIbKghsWXmdAHDyXQDk0KNOKmkw/oqgaACTR2YAsDQDPntSOsOP/fMbGfUpvGujjnseCREY4SnZ+b5UwTdm907ZXP9HiDCOReElgBn55lUryd/UQwZ/AKzCxtdmV3PbqA="})JSON",
+                   R"JSON({"code":"U2FsdGVkX1+UHeTX6vv3TdbyKsA3js3Gu9cPZgPCeWJ4GuitSrB1LpYGqkIboZGe4PeOVBrbeHo="})JSON",
+                   infinit::cryptography::Cipher::idea,
+                   infinit::cryptography::Mode::ecb,
+                   infinit::cryptography::Oneway::sha224);
   // RC2 based on [representation 6].
-  test_serialize_x(R"JSON({"cipher":6,"mode":4,"oneway":6,"password":"jXTY"})JSON",
-                   R"JSON({"code":"U2FsdGVkX1/gbxUcPpazj52DwCzgij3GAm5c5LZ6xbON+h9/WqYJ4tAVWc9B1/AY2Tq8HEof"})JSON");
+  test_serialize_x(R"JSON({"password":"dMX+"})JSON",
+                   R"JSON({"code":"U2FsdGVkX1/NwfbdPzil23ySr9WnGkPTRnVLZhByYStupF9/dEP0iG3WC9UHyXc9e5LWVlHM"})JSON",
+                   infinit::cryptography::Cipher::rc2,
+                   infinit::cryptography::Mode::ofb,
+                   infinit::cryptography::Oneway::sha512);
   // Blowfish based on [representation 7].
-  test_serialize_x(R"JSON({"cipher":7,"mode":1,"oneway":2,"password":"N6rTUe3HCak="})JSON",
-                   R"JSON({"code":"U2FsdGVkX1/7flbuLH+RGgIy19goe3mlUUbeoH2AsDhK/yZcG0J+kBohGYPDwV+W7kGjdOx8+3E="})JSON");
+  test_serialize_x(R"JSON({"password":"CGODeAH8Cms="})JSON",
+                   R"JSON({"code":"U2FsdGVkX1+FuogLtF7wVT8bUDRq5W1kxWr+fc8vkOUqwKVYutvzZtD89+xKp4MkvFUx4NwFUpw="})JSON",
+                   infinit::cryptography::Cipher::blowfish,
+                   infinit::cryptography::Mode::cbc,
+                   infinit::cryptography::Oneway::sha1);
   // CAST5 based on [representation 8].
-  test_serialize_x(R"JSON({"cipher":8,"mode":3,"oneway":1,"password":"rV3rzCsVYTjfi8WlNxOtKYGOuHw+IWlPFpJIMV0i7O71QCWfEJD4lsvhyNFWnn2tVw7HQwi6iI/BmWCtRfATNmgMuoQ/GSHzUSOu7SqBDzJVT+WL0Act7QEPXKEqRhny55PASkzq6Xsax8alxBiGeXcsfUOArUH4Yx05Txir/GmTioWUUGZURWjPuj23Q/mOXNh9bf9lYMO/Wy84iDYhXs9U5E94iDly0m2O22o9E3YOIDTnCrt3zwxo9MNcd+ROJLCXS8UUcSiB59T/zwd20gpkE/pCpuo5lv370VD7edRYLBH7ggOyX+XtdM7TbLKLVv/D7pEZ8k6jots/TjP7wArmGcGf/LffMDwX+DTfaPAE1cIYFgi4YPgtxGZnrFnDFOSOz0rmhPASbSFIh7P1mm2zzQZGWe8Ib8ZC9uJjq5tgHkuMs1SzNEnsgbkBZy62sOKyf26pWiX0Fl5Ttat+5fff1yc71z1uWd/v2mM25RMX0yj4sBDZt1JzrsC8/QlmFbUj9H4j5FH35JYVLvf2VTymg8NZ2e8DfrHdaMwZPluQGuKobU18CG7o7Zw26GSAPdnVCYAL36zLGjWqrTjgXYY8OnYSm3ZAzz4Hd8DoPwuXs7ao8g9ZLp13VZ9uk42ZFo4ejKHZ2EnlEKWd4voMbdPey2l4emUg0ff5yhkMWPy/ykmqiuaKvwTfBRt2+/cHLy2YMCyq8zeK7nr1aEkm2gc/2i5MydXag2mzpYla+l0oGawoj+lp0CpUtGjtYpL03218S0l6ksVhy8dYcWg="})JSON",
-                   R"JSON({"code":"U2FsdGVkX19zCtln/H3DU0ihatOcBMgu0oPafHwNmSG1Fluwe7+wQmJEtLK129FNkFbxQX72"})JSON");
+  test_serialize_x(R"JSON({"password":"LQauVO6pBtFgr2gMR1eH8MXkw8GUJkV343tmjyVC3Lm8dSPbkjGZj01Is7CeMPR3o3vt8cewFXik3hrRpQW6EwWpqtoLCyXOxmm2eZg9q3PcC1fJpYEQrbjGp4YUZO1k+OLzZw0XB704rYnYWgC5t78rR7pmlxs8dy5AdA4CLfottrCLHx7sZWGd870uhT6ckFF5DXJNLLCrojaa/JbssT86PLKTW2GHBkqWcPn3fKGlrSDUMNNnZk4/KV6MiZAJyGAmP8tezsR9Qxx/6fM0ur8zy1o/3YuV/tJAtRlcrFit7ZYPoYqILG/gP2VPTFOTrAOgMyUe5ZEAVcNgo3ukFpTrnd12a4VjOsmdWWMagLFt7uruCJk1O+AhzAgrE0l5i9/azTcIPVIpyOsIBk1aN/N1atq4EG4VT4PUA1e/dZX1+VAeFzbzElwabhzNepL5bmGAGqVWhkPL87HZEbw6Smj8EPjq0GjOM6Z0iXVnxNCEpFuXYbNlwU0rFs2RfQonYPxYErXCyoMfh9KMhFthb0rO0+D3XDxFIJB7u7xKmB3ugrbys2cGenRcvFuJ1Bhoanp265DrZ41OKEJhRVCoI4trw7jGQa0xcAggLVHR4+hGV+KPy8dCt2oKmVLzaXN6JH3U0f0XgQUgJJvFLKFDje3Dw4SX629iAuglel8tu/V7LbgJM3B6r7InI0ixX0tQkGoZ8W3V7ND7/f6abxZ7mN5mOQVfDTj/coB0haLYoxigHK/McXy8n23oUwj5v3zMFMmvxK+A0mR+mFdjB4M="})JSON",
+                   R"JSON({"code":"U2FsdGVkX1+0TJWw1NW6CfkREOcHr5FRZDiE9qk6KREVI10NmQkg0SmSV9GfTcoQc+t66IiM"})JSON",
+                   infinit::cryptography::Cipher::cast5,
+                   infinit::cryptography::Mode::cfb,
+                   infinit::cryptography::Oneway::sha);
   // AES128 based on [representation 9].
-  test_serialize_x(R"JSON({"cipher":9,"mode":1,"oneway":0,"password":"pRJ57hEE2Fvkt+RM1isUtVvDL7KNqgv7KF25QMkm+NSwHQVFzhduBLvsNPe/fCeT04q5k6sdByGQ/dCqN8NI56wNs33+YuFv1xGwbo3EQZzHsmJ35MlWgl9dnbMPdSVLMr2sPk4MKA=="})JSON",
-                   R"JSON({"code":"U2FsdGVkX188pjfzbZuEtLMTDottclYaKWU+zXEU5ijxhk0ZUnurRN0kAdRelPyyUbMhzg1qmO4JuT84PIsrwQ=="})JSON");
+  test_serialize_x(R"JSON({"password":"3QNCKRA0/q+alW/kQnHZ1/2smtl6yAFwu8balzJgvy0x5/ppMJaCbvr/I0/DObUP/WXjGrdpPCg/vGK5lpCS2jzlsImNuBwZUeJCn5IOsGSXgEVw39vuT6gbuhKRoe85+86ibLZ0Hg=="})JSON",
+                   R"JSON({"code":"U2FsdGVkX19VjZi/JfEzFXB7u8Ll7ZnedxvM0F6Ns0UcUve7TI/XajsT0mDYePnaw+LrdgghM5aSiZDC5uwtUw=="})JSON",
+                   infinit::cryptography::Cipher::aes128,
+                   infinit::cryptography::Mode::cbc,
+                   infinit::cryptography::Oneway::md5);
   // AES192 based on [representation 10].
-  test_serialize_x(R"JSON({"cipher":10,"mode":4,"oneway":3,"password":"k1yiX1a0hkpnnoe2ko6jq/HNM6OSJHAcfzQEPKOLRdJPJW/cWvQFCrlECOLaImqi7ouiVtj9oBox/mfdm6ZFXC7cU9xIoOk8wts5IUFLFTAvR3TYGX4oez5Fh9w2VEdLTg95e8PF8RZ3WUDitxHeEeIOkw=="})JSON",
-                   R"JSON({"code":"U2FsdGVkX19QfjndNx+8rDjLXSjWa3BqeuqzY0HHxxibR99031wTuugCtXO36pG8Ds2/Kj8O"})JSON");
+  test_serialize_x(R"JSON({"password":"KmvsgwIWGDy9tomxayOkZ/TP6fmXPEkUiX8QvNy52BSs/+s7jQSRS8H5jaGIfg6xCwDgN7fJ41z38oSfOJ+1fmeR0BiE/pP2OHO0a7+8xDzAldKHt5sbfpwfm20z6d3DmNiLG8FFf1h9wTjoos2JtUdXyA=="})JSON",
+                   R"JSON({"code":"U2FsdGVkX1/p7NMq8KcJ9zXZYAZ6ReP9hmzlTNMs/CRSIiYC0YahwvVp6N/c71Hx+stiTrGf"})JSON",
+                   infinit::cryptography::Cipher::aes192,
+                   infinit::cryptography::Mode::ofb,
+                   infinit::cryptography::Oneway::sha224);
   // AES256 based on [representation 11].
-  test_serialize_x(R"JSON({"cipher":11,"mode":2,"oneway":5,"password":"MLG20WdnAOQA9h0cbnqhDCK7"})JSON",
-                   R"JSON({"code":"U2FsdGVkX199hXW/lN1gytAiR6YVopESdZ08lYPpNC23RolSBdZ56prRgYPT4PQTzNhS1u2YvJHf5cCNyDO/zQ=="})JSON");
+  test_serialize_x(R"JSON({"password":"tNKK2OlijngOIEut27AuGo3w"})JSON",
+                   R"JSON({"code":"U2FsdGVkX18iZy7p279VN6KalsQqH5sTH1i2tcTj7V8wFGxFncRkNE617uB7b2EvyJ0ata14BYQV1u9fRsqCUQ=="})JSON",
+                   infinit::cryptography::Cipher::aes256,
+                   infinit::cryptography::Mode::ecb,
+                   infinit::cryptography::Oneway::sha384);
 }
 
 /*-----.

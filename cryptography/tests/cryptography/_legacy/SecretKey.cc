@@ -67,7 +67,7 @@ test_construct_aes128()
     infinit::cryptography::Oneway::md5);
 
   infinit::cryptography::SecretKey key2(
-    "chiche",
+    "chechi",
     infinit::cryptography::Cipher::aes128,
     infinit::cryptography::Mode::cbc,
     infinit::cryptography::Oneway::sha256);
@@ -80,7 +80,7 @@ test_construct_aes128()
     infinit::cryptography::Mode::cbc,
     infinit::cryptography::Oneway::sha256);
 
-  BOOST_CHECK_EQUAL(key2, key3);
+  BOOST_CHECK_EQUAL(key1, key3);
 
   infinit::cryptography::SecretKey key4 =
     test_generate_x<infinit::cryptography::Cipher::aes128, 128>();

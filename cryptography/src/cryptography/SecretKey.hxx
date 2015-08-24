@@ -29,7 +29,8 @@ namespace infinit
       elle::IOStream _archive(archive.istreambuf());
       std::stringstream _code;
 
-      this->encipher(_archive, _code);
+      this->encipher(_archive, _code,
+                     this->_cipher, this->_mode, this->_oneway);
 
       elle::Buffer code(_code.str().data(), _code.str().length());
 
@@ -47,7 +48,8 @@ namespace infinit
       elle::IOStream _code(code.buffer().istreambuf());
       std::stringstream _archive;
 
-      this->decipher(_code, _archive);
+      this->decipher(_code, _archive,
+                     this->_cipher, this->_mode, this->_oneway);
 
       elle::Buffer archive(_archive.str().data(), _archive.str().length());
 
