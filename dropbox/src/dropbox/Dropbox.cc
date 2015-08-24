@@ -441,6 +441,12 @@ namespace dropbox
     return res;
   }
 
+  boost::optional<Metadata>
+  Dropbox::local_metadata(boost::filesystem::path const& path) const
+  {
+    return this->_cache->metadata(path);
+  }
+
   Metadata
   Dropbox::metadata(boost::filesystem::path const& path) const
   {

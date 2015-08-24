@@ -90,6 +90,9 @@ namespace dropbox
     Metadata
     metadata(boost::filesystem::path const& path) const;
 
+    boost::optional<Metadata>
+    local_metadata(boost::filesystem::path const& path) const;
+
     elle::Buffer
     get(boost::filesystem::path const& path) const;
 
