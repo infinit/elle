@@ -82,12 +82,7 @@ namespace infinit
       public:
         explicit
         /// Deduce a keypair based out of the given seed.
-        KeyPair(Seed const& seed,
-                Padding const encryption_padding = defaults::encryption_padding,
-                Padding const signature_padding = defaults::signature_padding,
-                Oneway const digest_algorithm = defaults::digest_algorithm,
-                Cipher const envelope_cipher = defaults::envelope_cipher,
-                Mode const envelope_mode = defaults::envelope_mode);
+        KeyPair(Seed const& seed);
 # endif
 
         /*----------.
@@ -163,17 +158,20 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         KeyPair
-        generate(elle::Natural32 const length,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+        generate(elle::Natural32 const length
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                 , Padding const encryption_padding =
+                   defaults::encryption_padding
+                 , Padding const signature_padding =
+                   defaults::signature_padding
+                 , Oneway const oneway =
+                   defaults::oneway
+                 , Cipher const envelope_cipher =
+                   defaults::envelope_cipher
+                 , Mode const envelope_mode =
+                   defaults::envelope_mode
+# endif
+                );
 
         namespace der
         {
@@ -186,17 +184,7 @@ namespace infinit
           encode(KeyPair const& keypair);
           /// Decode the key pair from a DER representation.
           KeyPair
-          decode(elle::ConstWeakBuffer const& buffer,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+          decode(elle::ConstWeakBuffer const& buffer);
         }
       }
     }

@@ -52,21 +52,37 @@ namespace infinit
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PublicKey(::EVP_PKEY* key,
-                  Padding const encryption_padding,
-                  Padding const signature_padding,
-                  Oneway const digest_algorithm,
-                  Cipher const envelope_cipher,
-                  Mode const envelope_mode);
+        PublicKey(::EVP_PKEY* key
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                  , Padding const encryption_padding =
+                    defaults::encryption_padding
+                  , Padding const signature_padding =
+                    defaults::signature_padding
+                  , Oneway const oneway =
+                    defaults::oneway
+                  , Cipher const envelope_cipher =
+                    defaults::envelope_cipher
+                  , Mode const envelope_mode =
+                    defaults::envelope_mode
+# endif
+                 );
         /// Construct a public key based on the given RSA key whose
         /// ownership is transferred to the public key.
         explicit
-        PublicKey(::RSA* rsa,
-                  Padding const encryption_padding,
-                  Padding const signature_padding,
-                  Oneway const digest_algorithm,
-                  Cipher const envelope_cipher,
-                  Mode const envelope_mode);
+        PublicKey(::RSA* rsa
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                  , Padding const encryption_padding =
+                    defaults::encryption_padding
+                  , Padding const signature_padding =
+                    defaults::signature_padding
+                  , Oneway const oneway =
+                    defaults::oneway
+                  , Cipher const envelope_cipher =
+                    defaults::envelope_cipher
+                  , Mode const envelope_mode =
+                    defaults::envelope_mode
+#endif
+                 );
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         virtual
@@ -87,27 +103,36 @@ namespace infinit
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Encrypt the plain text and return the ciphered text in an envelope.
         elle::Buffer
-        seal(elle::ConstWeakBuffer const& plain) const;
+        seal(elle::ConstWeakBuffer const& plain,
+             Cipher const cipher = defaults::envelope_cipher,
+             Mode const mode = defaults::envelope_mode) const;
         /// Encrypt the stream-based plain text and seal it in an envelope.
         void
         seal(std::istream& plain,
-             std::ostream& code) const;
+             std::ostream& code,
+             Cipher const cipher = defaults::envelope_cipher,
+             Mode const mode = defaults::envelope_mode) const;
         /// Encrypt a plain text using the raw public key.
         ///
         /// WARNING: This method cannot be used to encrypt large amount of
         ///          data as constrained by the key's modulus. Please refer
         ///          to the seal()/open() methods.
         elle::Buffer
-        encrypt(elle::ConstWeakBuffer const& plain) const;
+        encrypt(elle::ConstWeakBuffer const& plain,
+                Padding const padding = defaults::encryption_padding) const;
         /// Verify the given signature against the original plain text.
         elle::Boolean
         verify(elle::ConstWeakBuffer const& signature,
-               elle::ConstWeakBuffer const& plain) const;
+               elle::ConstWeakBuffer const& plain,
+               Padding const padding = defaults::signature_padding,
+               Oneway const oneway = defaults::oneway) const;
 # endif
         /// Return true if the given signature matches the stream-based plain.
         elle::Boolean
         verify(elle::ConstWeakBuffer const& signature,
-               std::istream& plain) const;
+               std::istream& plain,
+               Padding const padding = defaults::signature_padding,
+               Oneway const oneway = defaults::oneway) const;
         /// Return the public key's size in bytes.
         elle::Natural32
         size() const;
@@ -123,17 +148,7 @@ namespace infinit
         /// Construct a public key based on a given seed i.e in a deterministic
         /// way.
         explicit
-        PublicKey(Seed const& seed,
-                  Padding const encryption_padding =
-                    defaults::encryption_padding,
-                  Padding const signature_padding =
-                    defaults::signature_padding,
-                  Oneway const digest_algorithm =
-                    defaults::digest_algorithm,
-                  Cipher const envelope_cipher =
-                    defaults::envelope_cipher,
-                  Mode const envelope_mode =
-                    defaults::envelope_mode);
+        PublicKey(Seed const& seed);
         /// Return the seed once unrotated by the public key.
         Seed
         unrotate(Seed const& seed) const;
@@ -167,11 +182,6 @@ namespace infinit
         `-----------*/
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
-        ELLE_ATTRIBUTE_R(Padding, signature_padding);
-        ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
-        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
-        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*-------.
@@ -199,6 +209,11 @@ namespace infinit
           infinit::cryptography::rsa::PublicKey,
           elle::serialize::Base64Archive>::serialize;
         // attributes
+        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
+        ELLE_ATTRIBUTE_R(Padding, signature_padding);
+        ELLE_ATTRIBUTE_R(Oneway, oneway);
+        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
+        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
         ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
 # endif
       };
@@ -229,17 +244,7 @@ namespace infinit
           encode(PublicKey const& K);
           /// Decode the public key from a DER representation.
           PublicKey
-          decode(elle::ConstWeakBuffer const& buffer,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+          decode(elle::ConstWeakBuffer const& buffer);
         }
       }
     }

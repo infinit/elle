@@ -3,7 +3,6 @@
 
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/KeyPair.hh>
-# include <cryptography/rsa/defaults.hh>
 # include <cryptography/pem.hh>
 
 # include <boost/filesystem.hpp>
@@ -22,47 +21,17 @@ namespace infinit
 
         /// Import an RSA public key from a path.
         PublicKey
-        import_K(boost::filesystem::path const& path,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+        import_K(boost::filesystem::path const& path);
         /// Import an RSA private key from a path.
         PrivateKey
         import_k(boost::filesystem::path const& path,
                  elle::String const& passphrase =
-                   cryptography::pem::defaults::passphrase,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+                   cryptography::pem::defaults::passphrase);
         /// Import an RSA key pair from a path.
         KeyPair
         import_keypair(boost::filesystem::path const& path,
                        elle::String const& passphrase =
-                         cryptography::pem::defaults::passphrase,
-                       Padding const encryption_padding =
-                         defaults::encryption_padding,
-                       Padding const signature_padding =
-                         defaults::signature_padding,
-                       Oneway const digest_algorithm =
-                         defaults::digest_algorithm,
-                       Cipher const envelope_cipher =
-                         defaults::envelope_cipher,
-                       Mode const envelope_mode =
-                         defaults::envelope_mode);
+                         cryptography::pem::defaults::passphrase);
         /// Export an RSA public key.
         void
         export_K(PublicKey const& K,

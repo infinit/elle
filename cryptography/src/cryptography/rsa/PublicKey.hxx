@@ -45,7 +45,7 @@ namespace infinit
                                     ::EVP_PKEY_encrypt,
                                     cipher::resolve(this->_envelope_cipher,
                                                     this->_envelope_mode),
-                                    oneway::resolve(this->_digest_algorithm),
+                                    oneway::resolve(this->_oneway),
                                     padding::footprint(context.get()))));
       }
 
@@ -67,7 +67,9 @@ namespace infinit
         elle::IOStream _plain(_value.istreambuf());
 
         return (this->verify(signature.buffer(),
-                             static_cast<std::istream&>(_plain)));
+                             static_cast<std::istream&>(_plain),
+                             this->_signature_padding,
+                             this->_oneway));
       }
     }
   }
@@ -210,7 +212,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
             infinit::cryptography::rsa::Padding::oaep;
           value._signature_padding =
             infinit::cryptography::rsa::Padding::pkcs1;
-          value._digest_algorithm =
+          value._oneway =
             infinit::cryptography::Oneway::sha256;
           value._envelope_cipher =
             infinit::cryptography::Cipher::aes256;
@@ -225,7 +227,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
             infinit::cryptography::rsa::Padding::pkcs1;
           value._signature_padding =
             infinit::cryptography::rsa::Padding::pkcs1;
-          value._digest_algorithm =
+          value._oneway =
             infinit::cryptography::Oneway::sha256;
           value._envelope_cipher =
             infinit::cryptography::Cipher::aes256;

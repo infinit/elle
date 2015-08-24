@@ -64,7 +64,9 @@ namespace infinit
 
         elle::IOStream _plain(_value.istreambuf());
 
-        return (Signature(this->sign(static_cast<std::istream&>(_plain))));
+        return (Signature(this->sign(static_cast<std::istream&>(_plain),
+                                     this->_signature_padding,
+                                     this->_oneway)));
       }
     }
   }
@@ -230,7 +232,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
             infinit::cryptography::rsa::Padding::oaep;
           value._signature_padding =
             infinit::cryptography::rsa::Padding::pkcs1;
-          value._digest_algorithm =
+          value._oneway =
             infinit::cryptography::Oneway::sha256;
           value._envelope_cipher =
             infinit::cryptography::Cipher::aes256;
@@ -245,7 +247,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
             infinit::cryptography::rsa::Padding::pkcs1;
           value._signature_padding =
             infinit::cryptography::rsa::Padding::pkcs1;
-          value._digest_algorithm =
+          value._oneway =
             infinit::cryptography::Oneway::sha256;
           value._envelope_cipher =
             infinit::cryptography::Cipher::aes256;

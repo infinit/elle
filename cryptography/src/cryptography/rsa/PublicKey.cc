@@ -82,12 +82,14 @@ namespace infinit
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         // Set the key parameters.
         this->_encryption_padding = k.encryption_padding();
         this->_signature_padding = k.signature_padding();
-        this->_digest_algorithm = k.digest_algorithm();
+        this->_oneway = k.oneway();
         this->_envelope_cipher = k.envelope_cipher();
         this->_envelope_mode = k.envelope_mode();
+#endif
 
         // Extract the public key only.
         RSA* _rsa = low::RSA_priv2pub(k.key().get()->pkey.rsa);
@@ -127,18 +129,23 @@ namespace infinit
 #endif
       }
 
-      PublicKey::PublicKey(::EVP_PKEY* key,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const digest_algorithm,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode):
-        _key(key),
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm),
-        _envelope_cipher(envelope_cipher),
-        _envelope_mode(envelope_mode)
+      PublicKey::PublicKey(::EVP_PKEY* key
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                           , Padding const encryption_padding
+                           , Padding const signature_padding
+                           , Oneway const oneway
+                           , Cipher const envelope_cipher
+                           , Mode const envelope_mode
+#endif
+                          ):
+        _key(key)
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _encryption_padding(encryption_padding)
+        , _signature_padding(signature_padding)
+        , _oneway(oneway)
+        , _envelope_cipher(envelope_cipher)
+        , _envelope_mode(envelope_mode)
+#endif
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -172,17 +179,21 @@ namespace infinit
 #endif
       }
 
-      PublicKey::PublicKey(::RSA* rsa,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const digest_algorithm,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode):
+      PublicKey::PublicKey(::RSA* rsa
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                           , Padding const encryption_padding
+                           , Padding const signature_padding
+                           , Oneway const oneway
+                           , Cipher const envelope_cipher
+                           , Mode const envelope_mode):
         _encryption_padding(encryption_padding),
         _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm),
+        _oneway(oneway),
         _envelope_cipher(envelope_cipher),
         _envelope_mode(envelope_mode)
+#else
+                           )
+#endif
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -214,16 +225,14 @@ namespace infinit
 #endif
       }
 
-      PublicKey::PublicKey(PublicKey const& other):
+      PublicKey::PublicKey(PublicKey const& other)
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<PublicKey>(other),
-#endif
-        _encryption_padding(other._encryption_padding),
-        _signature_padding(other._signature_padding),
-        _digest_algorithm(other._digest_algorithm),
-        _envelope_cipher(other._envelope_cipher),
-        _envelope_mode(other._envelope_mode)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        : elle::serialize::DynamicFormat<PublicKey>(other)
+        , _encryption_padding(other._encryption_padding)
+        , _signature_padding(other._signature_padding)
+        , _oneway(other._oneway)
+        , _envelope_cipher(other._envelope_cipher)
+        , _envelope_mode(other._envelope_mode)
         , _legacy_format(other._legacy_format)
 #endif
       {
@@ -249,13 +258,13 @@ namespace infinit
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::serialize::DynamicFormat<PublicKey>(other),
 #endif
-        _key(std::move(other._key)),
-        _encryption_padding(std::move(other._encryption_padding)),
-        _signature_padding(std::move(other._signature_padding)),
-        _digest_algorithm(std::move(other._digest_algorithm)),
-        _envelope_cipher(std::move(other._envelope_cipher)),
-        _envelope_mode(std::move(other._envelope_mode))
+        _key(std::move(other._key))
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+        , _encryption_padding(std::move(other._encryption_padding))
+        , _signature_padding(std::move(other._signature_padding))
+        , _oneway(std::move(other._oneway))
+        , _envelope_cipher(std::move(other._envelope_cipher))
+        , _envelope_mode(std::move(other._envelope_mode))
         , _legacy_format(std::move(other._legacy_format))
 #endif
       {
@@ -312,15 +321,18 @@ namespace infinit
 
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Buffer
-      PublicKey::seal(elle::ConstWeakBuffer const& plain) const
+      PublicKey::seal(elle::ConstWeakBuffer const& plain,
+                      Cipher const cipher,
+                      Mode const mode) const
       {
-        ELLE_TRACE_METHOD("");
+        ELLE_TRACE_METHOD(cipher, mode);
         ELLE_DUMP("plain: %x", plain);
 
         elle::IOStream _plain(plain.istreambuf());
         std::stringstream _code;
 
-        this->seal(_plain, _code);
+        this->seal(_plain, _code,
+                   cipher, mode);
 
         elle::Buffer code(_code.str().data(), _code.str().length());
 
@@ -329,27 +341,29 @@ namespace infinit
 
       void
       PublicKey::seal(std::istream& plain,
-                      std::ostream& code) const
+                      std::ostream& code,
+                      Cipher const cipher,
+                      Mode const mode) const
       {
-        ELLE_TRACE_METHOD("");
+        ELLE_TRACE_METHOD(cipher, mode);
 
         envelope::seal(this->_key.get(),
-                       cipher::resolve(this->_envelope_cipher,
-                                       this->_envelope_mode),
+                       cipher::resolve(cipher, mode),
                        plain,
                        code);
       }
 
       elle::Buffer
-      PublicKey::encrypt(elle::ConstWeakBuffer const& plain) const
+      PublicKey::encrypt(elle::ConstWeakBuffer const& plain,
+                         Padding const padding) const
       {
-        ELLE_TRACE_METHOD("");
+        ELLE_TRACE_METHOD(padding);
         ELLE_DUMP("plain: %x", plain);
 
         auto prolog =
-          [this](::EVP_PKEY_CTX* context)
+          [this, padding](::EVP_PKEY_CTX* context)
           {
-            padding::pad(context, this->_encryption_padding);
+            padding::pad(context, padding);
           };
 
         return (raw::asymmetric::encrypt(this->_key.get(),
@@ -359,46 +373,51 @@ namespace infinit
 
       elle::Boolean
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
-                        elle::ConstWeakBuffer const& plain) const
+                        elle::ConstWeakBuffer const& plain,
+                        Padding const padding,
+                        Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD("");
+        ELLE_TRACE_METHOD(padding, oneway);
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
         elle::IOStream _plain(plain.istreambuf());
 
-        return (this->verify(signature, _plain));
+        return (this->verify(signature, _plain,
+                             padding, oneway));
       }
 #endif
 
       elle::Boolean
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
-                        std::istream& plain) const
+                        std::istream& plain,
+                        Padding const padding,
+                        Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD("");
+        ELLE_TRACE_METHOD(padding, oneway);
         ELLE_DUMP("signature: %x", signature);
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         types::EVP_PKEY_CTX context(
           context::create(this->_key.get(), ::EVP_PKEY_verify_init));
-        padding::pad(context.get(), this->_signature_padding);
+        padding::pad(context.get(), padding);
 
-        elle::Buffer digest = hash(plain, this->_digest_algorithm);
+        elle::Buffer digest = hash(plain, oneway);
         return (raw::asymmetric::verify(signature,
                                         digest,
                                         context.get(),
                                         ::EVP_PKEY_verify));
 #else
         auto prolog =
-          [this](::EVP_MD_CTX* context,
-                 ::EVP_PKEY_CTX* ctx)
+          [this, padding](::EVP_MD_CTX* context,
+                          ::EVP_PKEY_CTX* ctx)
           {
-            padding::pad(ctx, this->_signature_padding);
+            padding::pad(ctx, padding);
           };
 
         return (raw::asymmetric::verify(
                   this->_key.get(),
-                  oneway::resolve(this->_digest_algorithm),
+                  oneway::resolve(oneway),
                   signature,
                   plain,
                   prolog));
@@ -424,17 +443,7 @@ namespace infinit
       | Rotation |
       `---------*/
 
-      PublicKey::PublicKey(Seed const& seed,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const digest_algorithm,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode):
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _digest_algorithm(digest_algorithm),
-        _envelope_cipher(envelope_cipher),
-        _envelope_mode(envelope_mode)
+      PublicKey::PublicKey(Seed const& seed)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -535,12 +544,6 @@ namespace infinit
           serializer,
           this->_key->pkey.rsa);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-
-        serializer.serialize("encryption padding", this->_encryption_padding);
-        serializer.serialize("signature padding", this->_signature_padding);
-        serializer.serialize("digest algorithm", this->_digest_algorithm);
-        serializer.serialize("envelope cipher", this->_envelope_cipher);
-        serializer.serialize("envelope mode", this->_envelope_mode);
       }
 
       /*----------.
@@ -560,18 +563,6 @@ namespace infinit
                << ", "
                << *this->_key->pkey.rsa->e
                << ")";
-
-        stream << "["
-               << this->_encryption_padding
-               << ", "
-               << this->_signature_padding
-               << ", "
-               << this->_digest_algorithm
-               << ", "
-               << this->_envelope_cipher
-               << ", "
-               << this->_envelope_mode
-               << "]";
       }
 
       /*-------.
@@ -616,21 +607,11 @@ namespace infinit
           }
 
           PublicKey
-          decode(elle::ConstWeakBuffer const& buffer,
-                 Padding const encryption_padding,
-                 Padding const signature_padding,
-                 Oneway const digest_algorithm,
-                 Cipher const envelope_cipher,
-                 Mode const envelope_mode)
+          decode(elle::ConstWeakBuffer const& buffer)
           {
             ::RSA* rsa = rsa::der::decode_public(buffer);
 
-            return (PublicKey(rsa,
-                              encryption_padding,
-                              signature_padding,
-                              digest_algorithm,
-                              envelope_cipher,
-                              envelope_mode));
+            return (PublicKey(rsa));
           }
         }
       }

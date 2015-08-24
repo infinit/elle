@@ -111,7 +111,7 @@ void
 test_operate()
 {
   // Construct a public key from [representation 1]
-  elle::String representation(R"JSON({"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIIBCgKCAQEAplfeEnFRCbdId8WiyP89bsoLSfE6kRDV4Vbu/gADaVv/sDitbLkOJGyzpIKP/yjmNqvj/m5mfKrHGqbe23c0g8qoTsR1tQN4xHfDm/1n05JyHL7f2Ij/JzaYR87aErYhAKuVM03YANLpV/ykXFBiLZ5NnY06v3aLWwKzJKSrmxB2t0tG0xnLQmvfxAFxhDH3+hUoXYXa9kTsJ0uuBBQfw2cyinRNs+nF7jerySK1RYe+5qmOfaeNlVZiD/kvXMgjGG3KL7kAw7xqhaRZrDDinTK+QwyDgCKUKIRir98QaTOAbveip4a5jkFljk58mCSO4QieM5q69pS79OXoZUOAJwIDAQAB","signature padding":5})JSON");
+  elle::String representation(R"JSON({"rsa":"MIIBCgKCAQEAplfeEnFRCbdId8WiyP89bsoLSfE6kRDV4Vbu/gADaVv/sDitbLkOJGyzpIKP/yjmNqvj/m5mfKrHGqbe23c0g8qoTsR1tQN4xHfDm/1n05JyHL7f2Ij/JzaYR87aErYhAKuVM03YANLpV/ykXFBiLZ5NnY06v3aLWwKzJKSrmxB2t0tG0xnLQmvfxAFxhDH3+hUoXYXa9kTsJ0uuBBQfw2cyinRNs+nF7jerySK1RYe+5qmOfaeNlVZiD/kvXMgjGG3KL7kAw7xqhaRZrDDinTK+QwyDgCKUKIRir98QaTOAbveip4a5jkFljk58mCSO4QieM5q69pS79OXoZUOAJwIDAQAB"})JSON");
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
@@ -182,7 +182,7 @@ test_serialize()
   {
     std::vector<elle::String> const archives{
       // format 0
-      R"JSON({"digest algorithm":4,"encryption padding":3,"envelope cipher":11,"envelope mode":1,"rsa":"MIIBCgKCAQEAplfeEnFRCbdId8WiyP89bsoLSfE6kRDV4Vbu/gADaVv/sDitbLkOJGyzpIKP/yjmNqvj/m5mfKrHGqbe23c0g8qoTsR1tQN4xHfDm/1n05JyHL7f2Ij/JzaYR87aErYhAKuVM03YANLpV/ykXFBiLZ5NnY06v3aLWwKzJKSrmxB2t0tG0xnLQmvfxAFxhDH3+hUoXYXa9kTsJ0uuBBQfw2cyinRNs+nF7jerySK1RYe+5qmOfaeNlVZiD/kvXMgjGG3KL7kAw7xqhaRZrDDinTK+QwyDgCKUKIRir98QaTOAbveip4a5jkFljk58mCSO4QieM5q69pS79OXoZUOAJwIDAQAB","signature padding":5})JSON"
+      R"JSON({"rsa":"MIIBCgKCAQEAplfeEnFRCbdId8WiyP89bsoLSfE6kRDV4Vbu/gADaVv/sDitbLkOJGyzpIKP/yjmNqvj/m5mfKrHGqbe23c0g8qoTsR1tQN4xHfDm/1n05JyHL7f2Ij/JzaYR87aErYhAKuVM03YANLpV/ykXFBiLZ5NnY06v3aLWwKzJKSrmxB2t0tG0xnLQmvfxAFxhDH3+hUoXYXa9kTsJ0uuBBQfw2cyinRNs+nF7jerySK1RYe+5qmOfaeNlVZiD/kvXMgjGG3KL7kAw7xqhaRZrDDinTK+QwyDgCKUKIRir98QaTOAbveip4a5jkFljk58mCSO4QieM5q69pS79OXoZUOAJwIDAQAB"})JSON"
       };
 
     infinit::cryptography::test::formats<

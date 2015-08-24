@@ -108,12 +108,7 @@ namespace infinit
       | Rotation |
       `---------*/
 
-      KeyPair::KeyPair(Seed const& seed,
-                       Padding const encryption_padding,
-                       Padding const signature_padding,
-                       Oneway const digest_algorithm,
-                       Cipher const envelope_cipher,
-                       Mode const envelope_mode)
+      KeyPair::KeyPair(Seed const& seed)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -134,11 +129,8 @@ namespace infinit
 
         // Instanciate both a RSA public and private key based on the RSA
         // structure.
-        this->_k.reset(new PrivateKey(rsa,
-                                      encryption_padding, signature_padding,
-                                      digest_algorithm));
-        this->_K.reset(new PublicKey(*this->_k,
-                                     envelope_cipher, envelope_mode));
+        this->_k.reset(new PrivateKey(rsa));
+        this->_K.reset(new PublicKey(*this->_k));
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
       }
@@ -219,17 +211,17 @@ namespace infinit
         `----------*/
 
         KeyPair
-        generate(elle::Natural32 const length,
-                 Padding const encryption_padding,
-                 Padding const signature_padding,
-                 Oneway const digest_algorithm,
-                 Cipher const envelope_cipher,
-                 Mode const envelope_mode)
+        generate(elle::Natural32 const length
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                 , Padding const encryption_padding
+                 , Padding const signature_padding
+                 , Oneway const oneway
+                 , Cipher const envelope_cipher
+                 , Mode const envelope_mode
+#endif
+                )
         {
-          ELLE_TRACE_FUNCTION(length,
-                              encryption_padding, signature_padding,
-                              digest_algorithm,
-                              envelope_cipher, envelope_mode);
+          ELLE_TRACE_FUNCTION(length);
 
           if ((length % 8) != 0)
             throw Error(
@@ -276,10 +268,13 @@ namespace infinit
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.
-          PrivateKey k(key,
-                       encryption_padding, signature_padding,
-                       digest_algorithm,
-                       envelope_cipher, envelope_mode);
+          PrivateKey k(key
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                       , encryption_padding, signature_padding
+                       , oneway
+                       , envelope_cipher, envelope_mode
+#endif
+                      );
           PublicKey K(k);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
@@ -300,19 +295,9 @@ namespace infinit
           }
 
           KeyPair
-          decode(elle::ConstWeakBuffer const& buffer,
-                 Padding const encryption_padding,
-                 Padding const signature_padding,
-                 Oneway const digest_algorithm,
-                 Cipher const envelope_cipher,
-                 Mode const envelope_mode)
+          decode(elle::ConstWeakBuffer const& buffer)
           {
-            PrivateKey k = privatekey::der::decode(buffer,
-                                                   encryption_padding,
-                                                   signature_padding,
-                                                   digest_algorithm,
-                                                   envelope_cipher,
-                                                   envelope_mode);
+            PrivateKey k = privatekey::der::decode(buffer);
             PublicKey K(k);
 
             return (KeyPair(K, k));

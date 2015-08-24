@@ -48,21 +48,37 @@ namespace infinit
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PrivateKey(::EVP_PKEY* key,
-                   Padding const encryption_padding,
-                   Padding const signature_padding,
-                   Oneway const digest_algorithm,
-                   Cipher const envelope_cipher,
-                   Mode const envelope_mode);
+        PrivateKey(::EVP_PKEY* key
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                   , Padding const encryption_padding =
+                     defaults::encryption_padding
+                   , Padding const signature_padding =
+                     defaults::signature_padding
+                   , Oneway const oneway =
+                     defaults::oneway
+                   , Cipher const envelope_cipher =
+                     defaults::envelope_cipher
+                   , Mode const envelope_mode =
+                     defaults::envelope_mode
+# endif
+                  );
         /// Construct a private key based on the given RSA key whose
         /// ownership is transferred to the private key.
         explicit
-        PrivateKey(::RSA* rsa,
-                   Padding const encryption_padding,
-                   Padding const signature_padding,
-                   Oneway const digest_algorithm,
-                   Cipher const envelope_cipher,
-                   Mode const envelope_mode);
+        PrivateKey(::RSA* rsa
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+                   , Padding const encryption_padding =
+                     defaults::encryption_padding
+                   , Padding const signature_padding =
+                     defaults::signature_padding
+                   , Oneway const oneway =
+                     defaults::oneway
+                   , Cipher const envelope_cipher =
+                     defaults::envelope_cipher
+                   , Mode const envelope_mode =
+                     defaults::envelope_mode
+# endif
+                  );
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         virtual
@@ -83,27 +99,36 @@ namespace infinit
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Open the envelope and return the original plain text.
         elle::Buffer
-        open(elle::ConstWeakBuffer const& code) const;
+        open(elle::ConstWeakBuffer const& code,
+             Cipher const cipher = defaults::envelope_cipher,
+             Mode const mode = defaults::envelope_mode) const;
         /// Open the envelope, decrypt its stream-based content and return the
         /// original plan text in the output stream.
         void
         open(std::istream& code,
-             std::ostream& plain) const;
+             std::ostream& plain,
+             Cipher const cipher = defaults::envelope_cipher,
+             Mode const mode = defaults::envelope_mode) const;
         /// Decrypt a code with the raw public key.
         ///
         /// WARNING: This method cannot be used to decrypt large amount of
         ///          data as constrained by the key's modulus. Please refer
         ///          to the seal()/open() methods.
         elle::Buffer
-        decrypt(elle::ConstWeakBuffer const& code) const;
+        decrypt(elle::ConstWeakBuffer const& code,
+                Padding const padding = defaults::encryption_padding) const;
         /// Sign the given plain text and return the signature.
         elle::Buffer
-        sign(elle::ConstWeakBuffer const& plain) const;
+        sign(elle::ConstWeakBuffer const& plain,
+             Padding const padding = defaults::signature_padding,
+             Oneway const oneway = defaults::oneway) const;
 # endif
         /// Write the signature in the output stream given the stream-based
         /// plain text.
         elle::Buffer
-        sign(std::istream& plain) const;
+        sign(std::istream& plain,
+             Padding const padding = defaults::signature_padding,
+             Oneway const oneway = defaults::oneway) const;
         /// Return the private key's size in bytes.
         elle::Natural32
         size() const;
@@ -119,17 +144,7 @@ namespace infinit
         /// Construct a private key based on a given seed i.e in a deterministic
         /// way.
         explicit
-        PrivateKey(Seed const& seed,
-                   Padding const encryption_padding =
-                     defaults::encryption_padding,
-                   Padding const signature_padding =
-                     defaults::signature_padding,
-                   Oneway const digest_algorithm =
-                     defaults::digest_algorithm,
-                   Cipher const envelope_cipher =
-                     defaults::envelope_cipher,
-                   Mode const envelope_mode =
-                     defaults::envelope_mode);
+        PrivateKey(Seed const& seed);
         /// Return the seed once rotated by the private key.
         Seed
         rotate(Seed const& seed) const;
@@ -163,11 +178,6 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
-        ELLE_ATTRIBUTE_R(Padding, signature_padding);
-        ELLE_ATTRIBUTE_R(Oneway, digest_algorithm);
-        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
-        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*-------.
@@ -191,6 +201,11 @@ namespace infinit
           infinit::cryptography::rsa::PrivateKey,
           elle::serialize::Base64Archive>::serialize;
         // attributes
+        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
+        ELLE_ATTRIBUTE_R(Padding, signature_padding);
+        ELLE_ATTRIBUTE_R(Oneway, oneway);
+        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
+        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
         ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
 # endif
       };
@@ -221,17 +236,7 @@ namespace infinit
           encode(PrivateKey const& K);
           /// Decode the private key from a DER representation.
           PrivateKey
-          decode(elle::ConstWeakBuffer const& buffer,
-                 Padding const encryption_padding =
-                   defaults::encryption_padding,
-                 Padding const signature_padding =
-                   defaults::signature_padding,
-                 Oneway const digest_algorithm =
-                   defaults::digest_algorithm,
-                 Cipher const envelope_cipher =
-                   defaults::envelope_cipher,
-                 Mode const envelope_mode =
-                   defaults::envelope_mode);
+          decode(elle::ConstWeakBuffer const& buffer);
         }
       }
     }

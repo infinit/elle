@@ -25,26 +25,15 @@ namespace infinit
         `----------*/
 
         PublicKey
-        import_K(boost::filesystem::path const& path,
-                 Padding const encryption_padding,
-                 Padding const signature_padding,
-                 Oneway const digest_algorithm,
-                 Cipher const envelope_cipher,
-                 Mode const envelope_mode)
+        import_K(boost::filesystem::path const& path)
         {
-          ELLE_TRACE_FUNCTION(path,
-                              encryption_padding, signature_padding,
-                              digest_algorithm,
-                              envelope_cipher, envelope_mode);
+          ELLE_TRACE_FUNCTION(path);
 
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
-          PublicKey K(key,
-                      encryption_padding, signature_padding,
-                      digest_algorithm,
-                      envelope_cipher, envelope_mode);
+          PublicKey K(key);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
@@ -53,27 +42,16 @@ namespace infinit
 
         PrivateKey
         import_k(boost::filesystem::path const& path,
-                 elle::String const& passphrase,
-                 Padding const encryption_padding,
-                 Padding const signature_padding,
-                 Oneway const digest_algorithm,
-                 Cipher const envelope_cipher,
-                 Mode const envelope_mode)
+                 elle::String const& passphrase)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase,
-                              encryption_padding, signature_padding,
-                              digest_algorithm,
-                              envelope_cipher, envelope_mode);
+          ELLE_TRACE_FUNCTION(path, passphrase);
 
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
-          PrivateKey k(key,
-                       encryption_padding, signature_padding,
-                       digest_algorithm,
-                       envelope_cipher, envelope_mode);
+          PrivateKey k(key);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
@@ -82,23 +60,11 @@ namespace infinit
 
         KeyPair
         import_keypair(boost::filesystem::path const& path,
-                       elle::String const& passphrase,
-                       Padding const encryption_padding,
-                       Padding const signature_padding,
-                       Oneway const digest_algorithm,
-                       Cipher const envelope_cipher,
-                       Mode const envelope_mode)
+                       elle::String const& passphrase)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase,
-                              encryption_padding, signature_padding,
-                              digest_algorithm,
-                              envelope_cipher, envelope_mode);
+          ELLE_TRACE_FUNCTION(path, passphrase);
 
-          PrivateKey k = import_k(path, passphrase,
-                                  encryption_padding, signature_padding,
-                                  digest_algorithm,
-                                  envelope_cipher, envelope_mode);
-
+          PrivateKey k = import_k(path, passphrase);
           PublicKey K(k);
 
           return (KeyPair(std::move(K), std::move(k)));
