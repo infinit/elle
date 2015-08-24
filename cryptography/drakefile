@@ -279,7 +279,7 @@ def configure(openssl_config,
     cxx_config_python = drake.cxx.Config(cxx_config)
     cxx_config_python.lib_path_runtime('..')
     cxx_config_python += boost_python
-    python = drake.cxx.Module(
+    python_module = drake.cxx.Module(
       'lib/python/cryptography',
       drake.nodes('src/cryptography/python.cc') + [lib_dynamic],
       cxx_toolkit,
@@ -381,8 +381,10 @@ def configure(openssl_config,
       runner = drake.Runner(exe = bin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+  python_test = drake.node('tests/python')
+  python_test.dependency_add(python_module)
   python_runner = drake.Runner(
-    exe = drake.node('tests/python'),
+    exe = python_test,
     env = {'PYTHONPATH': str(drake.path_build('lib/python'))},
   )
   python_runner.reporting = drake.Runner.Reporting.on_failure
