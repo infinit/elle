@@ -32,7 +32,7 @@ class TestRSA(unittest.TestCase):
   public_key = 'MIIBCgKCAQEAqKF6mFmmaH/xjxhUSMH4q9unjTCLfr8ZWQwLuX9EzezDGowOjt+yioyGoB/beUp5SVpaWFZTcgDSIHA6s7UAmR18pdDRaCCOS6dbQCSZvKNL5sWxR+HazBT6cOJkVjZf3Q6Bhs1c7Amzi4HidUdZVVHSlqGM4It1yzhwTgShW5jaALEPO9oGUc6lmCtfYgseFcsapNAaXKwAX4q6s1vxx+N50GoAx5aw0M9rOjEmZJ5OdPyqdc+C8cm4RHi1xoGdUnMrEC2C7go2o8CZup3zStPGeDgZWylGvVi77v4n+KxK0oI2gOLwPp6ny+IGpWrT8oSCTHeCp53oDnztAgj2fQIDAQAB'
 
   def test_der_load(self):
-    b = base64.b64decode(TestRSA.public_key)
+    b = base64.b64decode(TestRSA.public_key.encode('latin-1'))
     k = cryptography.der_decode(b)
     self.assertEqual(cryptography.der_encode(k), b)
 
