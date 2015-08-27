@@ -176,7 +176,7 @@ namespace infinit
                             "size: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT_EQ(size, ::EVP_PKEY_size(key));
+          ELLE_ASSERT_EQ(signed(size), ::EVP_PKEY_size(key));
 
           if (epilog)
             epilog(&context, ctx);
