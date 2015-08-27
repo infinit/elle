@@ -183,7 +183,8 @@ namespace reactor
     }
     catch (...)
     {
-      ELLE_WARN("%s: exception escaped: %s", *this, elle::exception_string());
+      ELLE_TRACE_SCOPE(
+        "%s: exception escaped: %s", *this, elle::exception_string());
       this->_exception_thrown = std::current_exception();
     }
   }
