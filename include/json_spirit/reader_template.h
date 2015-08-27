@@ -163,8 +163,8 @@ namespace json_spirit
     {
       if( end - begin >= 5 )  //  expecting "uHHHH..."
       {
-        int cp = unicode_str_to_codepoint(begin);
-        if (cp >= 0xd800u && cp -0xd800u < 0x800)
+        unsigned cp = unicode_str_to_codepoint(begin);
+        if (cp >= 0xd800u && cp - 0xd800u < 0x800)
         { // Possibly a surrogate pair
           if (end - begin >= 6 && *(begin+1) == '\\' && *(begin+2)=='u')
           {
