@@ -34,7 +34,7 @@ namespace reactor
     auto& sched = scheduler();
     _loopThread.reset(new std::thread([&] { this->_loop_one_thread(sched);}));
 #else
-    _loop_single();
+    _loop.reset(new Thread("fuse loop", [&] { _loop_single();}));
 #endif
   }
 
