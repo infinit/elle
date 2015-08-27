@@ -662,7 +662,7 @@ namespace elle
     elle::SafeFinally restore_stream_state([&] { std::cout.copyfmt(state); });
     if (float(printable) / buffer.size() < 0.9)
       hex = true;
-    if (fixed && buffer.size() > max_length)
+    if (fixed && signed(buffer.size()) > max_length)
     {
       put(stream, buffer.range(0, max_length / 2), hex);
       stream << "...";
@@ -722,7 +722,7 @@ namespace elle
   WeakBuffer
   InputStreamBuffer<BufferType>::read_buffer()
   {
-    if (this->_pos < this->_buffers.size())
+    if (this->_pos < signed(this->_buffers.size()))
     {
       this->_pos++;
       return WeakBuffer((char*)_buffers[_pos-1]->contents(), _buffers[_pos-1]->size());
