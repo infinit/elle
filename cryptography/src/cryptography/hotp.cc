@@ -17,7 +17,6 @@ namespace infinit
 
     int32_t hotp(elle::Buffer const& k, int64_t c)
     {
-      // HMAC(K,C) = SHA1(K ⊕ 0x5c5c… CONC SHA1(K ⊕ 0x3636… CONC C))
       // hotp: https://tools.ietf.org/html/rfc4226
       // hmac: https://tools.ietf.org/html/rfc2104
       elle::Buffer k2 = k;
@@ -30,9 +29,9 @@ namespace infinit
         (unsigned char&)(k1[i]) ^= 0x5c;
       k1.append(h1.contents(), h1.size());
       elle::Buffer h = hash(k1, Oneway::sha1);
-      ELLE_ASSERT_EQ(h.size(), sha1_length);
+      ELLE_ASSERT_EQ(signed(h.size()), sha1_length);
       int offset = h[19] & 0x0F;
-      return (h[offset] 
+      return (h[offset]
         + (h[offset+1] << 8)
         + (h[offset+2] << 16)
         + (h[offset+3] << 24)) & 0x7FFFFFFF;
