@@ -219,7 +219,7 @@ namespace elle
 #else // POSIX version
 #if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
       // macos has 64 bit lseek because off_t is 64 bits
-      ELLE_ASSERT_GTE(sizeof(off_t), 8);
+      ELLE_ASSERT_GTE(sizeof(off_t), 8u);
       typedef off_t seek_offset_type;
       #define SEEK_FUNC ::lseek
 #else
