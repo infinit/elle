@@ -12,7 +12,7 @@ namespace infinit
     : _c(c)
     , _key(key.contents(), key.size())
     {
-      ELLE_ASSERT(_key.size() == sha1_length);
+      ELLE_ASSERT_EQ(signed(_key.size()), sha1_length);
     }
 
     int32_t hotp(elle::Buffer const& k, int64_t c)
