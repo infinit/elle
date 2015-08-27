@@ -547,17 +547,17 @@ namespace reactor
         std::string nthread = elle::os::getenv("INFINIT_FUSE_POOL", "");
         if (!nthread.empty())
           nt = std::stoi(nthread);
-        ELLE_LOG("Pool mode with %s workers", nt);
+        ELLE_TRACE("Pool mode with %s workers", nt);
         _impl->_fuse.loop_pool(nt);
       }
       else if (!elle::os::getenv("INFINIT_FUSE_THREAD", "").empty())
       {
-        ELLE_LOG("Thread mode");
+        ELLE_TRACE("Thread mode");
         _impl->_fuse.loop_mt();
       }
       else
       {
-        ELLE_LOG("Single mode");
+        ELLE_TRACE("Single mode");
         _impl->_fuse.loop();
       }
     }
@@ -565,6 +565,7 @@ namespace reactor
     void
     FileSystem::unmount()
     {
+      ELLE_TRACE("unmount");
       if (!_impl->_where.empty())
       {
         _impl->_fuse.destroy();
