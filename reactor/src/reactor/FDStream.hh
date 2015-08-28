@@ -18,8 +18,13 @@ namespace reactor
     : public elle::IOStream
   {
   public:
-    FDStream(boost::asio::io_service& service, int fd);
-    FDStream(int fd);
+#if defined(INFINIT_WINDOWS)
+    typedef HANDLE Handle;
+#else
+    typdef int Handle;
+#endif
+    FDStream(boost::asio::io_service& service, Handle fd);
+    FDStream(Handle fd);
 
     class EOF
       : public elle::Error
@@ -32,15 +37,19 @@ namespace reactor
       : public elle::PlainStreamBuffer
     {
     public:
-      StreamBuffer(boost::asio::io_service& service, int fd);
+      StreamBuffer(boost::asio::io_service& service, Handle fd);
       virtual
       Size
       read(char* buffer, Size size) override;
       virtual
       void
       write(char* buffer, Size size) override;
+#if defined(INFINIT_WINDOWS)
+      ELLE_ATTRIBUTE(boost::asio::windows::stream_handle, stream);
+#else
       ELLE_ATTRIBUTE(boost::asio::posix::stream_descriptor, stream);
-      ELLE_ATTRIBUTE_R(int, fd);
+#endif
+      ELLE_ATTRIBUTE_R(Handle, handle);
     };
   };
 }

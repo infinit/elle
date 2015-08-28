@@ -9,9 +9,10 @@ namespace reactor
     : elle::Error("end of file")
   {}
 
-  FDStream::StreamBuffer::StreamBuffer(boost::asio::io_service& service, int fd)
-    : _stream(service, fd)
-    , _fd(fd)
+  FDStream::StreamBuffer::StreamBuffer(boost::asio::io_service& service,
+                                       Handle handle)
+    : _stream(service, handle)
+    , _handle(handle)
   {}
 
   elle::PlainStreamBuffer::Size
@@ -34,7 +35,7 @@ namespace reactor
     else if (error)
       throw elle::Error(
         elle::sprintf("unable to read from %s: %s",
-                      this->_fd, error.message()));
+                      this->_handle, error.message()));
     else
       return read;
   }
@@ -45,11 +46,11 @@ namespace reactor
     elle::unreachable();
   }
 
-  FDStream::FDStream(boost::asio::io_service& service, int fd)
-    : elle::IOStream(new StreamBuffer(service, fd))
+  FDStream::FDStream(boost::asio::io_service& service, Handle handle)
+    : elle::IOStream(new StreamBuffer(service, handle))
   {}
 
-  FDStream::FDStream(int fd)
-    : FDStream(reactor::scheduler().io_service(), fd)
+  FDStream::FDStream(Handle handle)
+    : FDStream(reactor::scheduler().io_service(), handle)
   {}
 }
