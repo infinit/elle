@@ -21,7 +21,7 @@ namespace reactor
 #if defined(INFINIT_WINDOWS)
     typedef HANDLE Handle;
 #else
-    typdef int Handle;
+    typedef int Handle;
 #endif
     FDStream(boost::asio::io_service& service, Handle fd);
     FDStream(Handle fd);
