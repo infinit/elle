@@ -34,12 +34,16 @@ namespace elle
     | Overloads |
     `----------*/
     public:
+      // Const overloads
       template <typename T>
       void
       serialize_forward(T const& v);
       template <typename T>
       void
       serialize(std::string const& name, T const& v);
+      // Litteral strings overload
+      void
+      serialize(std::string const& name, char const* v);
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
       void

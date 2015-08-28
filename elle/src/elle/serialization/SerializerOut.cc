@@ -16,6 +16,12 @@ namespace elle
       , _output(output)
     {}
 
+    void
+    SerializerOut::serialize(std::string const& name, char const* v)
+    {
+      this->serialize(name, std::string(v));
+    }
+
     std::ostream&
     SerializerOut::output()
     {
