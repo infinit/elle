@@ -374,6 +374,8 @@ def configure(curl_config,
   sources = drake.nodes(
     'src/reactor/Barrier.cc',
     'src/reactor/Barrier.hh',
+    'src/reactor/FDStream.cc',
+    'src/reactor/FDStream.hh',
     'src/reactor/MultiLockBarrier.cc',
     'src/reactor/MultiLockBarrier.hh',
     'src/reactor/Channel.hh',
