@@ -1713,7 +1713,8 @@ class Builder:
             stdout = f
           if not command(c, cwd = cwd, stdout = stdout, env = env):
             if throw:
-              raise Exception('command failed: %r' % c)
+              raise Exception(
+                'command failed: %s' % command_flatten(c, env))
             else:
               return False
         return True
