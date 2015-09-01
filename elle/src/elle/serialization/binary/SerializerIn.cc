@@ -112,6 +112,9 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: deserialize string \"%s\"", *this, name);
         int sz = _serialize_number();
+        if (sz < 0)
+          throw Error(elle::sprintf("%s: invalid negative string size %s",
+            *this, sz));
         v.resize(sz);
         input().read((char*)v.data(), sz);
         ELLE_ASSERT(input().gcount() == sz);
