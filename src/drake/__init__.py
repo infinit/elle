@@ -1700,7 +1700,12 @@ class Builder:
         if not _RAW and pretty is not None:
           self.output(pretty)
         for c in cmd:
-          c = list(map(str, c))
+          def convert(e):
+            if isinstance(e, Node):
+              return str(e.path())
+            else:
+              return str(e)
+          c = list(map(convert, c))
           if _RAW or pretty is None:
             self.output(command_flatten(c, env))
           stdout = None
