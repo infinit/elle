@@ -2926,7 +2926,11 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process):
     __copy_stripped_cache[key] = res
     return res
 
-def copy(sources, to, strip_prefix = None, post_process = None):
+def copy(sources,
+         to,
+         strip_prefix = None,
+         post_process = None,
+         builder = Copy):
   """Convenience function to create Copy builders.
 
   When copying large file trees, iterating and creating Copy
@@ -2956,7 +2960,7 @@ def copy(sources, to, strip_prefix = None, post_process = None):
   >>> targets
   [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
   """
-  return __copy(sources, to, strip_prefix, Copy, post_process)
+  return __copy(sources, to, strip_prefix, builder, post_process)
 
 
 def install(sources, to, strip_prefix = None, post_process = None):
