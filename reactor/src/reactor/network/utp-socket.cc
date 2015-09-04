@@ -142,7 +142,9 @@ static uint64 on_log(utp_callback_arguments* args)
 
 std::unique_ptr<UTPSocket> UTPServer::accept()
 {
+  ELLE_DEBUG("accepting...");
   _accept_barrier.wait();
+  ELLE_DEBUG("...accepted");
   ELLE_ASSERT(_accept_barrier.opened());
   std::unique_ptr<UTPSocket> sock(_accept_queue.back().release());
   _accept_queue.pop_back();
@@ -234,6 +236,12 @@ UTPSocket::UTPSocket(UTPServer& server)
 {
 }
 
+UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
+: UTPSocket(server, utp_create_socket(server.ctx))
+{
+  connect(host, port);
+}
+
 UTPSocket::~UTPSocket()
 {
   ELLE_DEBUG("~UTPSocket");
@@ -306,13 +314,16 @@ void UTPSocket::connect(std::string const& host, int port)
               &hints, &ai);
   utp_connect(_socket, ai->ai_addr, ai->ai_addrlen);
   freeaddrinfo(ai);
+  ELLE_DEBUG("waiting for connect...");
   _connect_barrier.wait();
+  ELLE_DEBUG("connected");
   if (!_open)
     throw SocketClosed();
 }
 
 void UTPSocket::write(elle::ConstWeakBuffer const& buf, DurationOpt opt)
 {
+  ELLE_DEBUG("write %s", buf.size());
   using namespace boost::posix_time;
   if (!_open)
     throw SocketClosed();
@@ -456,7 +467,6 @@ void UTPServer::_check_icmp()
 #ifdef INFINIT_LINUX
 
   int fd = _socket->socket()->native_handle();
-  ELLE_DEBUG("icmp check %s", fd);
   unsigned char vec_buf[4096], ancillary_buf[4096];
   struct iovec iov = { vec_buf, sizeof(vec_buf) };
   struct sockaddr_in remote;
@@ -478,7 +488,6 @@ void UTPServer::_check_icmp()
   msg.msg_controllen = sizeof(ancillary_buf);
 
   len = recvmsg(fd, &msg, MSG_ERRQUEUE);
-  ELLE_DEBUG("got %s", len);
   if (len < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
   {
     ELLE_DEBUG("recvmsg error: %s", errno);
@@ -618,7 +627,6 @@ void UTPServer::listen(EndPoint const& ep)
       {
         while (true)
         {
-          ELLE_DEBUG("check timeout");
           utp_check_timeouts(ctx);
           reactor::sleep(50_ms);
           _check_icmp();

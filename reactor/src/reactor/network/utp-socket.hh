@@ -54,6 +54,7 @@ namespace reactor
     public:
       UTPSocket(UTPServer& server);
       UTPSocket(UTPServer& server, utp_socket* socket);
+      UTPSocket(UTPServer& server, std::string const& host, int port);
       ~UTPSocket();
       void
       connect(std::string const& host, int port);
