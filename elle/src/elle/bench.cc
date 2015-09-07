@@ -40,7 +40,7 @@ namespace elle
   void Bench::log()
   {
     ELLE_LOG_COMPONENT(_name.c_str());
-    ELLE_LOG("%s: AVG %s, MIN %s, MAX %s, COUNT %s", _name,
+    ELLE_TRACE("%s: AVG %s, MIN %s, MAX %s, COUNT %s", _name,
       std::round(double(_sum*_roundfactor/_count)) / _roundfactor,
       _min, _max, _count);
   }
