@@ -3474,7 +3474,7 @@ class Runner(Builder):
            open(str(self.__err.path()), 'w') as err, \
            open(str(self.__status.path()), 'w') as rv:
         if self.__env is not None:
-          output_env = ('%s=%s ' % (var, pipes.quote(value))
+          output_env = ('%s=%s ' % (var, pipes.quote(str(value)))
                         for var, value in self.__env.items())
         else:
           output_env = ()
@@ -3484,6 +3484,7 @@ class Runner(Builder):
         env = dict(_OS.environ)
         if self.__env is not None:
           env.update(self.__env)
+          env = { k: str(v) for k, v in env.items() }
         try:
           p = subprocess.Popen(self.command,
                                stdout = out,
