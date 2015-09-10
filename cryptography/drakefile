@@ -397,11 +397,12 @@ def configure(openssl_config,
   ## Install ##
   ## ------- ##
 
-  rule_install = drake.Rule('install')
-  prefix = drake.Path(prefix)
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
-    rule_install << drake.install(lib_dynamic, prefix)
-  rule_install << drake.install(lib_static, prefix)
-  rule_install << drake.install(
-    list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
-    prefix / 'include', 'src')
+  if prefix is not False:
+    rule_install = drake.Rule('install')
+    prefix = drake.Path(prefix)
+    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+      rule_install << drake.install(lib_dynamic, prefix)
+    rule_install << drake.install(lib_static, prefix)
+    rule_install << drake.install(
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      prefix / 'include', 'src')
