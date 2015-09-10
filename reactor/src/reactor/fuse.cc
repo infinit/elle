@@ -57,9 +57,16 @@ namespace reactor
         ELLE_LOG("%s: %s", res, strerror(-res));
         break;
       }
-      sched.mt_run<void>("fuse worker", [&] {
-          fuse_session_process(s, (const char*)buffer_data, res, ch);
-      });
+      try
+      {
+        sched.mt_run<void>("fuse worker", [&] {
+            fuse_session_process(s, (const char*)buffer_data, res, ch);
+        });
+      }
+      catch (std::exception const& e)
+      {
+        ELLE_WARN("Exception escaped fuse_process: %s", e.what());
+      }
     }
     sched.run_later("exit notifier", _on_loop_exited);
   }
