@@ -810,21 +810,24 @@ namespace reactor
 
 
 
+#if defined(__arm__) || defined(__clang__)
+// libc++
+
+#include <reactor/libcxx-exceptions/cxa_exception.hpp>
+#define THROW_SPEC
+
+#else
+//libstdc++
+#include <reactor/libcxx-exceptions/unwind-cxx.h>
+#define THROW_SPEC throw()
+
+#endif
+
 /* Override _cxa_get_globals from libc++/libstdc++
 * which uses TLS.
 * Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
 * between coroutines.
 */
-// FIXME: wrong switches, we assume arm=libc++, linux=libstdc++
-#if defined(__arm__) || defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
-
-#include <reactor/libcxx-exceptions/cxa_exception.hpp>
-#define THROW_SPEC
-
-#elif defined(INFINIT_LINUX) || defined(INFINIT_WINDOWS)
-#include <reactor/libcxx-exceptions/unwind-cxx.h>
-#define THROW_SPEC throw()
-#endif
 
 
 typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;

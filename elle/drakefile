@@ -302,7 +302,7 @@ def configure(zlib_lib,
       'src/elle/system/platform.cc',
       'src/elle/system/user_paths.cc',
     )
-  else:
+  elif cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     sources += drake.nodes(
       'src/elle/system/platform.mm',
       'src/elle/system/user_paths.mm',

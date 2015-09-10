@@ -1,12 +1,18 @@
 #include <reactor/backend/backend.hh>
 
-#if defined(__arm__) || defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+#if defined(__arm__) || defined(__clang__)
+// libc++
 
 #include <reactor/libcxx-exceptions/cxa_exception.hpp>
+#define THROW_SPEC
 
-#elif defined(INFINIT_LINUX) || defined(INFINIT_WINDOWS)
+#else
+//libstdc++
 #include <reactor/libcxx-exceptions/unwind-cxx.h>
+#define THROW_SPEC throw()
+
 #endif
+
 
 namespace reactor
 {

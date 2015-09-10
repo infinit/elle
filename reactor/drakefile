@@ -81,7 +81,7 @@ def configure(curl_config,
     library_coroutine = libcoroutine
 
   # Libcxabi through llvm
-  if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     build_libcxxabi = drake.Rule("libcxxabi")
     llvm_url = 'http://llvm.org/releases/3.5.1/llvm-3.5.1.src.tar.xz'
     libcxx_url = 'http://llvm.org/releases/3.5.1/libcxx-3.5.1.src.tar.xz'
@@ -221,7 +221,7 @@ def configure(curl_config,
       build_libcxxabi << drake.nodes(libcxxabi_lib)
 
 
-  if cxx_toolkit.os in [drake.os.macos]:
+  if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     # Every lib/bin links to /usr/lib/libc++.dylib, which itself refers /usr/lib/libc++abi.dylib.
     # So we need to copy and patch libc++.dylib
     def rpath_libcxx(tgt):
