@@ -117,7 +117,10 @@ namespace elle
             *this, sz));
         v.resize(sz);
         input().read((char*)v.data(), sz);
-        ELLE_ASSERT(input().gcount() == sz);
+         if (input().gcount() != sz)
+           throw Error(elle::sprintf(
+            "%s: short read when deserializing '%s': expected %s, got %s",
+            *this, name, sz, input().gcount()));
       }
 
       void
