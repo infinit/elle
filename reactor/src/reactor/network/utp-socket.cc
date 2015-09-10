@@ -170,11 +170,16 @@ UTPServer::UTPServer()
 
 UTPServer::~UTPServer()
 {
+  _cleanup();
+}
+void UTPServer::_cleanup()
+{
   ELLE_DEBUG("Terminating");
   if (!_socket)
     return; // was never initialized
   _socket->close();
   _socket->socket()->close();
+  _socket.reset(nullptr);
   if (_checker)
   {
     _checker->terminate();
@@ -612,6 +617,7 @@ void UTPServer::listen(EndPoint const& ep)
         }
         catch (reactor::Terminate const&)
         {
+          _cleanup();
           throw;
         }
         catch (std::exception const& e)

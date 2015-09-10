@@ -37,6 +37,8 @@ namespace reactor
     private:
       void
       _check_icmp();
+      void
+      _cleanup();
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
       std::unique_ptr<UDPSocket> _socket;
