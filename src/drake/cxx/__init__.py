@@ -923,6 +923,10 @@ class GccToolkit(Toolkit):
                   '', self.cxx)
 
   @property
+  def kind(self):
+    return self.__kind
+
+  @property
   def include_path(self):
     if self.__include_path is None:
       cmd = [self.cxx, '-v', '-x', 'c++', '-E', '-']
