@@ -1979,3 +1979,15 @@ class CompilationDatabase(drake.Node):
   def __init__(self, path = None):
     super().__init__(path)
     CompilationDatabase.Builder(self)
+
+class PatchAndInstall(drake.Install):
+  def execute(self):
+    if not super.execute():
+      return False
+    output = subprocess.check_output(['otool', '-L', self.target.path()])
+    lines = output.decode('utf-8').strip().split('\n')
+    lines = [x.split(' ')[0] for x in lines if 'libstdc++' in x or 'libgcc_s.1' in x]
+    for l in lines:
+      self.cmd('Localize libstdc++ of %s' % self.target,
+        ['install_name_tool', '-change', l, '@rpath/%s' % (os.path.filename(l))], throw = True)
+
