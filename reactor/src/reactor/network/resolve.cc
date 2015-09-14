@@ -47,7 +47,7 @@ namespace reactor
     protected:
       virtual
       void
-      _abort()
+      _abort() override
       {
         ELLE_TRACE_SCOPE("%s: abort", *this);
         this->_canceled = true;
@@ -57,7 +57,7 @@ namespace reactor
 
       virtual
       void
-      _start()
+      _start() override
       {
         ELLE_TRACE("resolve %s:%s", this->_hostname, this->_service);
         if (this->ipv4_only())

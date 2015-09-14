@@ -13,7 +13,7 @@ namespace reactor
       bool release() override;
 
     protected:
-      virtual bool _wait(Thread* thread);
+      virtual bool _wait(Thread* thread) override;
 
     private:
       int _count;

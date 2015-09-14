@@ -295,7 +295,7 @@ namespace reactor
       /// Pretty print the request.
       virtual
       void
-      print(std::ostream& stream) const;
+      print(std::ostream& stream) const override;
     };
 
     std::ostream&

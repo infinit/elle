@@ -205,7 +205,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         this->socket().async_connect(
           this->_endpoint, boost::bind(&Connection::_wakeup, this, _1));
@@ -407,7 +407,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         // FIXME: be synchronous if enough bytes are available
         if (this->_some)
@@ -536,7 +536,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         boost::asio::async_read_until(
           *this->_socket.socket(),
@@ -626,7 +626,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         boost::asio::async_write(
           *this->_socket.socket(),

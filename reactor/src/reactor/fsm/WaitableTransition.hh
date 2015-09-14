@@ -17,7 +17,7 @@ namespace reactor
       boost::optional<std::function<void()>>
       run(reactor::Signal& triggered,
           Transition*& trigger,
-          Thread& action_thread);
+          Thread& action_thread) override;
     protected:
       WaitableTransition(State& start,
                          State& end,

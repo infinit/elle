@@ -14,7 +14,7 @@ namespace reactor
     public:
       virtual
       void
-      done(Transition*& trigger, std::exception_ptr& exn);
+      done(Transition*& trigger, std::exception_ptr& exn) override;
     protected:
       EndTransition(State& start,
                     State& end);

@@ -153,8 +153,9 @@ namespace reactor
     | Connection |
     `-----------*/
     public:
+      virtual
       void
-      close();
+      close() override;
     private:
       void
       _connect(EndPoint const& peer, DurationOpt timeout);
@@ -165,11 +166,13 @@ namespace reactor
     | Properties |
     `-----------*/
     public:
+      virtual
       boost::asio::ip::tcp::endpoint
-      peer() const;
+      peer() const override;
 
+      virtual
       boost::asio::ip::tcp::endpoint
-      local_endpoint() const;
+      local_endpoint() const override;
 
     /*----------------.
     | Pretty printing |

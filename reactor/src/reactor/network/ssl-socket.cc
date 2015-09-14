@@ -168,7 +168,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         this->_socket.socket()->async_handshake(
           this->_type,
@@ -229,7 +229,7 @@ namespace reactor
     protected:
       virtual
       void
-      _start()
+      _start() override
       {
         this->_socket.socket()->async_shutdown(
           std::bind(&SSLShutdown::_wakeup,

@@ -171,7 +171,7 @@ namespace reactor
       */
       void terminate_now(bool suicide = true);
     protected:
-      virtual bool _wait(Thread* thread);
+      virtual bool _wait(Thread* thread) override;
     private:
       friend class Waitable;
       friend class TimeoutGuard;

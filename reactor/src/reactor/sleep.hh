@@ -13,8 +13,8 @@ namespace reactor
       Sleep(Scheduler& scheduler, Duration d);
 
     protected:
-      virtual void _abort();
-      virtual void _start();
+      virtual void _abort() override;
+      virtual void _start() override;
 
   /*----------.
   | Printable |

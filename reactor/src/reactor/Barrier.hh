@@ -57,7 +57,7 @@ namespace reactor
     void close();
   protected:
     /// Stop the thread if and only if this is closed.
-    virtual bool _wait(Thread* thread);
+    virtual bool _wait(Thread* thread) override;
 
   /*----------.
   | Inversion |

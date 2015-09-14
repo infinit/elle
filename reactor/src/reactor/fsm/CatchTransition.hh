@@ -24,7 +24,7 @@ namespace reactor
     public:
       virtual
       void
-      done(Transition*& trigger, std::exception_ptr& exn);
+      done(Transition*& trigger, std::exception_ptr& exn) override;
       ELLE_ATTRIBUTE_RW(std::function<bool (std::exception_ptr const&)>,
                         condition);
     protected:
