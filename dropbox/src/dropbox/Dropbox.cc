@@ -431,6 +431,9 @@ namespace dropbox
   std::string
   Dropbox::escape_path(boost::filesystem::path const& path)
   {
+    if (path == "/")
+      return "/";
+
     std::string res;
     for (auto const& chunk: path)
     {
@@ -457,7 +460,7 @@ namespace dropbox
     auto r = this->_request(
       str(boost::format(url_fmt) % this->escape_path(path)),
       reactor::http::Method::GET,
-      {{}}, {}, {}, "metadata", {reactor::http::StatusCode::Not_Found});
+      {}, {}, {}, "metadata", {reactor::http::StatusCode::Not_Found});
     if (r.status() == reactor::http::StatusCode::OK)
     {
       // FIXME: deserialize json with helper everywhere
