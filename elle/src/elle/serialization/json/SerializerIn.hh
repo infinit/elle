@@ -80,7 +80,7 @@ namespace elle
         void
         _serialize_option(std::string const& name,
                           bool,
-                          std::function<void ()> const& f);
+                          std::function<void ()> const& f) override;
         virtual
         void
         _serialize_array(std::string const& name,
@@ -88,10 +88,10 @@ namespace elle
                          std::function<void ()> const& f) override;
         virtual
         bool
-        _enter(std::string const& name);
+        _enter(std::string const& name) override;
         virtual
         void
-        _leave(std::string const& name);
+        _leave(std::string const& name) override;
         virtual
         bool
         _option_filled() override;
