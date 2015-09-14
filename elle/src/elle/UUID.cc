@@ -1,5 +1,7 @@
 #include <elle/UUID.hh>
 
+#include <chrono>
+
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/string_generator.hpp>
@@ -36,7 +38,7 @@ namespace elle
     if (first)
     {
       first = false;
-      rng.seed(time(nullptr));
+      rng.seed(std::chrono::steady_clock::now().time_since_epoch().count() );
     }
     static boost::uuids::basic_random_generator<boost::mt19937> generator(&rng);
     return generator();
