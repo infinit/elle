@@ -664,7 +664,8 @@ namespace dropbox
   {
     auto r = this->_request("https://api.dropbox.com/1/delta/latest_cursor",
                             reactor::http::Method::POST,
-                            {{}}, {}, {}, "delta_latest_cursor");
+                            reactor::http::Request::QueryDict(),
+                            {}, {}, "delta_latest_cursor");
     this->_check_status("fetching latest cursor", r);
     {
       elle::serialization::json::SerializerIn s(r, false);
