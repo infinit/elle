@@ -460,7 +460,8 @@ namespace dropbox
     auto r = this->_request(
       str(boost::format(url_fmt) % this->escape_path(path)),
       reactor::http::Method::GET,
-      {}, {}, {}, "metadata", {reactor::http::StatusCode::Not_Found});
+      reactor::http::Request::QueryDict(), {}, {}, "metadata",
+      {reactor::http::StatusCode::Not_Found});
     if (r.status() == reactor::http::StatusCode::OK)
     {
       // FIXME: deserialize json with helper everywhere
