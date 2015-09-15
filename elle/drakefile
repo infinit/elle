@@ -297,7 +297,7 @@ def configure(zlib_lib,
       'src/elle/system/username.cc',
       'src/elle/system/username.hh',
     )
-  if cxx_toolkit.os not in [drake.os.macos, drake.os.ios]:
+  if cxx_toolkit.os not in [drake.os.macos, drake.os.ios] or cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.gcc:
     sources += drake.nodes(
       'src/elle/system/platform.cc',
       'src/elle/system/user_paths.cc',

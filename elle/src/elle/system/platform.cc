@@ -19,8 +19,10 @@ namespace elle
         return "Linux";
 #elif defined(INFINIT_ANDROID)
         return "Android";
-#elif defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
-# error Use platform.mm instead.
+#elif defined INFINIT_MACOSX
+        return "MacOSX";
+#elif defined INFINIT_IOS
+        return "iOS";
 #else
 # error Please define INFINIT_{OS} according to your platform.
 #endif
@@ -35,7 +37,7 @@ namespace elle
 #elif defined INFINIT_LINUX
         return "unknown";
 #elif defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
-# error Use platform.mm instead.
+        return "unknown";
 #elif defined INFINIT_ANDROID
         return "unknown"; // FIXME
 #else

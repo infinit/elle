@@ -17,9 +17,7 @@ namespace elle
     boost::filesystem::path
     home_directory()
     {
-#if defined(INFINIT_IOS) || defined(INFINIT_MACOSX)
-# error Use user_paths.mm on Apple platforms.
-#elif defined(INFINIT_WINDOWS)
+#if defined(INFINIT_WINDOWS)
       wchar_t path[MAX_PATH];
       if (SUCCEEDED(SHGetSpecialFolderPathW(NULL, path, CSIDL_PROFILE, 0)))
       {
