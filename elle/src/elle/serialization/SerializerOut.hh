@@ -60,6 +60,7 @@ namespace elle
     | Details |
     `--------*/
     protected:
+      friend class Serializer;
       std::ostream&
       output();
       ELLE_ATTRIBUTE(std::ostream&, output);

@@ -601,9 +601,8 @@ namespace elle
           -1,
           [&] ()
           {
-            collection.emplace_back();
-            As a(collection.back());
-            this->_serialize_anonymous(name, a);
+            collection.emplace_back(
+              static_cast<SerializerIn*>(this)->deserialize<As>());
           });
       }
     }
