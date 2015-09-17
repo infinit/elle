@@ -232,9 +232,8 @@ namespace reactor
       ELLE_DEBUG_SCOPE("fusop_release %s", path);
       try
       {
-        Handle* handle = (Handle*)fi->fh;
+        std::unique_ptr<Handle> handle((Handle*)fi->fh);
         handle->close();
-        delete handle;
       }
       catch (Error const& e)
       {
