@@ -38,10 +38,23 @@ values_iterator()
   BOOST_CHECK(values.empty());
 }
 
+#include <elle/unordered_map.hh>
+
+static
+void
+missing_key_exception()
+{
+  elle::unordered_map<int, int> map({{0, 0}, {1, 1}});
+  BOOST_CHECK_EQUAL(map.at(0), 0);
+  BOOST_CHECK_EQUAL(map.at(1), 1);
+  BOOST_CHECK_THROW(map.at(2), elle::Error);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(contains), 0, 1);
   master.add(BOOST_TEST_CASE(keys_iterator), 0, 1);
   master.add(BOOST_TEST_CASE(values_iterator), 0, 1);
+  master.add(BOOST_TEST_CASE(missing_key_exception), 0, 1);
 }
