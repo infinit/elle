@@ -245,6 +245,24 @@ namespace reactor
 
     static
     int
+    fusop_flush(const char *path, struct fuse_file_info *fi)
+    {
+      ELLE_DEBUG_SCOPE("fusop_flush %s", path);
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        handle->close();
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error flushing %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
+    static
+    int
     fusop_ftruncate(const char* path, off_t offset,
                     struct fuse_file_info* fi)
     {
@@ -534,6 +552,7 @@ namespace reactor
       ops.utimens = fusop_utimens;
       ops.truncate = fusop_truncate;
       ops.ftruncate = fusop_ftruncate;
+      ops.flush = fusop_flush;
       ops.setxattr = fusop_setxattr;
       ops.getxattr = fusop_getxattr;
       ops.listxattr = fusop_listxattr;
