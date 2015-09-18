@@ -285,7 +285,6 @@ namespace elle
 
     // Note: no ostreambuf equivalent, as the buffer is const
 
-
   /*---------.
   | Iterable |
   `---------*/
@@ -333,6 +332,12 @@ namespace elle
   public:
     Byte*
     mutable_contents() const;
+    /// A subset of this buffer.
+    WeakBuffer
+    range(int start) const;
+    /// A subset of this buffer.
+    WeakBuffer
+    range(int start, int end) const;
 
   /*---------.
   | Iterable |

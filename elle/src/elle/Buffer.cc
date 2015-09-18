@@ -552,16 +552,20 @@ namespace elle
     return this->_contents[i];
   }
 
-  /// A subset of this buffer.
+  WeakBuffer
+  WeakBuffer::range(int start) const
+  {
+    return this->range(start, this->size());
+  }
+
   ConstWeakBuffer
   ConstWeakBuffer::range(int start) const
   {
     return this->range(start, this->size());
   }
 
-  /// A subset of this buffer.
-  ConstWeakBuffer
-  ConstWeakBuffer::range(int start, int end) const
+  WeakBuffer
+  WeakBuffer::range(int start, int end) const
   {
     if (start < 0)
       start = this->size() + start;
@@ -569,9 +573,14 @@ namespace elle
       end = this->size() + end;
     ELLE_ASSERT_LTE(start, end);
     ELLE_ASSERT_LTE(end, signed(this->size()));
-    return ConstWeakBuffer(this->contents() + start, end - start);
+    return WeakBuffer(this->mutable_contents() + start, end - start);
   }
 
+  ConstWeakBuffer
+  ConstWeakBuffer::range(int start, int end) const
+  {
+    return static_cast<WeakBuffer const*>(this)->range(start, end);
+  }
 
   bool
   ConstWeakBuffer::operator ==(ConstWeakBuffer const& other) const
