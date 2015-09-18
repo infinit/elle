@@ -1,19 +1,23 @@
-#include <reactor/filesystem.hh>
+#include <errno.h>
+#include <sys/types.h>
+
+#include <attr/xattr.h>
 
 #include <unordered_map>
-
-#include <reactor/fuse.hh>
-#include <reactor/thread.hh>
-#include <reactor/scheduler.hh>
-
-#include <boost/filesystem.hpp>
-
-#include <elle/os/environ.hh>
 
 #define _FILE_OFFSET_BITS 64
 #define FUSE_USE_VERSION 26
 
 #include <fuse/fuse.h>
+
+#include <boost/filesystem.hpp>
+
+#include <elle/os/environ.hh>
+
+#include <reactor/filesystem.hh>
+#include <reactor/fuse.hh>
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
 ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
@@ -34,7 +38,9 @@ namespace reactor
   {
     typedef std::shared_ptr<Path> PathPtr;
 
-    static int fusop_getattr(const char *path, struct stat *stbuf)
+    static
+    int
+    fusop_getattr(const char *path, struct stat *stbuf)
     {
       ELLE_TRACE_SCOPE("fusop_getattr %s", path);
       try
@@ -45,13 +51,16 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error stating %s: %s", path, e.what());
+        ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }
       return 0;
     }
-    static int fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-       off_t offset, struct fuse_file_info *fi)
+
+    static
+    int
+    fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+                  off_t offset, struct fuse_file_info *fi)
     {
       ELLE_TRACE_SCOPE("fusop_readdir %s", path);
       try
@@ -419,12 +428,14 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_setxattr(const char *path, const char *key,
-                               const char *val, size_t valsize, int flags
+    static
+    int
+    fusop_setxattr(const char *path, const char *key,
+                   const char *val, size_t valsize, int flags
 #ifdef INFINIT_MACOSX
-                              , uint32_t position
+                   , uint32_t position
 #endif
-                              )
+      )
     {
       ELLE_TRACE_SCOPE("fusop_setxattr %s", path);
       try
@@ -435,17 +446,19 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on setxattr %s: %s", path, e);
+        ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }
       return 0;
     }
-    static int fusop_getxattr(const char *path, const char *key,
-                              char *val, size_t valsize
+
+    static
+    int
+    fusop_getxattr(const char *path, const char *key, char *val, size_t valsize
 #ifdef INFINIT_MACOSX
-                              , uint32_t position
+                   , uint32_t position
 #endif
-                             )
+      )
     {
       ELLE_TRACE_SCOPE("fusop_getxattr %s buf %s", path, valsize);
       try
@@ -459,12 +472,16 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on getxattr %s: %s", path, e);
+        if (e.error_code() != ENOATTR)
+          ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }
       return 0;
     }
-    static int fusop_listxattr(const char* path, char* buf, size_t size)
+
+    static
+    int
+    fusop_listxattr(const char* path, char* buf, size_t size)
     {
       ELLE_TRACE_SCOPE("fusop_listxattr %s", path);
       try
@@ -488,7 +505,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_removexattr(const char *path, const char *key)
+
+    static
+    int
+    fusop_removexattr(const char *path, const char *key)
     {
       ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
       try
@@ -499,15 +519,18 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on removexattr %s: %s", path, e);
+        if (e.error_code() != ENOATTR)
+          ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }
       return 0;
     }
+
     class FileSystemImpl
     {
     public:
-      std::shared_ptr<Path> fetch_recurse(boost::filesystem::path path);
+      std::shared_ptr<Path>
+      fetch_recurse(boost::filesystem::path path);
       std::unique_ptr<Operations> _operations;
       bool _full_tree;
       FuseContext _fuse;
@@ -608,16 +631,12 @@ namespace reactor
     {
       if (path == "" || path == "\\")
         path = "/";
-      ELLE_DEBUG("fetch_recurse on %s", path);
+      ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
       auto it = _cache.find(path);
       if (it != _cache.end())
-      {
-        ELLE_DEBUG("cache hit: %x", it->second.get());
         return it->second;
-      }
       else
       {
-        ELLE_DEBUG("cache miss");
         if (path == "/")
         {
           auto p = _operations->path("/");
@@ -636,6 +655,7 @@ namespace reactor
     std::shared_ptr<Path>
     FileSystem::path(std::string const& opath)
     {
+      ELLE_DEBUG_SCOPE("%s: fetch \"%s\"", *this, opath);
       std::string spath(opath);
       if (spath == "" || spath == "\\")
         spath = "/";
