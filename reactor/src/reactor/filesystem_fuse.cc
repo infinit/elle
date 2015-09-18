@@ -1,7 +1,11 @@
 #include <errno.h>
 #include <sys/types.h>
 
-#include <attr/xattr.h>
+#ifdef INFINIT_LINUX
+# include <attr/xattr.h>
+#else
+# include <sys/xattr.h>
+#endif
 
 #include <unordered_map>
 
