@@ -36,7 +36,7 @@ namespace reactor
 
     static int fusop_getattr(const char *path, struct stat *stbuf)
     {
-      ELLE_DEBUG_SCOPE("fusop_getattr %s", path);
+      ELLE_TRACE_SCOPE("fusop_getattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -53,7 +53,7 @@ namespace reactor
     static int fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
        off_t offset, struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_readdir %s", path);
+      ELLE_TRACE_SCOPE("fusop_readdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -75,13 +75,14 @@ namespace reactor
     int
     fusop_open(const char *path, struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_open %s %s", path, fi->flags);
+      ELLE_TRACE_SCOPE("fusop_open %s %s", path, fi->flags);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         PathPtr p = fs->path(path);
         auto handle = p->open(fi->flags, 0);
         fi->fh = (decltype(fi->fh)) handle.release();
+        ELLE_TRACE("handle: %s", fi->fh);
       }
       catch (Error const& e)
       {
@@ -95,7 +96,7 @@ namespace reactor
     int
     fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
+      ELLE_TRACE_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -115,7 +116,7 @@ namespace reactor
     int
     fusop_unlink(const char* path)
     {
-      ELLE_DEBUG_SCOPE("fusop_unlink %s", path);
+      ELLE_TRACE_SCOPE("fusop_unlink %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -134,7 +135,7 @@ namespace reactor
     int
     fusop_mkdir(const char* path, mode_t mode)
     {
-      ELLE_DEBUG_SCOPE("fusop_mkdir %s", path);
+      ELLE_TRACE_SCOPE("fusop_mkdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -153,7 +154,7 @@ namespace reactor
     int
     fusop_rmdir(const char* path)
     {
-      ELLE_DEBUG_SCOPE("fusop_rmdir %s", path);
+      ELLE_TRACE_SCOPE("fusop_rmdir %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -172,7 +173,7 @@ namespace reactor
     int
     fusop_rename(const char* path, const char* to)
     {
-      ELLE_DEBUG_SCOPE("fusop_rename %s %s", path, to);
+      ELLE_TRACE_SCOPE("fusop_rename %s %s", path, to);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -192,7 +193,7 @@ namespace reactor
     fusop_read(const char *path, char *buf, size_t size, off_t offset,
                struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
+      ELLE_TRACE_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -211,7 +212,8 @@ namespace reactor
     fusop_write(const char *path, const char *buf, size_t size, off_t offset,
                 struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_write %s sz=%s, offset=%s ", path, size, offset);
+      ELLE_TRACE_SCOPE("fusop_write %s(%s) sz=%s, offset=%s ",
+                       path, fi->fh, size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -229,7 +231,7 @@ namespace reactor
     int
     fusop_release(const char *path, struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_release %s", path);
+      ELLE_TRACE_SCOPE("fusop_release %s", path);
       try
       {
         std::unique_ptr<Handle> handle((Handle*)fi->fh);
@@ -247,7 +249,7 @@ namespace reactor
     int
     fusop_flush(const char *path, struct fuse_file_info *fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_flush %s", path);
+      ELLE_TRACE_SCOPE("fusop_flush %s(%s)", path, fi->fh);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -266,7 +268,7 @@ namespace reactor
     fusop_ftruncate(const char* path, off_t offset,
                     struct fuse_file_info* fi)
     {
-      ELLE_DEBUG_SCOPE("fusop_ftruncate %s %s", path, offset);
+      ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", path, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -284,7 +286,7 @@ namespace reactor
     int
     fusop_readlink(const char* path, char* buf, size_t len)
     {
-      ELLE_DEBUG_SCOPE("fusop_readlink %s", path);
+      ELLE_TRACE_SCOPE("fusop_readlink %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -306,7 +308,7 @@ namespace reactor
     int
     fusop_symlink(const char* target, const char* where)
     {
-      ELLE_DEBUG_SCOPE("fusop_symlink %s %s", target, where);
+      ELLE_TRACE_SCOPE("fusop_symlink %s %s", target, where);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -322,7 +324,7 @@ namespace reactor
     }
     static int fusop_link(const char* path, const char* to)
     {
-      ELLE_DEBUG_SCOPE("fusop_link %s %s", path, to);
+      ELLE_TRACE_SCOPE("fusop_link %s %s", path, to);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -338,7 +340,7 @@ namespace reactor
     }
     static int fusop_chmod(const char* path, mode_t mode)
     {
-      ELLE_DEBUG_SCOPE("fusop_chmod %s %s", path, mode);
+      ELLE_TRACE_SCOPE("fusop_chmod %s %s", path, mode);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -354,7 +356,7 @@ namespace reactor
     }
     static int fusop_chown(const char* path, uid_t uid, gid_t gid)
     {
-      ELLE_DEBUG_SCOPE("fusop_chown %s", path);
+      ELLE_TRACE_SCOPE("fusop_chown %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -370,7 +372,7 @@ namespace reactor
     }
     static int fusop_statfs(const char* path, struct ::statvfs* svfs)
     {
-      ELLE_DEBUG_SCOPE("fusop_statfs %s", path);
+      ELLE_TRACE_SCOPE("fusop_statfs %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -386,7 +388,7 @@ namespace reactor
     }
     static int fusop_utimens(const char* path, const struct timespec tv[2])
     {
-      ELLE_DEBUG_SCOPE("fusop_utimens %s", path);
+      ELLE_TRACE_SCOPE("fusop_utimens %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -402,7 +404,7 @@ namespace reactor
     }
     static int fusop_truncate(const char* path, off_t new_size)
     {
-      ELLE_DEBUG_SCOPE("fusop_truncate %s", path);
+      ELLE_TRACE_SCOPE("fusop_truncate %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -424,7 +426,7 @@ namespace reactor
 #endif
                               )
     {
-            ELLE_DEBUG_SCOPE("fusop_setxattr %s", path);
+      ELLE_TRACE_SCOPE("fusop_setxattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -445,7 +447,7 @@ namespace reactor
 #endif
                              )
     {
-      ELLE_DEBUG_SCOPE("fusop_getxattr %s buf %s", path, valsize);
+      ELLE_TRACE_SCOPE("fusop_getxattr %s buf %s", path, valsize);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -464,7 +466,7 @@ namespace reactor
     }
     static int fusop_listxattr(const char* path, char* buf, size_t size)
     {
-      ELLE_DEBUG_SCOPE("fusop_listxattr %s", path);
+      ELLE_TRACE_SCOPE("fusop_listxattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
@@ -488,7 +490,7 @@ namespace reactor
     }
     static int fusop_removexattr(const char *path, const char *key)
     {
-      ELLE_DEBUG_SCOPE("fusop_removexattr %s", path);
+      ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
       try
       {
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
