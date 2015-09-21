@@ -291,7 +291,9 @@ namespace reactor
         /// Wrap run function so that it can be passed when doing make_fcontext.
         friend void wrapped_run(intptr_t);
         ELLE_ATTRIBUTE(bool, root);
+        #ifdef VALGRIND
         ELLE_ATTRIBUTE(unsigned int, valgrind_stack);
+        #endif
       };
 
       static
