@@ -615,8 +615,8 @@ namespace reactor
       ELLE_TRACE("unmount");
       if (!_impl->_where.empty())
       {
-        _impl->_fuse.destroy();
         _impl->_where = "";
+        _impl->_fuse.destroy();
         this->_signal();
       }
     }
