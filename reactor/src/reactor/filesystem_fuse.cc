@@ -1,3 +1,6 @@
+#define _FILE_OFFSET_BITS 64 // This goes before sys/types.h.
+#define FUSE_USE_VERSION 26
+
 #include <errno.h>
 #include <sys/types.h>
 
@@ -8,9 +11,6 @@
 #endif
 
 #include <unordered_map>
-
-#define _FILE_OFFSET_BITS 64
-#define FUSE_USE_VERSION 26
 
 #include <fuse/fuse.h>
 
