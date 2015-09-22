@@ -55,7 +55,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("error: %s", e.what());
+        ELLE_TRACE("filesystem error statting %s: %s", path, e.what());
         return -e.error_code();
       }
       return 0;
@@ -586,6 +586,7 @@ namespace reactor
       ops.getxattr = fusop_getxattr;
       ops.listxattr = fusop_listxattr;
       ops.removexattr = fusop_removexattr;
+      ops.flag_nullpath_ok = true;
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
       _impl->_fuse.on_loop_exited([this] { this->unmount();});
       if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
