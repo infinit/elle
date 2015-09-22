@@ -266,8 +266,33 @@ class VersionGenerator(drake.Builder):
     raise NotImplementedError()
 
 class PythonVersionGenerator(VersionGenerator):
+
   def _variable(self, name, value):
     return '%s = %s' % (name, repr(value))
+
+class CxxVersionGenerator(VersionGenerator):
+
+  def __init__(self, prefix, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.__prefix = prefix
+
+  def _variable(self, name, value):
+    try:
+      return '#define %s_%s %s' % \
+        (self.__prefix.upper(), name.upper(), int(value))
+    except:
+      return '#define %s_%s "%s"' % \
+        (self.__prefix.upper(), name.upper(), value)
+
+  def _prologue(self):
+    yield '#ifndef %s_GIT_VERSION_HH' % self.__prefix
+    yield '# define %s_GIT_VERSION_HH' % self.__prefix
+    yield ''
+
+  def _epilogue(self):
+    yield ''
+    yield '#endif'
+
 
 def set_local_libcxx(cxx_toolkit):
   def _set_local_libcxx(tgt):
