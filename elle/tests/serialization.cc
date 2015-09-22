@@ -211,7 +211,7 @@ public:
 template <typename Format, template <typename, typename> class Container>
 static
 void
-array()
+collection()
 {
   std::stringstream stream;
   {
@@ -230,6 +230,30 @@ array()
                       (Container<std::string, std::allocator<std::string>>
                       {"foo", "bar", "baz"}));
   }
+}
+
+template <typename Format>
+static
+void
+list()
+{
+  return collection<Format, std::list>();
+}
+
+template <typename Format>
+static
+void
+deque()
+{
+  return collection<Format, std::deque>();
+}
+
+template <typename Format>
+static
+void
+vector()
+{
+  return collection<Format, std::vector>();
 }
 
 template <typename Format>
@@ -962,28 +986,35 @@ exceptions()
   }
 }
 
+#define FOR_ALL_SERIALIZATION_TYPES(Name)                               \
+  {                                                                     \
+    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE(#Name);   \
+    auto json = &Name<elle::serialization::Json>;                       \
+    subsuite->add(BOOST_TEST_CASE(json));                               \
+    auto binary = &Name<elle::serialization::Binary>;                   \
+    subsuite->add(BOOST_TEST_CASE(binary));                             \
+    suite.add(subsuite);                                                \
+  }                                                                     \
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(fundamentals<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(object<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Json>));
-  auto list = &array<elle::serialization::Json, std::list>;
-  suite.add(BOOST_TEST_CASE(list));
-  auto deque = &array<elle::serialization::Json, std::deque>;
-  suite.add(BOOST_TEST_CASE(deque));
-  auto vector = &array<elle::serialization::Json, std::vector>;
-  suite.add(BOOST_TEST_CASE(vector));
-  suite.add(BOOST_TEST_CASE(pair<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(option<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(date<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(context<elle::serialization::Json>));
-  suite.add(BOOST_TEST_CASE(exceptions<elle::serialization::Json>));
+  FOR_ALL_SERIALIZATION_TYPES(fundamentals);
+  FOR_ALL_SERIALIZATION_TYPES(object);
+  FOR_ALL_SERIALIZATION_TYPES(object_composite);
+  FOR_ALL_SERIALIZATION_TYPES(list);
+  FOR_ALL_SERIALIZATION_TYPES(deque);
+  FOR_ALL_SERIALIZATION_TYPES(vector);
+  FOR_ALL_SERIALIZATION_TYPES(pair);
+  FOR_ALL_SERIALIZATION_TYPES(option);
+  FOR_ALL_SERIALIZATION_TYPES(unique_ptr);
+  FOR_ALL_SERIALIZATION_TYPES(unordered_map);
+  FOR_ALL_SERIALIZATION_TYPES(buffer);
+  FOR_ALL_SERIALIZATION_TYPES(date);
+  FOR_ALL_SERIALIZATION_TYPES(hierarchy);
+  FOR_ALL_SERIALIZATION_TYPES(versioning);
+  FOR_ALL_SERIALIZATION_TYPES(context);
+  FOR_ALL_SERIALIZATION_TYPES(exceptions);
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
@@ -991,25 +1022,4 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_iso8601));
   suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
   suite.add(BOOST_TEST_CASE(json_optionals));
-
-  {
-    suite.add(BOOST_TEST_CASE(fundamentals<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(object<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(object_composite<elle::serialization::Binary>));
-    auto list = &array<elle::serialization::Binary, std::list>;
-    suite.add(BOOST_TEST_CASE(list));
-    auto deque = &array<elle::serialization::Binary, std::deque>;
-    suite.add(BOOST_TEST_CASE(deque));
-    auto vector = &array<elle::serialization::Binary, std::vector>;
-    suite.add(BOOST_TEST_CASE(vector));
-    suite.add(BOOST_TEST_CASE(pair<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(option<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(unique_ptr<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(unordered_map<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(buffer<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(date<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(hierarchy<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(versioning<elle::serialization::Binary>));
-    suite.add(BOOST_TEST_CASE(context<elle::serialization::Binary>));
-  }
 }
