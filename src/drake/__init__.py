@@ -1473,7 +1473,6 @@ class Node(BaseNode):
         ...
     drake.Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
     """
-  def build(self):
     super().build()
 
   def _build(self):
