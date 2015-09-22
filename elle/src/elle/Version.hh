@@ -21,6 +21,8 @@ namespace elle
     `-------------*/
   public:
     Version(); // XXX[to remove later]
+    inline
+    constexpr
     Version(elle::Natural8 major,
             elle::Natural8 minor,
             elle::Natural8 subminor);

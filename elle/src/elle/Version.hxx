@@ -3,6 +3,18 @@
 
 # include <elle/serialize/Serializer.hh>
 
+namespace elle
+{
+  constexpr
+  Version::Version(elle::Natural8 major,
+                   elle::Natural8 minor,
+                   elle::Natural8 subminor):
+    _major(major),
+    _minor(minor),
+    _subminor(subminor)
+  {}
+}
+
 ELLE_SERIALIZE_STATIC_FORMAT(elle::Version, 1);
 
 ELLE_SERIALIZE_SPLIT(elle::Version);

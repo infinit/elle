@@ -14,14 +14,6 @@ namespace elle
     _subminor(0)
   {}
 
-  Version::Version(elle::Natural8 major,
-                   elle::Natural8 minor,
-                   elle::Natural8 subminor):
-    _major(major),
-    _minor(minor),
-    _subminor(subminor)
-  {}
-
   ELLE_SERIALIZE_CONSTRUCT_DEFINE(Version)
   {}
 
