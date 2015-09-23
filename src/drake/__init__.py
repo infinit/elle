@@ -3710,7 +3710,7 @@ class PythonModule(Builder):
                            [drake.Node(self.__path / '__init__.py')])
 
   def command(self):
-    options = ['pip3', 'install']
+    options = ['pip3', 'install', '--install-option=--prefix=']
     if self.__python_path is not None:
       options.append('--target=%s' % self.__python_path)
     options.append(self.__package_name)
