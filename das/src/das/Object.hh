@@ -90,8 +90,6 @@ namespace das
         this->serialize(s);
       }
 
-      typedef typename T::serialization_tag serialization_tag;
-
       virtual
       void
       print(std::ostream& s) const override
