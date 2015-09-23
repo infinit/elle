@@ -1,17 +1,16 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 
-# include <cryptography/fwd.hh>
-# include <cryptography/types.hh>
-# include <cryptography/Oneway.hh>
-# include <cryptography/Cipher.hh>
-# include <cryptography/rsa/Seed.hh>
-# include <cryptography/rsa/Padding.hh>
-# include <cryptography/rsa/defaults.hh>
+# include <utility>
+
+# include <openssl/evp.h>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
+# include <elle/serialization.hh>
+
+ELLE_OPERATOR_RELATIONALS();
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 #  include <elle/serialize/fwd.hh>
@@ -19,10 +18,13 @@
 #  include <elle/concept/Uniquable.hh>
 # endif
 
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
-
-# include <openssl/evp.h>
+# include <cryptography/fwd.hh>
+# include <cryptography/types.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
+# include <cryptography/rsa/Seed.hh>
+# include <cryptography/rsa/Padding.hh>
+# include <cryptography/rsa/defaults.hh>
 
 ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
 
@@ -173,6 +175,7 @@ namespace infinit
         PublicKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |

@@ -1,6 +1,18 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 
+# include <utility>
+
+# include <openssl/evp.h>
+
+# include <elle/serialization.hh>
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/serialize/construct.hh>
+#  include <elle/concept/Uniquable.hh>
+# endif
+
+ELLE_OPERATOR_RELATIONALS();
+
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
 # include <cryptography/Oneway.hh>
@@ -8,20 +20,6 @@
 # include <cryptography/rsa/Seed.hh>
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/defaults.hh>
-
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/serialize/construct.hh>
-#  include <elle/concept/Uniquable.hh>
-# endif
-
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
-
-# include <openssl/evp.h>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -172,6 +170,7 @@ namespace infinit
         PrivateKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |

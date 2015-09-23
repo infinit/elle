@@ -1,19 +1,21 @@
 #ifndef INFINIT_CRYPTOGRAPHY_DSA_PRIVATEKEY_HH
 # define INFINIT_CRYPTOGRAPHY_DSA_PRIVATEKEY_HH
 
-# include <cryptography/fwd.hh>
-# include <cryptography/types.hh>
-# include <cryptography/Oneway.hh>
-# include <cryptography/Cipher.hh>
+# include <utility>
+
+# include <openssl/evp.h>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
+# include <elle/serialization.hh>
 
-# include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
-# include <openssl/evp.h>
+# include <cryptography/fwd.hh>
+# include <cryptography/types.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -25,7 +27,7 @@ namespace infinit
   {
     namespace dsa
     {
-      /// Represent a private key in the DSA asymmetric cryptosystem.
+      /// A private key in the DSA asymmetric cryptosystem.
       class PrivateKey:
         public elle::Printable
       {
@@ -95,6 +97,7 @@ namespace infinit
         PrivateKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |

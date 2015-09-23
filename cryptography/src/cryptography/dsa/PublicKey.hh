@@ -1,21 +1,23 @@
 #ifndef INFINIT_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
 # define INFINIT_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
 
-# include <cryptography/dsa/PrivateKey.hh>
-# include <cryptography/fwd.hh>
-# include <cryptography/types.hh>
-# include <cryptography/Oneway.hh>
-# include <cryptography/Cipher.hh>
+# include <utility>
+
+# include <openssl/evp.h>
 
 # include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialization/Serializer.hh>
+# include <elle/serialization.hh>
 
-# include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
-# include <openssl/evp.h>
+# include <cryptography/dsa/PrivateKey.hh>
+# include <cryptography/fwd.hh>
+# include <cryptography/types.hh>
+# include <cryptography/Oneway.hh>
+# include <cryptography/Cipher.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -102,6 +104,7 @@ namespace infinit
         PublicKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |
