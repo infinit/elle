@@ -11,6 +11,4 @@ namespace elle
   };
 }
 
-# include <elle/Version.hxx>
-
 #endif
