@@ -1,23 +1,24 @@
 #ifndef INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 # define INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
 
-# include <elle/fwd.hh>
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/Printable.hh>
+# include <utility>
 
+# include <elle/Printable.hh>
+# include <elle/attribute.hh>
+# include <elle/fwd.hh>
+# include <elle/operator.hh>
+# include <elle/serialization.hh>
+# include <elle/types.hh>
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/serialize/construct.hh>
 #  include <elle/concept/Uniquable.hh>
+#  include <elle/serialize/construct.hh>
 # endif
+
+ELLE_OPERATOR_RELATIONALS();
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
-
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -136,6 +137,7 @@ namespace infinit
       SecretKey(elle::serialization::SerializerIn& serializer);
       void
       serialize(elle::serialization::Serializer& serializer);
+      typedef elle::serialization_tag serialization_tag;
 
       /*-----------.
       | Attributes |

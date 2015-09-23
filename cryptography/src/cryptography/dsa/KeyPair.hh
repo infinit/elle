@@ -1,6 +1,13 @@
 #ifndef INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HH
 # define INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HH
 
+# include <iosfwd>
+# include <utility>
+
+# include <elle/types.hh>
+# include <elle/serialization/Serializer.hh>
+# include <elle/serialization.hh>
+
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
@@ -8,13 +15,7 @@
 # include <cryptography/dsa/PrivateKey.hh>
 # include <cryptography/dsa/defaults.hh>
 
-# include <utility>
 ELLE_OPERATOR_RELATIONALS();
-
-# include <iosfwd>
-
-# include <elle/types.hh>
-# include <elle/serialization/Serializer.hh>
 
 namespace infinit
 {
@@ -84,6 +85,7 @@ namespace infinit
         KeyPair(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |

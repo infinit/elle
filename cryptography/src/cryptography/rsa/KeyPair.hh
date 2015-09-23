@@ -1,6 +1,18 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 
+# include <iosfwd>
+
+# include <utility>
+
+# include <elle/types.hh>
+# include <elle/serialization.hh>
+# include <elle/serialization/Serializer.hh>
+# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+#  include <elle/concept/Uniquable.hh>
+#  include <elle/serialize/construct.hh>
+# endif
+
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
@@ -9,18 +21,7 @@
 # include <cryptography/rsa/PrivateKey.hh>
 # include <cryptography/rsa/defaults.hh>
 
-# include <utility>
 ELLE_OPERATOR_RELATIONALS();
-
-# include <elle/types.hh>
-# include <elle/serialization/Serializer.hh>
-
-# include <iosfwd>
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/concept/Uniquable.hh>
-#  include <elle/serialize/construct.hh>
-# endif
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -107,6 +108,7 @@ namespace infinit
         KeyPair(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |
