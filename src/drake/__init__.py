@@ -3694,3 +3694,36 @@ def host():
   else:
     raise Exception('Unhandled system: %s' % system)
   return '%s-%s' % (platform.machine(), os_string)
+
+class PythonModule(Builder):
+  '''Builder to download and extract python modules using pip.
+  '''
+  def __init__(self, package_name, python_path = None, version = None,
+               dependencies = []):
+    self.__python_path = python_path
+    self.__path = self.__python_path  / package_name
+    self.__package_name = package_name
+    self.__version = version
+    self.__dependencies = dependencies
+    drake.Builder.__init__(self,
+                           [],
+                           [drake.Node(self.__path / '__init__.py')])
+
+  def command(self):
+    options = ['pip3', 'install']
+    if self.__python_path is not None:
+      options.append('--target=%s' % self.__python_path)
+    options.append(self.__package_name)
+    if self.__version:
+      options[-1] += '==%s' % self.__version
+    return options
+
+  def execute(self):
+    for p in self.__dependencies + [self.__package_name]:
+      shutil.rmtree(str(self.__python_path / p), ignore_errors = True)
+    return self.cmd('Installing package %s' % self.__package_name,
+                    self.command(),
+                    leave_stdout = True)
+
+  def hash(self):
+    return self.command()
