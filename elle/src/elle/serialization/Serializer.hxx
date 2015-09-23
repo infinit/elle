@@ -438,11 +438,11 @@ namespace elle
     _version_switch(
       Serializer& s,
       T& object,
-      elle::Version version,
+      std::function<elle::Version ()> version,
       ELLE_SFINAE_IF_WORKS(object.serialize(ELLE_SFINAE_INSTANCE(Serializer),
                                             elle::Version())))
     {
-      object.serialize(s, version);
+      object.serialize(s, version());
     }
 
     template <typename T>
@@ -450,10 +450,26 @@ namespace elle
     _version_switch(
       Serializer& s,
       T& object,
-      elle::Version const& version,
+      std::function<elle::Version ()> const& version,
       ELLE_SFINAE_OTHERWISE())
     {
       object.serialize(s);
+    }
+
+    template <typename T>
+    typename std::enable_if_exists<decltype(T::serialization_tag::version),
+                                   elle::Version>::type
+    _version_tag(int)
+    {
+      return T::serialization_tag::version;
+    }
+
+    template <typename T>
+    elle::Version
+    _version_tag(...)
+    {
+      throw elle::Error(elle::sprintf("no serialization version tag for %s",
+                                      elle::type_info<T>().name()));
     }
 
     template <typename T>
@@ -464,17 +480,20 @@ namespace elle
       if (this->_versioned)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-        auto version = T::serialization_tag::version;
+        auto version = _version_tag<T>(42);
         {
           ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
           auto guard = scoped_assignment(this->_versioned, false);
           this->serialize(".version", version);
         }
-        _version_switch(*this, object, std::move(version), ELLE_SFINAE_TRY());
+        _version_switch(*this, object,
+                        [version] { return version; },
+                        ELLE_SFINAE_TRY());
       }
       else
         _version_switch(*this, object,
-                        T::serialization_tag::version, ELLE_SFINAE_TRY());
+                        [] { return _version_tag<T>(42); },
+                        ELLE_SFINAE_TRY());
     }
 
     // Special case: don't version versions.
