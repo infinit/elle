@@ -70,12 +70,14 @@ namespace das
 
   template <typename T, typename ... Fields>
   class Object
+    : public elle::serialization::forward_serialization_tag<T>
   {
   public:
     typedef T Model;
     class Update
       : public UpdateHelper<T, Fields...>
       , public elle::Printable
+      , public elle::serialization::forward_serialization_tag<T>
     {
     public:
       typedef UpdateHelper<T, Fields...> Super;

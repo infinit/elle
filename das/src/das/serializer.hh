@@ -19,6 +19,7 @@ namespace das
 
   template <typename T>
   class Serializer
+    : public elle::serialization::forward_serialization_tag<T>
   {
   public:
     Serializer(T& o)
@@ -36,6 +37,8 @@ namespace das
 
   template <typename T, typename ... Fields>
   class Serializer<das::Object<T, Fields ...>>
+    : public elle::serialization::forward_serialization_tag
+        <das::Object<T, Fields ...>>
   {
   public:
     typedef typename das::Object<T, Fields ...>::Model Model;
@@ -55,6 +58,7 @@ namespace das
       das::Object<T, Fields...>::template each_field<das::SerializeMember>(
         this->_object, s);
     }
+
     ELLE_ATTRIBUTE_R(Model&, object);
   };
 }
