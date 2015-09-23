@@ -572,9 +572,8 @@ def configure(cxx_toolkit = None,
   curl_environment['CC'] = cxx_toolkit.c
   curl_configure_args.append('--host=%s' % drake.host())
   if cxx_toolkit.os is drake.os.macos:
-    key = 'DYLD_FALLBACK_LIBRARY_PATH'
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
-    curl_environment[key] = str(path)
+    curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
   elif windows:
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
   elif cxx_toolkit.os is drake.os.ios:
@@ -715,7 +714,8 @@ def configure(cxx_toolkit = None,
                                   for n in libarchive_dependency_libs)
     if cxx_toolkit.os is drake.os.macos:
       libarchive_lib = 'lib/libarchive.13.dylib'
-      libarchive_env = {'DYLD_INSERT_LIBRARIES': libarchive_preload}
+      libarchive_configure_args.append('DYLD_INSERT_LIBRARIES=%s' %
+                                       libarchive_preload)
     elif cxx_toolkit.os is drake.os.linux:
       libarchive_lib = 'lib/libarchive.so.13'
       libarchive_env = {'LD_PRELOAD': libarchive_preload}
