@@ -5,6 +5,12 @@
 
 #include <das/model.hh>
 
+struct serialization
+{
+  static elle::Version version;
+};
+elle::Version serialization::version(0, 0, 0);
+
 class Device
 {
 public:
@@ -30,6 +36,8 @@ public:
   {
     return this->id == other.id && this->name == other.name;
   }
+
+  typedef serialization serialization_tag;
 };
 
 DAS_MODEL_FIELD(Device, name);
@@ -85,6 +93,8 @@ class User
 public:
   std::string name;
   Device device;
+
+  typedef serialization serialization_tag;
 };
 
 DAS_MODEL_FIELD(User, name);
@@ -188,6 +198,7 @@ class Model
 {
 public:
   std::vector<Device> devices;
+  typedef serialization serialization_tag;
 };
 
 DAS_MODEL_FIELD(Model, devices);

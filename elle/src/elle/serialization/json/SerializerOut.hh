@@ -31,10 +31,6 @@ namespace elle
         SerializerOut(std::ostream& output,
                       bool versioned = true,
                       bool pretty = false);
-        SerializerOut(std::ostream& output,
-                      elle::Version version,
-                      bool versioned = true,
-                      bool pretty = false);
         ~SerializerOut() noexcept(false);
 
       /*--------------.

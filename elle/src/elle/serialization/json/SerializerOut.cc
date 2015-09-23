@@ -20,14 +20,7 @@ namespace elle
       SerializerOut::SerializerOut(std::ostream& output,
                                    bool versioned,
                                    bool pretty)
-        : SerializerOut(output, elle::Version(), versioned, pretty)
-      {}
-
-      SerializerOut::SerializerOut(std::ostream& output,
-                                   elle::Version version,
-                                   bool versioned,
-                                   bool pretty)
-        : Super(output, std::move(version), versioned)
+        : Super(output, versioned)
         , _json()
         , _current()
         , _pretty(pretty)

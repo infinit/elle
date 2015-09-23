@@ -5,6 +5,7 @@
 # include <stdexcept>
 
 # include <elle/attribute.hh>
+# include <elle/serialization.hh>
 # include <elle/Backtrace.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/types.hh>
@@ -30,6 +31,7 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
+    typedef elle::serialization_tag serialization_tag;
     Exception(elle::serialization::SerializerIn& input);
     virtual
     void

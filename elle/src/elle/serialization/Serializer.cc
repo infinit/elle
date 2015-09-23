@@ -7,12 +7,7 @@ namespace elle
   namespace serialization
   {
     Serializer::Serializer(bool versioned)
-      : Serializer(elle::Version(), versioned)
-    {}
-
-    Serializer::Serializer(elle::Version version, bool versioned)
-      : _version(std::move(version))
-      , _versioned(versioned)
+      : _versioned(versioned)
     {}
 
     bool

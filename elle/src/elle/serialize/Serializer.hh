@@ -48,12 +48,12 @@
 
 # include "ArchiveMode.hh"
 # include "Concrete.hh"
-# include "Exception.hh"
 # include "Format.hh"
 # include "StaticFormat.hh"
 # include "StoreFormat.hh"
 
 # include <elle/Error.hh>
+# include <elle/assert.hh>
 # include <elle/types.hh>
 # include <elle/log.hh>
 

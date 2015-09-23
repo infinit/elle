@@ -16,6 +16,8 @@
 #include <elle/serialization/json/TypeError.hh>
 #include <elle/test.hh>
 
+ELLE_LOG_COMPONENT("elle.serialization.test");
+
 template <typename Format>
 static
 void
@@ -87,6 +89,8 @@ public:
     s.serialize("y", this->_y);
   }
 
+  typedef elle::serialization_tag serialization_tag;
+
   ELLE_ATTRIBUTE_R(int, x);
   ELLE_ATTRIBUTE_R(int, y);
 };
@@ -148,6 +152,8 @@ public:
     s.serialize("start", this->_start);
     s.serialize("end", this->_end);
   }
+
+  typedef elle::serialization_tag serialization_tag;
 
   ELLE_ATTRIBUTE_R(Point, start);
   ELLE_ATTRIBUTE_R(Point, end);
@@ -284,18 +290,23 @@ option()
   {
     boost::optional<int> empty;
     boost::optional<int> filled(42);
+    boost::optional<std::vector<int>> collection(std::vector<int>({0, 1, 2}));
     typename Format::SerializerOut output(stream);
     output.serialize("empty", empty);
     output.serialize("filled", filled);
+    output.serialize("collection", collection);
   }
   {
     boost::optional<int> empty;
     boost::optional<int> filled;
+    boost::optional<std::vector<int>> collection;
     typename Format::SerializerIn input(stream);
     input.serialize("empty", empty);
     input.serialize("filled", filled);
+    input.serialize("collection", collection);
     BOOST_CHECK(!empty);
     BOOST_CHECK_EQUAL(filled.get(), 42);
+    BOOST_CHECK_EQUAL(collection.get(), std::vector<int>({0, 1, 2}));
   }
 }
 
@@ -411,6 +422,8 @@ public:
     return this->_i;
   }
 
+  typedef elle::serialization_tag serialization_tag;
+
   ELLE_ATTRIBUTE_R(int, i);
 };
 static const elle::serialization::Hierarchy<Super>::Register<Super> _register_Super;
@@ -524,85 +537,104 @@ hierarchy()
   }
 }
 
-class Versioned
+namespace lib
 {
-public:
-  Versioned(int old, int addition)
-    : _old(old)
-    , _addition(addition)
-  {}
-
-  Versioned(elle::serialization::Serializer& s)
-    : _old(0)
-    , _addition(0)
+  struct serialization
   {
-    s.serialize_forward(*this);
-  }
+    static elle::Version version;
+  };
 
-  bool
-  operator ==(Versioned const& other) const
+  elle::Version serialization::version(0, 3, 0);
+
+  class Versioned
   {
-    return this->old() == other.old() && this->addition() == other.addition();
-  }
+  public:
+    typedef serialization serialization_tag;
 
-  void
-  serialize(elle::serialization::Serializer& s, elle::Version const& v)
-  {
-    s.serialize("old", this->_old);
-    if (v >= elle::Version(0, 1, 0))
-      s.serialize("addition", this->_addition);
-  }
+    Versioned(int old, int addition)
+      : _old(old)
+      , _addition(addition)
+    {}
 
-  ELLE_ATTRIBUTE_R(int, old);
-  ELLE_ATTRIBUTE_R(int, addition);
-};
+    Versioned(elle::serialization::Serializer& s)
+      : _old(0)
+      , _addition(0)
+    {
+      s.serialize_forward(*this);
+    }
+
+    bool
+    operator ==(Versioned const& other) const
+    {
+      return this->old() == other.old() && this->addition() == other.addition();
+    }
+
+    void
+    serialize(elle::serialization::Serializer& s, elle::Version const& v)
+    {
+      s.serialize("old", this->_old);
+      if (v >= elle::Version(0, 2, 0))
+        s.serialize("addition", this->_addition);
+    }
+
+    ELLE_ATTRIBUTE_R(int, old);
+    ELLE_ATTRIBUTE_R(int, addition);
+  };
+}
 
 template <typename Format>
 static
 void
 versioning()
 {
-  // old -> old
+  ELLE_LOG("test old -> old serialization")
   {
+    auto version = elle::scoped_assignment(lib::serialization::version,
+                                           elle::Version(0, 1, 0));
     std::stringstream stream;
     {
       typename Format::SerializerOut output(stream);
-      Versioned v(1, 2);
+      lib::Versioned v(1, 2);
       output.serialize_forward(v);
     }
+    ELLE_LOG("serialized: %s", stream.str());
     {
       typename Format::SerializerIn input(stream);
-      Versioned v(input);
+      lib::Versioned v(input);
       BOOST_CHECK_EQUAL(v.old(), 1);
       BOOST_CHECK_EQUAL(v.addition(), 0);
     }
   }
-  // old -> new
+  ELLE_LOG("test old -> new serialization")
+  {
+    std::stringstream stream;
+    {
+      auto version = elle::scoped_assignment(lib::serialization::version,
+                                             elle::Version(0, 1, 0));
+      typename Format::SerializerOut output(stream);
+      lib::Versioned v(1, 2);
+      output.serialize_forward(v);
+    }
+    ELLE_LOG("serialized: %s", stream.str());
+    {
+      typename Format::SerializerIn input(stream);
+      lib::Versioned v(input);
+      BOOST_CHECK_EQUAL(v.old(), 1);
+      BOOST_CHECK_EQUAL(v.addition(), 0);
+    }
+  }
+  ELLE_LOG("test new -> new serialization")
   {
     std::stringstream stream;
     {
       typename Format::SerializerOut output(stream);
-      Versioned v(1, 2);
+      lib::Versioned v(1, 2);
       output.serialize_forward(v);
     }
+    ELLE_LOG("serialized: %s", stream.str());
     {
-      typename Format::SerializerIn input(stream, elle::Version(0, 1, 1));
-      Versioned v(input);
-      BOOST_CHECK_EQUAL(v.old(), 1);
-      BOOST_CHECK_EQUAL(v.addition(), 0);
-    }
-  }
-  // new -> new
-  {
-    std::stringstream stream;
-    {
-      typename Format::SerializerOut output(stream, elle::Version(0, 1, 1));
-      Versioned v(1, 2);
-      output.serialize_forward(v);
-    }
-    {
-      typename Format::SerializerIn input(stream, elle::Version(0, 1, 1));
-      Versioned v(input);
+      typename Format::SerializerIn input(stream);
+      lib::Versioned v(input);
       BOOST_CHECK_EQUAL(v.old(), 1);
       BOOST_CHECK_EQUAL(v.addition(), 2);
     }
@@ -619,6 +651,8 @@ public:
 
   void serialize(elle::serialization::Serializer&)
   {}
+
+  typedef elle::serialization_tag serialization_tag;
 };
 
 class OutPlace
@@ -628,6 +662,8 @@ public:
 
   void serialize(elle::serialization::Serializer&)
   {}
+
+  typedef elle::serialization_tag serialization_tag;
 };
 
 static
@@ -887,6 +923,8 @@ public:
     s.serialize_context<std::string>(this->_ctx);
     s.serialize("msg", this->_msg);
   }
+
+  typedef elle::serialization_tag serialization_tag;
 
   ELLE_ATTRIBUTE_R(std::string, msg);
   ELLE_ATTRIBUTE_R(std::string, ctx);

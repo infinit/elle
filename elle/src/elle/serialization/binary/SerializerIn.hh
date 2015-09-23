@@ -26,13 +26,9 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        SerializerIn(std::istream& input,
-                     bool versioned = true);
-        SerializerIn(std::istream& input,
-                     elle::Version version,
-                     bool versioned = true);
+        SerializerIn(std::istream& input, bool versioned = true);
 
-        /*--------------.
+      /*--------------.
       | Serialization |
       `--------------*/
       protected:

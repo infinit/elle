@@ -4,8 +4,6 @@
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 
-ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerOut")
-
 namespace elle
 {
   namespace serialization
@@ -16,15 +14,8 @@ namespace elle
       | Construction |
       `-------------*/
 
-      SerializerOut::SerializerOut(std::ostream& output,
-                                   bool versioned)
-        : SerializerOut(output, elle::Version(), versioned)
-      {}
-
-      SerializerOut::SerializerOut(std::ostream& output,
-                                   elle::Version version,
-                                   bool versioned)
-        : Super(output, std::move(version), versioned)
+      SerializerOut::SerializerOut(std::ostream& output, bool versioned)
+        : Super(output, versioned)
       {}
 
       SerializerOut::~SerializerOut()

@@ -464,16 +464,26 @@ namespace elle
       if (this->_versioned)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-        elle::Version v(this->_version);
+        auto version = T::serialization_tag::version;
         {
-          ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, this->_version);
+          ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
           auto guard = scoped_assignment(this->_versioned, false);
-          this->serialize(".version", v);
+          this->serialize(".version", version);
         }
-        _version_switch(*this, object, std::move(v), ELLE_SFINAE_TRY());
+        _version_switch(*this, object, std::move(version), ELLE_SFINAE_TRY());
       }
       else
-        _version_switch(*this, object, elle::Version(), ELLE_SFINAE_TRY());
+        _version_switch(*this, object,
+                        T::serialization_tag::version, ELLE_SFINAE_TRY());
+    }
+
+    // Special case: don't version versions.
+    inline
+    void
+    Serializer::serialize_object(std::string const& name,
+                                 elle::Version& version)
+    {
+      version.serialize(*this);
     }
 
     template <typename T>

@@ -3,6 +3,7 @@
 
 # include <cassert>
 
+# include <elle/Error.hh>
 # include <elle/serialize/Serializer.hh>
 
 ELLE_SERIALIZE_SIMPLE(elle::utility::Duration,

@@ -82,7 +82,6 @@ namespace elle
     `-------------*/
     public:
       Serializer(bool versioned);
-      Serializer(elle::Version version, bool versioned);
 
     /*-----------.
     | Properties |
@@ -92,7 +91,6 @@ namespace elle
       in() const;
       bool
       out() const;
-      ELLE_ATTRIBUTE_R(elle::Version const, version);
       ELLE_ATTRIBUTE_R(bool, versioned);
     private:
       bool
@@ -127,6 +125,8 @@ namespace elle
       template <typename T>
       void
       serialize_object(std::string const& name, T& v);
+      void
+      serialize_object(std::string const& name, elle::Version& v);
       template <typename T>
       void
       serialize_pod(std::string const& name, T& v);

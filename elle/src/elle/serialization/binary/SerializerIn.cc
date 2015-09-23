@@ -12,17 +12,8 @@ namespace elle
     {
       SerializerIn::SerializerIn(std::istream& input,
                                  bool versioned)
-        : Self(input, elle::Version(), versioned)
+        : Super(input, versioned)
       {}
-
-      SerializerIn::SerializerIn(std::istream& input,
-                                 elle::Version version,
-                                 bool versioned)
-        : Super(input, version, versioned)
-      {
-
-      }
-
 
       void
       SerializerIn::_serialize(std::string const& name, int64_t& v)
@@ -229,7 +220,7 @@ namespace elle
         {
           unsigned char c2 = input().get();
           unsigned char c3 = input().get();
-          res = ((c&0x0F) << 16) + (c2 << 8) + c3; 
+          res = ((c&0x0F) << 16) + (c2 << 8) + c3;
         }
         else
         {

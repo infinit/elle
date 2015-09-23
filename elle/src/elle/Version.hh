@@ -13,8 +13,8 @@
 namespace elle
 {
   /// This class represents the version of the Infinit software.
-  class Version:
-    public elle::Printable
+  class Version
+    : public elle::Printable
   {
     /*-------------.
     | Construction |
