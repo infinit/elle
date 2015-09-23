@@ -190,12 +190,6 @@ namespace das
             Inserter<C, ElementUpdate, T>::insert(collection, update);
         }
       }
-
-      void
-      serialize(elle::serialization::Serializer& s)
-      {
-        s.serialize_forward(static_cast<Super&>(*this));
-      }
     };
   };
 }

@@ -508,6 +508,15 @@ namespace elle
       this->_serialize_anonymous(name, collection.back());
     }
 
+    // Specific overload to catch std::vector subclasses (for das, namely).
+    template <typename T, typename A>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::vector<T, A>& collection)
+    {
+      this->_serialize<std::vector, T, A>(name, collection);
+    }
+
     template <template <typename, typename> class C, typename T, typename A>
     void
     Serializer::_serialize(std::string const& name,
