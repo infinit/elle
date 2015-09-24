@@ -530,6 +530,38 @@ namespace reactor
       return 0;
     }
 
+    static int fusop_fsync(const char* path, int datasync, fuse_file_info* fi)
+    {
+      ELLE_TRACE_SCOPE("fusop_fsync %s %s", path, datasync);
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        handle->fsync(datasync);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on fsync %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
+    static int fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
+    {
+      ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", path, datasync);
+      try
+      {
+        Handle* handle = (Handle*)fi->fh;
+        handle->fsyncdir(datasync);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error on fsyncdir %s: %s", path, e);
+        return -e.error_code();
+      }
+      return 0;
+    }
+
     class FileSystemImpl
     {
     public:
@@ -586,6 +618,8 @@ namespace reactor
       ops.getxattr = fusop_getxattr;
       ops.listxattr = fusop_listxattr;
       ops.removexattr = fusop_removexattr;
+      ops.fsync = fusop_fsync;
+      ops.fsyncdir = fusop_fsyncdir;
 #if FUSE_VERSION >= 29
       ops.flag_nullpath_ok = true;
 #endif

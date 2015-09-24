@@ -60,6 +60,8 @@ namespace reactor
       virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual int write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
       virtual void ftruncate(off_t offset);
+      virtual void fsync(int datasync);
+      virtual void fsyncdir(int datasync);
       virtual void close()=0;
     };
 

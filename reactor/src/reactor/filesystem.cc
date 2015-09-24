@@ -73,6 +73,8 @@ namespace reactor
     std::string Path::getxattr(std::string const& name) { throw Error(EPERM, "Not implemented");}
     std::vector<std::string> Path::listxattr()          { throw Error(EPERM, "Not implemented");}
     void Path::removexattr(std::string const& name)     { throw Error(EPERM, "Not implemented");}
+    void Handle::fsync(int datasync) {}
+    void Handle::fsyncdir(int datasync) {}
 
     namespace bfs = boost::filesystem;
 
