@@ -2825,8 +2825,21 @@ class Copy(Builder):
 
   def _copy(self):
     with WritePermissions(self.__target):
-      shutil.copy2(str(self.__source.path()),
-                   str(self.__target.path()))
+      try:
+        shutil.copy2(str(self.__source.path()),
+                     str(self.__target.path()))
+      except PermissionError as e:
+        # Landing here means that we didn't have permission to do a copystat as
+        # part of the copy2. Fallback to a straight copy with a log.
+        # This fixes an issue with OS X 10.11 not enough permissions for files
+        # in /usr/lib.
+        sched.logger.log(
+          'drake.copy',
+          drake.log.LogLevel.debug,
+          'unable to copy2 %s, falling back to copy', str(self.__source.path()))
+        shutil.copy(str(self.__source.path()),
+                    str(self.__target.path()))
+
     return True
 
   @property
