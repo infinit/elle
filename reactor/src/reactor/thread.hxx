@@ -36,6 +36,16 @@ namespace reactor
         ("tried to fetched the result of an unfinished thread");
     return _result;
   }
+
+  inline
+  void
+  Thread::Terminator::operator ()(reactor::Thread* t)
+  {
+    if (t)
+      t->terminate_now();
+    this->std::default_delete<reactor::Thread>::operator ()(t);
+  }
+
 }
 
 #endif

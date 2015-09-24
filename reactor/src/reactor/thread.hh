@@ -20,11 +20,20 @@ namespace reactor
   class Thread:
     public Waitable
   {
-  /*---------.
-  | Typedefs |
-  `---------*/
+  /*------.
+  | Types |
+  `------*/
   public:
+    typedef Thread Self;
     typedef backend::Action Action;
+    class Terminator
+      : public std::default_delete<reactor::Thread>
+    {
+    public:
+      void
+      operator ()(reactor::Thread* t);
+    };
+    typedef std::unique_ptr<reactor::Thread, Terminator> unique_ptr;
 
     /*-------------.
     | Construction |
