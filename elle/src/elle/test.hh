@@ -13,6 +13,7 @@
 #include <boost/preprocessor/tuple/elem.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
+#include <elle/Error.hh>
 #include <elle/log.hh>
 
 /// This header includes boost Unit Test Framework and provides a simple macro
