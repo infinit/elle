@@ -19,6 +19,12 @@ namespace reactor
   }
 
   template <typename T>
+  Generator<T>::Generator(Generator<T>&& generator)
+    : _results(std::move(generator._results))
+    , _thread(std::move(generator._thread))
+  {}
+
+  template <typename T>
   Generator<T>::iterator::iterator()
     : _generator(nullptr)
     , _value()

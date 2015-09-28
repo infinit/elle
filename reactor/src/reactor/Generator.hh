@@ -17,7 +17,7 @@ namespace reactor
   {
     typedef typename yielder<T>::type yielder;
     Generator(std::function<void (yielder const&)> const& driver);
-    Generator(Generator&&b) = default;
+    Generator(Generator&&b);
     struct iterator
     {
       iterator();
@@ -28,13 +28,10 @@ namespace reactor
       operator ++();
       T
       operator *();
-
       ELLE_ATTRIBUTE(Generator<T>*, generator)
       ELLE_ATTRIBUTE(boost::optional<T>, value);
       ELLE_ATTRIBUTE(bool, fetch);
     };
-
-
     ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
     ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
   };
