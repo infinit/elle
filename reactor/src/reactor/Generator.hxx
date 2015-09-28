@@ -91,16 +91,30 @@ namespace reactor
 
   template <typename T>
   typename Generator<T>::iterator
+  Generator<T>::begin()
+  {
+    return typename Generator<T>::iterator(*this);
+  }
+
+  template <typename T>
+  typename Generator<T>::iterator
+  Generator<T>::end() const
+  {
+    return typename Generator<T>::iterator();
+  }
+
+  template <typename T>
+  typename Generator<T>::iterator
   begin(Generator<T>& g)
   {
-    return typename Generator<T>::iterator(g);
+    return g.begin();
   }
 
   template <typename T>
   typename Generator<T>::iterator
   end(Generator<T> const& g)
   {
-    return typename Generator<T>::iterator();
+    return g.end();
   }
 }
 

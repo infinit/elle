@@ -32,6 +32,10 @@ namespace reactor
       ELLE_ATTRIBUTE(boost::optional<T>, value);
       ELLE_ATTRIBUTE(bool, fetch);
     };
+    iterator
+    begin();
+    iterator
+    end() const;
     ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
     ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
     ELLE_ATTRIBUTE(std::exception_ptr, exception);
