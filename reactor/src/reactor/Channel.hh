@@ -15,8 +15,24 @@ namespace reactor
   class Channel
     : public elle::Printable
   {
+  /*------.
+  | Types |
+  `------*/
+  public:
+    typedef Channel<T, Container> Self;
+
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
     Channel();
+    Channel(Self&& source);
+
+
+  /*--------.
+  | Content |
+  `--------*/
+  public:
     void
     put(T data);
     T
@@ -29,6 +45,11 @@ namespace reactor
     empty() const;
     void
     clear();
+
+  /*--------.
+  | Control |
+  `--------*/
+  public:
     void
     open();
     void

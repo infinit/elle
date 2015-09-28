@@ -5,6 +5,10 @@
 
 namespace reactor
 {
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   template <typename T, typename Container>
   Channel<T, Container>::Channel()
     : _read_barrier()
@@ -13,6 +17,19 @@ namespace reactor
     , _opened(true)
     , _max_size(SizeUnlimited)
   {}
+
+  template <typename T, typename Container>
+  Channel<T, Container>::Channel(Self&& source)
+    : _read_barrier(std::move(source._read_barrier))
+    , _write_barrier(std::move(source._write_barrier))
+    , _queue(std::move(source._queue))
+    , _opened(source._opened)
+    , _max_size(source._max_size)
+  {}
+
+  /*--------.
+  | Content |
+  `--------*/
 
   template <typename T, typename Container>
   bool
@@ -122,6 +139,10 @@ namespace reactor
     this->_read_barrier.close();
   }
 
+  /*--------.
+  | Control |
+  `--------*/
+
   template <typename T, typename Container>
   void
   Channel<T, Container>::open()
@@ -144,6 +165,10 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: close", *this);
     this->_opened = false;
   }
+
+  /*----------.
+  | Printable |
+  `----------*/
 
   template <typename T, typename Container>
   void
