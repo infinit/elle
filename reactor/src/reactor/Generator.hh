@@ -34,6 +34,7 @@ namespace reactor
     };
     ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
     ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
+    ELLE_ATTRIBUTE(std::exception_ptr, exception);
   };
 
   template <typename T>

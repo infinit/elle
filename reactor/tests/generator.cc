@@ -66,6 +66,38 @@ ELLE_TEST_SCHEDULED(interleave)
   BOOST_CHECK(!(it != end(g)));
 }
 
+class Beacon
+  : public elle::Error
+{
+public:
+  Beacon()
+    : elle::Error("beacon exception escaped")
+  {}
+};
+
+ELLE_TEST_SCHEDULED(exception)
+{
+  auto f = [&] (reactor::yielder<int>::type const& yield)
+    {
+      yield(0);
+      yield(1);
+      throw Beacon();
+      yield(2);
+    };
+  int expected = 0;
+  try
+  {
+    for (auto i: reactor::generator<int>(f))
+      BOOST_CHECK_EQUAL(i, expected++);
+  }
+  catch (Beacon const&)
+  {
+    BOOST_CHECK_EQUAL(expected, 2);
+    return;
+  }
+  BOOST_FAIL("generator din't throw");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -73,4 +105,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(simple));
   master.add(BOOST_TEST_CASE(move));
   master.add(BOOST_TEST_CASE(interleave));
+  master.add(BOOST_TEST_CASE(exception));
 }

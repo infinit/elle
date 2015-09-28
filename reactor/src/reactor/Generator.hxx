@@ -13,7 +13,14 @@ namespace reactor
       new Thread("generator",
                  [this, driver, yield]
                  {
-                   driver(yield);
+                   try
+                   {
+                     driver(yield);
+                   }
+                   catch (...)
+                   {
+                     this->_exception = std::current_exception();
+                   }
                    this->_results.put({});
                  }));
   }
@@ -47,7 +54,13 @@ namespace reactor
       this->_value = this->_generator->_results.get();
       this->_fetch = false;
     }
-    return bool(this->_value);
+    if (this->_value)
+      return true;
+    else
+      if (this->_generator->_exception)
+        std::rethrow_exception(this->_generator->_exception);
+      else
+        return false;
   }
 
   template <typename T>
