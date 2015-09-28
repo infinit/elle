@@ -17,7 +17,7 @@ namespace reactor
   {
     typedef typename yielder<T>::type yielder;
     Generator(std::function<void (yielder const&)> const& driver);
-
+    Generator(Generator&&b) = default;
     struct iterator
     {
       iterator();
