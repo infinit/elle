@@ -20,8 +20,8 @@ namespace elle
   | Construction |
   `-------------*/
   public:
-    Error(std::string const& format);
-    Error(elle::Backtrace const& bt, std::string const& format);
+    Error(std::string const& message);
+    Error(elle::Backtrace const& bt, std::string const& message);
 
   /*--------------.
   | Serialization |

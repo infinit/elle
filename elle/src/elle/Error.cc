@@ -7,12 +7,12 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Error::Error(std::string const& format)
-    : Super(format)
+  Error::Error(std::string const& message)
+    : Super(message, 1)
   {}
 
-  Error::Error(elle::Backtrace const& bt, std::string const& format)
-    : Super(bt, format)
+  Error::Error(elle::Backtrace const& bt, std::string const& message)
+    : Super(bt, message)
   {}
 
   /*--------------.

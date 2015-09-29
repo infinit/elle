@@ -10,8 +10,8 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Exception::Exception(std::string const& message)
-    : Exception(Backtrace::current(1), message)
+  Exception::Exception(std::string const& message, int skip)
+    : Exception(Backtrace::current(1 + skip), message)
   {}
 
   Exception::Exception(elle::Backtrace const& bt,

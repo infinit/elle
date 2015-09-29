@@ -21,8 +21,8 @@ namespace elle
   | Construction |
   `-------------*/
   public:
-    Exception(std::string const& format);
-    Exception(elle::Backtrace const& bt, std::string const& format);
+    Exception(std::string const& message, int skip = 0);
+    Exception(elle::Backtrace const& bt, std::string const& message);
     ~Exception() noexcept (true);
     void
     inner_exception(std::unique_ptr<Exception>&& exception);
