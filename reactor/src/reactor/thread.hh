@@ -5,6 +5,7 @@
 # include <boost/system/error_code.hpp>
 
 # include <elle/Backtrace.hh>
+# include <elle/named.hh>
 
 # include <reactor/asio.hh>
 # include <reactor/backend/fwd.hh>
@@ -35,38 +36,45 @@ namespace reactor
     };
     typedef std::unique_ptr<reactor::Thread, Terminator> unique_ptr;
 
-    /*-------------.
-    | Construction |
-    `-------------*/
-    public:
-      Thread(Scheduler& scheduler,
-             const std::string& name,
-             const Action& action,
-             bool dispose = false);
-      Thread(const std::string& name,
-             const Action& action,
-             bool dispose = false);
-      // Returned shared ptr will be kept live until action finished
-      static
-      ThreadPtr
-      make_tracked(Scheduler& scheduler,
-                   const std::string& name,
-                   const Action& action);
-      // Returned shared ptr will be kept live until action finished
-      static
-      ThreadPtr
-      make_tracked(const std::string& name,
-                   const Action& action);
-      virtual
-      ~Thread();
-    protected:
-      /// Called by the scheduler when it doesn't reference this anymore.
-      virtual
-      void
-      _scheduler_release();
-    private:
-      ThreadPtr _self;
-      bool _dispose;
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
+    Thread(Scheduler& scheduler,
+           const std::string& name,
+           const Action& action,
+           bool dispose = false);
+    Thread(const std::string& name,
+           const Action& action,
+           bool dispose = false);
+    template <typename ... Args>
+    Thread(const std::string& name,
+           const Action& action,
+           Args&& ... args);
+    NAMED_ARGUMENT(dispose);
+    NAMED_ARGUMENT(managed);
+    // Returned shared ptr will be kept live until action finished
+    static
+    ThreadPtr
+    make_tracked(Scheduler& scheduler,
+                 const std::string& name,
+                 const Action& action);
+    // Returned shared ptr will be kept live until action finished
+    static
+    ThreadPtr
+    make_tracked(const std::string& name,
+                 const Action& action);
+    virtual
+    ~Thread();
+  protected:
+    /// Called by the scheduler when it doesn't reference this anymore.
+    virtual
+    void
+    _scheduler_release();
+  private:
+    ThreadPtr _self;
+    ELLE_ATTRIBUTE(bool, dispose);
+    ELLE_ATTRIBUTE(bool, managed);
 
     /*---------.
     | Tracking |

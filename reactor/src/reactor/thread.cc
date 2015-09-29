@@ -28,6 +28,7 @@ namespace reactor
                  Action const& action,
                  bool dispose)
     : _dispose(dispose)
+    , _managed(false)
     , _state(state::running)
     , _injection()
     , _exception()
@@ -197,7 +198,9 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: done", *this);
       _state = Thread::state::done;
-      _signal();
+      if (this->_exception_thrown)
+        this->Waitable::_raise(this->_exception_thrown);
+      this->Waitable::_signal();
     }
     // Unfortunately, uncaught_exception is broken by elle::exception_string,
     // probably because of the coroutines. True on GCC libstdc++ 4.8 at least.
@@ -209,7 +212,7 @@ namespace reactor
       this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
       this->_wait_abort("terminate exception was swallowed");
     }
-    if (this->_exception_thrown)
+    if (this->_exception_thrown && !this->_managed)
     {
       ELLE_TRACE("%s: step: re-raise exception: %s",
                  *this, elle::exception_string(this->_exception_thrown));
@@ -347,7 +350,10 @@ namespace reactor
   Thread::_wait(Thread* thread)
   {
     if (_state == state::done)
-      return false;
+      if (this->_exception_thrown)
+        std::rethrow_exception(this->_exception_thrown);
+      else
+        return false;
     else
       return Waitable::_wait(thread);
   }

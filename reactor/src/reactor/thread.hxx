@@ -3,6 +3,24 @@
 
 namespace reactor
 {
+  /*-------------.
+  | Construction |
+  `-------------*/
+
+  template <typename ... Args>
+  Thread::Thread(const std::string& name,
+                 const Action& action,
+                 Args&& ... args)
+    : Thread(name, action)
+  {
+    elle::named::prototype(dispose = false, managed = false)
+      .call([&] (bool dispose, bool managed)
+            {
+              this->_dispose = dispose;
+              this->_managed = managed;
+            }, std::forward<Args>(args)...);
+  }
+
   template <typename R>
   static void vthread_catcher(const typename VThread<R>::Action& action,
                        R& result)

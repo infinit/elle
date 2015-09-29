@@ -141,6 +141,19 @@ nested_schedulers()
   BOOST_CHECK(reactor::Scheduler::scheduler() == 0);
 }
 
+ELLE_TEST_SCHEDULED(managed)
+{
+  reactor::Thread t(
+    "thrower",
+    [&]
+    {
+      throw BeaconException();
+    },
+    reactor::Thread::managed = true);
+  BOOST_CHECK_THROW(reactor::wait(t), BeaconException);
+  BOOST_CHECK_THROW(reactor::wait(t), BeaconException);
+}
+
 /*-----.
 | Wait |
 `-----*/
@@ -2687,6 +2700,15 @@ namespace timeout_
 ELLE_TEST_SUITE()
 {
   {
+    boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("basics");
+    boost::unit_test::framework::master_test_suite().add(basics);
+    basics->add(BOOST_TEST_CASE(test_basics_one), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
+  }
+
+  {
     boost::unit_test::test_suite* channels = BOOST_TEST_SUITE("channel");
     boost::unit_test::framework::master_test_suite().add(channels);
     channels->add(BOOST_TEST_CASE(test_simple_channel), 0, valgrind(1, 5));
@@ -2697,12 +2719,6 @@ ELLE_TEST_SUITE()
     auto open_close = &channel::open_close;
     channels->add(BOOST_TEST_CASE(open_close), 0, valgrind(1, 5));
   }
-
-  boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
-  boost::unit_test::framework::master_test_suite().add(basics);
-  basics->add(BOOST_TEST_CASE(test_basics_one), 0, valgrind(1, 5));
-  basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
-  basics->add(BOOST_TEST_CASE(nested_schedulers), 0, valgrind(1, 5));
 
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
