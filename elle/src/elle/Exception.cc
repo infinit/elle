@@ -49,14 +49,32 @@ namespace elle
   | Helpers |
   `--------*/
 
-  std::ostream&
-  operator <<(std::ostream& s,
-              Exception const& e)
+  static
+  void
+  print_exception(std::ostream& s, Exception const& e)
   {
     s << e.what() << std::endl;
     s << e.backtrace();
     if (auto const& inner = e.inner_exception())
       s << std::endl << "Exception was triggered by: " << *inner;
+    try
+    {
+      std::rethrow_if_nested(e);
+    }
+    catch(elle::Exception const& e)
+    {
+      s << std::endl << "caused by: ";
+      print_exception(s, e);
+    }
+    catch(...)
+    {}
+  }
+
+  std::ostream&
+  operator <<(std::ostream& s,
+              Exception const& e)
+  {
+    print_exception(s, e);
     return s;
   }
 

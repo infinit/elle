@@ -4,9 +4,10 @@
 # include <memory>
 # include <stdexcept>
 
-# include <elle/attribute.hh>
-# include <elle/serialization.hh>
 # include <elle/Backtrace.hh>
+# include <elle/attribute.hh>
+# include <elle/compiler.hh>
+# include <elle/serialization.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/types.hh>
 
@@ -38,16 +39,27 @@ namespace elle
     serialize(elle::serialization::Serializer& s);
 
   private:
+    template <class T>
+    friend
+    void
+    throw_with_nested(T&& t);
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);
     ELLE_ATTRIBUTE_R(std::shared_ptr<Exception>, inner_exception);
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);
 
+  template <class T>
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  void
+  throw_with_nested(T&& t);
+
   // Try to return the most exhaustive string representing the given
   // exception (or the current one if none is given).
   std::string
   exception_string(std::exception_ptr err = std::exception_ptr{});
 }
+
+# include <elle/Exception.hxx>
 
 #endif
