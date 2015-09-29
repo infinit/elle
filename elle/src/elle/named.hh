@@ -6,7 +6,8 @@
 # include <elle/meta.hh>
 
 #define NAMED_ARGUMENT(Name)                                            \
-  struct Name##_type                                                    \
+  __attribute__((unused))                                               \
+  static struct Name##_type                                             \
     : public elle::named::Argument<Name##_type>                         \
   {                                                                     \
     using elle::named::Argument<Name##_type>::operator=;                \
