@@ -719,6 +719,46 @@ ELLE_TEST_SCHEDULED(query_string)
   reactor::wait(hit);
 }
 
+ELLE_TEST_SCHEDULED(keep_alive)
+{
+  HTTPServer server;
+  server.register_route(
+    "/alive", reactor::http::Method::GET,
+    [&] (HTTPServer::Headers const& headers,
+         HTTPServer::Cookies const&,
+         HTTPServer::Parameters const&,
+         elle::Buffer const&) -> std::string
+    {
+      BOOST_CHECK_EQUAL(headers.at("Connection"), "keep-alive");
+      return "alive";
+    });
+  server.register_route(
+    "/dead", reactor::http::Method::GET,
+    [&](HTTPServer::Headers const& headers,
+         HTTPServer::Cookies const&,
+         HTTPServer::Parameters const&,
+         elle::Buffer const&) -> std::string
+      {
+        BOOST_CHECK_THROW(headers.at("Connection"), std::out_of_range);
+        return "dead";
+      });
+  reactor::http::Request r_keep_alive(server.url("alive"));
+  r_keep_alive.wait();
+  std::string content;
+  r_keep_alive >> content;
+  BOOST_CHECK_EQUAL(content, "alive");
+  reactor::http::Request::Configuration conf(30_sec,
+                                             reactor::DurationOpt(),
+                                             reactor::http::Version::v11,
+                                             false);
+  reactor::http::Request r_close(server.url("dead"),
+                                 reactor::http::Method::GET,
+                                 conf);
+  r_close.wait();
+  content.clear();
+  r_close >> content;
+  BOOST_CHECK_EQUAL(content, "dead");
+}
 
 ELLE_TEST_SUITE()
 {
@@ -748,4 +788,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(download_progress), 0, valgrind(10));
   suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
   suite.add(BOOST_TEST_CASE(query_string), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(keep_alive), 0, valgrind(1));
 }
