@@ -61,8 +61,10 @@ namespace reactor
       DurationOpt timeout,
       DurationOpt stall_timeout,
       Version version,
+      bool keep_alive,
       boost::optional<Configuration::Proxy> proxy):
         _version(version),
+        _keep_alive(keep_alive),
         _proxy(proxy),
         _timeout(timeout),
         _stall_timeout(stall_timeout),
@@ -78,7 +80,7 @@ namespace reactor
 
     void
     Request::Configuration::header_add(std::string const& header,
-                              std::string const& content)
+                                       std::string const& content)
     {
       this->_headers.insert(std::make_pair(header, content));
     }
@@ -232,6 +234,10 @@ namespace reactor
       // CAs.
       // http://bugs.python.org/issue17128
       setopt(this->_handle, CURLOPT_SSL_VERIFYPEER, 0L);
+      // Accept all forms of compression that we support.
+      setopt(this->_handle, CURLOPT_ACCEPT_ENCODING, "");
+      if (this->_conf.keep_alive())
+        this->header_add("Connection", "keep-alive");
     }
 
     Request::Impl::~Impl()

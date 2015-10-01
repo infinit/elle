@@ -73,6 +73,7 @@ namespace reactor
         Configuration(DurationOpt timeout = 30_sec,
                       DurationOpt stall_timeout = DurationOpt(),
                       Version version = Version::v11,
+                      bool keep_alive = true,
                       boost::optional<Proxy> proxy = boost::optional<Proxy>());
         /// Configuration are not copiable.
         Configuration(Configuration const&) = default;
@@ -102,6 +103,8 @@ namespace reactor
       public:
         /// The HTTP version.
         ELLE_ATTRIBUTE_RW(Version, version);
+        // If keep-alive should be enabled or not.
+        ELLE_ATTRIBUTE_R(bool, keep_alive);
         /// The proxy to use.
         ELLE_ATTRIBUTE_RW(boost::optional<Proxy>, proxy);
         /// The potential request timeout.
