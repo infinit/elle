@@ -1,0 +1,22 @@
+// -*- c++ -*-
+#ifndef ELLE_MEMORY
+# define ELLE_MEMORY
+
+# include_next <cassert>
+# include_next <memory>
+
+namespace std
+{
+  template<typename T, typename U>
+  std::unique_ptr<T>
+  static_pointer_cast(std::unique_ptr<U>&& p)
+  {
+    assert(
+      dynamic_cast<typename std::unique_ptr<T>::element_type*>(p.get()));
+    auto raw =
+      static_cast<typename std::shared_ptr<T>::element_type*>(p.release());
+    return std::unique_ptr<T>(raw);
+  }
+}
+
+#endif
