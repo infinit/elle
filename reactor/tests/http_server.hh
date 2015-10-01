@@ -315,6 +315,11 @@ namespace reactor
                                   elle::sprintf("%s: ill-formed", words));
                 cookies[chunks[0]] = chunks[1];
               }
+              else if (words[0] == "Connection:")
+              {
+                expected_length(2);
+                headers["Connection"] = words[1];
+              }
             }
 
             ELLE_TRACE("%s: cookies: %s", *this, cookies);
