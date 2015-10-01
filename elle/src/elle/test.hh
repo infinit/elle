@@ -170,7 +170,17 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
       ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name));        \
       BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));                 \
     });                                                               \
-  sched.run();                                                        \
+  try                                                                 \
+  {                                                                   \
+    sched.run();                                                      \
+  }                                                                   \
+  catch (elle::Error const& e)                                        \
+  {                                                                   \
+    ELLE_LOG_COMPONENT("elle.Test");                                  \
+    ELLE_ERR("exception escaped test %s: %s",                         \
+             BOOST_PP_STRINGIZE(Name), e);                            \
+    throw;                                                            \
+  }                                                                   \
 }                                                                     \
                                                                       \
 static                                                                \
