@@ -201,6 +201,19 @@ namespace elle
           serialize_element();
       }
 
+      void
+      SerializerIn::_deserialize_dict_key(
+        std::function<void (std::string const&)> const& f)
+      {
+        int count = _serialize_number();
+        for (int i = 0; i < count; ++i)
+        {
+          std::string key;
+          _serialize("key", key);
+          f(key);
+        }
+      }
+
       int64_t
       SerializerIn::_serialize_number()
       {

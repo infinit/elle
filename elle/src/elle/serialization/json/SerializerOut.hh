@@ -50,6 +50,10 @@ namespace elle
                          std::function<void ()> const& f) override;
         virtual
         void
+        _serialize_dict_key(std::string const& name,
+                            std::function<void ()> const& f) override;
+        virtual
+        void
         _serialize(std::string const& name, int64_t& v) override;
         virtual
         void

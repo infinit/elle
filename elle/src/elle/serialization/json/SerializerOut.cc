@@ -51,7 +51,7 @@ namespace elle
         auto& current = *this->_current.back();
         if (current.empty())
         {
-          ELLE_DEBUG("%s: create object", *this);
+          ELLE_DEBUG("%s: create object (enter)", *this);
           current = elle::json::Object();
         }
         if (current.type() == typeid(elle::json::Object))
@@ -99,6 +99,16 @@ namespace elle
         ELLE_ASSERT(current.empty());
         current = elle::json::Array();
         f();
+      }
+
+      void
+      SerializerOut::_serialize_dict_key(
+        std::string const& name,
+        std::function<void ()> const& f)
+      {
+        ELLE_TRACE_SCOPE("%s: name = %s", *this, name);
+        if (this->_enter(name))
+          f();
       }
 
       void

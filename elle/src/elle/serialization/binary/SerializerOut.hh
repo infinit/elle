@@ -36,9 +36,16 @@ namespace elle
       protected:
         virtual
         void
+        _size(int size) override;
+        virtual
+        void
         _serialize_array(std::string const& name,
                          int size,
                          std::function<void ()> const& f) override;
+        virtual
+        void
+        _serialize_dict_key(std::string const& name,
+                            std::function<void ()> const& f) override;
         virtual
         void
         _serialize(std::string const& name, int64_t& v) override;

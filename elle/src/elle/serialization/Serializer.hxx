@@ -358,6 +358,43 @@ namespace elle
       _serialize_assoc(name, map);
     }
 
+    template <typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::unordered_map<std::string, V, Rest...>& map)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize umap<str,V> container \"%s\"",
+                       *this, name);
+
+      if (this->_out())
+      {
+        this->_size(map.size());
+
+        for (std::pair<std::string, V> pair: map)
+        {
+          this->_serialize_dict_key(
+          pair.first,
+          [&] ()
+          {
+            this->_serialize_anonymous(pair.first, pair.second);
+            elle::SafeFinally leave([&] { this->_leave(name); });
+          });
+        }
+      }
+      else
+      {
+        this->_deserialize_dict_key(
+          [&] (std::string const& key)
+          {
+            elle::SafeFinally leave([&] { this->_leave(key); });
+            V value;
+            this->_serialize_anonymous(key, value);
+            map.insert({key, value});
+          });
+      }
+    }
+
     template <typename K, typename V, typename ... Rest>
     void
     Serializer::_serialize(std::string const& name,
@@ -406,7 +443,6 @@ namespace elle
             map.insert(p);
           });
       }
-
     }
 
     template <typename T, typename A>

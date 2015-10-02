@@ -1,6 +1,7 @@
 #include <elle/serialization/binary/SerializerOut.hh>
 
 #include <elle/assert.hh>
+#include <elle/finally.hh>
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 
@@ -24,6 +25,12 @@ namespace elle
       /*--------------.
       | Serialization |
       `--------------*/
+
+      void
+      SerializerOut::_size(int size)
+      {
+        _serialize_number(size);
+      }
 
       void
       SerializerOut::_serialize_number(int64_t n)
@@ -74,6 +81,15 @@ namespace elle
                                       std::function<void ()> const& f)
       {
         _serialize_number(size);
+        f();
+      }
+
+      void
+      SerializerOut::_serialize_dict_key(
+        std::string const& name,
+        std::function<void ()> const& f)
+      {
+        this->_serialize("string", const_cast<std::string&>(name));
         f();
       }
 

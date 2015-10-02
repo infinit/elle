@@ -152,9 +152,20 @@ namespace elle
       _leave(std::string const& name);
       virtual
       void
+      _size(int size);
+      virtual
+      void
       _serialize_array(std::string const& name,
                        int size, // -1 for in(), array size for out()
                        std::function<void ()> const& f) = 0;
+      virtual
+      void
+      _serialize_dict_key(std::string const& name,
+                      std::function<void ()> const& f);
+      virtual
+      void
+      _deserialize_dict_key(
+        std::function<void (std::string const&)> const& f);
       virtual
       void
       _serialize(std::string const& name, int64_t& v) = 0;
@@ -213,6 +224,11 @@ namespace elle
       void
       _serialize(std::string const& name,
                 std::unordered_map<K, V, Rest...>& map);
+
+      template <typename V, typename ... Rest>
+      void
+      _serialize(std::string const& name,
+                std::unordered_map<std::string, V, Rest...>& map);
       template <typename K, typename V, typename ... Rest>
       void
       _serialize(std::string const& name,

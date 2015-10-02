@@ -245,6 +245,17 @@ namespace elle
         }
       }
 
+      void
+      SerializerIn::_deserialize_dict_key(
+        std::function<void (std::string const&)> const& f)
+      {
+        auto& current = *this->_current.back();
+        const auto& object = boost::any_cast<elle::json::Object>(current);
+        for (auto& elt: object)
+          if (this->_enter(elt.first))
+            f(elt.first);
+      }
+
       bool
       SerializerIn::_option_filled()
       {

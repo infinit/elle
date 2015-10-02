@@ -357,6 +357,33 @@ unordered_map()
 template <typename Format>
 static
 void
+unordered_map_string()
+{
+  std::unordered_map<std::string, int> map
+  {
+    {"zero", 0}, {"one", 1}, {"two", 2}
+  };
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("map", map);
+  }
+  ELLE_DUMP("out: %s", stream.str());
+  {
+    std::unordered_map<std::string, int> res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("map", res);
+    BOOST_CHECK_EQUAL(map, res);
+
+    ELLE_DUMP("in:");
+    for (auto const& elt: res)
+      ELLE_DUMP("%s, %s", elt.first, elt.second);
+  }
+}
+
+template <typename Format>
+static
+void
 buffer()
 {
   elle::Buffer buffer(256);
@@ -1047,6 +1074,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(option);
   FOR_ALL_SERIALIZATION_TYPES(unique_ptr);
   FOR_ALL_SERIALIZATION_TYPES(unordered_map);
+  FOR_ALL_SERIALIZATION_TYPES(unordered_map_string);
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(hierarchy);

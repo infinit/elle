@@ -77,6 +77,11 @@ namespace elle
                          int size,
                          std::function<void ()> const& f) override;
         virtual
+        void
+        _deserialize_dict_key(
+          std::function<void (std::string const&)> const& f) override;
+ 
+        virtual
         bool
         _enter(std::string const& name) override;
         virtual
