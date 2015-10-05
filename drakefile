@@ -1217,6 +1217,18 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     archs = archs,
     fuse = fuse,
   )
+  athena = drake.include(
+    'athena',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    elle = elle,
+    das = das,
+    reactor = reactor,
+    boost = boost,
+    prefix = prefix,
+    valgrind = valgrind,
+    valgrind_tests = valgrind_tests,
+  )
   dropbox = drake.include(
     'dropbox',
     cxx_toolkit = cxx_toolkit,
