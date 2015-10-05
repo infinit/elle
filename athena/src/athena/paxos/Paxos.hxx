@@ -22,12 +22,38 @@ namespace athena
       ELLE_LOG_COMPONENT("athena.paxos.Paxos");
       ELLE_TRACE_SCOPE("%s: choose %s", *this, value);
       ++this->_round;
-      this->propose(this->_id, this->_round);
-      for (auto& peer: this->_peers)
-        peer->propose(this->_id, this->_round);
-      this->accept(this->_id, this->_round, value);
-      for (auto& peer: this->_peers)
-        peer->accept(this->_id, this->_round, value);
+      {
+        this->propose(this->_id, this->_round);
+        int reached = 0;
+        for (auto& peer: this->_peers)
+        {
+          try
+          {
+            peer->propose(this->_id, this->_round);
+            ++reached;
+          }
+          catch (typename Peer::Unavailable const&)
+          {}
+        }
+        if (reached < this->_peers.size() / 2)
+          throw elle::Error("too few peers are available to reach consensus");
+      }
+      {
+        this->accept(this->_id, this->_round, value);
+        int reached = 0;
+        for (auto& peer: this->_peers)
+        {
+          try
+          {
+            peer->accept(this->_id, this->_round, value);
+            ++reached;
+          }
+          catch (typename Peer::Unavailable const&)
+          {}
+        }
+        if (reached < this->_peers.size() / 2)
+          throw elle::Error("to few peers are available to reach consensus");
+      }
       this->_chosen = true;
       ELLE_TRACE("%s: chose %s", *this, this->_accepted->value);
       return this->_accepted->value;
@@ -79,6 +105,15 @@ namespace athena
     {
       elle::fprintf(output, "Paxos(%s)", this->_id);
     }
+
+    /*------------.
+    | Unavailable |
+    `------------*/
+
+    template <typename T, typename ServerId>
+    Paxos<T, ServerId>::Peer::Unavailable::Unavailable()
+      : elle::Error("paxos peer unavailable")
+    {}
   }
 }
 

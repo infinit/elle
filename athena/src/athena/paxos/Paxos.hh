@@ -27,6 +27,12 @@ namespace athena
         virtual
         void
         accept(ServerId const& sender, int round, T const& value) = 0;
+        class Unavailable
+          : public elle::Error
+        {
+        public:
+          Unavailable();
+        };
       };
       typedef std::vector<std::unique_ptr<Peer>> Peers;
 
