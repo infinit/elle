@@ -5,6 +5,23 @@ namespace athena
 {
   namespace paxos
   {
+    /*------.
+    | Types |
+    `------*/
+
+    template <typename T, typename ServerId>
+    bool
+    Paxos<T, ServerId>::Proposal::operator <(Proposal const& rhs) const
+    {
+      if (this->round < rhs.round)
+        return true;
+      return this->sender < rhs.sender;
+    }
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
     template <typename T, typename ServerId>
     Paxos<T, ServerId>::Paxos(ServerId id, Peers peers)
       : _id(std::move(id))
@@ -17,44 +34,59 @@ namespace athena
 
     template <typename T, typename ServerId>
     T
-    Paxos<T, ServerId>::choose(T const& value)
+    Paxos<T, ServerId>::choose(T const& value_)
     {
+      T value = value_; // FIXME: no need to copy if not replaced
       ELLE_LOG_COMPONENT("athena.paxos.Paxos");
       ELLE_TRACE_SCOPE("%s: choose %s", *this, value);
-      ++this->_round;
+      if (!this->_chosen)
       {
-        this->propose(this->_id, this->_round);
-        int reached = 0;
-        for (auto& peer: this->_peers)
+        ++this->_round;
         {
-          try
+          auto previous = this->propose(this->_id, this->_round);
+          int reached = 0;
+          for (auto& peer: this->_peers) // FIXME: parallel
           {
-            peer->propose(this->_id, this->_round);
-            ++reached;
+            try
+            {
+              if (auto p = peer->propose(this->_id, this->_round))
+                if (!previous || previous->proposal < p->proposal)
+                {
+                  ELLE_DEBUG_SCOPE("%s: value already accepted: %s",
+                                   *this, p.get());
+                  previous = p;
+                }
+              ++reached;
+            }
+            catch (typename Peer::Unavailable const&)
+            {}
           }
-          catch (typename Peer::Unavailable const&)
-          {}
+          if (reached < this->_peers.size() / 2)
+            throw elle::Error("too few peers are available to reach consensus");
+          if (previous)
+          {
+            ELLE_DEBUG("%s: replace value with %s", *this, previous->value);
+            value = std::move(previous->value);
+          }
         }
-        if (reached < this->_peers.size() / 2)
-          throw elle::Error("too few peers are available to reach consensus");
-      }
-      {
-        this->accept(this->_id, this->_round, value);
-        int reached = 0;
-        for (auto& peer: this->_peers)
         {
-          try
+          this->accept(this->_id, this->_round, value);
+          int reached = 0;
+          for (auto& peer: this->_peers) // FIXME: parallel
           {
-            peer->accept(this->_id, this->_round, value);
-            ++reached;
+            try
+            {
+              peer->accept(this->_id, this->_round, value);
+              ++reached;
+            }
+            catch (typename Peer::Unavailable const&)
+            {}
           }
-          catch (typename Peer::Unavailable const&)
-          {}
+          if (reached < this->_peers.size() / 2)
+            throw elle::Error("to few peers are available to reach consensus");
         }
-        if (reached < this->_peers.size() / 2)
-          throw elle::Error("to few peers are available to reach consensus");
+        this->_chosen = true;
       }
-      this->_chosen = true;
       ELLE_TRACE("%s: chose %s", *this, this->_accepted->value);
       return this->_accepted->value;
     }
@@ -73,10 +105,13 @@ namespace athena
     }
 
     template <typename T, typename ServerId>
-    boost::optional<std::pair<int, T>>
+    boost::optional<typename Paxos<T, ServerId>::Accepted>
     Paxos<T, ServerId>::propose(ServerId const& sender, int round)
     {
-      return {};
+      Proposal p{round, sender};
+      if (!this->_minimum || this->_minimum < p)
+        this->_minimum = p;
+      return this->_accepted;
     }
 
     template <typename T, typename ServerId>
@@ -89,8 +124,8 @@ namespace athena
                        *this, value, round, sender);
       if (!this->_accepted)
         this->_accepted.emplace();
-      this->_accepted->sender = sender;
-      this->_accepted->round = round;
+      this->_accepted->proposal.sender = sender;
+      this->_accepted->proposal.round = round;
       this->_accepted->value = value;
       this->_has_accepted.open();
     }

@@ -14,6 +14,23 @@ namespace athena
     class Paxos
       : public elle::Printable
     {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      struct Proposal
+      {
+        int round;
+        ServerId sender;
+        bool
+        operator <(Proposal const& rhs) const;
+      };
+      struct Accepted
+      {
+        Proposal proposal;
+        T value;
+      };
+
     /*-----.
     | Peer |
     `-----*/
@@ -22,7 +39,7 @@ namespace athena
       {
       public:
         virtual
-        boost::optional<std::pair<int, T>>
+        boost::optional<Accepted>
         propose(ServerId const& sender, int round) = 0;
         virtual
         void
@@ -52,18 +69,13 @@ namespace athena
       choose(T const& value);
       T
       choose();
-      boost::optional<std::pair<int, T>>
+      boost::optional<Accepted>
       propose(ServerId const& sender, int round);
       void
       accept(ServerId const& sender, int round, T const& value);
       ELLE_ATTRIBUTE(int, round);
-      struct Accepted
-      {
-        ServerId sender;
-        int round;
-        T value;
-      };
       ELLE_ATTRIBUTE(boost::optional<Accepted>, accepted);
+      ELLE_ATTRIBUTE(boost::optional<Proposal>, minimum);
       ELLE_ATTRIBUTE(reactor::Barrier, has_accepted);
       ELLE_ATTRIBUTE(bool, chosen);
 
