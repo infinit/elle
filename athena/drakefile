@@ -40,9 +40,13 @@ def configure(cxx_toolkit,
     elle.lib_dynamic, 'lib', strip_prefix = True)
   reactor_lib = drake.copy(
     reactor.lib_dynamic, 'lib', strip_prefix = True)
-  local_config += boost.config_system(link = False)
-  local_config.library_add(
-    drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    local_cxx_config += boost.config_system(static = True)
+  else:
+    local_config += boost.config_system(link = False)
+    local_config.library_add(
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   sources = drake.nodes(
     'src/athena/paxos/Paxos.cc',
     'src/athena/paxos/Paxos.hh',
