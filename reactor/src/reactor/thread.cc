@@ -198,7 +198,7 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: done", *this);
       _state = Thread::state::done;
-      if (this->_exception_thrown)
+      if (this->_managed && this->_exception_thrown)
         this->Waitable::_raise(this->_exception_thrown);
       this->Waitable::_signal();
     }
@@ -350,7 +350,7 @@ namespace reactor
   Thread::_wait(Thread* thread)
   {
     if (_state == state::done)
-      if (this->_exception_thrown)
+      if (this->_managed && this->_exception_thrown)
         std::rethrow_exception(this->_exception_thrown);
       else
         return false;

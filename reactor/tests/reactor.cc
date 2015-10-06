@@ -154,6 +154,25 @@ ELLE_TEST_SCHEDULED(managed)
   BOOST_CHECK_THROW(reactor::wait(t), BeaconException);
 }
 
+ELLE_TEST_SCHEDULED_THROWS(non_managed, BeaconException)
+{
+  reactor::Thread thrower(
+    "thrower",
+    [&]
+    {
+      throw BeaconException();
+    });
+  try
+  {
+    reactor::sleep();
+  }
+  catch (...)
+  {
+    BOOST_CHECK_NO_THROW(reactor::wait(thrower));
+    throw;
+  }
+}
+
 /*-----.
 | Wait |
 `-----*/
@@ -2706,6 +2725,7 @@ ELLE_TEST_SUITE()
     basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(non_managed), 0, valgrind(1, 5));
   }
 
   {
