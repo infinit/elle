@@ -42,7 +42,7 @@ namespace athena
         boost::optional<Accepted>
         propose(ServerId const& sender, int round) = 0;
         virtual
-        void
+        Proposal
         accept(ServerId const& sender, int round, T const& value) = 0;
         class Unavailable
           : public elle::Error
@@ -71,7 +71,7 @@ namespace athena
       choose();
       boost::optional<Accepted>
       propose(ServerId const& sender, int round);
-      void
+      Proposal
       accept(ServerId const& sender, int round, T const& value);
       ELLE_ATTRIBUTE(int, round);
       ELLE_ATTRIBUTE(boost::optional<Accepted>, accepted);
