@@ -53,7 +53,7 @@ namespace elle
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
 #  define ELLE_ENFORCE(_condition_)                                           \
-  ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
+  ::elle::_elle_assert(bool(_condition_), #_condition_, __FILE__, __LINE__)
 
 #  define ELLE_ENFORCE_EQ(A, B)                                               \
   ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
