@@ -4,6 +4,7 @@
 
 #include <elle/Backtrace.hh>
 #include <elle/format/base64.hh>
+#include <elle/finally.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/memory.hh>
 #include <elle/printf.hh>
@@ -250,10 +251,35 @@ namespace elle
         std::function<void (std::string const&)> const& f)
       {
         auto& current = *this->_current.back();
-        const auto& object = boost::any_cast<elle::json::Object>(current);
-        for (auto& elt: object)
-          if (this->_enter(elt.first))
-            f(elt.first);
+        if (current.type() == typeid(elle::json::Object))
+        {
+          const auto& object = boost::any_cast<elle::json::Object>(current);
+          for (auto& elt: object)
+            if (this->_enter(elt.first))
+            {
+              elle::SafeFinally leave([&] { this->_leave(elt.first); });
+              f(elt.first);
+            }
+        }
+        else if (current.type() == typeid(elle::json::Array))
+        {
+          auto& array = boost::any_cast<elle::json::Array&>(current);
+          for (auto& elt: array)
+          {
+            if (elt.type() == typeid(elle::json::Array))
+            {
+              auto& subarray = boost::any_cast<elle::json::Array&>(elt);
+              if (subarray.size() == 2
+                  && subarray.front().type() == typeid(std::string))
+              {
+                auto key = boost::any_cast<std::string>(subarray.front());
+                elle::SafeFinally leave([&] { this->_leave(key); });
+                this->_current.push_back(&subarray.back());
+                f(key);
+              }
+            }
+          }
+        }
       }
 
       bool

@@ -387,7 +387,6 @@ namespace elle
         this->_deserialize_dict_key(
           [&] (std::string const& key)
           {
-            elle::SafeFinally leave([&] { this->_leave(key); });
             V value;
             this->_serialize_anonymous(key, value);
             map.insert({key, value});

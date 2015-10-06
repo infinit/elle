@@ -381,6 +381,30 @@ unordered_map_string()
   }
 }
 
+static
+void
+unordered_map_string_legacy()
+{
+  std::stringstream stream;
+  stream << "{\"features\":[\
+                [\"screenshot_modal\",\"v1\"],\
+                [\"send_view_20141027\",\"a\"],\
+                [\"drip_onboarding_template\",\"a\"],\
+                [\"send_file_url_template\",\"send-file-url\"],\
+                [\"screenshot_modal_20141104\",\"b\"],\
+                [\"drip_ghost-reminder_template\",\"control\"],\
+                [\"drip_delight-sender_template\",\"a\"]\
+                ],}";
+  std::unordered_map<std::string, std::string> res;
+  elle::serialization::json::SerializerIn input(stream);
+  input.serialize("features", res);
+
+  ELLE_DUMP("in:");
+  for (auto const& elt: res)
+    ELLE_DUMP("%s, %s", elt.first, elt.second);
+
+}
+
 template <typename Format>
 static
 void
@@ -1082,6 +1106,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(context);
   FOR_ALL_SERIALIZATION_TYPES(exceptions);
   suite.add(BOOST_TEST_CASE(in_place));
+  suite.add(BOOST_TEST_CASE(unordered_map_string_legacy));
   suite.add(BOOST_TEST_CASE(json_type_error));
   suite.add(BOOST_TEST_CASE(json_missing_key));
   suite.add(BOOST_TEST_CASE(json_overflows));
