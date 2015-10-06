@@ -50,7 +50,7 @@ namespace athena
           ++this->_round;
           Proposal proposal{this->_round, this->_id};
           {
-            auto previous = this->propose(this->_id, this->_round);
+            auto previous = this->propose(proposal);
             int reached = 0;
             elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
             {
@@ -62,7 +62,7 @@ namespace athena
                   {
                     try
                     {
-                      if (auto p = peer->propose(this->_id, this->_round))
+                      if (auto p = peer->propose(proposal))
                         if (!previous || previous->proposal < p->proposal)
                         {
                           ELLE_DEBUG_SCOPE("%s: value already accepted: %s",
@@ -86,7 +86,7 @@ namespace athena
             }
           }
           {
-            this->accept(this->_id, this->_round, value);
+            this->accept(proposal, value);
             int reached = 0;
             bool conflicted = false;
             elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
@@ -100,7 +100,7 @@ namespace athena
                     try
                     {
                       auto minimum =
-                        peer->accept(this->_id, this->_round, value);
+                        peer->accept(proposal, value);
                       // FIXME: If the majority doesn't conflict, the value was
                       // still chosen - right ? Take that in account.
                       if (proposal < minimum)
@@ -148,11 +148,10 @@ namespace athena
 
     template <typename T, typename ServerId>
     boost::optional<typename Paxos<T, ServerId>::Accepted>
-    Paxos<T, ServerId>::propose(ServerId const& sender, int round)
+    Paxos<T, ServerId>::propose(Proposal const& p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Paxos");
-      ELLE_TRACE_SCOPE("%s: get proposition %s from %s ", *this, round, sender);
-      Proposal p{round, sender};
+      ELLE_TRACE_SCOPE("%s: get proposition: %s ", *this, p);
       if (!this->_minimum || this->_minimum < p)
       {
         ELLE_DEBUG("%s: update minimum proposition", *this);
@@ -163,19 +162,17 @@ namespace athena
 
     template <typename T, typename ServerId>
     typename Paxos<T, ServerId>::Proposal
-    Paxos<T, ServerId>::accept(ServerId const& sender, int round,
+    Paxos<T, ServerId>::accept(Proposal const& p,
                                T const& value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Paxos");
-      ELLE_TRACE_SCOPE("%s: accept %s at round %s from %s",
-                       *this, value, round, sender);
-      Proposal p{round, sender};
+      ELLE_TRACE_SCOPE("%s: accept for %s: %s",
+                       *this, p, value);
       if (!(p < this->_minimum))
       {
         if (!this->_accepted)
           this->_accepted.emplace();
-        this->_accepted->proposal.sender = sender;
-        this->_accepted->proposal.round = round;
+        this->_accepted->proposal = p;
         this->_accepted->value = value;
         this->_has_accepted.open();
       }

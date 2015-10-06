@@ -17,16 +17,17 @@ class Peer
 public:
   virtual
   boost::optional<typename paxos::Paxos<T, ServerId>::Accepted>
-  propose(ServerId const& sender, int round) override
+  propose(typename paxos::Paxos<T, ServerId>::Proposal const& p) override
   {
-    return this->_paxos->propose(sender, round);
+    return this->_paxos->propose(p);
   }
 
   virtual
   typename paxos::Paxos<T, ServerId>::Proposal
-  accept(ServerId const& sender, int round, T const& value) override
+  accept(typename paxos::Paxos<T, ServerId>::Proposal const& p,
+         T const& value) override
   {
-    return this->_paxos->accept(sender, round, value);
+    return this->_paxos->accept(p, value);
   }
 
   ELLE_ATTRIBUTE_RW((paxos::Paxos<T, ServerId>*), paxos);
@@ -70,14 +71,15 @@ class UnavailablePeer
 {
   virtual
   boost::optional<typename paxos::Paxos<T, ServerId>::Accepted>
-  propose(ServerId const& sender, int round) override
+  propose(typename paxos::Paxos<T, ServerId>::Proposal const& p) override
   {
     throw typename paxos::Paxos<T, ServerId>::Peer::Unavailable();
   }
 
   virtual
   typename paxos::Paxos<T, ServerId>::Proposal
-  accept(ServerId const& sender, int round, T const& value) override
+  accept(typename paxos::Paxos<T, ServerId>::Proposal const& p,
+         T const& value) override
   {
     throw typename paxos::Paxos<T, ServerId>::Peer::Unavailable();
   }
@@ -159,24 +161,25 @@ public:
 
   virtual
   boost::optional<typename paxos::Paxos<T, ServerId>::Accepted>
-  propose(ServerId const& sender, int round) override
+  propose(typename paxos::Paxos<T, ServerId>::Proposal const& p) override
   {
     if (fail)
       throw typename Peer<T, ServerId>::Unavailable();
     this->propose_signal.signal();
     reactor::wait(this->propose_barrier);
-    return Peer<T, ServerId>::propose(sender, round);
+    return Peer<T, ServerId>::propose(p);
   }
 
   virtual
   typename paxos::Paxos<T, ServerId>::Proposal
-  accept(ServerId const& sender, int round, T const& value) override
+  accept(typename paxos::Paxos<T, ServerId>::Proposal const& p,
+         T const& value) override
   {
     if (fail)
       throw typename Peer<T, ServerId>::Unavailable();
     this->accept_signal.signal();
     reactor::wait(this->accept_barrier);
-    return Peer<T, ServerId>::accept(sender, round, value);
+    return Peer<T, ServerId>::accept(p, value);
   }
 
   bool fail;
