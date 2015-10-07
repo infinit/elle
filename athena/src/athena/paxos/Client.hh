@@ -1,35 +1,29 @@
-#ifndef ATHENA_PAXOS_PAXOS_HH
-# define ATHENA_PAXOS_PAXOS_HH
+#ifndef ATHENA_PAXOS_CLIENT_HH
+# define ATHENA_PAXOS_CLIENT_HH
 
 # include <elle/attribute.hh>
 # include <elle/Printable.hh>
 
 # include <reactor/Barrier.hh>
 
+# include <athena/paxos/Server.hh>
+
 namespace athena
 {
   namespace paxos
   {
-    template <typename T, typename ServerId>
-    class Paxos
+    template <typename T, typename ClientId>
+    class Client
       : public elle::Printable
     {
     /*------.
     | Types |
     `------*/
     public:
-      struct Proposal
-      {
-        int round;
-        ServerId sender;
-        bool
-        operator <(Proposal const& rhs) const;
-      };
-      struct Accepted
-      {
-        Proposal proposal;
-        T value;
-      };
+      typedef Client<T, ClientId> Self;
+      typedef paxos::Server<T, ClientId> Server;
+      typedef typename paxos::Server<T, ClientId>::Proposal Proposal;
+      typedef typename paxos::Server<T, ClientId>::Accepted Accepted;
 
     /*-----.
     | Peer |
@@ -57,8 +51,8 @@ namespace athena
     | Construction |
     `-------------*/
     public:
-      Paxos(ServerId id, Peers peers);
-      ELLE_ATTRIBUTE_R(ServerId, id);
+      Client(ClientId id, Peers peers);
+      ELLE_ATTRIBUTE_R(ClientId, id);
       ELLE_ATTRIBUTE_R(Peers, peers);
 
     /*----------.
@@ -67,17 +61,7 @@ namespace athena
     public:
       T
       choose(T const& value);
-      T
-      choose();
-      boost::optional<Accepted>
-      propose(Proposal const& p);
-      Proposal
-      accept(Proposal const& p, T const& value);
       ELLE_ATTRIBUTE(int, round);
-      ELLE_ATTRIBUTE(boost::optional<Accepted>, accepted);
-      ELLE_ATTRIBUTE(boost::optional<Proposal>, minimum);
-      ELLE_ATTRIBUTE(reactor::Barrier, has_accepted);
-      ELLE_ATTRIBUTE(bool, chosen);
 
     /*----------.
     | Printable |
@@ -89,6 +73,6 @@ namespace athena
   }
 }
 
-# include <athena/paxos/Paxos.hxx>
+# include <athena/paxos/Client.hxx>
 
 #endif
