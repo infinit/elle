@@ -23,16 +23,18 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Serializer::Serializer(std::iostream& stream):
-      Serializer(*reactor::Scheduler::scheduler(), stream)
+    Serializer::Serializer(std::iostream& stream, bool checksum):
+      Serializer(*reactor::Scheduler::scheduler(), stream, checksum)
     {}
 
     Serializer::Serializer(reactor::Scheduler& scheduler,
-                           std::iostream& stream):
+                           std::iostream& stream,
+                           bool checksum):
       Super(scheduler),
       _stream(stream),
       _lock_write(),
-      _lock_read()
+      _lock_read(),
+      _checksum(checksum)
     {}
 
     /*----------.
@@ -46,14 +48,17 @@ namespace infinit
       elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: read packet", *this)
       {
-        uint32_t hash_size(_uint32_get(_stream));
-        ELLE_DUMP("%s: checksum size: %s", *this, hash_size);
+        elle::Buffer hash;
+        if (_checksum)
+        {
+          uint32_t hash_size(_uint32_get(_stream));
+          ELLE_DUMP("%s: checksum size: %s", *this, hash_size);
 
-        elle::Buffer hash(hash_size);
-        _stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
-                     hash_size);
-        ELLE_DUMP("%s: checksum: %s", *this, hash);
-
+          hash.size(hash_size);
+          _stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
+                       hash_size);
+          ELLE_DUMP("%s: checksum: %s", *this, hash);
+        }
         uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
 
@@ -62,29 +67,32 @@ namespace infinit
         ELLE_DUMP("%s: packet data %s", *this, packet);
 
         // Check hash.
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _hash_local =
-          infinit::cryptography::hash(
-            infinit::cryptography::Plain(
-              elle::WeakBuffer(packet._data,
-                               packet._data_size)),
-            infinit::cryptography::Oneway::sha1);
-        auto hash_local(_hash_local.buffer());
-#else
-        auto hash_local =
-          infinit::cryptography::hash(
-            elle::ConstWeakBuffer(packet._data,
-                                  packet._data_size),
-            infinit::cryptography::Oneway::sha1);
-#endif
-        ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
-        if (hash_local != hash)
+        if (_checksum)
         {
-          ELLE_ERR("%s: wrong packet checksum", *this);
-          throw ChecksumError();
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+          auto _hash_local =
+            infinit::cryptography::hash(
+              infinit::cryptography::Plain(
+                elle::WeakBuffer(packet._data,
+                                 packet._data_size)),
+              infinit::cryptography::Oneway::sha1);
+          auto hash_local(_hash_local.buffer());
+#else
+          auto hash_local =
+            infinit::cryptography::hash(
+              elle::ConstWeakBuffer(packet._data,
+                                    packet._data_size),
+              infinit::cryptography::Oneway::sha1);
+#endif
+          ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
+          if (hash_local != hash)
+          {
+            ELLE_ERR("%s: wrong packet checksum", *this);
+            throw ChecksumError();
+          }
+          else
+            ELLE_DUMP("%s: checksum match", *this);
         }
-        else
-          ELLE_DUMP("%s: checksum match", *this);
         return packet;
       }
     }
@@ -99,28 +107,31 @@ namespace infinit
       elle::IOStreamClear clearer(_stream);
       ELLE_TRACE("%s: send %s", *this, packet)
       {
+        if (_checksum)
+        {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _hash =
-          infinit::cryptography::hash(
-            infinit::cryptography::Plain(
-              elle::WeakBuffer(packet._data,
-                               packet._data_size)),
-            infinit::cryptography::Oneway::sha1);
-        auto hash(_hash.buffer());
+          auto _hash =
+            infinit::cryptography::hash(
+              infinit::cryptography::Plain(
+                elle::WeakBuffer(packet._data,
+                                 packet._data_size)),
+              infinit::cryptography::Oneway::sha1);
+          auto hash(_hash.buffer());
 #else
-        auto hash =
-          infinit::cryptography::hash(
-            elle::ConstWeakBuffer(packet._data,
-                                  packet._data_size),
-            infinit::cryptography::Oneway::sha1);
+          auto hash =
+            infinit::cryptography::hash(
+              elle::ConstWeakBuffer(packet._data,
+                                    packet._data_size),
+              infinit::cryptography::Oneway::sha1);
 #endif
           auto hash_size = hash.size();
-        ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
-          _uint32_put(_stream, hash_size);
-        ELLE_DUMP("%s: send checksum: %s", *this, hash)
-        {
-          auto data = reinterpret_cast<char*>(hash.mutable_contents());
-          _stream.write(data, hash_size);
+          ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
+            _uint32_put(_stream, hash_size);
+          ELLE_DUMP("%s: send checksum: %s", *this, hash)
+          {
+            auto data = reinterpret_cast<char*>(hash.mutable_contents());
+            _stream.write(data, hash_size);
+          }
         }
         auto size = packet._data_size;
         ELLE_DUMP("%s: send packet size %s", *this, size)

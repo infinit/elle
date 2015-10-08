@@ -23,8 +23,9 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
-      Serializer(std::iostream& stream);
-      Serializer(reactor::Scheduler& scheduler, std::iostream& stream);
+      Serializer(std::iostream& stream, bool checksum = true);
+      Serializer(reactor::Scheduler& scheduler, std::iostream& stream,
+                 bool checksum = true);
 
     /*----------.
     | Receiving |
@@ -53,6 +54,7 @@ namespace infinit
       std::iostream& _stream;
       reactor::Mutex _lock_write;
       reactor::Mutex _lock_read;
+      bool           _checksum;
     };
   }
 }
