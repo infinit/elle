@@ -9,6 +9,7 @@ from itertools import chain
 
 archs = None
 asio_udt = None
+athena = None
 aws = None
 boost = None
 config = None
@@ -78,6 +79,7 @@ def configure(cxx_toolkit = None,
   ):
 
   global asio_udt
+  global athena
   global aws
   global config
   global cryptography
