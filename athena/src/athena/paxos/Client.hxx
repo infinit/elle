@@ -21,12 +21,13 @@ namespace athena
     {}
 
     template <typename T, typename ClientId>
-    T
+    boost::optional<T>
     Client<T, ClientId>::choose(T const& value_)
     {
-      T value = value_; // FIXME: no need to copy if not replaced
+      T const* value = &value_;
+      boost::optional<T> new_value;
       ELLE_LOG_COMPONENT("athena.paxos.Client");
-      ELLE_TRACE_SCOPE("%s: choose %s", *this, value);
+      ELLE_TRACE_SCOPE("%s: choose %s", *this, *value);
       while (true)
       {
         ++this->_round;
@@ -49,7 +50,7 @@ namespace athena
                       {
                         ELLE_DEBUG_SCOPE("%s: value already accepted: %s",
                                          *this, p.get());
-                        previous = p;
+                        previous = std::move(p);
                       }
                     ++reached;
                   }
@@ -64,7 +65,8 @@ namespace athena
           if (previous)
           {
             ELLE_DEBUG("%s: replace value with %s", *this, previous->value);
-            value = std::move(previous->value);
+            new_value.emplace(std::move(previous->value));
+            value = &*new_value;
           }
         }
         {
@@ -80,7 +82,7 @@ namespace athena
                 {
                   try
                   {
-                    auto minimum = peer->accept(proposal, value);
+                    auto minimum = peer->accept(proposal, *value);
                     // FIXME: If the majority doesn't conflict, the value was
                     // still chosen - right ? Take that in account.
                     if (proposal < minimum)
@@ -108,7 +110,7 @@ namespace athena
         }
       }
       ELLE_TRACE("%s: chose %s", *this, value);
-      return value;
+      return new_value;
     }
 
     /*----------.

@@ -32,6 +32,8 @@ namespace athena
       class Peer
       {
       public:
+        typedef typename paxos::Server<T, ClientId>::Proposal Proposal;
+        typedef typename paxos::Server<T, ClientId>::Accepted Accepted;
         virtual
         boost::optional<Accepted>
         propose(Proposal const& p) = 0;
@@ -59,7 +61,12 @@ namespace athena
     | Consensus |
     `----------*/
     public:
-      T
+      /** Submit \a value as the chosen value.
+       *
+       *  \param value the submitted value
+       *  \return the value that was chosen if not the one we submitted
+       */
+      boost::optional<T>
       choose(T const& value);
       ELLE_ATTRIBUTE(int, round);
 

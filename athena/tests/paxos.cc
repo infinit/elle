@@ -11,6 +11,19 @@ ELLE_LOG_COMPONENT("athena.paxos.test");
 
 namespace paxos = athena::paxos;
 
+namespace std
+{
+  std::ostream&
+  operator <<(std::ostream& output, boost::optional<int> const& v)
+  {
+    if (v)
+      elle::fprintf(output, "Some(%s)", v.get());
+    else
+      elle::fprintf(output, "None");
+    return output;
+  }
+}
+
 template <typename T, typename ServerId>
 class Peer
   : public paxos::Client<T, ServerId>::Peer
@@ -49,7 +62,7 @@ ELLE_TEST_SCHEDULED(all_is_well)
   peers.push_back(elle::make_unique<Peer<int, int>>(server_2));
   peers.push_back(elle::make_unique<Peer<int, int>>(server_3));
   paxos::Client<int, int> client(1, std::move(peers));
-  BOOST_CHECK_EQUAL(client.choose(42), 42);
+  BOOST_CHECK(!client.choose(42));
 }
 
 template <typename T, typename ServerId>
@@ -82,7 +95,7 @@ ELLE_TEST_SCHEDULED(two_of_three)
   peers.push_back(elle::make_unique<Peer<int, int>>(server_2));
   peers.push_back(elle::make_unique<UnavailablePeer<int, int>>());
   paxos::Client<int, int> client(1, std::move(peers));
-  BOOST_CHECK_EQUAL(client.choose(42), 42);
+  BOOST_CHECK(!client.choose(42));
 }
 
 ELLE_TEST_SCHEDULED(one_of_three)
@@ -113,7 +126,7 @@ ELLE_TEST_SCHEDULED(already_chosen)
   peers_2.push_back(elle::make_unique<Peer<int, int>>(server_2));
   peers_2.push_back(elle::make_unique<Peer<int, int>>(server_3));
   paxos::Client<int, int> client_2(1, std::move(peers_2));
-  BOOST_CHECK_EQUAL(client_1.choose(42), 42);
+  BOOST_CHECK(!client_1.choose(42));
   BOOST_CHECK_EQUAL(client_2.choose(43), 42);
 }
 
@@ -213,7 +226,7 @@ ELLE_TEST_SCHEDULED(conflict)
       [&] { BOOST_CHECK_EQUAL(client_1.choose(43), 42); }));
   reactor::wait(
     reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
-  BOOST_CHECK_EQUAL(client_2.choose(42), 42);
+  BOOST_CHECK(!client_2.choose(42));
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
   reactor::wait(*t1);
