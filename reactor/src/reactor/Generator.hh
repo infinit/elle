@@ -1,6 +1,8 @@
 #ifndef REACTOR_GENERATOR_HH
 # define REACTOR_GENERATOR_HH
 
+# include <elle/Error.hh>
+
 # include <reactor/Channel.hh>
 # include <reactor/thread.hh>
 
@@ -15,9 +17,36 @@ namespace reactor
   template <typename T>
   struct Generator
   {
+  /*----.
+  | End |
+  `----*/
+  public:
+    class End
+      : public elle::Error
+    {
+    public:
+      End(Generator const& g);
+    };
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+  public:
     typedef typename yielder<T>::type yielder;
     Generator(std::function<void (yielder const&)> const& driver);
     Generator(Generator&&b);
+
+  /*--------.
+  | Content |
+  `--------*/
+  public:
+    T
+    next();
+
+  /*---------.
+  | Iterator |
+  `---------*/
+  public:
     struct iterator
     {
       iterator();

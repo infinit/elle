@@ -3,6 +3,19 @@
 
 namespace reactor
 {
+  /*----.
+  | End |
+  `----*/
+
+  template <typename T>
+  Generator<T>::End::End(Generator<T> const& g)
+    : elle::Error(elle::sprintf("%s exhausted", g))
+  {}
+
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   template <typename T>
   Generator<T>::Generator(std::function<void (yielder const&)> const& driver)
     : _results()
@@ -30,6 +43,22 @@ namespace reactor
     : _results(std::move(generator._results))
     , _thread(std::move(generator._thread))
   {}
+
+  /*--------.
+  | Content |
+  `--------*/
+
+  template <typename T>
+  T
+  Generator<T>::iterator::operator *()
+  {
+    assert(!this->_fetch);
+    return std::move(this->_value.get());
+  }
+
+  /*---------.
+  | Iterator |
+  `---------*/
 
   template <typename T>
   Generator<T>::iterator::iterator()
@@ -74,10 +103,13 @@ namespace reactor
 
   template <typename T>
   T
-  Generator<T>::iterator::operator *()
+  Generator<T>::next()
   {
-    assert(!this->_fetch);
-    return std::move(this->_value.get());
+    auto res = this->_results.get();
+    if (res)
+      return *res;
+    else
+      throw End(*this);
   }
 
 
