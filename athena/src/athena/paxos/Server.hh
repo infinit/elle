@@ -24,11 +24,15 @@ namespace athena
         ClientId sender;
         bool
         operator <(Proposal const& rhs) const;
+        void
+        serialize(elle::serialization::Serializer& s);
       };
       struct Accepted
       {
         Proposal proposal;
         T value;
+        void
+        serialize(elle::serialization::Serializer& s);
       };
 
     /*-------------.

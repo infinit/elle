@@ -4,6 +4,7 @@
 # include <elle/With.hh>
 
 # include <reactor/Scope.hh>
+# include <reactor/scheduler.hh>
 
 namespace athena
 {

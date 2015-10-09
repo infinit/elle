@@ -22,6 +22,22 @@ namespace athena
       return this->sender < rhs.sender;
     }
 
+    template <typename T, typename ClientId>
+    void
+    Server<T, ClientId>::Proposal::serialize(elle::serialization::Serializer& s)
+    {
+      s.serialize("round", this->round);
+      s.serialize("sender", this->sender);
+    }
+
+    template <typename T, typename ClientId>
+    void
+    Server<T, ClientId>::Accepted::serialize(elle::serialization::Serializer& s)
+    {
+      s.serialize("proposal", this->proposal);
+      s.serialize("value", this->value);
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
