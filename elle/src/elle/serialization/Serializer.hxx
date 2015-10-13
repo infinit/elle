@@ -305,6 +305,24 @@ namespace elle
       }
     }
 
+    // FIXME: duplicated with ::serialize(name, shared_ptr)
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     std::shared_ptr<T>& opt)
+    {
+      if (this->_out())
+      {
+        ELLE_ASSERT(opt.get());
+        this->_serialize_anonymous(name, *opt);
+      }
+      else
+      {
+        Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+          (*this, name, opt);
+      }
+    }
+
     // FIXME: duplicated
     template <typename T>
     void
