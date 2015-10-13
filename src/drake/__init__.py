@@ -3723,6 +3723,36 @@ def Extractor(tarball, *args, **kwargs):
     type = TarballExtractor
   return type(tarball = tarball, *args, **kwargs)
 
+class Zipper(Builder):
+
+  def __init__(self, target, sources, prefix = None):
+    """ Constructor
+    """
+    self.__target = target
+    self.__sources = sources
+    self.__prefix = prefix
+    Builder.__init__(self, self.__sources, [self.__target])
+
+  @property
+  def target(self):
+    return self.__target
+
+  def compress(self):
+    import zipfile
+    with zipfile.ZipFile(str(self.__target.path()), 'w') as f:
+      for source in self.__sources:
+        source = source.path()
+        filename = source.without_prefix(self.__prefix, force = True)
+        f.write(str(source), arcname = str(filename))
+    return True
+
+  def execute(self):
+    self.output('Zip %s' % self.__target)
+    return self._run_job(lambda: self.compress())
+
+  def __str__(self):
+    return 'Zipping of %s' % self.__target
+
 def host():
   system = platform.system()
   if system == 'Linux':
