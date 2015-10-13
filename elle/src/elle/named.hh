@@ -13,6 +13,9 @@
     using elle::named::Argument<Name##_type>::operator=;                \
   } Name;                                                               \
 
+#define NAMED_ARGUMENT_DEFINE(Name, container)                          \
+  container::Name##_type container::Name;
+
 #define NAMED_FUNCTION(F, ...)                                          \
   template <typename ... Args>                                          \
   auto                                                                  \
