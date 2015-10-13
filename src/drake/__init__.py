@@ -3629,7 +3629,7 @@ def download(url,
   return target
 
 
-class TarballExtractor(Builder):
+class ArchiveExtractor(Builder):
 
   def __init__(self, tarball, targets = [],
                patches = None, patch_dir = drake.Path('.')):
@@ -3639,9 +3639,9 @@ class TarballExtractor(Builder):
     self.__tarball = tarball
     self.__patches = patches if patches is not None else ()
     self.__patch_dir = drake.Path(patch_dir)
-    import tarfile
     directory = self.__tarball.name_relative.dirname()
     self.__targets = [node(directory / target) for target in targets]
+    self.__destination = self.__tarball.path().dirname()
     # targets = []
     # with tarfile.open(str(self.__tarball.path()), 'r') as f:
     #   for name in f.getnames():
@@ -3653,38 +3653,24 @@ class TarballExtractor(Builder):
     Builder.__init__(self, list(chain((tarball,), patch_nodes)),
                      self.__targets)
 
+  @property
+  def tarball(self):
+    return self.__tarball
+
+  @property
+  def destination(self):
+    return self.__destination
+
   def execute(self):
-    import tarfile
-    # Make TarFile withable on python <= 3.1
-    if not hasattr(tarfile.TarFile, '__enter__'):
-      tarfile.TarFile.__enter__ = lambda self: self
-    if not hasattr(tarfile.TarFile, '__exit__'):
-      tarfile.TarFile.__exit__ = lambda self, v, tb, t: self.close()
     self.output('Extract %s' % self.__tarball)
-    destination = self.__tarball.path().dirname()
-    def extract():
-      with tarfile.open(str(self.__tarball.path()), 'r') as f:
-        # Remove all target directories because tarfile will miserably
-        # fail at overwriting some existing files such as symlinks.
-        paths = set()
-        for member in f.getnames():
-          root = member.split('/')[0]
-          # Just some securities
-          assert root != '.'
-          assert root != '..'
-          assert not root.startswith('/')
-          paths.add(root)
-        import shutil
-        for path in paths:
-          shutil.rmtree(str(drake.path_build(destination / path)))
-        f.extractall(str(destination))
-    self._run_job(extract)
+
+    self._run_job(lambda: self.extract())
     for patch in self.__patches:
       if not self.cmd(
           'Apply %s with level %s' % patch,
           [
             'patch', '-N', '-p', str(patch[1]),
-            '-d', str(destination / self.__patch_dir),
+            '-d', str(self.__destination / self.__patch_dir),
             '-i', patch[0].path(absolute = True)
           ]):
         return False
@@ -3692,6 +3678,50 @@ class TarballExtractor(Builder):
 
   def __str__(self):
     return 'Extraction of %s' % self.__tarball
+
+class TarballExtractor(ArchiveExtractor):
+
+  def extract(self):
+    import tarfile
+    # Make TarFile withable on python <= 3.1
+    if not hasattr(tarfile.TarFile, '__enter__'):
+      tarfile.TarFile.__enter__ = lambda self: self
+    if not hasattr(tarfile.TarFile, '__exit__'):
+      tarfile.TarFile.__exit__ = lambda self, v, tb, t: self.close()
+    with tarfile.open(str(self.tarball.path()), 'r') as f:
+      # Remove all target directories because tarfile will miserably
+      # fail at overwriting some existing files such as symlinks.
+      paths = set()
+      for member in f.getnames():
+        root = member.split('/')[0]
+        # Just some securities
+        assert root != '.'
+        assert root != '..'
+        assert not root.startswith('/')
+        paths.add(root)
+      import shutil
+      for path in paths:
+        shutil.rmtree(str(drake.path_build(self.destination / path)))
+      f.extractall(str(self.destination))
+
+class ZipExtractor(ArchiveExtractor):
+
+  def extract(self):
+    import zipfile
+    # Make TarFile withable on python <= 3.1
+    if not hasattr(zipfile.ZipFile, '__enter__'):
+      zipfile.ZipFile.__enter__ = lambda self: self
+    if not hasattr(zipfile.ZipFile, '__exit__'):
+      zipfile.ZipFile.__exit__ = lambda self, v, tb, t: self.close()
+    with zipfile.ZipFile(str(self.tarball.path()), 'r') as f:
+      f.extractall(str(self.destination))
+
+def Extractor(tarball, *args, **kwargs):
+  if str(tarball).endswith('.zip'):
+    type = ZipExtractor
+  else:
+    type = TarballExtractor
+  return type(tarball = tarball, *args, **kwargs)
 
 def host():
   system = platform.system()
