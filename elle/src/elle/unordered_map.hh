@@ -4,6 +4,7 @@
 # include <unordered_map>
 
 # include <elle/Error.hh>
+# include <elle/printf.hh>
 
 namespace elle
 {
