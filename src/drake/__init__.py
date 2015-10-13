@@ -3753,6 +3753,22 @@ class Zipper(Builder):
   def __str__(self):
     return 'Zipping of %s' % self.__target
 
+class FileConcatenator(Builder):
+  def __init__(self, target, sources):
+    self.__target = target
+    self.__sources = sources
+    Builder.__init__(self, self.__sources, [self.__target])
+
+  def execute(self):
+    from shutil import copyfileobj
+    with open(str(self.__target.path()), 'wb') as f:
+      for source in self.__sources:
+        with open(str(source.path()), 'rb') as s:
+          copyfileobj(s, f)
+    _OS.chmod(str(self.__target.path()),
+              _OS.stat(str(self.__sources[0].path())).st_mode)
+    return True
+
 def host():
   system = platform.system()
   if system == 'Linux':
