@@ -337,6 +337,34 @@ unique_ptr()
 template <typename Format>
 static
 void
+raw_ptr()
+{
+  std::stringstream stream;
+  {
+    int* empty = nullptr;
+    int* filled(new int(42));
+    typename Format::SerializerOut output(stream);
+    output.serialize("empty", empty);
+    output.serialize("filled", filled);
+  }
+  {
+    int padding;
+    int* empty;
+    int* filled;
+    int padding2;
+    typename Format::SerializerIn input(stream);
+    input.serialize("empty", empty);
+    input.serialize("filled", filled);
+    BOOST_CHECK(!empty);
+    BOOST_CHECK(filled);
+    BOOST_CHECK_EQUAL(*filled, 42);
+  }
+}
+
+
+template <typename Format>
+static
+void
 unordered_map()
 {
   std::unordered_map<int, std::string> map{
@@ -1097,6 +1125,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(pair);
   FOR_ALL_SERIALIZATION_TYPES(option);
   FOR_ALL_SERIALIZATION_TYPES(unique_ptr);
+  FOR_ALL_SERIALIZATION_TYPES(raw_ptr);
   FOR_ALL_SERIALIZATION_TYPES(unordered_map);
   FOR_ALL_SERIALIZATION_TYPES(unordered_map_string);
   FOR_ALL_SERIALIZATION_TYPES(buffer);

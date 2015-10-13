@@ -108,10 +108,13 @@ namespace elle
       serialize(std::string const& name, boost::optional<T>& opt);
       template <typename T>
       void
-      serialize(std::string const& name, std::unique_ptr<T>& opt);
+      serialize(std::string const& name, std::unique_ptr<T>& opt, bool anonymous=false);
       template <typename T>
       void
-      serialize(std::string const& name, std::shared_ptr<T>& opt);
+      serialize(std::string const& name, std::shared_ptr<T>& opt, bool anonymous=false);
+      template <typename T>
+      void
+      serialize(std::string const& name, T*& opt, bool anonymous=false);
       template <typename T, typename As>
       void
       serialize(std::string const& name, T& v, as<As>);
@@ -239,6 +242,12 @@ namespace elle
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
+      template <typename T>
+      void
+      _serialize_anonymous(std::string const& name, T*& v);
+      template <typename T>
+      void
+      _serialize_anonymous(std::string const& name, T* v);
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, std::unique_ptr<T>& v);

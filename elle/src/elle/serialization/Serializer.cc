@@ -76,7 +76,8 @@ namespace elle
         }
         catch (elle::Exception& e)
         {
-          this->_serialize_anonymous(name, e);
+          auto ptr = &e;
+          this->serialize("exception", ptr);
         }
         catch (std::exception const& e)
         {
@@ -89,7 +90,7 @@ namespace elle
       else
       {
         std::unique_ptr<elle::Exception> exn;
-        this->_serialize_anonymous(name, exn);
+        this->serialize("exception", exn);
         e = ExceptionMaker<elle::Exception>::make(*exn);
       }
     }

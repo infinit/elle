@@ -17,6 +17,16 @@ namespace elle
   {
     namespace
     {
+      template <typename P, typename T>
+      void _set_ptr(P& target, T* ptr)
+      {
+        target.reset(ptr);
+      }
+      template<typename P, typename T>
+      void _set_ptr(P* &target, T* ptr)
+      {
+        target = ptr;
+      }
       template <typename T>
       typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
       _serialize_switch(
@@ -202,7 +212,7 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        ptr.reset(new T(static_cast<SerializerIn&>(s)));
+        _set_ptr(ptr, new T(static_cast<SerializerIn&>(s)));
       }
 
       template <typename P, typename T>
@@ -216,7 +226,7 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        ptr.reset(new T);
+        _set_ptr(ptr, new T);
         s._serialize_anonymous(name, *ptr);
       }
 
@@ -242,7 +252,7 @@ namespace elle
         if (it == map.end())
           throw Error(elle::sprintf("unable to deserialize type %s",
                                     type_name));
-        ptr.reset(it->second(static_cast<SerializerIn&>(s)).release());
+        _set_ptr(ptr, it->second(static_cast<SerializerIn&>(s)).release());
       }
 
       template <typename P, typename T>
@@ -262,7 +272,8 @@ namespace elle
 
     template <typename T>
     void
-    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt)
+    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt,
+                          bool anonymous)
     {
       if (this->_out())
         this->_serialize_option(
@@ -270,7 +281,10 @@ namespace elle
           bool(opt),
           [&]
           {
-            this->serialize(name, *opt);
+            if (anonymous)
+              this->_serialize_anonymous(name, *opt);
+            else
+              this->serialize(name, *opt);
           });
       else
         this->_serialize_option(
@@ -278,7 +292,12 @@ namespace elle
           bool(opt),
           [&]
           {
-            if (this->_enter(name))
+            if (anonymous)
+            {
+              Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+                (*this, name, opt);
+            }
+            else if (this->_enter(name))
             {
               elle::SafeFinally leave([&] { this->_leave(name); });
               Details::_smart_virtual_switch<std::unique_ptr<T>, T>
@@ -287,40 +306,36 @@ namespace elle
           });
     }
 
-    // FIXME: duplicated with ::serialize(name, unique_ptr)
     template <typename T>
     void
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::unique_ptr<T>& opt)
     {
-      if (this->_out())
-      {
-        ELLE_ASSERT(opt.get());
-        this->_serialize_anonymous(name, *opt);
-      }
-      else
-      {
-        Details::_smart_virtual_switch<std::unique_ptr<T>, T>
-          (*this, name, opt);
-      }
+      serialize(name, opt, true);
     }
 
-    // FIXME: duplicated with ::serialize(name, shared_ptr)
     template <typename T>
     void
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::shared_ptr<T>& opt)
     {
-      if (this->_out())
-      {
-        ELLE_ASSERT(opt.get());
-        this->_serialize_anonymous(name, *opt);
-      }
-      else
-      {
-        Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-          (*this, name, opt);
-      }
+      serialize(name, opt, true);
+    }
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     T*& opt)
+    {
+      serialize(name, opt, true);
+    }
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     T* opt)
+    {
+      ELLE_ASSERT(out());
+      T* dummy = opt;
+      serialize(name, dummy, true);
     }
 
     // FIXME: duplicated
@@ -343,7 +358,8 @@ namespace elle
 
     template <typename T>
     void
-    Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt)
+    Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt,
+                          bool anonymous)
     {
       if (this->_out())
         this->_serialize_option(
@@ -351,7 +367,10 @@ namespace elle
           bool(opt),
           [&]
           {
-            this->serialize(name, *opt);
+            if (anonymous)
+              this->_serialize_anonymous(name, *opt);
+            else
+              this->serialize(name, *opt);
           });
       else
         this->_serialize_option(
@@ -359,13 +378,56 @@ namespace elle
           bool(opt),
           [&]
           {
-            if (this->_enter(name))
+            if (anonymous)
+            {
+              Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+                (*this, name, opt);
+            }
+            else if (this->_enter(name))
             {
               elle::SafeFinally leave([&] { this->_leave(name); });
               Details::_smart_virtual_switch<std::shared_ptr<T>, T>
                 (*this, name, opt);
             }
           });
+    }
+
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, T* &opt, bool anonymous)
+    {
+      if (this->_out())
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            if (anonymous)
+              this->_serialize_anonymous(name, *opt);
+            else
+              this->serialize(name, *opt);
+          });
+      else
+      {
+        opt = nullptr;
+        this->_serialize_option(
+          name,
+          bool(opt),
+          [&]
+          {
+            if (anonymous)
+            {
+              Details::_smart_virtual_switch<T*, T>
+                (*this, name, opt);
+            }
+            else if (this->_enter(name))
+            {
+              elle::SafeFinally leave([&] { this->_leave(name); });
+              Details::_smart_virtual_switch<T*, T>
+                (*this, name, opt);
+            }
+          });
+      }
     }
 
     template <typename K, typename V, typename ... Rest>
