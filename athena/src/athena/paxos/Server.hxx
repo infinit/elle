@@ -2,6 +2,7 @@
 # define ATHENA_PAXOS_SERVER_HXX
 
 # include <elle/With.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <reactor/Scope.hh>
 
