@@ -359,15 +359,6 @@ namespace elle
     {
       serialize(name, opt, true);
     }
-    template <typename T>
-    void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     T* opt)
-    {
-      ELLE_ASSERT(out());
-      T* dummy = opt;
-      serialize(name, dummy, true);
-    }
 
     // FIXME: duplicated
     template <typename T>
