@@ -884,7 +884,7 @@ namespace elle
     void
     Serializer::serialize_forward(T& v)
     {
-      this->_serialize_anonymous("FIXME BUT I DON'T THINK THIS IS USED", v);
+      this->_serialize_anonymous("SERIALIZE ANONYMOUS", v);
     }
 
     template <typename T>

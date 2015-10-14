@@ -130,9 +130,19 @@ namespace elle
                                       bool,
                                       std::function<void ()> const& f)
       {
-        auto& object = this->_check_type<elle::json::Object>(name);
-        if (object.find(name) != object.end())
+        if (name == "SERIALIZE ANONYMOUS")
+        { // optional was serialized anonymously,
+          auto& current = *this->_current.back();
+          if (current.type() == typeid(elle::json::NullType))
+            return;
           f();
+        }
+        else
+        {
+          auto& object = this->_check_type<elle::json::Object>(name);
+          if (object.find(name) != object.end())
+            f();
+        }
       }
 
       void
