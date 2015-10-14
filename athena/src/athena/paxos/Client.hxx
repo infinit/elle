@@ -58,7 +58,8 @@ namespace athena
             for (auto& peer: this->_peers)
             {
               scope.run_background(
-                elle::sprintf("paxos proposal"),
+                elle::sprintf("%s: paxos proposal",
+                              reactor::scheduler().current()->name()),
                 [&]
                 {
                   try
@@ -82,7 +83,10 @@ namespace athena
             reactor::wait(scope);
           };
           if (reached <= this->_peers.size() / 2)
+          {
+            ELLE_TRACE("%s: too few peers to reach consensus", *this);
             throw TooFewPeers(reached, this->_peers.size());
+          }
           if (previous)
           {
             ELLE_DEBUG("%s: replace value with %s", *this, previous->value);
@@ -109,8 +113,8 @@ namespace athena
                     // still chosen - right ? Take that in account.
                     if (proposal < minimum)
                     {
-                      ELLE_TRACE("%s: conflicted proposal, retry: %s",
-                                 *this, minimum);
+                      ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
+                                 *this, peer, minimum);
                       conflicted = true;
                       scope.terminate_now();
                     }
@@ -126,13 +130,21 @@ namespace athena
             reactor::wait(scope);
           };
           if (conflicted)
+          {
             // FIXME: we could (should) potentially skip rounds to catch up to
             // the latest - right ?
             // FIXME: random wait to avoid livelock
+            ELLE_DEBUG("%s: conflicted proposal, retry", *this);
             continue;
-          if (reached <= this->_peers.size() / 2)
-            throw TooFewPeers(reached, this->_peers.size());
-          break;
+          }
+          else
+            if (reached <= this->_peers.size() / 2)
+            {
+              ELLE_TRACE("%s: too few peers to reach consensus", *this);
+              throw TooFewPeers(reached, this->_peers.size());
+            }
+            else
+              break;
         }
       }
       ELLE_TRACE("%s: chose %s", *this, value);
