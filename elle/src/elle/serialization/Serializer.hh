@@ -135,6 +135,15 @@ namespace elle
       serialize_pod(std::string const& name, T& v);
       template <typename T>
       void
+      serialize_ptr(std::string const& name, T* &v, bool anonymous = false);
+      template<typename T>
+      void
+      serialize_with_struct_serialize(
+                                      std::string const& name,
+                                      T& v,
+                                      bool anonymous);
+      template <typename T>
+      void
       serialize_forward(T& v);
       template <typename T>
       void

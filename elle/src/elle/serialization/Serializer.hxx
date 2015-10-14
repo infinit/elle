@@ -27,6 +27,7 @@ namespace elle
       {
         target = ptr;
       }
+
       template <typename T>
       typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
       _serialize_switch(
@@ -97,18 +98,7 @@ namespace elle
         T& v,
         ELLE_SFINAE_IF_POSSIBLE())
       {
-        typedef typename Serialize<T>::Type Type;
-        if (s.out())
-        {
-          Type value(Serialize<T>::convert(v));
-          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
-        }
-        else
-        {
-          Type value;
-          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
-          v = Serialize<T>::convert(value);
-        }
+        s.serialize_with_struct_serialize(name, v, true);
       }
 
       template <typename T>
@@ -174,6 +164,47 @@ namespace elle
       opt = std::move(value);
     }
 
+    template<typename T>
+    void
+    Serializer::serialize_with_struct_serialize(
+      std::string const& name,
+      T& v,
+      bool anonymous)
+    {
+      typedef typename Serialize<T>::Type Type;
+      if (anonymous)
+      {
+        if (this->out())
+        {
+          Type value(Serialize<T>::convert(v));
+          _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
+        }
+        else
+        {
+          Type value;
+          _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
+          v = Serialize<T>::convert(value);
+        }
+      }
+      else
+      {
+        if (this->_enter(name))
+        {
+          elle::SafeFinally leave([&] { this->_leave(name); });
+          if (this->out())
+          {
+            Type value(Serialize<T>::convert(v));
+            _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
+          }
+          else
+          {
+            Type value;
+            _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
+            v = Serialize<T>::convert(value);
+          }
+        }
+      }
+    }
     template <typename T>
     void
     Serializer::serialize(std::string const& name, boost::optional<T>& opt)
@@ -393,8 +424,30 @@ namespace elle
     }
 
     template <typename T>
+    typename std::conditional<true, void, typename Serialize<T>::Type>::type
+    _serialize_ptr_switch(
+      Serializer& s,
+      std::string const& name,
+      T& v,
+      bool anonymous,
+      ELLE_SFINAE_IF_POSSIBLE())
+    {
+      s.serialize_with_struct_serialize(name, v, anonymous);
+    }
+
+    template <typename T>
     void
-    Serializer::serialize(std::string const& name, T* &opt, bool anonymous)
+    _serialize_ptr_switch(
+      Serializer& s,
+      std::string const& name,
+      T& v,
+      bool anonymous,
+      ELLE_SFINAE_OTHERWISE())
+    {
+      s.serialize_ptr(name, v, anonymous);
+    }
+    template<typename T>
+    void Serializer::serialize_ptr(std::string const& name, T* &opt, bool anonymous)
     {
       if (this->_out())
         this->_serialize_option(
@@ -428,6 +481,25 @@ namespace elle
             }
           });
       }
+    }
+
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, T* &opt, bool anonymous)
+    {
+      _serialize_ptr_switch(*this, name, opt, anonymous, ELLE_SFINAE_TRY());
+      /*
+      if (!anonymous)
+      {
+        if (this->_enter(name))
+        {
+          elle::SafeFinally leave([&] { this->_leave(name); });
+          _serialize_ptr_switch(*this, name, opt, true, ELLE_SFINAE_TRY());
+        }
+      }
+      else
+        _serialize_ptr_switch(*this, name, opt, true, ELLE_SFINAE_TRY());
+     */
     }
 
     template <typename K, typename V, typename ... Rest>
