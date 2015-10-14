@@ -1032,9 +1032,12 @@ namespace elle
 
     template <typename T, typename Serialization>
     T
-    deserialize(std::istream& input, bool version = true)
+    deserialize(std::istream& input, bool version = true,
+                boost::optional<Context const&> context = {})
     {
       typename Serialization::SerializerIn s(input, version);
+      if (context)
+        s.set_context(context.get());
       return s.template deserialize<T>();
     }
 
@@ -1049,10 +1052,11 @@ namespace elle
 
     template <typename T, typename Serialization>
     T
-    deserialize(elle::Buffer const& input, bool version = true)
+    deserialize(elle::Buffer const& input, bool version = true,
+                boost::optional<Context const&> context = {})
     {
       elle::IOStream s(input.istreambuf());
-      return deserialize<T, Serialization>(s, version);
+      return deserialize<T, Serialization>(s, version, context);
     }
 
     template <typename T, typename Serialization>
