@@ -10,6 +10,7 @@ namespace elle
 {
   namespace serialization
   {
+    template <typename T> struct is_nullable;
     class SerializerIn:
       public Serializer
     {
@@ -32,12 +33,14 @@ namespace elle
     public:
       template <typename T>
       typename std::enable_if<
-        !std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+        !std::is_base_of<boost::optional_detail::optional_tag, T>::value
+        && !is_nullable<T>::value,
         T>::type
       deserialize(std::string const& name);
       template <typename T>
       typename std::enable_if<
-        std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+        std::is_base_of<boost::optional_detail::optional_tag, T>::value
+        || is_nullable<T>::value,
         T>::type
       deserialize(std::string const& name);
       template <typename T>

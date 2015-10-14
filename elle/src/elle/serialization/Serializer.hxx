@@ -992,9 +992,18 @@ namespace elle
       }
     };
 
+    template <typename T> struct is_nullable
+    {
+      static const bool value = false;
+    };
+    template <typename T> struct is_nullable<T*> {static const bool value = true;};
+    template <typename T> struct is_nullable<std::unique_ptr<T>> {static const bool value = true;};
+    template <typename T> struct is_nullable<std::shared_ptr<T>> {static const bool value = true;};
+
     template <typename T>
     typename std::enable_if<
-      !std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+      !std::is_base_of<boost::optional_detail::optional_tag, T>::value
+      && !is_nullable<T>::value,
       T>::type
     SerializerIn::deserialize(std::string const& name)
     {
@@ -1005,10 +1014,11 @@ namespace elle
 
     template <typename T>
     typename std::enable_if<
-      std::is_base_of<boost::optional_detail::optional_tag, T>::value,
+      std::is_base_of<boost::optional_detail::optional_tag, T>::value
+      || is_nullable<T>::value,
       T>::type
     SerializerIn::deserialize(std::string const& name)
-    {
+    { // We cannot call _enter at this stage for optional types
       T res;
       this->serialize(name, res);
       return res;
