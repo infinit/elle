@@ -36,6 +36,9 @@ namespace elle
       serialize_forward(T const& v);
       template <typename T>
       void
+      serialize_forward(T const* &v);
+      template <typename T>
+      void
       serialize(std::string const& name, T const& v);
       // Litteral strings overload
       void
@@ -44,6 +47,9 @@ namespace elle
                 template <typename, typename> class C, typename T, typename A>
       void
       serialize(std::string const& name, C<T, A>& collection, as<As>);
+      template <typename T>
+      void
+      serialize_ptr(std::string const& name, T* ptr);
     protected:
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
