@@ -48,8 +48,11 @@ def configure(cxx_toolkit,
     local_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   sources = drake.nodes(
-    'src/athena/paxos/Paxos.cc',
-    'src/athena/paxos/Paxos.hh',
+    'src/athena/paxos/Client.cc',
+    'src/athena/paxos/Client.hh',
+    'src/athena/paxos/Client.hxx',
+    'src/athena/paxos/Server.hh',
+    'src/athena/paxos/Server.hxx',
   )
   lib_dynamic = drake.cxx.DynLib('lib/athena',
                                  sources + [elle_lib, reactor_lib],

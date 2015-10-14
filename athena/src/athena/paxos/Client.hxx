@@ -21,6 +21,22 @@ namespace athena
       , _round(0)
     {}
 
+    class TooFewPeers
+      : public elle::Error
+    {
+    public:
+      TooFewPeers(int effective, int total)
+        : elle::Error(
+          elle::sprintf(
+            "too few peers are available to reach consensus: %s of %s",
+            effective, total))
+      {}
+
+      TooFewPeers(elle::serialization::SerializerIn& input)
+        : elle::Error(input)
+      {}
+    };
+
     template <typename T, typename ClientId>
     boost::optional<T>
     Client<T, ClientId>::choose(T const& value_)
@@ -33,6 +49,7 @@ namespace athena
       {
         ++this->_round;
         Proposal proposal{this->_round, this->_id};
+        ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
           boost::optional<Accepted> previous;
           int reached = 0;
@@ -41,7 +58,7 @@ namespace athena
             for (auto& peer: this->_peers)
             {
               scope.run_background(
-                elle::sprintf("paxos proposition"),
+                elle::sprintf("paxos proposal"),
                 [&]
                 {
                   try
@@ -55,14 +72,17 @@ namespace athena
                       }
                     ++reached;
                   }
-                  catch (typename Peer::Unavailable const&)
-                  {}
+                  catch (typename Peer::Unavailable const& e)
+                  {
+                    ELLE_TRACE("%s: peer %s unavailable: %s",
+                               *this, peer, e.what());
+                  }
                 });
             }
             reactor::wait(scope);
           };
           if (reached <= this->_peers.size() / 2)
-            throw elle::Error("too few peers are available to reach consensus");
+            throw TooFewPeers(reached, this->_peers.size());
           if (previous)
           {
             ELLE_DEBUG("%s: replace value with %s", *this, previous->value);
@@ -70,6 +90,7 @@ namespace athena
             value = &*new_value;
           }
         }
+        ELLE_DEBUG("%s: send acceptation", *this)
         {
           int reached = 0;
           bool conflicted = false;
@@ -78,7 +99,7 @@ namespace athena
             for (auto& peer: this->_peers)
             {
               scope.run_background(
-                elle::sprintf("paxos proposition"),
+                elle::sprintf("paxos proposal"),
                 [&]
                 {
                   try
@@ -88,26 +109,30 @@ namespace athena
                     // still chosen - right ? Take that in account.
                     if (proposal < minimum)
                     {
+                      ELLE_TRACE("%s: conflicted proposal, retry: %s",
+                                 *this, minimum);
                       conflicted = true;
                       scope.terminate_now();
                     }
                     ++reached;
                   }
-                  catch (typename Peer::Unavailable const&)
-                  {}
+                  catch (typename Peer::Unavailable const& e)
+                  {
+                    ELLE_TRACE("%s: peer %s unavailable: %s",
+                               *this, peer, e.what());
+                  }
                 });
             }
             reactor::wait(scope);
           };
-          if (reached <= this->_peers.size() / 2)
-            throw elle::Error(
-              "to few peers are available to reach consensus");
           if (conflicted)
             // FIXME: we could (should) potentially skip rounds to catch up to
             // the latest - right ?
+            // FIXME: random wait to avoid livelock
             continue;
-          else
-            break;
+          if (reached <= this->_peers.size() / 2)
+            throw TooFewPeers(reached, this->_peers.size());
+          break;
         }
       }
       ELLE_TRACE("%s: chose %s", *this, value);
@@ -122,7 +147,7 @@ namespace athena
     void
     Client<T, ClientId>::print(std::ostream& output) const
     {
-      elle::fprintf(output, "Client(%s)", this->_id);
+      elle::fprintf(output, "paxos::Client(%f)", this->_id);
     }
 
     /*------------.

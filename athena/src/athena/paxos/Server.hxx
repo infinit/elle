@@ -55,10 +55,10 @@ namespace athena
     Server<T, ClientId>::propose(Proposal const& p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE_SCOPE("%s: get proposition: %s ", *this, p);
+      ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
       if (!this->_minimum || this->_minimum < p)
       {
-        ELLE_DEBUG("%s: update minimum proposition", *this);
+        ELLE_DEBUG("%s: update minimum proposal", *this);
         this->_minimum = p;
       }
       return this->_accepted;
@@ -67,7 +67,7 @@ namespace athena
     template <typename T, typename ClientId>
     typename Server<T, ClientId>::Proposal
     Server<T, ClientId>::accept(Proposal const& p,
-                               T const& value)
+                                T const& value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %s: %s",

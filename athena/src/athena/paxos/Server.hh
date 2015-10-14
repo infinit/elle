@@ -26,7 +26,16 @@ namespace athena
         operator <(Proposal const& rhs) const;
         void
         serialize(elle::serialization::Serializer& s);
+        friend
+        std::ostream&
+        operator <<(std::ostream& output,
+                    typename Server<T, ClientId>::Proposal const& p)
+        {
+          output << p.round << ":" << p.sender;
+          return output;
+        }
       };
+
       struct Accepted
       {
         Proposal proposal;
@@ -49,7 +58,7 @@ namespace athena
       propose(Proposal const& p);
       Proposal
       accept(Proposal const& p, T const& value);
-      ELLE_ATTRIBUTE(boost::optional<Accepted>, accepted);
+      ELLE_ATTRIBUTE_R(boost::optional<Accepted>, accepted);
       ELLE_ATTRIBUTE(boost::optional<Proposal>, minimum);
       ELLE_ATTRIBUTE(reactor::Barrier, has_accepted);
       ELLE_ATTRIBUTE(bool, chosen);
