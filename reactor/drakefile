@@ -351,7 +351,7 @@ def configure(curl_config,
       local_cxx_config += fuse_config
       drake.ShellCommand(
         sources = drake.nodes('osxfuse/build.sh'),
-        targets = [fuse_lib, osxfuse_fs_bundle] + fuse_includes,
+        targets = [osxfuse_fs_bundle] + fuse_includes,
         command = [
           './build.sh',
           '--build-directory=%s' % \
@@ -369,6 +369,16 @@ def configure(curl_config,
         cwd = drake.path_source() / 'elle/reactor/osxfuse',
         pretty = 'Building osxfuse'
         )
+      drake.ShellCommand(
+        sources = [osxfuse_fs_bundle] + fuse_includes,
+        targets = [fuse_lib],
+        command = [
+          'install_name_tool',
+          '-id',
+          '@rpath/libosxfuse.2.dylib',
+          '%s' % fuse_lib,
+        ]
+      )
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
   elif fuse:
     fuse_config = drake.cxx.Config()
@@ -524,7 +534,7 @@ def configure(curl_config,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
-  if cxx_toolkit.os is drake.os.linux or (cxx_toolkit.os is drake.os.macos and fuse):
+  if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
       'src/reactor/fuse.hh',
       'src/reactor/fuse.cc',
@@ -684,7 +694,7 @@ def configure(curl_config,
     ('utpcat', [utp_lib]),
     # 'reactor/file',
     ]
-  if cxx_toolkit.os is drake.os.linux or (cxx_toolkit.os is drake.os.macos and fuse):
+  if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     tests.append(('filesystem', []))
     tests.append(('filesystem_bind', []))
     tests.append(('filesystem_git', []))
