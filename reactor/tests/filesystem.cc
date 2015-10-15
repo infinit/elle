@@ -94,7 +94,7 @@ namespace sum
         throw reactor::filesystem::Error(ENOENT, "No such file or directory");
       return std::make_shared<Path>(n + num);
     }
-    std::unique_ptr<reactor::filesystem::Handle> open(int flags, mode_t mode)
+    std::unique_ptr<reactor::filesystem::Handle> open(int flags, mode_t mode) override
     {
       if ((flags & 3) != O_RDONLY)
         throw reactor::filesystem::Error(EACCES, "Write access denied");
