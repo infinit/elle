@@ -142,6 +142,11 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
     barrier.wait();
     ELLE_TRACE("...unmounting...");
     fs.unmount();
+#ifdef INFINIT_MACOSX
+    // XXX: Waiting on fs object does not work for unmount on OS X.
+    // https://app.asana.com/0/5058234687067/58308026674516
+    reactor::sleep(300_ms);
+#endif
     ELLE_TRACE("...unmounted");
   });
   sched.run();
