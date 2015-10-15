@@ -145,7 +145,7 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
 #ifdef INFINIT_MACOSX
     // XXX: Waiting on fs object does not work for unmount on OS X.
     // https://app.asana.com/0/5058234687067/58308026674516
-    reactor::sleep(1_s);
+    reactor::sleep(1_sec);
 #endif
     ELLE_TRACE("...unmounted");
   });
