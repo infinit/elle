@@ -202,7 +202,7 @@ namespace reactor
       void chown(int uid, int gid) override;
       void statfs(struct statvfs *) override;
       void utimens(const struct timespec tv[2]) override;
-      void truncate(off_t new_size);
+      void truncate(off_t new_size) override;
       /// Return a Path for given child name.
       std::shared_ptr<Path> child(std::string const& name) override;
       virtual std::unique_ptr<BindHandle> make_handle(boost::filesystem::path& where,
