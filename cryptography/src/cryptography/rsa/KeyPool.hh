@@ -16,7 +16,7 @@ namespace infinit
       class KeyPool
       {
       public:
-        KeyPool(int key_size, int max_pool_size);
+        KeyPool(int key_size, int max_pool_size, int thread_count = 1);
         ~KeyPool();
         KeyPair
         get();
@@ -26,7 +26,7 @@ namespace infinit
         int _max_count;
         std::vector<KeyPair> _pool;
         std::mutex _mutex;
-        std::thread _worker;
+        std::vector<std::thread> _workers;
         std::condition_variable _producer_barrier;
         std::condition_variable _consumer_barrier;
         bool _terminating;

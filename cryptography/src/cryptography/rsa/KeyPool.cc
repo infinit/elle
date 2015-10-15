@@ -6,19 +6,21 @@ namespace infinit
   {
     namespace rsa
     {
-      KeyPool::KeyPool(int key_size, int max_count)
+      KeyPool::KeyPool(int key_size, int max_count, int thread_count)
         : _key_size(key_size)
         , _max_count(max_count)
         , _terminating(false)
       {
-        _worker = std::thread([this] { this->_run();});
+        for (int i=0; i<thread_count; ++i)
+          _workers.push_back(std::thread([this] { this->_run();}));
       }
 
       KeyPool::~KeyPool()
       {
         _terminating = true;
-        _producer_barrier.notify_one();
-        _worker.join();
+        _producer_barrier.notify_all();
+        for (int i=0; i<signed(_workers.size()); ++i)
+          _workers[i].join();
       }
 
       KeyPair KeyPool::get()
