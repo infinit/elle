@@ -368,7 +368,7 @@ def configure(curl_config,
           '--kext=10.10->10.9',
           '--kext=10.11->10.9',
         ],
-        cwd = drake.path_source() / 'elle/reactor/osxfuse',
+        cwd = drake.node('osxfuse').path(),
         pretty = 'Building FUSE for OS X Core.pkg',
         )
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
