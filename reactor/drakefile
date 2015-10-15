@@ -343,23 +343,25 @@ def configure(curl_config,
           'fuse/fuse_opt.h',
         ]
       ))
-      osxfuse_fs_bundle = \
-        drake.node('%s/Library/Filesystems/osxfuse.fs' % osxfuse_prefix)
+      osxfuse_core_package = drake.node('%s/Packages/Core.pkg' % osxfuse_prefix)
       fuse_config = drake.cxx.Config()
       fuse_config.add_local_include_path(
         '%s/usr/local/include/osxfuse' % osxfuse_prefix)
       local_cxx_config += fuse_config
       drake.ShellCommand(
         sources = drake.nodes('osxfuse/build.sh'),
-        targets = [osxfuse_fs_bundle] + fuse_includes,
+        targets = [osxfuse_core_package, fuse_lib] + fuse_includes,
         command = [
           './build.sh',
+          '--action=build',
           '--build-directory=%s' % \
             (drake.path_root() / drake.path_build('osxfuse')),
           '--target=%s' % osxfuse_target,
           '--',
+          '--configuration=Release',
           '--sdk=10.7',
           '--deployment-target=10.7',
+          '--build-setting=CLANG_LINK_OBJC_RUNTIME=NO',
           '--kext=10.7',
           '--kext=10.8->10.7',
           '--kext=10.9',
@@ -367,18 +369,8 @@ def configure(curl_config,
           '--kext=10.11->10.9',
         ],
         cwd = drake.path_source() / 'elle/reactor/osxfuse',
-        pretty = 'Building osxfuse'
+        pretty = 'Building FUSE for OS X Core.pkg',
         )
-      drake.ShellCommand(
-        sources = [osxfuse_fs_bundle] + fuse_includes,
-        targets = [fuse_lib],
-        command = [
-          'install_name_tool',
-          '-id',
-          '@rpath/libosxfuse.2.dylib',
-          '%s' % fuse_lib,
-        ]
-      )
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
   elif fuse:
     fuse_config = drake.cxx.Config()
