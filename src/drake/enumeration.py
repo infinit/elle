@@ -50,3 +50,6 @@ class Enumerated(metaclass = Enumeration):
 
   def __le__(self, other):
     return self.index <= other.index
+
+  def __hash__(self):
+    return hash(self.name)
