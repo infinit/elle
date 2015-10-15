@@ -33,6 +33,9 @@ namespace elle
       `--------------*/
       protected:
         virtual
+        bool
+        _text() const override;
+        virtual
         void
         _serialize(std::string const& name, int64_t& v) override;
         virtual

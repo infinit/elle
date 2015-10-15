@@ -32,6 +32,12 @@ namespace elle
         _serialize_number(size);
       }
 
+      bool
+      SerializerOut::_text() const
+      {
+        return false;
+      }
+
       void
       SerializerOut::_serialize_number(int64_t n)
       {

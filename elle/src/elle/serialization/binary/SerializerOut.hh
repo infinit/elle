@@ -38,6 +38,9 @@ namespace elle
         void
         _size(int size) override;
         virtual
+        bool
+        _text() const override;
+        virtual
         void
         _serialize_array(std::string const& name,
                          int size,

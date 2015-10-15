@@ -186,6 +186,9 @@ namespace elle
       void
       _size(int size);
       virtual
+      bool
+      _text() const;
+      virtual
       void
       _serialize_array(std::string const& name,
                        int size, // -1 for in(), array size for out()

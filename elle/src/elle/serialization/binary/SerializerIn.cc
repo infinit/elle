@@ -15,6 +15,12 @@ namespace elle
         : Super(input, versioned)
       {}
 
+      bool
+      SerializerIn::_text() const
+      {
+        return false;
+      }
+
       void
       SerializerIn::_serialize(std::string const& name, int64_t& v)
       {
