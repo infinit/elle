@@ -39,6 +39,51 @@ namespace athena
       s.serialize("value", this->value);
     }
 
+    /*--------.
+    | Printer |
+    `--------*/
+
+    template <typename T>
+    struct Printer
+    {
+      Printer(T const& o_)
+        : o(o_)
+      {}
+
+      T const& o;
+    };
+
+    template <typename T>
+    Printer<T>
+    printer(T const& o)
+    {
+      return Printer<T>(o);
+    }
+
+    template <typename T>
+    std::ostream&
+    operator <<(std::ostream& output, Printer<std::shared_ptr<T>> const& p)
+    {
+      output << *p.o;
+      return output;
+    }
+
+    template <typename T>
+    std::ostream&
+    operator <<(std::ostream& output, Printer<std::unique_ptr<T>> const& p)
+    {
+      output << *p.o;
+      return output;
+    }
+
+    template <typename T>
+    std::ostream&
+    operator <<(std::ostream& output, Printer<T> const& p)
+    {
+      output << p.o;
+      return output;
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -71,7 +116,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %s: %s",
-                       *this, p, value);
+                       *this, p, printer(value));
       if (!(p < this->_minimum))
       {
         if (!this->_accepted)

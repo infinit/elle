@@ -37,6 +37,10 @@ namespace athena
       {}
     };
 
+    /*----------.
+    | Consensus |
+    `----------*/
+
     template <typename T, typename ClientId>
     boost::optional<T>
     Client<T, ClientId>::choose(T const& value_)
@@ -44,7 +48,7 @@ namespace athena
       T const* value = &value_;
       boost::optional<T> new_value;
       ELLE_LOG_COMPONENT("athena.paxos.Client");
-      ELLE_TRACE_SCOPE("%s: choose %s", *this, *value);
+      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(*value));
       while (true)
       {
         ++this->_round;
@@ -67,8 +71,8 @@ namespace athena
                     if (auto p = peer->propose(proposal))
                       if (!previous || previous->proposal < p->proposal)
                       {
-                        ELLE_DEBUG_SCOPE("%s: value already accepted: %s",
-                                         *this, p.get());
+                        ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
+                                         *this, p->proposal, printer(p->value));
                         previous = std::move(p);
                       }
                     ++reached;
@@ -89,7 +93,8 @@ namespace athena
           }
           if (previous)
           {
-            ELLE_DEBUG("%s: replace value with %s", *this, previous->value);
+            ELLE_DEBUG("%s: replace value with %s",
+                       *this, printer(previous->value));
             new_value.emplace(std::move(previous->value));
             value = &*new_value;
           }
@@ -147,7 +152,7 @@ namespace athena
               break;
         }
       }
-      ELLE_TRACE("%s: chose %s", *this, value);
+      ELLE_TRACE("%s: chose %s", *this, printer(*value));
       return new_value;
     }
 
