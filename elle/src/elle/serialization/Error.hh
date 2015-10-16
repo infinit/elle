@@ -12,6 +12,7 @@ namespace elle
     {
     public:
       Error(std::string const& message);
+      Error(SerializerIn& input);
     };
   }
 }
