@@ -3361,6 +3361,15 @@ class Version:
         self.__minor = minor and Range(minor)
         self.__subminor = subminor and Range(subminor)
 
+    @staticmethod
+    def load(string):
+      if string == str(Version()):
+        return Version()
+      v = string.split('.')[0:3]
+      if len(v) == 3:
+        v[2] = v[2].split('-')[0]
+      return drake.Version(*[int(x) for x in v])
+
     @property
     def major(self):
         return self.__major
