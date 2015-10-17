@@ -3045,8 +3045,52 @@ class EmptyBuilder(Builder):
         """Do nothing."""
         return True
 
+class WriteBuilder(Builder):
+    """Builder that write a given input to files.
 
-class TouchBuilder(Builder):
+    >>> n = node('/tmp/.drake.write')
+    >>> n.path().remove()
+    >>> b = WriteBuilder('hello world', n)
+    >>> n.build()
+    Write input to /tmp/.drake.write
+    >>> n.path().exists()
+    True
+    >>> open(n.path(), 'r').read()
+    'hello world'
+    """
+
+    def __init__(self, input, nodes):
+        """Create a WriteBuilder.
+
+        input -- Text or bytes.
+        nodes -- target nodes list, or a single target node.
+        """
+        if not isinstance(input, bytes):
+          input = bytes(input, encoding = 'utf-8')
+        self.__input = input
+        if isinstance(nodes, BaseNode):
+            nodes = [nodes]
+        for node in nodes:
+            assert isinstance(node, Node)
+        Builder.__init__(self, [], nodes)
+
+    def execute(self):
+        """Create all the non-existent target nodes as empty files."""
+        pretty = 'Write' if len(self.__input) else 'Touch'
+        self.output('%s %s' % (pretty, ', '.join(map(str, self.targets()))))
+        for node in self.targets():
+            assert isinstance(node, Node)
+            node.path().touch()
+            with open(str(node.path()), 'wb') as f:
+              f.write(self.__input)
+        return True
+
+def write(body, path):
+  res = node(Path(path))
+  WriteBuilder(body, res)
+  return res
+
+class TouchBuilder(WriteBuilder):
 
     """Builder that simply creates its targets as empty files.
 
@@ -3060,23 +3104,10 @@ class TouchBuilder(Builder):
     """
 
     def __init__(self, nodes):
-        """Create a TouchBuilder.
+      super().__init__('', nodes)
 
-        nodes -- target nodes list, or a single target node.
-        """
-        if isinstance(nodes, BaseNode):
-            nodes = [nodes]
-        for node in nodes:
-            assert isinstance(node, Node)
-        Builder.__init__(self, [], nodes)
-
-    def execute(self):
-        """Create all the non-existent target nodes as empty files."""
-        self.output('Touch %s' % ', '.join(map(str, self.targets())))
-        for node in self.targets():
-            assert isinstance(node, Node)
-            node.path().touch()
-        return True
+    def __str__(self):
+      return "Touch %s" % self.targets
 
 def touch(path):
   res = node(Path(path))
