@@ -186,7 +186,7 @@ test_serialize()
     _test_operate(keypair2);
   }
 
-  // Deserialize a wrong key pair (since missing elements)
+  // Deserialize a wrong key pair (since missing elements).
   {
     elle::String representation(R"JSON({"private_key":"wrong key name", "public_key":"wrong key name again"}})JSON");
     std::stringstream stream(representation);
@@ -194,6 +194,19 @@ test_serialize()
 
     BOOST_CHECK_THROW(infinit::cryptography::rsa::KeyPair keypair(input),
                       infinit::cryptography::Error);
+  }
+
+  // Deserialize a partially good key pair missing the private part.
+  {
+    elle::String representation(R"JSON({"rsa":"MIIBCgKCAQEAp0uoRP+SKv6ryQo8TLapW8SFVZfmc0clf2HxBSx+uKAvGASbW2/pGJsE7m7R2aiHlCUkvW19TbNtkRoZ8IlnOu1E52wJEDiZvEjUYm+3T6Re8eyFj2ZakCGjOzQWP7G8DGdVBHdKdtcljvmXaWUbJDDI5MMzk9v+C3q2NmQiRfRD/V0T3hRgCejN7fbYJ3cgySRxIEhaUr0SqHGJioD8jiRoYXLJ9w4xsSLkofFltmkbaqynimzvQ6rKnz4lKx2wl8X59YUDXT7UWb6yIPBMMhOnDxdOgojgQxbbkzp6ilGh+wS14KR6sp948jURYD7qDtdiluI78mlajzhEADuyTQIDAQAB"})JSON");
+    std::stringstream stream(representation);
+    typename elle::serialization::json::SerializerIn input(stream);
+
+    /* XXX
+    BOOST_CHECK_THROW(infinit::cryptography::rsa::KeyPair keypair(input),
+                      infinit::cryptography::Error);
+    */
+    infinit::cryptography::rsa::KeyPair keypair(input);
   }
 
   // For every hard-coded strings [representation 1] in every format,

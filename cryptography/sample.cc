@@ -66,12 +66,12 @@ main()
                      "the Universe, and Everything");
 
     infinit::cryptography::SecretKey key =
-      infinit::cryptography::secretkey::generate(
-        256,
-        infinit::cryptography::Cipher::aes128);
+      infinit::cryptography::secretkey::generate(256);
 
-    elle::Buffer code = key.encrypt(data);
-    elle::Buffer clear = key.decrypt(code);
+    elle::Buffer code = key.encipher(data,
+                                     infinit::cryptography::Cipher::aes128);
+    elle::Buffer clear = key.decipher(code,
+                                      infinit::cryptography::Cipher::aes128);
 
     elle::printf("3) %s\n", clear.string());
   }

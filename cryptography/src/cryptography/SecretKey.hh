@@ -120,8 +120,10 @@ namespace infinit
     public:
       elle::Boolean
       operator ==(SecretKey const&) const;
-      SecretKey& operator=(const SecretKey& b) = delete;
-      SecretKey& operator=(SecretKey&& b) = default;
+      SecretKey&
+      operator =(SecretKey const&) = delete;
+      SecretKey&
+      operator =(SecretKey&&) = default;
 
       /*----------.
       | Printable |
