@@ -3461,9 +3461,12 @@ class Version:
                 return minor > rhs_minor
         else:
             return self.__major > rhs.__major
+
     def __eq__(self, rhs):
       return all(getattr(self, a) == getattr(rhs, a) for a in ('major', 'minor', 'subminor'))
 
+    def __hash__(self):
+      return hash(str(self))
 
 class Runner(Builder):
 
