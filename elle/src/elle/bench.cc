@@ -3,6 +3,15 @@
 
 namespace elle
 {
+  Bench::~Bench()
+  {
+    if (_enabled)
+    {
+      // log might be already down, play safe
+      show(std::cerr);
+      std::cerr << std::endl;
+    }
+  }
   Bench::Bench(std::string const& name,
                boost::posix_time::time_duration log_interval,
                int roundto)
@@ -14,6 +23,8 @@ namespace elle
     , _log_interval(log_interval)
     , _roundfactor(std::pow(10, roundto))
   {
+    _enabled = elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,
+      elle::log::Logger::Level::trace, _name.c_str());
     _start = boost::posix_time::microsec_clock::universal_time();
   }
 

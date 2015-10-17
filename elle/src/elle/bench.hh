@@ -19,6 +19,7 @@ namespace elle
     Bench(std::string const& name,
           boost::posix_time::time_duration log_interval = {},
           int roundto = 2);
+    ~Bench();
     void
     add(double val);
     void
@@ -44,6 +45,7 @@ namespace elle
     ELLE_ATTRIBUTE_R(boost::posix_time::ptime, start);
     ELLE_ATTRIBUTE_R(boost::posix_time::time_duration, log_interval);
     ELLE_ATTRIBUTE(double, roundfactor);
+    ELLE_ATTRIBUTE_R(bool, enabled);
   };
 }
 
