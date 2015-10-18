@@ -5,7 +5,7 @@ namespace elle
 {
   Bench::~Bench()
   {
-    if (_enabled)
+    if (_enabled && _count)
     {
       // log might be already down, play safe
       show(std::cerr);
