@@ -3830,10 +3830,10 @@ def host():
 class PythonModule(Builder):
   '''Builder to download and extract python modules using pip.
   '''
-  def __init__(self, package_name, python_path = None, version = None,
+  def __init__(self, package_name, python_path, version = None,
                dependencies = []):
-    self.__python_path = python_path
-    self.__path = self.__python_path  / package_name
+    self.__python_path = drake.path_build(python_path)
+    self.__path = python_path  / package_name
     self.__package_name = package_name
     self.__version = version
     self.__dependencies = dependencies
@@ -3842,7 +3842,7 @@ class PythonModule(Builder):
                            [drake.Node(self.__path / '__init__.py')])
 
   def command(self):
-    options = ['pip3', 'install', '--install-option=--prefix=']
+    options = ['pip3', 'install', '--no-compile', '--install-option=--prefix=']
     if self.__python_path is not None:
       options.append('--target=%s' % self.__python_path)
     options.append(self.__package_name)
