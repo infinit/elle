@@ -52,6 +52,26 @@ namespace elle
         value = boost::any_cast<T>(it->second);
       }
 
+      template <typename T>
+      void
+      get(T& value, const T& default_value)
+      {
+        auto ti = type_info<T>();
+        auto it = this->_value.find(ti);
+        if (it == this->_value.end())
+          value = default_value;
+        else
+          value = boost::any_cast<T>(it->second);
+      }
+
+      template <typename T>
+      bool has() const
+      {
+        auto ti = type_info<T>();
+        auto it = this->_value.find(ti);
+        return it != this->_value.end();
+      }
+
       Context&
       operator += (Context const& source)
       {
