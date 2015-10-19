@@ -24,143 +24,146 @@ namespace std
   }
 }
 
-template <typename T, typename ServerId>
+template <typename T, typename Version, typename ServerId>
 class Peer
-  : public paxos::Client<T, ServerId>::Peer
+  : public paxos::Client<T, Version, ServerId>::Peer
 {
 public:
-  Peer(paxos::Server<T, ServerId>& paxos)
+  Peer(paxos::Server<T, Version, ServerId>& paxos)
     : _paxos(paxos)
   {}
 
   virtual
-  boost::optional<typename paxos::Client<T, ServerId>::Accepted>
-  propose(typename paxos::Client<T, ServerId>::Proposal const& p) override
+  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  propose(
+    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
   {
     return this->_paxos.propose(p);
   }
 
   virtual
-  typename paxos::Client<T, ServerId>::Proposal
-  accept(typename paxos::Client<T, ServerId>::Proposal const& p,
+  typename paxos::Client<T, Version, ServerId>::Proposal
+  accept(typename paxos::Client<T, Version, ServerId>::Proposal const& p,
          T const& value) override
   {
     return this->_paxos.accept(p, value);
   }
 
-  ELLE_ATTRIBUTE_RW((paxos::Server<T, ServerId>&), paxos);
+  ELLE_ATTRIBUTE_RW((paxos::Server<T, Version, ServerId>&), paxos);
 };
 
 ELLE_TEST_SCHEDULED(all_is_well)
 {
-  paxos::Server<int, int> server_1;
-  paxos::Server<int, int> server_2;
-  paxos::Server<int, int> server_3;
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_3));
-  paxos::Client<int, int> client(1, std::move(peers));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK(!client.choose(42));
 }
 
-template <typename T, typename ServerId>
+template <typename T, typename Version, typename ServerId>
 class UnavailablePeer
-  : public paxos::Client<T, ServerId>::Peer
+  : public paxos::Client<T, Version, ServerId>::Peer
 {
   virtual
-  boost::optional<typename paxos::Client<T, ServerId>::Accepted>
-  propose(typename paxos::Client<T, ServerId>::Proposal const& p) override
+  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  propose(
+    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
   {
-    throw typename paxos::Client<T, ServerId>::Peer::Unavailable();
+    throw typename paxos::Client<T, Version, ServerId>::Peer::Unavailable();
   }
 
   virtual
-  typename paxos::Client<T, ServerId>::Proposal
-  accept(typename paxos::Client<T, ServerId>::Proposal const& p,
+  typename paxos::Client<T, Version, ServerId>::Proposal
+  accept(typename paxos::Client<T, Version, ServerId>::Proposal const& p,
          T const& value) override
   {
-    throw typename paxos::Client<T, ServerId>::Peer::Unavailable();
+    throw typename paxos::Client<T, Version, ServerId>::Peer::Unavailable();
   }
 };
 
 ELLE_TEST_SCHEDULED(two_of_three)
 {
-  paxos::Server<int, int> server_1;
-  paxos::Server<int, int> server_2;
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int>>());
-  paxos::Client<int, int> client(1, std::move(peers));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK(!client.choose(42));
 }
 
 ELLE_TEST_SCHEDULED(one_of_three)
 {
-  paxos::Server<int, int> server_1;
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int>>());
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int>>());
-  paxos::Client<int, int> client(1, std::move(peers));
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK_THROW(client.choose(42), elle::Error);
 }
 
 ELLE_TEST_SCHEDULED(already_chosen)
 {
-  paxos::Server<int, int> server_1;
-  paxos::Server<int, int> server_2;
-  paxos::Server<int, int> server_3;
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers_1.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers_1.push_back(elle::make_unique<Peer<int, int>>(server_3));
-  paxos::Client<int, int> client_1(1, std::move(peers_1));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_3));
-  paxos::Client<int, int> client_2(1, std::move(peers_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(1, std::move(peers_2));
   BOOST_CHECK(!client_1.choose(42));
   BOOST_CHECK_EQUAL(client_2.choose(43), 42);
 }
 
-template <typename T, typename ServerId>
+template <typename T, typename Version, typename ServerId>
 class InstrumentedPeer
-  : public Peer<T, ServerId>
+  : public Peer<T, Version, ServerId>
 {
 public:
-  InstrumentedPeer(paxos::Server<T, ServerId>& paxos)
-    : Peer<T, ServerId>(paxos)
+  InstrumentedPeer(paxos::Server<T, Version, ServerId>& paxos)
+    : Peer<T, Version, ServerId>(paxos)
     , fail(false)
   {}
 
   virtual
-  boost::optional<typename paxos::Client<T, ServerId>::Accepted>
-  propose(typename paxos::Client<T, ServerId>::Proposal const& p) override
+  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  propose(
+    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
   {
     if (fail)
-      throw typename Peer<T, ServerId>::Unavailable();
+      throw typename Peer<T, Version, ServerId>::Unavailable();
     this->propose_signal.signal();
     reactor::wait(this->propose_barrier);
-    return Peer<T, ServerId>::propose(p);
+    return Peer<T, Version, ServerId>::propose(p);
   }
 
   virtual
-  typename paxos::Client<T, ServerId>::Proposal
-  accept(typename paxos::Client<T, ServerId>::Proposal const& p,
+  typename paxos::Client<T, Version, ServerId>::Proposal
+  accept(typename paxos::Client<T, Version, ServerId>::Proposal const& p,
          T const& value) override
   {
     if (fail)
-      throw typename Peer<T, ServerId>::Unavailable();
+      throw typename Peer<T, Version, ServerId>::Unavailable();
     this->accept_signal.signal();
     reactor::wait(this->accept_barrier);
-    return Peer<T, ServerId>::accept(p, value);
+    return Peer<T, Version, ServerId>::accept(p, value);
   }
 
   bool fail;
@@ -170,22 +173,22 @@ public:
 
 ELLE_TEST_SCHEDULED(concurrent)
 {
-  paxos::Server<int, int> server_1;
-  paxos::Server<int, int> server_2;
-  paxos::Server<int, int> server_3;
-  auto peer_1_2 = new InstrumentedPeer<int, int>(server_2);
-  auto peer_1_3 = new InstrumentedPeer<int, int>(server_3);
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  auto peer_1_2 = new InstrumentedPeer<int, int, int>(server_2);
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(server_3);
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int>::Peer>(peer_1_2));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int>::Peer>(peer_1_3));
-  paxos::Client<int, int> client_1(1, std::move(peers_1));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
+  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_3));
-  paxos::Client<int, int> client_2(2, std::move(peers_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   peer_1_2->propose_barrier.open();
   peer_1_2->accept_barrier.open();
   peer_1_3->propose_barrier.open();
@@ -202,22 +205,24 @@ ELLE_TEST_SCHEDULED(concurrent)
 
 ELLE_TEST_SCHEDULED(conflict)
 {
-  paxos::Server<int, int> server_1;
-  paxos::Server<int, int> server_2;
-  paxos::Server<int, int> server_3;
-  auto peer_1_2 = new InstrumentedPeer<int, int>(server_2);
-  auto peer_1_3 = new InstrumentedPeer<int, int>(server_3);
-  typedef paxos::Client<int, int>::Peers Peers;
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  auto peer_1_2 = new InstrumentedPeer<int, int, int>(server_2);
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(server_3);
+  typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int>>(server_1));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int>::Peer>(peer_1_2));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int>::Peer>(peer_1_3));
-  paxos::Client<int, int> client_1(1, std::move(peers_1));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_1.push_back(
+    std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
+  peers_1.push_back(
+    std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   Peers peers_2;
-  peers_2.push_back(elle::make_unique<UnavailablePeer<int, int>>());
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int>>(server_3));
-  paxos::Client<int, int> client_2(2, std::move(peers_2));
+  peers_2.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   peer_1_2->propose_barrier.open();
   peer_1_3->propose_barrier.open();
   reactor::Thread::unique_ptr t1(
@@ -232,6 +237,87 @@ ELLE_TEST_SCHEDULED(conflict)
   reactor::wait(*t1);
 }
 
+// Check a newer version overrides a previous result
+ELLE_TEST_SCHEDULED(versions)
+{
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  typedef paxos::Client<int, int, int>::Peers Peers;
+  Peers peers_1;
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
+  Peers peers_2;
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(1, std::move(peers_2));
+  BOOST_CHECK(!client_1.choose(1, 1));
+  BOOST_CHECK(!client_2.choose(2, 2));
+}
+
+// Check a newer version, even partially agreed on, is taken in account
+ELLE_TEST_SCHEDULED(versions_partial)
+{
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  typedef paxos::Client<int, int, int>::Peers Peers;
+  Peers peers_1;
+  auto peer_1_1 = new InstrumentedPeer<int, int, int>(server_1);
+  peers_1.push_back(
+    std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_1));
+  peer_1_1->propose_barrier.open();
+  peer_1_1->accept_barrier.open();
+  auto peer_1_2 = new InstrumentedPeer<int, int, int>(server_2);
+  peer_1_2->propose_barrier.open();
+  peers_1.push_back(
+    std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(server_3);
+  peer_1_3->propose_barrier.open();
+  peers_1.push_back(
+    std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
+  Peers peers_2;
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  reactor::Thread t("client_1",
+                    [&]
+                    {
+                      BOOST_CHECK(!client_1.choose(2, 2));
+                    });
+  reactor::wait(peer_1_1->accept_signal);
+  BOOST_CHECK_EQUAL(client_2.choose(1, 1), 2);
+  peer_1_2->accept_barrier.open();
+  peer_1_3->accept_barrier.open();
+  reactor::wait(t);
+}
+
+// Check a failed newer version doesn't block older ones
+ELLE_TEST_SCHEDULED(versions_aborted)
+{
+  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_3;
+  typedef paxos::Client<int, int, int>::Peers Peers;
+  Peers peers_1;
+  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
+  peers_1.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  peers_1.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
+  Peers peers_2;
+  peers_2.push_back(elle::make_unique<UnavailablePeer<int, int, int>>());
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_2));
+  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  BOOST_CHECK_THROW(client_1.choose(2, 2), elle::Error);
+  BOOST_CHECK(!client_2.choose(1, 1));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -241,4 +327,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(already_chosen), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(concurrent), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(conflict), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(versions), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
 }

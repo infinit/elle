@@ -14,29 +14,74 @@ namespace athena
     | Types |
     `------*/
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Proposal::Proposal(
+      Version version_, int round_, ClientId sender_)
+      : version(version_)
+      , round(round_)
+      , sender(sender_)
+    {}
+
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Proposal::Proposal()
+      : version()
+      , round()
+      , sender()
+    {}
+
+    template <typename T, typename Version, typename ClientId>
     bool
-    Server<T, ClientId>::Proposal::operator <(Proposal const& rhs) const
+    Server<T, Version, ClientId>::Proposal::operator <(
+      Proposal const& rhs) const
     {
       if (this->round < rhs.round)
         return true;
       return this->sender < rhs.sender;
     }
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
     void
-    Server<T, ClientId>::Proposal::serialize(elle::serialization::Serializer& s)
+    Server<T, Version, ClientId>::Proposal::serialize(
+      elle::serialization::Serializer& s)
     {
+      s.serialize("version", this->version);
       s.serialize("round", this->round);
       s.serialize("sender", this->sender);
     }
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Accepted::Accepted()
+      : proposal()
+      , value()
+    {}
+
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Accepted::Accepted(
+      Proposal proposal_, T value_)
+      : proposal(std::move(proposal_))
+      , value(std::move(value_))
+    {}
+
+    template <typename T, typename Version, typename ClientId>
     void
-    Server<T, ClientId>::Accepted::serialize(elle::serialization::Serializer& s)
+    Server<T, Version, ClientId>::Accepted::serialize(
+      elle::serialization::Serializer& s)
     {
       s.serialize("proposal", this->proposal);
       s.serialize("value", this->value);
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::VersionState::VersionState(Proposal p)
+      : proposal(std::move(p))
+      , accepted()
+    {}
+
+    template <typename T, typename Version, typename ClientId>
+    Version
+    Server<T, Version, ClientId>::VersionState::version() const
+    {
+      return this->proposal.version;
     }
 
     /*--------.
@@ -88,54 +133,109 @@ namespace athena
     | Construction |
     `-------------*/
 
-    template <typename T, typename ClientId>
-    Server<T, ClientId>::Server()
-      : _accepted()
-      , _has_accepted()
-      , _chosen(false)
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Server()
+      : _state()
     {}
 
-    template <typename T, typename ClientId>
-    boost::optional<typename Server<T, ClientId>::Accepted>
-    Server<T, ClientId>::propose(Proposal const& p)
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<typename Server<T, Version, ClientId>::Accepted>
+    Server<T, Version, ClientId>::propose(Proposal p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
-      if (!this->_minimum || this->_minimum < p)
       {
-        ELLE_DEBUG("%s: update minimum proposal", *this);
-        this->_minimum = p;
+        auto highest = this->highest_accepted();
+        if (highest && highest->proposal.version > p.version)
+        {
+          ELLE_DEBUG(
+            "%s: refuse proposal for version %s in favor of version %s",
+            *this, p.version, highest->proposal.version);
+          return highest.get();
+        }
       }
-      return this->_accepted;
+      auto it = this->_state.find(p.version);
+      if (it == this->_state.end())
+      {
+        ELLE_DEBUG("%s: accept proposal for version %s", *this, p.version);
+        this->_state.emplace(std::move(p));
+        return {};
+      }
+      else
+      {
+        if (it->proposal < p)
+        {
+          ELLE_DEBUG("%s: update minimum proposal for version %s",
+                     *this, p.version);
+          this->_state.modify(it,
+                              [&] (VersionState& s)
+                              {
+                                s.proposal = std::move(p);
+                              });
+        }
+        return it->accepted;
+      }
     }
 
-    template <typename T, typename ClientId>
-    typename Server<T, ClientId>::Proposal
-    Server<T, ClientId>::accept(Proposal const& p,
-                                T const& value)
+    template <typename T, typename Version, typename ClientId>
+    typename Server<T, Version, ClientId>::Proposal
+    Server<T, Version, ClientId>::accept(Proposal p, T value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE_SCOPE("%s: accept for %s: %s",
-                       *this, p, printer(value));
-      if (!(p < this->_minimum))
+      ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
       {
-        if (!this->_accepted)
-          this->_accepted.emplace();
-        this->_accepted->proposal = p;
-        this->_accepted->value = value;
-        this->_has_accepted.open();
+        auto highest = this->highest_accepted();
+        if (highest && highest->proposal.version > p.version)
+        {
+          ELLE_DEBUG(
+            "%s: refuse acceptation for version %s in favor of version %s",
+            *this, p.version, highest->proposal.version);
+          return highest->proposal;
+        }
       }
-      ELLE_ASSERT(this->_minimum);
-      return this->_minimum.get();
+      auto it = this->_state.find(p.version);
+      ELLE_ASSERT(it != this->_state.end());
+      auto& version = *it;
+      if (!(p < version.proposal))
+      {
+        if (!version.accepted)
+          this->_state.modify(
+            it,
+            [&] (VersionState& s)
+            {
+              s.accepted.emplace(std::move(p), std::move(value));
+            });
+        else
+          this->_state.modify(
+            it,
+            [&] (VersionState& s)
+            {
+              s.accepted->proposal = std::move(p);
+              s.accepted->value = std::move(value);
+            });
+      }
+      return version.proposal;
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<typename Server<T, Version, ClientId>::Accepted>
+    Server<T, Version, ClientId>::highest_accepted() const
+    {
+      for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
+      {
+        if (it->accepted)
+          return it->accepted;
+      }
+      return {};
     }
 
     /*----------.
     | Printable |
     `----------*/
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
     void
-    Server<T, ClientId>::print(std::ostream& output) const
+    Server<T, Version, ClientId>::print(std::ostream& output) const
     {
       elle::fprintf(output, "paxos::Server(%x)", this);
     }

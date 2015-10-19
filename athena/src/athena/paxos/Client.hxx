@@ -1,3 +1,4 @@
+
 #ifndef ATHENA_PAXOS_CLIENT_HXX
 # define ATHENA_PAXOS_CLIENT_HXX
 
@@ -14,8 +15,8 @@ namespace athena
     | Construction |
     `-------------*/
 
-    template <typename T, typename ClientId>
-    Client<T, ClientId>::Client(ClientId id, Peers peers)
+    template <typename T, typename Version, typename ClientId>
+    Client<T, Version, ClientId>::Client(ClientId id, Peers peers)
       : _id(id)
       , _peers(std::move(peers))
       , _round(0)
@@ -41,9 +42,19 @@ namespace athena
     | Consensus |
     `----------*/
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
     boost::optional<T>
-    Client<T, ClientId>::choose(T const& value_)
+    Client<T, Version, ClientId>::choose(
+      typename elle::_detail::attribute_r_type<T>::type value)
+    {
+      return this->choose(Version(), std::move(value));
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<T>
+    Client<T, Version, ClientId>::choose(
+      typename elle::_detail::attribute_r_type<Version>::type version,
+      typename elle::_detail::attribute_r_type<T>::type value_)
     {
       T const* value = &value_;
       boost::optional<T> new_value;
@@ -52,7 +63,7 @@ namespace athena
       while (true)
       {
         ++this->_round;
-        Proposal proposal{this->_round, this->_id};
+        Proposal proposal(std::move(version), this->_round, this->_id);
         ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
           boost::optional<Accepted> previous;
@@ -97,6 +108,13 @@ namespace athena
                        *this, printer(previous->value));
             new_value.emplace(std::move(previous->value));
             value = &*new_value;
+            if (previous->proposal.version > version)
+            {
+              ELLE_DEBUG("%s: newer version exists, replace %s",
+                         *this, printer(previous->value));
+              version = previous->proposal.version;
+              this->_round = 0;
+            }
           }
         }
         ELLE_DEBUG("%s: send acceptation", *this)
@@ -160,9 +178,9 @@ namespace athena
     | Printable |
     `----------*/
 
-    template <typename T, typename ClientId>
+    template <typename T, typename Version, typename ClientId>
     void
-    Client<T, ClientId>::print(std::ostream& output) const
+    Client<T, Version, ClientId>::print(std::ostream& output) const
     {
       elle::fprintf(output, "paxos::Client(%f)", this->_id);
     }
@@ -171,8 +189,8 @@ namespace athena
     | Unavailable |
     `------------*/
 
-    template <typename T, typename ClientId>
-    Client<T, ClientId>::Peer::Unavailable::Unavailable()
+    template <typename T, typename Version, typename ClientId>
+    Client<T, Version, ClientId>::Peer::Unavailable::Unavailable()
       : elle::Error("paxos peer unavailable")
     {}
   }
