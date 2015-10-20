@@ -1,5 +1,9 @@
 #include <elle/Version.hh>
 #include <elle/serialization/Serializer.hh>
+#include <boost/algorithm/string.hpp>
+#include <string>
+
+ELLE_LOG_COMPONENT("elle.Version");
 
 namespace elle
 {
@@ -66,8 +70,32 @@ namespace elle
   void
   Version::serialize(elle::serialization::Serializer& s)
   {
-    s.serialize("major", this->_major);
-    s.serialize("minor", this->_minor);
-    s.serialize("subminor", this->_subminor);
+    ELLE_DEBUG("Version: serialize");
+    if (s.text())
+    {
+      ELLE_DEBUG("Version: is text(json,xml,etc.)");
+      std::stringstream ss;
+      print(ss);
+      std::string str = ss.str();
+      s.serialize_forward(str);
+      if (s.in())
+      {
+        ELLE_DEBUG("Version: deserializing");
+        std::vector<std::string> strs;
+        boost::split(strs, str, boost::is_any_of("."));
+        this->_major = std::stoi(strs[0]);
+        this->_minor = std::stoi(strs[1]);
+        this->_subminor = std::stoi(strs[2]);
+      }
+      else
+        ELLE_DEBUG("Version: serializing");
+    }
+    else
+    {
+      ELLE_DEBUG("Version: is binary");
+      s.serialize("major", this->_major);
+      s.serialize("minor", this->_minor);
+      s.serialize("subminor", this->_subminor);
+    }
   }
 }

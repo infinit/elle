@@ -112,6 +112,8 @@ namespace elle
       bool
       out() const;
       ELLE_ATTRIBUTE_R(bool, versioned);
+      bool
+      text() const;
     private:
       bool
       _out() const;

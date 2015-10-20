@@ -25,6 +25,12 @@ namespace elle
     {}
 
     bool
+    Serializer::text() const
+    {
+      return this->_text();
+    }
+
+    bool
     Serializer::_text() const
     {
       return true;

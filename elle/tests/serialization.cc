@@ -984,6 +984,34 @@ json_optionals()
   }
 }
 
+static
+void
+text_parser()
+{
+  std::stringstream ss;
+  {
+    ELLE_LOG("json::in");
+    ss << "{}";
+    elle::serialization::json::SerializerIn ser(ss);
+    BOOST_CHECK_EQUAL(ser.text(), true);
+  }
+  {
+    ELLE_LOG("json::out");
+    elle::serialization::json::SerializerOut ser(ss);
+    BOOST_CHECK_EQUAL(ser.text(), true);
+  }
+  {
+    ELLE_LOG("json::in");
+    elle::serialization::binary::SerializerIn ser(ss);
+    BOOST_CHECK_EQUAL(ser.text(), false);
+  }
+  {
+    ELLE_LOG("json::out");
+    elle::serialization::binary::SerializerOut ser(ss);
+    BOOST_CHECK_EQUAL(ser.text(), false);
+  }
+}
+
 class Context
 {
 public:
@@ -1142,4 +1170,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_iso8601));
   suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
   suite.add(BOOST_TEST_CASE(json_optionals));
+  suite.add(BOOST_TEST_CASE(text_parser));
 }
