@@ -186,12 +186,12 @@ exchange_packets()
          [] (infinit::protocol::Serializer& s)
          {
            {
-             infinit::protocol::Packet p;
-             p << "some data 42";
+             elle::Buffer p("some data 42", strlen("some data 42"));
              s.write(p);
            }
            {
-             infinit::protocol::Packet p = s.read();
+             elle::Buffer pp = s.read();
+             elle::IOStream p(pp.istreambuf());
              std::string res;
              p >> res;
              BOOST_CHECK_EQUAL(res, "goody");
@@ -201,7 +201,8 @@ exchange_packets()
          [] (infinit::protocol::Serializer& s)
          {
            {
-             infinit::protocol::Packet p = s.read();
+             elle::Buffer pp = s.read();
+             elle::IOStream p(pp.istreambuf());
              std::string some, data;
              int i;
              p >> some;
@@ -213,8 +214,7 @@ exchange_packets()
              BOOST_CHECK(!(p >> data));
            }
            {
-             infinit::protocol::Packet p;
-             p << "goody";
+             elle::Buffer p("goody", 5);
              s.write(p);
            }
          });
@@ -231,12 +231,14 @@ connection_lost_reader()
     },
     [] (infinit::protocol::Serializer& s)
     {
-      infinit::protocol::Packet p;
+      elle::Buffer pp;
+      elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
       memset(buffer, 0xAA, sizeof(buffer));
       buffer[sizeof(buffer) - 1] = 0;
       p << buffer;
-      s.write(p);
+      p.flush();
+      s.write(pp);
     },
     [] (infinit::protocol::Serializer& s)
     {
@@ -255,8 +257,7 @@ connection_lost_sender()
     },
     [] (infinit::protocol::Serializer& s)
     {
-      infinit::protocol::Packet p;
-      p << "data";
+      elle::Buffer p("data", 4);
       s.write(p);
       // Getting an error from TCP writes is a bit touchy.
       try
@@ -288,12 +289,14 @@ corruption()
     },
     [] (infinit::protocol::Serializer& s)
     {
-      infinit::protocol::Packet p;
+      elle::Buffer pp;
+      elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
       memset(buffer, 0xAA, sizeof(buffer));
       buffer[sizeof(buffer) - 1] = 0;
       p << buffer;
-      s.write(p);
+      p.flush();
+      s.write(pp);
     },
     [] (infinit::protocol::Serializer& s)
     {

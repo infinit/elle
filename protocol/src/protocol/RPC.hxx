@@ -15,7 +15,6 @@
 
 # include <protocol/Channel.hh>
 # include <protocol/ChanneledStream.hh>
-# include <protocol/Packet.hh>
 # include <protocol/exceptions.hh>
 
 namespace infinit
@@ -172,15 +171,19 @@ namespace infinit
 
       Channel channel(_owner._channels);
       {
-        Packet question;
-        OS output(question);
-        output << _id;
-        put_args<OS, Args...>(output, args...);
+        elle::Buffer question;
+        {
+          elle::IOStream outs(question.ostreambuf());
+          OS output(outs);
+          output << _id;
+          put_args<OS, Args...>(output, args...);
+        }
         channel.write(question);
       }
       {
-        Packet response(channel.read());
-        IS input(response);
+        elle::Buffer response(channel.read());
+        elle::IOStream ins(response.istreambuf());
+        IS input(ins);
         bool res;
         input >> res;
         if (res)
@@ -417,15 +420,17 @@ namespace infinit
         {
           ELLE_TRACE_SCOPE("%s: Accepting new request...", *this);
           Channel c(_channels.accept());
-          Packet question(c.read());
-          IS input(question);
+          elle::Buffer question(c.read());
+          elle::IOStream ins(question.istreambuf());
+          IS input(ins);
           uint32_t id;
           input >> id;
           ELLE_TRACE_SCOPE("%s: Processing request for %s...", *this, id);
           auto procedure = _procedures.find(id);
 
-          Packet answer;
-          OS output(answer);
+          elle::Buffer answer;
+          elle::IOStream outs(answer.ostreambuf());
+          OS output(outs);
           try
           {
             if (procedure == _procedures.end())
@@ -453,6 +458,7 @@ namespace infinit
           { // Pass exception through handler if present, reply with an error
             stop_request = handle_exception(handler, output, std::current_exception());
           }
+          outs.flush();
           c.write(answer);
         }
       }
@@ -489,14 +495,16 @@ namespace infinit
             auto call_procedure = [&, chan] {
               ELLE_LOG_COMPONENT("infinit.protocol.RPC");
 
-              Packet question(chan->read());
-              IS input(question);
+              elle::Buffer question(chan->read());
+              elle::IOStream ins(question.istreambuf());
+              IS input(ins);
               uint32_t id;
               input >> id;
               auto procedure = _procedures.find(id);
 
-              Packet answer;
-              OS output(answer);
+              elle::Buffer answer;
+              elle::IOStream outs(answer.ostreambuf());
+              OS output(outs);
               try
               {
                 if (procedure == _procedures.end())
@@ -549,6 +557,7 @@ namespace infinit
                 output << std::string("unknown error");
                 output << uint16_t(0);
               }
+              outs.flush();
               chan->write(answer);
             };
             scope.run_background(elle::sprintf("RPC %s", i), call_procedure);

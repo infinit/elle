@@ -3,11 +3,12 @@
 
 # include <iosfwd>
 
+# include <elle/Buffer.hh>
 # include <elle/Printable.hh>
 
 # include <reactor/fwd.hh>
 
-# include <protocol/Packet.hh>
+
 
 namespace infinit
 {
@@ -34,18 +35,18 @@ namespace infinit
     | Receiving |
     `----------*/
     public:
-      virtual Packet read() = 0;
+      virtual elle::Buffer read() = 0;
 
     /*--------.
     | Sending |
     `--------*/
     public:
       void
-      write(Packet& packet);
+      write(elle::Buffer& packet);
     protected:
       virtual
       void
-      _write(Packet& packet) = 0;
+      _write(elle::Buffer& packet) = 0;
 
     /*------------------.
     | Int serialization |
@@ -53,6 +54,8 @@ namespace infinit
     protected:
       void _uint32_put(std::ostream& s, uint32_t  i);
       uint32_t _uint32_get(std::istream& s);
+      void _uint32_put(elle::Buffer& s, uint32_t  i);
+      uint32_t _uint32_get(elle::Buffer& s);
     };
   }
 }

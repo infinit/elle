@@ -41,7 +41,7 @@ namespace infinit
     | Receiving |
     `----------*/
     public:
-      virtual Packet read();
+      virtual elle::Buffer read();
       Channel accept();
     private:
       /// Read and dispatch packets until one that fit our needs is found.
@@ -51,7 +51,7 @@ namespace infinit
       /// @param channel Id of the channel receiving a packet on will cause the
       ///                function to return. Ignored if new_channel is true.
       void _read(bool new_channel, int channel);
-      Packet _read(Channel* channel);
+      elle::Buffer _read(Channel* channel);
       bool _reading;
 
     /*--------.
@@ -60,10 +60,10 @@ namespace infinit
     protected:
       virtual
       void
-      _write(Packet& packet);
+      _write(elle::Buffer& packet);
     private:
       void
-      _write(Packet& packet, int id);
+      _write(elle::Buffer& packet, int id);
 
     /*----------.
     | Printable |

@@ -7,7 +7,6 @@ namespace infinit
   {
     class Channel;
     class ChanneledStream;
-    class Packet;
     class BaseRPC;
     template <typename ISerializer, typename OSerializer>
     class RPC;

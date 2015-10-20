@@ -64,9 +64,7 @@ def configure(cryptography,
 
   sources = drake.nodes(
     'src/protocol/ChanneledStream.hh',
-    'src/protocol/Packet.hh',
     'src/protocol/RPC.hxx',
-    'src/protocol/Packet.cc',
     'src/protocol/Stream.hh',
     'src/protocol/Serializer.hh',
     'src/protocol/Channel.cc',

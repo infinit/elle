@@ -46,16 +46,15 @@ namespace infinit
         char mine = infinit::cryptography::random::generate<char>();
         char his;
         {
-          Packet p;
-          p.write(&mine, 1);
+          elle::Buffer p;
+          p.append(&mine, 1);
           backend.write(p);
           ELLE_DEBUG("%s: my roll: %d", *this, (int)mine);
         }
         {
-          Packet p(backend.read());
-          ELLE_ASSERT(p.good());
-          p.read(&his, 1);
-          ELLE_ASSERT(p.good());
+          elle::Buffer p(backend.read());
+          ELLE_ASSERT_EQ(1, p.size());
+          his = p.contents()[0];
           ELLE_DEBUG("%s: his roll: %d", *this, (int)his);
         }
         if (mine != his)
@@ -96,13 +95,13 @@ namespace infinit
     | Receiving |
     `----------*/
 
-    Packet
+    elle::Buffer
     ChanneledStream::read()
     {
       return _default.read();
     }
 
-    Packet
+    elle::Buffer
     ChanneledStream::_read(Channel* channel)
     {
       ELLE_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
@@ -113,7 +112,7 @@ namespace infinit
           if (!channel->_packets.empty())
             {
               // FIXME: use helper to pop
-              Packet packet(std::move(channel->_packets.front()));
+              elle::Buffer packet(std::move(channel->_packets.front()));
               channel->_packets.pop_front();
               ELLE_TRACE("%s: %s available.", *this, packet);
               return packet;
@@ -136,7 +135,7 @@ namespace infinit
         while (true)
         {
           _reading = true;
-          Packet p(_backend.read());
+          elle::Buffer p(_backend.read());
           if (p.size() < 4)
             throw elle::Exception("packet is too small for channel id");
           int channel_id = _uint32_get(p);
@@ -220,19 +219,19 @@ namespace infinit
     `--------*/
 
     void
-    ChanneledStream::_write(Packet& packet)
+    ChanneledStream::_write(elle::Buffer& packet)
     {
       _default.write(packet);
     }
 
     void
-    ChanneledStream::_write(Packet& packet, int id)
+    ChanneledStream::_write(elle::Buffer& packet, int id)
     {
       ELLE_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
 
-      Packet backend_packet;
+      elle::Buffer backend_packet;
       _uint32_put(backend_packet, id);
-      backend_packet.write(packet._data, packet.size());
+      backend_packet.append(packet.contents(), packet.size());
       _backend.write(backend_packet);
     }
 

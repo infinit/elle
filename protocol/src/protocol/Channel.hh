@@ -48,7 +48,7 @@ namespace infinit
     | Receiving |
     `----------*/
     public:
-      virtual Packet read();
+      virtual elle::Buffer read();
 
     /*--------.
     | Sending |
@@ -56,7 +56,7 @@ namespace infinit
     protected:
       virtual
       void
-      _write(Packet& packet);
+      _write(elle::Buffer& packet);
 
     /*--------.
     | Details |
@@ -65,7 +65,7 @@ namespace infinit
       friend class ChanneledStream;
       ChanneledStream& _backend;
       int _id;
-      std::list<Packet> _packets;
+      std::list<elle::Buffer> _packets;
       reactor::Signal _available;
     };
   }

@@ -41,7 +41,7 @@ namespace infinit
     | Receiving |
     `----------*/
 
-    Packet
+    elle::Buffer
     Serializer::read()
     {
       reactor::Lock lock(_lock_read);
@@ -62,8 +62,8 @@ namespace infinit
         uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
 
-        Packet packet(size);
-        _stream.read(reinterpret_cast<char*>(packet._data), size);
+        elle::Buffer packet(size);
+        _stream.read(reinterpret_cast<char*>(packet.mutable_contents()), size);
         ELLE_DUMP("%s: packet data %s", *this, packet);
 
         // Check hash.
@@ -73,15 +73,15 @@ namespace infinit
           auto _hash_local =
             infinit::cryptography::hash(
               infinit::cryptography::Plain(
-                elle::WeakBuffer(packet._data,
-                                 packet._data_size)),
+                elle::WeakBuffer(packet.mutable_contents(),
+                                 packet.size())),
               infinit::cryptography::Oneway::sha1);
           auto hash_local(_hash_local.buffer());
 #else
           auto hash_local =
             infinit::cryptography::hash(
-              elle::ConstWeakBuffer(packet._data,
-                                    packet._data_size),
+              elle::ConstWeakBuffer(packet.contents(),
+                                    packet.size()),
               infinit::cryptography::Oneway::sha1);
 #endif
           ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
@@ -101,7 +101,7 @@ namespace infinit
     | Sending |
     `--------*/
     void
-    Serializer::_write(Packet& packet)
+    Serializer::_write(elle::Buffer& packet)
     {
       reactor::Lock lock(_lock_write);
       elle::IOStreamClear clearer(_stream);
@@ -113,15 +113,15 @@ namespace infinit
           auto _hash =
             infinit::cryptography::hash(
               infinit::cryptography::Plain(
-                elle::WeakBuffer(packet._data,
-                                 packet._data_size)),
+                elle::WeakBuffer(packet.mutable_contents(),
+                                 packet.size())),
               infinit::cryptography::Oneway::sha1);
           auto hash(_hash.buffer());
 #else
           auto hash =
             infinit::cryptography::hash(
-              elle::ConstWeakBuffer(packet._data,
-                                    packet._data_size),
+              elle::ConstWeakBuffer(packet.contents(),
+                                    packet.size()),
               infinit::cryptography::Oneway::sha1);
 #endif
           auto hash_size = hash.size();
@@ -133,12 +133,12 @@ namespace infinit
             _stream.write(data, hash_size);
           }
         }
-        auto size = packet._data_size;
+        auto size = packet.size();
         ELLE_DUMP("%s: send packet size %s", *this, size)
           _uint32_put(_stream, size);
         ELLE_DUMP("%s: send packet data", *this)
-          _stream.write(reinterpret_cast<char*>(packet._data),
-                        packet._data_size);
+          _stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
+                        packet.size());
       }
       _stream.flush();
     }

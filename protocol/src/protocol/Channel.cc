@@ -78,7 +78,7 @@ namespace infinit
     | Receiving |
     `----------*/
 
-    Packet
+    elle::Buffer
     Channel::read()
     {
       return _backend._read(this);
@@ -89,7 +89,7 @@ namespace infinit
     `--------*/
 
     void
-    Channel::_write(Packet& packet)
+    Channel::_write(elle::Buffer& packet)
     {
       _backend._write(packet, _id);
     }

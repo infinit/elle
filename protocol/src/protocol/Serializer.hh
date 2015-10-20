@@ -31,7 +31,7 @@ namespace infinit
     | Receiving |
     `----------*/
     public:
-      Packet read();
+      elle::Buffer read();
 
     /*--------.
     | Sending |
@@ -39,7 +39,7 @@ namespace infinit
     protected:
       virtual
       void
-      _write(Packet& packet);
+      _write(elle::Buffer& packet);
 
     /*----------.
     | Printable |
