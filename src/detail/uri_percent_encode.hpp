@@ -47,27 +47,6 @@ namespace network {
     };
 
     template <class Iter>
-    Iter decode_encoded_chars(Iter first, Iter last) {
-      auto it = first, it2 = first;
-      while (it != last) {
-	if (*it == '%') {
-	  auto sfirst = it, slast = it;
-	  std::advance(slast, 3);
-	  auto opt_char = percent_encode(std::string(sfirst, slast));
-	  if (opt_char) {
-	    *it2 = *opt_char;
-	  }
-	  ++it; ++it;
-	}
-	else {
-	  *it2 = *it;
-	}
-	++it; ++it2;
-      }
-      return it2;
-    }
-
-    template <class Iter>
     Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
 
       // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"

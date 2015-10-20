@@ -146,6 +146,19 @@ TEST(uri_normalization_test, path_dash_dot_dash_dot) {
 	    instance.normalize(network::uri_comparison_level::syntax_based));
 }
 
+TEST(uri_normalization_test, path_percent_encoded_reserved) {
+  // :/?#[]@!$&'()*+,;=
+  network::uri instance("http://www.example.com/%3a%2f%3f%23%5b%5d%40%21%24%26%27%28%29%2a%2b%2c%3b%3d");
+  ASSERT_EQ("http://www.example.com/%3A%2F%3F%23%5B%5D%40%21%24%26%27%28%29%2A%2B%2C%3B%3D",
+        instance.normalize(network::uri_comparison_level::syntax_based));
+}
+
+TEST(uri_normalization_test, path_percent_encoded_unreserved) {
+  network::uri instance("http://www.example.com/alpha123%2d%2e%5f%7e");
+  ASSERT_EQ("http://www.example.com/alpha123-._~",
+        instance.normalize(network::uri_comparison_level::syntax_based));
+}
+
 TEST(uri_normalization_test, query_percent_encoded_reserved) {
   // :/?#[]@!$&'()*+,;=
   network::uri instance("http://www.example.com?foo=%3a%2f%3f%23%5b%5d%40%21%24%26%27%28%29%2a%2b%2c%3b%3d");
