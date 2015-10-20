@@ -104,11 +104,12 @@ ELLE_TEST_SCHEDULED(streams)
 ELLE_TEST_SCHEDULED(big)
 {
   SocketPair sp;
-  std::string data(20000, '-');
+  size_t buffer_size = 20000u;
+  std::string data(buffer_size, '-');
   // note: there is no garantee utp will buffer that much
   sp.s1->write(data);
-  elle::Buffer buf = sp.s2->read(20000);
-  ELLE_ASSERT_EQ(buf.size(), 20000);
+  elle::Buffer buf = sp.s2->read(buffer_size);
+  ELLE_ASSERT_EQ(buf.size(), buffer_size);
 }
 
 ELLE_TEST_SCHEDULED(many)
