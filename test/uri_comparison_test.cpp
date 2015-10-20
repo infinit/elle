@@ -74,3 +74,16 @@ TEST(uri_comparison_test, less_than_test) {
   network::uri rhs("http://www.example.org/");
   ASSERT_LT(lhs, rhs);
 }
+
+TEST(uri_comparison_test, percent_encoded_query_reserved_chars) {
+  network::uri lhs("http://www.example.com?foo=%5cbar");
+  network::uri rhs("http://www.example.com?foo=%5Cbar");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}
+
+
+TEST(uri_comparison_test, percent_encoded_query_unreserved_chars) {
+  network::uri lhs("http://www.example.com?foo=%61%6c%70%68%61%31%32%33%2d%2e%5f%7e");
+  network::uri rhs("http://www.example.com?foo=alpha123-._~");
+  ASSERT_EQ(lhs.compare(rhs, network::uri_comparison_level::syntax_based), 0);
+}

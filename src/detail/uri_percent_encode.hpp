@@ -47,22 +47,40 @@ namespace network {
     };
 
     template <class Iter>
-    Iter decode_encoded_chars(Iter first, Iter last) {
+    Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
+
+      // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+
+      const auto is_unreserved = [](char c)
+      {
+        return std::isalnum(c)
+            || '-' == c
+            || '.' == c
+            || '_' == c
+            || '~' == c;
+      };
+
       auto it = first, it2 = first;
       while (it != last) {
-	if (*it == '%') {
-	  auto sfirst = it, slast = it;
-	  std::advance(slast, 3);
-	  auto opt_char = percent_encode(std::string(sfirst, slast));
-	  if (opt_char) {
-	    *it2 = *opt_char;
-	  }
-	  ++it; ++it;
-	}
-	else {
-	  *it2 = *it;
-	}
-	++it; ++it2;
+        if (*it == '%') {
+          const auto sfirst = it;
+          const auto slast = [&]() {
+            auto slast = it;
+            std::advance(slast, 3);
+            return slast;
+          }();
+          const auto opt_char = percent_encode(std::string(sfirst, slast));
+          if (opt_char && is_unreserved(*opt_char)) {
+            *it2 = *opt_char;
+            ++it; ++it;
+          } else {
+            *it2 = *it;
+          }
+        }
+        else {
+          *it2 = *it;
+        }
+        ++it; ++it2;
       }
       return it2;
     }

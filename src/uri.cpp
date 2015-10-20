@@ -391,8 +391,8 @@ namespace network {
       // parts are invalidated here
       // there's got to be a better way of doing this that doesn't
       // mean parsing again (twice!)
-      normalized.erase(detail::decode_encoded_chars(std::begin(normalized),
-                                                    std::end(normalized)),
+      normalized.erase(detail::decode_encoded_unreserved_chars(std::begin(normalized),
+                                                               std::end(normalized)),
                        std::end(normalized));
 
       // need to parse the parts again as the underlying string has changed

@@ -30,8 +30,8 @@ namespace network {
         boost::for_each(normalized, percent_encoded_to_upper());
 
         // % encoding normalization
-        normalized.erase(detail::decode_encoded_chars(std::begin(normalized),
-                                                      std::end(normalized)),
+        normalized.erase(detail::decode_encoded_unreserved_chars(std::begin(normalized),
+                                                                 std::end(normalized)),
                          std::end(normalized));
 
         // % path segment normalization
