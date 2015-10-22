@@ -5,11 +5,13 @@
 # include <list>
 # include <memory>
 # include <string>
+# include <type_traits>
 # include <typeinfo>
 # include <unordered_map>
 
 # include <boost/any.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
+# include <boost/multi_index_container.hpp>
 # include <boost/optional.hpp>
 
 # include <elle/Buffer.hh>
@@ -246,9 +248,16 @@ namespace elle
       template <template <typename, typename> class C, typename T, typename A>
       void
       _serialize(std::string const& name, C<T, A>& collection);
+      template <typename C>
+      void
+      _serialize_collection(std::string const& name, C& collection);
       template <typename T, typename A>
       void
       _serialize(std::string const& name, std::vector<T, A>& collection);
+      template <typename T, typename I>
+      void
+      _serialize(std::string const& name,
+                 boost::multi_index::multi_index_container<T, I>& collection);
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
       typename
@@ -290,14 +299,30 @@ namespace elle
       _serialize_anonymous(std::string const& name, boost::optional<T>& opt);
       void
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);
-      template <template <typename, typename> class C, typename T, typename A>
-      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
-      _deserialize_in_array(std::string const& name,
-                            C<T, A>& collection);
-      template <template <typename, typename> class C, typename T, typename A>
-      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
-      _deserialize_in_array(std::string const& name,
-                            C<T, A>& collection);
+      template <typename C>
+      typename std::enable_if<
+        is_unserializable_inplace<
+          typename C::value_type>(),
+          typename std::enable_if_exists<
+            decltype(
+              std::declval<C>().emplace(
+                std::declval<elle::serialization::SerializerIn>())),
+            void>::type>::type
+      _deserialize_in_array(std::string const& name, C& collection);
+      template <typename C>
+      typename std::enable_if<
+        is_unserializable_inplace<
+          typename C::value_type>(),
+          typename std::enable_if_exists<
+            decltype(
+              std::declval<C>().emplace_back(
+                std::declval<elle::serialization::SerializerIn>())),
+            void>::type>::type
+      _deserialize_in_array(std::string const& name, C& collection);
+      template <typename C>
+      typename std::enable_if<
+        !is_unserializable_inplace<typename C::value_type>(), void>::type
+      _deserialize_in_array(std::string const& name, C& collection);
       template <typename T>
       typename std::enable_if<is_unserializable_inplace<T>(), void>::type
       _deserialize_in_option(std::string const& name, boost::optional<T>& opt);

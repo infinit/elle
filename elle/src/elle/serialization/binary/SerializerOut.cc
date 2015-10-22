@@ -5,6 +5,8 @@
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 
+ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerOut")
+
 namespace elle
 {
   namespace serialization
@@ -150,15 +152,19 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, std::string& v)
       {
-        _serialize_number(v.size());
-        output().write(v.data(), v.size());
+        ELLE_TRACE_SCOPE("%s: serialize string \"%s\"", *this, name);
+        elle::Buffer buffer(v.c_str(), v.size());
+        this->_serialize(name, buffer);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, elle::Buffer& buffer)
       {
-        _serialize_number(buffer.size());
-        output().write((const char*)buffer.contents(), buffer.size());
+        ELLE_TRACE_SCOPE("%s: serialize buffer \"%s\"", *this, name);
+        ELLE_DEBUG("%s: serialize size: %s", *this, buffer.size())
+          this->_serialize_number(buffer.size());
+        ELLE_DEBUG("%s: serialize content: %f", *this, buffer)
+          output().write((const char*)buffer.contents(), buffer.size());
       }
 
       void

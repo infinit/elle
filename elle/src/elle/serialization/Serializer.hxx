@@ -15,6 +15,22 @@ namespace elle
 {
   namespace serialization
   {
+    template <typename T>
+    typename std::enable_if_exists<decltype(T::serialization_tag::version),
+                                   elle::Version>::type
+    _version_tag(int)
+    {
+      return T::serialization_tag::version;
+    }
+
+    template <typename T>
+    elle::Version
+    _version_tag(...)
+    {
+      throw elle::Error(elle::sprintf("no serialization version tag for %s",
+                                      elle::type_info<T>().name()));
+    }
+
     namespace
     {
       template <typename P, typename T>
@@ -127,10 +143,20 @@ namespace elle
       typename std::enable_if<is_unserializable_inplace<T>(), T>::type
       _deserialize(elle::serialization::SerializerIn& input)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         static_assert(is_unserializable_inplace<T>(), "");
+        // FIXME: factor reading version
+        // FIXME: use that version
+        if (input.versioned())
+        {
+          auto version = _version_tag<T>(42);
+          {
+            ELLE_TRACE_SCOPE("serialize version: %s", version);
+            input.serialize(".version", version);
+          }
+        }
         return T(input);
       }
-
     }
 
     template <typename T>
@@ -281,7 +307,7 @@ namespace elle
         ELLE_DUMP("%s: type: %s", s, type_name);
         auto it = map.find(type_name);
         if (it == map.end())
-          throw Error(elle::sprintf("unable to deserialize type %s",
+          throw Error(elle::sprintf("unknown deserialization type: \"%s\"",
                                     type_name));
         _set_ptr(ptr, it->second(static_cast<SerializerIn&>(s)).release());
       }
@@ -635,29 +661,15 @@ namespace elle
     }
 
     template <typename T>
-    typename std::enable_if_exists<decltype(T::serialization_tag::version),
-                                   elle::Version>::type
-    _version_tag(int)
-    {
-      return T::serialization_tag::version;
-    }
-
-    template <typename T>
-    elle::Version
-    _version_tag(...)
-    {
-      throw elle::Error(elle::sprintf("no serialization version tag for %s",
-                                      elle::type_info<T>().name()));
-    }
-
-    template <typename T>
     void
     Serializer::serialize_object(std::string const& name,
                                  T& object)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize %s \"%s\"",
+                       *this, elle::type_info<T>(), name);
       if (this->_versioned)
       {
-        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         auto version = _version_tag<T>(42);
         {
           ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
@@ -698,18 +710,41 @@ namespace elle
       _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
-    template <template <typename, typename> class C, typename T, typename A>
-    typename std::enable_if<is_unserializable_inplace<T>(), void>::type
+    template <typename C>
+    typename std::enable_if<
+      is_unserializable_inplace<
+        typename C::value_type>(),
+        typename std::enable_if_exists<
+          decltype(
+            std::declval<C>().emplace(
+              std::declval<elle::serialization::SerializerIn>())),
+          void>::type>::type
     Serializer::_deserialize_in_array(std::string const& name,
-                                      C<T, A>& collection)
+                                      C& collection)
+    {
+      collection.emplace(static_cast<SerializerIn&>(*this));
+    }
+
+    template <typename C>
+    typename std::enable_if<
+      is_unserializable_inplace<
+        typename C::value_type>(),
+        typename std::enable_if_exists<
+          decltype(
+            std::declval<C>().emplace_back(
+              std::declval<elle::serialization::SerializerIn>())),
+          void>::type>::type
+    Serializer::_deserialize_in_array(std::string const& name,
+                                      C& collection)
     {
       collection.emplace_back(static_cast<SerializerIn&>(*this));
     }
 
-    template <template <typename, typename> class C, typename T, typename A>
-    typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
+    template <typename C>
+    typename std::enable_if<
+      !is_unserializable_inplace<typename C::value_type>(), void>::type
     Serializer::_deserialize_in_array(std::string const& name,
-                                      C<T, A>& collection)
+                                      C& collection)
     {
       collection.emplace_back();
       this->_serialize_anonymous(name, collection.back());
@@ -724,10 +759,27 @@ namespace elle
       this->_serialize<std::vector, T, A>(name, collection);
     }
 
+    template <typename T, typename I>
+    void
+    Serializer::_serialize(
+      std::string const& name,
+      boost::multi_index::multi_index_container<T, I>& collection)
+    {
+      this->_serialize_collection(name, collection);
+    }
+
     template <template <typename, typename> class C, typename T, typename A>
     void
     Serializer::_serialize(std::string const& name,
                            C<T, A>& collection)
+    {
+      this->_serialize_collection(name, collection);
+    }
+
+    template <typename C>
+    void
+    Serializer::_serialize_collection(std::string const& name,
+                                      C& collection)
     {
       if (this->out())
       {
@@ -741,7 +793,8 @@ namespace elle
               if (this->_enter(name))
               {
                 elle::SafeFinally leave([&] { this->_leave(name); });
-                this->_serialize_anonymous(name, elt);
+                this->_serialize_anonymous
+                  (name, const_cast<typename C::value_type&>(elt));
               }
             }
           });
@@ -753,7 +806,7 @@ namespace elle
           -1,
           [&] ()
           {
-            this->_deserialize_in_array<C, T, A>(name, collection);
+            this->_deserialize_in_array(name, collection);
           });
       }
     }
@@ -968,7 +1021,21 @@ namespace elle
             ELLE_TRACE_SCOPE("register dynamic type %s as %s", id, name_);
           std::string name = name_.empty() ? id.name() : name_;
           Hierarchy<T>::_map() [name] =
-            [] (SerializerIn& s) { return elle::make_unique<U>(s); };
+            [] (SerializerIn& s)
+            {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+              // FIXME: factor reading version
+              // FIXME: use that version
+              if (s.versioned())
+              {
+                auto version = _version_tag<T>(42);
+                {
+                  ELLE_TRACE_SCOPE("serialize version: %s", version);
+                  s.serialize(".version", version);
+                }
+              }
+              return elle::make_unique<U>(s);
+            };
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
         }

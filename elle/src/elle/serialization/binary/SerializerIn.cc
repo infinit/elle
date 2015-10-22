@@ -2,6 +2,7 @@
 
 #include <elle/serialization/json/Overflow.hh>
 #include <elle/serialization/json/FieldError.hh>
+
 ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerIn")
 
 namespace elle
@@ -26,6 +27,7 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: deserialize integer \"%s\"", *this, name);
         v = _serialize_number();
+        ELLE_DEBUG("value: %s", v);
       }
 
       void
@@ -108,16 +110,9 @@ namespace elle
       SerializerIn::_serialize(std::string const& name, std::string& v)
       {
         ELLE_TRACE_SCOPE("%s: deserialize string \"%s\"", *this, name);
-        int sz = _serialize_number();
-        if (sz < 0)
-          throw Error(elle::sprintf("%s: invalid negative string size %s",
-            *this, sz));
-        v.resize(sz);
-        input().read((char*)v.data(), sz);
-         if (input().gcount() != sz)
-           throw Error(elle::sprintf(
-            "%s: short read when deserializing '%s': expected %s, got %s",
-            *this, name, sz, input().gcount()));
+        elle::Buffer b;
+        this->_serialize(name, b);
+        v = b.string();
       }
 
       void
@@ -125,6 +120,7 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: deserialize buffer \"%s\"", *this, name);
         int sz = _serialize_number();
+        ELLE_DEBUG("%s: deserialize size: %s", *this, sz);
         buffer.size(sz);
         input().read((char*)buffer.mutable_contents(), sz);
         if (input().gcount() != sz)
