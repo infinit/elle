@@ -72,10 +72,27 @@ namespace athena
     }
 
     template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::VersionState::VersionState(Proposal p)
+    Server<T, Version, ClientId>::VersionState::VersionState(
+      Proposal p, boost::optional<Accepted> a)
       : proposal(std::move(p))
-      , accepted()
+      , accepted(std::move(a))
     {}
+
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::VersionState::VersionState(
+      elle::serialization::SerializerIn& s)
+    {
+      this->serialize(s);
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    void
+    Server<T, Version, ClientId>::VersionState::serialize(
+      elle::serialization::Serializer& s)
+    {
+      s.serialize("proposal", this->proposal);
+      s.serialize("accepted", this->accepted);
+    }
 
     template <typename T, typename Version, typename ClientId>
     Version
@@ -139,6 +156,11 @@ namespace athena
     {}
 
     template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Server(VersionsState state)
+      : _state(std::move(state))
+    {}
+
+    template <typename T, typename Version, typename ClientId>
     boost::optional<typename Server<T, Version, ClientId>::Accepted>
     Server<T, Version, ClientId>::propose(Proposal p)
     {
@@ -199,12 +221,17 @@ namespace athena
       if (!(p < version.proposal))
       {
         if (!version.accepted)
+        {
           this->_state.modify(
             it,
             [&] (VersionState& s)
             {
               s.accepted.emplace(std::move(p), std::move(value));
             });
+          // Drop older versions
+          for (auto obsolete = this->_state.begin(); obsolete != it;)
+            obsolete = this->_state.erase(obsolete);
+        }
         else
           this->_state.modify(
             it,
@@ -227,6 +254,28 @@ namespace athena
           return it->accepted;
       }
       return {};
+    }
+
+    /*--------------.
+    | Serialization |
+    `--------------*/
+
+    template <typename T, typename Version, typename ClientId>
+    Server<T, Version, ClientId>::Server(elle::serialization::SerializerIn& s)
+      : _state()
+    {
+      this->serialize(s);
+    }
+
+    // FIXME: use splitted serialization
+    template <typename T, typename Version, typename ClientId>
+    void
+    Server<T, Version, ClientId>::serialize(elle::serialization::Serializer& s)
+    {
+      if (s.out())
+      {
+        s.serialize("state", this->_state);
+      }
     }
 
     /*----------.
