@@ -6,6 +6,8 @@
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
 
+ELLE_LOG_COMPONENT("rdvcat");
+
 reactor::network::UDPSocket* sock = nullptr;
 Endpoint remote;
 
@@ -31,7 +33,8 @@ static void run(int argc, char** argv)
   req.id = id;
   req.command = Command::connect;
   req.target = remoteid;
-  elle::Buffer buf = elle::serialization::json::serialize(req);
+  elle::Buffer buf = elle::serialization::json::serialize(req, false);
+  ELLE_TRACE("sending connect request to %s", server_ep);
   srv.send_to(reactor::network::Buffer(buf.contents(), buf.size()), server_ep);
 
   while (true)
@@ -45,7 +48,7 @@ static void run(int argc, char** argv)
     if (ep.port() == 7890)
     { // rdv packet
       Reply reply;
-      reply = elle::serialization::json::deserialize<Reply>(buf);
+      reply = elle::serialization::json::deserialize<Reply>(buf, false);
       switch (reply.command)
       {
       case Command::ping:
@@ -53,17 +56,23 @@ static void run(int argc, char** argv)
         break;
       case Command::connect:
       case Command::connect_requested:
+        
         if (reply.target_endpoint)
         {
+          ELLE_TRACE("got connect ep=%s async=%s",
+                     *reply.target_endpoint, reply.command == Command::connect_requested);
           remote = *reply.target_endpoint;
           sock = &srv;
           srv.send_to(reactor::network::Buffer("RDV PING"), remote);
         }
+        else
+          ELLE_TRACE("got connect without endpoint");
         break;
       }
     }
     else if (buf == "RDV PING")
     {
+      ELLE_TRACE("Got ping packet");
     }
     else
     { // chat packet

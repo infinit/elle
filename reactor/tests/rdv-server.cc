@@ -30,13 +30,14 @@ static void run(int argc, char** argv)
                                    source);
     buf.size(sz);
     elle::IOStream ios(buf.istreambuf());
-    elle::serialization::json::SerializerIn sin(ios);
+    elle::serialization::json::SerializerIn sin(ios, false);
     Request req;
     sin.serialize_forward(req);
     peers[req.id] = source;
     Reply reply;
     reply.id = req.id;
     reply.source_endpoint = source;
+    ELLE_TRACE("Got %s packet from %s", (int)req.command, source);
     switch(req.command)
     {
     case Command::ping:
@@ -51,6 +52,7 @@ static void run(int argc, char** argv)
         auto peer = peers.find(*req.target);
         if (peer != peers.end())
         {
+          ELLE_TRACE("Found peer at %s", peer->second);
           reply.target_endpoint = peer->second;
           Reply other;
           other.command = Command::connect_requested;
@@ -61,7 +63,7 @@ static void run(int argc, char** argv)
           elle::Buffer b;
           {
             elle::IOStream ios(b.ostreambuf());
-            elle::serialization::json::SerializerOut sout(ios);
+            elle::serialization::json::SerializerOut sout(ios, false);
             sout.serialize_forward(other);
           }
           srv.send_to(reactor::network::Buffer(b.contents(), b.size()), peer->second);
@@ -75,7 +77,7 @@ static void run(int argc, char** argv)
     elle::Buffer b;
     {
       elle::IOStream ios(b.ostreambuf());
-      elle::serialization::json::SerializerOut sout(ios);
+      elle::serialization::json::SerializerOut sout(ios, false);
       sout.serialize_forward(reply);
     }
     srv.send_to(reactor::network::Buffer(b.contents(), b.size()), source);
