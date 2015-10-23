@@ -8,6 +8,7 @@
 # include <reactor/network/fwd.hh>
 
 # include <elle/assert.hh>
+# include <elle/Buffer.hh>
 
 namespace reactor
 {
@@ -34,6 +35,11 @@ namespace reactor
         Buffer(const Buffer& other)
           : _data(other._data)
           , _size(other._size)
+        {}
+
+        Buffer(const elle::Buffer& data)
+          : _data(data.mutable_contents())
+          , _size(data.size())
         {}
 
         ~Buffer()

@@ -4,57 +4,68 @@
 #include <elle/serialization/json.hh>
 
 
-using Endpoint = boost::asio::ip::udp::endpoint;
-
-enum class Command
+namespace reactor
 {
-  ping,
-  pong,
-  connect, // ask for a connect or reply to a connect
-  connect_requested, // async connect request from other peer
-};
-
-struct Request
-{
-  Request() {}
-  Request(elle::serialization::SerializerIn& sin)
+  namespace network
   {
-    serialize(sin);
+    namespace rdv
+    {
+      using Endpoint = boost::asio::ip::udp::endpoint;
+      
+      const char* rdv_magic = "RDVMAGIK"; // 8 bytes
+      enum class Command
+      {
+        ping,
+        pong,
+        connect, // ask for a connect or reply to a connect
+        connect_requested, // async connect request from other peer
+        error, // error string in target_address
+      };
+      
+      struct Request
+      {
+        Request() {}
+        Request(elle::serialization::SerializerIn& sin)
+        {
+          serialize(sin);
+        }
+        void serialize(elle::serialization::Serializer& s)
+        {
+          s.serialize("id", id);
+          s.serialize("command", command, elle::serialization::as<int>());
+          s.serialize("target", target);
+        }
+        std::string id;
+        Command command;
+        boost::optional<std::string> target;
+        typedef elle::serialization_tag serialization_tag;
+      };
+      
+      struct Reply
+      {
+        Reply() {}
+        Reply(elle::serialization::SerializerIn& sin)
+        {
+          serialize(sin);
+        }
+        void serialize(elle::serialization::Serializer& s)
+        {
+          s.serialize("id", id);
+          s.serialize("command", command, elle::serialization::as<int>());
+          s.serialize("source_endpoint", source_endpoint);
+          s.serialize("target_endpoint", target_endpoint);
+          s.serialize("target_address", target_address);
+        }
+        std::string id;
+        Command command;
+        Endpoint source_endpoint;
+        boost::optional<Endpoint> target_endpoint;
+        boost::optional<std::string>  target_address;
+        typedef elle::serialization_tag serialization_tag;
+      };
+    }
   }
-  void serialize(elle::serialization::Serializer& s)
-  {
-    s.serialize("id", id);
-    s.serialize("command", command, elle::serialization::as<int>());
-    s.serialize("target", target);
-  }
-  std::string id;
-  Command command;
-  boost::optional<std::string> target;
-  typedef elle::serialization_tag serialization_tag;
-};
-
-struct Reply
-{
-  Reply() {}
-  Reply(elle::serialization::SerializerIn& sin)
-  {
-    serialize(sin);
-  }
-  void serialize(elle::serialization::Serializer& s)
-  {
-    s.serialize("id", id);
-    s.serialize("command", command, elle::serialization::as<int>());
-    s.serialize("source_endpoint", source_endpoint);
-    s.serialize("target_endpoint", target_endpoint);
-    s.serialize("target_address", target_address);
-  }
-  std::string id;
-  Command command;
-  Endpoint source_endpoint;
-  boost::optional<Endpoint> target_endpoint;
-  boost::optional<std::string>  target_address;
-  typedef elle::serialization_tag serialization_tag;
-};
+}
 
 namespace elle
 {
@@ -86,8 +97,8 @@ namespace elle
       }
     };
 
-    template<> struct Serialize<Endpoint>
-      : public SerializeEndpoint<Endpoint>
+    template<> struct  Serialize<reactor::network::rdv::Endpoint>
+      : public SerializeEndpoint<reactor::network::rdv::Endpoint>
     {};
    }
 }

@@ -9,8 +9,18 @@
 
 
 ELLE_LOG_COMPONENT("rdv-server");
-    
-std::unordered_map<std::string, Endpoint> peers;
+
+using namespace reactor::network;
+
+std::unordered_map<std::string, rdv::Endpoint> peers;
+reactor::network::UDPSocket* server = nullptr;
+
+static void send_with_magik(elle::Buffer const& b, rdv::Endpoint peer)
+{
+  elle::Buffer data(reactor::network::rdv::rdv_magic, 8);
+  data.append(b.contents(), b.size());
+  server->send_to(Buffer(data.contents(), data.size()), peer);
+}
 
 static void run(int argc, char** argv)
 {
@@ -18,6 +28,7 @@ static void run(int argc, char** argv)
   if (argc >1)
     port = std::stoi(argv[1]);
   reactor::network::UDPSocket srv;
+  server = &srv;
   srv.close();
   srv.bind(
     boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
@@ -25,62 +36,70 @@ static void run(int argc, char** argv)
   while (true)
   {
     buf.size(5000);
-    Endpoint source;
+    rdv::Endpoint source;
     int sz = srv.receive_from(reactor::network::Buffer(buf.mutable_contents(), buf.size()),
                                    source);
     buf.size(sz);
-    elle::IOStream ios(buf.istreambuf());
-    elle::serialization::json::SerializerIn sin(ios, false);
-    Request req;
-    sin.serialize_forward(req);
-    peers[req.id] = source;
-    Reply reply;
-    reply.id = req.id;
-    reply.source_endpoint = source;
-    ELLE_TRACE("Got %s packet from %s", (int)req.command, source);
-    switch(req.command)
+    if (memcmp(buf.contents(), rdv::rdv_magic, 8) == 0)
     {
-    case Command::ping:
-      reply.command = Command::pong;
-      break;
-    case Command::pong:
-      break;
-    case Command::connect:
+      memmove(buf.mutable_contents(), buf.contents(), buf.size()-8);
+      buf.size(sz - 8);
+    }
+    rdv::Request req;
+    try
+    {
+      req = elle::serialization::json::deserialize<rdv::Request>(buf, false);
+
+      peers[req.id] = source;
+      rdv::Reply reply;
+      reply.id = req.id;
+      reply.source_endpoint = source;
+      ELLE_TRACE("Got %s packet from %s", (int)req.command, source);
+      switch(req.command)
       {
-        reply.command = Command::connect;
-        reply.target_address = req.target;
-        auto peer = peers.find(*req.target);
-        if (peer != peers.end())
+      case rdv::Command::ping:
+        reply.command = rdv::Command::pong;
+        break;
+      case rdv::Command::pong:
+        break;
+      case rdv::Command::connect:
         {
-          ELLE_TRACE("Found peer at %s", peer->second);
-          reply.target_endpoint = peer->second;
-          Reply other;
-          other.command = Command::connect_requested;
-          other.id = *req.target;
-          other.source_endpoint = peer->second;
-          other.target_address = req.id;
-          other.target_endpoint = source;
-          elle::Buffer b;
+          reply.command = rdv::Command::connect;
+          reply.target_address = req.target;
+          auto peer = peers.find(*req.target);
+          if (peer != peers.end())
           {
-            elle::IOStream ios(b.ostreambuf());
-            elle::serialization::json::SerializerOut sout(ios, false);
-            sout.serialize_forward(other);
+            ELLE_TRACE("Found peer at %s", peer->second);
+            reply.target_endpoint = peer->second;
+            rdv::Reply other;
+            other.command = rdv::Command::connect_requested;
+            other.id = *req.target;
+            other.source_endpoint = peer->second;
+            other.target_address = req.id;
+            other.target_endpoint = source;
+            elle::Buffer b = elle::serialization::json::serialize(other, false);
+            send_with_magik(b, peer->second);
           }
-          srv.send_to(reactor::network::Buffer(b.contents(), b.size()), peer->second);
         }
+        break;
+      case rdv::Command::connect_requested:
+      case rdv::Command::error:
+        ELLE_LOG("unexpected connect_requested");
+        break;
       }
-      break;
-    case Command::connect_requested:
-      ELLE_LOG("unexpected connect_requested");
-      break;
+      elle::Buffer b = elle::serialization::json::serialize(reply, false);
+      send_with_magik(b, source);
     }
-    elle::Buffer b;
+    catch (elle::Error const& e)
     {
-      elle::IOStream ios(b.ostreambuf());
-      elle::serialization::json::SerializerOut sout(ios, false);
-      sout.serialize_forward(reply);
+      ELLE_LOG("Exception handling packet: %s", e);
+      rdv::Reply reply;
+      reply.id = req.id;
+      reply.command = rdv::Command::error;
+      reply.target_address = e.what();
+      elle::Buffer b = elle::serialization::json::serialize(reply, false);
+      send_with_magik(b, source);
     }
-    srv.send_to(reactor::network::Buffer(b.contents(), b.size()), source);
   }
 }
 
