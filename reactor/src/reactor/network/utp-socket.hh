@@ -4,7 +4,7 @@
 #include <deque>
 
 #include <boost/asio.hpp>
-#include <reactor/network/udp-socket.hh>
+#include <reactor/network/rdv-socket.hh>
 #include <reactor/Barrier.hh>
 
 typedef struct UTPSocket					utp_socket;
@@ -28,7 +28,9 @@ namespace reactor
       local_endpoint();
       std::unique_ptr<UTPSocket>
       accept();
-
+      void rdv_connect(std::string const& id,
+                       std::string const& address,
+                       DurationOpt timeout = DurationOpt());
       // For internal use
       void
       send_to(Buffer buf, EndPoint where);
@@ -41,7 +43,7 @@ namespace reactor
       _cleanup();
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
-      std::unique_ptr<UDPSocket> _socket;
+      std::unique_ptr<RDVSocket> _socket;
       std::vector<std::unique_ptr<UTPSocket>> _accept_queue;
       Barrier _accept_barrier;
       std::unique_ptr<Thread> _listener;
@@ -54,12 +56,17 @@ namespace reactor
     class UTPSocket: public elle::IOStream
     {
     public:
+      typedef boost::asio::ip::udp::endpoint EndPoint;
       UTPSocket(UTPServer& server);
       UTPSocket(UTPServer& server, utp_socket* socket);
       UTPSocket(UTPServer& server, std::string const& host, int port);
       ~UTPSocket();
       void
       connect(std::string const& host, int port);
+      void
+      connect(std::string const& id,
+              std::vector<EndPoint> const& endpoints = {},
+              DurationOpt timeout = DurationOpt());
       void
       write(elle::ConstWeakBuffer const& data, DurationOpt timeout = DurationOpt());
       elle::Buffer

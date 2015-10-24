@@ -15,7 +15,7 @@ rdv::Endpoint remote;
 static void send(std::string const& data)
 {
   while (rdvsocket == nullptr)
-    usleep(100000);
+    reactor::sleep(100_ms);
   rdvsocket->send_to(Buffer(data), remote);
 }
 

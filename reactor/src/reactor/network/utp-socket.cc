@@ -20,12 +20,12 @@ namespace reactor
   {
 static uint64 on_sendto(utp_callback_arguments* args)
 {
-  ELLE_DEBUG("on_sendto %s", args->len);
   struct sockaddr_in *sin = (struct sockaddr_in *) args->address;
   UTPServer::EndPoint ep(
     boost::asio::ip::address::from_string(inet_ntoa(sin->sin_addr)),
     ntohs(sin->sin_port));
   UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
+  ELLE_DEBUG("on_sendto %s %s", args->len, ep);
   server->send_to(Buffer(args->buf, args->len), ep);
   return 0;
 }
@@ -198,6 +198,7 @@ void UTPServer::_cleanup()
 
 void UTPServer::send_to(Buffer buf, EndPoint where)
 {
+  ELLE_DEBUG("server send_to %s %s", buf.size(), where);
   _send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()), where);
   if (!_sending)
   {
@@ -210,6 +211,7 @@ void UTPServer::send_to(Buffer buf, EndPoint where)
       _send_buffer.pop_front();
       if (_send_buffer.empty())
       {
+        ELLE_DEBUG("_sending = false");
         _sending = false;
       }
       else
@@ -227,6 +229,8 @@ void UTPServer::send_to(Buffer buf, EndPoint where)
       _send_buffer.front().second,
       send_cont);
   }
+  else
+    ELLE_DEBUG("already sending, data queued");
 }
 
 auto UTPServer::local_endpoint() -> EndPoint
@@ -304,6 +308,14 @@ UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket)
 void UTPSocket::close()
 {
   on_close();
+}
+
+void UTPSocket::connect(std::string const& id,
+                        std::vector<EndPoint> const& endpoints,
+                        DurationOpt timeout)
+{
+  EndPoint res = _server._socket->contact(id, endpoints, timeout);
+  connect(res.address().to_string(), res.port());
 }
 
 void UTPSocket::connect(std::string const& host, int port)
@@ -582,7 +594,7 @@ void UTPServer::_check_icmp()
 
 void UTPServer::listen(EndPoint const& ep)
 {
-  _socket = elle::make_unique<UDPSocket>();
+  _socket = elle::make_unique<RDVSocket>();
   _socket->close();
   _socket->bind(ep);
 #ifdef INFINIT_LINUX
@@ -644,4 +656,19 @@ void UTPServer::listen(EndPoint const& ep)
       }
   }));
 }
+
+void UTPServer::rdv_connect(std::string const& id, std::string const& address,
+  DurationOpt timeout)
+{
+  int port = 7890;
+  std::string host = address;
+  auto p = host.find_first_of(':');
+  if (p != host.npos)
+  {
+    port = std::stoi(host.substr(p+1));
+    host = host.substr(0, p);
+  }
+  _socket->rdv_connect(id, host, port, timeout);
+}
+
 }}
