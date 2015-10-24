@@ -6,6 +6,8 @@
 #include <reactor/network/exception.hh>
 #include <reactor/scheduler.hh>
 
+ELLE_LOG_COMPONENT("rdv.socket");
+
 namespace reactor
 {
   namespace network
@@ -13,7 +15,16 @@ namespace reactor
 
     using Endpoint = boost::asio::ip::udp::endpoint;
     RDVSocket::RDVSocket()
-    {}
+    : _breacher("breacher", [this] { this->loop_breach();})
+    , _keep_alive("keep-alive", [this]  {this->loop_keep_alive();})
+    {
+    }
+
+    RDVSocket::~RDVSocket()
+    {
+      _breacher.terminate_now();
+      _keep_alive.terminate_now();
+    }
 
     void RDVSocket::rdv_connect(std::string const& id,
                                 std::string const& rdv_host, int rdv_port,
@@ -23,9 +34,11 @@ namespace reactor
     }
     void RDVSocket::rdv_connect(std::string const& id, Endpoint ep, DurationOpt timeout)
     {
+      _id = id;
+      ELLE_TRACE_SCOPE("rdv_connect to %s as %s", ep, id);
       _server_reached.close();
       _server = ep;
-      rdv::Request req;
+      rdv::Message req;
       req.command = rdv::Command::ping;
       req.id = id;
       elle::Buffer buf = elle::serialization::json::serialize(req, false);
@@ -49,17 +62,21 @@ namespace reactor
         Size sz = UDPSocket::receive_from(buffer, endpoint, timeout);
         if (sz < 8)
           return sz;
-        if (endpoint == _server)
+        if (endpoint == _server && !_server_reached.opened())
+        {
+          ELLE_TRACE("message from server, open reached");
           _server_reached.open();
+        }
         if (!memcmp(rdv::rdv_magic, buffer.data(), 8))
         {
-          rdv::Reply repl = elle::serialization::json::deserialize<rdv::Reply>(
+          rdv::Message repl = elle::serialization::json::deserialize<rdv::Message>(
             elle::Buffer(buffer.data()+8, sz - 8), false);
+          ELLE_DEBUG("got message from %s, code %s", endpoint, (int)repl.command);
           switch (repl.command)
           {
           case rdv::Command::ping:
             {
-              rdv::Reply reply;
+              rdv::Message reply;
               reply.id = _id;
               reply.command = rdv::Command::pong;
               reply.source_endpoint = endpoint;
@@ -69,9 +86,11 @@ namespace reactor
             break;
           case rdv::Command::pong:
             {
+              ELLE_DEBUG("pong from %s", repl.id);
               auto it = _contacts.find(repl.id);
               if (it != _contacts.end())
               {
+                ELLE_TRACE("opening result barrier");
                 it->second.result = endpoint;
                 it->second.barrier->open();
               }
@@ -79,18 +98,18 @@ namespace reactor
             break;
           case rdv::Command::connect:
             {
-              auto it = _contacts.find(repl.id);
-              if (it != _contacts.end())
+              ELLE_TRACE("connect result tgt=%s, peer=%s", *repl.target_address,
+                !!repl.target_endpoint);
+              auto it = _contacts.find(*repl.target_address);
+              if (it != _contacts.end() && !it->second.barrier->opened())
               {
                 if (repl.target_endpoint)
                 {
+                  // set result but do not open barrier yet, so that
+                  // contact() can retry pinging it
+                  it->second.result = repl.target_endpoint;
                   // give it a ping
-                  rdv::Reply ping;
-                  ping.command = rdv::Command::ping;
-                  ping.id = _id;
-                  ping.source_endpoint = _self;
-                  elle::Buffer buf = elle::serialization::json::serialize(ping, false);
-                  send_with_magik(buf, endpoint);
+                  send_ping(*repl.target_endpoint);
                 }
                 else
                 { // nothing to do, contact() will resend periodically
@@ -99,13 +118,19 @@ namespace reactor
             }
             break;
           case rdv::Command::connect_requested:
-            { // send a packet to breach
-              rdv::Reply ping;
-              ping.command = rdv::Command::ping;
-              ping.id = _id;
-              ping.source_endpoint = _self;
-              elle::Buffer buf = elle::serialization::json::serialize(ping, false);
-              send_with_magik(buf, *repl.target_endpoint);
+            { // add to breach requests
+              ELLE_ASSERT(repl.target_endpoint);
+              ELLE_TRACE("connect_requested, id=%s, ep=%s",
+                repl.id, *repl.target_endpoint);
+              auto it = std::find_if(_breach_requests.begin(), _breach_requests.end(),
+                [&](std::pair<Endpoint, int>const& b) {
+                  return b.first == *repl.target_endpoint;
+                });
+              if (it != _breach_requests.end())
+                it->second += 5;
+              else
+                _breach_requests.push_back(
+                  std::make_pair(*repl.target_endpoint, 5));
             }
             break;
           }
@@ -120,32 +145,40 @@ namespace reactor
     {
       if (_contacts.find(id) != _contacts.end())
         throw elle::Error("contact already in progress");
-      ContactInfo& ci = _contacts[id];
-      ci.barrier.reset(new Barrier());
-      ci.barrier->close();
+      {
+        ContactInfo& ci = _contacts[id];
+        ci.barrier.reset(new Barrier());
+        ci.barrier->close();
+      }
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
         if (!endpoints.empty())
         { // try known endpoints
-          rdv::Reply ping;
-          ping.command = rdv::Command::ping;
-          ping.id = _id;
-          ping.source_endpoint = _self;
-          elle::Buffer buf = elle::serialization::json::serialize(ping, false);
           for (auto const& ep: endpoints)
-            send_with_magik(buf, ep);
+            send_ping(ep);
         }
         // try establishing link through rdv
-        rdv::Request req;
-        req.command = rdv::Command::connect;
-        req.id = _id;
-        req.target = id;
-        elle::Buffer buf = elle::serialization::json::serialize(req, false);
-        send_to(buf, _server);
-        if (reactor::wait(*ci.barrier, 500_ms))
+        auto const& c = _contacts.at(id);
+        if (!c.barrier->opened())
         {
-          auto res = _contacts[id].result;
+          if (c.result)
+          { // RDV gave us an enpoint, but we are not connected to it yet, ping it
+            send_ping(*c.result);
+          }
+          else
+          {
+            rdv::Message req;
+            req.command = rdv::Command::connect;
+            req.id = _id;
+            req.target_address = id;
+            elle::Buffer buf = elle::serialization::json::serialize(req, false);
+            send_to(buf, _server);
+          }
+        }
+        if (reactor::wait(*_contacts.at(id).barrier, 500_ms))
+        {
+          auto res = *_contacts[id].result;
           _contacts.erase(id);
           return res;
         }
@@ -161,6 +194,47 @@ namespace reactor
       data.append(reactor::network::rdv::rdv_magic, 8);
       data.append(b.contents(), b.size());
       send_to(Buffer(data.contents(), data.size()), peer);
+    }
+
+    void RDVSocket::send_ping(Endpoint target)
+    {
+      ELLE_DEBUG("send ping to %s", target);
+      rdv::Message ping;
+      ping.command = rdv::Command::ping;
+      ping.id = _id;
+      ping.source_endpoint = target;
+      elle::Buffer buf = elle::serialization::json::serialize(ping, false);
+      send_with_magik(buf, target);
+    }
+
+    void RDVSocket::loop_breach()
+    {
+      while (true)
+      {
+        for (int i=0; i<signed(_breach_requests.size()); ++i)
+        {
+          auto& b = _breach_requests[i];
+          send_ping(b.first);
+          if (!--b.second)
+          {
+            std::swap(_breach_requests[i],
+                      _breach_requests[_breach_requests.size()-1]);
+            _breach_requests.pop_back();
+            --i;
+          }
+        }
+        reactor::sleep(500_ms);
+      }
+    }
+
+    void RDVSocket::loop_keep_alive()
+    {
+      reactor::wait(_server_reached);
+      while (true)
+      {
+        send_ping(_server);
+        reactor::sleep(30_sec);
+      }
     }
   }
 }

@@ -21,30 +21,11 @@ namespace reactor
         connect_requested, // async connect request from other peer
         error, // error string in target_address
       };
-      
-      struct Request
+
+      struct Message
       {
-        Request() {}
-        Request(elle::serialization::SerializerIn& sin)
-        {
-          serialize(sin);
-        }
-        void serialize(elle::serialization::Serializer& s)
-        {
-          s.serialize("id", id);
-          s.serialize("command", command, elle::serialization::as<int>());
-          s.serialize("target", target);
-        }
-        std::string id;
-        Command command;
-        boost::optional<std::string> target;
-        typedef elle::serialization_tag serialization_tag;
-      };
-      
-      struct Reply
-      {
-        Reply() {}
-        Reply(elle::serialization::SerializerIn& sin)
+        Message() {}
+        Message(elle::serialization::SerializerIn& sin)
         {
           serialize(sin);
         }
@@ -58,7 +39,7 @@ namespace reactor
         }
         std::string id;
         Command command;
-        Endpoint source_endpoint;
+        boost::optional<Endpoint> source_endpoint;
         boost::optional<Endpoint> target_endpoint;
         boost::optional<std::string>  target_address;
         typedef elle::serialization_tag serialization_tag;
