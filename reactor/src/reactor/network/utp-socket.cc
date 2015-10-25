@@ -239,6 +239,11 @@ auto UTPServer::local_endpoint() -> EndPoint
   return EndPoint(ep.address(), ep.port());
 }
 
+bool UTPServer::rdv_connected() const
+{
+  return _socket->rdv_connected();
+}
+
 UTPSocket::UTPSocket(UTPServer& server)
 : UTPSocket(server, utp_create_socket(server.ctx))
 {

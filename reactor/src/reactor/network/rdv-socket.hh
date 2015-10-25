@@ -35,6 +35,7 @@ namespace reactor
       Endpoint contact(std::string const& id,
         std::vector<Endpoint> const& endpoints = {},
         DurationOpt timeout = DurationOpt());
+      bool rdv_connected() const;
       private:
         void send_ping(Endpoint target);
         void loop_breach();

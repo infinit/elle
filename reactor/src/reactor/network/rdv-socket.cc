@@ -236,5 +236,10 @@ namespace reactor
         reactor::sleep(30_sec);
       }
     }
+
+    bool RDVSocket::rdv_connected() const
+    {
+      return _server_reached.opened();
+    }
   }
 }

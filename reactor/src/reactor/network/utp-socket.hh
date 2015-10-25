@@ -36,6 +36,7 @@ namespace reactor
       send_to(Buffer buf, EndPoint where);
       void
       on_accept(utp_socket* s);
+      bool rdv_connected() const;
     private:
       void
       _check_icmp();
