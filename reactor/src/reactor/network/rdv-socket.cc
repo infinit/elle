@@ -160,7 +160,7 @@ namespace reactor
         }
         // try establishing link through rdv
         auto const& c = _contacts.at(id);
-        if (!c.barrier->opened())
+        if (!c.barrier->opened() && _server_reached.opened())
         {
           if (c.result)
           { // RDV gave us an enpoint, but we are not connected to it yet, ping it
