@@ -57,7 +57,6 @@ namespace infinit
       static_assert(std::is_same<T, elle::ConstWeakBuffer>::value == false,
                     "this call should never have occured");
 
-      // XXX[this is should be used] T value(clear.buffer().reader());
       T value;
       archive.reader() >> value;
 
