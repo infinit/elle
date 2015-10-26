@@ -4,6 +4,8 @@
 # include <mutex>
 # include <unordered_map>
 
+# include <boost/signals2.hpp>
+
 # include <reactor/fwd.hh>
 
 namespace reactor
@@ -14,6 +16,7 @@ namespace reactor
   public:
     typedef LocalStorage<T> Self;
     LocalStorage();
+    ~LocalStorage();
     operator T&();
     T& Get(T const& def);
     T& Get();
@@ -22,6 +25,8 @@ namespace reactor
     void _Clean(Thread* t);
     typedef std::unordered_map<void*, T> Content;
     Content _content;
+    typedef std::unordered_map<void*, boost::signals2::connection> Links;
+    Links _links;
     std::mutex _mutex;
   };
 }

@@ -32,9 +32,12 @@ namespace reactor
     if (it == this->_content.end())
       {
         if (current != nullptr)
-          current->destructed().connect(
+        {
+          auto link = current->destructed().connect(
               boost::bind(&Self::_Clean, this, current)
           );
+          this->_links[current] = link;
+        }
         return this->_content[key];
       }
     else
@@ -55,9 +58,12 @@ namespace reactor
       {
         this->_content[key] = def;
         if (current != nullptr)
-          current->destructed().connect(
+        {
+          auto link = current->destructed().connect(
               boost::bind(&Self::_Clean, this, current)
           );
+          this->_links[current] = link;
+        }
         return this->_content[key];
       }
     else
@@ -69,9 +75,19 @@ namespace reactor
   LocalStorage<T>::_Clean(Thread* current)
   {
     std::lock_guard<std::mutex> lock(_mutex);
+    this->_links.erase(current);
     typename Content::iterator it = this->_content.find(current);
     ELLE_ASSERT_NEQ(it, this->_content.end());
     this->_content.erase(it);
+  }
+  template <typename T>
+  LocalStorage<T>::~LocalStorage()
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    for (auto const& i: this->_links)
+    {
+      i.second.disconnect();
+    }
   }
 }
 
