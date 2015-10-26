@@ -272,10 +272,7 @@ namespace athena
     void
     Server<T, Version, ClientId>::serialize(elle::serialization::Serializer& s)
     {
-      if (s.out())
-      {
-        s.serialize("state", this->_state);
-      }
+      s.serialize("state", this->_state);
     }
 
     /*----------.
