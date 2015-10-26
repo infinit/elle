@@ -118,7 +118,7 @@ namespace infinit
       | Operators |
       `----------*/
     public:
-      elle::Boolean
+      bool
       operator ==(SecretKey const&) const;
       SecretKey&
       operator =(SecretKey const&) = delete;

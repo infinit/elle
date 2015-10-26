@@ -40,7 +40,7 @@ namespace infinit
       }
 
       template <typename K>
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
              K const& key,
@@ -75,7 +75,7 @@ namespace infinit
       }
 
       template <typename K>
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
              K const& key,

@@ -125,16 +125,16 @@ namespace infinit
       };
 
       template <>
-      struct Generator<elle::Boolean>
+      struct Generator<bool>
       {
         static
-        elle::Boolean
+        bool
         generate()
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
           ELLE_TRACE_FUNCTION("");
 
-          int32_t value = _generate<elle::Boolean>();
+          int32_t value = _generate<bool>();
 
           if (value > 0)
             return (true);

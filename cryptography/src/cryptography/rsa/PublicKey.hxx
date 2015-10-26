@@ -46,7 +46,7 @@ namespace infinit
       }
 
       template <typename T>
-      elle::Boolean
+      bool
       PublicKey::verify(Signature const& signature,
                         T const& value) const
       {

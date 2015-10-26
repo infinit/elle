@@ -73,7 +73,7 @@ namespace infinit
         | Operators |
         `----------*/
       public:
-        elle::Boolean
+        bool
         operator ==(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 

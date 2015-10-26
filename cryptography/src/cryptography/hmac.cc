@@ -34,7 +34,7 @@ namespace infinit
         return (sign(_plain, key, oneway));
       }
 
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
              elle::String const& key,
@@ -80,7 +80,7 @@ namespace infinit
         return (digest);
       }
 
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
              elle::String const& key,

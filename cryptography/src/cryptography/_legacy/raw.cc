@@ -133,7 +133,7 @@ namespace infinit
           return (_apply(digest, context, function));
         }
 
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& digest,
                ::EVP_PKEY_CTX* context,

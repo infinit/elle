@@ -56,7 +56,7 @@ namespace infinit
         | Operators |
         `----------*/
       public:
-        elle::Boolean
+        bool
         operator ==(Seed const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(Seed);
 

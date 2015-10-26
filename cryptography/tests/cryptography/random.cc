@@ -10,7 +10,7 @@ static
 void
 test_operate_boolean()
 {
-  infinit::cryptography::random::generate<elle::Boolean>();
+  infinit::cryptography::random::generate<bool>();
 }
 
 static

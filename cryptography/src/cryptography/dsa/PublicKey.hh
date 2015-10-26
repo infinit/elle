@@ -68,11 +68,11 @@ namespace infinit
         _check() const;
       public:
         /// Return true if the given signature matches with the plain text.
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& plain) const;
         /// Verify a signature against a stream-based plain text.
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                std::istream& plain) const;
         /// Return the public key's size in bytes.
@@ -86,7 +86,7 @@ namespace infinit
         | Operators |
         `----------*/
       public:
-        elle::Boolean
+        bool
         operator ==(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 

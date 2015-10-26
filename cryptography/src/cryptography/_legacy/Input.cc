@@ -18,7 +18,7 @@ namespace infinit
     | Operators |
     `----------*/
 
-    elle::Boolean
+    bool
     Input::operator ==(Input const& other) const
     {
       if (this == &other)
@@ -27,7 +27,7 @@ namespace infinit
       return (this->_buffer == other._buffer);
     }
 
-    elle::Boolean
+    bool
     Input::operator <(Input const& other) const
     {
       if (this == &other)
@@ -36,7 +36,7 @@ namespace infinit
       return (this->_buffer < other._buffer);
     }
 
-    elle::Boolean
+    bool
     Input::operator <=(Input const& other) const
     {
       if (this == &other)
@@ -45,19 +45,19 @@ namespace infinit
       return (this->_buffer <= other._buffer);
     }
 
-    elle::Boolean
+    bool
     Input::operator ==(Output const& other) const
     {
       return (this->_buffer == elle::ConstWeakBuffer(other.buffer()));
     }
 
-    elle::Boolean
+    bool
     Input::operator <(Output const& other) const
     {
       return (this->_buffer < elle::ConstWeakBuffer(other.buffer()));
     }
 
-    elle::Boolean
+    bool
     Input::operator <=(Output const& other) const
     {
       return (this->_buffer <= elle::ConstWeakBuffer(other.buffer()));

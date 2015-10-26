@@ -35,11 +35,11 @@ namespace infinit
       | Operators |
       `----------*/
     public:
-      elle::Boolean
+      bool
       operator ==(Input const& other) const;
-      elle::Boolean
+      bool
       operator <(Input const& other) const;
-      elle::Boolean
+      bool
       operator <=(Input const& other) const;
       ELLE_OPERATOR_NEQ(Input);
       ELLE_OPERATOR_GT(Input);
@@ -49,11 +49,11 @@ namespace infinit
       Input&
       operator =(Input&& other) = default;
 
-      elle::Boolean
+      bool
       operator ==(Output const& other) const;
-      elle::Boolean
+      bool
       operator <(Output const& other) const;
-      elle::Boolean
+      bool
       operator <=(Output const& other) const;
       ELLE_OPERATOR_NEQ(Output);
       ELLE_OPERATOR_GT(Output);

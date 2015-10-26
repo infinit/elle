@@ -67,7 +67,7 @@ namespace infinit
         | Operators |
         `----------*/
       public:
-        elle::Boolean
+        bool
         operator ==(KeyPair const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(KeyPair);
 

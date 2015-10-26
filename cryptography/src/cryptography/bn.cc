@@ -57,14 +57,14 @@ operator <<(std::ostream& stream,
   return (stream);
 }
 
-elle::Boolean
+bool
 operator ==(::BIGNUM const& a,
             ::BIGNUM const& b)
 {
   return (::BN_cmp(&a, &b) == 0);
 }
 
-elle::Boolean
+bool
 operator <(::BIGNUM const& a,
            ::BIGNUM const& b)
 {

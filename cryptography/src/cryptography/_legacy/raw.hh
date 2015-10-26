@@ -39,7 +39,7 @@ namespace infinit
                              const unsigned char*,
                              size_t));
         /// Return true if the signature is valid according to the given digest.
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& digest,
                ::EVP_PKEY_CTX* context,

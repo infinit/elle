@@ -188,7 +188,7 @@ namespace infinit
     | Operators |
     `----------*/
 
-    elle::Boolean
+    bool
     SecretKey::operator ==(SecretKey const& other) const
     {
       return (this->_password == other._password);

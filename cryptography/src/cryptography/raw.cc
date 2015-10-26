@@ -204,7 +204,7 @@ namespace infinit
           return (signature);
         }
 
-        elle::Boolean
+        bool
         verify(::EVP_PKEY* key,
                ::EVP_MD const* oneway,
                elle::ConstWeakBuffer const& signature,
@@ -1007,7 +1007,7 @@ namespace infinit
           return (digest);
         }
 
-        elle::Boolean
+        bool
         verify(::EVP_PKEY* key,
                ::EVP_MD const* oneway,
                elle::ConstWeakBuffer const& digest,

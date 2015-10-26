@@ -282,7 +282,7 @@ namespace infinit
                                          prolog));
       }
 
-      elle::Boolean
+      bool
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         elle::ConstWeakBuffer const& plain,
                         Padding const padding,
@@ -299,7 +299,7 @@ namespace infinit
       }
 #endif
 
-      elle::Boolean
+      bool
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         std::istream& plain,
                         Padding const padding,
@@ -396,7 +396,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       PublicKey::operator ==(PublicKey const& other) const
       {
         if (this == &other)
@@ -466,7 +466,7 @@ namespace infinit
       `-------*/
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      elle::Boolean
+      bool
       PublicKey::operator <(PublicKey const& other) const
       {
         if (this == &other)

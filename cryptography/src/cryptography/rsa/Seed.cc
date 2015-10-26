@@ -54,7 +54,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       Seed::operator ==(Seed const& other) const
       {
         if (this == &other)

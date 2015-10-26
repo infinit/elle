@@ -34,7 +34,7 @@ public:
   | Operators |
   `----------*/
 public:
-  elle::Boolean
+  bool
   operator ==(Sample const& other) const
   {
     return ((this->_salt == other._salt) &&

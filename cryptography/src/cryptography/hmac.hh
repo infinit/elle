@@ -27,7 +27,7 @@ namespace infinit
            elle::String const& key,
            Oneway const oneway);
       /// Verify a buffer-based HMAC with string-based key.
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
              elle::String const& key,
@@ -40,7 +40,7 @@ namespace infinit
            Oneway const oneway);
       /// Verify a buffer-based HMAC with an asymmetric key.
       template <typename K>
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
              K const& key,
@@ -52,7 +52,7 @@ namespace infinit
            elle::String const& key,
            Oneway const oneway);
       /// Verify a stream-based HMAC with a string-based key.
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
              elle::String const& key,
@@ -65,7 +65,7 @@ namespace infinit
            Oneway const oneway);
       /// Verify a stream-based HMAC with an asymmetric key.
       template <typename K>
-      elle::Boolean
+      bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
              K const& key,

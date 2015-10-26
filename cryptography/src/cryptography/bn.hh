@@ -18,10 +18,10 @@ std::ostream&
 operator <<(std::ostream& stream,
             ::BIGNUM const& bignum);
 
-elle::Boolean
+bool
 operator ==(::BIGNUM const& a,
             ::BIGNUM const& b);
-elle::Boolean
+bool
 operator <(::BIGNUM const& a,
            ::BIGNUM const& b);
 

@@ -56,7 +56,7 @@ namespace infinit
              std::function<void (::EVP_MD_CTX*,
                                  ::EVP_PKEY_CTX*)> epilog = nullptr);
         /// Return true if the signature is valid according to the given plain.
-        elle::Boolean
+        bool
         verify(::EVP_PKEY* key,
                ::EVP_MD const* oneway,
                elle::ConstWeakBuffer const& signature,
@@ -177,7 +177,7 @@ namespace infinit
              std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
              std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
         /// Verify a HMAC digest.
-        elle::Boolean
+        bool
         verify(::EVP_PKEY* key,
                ::EVP_MD const* oneway,
                elle::ConstWeakBuffer const& digest,

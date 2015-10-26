@@ -192,7 +192,7 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.dsa->priv_key, nullptr);
       }
 
-      elle::Boolean
+      bool
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         elle::ConstWeakBuffer const& plain) const
       {
@@ -205,7 +205,7 @@ namespace infinit
         return (this->verify(signature, _plain));
       }
 
-      elle::Boolean
+      bool
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         std::istream& plain) const
       {
@@ -237,7 +237,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       PublicKey::operator ==(PublicKey const& other) const
       {
         if (this == &other)

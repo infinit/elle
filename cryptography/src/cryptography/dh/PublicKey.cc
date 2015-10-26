@@ -171,7 +171,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       PublicKey::operator ==(PublicKey const& other) const
       {
         if (this == &other)

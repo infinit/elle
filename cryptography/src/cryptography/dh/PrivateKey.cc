@@ -154,7 +154,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       PrivateKey::operator ==(PrivateKey const& other) const
       {
         if (this == &other)

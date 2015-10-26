@@ -140,7 +140,7 @@ namespace infinit
       | Operators |
       `----------*/
 
-      elle::Boolean
+      bool
       KeyPair::operator ==(KeyPair const& other) const
       {
         if (this == &other)

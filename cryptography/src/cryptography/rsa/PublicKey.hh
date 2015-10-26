@@ -120,14 +120,14 @@ namespace infinit
         encrypt(elle::ConstWeakBuffer const& plain,
                 Padding const padding = defaults::encryption_padding) const;
         /// Verify the given signature against the original plain text.
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& plain,
                Padding const padding = defaults::signature_padding,
                Oneway const oneway = defaults::oneway) const;
 # endif
         /// Return true if the given signature matches the stream-based plain.
-        elle::Boolean
+        bool
         verify(elle::ConstWeakBuffer const& signature,
                std::istream& plain,
                Padding const padding = defaults::signature_padding,
@@ -157,7 +157,7 @@ namespace infinit
         | Operators |
         `----------*/
       public:
-        elle::Boolean
+        bool
         operator ==(PublicKey const& other) const;
         ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
 
@@ -197,11 +197,11 @@ namespace infinit
         Code
         encrypt(T const& value) const;
         template <typename T = Plain>
-        elle::Boolean
+        bool
         verify(Signature const& signature,
                T const& value) const;
         // operators
-        elle::Boolean
+        bool
         operator <(PublicKey const& other) const;
         // serializable
         ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
