@@ -84,7 +84,7 @@ namespace infinit
 
       ::EVP_PKEY*
       import_private(boost::filesystem::path const& path,
-                     elle::String const& passphrase)
+                     std::string const& passphrase)
       {
         ELLE_TRACE_FUNCTION(path, passphrase);
 
@@ -160,7 +160,7 @@ namespace infinit
       void
       export_private(::EVP_PKEY* key,
                      boost::filesystem::path const& path,
-                     elle::String const& passphrase,
+                     std::string const& passphrase,
                      ::EVP_CIPHER const* cipher)
       {
         ELLE_TRACE_FUNCTION(key, path, passphrase, cipher);

@@ -67,8 +67,8 @@ static
 void
 test_operate()
 {
-  elle::String data =
-    infinit::cryptography::random::generate<elle::String>(123);
+  std::string data =
+    infinit::cryptography::random::generate<std::string>(123);
 
   elle::Buffer digest1 =
     infinit::cryptography::hash(data,
@@ -86,7 +86,7 @@ test_operate()
 
 template <infinit::cryptography::Oneway O>
 void
-test_serialize_x(elle::String const& R)
+test_serialize_x(std::string const& R)
 {
   std::stringstream stream(R);
   typename elle::serialization::json::SerializerIn input(stream);

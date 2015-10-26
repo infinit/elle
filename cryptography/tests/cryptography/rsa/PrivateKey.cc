@@ -11,7 +11,7 @@
 | Represent |
 `----------*/
 
-static elle::String const _input("chiche, donne nous tout!");
+static std::string const _input("chiche, donne nous tout!");
 
 static
 void
@@ -112,7 +112,7 @@ void
 test_operate()
 {
   // Construct a private key from [representation 1]
-  elle::String representation(R"JSON({"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA=="})JSON");
+  std::string representation(R"JSON({"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA=="})JSON");
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
@@ -123,7 +123,7 @@ test_operate()
 
   // Decrypt plain from [representation 2]
   {
-    elle::String archive(R"JSON({"code":"Lt2x0nEDpsdo7sUU4dI4tGjvfkp0pD8yGDfhTJ/UmtmPMXpisDKCjTBjCvHZqLf7JXH2mkzVI94AAVU9VRJksyvhNMcMr4yXSwCkpnhq2UjILhZsyP43CStDg2Ib624CA2ojSjiKzbrD5OvFyGnJ72pEmUMFuPAjC0+I6hEBMnNh4WKkbec3p0gOqSNAWEGIzK11VIOVq26b4n2s1vcXDhNGy8qpSWdvEtaq42EPjvE="})JSON");
+    std::string archive(R"JSON({"code":"Lt2x0nEDpsdo7sUU4dI4tGjvfkp0pD8yGDfhTJ/UmtmPMXpisDKCjTBjCvHZqLf7JXH2mkzVI94AAVU9VRJksyvhNMcMr4yXSwCkpnhq2UjILhZsyP43CStDg2Ib624CA2ojSjiKzbrD5OvFyGnJ72pEmUMFuPAjC0+I6hEBMnNh4WKkbec3p0gOqSNAWEGIzK11VIOVq26b4n2s1vcXDhNGy8qpSWdvEtaq42EPjvE="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
@@ -181,7 +181,7 @@ test_serialize()
   // deserialize the public keys, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA=="})JSON"
       };

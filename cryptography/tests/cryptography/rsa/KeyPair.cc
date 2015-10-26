@@ -121,18 +121,18 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 {
   // Public/private seal/open.
   {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(9128);
+    std::string input =
+      infinit::cryptography::random::generate<std::string>(9128);
     elle::Buffer code = keypair.K().seal(input);
     elle::Buffer plain = keypair.k().open(code);
-    elle::String const output(plain.string());
+    std::string const output(plain.string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
 
   // Public/private encryption/decryption.
   {
-    elle::String input = "a short string";
+    std::string input = "a short string";
     elle::Buffer code = keypair.K().encrypt(input);
     elle::Buffer plain = keypair.k().decrypt(code);
 
@@ -141,8 +141,8 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 
   // Sign/verify a plain text.
   {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(1493);
+    std::string input =
+      infinit::cryptography::random::generate<std::string>(1493);
     elle::Buffer signature = keypair.k().sign(input);
     auto result =
       keypair.K().verify(signature, input);
@@ -188,7 +188,7 @@ test_serialize()
 
   // Deserialize a wrong key pair (since missing elements).
   {
-    elle::String representation(R"JSON({"private_key":"wrong key name", "public_key":"wrong key name again"}})JSON");
+    std::string representation(R"JSON({"private_key":"wrong key name", "public_key":"wrong key name again"}})JSON");
     std::stringstream stream(representation);
     typename elle::serialization::json::SerializerIn input(stream);
 
@@ -200,7 +200,7 @@ test_serialize()
   // deserialize the key pairs, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"private key":{".version":{"major":0,"minor":0,"subminor":0},"rsa":"MIICXQIBAAKBgQDeiXQVuqQS02dwAXV3woFxqfl5NgXrE9TIv3IkDjL2DHCBU4VeXDvNVsgthJ0Cqcz5TOkO+bF5LANpeLAJ3+okB7mXmWsRJxwtFxYVZM1O85HRuqWJ1/0iucZhxI6ONHV0BDeAHqlQiSXfBOzORQc6nvcpYYtI2IOyK0CdpbZ4iwIDAQABAoGANewIfNtktksTXUh9Ni+jPe95y60Tcgq0HJCHD8WBA62v9SZPwrWGqBLHHoBrqyGJ0T6Zmk9WeY34pa3gugPPr8eFByugh2JMDSOG3erSQ6Wyc3Bzl2/ybVKONYlosiGLYrOXiuz0yvrruOlOt1QhDpjE0MyY7vpT1C2Y9D74vIECQQD50iRaO1yRoN6J1ZBCDaM5tP/I2P/kyTYUNu4kEqKxBEhzH5eevuXk8Pic29Dtvt7hnJ7uYS3Vbc32zfCwVirzAkEA5AqM5pc3srOstGS8kH82PMuFKYdJBb56sDUsUGyEC6vpKkUzGWQppYRpOij3ntpvLy0/f0JsNXdqLcmy5GayCQJAb+/F1BxnFOWE8TOdCMu9iFzeg2sf9a5mqdYXDFjBRxnJMLRGJp4YumVysC4aRnzQtzyLRfqLI+eoct7B6vEhGwJBANf2re4Ls/IHez30USg/cawtylTEDIHmHOcX1Hnt6zfqfQ1NL9GSLGbWeZldBvVoRPfW0FXDIBualfH7HPJ115ECQQCFYFKJb19q5kVElAEJaj/vj5RwAdNQKqfI0gWFIY3WGFz6WAEerAjQxzODlb55J+dZAUuqGd3y27WSViaY+AjM"},"public key":{".version":{"major":0,"minor":0,"subminor":0},"rsa":"MIGJAoGBAN6JdBW6pBLTZ3ABdXfCgXGp+Xk2BesT1Mi/ciQOMvYMcIFThV5cO81WyC2EnQKpzPlM6Q75sXksA2l4sAnf6iQHuZeZaxEnHC0XFhVkzU7zkdG6pYnX/SK5xmHEjo40dXQEN4AeqVCJJd8E7M5FBzqe9ylhi0jYg7IrQJ2ltniLAgMBAAE="}})JSON"
       };

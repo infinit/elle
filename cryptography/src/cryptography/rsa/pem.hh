@@ -25,12 +25,12 @@ namespace infinit
         /// Import an RSA private key from a path.
         PrivateKey
         import_k(boost::filesystem::path const& path,
-                 elle::String const& passphrase =
+                 std::string const& passphrase =
                    cryptography::pem::defaults::passphrase);
         /// Import an RSA key pair from a path.
         KeyPair
         import_keypair(boost::filesystem::path const& path,
-                       elle::String const& passphrase =
+                       std::string const& passphrase =
                          cryptography::pem::defaults::passphrase);
         /// Export an RSA public key.
         void
@@ -41,7 +41,7 @@ namespace infinit
         void
         export_k(PrivateKey const& k,
                  boost::filesystem::path const& path,
-                 elle::String const& passphrase =
+                 std::string const& passphrase =
                    cryptography::pem::defaults::passphrase,
                  Cipher const& cipher =
                    cryptography::pem::defaults::cipher,
@@ -51,7 +51,7 @@ namespace infinit
         void
         export_keypair(KeyPair const& keypair,
                        boost::filesystem::path const& path,
-                       elle::String const& passphrase =
+                       std::string const& passphrase =
                          cryptography::pem::defaults::passphrase,
                        Cipher const& cipher =
                          cryptography::pem::defaults::cipher,

@@ -94,13 +94,13 @@ _test_operate_rsa(infinit::cryptography::rsa::KeyPair const& pair)
 {
   // Public/private encryption/decryption with plain.
   {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(9128);
+    std::string input =
+      infinit::cryptography::random::generate<std::string>(9128);
     infinit::cryptography::Code code =
       pair.K().encrypt(
         infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
     infinit::cryptography::Clear clear = pair.k().decrypt(code);
-    elle::String const output(clear.buffer().string());
+    std::string const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -108,7 +108,7 @@ _test_operate_rsa(infinit::cryptography::rsa::KeyPair const& pair)
   // Public/private encryption/decryption with complex type.
   {
     Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(14920));
+      42, infinit::cryptography::random::generate<std::string>(14920));
     infinit::cryptography::Code code = pair.K().encrypt(input);
     Sample const output = pair.k().decrypt<Sample>(code);
 
@@ -117,8 +117,8 @@ _test_operate_rsa(infinit::cryptography::rsa::KeyPair const& pair)
 
   // Sign a plain text.
   {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(1493);
+    std::string input =
+      infinit::cryptography::random::generate<std::string>(1493);
     infinit::cryptography::Signature signature =
       pair.k().sign(
         infinit::cryptography::Plain{elle::ConstWeakBuffer{input}});
@@ -133,7 +133,7 @@ _test_operate_rsa(infinit::cryptography::rsa::KeyPair const& pair)
   // Sign a complex type.
   {
     Sample const input(
-      84, infinit::cryptography::random::generate<elle::String>(10329));
+      84, infinit::cryptography::random::generate<std::string>(10329));
     infinit::cryptography::Signature signature = pair.k().sign(input);
     auto result = pair.K().verify(signature, input);
 
@@ -170,7 +170,7 @@ test_serialize_rsa()
   {
     infinit::cryptography::rsa::KeyPair pair1 = test_generate_rsa(512);
 
-    elle::String archive;
+    std::string archive;
     elle::serialize::to_string(archive) << pair1;
 
     auto extractor = elle::serialize::from_string(archive);
@@ -185,7 +185,7 @@ test_serialize_rsa()
   // deserialize the key pairs, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       "AAAAAAAAAAAAAIAAAADTJND1LjjrbBkBAU0jaMPk4rrD5952vb4FKQYLiD2DrBnK/jnQQU97VV9UvSllSBfvL8wfDuy6o/eV4z6bIzEjR/a4whwu02xsHAyiW5vrNTLWXgKO8VaLjk1YAAgbQUleh4L3RyiDJiZDyWORZEzqIORT/u686fc8/sz7pxBj5wAAAwAAAAEAAQAAAAAAAAAAgAAAANMk0PUuOOtsGQEBTSNow+TiusPn3na9vgUpBguIPYOsGcr+OdBBT3tVX1S9KWVIF+8vzB8O7Lqj95XjPpsjMSNH9rjCHC7TbGwcDKJbm+s1MtZeAo7xVouOTVgACBtBSV6HgvdHKIMmJkPJY5FkTOog5FP+7rzp9zz+zPunEGPnAAADAAAAAQABAACAAAAAUL5Vgk1Iyw6tiSrcOtxHfXIPBffXpQTuc766ZxKUo5Pe0TfjF/bB1GJTcG5eNDMbpAZdQstMUBuABLvAJ0eP9EII9g55Ve8pmM7Hs+1oRNy7xZSiNuo2QG4othiE5poNNuoXEIY7Cq15Gr3fzXJahX83BcpvvtMphOmubtWsXCEAAEAAAADyhUC02fZZ3AaQps+V/HDwjBmPbY0rltI5QGc30FmUItaZRVrL95FuFvD97tkt9ZvDrizt3NPmh627Qfma8VtpAABAAAAA3uEdRQQ73G0oBydIKwMBrxojvwmU0YZU1gzV91vITmF1sb/nPUY46PMRRJNuiuDBlpecViqtmHwVAJ+Iwd5qzwAAQAAAAFvAIfzJwTO51BoBoeNif+/hcQIcNh5Zjurt/J7XCizLCVkvLeygmrqFn2LSbAPBOc7MJF9Q/jHm/skrap091pEAAEAAAACSs3fxkpzYNN0RAFEnRn5YRAtdVjAnTZUPozk+7KHGva2bRuYs1cjlxAAMtEIhlVi3B6n2qXbEFIA6fcelXAHPAABAAAAAfWLqKlb/jubacUHv8r9HD2lDFSH2z+UA8SpxilOm3F0sEMArPImHeaivWeKWThedAEUv6z0FiFryrx1Lzeg5vg==",
       // format 1

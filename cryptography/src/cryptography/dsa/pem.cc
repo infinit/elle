@@ -43,7 +43,7 @@ namespace infinit
 
         PrivateKey
         import_k(boost::filesystem::path const& path,
-                 elle::String const& passphrase,
+                 std::string const& passphrase,
                  Oneway const digest_algorithm)
         {
           ELLE_TRACE_FUNCTION(path, passphrase,
@@ -64,7 +64,7 @@ namespace infinit
 
         KeyPair
         import_keypair(boost::filesystem::path const& path,
-                       elle::String const& passphrase,
+                       std::string const& passphrase,
                        Oneway const digest_algorithm)
         {
           ELLE_TRACE_FUNCTION(path, passphrase,
@@ -91,7 +91,7 @@ namespace infinit
         void
         export_k(PrivateKey const& k,
                  boost::filesystem::path const& path,
-                 elle::String const& passphrase,
+                 std::string const& passphrase,
                  Cipher const& cipher,
                  Mode const& mode)
         {
@@ -106,7 +106,7 @@ namespace infinit
         void
         export_keypair(KeyPair const& keypair,
                        boost::filesystem::path const& path,
-                       elle::String const& passphrase,
+                       std::string const& passphrase,
                        Cipher const& cipher,
                        Mode const& mode)
         {

@@ -177,14 +177,14 @@ class Object
 {
 public:
   Object(infinit::cryptography::rsa::KeyPair const& owner_keypair,
-         elle::String const& content):
+         std::string const& content):
     Object(owner_keypair.K(),
            content)
   {}
 
 private:
   Object(infinit::cryptography::rsa::PublicKey const& owner_K,
-         elle::String const& content):
+         std::string const& content):
     Object(owner_K,
            infinit::cryptography::secretkey::generate(
              256,
@@ -194,7 +194,7 @@ private:
 
   Object(infinit::cryptography::rsa::PublicKey const& owner_K,
          infinit::cryptography::SecretKey const& key,
-         elle::String const& content):
+         std::string const& content):
     Object(owner_K,
            elle::serialization::serialize<elle::serialization::Json>(key),
            key.encipher(content))
@@ -210,7 +210,7 @@ private:
 
   Object(Object const& object,
          infinit::cryptography::SecretKey const& key,
-         elle::String const& content):
+         std::string const& content):
     Object(object,
            elle::serialization::serialize<elle::serialization::Json>(key),
            key.encipher(content))
@@ -228,7 +228,7 @@ private:
 public:
   Object
   write(infinit::cryptography::rsa::PrivateKey const& owner_k,
-        elle::String const& content)
+        std::string const& content)
   {
     infinit::cryptography::SecretKey __key = this->key(owner_k);
     infinit::cryptography::SecretKey key =
@@ -244,7 +244,7 @@ public:
     return (object);
   }
 
-  elle::String
+  std::string
   read(infinit::cryptography::SecretKey const& key) const
   {
     return (key.decipher(this->_content).string());

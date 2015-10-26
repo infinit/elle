@@ -119,13 +119,13 @@ test_operate_idea()
 
   // Encrypt/decrypt with plain.
   {
-    elle::String const input = "Chier du foutre!";
+    std::string const input = "Chier du foutre!";
     infinit::cryptography::Code code =
       key.encrypt(
         infinit::cryptography::Plain{
           elle::ConstWeakBuffer{input}});
     infinit::cryptography::Clear clear = key.decrypt(code);
-    elle::String const output(clear.buffer().string());
+    std::string const output(clear.buffer().string());
 
     BOOST_CHECK_EQUAL(input, output);
   }
@@ -133,7 +133,7 @@ test_operate_idea()
   // Encrypt/decrypt with complex type.
   {
     Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(32893));
+      42, infinit::cryptography::random::generate<std::string>(32893));
     infinit::cryptography::Code code = key.encrypt(input);
     Sample const output = key.decrypt<Sample>(code);
 
@@ -156,13 +156,13 @@ test_operate()
 template <infinit::cryptography::Cipher A,
           uint32_t L>
 void
-test_serialize_x(elle::String const& R)
+test_serialize_x(std::string const& R)
 {
   // Serialize/deserialize.
   {
     infinit::cryptography::SecretKey key1 = test_generate_x<A, L>();
 
-    elle::String archive;
+    std::string archive;
     elle::serialize::to_string(archive) << key1;
 
     auto extractor = elle::serialize::from_string(archive);
@@ -174,13 +174,13 @@ test_serialize_x(elle::String const& R)
   // Deserialize from the hard-coded [representation R]: useful for detecting
   // changes in formats.
   {
-    elle::String archive1 = R;
+    std::string archive1 = R;
     auto extractor =
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive1);
     infinit::cryptography::SecretKey key(extractor);
 
-    elle::String archive2;
+    std::string archive2;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << key;
 

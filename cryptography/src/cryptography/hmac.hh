@@ -24,13 +24,13 @@ namespace infinit
       /// Sign a buffer with a string-based key.
       elle::Buffer
       sign(elle::ConstWeakBuffer const& plain,
-           elle::String const& key,
+           std::string const& key,
            Oneway const oneway);
       /// Verify a buffer-based HMAC with string-based key.
       bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
-             elle::String const& key,
+             std::string const& key,
              Oneway const oneway);
       /// Sign a buffer with an asymmetric key.
       template <typename K>
@@ -49,13 +49,13 @@ namespace infinit
       /// Sign a stream with a string-based key.
       elle::Buffer
       sign(std::istream& plain,
-           elle::String const& key,
+           std::string const& key,
            Oneway const oneway);
       /// Verify a stream-based HMAC with a string-based key.
       bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
-             elle::String const& key,
+             std::string const& key,
              Oneway const oneway);
       /// Sign a stream with an asymmetric key.
       template <typename K>

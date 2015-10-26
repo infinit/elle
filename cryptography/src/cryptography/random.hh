@@ -45,7 +45,7 @@ namespace infinit
       ///   generate<uint64_t>();
       ///   generate<uint64_t>(uint64_t minimum,
       ///                      uint64_t maximum);
-      ///   generate<elle::String>(uint32_t length);
+      ///   generate<std::string>(uint32_t length);
       ///   generate<elle::Buffer>(uint32_t size);
       template <typename T,
                 typename... A>

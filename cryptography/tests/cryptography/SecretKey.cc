@@ -11,7 +11,7 @@
 | Represent |
 `----------*/
 
-static elle::String const _message("I don't know what we're yelling about!");
+static std::string const _message("I don't know what we're yelling about!");
 
 template <uint32_t N,
           uint32_t L,
@@ -222,14 +222,14 @@ _test_operate_idea()
   infinit::cryptography::SecretKey key =
     test_generate_x<512>();
 
-  elle::String const input = "Chie du foutre!";
+  std::string const input = "Chie du foutre!";
 
   elle::Buffer code = key.encipher(input,
                                    infinit::cryptography::Cipher::idea);
   elle::Buffer plain = key.decipher(code,
                                     infinit::cryptography::Cipher::idea);
 
-  elle::String const output(plain.string());
+  std::string const output(plain.string());
 
   BOOST_CHECK_EQUAL(input, output);
 }
@@ -248,8 +248,8 @@ test_operate()
 
 static
 void
-test_serialize_x(elle::String const& R1,
-                 elle::String const& R2,
+test_serialize_x(std::string const& R1,
+                 std::string const& R2,
                  infinit::cryptography::Cipher const cipher,
                  infinit::cryptography::Mode const mode,
                  infinit::cryptography::Oneway const oneway)

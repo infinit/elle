@@ -133,7 +133,7 @@ test_serialize()
   // deserialize the public keys, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"digest algorithm":4,"dsa":"MIIBuwIBAAKBgQDTqOWZ7rSD+2LLZAae5TnEH576/xpwKNWU0KJ1bw1vrFO6i1zlxstE0JLl++tkWFuklbU5an3oGqOhfw0ClryxBWOfMVVPQ3+MWEvn/heU9q+1odOaTrm985KZp6aqmHRqXnLGWnVN5yuO/JwwzS/Gz6mtPMIq00/C2RjvVkeCYwIVAJ9b7Z4C5+cy9dxkRHIObd2jqpX5AoGBAIhF3LRrhlkD37PGzirFmVxkg/mz1r1FNHDNqzUFJpTey8JdUEvyKecx+H2yI6YLM37BjzujWWn75J37ZQ3EuA1mmQ08zdUJKEyiKh297Nibx/rnYVmhFol1OAl5LVn18IYICALVfpTvusiNlPaJ5ai2SjALEBHfPfyGjqPDfAqGAoGAet+hjm07E01WdO76jF1SHAIcbU2WYkjNqovmiHuxd6AZcjQU8r7EFCRVG6Chge89pXVqr7vqfci5VY44LUh4gA1opIx3dIggL0W66DJUvrDmGMvshwRL0vw+/nHtIRvbrmfad443Ghdl5wqLC3Mg0C6DmkKkY6vd2asfjiqQjjQCFC8088Cg7wtkCCZ6MfHlFd679Vyy"})JSON"
     };

@@ -23,7 +23,7 @@ namespace infinit
 #if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Buffer
       sign(elle::ConstWeakBuffer const& plain,
-           elle::String const& key,
+           std::string const& key,
            Oneway const oneway)
       {
         ELLE_TRACE_FUNCTION(key, oneway);
@@ -37,7 +37,7 @@ namespace infinit
       bool
       verify(elle::ConstWeakBuffer const& digest,
              elle::ConstWeakBuffer const& plain,
-             elle::String const& key,
+             std::string const& key,
              Oneway const oneway)
       {
         ELLE_TRACE_FUNCTION(key, oneway);
@@ -52,7 +52,7 @@ namespace infinit
 
       elle::Buffer
       sign(std::istream& plain,
-           elle::String const& key,
+           std::string const& key,
            Oneway const oneway)
       {
         ELLE_TRACE_FUNCTION(key, oneway);
@@ -83,7 +83,7 @@ namespace infinit
       bool
       verify(elle::ConstWeakBuffer const& digest,
              std::istream& plain,
-             elle::String const& key,
+             std::string const& key,
              Oneway const oneway)
       {
         ELLE_TRACE_FUNCTION(key, oneway);

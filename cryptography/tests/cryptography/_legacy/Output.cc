@@ -68,7 +68,7 @@ test_serialize()
     infinit::cryptography::Output output1(
       infinit::cryptography::random::generate<elle::Buffer>(128));
 
-    elle::String archive;
+    std::string archive;
     elle::serialize::to_string(archive) << output1;
 
     auto extractor = elle::serialize::from_string(archive);
@@ -80,14 +80,14 @@ test_serialize()
   // Deserialize from the hard-coded string [representation 1]: useful
   // for detecting changes in formats.
   {
-    elle::String archive1("AAAAAIAAAAAAAAAAYVS/sqT6qs+lo+MdcB1jaZY8gwFx6a10mr1+MjW8to4nvK1hjewkupo66RFvioIZ59hITeuy4CvfQNJSqvdVJ4xLEyWKED9oeuji8jxe1nGOt068HlVyFJ9RkZT4cN6WC8RJXekhokXjI4yr89ad0Vw8KaB5mw5U79CUKaxBVnU=");
+    std::string archive1("AAAAAIAAAAAAAAAAYVS/sqT6qs+lo+MdcB1jaZY8gwFx6a10mr1+MjW8to4nvK1hjewkupo66RFvioIZ59hITeuy4CvfQNJSqvdVJ4xLEyWKED9oeuji8jxe1nGOt068HlVyFJ9RkZT4cN6WC8RJXekhokXjI4yr89ad0Vw8KaB5mw5U79CUKaxBVnU=");
 
     auto extractor =
       elle::serialize::from_string<
         elle::serialize::InputBase64Archive>(archive1);
     infinit::cryptography::Output output(extractor);
 
-    elle::String archive2;
+    std::string archive2;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << output;
 

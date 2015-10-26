@@ -20,7 +20,7 @@ namespace infinit
       /// representations.
       template <typename T>
       void
-      formats(std::vector<elle::String> const& archives,
+      formats(std::vector<std::string> const& archives,
               std::function<void (T const&)> operate = nullptr)
       {
         std::vector<std::unique_ptr<T>> objects(archives.size());

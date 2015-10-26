@@ -43,10 +43,10 @@ static
 void
 test_operate_string()
 {
-  elle::String value1 =
-    infinit::cryptography::random::generate<elle::String>(262);
-  elle::String value2 =
-    infinit::cryptography::random::generate<elle::String>(262);
+  std::string value1 =
+    infinit::cryptography::random::generate<std::string>(262);
+  std::string value2 =
+    infinit::cryptography::random::generate<std::string>(262);
 
   // With very high probability.
   BOOST_CHECK_NE(value1, value2);

@@ -16,7 +16,7 @@ static std::string const _message(
 template <uint32_t N,
           infinit::cryptography::Oneway O>
 void
-test_represent_n(elle::String const& key)
+test_represent_n(std::string const& key)
 {
   // N)
   {
@@ -66,8 +66,8 @@ static
 void
 test_operate()
 {
-  elle::String key =
-    infinit::cryptography::random::generate<elle::String>(32);
+  std::string key =
+    infinit::cryptography::random::generate<std::string>(32);
 
   // HMAC sign/verify a random content.
   {
@@ -109,8 +109,8 @@ test_operate()
 
 template <infinit::cryptography::Oneway O>
 void
-test_serialize_x(elle::String const& key,
-                 elle::String const& R)
+test_serialize_x(std::string const& key,
+                 std::string const& R)
 {
   std::stringstream stream(R);
   typename elle::serialization::json::SerializerIn input(stream);

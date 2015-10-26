@@ -16,7 +16,7 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
-      Error(elle::String const& message);
+      Error(std::string const& message);
       Error(elle::serialization::SerializerIn& input);
     };
   }

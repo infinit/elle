@@ -22,7 +22,7 @@ public:
   }
 
   Sample(double const& salt,
-        elle::String const& string):
+        std::string const& string):
     _salt(salt),
     _string(string)
   {
@@ -54,7 +54,7 @@ public:
   `-----------*/
 private:
   ELLE_ATTRIBUTE_R(double, salt);
-  ELLE_ATTRIBUTE_R(elle::String, string);
+  ELLE_ATTRIBUTE_R(std::string, string);
 };
 
 /*-------------.

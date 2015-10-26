@@ -40,7 +40,7 @@ test_scenario()
     infinit::cryptography::rsa::keypair::generate(2048);
 
   // Create the object and store some information in it.
-  elle::String content0("When I'm sad, I stop being sad "
+  std::string content0("When I'm sad, I stop being sad "
                         "and be awesome instead");
   Object object0(owner, content0);
   infinit::cryptography::SecretKey key0 = object0.key(owner.k());
@@ -118,7 +118,7 @@ test_scenario()
   infinit::cryptography::rsa::Seed seedA2 = groupA2.seed(managerA.k());
 
   // Update the object to version 1.
-  elle::String content1("If you don't have ability, "
+  std::string content1("If you don't have ability, "
                         "you wind up playing in a rock band");
   Object object1 = object0.write(owner.k(), content1);
   infinit::cryptography::SecretKey key1 = object1.key(owner.k());
@@ -164,7 +164,7 @@ test_scenario()
   }
 
   // Update the object to version 2.
-  elle::String content2("Have no fear of perfection, you'll "
+  std::string content2("Have no fear of perfection, you'll "
                         "never reach it");
   Object object2 = object1.write(owner.k(), content2);
   infinit::cryptography::SecretKey key2 = object2.key(owner.k());

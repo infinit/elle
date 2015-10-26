@@ -26,7 +26,7 @@
 static
 void
 _fill(boost::filesystem::path const& path,
-      elle::String const& content = "")
+      std::string const& content = "")
 {
   std::ofstream stream(path.generic_string(),
                        std::ofstream::out);
@@ -44,7 +44,7 @@ _fill(boost::filesystem::path const& path,
 //
 // This will generate 'output' and 'output.pub' files.
 
-elle::String private_key(
+std::string private_key(
 R"PRIVATEKEY(-----BEGIN DSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: AES-128-CBC,50268ADB8A0C8236CDC33EB5377899F3
@@ -65,7 +65,7 @@ static
 void
 test_operate_import()
 {
-  elle::String const passphrase = "Sancho";
+  std::string const passphrase = "Sancho";
 
   // 1) Try to load the DSA private key with an incorrect
   // passphrase 2) Load DSA private key in its encrypted form.
@@ -85,7 +85,7 @@ test_operate_import()
   infinit::cryptography::dsa::PublicKey K(k);
 
   // Sign and verify data to make sure the keys are valid.
-  elle::String const data("N'est pas Sancho qui veut!");
+  std::string const data("N'est pas Sancho qui veut!");
 
   elle::Buffer signature = k.sign(data);
   BOOST_CHECK_EQUAL(K.verify(signature, data), true);
@@ -100,7 +100,7 @@ test_operate_export()
 
   elle::filesystem::TemporaryFile path("path");
 
-  elle::String const passphrase = "Dave";
+  std::string const passphrase = "Dave";
 
   // Export keypair.
   infinit::cryptography::dsa::pem::export_keypair(

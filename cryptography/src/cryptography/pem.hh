@@ -27,7 +27,7 @@ namespace infinit
       {
         static Cipher const cipher = Cipher::aes256;
         static Mode const mode = Mode::cbc;
-        static elle::String const passphrase;
+        static std::string const passphrase;
       };
 
       /*----------.
@@ -41,7 +41,7 @@ namespace infinit
       /// key with the provided passphrase.
       ::EVP_PKEY*
       import_private(boost::filesystem::path const& path,
-                     elle::String const& passphrase);
+                     std::string const& passphrase);
       /// Export an EVP public key.
       void
       export_public(::EVP_PKEY* key,
@@ -55,7 +55,7 @@ namespace infinit
       void
       export_private(::EVP_PKEY* key,
                      boost::filesystem::path const& path,
-                     elle::String const& passphrase,
+                     std::string const& passphrase,
                      ::EVP_CIPHER const* cipher);
     }
   }

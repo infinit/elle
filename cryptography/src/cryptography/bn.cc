@@ -40,7 +40,7 @@ operator <<(std::ostream& stream,
   }
   else
   {
-    elle::String string(hexadecimal);
+    std::string string(hexadecimal);
 
     // Otherwise chop it and display the begining and the end only.
     stream << string.substr(0, length / 2)

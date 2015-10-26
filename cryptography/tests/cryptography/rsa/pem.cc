@@ -29,7 +29,7 @@
 static
 void
 _fill(boost::filesystem::path const& path,
-      elle::String const& content = "")
+      std::string const& content = "")
 {
   std::ofstream stream(path.generic_string(),
                        std::ofstream::out);
@@ -47,7 +47,7 @@ _fill(boost::filesystem::path const& path,
 //
 // This will generate 'output' and 'output.pub' files.
 
-elle::String private_key(
+std::string private_key(
 R"PRIVATEKEY(-----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: AES-128-CBC,BB839C89C20C17C5F7089433A3AB728C
@@ -83,7 +83,7 @@ static
 void
 test_operate_import()
 {
-  elle::String const passphrase = "Sancho";
+  std::string const passphrase = "Sancho";
 
   // 1) Try to load the RSA private key with an incorrect
   // passphrase 2) Load RSA private key in its encrypted form.
@@ -103,7 +103,7 @@ test_operate_import()
   infinit::cryptography::rsa::PublicKey K(k);
 
   // Encrypt and decrypt data to make sure the keys are valid.
-  elle::String const data("N'est pas Sancho qui veut!");
+  std::string const data("N'est pas Sancho qui veut!");
 
   elle::Buffer code = K.seal(data);
   elle::Buffer plain = k.open(code);
@@ -120,7 +120,7 @@ test_operate_export()
 
   elle::filesystem::TemporaryFile path("path");
 
-  elle::String const passphrase = "Dave";
+  std::string const passphrase = "Dave";
 
   // Export keypair.
   infinit::cryptography::rsa::pem::export_keypair(

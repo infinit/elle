@@ -19,7 +19,7 @@ test_serialize()
   // Deserialize from the hard-coded [representation 1]: useful for detecting
   // changes in formats.
   {
-    elle::String archive1("AACAAAAA8DGAteEiGfhKAnwaPaIUxWWrkOxUQs7RMq2emyWnc2aPpjWY+PwcSFP1nsz4FU7hFAK3l/dh9p1uw50vp6mzhXZdXAAAqkiaHRqrJ2ckfj7mPF9ikKk88dmSmqZGsnFtVhuD2/bOGbdgGPzSRnJ8vNj77zzxRAMF88vwjliHR2s=");
+    std::string archive1("AACAAAAA8DGAteEiGfhKAnwaPaIUxWWrkOxUQs7RMq2emyWnc2aPpjWY+PwcSFP1nsz4FU7hFAK3l/dh9p1uw50vp6mzhXZdXAAAqkiaHRqrJ2ckfj7mPF9ikKk88dmSmqZGsnFtVhuD2/bOGbdgGPzSRnJ8vNj77zzxRAMF88vwjliHR2s=");
 
     ::BIGNUM bn;
     ::BN_init(&bn);
@@ -27,7 +27,7 @@ test_serialize()
     elle::serialize::from_string<
       elle::serialize::InputBase64Archive>(archive1) >> bn;
 
-    elle::String archive2;
+    std::string archive2;
     elle::serialize::to_string<
       elle::serialize::OutputBase64Archive>(archive2) << bn;
 
@@ -38,7 +38,7 @@ test_serialize()
 
   // Deserialize an invalid representation.
   {
-    elle::String archive("EWDqiqwd9032eajnoIAijfwofqaaaodQEJFAOW");
+    std::string archive("EWDqiqwd9032eajnoIAijfwofqaaaodQEJFAOW");
 
     ::BIGNUM bn;
     ::BN_init(&bn);

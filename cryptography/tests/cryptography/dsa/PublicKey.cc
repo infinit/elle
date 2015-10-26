@@ -10,7 +10,7 @@
 | Represent |
 `----------*/
 
-static elle::String const _input("my balls are ok!");
+static std::string const _input("my balls are ok!");
 
 static
 void
@@ -111,7 +111,7 @@ void
 test_operate()
 {
   // Construct a public key from [representation 1]
-  elle::String representation(R"JSON({"digest algorithm":4,"dsa":"MIIDJQKCAQEAq+VVghywf5oodq7USwkzijdlzH53p+OUGfORgcYuiv5mTnDMgCpzQgXZtRGI5y1tmtQcnd1Kc4rokKl5kerQcu8z9h0EAefwIVM98USosBeziVowC25jOlkuM4F1QzDyMOmdN9Bc1EBKXaqxHGtRBKSpKhi5m/UV7xX3DgrHOcrqnyXw0THJ+YjamzKvI11oS22hJHksl9Gryxs6t78YJV9AaPKbgtcAM8vK0qmKAHXi0uZhLtwZelv2ukzGbJwSlJ2Zx7fHS1+fNvu+/iThBYTzkuInmZeaPpoVYFa7BOppqqL91DPE/HO3lW8l4mPw5l2X7c8TStCMDtPB3qb2kwKCAQEAto+zhq1jMPrUTW0SPaJGvcSeyDRCbu5FNdQIOxBEQSDI1XxZ/XboY9Q4+uaGxl3AfU90P8E5wDtlLv19hCc2cdoNHZ/kZh+Zi9Yhi1HM9RGN0SmAAvIYI5smoDej0sqKHp2e4yz0tzxD/stemxYQwIK54pXKg7o/pc1mOeFtlPbZEMPwU8t1raDOFvE595uBqspYG68Bj77icTgNHszaCTBCpXzcMLWj08HnmU5leFZ8aaEtPxeKEukYhRYpxBP7U3NKBVRgZ5dTv+9/2rLzgj73DUz8xTQRsWnXEPRbct6pN0WZMEjyigysonGsilKWsVfiExOYyLuxrsVbO6MPGwIVAPR6HJ/qfhGuFWeKv0rE4dCTljBFAoIBAFHiseJEDGA9mi+E/ShFXv0BEb5FiDwrP10n+fT/InBLDpxW17r0mf25p5oXoD7tLXlQbyZoM2qzApGtQLKiQCgpphsMny/BfalbxD0LtwrRt1zAVaZnTQAU6pFFqDJnZUdm7CRvf0SgCfAW0SYGOrodxkdFmL5mqKZLGxjsrTqcLQAn5uHaJOSBNAyewwc5/fsYvfWOyH9CgUqqJ3XrLN0lEguRn9DFl3b2OuwCBDKI8Hty8sO24u8HgJx/n/Ng1xzlIh+MaN62PaW5KjaYqZvKah+2LG9O3s9rlg2WFYKz9uUCToj6d5lzF9RtxKYJVjk8MWsi3AM0lemzedaRXx0="})JSON");
+  std::string representation(R"JSON({"digest algorithm":4,"dsa":"MIIDJQKCAQEAq+VVghywf5oodq7USwkzijdlzH53p+OUGfORgcYuiv5mTnDMgCpzQgXZtRGI5y1tmtQcnd1Kc4rokKl5kerQcu8z9h0EAefwIVM98USosBeziVowC25jOlkuM4F1QzDyMOmdN9Bc1EBKXaqxHGtRBKSpKhi5m/UV7xX3DgrHOcrqnyXw0THJ+YjamzKvI11oS22hJHksl9Gryxs6t78YJV9AaPKbgtcAM8vK0qmKAHXi0uZhLtwZelv2ukzGbJwSlJ2Zx7fHS1+fNvu+/iThBYTzkuInmZeaPpoVYFa7BOppqqL91DPE/HO3lW8l4mPw5l2X7c8TStCMDtPB3qb2kwKCAQEAto+zhq1jMPrUTW0SPaJGvcSeyDRCbu5FNdQIOxBEQSDI1XxZ/XboY9Q4+uaGxl3AfU90P8E5wDtlLv19hCc2cdoNHZ/kZh+Zi9Yhi1HM9RGN0SmAAvIYI5smoDej0sqKHp2e4yz0tzxD/stemxYQwIK54pXKg7o/pc1mOeFtlPbZEMPwU8t1raDOFvE595uBqspYG68Bj77icTgNHszaCTBCpXzcMLWj08HnmU5leFZ8aaEtPxeKEukYhRYpxBP7U3NKBVRgZ5dTv+9/2rLzgj73DUz8xTQRsWnXEPRbct6pN0WZMEjyigysonGsilKWsVfiExOYyLuxrsVbO6MPGwIVAPR6HJ/qfhGuFWeKv0rE4dCTljBFAoIBAFHiseJEDGA9mi+E/ShFXv0BEb5FiDwrP10n+fT/InBLDpxW17r0mf25p5oXoD7tLXlQbyZoM2qzApGtQLKiQCgpphsMny/BfalbxD0LtwrRt1zAVaZnTQAU6pFFqDJnZUdm7CRvf0SgCfAW0SYGOrodxkdFmL5mqKZLGxjsrTqcLQAn5uHaJOSBNAyewwc5/fsYvfWOyH9CgUqqJ3XrLN0lEguRn9DFl3b2OuwCBDKI8Hty8sO24u8HgJx/n/Ng1xzlIh+MaN62PaW5KjaYqZvKah+2LG9O3s9rlg2WFYKz9uUCToj6d5lzF9RtxKYJVjk8MWsi3AM0lemzedaRXx0="})JSON");
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
@@ -122,7 +122,7 @@ test_operate()
 
   // Verify plain from [representation 2].
   {
-    elle::String archive(R"JSON({"signature":"MC0CFFOtibJJmEq4lq0DxGv/zRMPNEC+AhUA0GzN1zjs1NCmT78Cm8bp9c8zeYg="})JSON");
+    std::string archive(R"JSON({"signature":"MC0CFFOtibJJmEq4lq0DxGv/zRMPNEC+AhUA0GzN1zjs1NCmT78Cm8bp9c8zeYg="})JSON");
 
     std::stringstream stream(archive);
     typename elle::serialization::json::SerializerIn input(stream);
@@ -180,7 +180,7 @@ test_serialize()
   // deserialize the public keys, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"digest algorithm":4,"dsa":"MIIDJQKCAQEAq+VVghywf5oodq7USwkzijdlzH53p+OUGfORgcYuiv5mTnDMgCpzQgXZtRGI5y1tmtQcnd1Kc4rokKl5kerQcu8z9h0EAefwIVM98USosBeziVowC25jOlkuM4F1QzDyMOmdN9Bc1EBKXaqxHGtRBKSpKhi5m/UV7xX3DgrHOcrqnyXw0THJ+YjamzKvI11oS22hJHksl9Gryxs6t78YJV9AaPKbgtcAM8vK0qmKAHXi0uZhLtwZelv2ukzGbJwSlJ2Zx7fHS1+fNvu+/iThBYTzkuInmZeaPpoVYFa7BOppqqL91DPE/HO3lW8l4mPw5l2X7c8TStCMDtPB3qb2kwKCAQEAto+zhq1jMPrUTW0SPaJGvcSeyDRCbu5FNdQIOxBEQSDI1XxZ/XboY9Q4+uaGxl3AfU90P8E5wDtlLv19hCc2cdoNHZ/kZh+Zi9Yhi1HM9RGN0SmAAvIYI5smoDej0sqKHp2e4yz0tzxD/stemxYQwIK54pXKg7o/pc1mOeFtlPbZEMPwU8t1raDOFvE595uBqspYG68Bj77icTgNHszaCTBCpXzcMLWj08HnmU5leFZ8aaEtPxeKEukYhRYpxBP7U3NKBVRgZ5dTv+9/2rLzgj73DUz8xTQRsWnXEPRbct6pN0WZMEjyigysonGsilKWsVfiExOYyLuxrsVbO6MPGwIVAPR6HJ/qfhGuFWeKv0rE4dCTljBFAoIBAFHiseJEDGA9mi+E/ShFXv0BEb5FiDwrP10n+fT/InBLDpxW17r0mf25p5oXoD7tLXlQbyZoM2qzApGtQLKiQCgpphsMny/BfalbxD0LtwrRt1zAVaZnTQAU6pFFqDJnZUdm7CRvf0SgCfAW0SYGOrodxkdFmL5mqKZLGxjsrTqcLQAn5uHaJOSBNAyewwc5/fsYvfWOyH9CgUqqJ3XrLN0lEguRn9DFl3b2OuwCBDKI8Hty8sO24u8HgJx/n/Ng1xzlIh+MaN62PaW5KjaYqZvKah+2LG9O3s9rlg2WFYKz9uUCToj6d5lzF9RtxKYJVjk8MWsi3AM0lemzedaRXx0="})JSON"
     };

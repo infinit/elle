@@ -41,7 +41,7 @@ namespace infinit
 
         // The static password used to construct this dummy secret key
         // whose only purpose is to calculate the serialization overhead.
-        elle::String password =
+        std::string password =
           "An equation means nothing to me unless it expresses "
           "a thought of God. Srinivasa Ramanujan";
         uint32_t length_original = password.length() * 8;

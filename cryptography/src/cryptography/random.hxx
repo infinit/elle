@@ -170,10 +170,10 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint64_t);
 
       template <>
-      struct Generator<elle::String>
+      struct Generator<std::string>
       {
         static
-        elle::String
+        std::string
         generate(uint32_t const length)
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
@@ -182,11 +182,11 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          static elle::String const alphabet =
+          static std::string const alphabet =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "0123456789@#$%^&*)_+=-\';:|.,<>?`~";
 
-          elle::String value;
+          std::string value;
 
           value.resize(length);
 

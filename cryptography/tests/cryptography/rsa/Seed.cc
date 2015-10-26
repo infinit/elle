@@ -214,7 +214,7 @@ test_serialize()
   // deserialize the public keys, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"buffer":"ACbE7eMBCuKT36AzLzoYlxtCKbUH6bMTgBhNu+3jLByV8QqqnsTTclL6El/d6dfnaqcPalMiHSzoQITIIoputmGyVIttWr5ZuP5tdHRZhq3kFcsZ4YP6+x2P5TJi+R67t50bO8nJdw3nRIbtrYHIEYhvDHYwtxBjQaYltwgbU3A=","length":1024})JSON"
     };

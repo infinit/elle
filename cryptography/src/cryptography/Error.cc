@@ -10,7 +10,7 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Error::Error(elle::String const& message):
+    Error::Error(std::string const& message):
       elle::Error(message)
     {}
 

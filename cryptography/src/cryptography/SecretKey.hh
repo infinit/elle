@@ -53,7 +53,7 @@ namespace infinit
     public:
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
-      SecretKey(elle::String const& password
+      SecretKey(std::string const& password
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
                 , Cipher const cipher = defaults::cipher
                 , Mode const mode = defaults::mode

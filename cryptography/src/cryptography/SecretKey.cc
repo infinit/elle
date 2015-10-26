@@ -21,7 +21,7 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    SecretKey::SecretKey(elle::String const& password
+    SecretKey::SecretKey(std::string const& password
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
                          , Cipher const cipher
                          , Mode const mode

@@ -124,7 +124,7 @@ test_operate()
 template <infinit::cryptography::Oneway O>
 void
 test_serialize_x(infinit::cryptography::rsa::PublicKey const& K,
-                 elle::String const& R)
+                 std::string const& R)
 {
   std::stringstream stream(R);
   typename elle::serialization::json::SerializerIn input(stream);
@@ -145,7 +145,7 @@ void
 test_serialize()
 {
   // Extract the key pair from [representation 0].
-  elle::String representation0(R"JSON({"rsa":"MIIBCgKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQAB","version":{"major":0,"minor":0,"subminor":0}})JSON");
+  std::string representation0(R"JSON({"rsa":"MIIBCgKCAQEAwYfl1tHiNwZ1Yk3lQ01KPJls62H6w3OoA68Cv2JpWTFRIcjqDH75No2rjs5yIQnZgQ02mlJ9b0Y39ofq7G49bNcqp5juNQiKgZ5/tK+wZKmNttDpETpj/nJmIbrieMNTPws9k2V8FGR+nS2exG6N//CXbkph67UOep5FqpJzboZPI4aO8tVyurXFBaBainpuvGwM7O5jj4PO8D3cjMQOZrXgAZPoiGX0daI+9IfTnocOTBMvplNlEJMLj5RkOSzFK/yGQozwlg2XIDiYV+r944qTrbdXpltqlkDKtdZRE9VTiY4Duj0qt/Jv42rT8TbFZ9ebwrh6JwnRXX5JCDBDxwIDAQAB","version":{"major":0,"minor":0,"subminor":0}})JSON");
 
   std::stringstream stream(representation0);
   typename elle::serialization::json::SerializerIn input(stream);

@@ -26,7 +26,7 @@ static std::string const _input(
 template <infinit::cryptography::Oneway A,
           uint32_t S>
 void
-test_hash_operate_x(elle::String const& R)
+test_hash_operate_x(std::string const& R)
 {
   // Hash a plain.
   {
@@ -51,7 +51,7 @@ test_hash_operate_x(elle::String const& R)
   // Hash a complex type.
   {
     Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(S));
+      42, infinit::cryptography::random::generate<std::string>(S));
 
     infinit::cryptography::Digest digest1 =
       infinit::cryptography::hash(input, A);
@@ -93,7 +93,7 @@ test_hash_operate()
 template <infinit::cryptography::Oneway A,
           uint32_t S>
 void
-test_hmac_operate_x(elle::String const& R)
+test_hmac_operate_x(std::string const& R)
 {
   elle::Buffer key("key", 3);
 
@@ -116,7 +116,7 @@ test_hmac_operate_x(elle::String const& R)
   // HMAC a complex type.
   {
     Sample const input(
-      42, infinit::cryptography::random::generate<elle::String>(S));
+      42, infinit::cryptography::random::generate<std::string>(S));
 
     infinit::cryptography::Digest digest1 =
       infinit::cryptography::hmac::sign(input, key, A);

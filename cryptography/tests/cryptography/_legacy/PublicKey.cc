@@ -8,7 +8,7 @@
 #include <elle/serialize/insert.hh>
 #include <elle/serialize/extract.hh>
 
-static elle::String const _input1("my balls are ok!");
+static std::string const _input1("my balls are ok!");
 static Sample const _input2(23293083121, "chodaboy");
 
 /*---------.
@@ -64,7 +64,7 @@ void
 test_operate_rsa()
 {
   // Construct a public key from [representation 1]
-  elle::String representation("AAAAAAAAAAAAAQAAwyqSEVWQVKNMVyKy+COV5huZNfdkU79dKbyV3Pt7rvVJ2FNcdx2AJOZc7iWRAcB9i+VdHBgJs9uJ/5wUoBvjiXBV45E+6wm0Zz6QRqdtph1vRP8UtXMfY7nZxh6h/NgcV5uGj/zwrg4PWZq1NR3DzA3r2n5buc4TLoX8sFUlSBF5wIUAWL/GLKD+ZR1tsoszXVgG+KR7RzTT0CqEzQ23KLtHoVQi3cXFE4hTFBsAxbhbO9WC1hLh13CcpmWPKBo8lCtbvcElmodQnuwouprZydICVDKoQjsRuj+AyOqjQgkhSN7eTHCpffaf0cjz+qMReboRSw9zhIp8uBqtCIAv+wAAAwAAAAEAAQ==");
+  std::string representation("AAAAAAAAAAAAAQAAwyqSEVWQVKNMVyKy+COV5huZNfdkU79dKbyV3Pt7rvVJ2FNcdx2AJOZc7iWRAcB9i+VdHBgJs9uJ/5wUoBvjiXBV45E+6wm0Zz6QRqdtph1vRP8UtXMfY7nZxh6h/NgcV5uGj/zwrg4PWZq1NR3DzA3r2n5buc4TLoX8sFUlSBF5wIUAWL/GLKD+ZR1tsoszXVgG+KR7RzTT0CqEzQ23KLtHoVQi3cXFE4hTFBsAxbhbO9WC1hLh13CcpmWPKBo8lCtbvcElmodQnuwouprZydICVDKoQjsRuj+AyOqjQgkhSN7eTHCpffaf0cjz+qMReboRSw9zhIp8uBqtCIAv+wAAAwAAAAEAAQ==");
 
   auto extractor =
     elle::serialize::from_string<
@@ -76,7 +76,7 @@ test_operate_rsa()
 
   // Verify plain from [representation 4].
   {
-    elle::String archive("AAAAAAABAAAAAAAACtl3p9rCYGLPwr6YbEkmo17d5QtogRLppEIzHbtA+P1WAZYFuQeSF4/BE5eJZugYu4PEbVgdX5Mv8l11nddGfdgmwuEL1ACZ6yc7gxps2Skb2U+ZzbrS3ZBYeGYe5haUfjrVCCyP2wE/oe86WiAKhBVIEekb7eAxtO+AlQm6JjBzmTHcDK9ZxaLwmrPxhUyLMTfyTRWf53di7njr65IppRdJMfgbQB+hDWdODSDj/M446e+C8NQWIKxj5EjqQC62dEoyH9CAht98cOHL6251EZRZEG+YFiSTdmo77QHwpAZ+Mq7erlYW78g1uPgDQ1kJ8olMyGYF3tWIazQ1reEonA==");
+    std::string archive("AAAAAAABAAAAAAAACtl3p9rCYGLPwr6YbEkmo17d5QtogRLppEIzHbtA+P1WAZYFuQeSF4/BE5eJZugYu4PEbVgdX5Mv8l11nddGfdgmwuEL1ACZ6yc7gxps2Skb2U+ZzbrS3ZBYeGYe5haUfjrVCCyP2wE/oe86WiAKhBVIEekb7eAxtO+AlQm6JjBzmTHcDK9ZxaLwmrPxhUyLMTfyTRWf53di7njr65IppRdJMfgbQB+hDWdODSDj/M446e+C8NQWIKxj5EjqQC62dEoyH9CAht98cOHL6251EZRZEG+YFiSTdmo77QHwpAZ+Mq7erlYW78g1uPgDQ1kJ8olMyGYF3tWIazQ1reEonA==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -93,7 +93,7 @@ test_operate_rsa()
 
   // Verify plain from [representation 5].
   {
-    elle::String archive("AAAAAAABAAAAAAAABIZUvjdGrl1z9AHo4RYsrnvchBBnLnA+B3B4oLdfcDcp5Th0pe85rjyrwoTsFn/NgqsdMmitgDmOZ+cwc5SVMAoq4sN5jshz9bypaSAW+ZmHzoibvhL7eJjPmUJEKUN+mg4rpY6mMVu9btzaROcBocL8J2JjCxLSm3r3xd75k2idKLlbIndtjWt2atKErxTgBSEsYYyjUHS5OaO1ElZgftz8ooDZQZr7AKUYbY+ppydl3aaGiHpekHN1qgya5YC/MwDRVsbptTqeg8h0lWezWgP480mTSk2UgjyQTCcxa8l7dvsrQWpdythkrZLk+KaARci7S82LGIcqhxmMNDBOng==");
+    std::string archive("AAAAAAABAAAAAAAABIZUvjdGrl1z9AHo4RYsrnvchBBnLnA+B3B4oLdfcDcp5Th0pe85rjyrwoTsFn/NgqsdMmitgDmOZ+cwc5SVMAoq4sN5jshz9bypaSAW+ZmHzoibvhL7eJjPmUJEKUN+mg4rpY6mMVu9btzaROcBocL8J2JjCxLSm3r3xd75k2idKLlbIndtjWt2atKErxTgBSEsYYyjUHS5OaO1ElZgftz8ooDZQZr7AKUYbY+ppydl3aaGiHpekHN1qgya5YC/MwDRVsbptTqeg8h0lWezWgP480mTSk2UgjyQTCcxa8l7dvsrQWpdythkrZLk+KaARci7S82LGIcqhxmMNDBOng==");
 
     auto extractor =
       elle::serialize::from_string<
@@ -151,7 +151,7 @@ test_serialize_rsa()
   {
     infinit::cryptography::rsa::PublicKey K1 = test_generate_rsa(2048);
 
-    elle::String archive;
+    std::string archive;
     elle::serialize::to_string(archive) << K1;
 
     auto extractor = elle::serialize::from_string(archive);
@@ -164,7 +164,7 @@ test_serialize_rsa()
   // deserialize the public keys, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       "AAAAAAAAAACAAAAApcZBa1TEkWy17WfZVvNGHDLufkKpu3HRBZ/r4pPtdCKufOBKYw22eWxKEClEo06IfnuCtzfn/ZfSGDMelzJKy5XhJ+qX1e7IYTioWcUq928awLyK/4mAShE3lv5BQPDx983+1LEigaYmRcD1Dii1sSMyezvxCVyufYWD2NOQjMMAAAMAAAABAAE=",
       // format 1

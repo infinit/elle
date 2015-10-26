@@ -127,8 +127,8 @@ _test_operate(infinit::cryptography::dsa::KeyPair const& keypair)
 {
   // Sign a plain text.
   {
-    elle::String input =
-      infinit::cryptography::random::generate<elle::String>(1493);
+    std::string input =
+      infinit::cryptography::random::generate<std::string>(1493);
     elle::Buffer signature = keypair.k().sign(input);
     auto result = keypair.K().verify(signature, input);
 
@@ -179,7 +179,7 @@ test_serialize()
   // deserialize the key pairs, re-serialize them, make sure they can
   // be used and finally upgrade them: useful for detecting changes in formats.
   {
-    std::vector<elle::String> const archives{
+    std::vector<std::string> const archives{
       // format 0
       R"JSON({"private key":{".version":{"major":0,"minor":0,"subminor":0},"digest algorithm":2,"dsa":"MIIBvAIBAAKBgQDV69tk+qVpwiPeiBUVfesOjjGfBFdR8naWQKCYlkfn/yw/qnf0ay8HLB1MG6hoxo3Nh3jqJJpwEEAgTX6N/6nvkYnDQYsKXEu/xPoe9r0B6IJ8ZMT3n3rOtBJV0ttFzYWgDm3wE1M1Wy2Fy+qLUBlQIKFlnp/UWTh1TO1CubJ91QIVANymO3Ihghaz2O9w7LTfapBEL8oXAoGAPD05GSgCYNFyd7RcAGyOPYnTQlMnP67uUj4Yc8j+LYDwfN+YVXLyTe9cj8F9tWRS/n5P+wBygDxWGFq5Z4kLORnZAKmat82qLWNtkkB/FxGwXbWsC2dYY+e/37gWacMHWIwz+acCr7f2sfKw8LECBiMhhQnXg8XKNrH6oPIZOqMCgYEA0QHTFEkzlE5PQmnqG48KB43vFvsi2BdH11Ub4wFhGfZ0vt92EQjyv2dfXE6grPYqWJdxOaG+acr6h1wBemOMxieTwdJ1742wMk73OnMB6D0PKUvtIeyyetIc1p/htvVpBD6iX92WMsOwYq/FHrZr77bVQNVsqATOm0frsLhZeRMCFQDBVIxc53gmioEw4xz1bgO5iohUEQ=="},"public key":{".version":{"major":0,"minor":0,"subminor":0},"digest algorithm":2,"dsa":"MIIBogKBgQDRAdMUSTOUTk9CaeobjwoHje8W+yLYF0fXVRvjAWEZ9nS+33YRCPK/Z19cTqCs9ipYl3E5ob5pyvqHXAF6Y4zGJ5PB0nXvjbAyTvc6cwHoPQ8pS+0h7LJ60hzWn+G29WkEPqJf3ZYyw7Bir8UetmvvttVA1WyoBM6bR+uwuFl5EwKBgQDV69tk+qVpwiPeiBUVfesOjjGfBFdR8naWQKCYlkfn/yw/qnf0ay8HLB1MG6hoxo3Nh3jqJJpwEEAgTX6N/6nvkYnDQYsKXEu/xPoe9r0B6IJ8ZMT3n3rOtBJV0ttFzYWgDm3wE1M1Wy2Fy+qLUBlQIKFlnp/UWTh1TO1CubJ91QIVANymO3Ihghaz2O9w7LTfapBEL8oXAoGAPD05GSgCYNFyd7RcAGyOPYnTQlMnP67uUj4Yc8j+LYDwfN+YVXLyTe9cj8F9tWRS/n5P+wBygDxWGFq5Z4kLORnZAKmat82qLWNtkkB/FxGwXbWsC2dYY+e/37gWacMHWIwz+acCr7f2sfKw8LECBiMhhQnXg8XKNrH6oPIZOqM="}})JSON"
       };
