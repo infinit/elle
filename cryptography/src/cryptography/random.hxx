@@ -167,7 +167,7 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint8_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint16_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint32_t);
-      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Natural64);
+      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint64_t);
 
       template <>
       struct Generator<elle::String>

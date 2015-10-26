@@ -10,7 +10,7 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    Output::Output(elle::Natural64 const size):
+    Output::Output(uint64_t const size):
       _buffer(size)
     {
     }

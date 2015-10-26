@@ -28,7 +28,7 @@ namespace infinit
       `-------------*/
     public:
       explicit
-      Output(elle::Natural64 const size);
+      Output(uint64_t const size);
       explicit
       Output(elle::Buffer const& buffer);
       explicit

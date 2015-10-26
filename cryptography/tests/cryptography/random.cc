@@ -79,7 +79,7 @@ test_operate()
   test_operate_x<uint8_t>(75, 126);
   test_operate_x<uint16_t>(1238, 53104);
   test_operate_x<uint32_t>(424242, 424242);
-  test_operate_x<elle::Natural64>(23409, 1209242094821);
+  test_operate_x<uint64_t>(23409, 1209242094821);
   test_operate_string();
   test_operate_buffer();
 }
