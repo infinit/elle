@@ -28,7 +28,7 @@ namespace infinit
                          , Oneway const oneway
 #endif
                         ):
-      _password(reinterpret_cast<elle::Byte const*>(password.c_str()),
+      _password(reinterpret_cast<uint8_t const*>(password.c_str()),
                 password.length())
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       , _cipher(cipher)
