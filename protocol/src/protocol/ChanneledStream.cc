@@ -53,7 +53,7 @@ namespace infinit
         }
         {
           elle::Buffer p(backend.read());
-          ELLE_ASSERT_EQ(1, p.size());
+          ELLE_ASSERT_EQ(1, (signed)p.size());
           his = p.contents()[0];
           ELLE_DEBUG("%s: his roll: %d", *this, (int)his);
         }

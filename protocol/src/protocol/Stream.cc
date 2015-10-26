@@ -57,7 +57,7 @@ namespace infinit
     Stream::_uint32_get(elle::Buffer& b)
     {
       uint32_t i;
-      ELLE_ASSERT_GTE(b.size(), 4);
+      ELLE_ASSERT_GTE((signed)b.size(), 4);
       i = *(uint32_t*)b.contents();
       memmove(b.mutable_contents(), b.contents()+4, b.size() - 4);
       b.size(b.size()-4);
