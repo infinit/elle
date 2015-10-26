@@ -207,16 +207,16 @@ namespace elle
 {
   namespace serialization
   {
-    elle::Natural8
+    uint8_t
     Serialize<infinit::cryptography::rsa::Padding>::convert(
       infinit::cryptography::rsa::Padding const& value)
     {
-      return (static_cast<elle::Natural8>(value));
+      return (static_cast<uint8_t>(value));
     }
 
     infinit::cryptography::rsa::Padding
     Serialize<infinit::cryptography::rsa::Padding>::convert(
-      elle::Natural8 const& representation)
+      uint8_t const& representation)
     {
       return (static_cast<infinit::cryptography::rsa::Padding>(representation));
     }

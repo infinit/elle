@@ -81,26 +81,26 @@ namespace elle
     template <>
     struct Serialize<infinit::cryptography::Cipher>
     {
-      typedef elle::Natural8 Type;
+      typedef uint8_t Type;
       static
-      elle::Natural8
+      uint8_t
       convert(infinit::cryptography::Cipher const& value);
       static
       infinit::cryptography::Cipher
-      convert(elle::Natural8 const& representation);
+      convert(uint8_t const& representation);
     };
 
     // Mode
     template <>
     struct Serialize<infinit::cryptography::Mode>
     {
-      typedef elle::Natural8 Type;
+      typedef uint8_t Type;
       static
-      elle::Natural8
+      uint8_t
       convert(infinit::cryptography::Mode const& value);
       static
       infinit::cryptography::Mode
-      convert(elle::Natural8 const& representation);
+      convert(uint8_t const& representation);
     };
   }
 }

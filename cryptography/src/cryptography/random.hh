@@ -33,9 +33,9 @@ namespace infinit
       ///   generate<int64_t>();
       ///   generate<int64_t>(int64_t minimum,
       ///                     int64_t maximum);
-      ///   generate<elle::Natural8>();
-      ///   generate<elle::Natural8>(elle::Natural8 minimum,
-      ///                            elle::Natural8 maximum);
+      ///   generate<uint8_t>();
+      ///   generate<uint8_t>(uint8_t minimum,
+      ///                     uint8_t maximum);
       ///   generate<elle::Natural16>();
       ///   generate<elle::Natural16>(elle::Natural16 minimum,
       ///                             elle::Natural16 maximum);

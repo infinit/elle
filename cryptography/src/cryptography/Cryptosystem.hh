@@ -43,13 +43,13 @@ namespace elle
     template <>
     struct Serialize<infinit::cryptography::Cryptosystem>
     {
-      typedef elle::Natural8 Type;
+      typedef uint8_t Type;
       static
-      elle::Natural8
+      uint8_t
       convert(infinit::cryptography::Cryptosystem const& value);
       static
       infinit::cryptography::Cryptosystem
-      convert(elle::Natural8 const& representation);
+      convert(uint8_t const& representation);
     };
   }
 }

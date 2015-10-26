@@ -134,16 +134,16 @@ namespace elle
 {
   namespace serialization
   {
-    elle::Natural8
+    uint8_t
     Serialize<infinit::cryptography::Oneway>::convert(
       infinit::cryptography::Oneway const& value)
     {
-      return (static_cast<elle::Natural8>(value));
+      return (static_cast<uint8_t>(value));
     }
 
     infinit::cryptography::Oneway
     Serialize<infinit::cryptography::Oneway>::convert(
-      elle::Natural8 const& representation)
+      uint8_t const& representation)
     {
       return (static_cast<infinit::cryptography::Oneway>(representation));
     }

@@ -78,13 +78,13 @@ namespace elle
     template <>
     struct Serialize<infinit::cryptography::rsa::Padding>
     {
-      typedef elle::Natural8 Type;
+      typedef uint8_t Type;
       static
-      elle::Natural8
+      uint8_t
       convert(infinit::cryptography::rsa::Padding const& value);
       static
       infinit::cryptography::rsa::Padding
-      convert(elle::Natural8 const& representation);
+      convert(uint8_t const& representation);
     };
   }
 }

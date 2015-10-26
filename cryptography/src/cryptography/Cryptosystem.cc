@@ -57,16 +57,16 @@ namespace elle
 {
   namespace serialization
   {
-    elle::Natural8
+    uint8_t
     Serialize<infinit::cryptography::Cryptosystem>::convert(
       infinit::cryptography::Cryptosystem const& value)
     {
-      return (static_cast<elle::Natural8>(value));
+      return (static_cast<uint8_t>(value));
     }
 
     infinit::cryptography::Cryptosystem
     Serialize<infinit::cryptography::Cryptosystem>::convert(
-      elle::Natural8 const& representation)
+      uint8_t const& representation)
     {
       return (static_cast<infinit::cryptography::Cryptosystem>(representation));
     }
