@@ -1,7 +1,7 @@
 Cryptography
 ============
 
-The Cryptography library allows for performing a variety of cryptographic operations from key generation, encryption, decryption, signature, verification to higher-level mechanisms like public-key challenges.
+The Cryptography library allows for performing a variety of cryptographic operations from key generation, encryption, decryption, signature, verification to higher-level mechanisms.
 
 Note that the Cryptography library is mostly buffer-oriented even though some operations are allowed on streams such a symmetric encryption, hashing and more.
 
