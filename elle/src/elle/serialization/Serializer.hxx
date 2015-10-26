@@ -269,6 +269,18 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        static_assert(is_unserializable_inplace<T>(), "");
+        // FIXME: factor reading version
+        // FIXME: use that version
+        if (s.versioned())
+        {
+          auto version = _version_tag<T>(42);
+          {
+            ELLE_TRACE_SCOPE("serialize version: %s", version);
+            s.serialize(".version", version);
+          }
+        }
         _set_ptr(ptr, new T(static_cast<SerializerIn&>(s)));
       }
 
@@ -722,6 +734,17 @@ namespace elle
     Serializer::_deserialize_in_array(std::string const& name,
                                       C& collection)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      // FIXME: factor reading version
+      // FIXME: use that version
+      if (this->versioned())
+      {
+        auto version = _version_tag<typename C::value_type>(42);
+        {
+          ELLE_TRACE_SCOPE("serialize version: %s", version);
+          this->serialize(".version", version);
+        }
+      }
       collection.emplace(static_cast<SerializerIn&>(*this));
     }
 
@@ -737,6 +760,17 @@ namespace elle
     Serializer::_deserialize_in_array(std::string const& name,
                                       C& collection)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      // FIXME: factor reading version
+      // FIXME: use that version
+      if (this->versioned())
+      {
+        auto version = _version_tag<typename C::value_type>(42);
+        {
+          ELLE_TRACE_SCOPE("serialize version: %s", version);
+          this->serialize(".version", version);
+        }
+      }
       collection.emplace_back(static_cast<SerializerIn&>(*this));
     }
 
