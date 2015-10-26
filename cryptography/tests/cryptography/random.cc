@@ -72,7 +72,7 @@ test_operate()
   test_operate_boolean();
   test_operate_x<elle::Character>(15, 48);
   test_operate_real();
-  test_operate_x<elle::Integer8>(-60, -58);
+  test_operate_x<int8_t>(-60, -58);
   test_operate_x<elle::Integer16>(-21000, 21000);
   test_operate_x<elle::Integer32>(-848, 73435);
   test_operate_x<elle::Integer64>(-324923, 32212394);
