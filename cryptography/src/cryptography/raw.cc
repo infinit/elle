@@ -505,7 +505,7 @@ namespace infinit
         /// Define the magic which is embedded in every encrypted
         /// text so for the decryption process to know that the text
         /// has been salted.
-        static elle::Character const magic[] = "Salted__";
+        static char const magic[] = "Salted__";
 
         /*----------.
         | Functions |
@@ -673,7 +673,7 @@ namespace infinit
           cryptography::require();
 
           // Check whether the code was produced with a salt.
-          elle::Character _magic[sizeof (magic)];
+          char _magic[sizeof (magic)];
 
           code.read(reinterpret_cast<char*>(_magic), sizeof (magic) - 1);
           if (!code.good())

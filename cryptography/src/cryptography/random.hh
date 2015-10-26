@@ -17,9 +17,9 @@ namespace infinit
       /// Generate a random value. The following versions are provided:
       ///
       ///   generate<bool>();
-      ///   generate<elle::Character>();
-      ///   generate<elle::Character>(elle::Character minimum,
-      ///                             elle::Character maximum);
+      ///   generate<char>();
+      ///   generate<char>(char minimum,
+      ///                  char maximum);
       ///   generate<elle::Real>();
       ///   generate<int8_t>();
       ///   generate<int8_t>(int8_t minimum,
