@@ -205,7 +205,7 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Oneway, oneway);
         ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
         ELLE_ATTRIBUTE_R(Mode, envelope_mode);
-        ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
+        ELLE_ATTRIBUTE_R(uint16_t, legacy_format);
 # endif
       };
     }

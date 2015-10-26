@@ -126,8 +126,8 @@ namespace infinit
                            Oneway const oneway,
                            Cipher const envelope_cipher,
                            Mode const envelope_mode,
-                           elle::Natural16 legacy_format,
-                           elle::Natural16 dynamic_format)
+                           uint16_t legacy_format,
+                           uint16_t dynamic_format)
         : _key(key)
         , _encryption_padding(encryption_padding)
         , _signature_padding(signature_padding)

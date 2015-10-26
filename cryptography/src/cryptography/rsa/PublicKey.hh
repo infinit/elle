@@ -64,9 +64,9 @@ namespace infinit
                     defaults::envelope_cipher
                   , Mode const envelope_mode =
                     defaults::envelope_mode
-                  , elle::Natural16 legacy_format =
+                  , uint16_t legacy_format =
                     elle::serialize::StaticFormat<PublicKey>::version
-                  , elle::Natural16 dynamic_format = 0
+                  , uint16_t dynamic_format = 0
 # endif
                  );
         /// Construct a public key based on the given RSA key whose
@@ -214,7 +214,7 @@ namespace infinit
         ELLE_ATTRIBUTE_R(Oneway, oneway);
         ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
         ELLE_ATTRIBUTE_R(Mode, envelope_mode);
-        ELLE_ATTRIBUTE_R(elle::Natural16, legacy_format);
+        ELLE_ATTRIBUTE_R(uint16_t, legacy_format);
 # endif
       };
 
