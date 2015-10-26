@@ -61,7 +61,7 @@ namespace elle
           {
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             auto message =
-              elle::sprintf("unable to get serialization name for type %s", id);
+              elle::sprintf("unknown serialization type: %s", id);
             ELLE_WARN("%s", message);
             throw Error(message);
           }
@@ -475,6 +475,7 @@ namespace elle
     {
       s.serialize_ptr(name, v, anonymous);
     }
+
     template<typename T>
     void Serializer::serialize_ptr(std::string const& name, T* &opt, bool anonymous)
     {
