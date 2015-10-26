@@ -64,7 +64,7 @@ test_represent()
 
 static
 infinit::cryptography::dsa::PublicKey
-_test_generate(elle::Natural32 const length = 1024)
+_test_generate(uint32_t const length = 1024)
 {
   infinit::cryptography::dsa::KeyPair keypair =
     infinit::cryptography::dsa::keypair::generate(length);

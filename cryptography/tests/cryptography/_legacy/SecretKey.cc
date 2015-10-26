@@ -14,7 +14,7 @@
 `---------*/
 
 template <infinit::cryptography::Cipher A,
-          elle::Natural32 L>
+          uint32_t L>
 infinit::cryptography::SecretKey
 test_generate_x()
 {
@@ -154,7 +154,7 @@ test_operate()
 `----------*/
 
 template <infinit::cryptography::Cipher A,
-          elle::Natural32 L>
+          uint32_t L>
 void
 test_serialize_x(elle::String const& R)
 {

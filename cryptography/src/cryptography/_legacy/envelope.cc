@@ -34,7 +34,7 @@ namespace infinit
       // This overhead therefore represents the additional bits implied by
       // the serialization mechanism.
       static
-      elle::Natural32
+      uint32_t
       _overhead()
       {
         ELLE_DEBUG_FUNCTION("");
@@ -44,7 +44,7 @@ namespace infinit
         elle::String password =
           "An equation means nothing to me unless it expresses "
           "a thought of God. Srinivasa Ramanujan";
-        elle::Natural32 length_original = password.length() * 8;
+        uint32_t length_original = password.length() * 8;
 
         // The cipher is not important as it does not impact the
         // serialization's overhead.
@@ -57,13 +57,13 @@ namespace infinit
 
         buffer.writer() << secret;
 
-        elle::Natural32 length_final = buffer.size() * 8;
+        uint32_t length_final = buffer.size() * 8;
 
         ELLE_ASSERT_GTE(length_final, length_original);
 
         // Return the difference between the requested secret length and
         // the actual one.
-        elle::Natural32 overhead = length_final - length_original;
+        uint32_t overhead = length_final - length_original;
         ELLE_DEBUG("overhead: %s", overhead);
         return (overhead);
       }
@@ -82,7 +82,7 @@ namespace infinit
                            size_t),
            ::EVP_CIPHER const* cipher,
            ::EVP_MD const* oneway,
-           elle::Natural32 const padding_size)
+           uint32_t const padding_size)
       {
         ELLE_DEBUG_FUNCTION(context, function, cipher, oneway, padding_size);
         ELLE_DUMP("plain: %s", plain);
@@ -111,17 +111,17 @@ namespace infinit
         //
         // Note that this overhead is only calculated once as it does not
         // depend on the nature of the secret key that will be generated.
-        static elle::Natural32 overhead = _overhead();
+        static uint32_t overhead = _overhead();
 
         // 1) Compute the size of the secret key to generate by taking
         //    into account the padding size, if any.
-        ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
+        ELLE_ASSERT_GTE(static_cast<uint32_t>(
                           ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
                         (padding_size + overhead));
 
         // The maximum length, in bits, of the generated symmetric key.
-        elle::Natural32 const ceiling = 512;
-        elle::Natural32 const length =
+        uint32_t const ceiling = 512;
+        uint32_t const length =
           (::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -
            (padding_size + overhead)) < ceiling ?
           ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context)) -

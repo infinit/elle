@@ -166,7 +166,7 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(int64_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint8_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint16_t);
-      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Natural32);
+      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(uint32_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Natural64);
 
       template <>
@@ -174,7 +174,7 @@ namespace infinit
       {
         static
         elle::String
-        generate(elle::Natural32 const length)
+        generate(uint32_t const length)
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
           ELLE_TRACE_FUNCTION(length);
@@ -190,9 +190,9 @@ namespace infinit
 
           value.resize(length);
 
-          for (elle::Natural32 i = 0; i < length; i++)
+          for (uint32_t i = 0; i < length; i++)
           {
-            elle::Natural32 n;
+            uint32_t n;
 
             fill(reinterpret_cast<unsigned char*>(&n), sizeof (n));
 
@@ -208,7 +208,7 @@ namespace infinit
       {
         static
         elle::Buffer
-        generate(elle::Natural32 const size)
+        generate(uint32_t const size)
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
           ELLE_TRACE_FUNCTION(size);

@@ -153,17 +153,17 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.dh->priv_key, nullptr);
       }
 
-      elle::Natural32
+      uint32_t
       PublicKey::size() const
       {
-        return (static_cast<elle::Natural32>(
+        return (static_cast<uint32_t>(
                   ::EVP_PKEY_size(this->_key.get())));
       }
 
-      elle::Natural32
+      uint32_t
       PublicKey::length() const
       {
-        return (static_cast<elle::Natural32>(
+        return (static_cast<uint32_t>(
                   ::EVP_PKEY_bits(this->_key.get())));
       }
 

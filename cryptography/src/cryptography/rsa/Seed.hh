@@ -41,12 +41,12 @@ namespace infinit
         /// Note that this version of the constructor duplicates the buffer.
         explicit
         Seed(elle::Buffer const& buffer,
-             elle::Natural32 const length);
+             uint32_t const length);
         /// Construct an RSA seed as above but by transferring the ownership
         /// of the buffer.
         explicit
         Seed(elle::Buffer&& buffer,
-             elle::Natural32 const length);
+             uint32_t const length);
         Seed(Seed const& seed);
         Seed(Seed&& other);
         virtual
@@ -82,7 +82,7 @@ namespace infinit
         ELLE_ATTRIBUTE_R(elle::Buffer, buffer);
         // The length, in bits, of the keys' modulus one can
         // generate with this seed.
-        ELLE_ATTRIBUTE_R(elle::Natural32, length);
+        ELLE_ATTRIBUTE_R(uint32_t, length);
       };
     }
   }
@@ -106,7 +106,7 @@ namespace infinit
 
         /// Generate a seed of the given length.
         Seed
-        generate(elle::Natural32 const length);
+        generate(uint32_t const length);
         /// Generate a seed for the given key pair.
         Seed
         generate(KeyPair const& keypair);

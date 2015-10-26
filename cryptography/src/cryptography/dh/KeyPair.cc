@@ -71,7 +71,7 @@ namespace infinit
         return (*this->_k);
       }
 
-      elle::Natural32
+      uint32_t
       KeyPair::size() const
       {
         ELLE_ASSERT_NEQ(this->_K, nullptr);
@@ -81,7 +81,7 @@ namespace infinit
         return (this->_K->size());
       }
 
-      elle::Natural32
+      uint32_t
       KeyPair::length() const
       {
         ELLE_ASSERT_NEQ(this->_K, nullptr);

@@ -18,7 +18,7 @@ static Sample const _input2(3240913, "Dave");
 
 static
 infinit::cryptography::rsa::PrivateKey
-test_generate_rsa(elle::Natural32 const length = 1024)
+test_generate_rsa(uint32_t const length = 1024)
 {
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(length);

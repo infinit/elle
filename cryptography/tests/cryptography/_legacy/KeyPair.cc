@@ -17,7 +17,7 @@
 
 static
 infinit::cryptography::rsa::KeyPair
-test_generate_rsa(elle::Natural32 const length = 2048)
+test_generate_rsa(uint32_t const length = 2048)
 {
   infinit::cryptography::rsa::KeyPair pair =
     infinit::cryptography::rsa::keypair::generate(length);

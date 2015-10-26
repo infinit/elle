@@ -35,7 +35,7 @@ ELLE_SERIALIZE_SPLIT_SAVE(::BIGNUM,
   ::BN_bn2bin(&value, buffer);
 
   // Serialize both the size and the binary data.
-  archive << static_cast<elle::Natural32>(size);
+  archive << static_cast<uint32_t>(size);
   archive.SaveBinary(buffer, size);
 }
 
@@ -49,7 +49,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(::BIGNUM,
   enforce(format == 0);
 
   // Extract the big number size.
-  elle::Natural32 size;
+  uint32_t size;
 
   archive >> size;
   enforce(size > 0, "cannot load empty BIGNUM");

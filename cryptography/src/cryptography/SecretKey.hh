@@ -108,10 +108,10 @@ namespace infinit
                Mode const mode = defaults::mode,
                Oneway const oneway = defaults::oneway) const;
       /// Return the size, in bytes, of the secret key.
-      elle::Natural32
+      uint32_t
       size() const;
       /// Return the length, in bits, of the secret key.
-      elle::Natural32
+      uint32_t
       length() const;
 
       /*----------.
@@ -201,7 +201,7 @@ namespace infinit
       ///
       /// Note that the length is expressed in bits.
       SecretKey
-      generate(elle::Natural32 const length
+      generate(uint32_t const length
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
                , Cipher const cipher = SecretKey::defaults::cipher
                , Mode const mode = SecretKey::defaults::mode

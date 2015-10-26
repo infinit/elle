@@ -58,10 +58,10 @@ namespace infinit
         PrivateKey const&
         k() const;
         /// Return the key pair's size in bytes.
-        elle::Natural32
+        uint32_t
         size() const;
         /// Return the key pair's length in bits.
-        elle::Natural32
+        uint32_t
         length() const;
 
         /*----------.

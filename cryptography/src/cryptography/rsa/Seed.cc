@@ -25,14 +25,14 @@ namespace infinit
       `-------------*/
 
       Seed::Seed(elle::Buffer const& buffer,
-                 elle::Natural32 const length):
+                 uint32_t const length):
         _buffer(buffer),
         _length(length)
       {
       }
 
       Seed::Seed(elle::Buffer&& buffer,
-                 elle::Natural32 const length):
+                 uint32_t const length):
         _buffer(std::move(buffer)),
         _length(length)
       {
@@ -115,7 +115,7 @@ namespace infinit
         `----------*/
 
         Seed
-        generate(elle::Natural32 const length)
+        generate(uint32_t const length)
         {
           ELLE_TRACE_FUNCTION(length);
 

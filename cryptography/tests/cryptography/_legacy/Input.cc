@@ -14,7 +14,7 @@ test_construction()
 {
   // Implicit construction from ConstWeakBuffer.
   {
-    elle::Natural32 size = 256;
+    uint32_t size = 256;
     elle::Buffer buffer =
       infinit::cryptography::random::generate<elle::Buffer>(size);
     elle::ConstWeakBuffer constweakbuffer(buffer);
@@ -30,7 +30,7 @@ test_construction()
 
   // Implicit construction from WeakBuffer.
   {
-    elle::Natural32 size = 64;
+    uint32_t size = 64;
     elle::Buffer buffer =
       infinit::cryptography::random::generate<elle::Buffer>(size);
     elle::WeakBuffer weakbuffer(buffer);
@@ -46,7 +46,7 @@ test_construction()
 
   // Implicit construction from Buffer.
   {
-    elle::Natural32 size = 512;
+    uint32_t size = 512;
     elle::Buffer buffer =
       infinit::cryptography::random::generate<elle::Buffer>(size);
 

@@ -19,7 +19,7 @@
 
 static
 void
-_test_represent(elle::Natural32 const length)
+_test_represent(uint32_t const length)
 {
   // 1)
   {
@@ -55,7 +55,7 @@ test_represent()
 
 static
 infinit::cryptography::rsa::KeyPair
-_test_generate(elle::Natural32 const length)
+_test_generate(uint32_t const length)
 {
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(length);

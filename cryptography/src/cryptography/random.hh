@@ -39,14 +39,14 @@ namespace infinit
       ///   generate<uint16_t>();
       ///   generate<uint16_t>(uint16_t minimum,
       ///                      uint16_t maximum);
-      ///   generate<elle::Natural32>();
-      ///   generate<elle::Natural32>(elle::Natural32 minimum,
-      ///                             elle::Natural32 maximum);
+      ///   generate<uint32_t>();
+      ///   generate<uint32_t>(uint32_t minimum,
+      ///                      uint32_t maximum);
       ///   generate<elle::Natural64>();
       ///   generate<elle::Natural64>(elle::Natural64 minimum,
       ///                             elle::Natural64 maximum);
-      ///   generate<elle::String>(elle::Natural32 length);
-      ///   generate<elle::Buffer>(elle::Natural32 size);
+      ///   generate<elle::String>(uint32_t length);
+      ///   generate<elle::Buffer>(uint32_t size);
       template <typename T,
                 typename... A>
       T

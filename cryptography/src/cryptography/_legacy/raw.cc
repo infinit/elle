@@ -69,7 +69,7 @@ namespace infinit
           cryptography::require();
 
           ELLE_ASSERT_NEQ(context, nullptr);
-          ELLE_ASSERT_GTE(static_cast<elle::Natural32>(
+          ELLE_ASSERT_GTE(static_cast<uint32_t>(
                             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
                           input.size() * 8);
 

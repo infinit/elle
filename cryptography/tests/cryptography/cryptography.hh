@@ -28,7 +28,7 @@ namespace infinit
         // First, deserialize all the objects from the archives,
         // call the operate function and finally check thatt
         // reserializing the object generates the same archive.
-        for (elle::Natural32 i = 0; i < archives.size(); ++i)
+        for (uint32_t i = 0; i < archives.size(); ++i)
         {
           std::stringstream stream1(archives[i]);
           typename elle::serialization::json::SerializerIn input1(stream1);

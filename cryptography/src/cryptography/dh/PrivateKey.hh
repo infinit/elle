@@ -65,10 +65,10 @@ namespace infinit
         SecretKey
         agree(PublicKey const& peer_K) const;
         /// Return the private key's size in bytes.
-        elle::Natural32
+        uint32_t
         size() const;
         /// Return the private key's length in bits.
-        elle::Natural32
+        uint32_t
         length() const;
 
         /*----------.

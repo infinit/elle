@@ -13,8 +13,8 @@
 
 static elle::String const _message("I don't know what we're yelling about!");
 
-template <elle::Natural32 N,
-          elle::Natural32 L,
+template <uint32_t N,
+          uint32_t L,
           infinit::cryptography::Cipher C,
           infinit::cryptography::Mode M,
           infinit::cryptography::Oneway O>
@@ -131,7 +131,7 @@ test_represent()
 | Generate |
 `---------*/
 
-template <elle::Natural32 L>
+template <uint32_t L>
 infinit::cryptography::SecretKey
 test_generate_x()
 {

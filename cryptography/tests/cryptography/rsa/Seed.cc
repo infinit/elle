@@ -54,7 +54,7 @@ test_represent()
 
 static
 infinit::cryptography::rsa::Seed
-_test_generate(elle::Natural32 const length = 2048)
+_test_generate(uint32_t const length = 2048)
 {
   infinit::cryptography::rsa::Seed seed =
     infinit::cryptography::rsa::seed::generate(length);
@@ -99,7 +99,7 @@ static
 void
 _test_operate(R const& r,
               D const& d,
-              elle::Natural32 length)
+              uint32_t length)
 {
   infinit::cryptography::rsa::Seed seed0 =
     infinit::cryptography::rsa::seed::generate(length);
@@ -166,7 +166,7 @@ test_operate()
   // key, the longer it will take. Say differently, do not use keys that
   // are too large for that purpose unless you can support it.
   {
-    elle::Natural32 const length = 2048;
+    uint32_t const length = 2048;
     infinit::cryptography::rsa::KeyPair keypair =
       infinit::cryptography::rsa::keypair::generate(length);
 

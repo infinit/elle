@@ -181,17 +181,17 @@ namespace infinit
                   plain));
       }
 
-      elle::Natural32
+      uint32_t
       PrivateKey::size() const
       {
-        return (static_cast<elle::Natural32>(
+        return (static_cast<uint32_t>(
                   ::EVP_PKEY_size(this->_key.get())));
       }
 
-      elle::Natural32
+      uint32_t
       PrivateKey::length() const
       {
-        return (static_cast<elle::Natural32>(
+        return (static_cast<uint32_t>(
                   ::EVP_PKEY_bits(this->_key.get())));
       }
 

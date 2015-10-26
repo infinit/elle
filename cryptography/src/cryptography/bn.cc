@@ -20,7 +20,7 @@ std::ostream&
 operator <<(std::ostream& stream,
             BIGNUM const& bignum)
 {
-  static elle::Natural32 const length = 50;
+  static uint32_t const length = 50;
   char* hexadecimal;
 
   // Transform the number in hexadecimal.

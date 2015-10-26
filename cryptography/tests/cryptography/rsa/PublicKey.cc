@@ -64,7 +64,7 @@ test_represent()
 
 static
 infinit::cryptography::rsa::PublicKey
-_test_generate(elle::Natural32 const length = 1024)
+_test_generate(uint32_t const length = 1024)
 {
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(length);

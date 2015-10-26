@@ -26,7 +26,7 @@
 class Entry
 {
 public:
-  Entry(elle::Natural32 version,
+  Entry(uint32_t version,
         infinit::cryptography::rsa::PublicKey const& pass_K,
         elle::Buffer const& key):
     _version(version),
@@ -41,7 +41,7 @@ public:
   {}
 
 private:
-  ELLE_ATTRIBUTE_R(elle::Natural32 const, version);
+  ELLE_ATTRIBUTE_R(uint32_t const, version);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, pass_K);
   ELLE_ATTRIBUTE_R(elle::Buffer const, key);
 };
@@ -66,7 +66,7 @@ public:
 public:
   void
   grant(infinit::cryptography::rsa::PublicKey const& address,
-        elle::Natural32 version,
+        uint32_t version,
         infinit::cryptography::rsa::PublicKey const& pass_K,
         infinit::cryptography::SecretKey const& key)
   {
@@ -119,7 +119,7 @@ public:
   void
   update(infinit::cryptography::SecretKey const& key,
          infinit::cryptography::rsa::PublicKey const& address,
-         elle::Natural32 const version,
+         uint32_t const version,
          infinit::cryptography::rsa::PublicKey const& pass_K)
   {
     elle::Buffer archive =
@@ -135,7 +135,7 @@ public:
     delete _entry;
   }
 
-  elle::Natural32
+  uint32_t
   size() const
   {
     return (this->_entries.size());
@@ -395,7 +395,7 @@ public:
     }
   }
 
-  elle::Natural32
+  uint32_t
   size() const
   {
     return (this->_members.size());
@@ -430,7 +430,7 @@ private:
   {}
 
   Group(infinit::cryptography::rsa::PublicKey const& address,
-        elle::Natural32 const version,
+        uint32_t const version,
         infinit::cryptography::rsa::PublicKey const& manager_K,
         infinit::cryptography::rsa::Seed const& seed,
         Members const& members):
@@ -443,7 +443,7 @@ private:
   {}
 
   Group(infinit::cryptography::rsa::PublicKey const& address,
-        elle::Natural32 const version,
+        uint32_t const version,
         infinit::cryptography::rsa::PublicKey const& manager_K,
         infinit::cryptography::rsa::Seed const& seed,
         infinit::cryptography::rsa::KeyPair const& pass,
@@ -458,7 +458,7 @@ private:
   {}
 
   Group(infinit::cryptography::rsa::PublicKey const& address,
-        elle::Natural32 const version,
+        uint32_t const version,
         infinit::cryptography::rsa::PublicKey const& manager_K,
         elle::Buffer const& seed,
         infinit::cryptography::rsa::PublicKey const& pass_K,
@@ -531,7 +531,7 @@ public:
 
 private:
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, address);
-  ELLE_ATTRIBUTE_R(elle::Natural32, version);
+  ELLE_ATTRIBUTE_R(uint32_t, version);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, manager_K);
   ELLE_ATTRIBUTE(elle::Buffer, seed);
   ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, pass_K);

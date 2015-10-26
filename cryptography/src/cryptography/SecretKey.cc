@@ -172,13 +172,13 @@ namespace infinit
                                plain);
     }
 
-    elle::Natural32
+    uint32_t
     SecretKey::size() const
     {
       return (this->_password.size());
     }
 
-    elle::Natural32
+    uint32_t
     SecretKey::length() const
     {
       return (this->_password.size() * 8);
@@ -270,18 +270,18 @@ namespace infinit
       `----------*/
 
       SecretKey
-      generate(elle::Natural32 const length
+      generate(uint32_t const length
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                         , Cipher const cipher
-                         , Mode const mode
-                         , Oneway const oneway
+               , Cipher const cipher
+               , Mode const mode
+               , Oneway const oneway
 #endif
               )
       {
         ELLE_TRACE_FUNCTION(length);
 
         // Convert the length in a bit-specific size.
-        elle::Natural32 size = length / 8;
+        uint32_t size = length / 8;
 
         // Generate a buffer-based password.
         elle::Buffer password(random::generate<elle::Buffer>(size));

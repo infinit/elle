@@ -45,7 +45,7 @@ namespace infinit
                            size_t),
            ::EVP_CIPHER const* cipher,
            ::EVP_MD const* oneway,
-           elle::Natural32 const padding_size);
+           uint32_t const padding_size);
       /// Open the envelope with the provided context and function.
       elle::Buffer
       open(elle::ConstWeakBuffer const& code,

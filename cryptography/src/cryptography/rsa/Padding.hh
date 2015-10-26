@@ -56,7 +56,7 @@ namespace infinit
         /// Return the padding's footprint --- i.e the number of bits (not
         /// bytes) of data reserved for the padding --- for the given encryption
         /// context.
-        elle::Natural32
+        uint32_t
         footprint(::EVP_PKEY_CTX* context);
         /// Pad a context.
         void

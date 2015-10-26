@@ -12,7 +12,7 @@ namespace infinit
       `----------*/
 
       /// The size of the chunk to process iteratively from the streams.
-      static elle::Natural32 const stream_block_size = 524288;
+      static uint32_t const stream_block_size = 524288;
     }
   }
 }

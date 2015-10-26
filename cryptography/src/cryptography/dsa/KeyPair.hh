@@ -57,10 +57,10 @@ namespace infinit
         PrivateKey const&
         k() const;
         /// Return the key pair's size in bytes.
-        elle::Natural32
+        uint32_t
         size() const;
         /// Return the key pair's length in bits.
-        elle::Natural32
+        uint32_t
         length() const;
 
         /*----------.
@@ -121,7 +121,7 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         KeyPair
-        generate(elle::Natural32 const length,
+        generate(uint32_t const length,
                  Oneway const digest_algorithm =
                    defaults::digest_algorithm);
       }

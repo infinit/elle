@@ -76,10 +76,10 @@ namespace infinit
         verify(elle::ConstWeakBuffer const& signature,
                std::istream& plain) const;
         /// Return the public key's size in bytes.
-        elle::Natural32
+        uint32_t
         size() const;
         /// Return the public key's length in bits.
-        elle::Natural32
+        uint32_t
         length() const;
 
         /*----------.

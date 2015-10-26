@@ -14,7 +14,7 @@ static std::string const _message(
 | Represent |
 `----------*/
 
-template <elle::Natural32 N,
+template <uint32_t N,
           infinit::cryptography::Oneway O>
 void
 test_represent_n()

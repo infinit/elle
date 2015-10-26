@@ -17,7 +17,7 @@
 
 static
 void
-_test_represent(elle::Natural32 const length,
+_test_represent(uint32_t const length,
                 infinit::cryptography::Oneway const digest_algorithm)
 {
   // 1)
@@ -56,7 +56,7 @@ test_represent()
 
 static
 infinit::cryptography::dsa::KeyPair
-_test_generate(elle::Natural32 const length,
+_test_generate(uint32_t const length,
                infinit::cryptography::Oneway const digest_algorithm)
 {
   infinit::cryptography::dsa::KeyPair keypair =

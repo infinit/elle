@@ -24,7 +24,7 @@ static std::string const _input(
 `--------*/
 
 template <infinit::cryptography::Oneway A,
-          elle::Natural32 S>
+          uint32_t S>
 void
 test_hash_operate_x(elle::String const& R)
 {
@@ -91,7 +91,7 @@ test_hash_operate()
 `--------*/
 
 template <infinit::cryptography::Oneway A,
-          elle::Natural32 S>
+          uint32_t S>
 void
 test_hmac_operate_x(elle::String const& R)
 {

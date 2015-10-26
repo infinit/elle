@@ -17,7 +17,7 @@ static Sample const _input2(23293083121, "chodaboy");
 
 static
 infinit::cryptography::rsa::PublicKey
-test_generate_rsa(elle::Natural32 const length = 1024)
+test_generate_rsa(uint32_t const length = 1024)
 {
   infinit::cryptography::rsa::KeyPair keypair =
     infinit::cryptography::rsa::keypair::generate(length);

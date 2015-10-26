@@ -225,13 +225,13 @@ test_scenario()
     // The group A is referenced in its version 2 in the object 1's ACL.
     BOOST_CHECK_EQUAL(entry->version(), 2);
 
-    elle::Natural32 derivations = groupA5.version() - entry->version();
+    uint32_t derivations = groupA5.version() - entry->version();
     BOOST_CHECK_EQUAL(derivations, 3);
 
     infinit::cryptography::rsa::Seed* seed =
       new infinit::cryptography::rsa::Seed(groupA5.members().seed(userZ));
 
-    for (elle::Natural32 i = 0; i < derivations; i++)
+    for (uint32_t i = 0; i < derivations; i++)
     {
       infinit::cryptography::rsa::Seed* _seed = seed;
 

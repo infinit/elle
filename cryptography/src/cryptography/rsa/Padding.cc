@@ -143,7 +143,7 @@ namespace infinit
           stream << resolve(padding);
         }
 
-        elle::Natural32
+        uint32_t
         footprint(::EVP_PKEY_CTX* context)
         {
           int padding;

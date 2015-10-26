@@ -70,10 +70,10 @@ namespace infinit
         PrivateKey const&
         k() const;
         /// Return the key pair's size in bytes.
-        elle::Natural32
+        uint32_t
         size() const;
         /// Return the key pair's length in bits.
-        elle::Natural32
+        uint32_t
         length() const;
 
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
@@ -160,7 +160,7 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         KeyPair
-        generate(elle::Natural32 const length
+        generate(uint32_t const length
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
                  , Padding const encryption_padding =
                    defaults::encryption_padding
