@@ -47,8 +47,10 @@ namespace reactor
         Barrier _server_reached;
         struct ContactInfo
         {
-          std::shared_ptr<Barrier> barrier;
+          ContactInfo() : waiters(0) {}
+          Barrier barrier;
           boost::optional<Endpoint> result;
+          int waiters;
         };
         std::unordered_map<std::string, ContactInfo> _contacts;
         std::vector<std::pair<Endpoint, int>> _breach_requests;

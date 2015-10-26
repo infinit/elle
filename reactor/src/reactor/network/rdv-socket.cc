@@ -92,7 +92,7 @@ namespace reactor
               {
                 ELLE_TRACE("opening result barrier");
                 it->second.result = endpoint;
-                it->second.barrier->open();
+                it->second.barrier.open();
               }
             }
             break;
@@ -101,7 +101,7 @@ namespace reactor
               ELLE_TRACE("connect result tgt=%s, peer=%s", *repl.target_address,
                 !!repl.target_endpoint);
               auto it = _contacts.find(*repl.target_address);
-              if (it != _contacts.end() && !it->second.barrier->opened())
+              if (it != _contacts.end() && !it->second.barrier.opened())
               {
                 if (repl.target_endpoint)
                 {
@@ -143,13 +143,15 @@ namespace reactor
         std::vector<Endpoint> const& endpoints,
         DurationOpt timeout)
     {
-      if (_contacts.find(id) != _contacts.end())
-        throw elle::Error("contact already in progress");
       {
         ContactInfo& ci = _contacts[id];
-        ci.barrier.reset(new Barrier());
-        ci.barrier->close();
+        ++ci.waiters;
       }
+      elle::SafeFinally unregister_request([&] {
+          ContactInfo& ci = _contacts[id];
+          if (--ci.waiters <= 0)
+            _contacts.erase(id);
+      });
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
@@ -160,7 +162,7 @@ namespace reactor
         }
         // try establishing link through rdv
         auto const& c = _contacts.at(id);
-        if (!c.barrier->opened() && _server_reached.opened())
+        if (!c.barrier.opened() && _server_reached.opened())
         {
           if (c.result)
           { // RDV gave us an enpoint, but we are not connected to it yet, ping it
@@ -176,10 +178,9 @@ namespace reactor
             send_to(buf, _server);
           }
         }
-        if (reactor::wait(*_contacts.at(id).barrier, 500_ms))
+        if (reactor::wait(_contacts.at(id).barrier, 500_ms))
         {
           auto res = *_contacts[id].result;
-          _contacts.erase(id);
           return res;
         }
         if (timeout
