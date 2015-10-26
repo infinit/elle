@@ -134,7 +134,7 @@ namespace infinit
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
           ELLE_TRACE_FUNCTION("");
 
-          elle::Integer32 value = _generate<elle::Boolean>();
+          int32_t value = _generate<elle::Boolean>();
 
           if (value > 0)
             return (true);
@@ -162,7 +162,7 @@ namespace infinit
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Character);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(int8_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(int16_t);
-      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Integer32);
+      INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(int32_t);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Integer64);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Natural8);
       INFINIT_CRYPTOGRAPHY_RANDOM_GENERATOR(elle::Natural16);

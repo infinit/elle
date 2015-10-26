@@ -74,7 +74,7 @@ test_operate()
   test_operate_real();
   test_operate_x<int8_t>(-60, -58);
   test_operate_x<int16_t>(-21000, 21000);
-  test_operate_x<elle::Integer32>(-848, 73435);
+  test_operate_x<int32_t>(-848, 73435);
   test_operate_x<elle::Integer64>(-324923, 32212394);
   test_operate_x<elle::Natural8>(75, 126);
   test_operate_x<elle::Natural16>(1238, 53104);

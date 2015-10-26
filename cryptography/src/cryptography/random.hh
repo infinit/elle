@@ -27,9 +27,9 @@ namespace infinit
       ///   generate<int16_t>();
       ///   generate<int16_t>(int16_t minimum,
       ///                     int16_t maximum);
-      ///   generate<elle::Integer32>();
-      ///   generate<elle::Integer32>(elle::Integer32 minimum,
-      ///                             elle::Integer32 maximum);
+      ///   generate<int32_t>();
+      ///   generate<int32_t>(int32_t minimum,
+      ///                     int32_t maximum);
       ///   generate<elle::Integer64>();
       ///   generate<elle::Integer64>(elle::Integer64 minimum,
       ///                             elle::Integer64 maximum);
