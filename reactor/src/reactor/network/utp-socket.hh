@@ -6,6 +6,7 @@
 #include <boost/asio.hpp>
 #include <reactor/network/rdv-socket.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/MultiLockBarrier.hh>
 
 typedef struct UTPSocket					utp_socket;
 typedef struct struct_utp_context			utp_context;
@@ -100,6 +101,7 @@ namespace reactor
       UTPServer&  _server;
       utp_socket* _socket;
       elle::ConstWeakBuffer _write;
+      MultiLockBarrier _pending_operations;
       int _write_pos;
       bool _open;
     };

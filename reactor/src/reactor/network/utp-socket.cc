@@ -124,7 +124,10 @@ static uint64 on_connect(utp_callback_arguments* args)
 {
   ELLE_DEBUG("on_connect");
   UTPSocket* s = (UTPSocket*) utp_get_userdata(args->socket);
-  s->on_connect();
+  if (!s)
+    utp_close(args->socket);
+  else
+    s->on_connect();
   return 0;
 }
 
@@ -260,6 +263,7 @@ UTPSocket::~UTPSocket()
 {
   ELLE_DEBUG("~UTPSocket");
   on_close();
+  reactor::wait(_pending_operations);
   ELLE_DEBUG("~UTPSocket finished");
 }
 
@@ -330,6 +334,7 @@ void UTPSocket::connect(std::string const& id,
 
 void UTPSocket::connect(std::string const& host, int port)
 {
+  auto lock = _pending_operations.lock();
   struct addrinfo * ai;
   addrinfo hints;
   memset(&hints, 0, sizeof(hints));
@@ -353,6 +358,7 @@ void UTPSocket::write(elle::ConstWeakBuffer const& buf, DurationOpt opt)
   using namespace boost::posix_time;
   if (!_open)
     throw SocketClosed();
+  auto lock = _pending_operations.lock();
   ptime start = microsec_clock::universal_time();
   Lock l(_write_mutex);
   unsigned char* data = const_cast<unsigned char*>(buf.contents());
@@ -402,6 +408,7 @@ elle::Buffer UTPSocket::read_until(std::string const& delimiter, DurationOpt opt
   using namespace boost::posix_time;
   if (!_open)
     throw SocketClosed();
+  auto lock = _pending_operations.lock();
   ptime start = microsec_clock::universal_time();
   while (true)
   {
@@ -425,6 +432,7 @@ elle::Buffer UTPSocket::read(size_t sz, DurationOpt opt)
   using namespace boost::posix_time;
   if (!_open)
     throw SocketClosed();
+  auto lock = _pending_operations.lock();
   ELLE_DEBUG("read");
   ptime start = microsec_clock::universal_time();
   while (_read_buffer.size() < sz)
@@ -453,6 +461,7 @@ elle::Buffer UTPSocket::read_some(size_t sz, DurationOpt opt)
   using namespace boost::posix_time;
   if (!_open)
     throw SocketClosed();
+  auto lock = _pending_operations.lock();
   ELLE_DEBUG("read_some");
   ptime start = microsec_clock::universal_time();
   while (_read_buffer.empty())

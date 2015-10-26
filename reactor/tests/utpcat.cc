@@ -66,6 +66,29 @@ ELLE_TEST_SCHEDULED(utp_close)
     UTPServer srv;
     reactor::network::UTPSocket sock(srv);
   }
+  {
+    SocketPair sp;
+  }
+  {
+    UTPServer srv1, srv2;
+    reactor::Thread* t;
+    srv1.listen(0); srv2.listen(0);
+    {
+      auto s1 = elle::make_unique<reactor::network::UTPSocket>(srv2);
+      reactor::Barrier b;
+      t = new reactor::Thread ("foo", [&] {
+          b.open();
+          try {
+            s1->connect("127.0.0.1", srv1.local_endpoint().port());
+          }
+          catch(...)
+          {}
+      });
+      b.wait();
+    }
+    t->terminate_now();
+    delete t;
+  }
 }
 
 ELLE_TEST_SCHEDULED(utp_timeout)
