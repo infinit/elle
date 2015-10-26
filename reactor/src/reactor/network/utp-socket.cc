@@ -62,7 +62,7 @@ static uint64 on_accept(utp_callback_arguments* args)
 
 void UTPServer::on_accept(utp_socket* s)
 {
-  _accept_queue.emplace_back(new UTPSocket(*this, s));
+  _accept_queue.emplace_back(new UTPSocket(*this, s, true));
   _accept_barrier.open();
 }
 
@@ -130,6 +130,7 @@ static uint64 on_connect(utp_callback_arguments* args)
 
 void UTPSocket::on_connect()
 {
+  _open = true;
   _connect_barrier.open();
   _write_barrier.open();
 }
@@ -245,12 +246,12 @@ bool UTPServer::rdv_connected() const
 }
 
 UTPSocket::UTPSocket(UTPServer& server)
-: UTPSocket(server, utp_create_socket(server.ctx))
+: UTPSocket(server, utp_create_socket(server.ctx), false)
 {
 }
 
 UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-: UTPSocket(server, utp_create_socket(server.ctx))
+: UTPSocket(server, utp_create_socket(server.ctx), false)
 {
   connect(host, port);
 }
@@ -266,7 +267,8 @@ void UTPSocket::on_close()
 {
   if (!_socket)
     return;
-  utp_close(_socket);
+  if (_open)
+    utp_close(_socket);
   _open = false;
   _read_barrier.open();
   _write_barrier.open();
@@ -298,16 +300,19 @@ namespace
   };
 }
 
-UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket)
+UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
 : IOStream(new StreamBuffer(this))
 , _server(server)
 , _socket(socket)
-, _open(true)
+, _open(open)
 {
   utp_set_userdata(_socket, this);
-  _write_barrier.open();
-  ELLE_DEBUG("snd %s recv %s", utp_getsockopt(_socket, UTP_SNDBUF),
-    utp_getsockopt(_socket, UTP_RCVBUF));
+  if (open)
+  {
+    _write_barrier.open();
+    ELLE_DEBUG("snd %s recv %s", utp_getsockopt(_socket, UTP_SNDBUF),
+      utp_getsockopt(_socket, UTP_RCVBUF));
+  }
 }
 
 void UTPSocket::close()

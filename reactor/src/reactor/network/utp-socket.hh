@@ -59,7 +59,7 @@ namespace reactor
     public:
       typedef boost::asio::ip::udp::endpoint EndPoint;
       UTPSocket(UTPServer& server);
-      UTPSocket(UTPServer& server, utp_socket* socket);
+      UTPSocket(UTPServer& server, utp_socket* socket, bool open);
       UTPSocket(UTPServer& server, std::string const& host, int port);
       ~UTPSocket();
       void

@@ -62,6 +62,10 @@ ELLE_TEST_SCHEDULED(utp_close)
   BOOST_CHECK_THROW(sp.s1->read_some(10), reactor::network::SocketClosed);
   BOOST_CHECK_THROW(sp.s2->read_some(10), reactor::network::SocketClosed);
   BOOST_CHECK_THROW(sp.s2->write("bar"), reactor::network::SocketClosed);
+  {
+    UTPServer srv;
+    reactor::network::UTPSocket sock(srv);
+  }
 }
 
 ELLE_TEST_SCHEDULED(utp_timeout)
