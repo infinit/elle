@@ -38,7 +38,7 @@ _test_represent(uint32_t const length)
 
 static
 void
-test_represent()
+represent()
 {
   // WARNING: To uncomment only if one wants to update the representations.
   return;
@@ -65,7 +65,7 @@ _test_generate(uint32_t const length)
 
 static
 void
-test_generate()
+generate()
 {
   _test_generate(4096);
 }
@@ -76,7 +76,7 @@ test_generate()
 
 static
 void
-test_construct()
+construct()
 {
   infinit::cryptography::rsa::KeyPair keypair1 = _test_generate(2048);
 
@@ -153,7 +153,7 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 
 static
 void
-test_operate()
+operate()
 {
   infinit::cryptography::rsa::KeyPair keypair = _test_generate(512);
 
@@ -166,7 +166,7 @@ test_operate()
 
 static
 void
-test_serialize()
+serialize()
 {
   // Serialize/deserialize.
   {
@@ -202,7 +202,7 @@ test_serialize()
   {
     std::vector<std::string> const archives{
       // format 0
-      R"JSON({"private key":{".version":{"major":0,"minor":0,"subminor":0},"rsa":"MIICXQIBAAKBgQDeiXQVuqQS02dwAXV3woFxqfl5NgXrE9TIv3IkDjL2DHCBU4VeXDvNVsgthJ0Cqcz5TOkO+bF5LANpeLAJ3+okB7mXmWsRJxwtFxYVZM1O85HRuqWJ1/0iucZhxI6ONHV0BDeAHqlQiSXfBOzORQc6nvcpYYtI2IOyK0CdpbZ4iwIDAQABAoGANewIfNtktksTXUh9Ni+jPe95y60Tcgq0HJCHD8WBA62v9SZPwrWGqBLHHoBrqyGJ0T6Zmk9WeY34pa3gugPPr8eFByugh2JMDSOG3erSQ6Wyc3Bzl2/ybVKONYlosiGLYrOXiuz0yvrruOlOt1QhDpjE0MyY7vpT1C2Y9D74vIECQQD50iRaO1yRoN6J1ZBCDaM5tP/I2P/kyTYUNu4kEqKxBEhzH5eevuXk8Pic29Dtvt7hnJ7uYS3Vbc32zfCwVirzAkEA5AqM5pc3srOstGS8kH82PMuFKYdJBb56sDUsUGyEC6vpKkUzGWQppYRpOij3ntpvLy0/f0JsNXdqLcmy5GayCQJAb+/F1BxnFOWE8TOdCMu9iFzeg2sf9a5mqdYXDFjBRxnJMLRGJp4YumVysC4aRnzQtzyLRfqLI+eoct7B6vEhGwJBANf2re4Ls/IHez30USg/cawtylTEDIHmHOcX1Hnt6zfqfQ1NL9GSLGbWeZldBvVoRPfW0FXDIBualfH7HPJ115ECQQCFYFKJb19q5kVElAEJaj/vj5RwAdNQKqfI0gWFIY3WGFz6WAEerAjQxzODlb55J+dZAUuqGd3y27WSViaY+AjM"},"public key":{".version":{"major":0,"minor":0,"subminor":0},"rsa":"MIGJAoGBAN6JdBW6pBLTZ3ABdXfCgXGp+Xk2BesT1Mi/ciQOMvYMcIFThV5cO81WyC2EnQKpzPlM6Q75sXksA2l4sAnf6iQHuZeZaxEnHC0XFhVkzU7zkdG6pYnX/SK5xmHEjo40dXQEN4AeqVCJJd8E7M5FBzqe9ylhi0jYg7IrQJ2ltniLAgMBAAE="}})JSON"
+      R"JSON({"private key":{".version":"0.0.0","rsa":"MIICXQIBAAKBgQDeiXQVuqQS02dwAXV3woFxqfl5NgXrE9TIv3IkDjL2DHCBU4VeXDvNVsgthJ0Cqcz5TOkO+bF5LANpeLAJ3+okB7mXmWsRJxwtFxYVZM1O85HRuqWJ1/0iucZhxI6ONHV0BDeAHqlQiSXfBOzORQc6nvcpYYtI2IOyK0CdpbZ4iwIDAQABAoGANewIfNtktksTXUh9Ni+jPe95y60Tcgq0HJCHD8WBA62v9SZPwrWGqBLHHoBrqyGJ0T6Zmk9WeY34pa3gugPPr8eFByugh2JMDSOG3erSQ6Wyc3Bzl2/ybVKONYlosiGLYrOXiuz0yvrruOlOt1QhDpjE0MyY7vpT1C2Y9D74vIECQQD50iRaO1yRoN6J1ZBCDaM5tP/I2P/kyTYUNu4kEqKxBEhzH5eevuXk8Pic29Dtvt7hnJ7uYS3Vbc32zfCwVirzAkEA5AqM5pc3srOstGS8kH82PMuFKYdJBb56sDUsUGyEC6vpKkUzGWQppYRpOij3ntpvLy0/f0JsNXdqLcmy5GayCQJAb+/F1BxnFOWE8TOdCMu9iFzeg2sf9a5mqdYXDFjBRxnJMLRGJp4YumVysC4aRnzQtzyLRfqLI+eoct7B6vEhGwJBANf2re4Ls/IHez30USg/cawtylTEDIHmHOcX1Hnt6zfqfQ1NL9GSLGbWeZldBvVoRPfW0FXDIBualfH7HPJ115ECQQCFYFKJb19q5kVElAEJaj/vj5RwAdNQKqfI0gWFIY3WGFz6WAEerAjQxzODlb55J+dZAUuqGd3y27WSViaY+AjM"},"public key":{".version":"0.0.0","rsa":"MIGJAoGBAN6JdBW6pBLTZ3ABdXfCgXGp+Xk2BesT1Mi/ciQOMvYMcIFThV5cO81WyC2EnQKpzPlM6Q75sXksA2l4sAnf6iQHuZeZaxEnHC0XFhVkzU7zkdG6pYnX/SK5xmHEjo40dXQEN4AeqVCJJd8E7M5FBzqe9ylhi0jYg7IrQJ2ltniLAgMBAAE="}})JSON"
       };
 
     infinit::cryptography::test::formats<infinit::cryptography::rsa::KeyPair>(
@@ -216,13 +216,10 @@ test_serialize()
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("rsa/KeyPair");
-
-  suite->add(BOOST_TEST_CASE(test_represent));
-  suite->add(BOOST_TEST_CASE(test_generate));
-  suite->add(BOOST_TEST_CASE(test_construct));
-  suite->add(BOOST_TEST_CASE(test_operate));
-  suite->add(BOOST_TEST_CASE(test_serialize));
-
-  boost::unit_test::framework::master_test_suite().add(suite);
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(represent));
+  suite.add(BOOST_TEST_CASE(generate));
+  suite.add(BOOST_TEST_CASE(construct));
+  suite.add(BOOST_TEST_CASE(operate));
+  suite.add(BOOST_TEST_CASE(serialize));
 }
