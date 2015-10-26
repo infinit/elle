@@ -41,44 +41,47 @@ namespace elle
       }
 
       void
-      SerializerOut::_serialize_number(int64_t n)
+      SerializerOut::_serialize_number(int64_t n_)
       {
-        uint64_t number;
+        int64_t n = n_;
         bool neg = n < 0;
         if (neg)
-          number = -n;
-        else
-          number = n;
-        if (number <= 0x3f)
+          n = -n;
+        if (n <= 0x3f)
         { // sgn 0 val
-          unsigned char ser = (neg ? 0x80 : 0) + number;
+          unsigned char ser = (neg ? 0x80 : 0) + n;
+          ELLE_DUMP("serialize %s as 0x%02x", n_, int(ser));
           output().write((const char*)&ser, 1);
         }
-        else if (number <= 0x1fff)
+        else if (n <= 0x1fff)
         { // sgn 1 0 val val2
           unsigned char ser[2];
-          ser[0] = (neg ? 0xC0 : 0x40) + (number >> 8);
-          ser[1] = number;
+          ser[0] = (neg ? 0xC0 : 0x40) + (n >> 8);
+          ser[1] = n;
+          ELLE_DUMP("serialize %s as 0x%02x%02x", n_, int(ser[0]), int(ser[1]));
           output().write((const char*)ser, 2);
         } // sgn 1 1 0 val val2 val3
-        else if (number <= 0x0fffff)
+        else if (n <= 0x0fffff)
         {
           unsigned char ser[3];
-          ser[0] = (neg ? 0xe0 : 0x60) + (number >> 16);
-          ser[1] = number >> 8;
-          ser[2] = number;
+          ser[0] = (neg ? 0xe0 : 0x60) + (n >> 16);
+          ser[1] = n >> 8;
+          ser[2] = n;
+          ELLE_DUMP("serialize %s as 0x%02x%02x%02x",
+                    n_, int(ser[0]), int(ser[1]), int(ser[2]));
           output().write((const char*)ser, 3);
         }
         else
         {
           unsigned char c = neg? 0xFF : 0x7F;
           output().write((const char*)&c, 1);
-          output().write((const char*)(const void*)&number, 8);
+          output().write((const char*)(const void*)&n, 8);
+          ELLE_DUMP("serialize %s as 0x%02x%08x", int(c), n);
           /*
           unsigned char ser[9];
           ser[0] = neg? 0xFF : 0x7F;
           for (int i=1; i<9; ++i)
-            ser[i] = number >> ((i-1)*8);
+            ser[i] = n >> ((i-1)*8);
           output().write((const char*)ser, 9);*/
         }
       }
@@ -88,6 +91,7 @@ namespace elle
                                       int size,
                                       std::function<void ()> const& f)
       {
+        ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
         _serialize_number(size);
         f();
       }
@@ -104,36 +108,42 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, int64_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, uint64_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, int32_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, uint32_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, int8_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
       SerializerOut::_serialize(std::string const& name, uint8_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
@@ -187,6 +197,7 @@ namespace elle
                                        bool filled,
                                        std::function<void ()> const& f)
       {
+        ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
         _serialize(name, filled);
         if (filled)
           f();

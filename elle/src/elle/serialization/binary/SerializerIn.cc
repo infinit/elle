@@ -100,6 +100,7 @@ namespace elle
                                       bool,
                                       std::function<void ()> const& f)
       {
+        ELLE_TRACE_SCOPE("%s: deserialize option \"%s\"", *this, name);
         bool isOn;
         _serialize(name, isOn);
         if (isOn)
@@ -197,7 +198,7 @@ namespace elle
         int,
         std::function<void ()> const& serialize_element)
       {
-        ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
+        ELLE_TRACE_SCOPE("%s: deserialize array \"%s\"", *this, name);
         int count = _serialize_number();
         for (int i=0; i<count; ++i)
           serialize_element();
