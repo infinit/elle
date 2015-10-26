@@ -17,10 +17,10 @@ static
 void
 test_operate_real()
 {
-  elle::Real value1 =
-    infinit::cryptography::random::generate<elle::Real>();
-  elle::Real value2 =
-    infinit::cryptography::random::generate<elle::Real>();
+  double value1 =
+    infinit::cryptography::random::generate<double>();
+  double value2 =
+    infinit::cryptography::random::generate<double>();
 
   // With very high probability.
   BOOST_CHECK_NE(value1, value2);

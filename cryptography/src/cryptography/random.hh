@@ -20,7 +20,7 @@ namespace infinit
       ///   generate<char>();
       ///   generate<char>(char minimum,
       ///                  char maximum);
-      ///   generate<elle::Real>();
+      ///   generate<double>();
       ///   generate<int8_t>();
       ///   generate<int8_t>(int8_t minimum,
       ///                    int8_t maximum);

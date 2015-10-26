@@ -21,7 +21,7 @@ public:
     // XXX[virer pour le load constructor]
   }
 
-  Sample(elle::Real const& salt,
+  Sample(double const& salt,
         elle::String const& string):
     _salt(salt),
     _string(string)
@@ -53,7 +53,7 @@ public:
   | Attributes |
   `-----------*/
 private:
-  ELLE_ATTRIBUTE_R(elle::Real, salt);
+  ELLE_ATTRIBUTE_R(double, salt);
   ELLE_ATTRIBUTE_R(elle::String, string);
 };
 

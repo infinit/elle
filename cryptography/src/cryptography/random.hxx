@@ -81,11 +81,11 @@ namespace infinit
 
         T ranged =
           static_cast<T>(
-            static_cast<elle::Real>(_abs(value)) /
-            (static_cast<elle::Real>(std::numeric_limits<T>::max()) -
-             static_cast<elle::Real>(std::numeric_limits<T>::min())) *
-            (static_cast<elle::Real>(maximum) -
-             static_cast<elle::Real>(minimum)));
+            static_cast<double>(_abs(value)) /
+            (static_cast<double>(std::numeric_limits<T>::max()) -
+             static_cast<double>(std::numeric_limits<T>::min())) *
+            (static_cast<double>(maximum) -
+             static_cast<double>(minimum)));
 
         return (minimum + ranged);
       }
@@ -146,16 +146,16 @@ namespace infinit
       };
 
       template <>
-      struct Generator<elle::Real>
+      struct Generator<double>
       {
         static
-        elle::Real
+        double
         generate()
         {
           ELLE_LOG_COMPONENT("infinit.cryptography.random");
           ELLE_TRACE_FUNCTION("");
 
-          return (_generate<elle::Real>());
+          return (_generate<double>());
         }
       };
 
