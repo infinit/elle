@@ -328,7 +328,9 @@ void UTPSocket::connect(std::string const& id,
                         std::vector<EndPoint> const& endpoints,
                         DurationOpt timeout)
 {
+  ELLE_TRACE("Contacting %s at %s", id, endpoints);
   EndPoint res = _server._socket->contact(id, endpoints, timeout);
+  ELLE_TRACE("Got contact at %s", res);
   connect(res.address().to_string(), res.port());
 }
 
@@ -688,6 +690,11 @@ void UTPServer::rdv_connect(std::string const& id, std::string const& address,
     host = host.substr(0, p);
   }
   _socket->rdv_connect(id, host, port, timeout);
+}
+
+void UTPServer::set_local_id(std::string const& id)
+{
+  _socket->set_local_id(id);
 }
 
 }}

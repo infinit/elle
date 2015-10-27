@@ -27,6 +27,7 @@ namespace reactor
       void rdv_connect(std::string const& id,
                        Endpoint server,
                        DurationOpt timeout = DurationOpt());
+      void set_local_id(std::string const& id);
       // We expect user to call receive_from in a loop, before rdv_connect
       Size receive_from(Buffer buffer,
         boost::asio::ip::udp::endpoint &endpoint,
@@ -37,7 +38,7 @@ namespace reactor
         DurationOpt timeout = DurationOpt());
       bool rdv_connected() const;
       private:
-        void send_ping(Endpoint target);
+        void send_ping(Endpoint target, std::string const& tid = {});
         void loop_breach();
         void loop_keep_alive();
         void send_with_magik(elle::Buffer const& buf, Endpoint target);

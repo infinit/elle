@@ -32,6 +32,7 @@ namespace reactor
       void rdv_connect(std::string const& id,
                        std::string const& address,
                        DurationOpt timeout = DurationOpt());
+      void set_local_id(std::string const& id);
       // For internal use
       void
       send_to(Buffer buf, EndPoint where);

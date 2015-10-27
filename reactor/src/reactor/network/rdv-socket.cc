@@ -1,5 +1,8 @@
 #include <reactor/network/rdv-socket.hh>
 
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include <reactor/network/resolve.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/rdv.hh>
@@ -80,19 +83,31 @@ namespace reactor
               reply.id = _id;
               reply.command = rdv::Command::pong;
               reply.source_endpoint = endpoint;
+              reply.target_address = repl.target_address;
               elle::Buffer buf = elle::serialization::json::serialize(reply, false);
               send_with_magik(buf, endpoint);
             }
             break;
           case rdv::Command::pong:
             {
-              ELLE_DEBUG("pong from %s", repl.id);
+              ELLE_DEBUG("pong from '%s' (%s)", repl.id, repl.target_address ?
+                *repl.target_address : "");
               auto it = _contacts.find(repl.id);
               if (it != _contacts.end())
               {
                 ELLE_TRACE("opening result barrier");
                 it->second.result = endpoint;
                 it->second.barrier.open();
+              }
+              if (repl.target_address)
+              {
+                auto it = _contacts.find(*repl.target_address);
+                if (it != _contacts.end())
+                {
+                  ELLE_TRACE("opening result barrier");
+                  it->second.result = endpoint;
+                  it->second.barrier.open();
+                }
               }
             }
             break;
@@ -133,6 +148,8 @@ namespace reactor
                   std::make_pair(*repl.target_endpoint, 5));
             }
             break;
+          case rdv::Command::error:
+            break;
           }
         }
         else
@@ -143,26 +160,34 @@ namespace reactor
         std::vector<Endpoint> const& endpoints,
         DurationOpt timeout)
     {
+      std::string tempid;
+      std::string contactid = id;
+      if (id.empty())
       {
-        ContactInfo& ci = _contacts[id];
-        ++ci.waiters;
+        tempid = to_string(
+          boost::uuids::basic_random_generator<boost::mt19937>()());
+        contactid = tempid;
       }
+      ELLE_TRACE("Using contactid %s", contactid);
+      ContactInfo& ci = _contacts[contactid];
+      ++ci.waiters;
       elle::SafeFinally unregister_request([&] {
-          ContactInfo& ci = _contacts[id];
+          ContactInfo& ci = _contacts[contactid];
           if (--ci.waiters <= 0)
-            _contacts.erase(id);
+            _contacts.erase(contactid);
       });
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
         if (!endpoints.empty())
         { // try known endpoints
+          ELLE_TRACE("pinging id=%s, tmpid=%s", id, tempid);
           for (auto const& ep: endpoints)
-            send_ping(ep);
+            send_ping(ep, tempid);
         }
         // try establishing link through rdv
-        auto const& c = _contacts.at(id);
-        if (!c.barrier.opened() && _server_reached.opened())
+        auto const& c = _contacts.at(contactid);
+        if (!c.barrier.opened() && _server_reached.opened() && !id.empty())
         {
           if (c.result)
           { // RDV gave us an enpoint, but we are not connected to it yet, ping it
@@ -178,9 +203,9 @@ namespace reactor
             send_to(buf, _server);
           }
         }
-        if (reactor::wait(_contacts.at(id).barrier, 500_ms))
+        if (reactor::wait(_contacts.at(contactid).barrier, 500_ms))
         {
-          auto res = *_contacts[id].result;
+          auto res = *_contacts[contactid].result;
           return res;
         }
         if (timeout
@@ -197,13 +222,14 @@ namespace reactor
       send_to(Buffer(data.contents(), data.size()), peer);
     }
 
-    void RDVSocket::send_ping(Endpoint target)
+    void RDVSocket::send_ping(Endpoint target, std::string const& tid)
     {
       ELLE_DEBUG("send ping to %s", target);
       rdv::Message ping;
       ping.command = rdv::Command::ping;
       ping.id = _id;
       ping.source_endpoint = target;
+      ping.target_address = tid;
       elle::Buffer buf = elle::serialization::json::serialize(ping, false);
       send_with_magik(buf, target);
     }
@@ -241,6 +267,11 @@ namespace reactor
     bool RDVSocket::rdv_connected() const
     {
       return _server_reached.opened();
+    }
+
+    void RDVSocket::set_local_id(std::string const& id)
+    {
+      this->_id = id;
     }
   }
 }
