@@ -79,6 +79,8 @@ namespace athena
                 {
                   try
                   {
+                    ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
+                                     *this, proposal, *peer);
                     if (auto p = peer->propose(proposal))
                       if (!previous || previous->proposal < p->proposal)
                       {
@@ -97,21 +99,21 @@ namespace athena
             }
             reactor::wait(scope);
           };
+          ELLE_DEBUG("reached %s peers", reached);
           if (reached <= this->_peers.size() / 2)
           {
-            ELLE_TRACE("%s: too few peers to reach consensus", *this);
+            ELLE_TRACE("too few peers to reach consensus");
             throw TooFewPeers(reached, this->_peers.size());
           }
           if (previous)
           {
-            ELLE_DEBUG("%s: replace value with %s",
-                       *this, printer(previous->value));
+            ELLE_DEBUG("replace value with %s", printer(previous->value));
             new_value.emplace(std::move(previous->value));
             value = &*new_value;
             if (previous->proposal.version > version)
             {
-              ELLE_DEBUG("%s: newer version exists, replace %s",
-                         *this, printer(previous->value));
+              ELLE_DEBUG("newer version exists, replace %s",
+                         printer(previous->value));
               version = previous->proposal.version;
               this->_round = 0;
             }
