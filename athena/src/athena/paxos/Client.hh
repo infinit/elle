@@ -35,6 +35,8 @@ namespace athena
         typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
         typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
         virtual
+        ~Peer() = default;
+        virtual
         boost::optional<Accepted>
         propose(Proposal const& p) = 0;
         virtual
