@@ -14,7 +14,10 @@ namespace athena
 {
   namespace paxos
   {
-    template <typename T, typename Version, typename ClientId>
+    template <typename T,
+              typename Version,
+              typename ClientId,
+              typename ServerId = ClientId>
     class Server
       : public elle::Printable
     {
@@ -81,8 +84,10 @@ namespace athena
     | Construction |
     `-------------*/
     public:
-      Server();
+      Server(ServerId id, std::vector<ServerId> peers);
       Server(VersionsState state);
+      ELLE_ATTRIBUTE(ServerId, id);
+      ELLE_ATTRIBUTE_R(std::vector<ServerId>, peers);
 
     /*----------.
     | Consensus |

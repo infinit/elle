@@ -54,9 +54,9 @@ public:
 
 ELLE_TEST_SCHEDULED(all_is_well)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
   peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
@@ -89,8 +89,8 @@ class UnavailablePeer
 
 ELLE_TEST_SCHEDULED(two_of_three)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
   peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
@@ -102,7 +102,7 @@ ELLE_TEST_SCHEDULED(two_of_three)
 
 ELLE_TEST_SCHEDULED(one_of_three)
 {
-  paxos::Server<int, int, int> server_1;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers;
   peers.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
@@ -114,9 +114,9 @@ ELLE_TEST_SCHEDULED(one_of_three)
 
 ELLE_TEST_SCHEDULED(already_chosen)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
   peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
@@ -173,9 +173,9 @@ public:
 
 ELLE_TEST_SCHEDULED(concurrent)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(server_3);
   typedef paxos::Client<int, int, int>::Peers Peers;
@@ -205,9 +205,9 @@ ELLE_TEST_SCHEDULED(concurrent)
 
 ELLE_TEST_SCHEDULED(conflict)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(server_3);
   typedef paxos::Client<int, int, int>::Peers Peers;
@@ -240,9 +240,9 @@ ELLE_TEST_SCHEDULED(conflict)
 // Check a newer version overrides a previous result
 ELLE_TEST_SCHEDULED(versions)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
   peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));
@@ -261,9 +261,9 @@ ELLE_TEST_SCHEDULED(versions)
 // Check a newer version, even partially agreed on, is taken in account
 ELLE_TEST_SCHEDULED(versions_partial)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
   auto peer_1_1 = new InstrumentedPeer<int, int, int>(server_1);
@@ -300,9 +300,9 @@ ELLE_TEST_SCHEDULED(versions_partial)
 // Check a failed newer version doesn't block older ones
 ELLE_TEST_SCHEDULED(versions_aborted)
 {
-  paxos::Server<int, int, int> server_1;
-  paxos::Server<int, int, int> server_2;
-  paxos::Server<int, int, int> server_3;
+  paxos::Server<int, int, int> server_1(11, {12, 13});
+  paxos::Server<int, int, int> server_2(12, {11, 13});
+  paxos::Server<int, int, int> server_3(13, {11, 12});
   typedef paxos::Client<int, int, int>::Peers Peers;
   Peers peers_1;
   peers_1.push_back(elle::make_unique<Peer<int, int, int>>(server_1));

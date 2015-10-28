@@ -14,24 +14,27 @@ namespace athena
     | Types |
     `------*/
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Proposal::Proposal(
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Proposal::Proposal(
       Version version_, int round_, ClientId sender_)
       : version(version_)
       , round(round_)
       , sender(sender_)
     {}
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Proposal::Proposal()
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Proposal::Proposal()
       : version()
       , round()
       , sender()
     {}
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     bool
-    Server<T, Version, ClientId>::Proposal::operator <(
+    Server<T, Version, ClientId, ServerId>::Proposal::operator <(
       Proposal const& rhs) const
     {
       if (this->round < rhs.round)
@@ -39,9 +42,10 @@ namespace athena
       return this->sender < rhs.sender;
     }
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId>::Proposal::serialize(
+    Server<T, Version, ClientId, ServerId>::Proposal::serialize(
       elle::serialization::Serializer& s)
     {
       s.serialize("version", this->version);
@@ -49,54 +53,61 @@ namespace athena
       s.serialize("sender", this->sender);
     }
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Accepted::Accepted()
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Accepted::Accepted()
       : proposal()
       , value()
     {}
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Accepted::Accepted(
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
       Proposal proposal_, T value_)
       : proposal(std::move(proposal_))
       , value(std::move(value_))
     {}
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId>::Accepted::serialize(
+    Server<T, Version, ClientId, ServerId>::Accepted::serialize(
       elle::serialization::Serializer& s)
     {
       s.serialize("proposal", this->proposal);
       s.serialize("value", this->value);
     }
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::VersionState::VersionState(
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
       Proposal p, boost::optional<Accepted> a)
       : proposal(std::move(p))
       , accepted(std::move(a))
     {}
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::VersionState::VersionState(
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
       elle::serialization::SerializerIn& s)
     {
       this->serialize(s);
     }
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId>::VersionState::serialize(
+    Server<T, Version, ClientId, ServerId>::VersionState::serialize(
       elle::serialization::Serializer& s)
     {
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
     }
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     Version
-    Server<T, Version, ClientId>::VersionState::version() const
+    Server<T, Version, ClientId, ServerId>::VersionState::version() const
     {
       return this->proposal.version;
     }
@@ -150,19 +161,27 @@ namespace athena
     | Construction |
     `-------------*/
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Server()
-      : _state()
-    {}
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Server(
+      ServerId id, std::vector<ServerId> peers)
+      : _id(std::move(id))
+      , _peers(std::move(peers))
+      , _state()
+    {
+      this->_peers.push_back(this->_id);
+    }
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Server(VersionsState state)
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Server(VersionsState state)
       : _state(std::move(state))
     {}
 
-    template <typename T, typename Version, typename ClientId>
-    boost::optional<typename Server<T, Version, ClientId>::Accepted>
-    Server<T, Version, ClientId>::propose(Proposal p)
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
+    Server<T, Version, ClientId, ServerId>::propose(Proposal p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
@@ -199,9 +218,10 @@ namespace athena
       }
     }
 
-    template <typename T, typename Version, typename ClientId>
-    typename Server<T, Version, ClientId>::Proposal
-    Server<T, Version, ClientId>::accept(Proposal p, T value)
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    typename Server<T, Version, ClientId, ServerId>::Proposal
+    Server<T, Version, ClientId, ServerId>::accept(Proposal p, T value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
@@ -244,9 +264,10 @@ namespace athena
       return version.proposal;
     }
 
-    template <typename T, typename Version, typename ClientId>
-    boost::optional<typename Server<T, Version, ClientId>::Accepted>
-    Server<T, Version, ClientId>::highest_accepted() const
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
+    Server<T, Version, ClientId, ServerId>::highest_accepted() const
     {
       for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
       {
@@ -260,17 +281,21 @@ namespace athena
     | Serialization |
     `--------------*/
 
-    template <typename T, typename Version, typename ClientId>
-    Server<T, Version, ClientId>::Server(elle::serialization::SerializerIn& s)
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::Server(
+      elle::serialization::SerializerIn& s)
       : _state()
     {
       this->serialize(s);
     }
 
     // FIXME: use splitted serialization
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId>::serialize(elle::serialization::Serializer& s)
+    Server<T, Version, ClientId, ServerId>::serialize(
+      elle::serialization::Serializer& s)
     {
       s.serialize("state", this->_state);
     }
@@ -279,9 +304,10 @@ namespace athena
     | Printable |
     `----------*/
 
-    template <typename T, typename Version, typename ClientId>
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId>::print(std::ostream& output) const
+    Server<T, Version, ClientId, ServerId>::print(std::ostream& output) const
     {
       elle::fprintf(output, "paxos::Server(%x)", this);
     }
