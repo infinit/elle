@@ -22,8 +22,9 @@ namespace athena
     public:
       typedef Client<T, Version, ClientId> Self;
       typedef paxos::Server<T, Version, ClientId> Server;
-      typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
       typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
+      typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
+      typedef typename paxos::Server<T, Version, ClientId>::Quorum Quorum;
 
     /*-----.
     | Peer |
@@ -38,10 +39,10 @@ namespace athena
         ~Peer() = default;
         virtual
         boost::optional<Accepted>
-        propose(Proposal const& p) = 0;
+        propose(Quorum const& q, Proposal const& p) = 0;
         virtual
         Proposal
-        accept(Proposal const& p, T const& value) = 0;
+        accept(Quorum const& q, Proposal const& p, T const& value) = 0;
         class Unavailable
           : public elle::Error
         {
@@ -69,15 +70,19 @@ namespace athena
        *  \return the value that was chosen if not the one we submitted
        */
       boost::optional<T>
-      choose(typename elle::_detail::attribute_r_type<T>::type value);
+      choose(
+        Quorum const& q,
+        typename elle::_detail::attribute_r_type<T>::type value);
       /** Submit \a value as the chosen value.
        *
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
       boost::optional<T>
-      choose(typename elle::_detail::attribute_r_type<Version>::type version,
-             typename elle::_detail::attribute_r_type<T>::type value);
+      choose(
+        Quorum const& q,
+        typename elle::_detail::attribute_r_type<Version>::type version,
+        typename elle::_detail::attribute_r_type<T>::type value);
       ELLE_ATTRIBUTE(int, round);
 
     /*----------.

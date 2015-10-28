@@ -112,6 +112,36 @@ namespace athena
       return this->proposal.version;
     }
 
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
+      Quorum expected, Quorum effective, Version version)
+      : elle::Error(elle::sprintf("wrong quorum, current version is %s", version))
+      , _expected(std::move(expected))
+      , _effective(std::move(effective))
+      , _version(std::move(version))
+    {}
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
+      elle::serialization::SerializerIn& input)
+      : Super(input)
+    {
+      this->serialize(input);
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    void
+    Server<T, Version, ClientId, ServerId>::WrongQuorum::serialize(
+      elle::serialization::Serializer& s)
+    {
+      s.serialize("expected", this->_expected);
+      s.serialize("effective", this->_effective);
+      s.serialize("version", this->_version);
+    }
+
     /*--------.
     | Printer |
     `--------*/
@@ -164,12 +194,12 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Server(
-      ServerId id, std::vector<ServerId> peers)
+      ServerId id, Quorum quorum)
       : _id(std::move(id))
-      , _peers(std::move(peers))
+      , _quorum(std::move(quorum))
       , _state()
     {
-      this->_peers.push_back(this->_id);
+      this->_quorum.insert(this->_id);
     }
 
     template <
@@ -178,12 +208,17 @@ namespace athena
       : _state(std::move(state))
     {}
 
+    /*----------.
+    | Consensus |
+    `----------*/
+
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
-    Server<T, Version, ClientId, ServerId>::propose(Proposal p)
+    Server<T, Version, ClientId, ServerId>::propose(Quorum q, Proposal p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
+      this->_check_quorum(q);
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
       {
         auto highest = this->highest_accepted();
@@ -221,9 +256,11 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     typename Server<T, Version, ClientId, ServerId>::Proposal
-    Server<T, Version, ClientId, ServerId>::accept(Proposal p, T value)
+    Server<T, Version, ClientId, ServerId>::accept(
+      Quorum q, Proposal p, T value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
+      this->_check_quorum(q);
       ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
       {
         auto highest = this->highest_accepted();
@@ -275,6 +312,15 @@ namespace athena
           return it->accepted;
       }
       return {};
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    void
+    Server<T, Version, ClientId, ServerId>::_check_quorum(Quorum q) const
+    {
+      if (q != this->_quorum)
+        throw WrongQuorum(this->_quorum, q, 0);
     }
 
     /*--------------.

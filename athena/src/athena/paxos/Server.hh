@@ -6,6 +6,7 @@
 # include <boost/multi_index/member.hpp>
 
 # include <elle/attribute.hh>
+# include <elle/Error.hh>
 # include <elle/Printable.hh>
 
 # include <reactor/Barrier.hh>
@@ -80,26 +81,45 @@ namespace athena
           >
         > VersionsState;
 
+      typedef std::set<ServerId> Quorum;
+
+      class WrongQuorum
+        : public elle::Error
+      {
+      public:
+        WrongQuorum(Quorum expected, Quorum effective, Version version);
+        WrongQuorum(elle::serialization::SerializerIn& input);
+        void
+        serialize(elle::serialization::Serializer& s);
+
+        ELLE_ATTRIBUTE_R(Quorum, expected);
+        ELLE_ATTRIBUTE_R(Quorum, effective);
+        ELLE_ATTRIBUTE_R(Version, version);
+      };
+
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      Server(ServerId id, std::vector<ServerId> peers);
+      Server(ServerId id, Quorum quorum);
       Server(VersionsState state);
       ELLE_ATTRIBUTE(ServerId, id);
-      ELLE_ATTRIBUTE_R(std::vector<ServerId>, peers);
+      ELLE_ATTRIBUTE_R(Quorum, quorum);
 
     /*----------.
     | Consensus |
     `----------*/
     public:
       boost::optional<Accepted>
-      propose(Proposal p);
+      propose(Quorum q, Proposal p);
       Proposal
-      accept(Proposal p, T value);
+      accept(Quorum q, Proposal p, T value);
       boost::optional<Accepted>
       highest_accepted() const;
       ELLE_ATTRIBUTE(VersionsState, state);
+    private:
+      void
+      _check_quorum(Quorum q) const;
 
     /*--------------.
     | Serialization |

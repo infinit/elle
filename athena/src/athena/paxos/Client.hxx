@@ -45,14 +45,16 @@ namespace athena
     template <typename T, typename Version, typename ClientId>
     boost::optional<T>
     Client<T, Version, ClientId>::choose(
+      Quorum const& q,
       typename elle::_detail::attribute_r_type<T>::type value)
     {
-      return this->choose(Version(), std::move(value));
+      return this->choose(q, Version(), std::move(value));
     }
 
     template <typename T, typename Version, typename ClientId>
     boost::optional<T>
     Client<T, Version, ClientId>::choose(
+      Quorum const& q,
       typename elle::_detail::attribute_r_type<Version>::type version,
       typename elle::_detail::attribute_r_type<T>::type value_)
     {
@@ -81,7 +83,7 @@ namespace athena
                   {
                     ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
                                      *this, proposal, *peer);
-                    if (auto p = peer->propose(proposal))
+                    if (auto p = peer->propose(q, proposal))
                       if (!previous || previous->proposal < p->proposal)
                       {
                         ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
@@ -133,7 +135,7 @@ namespace athena
                 {
                   try
                   {
-                    auto minimum = peer->accept(proposal, *value);
+                    auto minimum = peer->accept(q, proposal, *value);
                     // FIXME: If the majority doesn't conflict, the value was
                     // still chosen - right ? Take that in account.
                     if (proposal < minimum)
