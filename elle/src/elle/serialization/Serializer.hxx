@@ -806,6 +806,15 @@ namespace elle
       this->_serialize<std::vector, T, A>(name, collection);
     }
 
+    // Specific overload to catch std::vector subclasses (for das, namely).
+    template <typename T, typename C, typename A>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::set<T, C, A>& collection)
+    {
+      this->_serialize_collection(name, collection);
+    }
+
     template <typename T, typename I>
     void
     Serializer::_serialize(

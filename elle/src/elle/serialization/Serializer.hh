@@ -254,6 +254,9 @@ namespace elle
       template <typename T, typename A>
       void
       _serialize(std::string const& name, std::vector<T, A>& collection);
+      template <typename T, typename C, typename A>
+      void
+      _serialize(std::string const& name, std::set<T, C, A>& collection);
       template <typename T, typename I>
       void
       _serialize(std::string const& name,
