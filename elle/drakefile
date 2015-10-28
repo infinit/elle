@@ -292,6 +292,7 @@ def configure(zlib_lib,
     'src/elle/system/user_paths.hh',
     'src/elle/time.hh',
     'src/elle/types.hh',
+    'src/elle/utils.hh',
     )
   version = drake.node('src/elle/elle.hh')
   CxxVersionGenerator(output = version, git = drake.git.Git(),
