@@ -104,7 +104,7 @@ namespace elle
   template <typename T>
   template <typename F>
   auto
-  With<T>::operator <<(F const& action) -> decltype(action(*(T*)(nullptr)))
+  With<T>::operator <<(F const& action) -> decltype(action(std::declval<T&>()))
   {
     return this->_run(action);
   }
@@ -112,9 +112,9 @@ namespace elle
   template <typename T>
   template <typename F>
   auto
-  With<T>::_run(F const& action) -> decltype(action(*(T*)(nullptr)))
+  With<T>::_run(F const& action) -> decltype(action(std::declval<T&>()))
   {
-    typedef decltype(action(*(T*)(nullptr))) Value;
+    typedef decltype(action(std::declval<T&>())) Value;
 
     ELLE_LOG_COMPONENT("elle.With");
 

@@ -31,7 +31,7 @@ namespace elle
   public:
     template <typename F>
     auto
-    operator <<(F const& action) -> decltype(action(*(T*)(nullptr)));
+    operator <<(F const& action) -> decltype(action(std::declval<T&>()));
 
     template <typename F>
     auto
@@ -40,7 +40,7 @@ namespace elle
   private:
     template <typename F>
     auto
-    _run(F const& action) -> decltype(action(*(T*)(nullptr)));
+    _run(F const& action) -> decltype(action(std::declval<T&>()));
   };
 }
 
