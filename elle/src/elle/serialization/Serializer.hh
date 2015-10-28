@@ -4,6 +4,7 @@
 # include <functional>
 # include <list>
 # include <memory>
+# include <set>
 # include <string>
 # include <type_traits>
 # include <typeinfo>
@@ -324,7 +325,21 @@ namespace elle
       _deserialize_in_array(std::string const& name, C& collection);
       template <typename C>
       typename std::enable_if<
-        !is_unserializable_inplace<typename C::value_type>(), void>::type
+        !is_unserializable_inplace<
+          typename C::value_type>(),
+          typename std::enable_if_exists<
+            decltype(
+              std::declval<C>().emplace()),
+            void>::type>::type
+      _deserialize_in_array(std::string const& name, C& collection);
+      template <typename C>
+      typename std::enable_if<
+        !is_unserializable_inplace<
+          typename C::value_type>(),
+          typename std::enable_if_exists<
+            decltype(
+              std::declval<C>().emplace_back()),
+            void>::type>::type
       _deserialize_in_array(std::string const& name, C& collection);
       template <typename T>
       typename std::enable_if<is_unserializable_inplace<T>(), void>::type

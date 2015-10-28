@@ -787,7 +787,30 @@ namespace elle
 
     template <typename C>
     typename std::enable_if<
-      !is_unserializable_inplace<typename C::value_type>(), void>::type
+      !is_unserializable_inplace<
+        typename C::value_type>(),
+        typename std::enable_if_exists<
+          decltype(
+            std::declval<C>().emplace()),
+          void>::type>::type
+    Serializer::_deserialize_in_array(std::string const& name,
+                                      C& collection)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_DEBUG("%s: serialize in place %s in %s", *this, name, collection);
+      typename C::value_type value;
+      this->_serialize_anonymous(name, value);
+      collection.emplace(std::move(value));
+    }
+
+    template <typename C>
+    typename std::enable_if<
+      !is_unserializable_inplace<
+        typename C::value_type>(),
+        typename std::enable_if_exists<
+          decltype(
+            std::declval<C>().emplace_back()),
+          void>::type>::type
     Serializer::_deserialize_in_array(std::string const& name,
                                       C& collection)
     {
