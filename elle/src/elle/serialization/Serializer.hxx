@@ -344,9 +344,6 @@ namespace elle
     Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt,
                           bool anonymous)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: serialize uptr named %s anonimously ? (%s)",
-          *this, name, anonymous);
       if (this->_out())
         this->_serialize_option(
           name,
@@ -360,21 +357,17 @@ namespace elle
           });
       else
         this->_serialize_option(
-          anonymous ? "SERIALIZE ANONYMOUS" : name,
+          name,
           bool(opt),
           [&]
           {
-            ELLE_LOG_COMPONENT("elle.serialization.lambda");
-            ELLE_DEBUG("%s: lambda anon or not", *this);
             if (anonymous)
             {
-              ELLE_DEBUG("lambda: anonymous unique_ptr");
               Details::_smart_virtual_switch<std::unique_ptr<T>, T>
-                (*this, "SERIALIZE ANONYMOUS", opt);
+                (*this, name, opt);
             }
             else if (this->_enter(name))
             {
-              ELLE_DEBUG("lambda: not anonymous unique_ptr");
               elle::SafeFinally leave([&] { this->_leave(name); });
               Details::_smart_virtual_switch<std::unique_ptr<T>, T>
                 (*this, name, opt);
@@ -387,9 +380,6 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::unique_ptr<T>& opt)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: %s: _serialize_anonymous %s as uptr of type %s",
-          *this, name, opt, elle::type_info(opt))
       serialize(name, opt, true);
     }
 
@@ -792,8 +782,6 @@ namespace elle
                                       C& collection)
     {
       collection.emplace_back();
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: serialize in place %s in %s", *this, name, collection);
       this->_serialize_anonymous(name, collection.back());
     }
 
@@ -853,8 +841,6 @@ namespace elle
           -1,
           [&] ()
           {
-            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-            ELLE_DEBUG("%s: lambda: %s, %s", *this, name, collection);
             this->_deserialize_in_array(name, collection);
           });
       }
