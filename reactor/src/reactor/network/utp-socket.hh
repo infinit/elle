@@ -46,7 +46,7 @@ namespace reactor
       _cleanup();
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
-      std::unique_ptr<RDVSocket> _socket;
+      ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
       std::vector<std::unique_ptr<UTPSocket>> _accept_queue;
       Barrier _accept_barrier;
       std::unique_ptr<Thread> _listener;
