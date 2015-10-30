@@ -9,6 +9,8 @@
 #include <cryptography/hash.hh>
 
 #include <reactor/scheduler.hh>
+#include <reactor/exception.hh>
+#include <reactor/Barrier.hh>
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
@@ -46,6 +48,11 @@ namespace infinit
     {
       reactor::Lock lock(_lock_read);
       elle::IOStreamClear clearer(_stream);
+      int state = 0;
+      elle::SafeFinally state_checker([&] {
+        if (state == 1)
+          ELLE_ERR("serializer::read interrupted in unsafe state");
+      });
       ELLE_TRACE("%s: read packet", *this)
       {
         elle::Buffer hash;
@@ -61,11 +68,11 @@ namespace infinit
         }
         uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
-
+        state = 1;
         elle::Buffer packet(size);
         _stream.read(reinterpret_cast<char*>(packet.mutable_contents()), size);
         ELLE_DUMP("%s: packet data %s", *this, packet);
-
+        state = 2;
         // Check hash.
         if (_checksum)
         {
@@ -103,44 +110,64 @@ namespace infinit
     void
     Serializer::_write(elle::Buffer& packet)
     {
-      reactor::Lock lock(_lock_write);
-      elle::IOStreamClear clearer(_stream);
-      ELLE_TRACE("%s: send %s", *this, packet)
+      // The write must not be interrupted, otherwise it will break
+      // the serialization protocol.
+      // FIXME nonInterruptible
+      auto b = std::make_shared<reactor::Barrier>();
+      auto exc = std::make_shared<std::exception_ptr>();
+      b->close();
+      new reactor::Thread("ser writer", [this, packet, b, exc]
       {
-        if (_checksum)
+        try
         {
+          reactor::Lock lock(_lock_write);
+          elle::SafeFinally done([&] {
+              b->open();
+          });
+          elle::IOStreamClear clearer(_stream);
+          ELLE_TRACE("%s: send %s", *this, packet)
+          if (_checksum)
+          {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-          auto _hash =
+            auto _hash =
             infinit::cryptography::hash(
               infinit::cryptography::Plain(
                 elle::WeakBuffer(packet.mutable_contents(),
-                                 packet.size())),
+                  packet.size())),
               infinit::cryptography::Oneway::sha1);
-          auto hash(_hash.buffer());
+            auto hash(_hash.buffer());
 #else
-          auto hash =
+            auto hash =
             infinit::cryptography::hash(
               elle::ConstWeakBuffer(packet.contents(),
                                     packet.size()),
               infinit::cryptography::Oneway::sha1);
 #endif
-          auto hash_size = hash.size();
-          ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
-            _uint32_put(_stream, hash_size);
-          ELLE_DUMP("%s: send checksum: %s", *this, hash)
-          {
-            auto data = reinterpret_cast<char*>(hash.mutable_contents());
-            _stream.write(data, hash_size);
+            auto hash_size = hash.size();
+            ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
+              _uint32_put(_stream, hash_size);
+            ELLE_DUMP("%s: send checksum: %s", *this, hash)
+            {
+              auto data = reinterpret_cast<char*>(hash.mutable_contents());
+              _stream.write(data, hash_size);
+            }
           }
-        }
-        auto size = packet.size();
-        ELLE_DUMP("%s: send packet size %s", *this, size)
+          auto size = packet.size();
+          ELLE_DUMP("%s: send packet size %s", *this, size)
           _uint32_put(_stream, size);
-        ELLE_DUMP("%s: send packet data", *this)
-          _stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
-                        packet.size());
-      }
-      _stream.flush();
+          ELLE_DUMP("%s: send packet data", *this)
+            _stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
+              packet.size());
+          _stream.flush();
+        }
+        catch (std::exception& e)
+        {
+          *exc = std::current_exception();
+        }
+        }, true);
+      reactor::wait(*b);
+      if (*exc)
+        std::rethrow_exception(*exc);
     }
 
     /*----------.
