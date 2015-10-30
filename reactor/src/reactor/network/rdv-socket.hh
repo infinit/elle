@@ -37,6 +37,11 @@ namespace reactor
         std::vector<Endpoint> const& endpoints = {},
         DurationOpt timeout = DurationOpt());
       bool rdv_connected() const;
+      // Register a function that will be called for each received packet
+      // begining with magic. Magic must be 8 bytes long.
+      void register_reader(std::string const& magic,
+                           std::function<void(Buffer, Endpoint)> data_callback);
+      void unregister_reader(std::string const& magic);
       private:
         void send_ping(Endpoint target, std::string const& tid = {});
         void loop_breach();
@@ -55,6 +60,8 @@ namespace reactor
         };
         std::unordered_map<std::string, ContactInfo> _contacts;
         std::vector<std::pair<Endpoint, int>> _breach_requests;
+        std::unordered_map<std::string,
+          std::function<void(Buffer, Endpoint)>> _readers;
         reactor::Thread _breacher;
         reactor::Thread _keep_alive;
     };

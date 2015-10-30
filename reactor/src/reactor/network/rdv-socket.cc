@@ -70,7 +70,13 @@ namespace reactor
           ELLE_TRACE("message from server, open reached");
           _server_reached.open();
         }
-        if (!memcmp(rdv::rdv_magic, buffer.data(), 8))
+        std::string magic(buffer.data(), buffer.data() + 8);
+        auto it = _readers.find(magic);
+        if (it != _readers.end())
+        {
+          it->second(buffer, endpoint);
+        }
+        else if (magic == rdv::rdv_magic)
         {
           rdv::Message repl = elle::serialization::json::deserialize<rdv::Message>(
             elle::Buffer(buffer.data()+8, sz - 8), false);
@@ -272,6 +278,18 @@ namespace reactor
     void RDVSocket::set_local_id(std::string const& id)
     {
       this->_id = id;
+    }
+
+    void RDVSocket::register_reader(std::string const& magic,
+                                    std::function<void(Buffer, Endpoint)> handler)
+    {
+      ELLE_ASSERT_EQ(magic.size(), 8);
+      _readers[magic] = handler;
+    }
+
+    void RDVSocket::unregister_reader(std::string const& magic)
+    {
+      _readers.erase(magic);
     }
   }
 }
