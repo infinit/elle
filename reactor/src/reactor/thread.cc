@@ -43,6 +43,7 @@ namespace reactor
                 boost::bind(&Thread::_action_wrapper, this, action)))
     , _scheduler(scheduler)
     , _terminating(false)
+    , _interruptible(true)
   {
     _scheduler._thread_register(*this);
   }
@@ -243,8 +244,38 @@ namespace reactor
                    *this, elle::exception_string(this->_exception));
         std::exception_ptr tmp = this->_exception;
         this->_exception = std::exception_ptr{};
-        std::rethrow_exception(tmp);
+        bool rethrow = true;
+        try
+        {
+          std::rethrow_exception(tmp);
+        }
+        catch (reactor::Terminate const& t)
+        {
+          if (!this->_interruptible)
+            rethrow = false;
+        }
+        catch (...)
+        {}
+        if (rethrow)
+          std::rethrow_exception(tmp);
+        else
+          this->_exception = tmp;
       }
+    }
+  }
+
+  void
+  Thread::interruptible(bool state)
+  {
+    ELLE_DEBUG("%s: set interruptible to %s", *this, state);
+    this->_interruptible = state;
+    if (state && this->_exception)
+    {
+      ELLE_TRACE("%s: interruptible: re-raise exception: %s",
+                 *this, elle::exception_string(this->_exception));
+      std::exception_ptr tmp = this->_exception;
+      this->_exception = std::exception_ptr{};
+      std::rethrow_exception(tmp);
     }
   }
 
@@ -461,6 +492,18 @@ namespace reactor
   Thread::raise(std::exception_ptr e)
   {
     this->_exception = e;
+  }
+
+  Thread::NonInterruptible::NonInterruptible()
+  : _current(reactor::scheduler().current())
+  , _initial_value(_current->interruptible())
+  {
+    _current->interruptible(false);
+  }
+
+  Thread::NonInterruptible::~NonInterruptible() noexcept(false)
+  {
+    _current->interruptible(_initial_value);
   }
 
   /*----------------.

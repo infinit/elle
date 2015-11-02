@@ -217,6 +217,17 @@ namespace reactor
     ELLE_ATTRIBUTE_RX(
       boost::signals2::signal<void (std::string const&)>, unfrozen);
 
+    /// Marks current thread noniterruptible while this object lives
+    class NonInterruptible
+    {
+    public:
+      NonInterruptible();
+      ~NonInterruptible() noexcept(false);
+    private:
+      Thread* _current;
+      bool    _initial_value;
+    };
+
   /*--------.
   | Backend |
   `--------*/
@@ -227,6 +238,8 @@ namespace reactor
     ELLE_ATTRIBUTE(std::unique_ptr<backend::Thread>, thread);
     ELLE_ATTRIBUTE(Scheduler&, scheduler);
     ELLE_ATTRIBUTE_R(bool, terminating);
+        /// If set to false, do not rethrow Terminate exception.
+    ELLE_ATTRIBUTE_Rw(bool, interruptible);
   };
 
   template <typename R>

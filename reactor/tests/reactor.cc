@@ -2825,6 +2825,47 @@ namespace timeout_
   }
 }
 
+ELLE_TEST_SCHEDULED(test_terminate_non_interruptible)
+{
+  ELLE_LOG("test 1");
+  {
+    reactor::Barrier b,c;
+    int status = 0;
+    reactor::Thread t("test", [&] {
+        reactor::Thread::NonInterruptible ni;
+        status = 1;
+        b.open();
+        reactor::wait(c);
+        status = 2;
+    });
+    reactor::wait(b);
+    b.close(); c.open();
+    t.terminate_now();
+    BOOST_CHECK_EQUAL(status, 2);
+  }
+  ELLE_LOG("test 2");
+  {
+    reactor::Barrier b,c,d;
+    int status = 0;
+    reactor::Thread t("test", [&] {
+        {
+          reactor::Thread::NonInterruptible ni;
+          status = 1;
+          b.open();
+          reactor::wait(c);
+          status = 2;
+        }
+        reactor::wait(d);
+        status = 3;
+    });
+    reactor::wait(b);
+    c.open();
+    reactor::yield();
+    t.terminate_now();
+    BOOST_CHECK_EQUAL(status, 2);
+  }
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -2947,6 +2988,7 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, valgrind(1, 5));
+  terminate->add(BOOST_TEST_CASE(test_terminate_non_interruptible), 0, valgrind(1, 5));
   // See Thread::_step: uncaught_exception is broken, can't make this work. It's
   // a security anyway ...
   // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1, 5));
