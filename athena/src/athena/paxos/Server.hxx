@@ -112,6 +112,10 @@ namespace athena
       return this->proposal.version;
     }
 
+    /*------------.
+    | WrongQuorum |
+    `------------*/
+
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
@@ -137,10 +141,17 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::WrongQuorum::serialize(
       elle::serialization::Serializer& s)
     {
+      Super::serialize(s);
       s.serialize("expected", this->_expected);
       s.serialize("effective", this->_effective);
       s.serialize("version", this->_version);
     }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    const elle::serialization::Hierarchy<elle::Exception>::Register<
+      typename Server<T, Version, ClientId, ServerId>::WrongQuorum>
+    Server<T, Version, ClientId, ServerId>::_register_serialization;
 
     /*--------.
     | Printer |
@@ -200,6 +211,7 @@ namespace athena
       , _state()
     {
       this->_quorum.insert(this->_id);
+      this->_register_serialization.poke();
     }
 
     template <
@@ -319,8 +331,12 @@ namespace athena
     void
     Server<T, Version, ClientId, ServerId>::_check_quorum(Quorum q) const
     {
+      ELLE_LOG_COMPONENT("athena.paxos.Server");
       if (q != this->_quorum)
+      {
+        ELLE_TRACE("quorum is wrong: %s instead of %s", q, this->_quorum);
         throw WrongQuorum(this->_quorum, q, 0);
+      }
     }
 
     /*--------------.

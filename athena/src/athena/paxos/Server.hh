@@ -8,6 +8,7 @@
 # include <elle/attribute.hh>
 # include <elle/Error.hh>
 # include <elle/Printable.hh>
+# include <elle/serialization/Serializer.hh>
 
 # include <reactor/Barrier.hh>
 
@@ -87,6 +88,7 @@ namespace athena
         : public elle::Error
       {
       public:
+        typedef elle::Error Super;
         WrongQuorum(Quorum expected, Quorum effective, Version version);
         WrongQuorum(elle::serialization::SerializerIn& input);
         void
@@ -96,6 +98,10 @@ namespace athena
         ELLE_ATTRIBUTE_R(Quorum, effective);
         ELLE_ATTRIBUTE_R(Version, version);
       };
+
+    private:
+      static const elle::serialization::Hierarchy<elle::Exception>::
+      Register<WrongQuorum> _register_serialization;
 
     /*-------------.
     | Construction |

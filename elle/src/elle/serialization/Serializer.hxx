@@ -1120,6 +1120,13 @@ namespace elle
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
         }
+
+        void
+        poke() const
+        {
+          ELLE_LOG_COMPONENT("elle.serialization");
+          ELLE_DUMP("%s: poke to ensure instantiation", *this);
+        }
       };
 
       static
