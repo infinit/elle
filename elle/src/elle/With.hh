@@ -1,6 +1,8 @@
 #ifndef ELLE_WITH_HH
 # define ELLE_WITH_HH
 
+# include <utility>
+
 namespace elle
 {
   template <typename T>
