@@ -179,6 +179,7 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
     ELLE_LOG_COMPONENT("elle.Test");                                  \
     ELLE_ERR("exception escaped test %s: %s",                         \
              BOOST_PP_STRINGIZE(Name), e);                            \
+    ELLE_ERR("%s", e.backtrace());                                    \
     throw;                                                            \
   }                                                                   \
 }                                                                     \
