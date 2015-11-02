@@ -359,6 +359,8 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::serialize(
       elle::serialization::Serializer& s)
     {
+      s.serialize("id", this->_id);
+      s.serialize("quorum", this->_quorum);
       s.serialize("state", this->_state);
     }
 
