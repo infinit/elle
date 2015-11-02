@@ -460,6 +460,7 @@ def configure(zlib_lib,
   sources += drake.nodes(
     'src/set',
     'src/unordered_map',
+    'src/unordered_set',
     'src/vector',
     type = drake.cxx.Header,
   )

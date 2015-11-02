@@ -558,11 +558,9 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize umap<str,V> container \"%s\"",
                        *this, name);
-
       if (this->_out())
       {
         this->_size(map.size());
-
         for (std::pair<std::string, V> pair: map)
         {
           this->_serialize_dict_key(
@@ -584,6 +582,14 @@ namespace elle
             map.insert({key, value});
           });
       }
+    }
+
+    template <typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::unordered_set<V, Rest...>& set)
+    {
+      this->_serialize_collection(name, set);
     }
 
     template <typename K, typename V, typename ... Rest>

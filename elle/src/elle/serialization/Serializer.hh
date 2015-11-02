@@ -9,6 +9,7 @@
 # include <type_traits>
 # include <typeinfo>
 # include <unordered_map>
+# include <unordered_set>
 
 # include <boost/any.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
@@ -274,11 +275,14 @@ namespace elle
       void
       _serialize(std::string const& name,
                 std::unordered_map<K, V, Rest...>& map);
-
       template <typename V, typename ... Rest>
       void
       _serialize(std::string const& name,
                 std::unordered_map<std::string, V, Rest...>& map);
+      template <typename V, typename ... Rest>
+      void
+      _serialize(std::string const& name,
+                std::unordered_set<V, Rest...>& set);
       template <typename K, typename V, typename ... Rest>
       void
       _serialize(std::string const& name,

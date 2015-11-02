@@ -402,10 +402,28 @@ unordered_map_string()
     typename Format::SerializerIn input(stream);
     input.serialize("map", res);
     BOOST_CHECK_EQUAL(map, res);
-
     ELLE_DUMP("in:");
     for (auto const& elt: res)
       ELLE_DUMP("%s, %s", elt.first, elt.second);
+  }
+}
+
+template <typename Format>
+static
+void
+unordered_set()
+{
+  std::unordered_set<int> set{0, 1, 2};
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("set", set);
+  }
+  {
+    std::unordered_set<int> res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("set", res);
+    BOOST_CHECK_EQUAL(set, res);
   }
 }
 
@@ -1156,6 +1174,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(raw_ptr);
   FOR_ALL_SERIALIZATION_TYPES(unordered_map);
   FOR_ALL_SERIALIZATION_TYPES(unordered_map_string);
+  FOR_ALL_SERIALIZATION_TYPES(unordered_set);
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(hierarchy);
