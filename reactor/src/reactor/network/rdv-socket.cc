@@ -283,7 +283,7 @@ namespace reactor
     void RDVSocket::register_reader(std::string const& magic,
                                     std::function<void(Buffer, Endpoint)> handler)
     {
-      ELLE_ASSERT_EQ(magic.size(), 8);
+      ELLE_ASSERT_EQ(signed(magic.size()), 8);
       _readers[magic] = handler;
     }
 
