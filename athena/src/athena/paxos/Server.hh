@@ -1,6 +1,8 @@
 #ifndef ATHENA_PAXOS_SERVER_HH
 # define ATHENA_PAXOS_SERVER_HH
 
+# include <unordered_set>
+
 # include <boost/multi_index_container.hpp>
 # include <boost/multi_index/ordered_index.hpp>
 # include <boost/multi_index/member.hpp>
@@ -82,7 +84,7 @@ namespace athena
           >
         > VersionsState;
 
-      typedef std::set<ServerId> Quorum;
+      typedef std::unordered_set<ServerId> Quorum;
 
       class WrongQuorum
         : public elle::Error

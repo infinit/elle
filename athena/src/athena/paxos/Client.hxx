@@ -62,6 +62,7 @@ namespace athena
       boost::optional<T> new_value;
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(*value));
+      ELLE_DUMP("quorum: %s", q);
       while (true)
       {
         ++this->_round;

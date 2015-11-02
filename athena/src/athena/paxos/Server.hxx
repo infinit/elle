@@ -210,7 +210,7 @@ namespace athena
       , _quorum(std::move(quorum))
       , _state()
     {
-      this->_quorum.insert(this->_id);
+      ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
       this->_register_serialization.poke();
     }
 
@@ -230,8 +230,8 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::propose(Quorum q, Proposal p)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      this->_check_quorum(q);
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
+      this->_check_quorum(q);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
@@ -272,8 +272,8 @@ namespace athena
       Quorum q, Proposal p, T value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      this->_check_quorum(q);
       ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
+      this->_check_quorum(q);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
