@@ -102,7 +102,7 @@ namespace athena
             reactor::wait(scope);
           };
           ELLE_DEBUG("reached %s peers", reached);
-          if (reached <= this->_peers.size() / 2)
+          if (reached <= signed(this->_peers.size()) / 2)
           {
             ELLE_TRACE("too few peers to reach consensus");
             throw TooFewPeers(reached, this->_peers.size());
@@ -165,7 +165,7 @@ namespace athena
             continue;
           }
           else
-            if (reached <= this->_peers.size() / 2)
+            if (reached <= signed(this->_peers.size()) / 2)
             {
               ELLE_TRACE("%s: too few peers to reach consensus", *this);
               throw TooFewPeers(reached, this->_peers.size());
