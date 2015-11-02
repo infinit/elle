@@ -41,6 +41,7 @@ def configure(curl_config,
               valgrind_tests = False,
               archs = [],
               fuse = None,
+              codesign = False,
 ):
 
   global asio_udt_lib
@@ -352,28 +353,31 @@ def configure(curl_config,
       fuse_config.add_local_include_path(
         '%s/usr/local/include/osxfuse' % osxfuse_prefix)
       local_cxx_config += fuse_config
+      osxfuse_build_command = [
+        './build.sh',
+        '--action=build',
+        '--build-directory=%s' % \
+          (drake.path_root() / drake.path_build('osxfuse')),
+        '--target=%s' % osxfuse_target,
+        '--',
+        '--configuration=Release',
+        '--sdk=10.7',
+        '--deployment-target=10.7',
+        '--build-setting=CLANG_LINK_OBJC_RUNTIME=NO',
+        '--kext=10.7',
+        '--kext=10.8->10.7',
+        '--kext=10.9',
+        '--kext=10.10->10.9',
+        '--kext=10.11->10.9',
+      ]
+      if codesign:
+        osxfuse_build_command.append('--codesign')
       drake.ShellCommand(
-        sources = drake.nodes('osxfuse/build.sh'),
-        targets = [osxfuse_core_package, fuse_lib] + fuse_includes,
-        command = [
-          './build.sh',
-          '--action=build',
-          '--build-directory=%s' % \
-            (drake.path_root() / drake.path_build('osxfuse')),
-          '--target=%s' % osxfuse_target,
-          '--',
-          '--configuration=Release',
-          '--sdk=10.7',
-          '--deployment-target=10.7',
-          '--build-setting=CLANG_LINK_OBJC_RUNTIME=NO',
-          '--kext=10.7',
-          '--kext=10.8->10.7',
-          '--kext=10.9',
-          '--kext=10.10->10.9',
-          '--kext=10.11->10.9',
-        ],
-        cwd = drake.node('osxfuse').path(),
-        pretty = 'Building FUSE for OS X Core.pkg',
+          sources = drake.nodes('osxfuse/build.sh'),
+          targets = [osxfuse_core_package, fuse_lib] + fuse_includes,
+          command = osxfuse_build_command,
+          cwd = drake.node('osxfuse').path(),
+          pretty = 'Building FUSE for OS X Core.pkg',
         )
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
   elif fuse:
