@@ -76,6 +76,7 @@ def configure(cxx_toolkit = None,
               build_openssl_eay = False,
               qt = None,
               cryptography_python = True,
+              codesign = False,
   ):
 
   global asio_udt
@@ -1218,6 +1219,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
     archs = archs,
     fuse = fuse,
+    codesign = codesign,
   )
   athena = drake.include(
     'athena',
