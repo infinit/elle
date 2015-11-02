@@ -305,3 +305,38 @@ def set_local_libcxx(cxx_toolkit):
     else:
       return True
   return _set_local_libcxx
+
+class Keychain():
+
+  def __init__(self, keychain_path, keychain_password):
+    self.__keychain = str(keychain_path)
+    self.__keychain_password = keychain_password
+
+  def _unlock_keychain(self):
+    output = subprocess.check_output(
+      ['security', 'list-keychains']).decode('utf-8').split('\n')
+    found = False
+    existing_keychains = []
+    for keychain in output:
+      # Don't want to re-add the system keychain.
+      if len(keychain.strip()) > 0:
+        if keychain.strip(' "') != '/Library/Keychains/System.keychain':
+          existing_keychains.append(keychain.strip(' "'))
+      if keychain.strip(' "') == self.__keychain:
+        found = True
+    if not found:
+      args = ['security', 'list-keychains', '-s']
+      args.extend(existing_keychains)
+      args.append(self.__keychain)
+      subprocess.check_call(args)
+    subprocess.check_call(['security', 'unlock-keychain', '-p',
+                           self.__keychain_password, self.__keychain])
+
+  def _lock_keychain(self):
+    subprocess.check_call(['security', 'lock-keychain', self.__keychain])
+
+  def __enter__(self):
+    self._unlock_keychain()
+
+  def __exit__(self, *args):
+    self._lock_keychain()
