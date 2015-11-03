@@ -20,7 +20,9 @@ namespace athena
       : _id(id)
       , _peers(std::move(peers))
       , _round(0)
-    {}
+    {
+      ELLE_ASSERT(!this->_peers.empty());
+    }
 
     class TooFewPeers
       : public elle::Error
