@@ -275,7 +275,9 @@ namespace elle
       }
     };
 
-    template <typename T>
+
+    // The Tail remainder is there to uniquify
+    template <typename T, typename ... Tail>
     struct
     Empty
     {
@@ -298,7 +300,7 @@ namespace elle
     template <typename Head, typename ... Tail>
     struct DefaultStore<Head, Tail...>
       : public DefaultStore<Tail...>
-      , public std::conditional<is_effective<Head>::value, Head, Empty<Head>>::type
+      , public std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type
     {
       typedef typename std::conditional<
         is_effective<Head>::value,
@@ -309,7 +311,7 @@ namespace elle
 
       DefaultStore(Head&& head, Tail&& ... tail)
         : DefaultStore<Tail...>(std::forward<Tail>(tail)...)
-        , std::conditional<is_effective<Head>::value, Head, Empty<Head>>::type(std::forward<Head>(head))
+        , std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type(std::forward<Head>(head))
       {}
 
       template <typename T>
