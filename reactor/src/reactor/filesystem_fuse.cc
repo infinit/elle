@@ -44,7 +44,7 @@ namespace reactor
 
     static
     int
-    fusop_getattr(const char *path, struct stat *stbuf)
+    fusop_getattr(const char* path, struct stat* stbuf)
     {
       ELLE_TRACE_SCOPE("fusop_getattr %s", path);
       try
@@ -63,8 +63,11 @@ namespace reactor
 
     static
     int
-    fusop_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-                  off_t offset, struct fuse_file_info *fi)
+    fusop_readdir(const char* path,
+                  void* buf,
+                  fuse_fill_dir_t filler,
+                  off_t offset,
+                  struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_readdir %s", path);
       try
@@ -72,9 +75,10 @@ namespace reactor
         FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
         PathPtr p = fs->path(path);
         p->list_directory(
-          [&](std::string const& filename, struct stat* stbuf) {
+          [&](std::string const& filename, struct stat* stbuf)
+          {
             filler(buf, filename.c_str(), stbuf, 0);
-        });
+          });
       }
       catch (Error const& e)
       {
@@ -86,7 +90,7 @@ namespace reactor
 
     static
     int
-    fusop_open(const char *path, struct fuse_file_info *fi)
+    fusop_open(const char* path, struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_open %s %s", path, fi->flags);
       try
@@ -203,8 +207,11 @@ namespace reactor
 
     static
     int
-    fusop_read(const char *path, char *buf, size_t size, off_t offset,
-               struct fuse_file_info *fi)
+    fusop_read(const char* path,
+               char* buf,
+               size_t size,
+               off_t offset,
+               struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
       try
@@ -222,8 +229,11 @@ namespace reactor
 
     static
     int
-    fusop_write(const char *path, const char *buf, size_t size, off_t offset,
-                struct fuse_file_info *fi)
+    fusop_write(const char* path,
+                const char* buf,
+                size_t size,
+                off_t offset,
+                struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_write %s(%s) sz=%s, offset=%s ",
                        path, fi->fh, size, offset);
@@ -242,7 +252,7 @@ namespace reactor
 
     static
     int
-    fusop_release(const char *path, struct fuse_file_info *fi)
+    fusop_release(const char* path, struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_release %s", path);
       try
@@ -260,7 +270,7 @@ namespace reactor
 
     static
     int
-    fusop_flush(const char *path, struct fuse_file_info *fi)
+    fusop_flush(const char* path, struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_flush %s(%s)", path, fi->fh);
       try
@@ -278,8 +288,7 @@ namespace reactor
 
     static
     int
-    fusop_ftruncate(const char* path, off_t offset,
-                    struct fuse_file_info* fi)
+    fusop_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", path, offset);
       try
@@ -335,7 +344,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_link(const char* path, const char* to)
+
+    static
+    int
+    fusop_link(const char* path, const char* to)
     {
       ELLE_TRACE_SCOPE("fusop_link %s %s", path, to);
       try
@@ -351,7 +363,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_chmod(const char* path, mode_t mode)
+
+    static
+    int
+    fusop_chmod(const char* path, mode_t mode)
     {
       ELLE_TRACE_SCOPE("fusop_chmod %s %s", path, mode);
       try
@@ -367,7 +382,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_chown(const char* path, uid_t uid, gid_t gid)
+
+    static
+    int
+    fusop_chown(const char* path, uid_t uid, gid_t gid)
     {
       ELLE_TRACE_SCOPE("fusop_chown %s", path);
       try
@@ -383,7 +401,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_statfs(const char* path, struct ::statvfs* svfs)
+
+    static
+    int
+    fusop_statfs(const char* path, struct ::statvfs* svfs)
     {
       ELLE_TRACE_SCOPE("fusop_statfs %s", path);
       try
@@ -399,7 +420,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_utimens(const char* path, const struct timespec tv[2])
+
+    static
+    int
+    fusop_utimens(const char* path, const struct timespec tv[2])
     {
       ELLE_TRACE_SCOPE("fusop_utimens %s", path);
       try
@@ -415,7 +439,10 @@ namespace reactor
       }
       return 0;
     }
-    static int fusop_truncate(const char* path, off_t new_size)
+
+    static
+    int
+    fusop_truncate(const char* path, off_t new_size)
     {
       ELLE_TRACE_SCOPE("fusop_truncate %s", path);
       try
@@ -434,8 +461,11 @@ namespace reactor
 
     static
     int
-    fusop_setxattr(const char *path, const char *key,
-                   const char *val, size_t valsize, int flags
+    fusop_setxattr(const char* path,
+                   const char* key,
+                   const char* val,
+                   size_t valsize,
+                   int flags
 #ifdef INFINIT_MACOSX
                    , uint32_t position
 #endif
@@ -458,7 +488,10 @@ namespace reactor
 
     static
     int
-    fusop_getxattr(const char *path, const char *key, char *val, size_t valsize
+    fusop_getxattr(const char* path,
+                   const char* key,
+                   char* val,
+                   size_t valsize
 #ifdef INFINIT_MACOSX
                    , uint32_t position
 #endif
@@ -512,7 +545,7 @@ namespace reactor
 
     static
     int
-    fusop_removexattr(const char *path, const char *key)
+    fusop_removexattr(const char* path, const char* key)
     {
       ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
       try
@@ -530,7 +563,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_fsync(const char* path, int datasync, fuse_file_info* fi)
+    static
+    int
+    fusop_fsync(const char* path, int datasync, fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_fsync %s %s", path, datasync);
       try
@@ -546,7 +581,9 @@ namespace reactor
       return 0;
     }
 
-    static int fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
+    static
+    int
+    fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
     {
       ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", path, datasync);
       try
@@ -624,7 +661,10 @@ namespace reactor
       ops.flag_nullpath_ok = true;
 #endif
       _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
-      _impl->_fuse.on_loop_exited([this] { this->unmount();});
+      _impl->_fuse.on_loop_exited([this]
+        {
+          this->unmount();
+        });
       if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
       {
         int nt = 5;
