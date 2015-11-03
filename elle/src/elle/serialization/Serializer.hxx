@@ -344,9 +344,6 @@ namespace elle
     Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt,
                           bool anonymous)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: serialize uptr named %s anonimously ? (%s)",
-          *this, name, anonymous);
       if (this->_out())
         this->_serialize_option(
           name,
@@ -364,17 +361,13 @@ namespace elle
           bool(opt),
           [&]
           {
-            ELLE_LOG_COMPONENT("elle.serialization.lambda");
-            ELLE_DEBUG("%s: lambda anon or not", *this);
             if (anonymous)
             {
-              ELLE_DEBUG("lambda: anonymous unique_ptr");
               Details::_smart_virtual_switch<std::unique_ptr<T>, T>
                 (*this, "SERIALIZE ANONYMOUS", opt);
             }
             else if (this->_enter(name))
             {
-              ELLE_DEBUG("lambda: not anonymous unique_ptr");
               elle::SafeFinally leave([&] { this->_leave(name); });
               Details::_smart_virtual_switch<std::unique_ptr<T>, T>
                 (*this, name, opt);
@@ -387,9 +380,6 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::unique_ptr<T>& opt)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: %s: _serialize_anonymous %s as uptr of type %s",
-          *this, name, opt, elle::type_info(opt))
       serialize(name, opt, true);
     }
 
@@ -802,8 +792,6 @@ namespace elle
     Serializer::_deserialize_in_array(std::string const& name,
                                       C& collection)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: serialize in place %s in %s", *this, name, collection);
       typename C::value_type value;
       this->_serialize_anonymous(name, value);
       collection.emplace(std::move(value));
@@ -821,8 +809,6 @@ namespace elle
                                       C& collection)
     {
       collection.emplace_back();
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_DEBUG("%s: serialize in place %s in %s", *this, name, collection);
       this->_serialize_anonymous(name, collection.back());
     }
 
@@ -875,6 +861,8 @@ namespace elle
           {
             for (auto& elt: collection)
             {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+              ELLE_DEBUG_SCOPE("serialize element of \"%s\"", name);
               if (this->_enter(name))
               {
                 elle::SafeFinally leave([&] { this->_leave(name); });
@@ -892,7 +880,7 @@ namespace elle
           [&] ()
           {
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-            ELLE_DEBUG("%s: lambda: %s, %s", *this, name, collection);
+            ELLE_DEBUG_SCOPE("deserialize element of \"%s\"", name);
             this->_deserialize_in_array(name, collection);
           });
       }

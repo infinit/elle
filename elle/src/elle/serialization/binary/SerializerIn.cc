@@ -217,29 +217,44 @@ namespace elle
         }
       }
 
+      static
+      char
+      get(std::istream& s)
+      {
+        int res = s.get();
+        if (res == EOF)
+          throw Error("end of stream while reading number");
+        return res;
+      }
+
       int64_t
       SerializerIn::_serialize_number()
       {
+        ELLE_DEBUG_SCOPE("deserialize number");
         uint64_t res;
-        unsigned char c = input().get();
+        unsigned char c = get(input());
         bool negative = c & 0x80;
-        if (! (c&0x40))
+        if (!(c & 0x40))
         {
+          ELLE_DUMP("1-byte coding");
           res = c&0x3f;
         }
         else if (! (c&0x20))
         {
-          unsigned char c2 = input().get();
+          ELLE_DUMP("2-bytes coding");
+          unsigned char c2 = get(input());
           res = ((c&0x1F) << 8) + c2;
         }
         else if (! (c&0x10))
         {
-          unsigned char c2 = input().get();
-          unsigned char c3 = input().get();
+          ELLE_DUMP("4-bytes coding");
+          unsigned char c2 = get(input());
+          unsigned char c3 = get(input());
           res = ((c&0x0F) << 16) + (c2 << 8) + c3;
         }
         else
         {
+          ELLE_DUMP("8-bytes coding");
           input().read((char*)(void*)&res, 8);
           /*
           unsigned char elems[8];
@@ -248,10 +263,9 @@ namespace elle
           for (int i=0; i<8; ++i)
             res += uint64_t(elems[i]) << (8*i);*/
         }
-        if (negative)
-          return - (int64_t)res;
-        else
-          return res;
+        int64_t s = negative ? - (int64_t)res : res;
+        ELLE_DEBUG("value: %s", s);
+        return s;
       }
     }
   }
