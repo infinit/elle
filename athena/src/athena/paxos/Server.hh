@@ -95,10 +95,12 @@ namespace athena
         WrongQuorum(elle::serialization::SerializerIn& input);
         void
         serialize(elle::serialization::Serializer& s);
-
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
         ELLE_ATTRIBUTE_R(Version, version);
+      private:
+        void
+        _serialize(elle::serialization::Serializer& s);
       };
 
     private:

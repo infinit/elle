@@ -132,7 +132,7 @@ namespace athena
       elle::serialization::SerializerIn& input)
       : Super(input)
     {
-      this->serialize(input);
+      this->_serialize(input);
     }
 
     template <
@@ -142,6 +142,15 @@ namespace athena
       elle::serialization::Serializer& s)
     {
       Super::serialize(s);
+      this->_serialize(s);
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    void
+    Server<T, Version, ClientId, ServerId>::WrongQuorum::_serialize(
+      elle::serialization::Serializer& s)
+    {
       s.serialize("expected", this->_expected);
       s.serialize("effective", this->_effective);
       s.serialize("version", this->_version);
