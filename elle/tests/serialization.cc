@@ -346,6 +346,7 @@ raw_ptr()
     typename Format::SerializerOut output(stream);
     output.serialize("empty", empty);
     output.serialize("filled", filled);
+    delete filled;
   }
   {
     int padding;
@@ -358,6 +359,7 @@ raw_ptr()
     BOOST_CHECK(!empty);
     BOOST_CHECK(filled);
     BOOST_CHECK_EQUAL(*filled, 42);
+    delete filled;
   }
 }
 
