@@ -3,13 +3,6 @@
 
 namespace std
 {
-  template <typename T, typename ...OTHER>
-  std::ostream&
-  operator <<(ostream& out,
-              unordered_set<T, OTHER...> const& s)
-  {
-    return out << "{" << elle::join(begin(s), end(s), ", ") << "}";
-  }
 
   template <typename V, typename T, typename ...OTHER>
   bool
