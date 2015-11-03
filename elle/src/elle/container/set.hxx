@@ -3,7 +3,6 @@
 
 namespace std
 {
-
   template <typename V, typename T, typename ...OTHER>
   bool
   contains(unordered_set<T, OTHER...> const& set,
