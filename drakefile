@@ -1279,34 +1279,38 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   asio_udt = reactor.asio_udt_lib
 
   build = drake.Rule('build')
-  build << elle.rule_build
-  build << cryptography.rule_build
-  build << reactor.rule_build
-  build << das.rule_build
-  build << protocol.rule_build
+  build << athena.rule_build
   build << aws.rule_build
+  build << cryptography.rule_build
+  build << das.rule_build
+  build << elle.rule_build
+  build << protocol.rule_build
+  build << reactor.rule_build
 
   global rule_tests
   rule_tests = drake.Rule('tests')
-  rule_tests << elle.rule_tests
-  rule_tests << cryptography.rule_tests
-  rule_tests << reactor.rule_tests
-  rule_tests << das.rule_tests
-  rule_tests << protocol.rule_tests
+  rule_tests << athena.rule_tests
   rule_tests << aws.rule_tests
+  rule_tests << cryptography.rule_tests
+  rule_tests << das.rule_tests
+  rule_tests << elle.rule_tests
+  rule_tests << protocol.rule_tests
+  rule_tests << reactor.rule_tests
 
   global rule_check
   rule_check = drake.Rule('check')
-  rule_check << elle.rule_check
-  rule_check << cryptography.rule_check
-  rule_check << reactor.rule_check
-  rule_check << das.rule_check
-  rule_check << protocol.rule_check
+  rule_check << athena.rule_check
   rule_check << aws.rule_check
+  rule_check << cryptography.rule_check
+  rule_check << das.rule_check
+  rule_check << elle.rule_check
+  rule_check << protocol.rule_check
+  rule_check << reactor.rule_check
 
   install = drake.Rule('install')
-  install << elle.rule_install
-  install << cryptography.rule_install
-  install << reactor.rule_install
-  install << protocol.rule_install
+  # install << athena.rule_install
   install << aws.rule_install
+  install << cryptography.rule_install
+  install << elle.rule_install
+  install << protocol.rule_install
+  install << reactor.rule_install
