@@ -154,6 +154,9 @@ public:
     , fail(false)
   {}
 
+  ~InstrumentedPeer() noexcept(true)
+  {}
+
   virtual
   boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
   propose(
