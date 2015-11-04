@@ -54,6 +54,21 @@ namespace athena
     }
 
     template <typename T, typename Version, typename ClientId>
+    void
+    Client<T, Version, ClientId>::_check_headcount(Quorum const& q,
+                                                   int reached) const
+    {
+      ELLE_LOG_COMPONENT("athena.paxos.Client");
+      ELLE_DEBUG("reached %s peers", reached);
+      auto size = signed(q.size());
+      if (reached <= size / 2)
+      {
+        ELLE_TRACE("too few peers to reach consensus: %s of %s", reached, size);
+        throw TooFewPeers(reached, size);
+      }
+    }
+
+    template <typename T, typename Version, typename ClientId>
     boost::optional<T>
     Client<T, Version, ClientId>::choose(
       Quorum const& q,
@@ -104,12 +119,7 @@ namespace athena
             }
             reactor::wait(scope);
           };
-          ELLE_DEBUG("reached %s peers", reached);
-          if (reached <= signed(this->_peers.size()) / 2)
-          {
-            ELLE_TRACE("too few peers to reach consensus");
-            throw TooFewPeers(reached, this->_peers.size());
-          }
+          this->_check_headcount(q, reached);
           if (previous)
           {
             ELLE_DEBUG("replace value with %s", printer(previous->value));
@@ -168,13 +178,10 @@ namespace athena
             continue;
           }
           else
-            if (reached <= signed(this->_peers.size()) / 2)
-            {
-              ELLE_TRACE("%s: too few peers to reach consensus", *this);
-              throw TooFewPeers(reached, this->_peers.size());
-            }
-            else
-              break;
+          {
+            this->_check_headcount(q, reached);
+            break;
+          }
         }
       }
       ELLE_TRACE("%s: chose %s", *this, printer(*value));

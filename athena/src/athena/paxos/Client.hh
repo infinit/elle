@@ -84,6 +84,15 @@ namespace athena
         typename elle::_detail::attribute_r_type<Version>::type version,
         typename elle::_detail::attribute_r_type<T>::type value);
       ELLE_ATTRIBUTE(int, round);
+    private:
+      /** Check a majority of members where reached.
+       *
+       *  \param q The quorum we consult.
+       *  \param reached The number of member successfully consulted.
+       *  \throws TooFewPeers if a strict majority was not reached.
+       */
+      void
+      _check_headcount(Quorum const& q, int reached) const;
 
     /*----------.
     | Printable |
