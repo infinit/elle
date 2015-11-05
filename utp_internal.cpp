@@ -1156,6 +1156,7 @@ void UTPSocket::check_timeouts()
 			// Increase RTO
 			const uint new_timeout = ignore_loss ? retransmit_timeout : retransmit_timeout * 2;
 
+                        /*
 			if (retransmit_count >= 4 || (state == CS_SYN_SENT && retransmit_count >= 2)) {
 				// 4 consecutive transmissions have timed out. Kill it. If we
 				// haven't even connected yet, give up after only 2 consecutive
@@ -1166,7 +1167,7 @@ void UTPSocket::check_timeouts()
 					state = CS_RESET;
 				utp_call_on_error(ctx, this, UTP_ETIMEDOUT);
 				return;
-			}
+			}*/
 
 			retransmit_timeout = new_timeout;
 			rto_timeout = ctx->current_ms + new_timeout;
