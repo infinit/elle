@@ -72,7 +72,8 @@ ELLE_TEST_SCHEDULED(all_is_well)
   }
   catch (paxos::Server<int, int, int>::WrongQuorum const& q)
   {
-    ELLE_ERR("%s != %s", q.effective(), q.expected());
+    BOOST_CHECK_EQUAL(q.effective(), q.expected());
+    throw;
   }
 }
 
