@@ -31,9 +31,13 @@ namespace elle
 {
   namespace named
   {
+    struct BaseArgument
+    {};
+
     /// Base class of all formal arguments
     template <typename Tag>
     struct Argument
+      : public BaseArgument
     {
       template <typename E>
       struct Effective
@@ -61,8 +65,15 @@ namespace elle
               typename Applied,
               typename Remaining,
               typename Store>
-    struct Applier
-    {};
+    struct Applier;
+
+    template <typename DefaultStore,
+              typename Formal,
+              typename Applied,
+              typename Remaining,
+              typename Store,
+              bool effective>
+    struct NotFoundApplier;
 
     // Done
     template <typename DefaultStore,
@@ -182,17 +193,60 @@ namespace elle
       }
     };
 
-    // Not found
+    // Positional
+    template <typename DefaultStore,
+              typename Head,
+              typename ... Tail,
+              typename ... Applied,
+              typename StoreHead,
+              typename ... StoreTail>
+    struct NotFoundApplier<DefaultStore,
+                           meta::List<Head, Tail...>,
+                           meta::List<Applied...>,
+                           meta::List<>,
+                           meta::List<StoreHead, StoreTail ...>,
+                           false>
+    {
+      typedef Applier<DefaultStore,
+                      meta::List<Tail...>,
+                      meta::List<Applied..., StoreHead>,
+                      meta::List<StoreTail...>,
+                      meta::List<>> next;
+      template <typename F>
+        struct result_of
+      {
+        typedef typename next::template result_of<F>::type type;
+      };
+      template <typename F>
+        static
+        void
+        apply(DefaultStore& defaults,
+              F const& f,
+              Applied&& ... applied,
+              StoreHead&& store_head,
+              StoreTail&& ... store_tail)
+      {
+        return next::apply(
+          defaults,
+          f,
+          std::forward<Applied>(applied)...,
+          std::forward<StoreHead>(store_head),
+          std::forward<StoreTail>(store_tail)...);
+      }
+    };
+
+    // Default
     template <typename DefaultStore,
               typename Head,
               typename ... Tail,
               typename ... Applied,
               typename ... Store>
-    struct Applier<DefaultStore,
-                   meta::List<Head, Tail...>,
-                   meta::List<Applied...>,
-                   meta::List<>,
-                   meta::List<Store...>>
+    struct NotFoundApplier<DefaultStore,
+                           meta::List<Head, Tail...>,
+                           meta::List<Applied...>,
+                           meta::List<>,
+                           meta::List<Store...>,
+                           true>
     {
       static_assert(DefaultStore::template default_for<Head>::has,
                     "missing argument");
@@ -226,6 +280,60 @@ namespace elle
           std::forward<Store>(store)...);
       }
     };
+
+    template <typename T>
+    static
+    constexpr typename std::enable_if_exists<typename T::Formal, bool>::type
+    is_named(int)
+    {
+      return std::is_base_of<BaseArgument, typename T::Formal>::value;
+    };
+
+    template <typename T>
+    static
+    constexpr bool
+    is_named(...)
+    {
+      return false;
+    };
+
+    // Not found: bounce to positional or default value
+    template <typename DefaultStore,
+              typename FormalHead,
+              typename ... FormalTail,
+              typename Applied,
+              typename StoreHead,
+              typename ... StoreTail>
+    struct Applier<DefaultStore,
+                   meta::List<FormalHead, FormalTail...>,
+                   Applied,
+                   meta::List<>,
+                   meta::List<StoreHead, StoreTail...>>
+      : public NotFoundApplier<DefaultStore,
+                               meta::List<FormalHead, FormalTail...>,
+                               Applied,
+                               meta::List<>,
+                               meta::List<StoreHead, StoreTail...>,
+                               is_named<StoreHead>(42)>
+    {};
+
+    // Not found without any value left: bounce to default value
+    template <typename DefaultStore,
+              typename FormalHead,
+              typename ... FormalTail,
+              typename Applied>
+    struct Applier<DefaultStore,
+                   meta::List<FormalHead, FormalTail...>,
+                   Applied,
+                   meta::List<>,
+                   meta::List<>>
+      : public NotFoundApplier<DefaultStore,
+                               meta::List<FormalHead, FormalTail...>,
+                               Applied,
+                               meta::List<>,
+                               meta::List<>,
+                               true>
+    {};
 
     template <typename T>
     T

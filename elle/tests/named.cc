@@ -175,6 +175,9 @@ positional()
 | Default value |
 `--------------*/
 
+NAMED_ARGUMENT(out1);
+NAMED_ARGUMENT(out2);
+
 static
 void
 _default_f(bool& o1, bool& o2, bool i1, bool i2, Neither const&)
@@ -182,19 +185,39 @@ _default_f(bool& o1, bool& o2, bool i1, bool i2, Neither const&)
   o1 = i1;
   o2 = i2;
 }
-NAMED_FUNCTION(default_f, arg1 = true, arg2 = false, versioned = Neither());
+NAMED_FUNCTION(default_f, out1, out2,
+               arg1 = true, arg2 = false, versioned = Neither());
 
 static
 void
 default_value()
 {
   bool a1 = true, a2 = false;
-  default_f(a1, a2, arg1 = false, arg2 = true);
+  default_f(out1 = a1, out2 = a2, arg1 = false, arg2 = true);
   BOOST_CHECK(!a1);
   BOOST_CHECK(a2);
-  default_f(a1, a2);
+  default_f(out1 = a1, out2 = a2);
   BOOST_CHECK(a1);
   BOOST_CHECK(!a2);
+}
+
+/*-------------------.
+| Default positional |
+`-------------------*/
+
+static
+void
+_default_positional_f(bool arg1, bool arg2)
+{
+  BOOST_CHECK_EQUAL(arg1, arg2);
+}
+NAMED_FUNCTION(default_positional_f, arg1 = true, arg2 = false);
+
+static
+void
+default_positional()
+{
+  default_positional_f(false);
 }
 
 /*-------.
@@ -209,4 +232,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(forwarding));
   master.add(BOOST_TEST_CASE(positional));
   master.add(BOOST_TEST_CASE(default_value));
+  master.add(BOOST_TEST_CASE(default_positional));
 }
