@@ -337,6 +337,9 @@ namespace reactor
       // This call will make the fuse_loop exit, but the subprocess will hang forever.
       elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
       helper_pid = p.pid();
+      // XXX: Waiting on fs object does not work for unmount on OS X.
+      // https://app.asana.com/0/5058234687067/58308026674516
+      reactor::sleep(5_sec);
 #endif
     }
     _socket_barrier.open();
@@ -376,6 +379,9 @@ namespace reactor
     _loop->terminate_now();
     kill(helper_pid, SIGTERM);
     elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
+    // XXX: Waiting on fs object does not work for unmount on OS X.
+    // https://app.asana.com/0/5058234687067/58308026674516
+    reactor::sleep(5_sec);
 #endif
     ELLE_TRACE("finished");
   }
