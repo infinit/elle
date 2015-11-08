@@ -43,6 +43,7 @@ namespace reactor
                            std::function<void(Buffer, Endpoint)> data_callback);
       void unregister_reader(std::string const& magic);
       private:
+        void send_to_failsafe(Buffer buffer, Endpoint endpoint);
         void send_ping(Endpoint target, std::string const& tid = {});
         void loop_breach();
         void loop_keep_alive();

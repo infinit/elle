@@ -49,7 +49,7 @@ namespace reactor
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
-        send_to(Buffer(buf), ep);
+        send_to_failsafe(Buffer(buf), ep);
         if (reactor::wait(_server_reached, 500_ms))
           return;
         if (timeout
@@ -207,11 +207,12 @@ namespace reactor
             req.id = _id;
             req.target_address = id;
             elle::Buffer buf = elle::serialization::json::serialize(req, false);
-            send_to(buf, _server);
+            send_to_failsafe(buf, _server);
           }
         }
         if (reactor::wait(_contacts.at(contactid).barrier, 500_ms))
         {
+          ELLE_TRACE("got result: %s", *_contacts[contactid].result);
           auto res = *_contacts[contactid].result;
           return res;
         }
@@ -226,7 +227,7 @@ namespace reactor
       elle::Buffer data;
       data.append(reactor::network::rdv::rdv_magic, 8);
       data.append(b.contents(), b.size());
-      send_to(Buffer(data.contents(), data.size()), peer);
+      send_to_failsafe(Buffer(data.contents(), data.size()), peer);
     }
 
     void RDVSocket::send_ping(Endpoint target, std::string const& tid)
@@ -291,6 +292,17 @@ namespace reactor
     void RDVSocket::unregister_reader(std::string const& magic)
     {
       _readers.erase(magic);
+    }
+    void RDVSocket::send_to_failsafe(Buffer buffer, Endpoint endpoint)
+    {
+      try
+      {
+        send_to(buffer, endpoint);
+      }
+      catch (Exception const&e)
+      {
+        ELLE_DEBUG("send_to failed with %s", e);
+      }
     }
   }
 }
