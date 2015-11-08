@@ -33,6 +33,7 @@ namespace reactor
                                 std::string const& rdv_host, int rdv_port,
                                 DurationOpt timeout)
     {
+      _id = id;
       rdv_connect(id, resolve_udp(rdv_host, std::to_string(rdv_port)), timeout);
     }
     void RDVSocket::rdv_connect(std::string const& id, Endpoint ep, DurationOpt timeout)
