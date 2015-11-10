@@ -134,6 +134,20 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize(std::string const& name, int16_t& v)
+      {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
+        _serialize_number(v);
+      }
+
+      void
+      SerializerOut::_serialize(std::string const& name, uint16_t& v)
+      {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
+        _serialize_number(v);
+      }
+
+      void
       SerializerOut::_serialize(std::string const& name, int8_t& v)
       {
         ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);

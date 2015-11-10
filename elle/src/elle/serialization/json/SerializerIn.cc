@@ -87,6 +87,18 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize(std::string const& name, int16_t& v)
+      {
+        this->_serialize_int<int16_t>(name, v);
+      }
+
+      void
+      SerializerIn::_serialize(std::string const& name, uint16_t& v)
+      {
+        this->_serialize_int<uint16_t>(name, v);
+      }
+
+      void
       SerializerIn::_serialize(std::string const& name, int8_t& v)
       {
         this->_serialize_int<int8_t>(name, v);

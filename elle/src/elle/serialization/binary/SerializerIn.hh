@@ -49,6 +49,12 @@ namespace elle
         _serialize(std::string const& name, uint32_t& v) override;
         virtual
         void
+        _serialize(std::string const& name, int16_t& v) override;
+        virtual
+        void
+        _serialize(std::string const& name, uint16_t& v) override;
+        virtual
+        void
         _serialize(std::string const& name, int8_t& v) override;
         virtual
         void
@@ -83,7 +89,7 @@ namespace elle
         void
         _deserialize_dict_key(
           std::function<void (std::string const&)> const& f) override;
- 
+
         virtual
         bool
         _enter(std::string const& name) override;
