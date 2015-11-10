@@ -170,6 +170,9 @@ UTPServer::UTPServer()
   utp_set_callback(ctx, UTP_ON_CONNECT, &on_connect);
   utp_set_callback(ctx, UTP_SENDTO, &on_sendto);
   utp_set_callback(ctx, UTP_LOG, &on_log);
+  utp_context_set_option(ctx, UTP_INITIAL_TIMEOUT, 300);
+  utp_context_set_option(ctx, UTP_TIMEOUT_INCRASE_PERCENT, 150);
+  utp_context_set_option(ctx, UTP_MAXIMUM_TIMEOUT, 5000);
 }
 
 UTPServer::~UTPServer()
