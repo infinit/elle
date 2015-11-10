@@ -90,6 +90,9 @@ enum {
 	UTP_SNDBUF,
 	UTP_RCVBUF,
 	UTP_TARGET_DELAY,
+	UTP_INITIAL_TIMEOUT,  // initial retransmit delay in milliseconds
+	UTP_TIMEOUT_INCRASE_PERCENT, // 100 * timeout increase per retry
+	UTP_MAXIMUM_TIMEOUT,
 
 	UTP_ARRAY_SIZE,	// must be last
 };

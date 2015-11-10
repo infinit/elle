@@ -1154,7 +1154,10 @@ void UTPSocket::check_timeouts()
 			*/
 
 			// Increase RTO
-			const uint new_timeout = ignore_loss ? retransmit_timeout : retransmit_timeout * 2;
+			uint new_timeout = ignore_loss ? retransmit_timeout
+			                     : retransmit_timeout * ctx->timeout_increase_percent / 100;
+			if (ctx->maximum_timeout && new_timeout > ctx->maximum_timeout)
+			  new_timeout = ctx->maximum_timeout;
 
                         /*
 			if (retransmit_count >= 4 || (state == CS_SYN_SENT && retransmit_count >= 2)) {
@@ -2606,6 +2609,17 @@ int utp_context_set_option(utp_context *ctx, int opt, int val)
 			assert(val >= 1);
 			ctx->opt_rcvbuf = val;
 			return 0;
+		case UTP_INITIAL_TIMEOUT:
+		  assert(val >= 1);
+		  ctx->initial_timeout = val;
+		  return 0;
+		case UTP_TIMEOUT_INCRASE_PERCENT:
+		  assert(val >= 100);
+		  ctx->timeout_increase_percent = val;
+		  return 0;
+		case UTP_MAXIMUM_TIMEOUT:
+		  ctx->maximum_timeout = val;
+		  return 0;
 	}
 	return -1;
 }
@@ -2622,6 +2636,9 @@ int utp_context_get_option(utp_context *ctx, int opt)
     	case UTP_TARGET_DELAY:	return ctx->target_delay;
 		case UTP_SNDBUF:		return ctx->opt_sndbuf;
 		case UTP_RCVBUF:		return ctx->opt_rcvbuf;
+		case UTP_INITIAL_TIMEOUT: return ctx->initial_timeout;
+		case UTP_TIMEOUT_INCRASE_PERCENT: return ctx->timeout_increase_percent;
+		case UTP_MAXIMUM_TIMEOUT: return ctx->maximum_timeout;
 	}
 	return -1;
 }
@@ -2697,7 +2714,7 @@ int utp_connect(utp_socket *conn, const struct sockaddr *to, socklen_t tolen)
 			CUR_DELAY_SIZE, DELAY_BASE_HISTORY);
 
 	// Setup initial timeout timer.
-	conn->retransmit_timeout = 3000;
+	conn->retransmit_timeout = conn->ctx->initial_timeout;
 	conn->rto_timeout = conn->ctx->current_ms + conn->retransmit_timeout;
 	conn->last_rcv_win = conn->get_rcv_window();
 

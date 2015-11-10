@@ -126,6 +126,9 @@ struct struct_utp_context {
 	size_t opt_rcvbuf;
 	uint64 last_check;
 
+	uint64 initial_timeout;
+	uint64 timeout_increase_percent;
+	uint64 maximum_timeout; // 0 means no limit
 	struct_utp_context();
 	~struct_utp_context();
 

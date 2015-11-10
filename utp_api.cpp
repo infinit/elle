@@ -90,6 +90,9 @@ struct_utp_context::struct_utp_context()
 	// their receive buffer set much lower, to say 60 kiB or so
 	opt_rcvbuf = opt_sndbuf = 1024 * 1024;
 	last_check = 0;
+	initial_timeout = 3000;
+	timeout_increase_percent = 200;
+	maximum_timeout = 0;
 }
 
 struct_utp_context::~struct_utp_context() {
