@@ -544,6 +544,7 @@ def configure(curl_config,
       'src/reactor/filesystem.hh',
       'src/reactor/filesystem.cc',
       'src/reactor/filesystem_fuse.cc',
+      'src/reactor/filesystem_journal.cc',
       'src/reactor/pthread.hh',
       'src/reactor/pthread.cc',
       )

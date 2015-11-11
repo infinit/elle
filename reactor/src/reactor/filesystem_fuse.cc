@@ -615,6 +615,13 @@ namespace reactor
       : _impl(new FileSystemImpl{std::move(op), full_tree})
     {
       this->_impl->_operations->filesystem(this);
+      char* journal = getenv("INFINIT_FILESYSTEM_JOURNAL");
+      if (journal)
+      {
+        this->_impl->_operations = install_journal(
+          std::move(this->_impl->_operations), journal);
+        this->_impl->_operations->filesystem(this);
+      }
     }
 
     FileSystem::~FileSystem()
@@ -715,11 +722,16 @@ namespace reactor
       ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
       auto it = _cache.find(path);
       if (it != _cache.end())
+      {
+        ELLE_DEBUG("%s: hit on %s", *this, path);
         return it->second;
+      }
       else
       {
+        ELLE_DEBUG("%s: miss on %s", *this, path);
         if (path == "/")
         {
+          ELLE_DEBUG("%s: root fetch", *this);
           auto p = _operations->path("/");
           if (p->allow_cache())
             _cache[path] = p;
@@ -743,7 +755,8 @@ namespace reactor
       ELLE_ASSERT(_impl);
       if (_impl->_full_tree)
       {
-        return _impl->fetch_recurse(spath);
+        auto res = _impl->fetch_recurse(spath);
+        return res->unwrap();
       }
       else
       {
@@ -768,7 +781,7 @@ namespace reactor
         return {};
       auto res = it->second;
       _impl->_cache.erase(path);
-      return res;
+      return res->unwrap();
     }
 
     std::shared_ptr<Path>
@@ -776,7 +789,8 @@ namespace reactor
                     std::shared_ptr<Path> new_content)
     {
       std::shared_ptr<Path> res = extract(path);
-      _impl->_cache[path] = new_content;
+      _impl->_cache[path] =
+        _impl->_operations->wrap(path, new_content);
       return res;
     }
 

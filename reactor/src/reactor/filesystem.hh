@@ -194,6 +194,10 @@ namespace reactor
         return true;
       }
 
+      virtual std::shared_ptr<Path> unwrap()
+      {
+        return shared_from_this();
+      }
     };
 
     class FileSystem;
@@ -209,7 +213,16 @@ namespace reactor
       std::shared_ptr<Path>
       path(std::string const& path) = 0;
 
-      ELLE_ATTRIBUTE_RW(FileSystem*, filesystem);
+      virtual
+      std::shared_ptr<Path>
+      wrap(std::string const& path, std::shared_ptr<Path> source)
+      {
+        return source;
+      }
+      virtual
+      void
+      filesystem(FileSystem* fs) { _filesystem = fs;}
+      ELLE_ATTRIBUTE_R(FileSystem*, filesystem, protected);
     };
 
     class FileSystemImpl;
@@ -363,6 +376,9 @@ namespace reactor
       ELLE_ATTRIBUTE_R(boost::filesystem::path, where);
       ELLE_ATTRIBUTE_R(BindOperations&, ops);
     };
+
+    std::unique_ptr<Operations> install_journal(std::unique_ptr<Operations> backend,
+                                                std::string const& path);
   }
 }
 
