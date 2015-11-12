@@ -103,7 +103,7 @@ namespace reactor
               if (it != _contacts.end())
               {
                 ELLE_TRACE("opening result barrier");
-                it->second.result = endpoint;
+                it->second.set_result(endpoint);
                 it->second.barrier.open();
               }
               if (repl.target_address)
@@ -112,7 +112,7 @@ namespace reactor
                 if (it != _contacts.end())
                 {
                   ELLE_TRACE("opening result barrier");
-                  it->second.result = endpoint;
+                  it->second.set_result(endpoint);
                   it->second.barrier.open();
                 }
               }
@@ -129,7 +129,7 @@ namespace reactor
                 {
                   // set result but do not open barrier yet, so that
                   // contact() can retry pinging it
-                  it->second.result = repl.target_endpoint;
+                  it->second.set_result(*repl.target_endpoint);
                   // give it a ping
                   send_ping(*repl.target_endpoint);
                 }
@@ -175,9 +175,10 @@ namespace reactor
           boost::uuids::basic_random_generator<boost::mt19937>()());
         contactid = tempid;
       }
-      ELLE_TRACE("Using contactid %s", contactid);
       ContactInfo& ci = _contacts[contactid];
       ++ci.waiters;
+      ELLE_TRACE("Using contactid %s, %s waiters, opened=%s",
+                 contactid, ci.waiters, ci.barrier.opened());
       elle::SafeFinally unregister_request([&] {
           ContactInfo& ci = _contacts[contactid];
           if (--ci.waiters <= 0)
@@ -196,7 +197,9 @@ namespace reactor
         auto const& c = _contacts.at(contactid);
         if (!c.barrier.opened() && _server_reached.opened() && !id.empty())
         {
-          if (c.result)
+          if (c.result
+            && boost::posix_time::second_clock::local_time() - c.result_time
+                 < 10_sec)
           { // RDV gave us an enpoint, but we are not connected to it yet, ping it
             send_ping(*c.result);
           }
@@ -303,6 +306,11 @@ namespace reactor
       {
         ELLE_DEBUG("send_to failed with %s", e);
       }
+    }
+    void RDVSocket::ContactInfo::set_result(Endpoint ep)
+    {
+      result = ep;
+      result_time = boost::posix_time::second_clock::local_time();
     }
   }
 }

@@ -55,8 +55,10 @@ namespace reactor
         struct ContactInfo
         {
           ContactInfo() : waiters(0) {}
+          void set_result(Endpoint endpoint);
           Barrier barrier;
           boost::optional<Endpoint> result;
+          boost::posix_time::ptime result_time;
           int waiters;
         };
         std::unordered_map<std::string, ContactInfo> _contacts;
