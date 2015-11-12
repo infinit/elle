@@ -7,6 +7,7 @@
 #include <elle/log.hh>
 #include <elle/memory.hh>
 
+#include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
 #ifdef INFINIT_WINDOWS
 # include <reactor/backend/coro_io/backend.hh>
@@ -545,93 +546,6 @@ namespace reactor
   {
     return this->_background_pool.size();
   }
-
-  class BackgroundOperation:
-    public Operation
-  {
-  public:
-    typedef std::function<void ()> Action;
-    struct Status
-    {
-      bool aborted;
-    };
-
-  public:
-    BackgroundOperation(Action const& action):
-      Operation(*Scheduler::scheduler()),
-      _action(action),
-      _status(new Status)
-    {
-      this->_status->aborted = false;
-    }
-    ELLE_ATTRIBUTE(Action, action);
-    std::shared_ptr<Status> _status;
-
-  protected:
-    virtual
-    void
-    _abort() override
-    {
-      auto& sched = *Scheduler::scheduler();
-      ELLE_TRACE_SCOPE("%s: abort background operation", sched);
-      this->_status->aborted = true;
-      this->_signal();
-      ++sched._background_pool_free;
-    }
-
-    virtual
-    void
-    _start() override
-    {
-      auto& sched = *Scheduler::scheduler();
-      auto& current = *sched.current();
-      if (sched._background_pool_free == 0)
-      {
-        ELLE_DEBUG("%s: spawn new background thread", sched);
-        sched._background_pool.emplace_back([&sched]
-                                            {
-                                              sched._background_service.run();
-                                            });
-      }
-      else
-        --sched._background_pool_free;
-      auto status = this->_status;
-      auto action = this->_action;
-      sched._background_service.post(
-        [this, status, action, &current, &sched]
-        {
-          try
-          {
-            ELLE_TRACE_SCOPE("%s: run background operation", sched);
-            action();
-            ELLE_TRACE("%s: background operation finished", sched);
-            sched.io_service().post([this, status, &sched]
-                                    {
-                                      if (!status->aborted)
-                                      {
-                                        this->_signal();
-                                        ++sched._background_pool_free;
-                                      }
-                                    });
-          }
-          catch (...)
-          {
-            ELLE_TRACE("%s: background operation threw: %s",
-                       sched, elle::exception_string());
-            auto e = std::current_exception();
-            sched.io_service().post([this, status, &sched, e]
-                                    {
-                                      if (!status->aborted)
-                                      {
-                                        this->_raise(e);
-                                        this->_signal();
-                                        ++sched._background_pool_free;
-                                      }
-                                    });
-          }
-      });
-    }
-  };
 
   void
   Scheduler::_run_background(std::function<void ()> const& action)
