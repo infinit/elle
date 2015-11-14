@@ -64,6 +64,7 @@ class Config:
             self.__rpath = []
             self.__warnings = Config.Warnings()
             self.__use_local_libcxx = False
+            self.__whole_archive = False
         else:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
@@ -81,7 +82,7 @@ class Config:
             self.__rpath = model.__rpath[:]
             self.__warnings = Config.Warnings(model.__warnings)
             self.__use_local_libcxx = model.__use_local_libcxx
-
+            self.__whole_archive = model.__whole_archive
     class Warnings:
 
       Error = object()
@@ -300,6 +301,17 @@ class Config:
     def library_path(self):
 
         return iter(self.__lib_paths)
+
+
+    @property
+    def whole_archive(self):
+
+        return self.__whole_archive
+
+
+    def use_whole_archive(self):
+
+        self.__whole_archive = True
 
 
     def lib_path(self, path):
@@ -822,6 +834,26 @@ class GccToolkit(Toolkit):
       cmd += ['-o', exe.path()]
       libraries = (obj for obj in objs if isinstance(obj, Library))
       self.__libraries_flags(cfg, libraries, cmd)
+      if cfg.whole_archive:
+        pre=list()
+        ar=list()
+        post=list()
+        arnames=list()
+        for e in cmd:
+          e = str(e)
+          if e[-2:] == '.a':
+            if e.split('/')[-1] not in arnames:
+              ar.append(e)
+              arnames.append(e.split('/')[-1])
+            else:
+              pass
+          else:
+            if len(ar):
+              post.append(e)
+            else:
+              pre.append(e)
+        cmd = pre + ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
+
       return cmd
 
   def dynlink(self, cfg, objs, exe):
