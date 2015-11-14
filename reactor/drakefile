@@ -537,16 +537,22 @@ def configure(curl_config,
     'src/reactor/waitable.cc',
     'src/reactor/waitable.hh',
     )
+  sources += drake.nodes(
+    'src/reactor/filesystem.hh',
+    'src/reactor/filesystem.cc',
+    'src/reactor/filesystem_journal.cc',
+  )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
       'src/reactor/fuse.hh',
       'src/reactor/fuse.cc',
-      'src/reactor/filesystem.hh',
-      'src/reactor/filesystem.cc',
       'src/reactor/filesystem_fuse.cc',
-      'src/reactor/filesystem_journal.cc',
       'src/reactor/pthread.hh',
       'src/reactor/pthread.cc',
+      )
+  else:
+    sources += drake.nodes(
+      'src/reactor/filesystem_dummy.cc'
       )
   sources += drake.nodes(
     'src/reactor/http/Client.cc',

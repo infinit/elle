@@ -5,6 +5,7 @@
 
 # include <string>
 
+# include <unordered_map>
 # include <boost/filesystem.hpp>
 
 # include <elle/Buffer.hh>
@@ -34,6 +35,17 @@ struct statvfs {
 
 struct stat;
 struct statvfs;
+
+namespace std
+{
+  template<> struct hash<boost::filesystem::path>
+  {
+    inline size_t operator()(const boost::filesystem::path& p) const
+    {
+      return boost::filesystem::hash_value(p);
+    }
+  };
+}
 
 namespace reactor
 {
@@ -277,7 +289,14 @@ namespace reactor
     `--------*/
     private:
       FileSystemImpl* _impl;
+      std::shared_ptr<Path>
+      fetch_recurse(boost::filesystem::path path);
+      std::unique_ptr<Operations> _operations;
+      bool _full_tree;
+      std::string _where;
+      std::unordered_map<boost::filesystem::path, std::shared_ptr<Path>> _cache;
     };
+
 
     /// Handle implementation reading/writing to the local filesystem
     class BindHandle: public Handle
