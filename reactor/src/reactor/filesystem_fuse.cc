@@ -25,16 +25,6 @@
 
 ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
-namespace std
-{
-  template<> struct hash<boost::filesystem::path>
-  {
-    size_t operator()(const boost::filesystem::path& p) const
-    {
-      return boost::filesystem::hash_value(p);
-    }
-  };
-}
 
 namespace reactor
 {
@@ -601,28 +591,22 @@ namespace reactor
       return 0;
     }
 
-    class FileSystemImpl
+    class FileSystemImpl: public FuseContext
     {
-    public:
-      std::shared_ptr<Path>
-      fetch_recurse(boost::filesystem::path path);
-      std::unique_ptr<Operations> _operations;
-      bool _full_tree;
-      FuseContext _fuse;
-      std::string _where;
-      std::unordered_map<boost::filesystem::path, std::shared_ptr<Path>> _cache;
     };
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
-      : _impl(new FileSystemImpl{std::move(op), full_tree})
+      : _impl(new FileSystemImpl())
+      , _operations(std::move(op))
+      , _full_tree(full_tree)
     {
-      this->_impl->_operations->filesystem(this);
+      this->_operations->filesystem(this);
       char* journal = getenv("INFINIT_FILESYSTEM_JOURNAL");
       if (journal)
       {
-        this->_impl->_operations = install_journal(
-          std::move(this->_impl->_operations), journal);
-        this->_impl->_operations->filesystem(this);
+        this->_operations = install_journal(
+          std::move(this->_operations), journal);
+        this->_operations->filesystem(this);
       }
     }
 
@@ -636,7 +620,7 @@ namespace reactor
     FileSystem::mount(boost::filesystem::path const& where,
                       std::vector<std::string> const& options)
     {
-      _impl->_where = where.string();
+      _where = where.string();
       fuse_operations ops;
       memset(&ops, 0, sizeof(ops));
       ops.getattr = fusop_getattr;
@@ -669,8 +653,8 @@ namespace reactor
 #if FUSE_VERSION >= 29
       ops.flag_nullpath_ok = true;
 #endif
-      _impl->_fuse.create(where.string(), options, &ops, sizeof(ops), this);
-      _impl->_fuse.on_loop_exited([this]
+      _impl->create(where.string(), options, &ops, sizeof(ops), this);
+      _impl->on_loop_exited([this]
         {
           this->unmount();
         });
@@ -681,17 +665,17 @@ namespace reactor
         if (!nthread.empty())
           nt = std::stoi(nthread);
         ELLE_TRACE("Pool mode with %s workers", nt);
-        _impl->_fuse.loop_pool(nt);
+        _impl->loop_pool(nt);
       }
       else if (!elle::os::getenv("INFINIT_FUSE_THREAD", "").empty())
       {
         ELLE_TRACE("Thread mode");
-        _impl->_fuse.loop_mt();
+        _impl->loop_mt();
       }
       else
       {
         ELLE_TRACE("Single mode");
-        _impl->_fuse.loop();
+        _impl->loop();
       }
     }
 
@@ -699,111 +683,12 @@ namespace reactor
     FileSystem::unmount()
     {
       ELLE_TRACE("unmount");
-      if (!_impl->_where.empty())
+      if (!_where.empty())
       {
-        _impl->_where = "";
-        _impl->_fuse.destroy();
+        _where = "";
+        _impl->destroy();
         this->_signal();
       }
-    }
-
-    bool
-    FileSystem::_wait(Thread* thread)
-    {
-      if (!this->_impl)
-        return false;
-      else
-        return Waitable::_wait(thread);
-    }
-
-    std::shared_ptr<Path>
-    FileSystemImpl::fetch_recurse(boost::filesystem::path path)
-    {
-      if (path == "" || path == "\\")
-        path = "/";
-      ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
-      auto it = _cache.find(path);
-      if (it != _cache.end())
-      {
-        ELLE_DEBUG("%s: hit on %s", *this, path);
-        return it->second;
-      }
-      else
-      {
-        ELLE_DEBUG("%s: miss on %s", *this, path);
-        if (path == "/")
-        {
-          ELLE_DEBUG("%s: root fetch", *this);
-          auto p = _operations->path("/");
-          if (p->allow_cache())
-            _cache[path] = p;
-          return p;
-        }
-        std::shared_ptr<Path> parent = fetch_recurse(path.parent_path());
-        auto p = parent->child(path.filename().string());
-        if (p->allow_cache())
-          _cache[path] = p;
-        return p;
-      }
-    }
-
-    std::shared_ptr<Path>
-    FileSystem::path(std::string const& opath)
-    {
-      ELLE_DEBUG_SCOPE("%s: fetch \"%s\"", *this, opath);
-      std::string spath(opath);
-      if (spath == "" || spath == "\\")
-        spath = "/";
-      ELLE_ASSERT(_impl);
-      if (_impl->_full_tree)
-      {
-        auto res = _impl->fetch_recurse(spath);
-        return res->unwrap();
-      }
-      else
-      {
-        auto it = _impl->_cache.find(spath);
-        if (it == _impl->_cache.end())
-        {
-          auto res = _impl->_operations->path(spath);
-          if (res->allow_cache())
-            _impl->_cache[spath] = res;
-          return res;
-        }
-        else
-          return it->second;
-      }
-    }
-
-    std::shared_ptr<Path>
-    FileSystem::extract(std::string const& path)
-    {
-      auto it = _impl->_cache.find(path);
-      if (it == _impl->_cache.end())
-        return {};
-      auto res = it->second;
-      _impl->_cache.erase(path);
-      return res->unwrap();
-    }
-
-    std::shared_ptr<Path>
-    FileSystem::set(std::string const& path,
-                    std::shared_ptr<Path> new_content)
-    {
-      std::shared_ptr<Path> res = extract(path);
-      _impl->_cache[path] =
-        _impl->_operations->wrap(path, new_content);
-      return res;
-    }
-
-    std::shared_ptr<Path>
-    FileSystem::get(std::string const& path)
-    {
-      auto it = _impl->_cache.find(path);
-      if (it == _impl->_cache.end())
-        return nullptr;
-      else
-        return it->second;
     }
   }
 }

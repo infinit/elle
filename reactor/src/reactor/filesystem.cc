@@ -3,23 +3,13 @@
 #include <sys/types.h>
 
 #include <fcntl.h>
+#include <unistd.h>
 
 #include <reactor/filesystem.hh>
 
 #include <elle/assert.hh>
 
-namespace std
-{
-  template<>
-  struct hash<boost::filesystem::path>
-  {
-    size_t
-    operator()(const boost::filesystem::path& p) const
-    {
-      return boost::filesystem::hash_value(p);
-    }
-  };
-}
+ELLE_LOG_COMPONENT("reactor.filesystem");
 
 namespace reactor
 {
@@ -30,6 +20,106 @@ namespace reactor
     Operations::Operations()
       : _filesystem(nullptr)
     {}
+
+
+    bool
+    FileSystem::_wait(Thread* thread)
+    {
+      if (!this->_impl)
+        return false;
+      else
+        return Waitable::_wait(thread);
+    }
+
+    std::shared_ptr<Path>
+    FileSystem::fetch_recurse(boost::filesystem::path path)
+    {
+      if (path == "" || path == "\\")
+        path = "/";
+      ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
+      auto it = _cache.find(path);
+      if (it != _cache.end())
+      {
+        ELLE_DEBUG("%s: hit on %s", *this, path);
+        return it->second;
+      }
+      else
+      {
+        ELLE_DEBUG("%s: miss on %s", *this, path);
+        if (path == "/")
+        {
+          ELLE_DEBUG("%s: root fetch", *this);
+          auto p = _operations->path("/");
+          if (p->allow_cache())
+            _cache[path] = p;
+          return p;
+        }
+        std::shared_ptr<Path> parent = fetch_recurse(path.parent_path());
+        auto p = parent->child(path.filename().string());
+        if (p->allow_cache())
+          _cache[path] = p;
+        return p;
+      }
+    }
+
+    std::shared_ptr<Path>
+    FileSystem::path(std::string const& opath)
+    {
+      ELLE_DEBUG_SCOPE("%s: fetch \"%s\"", *this, opath);
+      std::string spath(opath);
+      if (spath == "" || spath == "\\")
+        spath = "/";
+      ELLE_ASSERT(_impl);
+      if (this->_full_tree)
+      {
+        auto res = this->fetch_recurse(spath);
+        return res->unwrap();
+      }
+      else
+      {
+        auto it = this->_cache.find(spath);
+        if (it == this->_cache.end())
+        {
+          auto res = this->_operations->path(spath);
+          if (res->allow_cache())
+            this->_cache[spath] = res;
+          return res;
+        }
+        else
+          return it->second;
+      }
+    }
+
+    std::shared_ptr<Path>
+    FileSystem::extract(std::string const& path)
+    {
+      auto it = this->_cache.find(path);
+      if (it == this->_cache.end())
+        return {};
+      auto res = it->second;
+      this->_cache.erase(path);
+      return res->unwrap();
+    }
+
+    std::shared_ptr<Path>
+    FileSystem::set(std::string const& path,
+                    std::shared_ptr<Path> new_content)
+    {
+      std::shared_ptr<Path> res = extract(path);
+      this->_cache[path] =
+        this->_operations->wrap(path, new_content);
+      return res;
+    }
+
+    std::shared_ptr<Path>
+    FileSystem::get(std::string const& path)
+    {
+      auto it = this->_cache.find(path);
+      if (it == this->_cache.end())
+        return nullptr;
+      else
+        return it->second;
+    }
 
     std::unique_ptr<Handle>
     Path::create(int flags, mode_t mode)
