@@ -1,3 +1,5 @@
+#define _FILE_OFFSET_BITS 64
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -43,7 +45,7 @@ namespace reactor
       : ios(b.ostreambuf())
       , _serializer(new elle::serialization::json::SerializerOut(ios))
       {
-        std::string shandle = std::to_string((unsigned long)handle);
+        std::string shandle = std::to_string((uint64_t)handle);
         _serializer->serialize("handle", shandle);
         _serializer->serialize("operation", op);
       }
@@ -268,7 +270,7 @@ namespace reactor
         InOp inop(_owner);
         void* h = nullptr;
         elle::SafeFinally pushin([&] {
-            std::string shandle = std::to_string((unsigned long)h);
+            std::string shandle = std::to_string((uint64_t)h);
             _owner.push_in(
               PushSerializer(_full_path, "create")("mode", mode)("flags", flags)
               ("handle", shandle)
@@ -290,7 +292,7 @@ namespace reactor
         InOp inop(_owner);
         void* h = nullptr;
         elle::SafeFinally pushin([&] {
-            std::string shandle = std::to_string((unsigned long)h);
+            std::string shandle = std::to_string((uint64_t)h);
             _owner.push_in(
               PushSerializer(_full_path, "open")("mode", mode)("flags", flags)
               ("handle", shandle)
@@ -322,16 +324,18 @@ namespace reactor
             response.serialize("success", true);
             response.serialize("operation", "stat");
             response.serialize("path", _full_path);
-            response.serialize("st_dev"    , s->st_dev            );
-            response.serialize("st_ino"    , s->st_ino            );
-            response.serialize("st_mode"   , s->st_mode           );
-            response.serialize("st_nlink"  , s->st_nlink          );
-            response.serialize("st_uid"    , s->st_uid            );
-            response.serialize("st_gid"    , s->st_gid            );
-            response.serialize("st_rdev"   , s->st_rdev           );
-            response.serialize("st_size"   , s->st_size           );
-            response.serialize("st_blksize", s->st_blksize        );
-            response.serialize("st_blocks" , s->st_blocks         );
+            response.serialize("st_dev"    ,s->st_dev    );
+            response.serialize("st_ino"    ,s->st_ino    );
+            response.serialize("st_mode"   ,s->st_mode   );
+            response.serialize("st_nlink"  ,s->st_nlink  );
+            response.serialize("st_uid"    ,s->st_uid    );
+            response.serialize("st_gid"    ,s->st_gid    );
+            response.serialize("st_rdev"   ,s->st_rdev   );
+            response.serialize("st_size"   ,int64_t(s->st_size));
+#ifndef INFINIT_WINDOWS
+            response.serialize("st_blksize",s->st_blksize);
+            response.serialize("st_blocks" ,s->st_blocks );
+#endif
             response.serialize("st_atime"  , uint64_t(s->st_atime));
             response.serialize("st_mtime"  , uint64_t(s->st_mtime));
             response.serialize("st_ctime"  , uint64_t(s->st_ctime));
@@ -483,16 +487,16 @@ namespace reactor
             elle::IOStream ios(buf.ostreambuf());
             elle::serialization::json::SerializerOut response(ios);
             response.serialize("success", true);
-            response.serialize("f_bsize"  , uint64_t(st->f_bsize)  );
-            response.serialize("f_frsize" , uint64_t(st->f_frsize) );
-            response.serialize("f_blocks" , st->f_blocks           );
-            response.serialize("f_bfree"  , st->f_bfree            );
-            response.serialize("f_bavail" , st->f_bavail           );
-            response.serialize("f_files"  , st->f_files            );
-            response.serialize("f_ffree"  , st->f_ffree            );
-            response.serialize("f_favail" , st->f_favail           );
-            response.serialize("f_fsid"   , uint64_t(st->f_fsid)   );
-            response.serialize("f_flag"   , uint64_t(st->f_flag)   );
+            response.serialize("f_bsize",   uint64_t(st->f_bsize));
+            response.serialize("f_frsize",  uint64_t(st->f_frsize));
+            response.serialize("f_blocks",  uint64_t(st->f_blocks));
+            response.serialize("f_bfree",   uint64_t(st->f_bfree));
+            response.serialize("f_bavail",  uint64_t(st->f_bavail));
+            response.serialize("f_files",   uint64_t(st->f_files));
+            response.serialize("f_ffree",   uint64_t(st->f_ffree));
+            response.serialize("f_favail",  uint64_t(st->f_favail));
+            response.serialize("f_fsid",    uint64_t(st->f_fsid));
+            response.serialize("f_flag",    uint64_t(st->f_flag));
             response.serialize("f_namemax", uint64_t(st->f_namemax));
           }
           _owner.push_out(buf);
