@@ -1096,7 +1096,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
                  targets = boost_libraries + boost_headers)
     if cxx_toolkit.os is drake.os.macos:
       drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
-    elif windows:
+    elif windows and python3:
       python_dll = drake.node('%s/python%s%s.dll' % (python3.prefix, python_version.major, python_version.minor))
       boost_fs = drake.node('boost/lib/libboost_python3-mt-s.a')
       boost_fs.dependency_add(python_dll)
@@ -1110,7 +1110,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost_rule << boost_headers
     boost_rule << boost_libraries
     # Fix ::hypot issues on windows.
-  if windows:
+  if windows and python3:
     boost.config_python(static = True).flag('-include')
     boost.config_python(static = True).flag('cmath')
   set_boost(boost)
