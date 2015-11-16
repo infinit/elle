@@ -13,11 +13,7 @@ namespace reactor
 
   Exception::Exception(elle::Backtrace const& bt, const std::string& message)
     : elle::Exception(bt, message)
-  {
-    // if (Scheduler* sched = reactor::Scheduler::scheduler())
-    //   if (Thread* t = sched->current())
-    //     _backtrace.strip_base(t->_backtrace_root);
-  }
+  {}
 
   Timeout::Timeout(reactor::Duration const& delay)
     : Super(elle::sprintf("timeout %s", delay))

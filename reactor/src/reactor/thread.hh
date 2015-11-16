@@ -151,7 +151,6 @@ namespace reactor
     boost::function<void ()> _injection;
     /// Exception to be thrown by the thread upon wake-up.
     std::exception_ptr _exception;
-    elle::Backtrace _backtrace_root;
     friend class Exception;
     /// Exception thrown by the thread execution.
     std::exception_ptr _exception_thrown;

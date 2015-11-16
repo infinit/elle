@@ -35,7 +35,6 @@ namespace reactor
     , _state(state::running)
     , _injection()
     , _exception()
-    , _backtrace_root()
     , _waited()
     , _timeout(false)
     , _timeout_timer(scheduler.io_service())
@@ -172,7 +171,6 @@ namespace reactor
         this->_exception = std::exception_ptr{};
         std::rethrow_exception(tmp);
       }
-      this->_backtrace_root = elle::Backtrace::current();
       action();
     }
     catch (Terminate const&)

@@ -149,7 +149,6 @@ protected:
         this->_exception = std::exception_ptr{};
         std::rethrow_exception(tmp);
       }
-      _backtrace_root = elle::Backtrace::current();
       action();
     }
     catch (reactor::Terminate const&)
