@@ -7,12 +7,13 @@
 #include <elle/finally.hh>
 #include <elle/test.hh>
 
-#include <reactor/asio.hh>
+#include <reactor/BackgroundFuture.hh>
 #include <reactor/Barrier.hh>
-#include <reactor/MultiLockBarrier.hh>
 #include <reactor/Channel.hh>
+#include <reactor/MultiLockBarrier.hh>
 #include <reactor/Scope.hh>
 #include <reactor/TimeoutGuard.hh>
+#include <reactor/asio.hh>
 #include <reactor/duration.hh>
 #include <reactor/exception.hh>
 #include <reactor/mutex.hh>
@@ -2318,6 +2319,28 @@ namespace background
       barrier.wait(lock);
     }
   }
+
+  ELLE_TEST_SCHEDULED(future)
+  {
+    ELLE_LOG("test plain value")
+    {
+      reactor::BackgroundFuture<int> f(42);
+      BOOST_CHECK_EQUAL(f.value(), 42);
+    }
+    ELLE_LOG("test waiting value")
+    {
+      reactor::BackgroundFuture<int> f([] { ::usleep(100000); return 51; });
+      BOOST_CHECK_EQUAL(f.value(), 51);
+      f = [] { ::usleep(100000); return 69; };
+      BOOST_CHECK_EQUAL(f.value(), 69);
+    }
+    ELLE_LOG("test already available value")
+    {
+      reactor::BackgroundFuture<int> f([] { return 69; });
+      reactor::sleep(200_ms);
+      BOOST_CHECK_EQUAL(f.value(), 69);
+    }
+  }
 }
 
 /*--------.
@@ -2903,6 +2926,7 @@ ELLE_TEST_SUITE()
     background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted_throw), 0, valgrind(1, 5));
+    background->add(BOOST_TEST_CASE(future), 0, valgrind(2, 5));
   }
 
   boost::unit_test::test_suite* released = BOOST_TEST_SUITE("released");
