@@ -54,7 +54,7 @@ namespace reactor
         Barrier _server_reached;
         struct ContactInfo
         {
-          ContactInfo() : waiters(0) {}
+          ContactInfo(RDVSocket const& owner, std::string const& id);
           void set_result(Endpoint endpoint);
           Barrier barrier;
           boost::optional<Endpoint> result;

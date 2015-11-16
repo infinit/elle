@@ -18,10 +18,10 @@ namespace reactor
 
     using Endpoint = boost::asio::ip::udp::endpoint;
     RDVSocket::RDVSocket()
-    : _breacher("breacher", [this] { this->loop_breach();})
-    , _keep_alive("keep-alive", [this]  {this->loop_keep_alive();})
-    {
-    }
+      : _server_reached(elle::sprintf("%s: server reached", *this))
+      , _breacher("breacher", [this] { this->loop_breach();})
+      , _keep_alive("keep-alive", [this]  {this->loop_keep_alive();})
+    {}
 
     RDVSocket::~RDVSocket()
     {
@@ -29,14 +29,17 @@ namespace reactor
       _keep_alive.terminate_now();
     }
 
-    void RDVSocket::rdv_connect(std::string const& id,
-                                std::string const& rdv_host, int rdv_port,
-                                DurationOpt timeout)
+    void
+    RDVSocket::rdv_connect(std::string const& id,
+                           std::string const& rdv_host, int rdv_port,
+                           DurationOpt timeout)
     {
       _id = id;
       rdv_connect(id, resolve_udp(rdv_host, std::to_string(rdv_port)), timeout);
     }
-    void RDVSocket::rdv_connect(std::string const& id, Endpoint ep, DurationOpt timeout)
+
+    void
+    RDVSocket::rdv_connect(std::string const& id, Endpoint ep, DurationOpt timeout)
     {
       _id = id;
       ELLE_TRACE_SCOPE("rdv_connect to %s as %s", ep, id);
@@ -163,10 +166,13 @@ namespace reactor
           return sz;
       }
     }
-    Endpoint RDVSocket::contact(std::string const& id,
-        std::vector<Endpoint> const& endpoints,
-        DurationOpt timeout)
+
+    Endpoint
+    RDVSocket::contact(std::string const& id,
+                       std::vector<Endpoint> const& endpoints,
+                       DurationOpt timeout)
     {
+      ELLE_TRACE_SCOPE("%s: contact %s", *this, id);
       std::string tempid;
       std::string contactid = id;
       if (id.empty())
@@ -175,15 +181,19 @@ namespace reactor
           boost::uuids::basic_random_generator<boost::mt19937>()());
         contactid = tempid;
       }
-      ContactInfo& ci = _contacts[contactid];
-      ++ci.waiters;
-      ELLE_TRACE("Using contactid %s, %s waiters, opened=%s",
-                 contactid, ci.waiters, ci.barrier.opened());
-      elle::SafeFinally unregister_request([&] {
-          ContactInfo& ci = _contacts[contactid];
-          if (--ci.waiters <= 0)
-            _contacts.erase(contactid);
-      });
+      auto ci = _contacts.emplace(
+        std::piecewise_construct,
+        std::forward_as_tuple(contactid),
+        std::forward_as_tuple(*this, contactid));
+      ++ci.first->second.waiters;
+      elle::SafeFinally unregister_request(
+        [&]
+        {
+          auto it = this->_contacts.find(contactid);
+          ELLE_ASSERT(it != this->_contacts.end());
+          if (--it->second.waiters <= 0)
+            this->_contacts.erase(it);
+        });
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
@@ -215,9 +225,8 @@ namespace reactor
         }
         if (reactor::wait(_contacts.at(contactid).barrier, 500_ms))
         {
-          ELLE_TRACE("got result: %s", *_contacts[contactid].result);
-          auto res = *_contacts[contactid].result;
-          return res;
+          ELLE_TRACE("got result: %s", *this->_contacts.at(contactid).result);
+          return *_contacts.at(contactid).result;
         }
         if (timeout
           && boost::posix_time::second_clock::universal_time() - now > *timeout)
@@ -225,7 +234,8 @@ namespace reactor
       }
     }
 
-    void RDVSocket::send_with_magik(elle::Buffer const& b, Endpoint peer)
+    void
+    RDVSocket::send_with_magik(elle::Buffer const& b, Endpoint peer)
     {
       elle::Buffer data;
       data.append(reactor::network::rdv::rdv_magic, 8);
@@ -233,7 +243,8 @@ namespace reactor
       send_to_failsafe(Buffer(data.contents(), data.size()), peer);
     }
 
-    void RDVSocket::send_ping(Endpoint target, std::string const& tid)
+    void
+    RDVSocket::send_ping(Endpoint target, std::string const& tid)
     {
       ELLE_DEBUG("send ping to %s", target);
       rdv::Message ping;
@@ -245,7 +256,8 @@ namespace reactor
       send_with_magik(buf, target);
     }
 
-    void RDVSocket::loop_breach()
+    void
+    RDVSocket::loop_breach()
     {
       while (true)
       {
@@ -265,7 +277,8 @@ namespace reactor
       }
     }
 
-    void RDVSocket::loop_keep_alive()
+    void
+    RDVSocket::loop_keep_alive()
     {
       reactor::wait(_server_reached);
       while (true)
@@ -275,28 +288,34 @@ namespace reactor
       }
     }
 
-    bool RDVSocket::rdv_connected() const
+    bool
+    RDVSocket::rdv_connected() const
     {
       return _server_reached.opened();
     }
 
-    void RDVSocket::set_local_id(std::string const& id)
+    void
+    RDVSocket::set_local_id(std::string const& id)
     {
       this->_id = id;
     }
 
-    void RDVSocket::register_reader(std::string const& magic,
-                                    std::function<void(Buffer, Endpoint)> handler)
+    void
+    RDVSocket::register_reader(std::string const& magic,
+                               std::function<void(Buffer, Endpoint)> handler)
     {
       ELLE_ASSERT_EQ(signed(magic.size()), 8);
       _readers[magic] = handler;
     }
 
-    void RDVSocket::unregister_reader(std::string const& magic)
+    void
+    RDVSocket::unregister_reader(std::string const& magic)
     {
       _readers.erase(magic);
     }
-    void RDVSocket::send_to_failsafe(Buffer buffer, Endpoint endpoint)
+
+    void
+    RDVSocket::send_to_failsafe(Buffer buffer, Endpoint endpoint)
     {
       try
       {
@@ -307,7 +326,15 @@ namespace reactor
         ELLE_DEBUG("send_to failed with %s", e);
       }
     }
-    void RDVSocket::ContactInfo::set_result(Endpoint ep)
+
+    RDVSocket::ContactInfo::ContactInfo(RDVSocket const& owner,
+                                        std::string const& id)
+      : barrier(elle::sprintf("%s: contact %s", owner, id))
+      , waiters()
+    {}
+
+    void
+    RDVSocket::ContactInfo::set_result(Endpoint ep)
     {
       result = ep;
       result_time = boost::posix_time::second_clock::local_time();
