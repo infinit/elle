@@ -55,7 +55,7 @@ namespace reactor
                                   {
                                     if (!status->aborted)
                                     {
-                                      this->_signal();
+                                      this->done();
                                       ++sched._background_pool_free;
                                     }
                                   });
@@ -70,7 +70,7 @@ namespace reactor
                                     if (!status->aborted)
                                     {
                                       this->_raise(e);
-                                      this->_signal();
+                                      this->done();
                                       ++sched._background_pool_free;
                                     }
                                   });

@@ -28,7 +28,6 @@ namespace reactor
     void
     _start() override;
   };
-
 }
 
 #endif
