@@ -174,6 +174,92 @@ ELLE_TEST_SCHEDULED_THROWS(non_managed, BeaconException)
   }
 }
 
+ELLE_TEST_SCHEDULED(unique_ptr)
+{
+  ELLE_LOG("terminate thread upon release")
+  {
+    bool beacon = false;
+    reactor::Barrier sleeping;
+    reactor::Thread::unique_ptr t(
+      new reactor::Thread(
+        "waiter",
+        [&]
+        {
+          try
+          {
+            sleeping.open();
+            reactor::sleep();
+            BOOST_FAIL("NOT POSSIBLE");
+          }
+          catch (...)
+          {
+            beacon = true;
+            throw;
+          }
+        }));
+    reactor::wait(sleeping);
+    t.reset();
+    BOOST_CHECK(beacon);
+  }
+  ELLE_LOG("terminate disposed thread upon release")
+  {
+    bool beacon = false;
+    reactor::Barrier sleeping;
+    reactor::Thread::unique_ptr t(
+      new reactor::Thread(
+        "waiter",
+        [&]
+        {
+          try
+          {
+            sleeping.open();
+            reactor::sleep();
+            BOOST_FAIL("NOT POSSIBLE");
+          }
+          catch (...)
+          {
+            beacon = true;
+            throw;
+          }
+        },
+        reactor::Thread::dispose = true));
+    reactor::wait(sleeping);
+    t.reset();
+    BOOST_CHECK(beacon);
+  }
+  ELLE_LOG("release disposed thread")
+  {
+    reactor::Barrier run;
+    reactor::Thread::unique_ptr t(
+      new reactor::Thread(
+        "waiter",
+        [&]
+        {
+          run.open();
+        },
+        reactor::Thread::dispose = true));
+    reactor::wait(run);
+    BOOST_CHECK(!t);
+    t.reset();
+  }
+  ELLE_LOG("destroy pointer to alive disposed thread")
+  {
+    reactor::Barrier go;
+    auto raw = new reactor::Thread(
+      "waiter",
+      [&]
+      {
+        reactor::wait(go);
+      },
+      reactor::Thread::dispose = true);
+    auto t = new reactor::Thread::unique_ptr(raw);
+    t->release();
+    delete t;
+    go.open();
+    reactor::wait(*raw);
+  }
+}
+
 /*-----.
 | Wait |
 `-----*/
@@ -2749,6 +2835,7 @@ ELLE_TEST_SUITE()
     basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(non_managed), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(unique_ptr), 0, valgrind(1, 5));
   }
 
   {

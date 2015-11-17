@@ -1,6 +1,8 @@
 #ifndef INFINIT_REACTOR_THREAD_HXX
 # define INFINIT_REACTOR_THREAD_HXX
 
+# include <elle/log.hh>
+
 namespace reactor
 {
   /*-------------.
@@ -59,11 +61,21 @@ namespace reactor
   void
   Thread::Terminator::operator ()(reactor::Thread* t)
   {
+    bool disposed = t->_dispose;
     if (t)
       t->terminate_now();
-    this->std::default_delete<reactor::Thread>::operator ()(t);
+    if (!disposed)
+      this->std::default_delete<reactor::Thread>::operator ()(t);
   }
 
+  template <typename ... Args>
+  Thread::unique_ptr::unique_ptr(Args&& ... args)
+    : std::unique_ptr<reactor::Thread, Terminator>(std::forward<Args>(args)...)
+  {
+    if (this && this->get()->_dispose)
+      this->_slot = this->get()->destructed().connect(
+        [this] {this->release(); });
+  }
 }
 
 #endif

@@ -34,7 +34,16 @@ namespace reactor
       void
       operator ()(reactor::Thread* t);
     };
-    typedef std::unique_ptr<reactor::Thread, Terminator> unique_ptr;
+    friend class Terminator;
+    class unique_ptr
+      : public std::unique_ptr<reactor::Thread, Terminator>
+    {
+    public:
+      template <typename ... Args>
+      unique_ptr(Args&& ... args);
+    private:
+      boost::signals2::scoped_connection _slot;
+    };
 
   /*-------------.
   | Construction |
