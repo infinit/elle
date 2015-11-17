@@ -4,7 +4,11 @@
 
 #include <sys/mount.h>
 
-#include "fuse.hh"
+#include <reactor/fuse.hh>
+#ifdef INFINIT_MACOSX
+# include <CoreFoundation/CoreFoundation.h>
+# include <DiskArbitration/DiskArbitration.h>
+#endif
 
 #include <fuse/fuse.h>
 #include <fuse/fuse_lowlevel.h>
@@ -25,26 +29,40 @@ ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
 namespace reactor
 {
-
-  void FuseContext::loop()
+  void
+  FuseContext::loop()
   {
     // Macos can't run async ops on fuse socket, so thread it
 #ifdef INFINIT_MACOSX
-    _loop.reset(new Thread("holder", [&] { reactor::sleep();}));
+    this->_loop.reset(new Thread(
+      "holder",
+      [&]
+      {
+        reactor::sleep();
+      }));
     auto& sched = scheduler();
-    _loopThread.reset(new std::thread([&] { this->_loop_one_thread(sched);}));
+    this->_loop_thread.reset(new std::thread(
+      [&]
+      {
+        this->_loop_one_thread(sched);
+      }));
 #else
-    _loop.reset(new Thread("fuse loop", [&] { _loop_single();}));
+    this->_loop.reset(new Thread("fuse loop",
+      [&]
+      {
+        this->_loop_single();
+      }));
 #endif
   }
 
-  void FuseContext::_loop_one_thread(reactor::Scheduler& sched)
+  void
+  FuseContext::_loop_one_thread(reactor::Scheduler& sched)
   {
-    fuse_session* s = fuse_get_session(_fuse);
+    fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
     void* buffer_data = malloc(buffer_size);
-    while (!fuse_exited(_fuse))
+    while (!fuse_exited(this->_fuse))
     {
       ELLE_DUMP("Processing command");
       int res = -EINTR;
@@ -59,94 +77,117 @@ namespace reactor
       }
       try
       {
-        sched.mt_run<void>("fuse worker", [&] {
+        sched.mt_run<void>(
+          "fuse worker",
+          [&]
+          {
             fuse_session_process(s, (const char*)buffer_data, res, ch);
-        });
+          });
       }
       catch (std::exception const& e)
       {
         ELLE_WARN("Exception escaped fuse_process: %s", e.what());
       }
     }
-    sched.run_later("exit notifier", _on_loop_exited);
+    sched.run_later("exit notifier", this->on_loop_exited());
   }
 
-  void FuseContext::_loop_single()
+  void
+  FuseContext::_loop_single()
   {
-    fuse_session* s = fuse_get_session(_fuse);
+    fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     int fd = fuse_chan_fd(ch);
     ELLE_TRACE("Got fuse fs %s", fd);
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
-    auto lock = _mt_barrier.lock();
-    while (!fuse_exited(_fuse))
+    auto lock = this->_mt_barrier.lock();
+    while (!fuse_exited(this->_fuse))
     {
-      _socket_barrier.close();
+      this->_socket_barrier.close();
       socket.async_read_some(boost::asio::null_buffers(),
-        [&](boost::system::error_code const&, std::size_t)
+        [&] (boost::system::error_code const&, std::size_t)
         {
-          if (!_fuse)
+          if (!this->_fuse)
             return;
-          _socket_barrier.open();
+          this->_socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
-      wait(_socket_barrier);
-      if (fuse_exited(_fuse))
+      wait(this->_socket_barrier);
+      if (fuse_exited(this->_fuse))
         break;
       ELLE_DUMP("Processing command");
       //highlevel api
-      fuse_cmd* cmd = fuse_read_cmd(_fuse);
+      fuse_cmd* cmd = fuse_read_cmd(this->_fuse);
       if (!cmd)
         break;
-      fuse_process_cmd(_fuse, cmd);
+      fuse_process_cmd(this->_fuse, cmd);
     }
     socket.release();
-    if (_on_loop_exited)
-      new reactor::Thread("exit notifier", _on_loop_exited, true);
+    if (this->on_loop_exited())
+      new reactor::Thread("exit notifier", this->on_loop_exited(), true);
   }
 
-  void FuseContext::loop_pool(int nThreads)
+  void
+  FuseContext::loop_pool(int threads)
   {
 #ifdef INFINIT_MACOSX
     Scheduler& sched = scheduler();
-    _loopThread.reset(new std::thread([=](Scheduler* sched) { this->_loop_pool(nThreads, *sched);}, &sched));
+    this->_loop_thread.reset(new std::thread(
+      [=] (Scheduler* sched)
+      {
+        this->_loop_pool(threads, *sched);
+      }, &sched));
 #else
-    _loop.reset(new Thread("fuse loop",
-                           [=] { this->_loop_pool(nThreads, scheduler());}));
+    this->_loop.reset(new Thread(
+      "fuse loop",
+      [=]
+      {
+        this->_loop_pool(threads, scheduler());
+      }));
 #endif
   }
 
-  void FuseContext::loop_mt()
+  void
+  FuseContext::loop_mt()
   {
     Scheduler& sched = scheduler();
 #ifdef INFINIT_MACOSX
-    _loopThread.reset(new std::thread([&] { this->_loop_mt(sched);}));
+    this->_loop_thread.reset(new std::thread(
+      [&]
+      {
+        this->_loop_mt(sched);
+      }));
 #else
-    _loop.reset(new Thread("fuse loop",
-                           [&] { this->_loop_mt(sched);}));
+    this->_loop.reset(new Thread(
+      "fuse loop",
+      [&]
+      {
+        this->_loop_mt(sched);
+      }));
 #endif
   }
 
-  void FuseContext::_loop_pool(int nThreads, Scheduler& sched)
+  void
+  FuseContext::_loop_pool(int threads, Scheduler& sched)
   {
-    ELLE_TRACE("Entering pool loop with %s workers", nThreads);
+    ELLE_TRACE("Entering pool loop with %s workers", threads);
     reactor::Semaphore sem;
     bool stop = false;
     std::list<elle::Buffer> requests;
-    fuse_session* s = fuse_get_session(_fuse);
+    fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
-    auto lock = _mt_barrier.lock();
+    auto lock = this->_mt_barrier.lock();
     auto worker = [&] {
-      auto lock = _mt_barrier.lock();
+      auto lock = this->_mt_barrier.lock();
       while (true)
       {
         sem.wait();
         elle::Buffer buf;
         {
 #ifdef INFINIT_MACOSX
-          std::unique_lock<std::mutex> mutex_lock(_mutex);
+          std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
           if (stop)
             return;
@@ -159,14 +200,15 @@ namespace reactor
           requests.pop_front();
         }
         ELLE_TRACE("Processing new request");
-        fuse_session_process(s, (const char*)buf.mutable_contents(), buf.size(), ch);
+        fuse_session_process(
+          s, (const char*)buf.mutable_contents(), buf.size(), ch);
         ELLE_TRACE("Back to the pool");
       }
     };
-    for(int i=0; i< nThreads; ++i)
+    for(int i = 0; i < threads; ++i)
     {
       Thread* t = new Thread(elle::sprintf("fuse worker %s", i), worker);
-      _workers.push_back(t);
+      this->_workers.push_back(t);
     }
 #ifndef INFINIT_MACOSX
     int fd = fuse_chan_fd(ch);
@@ -174,22 +216,22 @@ namespace reactor
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
 #endif
-    while (!fuse_exited(_fuse))
+    while (!fuse_exited(this->_fuse))
     {
 #ifndef INFINIT_MACOSX
-      _socket_barrier.close();
+      this->_socket_barrier.close();
       socket.async_read_some(boost::asio::null_buffers(),
-        [&](boost::system::error_code const& erc, std::size_t)
+        [&] (boost::system::error_code const& erc, std::size_t)
         {
           if (erc)
             return;
           ELLE_DUMP("fuse message ready, opening...");
-          _socket_barrier.open();
+          this->_socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
-      wait(_socket_barrier);
+      wait(this->_socket_barrier);
 #endif
-      if (fuse_exited(_fuse))
+      if (fuse_exited(this->_fuse))
         break;
       ELLE_DUMP("Processing command");
       elle::Buffer buf;
@@ -206,7 +248,7 @@ namespace reactor
       }
       buf.size(res);
 #ifdef INFINIT_MACOSX
-      std::unique_lock<std::mutex> mutex_lock(_mutex);
+      std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
       requests.push_back(std::move(buf));
       sem.release();
@@ -218,19 +260,20 @@ namespace reactor
     for(auto t : _workers)
       reactor::wait(*t);
     ELLE_DEBUG("fuse loop returning");
-    if (_on_loop_exited)
+    if (this->on_loop_exited())
 #ifdef INFINIT_MACOSX
-      sched.mt_run<void>("exit notifier", _on_loop_exited);
+      sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
-      new reactor::Thread("exit notifier", _on_loop_exited, true);
+      new reactor::Thread("exit notifier", this->on_loop_exited(), true);
 #endif
   }
 
 
-  void FuseContext::_loop_mt(Scheduler& sched)
+  void
+  FuseContext::_loop_mt(Scheduler& sched)
   {
     reactor::MultiLockBarrier barrier;
-    fuse_session* s = fuse_get_session(_fuse);
+    fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
 #ifndef INFINIT_MACOSX
@@ -239,23 +282,23 @@ namespace reactor
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
 #endif
-    auto lock = _mt_barrier.lock();
+    auto lock = this->_mt_barrier.lock();
     void* buffer_data = malloc(buffer_size);
-    while (!fuse_exited(_fuse))
+    while (!fuse_exited(this->_fuse))
     {
 #ifndef INFINIT_MACOSX
-      _socket_barrier.close();
+      this->_socket_barrier.close();
       socket.async_read_some(boost::asio::null_buffers(),
         [&](boost::system::error_code const& erc, std::size_t)
         {
           if (erc)
             return;
-          _socket_barrier.open();
+          this->_socket_barrier.open();
         });
       ELLE_DUMP("waiting for socket");
-      wait(_socket_barrier);
+      wait(this->_socket_barrier);
 #endif
-      if (fuse_exited(_fuse))
+      if (fuse_exited(this->_fuse))
         break;
       ELLE_DUMP("Processing command");
       int res = -EINTR;
@@ -271,118 +314,166 @@ namespace reactor
       void* b2 = malloc(res);
       memcpy(b2, buffer_data, res);
 #ifdef INFINIT_MACOSX
-      std::unique_lock<std::mutex> mutex_lock(_mutex);
+      std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
-      _workers.push_back(new Thread(sched, "fuse worker", [s, b2, res, ch, this] {
-        auto lock = this->_mt_barrier.lock();
-        fuse_session_process(s, (const char*)b2, res, ch);
-        free(b2);
+      this->_workers.push_back(new Thread(
+        sched,
+        "fuse worker",
+        [s, b2, res, ch, this]
+        {
+          auto lock = this->_mt_barrier.lock();
+          fuse_session_process(s, (const char*)b2, res, ch);
+          free(b2);
 #ifdef INFINIT_MACOSX
-        std::unique_lock<std::mutex> mutex_lock(_mutex);
+          std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
-        auto it = std::find(_workers.begin(), _workers.end(), scheduler().current());
-        ELLE_ASSERT(it != _workers.end());
-        std::swap(*it, _workers.back());
-        _workers.pop_back();
-        },
-        true));
+          auto it = std::find(this->_workers.begin(),
+                              this->_workers.end(),
+                              scheduler().current());
+          ELLE_ASSERT(it != this->_workers.end());
+          std::swap(*it, this->_workers.back());
+          this->_workers.pop_back();
+        }, true));
     }
 #ifdef INFINIT_MACOSX
-      sched.mt_run<void>("exit notifier", _on_loop_exited);
+      sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
-      new reactor::Thread("exit notifier", _on_loop_exited, true);
+      new reactor::Thread("exit notifier", this->on_loop_exited(), true);
 #endif
   }
 
-  void FuseContext::create(std::string const& mountpoint,
-                    std::vector<std::string> const& arguments,
-                    const struct fuse_operations *op, size_t op_size,
-                    void* user_data)
+  void
+  FuseContext::create(std::string const& mountpoint,
+                      std::vector<std::string> const& arguments,
+                      const struct fuse_operations* op,
+                      size_t op_size,
+                      void* user_data)
   {
-    _mountpoint = mountpoint;
+    this->_mountpoint = mountpoint;
     fuse_args args;
     args.allocated = false;
     args.argc = arguments.size();
     args.argv = (char**) malloc(sizeof(void*) * (arguments.size() + 1));
     void* ptr = args.argv;
     elle::SafeFinally cleanup([&] { if (ptr == args.argv) free(args.argv);});
-    for (unsigned int i=0; i<arguments.size(); ++i)
+    for (unsigned int i = 0; i < arguments.size(); ++i)
       args.argv[i] = (char*)arguments[i].c_str();
     args.argv[arguments.size()] = nullptr;
     fuse_chan* chan = ::fuse_mount(mountpoint.c_str(), &args);
     if (!chan)
       throw std::runtime_error("fuse_mount failed");
-    _fuse = ::fuse_new(chan, &args, op, op_size, user_data);
-    if (!_fuse)
+    this->_fuse = ::fuse_new(chan, &args, op, op_size, user_data);
+    if (!this->_fuse)
       throw std::runtime_error("fuse_new failed");
   }
 
-  void FuseContext::destroy(DurationOpt graceTime)
+  void
+  FuseContext::destroy(DurationOpt grace_time)
   {
     ELLE_TRACE("fuse_destroy");
     int helper_pid = -1;
     (void)helper_pid;
-    if (!_fuse)
+    if (!this->_fuse)
     {
       ELLE_TRACE("Already destroyed");
       return;
     }
-    if (_fuse)
+    if (this->_fuse)
     {
-      ::fuse_exit(_fuse);
-#ifdef INFINIT_MACOSX
-      // This is the only way I found, any path that tries to umount
-      // from the inside of the fuse process freezes.
-      //elle::system::Process p({"umount", "-f", _mountpoint});
-      // This call will make the fuse_loop exit, but the subprocess will hang forever.
-      elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
-      helper_pid = p.pid();
-      // XXX: Waiting on fs object does not work for unmount on OS X.
-      // https://app.asana.com/0/5058234687067/58308026674516
-      reactor::sleep(5_sec);
-#endif
+      ::fuse_exit(this->_fuse);
     }
-    _socket_barrier.open();
+    this->_socket_barrier.open();
     ELLE_TRACE("terminating...");
 #ifndef INFINIT_MACOSX
     try
     {
-      reactor::wait(_mt_barrier, graceTime);
+      reactor::wait(this->_mt_barrier, grace_time);
     }
     catch(Timeout const&)
     {
       ELLE_TRACE("killing...");
-      if (_loop)
-        _loop->terminate_now();
-      for (auto const& t: _workers)
+      if (this->_loop)
+        this->_loop->terminate_now();
+      for (auto const& t: this->_workers)
         t->terminate_now();
-      reactor::wait(_mt_barrier);
+      reactor::wait(this->_mt_barrier);
     }
 #endif
-    if (_loopThread)
-      _loopThread->join();
+    if (this->_loop_thread)
+      this->_loop_thread->join();
     ELLE_TRACE("done");
-    if (!_fuse)
+    if (!this->_fuse)
       return;
-    fuse_session* s = ::fuse_get_session(_fuse);
+    fuse_session* s = ::fuse_get_session(this->_fuse);
     ELLE_TRACE("session");
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
     ELLE_TRACE("chan %s", ch);
 #ifndef INFINIT_MACOSX
-    ::fuse_unmount(_mountpoint.c_str(), ch);
+    ::fuse_unmount(this->_mountpoint.c_str(), ch);
 #endif
-    ELLE_TRACE("unomount");
-    ::fuse_destroy(_fuse);
-    _fuse = nullptr;
+    ELLE_TRACE("unmount");
+    ::fuse_destroy(this->_fuse);
+    this->_fuse = nullptr;
     ELLE_TRACE("destroy");
 #ifdef INFINIT_MACOSX
-    _loop->terminate_now();
-    kill(helper_pid, SIGTERM);
-    elle::system::Process p ({"diskutil", "unmount", "force", _mountpoint});
-    // XXX: Waiting on fs object does not work for unmount on OS X.
-    // https://app.asana.com/0/5058234687067/58308026674516
-    reactor::sleep(5_sec);
+    this->_loop->terminate_now();
+    this->_mac_unmount(grace_time);
 #endif
     ELLE_TRACE("finished");
   }
+
+#ifdef INFINIT_MACOSX
+  static
+  void
+  _unmount_callback(DADiskRef disk,
+                    DADissenterRef dissenter,
+                    void* context)
+  {
+    if (dissenter)
+    {
+      DAReturn res = DADissenterGetStatus(dissenter);
+      if (res != kDAReturnSuccess)
+        ELLE_ERR("error unmounting (0x%x), see DADissenter.h for code", res);
+    }
+    CFRunLoopStop(CFRunLoopGetCurrent());
+  }
+
+  void
+  FuseContext::_mac_unmount(DurationOpt grace_time)
+  {
+    auto mountpoint = this->_mountpoint;
+    reactor::background(
+      [grace_time, mountpoint]
+      {
+        DASessionRef session = DASessionCreate(kCFAllocatorDefault);
+        CFURLRef path_url = CFURLCreateFromFileSystemRepresentation(
+          kCFAllocatorDefault,
+          reinterpret_cast<const unsigned char*>(mountpoint.data()),
+          mountpoint.size(),
+          true);
+        DADiskRef disk = DADiskCreateFromVolumePath(
+          kCFAllocatorDefault, session, path_url);
+        CFRelease(path_url);
+        if (disk)
+        {
+          DASessionScheduleWithRunLoop(
+            session, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+          DADiskUnmount(disk,
+                        kDADiskUnmountOptionForce,
+                        _unmount_callback,
+                        NULL);
+          float run_time =
+            grace_time ? grace_time.get().total_seconds() : 15.0f;
+          CFRunLoopRunResult res =
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, run_time, false);
+          if (res == kCFRunLoopRunTimedOut)
+            ELLE_WARN("unmount run loop timed out");
+          CFRelease(disk);
+        }
+        DASessionUnscheduleFromRunLoop(
+          session, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(session);
+      });
+  }
+#endif
 }
