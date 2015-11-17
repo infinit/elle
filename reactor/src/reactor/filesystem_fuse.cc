@@ -258,7 +258,8 @@ namespace reactor
       try
       {
         std::unique_ptr<Handle> handle((Handle*)fi->fh);
-        handle->close();
+        if (handle)
+          handle->close();
       }
       catch (Error const& e)
       {
@@ -276,7 +277,8 @@ namespace reactor
       try
       {
         Handle* handle = (Handle*)fi->fh;
-        handle->close();
+        if (handle)
+          handle->close();
       }
       catch (Error const& e)
       {
