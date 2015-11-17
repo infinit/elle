@@ -72,7 +72,7 @@ namespace reactor
   Thread::unique_ptr::unique_ptr(Args&& ... args)
     : std::unique_ptr<reactor::Thread, Terminator>(std::forward<Args>(args)...)
   {
-    if (this && this->get()->_dispose)
+    if (*this && this->get()->_dispose)
       this->_slot = this->get()->destructed().connect(
         [this] {this->release(); });
   }

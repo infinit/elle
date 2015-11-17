@@ -176,6 +176,10 @@ ELLE_TEST_SCHEDULED_THROWS(non_managed, BeaconException)
 
 ELLE_TEST_SCHEDULED(unique_ptr)
 {
+  ELLE_LOG("test null managed pointer")
+  {
+    reactor::Thread::unique_ptr t;
+  }
   ELLE_LOG("terminate thread upon release")
   {
     bool beacon = false;
