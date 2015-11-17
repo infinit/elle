@@ -464,7 +464,8 @@ namespace reactor
                         NULL);
           float run_time =
             grace_time ? grace_time.get().total_seconds() : 15.0f;
-          CFRunLoopRunResult res =
+          // returns CFRunLoopRunResult on 10.11+
+          SInt32 res =
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, run_time, false);
           if (res == kCFRunLoopRunTimedOut)
             ELLE_WARN("unmount run loop timed out");
