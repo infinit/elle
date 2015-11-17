@@ -177,33 +177,39 @@ UTPServer::UTPServer()
 
 UTPServer::~UTPServer()
 {
-  _cleanup();
+  this->_cleanup();
 }
-void UTPServer::_cleanup()
+
+void
+UTPServer::_cleanup()
 {
-  ELLE_DEBUG("Terminating");
-  if (!_socket)
-    return; // was never initialized
-  if (_checker)
+  ELLE_TRACE_SCOPE("%s: cleanup", *this);
+  // Run any completed callback before deleting this.
   {
-    _checker->terminate();
+    reactor::scheduler().io_service().reset();
+    reactor::scheduler().io_service().poll();
+  }
+  if (!this->_socket)
+    // Was never initialized.
+    return;
+  if (this->_checker)
+  {
+    this->_checker->terminate();
     reactor::wait(*_checker);
-    ELLE_DEBUG("checker down");
   }
-  ELLE_DEBUG("listener teardown");
-  if (_listener)
+  if (this->_listener)
   {
-    _listener->terminate();
-    reactor::wait(*_listener);
-    ELLE_DEBUG("listener down");
+    this->_listener->terminate();
+    reactor::wait(*this->_listener);
   }
-  _socket->close();
-  _socket->socket()->close();
-  _socket.reset(nullptr);
+  this->_socket->socket()->close();
+  this->_socket->close();
+  this->_socket.reset(nullptr);
   utp_destroy(ctx);
 }
 
-void UTPServer::send_to(Buffer buf, EndPoint where)
+void
+UTPServer::send_to(Buffer buf, EndPoint where)
 {
   ELLE_DEBUG("server send_to %s %s", buf.size(), where);
   _send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()), where);
@@ -211,29 +217,31 @@ void UTPServer::send_to(Buffer buf, EndPoint where)
   {
     _sending = true;
     send_cont =
-    static_cast<decltype(send_cont)>([this](boost::system::error_code const& erc, size_t sz)
-    {
-      if (erc)
-        ELLE_TRACE("send_to error: %s", erc.message());
-      _send_buffer.pop_front();
-      if (_send_buffer.empty())
-      {
-        ELLE_DEBUG("_sending = false");
-        _sending = false;
-      }
-      else
-      {
-        _socket->socket()->async_send_to(boost::asio::buffer(
-            _send_buffer.front().first.contents(),
-            _send_buffer.front().first.size()),
-          _send_buffer.front().second,
-          this->send_cont);
-      }
-    });
-    _socket->socket()->async_send_to(boost::asio::buffer(
-        _send_buffer.front().first.contents(),
-        _send_buffer.front().first.size()),
-      _send_buffer.front().second,
+      static_cast<decltype(send_cont)>(
+        [this] (boost::system::error_code const& erc, size_t sz)
+        {
+          if (erc == boost::asio::error::operation_aborted)
+            return;
+          if (erc)
+            ELLE_TRACE("%s: send_to error: %s", *this, erc.message());
+          this->_send_buffer.pop_front();
+          if (this->_send_buffer.empty())
+            this->_sending = false;
+          else
+          {
+            this->_socket->socket()->async_send_to(
+              boost::asio::buffer(
+                this->_send_buffer.front().first.contents(),
+              this->_send_buffer.front().first.size()),
+              this->_send_buffer.front().second,
+              this->send_cont);
+          }
+        });
+    this->_socket->socket()->async_send_to(
+      boost::asio::buffer(
+        this->_send_buffer.front().first.contents(),
+        this->_send_buffer.front().first.size()),
+      this->_send_buffer.front().second,
       send_cont);
   }
   else
