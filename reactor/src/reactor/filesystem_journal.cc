@@ -81,7 +81,7 @@ namespace reactor
       }
       virtual
       void
-      filesystem(FileSystem* fs)
+      filesystem(FileSystem* fs) override
       {
         _filesystem = fs;
         _backend->filesystem(fs);
@@ -175,7 +175,7 @@ namespace reactor
         }
         HERROR("close")
       }
-      virtual void fsyncdir(int datasync)
+      virtual void fsyncdir(int datasync) override
       {
         _owner.push_in(
           PushSerializer(this, "fsyncdir")("datasync", datasync)()
@@ -187,7 +187,7 @@ namespace reactor
         }
         HERROR("fsyncdir")
       }
-      virtual void fsync(int datasync)
+      virtual void fsync(int datasync) override
       {
         _owner.push_in(
           PushSerializer(this, "fsync")("datasync", datasync)()
@@ -199,7 +199,7 @@ namespace reactor
         }
         HERROR("fsync")
       }
-      virtual void ftruncate(off_t offset)
+      virtual void ftruncate(off_t offset) override
       {
         _owner.push_in(
           PushSerializer(this, "ftruncate")("size", offset)()
@@ -257,7 +257,7 @@ namespace reactor
       std::string _full_path;
       std::shared_ptr<Path> _backend;
     public:
-      virtual std::shared_ptr<Path> child(std::string const& name)
+      virtual std::shared_ptr<Path> child(std::string const& name) override
       {
         ELLE_DEBUG("journal_child %s", name);
         InOp inop(_owner);
@@ -367,7 +367,7 @@ namespace reactor
         }
         ERROR("rmdir");
       }
-      virtual void list_directory(OnDirectoryEntry cb)
+      virtual void list_directory(OnDirectoryEntry cb) override
       {
         InOp inop(_owner);
         _owner.push_op(_full_path, "list_directory");
@@ -395,7 +395,7 @@ namespace reactor
         }
         ERROR("unlink");
       }
-      virtual void rename(boost::filesystem::path const& where)
+      virtual void rename(boost::filesystem::path const& where) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -408,7 +408,7 @@ namespace reactor
         }
         ERROR("rename");
       }
-      virtual boost::filesystem::path readlink()
+      virtual boost::filesystem::path readlink() override
       {
         InOp inop(_owner);
         _owner.push_op(_full_path, "readlink");
@@ -422,7 +422,7 @@ namespace reactor
         }
         ERROR("readlink");
       }
-      virtual void symlink(boost::filesystem::path const& where)
+      virtual void symlink(boost::filesystem::path const& where) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -435,7 +435,7 @@ namespace reactor
         }
         ERROR("symlink");
       }
-      virtual void link(boost::filesystem::path const& where)
+      virtual void link(boost::filesystem::path const& where) override
       {
         ELLE_DEBUG("journal_link");
         InOp inop(_owner);
@@ -449,7 +449,7 @@ namespace reactor
         }
         ERROR("link");
       }
-      virtual void chmod(mode_t mode)
+      virtual void chmod(mode_t mode) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -462,7 +462,7 @@ namespace reactor
         }
         ERROR("chmod");
       }
-      virtual void chown(int uid, int gid)
+      virtual void chown(int uid, int gid) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -475,7 +475,7 @@ namespace reactor
         }
         ERROR("chown");
       }
-      virtual void statfs(struct statvfs* st)
+      virtual void statfs(struct statvfs* st) override
       {
         InOp inop(_owner);
         _owner.push_op(_full_path, "statfs");
@@ -503,7 +503,7 @@ namespace reactor
         }
         ERROR("statfs");
       }
-      virtual void utimens(const struct timespec tv[2])
+      virtual void utimens(const struct timespec tv[2]) override
       {
         InOp inop(_owner);
         uint64_t ta = tv[0].tv_sec * 1000000000ULL + tv[0].tv_nsec;
@@ -518,7 +518,7 @@ namespace reactor
         }
         ERROR("utimens");
       }
-      virtual void truncate(off_t new_size)
+      virtual void truncate(off_t new_size) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -545,7 +545,7 @@ namespace reactor
         }
         ERROR("setxattr");
       }
-      virtual std::string getxattr(std::string const& name)
+      virtual std::string getxattr(std::string const& name) override
       {
         InOp inop(_owner);
         _owner.push_in(
@@ -561,7 +561,7 @@ namespace reactor
         }
         ERROR("getxattr")
       }
-      std::vector<std::string> listxattr()
+      std::vector<std::string> listxattr() override
       {
         InOp inop(_owner);
         _owner.push_op(_full_path, "listxattr");
@@ -574,7 +574,7 @@ namespace reactor
         }
         ERROR("listxattr");
       }
-      virtual void removexattr(std::string const& name)
+      virtual void removexattr(std::string const& name) override
       {
         InOp inop(_owner);
          _owner.push_in(
