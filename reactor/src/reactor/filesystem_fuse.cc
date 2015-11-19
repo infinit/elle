@@ -17,6 +17,7 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/os/environ.hh>
+#include <elle/bench.hh>
 
 #include <reactor/filesystem.hh>
 #include <reactor/fuse.hh>
@@ -25,6 +26,10 @@
 
 ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
+
+#define BENCH(name)                                      \
+  static elle::Bench bench("bench.fs." name, 10000_sec); \
+  elle::Bench::BenchScope bs(bench)
 
 namespace reactor
 {
@@ -36,6 +41,7 @@ namespace reactor
     int
     fusop_getattr(const char* path, struct stat* stbuf)
     {
+      BENCH("getattr");
       ELLE_TRACE_SCOPE("fusop_getattr %s", path);
       try
       {
@@ -59,6 +65,7 @@ namespace reactor
                   off_t offset,
                   struct fuse_file_info* fi)
     {
+      BENCH("readdir");
       ELLE_TRACE_SCOPE("fusop_readdir %s", path);
       try
       {
@@ -82,6 +89,7 @@ namespace reactor
     int
     fusop_open(const char* path, struct fuse_file_info* fi)
     {
+      BENCH("open");
       ELLE_TRACE_SCOPE("fusop_open %s %s", path, fi->flags);
       try
       {
@@ -103,6 +111,7 @@ namespace reactor
     int
     fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
     {
+      BENCH("create");
       ELLE_TRACE_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
       try
       {
@@ -123,6 +132,7 @@ namespace reactor
     int
     fusop_unlink(const char* path)
     {
+      BENCH("unlink");
       ELLE_TRACE_SCOPE("fusop_unlink %s", path);
       try
       {
@@ -142,6 +152,7 @@ namespace reactor
     int
     fusop_mkdir(const char* path, mode_t mode)
     {
+      BENCH("mkdir");
       ELLE_TRACE_SCOPE("fusop_mkdir %s", path);
       try
       {
@@ -161,6 +172,7 @@ namespace reactor
     int
     fusop_rmdir(const char* path)
     {
+      BENCH("rmdir");
       ELLE_TRACE_SCOPE("fusop_rmdir %s", path);
       try
       {
@@ -180,6 +192,7 @@ namespace reactor
     int
     fusop_rename(const char* path, const char* to)
     {
+      BENCH("rename");
       ELLE_TRACE_SCOPE("fusop_rename %s %s", path, to);
       try
       {
@@ -203,6 +216,7 @@ namespace reactor
                off_t offset,
                struct fuse_file_info* fi)
     {
+      BENCH("read");
       ELLE_TRACE_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
       try
       {
@@ -225,6 +239,7 @@ namespace reactor
                 off_t offset,
                 struct fuse_file_info* fi)
     {
+      BENCH("write");
       ELLE_TRACE_SCOPE("fusop_write %s(%s) sz=%s, offset=%s ",
                        path, fi->fh, size, offset);
       try
@@ -244,6 +259,7 @@ namespace reactor
     int
     fusop_release(const char* path, struct fuse_file_info* fi)
     {
+      BENCH("release");
       ELLE_TRACE_SCOPE("fusop_release %s", path);
       try
       {
@@ -263,6 +279,7 @@ namespace reactor
     int
     fusop_flush(const char* path, struct fuse_file_info* fi)
     {
+      BENCH("flush");
       ELLE_TRACE_SCOPE("fusop_flush %s(%s)", path, fi->fh);
       try
       {
@@ -282,6 +299,7 @@ namespace reactor
     int
     fusop_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
     {
+      BENCH("ftruncate");
       ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", path, offset);
       try
       {
@@ -300,6 +318,7 @@ namespace reactor
     int
     fusop_readlink(const char* path, char* buf, size_t len)
     {
+      BENCH("readlink");
       ELLE_TRACE_SCOPE("fusop_readlink %s", path);
       try
       {
@@ -322,6 +341,7 @@ namespace reactor
     int
     fusop_symlink(const char* target, const char* where)
     {
+      BENCH("symlink");
       ELLE_TRACE_SCOPE("fusop_symlink %s %s", target, where);
       try
       {
@@ -341,6 +361,7 @@ namespace reactor
     int
     fusop_link(const char* path, const char* to)
     {
+      BENCH("link");
       ELLE_TRACE_SCOPE("fusop_link %s %s", path, to);
       try
       {
@@ -360,6 +381,7 @@ namespace reactor
     int
     fusop_chmod(const char* path, mode_t mode)
     {
+      BENCH("chmod");
       ELLE_TRACE_SCOPE("fusop_chmod %s %s", path, mode);
       try
       {
@@ -379,6 +401,7 @@ namespace reactor
     int
     fusop_chown(const char* path, uid_t uid, gid_t gid)
     {
+      BENCH("chown");
       ELLE_TRACE_SCOPE("fusop_chown %s", path);
       try
       {
@@ -398,6 +421,7 @@ namespace reactor
     int
     fusop_statfs(const char* path, struct ::statvfs* svfs)
     {
+      BENCH("statfs");
       ELLE_TRACE_SCOPE("fusop_statfs %s", path);
       try
       {
@@ -417,6 +441,7 @@ namespace reactor
     int
     fusop_utimens(const char* path, const struct timespec tv[2])
     {
+      BENCH("utimens");
       ELLE_TRACE_SCOPE("fusop_utimens %s", path);
       try
       {
@@ -436,6 +461,7 @@ namespace reactor
     int
     fusop_truncate(const char* path, off_t new_size)
     {
+      BENCH("truncate");
       ELLE_TRACE_SCOPE("fusop_truncate %s", path);
       try
       {
@@ -463,6 +489,7 @@ namespace reactor
 #endif
       )
     {
+      BENCH("setxattr");
       ELLE_TRACE_SCOPE("fusop_setxattr %s", path);
       try
       {
@@ -489,6 +516,7 @@ namespace reactor
 #endif
       )
     {
+      BENCH("getxattr");
       ELLE_TRACE_SCOPE("fusop_getxattr %s buf %s", path, valsize);
       try
       {
@@ -512,6 +540,7 @@ namespace reactor
     int
     fusop_listxattr(const char* path, char* buf, size_t size)
     {
+      BENCH("listxattr");
       ELLE_TRACE_SCOPE("fusop_listxattr %s", path);
       try
       {
@@ -539,6 +568,7 @@ namespace reactor
     int
     fusop_removexattr(const char* path, const char* key)
     {
+      BENCH("removexattr");
       ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
       try
       {
@@ -559,6 +589,7 @@ namespace reactor
     int
     fusop_fsync(const char* path, int datasync, fuse_file_info* fi)
     {
+      BENCH("fsync");
       ELLE_TRACE_SCOPE("fusop_fsync %s %s", path, datasync);
       try
       {
@@ -577,6 +608,7 @@ namespace reactor
     int
     fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
     {
+      BENCH("fsyncdir");
       ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", path, datasync);
       try
       {
