@@ -112,62 +112,43 @@ namespace infinit
     {
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.
-      // FIXME nonInterruptible
-      auto b = std::make_shared<reactor::Barrier>();
-      auto exc = std::make_shared<std::exception_ptr>();
-      b->close();
-      new reactor::Thread("ser writer", [this, packet, b, exc]
+      reactor::Thread::NonInterruptible ni;
+      reactor::Lock lock(_lock_write);
+      elle::IOStreamClear clearer(_stream);
+      ELLE_TRACE("%s: send %s", *this, packet)
+      if (_checksum)
       {
-        try
-        {
-          reactor::Lock lock(_lock_write);
-          elle::SafeFinally done([&] {
-              b->open();
-          });
-          elle::IOStreamClear clearer(_stream);
-          ELLE_TRACE("%s: send %s", *this, packet)
-          if (_checksum)
-          {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-            auto _hash =
-            infinit::cryptography::hash(
-              infinit::cryptography::Plain(
-                elle::WeakBuffer(packet.mutable_contents(),
-                  packet.size())),
-              infinit::cryptography::Oneway::sha1);
-            auto hash(_hash.buffer());
+        auto _hash =
+        infinit::cryptography::hash(
+          infinit::cryptography::Plain(
+            elle::WeakBuffer(packet.mutable_contents(),
+              packet.size())),
+          infinit::cryptography::Oneway::sha1);
+        auto hash(_hash.buffer());
 #else
-            auto hash =
-            infinit::cryptography::hash(
-              elle::ConstWeakBuffer(packet.contents(),
-                                    packet.size()),
-              infinit::cryptography::Oneway::sha1);
+        auto hash =
+        infinit::cryptography::hash(
+          elle::ConstWeakBuffer(packet.contents(),
+                                packet.size()),
+          infinit::cryptography::Oneway::sha1);
 #endif
-            auto hash_size = hash.size();
-            ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
-              _uint32_put(_stream, hash_size);
-            ELLE_DUMP("%s: send checksum: %s", *this, hash)
-            {
-              auto data = reinterpret_cast<char*>(hash.mutable_contents());
-              _stream.write(data, hash_size);
-            }
-          }
-          auto size = packet.size();
-          ELLE_DUMP("%s: send packet size %s", *this, size)
-          _uint32_put(_stream, size);
-          ELLE_DUMP("%s: send packet data", *this)
-            _stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
-              packet.size());
-          _stream.flush();
-        }
-        catch (std::exception& e)
+        auto hash_size = hash.size();
+        ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
+          _uint32_put(_stream, hash_size);
+        ELLE_DUMP("%s: send checksum: %s", *this, hash)
         {
-          *exc = std::current_exception();
+          auto data = reinterpret_cast<char*>(hash.mutable_contents());
+          _stream.write(data, hash_size);
         }
-        }, true);
-      reactor::wait(*b);
-      if (*exc)
-        std::rethrow_exception(*exc);
+      }
+      auto size = packet.size();
+      ELLE_DUMP("%s: send packet size %s", *this, size)
+      _uint32_put(_stream, size);
+      ELLE_DUMP("%s: send packet data", *this)
+      _stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
+        packet.size());
+      _stream.flush();
     }
 
     /*----------.
