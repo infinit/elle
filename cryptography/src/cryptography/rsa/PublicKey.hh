@@ -159,7 +159,8 @@ namespace infinit
       public:
         bool
         operator ==(PublicKey const& other) const;
-        ELLE_OPERATOR_NO_ASSIGNMENT(PublicKey);
+        PublicKey&
+        operator =(PublicKey&& other) = default;
 
         /*----------.
         | Printable |
