@@ -112,7 +112,7 @@ namespace reactor
   Channel<T, Container>::max_size(int ms)
   {
     this->_max_size = ms;
-    if (this->_max_size < this->_queue.size())
+    if (this->_max_size < signed(this->_queue.size()))
       this->_write_barrier.open();
     // no need to close, next write will do that
   }
@@ -134,7 +134,7 @@ namespace reactor
     ELLE_LOG_COMPONENT("reactor.Channel");
     ELLE_TRACE_SCOPE("%s: clear", *this);
     this->_queue = Container(); // priority_queue has no clear
-    if (this->_max_size < this->_queue.size())
+    if (this->_max_size < signed(this->_queue.size()))
       this->_write_barrier.open();
     this->_read_barrier.close();
   }
