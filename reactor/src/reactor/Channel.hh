@@ -39,8 +39,6 @@ namespace reactor
     get();
     const T&
     peek();
-    unsigned int
-    size() const;
     bool
     empty() const;
     void
@@ -69,7 +67,8 @@ namespace reactor
     ELLE_ATTRIBUTE(Container, queue);
     ELLE_ATTRIBUTE_R(bool, opened);
     /// Maximum size, will block writers *after* insertion if reached
-    ELLE_ATTRIBUTE_Rw(unsigned int, max_size);
+    ELLE_ATTRIBUTE_Rw(int, max_size);
+    ELLE_ATTRIBUTE_r(int, size);
     enum
     {
       SizeUnlimited = std::numeric_limits<int>::max()

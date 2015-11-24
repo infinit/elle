@@ -44,14 +44,14 @@ namespace reactor
   {
     ELLE_LOG_COMPONENT("reactor.Channel");
     ELLE_TRACE_SCOPE("%s: put", *this);
-    this->_queue.push(std::move(data));
-    if (this->_opened)
-      this->_read_barrier.open();
     while (this->_queue.size() >= this->_max_size)
     {
       this->_write_barrier.close();
       reactor::wait(this->_write_barrier);
     }
+    this->_queue.push(std::move(data));
+    if (this->_opened)
+      this->_read_barrier.open();
   }
 
   namespace details
@@ -101,7 +101,7 @@ namespace reactor
   }
 
   template <typename T, typename Container>
-  unsigned int
+  int
   Channel<T, Container>::size() const
   {
     return this->_queue.size();
@@ -109,7 +109,7 @@ namespace reactor
 
   template <typename T, typename Container>
   void
-  Channel<T, Container>::max_size(unsigned int ms)
+  Channel<T, Container>::max_size(int ms)
   {
     this->_max_size = ms;
     if (this->_max_size < this->_queue.size())
