@@ -44,7 +44,7 @@ namespace reactor
   {
     ELLE_LOG_COMPONENT("reactor.Channel");
     ELLE_TRACE_SCOPE("%s: put", *this);
-    while (this->_queue.size() >= this->_max_size)
+    while (signed(this->_queue.size()) >= this->_max_size)
     {
       this->_write_barrier.close();
       reactor::wait(this->_write_barrier);
@@ -95,7 +95,7 @@ namespace reactor
     this->_queue.pop();
     if (this->_queue.empty())
       this->_read_barrier.close();
-    if (this->_queue.size() < this->_max_size)
+    if (signed(this->_queue.size()) < this->_max_size)
       this->_write_barrier.open();
     return res;
   }
