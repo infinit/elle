@@ -278,7 +278,7 @@ namespace reactor
     size_t buffer_size = fuse_chan_bufsize(ch);
 #ifndef INFINIT_MACOSX
     int fd = fuse_chan_fd(ch);
-    ELLE_TRACE("Got fuse fs %s", fd);
+    ELLE_TRACE("Got fuse fd %s", fd);
     boost::asio::posix::stream_descriptor socket(scheduler().io_service());
     socket.assign(fd);
 #endif
@@ -371,16 +371,14 @@ namespace reactor
   FuseContext::destroy(DurationOpt grace_time)
   {
     ELLE_TRACE("fuse_destroy");
-    int helper_pid = -1;
-    (void)helper_pid;
-    if (!this->_fuse)
-    {
-      ELLE_TRACE("Already destroyed");
-      return;
-    }
     if (this->_fuse)
     {
       ::fuse_exit(this->_fuse);
+    }
+    else
+    {
+      ELLE_TRACE("Already destroyed");
+      return;
     }
     this->_socket_barrier.open();
     ELLE_TRACE("terminating...");
@@ -389,7 +387,7 @@ namespace reactor
     {
       reactor::wait(this->_mt_barrier, grace_time);
     }
-    catch(Timeout const&)
+    catch (Timeout const&)
     {
       ELLE_TRACE("killing...");
       if (this->_loop)
@@ -404,17 +402,17 @@ namespace reactor
     ELLE_TRACE("done");
     if (!this->_fuse)
       return;
+#ifndef INFINIT_MACOSX
     fuse_session* s = ::fuse_get_session(this->_fuse);
     ELLE_TRACE("session");
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
     ELLE_TRACE("chan %s", ch);
-#ifndef INFINIT_MACOSX
     ::fuse_unmount(this->_mountpoint.c_str(), ch);
 #endif
-    ELLE_TRACE("unmount");
+    ELLE_TRACE("unmounted");
     ::fuse_destroy(this->_fuse);
     this->_fuse = nullptr;
-    ELLE_TRACE("destroy");
+    ELLE_TRACE("destroyed");
 #ifdef INFINIT_MACOSX
     this->_loop->terminate_now();
     this->_mac_unmount(grace_time);
@@ -435,6 +433,10 @@ namespace reactor
       if (res != kDAReturnSuccess)
         ELLE_ERR("error unmounting (0x%x), see DADissenter.h for code", res);
     }
+    else
+    {
+      ELLE_TRACE("mac unmount successful");
+    }
     CFRunLoopStop(CFRunLoopGetCurrent());
   }
 
@@ -445,6 +447,7 @@ namespace reactor
     reactor::background(
       [grace_time, mountpoint]
       {
+        ELLE_TRACE("start mac unmount thread");
         DASessionRef session = DASessionCreate(kCFAllocatorDefault);
         CFURLRef path_url = CFURLCreateFromFileSystemRepresentation(
           kCFAllocatorDefault,
@@ -454,6 +457,7 @@ namespace reactor
         DADiskRef disk = DADiskCreateFromVolumePath(
           kCFAllocatorDefault, session, path_url);
         CFRelease(path_url);
+        ELLE_DEBUG("mac unmount disk: %s", disk);
         if (disk)
         {
           DASessionScheduleWithRunLoop(
@@ -465,6 +469,7 @@ namespace reactor
           float run_time =
             grace_time ? grace_time.get().total_seconds() : 15.0f;
           // returns CFRunLoopRunResult on 10.11+
+          ELLE_DEBUG("mac unmount start run loop");
           SInt32 res =
             CFRunLoopRunInMode(kCFRunLoopDefaultMode, run_time, false);
           if (res == kCFRunLoopRunTimedOut)
