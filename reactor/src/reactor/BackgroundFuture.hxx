@@ -45,8 +45,7 @@ namespace reactor
   BackgroundFuture<T>&
   BackgroundFuture<T>::operator =(Action action)
   {
-    // FIXME: could we abort the current assignment ?
-    this->_resolve();
+    this->_operation.reset();
     this->_value.reset();
     this->_operation.emplace(std::move(action));
     this->_operation->start();
@@ -57,8 +56,7 @@ namespace reactor
   BackgroundFuture<T>&
   BackgroundFuture<T>::operator =(T value)
   {
-    // FIXME: could we abort the current assignment ?
-    this->_resolve();
+    this->_operation.reset();
     this->_value.reset();
     this->_value.emplace(std::move(value));
     return *this;
