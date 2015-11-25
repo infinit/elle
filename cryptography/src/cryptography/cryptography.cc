@@ -2,6 +2,9 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 
+#include <thread>
+#include <mutex>
+
 #include <elle/log.hh>
 
 #include <cryptography/cryptography.hh>
@@ -20,6 +23,25 @@ namespace infinit
 {
   namespace cryptography
   {
+    static std::unordered_map<int, std::unique_ptr<std::mutex>> mutexes;
+    static void crypto_threadid(CRYPTO_THREADID *id)
+    {
+      CRYPTO_THREADID_set_numeric(id,
+        std::hash<std::thread::id>()(std::this_thread::get_id()));
+    }
+    static void crypto_lock(int mode, int n, const char *file, int line)
+    {
+      bool set = mode & CRYPTO_LOCK;
+      auto it = mutexes.find(n);
+      if (it == mutexes.end())
+      {
+        it = mutexes.emplace(std::make_pair(n, elle::make_unique<std::mutex>())).first;
+      }
+      if (set)
+        it->second->lock();
+      else
+        it->second->unlock();
+    }
     /*--------.
     | Classes |
     `--------*/
@@ -49,6 +71,10 @@ namespace infinit
                           "engine: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 #endif
+
+        // Set thread-safeness procedures
+        CRYPTO_set_locking_callback(crypto_lock);
+        CRYPTO_THREADID_set_callback(crypto_threadid);
       }
 
       ~Initializer()
