@@ -187,7 +187,10 @@ namespace athena
     std::ostream&
     operator <<(std::ostream& output, Printer<std::shared_ptr<T>> const& p)
     {
-      output << *p.o;
+      if (p.o)
+        output << *p.o;
+      else
+        output << "nullptr";
       return output;
     }
 
@@ -195,7 +198,10 @@ namespace athena
     std::ostream&
     operator <<(std::ostream& output, Printer<std::unique_ptr<T>> const& p)
     {
-      output << *p.o;
+      if (p.o)
+        output << *p.o;
+      else
+        output << "nullptr";
       return output;
     }
 
