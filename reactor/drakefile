@@ -429,8 +429,8 @@ def configure(curl_config,
   # config += asio_fs.config
 
   sources = drake.nodes(
-    'src/reactor/BackgroundOperation.cc',
     'src/reactor/BackgroundOperation.hh',
+    'src/reactor/BackgroundOperation.hxx',
     'src/reactor/Barrier.cc',
     'src/reactor/Barrier.hh',
     'src/reactor/FDStream.cc',

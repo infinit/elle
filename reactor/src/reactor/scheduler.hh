@@ -175,6 +175,7 @@ namespace reactor
     ELLE_ATTRIBUTE(boost::asio::io_service::work*, background_service_work);
     ELLE_ATTRIBUTE(std::vector<std::thread>, background_pool);
     ELLE_ATTRIBUTE(int, background_pool_free);
+    template <typename T>
     friend class BackgroundOperation;
     friend void background(std::function<void()> const& action);
 

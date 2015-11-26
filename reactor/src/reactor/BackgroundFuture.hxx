@@ -25,8 +25,7 @@ namespace reactor
 
   template <typename T>
   BackgroundFuture<T>::BackgroundFuture(Action action)
-    : _operation(
-      [this, action] { this->_value.emplace(action()); })
+    : _operation(std::move(action))
     , _value()
   {
     this->_operation->start();
@@ -40,9 +39,7 @@ namespace reactor
 
   template <typename T>
   BackgroundFuture<T>::~BackgroundFuture()
-  {
-    this->_resolve();
-  }
+  {}
 
   template <typename T>
   BackgroundFuture<T>&
@@ -51,8 +48,7 @@ namespace reactor
     // FIXME: could we abort the current assignment ?
     this->_resolve();
     this->_value.reset();
-    this->_operation.emplace([this, action]
-                             { this->_value.emplace(action()); });
+    this->_operation.emplace(std::move(action));
     this->_operation->start();
     return *this;
   }
@@ -93,6 +89,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: join", *this);
       if (this->_operation->running())
         reactor::wait(this->_operation.get());
+      this->_value.emplace(std::move(this->_operation->result().get()));
       this->_operation.reset();
     }
     ELLE_ASSERT(!this->_operation);

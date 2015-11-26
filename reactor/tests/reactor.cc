@@ -2430,6 +2430,47 @@ namespace background
       reactor::sleep(200_ms);
       BOOST_CHECK_EQUAL(f.value(), 69);
     }
+    ELLE_LOG("test killing unfinished")
+    {
+      reactor::Barrier destroying;
+      bool sleeping = false;
+      bool over = false;
+      std::condition_variable sync;
+      std::mutex m;
+      reactor::Thread t(
+        "future",
+        [&]
+        {
+          reactor::BackgroundFuture<int> f(
+            [&]
+            {
+              {
+                std::unique_lock<std::mutex> lock(m);
+                sleeping = true;
+                sync.notify_one();
+              }
+              {
+                std::unique_lock<std::mutex> lock(m);
+                while (!over)
+                  sync.wait(lock);
+              }
+              return 42;
+            });
+          {
+            std::unique_lock<std::mutex> lock(m);
+            while (!sleeping)
+              sync.wait(lock);
+          }
+          destroying.open();
+        });
+      reactor::wait(destroying);
+      t.terminate_now();
+      {
+        std::unique_lock<std::mutex> lock(m);
+        over = true;
+        sync.notify_one();
+      }
+    }
   }
 }
 

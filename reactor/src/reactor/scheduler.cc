@@ -550,7 +550,7 @@ namespace reactor
   void
   Scheduler::_run_background(std::function<void ()> const& action)
   {
-    BackgroundOperation o(action);
+    BackgroundOperation<void> o(action);
     o.run();
   }
 
