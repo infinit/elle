@@ -155,6 +155,7 @@ namespace athena
                     {
                       ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
                                  *this, peer, minimum);
+                      this->_round = minimum.round;
                       conflicted = true;
                       scope.terminate_now();
                     }
@@ -171,8 +172,6 @@ namespace athena
           };
           if (conflicted)
           {
-            // FIXME: we could (should) potentially skip rounds to catch up to
-            // the latest - right ?
             // FIXME: random wait to avoid livelock
             ELLE_DEBUG("%s: conflicted proposal, retry", *this);
             continue;
