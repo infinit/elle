@@ -169,15 +169,32 @@ namespace reactor
     int
     background_pool_size() const;
   private:
+    template <typename T>
+    friend class BackgroundOperation;
+    /** Run function in a system thread. Run the result back in the scheduler.
+     *
+     *  It is guaranteed that a thread will immediately start executing the
+     *  action, spawning a new one if needed. The system thread runs freely, all
+     *  race condition issues apply, use at your own risks. The thread is joined
+     *  upon destruction of the scheduler. The returned function is then run
+     *  in the scheduler context.
+     *
+     *  This pattern enables to run absolutely pure code in the system thread,
+     *  removing the possibility of any race condition, and run the
+     *  potentially non-pure epilogue in the non-parallel scheduler context.
+     *
+     *  \param action The action to run in a system thread.
+     *  \return A function to run back in the scheduler.
+     */
     void
-    _run_background(std::function<void ()> const& action);
+    _run_background(std::function<std::function<void ()> ()> action);
     ELLE_ATTRIBUTE(boost::asio::io_service, background_service);
     ELLE_ATTRIBUTE(boost::asio::io_service::work*, background_service_work);
     ELLE_ATTRIBUTE(std::vector<std::thread>, background_pool);
     ELLE_ATTRIBUTE(int, background_pool_free);
-    template <typename T>
-    friend class BackgroundOperation;
-    friend void background(std::function<void()> const& action);
+    friend
+    void
+    background(std::function<void()> const& action);
 
   /*--------.
   | Signals |

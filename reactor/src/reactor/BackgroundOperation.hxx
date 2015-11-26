@@ -78,53 +78,40 @@ namespace reactor
   BackgroundOperation<T>::_start()
   {
     ELLE_LOG_COMPONENT("reactor.BackgroundOperation");
-    auto& sched = *Scheduler::scheduler();
-    auto& current = *sched.current();
-    if (sched._background_pool_free == 0)
-    {
-      ELLE_DEBUG("%s: spawn new background thread", sched);
-      sched._background_pool.emplace_back([&sched]
-                                          {
-                                            sched._background_service.run();
-                                          });
-    }
-    else
-      --sched._background_pool_free;
     auto status = this->_status;
     auto action = this->_action;
-    sched._background_service.post(
-      [this, status, action, &current, &sched]
+    auto& sched = this->scheduler();
+    sched._run_background(
+      [this, status, action, &sched] () -> std::function<void ()>
       {
         try
         {
           ELLE_TRACE_SCOPE("%s: run background operation", sched);
           auto res = elle::utility::move_on_copy(result<T>::call(action));
           ELLE_TRACE("%s: background operation finished", sched);
-          sched.io_service().post([this, status, &sched, res]
-                                  {
-                                    if (!status->aborted)
-                                    {
-                                      this->_result_set(std::move(*res));
-                                      this->done();
-                                      ++sched._background_pool_free;
-                                    }
-                                  });
+          return [this, status, &sched, res]
+          {
+            if (!status->aborted)
+            {
+              this->_result_set(std::move(*res));
+              this->done();
+            }
+          };
         }
         catch (...)
         {
           ELLE_TRACE("%s: background operation threw: %s",
                      sched, elle::exception_string());
           auto e = std::current_exception();
-          sched.io_service().post([this, status, &sched, e]
-                                  {
-                                    if (!status->aborted)
-                                    {
-                                      this->_raise(e);
-                                      this->done();
-                                      ++sched._background_pool_free;
-                                    }
-                                  });
+          return [this, status, &sched, e]
+          {
+            if (!status->aborted)
+            {
+              this->_raise(e);
+              this->done();
+            }
+          };
         }
-    });
+      });
   }
 }

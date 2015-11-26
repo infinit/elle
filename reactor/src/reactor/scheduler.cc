@@ -548,11 +548,47 @@ namespace reactor
   }
 
   void
-  Scheduler::_run_background(std::function<void ()> const& action)
+  Scheduler::_run_background(std::function<std::function<void ()> ()> action)
   {
-    BackgroundOperation<void> o(action);
-    o.run();
-  }
+    // FIXME: don't hardcode 16, sort out CPU-bound versus "blocking" use case
+    if (this->_background_pool_free == 0 && this->_background_pool.size() < 16)
+    {
+      ELLE_DEBUG("%s: spawn new background thread", *this);
+      this->_background_pool.emplace_back(
+        [this]
+        {
+          this->_background_service.run();
+        });
+    }
+    else
+      --this->_background_pool_free;
+    this->_background_service.post(
+      [this, action]
+      {
+        try
+        {
+          auto epilogue = elle::utility::move_on_copy(action());
+          this->_io_service.post(
+            [this, epilogue]
+            {
+              try
+              {
+                (*epilogue)();
+                ++this->_background_pool_free;
+              }
+              catch (...)
+              {
+                ++this->_background_pool_free;
+                throw;
+              }
+            });
+        }
+        catch (...)
+        {
+          ELLE_ABORT("background job threw: %s", elle::exception_string());
+        }
+      });
+    }
 
   /*--------.
   | Signals |
@@ -650,9 +686,8 @@ namespace reactor
   void
   background(std::function<void()> const& action)
   {
-    auto* sched = Scheduler::scheduler();
-    ELLE_ASSERT(sched);
-    sched->_run_background(action);
+    BackgroundOperation<void> o(action);
+    o.run();
   }
 
   void
