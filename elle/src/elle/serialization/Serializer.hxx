@@ -1051,29 +1051,31 @@ namespace elle
       add()
       {
         Self::_map()[type_info<U>()] =
-          [] (elle::Exception const& e) -> std::exception_ptr
+          [] (elle::Exception&& e) -> std::exception_ptr
           {
-            return std::make_exception_ptr<U>(static_cast<U const&>(e));
+            // FIXME: make_exception cannot use move constructor it seems, which
+            // forces all serializable exception to be copyable :(
+            return std::make_exception_ptr<U>(static_cast<U&&>(e));
           };
       }
 
       static
       std::exception_ptr
-      make(elle::Exception& e)
+      make(elle::Exception&& e)
       {
         auto it = Self::_map().find(type_info(e));
         ELLE_ASSERT(it != Self::_map().end());
-        return it->second(e);
+        return it->second(std::move(e));
       }
 
       static
       std::map<TypeInfo,
-               std::function<std::exception_ptr (elle::Exception const&)> >&
+               std::function<std::exception_ptr (elle::Exception&&)> >&
       _map()
       {
         static std::map<
           TypeInfo,
-          std::function<std::exception_ptr (elle::Exception const&)> > map;
+          std::function<std::exception_ptr (elle::Exception&&)> > map;
         return map;
       }
     };

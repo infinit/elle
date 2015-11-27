@@ -103,7 +103,7 @@ namespace elle
       {
         std::unique_ptr<elle::Exception> exn;
         this->serialize("exception", exn);
-        e = ExceptionMaker<elle::Exception>::make(*exn);
+        e = ExceptionMaker<elle::Exception>::make(std::move(*exn));
       }
     }
 
