@@ -2,6 +2,7 @@
 # define REACTOR_BACKGROUND_FUTURE_HXX
 
 # include <elle/utils.hh>
+# include <elle/log.hh>
 
 # include <reactor/scheduler.hh>
 
@@ -87,8 +88,13 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: join", *this);
       if (this->_operation->running())
         reactor::wait(this->_operation.get());
-      this->_value.emplace(std::move(this->_operation->result().get()));
-      this->_operation.reset();
+      if (!this->_operation) // an other thread called _resolve and reseted it
+        ELLE_ASSERT(this->_value);
+      else
+      {
+        this->_value.emplace(std::move(this->_operation->result().get()));
+        this->_operation.reset();
+      }
     }
     ELLE_ASSERT(!this->_operation);
     ELLE_ASSERT(this->_value);
