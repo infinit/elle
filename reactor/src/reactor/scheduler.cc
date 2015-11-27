@@ -780,10 +780,11 @@ namespace reactor
 
 
 typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;
+
+static CXAThreadMap _cxa_thread_map __attribute__ ((init_priority (101)));
 static CXAThreadMap& cxa_thread_map()
 {
-  static CXAThreadMap map;
-  return map;
+  return _cxa_thread_map;
 }
 
 namespace __cxxabiv1 {
