@@ -781,7 +781,13 @@ namespace reactor
 
 typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;
 
-static CXAThreadMap _cxa_thread_map __attribute__ ((init_priority (101)));
+static CXAThreadMap _cxa_thread_map
+// doh, init_priority fails on gcc49 on macosx
+#if defined(__clang__) || !defined(INFINIT_MACOSX)
+    __attribute__ ((init_priority (101)))
+#endif
+;
+
 static CXAThreadMap& cxa_thread_map()
 {
   return _cxa_thread_map;
