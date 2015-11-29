@@ -3769,12 +3769,13 @@ def Extractor(tarball, *args, **kwargs):
 
 class Zipper(Builder):
 
-  def __init__(self, target, sources, prefix = None):
+  def __init__(self, target, sources, prefix = None, whole_folder = None):
     """ Constructor
     """
     self.__target = target
     self.__sources = sources
     self.__prefix = prefix
+    self.__whole_folder = whole_folder
     Builder.__init__(self, self.__sources, [self.__target])
 
   @property
@@ -3783,11 +3784,22 @@ class Zipper(Builder):
 
   def compress(self):
     import zipfile
-    with zipfile.ZipFile(str(self.__target.path()), 'w') as f:
-      for source in self.__sources:
-        source = source.path()
-        filename = source.without_prefix(self.__prefix, force = True)
-        f.write(str(source), arcname = str(filename))
+    with zipfile.ZipFile(str(self.__target.path()), 'w') as archive:
+      if self.__whole_folder:
+        import os.path
+        folder = os.path.commonprefix(
+          [str(source.path()) for source in self.__sources])
+        assert len(folder) > 0
+        for root, dirs, files in _OS.walk(str(folder)):
+          for file in files:
+            file = drake.Path(root) / file
+            filename = file.without_prefix(self.__prefix, force = True)
+            archive.write(str(file), arcname = str(filename))
+      else:
+        for source in self.__sources:
+          source = source.path()
+          filename = source.without_prefix(self.__prefix, force = True)
+          archive.write(str(source), arcname = str(filename))
     return True
 
   def execute(self):
