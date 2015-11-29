@@ -3836,16 +3836,18 @@ class PythonModule(Builder):
                dependencies = [],
                module_name = None):
     self.__python_path = drake.path_build(python_path)
-    self.__path = python_path  / (module_name or package_name)
+    self.__module_name = module_name or package_name
     self.__package_name = package_name
     self.__version = version
     self.__dependencies = dependencies
-    drake.Builder.__init__(self,
-                           [],
-                           [drake.Node(self.__path / '__init__.py')])
+    drake.Builder.__init__(
+      self,
+      [],
+      [drake.Node(python_path / self.__module_name / '__init__.py')])
 
   def command(self):
-    options = ['pip3', 'install', '--no-compile', '--install-option=--prefix=']
+    options = ['pip3', 'install',
+               '--no-compile', '--install-option=--prefix=']
     if self.__python_path is not None:
       options.append('--target=%s' % self.__python_path)
     options.append(self.__package_name)
@@ -3854,11 +3856,12 @@ class PythonModule(Builder):
     return options
 
   def execute(self):
-    for p in self.__dependencies + [self.__package_name]:
+    for p in self.__dependencies + [self.__module_name]:
       shutil.rmtree(str(self.__python_path / p), ignore_errors = True)
     return self.cmd('Installing package %s' % self.__package_name,
-                    self.command(),
-                    leave_stdout = True)
+             self.command(),
+             leave_stdout = True,
+             throw = True)
 
   def hash(self):
     return self.command()
