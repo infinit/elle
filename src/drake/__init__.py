@@ -3830,10 +3830,13 @@ def host():
 class PythonModule(Builder):
   '''Builder to download and extract python modules using pip.
   '''
-  def __init__(self, package_name, python_path, version = None,
-               dependencies = []):
+  def __init__(self, package_name,
+               python_path,
+               version = None,
+               dependencies = [],
+               module_name = None):
     self.__python_path = drake.path_build(python_path)
-    self.__path = python_path  / package_name
+    self.__path = python_path  / (module_name or package_name)
     self.__package_name = package_name
     self.__version = version
     self.__dependencies = dependencies
