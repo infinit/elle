@@ -323,18 +323,18 @@ namespace reactor
             elle::serialization::json::SerializerOut response(ios);
             response.serialize("success", true);
             response.serialize("operation", "stat");
-            response.serialize("path", _full_path);
-            response.serialize("st_dev"    ,s->st_dev    );
-            response.serialize("st_ino"    ,s->st_ino    );
-            response.serialize("st_mode"   ,s->st_mode   );
-            response.serialize("st_nlink"  ,s->st_nlink  );
-            response.serialize("st_uid"    ,s->st_uid    );
-            response.serialize("st_gid"    ,s->st_gid    );
-            response.serialize("st_rdev"   ,s->st_rdev   );
-            response.serialize("st_size"   ,int64_t(s->st_size));
+            response.serialize("path"      , this->_full_path);
+            response.serialize("st_dev"    , s->st_dev    );
+            response.serialize("st_ino"    , s->st_ino    );
+            response.serialize("st_mode"   , s->st_mode   );
+            response.serialize("st_nlink"  , s->st_nlink  );
+            response.serialize("st_uid"    , s->st_uid    );
+            response.serialize("st_gid"    , s->st_gid    );
+            response.serialize("st_rdev"   , s->st_rdev   );
+            response.serialize("st_size"   , int64_t(s->st_size));
 #ifndef INFINIT_WINDOWS
-            response.serialize("st_blksize",s->st_blksize);
-            response.serialize("st_blocks" ,s->st_blocks );
+            response.serialize("st_blksize", int64_t(s->st_blksize));
+            response.serialize("st_blocks" , s->st_blocks );
 #endif
             response.serialize("st_atime"  , uint64_t(s->st_atime));
             response.serialize("st_mtime"  , uint64_t(s->st_mtime));
