@@ -3081,8 +3081,9 @@ class WriteBuilder(Builder):
         for node in self.targets():
             assert isinstance(node, Node)
             node.path().touch()
-            with open(str(node.path()), 'wb') as f:
-              f.write(self.__input)
+            with WritePermissions(node):
+              with open(str(node.path()), 'wb') as f:
+                f.write(self.__input)
         return True
 
 def write(body, path):
