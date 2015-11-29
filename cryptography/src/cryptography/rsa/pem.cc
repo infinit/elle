@@ -6,6 +6,7 @@
 #include <cryptography/rsa/pem.hh>
 #include <cryptography/rsa/PublicKey.hh>
 #include <cryptography/rsa/PrivateKey.hh>
+#include <cryptography/Error.hh>
 #include <cryptography/finally.hh>
 #include <cryptography/cryptography.hh>
 #include <cryptography/pem.hh>
@@ -31,6 +32,10 @@ namespace infinit
 
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
 
+          if (key->type != EVP_PKEY_RSA)
+            throw Error(
+              elle::sprintf("the key type is not RSA: %s", key->type));
+
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           PublicKey K(key);
@@ -48,6 +53,10 @@ namespace infinit
 
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
+
+          if (key->type != EVP_PKEY_RSA)
+            throw Error(
+              elle::sprintf("the key type is not RSA: %s", key->type));
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
