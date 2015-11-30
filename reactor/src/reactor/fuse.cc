@@ -342,6 +342,15 @@ namespace reactor
 #endif
   }
 
+#ifdef INFINIT_MACOSX
+  static
+  void
+  _sig_user_1_handler(int)
+  {
+    ELLE_DEBUG("caught SIGUSR1");
+  }
+#endif
+
   void
   FuseContext::create(std::string const& mountpoint,
                       std::vector<std::string> const& arguments,
@@ -398,7 +407,30 @@ namespace reactor
     }
 #endif
     if (this->_loop_thread)
+    {
+#ifdef INFINIT_MACOSX
+      // Use a signal to make sure that we get out of the read in
+      // fuse_chan_recv. Closing the file descriptor here didn't work.
+      reactor::sleep(2_sec);
+      if (this->_loop_thread)
+      {
+        int res = 0;
+        sigset_t mask_set;
+        sigemptyset(&mask_set);
+        sigaddset(&mask_set, SIGUSR1);
+        res = pthread_sigmask(SIG_BLOCK, &mask_set, NULL);
+        if (res != 0)
+          ELLE_WARN("failed to mask signal on main thread, error: %d", res);
+        signal(SIGUSR1, &_sig_user_1_handler);
+        res = pthread_kill(this->_loop_thread->native_handle(), SIGUSR1);
+        if (res != 0)
+          ELLE_WARN("failed to send signal to loop_thread, error: %d", res);
+        else
+          ELLE_DEBUG("signaled loop_thread");
+      }
+#endif
       this->_loop_thread->join();
+    }
     ELLE_TRACE("done");
     if (!this->_fuse)
       return;
@@ -423,9 +455,7 @@ namespace reactor
 #ifdef INFINIT_MACOSX
   static
   void
-  _unmount_callback(DADiskRef disk,
-                    DADissenterRef dissenter,
-                    void* context)
+  _unmount_callback(DADiskRef disk, DADissenterRef dissenter, void* context)
   {
     if (dissenter)
     {
