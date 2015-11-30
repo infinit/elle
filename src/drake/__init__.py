@@ -3052,7 +3052,7 @@ class WriteBuilder(Builder):
     >>> n.path().remove()
     >>> b = WriteBuilder('hello world', n)
     >>> n.build()
-    Write input to /tmp/.drake.write
+    Write /tmp/.drake.write
     >>> n.path().exists()
     True
     >>> open(n.path(), 'r').read()
