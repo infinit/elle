@@ -2,6 +2,7 @@
 # define INFINIT_REACTOR_SCHEDULER_HXX
 
 # include <reactor/thread.hh>
+# include <reactor/exception.hh>
 
 # include <elle/assert.hh>
 
@@ -21,6 +22,10 @@ namespace reactor
     try
     {
       res = action();
+    }
+    catch (Terminate const&)
+    {
+      // Ignore
     }
     catch (...)
     {
