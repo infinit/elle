@@ -3050,13 +3050,14 @@ class WriteBuilder(Builder):
 
     >>> n = node('/tmp/.drake.write')
     >>> n.path().remove()
-    >>> b = WriteBuilder('hello world', n)
+    >>> b = WriteBuilder('Hello world!', n)
     >>> n.build()
     Write /tmp/.drake.write
     >>> n.path().exists()
     True
-    >>> open(str(n.path()), 'r').read()
-    'hello world'
+    >>> with open(str(n.path()), 'r') as f:
+    ...   print(f.read())
+    Hello world!
     """
 
     def __init__(self, input, nodes):
