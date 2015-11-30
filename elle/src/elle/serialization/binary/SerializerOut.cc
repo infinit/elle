@@ -19,7 +19,10 @@ namespace elle
 
       SerializerOut::SerializerOut(std::ostream& output, bool versioned)
         : Super(output, versioned)
-      {}
+      {
+        static char const magic = 0;
+        output.write(&magic, 1);
+      }
 
       SerializerOut::~SerializerOut()
       {}

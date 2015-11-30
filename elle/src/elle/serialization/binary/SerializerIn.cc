@@ -14,7 +14,16 @@ namespace elle
       SerializerIn::SerializerIn(std::istream& input,
                                  bool versioned)
         : Super(input, versioned)
-      {}
+      {
+        char magic;
+        input.read(&magic, 1);
+        if (input.gcount() != 1)
+          throw Error("unable to read magic");
+        if (magic != 0)
+          throw Error(
+            elle::sprintf("wrong magic for binary serialization: 0x%2x",
+                          int(magic)));
+      }
 
       bool
       SerializerIn::_text() const

@@ -1004,31 +1004,21 @@ json_optionals()
   }
 }
 
+template <typename Format>
 static
 void
 text_parser()
 {
-  std::stringstream ss;
+  std::stringstream stream;
   {
-    ELLE_LOG("json::in");
-    ss << "{}";
-    elle::serialization::json::SerializerIn ser(ss);
-    BOOST_CHECK_EQUAL(ser.text(), true);
+    typename Format::SerializerOut ser(stream);
+    BOOST_CHECK_EQUAL(ser.text(),
+                      (std::is_same<Format, elle::serialization::Json>::value));
   }
   {
-    ELLE_LOG("json::out");
-    elle::serialization::json::SerializerOut ser(ss);
-    BOOST_CHECK_EQUAL(ser.text(), true);
-  }
-  {
-    ELLE_LOG("json::in");
-    elle::serialization::binary::SerializerIn ser(ss);
-    BOOST_CHECK_EQUAL(ser.text(), false);
-  }
-  {
-    ELLE_LOG("json::out");
-    elle::serialization::binary::SerializerOut ser(ss);
-    BOOST_CHECK_EQUAL(ser.text(), false);
+    typename Format::SerializerIn ser(stream);
+    BOOST_CHECK_EQUAL(ser.text(),
+                      (std::is_same<Format, elle::serialization::Json>::value));
   }
 }
 
@@ -1183,6 +1173,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(versioning);
   FOR_ALL_SERIALIZATION_TYPES(context);
   FOR_ALL_SERIALIZATION_TYPES(exceptions);
+  FOR_ALL_SERIALIZATION_TYPES(text_parser);
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(unordered_map_string_legacy));
   suite.add(BOOST_TEST_CASE(json_type_error));
@@ -1191,5 +1182,4 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(json_iso8601));
   suite.add(BOOST_TEST_CASE(json_unicode_surrogate));
   suite.add(BOOST_TEST_CASE(json_optionals));
-  suite.add(BOOST_TEST_CASE(text_parser));
 }
