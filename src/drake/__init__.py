@@ -3055,7 +3055,7 @@ class WriteBuilder(Builder):
     Write /tmp/.drake.write
     >>> n.path().exists()
     True
-    >>> open(n.path(), 'r').read()
+    >>> open(str(n.path()), 'r').read()
     'hello world'
     """
 
