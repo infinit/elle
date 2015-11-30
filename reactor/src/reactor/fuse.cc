@@ -342,15 +342,6 @@ namespace reactor
 #endif
   }
 
-#ifdef INFINIT_MACOSX
-  static
-  void
-  _sig_user_1_handler(int)
-  {
-    ELLE_DEBUG("caught SIGUSR1");
-  }
-#endif
-
   void
   FuseContext::create(std::string const& mountpoint,
                       std::vector<std::string> const& arguments,
@@ -375,6 +366,14 @@ namespace reactor
     if (!this->_fuse)
       throw std::runtime_error("fuse_new failed");
   }
+
+  static
+  void
+  _signal_handler(int sig)
+  {
+    ELLE_DEBUG("caught signal: %d", sig);
+  }
+
 
   void
   FuseContext::destroy(DurationOpt grace_time)
@@ -409,25 +408,24 @@ namespace reactor
     if (this->_loop_thread)
     {
 #ifdef INFINIT_MACOSX
-      // Use a signal to make sure that we get out of the read in
-      // fuse_chan_recv. Closing the file descriptor here didn't work.
-      reactor::sleep(2_sec);
-      if (this->_loop_thread)
-      {
-        int res = 0;
-        sigset_t mask_set;
-        sigemptyset(&mask_set);
-        sigaddset(&mask_set, SIGUSR1);
-        res = pthread_sigmask(SIG_BLOCK, &mask_set, NULL);
-        if (res != 0)
-          ELLE_WARN("failed to mask signal on main thread, error: %d", res);
-        signal(SIGUSR1, &_sig_user_1_handler);
-        res = pthread_kill(this->_loop_thread->native_handle(), SIGUSR1);
-        if (res != 0)
-          ELLE_WARN("failed to send signal to loop_thread, error: %d", res);
-        else
-          ELLE_DEBUG("signaled loop_thread");
-      }
+      // Use a signal to stop the read syscall in fuse_chan_recv. We also need
+      // to ensure that the syscall is not automatically restarted (default on
+      // OS X, see `man signal`).
+      struct sigaction action;
+      sigaction(SIGUSR1, NULL, &action);
+      action.sa_handler = &_signal_handler;
+      action.sa_flags &= ~SA_RESTART;
+      sigaction(SIGUSR1, &action, NULL);
+      int res = 0;
+      sigset_t mask_set;
+      sigemptyset(&mask_set);
+      sigaddset(&mask_set, SIGUSR1);
+      res = pthread_sigmask(SIG_BLOCK, &mask_set, NULL);
+      if (res != 0)
+        ELLE_WARN("failed to mask SIGUSR1 on main thread, error: %d", res);
+      res = pthread_kill(this->_loop_thread->native_handle(), SIGUSR1);
+      if (res != 0)
+        ELLE_WARN("failed to send signal to loop_thread, error: %d", res);
 #endif
       this->_loop_thread->join();
     }
