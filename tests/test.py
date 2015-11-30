@@ -24,9 +24,6 @@ import sched
 assert os.system('src/drake/threadpool-test.py') == 0
 assert os.system('src/drake/sched-test.py') == 0
 
-os.chdir('_build')
-assert os.system('./drake //check') == 0
-
 def test_suite():
   tests = []
 
