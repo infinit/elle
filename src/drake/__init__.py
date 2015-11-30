@@ -1526,7 +1526,7 @@ def node(path, type = None):
   if path.__class__ is not Path:
     path = Path(path)
   d = Drake.current
-  res = d.nodes.get(path, None)
+  res = d.nodes.get(drake.path_build() / path, None)
   if res is None:
     if type is not None:
       res = type(path)
