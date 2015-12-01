@@ -2,10 +2,30 @@
 #ifndef ELLE_UNORDERED_MAP
 # define ELLE_UNORDERED_MAP
 
+# include <ostream>
 # include_next <unordered_map>
 
 namespace std
 {
+  template <class K, class V, class ...Args>
+  std::ostream&
+  operator <<(ostream& out,
+              unordered_map<K, V, Args...> const& map)
+  {
+    out << "{";
+    bool first = true;
+    for (auto const& elt: map)
+    {
+      if (first)
+        first = false;
+      else
+        out << ", ";
+      out << elt.first << ": " << elt.second;
+    }
+    out << "}";
+    return out;
+  }
+
   template <typename K, typename V, typename E>
   bool
   contains(std::unordered_map<K, V> const& map, E const& e)

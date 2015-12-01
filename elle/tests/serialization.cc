@@ -1,14 +1,12 @@
 #include <deque>
 #include <list>
+#include <pair>
 #include <sstream>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
 #include <elle/attribute.hh>
-#include <elle/container/deque.hh>
-#include <elle/container/list.hh>
-#include <elle/container/map.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>

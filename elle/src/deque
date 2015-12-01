@@ -1,0 +1,40 @@
+// -*- c++ -*-
+#ifndef ELLE_DEQUE
+# define ELLE_DEQUE
+
+# include <ostream>
+# include_next <deque>
+
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
+namespace std
+{
+  template <class V, class ... Args>
+  ostream&
+  operator <<(ostream& out, deque<V, Args...> const& v)
+  {
+    elle::fprintf(out, "[");
+    bool first = true;
+    for (V const& elt: v)
+    {
+      if (first)
+      {
+        first = false;
+        elle::fprintf(out, "%s", elt);
+      }
+      else
+        elle::fprintf(out, ", %s", elt);
+    }
+    elle::fprintf(out, "]");
+    return out;
+  }
+}
+
+#endif

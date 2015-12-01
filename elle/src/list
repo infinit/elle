@@ -1,0 +1,40 @@
+// -*- c++ -*-
+#ifndef ELLE_LIST
+# define ELLE_LIST
+
+# include <ostream>
+# include_next <list>
+
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
+namespace std
+{
+  template <class V, class ... Args>
+  ostream&
+  operator <<(ostream& out, list<V, Args...> const& v)
+  {
+    elle::fprintf(out, "[");
+    bool first = true;
+    for (V const& elt: v)
+    {
+      if (first)
+      {
+        first = false;
+        elle::fprintf(out, "%s", elt);
+      }
+      else
+        elle::fprintf(out, ", %s", elt);
+    }
+    elle::fprintf(out, "]");
+    return out;
+  }
+}
+
+#endif
