@@ -2,6 +2,7 @@
 #ifndef ELLE_UTILITY
 # define ELLE_UTILITY
 
+# include <ostream>
 # include <pair>
 
 namespace elle
@@ -20,7 +21,7 @@ namespace std
   operator <<(std::basic_ostream<charT, traits>& o, std::pair<T1, T2> const& p)
   {
     elle::fprintf(o, "(%s, %s)", p.first, p.second);
-    return out;
+    return o;
   }
 }
 
