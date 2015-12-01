@@ -379,7 +379,6 @@ def configure(curl_config,
           cwd = drake.node('osxfuse').path(),
           pretty = 'Building FUSE for OS X Core.pkg',
         )
-      fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
   elif fuse:
     fuse_config = drake.cxx.Config()
     fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
