@@ -5,7 +5,6 @@
 #include <reactor/fsm.hh>
 
 #include <elle/test.hh>
-#include <elle/container/set.hh>
 
 using reactor::fsm::Machine;
 using reactor::fsm::State;

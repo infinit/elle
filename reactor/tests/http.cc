@@ -3,7 +3,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <elle/With.hh>
-#include <elle/container/map.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
 

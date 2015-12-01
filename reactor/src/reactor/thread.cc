@@ -4,7 +4,6 @@
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
-#include <elle/container/set.hh>
 
 #include <reactor/backend/backend.hh>
 #include <reactor/exception.hh>
