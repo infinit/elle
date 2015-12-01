@@ -188,7 +188,6 @@ def configure(openssl_config,
     'src/cryptography/rsa/serialization.hh',
     'src/cryptography/rsa/serialization.hxx',
     'src/cryptography/rsa/KeyPool.hh',
-    'src/cryptography/rsa/KeyPool.cc',
     )
 
   if legacy_mode:

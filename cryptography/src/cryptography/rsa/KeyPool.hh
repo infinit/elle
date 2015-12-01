@@ -6,6 +6,7 @@
 # include <vector>
 
 # include <cryptography/rsa/KeyPair.hh>
+# include <elle/ProducerPool.hh>
 
 namespace infinit
 {
@@ -14,22 +15,15 @@ namespace infinit
     namespace rsa
     {
       class KeyPool
+        : public elle::ProducerPool<KeyPair>
       {
       public:
-        KeyPool(int key_size, int max_pool_size, int thread_count = 1);
-        ~KeyPool();
-        KeyPair
-        get();
-      private:
-        void _run();
-        int _key_size;
-        int _max_count;
-        std::vector<KeyPair> _pool;
-        std::mutex _mutex;
-        std::vector<std::thread> _workers;
-        std::condition_variable _producer_barrier;
-        std::condition_variable _consumer_barrier;
-        bool _terminating;
+        KeyPool(int key_size, int max_pool_size, int thread_count = 1)
+        : ProducerPool<KeyPair>(
+            [key_size] { return keypair::generate(key_size);},
+            max_pool_size,
+            thread_count)
+        {}
       };
     }
   }
