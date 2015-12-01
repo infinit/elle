@@ -1,0 +1,27 @@
+// -*- c++ -*-
+#ifndef ELLE_UTILITY
+# define ELLE_UTILITY
+
+# include <pair>
+
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
+namespace std
+{
+  template <typename charT, typename traits, typename T1, typename T2>
+  std::basic_ostream<charT, traits>&
+  operator <<(std::basic_ostream<charT, traits>& o, std::pair<T1, T2> const& p)
+  {
+    elle::fprintf(o, "(%s, %s)", p.first, p.second);
+    return out;
+  }
+}
+
+#endif
