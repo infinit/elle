@@ -67,6 +67,10 @@ namespace reactor
         , _error_code(error_code)
       {}
 
+      Error(int error_code, std::string const& message, elle::Backtrace const& bt)
+        : elle::Error(bt, message)
+        , _error_code(error_code)
+      {}
       ELLE_ATTRIBUTE_R(int, error_code);
     };
 
