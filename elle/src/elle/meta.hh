@@ -17,6 +17,11 @@ namespace elle
       template <template <typename> class P>
       struct filter;
 
+      /// The position of T in List
+      template <typename T>
+      struct
+      index_of;
+
       /// List<T, Elts...>
       template <typename T>
       struct

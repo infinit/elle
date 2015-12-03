@@ -25,6 +25,17 @@ namespace list
                   "list::filter yielded the wrong type");
   }
 
+  namespace index_of
+  {
+    typedef List<int, float, double> l;
+    static_assert(l::index_of<int>::value == 0,
+                  "list::index_of yielded the wrong index");
+    static_assert(l::index_of<float>::value == 1,
+                  "list::index_of yielded the wrong index");
+    static_assert(l::index_of<double>::value == 2,
+                  "list::index_of yielded the wrong index");
+  }
+
   namespace prepend
   {
     typedef List<int, void> l;
