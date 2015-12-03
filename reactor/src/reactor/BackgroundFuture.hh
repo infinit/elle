@@ -30,6 +30,7 @@ namespace reactor
     operator =(T value);
     BackgroundFuture<T>&
     operator =(BackgroundFuture<T> const&) = delete;
+    bool running() const;
     ELLE_ATTRIBUTE(boost::optional<BackgroundOperation<T>>, operation);
     ELLE_ATTRIBUTE(boost::optional<T>, value);
   private:

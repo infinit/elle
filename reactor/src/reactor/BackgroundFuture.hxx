@@ -99,6 +99,13 @@ namespace reactor
     ELLE_ASSERT(!this->_operation);
     ELLE_ASSERT(this->_value);
   }
+
+  template <typename T>
+  bool
+  BackgroundFuture<T>::running() const
+  {
+    return !this->_value;
+  }
 }
 
 #endif
