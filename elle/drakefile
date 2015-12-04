@@ -570,6 +570,7 @@ def configure(zlib_lib,
     'Lazy.cc',
     'Logger.cc',
     'Printable.cc',
+    'TypeInfo.cc',
     # Disable valgrind because of random uuids.
     ('UUID.cc', (), False),
     'Version.cc',
