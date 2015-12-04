@@ -8,7 +8,7 @@ namespace elle
   std::string
   TypeInfo::name() const
   {
-    return elle::demangle(this->_info->name());
+    return elle::demangle(this->_info.name());
   }
 
   bool
@@ -17,7 +17,7 @@ namespace elle
 #ifdef __clang__
     return strcmp(this->_info->name(), rhs._info->name()) == 0;
 #else
-    return *this->_info == *rhs._info;
+    return this->_info == rhs._info;
 #endif
   }
 
@@ -29,12 +29,12 @@ namespace elle
 #ifdef __clang__
     return strcmp(this->_info->name(), rhs._info->name()) < 0;
 #else
-    return this->_info->before(*rhs._info);
+    return this->_info < rhs._info;
 #endif
   }
 
   TypeInfo::TypeInfo(std::type_info const* info)
-    : _info(info)
+    : _info(*info)
   {}
 
   std::ostream&
@@ -42,5 +42,14 @@ namespace elle
   {
     s << ti.name();
     return s;
+  }
+}
+
+namespace std
+{
+  size_t
+  hash<elle::TypeInfo>::operator()(elle::TypeInfo const& info) const
+  {
+    return std::hash<type_index>()(info._info);
   }
 }

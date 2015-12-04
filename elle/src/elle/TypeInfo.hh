@@ -2,6 +2,7 @@
 # define ELLE_TYPE_INFO_HH
 
 # include <string>
+# include <typeindex>
 # include <typeinfo>
 
 # include <elle/attribute.hh>
@@ -24,7 +25,8 @@ namespace elle
     friend TypeInfo type_info();
     template <typename T>
     friend TypeInfo type_info(T const&);
-    ELLE_ATTRIBUTE(std::type_info const*, info)
+    ELLE_ATTRIBUTE(std::type_index, info);
+    friend class std::hash<TypeInfo>;
   };
 
   std::ostream&
@@ -37,6 +39,16 @@ namespace elle
   template <typename T>
   TypeInfo
   type_info(T const& v);
+}
+
+namespace std
+{
+  template<>
+  class hash<elle::TypeInfo>
+  {
+  public:
+    size_t operator()(elle::TypeInfo const& info) const;
+  };
 }
 
 # include <elle/TypeInfo.hxx>
