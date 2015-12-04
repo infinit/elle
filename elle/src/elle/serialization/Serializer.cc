@@ -8,6 +8,12 @@ namespace elle
   {
     Serializer::Serializer(bool versioned)
       : _versioned(versioned)
+      , _versions()
+    {}
+
+    Serializer::Serializer(Versions versions)
+      : _versioned(true)
+      , _versions(std::move(versions))
     {}
 
     bool

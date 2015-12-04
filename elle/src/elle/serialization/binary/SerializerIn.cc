@@ -15,6 +15,19 @@ namespace elle
                                  bool versioned)
         : Super(input, versioned)
       {
+        this->_check_magic(input);
+      }
+
+      SerializerIn::SerializerIn(std::istream& input,
+                                 Versions versions)
+        : Super(input, std::move(versions))
+      {
+        this->_check_magic(input);
+      }
+
+      void
+      SerializerIn::_check_magic(std::istream& input)
+      {
         char magic;
         input.read(&magic, 1);
         if (input.gcount() != 1)

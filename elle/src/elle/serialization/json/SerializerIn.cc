@@ -33,6 +33,22 @@ namespace elle
         , _json()
         , _current()
       {
+        this->_load_json(input);
+      }
+
+      SerializerIn::SerializerIn(std::istream& input,
+                                 Versions versions)
+        : Super(input, std::move(versions))
+        , _partial(false)
+        , _json()
+        , _current()
+      {
+        this->_load_json(input);
+      }
+
+      void
+      SerializerIn::_load_json(std::istream& input)
+      {
         try
         {
           this->_json = elle::json::read(input);

@@ -679,61 +679,125 @@ namespace lib
   };
 }
 
-template <typename Format>
-static
-void
-versioning()
+namespace versioning
 {
-  ELLE_LOG("test old -> old serialization")
+  template <typename Format>
+  static
+  void
+  global()
   {
-    auto version = elle::scoped_assignment(lib::serialization::version,
-                                           elle::Version(0, 1, 0));
-    std::stringstream stream;
-    {
-      typename Format::SerializerOut output(stream);
-      lib::Versioned v(1, 2);
-      output.serialize_forward(v);
-    }
-    ELLE_LOG("serialized: %s", stream.str());
-    {
-      typename Format::SerializerIn input(stream);
-      lib::Versioned v(input);
-      BOOST_CHECK_EQUAL(v.old(), 1);
-      BOOST_CHECK_EQUAL(v.addition(), 0);
-    }
-  }
-  ELLE_LOG("test old -> new serialization")
-  {
-    std::stringstream stream;
+    ELLE_LOG("test old -> old serialization")
     {
       auto version = elle::scoped_assignment(lib::serialization::version,
                                              elle::Version(0, 1, 0));
-      typename Format::SerializerOut output(stream);
-      lib::Versioned v(1, 2);
-      output.serialize_forward(v);
+      std::stringstream stream;
+      {
+        typename Format::SerializerOut output(stream);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 0);
+      }
     }
-    ELLE_LOG("serialized: %s", stream.str());
+    ELLE_LOG("test old -> new serialization")
     {
-      typename Format::SerializerIn input(stream);
-      lib::Versioned v(input);
-      BOOST_CHECK_EQUAL(v.old(), 1);
-      BOOST_CHECK_EQUAL(v.addition(), 0);
+      std::stringstream stream;
+      {
+        auto version = elle::scoped_assignment(lib::serialization::version,
+                                               elle::Version(0, 1, 0));
+        typename Format::SerializerOut output(stream);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 0);
+      }
+    }
+    ELLE_LOG("test new -> new serialization")
+    {
+      std::stringstream stream;
+      {
+        typename Format::SerializerOut output(stream);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 2);
+      }
     }
   }
-  ELLE_LOG("test new -> new serialization")
+
+  template <typename Format>
+  static
+  void
+  local()
   {
-    std::stringstream stream;
+    ELLE_LOG("test old -> old serialization")
     {
-      typename Format::SerializerOut output(stream);
-      lib::Versioned v(1, 2);
-      output.serialize_forward(v);
+      std::unordered_map<elle::TypeInfo, elle::Version> versions;
+      versions.emplace(elle::type_info<lib::serialization>(),
+                       elle::Version(0, 1, 0));
+      std::stringstream stream;
+      {
+        typename Format::SerializerOut output(stream, versions);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream, versions);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 0);
+      }
     }
-    ELLE_LOG("serialized: %s", stream.str());
+    ELLE_LOG("test old -> new serialization")
     {
-      typename Format::SerializerIn input(stream);
-      lib::Versioned v(input);
-      BOOST_CHECK_EQUAL(v.old(), 1);
-      BOOST_CHECK_EQUAL(v.addition(), 2);
+      std::stringstream stream;
+      {
+        std::unordered_map<elle::TypeInfo, elle::Version> versions;
+        versions.emplace(elle::type_info<lib::serialization>(),
+                         elle::Version(0, 1, 0));
+        typename Format::SerializerOut output(stream, versions);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 0);
+      }
+    }
+    ELLE_LOG("test new -> new serialization")
+    {
+      std::stringstream stream;
+      {
+        typename Format::SerializerOut output(stream);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 2);
+      }
     }
   }
 }
@@ -1151,7 +1215,8 @@ exceptions()
 
 ELLE_TEST_SUITE()
 {
-  auto& suite = boost::unit_test::framework::master_test_suite();
+  auto& master = boost::unit_test::framework::master_test_suite();
+  auto& suite = master;
   FOR_ALL_SERIALIZATION_TYPES(fundamentals);
   FOR_ALL_SERIALIZATION_TYPES(object);
   FOR_ALL_SERIALIZATION_TYPES(object_composite);
@@ -1168,7 +1233,14 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(hierarchy);
-  FOR_ALL_SERIALIZATION_TYPES(versioning);
+  {
+    using namespace versioning;
+    auto subsuite = BOOST_TEST_SUITE("versioning");
+    master.add(subsuite);
+    auto& suite = *subsuite;
+    FOR_ALL_SERIALIZATION_TYPES(global);
+    FOR_ALL_SERIALIZATION_TYPES(local);
+  }
   FOR_ALL_SERIALIZATION_TYPES(context);
   FOR_ALL_SERIALIZATION_TYPES(exceptions);
   FOR_ALL_SERIALIZATION_TYPES(text_parser);

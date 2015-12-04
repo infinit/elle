@@ -14,11 +14,11 @@
 # include <boost/any.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/multi_index_container.hpp>
-# include <boost/optional.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
+# include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/serialization/predicates.hh>
 # include <elle/sfinae.hh>
@@ -100,12 +100,14 @@ namespace elle
     `------*/
     public:
       typedef Serializer Self;
+      typedef std::unordered_map<TypeInfo, Version> Versions;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
       Serializer(bool versioned);
+      Serializer(Versions versions);
 
     /*-----------.
     | Properties |
@@ -115,9 +117,10 @@ namespace elle
       in() const;
       bool
       out() const;
-      ELLE_ATTRIBUTE_R(bool, versioned);
       bool
       text() const;
+      ELLE_ATTRIBUTE_R(bool, versioned);
+      ELLE_ATTRIBUTE_R(boost::optional<Versions>, versions);
     private:
       bool
       _out() const;

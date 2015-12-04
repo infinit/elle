@@ -24,7 +24,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      SerializerOut(std::ostream& output, bool versioned);
+      SerializerOut(std::ostream& output, bool versioned = true);
+      SerializerOut(std::ostream& output, Versions versions);
 
     /*----------.
     | Overloads |

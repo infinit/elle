@@ -15,20 +15,66 @@ namespace elle
 {
   namespace serialization
   {
-    template <typename T>
-    typename std::enable_if_exists<decltype(T::serialization_tag::version),
-                                   elle::Version>::type
-    _version_tag(int)
+    namespace _details
     {
-      return T::serialization_tag::version;
-    }
+      template <typename T>
+      inline constexpr
+      typename std::enable_if_exists<decltype(T::serialization_tag::version),
+                                     bool>::type
+      _has_version_tag(int)
+      {
+        return true;
+      }
 
-    template <typename T>
-    elle::Version
-    _version_tag(...)
-    {
-      throw elle::Error(elle::sprintf("no serialization version tag for %s",
-                                      elle::type_info<T>().name()));
+      template <typename T>
+      inline constexpr
+      bool
+      _has_version_tag(...)
+      {
+        return false;
+      }
+
+      template <typename T>
+      inline constexpr
+      bool
+      has_version_tag()
+      {
+        return _has_version_tag<T>(42);
+      }
+
+      template <typename T>
+      typename std::enable_if<has_version_tag<T>(), elle::Version>::type
+      version_tag(boost::optional<Serializer::Versions> const& versions)
+      {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        if (versions)
+        {
+          auto it = versions->find(type_info<typename T::serialization_tag>());
+          if (it != versions->end())
+          {
+            ELLE_DUMP("use local serialization version for %s",
+                      elle::type_info<T>());
+            return it->second;
+          }
+        }
+        ELLE_DUMP("use default serialization version for %s",
+                  elle::type_info<T>());
+        return T::serialization_tag::version;
+      }
+
+      template <typename T>
+      typename std::enable_if<!has_version_tag<T>(), elle::Version>::type
+      version_tag(boost::optional<Serializer::Versions> const& versions)
+      {
+        if (versions)
+        {
+          auto it = versions->find(type_info<typename T::serialization_tag>());
+          if (it != versions->end())
+            return it->second;
+        }
+        throw elle::Error(elle::sprintf("no serialization version tag for %s",
+                                        elle::type_info<T>().name()));
+      }
     }
 
     namespace
@@ -149,7 +195,7 @@ namespace elle
         // FIXME: use that version
         if (input.versioned())
         {
-          auto version = _version_tag<T>(42);
+          auto version = _details::version_tag<T>(input.versions());
           {
             ELLE_TRACE_SCOPE("serialize version: %s", version);
             input.serialize(".version", version);
@@ -275,7 +321,7 @@ namespace elle
         // FIXME: use that version
         if (s.versioned())
         {
-          auto version = _version_tag<T>(42);
+          auto version = _details::version_tag<T>(s.versions());
           {
             ELLE_TRACE_SCOPE("serialize version: %s", version);
             s.serialize(".version", version);
@@ -689,10 +735,9 @@ namespace elle
                        *this, elle::type_info<T>(), name);
       if (this->_versioned)
       {
-        auto version = _version_tag<T>(42);
+        auto version = _details::version_tag<T>(this->versions());
         {
           ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
-          auto guard = scoped_assignment(this->_versioned, false);
           this->serialize(".version", version);
         }
         _version_switch(*this, object,
@@ -700,9 +745,10 @@ namespace elle
                         ELLE_SFINAE_TRY());
       }
       else
-        _version_switch(*this, object,
-                        [] { return _version_tag<T>(42); },
-                        ELLE_SFINAE_TRY());
+        _version_switch(
+          *this, object,
+          [this] { return _details::version_tag<T>(this->versions()); },
+          ELLE_SFINAE_TRY());
     }
 
     // Special case: don't version versions.
@@ -746,7 +792,8 @@ namespace elle
       // FIXME: use that version
       if (this->versioned())
       {
-        auto version = _version_tag<typename C::value_type>(42);
+        auto version =
+          _details::version_tag<typename C::value_type>(this->versions());
         {
           ELLE_TRACE_SCOPE("serialize version: %s", version);
           this->serialize(".version", version);
@@ -772,7 +819,8 @@ namespace elle
       // FIXME: use that version
       if (this->versioned())
       {
-        auto version = _version_tag<typename C::value_type>(42);
+        auto version =
+          _details::version_tag<typename C::value_type>(this->versions());
         {
           ELLE_TRACE_SCOPE("serialize version: %s", version);
           this->serialize(".version", version);
@@ -1105,7 +1153,7 @@ namespace elle
               // FIXME: use that version
               if (s.versioned())
               {
-                auto version = _version_tag<T>(42);
+                auto version = _details::version_tag<T>(s.versions());
                 {
                   ELLE_TRACE_SCOPE("serialize version: %s", version);
                   s.serialize(".version", version);

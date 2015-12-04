@@ -28,6 +28,17 @@ namespace elle
         this->_current.push_back(&this->_json);
       }
 
+      SerializerOut::SerializerOut(std::ostream& output,
+                                   Versions versions,
+                                   bool pretty)
+        : Super(output, std::move(versions))
+        , _json()
+        , _current()
+        , _pretty(pretty)
+      {
+        this->_current.push_back(&this->_json);
+      }
+
       SerializerOut::~SerializerOut() noexcept(false)
       {
         if (_pretty)

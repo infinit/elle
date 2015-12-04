@@ -10,6 +10,12 @@ namespace elle
       , _output(output)
     {}
 
+    SerializerOut::SerializerOut(std::ostream& output,
+                                 Versions versions)
+      : Super(std::move(versions))
+      , _output(output)
+    {}
+
     void
     SerializerOut::serialize(std::string const& name, char const* v)
     {
