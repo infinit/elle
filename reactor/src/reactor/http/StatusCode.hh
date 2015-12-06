@@ -45,6 +45,7 @@ namespace reactor
       Unsupported_Media_Type = 415,
       Requested_Range_Not_Satisfiable = 416,
       Expectation_Failed = 417,
+      Unprocessable_Entity = 422,
       Internal_Server_Error = 500,
       Not_Implemented = 501,
       Bad_Gateway = 502,
