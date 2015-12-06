@@ -634,53 +634,56 @@ hierarchy()
   }
 }
 
-namespace lib
-{
-  struct serialization
-  {
-    static elle::Version version;
-  };
-
-  elle::Version serialization::version(0, 3, 0);
-
-  class Versioned
-  {
-  public:
-    typedef serialization serialization_tag;
-
-    Versioned(int old, int addition)
-      : _old(old)
-      , _addition(addition)
-    {}
-
-    Versioned(elle::serialization::Serializer& s)
-      : _old(0)
-      , _addition(0)
-    {
-      s.serialize_forward(*this);
-    }
-
-    bool
-    operator ==(Versioned const& other) const
-    {
-      return this->old() == other.old() && this->addition() == other.addition();
-    }
-
-    void
-    serialize(elle::serialization::Serializer& s, elle::Version const& v)
-    {
-      s.serialize("old", this->_old);
-      if (v >= elle::Version(0, 2, 0))
-        s.serialize("addition", this->_addition);
-    }
-
-    ELLE_ATTRIBUTE_R(int, old);
-    ELLE_ATTRIBUTE_R(int, addition);
-  };
-}
-
 namespace versioning
 {
+  using elle::Version;
+  using elle::type_info;
+  namespace lib
+  {
+    struct serialization
+    {
+      static Version version;
+    };
+
+    Version serialization::version(0, 3, 0);
+
+    class Versioned
+    {
+    public:
+      typedef serialization serialization_tag;
+
+      Versioned(int old, int addition)
+        : _old(old)
+        , _addition(addition)
+      {}
+
+      Versioned(elle::serialization::Serializer& s)
+        : _old(0)
+        , _addition(0)
+      {
+        s.serialize_forward(*this);
+      }
+
+      bool
+      operator ==(Versioned const& other) const
+      {
+        return this->old() == other.old() &&
+          this->addition() == other.addition();
+      }
+
+      void
+      serialize(elle::serialization::Serializer& s, Version const& v)
+      {
+        s.serialize("old", this->_old);
+        if (v >= Version(0, 2, 0))
+          s.serialize("addition", this->_addition);
+      }
+
+      ELLE_ATTRIBUTE_R(int, old);
+      ELLE_ATTRIBUTE_R(int, addition);
+    };
+  }
+
   template <typename Format>
   static
   void
@@ -689,7 +692,7 @@ namespace versioning
     ELLE_LOG("test old -> old serialization")
     {
       auto version = elle::scoped_assignment(lib::serialization::version,
-                                             elle::Version(0, 1, 0));
+                                             Version(0, 1, 0));
       std::stringstream stream;
       {
         typename Format::SerializerOut output(stream);
@@ -709,7 +712,7 @@ namespace versioning
       std::stringstream stream;
       {
         auto version = elle::scoped_assignment(lib::serialization::version,
-                                               elle::Version(0, 1, 0));
+                                               Version(0, 1, 0));
         typename Format::SerializerOut output(stream);
         lib::Versioned v(1, 2);
         output.serialize_forward(v);
@@ -747,9 +750,8 @@ namespace versioning
   {
     ELLE_LOG("test old -> old serialization")
     {
-      std::unordered_map<elle::TypeInfo, elle::Version> versions;
-      versions.emplace(elle::type_info<lib::serialization>(),
-                       elle::Version(0, 1, 0));
+      std::unordered_map<elle::TypeInfo, Version> versions;
+      versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
       std::stringstream stream;
       {
         typename Format::SerializerOut output(stream, versions);
@@ -768,9 +770,8 @@ namespace versioning
     {
       std::stringstream stream;
       {
-        std::unordered_map<elle::TypeInfo, elle::Version> versions;
-        versions.emplace(elle::type_info<lib::serialization>(),
-                         elle::Version(0, 1, 0));
+        std::unordered_map<elle::TypeInfo, Version> versions;
+        versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
         typename Format::SerializerOut output(stream, versions);
         lib::Versioned v(1, 2);
         output.serialize_forward(v);
@@ -800,6 +801,79 @@ namespace versioning
       }
     }
   }
+
+  // struct serialization
+  // {
+  //   static Version version;
+  //   static std::unordered_map<
+  //     Version, elle::serialization::Serializer::Versions> dependencies;
+  // };
+  // Version serialization::version(0, 2, 0);
+  // std::unordered_map<
+  //   Version, elle::serialization::Serializer::Versions>
+  //   serialization::dependencies{
+  //   {Version(0, 2, 0), {{type_info<lib::serialization>()}, Version(0, 3, 0)}},
+  //   {Version(0, 1, 0), {{type_info<lib::serialization>()}, Version(0, 1, 0)}},
+  // };
+
+  // template <typename Format>
+  // static
+  // void
+  // dependencies()
+  // {
+  //   std::unordered_map<elle::TypeInfo, Version> versions;
+  //   versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
+  //   ELLE_LOG("test old -> old serialization")
+  //   {
+  //     std::stringstream stream;
+  //     {
+  //       typename Format::SerializerOut output(stream, versions);
+  //       lib::Versioned v(1, 2);
+  //       output.serialize_forward(v);
+  //     }
+  //     ELLE_LOG("serialized: %s", stream.str());
+  //     {
+  //       typename Format::SerializerIn input(stream, versions);
+  //       lib::Versioned v(input);
+  //       BOOST_CHECK_EQUAL(v.old(), 1);
+  //       BOOST_CHECK_EQUAL(v.addition(), 0);
+  //     }
+  //   }
+  //   ELLE_LOG("test old -> new serialization")
+  //   {
+  //     std::stringstream stream;
+  //     {
+  //       std::unordered_map<elle::TypeInfo, Version> versions;
+  //       versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
+  //       typename Format::SerializerOut output(stream, versions);
+  //       lib::Versioned v(1, 2);
+  //       output.serialize_forward(v);
+  //     }
+  //     ELLE_LOG("serialized: %s", stream.str());
+  //     {
+  //       typename Format::SerializerIn input(stream);
+  //       lib::Versioned v(input);
+  //       BOOST_CHECK_EQUAL(v.old(), 1);
+  //       BOOST_CHECK_EQUAL(v.addition(), 0);
+  //     }
+  //   }
+  //   ELLE_LOG("test new -> new serialization")
+  //   {
+  //     std::stringstream stream;
+  //     {
+  //       typename Format::SerializerOut output(stream);
+  //       lib::Versioned v(1, 2);
+  //       output.serialize_forward(v);
+  //     }
+  //     ELLE_LOG("serialized: %s", stream.str());
+  //     {
+  //       typename Format::SerializerIn input(stream);
+  //       lib::Versioned v(input);
+  //       BOOST_CHECK_EQUAL(v.old(), 1);
+  //       BOOST_CHECK_EQUAL(v.addition(), 2);
+  //     }
+  //   }
+  // }
 }
 
 class InPlace
@@ -1033,17 +1107,14 @@ json_optionals()
       "}");
     elle::serialization::json::SerializerIn serializer(stream);
     serializer.serialize("value", value);
-    BOOST_CHECK(value);
+    BOOST_REQUIRE(value);
     BOOST_CHECK_EQUAL(value.get(), "castor");
   }
   {
-    std::stringstream stream(
-      "{"
-      "}");
+    std::stringstream stream("{}");
     elle::serialization::json::SerializerIn serializer(stream);
     serializer.serialize("value", value);
-    BOOST_CHECK(value);
-    BOOST_CHECK_EQUAL(value.get(), "castor");
+    BOOST_CHECK(!value);
   }
   {
     std::stringstream stream(

@@ -184,7 +184,6 @@ namespace elle
       set_context(Context const& context);
       ELLE_ATTRIBUTE_R(Context, context);
 
-    protected:
       virtual
       bool
       _enter(std::string const& name);
@@ -354,12 +353,6 @@ namespace elle
               std::declval<C>().emplace_back()),
             void>::type>::type
       _deserialize_in_array(std::string const& name, C& collection);
-      template <typename T>
-      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
-      _deserialize_in_option(std::string const& name, boost::optional<T>& opt);
-      template <typename T>
-      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
-      _deserialize_in_option(std::string const& name, boost::optional<T>& opt);
       template <typename T>
       friend struct Serialize;
       class Details;

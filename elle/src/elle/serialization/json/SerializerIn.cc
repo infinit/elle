@@ -158,17 +158,21 @@ namespace elle
                                       bool,
                                       std::function<void ()> const& f)
       {
-        if (name == "SERIALIZE ANONYMOUS")
+        if (name == "SERIALIZE ANONYMOUS") // FIXME: get rid of that
         { // optional was serialized anonymously,
           auto& current = *this->_current.back();
-          if (current.type() == typeid(elle::json::NullType))
-            return;
-          f();
+          if (current.type() != typeid(elle::json::NullType))
+            f();
         }
         else
         {
           auto& object = this->_check_type<elle::json::Object>(name);
-          if (object.find(name) != object.end())
+          auto it = object.find(name);
+          if (it == object.end())
+            ELLE_DEBUG("skip option as JSON key is missing");
+          else if (it->second.type() == typeid(elle::json::NullType))
+            ELLE_DEBUG("skip option as JSON value is null");
+          else
             f();
         }
       }
@@ -318,12 +322,6 @@ namespace elle
             }
           }
         }
-      }
-
-      bool
-      SerializerIn::_option_filled()
-      {
-        return this->_current.back()->type() != typeid(::elle::json::NullType);
       }
 
       template <typename T, typename ... Types>

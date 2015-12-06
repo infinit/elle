@@ -52,9 +52,6 @@ namespace elle
     | Details |
     `--------*/
     protected:
-      virtual
-      bool
-      _option_filled();
       friend class Serializer;
       ELLE_ATTRIBUTE_R(std::istream&, input);
     };
