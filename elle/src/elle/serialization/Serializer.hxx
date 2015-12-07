@@ -74,6 +74,22 @@ namespace elle
                                         elle::type_info<T>().name()));
       }
 
+      // option_reset: reset boost::optional, smart pointers and raw pointers
+
+      template <typename T>
+      void
+      option_reset(T& opt)
+      {
+        opt.reset();
+      }
+
+      template <typename T>
+      void
+      option_reset(T*& opt)
+      {
+        opt = nullptr;
+      }
+
       template <typename P, typename T>
       void _set_ptr(P& target, T* ptr)
       {
@@ -352,7 +368,7 @@ namespace elle
       if (!filled && opt)
       {
         ELLE_DEBUG("reset option");
-        opt.reset();
+        _details::option_reset(opt);
       }
     }
 
@@ -454,6 +470,33 @@ namespace elle
           (*this, "SERIALIZE ANONYMOUS", ptr);
     }
 
+    // Raw pointers
+
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, T*& opt)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize raw pointer \"%s\"", *this, name);
+      Details::serialize_option(*this, name, opt);
+    }
+
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name,
+                                     T*& ptr)
+    {
+      if (this->_out())
+      {
+        ELLE_ASSERT(bool(ptr));
+        this->_serialize_anonymous(name, *ptr);
+      }
+      else
+        Details::_smart_virtual_switch<T*, T>(*this, name, ptr);
+    }
+
+    // ---
+
     template<typename T>
     void
     Serializer::serialize_with_struct_serialize(
@@ -494,95 +537,6 @@ namespace elle
           }
         }
       }
-    }
-
-    template <typename T>
-    void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     T*& opt)
-    {
-      serialize(name, opt, true);
-    }
-
-
-    template <typename T>
-    typename std::conditional<true, void, typename Serialize<T>::Type>::type
-    _serialize_ptr_switch(
-      Serializer& s,
-      std::string const& name,
-      T& v,
-      bool anonymous,
-      ELLE_SFINAE_IF_POSSIBLE())
-    {
-      s.serialize_with_struct_serialize(name, v, anonymous);
-    }
-
-    template <typename T>
-    void
-    _serialize_ptr_switch(
-      Serializer& s,
-      std::string const& name,
-      T& v,
-      bool anonymous,
-      ELLE_SFINAE_OTHERWISE())
-    {
-      s.serialize_ptr(name, v, anonymous);
-    }
-
-    template<typename T>
-    void Serializer::serialize_ptr(std::string const& name, T* &opt, bool anonymous)
-    {
-      if (this->_out())
-        this->_serialize_option(
-          name,
-          bool(opt),
-          [&]
-          {
-            if (anonymous)
-              this->_serialize_anonymous(name, *opt);
-            else
-              this->serialize(name, *opt);
-          });
-      else
-      {
-        opt = nullptr;
-        this->_serialize_option(
-          name,
-          bool(opt),
-          [&]
-          {
-            if (anonymous)
-            {
-              Details::_smart_virtual_switch<T*, T>
-                (*this, name, opt);
-            }
-            else if (this->_enter(name))
-            {
-              elle::SafeFinally leave([&] { this->_leave(name); });
-              Details::_smart_virtual_switch<T*, T>
-                (*this, name, opt);
-            }
-          });
-      }
-    }
-
-    template <typename T>
-    void
-    Serializer::serialize(std::string const& name, T* &opt, bool anonymous)
-    {
-      _serialize_ptr_switch(*this, name, opt, anonymous, ELLE_SFINAE_TRY());
-      /*
-      if (!anonymous)
-      {
-        if (this->_enter(name))
-        {
-          elle::SafeFinally leave([&] { this->_leave(name); });
-          _serialize_ptr_switch(*this, name, opt, true, ELLE_SFINAE_TRY());
-        }
-      }
-      else
-        _serialize_ptr_switch(*this, name, opt, true, ELLE_SFINAE_TRY());
-     */
     }
 
     template <typename K, typename V, typename ... Rest>

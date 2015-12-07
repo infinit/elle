@@ -143,7 +143,7 @@ namespace elle
       serialize(std::string const& name, std::shared_ptr<T>& opt);
       template <typename T>
       void
-      serialize(std::string const& name, T*& opt, bool anonymous=false);
+      serialize(std::string const& name, T*& opt);
       template <typename T, typename As>
       void
       serialize(std::string const& name, T& v, as<As>);
