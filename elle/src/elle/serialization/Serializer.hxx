@@ -501,7 +501,79 @@ namespace elle
       Details::_smart_virtual_switch<T*, T>(*this, name, ptr);
     }
 
-    // ---
+    /*------.
+    | Leafs |
+    `------*/
+
+    template <typename T>
+    void
+    _version_switch(
+      Serializer& s,
+      T& object,
+      std::function<elle::Version ()> version,
+      ELLE_SFINAE_IF_WORKS(object.serialize(ELLE_SFINAE_INSTANCE(Serializer),
+                                            elle::Version())))
+    {
+      object.serialize(s, version());
+    }
+
+    template <typename T>
+    void
+    _version_switch(
+      Serializer& s,
+      T& object,
+      std::function<elle::Version ()> const& version,
+      ELLE_SFINAE_OTHERWISE())
+    {
+      object.serialize(s);
+    }
+
+    template <typename T>
+    void
+    Serializer::serialize_object(std::string const& name,
+                                 T& object)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize %s \"%s\"",
+                       *this, elle::type_info<T>(), name);
+      if (this->_versioned)
+      {
+        auto version = _details::version_tag<T>(this->versions());
+        {
+          ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
+          this->serialize(".version", version);
+        }
+        _version_switch(*this, object,
+                        [version] { return version; },
+                        ELLE_SFINAE_TRY());
+      }
+      else
+        _version_switch(
+          *this, object,
+          [this] { return _details::version_tag<T>(this->versions()); },
+          ELLE_SFINAE_TRY());
+    }
+
+    // Special case: don't version versions.
+    inline
+    void
+    Serializer::serialize_object(std::string const& name,
+                                 elle::Version& version)
+    {
+      version.serialize(*this);
+    }
+
+    template <typename T>
+    void
+    Serializer::serialize_pod(std::string const& name,
+                              T& v)
+    {
+      this->_serialize(name, v);
+    }
+
+    /*------------.
+    | Collections |
+    `------------*/
 
     template <typename K, typename V, typename ... Rest>
     void
@@ -603,15 +675,6 @@ namespace elle
       }
     }
 
-    template <typename T, typename A>
-    void
-    Serializer::serialize(std::string const& name, T& v, as<A>)
-    {
-      A actual = A(v);
-      this->serialize(name, actual);
-      v = T(actual);
-    }
-
     template <typename As,
               template <typename, typename> class C,
               typename T,
@@ -625,72 +688,6 @@ namespace elle
         elle::SafeFinally leave([&] { this->_leave(name); });
         this->_serialize(name, collection, as<As>());
       }
-    }
-
-    template <typename T>
-    void
-    _version_switch(
-      Serializer& s,
-      T& object,
-      std::function<elle::Version ()> version,
-      ELLE_SFINAE_IF_WORKS(object.serialize(ELLE_SFINAE_INSTANCE(Serializer),
-                                            elle::Version())))
-    {
-      object.serialize(s, version());
-    }
-
-    template <typename T>
-    void
-    _version_switch(
-      Serializer& s,
-      T& object,
-      std::function<elle::Version ()> const& version,
-      ELLE_SFINAE_OTHERWISE())
-    {
-      object.serialize(s);
-    }
-
-    template <typename T>
-    void
-    Serializer::serialize_object(std::string const& name,
-                                 T& object)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize %s \"%s\"",
-                       *this, elle::type_info<T>(), name);
-      if (this->_versioned)
-      {
-        auto version = _details::version_tag<T>(this->versions());
-        {
-          ELLE_TRACE_SCOPE("%s: serialize version: %s", *this, version);
-          this->serialize(".version", version);
-        }
-        _version_switch(*this, object,
-                        [version] { return version; },
-                        ELLE_SFINAE_TRY());
-      }
-      else
-        _version_switch(
-          *this, object,
-          [this] { return _details::version_tag<T>(this->versions()); },
-          ELLE_SFINAE_TRY());
-    }
-
-    // Special case: don't version versions.
-    inline
-    void
-    Serializer::serialize_object(std::string const& name,
-                                 elle::Version& version)
-    {
-      version.serialize(*this);
-    }
-
-    template <typename T>
-    void
-    Serializer::serialize_pod(std::string const& name,
-                              T& v)
-    {
-      this->_serialize(name, v);
     }
 
     template <typename C>
@@ -1046,6 +1043,10 @@ namespace elle
       }
     };
 
+    /*----------.
+    | Hierarchy |
+    `----------*/
+
     template <typename T>
     class Hierarchy
     {
@@ -1100,6 +1101,19 @@ namespace elle
         return res;
       }
     };
+
+    /*--------.
+    | Helpers |
+    `--------*/
+
+    template <typename T, typename A>
+    void
+    Serializer::serialize(std::string const& name, T& v, as<A>)
+    {
+      A actual = A(v);
+      this->serialize(name, actual);
+      v = T(actual);
+    }
 
     template <typename T> struct is_nullable
     {
