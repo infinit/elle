@@ -142,7 +142,8 @@ namespace elle
       void
       serialize(std::string const& name, std::shared_ptr<T>& opt);
       template <typename T>
-      void
+      typename std::enable_if<
+        !_details::has_serialize_convert_api<T*>(), void>::type
       serialize(std::string const& name, T*& opt);
       template <typename T, typename As>
       void
@@ -303,7 +304,8 @@ namespace elle
       void
       _serialize_anonymous(std::string const& name, T& v);
       template <typename T>
-      void
+      typename std::enable_if<
+        !_details::has_serialize_convert_api<T*>(), void>::type
       _serialize_anonymous(std::string const& name, T*& v);
       template <typename T>
       void

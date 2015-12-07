@@ -23,6 +23,14 @@ namespace elle
 
       static constexpr char const* virtually_serializable_key = ".type";
     };
+
+    namespace _details
+    {
+      template <typename T>
+      inline constexpr
+      bool
+      has_serialize_convert_api();
+    }
   }
 }
 

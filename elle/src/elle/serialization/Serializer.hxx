@@ -91,6 +91,8 @@ namespace elle
     class Serializer::Details
     {
     public:
+
+
       template <typename P, typename T>
       static
       typename std::enable_if<
@@ -248,6 +250,17 @@ namespace elle
       }
 
       template <typename T>
+      void
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& v,
+        ELLE_SFINAE_OTHERWISE())
+      {
+        s.serialize_pod(name, v);
+      }
+
+      template <typename T>
       typename std::enable_if<
         _details::has_serialize_convert_api<T>(), void>::type
       _serialize_switch(Serializer& s,
@@ -280,17 +293,6 @@ namespace elle
         typedef typename Serialize<T>::Wrapper Wrapper;
         Wrapper wrapper(v);
         _serialize_switch<Wrapper>(s, name, wrapper, ELLE_SFINAE_TRY());
-      }
-
-      template <typename T>
-      void
-      _serialize_switch(
-        Serializer& s,
-        std::string const& name,
-        T& v,
-        ELLE_SFINAE_OTHERWISE())
-      {
-        s.serialize_pod(name, v);
       }
 
       template <typename T>
@@ -474,9 +476,12 @@ namespace elle
     }
 
     // Raw pointers
+    // std::enable_if short-circuits serialization explicit pointer
+    // specialization such as BIGNUM*
 
     template <typename T>
-    void
+    typename std::enable_if<
+      !_details::has_serialize_convert_api<T*>(), void>::type
     Serializer::serialize(std::string const& name, T*& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -485,7 +490,8 @@ namespace elle
     }
 
     template <typename T>
-    void
+    typename std::enable_if<
+      !_details::has_serialize_convert_api<T*>(), void>::type
     Serializer::_serialize_anonymous(std::string const& name,
                                      T*& ptr)
     {

@@ -1292,6 +1292,85 @@ exceptions()
   }
 }
 
+struct Convertable
+{
+  int64_t i;
+};
+
+struct PConvertable
+{
+  int64_t i;
+};
+
+namespace elle
+{
+  namespace serialization
+  {
+    template <>
+    struct Serialize<Convertable>
+    {
+      typedef int64_t Type;
+
+      static
+      int64_t
+      convert(Convertable const& c)
+      {
+        return c.i;
+      }
+
+      static
+      Convertable
+      convert(int64_t const& i)
+      {
+        return Convertable{i};
+      }
+    };
+
+    // Check one can override even pointer serialization. Think BIGNUM*.
+    template <>
+    struct Serialize<PConvertable*>
+    {
+      typedef int64_t Type;
+
+      static
+      int64_t
+      convert(PConvertable* c)
+      {
+        return c->i;
+      }
+
+      static
+      PConvertable*
+      convert(int64_t i)
+      {
+        return new PConvertable{i};
+      }
+    };
+  }
+}
+
+template <typename Format>
+static
+void
+convert()
+{
+  Convertable c{1332};
+  auto pc = new PConvertable{1332};
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut serializer(stream, false);
+    serializer.serialize("convertable", c);
+    serializer.serialize("pconvertable", pc);
+  }
+  {
+    typename Format::SerializerIn serializer(stream, false);
+    auto r = serializer.template deserialize<Convertable>("convertable");
+    BOOST_CHECK_EQUAL(r.i, c.i);
+    auto pr = serializer.template deserialize<PConvertable*>("pconvertable");
+    BOOST_CHECK_EQUAL(pr->i, pc->i);
+  }
+}
+
 #define FOR_ALL_SERIALIZATION_TYPES(Name)                               \
   {                                                                     \
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE(#Name);   \
@@ -1333,6 +1412,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(context);
   FOR_ALL_SERIALIZATION_TYPES(exceptions);
   FOR_ALL_SERIALIZATION_TYPES(text_parser);
+  FOR_ALL_SERIALIZATION_TYPES(convert);
   suite.add(BOOST_TEST_CASE(in_place));
   suite.add(BOOST_TEST_CASE(unordered_map_string_legacy));
   suite.add(BOOST_TEST_CASE(json_type_error));
