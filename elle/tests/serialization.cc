@@ -288,22 +288,31 @@ option()
   {
     boost::optional<int> empty;
     boost::optional<int> filled(42);
+    boost::optional<Point> object(Point(1, 2));
     boost::optional<std::vector<int>> collection(std::vector<int>({0, 1, 2}));
     typename Format::SerializerOut output(stream);
     output.serialize("empty", empty);
     output.serialize("filled", filled);
+    output.serialize("object", object);
     output.serialize("collection", collection);
   }
   {
     boost::optional<int> empty;
     boost::optional<int> filled;
+    boost::optional<Point> object;
     boost::optional<std::vector<int>> collection;
     typename Format::SerializerIn input(stream);
     input.serialize("empty", empty);
     input.serialize("filled", filled);
+    input.serialize("object", object);
     input.serialize("collection", collection);
     BOOST_CHECK(!empty);
+    BOOST_REQUIRE(filled);
     BOOST_CHECK_EQUAL(filled.get(), 42);
+    BOOST_REQUIRE(object);
+    BOOST_CHECK_EQUAL(object->x(), 1);
+    BOOST_CHECK_EQUAL(object->y(), 2);
+    BOOST_REQUIRE(collection);
     BOOST_CHECK_EQUAL(collection.get(), std::vector<int>({0, 1, 2}));
   }
 }

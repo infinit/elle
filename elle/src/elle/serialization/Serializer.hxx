@@ -402,6 +402,18 @@ namespace elle
                                                std::string const& name,
                                                boost::optional<T>& opt)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      static_assert(is_unserializable_inplace<T>(), "");
+      // FIXME: factor reading version
+      // FIXME: use that version
+      if (self.versioned())
+      {
+        auto version = _details::version_tag<T>(self.versions());
+        {
+          ELLE_TRACE_SCOPE("serialize version: %s", version);
+          self.serialize(".version", version);
+        }
+      }
       opt.emplace(static_cast<SerializerIn&>(self));
     }
 
