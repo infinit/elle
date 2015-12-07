@@ -402,9 +402,8 @@ namespace elle
                                                std::string const& name,
                                                boost::optional<T>& opt)
     {
-      T value;
-      self._serialize_anonymous(name, value);
-      opt = std::move(value);
+      opt.emplace();
+      self._serialize_anonymous(name, *opt);
     }
 
     template <typename T>
