@@ -317,18 +317,27 @@ unique_ptr()
   {
     std::unique_ptr<int> empty;
     std::unique_ptr<int> filled(new int(42));
+    std::unique_ptr<Point> object(new Point(1, 2));
     typename Format::SerializerOut output(stream);
     output.serialize("empty", empty);
     output.serialize("filled", filled);
+    output.serialize("object", object);
   }
+  ELLE_LOG("serialized: %s", elle::ConstWeakBuffer(stream.str()));
   {
     std::unique_ptr<int> empty;
     std::unique_ptr<int> filled;
+    std::unique_ptr<Point> object;
     typename Format::SerializerIn input(stream);
     input.serialize("empty", empty);
     input.serialize("filled", filled);
+    input.serialize("object", object);
     BOOST_CHECK(!empty);
+    BOOST_REQUIRE(filled);
     BOOST_CHECK_EQUAL(*filled, 42);
+    BOOST_REQUIRE(object);
+    BOOST_CHECK_EQUAL(object->x(), 1);
+    BOOST_CHECK_EQUAL(object->y(), 2);
   }
 }
 

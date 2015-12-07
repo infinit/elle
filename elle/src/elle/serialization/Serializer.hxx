@@ -158,19 +158,40 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-        ELLE_DEBUG_SCOPE("%s: deserialize virtual key %s of type %s",
-                         s, name, type_info<T>());
-        auto const& map = Hierarchy<T>::_map();
-        std::string type_name;
-        s.serialize(T::virtually_serializable_key, type_name);
-        ELLE_DUMP("%s: type: %s", s, type_name);
-        auto it = map.find(type_name);
-        if (it == map.end())
-          throw Error(elle::sprintf("unknown deserialization type: \"%s\"",
-                                    type_name));
-        _details::_set_ptr(
-          ptr, it->second(static_cast<SerializerIn&>(s)).release());
+        if (s.out())
+        {
+          ELLE_ASSERT(bool(ptr));
+          auto id = elle::type_info(*ptr);
+          auto const& map = Hierarchy<T>::_rmap();
+          auto it = map.find(id);
+          if (it == map.end())
+          {
+            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+            auto message =
+              elle::sprintf("unknown serialization type: %s", id);
+            ELLE_WARN("%s", message);
+            throw Error(message);
+          }
+          auto type_name = it->second;
+          s.serialize(T::virtually_serializable_key, type_name);
+          s.serialize_object(name, *ptr);
+        }
+        else
+        {
+          ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+          ELLE_DEBUG_SCOPE("%s: deserialize virtual key %s of type %s",
+                           s, name, type_info<T>());
+          auto const& map = Hierarchy<T>::_map();
+          std::string type_name;
+          s.serialize(T::virtually_serializable_key, type_name);
+          ELLE_DUMP("%s: type: %s", s, type_name);
+          auto it = map.find(type_name);
+          if (it == map.end())
+            throw Error(elle::sprintf("unknown deserialization type: \"%s\"",
+                                      type_name));
+          _details::_set_ptr(
+            ptr, it->second(static_cast<SerializerIn&>(s)).release());
+        }
       }
 
       template <typename P, typename T>
@@ -184,7 +205,10 @@ namespace elle
         std::string const& name,
         P& ptr)
       {
-        _smart_emplace_switch<P, T>(s, name, ptr);
+        if (s.in())
+          _smart_emplace_switch<P, T>(s, name, ptr);
+        else
+          s._serialize_anonymous(name, *ptr);
       }
 
       // Serialize boost::optionals and smart pointers
@@ -211,34 +235,7 @@ namespace elle
     namespace
     {
       template <typename T>
-      typename std::enable_if<std::is_base_of<VirtuallySerializable, T>::value, void>::type
-      _serialize_switch(
-        Serializer& s,
-        std::string const& name,
-        T& obj,
-        ELLE_SFINAE_IF_WORKS(obj.serialize(ELLE_SFINAE_INSTANCE(Serializer))))
-      {
-        if (s.out())
-        {
-          auto id = type_info(obj);
-          auto const& map = Hierarchy<T>::_rmap();
-          auto it = map.find(id);
-          if (it == map.end())
-          {
-            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-            auto message =
-              elle::sprintf("unknown serialization type: %s", id);
-            ELLE_WARN("%s", message);
-            throw Error(message);
-          }
-          auto type_name = it->second;
-          s.serialize(T::virtually_serializable_key, type_name);
-        }
-        s.serialize_object(name, obj);
-      }
-
-      template <typename T>
-      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      void
       _serialize_switch(
         Serializer& s,
         std::string const& name,
@@ -249,7 +246,7 @@ namespace elle
       }
 
       template <typename T>
-      typename std::enable_if<!std::is_base_of<VirtuallySerializable, T>::value, void>::type
+      void
       _serialize_switch(
         Serializer& s,
         std::string const& name,
@@ -340,6 +337,13 @@ namespace elle
         elle::SafeFinally leave([&] { this->_leave(name); });
         this->_serialize_anonymous(name, v);
       }
+    }
+
+    template <typename T>
+    void
+    Serializer::_serialize_anonymous(std::string const& name, T& v)
+    {
+      _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
     /*------------------------------------.
@@ -434,14 +438,8 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::unique_ptr<T>& ptr)
     {
-      if (this->_out())
-      {
-        ELLE_ASSERT(bool(ptr));
-        this->_serialize_anonymous(name, *ptr);
-      }
-      else
-        Details::_smart_virtual_switch<std::unique_ptr<T>, T>
-          (*this, "SERIALIZE ANONYMOUS", ptr);
+      Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+        (*this, "SERIALIZE ANONYMOUS", ptr);
     }
 
     // std::shared_ptr
@@ -460,14 +458,8 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name,
                                      std::shared_ptr<T>& ptr)
     {
-      if (this->_out())
-      {
-        ELLE_ASSERT(bool(ptr));
-        this->_serialize_anonymous(name, *ptr);
-      }
-      else
-        Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-          (*this, "SERIALIZE ANONYMOUS", ptr);
+      Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+        (*this, "SERIALIZE ANONYMOUS", ptr);
     }
 
     // Raw pointers
@@ -486,13 +478,7 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name,
                                      T*& ptr)
     {
-      if (this->_out())
-      {
-        ELLE_ASSERT(bool(ptr));
-        this->_serialize_anonymous(name, *ptr);
-      }
-      else
-        Details::_smart_virtual_switch<T*, T>(*this, name, ptr);
+      Details::_smart_virtual_switch<T*, T>(*this, name, ptr);
     }
 
     // ---
@@ -727,13 +713,6 @@ namespace elle
                               T& v)
     {
       this->_serialize(name, v);
-    }
-
-    template <typename T>
-    void
-    Serializer::_serialize_anonymous(std::string const& name, T& v)
-    {
-      _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
     template <typename C>
