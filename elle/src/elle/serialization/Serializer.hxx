@@ -270,23 +270,32 @@ namespace elle
       }
 
       template <typename T>
-      typename std::conditional<true, void, typename Serialize<T>::Type>::type
-      _serialize_switch(
-        Serializer& s,
-        std::string const& name,
-        T& v,
-        ELLE_SFINAE_IF_POSSIBLE())
+      typename std::enable_if_exists<typename Serialize<T>::Type, void>::type
+      _serialize_switch(Serializer& s,
+                        std::string const& name,
+                        T& v,
+                        ELLE_SFINAE_IF_POSSIBLE())
       {
-        s.serialize_with_struct_serialize(name, v, true);
+        typedef typename Serialize<T>::Type Type;
+        if (s.out())
+        {
+          Type value(Serialize<T>::convert(v));
+          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
+        }
+        else
+        {
+          Type value;
+          _serialize_switch<Type>(s, name, value, ELLE_SFINAE_TRY());
+          v = Serialize<T>::convert(value);
+        }
       }
 
       template <typename T>
-      typename std::conditional<true, void, typename Serialize<T>::Wrapper>::type
-      _serialize_switch(
-        Serializer& s,
-        std::string const& name,
-        T& v,
-        ELLE_SFINAE_IF_POSSIBLE())
+      typename std::enable_if_exists<typename Serialize<T>::Wrapper, void>::type
+      _serialize_switch(Serializer& s,
+                        std::string const& name,
+                        T& v,
+                        ELLE_SFINAE_IF_POSSIBLE())
       {
         typedef typename Serialize<T>::Wrapper Wrapper;
         Wrapper wrapper(v);
@@ -481,48 +490,6 @@ namespace elle
     }
 
     // ---
-
-    template<typename T>
-    void
-    Serializer::serialize_with_struct_serialize(
-      std::string const& name,
-      T& v,
-      bool anonymous)
-    {
-      typedef typename Serialize<T>::Type Type;
-      if (anonymous)
-      {
-        if (this->out())
-        {
-          Type value(Serialize<T>::convert(v));
-          _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
-        }
-        else
-        {
-          Type value;
-          _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
-          v = Serialize<T>::convert(value);
-        }
-      }
-      else
-      {
-        if (this->_enter(name))
-        {
-          elle::SafeFinally leave([&] { this->_leave(name); });
-          if (this->out())
-          {
-            Type value(Serialize<T>::convert(v));
-            _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
-          }
-          else
-          {
-            Type value;
-            _serialize_switch<Type>(*this, name, value, ELLE_SFINAE_TRY());
-            v = Serialize<T>::convert(value);
-          }
-        }
-      }
-    }
 
     template <typename K, typename V, typename ... Rest>
     void
