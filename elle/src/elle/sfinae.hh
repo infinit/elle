@@ -3,6 +3,8 @@
 
 # include <cstddef>
 
+# include <boost/preprocessor/cat.hpp>
+
 namespace elle
 {
   namespace sfinae
@@ -27,5 +29,30 @@ namespace elle
 
 # define ELLE_SFINAE_INSTANCE(Type)             \
   (*reinterpret_cast<typename std::remove_reference<Type>::type*>((void*)(0)))
+
+# define ELLE_STATIC_PREDICATE(Name, Test)                              \
+  template <typename T>                                                 \
+  inline constexpr                                                      \
+  typename std::enable_if_exists<Test, bool>::type                      \
+  BOOST_PP_CAT(_, Name)(int)                                            \
+  {                                                                     \
+    return true;                                                        \
+  }                                                                     \
+                                                                        \
+  template <typename T>                                                 \
+  inline constexpr                                                      \
+  bool                                                                  \
+  BOOST_PP_CAT(_, Name)(...)                                            \
+  {                                                                     \
+    return false;                                                       \
+  }                                                                     \
+                                                                        \
+  template <typename T>                                                 \
+  inline constexpr                                                      \
+  bool                                                                  \
+  Name()                                                                \
+  {                                                                     \
+    return BOOST_PP_CAT(_, Name)<T>(42);                                \
+  }                                                                     \
 
 #endif

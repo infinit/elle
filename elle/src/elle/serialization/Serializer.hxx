@@ -21,30 +21,15 @@ namespace elle
 
     namespace _details
     {
-      template <typename T>
-      inline constexpr
-      typename std::enable_if_exists<decltype(T::serialization_tag::version),
-                                     bool>::type
-      _has_version_tag(int)
-      {
-        return true;
-      }
-
-      template <typename T>
-      inline constexpr
-      bool
-      _has_version_tag(...)
-      {
-        return false;
-      }
-
-      template <typename T>
-      inline constexpr
-      bool
-      has_version_tag()
-      {
-        return _has_version_tag<T>(42);
-      }
+      ELLE_STATIC_PREDICATE(
+        has_version_tag,
+        decltype(T::serialization_tag::version));
+      ELLE_STATIC_PREDICATE(
+        has_serialize_convert_api,
+        typename elle::serialization::Serialize<T>::Type);
+      ELLE_STATIC_PREDICATE(
+        has_serialize_wrapper_api,
+        typename elle::serialization::Serialize<T>::Wrapper);
 
       template <typename T>
       typename std::enable_if<has_version_tag<T>(), elle::Version>::type
@@ -235,42 +220,36 @@ namespace elle
     namespace
     {
       template <typename T>
-      void
+      typename std::enable_if_exists<
+        decltype(std::declval<T>().serialize(std::declval<Serializer&>())),
+        void>::type
       _serialize_switch(
         Serializer& s,
         std::string const& name,
         T& obj,
-        ELLE_SFINAE_IF_WORKS(obj.serialize(ELLE_SFINAE_INSTANCE(Serializer))))
+        ELLE_SFINAE_IF_POSSIBLE())
       {
         s.serialize_object(name, obj);
       }
 
       template <typename T>
-      void
+      typename std::enable_if_exists<
+        decltype(std::declval<T>().serialize(
+                   std::declval<Serializer&>(),
+                   std::declval<elle::Version const&>())),
+        void>::type
       _serialize_switch(
         Serializer& s,
         std::string const& name,
         T& obj,
-        ELLE_SFINAE_IF_WORKS(
-          obj.serialize(ELLE_SFINAE_INSTANCE(Serializer),
-                        ELLE_SFINAE_INSTANCE(elle::Version))))
+        ELLE_SFINAE_IF_POSSIBLE())
       {
         s.serialize_object(name, obj);
       }
 
       template <typename T>
-      void
-      _serialize_switch(
-        Serializer& s,
-        std::string const& name,
-        T& v,
-        ELLE_SFINAE_OTHERWISE())
-      {
-        s.serialize_pod(name, v);
-      }
-
-      template <typename T>
-      typename std::enable_if_exists<typename Serialize<T>::Type, void>::type
+      typename std::enable_if<
+        _details::has_serialize_convert_api<T>(), void>::type
       _serialize_switch(Serializer& s,
                         std::string const& name,
                         T& v,
@@ -291,7 +270,8 @@ namespace elle
       }
 
       template <typename T>
-      typename std::enable_if_exists<typename Serialize<T>::Wrapper, void>::type
+      typename std::enable_if<
+        _details::has_serialize_wrapper_api<T>(), void>::type
       _serialize_switch(Serializer& s,
                         std::string const& name,
                         T& v,
@@ -300,6 +280,17 @@ namespace elle
         typedef typename Serialize<T>::Wrapper Wrapper;
         Wrapper wrapper(v);
         _serialize_switch<Wrapper>(s, name, wrapper, ELLE_SFINAE_TRY());
+      }
+
+      template <typename T>
+      void
+      _serialize_switch(
+        Serializer& s,
+        std::string const& name,
+        T& v,
+        ELLE_SFINAE_OTHERWISE())
+      {
+        s.serialize_pod(name, v);
       }
 
       template <typename T>
@@ -511,8 +502,8 @@ namespace elle
       Serializer& s,
       T& object,
       std::function<elle::Version ()> version,
-      ELLE_SFINAE_IF_WORKS(object.serialize(ELLE_SFINAE_INSTANCE(Serializer),
-                                            elle::Version())))
+      ELLE_SFINAE_IF_WORKS(object.serialize(std::declval<Serializer&>(),
+                                            std::declval<Version const&>())))
     {
       object.serialize(s, version());
     }
