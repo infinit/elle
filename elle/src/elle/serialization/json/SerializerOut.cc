@@ -62,12 +62,12 @@ namespace elle
         auto& current = *this->_current.back();
         if (current.empty())
         {
-          ELLE_DEBUG("%s: create object (enter)", *this);
+          ELLE_DEBUG("create object");
           current = elle::json::Object();
         }
         if (current.type() == typeid(elle::json::Object))
         {
-          ELLE_DEBUG("%s: insert key", *this);
+          ELLE_DEBUG_SCOPE("insert key");
           auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
@@ -78,7 +78,7 @@ namespace elle
         }
         else if (current.type() == typeid(elle::json::Array))
         {
-          ELLE_DEBUG("%s: insert array element", *this);
+          ELLE_DEBUG_SCOPE("insert array element");
           auto& array = boost::any_cast<elle::json::Array&>(current);
           array.emplace_back();
           this->_current.push_back(&array.back());
@@ -125,6 +125,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, int64_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -132,6 +133,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, uint64_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -139,6 +141,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, int32_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -146,6 +149,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, uint32_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -153,6 +157,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, int16_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -160,6 +165,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, uint16_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = v;
       }
@@ -167,6 +173,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, int8_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = int(v);
       }
@@ -174,6 +181,7 @@ namespace elle
       void
       SerializerOut::_serialize(std::string const& name, uint8_t& v)
       {
+        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\": %s", *this, name, v);
         auto& current = this->_get_current();
         current = int(v);
       }
