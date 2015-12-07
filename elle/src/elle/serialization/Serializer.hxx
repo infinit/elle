@@ -70,12 +70,6 @@ namespace elle
       typename std::enable_if<!has_version_tag<T>(), elle::Version>::type
       version_tag(boost::optional<Serializer::Versions> const& versions)
       {
-        if (versions)
-        {
-          auto it = versions->find(type_info<typename T::serialization_tag>());
-          if (it != versions->end())
-            return it->second;
-        }
         throw elle::Error(elle::sprintf("no serialization version tag for %s",
                                         elle::type_info<T>().name()));
       }
