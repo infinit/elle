@@ -1,0 +1,47 @@
+digraph G {
+serialize;
+{
+rank = same;
+serialize_def [shape=box, label="serialize(T&)"];
+serialize_opt [shape=box, label="serialize(boost::optional<T>&)\n
+serialize(std::unique_ptr<T>&)\n
+serialize(std::shared_ptr<T>&)\n
+serialize(T*&)"];
+}
+serialize -> serialize_def;
+serialize -> serialize_opt;
+{
+rank = same;
+_serialize_option [shape=box, label="_serialize_option", color=red];
+skip;
+_serialize_option->skip;
+}
+serialize_opt-> _serialize_option;
+serialize_anonymous;
+serialize_def -> serialize_anonymous;
+_serialize_option -> serialize_anonymous;
+serialize_anonymous_def [shape=box, label="serialize_anonymous(T&)"];
+serialize_anonymous_optional [shape=box, label="serialize_anonymous(boost::optional<T>&)"];
+serialize_anonymous_ptr [shape=box, label="serialize_anonymous(std::unique_ptr<T>&)\n
+serialize_anonymous(std::shared_ptr<T>&)\n
+serialize_anonymous(T*&)"];
+serialize_anonymous -> serialize_anonymous_def;
+serialize_anonymous -> serialize_anonymous_optional;
+serialize_anonymous -> serialize_anonymous_ptr;
+serialize_anonymous_optional -> serialize_anonymous;
+leaf_ctor [shape=box, label="T(SerializerIn&)"];
+serialize_anonymous_optional -> leaf_ctor [label="in"];
+serialize_switch;
+serialize_anonymous_def -> serialize_switch;
+leaf_serialize [shape=box, label="T::serialize(Serializer&)"];
+leaf_pod [shape=box, label="POD"];
+leaf_struct [shape=box, label="struct Serialize"];
+serialize_switch -> leaf_serialize;
+serialize_switch -> leaf_pod;
+serialize_switch -> leaf_struct;
+smart_virtual_switch [shape=box];
+serialize_anonymous_ptr -> smart_virtual_switch;
+smart_virtual_switch -> serialize_anonymous;
+smart_virtual_switch -> leaf_ctor;
+smart_virtual_switch -> leaf_serialize;
+}
