@@ -170,6 +170,26 @@ namespace elle
       {
         _smart_emplace_switch<P, T>(s, name, ptr);
       }
+
+      // Serialize boost::optionals and smart pointers
+      template <typename T>
+      static
+      void
+      serialize_option(Serializer& self, std::string const& name, T& opt);
+
+      // Deserialize a boost::optional, using emplace if possible.
+      template <typename T>
+      static
+      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
+      deserialize_in_option(Serializer& self,
+                            std::string const& name,
+                            boost::optional<T>& opt);
+      template <typename T>
+      static
+      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
+      deserialize_in_option(SerializerIn& self,
+                            std::string const& name,
+                            boost::optional<T>& opt);
     };
 
     namespace
@@ -306,23 +326,27 @@ namespace elle
       }
     }
 
-    // boost::optional
+    /*------------------------------------.
+    | Serialization: Options and pointers |
+    `------------------------------------*/
 
     template <typename T>
+
     void
-    Serializer::serialize(std::string const& name, boost::optional<T>& opt)
+    Serializer::Details::serialize_option(Serializer& self,
+                                          std::string const& name,
+                                          T& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
       bool filled = false;
-      this->_serialize_option(
+      self._serialize_option(
         name,
         bool(opt),
         [&]
         {
-          ELLE_ENFORCE(this->_enter(name));
-          elle::SafeFinally leave([&] { this->_leave(name); });
-          this->_serialize_anonymous(name, opt);
+          ELLE_ENFORCE(self._enter(name));
+          elle::SafeFinally leave([&] { self._leave(name); });
+          self._serialize_anonymous(name, opt);
           filled = true;
         });
       if (!filled && opt)
@@ -332,28 +356,35 @@ namespace elle
       }
     }
 
-    namespace _details
-    {
-      template <typename T>
-      typename std::enable_if<is_unserializable_inplace<T>(), void>::type
-      deserialize_in_option(Serializer& s,
-                             std::string const& name,
-                             boost::optional<T>& opt)
-      {
-        opt.emplace(static_cast<SerializerIn&>(s));
-      }
+    // boost::optional
 
-      template <typename T>
-      typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
-      deserialize_in_option(
-        SerializerIn& s,
-        std::string const& name,
-        boost::optional<T>& opt)
-      {
-        T value;
-        s._serialize_anonymous(name, value);
-        opt = std::move(value);
-      }
+    template <typename T>
+    void
+    Serializer::serialize(std::string const& name, boost::optional<T>& opt)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
+      Details::serialize_option(*this, name, opt);
+    }
+
+    template <typename T>
+    typename std::enable_if<is_unserializable_inplace<T>(), void>::type
+    Serializer::Details::deserialize_in_option(Serializer& self,
+                                               std::string const& name,
+                                               boost::optional<T>& opt)
+    {
+      opt.emplace(static_cast<SerializerIn&>(self));
+    }
+
+    template <typename T>
+    typename std::enable_if<!is_unserializable_inplace<T>(), void>::type
+    Serializer::Details::deserialize_in_option(SerializerIn& self,
+                                               std::string const& name,
+                                               boost::optional<T>& opt)
+    {
+      T value;
+      self._serialize_anonymous(name, value);
+      opt = std::move(value);
     }
 
     template <typename T>
@@ -367,7 +398,7 @@ namespace elle
         this->_serialize_anonymous(name, *opt);
       }
       else
-        _details::deserialize_in_option(
+        Details::deserialize_in_option(
           *static_cast<SerializerIn*>(this), name, opt);
     }
 
@@ -379,22 +410,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize unique pointer \"%s\"", *this, name);
-      bool filled = false;
-      this->_serialize_option(
-        name,
-        bool(opt),
-        [&]
-        {
-          ELLE_ENFORCE(this->_enter(name));
-          elle::SafeFinally leave([&] { this->_leave(name); });
-          this->_serialize_anonymous(name, opt);
-          filled = true;
-          });
-      if (!filled && opt)
-      {
-        ELLE_DEBUG("reset pointer");
-        opt.reset();
-      }
+      Details::serialize_option(*this, name, opt);
     }
 
     template <typename T>
@@ -420,22 +436,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize shared pointer \"%s\"", *this, name);
-      bool filled = false;
-      this->_serialize_option(
-        name,
-        bool(opt),
-        [&]
-        {
-          ELLE_ENFORCE(this->_enter(name));
-          elle::SafeFinally leave([&] { this->_leave(name); });
-          this->_serialize_anonymous(name, opt);
-          filled = true;
-        });
-      if (!filled && opt)
-      {
-        ELLE_DEBUG("reset pointer");
-        opt.reset();
-      }
+      Details::serialize_option(*this, name, opt);
     }
 
     template <typename T>

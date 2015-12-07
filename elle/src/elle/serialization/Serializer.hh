@@ -184,6 +184,7 @@ namespace elle
       set_context(Context const& context);
       ELLE_ATTRIBUTE_R(Context, context);
 
+    protected:
       virtual
       bool
       _enter(std::string const& name);
