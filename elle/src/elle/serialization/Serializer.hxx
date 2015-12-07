@@ -1066,18 +1066,10 @@ namespace elle
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s)
             {
-              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              // FIXME: factor reading version
-              // FIXME: use that version
-              if (s.versioned())
-              {
-                auto version = _details::version_tag<T>(s.versions());
-                {
-                  ELLE_TRACE_SCOPE("serialize version: %s", version);
-                  s.serialize(".version", version);
-                }
-              }
-              return elle::make_unique<U>(s);
+              std::unique_ptr<U> p;
+              Serializer::Details::
+                _smart_emplace_switch<std::unique_ptr<U>, U>(s, "", p);
+              return p;
             };
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
