@@ -1334,30 +1334,6 @@ namespace elle
       return res;
     }
 
-    template <typename T>
-    constexpr
-    typename std::enable_if_exists<typename T::serialization_tag, bool>::type
-    _has_serialization_tag(int)
-    {
-      return true;
-    }
-
-    template <typename T>
-    constexpr
-    bool
-    _has_serialization_tag(...)
-    {
-      return false;
-    }
-
-    template <typename T>
-    constexpr
-    bool
-    has_serialization_tag()
-    {
-      return _has_serialization_tag<T>(42);
-    }
-
     template <typename T, bool has>
     struct _forward_serialization_tag
     {
@@ -1370,7 +1346,7 @@ namespace elle
 
     template <typename T>
     struct forward_serialization_tag
-      : public _forward_serialization_tag<T, has_serialization_tag<T>()>
+      : public _forward_serialization_tag<T, _details::has_version_tag<T>()>
     {};
   }
 }
