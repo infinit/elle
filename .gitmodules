@@ -21,4 +21,4 @@
 	url = git@git.infinit.io:libutp
 [submodule "reactor/osxfuse"]
 	path = reactor/osxfuse
-	url = https://github.com/infinit/osxfuse
+	url = https://github.com/osxfuse/osxfuse
