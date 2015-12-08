@@ -55,8 +55,10 @@ namespace elle
       typename std::enable_if<!has_version_tag<T>(), elle::Version>::type
       version_tag(boost::optional<Serializer::Versions> const& versions)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_WARN("no serialization version tag for %s", elle::type_info<T>());
         throw elle::Error(elle::sprintf("no serialization version tag for %s",
-                                        elle::type_info<T>().name()));
+                                        elle::type_info<T>()));
       }
 
       // option_reset: reset boost::optional, smart pointers and raw pointers
@@ -334,6 +336,9 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize \"%s\"", *this, name);
+      static_assert(
+        !std::is_base_of<VirtuallySerializable, T>::value,
+        "serialize VirtuallySerializable objects through a pointer type");
       if (this->_enter(name))
       {
         elle::SafeFinally leave([&] { this->_leave(name); });
@@ -345,6 +350,9 @@ namespace elle
     void
     Serializer::_serialize_anonymous(std::string const& name, T& v)
     {
+      static_assert(
+        !std::is_base_of<VirtuallySerializable, T>::value,
+        "serialize VirtuallySerializable objects through a pointer type");
       _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
 
@@ -462,7 +470,8 @@ namespace elle
     Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize shared pointer \"%s\"", *this, name);
+      ELLE_TRACE_SCOPE("%s: serialize shared pointer to %s \"%s\"",
+                       *this, elle::type_info<T>(), name);
       Details::serialize_option(*this, name, opt);
     }
 
@@ -1081,12 +1090,15 @@ namespace elle
         }
       };
 
+      typedef
+        std::unordered_map<std::string,
+                           std::function<std::unique_ptr<T>(SerializerIn&)>>
+        TypeMap;
       static
-      std::unordered_map<std::string,
-                         std::function<std::unique_ptr<T>(SerializerIn&)>>&
+      TypeMap&
       _map()
       {
-        static std::unordered_map<std::string, std::function<std::unique_ptr<T>(SerializerIn&)>> res;
+        static TypeMap res;
         return res;
       }
 
