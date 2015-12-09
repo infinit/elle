@@ -76,63 +76,80 @@ test_greater_equal(int maj1, int min1, int submin1,
   BOOST_CHECK_EQUAL((first >= second), result);
 }
 
+static
+std::size_t
+h(elle::Version const& v)
+{
+  return std::hash<elle::Version>()(v);
+}
+
+static
+void
+hash()
+{
+  BOOST_CHECK_EQUAL(h({1, 2, 3}), h({1, 2, 3}));
+  BOOST_CHECK_NE(h({1, 2, 3}), h({3, 2, 1}));
+}
+
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
-  boost::unit_test::framework::master_test_suite().add(basics);
+  auto& suite = boost::unit_test::framework::master_test_suite();
 
   // Default value
-  basics->add(BOOST_TEST_CASE(std::bind(test_default)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_default)));
 
   // == tests
-  basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 2, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 3, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 2, 4, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 4, 5, 6, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 2, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 3, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 1, 2, 4, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_equal, 1, 2, 3, 4, 5, 6, false)));
 
   // != tests
-  basics->add(BOOST_TEST_CASE(std::bind(test_not_equal, 1, 2, 3, 3, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_not_equal, 1, 2, 3, 1, 3, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_not_equal, 3, 2, 1, 3, 2, 1, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_not_equal, 1, 2, 3, 3, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_not_equal, 1, 2, 3, 1, 3, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_not_equal, 3, 2, 1, 3, 2, 1, false)));
 
   // < tests
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 2, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 3, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 4, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 0, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 1, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 2, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 1, 4, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 2, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 3, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 4, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 0, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 1, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 2, 2, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less, 1, 2, 3, 1, 1, 4, false)));
 
   // <= tests (same as less than, except for equal case)
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 2, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 3, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 4, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 0, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 1, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 2, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 1, 4, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 2, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 3, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 4, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 0, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 1, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 2, 2, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_less_equal, 1, 2, 3, 1, 1, 4, false)));
 
   // > tests (opposite of <, except for equal case)
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 2, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 3, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 4, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 0, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 1, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 2, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 1, 4, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 2, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 3, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 4, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 0, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 1, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 2, 2, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater, 1, 2, 3, 1, 1, 4, true)));
 
   // >= tests (same results as >, except for equal case)
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 2, 2, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 3, 3, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 4, false)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 0, 2, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 1, 3, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 2, true)));
-  basics->add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 1, 4, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 2, 2, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 3, 3, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 4, false)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 0, 2, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 1, 3, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 2, 2, true)));
+  suite.add(BOOST_TEST_CASE(std::bind(test_greater_equal, 1, 2, 3, 1, 1, 4, true)));
+
+  // hashing
+  suite.add(BOOST_TEST_CASE(hash));
 }

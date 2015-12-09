@@ -55,10 +55,10 @@ namespace elle
   /*-----------.
   | Attributes |
   `-----------*/
-  private:
-    ELLE_ATTRIBUTE(elle::Natural8, major);
-    ELLE_ATTRIBUTE(elle::Natural8, minor);
-    ELLE_ATTRIBUTE(elle::Natural8, subminor);
+  public:
+    ELLE_ATTRIBUTE_R(elle::Natural8, major);
+    ELLE_ATTRIBUTE_R(elle::Natural8, minor);
+    ELLE_ATTRIBUTE_R(elle::Natural8, subminor);
 
   /*--------------.
   | Serialization |
@@ -66,6 +66,21 @@ namespace elle
   public:
     void
     serialize(elle::serialization::Serializer& s);
+  };
+}
+
+/*-----.
+| Hash |
+`-----*/
+
+namespace std
+{
+  template <>
+  class hash<elle::Version>
+  {
+  public:
+    std::size_t
+    operator()(elle::Version const& version) const;
   };
 }
 

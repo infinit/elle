@@ -99,3 +99,20 @@ namespace elle
     }
   }
 }
+
+/*-----.
+| Hash |
+`-----*/
+
+
+namespace std
+{
+  std::size_t
+  hash<elle::Version>::operator()(elle::Version const& version) const
+  {
+    return
+      (std::size_t(version.major()) << 16) |
+      (std::size_t(version.minor()) << 8) |
+      (std::size_t(version.subminor()));
+  }
+}
