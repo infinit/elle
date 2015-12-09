@@ -222,6 +222,14 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize_named_option(std::string const&,
+                                       bool,
+                                       std::function<void ()> const& f)
+      {
+        f();
+      }
+
+      void
       SerializerOut::_serialize_option(std::string const& name,
                                        bool filled,
                                        std::function<void ()> const& f)

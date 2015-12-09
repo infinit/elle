@@ -130,14 +130,22 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize_named_option(std::string const& name,
+                                            bool,
+                                            std::function<void ()> const& f)
+      {
+        f();
+      }
+
+      void
       SerializerIn::_serialize_option(std::string const& name,
                                       bool,
                                       std::function<void ()> const& f)
       {
         ELLE_TRACE_SCOPE("%s: deserialize option \"%s\"", *this, name);
-        bool isOn;
-        _serialize(name, isOn);
-        if (isOn)
+        bool filled;
+        this->_serialize(name, filled);
+        if (filled)
           f();
       }
 

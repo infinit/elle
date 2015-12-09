@@ -154,18 +154,27 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize_named_option(std::string const& name,
+                                            bool,
+                                            std::function<void ()> const& f)
+      {
+        auto& object = this->_check_type<elle::json::Object>(name);
+        auto it = object.find(name);
+        if (it != object.end())
+          f();
+        else
+          ELLE_DEBUG("skip option as JSON key is missing");
+      }
+
+      void
       SerializerIn::_serialize_option(std::string const& name,
                                       bool,
                                       std::function<void ()> const& f)
       {
-        auto& object = this->_check_type<elle::json::Object>(name);
-        auto it = object.find(name);
-        if (it == object.end())
-          ELLE_DEBUG("skip option as JSON key is missing");
-        else if (it->second.type() == typeid(elle::json::NullType))
-          ELLE_DEBUG("skip option as JSON value is null");
-        else
+        if (this->_current.back()->type() != typeid(elle::json::NullType))
           f();
+        else
+          ELLE_DEBUG("skip option as JSON value is null");
       }
 
       void

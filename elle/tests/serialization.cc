@@ -205,11 +205,13 @@ public:
     s.serialize("ints", this->ints);
     s.serialize("strings", this->strings);
     s.serialize("empty", this->empty);
+    s.serialize("options", this->options);
   }
 
   Container<int, std::allocator<int>> ints;
   Container<std::string, std::allocator<std::string>> strings;
   Container<int, std::allocator<int>> empty;
+  Container<boost::optional<int>, std::allocator<boost::optional<int>>> options;
 };
 
 template <typename Format, template <typename, typename> class Container>
@@ -223,6 +225,7 @@ collection()
     Lists<Container> l;
     l.ints = {0, 1, 2};
     l.strings = {"foo", "bar", "baz"};
+    l.options = {{42}, {}};
     l.serialize(output);
   }
   {
@@ -233,6 +236,11 @@ collection()
     BOOST_CHECK_EQUAL(l.strings,
                       (Container<std::string, std::allocator<std::string>>
                       {"foo", "bar", "baz"}));
+    BOOST_CHECK(l.empty.empty());
+    BOOST_CHECK_EQUAL(
+      l.options,
+      (Container<boost::optional<int>, std::allocator<boost::optional<int>>>
+      {{42}, {}}));
   }
 }
 
@@ -827,12 +835,12 @@ namespace versioning
   //     Version, elle::serialization::Serializer::Versions> dependencies;
   // };
   // Version serialization::version(0, 2, 0);
-  // std::unordered_map<
-  //   Version, elle::serialization::Serializer::Versions>
-  //   serialization::dependencies{
-  //   {Version(0, 2, 0), {{type_info<lib::serialization>()}, Version(0, 3, 0)}},
-  //   {Version(0, 1, 0), {{type_info<lib::serialization>()}, Version(0, 1, 0)}},
-  // };
+  // std::unordered_map<Version, elle::serialization::Serializer::Versions>
+  //   serialization::dependencies
+  //   {
+  //     {Version(0, 2, 0), {{type_info<lib::serialization>(), Version(0, 3, 0)}}},
+  //     {Version(0, 1, 0), {{type_info<lib::serialization>(), Version(0, 1, 0)}}},
+  //   };
 
   // template <typename Format>
   // static

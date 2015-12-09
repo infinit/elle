@@ -235,12 +235,23 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize_named_option(std::string const& name,
+                                             bool filled,
+                                             std::function<void ()> const& f)
+      {
+        if (filled)
+          f();
+      }
+
+      void
       SerializerOut::_serialize_option(std::string const& name,
                                        bool filled,
                                        std::function<void ()> const& f)
       {
         if (filled)
           f();
+        else
+          *this->_current.back() = elle::json::NullType();
       }
 
       boost::any&
