@@ -363,7 +363,7 @@ namespace infinit
                seed.length(),
                static_cast<unsigned char const*>(seed.buffer().contents()),
                seed.buffer().size())) == nullptr)
-          raise("unable to deduce the RSA key from the given seed");
+          _details::raise("unable to deduce the RSA key from the given seed");
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
         // Extract the public key
         RSA* pub = low::RSA_priv2pub(rsa);
@@ -372,7 +372,7 @@ namespace infinit
       }
 
       PublicKey::PublicKey(Seed const& seed)
-        : PublicKey(build_evp(rsa_from_seed(seed)))
+        : PublicKey(_details::build_evp(rsa_from_seed(seed)).release())
       {}
 
       Seed

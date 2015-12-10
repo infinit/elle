@@ -421,7 +421,7 @@ namespace infinit
         // Note that in these cases, using no RSA padding is not dangerous
         // because (1) the content being rotated is always random (2) the
         // content is always the size of the RSA key's modulus.
-        elle::Buffer buffer = raw::asymmetric::rotate(this->_key.get()
+        elle::Buffer buffer = raw::asymmetric::rotate(this->_key.get(),
                                                       seed.buffer());
 
         return (Seed(buffer, seed.length()));
