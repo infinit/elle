@@ -11,8 +11,9 @@ namespace elle
     {}
 
     SerializerIn::SerializerIn(std::istream& input,
-                               Versions versions)
-      : Super(std::move(versions))
+                               Versions versions,
+                               bool versioned)
+      : Super(std::move(versions), versioned)
       , _input(input)
     {}
   }

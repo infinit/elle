@@ -1090,6 +1090,20 @@ namespace elle
 
     template <typename Serialization, typename T>
     T
+    deserialize(std::istream& input,
+                elle::Version const& version,
+                bool versioned,
+                boost::optional<Context const&> context = {})
+    {
+      typename Serialization::SerializerIn s(
+        input, T::serialization_tag::dependencies.at(version), versioned);
+      if (context)
+        s.set_context(context.get());
+      return s.template deserialize<T>();
+    }
+
+    template <typename Serialization, typename T>
+    T
     deserialize(std::istream& input, bool version = true,
                 boost::optional<Context const&> context = {})
     {
@@ -1106,6 +1120,17 @@ namespace elle
     {
       typename Serialization::SerializerIn s(input, version);
       return s.template deserialize<T>(name);
+    }
+
+    template <typename Serialization, typename T>
+    T
+    deserialize(elle::Buffer const& input,
+                elle::Version const& version,
+                bool versioned = true,
+                boost::optional<Context const&> context = {})
+    {
+      elle::IOStream s(input.istreambuf());
+      return deserialize<Serialization, T>(s, version, versioned, context);
     }
 
     template <typename Serialization, typename T>
@@ -1154,6 +1179,18 @@ namespace elle
     }
 
     template <typename Serialization, typename T>
+    void
+    serialize(T const& o,
+              std::ostream& output,
+              elle::Version const& version,
+              bool versioned = true)
+    {
+      typename Serialization::SerializerOut s(
+        output, T::serialization_tag::dependencies.at(version), versioned);
+      s.serialize_forward(o);
+    }
+
+    template <typename Serialization, typename T>
     elle::Buffer
     serialize(T const& o, std::string const& name, bool version = true)
     {
@@ -1182,6 +1219,18 @@ namespace elle
       {
         elle::IOStream s(res.ostreambuf());
         serialize<Serialization, T>(o, s, version);
+      }
+      return res;
+    }
+
+    template <typename Serialization, typename T>
+    elle::Buffer
+    serialize(T const& o, elle::Version const& version, bool versioned = true)
+    {
+      elle::Buffer res;
+      {
+        elle::IOStream s(res.ostreambuf());
+        serialize<Serialization, T>(o, s, version, versioned);
       }
       return res;
     }

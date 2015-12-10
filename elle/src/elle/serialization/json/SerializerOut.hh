@@ -33,6 +33,7 @@ namespace elle
                       bool pretty = false);
         SerializerOut(std::ostream& output,
                       Versions versions,
+                      bool versioned = true,
                       bool pretty = false);
         ~SerializerOut() noexcept(false);
 

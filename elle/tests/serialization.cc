@@ -886,13 +886,13 @@ namespace versioning
     ELLE_ATTRIBUTE_R(lib::Versioned, v);
   };
 
-  static
-  std::ostream&
-  operator <<(std::ostream& o, Owner const& owner)
-  {
-    elle::fprintf(o, "Owner(%s, %s)", owner.i(), owner.v());
-    return o;
-  }
+  // static
+  // std::ostream&
+  // operator <<(std::ostream& o, Owner const& owner)
+  // {
+  //   elle::fprintf(o, "Owner(%s, %s)", owner.i(), owner.v());
+  //   return o;
+  // }
 
   template <typename Format>
   static
@@ -901,48 +901,49 @@ namespace versioning
   {
     std::unordered_map<elle::TypeInfo, Version> versions;
     versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
-    ELLE_LOG("test old -> old serialization")
+    ELLE_LOG("test old -> old serialization versioned")
     {
       Owner o(42, {1, 2});
-      auto buffer =
-        elle::serialization::serialize<Format>(o);
-      auto v =
-        elle::serialization::deserialize<Format, Owner>(buffer);
-      BOOST_CHECK_EQUAL(v, o);
+      auto buffer = elle::serialization::serialize<Format>(o, Version(0, 1, 0));
+      ELLE_LOG("serialized: %s", buffer);
+      auto v = elle::serialization::deserialize<Format, Owner>(buffer);
+      BOOST_CHECK_EQUAL(v.i(), 42);
+      BOOST_CHECK_EQUAL(v.v().old(), 1);
+      BOOST_CHECK_EQUAL(v.v().addition(), 0);
     }
-    ELLE_LOG("test old -> new serialization")
+    ELLE_LOG("test old -> old serialization unversioned")
     {
-      std::stringstream stream;
-      {
-        std::unordered_map<elle::TypeInfo, Version> versions;
-        versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
-        typename Format::SerializerOut output(stream, versions);
-        lib::Versioned v(1, 2);
-        output.serialize_forward(v);
-      }
-      ELLE_LOG("serialized: %s", stream.str());
-      {
-        typename Format::SerializerIn input(stream);
-        lib::Versioned v(input);
-        BOOST_CHECK_EQUAL(v.old(), 1);
-        BOOST_CHECK_EQUAL(v.addition(), 0);
-      }
+      Owner o(42, {1, 2});
+      auto buffer = elle::serialization::serialize<Format>(
+        o, Version(0, 1, 0), false);
+      ELLE_LOG("serialized: %s", buffer);
+      auto v = elle::serialization::deserialize<Format, Owner>(
+        buffer, Version(0, 1, 0), false);
+      BOOST_CHECK_EQUAL(v.i(), 42);
+      BOOST_CHECK_EQUAL(v.v().old(), 1);
+      BOOST_CHECK_EQUAL(v.v().addition(), 0);
     }
-    ELLE_LOG("test new -> new serialization")
+    ELLE_LOG("test new -> new serialization versioned")
     {
-      std::stringstream stream;
-      {
-        typename Format::SerializerOut output(stream);
-        lib::Versioned v(1, 2);
-        output.serialize_forward(v);
-      }
-      ELLE_LOG("serialized: %s", stream.str());
-      {
-        typename Format::SerializerIn input(stream);
-        lib::Versioned v(input);
-        BOOST_CHECK_EQUAL(v.old(), 1);
-        BOOST_CHECK_EQUAL(v.addition(), 2);
-      }
+      Owner o(42, {1, 2});
+      auto buffer = elle::serialization::serialize<Format>(o, Version(0, 2, 0));
+      ELLE_LOG("serialized: %s", buffer);
+      auto v = elle::serialization::deserialize<Format, Owner>(buffer);
+      BOOST_CHECK_EQUAL(v.i(), 42);
+      BOOST_CHECK_EQUAL(v.v().old(), 1);
+      BOOST_CHECK_EQUAL(v.v().addition(), 2);
+    }
+    ELLE_LOG("test new -> new serialization unversioned")
+    {
+      Owner o(42, {1, 2});
+      auto buffer = elle::serialization::serialize<Format>(
+        o, Version(0, 2, 0), false);
+      ELLE_LOG("serialized: %s", buffer);
+      auto v = elle::serialization::deserialize<Format, Owner>(
+        buffer, Version(0, 2, 0), false);
+      BOOST_CHECK_EQUAL(v.i(), 42);
+      BOOST_CHECK_EQUAL(v.v().old(), 1);
+      BOOST_CHECK_EQUAL(v.v().addition(), 2);
     }
   }
 }

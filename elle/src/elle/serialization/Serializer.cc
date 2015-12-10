@@ -11,8 +11,8 @@ namespace elle
       , _versions()
     {}
 
-    Serializer::Serializer(Versions versions)
-      : _versioned(true)
+    Serializer::Serializer(Versions versions, bool versioned)
+      : _versioned(versioned)
       , _versions(std::move(versions))
     {}
 

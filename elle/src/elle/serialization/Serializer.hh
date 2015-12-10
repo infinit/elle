@@ -106,7 +106,7 @@ namespace elle
     `-------------*/
     public:
       Serializer(bool versioned);
-      Serializer(Versions versions);
+      Serializer(Versions versions,bool versioned);
 
     /*-----------.
     | Properties |

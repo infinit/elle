@@ -26,7 +26,8 @@ namespace elle
     `-------------*/
     public:
       SerializerIn(std::istream& input, bool versioned);
-      SerializerIn(std::istream& input, Versions versions);
+      SerializerIn(std::istream& input,
+                   Versions versions, bool versioned = true);
 
     /*--------.
     | Helpers |

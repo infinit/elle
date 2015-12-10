@@ -27,7 +27,8 @@ namespace elle
       `-------------*/
       public:
         SerializerOut(std::ostream& output, bool versioned = true);
-        SerializerOut(std::ostream& output, Versions versions);
+        SerializerOut(std::ostream& output,
+                      Versions versions, bool versioned = true);
         virtual
         ~SerializerOut();
       private:

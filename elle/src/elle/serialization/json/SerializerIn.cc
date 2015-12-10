@@ -37,8 +37,9 @@ namespace elle
       }
 
       SerializerIn::SerializerIn(std::istream& input,
-                                 Versions versions)
-        : Super(input, std::move(versions))
+                                 Versions versions,
+                                 bool versioned)
+        : Super(input, std::move(versions), versioned)
         , _partial(false)
         , _json()
         , _current()

@@ -11,8 +11,9 @@ namespace elle
     {}
 
     SerializerOut::SerializerOut(std::ostream& output,
-                                 Versions versions)
-      : Super(std::move(versions))
+                                 Versions versions,
+                                 bool versioned)
+      : Super(std::move(versions), versioned)
       , _output(output)
     {}
 
