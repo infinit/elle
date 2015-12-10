@@ -82,8 +82,9 @@ namespace reactor
         }
         else if (magic == rdv::rdv_magic)
         {
-          rdv::Message repl = elle::serialization::json::deserialize<rdv::Message>(
-            elle::Buffer(buffer.data()+8, sz - 8), false);
+          rdv::Message repl =
+            elle::serialization::json::deserialize<rdv::Message>(
+              elle::Buffer(buffer.data() + 8, sz - 8), false);
           ELLE_DEBUG("got message from %s, code %s", endpoint, (int)repl.command);
           switch (repl.command)
           {

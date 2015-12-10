@@ -710,6 +710,14 @@ namespace versioning
     };
   }
 
+  // static
+  // std::ostream&
+  // operator <<(std::ostream& o, lib::Versioned const& v)
+  // {
+  //   elle::fprintf(o, "Versioned(%s, %s)", v.old(), v.addition());
+  //   return o;
+  // }
+
   template <typename Format>
   static
   void
@@ -828,78 +836,115 @@ namespace versioning
     }
   }
 
-  // struct serialization
-  // {
-  //   static Version version;
-  //   static std::unordered_map<
-  //     Version, elle::serialization::Serializer::Versions> dependencies;
-  // };
-  // Version serialization::version(0, 2, 0);
-  // std::unordered_map<Version, elle::serialization::Serializer::Versions>
-  //   serialization::dependencies
-  //   {
-  //     {Version(0, 2, 0), {{type_info<lib::serialization>(), Version(0, 3, 0)}}},
-  //     {Version(0, 1, 0), {{type_info<lib::serialization>(), Version(0, 1, 0)}}},
-  //   };
+  struct serialization
+  {
+    static Version version;
+    static std::unordered_map<
+      Version, elle::serialization::Serializer::Versions> dependencies;
+  };
+  Version serialization::version(0, 2, 0);
+  std::unordered_map<Version, elle::serialization::Serializer::Versions>
+    serialization::dependencies
+    {
+      {Version(0, 2, 0), {{type_info<lib::serialization>(), Version(0, 3, 0)}}},
+      {Version(0, 1, 0), {{type_info<lib::serialization>(), Version(0, 1, 0)}}},
+    };
 
-  // template <typename Format>
-  // static
-  // void
-  // dependencies()
-  // {
-  //   std::unordered_map<elle::TypeInfo, Version> versions;
-  //   versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
-  //   ELLE_LOG("test old -> old serialization")
-  //   {
-  //     std::stringstream stream;
-  //     {
-  //       typename Format::SerializerOut output(stream, versions);
-  //       lib::Versioned v(1, 2);
-  //       output.serialize_forward(v);
-  //     }
-  //     ELLE_LOG("serialized: %s", stream.str());
-  //     {
-  //       typename Format::SerializerIn input(stream, versions);
-  //       lib::Versioned v(input);
-  //       BOOST_CHECK_EQUAL(v.old(), 1);
-  //       BOOST_CHECK_EQUAL(v.addition(), 0);
-  //     }
-  //   }
-  //   ELLE_LOG("test old -> new serialization")
-  //   {
-  //     std::stringstream stream;
-  //     {
-  //       std::unordered_map<elle::TypeInfo, Version> versions;
-  //       versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
-  //       typename Format::SerializerOut output(stream, versions);
-  //       lib::Versioned v(1, 2);
-  //       output.serialize_forward(v);
-  //     }
-  //     ELLE_LOG("serialized: %s", stream.str());
-  //     {
-  //       typename Format::SerializerIn input(stream);
-  //       lib::Versioned v(input);
-  //       BOOST_CHECK_EQUAL(v.old(), 1);
-  //       BOOST_CHECK_EQUAL(v.addition(), 0);
-  //     }
-  //   }
-  //   ELLE_LOG("test new -> new serialization")
-  //   {
-  //     std::stringstream stream;
-  //     {
-  //       typename Format::SerializerOut output(stream);
-  //       lib::Versioned v(1, 2);
-  //       output.serialize_forward(v);
-  //     }
-  //     ELLE_LOG("serialized: %s", stream.str());
-  //     {
-  //       typename Format::SerializerIn input(stream);
-  //       lib::Versioned v(input);
-  //       BOOST_CHECK_EQUAL(v.old(), 1);
-  //       BOOST_CHECK_EQUAL(v.addition(), 2);
-  //     }
-  //   }
-  // }
+
+  class Owner
+  {
+  public:
+    typedef serialization serialization_tag;
+
+    Owner(int i, lib::Versioned const& v)
+      : _i(i)
+      , _v(std::move(v))
+    {}
+
+    Owner(elle::serialization::Serializer& s, elle::Version const& v)
+      : _i(0)
+      , _v(0, 0)
+    {
+      this->serialize(s, v);
+    }
+
+    bool
+    operator ==(Owner const& other) const
+    {
+      return this->i() == other.i() &&
+        this->v() == other.v();
+    }
+
+    void
+    serialize(elle::serialization::Serializer& s, Version const& v)
+    {
+      s.serialize("i", this->_i);
+      s.serialize("v", this->_v);
+    }
+
+    ELLE_ATTRIBUTE_R(int, i);
+    ELLE_ATTRIBUTE_R(lib::Versioned, v);
+  };
+
+  static
+  std::ostream&
+  operator <<(std::ostream& o, Owner const& owner)
+  {
+    elle::fprintf(o, "Owner(%s, %s)", owner.i(), owner.v());
+    return o;
+  }
+
+  template <typename Format>
+  static
+  void
+  dependencies()
+  {
+    std::unordered_map<elle::TypeInfo, Version> versions;
+    versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
+    ELLE_LOG("test old -> old serialization")
+    {
+      Owner o(42, {1, 2});
+      auto buffer =
+        elle::serialization::serialize<Format>(o);
+      auto v =
+        elle::serialization::deserialize<Format, Owner>(buffer);
+      BOOST_CHECK_EQUAL(v, o);
+    }
+    ELLE_LOG("test old -> new serialization")
+    {
+      std::stringstream stream;
+      {
+        std::unordered_map<elle::TypeInfo, Version> versions;
+        versions.emplace(type_info<lib::serialization>(), Version(0, 1, 0));
+        typename Format::SerializerOut output(stream, versions);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 0);
+      }
+    }
+    ELLE_LOG("test new -> new serialization")
+    {
+      std::stringstream stream;
+      {
+        typename Format::SerializerOut output(stream);
+        lib::Versioned v(1, 2);
+        output.serialize_forward(v);
+      }
+      ELLE_LOG("serialized: %s", stream.str());
+      {
+        typename Format::SerializerIn input(stream);
+        lib::Versioned v(input);
+        BOOST_CHECK_EQUAL(v.old(), 1);
+        BOOST_CHECK_EQUAL(v.addition(), 2);
+      }
+    }
+  }
 }
 
 class InPlace
@@ -909,6 +954,7 @@ public:
   {}
 
   InPlace(InPlace const&) = delete;
+  InPlace(InPlace&&) = default;
 
   void serialize(elle::serialization::Serializer&)
   {}
@@ -1416,6 +1462,7 @@ ELLE_TEST_SUITE()
     auto& suite = *subsuite;
     FOR_ALL_SERIALIZATION_TYPES(global);
     FOR_ALL_SERIALIZATION_TYPES(local);
+    FOR_ALL_SERIALIZATION_TYPES(dependencies);
   }
   FOR_ALL_SERIALIZATION_TYPES(context);
   FOR_ALL_SERIALIZATION_TYPES(exceptions);

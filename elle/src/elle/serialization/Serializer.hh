@@ -20,7 +20,6 @@
 # include <elle/Version.hh>
 # include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
-# include <elle/serialization/predicates.hh>
 # include <elle/sfinae.hh>
 
 namespace elle
@@ -324,42 +323,18 @@ namespace elle
       void
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);
       template <typename C>
-      typename std::enable_if<
-        is_unserializable_inplace<
-          typename C::value_type>(),
-          typename std::enable_if_exists<
-            decltype(
-              std::declval<C>().emplace(
-                std::declval<elle::serialization::SerializerIn>())),
-            void>::type>::type
+      typename std::enable_if_exists<
+        decltype(
+          std::declval<C>().emplace(
+            std::declval<elle::serialization::SerializerIn>())),
+        void>::type
       _deserialize_in_array(std::string const& name, C& collection);
       template <typename C>
-      typename std::enable_if<
-        is_unserializable_inplace<
-          typename C::value_type>(),
-          typename std::enable_if_exists<
-            decltype(
-              std::declval<C>().emplace_back(
-                std::declval<elle::serialization::SerializerIn>())),
-            void>::type>::type
-      _deserialize_in_array(std::string const& name, C& collection);
-      template <typename C>
-      typename std::enable_if<
-        !is_unserializable_inplace<
-          typename C::value_type>(),
-          typename std::enable_if_exists<
-            decltype(
-              std::declval<C>().emplace()),
-            void>::type>::type
-      _deserialize_in_array(std::string const& name, C& collection);
-      template <typename C>
-      typename std::enable_if<
-        !is_unserializable_inplace<
-          typename C::value_type>(),
-          typename std::enable_if_exists<
-            decltype(
-              std::declval<C>().emplace_back()),
-            void>::type>::type
+      typename std::enable_if_exists<
+        decltype(
+          std::declval<C>().emplace_back(
+            std::declval<elle::serialization::SerializerIn>())),
+        void>::type
       _deserialize_in_array(std::string const& name, C& collection);
       template <typename T>
       friend struct Serialize;
