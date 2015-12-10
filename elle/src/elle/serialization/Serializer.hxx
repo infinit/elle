@@ -1201,6 +1201,10 @@ namespace elle
       return res;
     }
 
+    /*--------.
+    | Helpers |
+    `--------*/
+
     template <typename T>
     T
     SerializerIn::deserialize()
@@ -1208,7 +1212,7 @@ namespace elle
       return _deserialize<T>(*this);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     T
     deserialize(std::istream& input, bool version = true,
                 boost::optional<Context const&> context = {})
@@ -1219,7 +1223,7 @@ namespace elle
       return s.template deserialize<T>();
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     T
     deserialize(std::istream& input, std::string const& name,
                 bool version = true)
@@ -1228,35 +1232,35 @@ namespace elle
       return s.template deserialize<T>(name);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     T
     deserialize(elle::Buffer const& input, bool version = true,
                 boost::optional<Context const&> context = {})
     {
       elle::IOStream s(input.istreambuf());
-      return deserialize<T, Serialization>(s, version, context);
+      return deserialize<Serialization, T>(s, version, context);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     T
     deserialize(elle::Buffer const& input, std::string const& name,
                 bool version = true)
     {
       elle::IOStream s(input.istreambuf());
-      return deserialize<T, Serialization>(s, name, version);
+      return deserialize<Serialization, T>(s, name, version);
     }
 
     // Prevent literal string from being converted to boolean and triggerring
     // the nameless overload.
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     T
     deserialize(elle::Buffer const& input, char const* name,
                 bool version = true)
     {
-      return deserialize<T, Serialization>(input, std::string(name), version);
+      return deserialize<Serialization, T>(input, std::string(name), version);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     void
     serialize(T const& o, std::string const& name,
               std::ostream& output, bool version = true)
@@ -1265,7 +1269,7 @@ namespace elle
       s.serialize(name, o);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     void
     serialize(T const& o, std::ostream& output, bool version = true)
     {
@@ -1273,7 +1277,7 @@ namespace elle
       s.serialize_forward(o);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     elle::Buffer
     serialize(T const& o, std::string const& name, bool version = true)
     {
@@ -1287,24 +1291,28 @@ namespace elle
 
     // Prevent literal string from being converted to boolean and triggerring
     // the nameless overload.
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     elle::Buffer
     serialize(T const& o, char const* name, bool version = true)
     {
       return serialize<T, Serialization>(o, std::string(name), version);
     }
 
-    template <typename T, typename Serialization>
+    template <typename Serialization, typename T>
     elle::Buffer
     serialize(T const& o, bool version = true)
     {
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        serialize<T, Serialization>(o, s, version);
+        serialize<Serialization, T>(o, s, version);
       }
       return res;
     }
+
+    /*--------------------------.
+    | forward_serialization_tag |
+    `--------------------------*/
 
     template <typename T, bool has>
     struct _forward_serialization_tag

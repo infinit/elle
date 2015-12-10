@@ -20,20 +20,20 @@ namespace elle
       template <typename T, typename ... Args>
       auto
       serialize(T const& o, Args&& ... args)
-        -> decltype(elle::serialization::serialize<T, Json>
+        -> decltype(elle::serialization::serialize<Json, T>
                     (o, std::forward<Args>(args)...))
       {
-        return elle::serialization::serialize<T, Json>
+        return elle::serialization::serialize<Json, T>
           (o, std::forward<Args>(args)...);
       }
 
       template <typename T, typename ... Args>
       auto
       deserialize(Args&& ... args)
-        -> decltype(elle::serialization::deserialize<T, Json>
+        -> decltype(elle::serialization::deserialize<Json, T>
                     (std::forward<Args>(args)...))
       {
-        return elle::serialization::deserialize<T, Json>
+        return elle::serialization::deserialize<Json, T>
           (std::forward<Args>(args)...);
       }
     }
