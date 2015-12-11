@@ -368,6 +368,7 @@ namespace infinit
         // Extract the public key
         RSA* pub = low::RSA_priv2pub(rsa);
         ::RSA_free(rsa);
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
         return pub;
       }
 
@@ -381,12 +382,19 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
+        auto prolog =
+          [this](::EVP_PKEY_CTX* ctx)
+          {
+            padding::pad(ctx, rsa::Padding::none);
+          };
+
         // The unrotate operation does not rely on padding. Not that relying on
         // textbook RSA is considered foolish. In this case however, restricting
         // the rotation/derivation to content of the size of the RSA key's
         // modulus makes it secure.
         elle::Buffer buffer = raw::asymmetric::unrotate(this->_key.get(),
-                                                        seed.buffer());
+                                                        seed.buffer(),
+                                                        prolog);
 
         return (Seed(buffer, seed.length()));
       }

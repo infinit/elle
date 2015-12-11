@@ -74,6 +74,7 @@ namespace infinit
         Seed(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
+        typedef elle::serialization_tag serialization_tag;
 
         /*-----------.
         | Attributes |

@@ -342,6 +342,7 @@ namespace infinit
           return (buffer);
         }
 
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         elle::Buffer
         rotate(::EVP_PKEY* key,
                elle::ConstWeakBuffer const& seed,
@@ -423,6 +424,7 @@ namespace infinit
 
           return (buffer);
         }
+#endif
 
         elle::Buffer
         apply(::EVP_PKEY_CTX* context,

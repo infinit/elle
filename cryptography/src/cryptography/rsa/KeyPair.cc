@@ -130,9 +130,8 @@ namespace infinit
         // Instanciate both a RSA public and private key based on the RSA
         // structure.
         this->_k.reset(new PrivateKey(rsa));
-        this->_K.reset(new PublicKey(*this->_k));
-
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+        this->_K.reset(new PublicKey(*this->_k));
       }
 #endif
 

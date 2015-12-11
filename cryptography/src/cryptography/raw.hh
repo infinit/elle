@@ -73,6 +73,7 @@ namespace infinit
               ::EVP_PKEY* peer,
               std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
               std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /// Rotate the given seed with the key.
         elle::Buffer
         rotate(::EVP_PKEY* key,
@@ -85,6 +86,7 @@ namespace infinit
                  elle::ConstWeakBuffer const& seed,
                  std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
                  std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
+# endif
         /// A low-level function that should be used only if you know what
         /// you are doing.
         elle::Buffer

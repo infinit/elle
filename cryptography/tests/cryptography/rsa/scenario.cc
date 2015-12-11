@@ -48,9 +48,7 @@ test_scenario()
   // A user tries to access the content without the right key.
   {
     infinit::cryptography::SecretKey key =
-      infinit::cryptography::secretkey::generate(
-        256,
-        infinit::cryptography::Cipher::aes256);
+      infinit::cryptography::secretkey::generate(256);
 
     BOOST_CHECK_THROW(object0.read(key),
                       infinit::cryptography::Error);

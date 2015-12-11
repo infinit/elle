@@ -418,11 +418,18 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
+        auto prolog =
+          [this](::EVP_PKEY_CTX* ctx)
+          {
+            padding::pad(ctx, rsa::Padding::none);
+          };
+
         // Note that in these cases, using no RSA padding is not dangerous
         // because (1) the content being rotated is always random (2) the
         // content is always the size of the RSA key's modulus.
         elle::Buffer buffer = raw::asymmetric::rotate(this->_key.get(),
-                                                      seed.buffer());
+                                                      seed.buffer(),
+                                                      prolog);
 
         return (Seed(buffer, seed.length()));
       }
