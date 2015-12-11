@@ -16,7 +16,7 @@ namespace elle
   /// Base class for exception, with backtrace.
   class Exception
     : public std::runtime_error
-    , public elle::serialization::VirtuallySerializable
+    , public elle::serialization::VirtuallySerializable<false>
   {
   /*-------------.
   | Construction |

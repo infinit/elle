@@ -12,6 +12,7 @@ namespace elle
 {
   class Buffer;
   class ConstWeakBuffer;
+  class Version;
   class WeakBuffer;
 }
 

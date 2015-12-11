@@ -97,7 +97,7 @@ namespace elle
       template <typename P, typename T>
       static
       typename std::enable_if<
-        std::is_base_of<VirtuallySerializable, T>::value,
+        std::is_base_of<VirtuallySerializableBase, T>::value,
         void
       >::type
       _smart_virtual_switch(
@@ -144,7 +144,7 @@ namespace elle
       template <typename P, typename T>
       static
       typename std::enable_if<
-        !std::is_base_of<VirtuallySerializable, T>::value,
+        !std::is_base_of<VirtuallySerializableBase, T>::value,
         void
       >::type
       _smart_virtual_switch(
@@ -203,8 +203,12 @@ namespace elle
       template <typename T>
       static
       T
-      deserialize(Serializer& self, ...)
+      deserialize(SerializerIn& self, unsigned)
       {
+        static_assert(
+          std::is_base_of<boost::optional_detail::optional_tag, T>::value ||
+          !std::is_constructible<T, elle::serialization::SerializerIn&>::value,
+          "");
         T res;
         self._serialize_anonymous("", res);
         return res;
@@ -311,7 +315,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize \"%s\"", *this, name);
       static_assert(
-        !std::is_base_of<VirtuallySerializable, T>::value,
+        !std::is_base_of<VirtuallySerializableBase, T>::value,
         "serialize VirtuallySerializable objects through a pointer type");
       if (this->_enter(name))
       {
@@ -325,7 +329,7 @@ namespace elle
     Serializer::_serialize_anonymous(std::string const& name, T& v)
     {
       static_assert(
-        !std::is_base_of<VirtuallySerializable, T>::value,
+        !std::is_base_of<VirtuallySerializableBase, T>::value,
         "serialize VirtuallySerializable objects through a pointer type");
       _serialize_switch(*this, name, v, ELLE_SFINAE_TRY());
     }
@@ -689,7 +693,8 @@ namespace elle
                                       C& collection)
     {
       collection.emplace(
-        Details::deserialize<typename C::value_type>(*this, 42));
+        Details::deserialize<typename C::value_type>(
+          static_cast<SerializerIn&>(*this), 42));
     }
 
     template <typename C>
@@ -702,7 +707,8 @@ namespace elle
                                       C& collection)
     {
       collection.emplace_back(
-        Details::deserialize<typename C::value_type>(*this, 42));
+        Details::deserialize<typename C::value_type>(
+          static_cast<SerializerIn&>(*this), 42));
     }
 
     // Specific overload to catch std::vector subclasses (for das, namely).

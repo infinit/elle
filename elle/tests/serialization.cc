@@ -518,8 +518,9 @@ date()
   }
 }
 
+template <bool Versioned>
 class Super
-  : public elle::serialization::VirtuallySerializable
+  : public elle::serialization::VirtuallySerializable<Versioned>
 {
 public:
   Super(int i)
@@ -549,19 +550,56 @@ public:
 
   ELLE_ATTRIBUTE_R(int, i);
 };
-static const elle::serialization::Hierarchy<Super>::Register<Super> _register_Super;
+static const elle::serialization::Hierarchy<Super<false>>::Register<Super<false>>
+_register_SuperU("SuperU");
 
+template <>
+class Super<true>
+  : public elle::serialization::VirtuallySerializable<true>
+{
+public:
+  Super(int i)
+    : _i(i)
+  {}
+
+  Super(elle::serialization::SerializerIn& s, elle::Version const& v)
+  {
+    this->serialize(s, v);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s, elle::Version const&)
+  {
+    s.serialize("super", this->_i);
+  }
+
+  virtual
+  int
+  type()
+  {
+    return this->_i;
+  }
+
+  typedef elle::serialization_tag serialization_tag;
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super<true>>::Register<Super<true>>
+_register_SuperV("SuperV");
+
+template <bool Versioned>
 class Sub1
-  : public Super
+  : public Super<Versioned>
 {
 public:
   Sub1(int i)
-    : Super(i - 1)
+    : Super<Versioned>(i - 1)
     , _i(i)
   {}
 
   Sub1(elle::serialization::SerializerIn& s)
-    : Super(s)
+    : Super<Versioned>(s)
     , _i(-1)
   {
     this->_serialize(s);
@@ -571,7 +609,7 @@ public:
   void
   serialize(elle::serialization::Serializer& s) override
   {
-    Super::serialize(s);
+    Super<Versioned>::serialize(s);
     this->_serialize(s);
   }
 
@@ -590,19 +628,64 @@ public:
 
   ELLE_ATTRIBUTE_R(int, i);
 };
-static const elle::serialization::Hierarchy<Super>::Register<Sub1> _register_Sub1;
+static const elle::serialization::Hierarchy<Super<false>>::Register<Sub1<false>>
+_register_Sub1U("Sub1U");
 
+template <>
+class Sub1<true>
+  : public Super<true>
+{
+public:
+  Sub1(int i)
+    : Super<true>(i - 1)
+    , _i(i)
+  {}
+
+  Sub1(elle::serialization::SerializerIn& s, elle::Version const& v)
+    : Super<true>(s, v)
+    , _i(-1)
+  {
+    this->_serialize(s);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s, elle::Version const& v) override
+  {
+    Super<true>::serialize(s, v);
+    this->_serialize(s);
+  }
+
+  void
+  _serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("sub1", this->_i);
+  }
+
+  virtual
+  int
+  type() override
+  {
+    return this->_i;
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super<true>>::Register<Sub1<true>>
+_register_Sub1V("Sub1V");
+
+template <bool Versioned>
 class Sub2
-  : public Super
+  : public Super<Versioned>
 {
 public:
   Sub2(int i)
-    : Super(i - 1)
+    : Super<Versioned>(i - 1)
     , _i(i)
   {}
 
   Sub2(elle::serialization::SerializerIn& s)
-    : Super(s)
+    : Super<Versioned>(s)
     , _i(-1)
   {
     this->_serialize(s);
@@ -612,7 +695,7 @@ public:
   void
   serialize(elle::serialization::Serializer& s) override
   {
-    Super::serialize(s);
+    Super<Versioned>::serialize(s);
     this->_serialize(s);
   }
 
@@ -631,9 +714,53 @@ public:
 
   ELLE_ATTRIBUTE_R(int, i);
 };
-static const elle::serialization::Hierarchy<Super>::Register<Sub2> _register_Sub2;
+static const elle::serialization::Hierarchy<Super<false>>::Register<Sub2<false>>
+_register_Sub2U("Sub2U");
 
-template <typename Format>
+template <>
+class Sub2<true>
+  : public Super<true>
+{
+public:
+  Sub2(int i)
+    : Super<true>(i - 1)
+    , _i(i)
+  {}
+
+  Sub2(elle::serialization::SerializerIn& s, elle::Version const& v)
+    : Super<true>(s, v)
+    , _i(-1)
+  {
+    this->_serialize(s);
+  }
+
+  virtual
+  void
+  serialize(elle::serialization::Serializer& s, elle::Version const& v) override
+  {
+    Super<true>::serialize(s, v);
+    this->_serialize(s);
+  }
+
+  void
+  _serialize(elle::serialization::Serializer& s)
+  {
+    s.serialize("sub2", this->_i);
+  }
+
+  virtual
+  int
+  type() override
+  {
+    return this->_i;
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+};
+static const elle::serialization::Hierarchy<Super<true>>::Register<Sub2<true>>
+_register_Sub2V("Sub2V");
+
+template <typename Format, bool Versioned>
 static
 void
 hierarchy()
@@ -641,16 +768,16 @@ hierarchy()
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream, false);
-    std::unique_ptr<Super> super(new Super(0));
-    std::unique_ptr<Super> s1(new Sub1(2));
-    std::unique_ptr<Super> s2(new Sub2(3));
+    std::unique_ptr<Super<Versioned>> super(new Super<Versioned>(0));
+    std::unique_ptr<Super<Versioned>> s1(new Sub1<Versioned>(2));
+    std::unique_ptr<Super<Versioned>> s2(new Sub2<Versioned>(3));
     output.serialize("super", super);
     output.serialize("sub1", s1);
     output.serialize("sub2", s2);
   }
   {
     typename Format::SerializerIn output(stream, false);
-    std::shared_ptr<Super> ptr;
+    std::shared_ptr<Super<Versioned>> ptr;
     output.serialize("super", ptr);
     BOOST_CHECK_EQUAL(ptr->type(), 0);
     output.serialize("sub1", ptr);
@@ -1455,7 +1582,26 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(unordered_set);
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
-  FOR_ALL_SERIALIZATION_TYPES(hierarchy);
+  {
+    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");
+    {
+      boost::unit_test::test_suite* s = BOOST_TEST_SUITE("unversioned");
+      auto json = &hierarchy<elle::serialization::Json, false>;
+      s->add(BOOST_TEST_CASE(json));
+      auto binary = &hierarchy<elle::serialization::Binary, false>;
+      s->add(BOOST_TEST_CASE(binary));
+      subsuite->add(s);
+    }
+    {
+      boost::unit_test::test_suite* s = BOOST_TEST_SUITE("versioned");
+      auto json = &hierarchy<elle::serialization::Json, true>;
+      s->add(BOOST_TEST_CASE(json));
+      auto binary = &hierarchy<elle::serialization::Binary, true>;
+      s->add(BOOST_TEST_CASE(binary));
+      subsuite->add(s);
+    }
+    suite.add(subsuite);
+  }
   {
     using namespace versioning;
     auto subsuite = BOOST_TEST_SUITE("versioning");
