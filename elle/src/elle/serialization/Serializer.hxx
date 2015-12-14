@@ -1186,7 +1186,7 @@ namespace elle
 
     template <typename Serialization, typename T>
     void
-    serialize(T const& o,
+    serialize(std::unique_ptr<T> const& o,
               std::ostream& output,
               elle::Version const& version,
               bool versioned = true)
@@ -1206,6 +1206,35 @@ namespace elle
         serialize<T, Serialization>(o, name, s, version);
       }
       return res;
+    }
+
+    namespace _details
+    {
+      template <typename T>
+      struct serialization_tag
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      struct serialization_tag<std::unique_ptr<T>>
+      {
+        typedef typename T::serialization_tag type;
+      };
+    }
+
+    template <typename Serialization, typename T>
+    void
+    serialize(T const& o,
+              std::ostream& output,
+              elle::Version const& version,
+              bool versioned = true)
+    {
+      typename Serialization::SerializerOut s(
+        output,
+        _details::serialization_tag<T>::type::dependencies.at(version),
+        versioned);
+      s.serialize_forward(o);
     }
 
     // Prevent literal string from being converted to boolean and triggerring
