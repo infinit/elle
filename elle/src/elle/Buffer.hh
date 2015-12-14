@@ -60,8 +60,9 @@ namespace elle
     explicit
     Buffer(size_t size);
     /// A buffer containing a copy of the given data.
-    Buffer(void const* data,
-           size_t size);
+    Buffer(void const* data, size_t size);
+    /// A buffer containing a copy of the given data.
+    Buffer(std::string const& data);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);
     /// A copy of the source buffer

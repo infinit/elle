@@ -102,52 +102,55 @@ namespace elle
     int _pos;
   };
 
-//
-// ---------- Buffer ----------------------------------------------------------
-//
+  /*-------.
+  | Buffer |
+  `-------*/
 
   // Note that an empty buffer has a valid pointer to a memory region with
   // a size of zero.
-  Buffer::Buffer():
-    _size(0),
-    _capacity(ELLE_BUFFER_INITIAL_SIZE),
-    _contents(static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE)))
+  Buffer::Buffer()
+    : _size(0)
+    , _capacity(ELLE_BUFFER_INITIAL_SIZE)
+    , _contents(static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE)))
   {
     if (this->_contents == nullptr)
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(size_t size):
-    _size(size),
-    _capacity(size),
-    _contents(nullptr)
+  Buffer::Buffer(size_t size)
+    : _size(size)
+    , _capacity(size)
+    , _contents(nullptr)
   {
     if ((this->_contents =
          static_cast<Byte*>(::malloc(this->_capacity))) == nullptr)
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(void const* data,
-                 size_t size):
-    _size(0),
-    _capacity(0),
-    _contents(nullptr)
+  Buffer::Buffer(void const* data, size_t size)
+    : _size(0)
+    , _capacity(0)
+    , _contents(nullptr)
   {
     if (size == 0)
-      {
-        this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
-        if ((this->_contents =
-             static_cast<Byte*>(::malloc(_capacity))) == nullptr)
-          throw std::bad_alloc();
-      }
+    {
+      this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
+      if ((this->_contents =
+           static_cast<Byte*>(::malloc(_capacity))) == nullptr)
+        throw std::bad_alloc();
+    }
     else
       this->append(data, size);
   }
 
-  Buffer::Buffer(Buffer&& other):
-    _size(0),
-    _capacity(0),
-    _contents(nullptr)
+  Buffer::Buffer(std::string const& data)
+    : Buffer(data.c_str(), data.size())
+  {}
+
+  Buffer::Buffer(Buffer&& other)
+    : _size(0)
+    , _capacity(0)
+    , _contents(nullptr)
   {
     (*this) = std::move(other);
   }
