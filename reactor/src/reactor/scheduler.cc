@@ -679,7 +679,8 @@ namespace reactor
   scheduler()
   {
     auto res = reactor::Scheduler::scheduler();
-    ELLE_ASSERT(res);
+    if (!res)
+      ELLE_ABORT("can't run outside a scheduler");
     return *res;
   }
 

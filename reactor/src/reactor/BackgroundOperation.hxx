@@ -80,7 +80,7 @@ namespace reactor
     ELLE_LOG_COMPONENT("reactor.BackgroundOperation");
     auto status = this->_status;
     auto action = this->_action;
-    auto& sched = this->scheduler();
+    auto& sched = reactor::scheduler();
     sched._run_background(
       [this, status, action, &sched] () -> std::function<void ()>
       {
