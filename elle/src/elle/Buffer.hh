@@ -384,6 +384,15 @@ namespace std
   public:
     std::size_t operator()(elle::ConstWeakBuffer const& buffer) const;
   };
+  template<>
+  struct hash<elle::Buffer>
+  {
+  public:
+    std::size_t operator()(elle::Buffer const& buffer) const
+    {
+      return hash<elle::ConstWeakBuffer>()(buffer);
+    }
+  };
 }
 
 # include <elle/Buffer.hxx>
