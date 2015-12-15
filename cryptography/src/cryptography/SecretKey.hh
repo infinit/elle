@@ -93,6 +93,7 @@ namespace infinit
 # endif
       /// Encipher an input stream and put the cipher text in the
       /// output stream.
+      virtual
       void
       encipher(std::istream& plain,
                std::ostream& code,

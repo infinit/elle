@@ -50,8 +50,9 @@ namespace infinit
         | Construction |
         `-------------*/
       public:
-        KeyPair(PublicKey const& K,
-                PrivateKey const& k);
+        KeyPair(PublicKey const& K, PrivateKey const& k);
+        KeyPair(std::unique_ptr<PublicKey> K,
+                std::unique_ptr<PrivateKey> k);
         KeyPair(PublicKey&& K,
                 PrivateKey&& k);
         KeyPair(KeyPair const& other);

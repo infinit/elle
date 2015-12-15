@@ -116,6 +116,7 @@ namespace infinit
         decrypt(elle::ConstWeakBuffer const& code,
                 Padding const padding = defaults::encryption_padding) const;
         /// Sign the given plain text and return the signature.
+        virtual
         elle::Buffer
         sign(elle::ConstWeakBuffer const& plain,
              Padding const padding = defaults::signature_padding,

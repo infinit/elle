@@ -216,7 +216,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          elle::Buffer value(size);
+          elle::Buffer value(static_cast<int>(size));
 
           fill(
             reinterpret_cast<unsigned char*>(value.mutable_contents()),

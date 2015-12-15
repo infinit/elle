@@ -101,6 +101,7 @@ namespace infinit
       public:
 # if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Encrypt the plain text and return the ciphered text in an envelope.
+        virtual
         elle::Buffer
         seal(elle::ConstWeakBuffer const& plain,
              Cipher const cipher = defaults::envelope_cipher,

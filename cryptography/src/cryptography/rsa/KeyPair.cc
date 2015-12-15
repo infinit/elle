@@ -32,10 +32,15 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      KeyPair::KeyPair(PublicKey const& K,
-                       PrivateKey const& k):
-        _K(new PublicKey(K)),
-        _k(new PrivateKey(k))
+      KeyPair::KeyPair(PublicKey const& K, PrivateKey const& k)
+        : _K(new PublicKey(K))
+        , _k(new PrivateKey(k))
+      {}
+
+      KeyPair::KeyPair(std::unique_ptr<PublicKey> K,
+                       std::unique_ptr<PrivateKey> k)
+        : _K(std::move(K))
+        , _k(std::move(k))
       {}
 
       KeyPair::KeyPair(PublicKey&& K,
