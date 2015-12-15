@@ -66,6 +66,10 @@ namespace elle
   public:
     void
     serialize(elle::serialization::Serializer& s);
+
+    static
+    Version
+    from_string(std::string const& repr);
   };
 }
 

@@ -1,5 +1,6 @@
 #include <elle/Version.hh>
 #include <elle/test.hh>
+#include <elle/serialization/Error.hh>
 
 static
 void
@@ -91,6 +92,27 @@ hash()
   BOOST_CHECK_NE(h({1, 2, 3}), h({3, 2, 1}));
 }
 
+static
+void
+from_string()
+{
+  // Working usage cases.
+  elle::Version major = elle::Version::from_string("1");
+  elle::Version major_minor = elle::Version::from_string("1.2");
+  elle::Version full = elle::Version::from_string("1.2.3");
+
+  BOOST_CHECK_EQUAL(major, elle::Version(1, 0, 0));
+  BOOST_CHECK_EQUAL(major_minor, elle::Version(1, 2, 0));
+  BOOST_CHECK_EQUAL(full, elle::Version(1, 2, 3));
+
+  // Failing cases.
+  BOOST_CHECK_THROW(elle::Version::from_string("nicolas"),
+                    elle::serialization::Error);
+
+  BOOST_CHECK_THROW(elle::Version::from_string(""),
+                    elle::serialization::Error);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -152,4 +174,5 @@ ELLE_TEST_SUITE()
 
   // hashing
   suite.add(BOOST_TEST_CASE(hash));
+  suite.add(BOOST_TEST_CASE(from_string));
 }

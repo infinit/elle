@@ -81,11 +81,7 @@ namespace elle
       if (s.in())
       {
         ELLE_DEBUG("Version: deserializing");
-        std::vector<std::string> strs;
-        boost::split(strs, str, boost::is_any_of("."));
-        this->_major = std::stoi(strs[0]);
-        this->_minor = std::stoi(strs[1]);
-        this->_subminor = std::stoi(strs[2]);
+        *this = Version::from_string(str);
       }
       else
         ELLE_DEBUG("Version: serializing");
@@ -96,6 +92,32 @@ namespace elle
       s.serialize("major", this->_major);
       s.serialize("minor", this->_minor);
       s.serialize("subminor", this->_subminor);
+    }
+  }
+
+  Version
+  Version::from_string(std::string const& repr)
+  {
+    if (repr.size() == 0)
+      throw elle::serialization::Error("version format error: empty");
+
+    std::vector<std::string> strs;
+    boost::split(strs, repr, boost::is_any_of("."));
+    std::string major = strs.size() > 0 ? strs[0] : "0";
+    std::string minor = strs.size() > 1 ? strs[1] : "0";
+    std::string sub_minor = strs.size() > 2 ? strs[2] : "0";
+
+    try
+    {
+      Version v(std::stoi(major),
+              std::stoi(minor),
+              std::stoi(sub_minor));
+      return v;
+    }
+    catch (std::invalid_argument const& e)
+    {
+      throw elle::serialization::Error(
+        elle::sprintf("version format error: %s", e.what()));
     }
   }
 }
