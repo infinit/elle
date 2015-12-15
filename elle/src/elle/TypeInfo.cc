@@ -15,7 +15,7 @@ namespace elle
   TypeInfo::operator ==(TypeInfo const& rhs) const
   {
 #ifdef __clang__
-    return strcmp(this->_info->name(), rhs._info->name()) == 0;
+    return strcmp(this->_info.name(), rhs._info.name()) == 0;
 #else
     return this->_info == rhs._info;
 #endif
@@ -27,7 +27,7 @@ namespace elle
    // When using before on two different typeinfos for the same type,
    // clang fails to treat them as equals.
 #ifdef __clang__
-    return strcmp(this->_info->name(), rhs._info->name()) < 0;
+    return strcmp(this->_info.name(), rhs._info.name()) < 0;
 #else
     return this->_info < rhs._info;
 #endif
