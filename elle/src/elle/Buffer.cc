@@ -131,11 +131,11 @@ namespace elle
     : Buffer(static_cast<std::size_t>(size))
   {}
 
-  Buffer::Buffer(uint64_t size)
+  Buffer::Buffer(unsigned int size)
     : Buffer(static_cast<std::size_t>(size))
   {}
 
-  Buffer::Buffer(unsigned int size)
+  Buffer::Buffer(unsigned long long size)
     : Buffer(static_cast<std::size_t>(size))
   {}
 
