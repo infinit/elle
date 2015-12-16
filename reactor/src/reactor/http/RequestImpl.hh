@@ -69,7 +69,7 @@ namespace reactor
       elle::WeakBuffer
       write_buffer() override;
       void
-      flush(unsigned int size) override;
+      flush(StreamBuffer::Size size) override;
       elle::WeakBuffer
       read_buffer() override;
       static

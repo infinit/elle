@@ -429,7 +429,7 @@ namespace reactor
     }
 
     void
-    Request::Impl::flush(unsigned int size)
+    Request::Impl::flush(StreamBuffer::Size size)
     {
       ELLE_ASSERT(!this->_output_done);
       if (this->_conf.chunked_transfers())
