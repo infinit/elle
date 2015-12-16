@@ -34,7 +34,7 @@ namespace elle
   class StreamBuffer: public std::streambuf
   {
   public:
-    typedef unsigned int Size;
+    typedef int64_t Size;
     StreamBuffer();
     virtual
     ~StreamBuffer();
@@ -77,7 +77,7 @@ namespace elle
   class PlainStreamBuffer: public StreamBuffer
   {
   public:
-    typedef unsigned int Size;
+    typedef int64_t Size;
     PlainStreamBuffer();
     ~PlainStreamBuffer();
 
@@ -96,7 +96,7 @@ namespace elle
 
     virtual
     void
-    flush(unsigned int size);
+    flush(Size size);
 
   private:
     static const int _bufsize = (1 << 12); // == 4096 bytes.
@@ -107,8 +107,8 @@ namespace elle
   class DynamicStreamBuffer : public StreamBuffer
   {
   public:
-    typedef unsigned int    Size;
-    typedef unsigned char   Byte;
+    typedef int64_t Size;
+    typedef unsigned char Byte;
 
     DynamicStreamBuffer(Size size);
     ~DynamicStreamBuffer();
@@ -128,7 +128,7 @@ namespace elle
 
     virtual
     void
-    flush(unsigned int size);
+    flush(Size size);
 
   private:
     Size const  _bufsize;

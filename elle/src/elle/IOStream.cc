@@ -97,7 +97,7 @@ namespace elle
   int
   StreamBuffer::sync()
   {
-    unsigned int size = pptr() - pbase();
+    Size size = pptr() - pbase();
     ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
     setp(0, 0);
     if (size > 0)
@@ -107,7 +107,7 @@ namespace elle
   }
 
   void
-  StreamBuffer::flush(unsigned int)
+  StreamBuffer::flush(Size)
   {}
 
   /*------------------.
@@ -125,10 +125,10 @@ namespace elle
   WeakBuffer
   PlainStreamBuffer::read_buffer()
   {
-    static const int max_size = _bufsize;
+    static Size max_size = _bufsize;
     ELLE_TRACE("read at most %s bytes", max_size)
     {
-      ssize_t size = read(_ibuf, max_size);
+      Size size = read(_ibuf, max_size);
       ELLE_TRACE("got %s bytes", size);
       return WeakBuffer(_ibuf, size);
     }
@@ -141,7 +141,7 @@ namespace elle
   }
 
   void
-  PlainStreamBuffer::flush(unsigned int size)
+  PlainStreamBuffer::flush(Size size)
   {
     ELLE_TRACE("write %s bytes", size)
       write(_obuf, size);
@@ -168,9 +168,9 @@ namespace elle
   {
     ELLE_TRACE("read at most %s bytes", this->_bufsize)
     {
-      ssize_t size = read((char *)_ibuf, this->_bufsize);
+      Size size = read((char *)_ibuf, this->_bufsize);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer{this->_ibuf, static_cast<size_t>(size)};
+      return WeakBuffer{this->_ibuf, size};
     }
   }
 
@@ -181,7 +181,7 @@ namespace elle
   }
 
   void
-  DynamicStreamBuffer::flush(unsigned int size)
+  DynamicStreamBuffer::flush(Size size)
   {
     ELLE_TRACE("write %s bytes", size)
       write((char *)this->_obuf, size);
