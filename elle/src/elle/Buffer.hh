@@ -64,6 +64,9 @@ namespace elle
     Buffer(int size);
     /// An uninitialized buffer of the specified size.
     explicit
+    Buffer(uint64_t size);
+    /// An uninitialized buffer of the specified size.
+    explicit
     Buffer(unsigned int size);
     /// A buffer containing a copy of the given data.
     Buffer(void const* data, size_t size);
