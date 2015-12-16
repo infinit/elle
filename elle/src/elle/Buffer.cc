@@ -46,7 +46,7 @@ namespace elle
     read_buffer();
     virtual
     void
-    flush(Size size);
+    flush(StreamBuffer::Size size);
 
   private:
     size_t _old_size;
@@ -68,7 +68,7 @@ namespace elle
     read_buffer();
     virtual
     void
-    flush(Size size);
+    flush(StreamBuffer::Size size);
   private:
     bool _buffer_returned;
     WeakBuffer& _buffer;
@@ -95,7 +95,7 @@ namespace elle
     read_buffer();
     virtual
     void
-    flush(Size size);
+    flush(StreamBuffer::Size size);
 
   private:
     std::vector<BufferType const*> _buffers;
@@ -117,7 +117,7 @@ namespace elle
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(void const* data, Size size)
+  Buffer::Buffer(void const* data, Buffer::Size size)
     : _size(0)
     , _capacity(0)
     , _contents(nullptr)
@@ -190,7 +190,7 @@ namespace elle
   }
 
   void
-  Buffer::capacity(Size capacity)
+  Buffer::capacity(Buffer::Size capacity)
   {
     if (capacity < ELLE_BUFFER_INITIAL_SIZE)
       capacity = ELLE_BUFFER_INITIAL_SIZE;
@@ -202,11 +202,11 @@ namespace elle
     this->_size = std::min(this->_size, capacity);
   }
 
-  void Buffer::append(void const* data, Size size)
+  void Buffer::append(void const* data, Buffer::Size size)
   {
     ELLE_ASSERT(data != nullptr || size == 0);
 
-    Size old_size = this->_size;
+    Buffer::Size old_size = this->_size;
     this->size(this->_size + size);
     /// XXX some implementations of memmove does not check for memory overlap
     memmove(this->_contents + old_size, data, size);
@@ -217,17 +217,17 @@ namespace elle
   }
 
   void
-  Buffer::size(Size size)
+  Buffer::size(Buffer::Size size)
   {
     if (this->_capacity < size)
-      {
-        Size next_size = Buffer::_next_size(size);
-        void* tmp = ::realloc(_contents, next_size);
-        if (tmp == nullptr)
-          throw std::bad_alloc();
-        this->_contents = static_cast<Byte*>(tmp);
-        this->_capacity = next_size;
-      }
+    {
+      Buffer::Size next_size = Buffer::_next_size(size);
+      void* tmp = ::realloc(_contents, next_size);
+      if (tmp == nullptr)
+        throw std::bad_alloc();
+      this->_contents = static_cast<Byte*>(tmp);
+      this->_capacity = next_size;
+    }
     this->_size = size;
   }
 
@@ -327,7 +327,7 @@ namespace elle
       {
         std::cout << alignment << io::Dumpable::Shift;
 
-        for (Size j = 0; j < (this->_size % space); j++)
+        for (Buffer::Size j = 0; j < (this->_size % space); j++)
           std::cout << std::nouppercase
                     << std::hex
                     << std::setw(2)
@@ -337,8 +337,8 @@ namespace elle
       }
   }
 
-  Size
-  Buffer::_next_size(Size size)
+  Buffer::Size
+  Buffer::_next_size(Buffer::Size size)
   {
     if (size < 32)
       return 32;
@@ -413,7 +413,8 @@ namespace elle
   Buffer::shrink_to_fit()
   {
     auto size =
-      std::max(static_cast<Size>(ELLE_BUFFER_INITIAL_SIZE), this->_size);
+      std::max(static_cast<Buffer::Size>(ELLE_BUFFER_INITIAL_SIZE),
+               this->_size);
     if (size < this->_capacity)
     {
       void* tmp = ::realloc(_contents, size);
@@ -530,7 +531,7 @@ namespace elle
       {
         std::cout << alignment << io::Dumpable::Shift;
 
-        for (Size j = 0; j < (this->_size % space); j++)
+        for (Buffer::Size j = 0; j < (this->_size % space); j++)
           std::cout << std::nouppercase
                     << std::hex
                     << std::setw(2)
@@ -744,7 +745,7 @@ namespace elle
 
   template <typename BufferType>
   void
-  InputStreamBuffer<BufferType>::flush(Size)
+  InputStreamBuffer<BufferType>::flush(StreamBuffer::Size)
   {
     throw Exception("the buffer is in input mode");
   }
@@ -815,7 +816,7 @@ namespace elle
 
   template <typename BufferType>
   void
-  OutputStreamBuffer<BufferType>::flush(Size size)
+  OutputStreamBuffer<BufferType>::flush(StreamBuffer::Size size)
   {
     ELLE_DEBUG("%s: flush buffer stream size: %s", *this, size);
     _old_size += size;
@@ -843,7 +844,7 @@ namespace elle
   }
 
   void
-  OutputStreamBuffer<WeakBuffer>::flush(Size size)
+  OutputStreamBuffer<WeakBuffer>::flush(StreamBuffer::Size size)
   {
     ELLE_DEBUG("Flush buffer stream size: %s", size);
   }
