@@ -190,8 +190,9 @@ namespace elle
   }
 
   void
-  Buffer::capacity(Buffer::Size capacity)
+  Buffer::capacity(boost::call_traits<Buffer::Size>::param_type capacity_)
   {
+    Buffer::Size capacity = capacity_;
     if (capacity < ELLE_BUFFER_INITIAL_SIZE)
       capacity = ELLE_BUFFER_INITIAL_SIZE;
     void* tmp = ::realloc(this->_contents, capacity);
@@ -217,8 +218,9 @@ namespace elle
   }
 
   void
-  Buffer::size(Buffer::Size size)
+  Buffer::size(boost::call_traits<Buffer::Size>::param_type size_)
   {
+    Buffer::Size size = size_;
     if (this->_capacity < size)
     {
       Buffer::Size next_size = Buffer::_next_size(size);
