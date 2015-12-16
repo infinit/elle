@@ -51,8 +51,8 @@ namespace infinit
         `-------------*/
       public:
         KeyPair(PublicKey const& K, PrivateKey const& k);
-        KeyPair(std::unique_ptr<PublicKey> K,
-                std::unique_ptr<PrivateKey> k);
+        KeyPair(std::shared_ptr<PublicKey> K,
+                std::shared_ptr<PrivateKey> k);
         KeyPair(PublicKey&& K,
                 PrivateKey&& k);
         KeyPair(KeyPair const& other);
@@ -116,9 +116,9 @@ namespace infinit
         `-----------*/
       private:
         /// The public key.
-        ELLE_ATTRIBUTE(std::unique_ptr<PublicKey>, K);
+        ELLE_ATTRIBUTE_R(std::shared_ptr<PublicKey>, public_key);
         /// The private key.
-        ELLE_ATTRIBUTE(std::unique_ptr<PrivateKey>, k);
+        ELLE_ATTRIBUTE_R(std::shared_ptr<PrivateKey>, private_key);
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /*-------.

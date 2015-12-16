@@ -33,36 +33,36 @@ namespace infinit
       `-------------*/
 
       KeyPair::KeyPair(PublicKey const& K, PrivateKey const& k)
-        : _K(new PublicKey(K))
-        , _k(new PrivateKey(k))
+        : _public_key(new PublicKey(K))
+        , _private_key(new PrivateKey(k))
       {}
 
-      KeyPair::KeyPair(std::unique_ptr<PublicKey> K,
-                       std::unique_ptr<PrivateKey> k)
-        : _K(std::move(K))
-        , _k(std::move(k))
+      KeyPair::KeyPair(std::shared_ptr<PublicKey> K,
+                       std::shared_ptr<PrivateKey> k)
+        : _public_key(std::move(K))
+        , _private_key(std::move(k))
       {}
 
       KeyPair::KeyPair(PublicKey&& K,
                        PrivateKey&& k):
-        _K(new PublicKey(std::move(K))),
-        _k(new PrivateKey(std::move(k)))
+        _public_key(new PublicKey(std::move(K))),
+        _private_key(new PrivateKey(std::move(k)))
       {}
 
       KeyPair::KeyPair(KeyPair const& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::serialize::DynamicFormat<KeyPair>(other),
 #endif
-        _K(new PublicKey(*other._K)),
-        _k(new PrivateKey(*other._k))
+        _public_key(new PublicKey(*other._public_key)),
+        _private_key(new PrivateKey(*other._private_key))
       {}
 
       KeyPair::KeyPair(KeyPair&& other):
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::serialize::DynamicFormat<KeyPair>(other),
 #endif
-        _K(std::move(other._K)),
-        _k(std::move(other._k))
+        _public_key(std::move(other._public_key)),
+        _private_key(std::move(other._private_key))
       {}
 
       KeyPair::~KeyPair()
@@ -75,37 +75,37 @@ namespace infinit
       PublicKey const&
       KeyPair::K() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
+        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
 
-        return (*this->_K);
+        return (*this->_public_key);
       }
 
       PrivateKey const&
       KeyPair::k() const
       {
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
 
-        return (*this->_k);
+        return (*this->_private_key);
       }
 
       uint32_t
       KeyPair::size() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
-        ELLE_ASSERT_EQ(this->_K->size(), this->_k->size());
+        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT_EQ(this->_public_key->size(), this->_private_key->size());
 
-        return (this->_K->size());
+        return (this->_public_key->size());
       }
 
       uint32_t
       KeyPair::length() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
-        ELLE_ASSERT_EQ(this->_K->length(), this->_k->length());
+        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT_EQ(this->_public_key->length(), this->_private_key->length());
 
-        return (this->_K->length());
+        return (this->_public_key->length());
       }
 
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
@@ -134,9 +134,9 @@ namespace infinit
 
         // Instanciate both a RSA public and private key based on the RSA
         // structure.
-        this->_k.reset(new PrivateKey(rsa));
+        this->_private_key.reset(new PrivateKey(rsa));
         INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-        this->_K.reset(new PublicKey(*this->_k));
+        this->_public_key.reset(new PublicKey(*this->_private_key));
       }
 #endif
 
@@ -150,11 +150,11 @@ namespace infinit
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
 
         // The public component is enough to uniquely identify a key pair.
-        return (*this->_K == *other._K);
+        return (*this->_public_key == *other._public_key);
       }
 
       /*--------------.
@@ -162,8 +162,8 @@ namespace infinit
       `--------------*/
 
       KeyPair::KeyPair(elle::serialization::SerializerIn& serializer):
-        _K(),
-        _k()
+        _public_key(),
+        _private_key()
       {
         this->serialize(serializer);
       }
@@ -171,13 +171,13 @@ namespace infinit
       void
       KeyPair::serialize(elle::serialization::Serializer& serializer)
       {
-        serializer.serialize("public key", this->_K);
-        if (this->_K == nullptr)
+        serializer.serialize("public key", this->_public_key);
+        if (this->_public_key == nullptr)
           throw Error(
             elle::sprintf("unable to deserialize the 'public key'"));
 
-        serializer.serialize("private key", this->_k);
-        if (this->_k == nullptr)
+        serializer.serialize("private key", this->_private_key);
+        if (this->_private_key == nullptr)
           throw Error(
             elle::sprintf("unable to deserialize the 'private key'"));
       }
@@ -189,10 +189,10 @@ namespace infinit
       void
       KeyPair::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
+        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
 
-        stream << "(" << *this->_K << ", " << *this->_k << ")";
+        stream << "(" << *this->_public_key << ", " << *this->_private_key << ")";
       }
     }
   }

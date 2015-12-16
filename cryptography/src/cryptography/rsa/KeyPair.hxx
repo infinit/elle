@@ -26,22 +26,22 @@ ELLE_SERIALIZE_SPLIT_SAVE(infinit::cryptography::rsa::KeyPair,
                           value,
                           format)
 {
-  ELLE_ASSERT_NEQ(value._K, nullptr);
-  ELLE_ASSERT_NEQ(value._k, nullptr);
+  ELLE_ASSERT_NEQ(value._public_key, nullptr);
+  ELLE_ASSERT_NEQ(value._private_key, nullptr);
 
   switch (format)
   {
     case 0:
     {
-      archive << *value._K;
-      archive << *value._k;
+      archive << *value._public_key;
+      archive << *value._private_key;
 
       break;
     }
     case 1:
     {
-      archive << value._K;
-      archive << value._k;
+      archive << value._public_key;
+      archive << value._private_key;
 
       break;
     }
@@ -60,15 +60,15 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
   {
     case 0:
     {
-      value._K.reset(new infinit::cryptography::rsa::PublicKey(archive));
-      value._k.reset(new infinit::cryptography::rsa::PrivateKey(archive));
+      value._public_key.reset(new infinit::cryptography::rsa::PublicKey(archive));
+      value._private_key.reset(new infinit::cryptography::rsa::PrivateKey(archive));
 
       break;
     }
     case 1:
     {
-      archive >> value._K;
-      archive >> value._k;
+      archive >> value._public_key;
+      archive >> value._private_key;
 
       break;
     }
@@ -77,8 +77,8 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::KeyPair,
         elle::sprintf("unknown format '%s'", format));
   }
 
-  ELLE_ASSERT_NEQ(value._K, nullptr);
-  ELLE_ASSERT_NEQ(value._k, nullptr);
+  ELLE_ASSERT_NEQ(value._public_key, nullptr);
+  ELLE_ASSERT_NEQ(value._private_key, nullptr);
 }
 
 # endif
