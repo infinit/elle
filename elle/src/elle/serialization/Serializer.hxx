@@ -209,7 +209,7 @@ namespace elle
           std::is_base_of<boost::optional_detail::optional_tag, T>::value ||
           !std::is_constructible<T, elle::serialization::SerializerIn&>::value,
           "");
-        T res;
+        T res = {};
         self._serialize_anonymous("", res);
         return res;
       }
