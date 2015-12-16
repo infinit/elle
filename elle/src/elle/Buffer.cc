@@ -127,6 +127,14 @@ namespace elle
       throw std::bad_alloc();
   }
 
+  Buffer::Buffer(int size)
+    : Buffer(static_cast<std::size_t>(size))
+  {}
+
+  Buffer::Buffer(unsigned int size)
+    : Buffer(static_cast<std::size_t>(size))
+  {}
+
   Buffer::Buffer(void const* data, size_t size)
     : _size(0)
     , _capacity(0)
@@ -142,6 +150,10 @@ namespace elle
     else
       this->append(data, size);
   }
+
+  Buffer::Buffer(char const* data)
+    : Buffer(data, strlen(data))
+  {}
 
   Buffer::Buffer(std::string const& data)
     : Buffer(data.c_str(), data.size())
@@ -164,6 +176,10 @@ namespace elle
       throw std::bad_alloc();
     memcpy(this->_contents, source._contents, this->_size);
   }
+
+  Buffer::Buffer(ConstWeakBuffer const& source)
+    : Buffer(source.contents(), source.size())
+  {}
 
   Buffer&
   Buffer::operator = (Buffer&& other)

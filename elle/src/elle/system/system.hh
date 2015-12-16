@@ -50,7 +50,7 @@ namespace elle
     /// Write at the ond of the file
     void
     write_file(boost::filesystem::path const& path,
-               Buffer const& buffer = elle::Buffer{0});
+               Buffer const& buffer = elle::Buffer(0));
 
     void
     truncate(boost::filesystem::path file_name,

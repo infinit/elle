@@ -56,17 +56,29 @@ namespace elle
   public:
     /// An empty buffer.
     Buffer();
-    /// A buffer of a specify size.
+    /// An uninitialized buffer of the specified size.
     explicit
-    Buffer(size_t size);
+    Buffer(Size size);
+    /// An uninitialized buffer of the specified size.
+    explicit
+    Buffer(int size);
+    /// An uninitialized buffer of the specified size.
+    explicit
+    Buffer(unsigned int size);
     /// A buffer containing a copy of the given data.
     Buffer(void const* data, size_t size);
     /// A buffer containing a copy of the given data.
     Buffer(std::string const& data);
+    /// A copy of the literal string.
+    explicit
+    Buffer(char const* data);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);
     /// A copy of the source buffer
     Buffer(Buffer const& source);
+    /// A copy of the source buffer
+    explicit
+    Buffer(ConstWeakBuffer const& source);
     /// Steal the content of the moved buffer.
     Buffer&
     operator = (Buffer&& other);

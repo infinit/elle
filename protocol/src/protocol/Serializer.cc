@@ -69,7 +69,7 @@ namespace infinit
         uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
         state = 1;
-        elle::Buffer packet(size);
+        elle::Buffer packet(static_cast<std::size_t>(size));
         _stream.read(reinterpret_cast<char*>(packet.mutable_contents()), size);
         ELLE_DUMP("%s: packet data %s", *this, packet);
         state = 2;
