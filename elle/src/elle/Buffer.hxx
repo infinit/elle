@@ -21,6 +21,17 @@ namespace elle
   /*-------------.
   | Construction |
   `-------------*/
+  template <typename T,
+            typename std::enable_if<std::is_integral<T>::value, int>::type>
+  Buffer::Buffer(T size)
+    : _size(static_cast<Size>(size))
+    , _capacity(size)
+    , _contents(nullptr)
+  {
+    if ((this->_contents =
+         static_cast<Byte*>(::malloc(this->_capacity))) == nullptr)
+      throw std::bad_alloc();
+  }
 
   inline
   ConstWeakBuffer::ConstWeakBuffer():
@@ -29,7 +40,7 @@ namespace elle
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(const void* data, size_t size):
+  ConstWeakBuffer::ConstWeakBuffer(const void* data, Size size):
     _size(size),
     _contents(static_cast<Byte*>(const_cast<void*>(data)))
   {}
@@ -68,7 +79,7 @@ namespace elle
   {}
 
   inline
-  WeakBuffer::WeakBuffer(void* data, size_t size):
+  WeakBuffer::WeakBuffer(void* data, Size size):
     ConstWeakBuffer(data, size)
   {}
 

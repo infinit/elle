@@ -44,11 +44,11 @@ namespace elle
   `------*/
   public:
     /// Size of a Buffer.
-    typedef size_t Size;
+    typedef uint64_t Size;
     /// Data owned by a Buffer:
     typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
     /// Content owned by a Buffer: data and size.
-    typedef std::pair<ContentPtr, size_t> ContentPair;
+    typedef std::pair<ContentPtr, Size> ContentPair;
 
   /*-------------.
   | Construction |
@@ -57,19 +57,12 @@ namespace elle
     /// An empty buffer.
     Buffer();
     /// An uninitialized buffer of the specified size.
-    explicit
-    Buffer(Size size);
-    /// An uninitialized buffer of the specified size.
-    explicit
-    Buffer(int size);
-    /// An uninitialized buffer of the specified size.
-    explicit
-    Buffer(unsigned int size);
-    /// An uninitialized buffer of the specified size.
-    explicit
-    Buffer(unsigned long long size);
+    template <
+      typename T,
+      typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+    Buffer(T size);
     /// A buffer containing a copy of the given data.
-    Buffer(void const* data, size_t size);
+    Buffer(void const* data, Size size);
     /// A buffer containing a copy of the given data.
     Buffer(std::string const& data);
     /// A copy of the literal string.
@@ -111,10 +104,10 @@ namespace elle
     void
     shrink_to_fit();
   private:
-    static size_t _next_size(size_t);
+    static Size _next_size(Size);
 
   public:
-    static const size_t max_size = std::numeric_limits<size_t>::max();
+    static const Size max_size = std::numeric_limits<Size>::max();
 
   /*-----------.
   | Operations |
@@ -122,8 +115,7 @@ namespace elle
   public:
     /// Append a copy of the data to the end of the buffer.
     void
-    append(void const* data,
-           size_t size);
+    append(void const* data, Size size);
 
   /*---------------------.
   | Relational Operators |
@@ -228,7 +220,7 @@ namespace elle
     /// ConstWeakBuffer with null memory segment and size.
     ConstWeakBuffer();
     /// WeakBuffer for the given memory segment.
-    ConstWeakBuffer(const void* data, size_t size);
+    ConstWeakBuffer(const void* data, Size size);
     /// WeakBuffer with \a data content.
     ConstWeakBuffer(std::string const& data) /* implicit */;
     /// WeakBuffer with \a data content.
@@ -261,7 +253,7 @@ namespace elle
     ConstWeakBuffer
     range(int start, int end) const;
     /// Size of the buffer.
-    ELLE_ATTRIBUTE_R(size_t, size);
+    ELLE_ATTRIBUTE_R(Size, size);
     /// Buffer constant data.
     ELLE_ATTRIBUTE_R(const Byte*, contents);
 
@@ -331,7 +323,7 @@ namespace elle
     /// WeakBuffer with null memory segment and size.
     WeakBuffer();
     /// WeakBuffer for the given memory segment.
-    WeakBuffer(void* data, size_t size);
+    WeakBuffer(void* data, Size size);
     /// WeakBuffer for the given Buffer content.
     WeakBuffer(Buffer const& buffer) /* implicit */;
     /// WeakBuffer copy.
@@ -398,13 +390,13 @@ namespace std
   struct hash<elle::ConstWeakBuffer>
   {
   public:
-    std::size_t operator()(elle::ConstWeakBuffer const& buffer) const;
+    elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
   };
   template<>
   struct hash<elle::Buffer>
   {
   public:
-    std::size_t operator()(elle::Buffer const& buffer) const
+    elle::Buffer::Size operator()(elle::Buffer const& buffer) const
     {
       return hash<elle::ConstWeakBuffer>()(buffer);
     }

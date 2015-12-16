@@ -117,29 +117,7 @@ namespace elle
       throw std::bad_alloc();
   }
 
-  Buffer::Buffer(size_t size)
-    : _size(size)
-    , _capacity(size)
-    , _contents(nullptr)
-  {
-    if ((this->_contents =
-         static_cast<Byte*>(::malloc(this->_capacity))) == nullptr)
-      throw std::bad_alloc();
-  }
-
-  Buffer::Buffer(int size)
-    : Buffer(static_cast<std::size_t>(size))
-  {}
-
-  Buffer::Buffer(unsigned int size)
-    : Buffer(static_cast<std::size_t>(size))
-  {}
-
-  Buffer::Buffer(unsigned long long size)
-    : Buffer(static_cast<std::size_t>(size))
-  {}
-
-  Buffer::Buffer(void const* data, size_t size)
+  Buffer::Buffer(void const* data, Size size)
     : _size(0)
     , _capacity(0)
     , _contents(nullptr)
@@ -212,7 +190,7 @@ namespace elle
   }
 
   void
-  Buffer::capacity(size_t capacity)
+  Buffer::capacity(Size capacity)
   {
     if (capacity < ELLE_BUFFER_INITIAL_SIZE)
       capacity = ELLE_BUFFER_INITIAL_SIZE;
@@ -224,11 +202,11 @@ namespace elle
     this->_size = std::min(this->_size, capacity);
   }
 
-  void Buffer::append(void const* data, size_t size)
+  void Buffer::append(void const* data, Size size)
   {
     ELLE_ASSERT(data != nullptr || size == 0);
 
-    size_t old_size = this->_size;
+    Size old_size = this->_size;
     this->size(this->_size + size);
     /// XXX some implementations of memmove does not check for memory overlap
     memmove(this->_contents + old_size, data, size);
@@ -239,11 +217,11 @@ namespace elle
   }
 
   void
-  Buffer::size(size_t size)
+  Buffer::size(Size size)
   {
     if (this->_capacity < size)
       {
-        size_t next_size = Buffer::_next_size(size);
+        Size next_size = Buffer::_next_size(size);
         void* tmp = ::realloc(_contents, next_size);
         if (tmp == nullptr)
           throw std::bad_alloc();
@@ -349,7 +327,7 @@ namespace elle
       {
         std::cout << alignment << io::Dumpable::Shift;
 
-        for (size_t j = 0; j < (this->_size % space); j++)
+        for (Size j = 0; j < (this->_size % space); j++)
           std::cout << std::nouppercase
                     << std::hex
                     << std::setw(2)
@@ -359,8 +337,8 @@ namespace elle
       }
   }
 
-  size_t
-  Buffer::_next_size(size_t size)
+  Size
+  Buffer::_next_size(Size size)
   {
     if (size < 32)
       return 32;
@@ -434,7 +412,8 @@ namespace elle
   void
   Buffer::shrink_to_fit()
   {
-    auto size = std::max(ELLE_BUFFER_INITIAL_SIZE, this->_size);
+    auto size =
+      std::max(static_cast<Size>(ELLE_BUFFER_INITIAL_SIZE), this->_size);
     if (size < this->_capacity)
     {
       void* tmp = ::realloc(_contents, size);
@@ -551,7 +530,7 @@ namespace elle
       {
         std::cout << alignment << io::Dumpable::Shift;
 
-        for (size_t j = 0; j < (this->_size % space); j++)
+        for (Size j = 0; j < (this->_size % space); j++)
           std::cout << std::nouppercase
                     << std::hex
                     << std::setw(2)
@@ -911,7 +890,7 @@ namespace elle
 
 namespace std
 {
-  std::size_t
+  elle::Buffer::Size
   hash<elle::ConstWeakBuffer>::operator()(elle::ConstWeakBuffer const& buffer) const
   {
     return std::hash<std::string>()(buffer.string());
