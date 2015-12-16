@@ -1221,6 +1221,18 @@ namespace elle
       {
         typedef typename T::serialization_tag type;
       };
+
+      template <typename T>
+      struct serialization_tag<T const*>
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      struct serialization_tag<T*>
+      {
+        typedef typename T::serialization_tag type;
+      };
     }
 
     template <typename Serialization, typename T>
