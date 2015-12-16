@@ -17,6 +17,13 @@ namespace std
       static_cast<typename std::shared_ptr<T>::element_type*>(p.release());
     return std::unique_ptr<T>(raw);
   }
+
+  template<typename T>
+  std::shared_ptr<T>
+  make_shared(T&& o)
+  {
+    return std::shared_ptr<T>(new T(std::forward<T>(o)));
+  }
 }
 
 #endif
