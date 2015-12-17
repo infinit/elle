@@ -70,6 +70,10 @@ namespace elle
     static
     Version
     from_string(std::string const& repr);
+
+    static
+    std::string
+    to_string(elle::Version const& version);
   };
 }
 

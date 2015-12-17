@@ -120,6 +120,15 @@ namespace elle
         elle::sprintf("version format error: %s", e.what()));
     }
   }
+
+  std::string
+  Version::to_string(elle::Version const& version)
+  {
+    return elle::sprintf("%s.%s.%s",
+                         version.major(),
+                         version.minor(),
+                         version.subminor());
+  }
 }
 
 /*-----.
