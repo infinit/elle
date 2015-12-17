@@ -2918,7 +2918,7 @@ ELLE_TEST_SUITE()
     boost::unit_test::framework::master_test_suite().add(basics);
     basics->add(BOOST_TEST_CASE(test_basics_one), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
-    basics->add(BOOST_TEST_CASE(test_basics_interleave), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(nested_schedulers), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(non_managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(unique_ptr), 0, valgrind(1, 5));
