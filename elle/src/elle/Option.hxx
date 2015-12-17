@@ -87,7 +87,13 @@ namespace elle
         new (this->_buffer) Head(std::forward<A>(value));
         this->_index = Index;
       }
-      using Super::_emplace;
+
+      template <typename T, typename A>
+      typename std::enable_if<!std::is_same<T, Head>::value, void>::type
+      _emplace(A&& value)
+      {
+        this->Super::template _emplace<T>(std::forward<A>(value));
+      }
 
       void
       _reset()
