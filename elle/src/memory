@@ -5,8 +5,6 @@
 # include_next <cassert>
 # include_next <memory>
 
-# include <iostream>
-
 namespace std
 {
   template<typename T, typename U, typename D>
