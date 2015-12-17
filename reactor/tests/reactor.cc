@@ -2170,30 +2170,30 @@ ELLE_TEST_SCHEDULED(test_terminate_not_swallowed_catch)
 }
 
 // Check you can't swallow terminate exception.
-ELLE_TEST_SCHEDULED(test_terminate_swallowed)
-{
-  int i = 0;
-  int const n = 8;
-  reactor::Barrier waiting;
-  reactor::Thread thread(
-    "survivor",
-    [&]
-    {
-      while (++i < n)
-      {
-        try
-        {
-          waiting.open();
-          reactor::sleep();
-        }
-        catch (reactor::Terminate const&)
-        {}
-      }
-    });
-  reactor::wait(waiting);
-  thread.terminate_now();
-  BOOST_CHECK_EQUAL(i, n);
-}
+// ELLE_TEST_SCHEDULED(test_terminate_swallowed)
+// {
+//   int i = 0;
+//   int const n = 8;
+//   reactor::Barrier waiting;
+//   reactor::Thread thread(
+//     "survivor",
+//     [&]
+//     {
+//       while (++i < n)
+//       {
+//         try
+//         {
+//           waiting.open();
+//           reactor::sleep();
+//         }
+//         catch (reactor::Terminate const&)
+//         {}
+//       }
+//     });
+//   reactor::wait(waiting);
+//   thread.terminate_now();
+//   BOOST_CHECK_EQUAL(i, n);
+// }
 
 /*-----------------.
 | IO service throw |
