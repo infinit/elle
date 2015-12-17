@@ -5,17 +5,44 @@
 # include_next <cassert>
 # include_next <memory>
 
+# include <iostream>
+
 namespace std
 {
-  template<typename T, typename U>
-  std::unique_ptr<T>
-  static_pointer_cast(std::unique_ptr<U>&& p)
+  template<typename T, typename U, typename D>
+  std::unique_ptr<T, D>
+  static_pointer_cast(std::unique_ptr<U, D>& p)
+  {
+    return static_pointer_cast<T>(std::move(p));
+  }
+
+  template<typename T, typename U, typename D>
+  std::unique_ptr<T, D>
+  static_pointer_cast(std::unique_ptr<U, D>&& p)
   {
     assert(
       dynamic_cast<typename std::unique_ptr<T>::element_type*>(p.get()));
     auto raw =
-      static_cast<typename std::shared_ptr<T>::element_type*>(p.release());
-    return std::unique_ptr<T>(raw);
+      static_cast<typename std::unique_ptr<T>::element_type*>(p.release());
+    return std::unique_ptr<T, D>(raw, p.get_deleter());
+  }
+
+  template<typename T, typename U, typename D>
+  std::unique_ptr<T, D>
+  dynamic_pointer_cast(std::unique_ptr<U, D>& p)
+  {
+    return dynamic_pointer_cast<T>(std::move(p));
+  }
+
+  template<typename T, typename U, typename D>
+  std::unique_ptr<T, D>
+  dynamic_pointer_cast(std::unique_ptr<U, D>&& p)
+  {
+    auto raw =
+      dynamic_cast<typename std::unique_ptr<T>::element_type*>(p.get());
+    if (raw)
+      p.release();
+    return std::unique_ptr<T, D>(raw, p.get_deleter());
   }
 
   /** Make a shared pointer to an object.

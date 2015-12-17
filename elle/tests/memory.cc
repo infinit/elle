@@ -42,10 +42,92 @@ generic_unique_ptr()
   }
 }
 
+struct Super
+{
+  Super(int& count)
+    : _count(count)
+  {
+    ++this->_count;
+  }
+
+  virtual
+  ~Super()
+  {
+    --this->_count;
+  }
+
+  int& _count;
+};
+
+struct Child
+  : public Super
+{
+  Child(int& count)
+    : Super(count)
+  {
+    ++this->_count;
+  }
+
+  virtual
+  ~Child()
+  {
+    --this->_count;
+  }
+};
+
+static
+void
+dynamic_pointer_cast()
+{
+  {
+    int count;
+    BOOST_CHECK(
+      !std::dynamic_pointer_cast<Child>(
+        std::unique_ptr<Super>(new Super(count))));
+    BOOST_CHECK(
+      std::dynamic_pointer_cast<Child>(
+        std::unique_ptr<Super>(new Child(count))));
+  }
+  {
+    int count = 0;
+    {
+      auto super = elle::make_unique<Super>(count);
+      auto child = elle::make_unique<Child>(count);
+      BOOST_CHECK_EQUAL(count, 3);
+      BOOST_CHECK(super);
+      BOOST_CHECK(!std::dynamic_pointer_cast<Child>(super));
+      BOOST_CHECK(super);
+      auto casted = std::dynamic_pointer_cast<Child>(child);
+      BOOST_CHECK(casted);
+      BOOST_CHECK(!child);
+      BOOST_CHECK_EQUAL(count, 3);
+    }
+    BOOST_CHECK_EQUAL(count, 0);
+  }
+  {
+    bool beacon = false;
+    {
+      int count = 0;
+      std::unique_ptr<Child, std::function<void(Super*)>> child;
+      auto deleter = [&] (Super* p) { delete p; beacon = true; };
+      {
+        auto super = std::unique_ptr<Super, std::function<void(Super*)>>
+          (new Child(count), deleter);
+        child = std::dynamic_pointer_cast<Child>(super);
+        BOOST_CHECK(child);
+        BOOST_CHECK(!super);
+      }
+      BOOST_CHECK(!beacon);
+    }
+    BOOST_CHECK(beacon);
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
 
   suite.add(BOOST_TEST_CASE(make_unique));
   suite.add(BOOST_TEST_CASE(generic_unique_ptr));
+  suite.add(BOOST_TEST_CASE(dynamic_pointer_cast));
 }
