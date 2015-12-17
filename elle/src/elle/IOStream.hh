@@ -34,7 +34,7 @@ namespace elle
   class StreamBuffer: public std::streambuf
   {
   public:
-    typedef int64_t Size;
+    typedef uint64_t Size;
     StreamBuffer();
     virtual
     ~StreamBuffer();
@@ -77,7 +77,7 @@ namespace elle
   class PlainStreamBuffer: public StreamBuffer
   {
   public:
-    typedef int64_t Size;
+    typedef StreamBuffer::Size Size;
     PlainStreamBuffer();
     ~PlainStreamBuffer();
 
@@ -107,7 +107,7 @@ namespace elle
   class DynamicStreamBuffer : public StreamBuffer
   {
   public:
-    typedef int64_t Size;
+    typedef StreamBuffer::Size Size;
     typedef unsigned char Byte;
 
     DynamicStreamBuffer(Size size);

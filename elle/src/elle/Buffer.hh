@@ -44,7 +44,7 @@ namespace elle
   `------*/
   public:
     /// Size of a Buffer.
-    typedef int64_t Size;
+    typedef uint64_t Size;
     /// Data owned by a Buffer:
     typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
     /// Content owned by a Buffer: data and size.
