@@ -2436,28 +2436,28 @@ namespace background
       bool sleeping = false;
       bool over = false;
       std::condition_variable sync;
-      std::mutex m;
+      auto mtx = std::make_shared<std::mutex>();
       reactor::Thread t(
         "future",
-        [&]
+        [&, mtx]
         {
           reactor::BackgroundFuture<int> f(
-            [&]
+            [&, mtx]
             {
               {
-                std::unique_lock<std::mutex> lock(m);
+                std::unique_lock<std::mutex> lock(*mtx);
                 sleeping = true;
                 sync.notify_one();
               }
               {
-                std::unique_lock<std::mutex> lock(m);
+                std::unique_lock<std::mutex> lock(*mtx);
                 while (!over)
                   sync.wait(lock);
               }
               return 42;
             });
           {
-            std::unique_lock<std::mutex> lock(m);
+            std::unique_lock<std::mutex> lock(*mtx);
             while (!sleeping)
               sync.wait(lock);
           }
@@ -2466,7 +2466,7 @@ namespace background
       reactor::wait(destroying);
       t.terminate_now();
       {
-        std::unique_lock<std::mutex> lock(m);
+        std::unique_lock<std::mutex> lock(*mtx);
         over = true;
         sync.notify_one();
       }
