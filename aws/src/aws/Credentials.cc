@@ -28,6 +28,26 @@ namespace aws
     , _server_time(std::move(server_time))
     , _expiry(std::move(expiration))
     , _skew()
+    , _federated_user(true)
+  {
+    this->_initialize();
+  }
+
+  Credentials::Credentials(std::string const& access_key_id,
+                           std::string const& secret_access_key,
+                           std::string const& region,
+                           std::string const& bucket,
+                           std::string const& folder)
+    : _access_key_id(access_key_id)
+    , _secret_access_key(secret_access_key)
+    , _session_token()
+    , _region(region)
+    , _bucket(bucket)
+    , _folder(folder)
+    , _server_time(boost::posix_time::second_clock::universal_time())
+    , _expiry(boost::posix_time::pos_infin)
+    , _skew()
+    , _federated_user(false)
   {
     this->_initialize();
   }
@@ -93,11 +113,21 @@ namespace aws
     s.serialize("access_key_id", this->_access_key_id);
     s.serialize("secret_access_key", this->_secret_access_key);
     s.serialize("session_token", this->_session_token);
+    if (s.in())
+      this->_federated_user = this->session_token() ? true : false;
     s.serialize("region", this->_region);
     s.serialize("bucket", this->_bucket);
     s.serialize("folder", this->_folder);
-    s.serialize("expiration", this->_expiry);
-    s.serialize("current_time", this->_server_time);
+    if (this->federated_user())
+    {
+      s.serialize("expiration", this->_expiry);
+      s.serialize("current_time", this->_server_time);
+    }
+    else if (s.in())
+    {
+      this->_expiry = boost::posix_time::pos_infin;
+      this->_server_time = boost::posix_time::second_clock::universal_time();
+    }
     if (s.in())
       this->_initialize();
   }
@@ -106,7 +136,9 @@ namespace aws
   void
   Credentials::print(std::ostream& stream) const
   {
-    stream << "aws::Credentials(access_id = \"" << this->_access_key_id
-           << "\", expiry = " << this->_expiry << ")";
+    stream << "aws::Credentials(access_id = \"" << this->_access_key_id;
+    if (this->federated_user())
+      stream << "\", expiry = " << this->_expiry;
+    stream << ")";
   }
 }

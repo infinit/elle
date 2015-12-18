@@ -22,6 +22,7 @@ namespace aws
       `-------------*/
     public:
       Credentials() = default;
+      /// Constructor for federated user.
       Credentials(std::string const& access_key_id,
                   std::string const& secret_access_key,
                   std::string const& session_token,
@@ -30,7 +31,12 @@ namespace aws
                   std::string const& folder,
                   boost::posix_time::ptime expiration,
                   boost::posix_time::ptime server_time);
-
+      /// Constructor for normal user (i.e.: No session_token).
+      Credentials(std::string const& access_key_id,
+                  std::string const& secret_access_key,
+                  std::string const& region,
+                  std::string const& bucket,
+                  std::string const& folder);
       std::string
       credential_string(RequestTime const& request_time,
                         Service const& aws_service);
@@ -40,7 +46,7 @@ namespace aws
 
       ELLE_ATTRIBUTE_R(std::string, access_key_id);
       ELLE_ATTRIBUTE_R(std::string, secret_access_key);
-      ELLE_ATTRIBUTE_R(std::string, session_token);
+      ELLE_ATTRIBUTE_R(boost::optional<std::string>, session_token);
       ELLE_ATTRIBUTE_R(std::string, region);
       ELLE_ATTRIBUTE_R(std::string, bucket);
       ELLE_ATTRIBUTE_R(std::string, folder);
@@ -49,6 +55,7 @@ namespace aws
       ELLE_ATTRIBUTE_R(boost::posix_time::ptime, expiry);
       // Estimated skew between trusted server time and local universal time.
       ELLE_ATTRIBUTE_RW(boost::posix_time::time_duration, skew);
+      ELLE_ATTRIBUTE_R(bool, federated_user);
 
       /*--------------.
       | Serialization |
