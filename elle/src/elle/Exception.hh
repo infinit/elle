@@ -26,7 +26,7 @@ namespace elle
     Exception(elle::Backtrace const& bt, std::string const& message);
     ~Exception() noexcept (true);
     void
-    inner_exception(std::unique_ptr<Exception>&& exception);
+    inner_exception(std::exception_ptr exception);
 
   /*--------------.
   | Serialization |
@@ -44,7 +44,7 @@ namespace elle
     void
     throw_with_nested(T&& t);
     ELLE_ATTRIBUTE_R(Backtrace, backtrace);
-    ELLE_ATTRIBUTE_R(std::shared_ptr<Exception>, inner_exception);
+    ELLE_ATTRIBUTE_R(std::exception_ptr, inner_exception);
   };
 
   std::ostream& operator << (std::ostream& s, Exception const& e);

@@ -25,9 +25,9 @@ namespace elle
   {}
 
   void
-  Exception::inner_exception(std::unique_ptr<Exception>&& exception)
+  Exception::inner_exception(std::exception_ptr exception)
   {
-    this->_inner_exception = std::move(exception);
+    this->_inner_exception = exception;
   }
 
   /*--------------.
@@ -56,7 +56,10 @@ namespace elle
     s << e.what() << std::endl;
     s << e.backtrace();
     if (auto const& inner = e.inner_exception())
-      s << std::endl << "Exception was triggered by: " << *inner;
+    {
+      s << std::endl
+        << "Exception was triggered by: " << elle::exception_string(inner);
+    }
     try
     {
       std::rethrow_if_nested(e);
