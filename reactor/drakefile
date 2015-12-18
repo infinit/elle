@@ -50,7 +50,7 @@ def configure(curl_config,
   global python_lib
 
   if cxx_toolkit.os is drake.os.macos:
-    global osxfuse_package
+    global osxfuse_core_package
 
   # Public C++ configuration
   config = drake.cxx.Config()
@@ -330,67 +330,55 @@ def configure(curl_config,
       local_cxx_config += fuse_config
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
     elif cxx_toolkit.os is drake.os.macos:
-      osxfuse_version = drake.Version(3, 0, 9)
-      osxfuse_base_name = 'osxfuse-%s' % osxfuse_version
-      osxfuse_url = 'https://github.com/osxfuse/osxfuse/releases/download'\
-        '/%(name)s/%(name)s.dmg' % {'name': osxfuse_base_name}
-      osxfuse_dmg = drake.node('osxfuse/%s.dmg' % osxfuse_base_name)
-      drake.HTTPDownload(
-        osxfuse_url,
-        osxfuse_dmg,
-        fingerprint = '5163a918919fbbe6d746ec6a640dc5ca',
-      )
-      osxfuse_package = drake.node('osxfuse/%s.pkg' % osxfuse_base_name)
-      fuse_includes = drake.nodes(
-        'osxfuse/fuse/include/cuse_lowlevel.h',
-        'osxfuse/fuse/include/fuse_common_compat.h',
-        'osxfuse/fuse/include/fuse_common.h',
-        'osxfuse/fuse/include/fuse_compat.h',
-        'osxfuse/fuse/include/fuse.h',
-        'osxfuse/fuse/include/fuse_lowlevel_compat.h',
-        'osxfuse/fuse/include/fuse_lowlevel.h',
-        'osxfuse/fuse/include/fuse_opt.h'
-        )
-      fuse_includes = drake.copy(
-        fuse_includes, 'osxfuse/include/fuse', strip_prefix = True)
+      osxfuse_target = 'distribution_infinit'
+      osxfuse_prefix = 'osxfuse/%s' % osxfuse_target
+      fuse_lib = \
+        drake.cxx.DynLib('%s/usr/local/lib/libosxfuse.2.dylib' % osxfuse_prefix)
+      fuse_includes = list(map(lambda i: \
+        drake.node(osxfuse_prefix + '/usr/local/include/osxfuse/' + i),
+        [
+          'fuse/cuse_lowlevel.h',
+          'fuse/fuse_common_compat.h',
+          'fuse/fuse_common.h',
+          'fuse/fuse_compat.h',
+          'fuse/fuse.h',
+          'fuse/fuse_lowlevel_compat.h',
+          'fuse/fuse_lowlevel.h',
+          'fuse/fuse_opt.h',
+        ]
+      ))
+      osxfuse_core_package = \
+        drake.node('%s/Packages/osxfuse-core.pkg' % osxfuse_prefix)
       fuse_config = drake.cxx.Config()
-      fuse_config.add_local_include_path('osxfuse/include')
+      fuse_config.add_local_include_path(
+        '%s/usr/local/include/osxfuse' % osxfuse_prefix)
       local_cxx_config += fuse_config
-
-      class OSXFUSEExtractor(drake.Builder):
-        def __init__(self, version, dmg, target):
-          self.__version = version
-          self.__dmg = dmg
-          self.__destination = target
-          import tempfile
-          self.__mountpoint = tempfile.mkdtemp()
-          drake.Builder.__init__(self, [self.__dmg], [target])
-
-        def execute(self):
-          self.cmd('Mount DMG: %s' % self.__dmg,
-          [
-            'hdiutil', 'attach', '-noautoopen',
-            '-mountpoint', self.__mountpoint,
-            self.__dmg,
-          ])
-          self.cmd('Copy .pkg',
-          [
-            'cp',
-            '%s/Extras/FUSE for OS X %s.pkg' % \
-              (self.__mountpoint, self.__version),
-            self.__destination,
-          ])
-          self.cmd('Unmount DMG: %s' % self.__dmg,
-          [
-            'hdiutil', 'detach', self.__mountpoint,
-          ])
-          import shutil
-          shutil.rmtree(self.__mountpoint)
-          return True
-
-      OSXFUSEExtractor(osxfuse_version, osxfuse_dmg, osxfuse_package)
-      fuse_lib = drake.cxx.DynLib('/usr/local/lib/libosxfuse.2.dylib')
-
+      osxfuse_build_command = [
+        './build.sh',
+        '--action=build',
+        '--build-directory=%s' % \
+          (drake.path_root() / drake.path_build('osxfuse')),
+        '--target=%s' % osxfuse_target,
+        '--',
+        '--configuration=Release',
+        '--sdk=10.7',
+        '--deployment-target=10.7',
+        '--build-setting=CLANG_LINK_OBJC_RUNTIME=NO',
+        '--kext=10.7',
+        '--kext=10.8->10.7',
+        '--kext=10.9',
+        '--kext=10.10->10.9',
+        '--kext=10.11->10.9',
+      ]
+      if codesign:
+        osxfuse_build_command.append('--codesign')
+      drake.ShellCommand(
+          sources = drake.nodes('osxfuse/build.sh'),
+          targets = [osxfuse_core_package, fuse_lib] + fuse_includes,
+          command = osxfuse_build_command,
+          cwd = drake.node('osxfuse').path(),
+          pretty = 'Building FUSE for OS X Core.pkg',
+        )
   elif fuse:
     fuse_config = drake.cxx.Config()
     fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
