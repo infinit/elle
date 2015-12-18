@@ -88,7 +88,7 @@ namespace aws
     AWSException(std::string const& operation,
                  std::string const& url,
                  unsigned int attempt,
-                 std::unique_ptr<elle::Exception> inner);
+                 std::exception_ptr inner);
   private:
     // Attempt number
     ELLE_ATTRIBUTE_R(unsigned int, attempt);

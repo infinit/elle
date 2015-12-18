@@ -58,8 +58,7 @@ namespace elle
         catch (elle::json::ParseError const& e)
         {
           Error exception("json parse error");
-          exception.inner_exception(
-            elle::make_unique<elle::json::ParseError>(e));
+          exception.inner_exception(std::current_exception());
           throw exception;
         }
       }

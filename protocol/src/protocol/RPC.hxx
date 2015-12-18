@@ -211,7 +211,8 @@ namespace infinit
           // exceptions.
           RPCError e
             (elle::sprintf("remote procedure '%s' failed with '%s'", this->_name, error));
-          e.inner_exception(elle::make_unique<elle::Exception>(bt, error));
+          elle::Exception inner_exception(bt, error);
+          e.inner_exception(std::make_exception_ptr(inner_exception));
           throw e;
         }
       }

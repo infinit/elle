@@ -7,14 +7,15 @@ namespace aws
   AWSException::AWSException(std::string const& operation,
                              std::string const& url,
                              unsigned int attempt,
-                             std::unique_ptr<elle::Exception> inner)
+                             std::exception_ptr inner)
     : Super(elle::sprintf("AWS error: '%s' on '%s' (attempt %s): %s",
-                          operation, url, attempt, inner->what()))
+                          operation, url, attempt,
+                          elle::exception_string(inner)))
     , _attempt(attempt)
     , _operation(operation)
     , _url(url)
   {
-    inner_exception(std::move(inner));
+    inner_exception(inner);
   };
 
   RequestError::RequestError(std::string const& message,
@@ -34,34 +35,34 @@ namespace aws
   {}
 
   CredentialsExpired::CredentialsExpired(
-    std::string const& message,
-    boost::optional<reactor::http::StatusCode> http_status,
-    boost::optional<std::string> const& error_code
-    )
-  : RequestError(message, http_status, error_code)
+      std::string const& message,
+      boost::optional<reactor::http::StatusCode> http_status,
+      boost::optional<std::string> const& error_code
+      )
+    : RequestError(message, http_status, error_code)
   {}
 
   CredentialsNotValid::CredentialsNotValid(
-    std::string const& message,
-    boost::optional<reactor::http::StatusCode> http_status,
-    boost::optional<std::string> const& error_code
-    )
-  : RequestError(message, http_status, error_code)
+      std::string const& message,
+      boost::optional<reactor::http::StatusCode> http_status,
+      boost::optional<std::string> const& error_code
+      )
+    : RequestError(message, http_status, error_code)
   {}
 
   CorruptedData::CorruptedData(
-    std::string const& message,
-    boost::optional<reactor::http::StatusCode> http_status,
-    boost::optional<std::string> const& error_code
-    )
-  : RequestError(message, http_status, error_code)
+      std::string const& message,
+      boost::optional<reactor::http::StatusCode> http_status,
+      boost::optional<std::string> const& error_code
+      )
+    : RequestError(message, http_status, error_code)
   {}
 
   FileNotFound::FileNotFound(
-    std::string const& message,
-    boost::optional<reactor::http::StatusCode> http_status,
-    boost::optional<std::string> const& error_code
-    )
-  : RequestError(message, http_status, error_code)
+      std::string const& message,
+      boost::optional<reactor::http::StatusCode> http_status,
+      boost::optional<std::string> const& error_code
+      )
+    : RequestError(message, http_status, error_code)
   {}
 }
