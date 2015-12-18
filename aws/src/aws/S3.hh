@@ -22,7 +22,9 @@ namespace aws
     std::string scheme;
     std::string domain;
     std::string path;
-    std::string join() const;
+
+    std::string
+    join() const;
   };
   class S3:
     public elle::Printable
@@ -39,7 +41,7 @@ namespace aws
   `-------------*/
   public:
     /// Create a new S3 handler.
-    /// This requires a bucket name, rbemote folder and set of credentials.
+    /// This requires a bucket name, remote folder and set of credentials.
     /// Use of this should be optimised based on S3 pricing:
     /// http://aws.amazon.com/s3/pricing/
     S3(Credentials const& credentials);
@@ -95,12 +97,15 @@ namespace aws
     /// Initialize multipart upload for given object
     /// @return an upload key needed by further operations
     std::string
-    multipart_initialize(std::string const& object_name,
-      std::string const& mime_type = "binary/octet-stream");
+    multipart_initialize(
+      std::string const& object_name,
+      std::string const& mime_type = "binary/octet-stream",
+      bool ommit_redundancy = false);
 
     typedef std::pair<int, std::string> MultiPartChunk;
     /// Upload one part of a multipart upload
-    /// @return id for chunk information that needs to be passed to multipart_finalize
+    /// @return id for chunk information that needs to be passed to
+    /// multipart_finalize
     std::string
     multipart_upload(
       std::string const& object_name,

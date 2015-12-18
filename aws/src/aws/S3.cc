@@ -67,14 +67,22 @@ namespace aws
     for (unsigned i = 0; i < input.length() ; ++i)
     {
       char ch = input[i];
-      if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == '-' || ch == '~' || ch == '.') {
+      if ((ch >= 'A' && ch <= 'Z') ||
+          (ch >= 'a' && ch <= 'z') ||
+          (ch >= '0' && ch <= '9') ||
+          ch == '_' || ch == '-' || ch == '~' || ch == '.')
+      {
         result+= ch;
       }
       else if (ch == '/') {
         result += (encodeSlash ? "%2F" : "/");
       }
       else
-        result += std::string("%") + syms[((unsigned char)ch)>>4] + syms[((unsigned char)ch)&0x0F];
+      {
+        result += std::string("%")
+               + syms[((unsigned char)ch)>>4]
+               + syms[((unsigned char)ch)&0x0F];
+      }
     }
     return result;
   }
@@ -112,10 +120,11 @@ namespace aws
     std::string res = "?";
     for (auto const& parameter: query)
     {
-      res += elle::sprintf("%s=%s&", EscapedString(parameter.first),
-                                 EscapedString(parameter.second));
+      res += elle::sprintf("%s=%s&",
+                           EscapedString(parameter.first),
+                           EscapedString(parameter.second));
     }
-    res = res.substr(0, res.size()-1);
+    res = res.substr(0, res.size() - 1);
     return res;
   }
   /*-----------.
@@ -170,10 +179,13 @@ namespace aws
     query["prefix"] = elle::sprintf("%s/", this->_credentials.folder());
     query["delimiter"] = "/";
     if (marker.size() > 0)
-      query["marker"] = elle::sprintf("%s/%s", this->_credentials.folder(), marker);
+    {
+      query["marker"] =
+        elle::sprintf("%s/%s", this->_credentials.folder(), marker);
+    }
 
-    auto request = _build_send_request(RequestKind::data,
-                                       "/", "list", reactor::http::Method::GET, query);
+    auto request = this->_build_send_request(
+      RequestKind::data, "/", "list", reactor::http::Method::GET, query);
     return this->_parse_list_xml(*request);
    }
 
@@ -186,12 +198,12 @@ namespace aws
     std::vector<std::pair<std::string, S3::FileSize>> chunk;
     do
     {
-      chunk = list_remote_folder(marker);
+      chunk = this->list_remote_folder(marker);
       if (chunk.empty())
         break;
       marker = chunk.back().first;
       result.insert(result.end(),
-                    first ? chunk.begin():chunk.begin()+1, chunk.end());
+                    first ? chunk.begin() : chunk.begin() + 1, chunk.end());
       first = false;
     }
     while (chunk.size() >= 1000);
@@ -203,8 +215,8 @@ namespace aws
                        FileSize offset, FileSize size)
   {
     RequestHeaders headers;
-    headers["Range"] = elle::sprintf("bytes=%s-%s", offset, offset+size-1);
-    return get_object(object_name, headers);
+    headers["Range"] = elle::sprintf("bytes=%s-%s", offset, offset + size - 1);
+    return this->get_object(object_name, headers);
   }
 
   elle::Buffer
@@ -220,10 +232,12 @@ namespace aws
     );
     ELLE_DEBUG("url: %s", url);
 
-    auto request = _build_send_request(RequestKind::data, url,
-                                       elle::sprintf("get_object(%s)", headers),
-                                       reactor::http::Method::GET,
-                                       RequestQuery(), headers);
+    auto request =
+      this->_build_send_request(RequestKind::data, url,
+                                elle::sprintf("get_object(%s)", headers),
+                                reactor::http::Method::GET,
+                                RequestQuery(),
+                                headers);
     auto response = request->response();
     std::string calcd_md5(this->_md5_digest(response));
     std::string aws_md5(request->headers().at("ETag"));
@@ -245,19 +259,21 @@ namespace aws
   {
     ELLE_DEBUG("%s: fetching folder content", *this);
     std::vector<std::pair<std::string, S3::FileSize>> content =
-      list_remote_folder_full();
+      this->list_remote_folder_full();
     ELLE_DEBUG("%s: deleting %s objects", *this, content.size());
     // multi-delete has a limit at 1000 items...in theory. But passing 1000
     // objects asplode the AWS xml parser.
     int block_size = 200;
-    for (int i = 0; i < (int)content.size(); i+= block_size)
-    {    // build delete request payload
+    for (int i = 0; i < (int)content.size(); i += block_size)
+    {
+      // build delete request payload
       std::string xml;
       xml += "<Delete><Quiet>true</Quiet>";
-      for (int j=i; j < (int)content.size() && j-i <= block_size; ++j)
+      for (int j = i; j < (int)content.size() && j - i <= block_size; ++j)
       {
         xml += "<Object><Key>"
-          + _credentials.folder() + "/" + content[j].first + "</Key></Object>";
+            + this->_credentials.folder() + "/" + content[j].first
+            + "</Key></Object>";
       }
       xml += "</Delete>";
       elle::ConstWeakBuffer payload(xml);
@@ -279,14 +295,16 @@ namespace aws
       RequestQuery query;
       query["delete"] = "";
 
-      _build_send_request(RequestKind::control,
-                          "/",
-                          "delete_folder",
-                          reactor::http::Method::POST,
-                          query, headers,
-                          "text/xml", payload);
+      this->_build_send_request(RequestKind::control,
+                                "/",
+                                "delete_folder",
+                                reactor::http::Method::POST,
+                                query,
+                                headers,
+                                "text/xml",
+                                payload);
     }
-    delete_object(_credentials.folder());
+    delete_object(this->_credentials.folder());
   }
 
   void
@@ -294,23 +312,26 @@ namespace aws
   {
     ELLE_TRACE_SCOPE("%s: DELETE remote object", *this);
 
-    auto url = elle::sprintf("/%s/%s", this->_credentials.folder(), object_name);
+    auto url =
+      elle::sprintf("/%s/%s", this->_credentials.folder(), object_name);
     ELLE_DEBUG("url: %s", url);
 
-    _build_send_request(RequestKind::control, url,
-                        "delete",
-                        reactor::http::Method::DELETE,
-                        query);
-
+    this->_build_send_request(RequestKind::control,
+                              url,
+                              "delete",
+                              reactor::http::Method::DELETE,
+                              query);
   }
 
   std::string
   S3::multipart_initialize(std::string const& object_name,
-                           std::string const& mime_type)
+                           std::string const& mime_type,
+                           bool ommit_redundancy)
   {
     ELLE_TRACE_SCOPE("%s: initialize multipart: %s", *this, object_name);
     RequestHeaders headers;
-    headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
+    if (!ommit_redundancy)
+      headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
     RequestQuery query;
     query["uploads"] = "";
     auto url = elle::sprintf(
@@ -320,10 +341,13 @@ namespace aws
     );
     ELLE_DUMP("url: %s", url);
 
-    auto request = _build_send_request(
+    auto request = this->_build_send_request(
       RequestKind::control,
-      url, "multipart_initialize", reactor::http::Method::POST,
-      query, headers,
+      url,
+      "multipart_initialize",
+      reactor::http::Method::POST,
+      query,
+      headers,
       mime_type);
     using boost::property_tree::ptree;
     ptree response;
@@ -341,7 +365,7 @@ namespace aws
     )
   {
     RequestQuery query;
-    query["partNumber"] = std::to_string(chunk+1);
+    query["partNumber"] = std::to_string(chunk + 1);
     query["uploadId"] = upload_key;
     return put_object(object, object_name, query, true, progress_callback);
   }
@@ -358,8 +382,9 @@ namespace aws
     xchunks = "<CompleteMultipartUpload>";
     for (auto const& chunk: chunks)
     {
-      xchunks += elle::sprintf("<Part><PartNumber>%s</PartNumber><ETag>%s</ETag></Part>",
-                                chunk.first+1, chunk.second);
+      xchunks +=
+        elle::sprintf("<Part><PartNumber>%s</PartNumber><ETag>%s</ETag></Part>",
+                      chunk.first + 1, chunk.second);
     }
     xchunks += "</CompleteMultipartUpload>";
     RequestQuery query;
@@ -373,24 +398,29 @@ namespace aws
 
     try
     {
-      auto request = _build_send_request(
+      auto request = this->_build_send_request(
         RequestKind::control,
-        url, "multipart_finalize", reactor::http::Method::POST,
-        query, RequestHeaders(),
-        "text/xml", xchunks);
+        url,
+        "multipart_finalize",
+        reactor::http::Method::POST,
+        query,
+        RequestHeaders(),
+        "text/xml",
+        xchunks);
       // This request can 200 OK and still return an error in XML
       using boost::property_tree::ptree;
       ptree response;
 
       read_xml(*request, response);
-      if (response.find("Error") != response.not_found()
-        || response.find("CompleteMultipartUploadResult") == response.not_found())
+      if (response.find("Error") != response.not_found() ||
+          response.find("CompleteMultipartUploadResult") == response.not_found())
       {
-        throw aws::RequestError(elle::sprintf("%s: during S3 finalize on %s:%s",
-                                              *this, object_name, request->response()));
+        throw aws::RequestError(
+          elle::sprintf("%s: during S3 finalize on %s:%s",
+                        *this, object_name, request->response()));
       }
     }
-    catch(...)
+    catch (...)
     {
       ELLE_WARN("multipart_upload request payload: %s", xchunks);
       throw;
@@ -424,8 +454,11 @@ namespace aws
                                this->_credentials.folder(),
                                object_name);
 
-      auto request = _build_send_request(RequestKind::data,
-                                         url, "multipart_list", reactor::http::Method::GET, query);
+      auto request = this->_build_send_request(RequestKind::data,
+                                               url,
+                                               "multipart_list",
+                                               reactor::http::Method::GET,
+                                               query);
 
       using boost::property_tree::ptree;
       ptree response;
@@ -450,10 +483,11 @@ namespace aws
         return res;
       // recompute max_id for next request
       max_id = std::max_element(res.begin(), res.end(),
-        [](MultiPartChunk const& a, MultiPartChunk const& b)
-          { return a.first < b.first;})->first + 1;
+        [] (MultiPartChunk const& a, MultiPartChunk const& b)
+        {
+          return a.first < b.first;
+        })->first + 1;
       ELLE_DUMP("Marker for next iteration is %s", max_id);
-
     }
   }
 
@@ -521,7 +555,8 @@ namespace aws
                            std::string const& canonical_request_sha256)
   {
     aws::CredentialScope credential_scope(request_time,
-                                          Service::s3, _credentials.region());
+                                          Service::s3,
+                                          this->_credentials.region());
 
     aws::StringToSign res(request_time, credential_scope,
                           canonical_request_sha256,
@@ -545,9 +580,8 @@ namespace aws
         std::string fname = base_element.second.get<std::string>("Key");
         if (fname != elle::sprintf("%s/", this->_credentials.folder()))
         {
-          int pos = fname.size() - this->_credentials.folder().size();
-          fname = fname.substr(this->_credentials.folder().size() + 1, fname.size() -
-                               (pos + 1));
+          int pos = this->_credentials.folder().size() + 1;
+          fname = fname.substr(pos, fname.size() - pos);
           FileSize fsize = base_element.second.get<FileSize>("Size");
           std::pair<std::string, S3::FileSize> file_pair(fname, fsize);
           res.push_back(file_pair);
@@ -677,7 +711,8 @@ namespace aws
           write_xml(payload, response_tree);
           if (code == "RequestTimeTooSkewed")
           {
-            ELLE_TRACE("S3: RequestTimeTooSkewed, treating as CredentialsExpired");
+            ELLE_TRACE(
+              "S3: RequestTimeTooSkewed, treating as CredentialsExpired");
             throw CredentialsExpired(payload.str(), status, code);
           }
           ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
@@ -737,8 +772,9 @@ namespace aws
     boost::optional<std::function<void (int)>> const& progress_callback
     )
   {
-    boost::posix_time::time_duration timeout =
-      (kind == RequestKind::control) ? default_timeout() : default_stall_timeout();
+    boost::posix_time::time_duration timeout = (kind == RequestKind::control)
+                                             ? default_timeout()
+                                             : default_stall_timeout();
     if (timeout_opt)
       timeout = timeout_opt.get();
     // Transient errors on requests is perfectly reasonable
@@ -764,7 +800,11 @@ namespace aws
       RequestHeaders headers(extra_headers);
       headers["x-amz-date"] = this->_amz_date(request_time);
       headers["x-amz-content-sha256"] = this->_sha256_hexdigest(payload);
-      headers["x-amz-security-token"] = this->_credentials.session_token();
+      if (this->_credentials.session_token())
+      {
+        headers["x-amz-security-token"] =
+          this->_credentials.session_token().get();
+      }
       // Host header needs bare hostname.
       headers["Host"] = hostname.domain;
       if (!content_type.empty())
@@ -775,32 +815,37 @@ namespace aws
       // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
       CanonicalRequest canonical_request(
         method, url_encoded,  query, headers,
-        _signed_headers(headers), _sha256_hexdigest(payload)
+        this->_signed_headers(headers), this->_sha256_hexdigest(payload)
       );
-      reactor::http::Request::Configuration cfg(
-        _initialize_request(kind, request_time, canonical_request, headers, timeout));
+      reactor::http::Request::Configuration cfg(this->_initialize_request(
+        kind, request_time, canonical_request, headers, timeout));
       std::string full_url = elle::sprintf(
         "%s%s%s",
         hostname.join(),
         url_encoded,
         query_parameters(query)
         );
-      ELLE_DEBUG("Full url: %s", full_url);
+      ELLE_DEBUG("full url: %s", full_url);
       for (auto const& h: headers)
         ELLE_DUMP("header %s: %s", h.first, h.second);
       std::unique_ptr<reactor::http::Request> request;
       try
       {
-        request = elle::make_unique<reactor::http::Request>(full_url, method, cfg);
+        request =
+          elle::make_unique<reactor::http::Request>(full_url, method, cfg);
         if (progress_callback)
+        {
           request->progress_changed().connect(
             [&progress_callback] (reactor::http::Request::Progress const& p)
             {
               progress_callback.get()(p.upload_current);
             });
+        }
         if (payload.size())
+        {
           request->write(reinterpret_cast<char const*>(payload.contents()),
             payload.size());
+        }
         reactor::wait(*request);
       }
       catch (reactor::network::Exception const& e)
@@ -809,9 +854,10 @@ namespace aws
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.what(), attempt);
         AWSException aws_exception(operation, url, attempt,
-                                   elle::make_unique<reactor::network::Exception>(e));
-        if (_on_error)
-          _on_error(aws_exception, !max_attempts || attempt < max_attempts);
+                                   std::current_exception());
+        if (this->_on_error)
+          this->_on_error(aws_exception,
+                          !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
         {
           throw aws_exception;
@@ -828,9 +874,9 @@ namespace aws
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
         AWSException aws_exception(operation, url, attempt,
-                                   elle::make_unique<reactor::http::RequestError>(e));
-        if (_on_error)
-          _on_error(aws_exception, !max_attempts || attempt < max_attempts);
+                                   std::current_exception());
+        if (this->_on_error)
+          this->_on_error(aws_exception, !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
         {
           throw aws_exception;
@@ -846,30 +892,30 @@ namespace aws
       {
         _check_request_status(*request, url);
       }
-      catch(CredentialsExpired const& e)
+      catch (CredentialsExpired const& e)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
                    *this, this->_credentials.expiry(), !!_query_credentials);
         AWSException aws_exception(operation, url, 0,
-                                   elle::make_unique<CredentialsExpired>(e));
-        if (_on_error)
-          _on_error(aws_exception, !!_query_credentials);
+                                   std::current_exception());
+        if (this->_on_error)
+          this->_on_error(aws_exception, !!_query_credentials);
         if (!_query_credentials)
           throw aws_exception;
-        this->_credentials = _query_credentials(false);
+        this->_credentials = this->_query_credentials(false);
         ELLE_TRACE("%s: acquired new credentials expiring %s",
                    *this,  this->_credentials.expiry());
         continue;
       }
-      catch(TransientError const& err)
+      catch (TransientError const& err)
       {
         ++attempt;
         AWSException aws_exception(operation, url, attempt,
-                                   elle::make_unique<TransientError>(err));
+                                   std::current_exception());
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 transient error '%s' (attempt %s)", err.what(), attempt);
-        if (_on_error)
-          _on_error(aws_exception,
+        if (this->_on_error)
+          this->_on_error(aws_exception,
                     !max_attempts || attempt < max_attempts);
         if (max_attempts && attempt >= max_attempts)
           throw aws_exception;
@@ -879,20 +925,22 @@ namespace aws
           continue;
         }
       }
-      catch(aws::RequestError const& err)
+      catch (aws::RequestError& err)
       { // non-transient RequestError is fatal
         ++attempt;
         ELLE_ERR("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
         // Debug, retry a bit on checksum error to see if value changes on
         // either side
-        if (err.error_code() && *err.error_code() == "XAmzContentSHA256Mismatch" && attempt < 5)
+        if (err.error_code() &&
+            *err.error_code() == "XAmzContentSHA256Mismatch" &&
+            attempt < 5)
         {
           continue;
         }
         AWSException aws_exception(operation, url, attempt,
-                                   elle::make_unique<RequestError>(err));
-        if (_on_error)
-          _on_error(aws_exception, false);
+                                   std::current_exception());
+        if (this->_on_error)
+          this->_on_error(aws_exception, false);
         throw aws_exception;
       }
       // Consider all other failures as fatal errors
