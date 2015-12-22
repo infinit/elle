@@ -25,6 +25,17 @@ namespace std
     return std::unique_ptr<T, D>(raw, p.get_deleter());
   }
 
+  template<typename T, typename U>
+  std::unique_ptr<T>
+  static_pointer_cast(std::unique_ptr<U>&& p)
+  {
+    assert(
+      dynamic_cast<typename std::unique_ptr<T>::element_type*>(p.get()));
+    auto raw =
+      static_cast<typename std::unique_ptr<T>::element_type*>(p.release());
+    return std::unique_ptr<T>(raw);
+  }
+
   template<typename T, typename U, typename D>
   std::unique_ptr<T, D>
   dynamic_pointer_cast(std::unique_ptr<U, D>& p)
@@ -41,6 +52,17 @@ namespace std
     if (raw)
       p.release();
     return std::unique_ptr<T, D>(raw, p.get_deleter());
+  }
+
+  template<typename T, typename U>
+  std::unique_ptr<T>
+  dynamic_pointer_cast(std::unique_ptr<U>&& p)
+  {
+    auto raw =
+      dynamic_cast<typename std::unique_ptr<T>::element_type*>(p.get());
+    if (raw)
+      p.release();
+    return std::unique_ptr<T>(raw);
   }
 
   /** Make a shared pointer to an object.
