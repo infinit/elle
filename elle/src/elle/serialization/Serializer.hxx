@@ -1253,9 +1253,14 @@ namespace elle
               elle::Version const& version,
               bool versioned = true)
     {
+      auto versions =
+        _details::serialization_tag<T>::type::dependencies.at(version);
+      versions.emplace(
+        elle::type_info<typename _details::serialization_tag<T>::type>(),
+        version);
       typename Serialization::SerializerOut s(
         output,
-        _details::serialization_tag<T>::type::dependencies.at(version),
+        versions,
         versioned);
       s.serialize_forward(o);
     }
