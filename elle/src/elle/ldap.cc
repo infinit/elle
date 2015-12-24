@@ -91,6 +91,8 @@ namespace elle
       cattrs[attrs.size()] = nullptr;
       base = base / _domain;
       LDAPMessage* msg;
+      if (query.value.empty())
+        query.value = "(objectclass=*)";
       int rc = ldap_search_ext_s(_ld, base.value.c_str(),
         LDAP_SCOPE_SUBTREE,
         query.value.c_str(),
