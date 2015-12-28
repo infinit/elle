@@ -14,10 +14,7 @@ namespace elle
   Lazy<T>::value()
   {
     if (!this->_value)
-      this->_value.reset(this->_lambda());
-      // FIXME: Use this whenever std::optional comes out or boost::optional
-      // gets upgraded.
-      // this->_value.emplace(this->_lambda());
+      this->_value.emplace(this->_lambda());
     return *this->_value;
   }
 
