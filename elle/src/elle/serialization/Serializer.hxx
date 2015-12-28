@@ -1244,6 +1244,23 @@ namespace elle
       {
         typedef typename T::serialization_tag type;
       };
+
+      template <typename T>
+      typename std::enable_if_exists<
+        decltype(T::dependencies),
+        std::unordered_map<elle::TypeInfo, elle::Version>
+      >::type
+      dependencies(elle::Version const& version, int)
+      {
+        return T::dependencies.at(version);;
+      }
+
+      template <typename T>
+      std::unordered_map<elle::TypeInfo, elle::Version>
+      dependencies(elle::Version const&, ...)
+      {
+        return {};
+      }
     }
 
     template <typename Serialization, typename T>
@@ -1254,7 +1271,8 @@ namespace elle
               bool versioned = true)
     {
       auto versions =
-        _details::serialization_tag<T>::type::dependencies.at(version);
+        _details::dependencies<typename _details::serialization_tag<T>::type>(
+          version, 42);
       versions.emplace(
         elle::type_info<typename _details::serialization_tag<T>::type>(),
         version);
