@@ -3,10 +3,6 @@
 
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
 
-//
-// ---------- Class -----------------------------------------------------------
-//
-
 #  include <cryptography/serialization.hh>
 #  include <cryptography/Cryptosystem.hh>
 #  include <cryptography/Error.hh>
@@ -272,6 +268,58 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
     default:
       throw infinit::cryptography::Error(
         elle::sprintf("unknown format '%s'", value._legacy_format));
+  }
+}
+
+# else
+
+#  include <elle/serialization/binary.hh>
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      template <typename T>
+      elle::Buffer
+      PrivateKey::sign(T const& o) const
+      {
+        return this->sign(
+          o,
+          elle::serialization::_details::serialization_tag<T>::type::version);
+      }
+
+      template <>
+      inline
+      elle::Buffer
+      PrivateKey::sign<elle::Buffer>(elle::Buffer const& b) const
+      {
+        return this->sign(elle::ConstWeakBuffer(b));
+      }
+
+      template <typename T>
+      elle::Buffer
+      PrivateKey::sign(T const& o, elle::Version const& version) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
+        ELLE_TRACE_SCOPE("%s: sign %s", *this, o);
+        elle::Buffer res;
+        elle::IOStream output(res.ostreambuf());
+        elle::serialization::binary::serialize(version, output, false);
+        {
+          auto serialized =
+            elle::serialization::binary::serialize(o, version, false);
+          ELLE_DUMP("serialization: %s", serialized);
+          auto signature = this->sign(serialized);
+          ELLE_DUMP("signature: %s", signature);
+          ELLE_DUMP("version: %s", version);
+          output.write(reinterpret_cast<char const*>(signature.contents()),
+                       signature.size());
+        }
+        return res;
+      }
+    }
   }
 }
 

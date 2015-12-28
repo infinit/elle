@@ -121,6 +121,14 @@ namespace infinit
         sign(elle::ConstWeakBuffer const& plain,
              Padding const padding = defaults::signature_padding,
              Oneway const oneway = defaults::oneway) const;
+        /// Sign the given plain text and return the signature.
+        template <typename T>
+        elle::Buffer
+        sign(T const& o) const;
+        /// Sign the given plain text and return the signature.
+        template <typename T>
+        elle::Buffer
+        sign(T const& o, elle::Version const& version) const;
 # endif
         /// Write the signature in the output stream given the stream-based
         /// plain text.

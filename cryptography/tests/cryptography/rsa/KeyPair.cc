@@ -13,6 +13,8 @@
 #include <elle/types.hh>
 #include <elle/serialization/json.hh>
 
+ELLE_LOG_COMPONENT("infinit.cryptography.test");
+
 /*----------.
 | Represent |
 `----------*/
@@ -121,8 +123,7 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 {
   // Public/private seal/open.
   {
-    std::string input =
-      infinit::cryptography::random::generate<std::string>(9128);
+    auto input = infinit::cryptography::random::generate<elle::Buffer>(9128);
     elle::Buffer code = keypair.K().seal(input);
     elle::Buffer plain = keypair.k().open(code);
     std::string const output(plain.string());
@@ -141,8 +142,7 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 
   // Sign/verify a plain text.
   {
-    std::string input =
-      infinit::cryptography::random::generate<std::string>(1493);
+    auto input = infinit::cryptography::random::generate<elle::Buffer>(1493);
     elle::Buffer signature = keypair.k().sign(input);
     auto result =
       keypair.K().verify(signature, input);
@@ -210,6 +210,59 @@ serialize()
   }
 }
 
+/*--------.
+| Signing |
+`--------*/
+
+class Signed
+{
+public:
+  Signed(int i, int j)
+    : _i(i)
+    , _j(j)
+  {}
+
+  void
+  serialize(elle::serialization::Serializer& s, elle::Version const& v)
+  {
+    s.serialize("i", this->_i);
+    if (v >= elle::Version(0, 1, 0))
+      s.serialize("j", this->_j);
+  }
+
+  ELLE_ATTRIBUTE_R(int, i);
+  ELLE_ATTRIBUTE_R(int, j);
+
+  struct serialization_tag {
+    static constexpr elle::Version version{0, 1, 0};
+  };
+};
+
+static
+void
+signing()
+{
+  Signed s(1, 2);
+  Signed s2(1, 3);
+  infinit::cryptography::rsa::KeyPair keys =
+    infinit::cryptography::rsa::keypair::generate(1024);
+  ELLE_LOG("sign with legacy version")
+  {
+    auto signature = keys.k().sign(s, elle::Version(0, 0, 0));
+    ELLE_DUMP("signature: %s", signature);
+    BOOST_CHECK(keys.K().verify(signature, s));
+    BOOST_CHECK(keys.K().verify(signature, s2));
+  }
+  ELLE_LOG("sign with new version")
+  {
+    auto signature = keys.k().sign(s, elle::Version(0, 1, 0));
+    ELLE_DUMP("signature: %s", signature);
+    BOOST_CHECK(keys.K().verify(signature, s));
+    BOOST_CHECK(!keys.K().verify(signature, s2));
+  }
+}
+
+
 /*-----.
 | Main |
 `-----*/
@@ -222,4 +275,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(construct));
   suite.add(BOOST_TEST_CASE(operate));
   suite.add(BOOST_TEST_CASE(serialize));
+  suite.add(BOOST_TEST_CASE(signing));
 }

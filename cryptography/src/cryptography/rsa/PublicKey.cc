@@ -7,6 +7,7 @@
 #include <functional>
 
 #include <elle/Error.hh>
+#include <elle/Lazy.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/printf.hh>
@@ -461,8 +462,9 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        elle::fprintf(stream,
-                      "PublicKey(%f)", publickey::der::encode(*this));
+        elle::fprintf(
+          stream, "PublicKey(%f)",
+          elle::lazy([this] { return publickey::der::encode(*this); }));
       }
 
       /*-------.

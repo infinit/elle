@@ -126,6 +126,10 @@ namespace infinit
                elle::ConstWeakBuffer const& plain,
                Padding const padding = defaults::signature_padding,
                Oneway const oneway = defaults::oneway) const;
+        /// Verify the given signature against the object
+        template <typename T>
+        bool
+        verify(elle::ConstWeakBuffer const& signature, T const& o) const;
 # endif
         /// Return true if the given signature matches the stream-based plain.
         bool

@@ -249,6 +249,48 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
   }
 }
 
+# else
+
+#  include <elle/serialization/binary.hh>
+
+namespace infinit
+{
+  namespace cryptography
+  {
+    namespace rsa
+    {
+      template <>
+      inline
+      bool
+      PublicKey::verify<elle::Buffer>(elle::ConstWeakBuffer const& signature,
+                                      elle::Buffer const& plain) const
+      {
+        return this->verify(signature, elle::ConstWeakBuffer(plain));
+      }
+
+      template <typename T>
+      bool
+      PublicKey::verify(elle::ConstWeakBuffer const& signature,
+                        T const& o) const
+      {
+        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
+        ELLE_TRACE_SCOPE("%s: verify %s", *this, o);
+        elle::IOStream input(signature.istreambuf());
+        auto version =
+          elle::serialization::binary::deserialize<elle::Version>(input, false);
+        auto serialized =
+          elle::serialization::binary::serialize(o, version, false);
+        ELLE_DUMP("serialization: %s", serialized);
+        elle::Buffer s(std::string{std::istreambuf_iterator<char>(input),
+                                   std::istreambuf_iterator<char>()});
+        ELLE_DUMP("signature: %s", s);
+        ELLE_DUMP("version: %s", version);
+        return this->verify(s, serialized);
+      }
+    }
+  }
+}
+
 # endif
 
 //
