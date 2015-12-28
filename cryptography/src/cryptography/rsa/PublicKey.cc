@@ -461,12 +461,8 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-
-        stream << "("
-               << *this->_key->pkey.rsa->n
-               << ", "
-               << *this->_key->pkey.rsa->e
-               << ")";
+        elle::fprintf(stream,
+                      "PublicKey(%f)", publickey::der::encode(*this));
       }
 
       /*-------.

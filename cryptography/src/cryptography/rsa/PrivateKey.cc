@@ -5,6 +5,7 @@
 #include <openssl/rsa.h>
 #include <openssl/err.h>
 
+#include <elle/Lazy.hh>
 #include <elle/log.hh>
 
 #include <cryptography/Error.hh>
@@ -499,14 +500,9 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
-
-        stream << "("
-               << *this->_key->pkey.rsa->n
-               << ", "
-               << *this->_key->pkey.rsa->e
-               << ", "
-               << *this->_key->pkey.rsa->d
-               << ")";
+        elle::fprintf(
+          stream, "PrivateKey(%f)",
+          elle::lazy([this] { return privatekey::der::encode(*this); }));
       }
     }
   }

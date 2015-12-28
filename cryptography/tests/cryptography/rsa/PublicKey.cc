@@ -10,7 +10,7 @@
 | Represent |
 `----------*/
 
-static std::string const _input("my balls are ok!");
+static elle::Buffer const _input("my balls are ok!");
 
 static
 void
