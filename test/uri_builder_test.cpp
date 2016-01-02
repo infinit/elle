@@ -655,6 +655,30 @@ TEST(builder_test, build_uri_with_multiple_query_items) {
   ASSERT_EQ("http://www.example.com/?a=1&b=2", builder.uri());
 }
 
+TEST(builder_test, build_uri_with_query_item_with_encoded_chars)
+{
+    network::uri_builder builder;
+    builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "parameter with encoded chars!")
+    .path("/")
+    ;
+    ASSERT_EQ("http://www.example.com/?a=parameter%20with%20encoded%20chars%21", builder.uri());
+}
+
+TEST(builder_test, build_uri_with_multiple_query_items_with_encoded_chars) {
+    network::uri_builder builder;
+    builder
+    .scheme("http")
+    .host("www.example.com")
+    .query("a", "first parameter with encoded chars!")
+    .query("b", "second parameter with encoded chars!")
+    .path("/")
+    ;
+    ASSERT_EQ("http://www.example.com/?a=first%20parameter%20with%20encoded%20chars%21&b=second%20parameter%20with%20encoded%20chars%21", builder.uri());
+}
+
 //TEST(builder_test, build_uri_with_multiple_query_items_with_int_values) {
 //  network::uri_builder builder;
 //  builder
