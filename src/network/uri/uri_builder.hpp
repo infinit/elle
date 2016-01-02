@@ -260,9 +260,9 @@ namespace network {
       else {
 	query_->append("&");
       }
-      query_->append(detail::translate(key));
-      query_->append("=");
-      query_->append(detail::translate(value));
+      string_type query_pair = detail::translate(key) + "=" + detail::translate(value);
+      network::uri::encode_query(std::begin(query_pair), std::end(query_pair),
+                                 std::back_inserter(*query_));
       return *this;
     }
 
