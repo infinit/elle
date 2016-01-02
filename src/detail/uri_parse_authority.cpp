@@ -60,43 +60,93 @@ namespace network {
         ipvfuture %= qi::lit('v') >> +qi::xdigit >> '.' >>
                      +(unreserved | sub_delims | ':');
 
+        ipv6addresses[0] %= qi::repeat(6)[h16 >> ':'] >> ls32;
+        ipv6addresses[1] %= "::" >> qi::repeat(5)[h16 >> ':'] >> ls32;
+        ipv6addresses[2] %= -qi::raw[h16] >> "::" >> qi::repeat(4)[h16 >> ':']
+          >> ls32;
+        ipv6addresses[3] %= -qi::raw[h16] >> "::" >> qi::repeat(3)[h16 >> ':']
+          >> ls32;
+        ipv6addresses[4] %= -qi::raw[h16] >> "::" >> qi::repeat(2)[h16 >> ':']
+          >> ls32;
+        ipv6addresses[5] %= -qi::raw[h16] >> "::" >> h16 >> ':' >> ls32;
+        ipv6addresses[6] %= -qi::raw[h16] >> "::" >> ls32;
+        ipv6addresses[7] %= -qi::raw[h16] >> "::" >> h16;
+        ipv6addresses[8] %= -qi::raw[h16] >> "::";
+        ipv6addresses[9] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::" >> qi::repeat(3)[h16 >> ':'] >> ls32;
+        ipv6addresses[10] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::" >> qi::repeat(2)[h16 >> ':'] >> ls32;
+        ipv6addresses[11] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::" >> h16 >> ':' >> ls32;
+        ipv6addresses[12] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::" >> ls32;
+        ipv6addresses[13] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::" >> h16;
+        ipv6addresses[14] %= -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >>
+          "::";
+        ipv6addresses[15] %= -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >>
+          "::" >> qi::repeat(2)[h16 >> ':'] >> ls32;
+        ipv6addresses[16] %= -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >>
+          "::" >> h16 >> ':' >> ls32;
+        ipv6addresses[17] %= -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >>
+          "::" >> ls32;
+        ipv6addresses[18] %= -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >>
+          "::" >> h16;
+        ipv6addresses[19] %= -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >>
+          "::";
+        ipv6addresses[20] %= -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >>
+          "::" >> h16 >> ':' >> ls32;
+        ipv6addresses[21] %= -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >>
+          "::" >> ls32;
+        ipv6addresses[22] %= -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >>
+          "::" >> h16;
+        ipv6addresses[23] %= -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >>
+          "::";
+        ipv6addresses[24] %= -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >>
+          "::" >> ls32;
+        ipv6addresses[25] %= -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >>
+          "::" >> h16;
+        ipv6addresses[26] %= -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >>
+          "::";
+        ipv6addresses[27] %= -qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >>
+          "::" >> h16;
+        ipv6addresses[28] %= -qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >>
+          "::";
+        ipv6addresses[29] %= -qi::raw[qi::repeat(6)[(h16 >> ':')] >> h16] >>
+          "::";
+        
         ipv6address %= qi::raw
-            [qi::repeat(6)[h16 >> ':'] >> ls32 |
-             "::" >> qi::repeat(5)[h16 >> ':'] >> ls32 |
-             -qi::raw[h16] >> "::" >> qi::repeat(4)[h16 >> ':'] >> ls32 |
-             -qi::raw[h16] >> "::" >> qi::repeat(3)[h16 >> ':'] >> ls32 |
-             -qi::raw[h16] >> "::" >> qi::repeat(2)[h16 >> ':'] >> ls32 |
-             -qi::raw[h16] >> "::" >> h16 >> ':' >> ls32 |
-             -qi::raw[h16] >> "::" >> ls32 | -qi::raw[h16] >> "::" >> h16 |
-             -qi::raw[h16] >> "::" |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >>
-                 qi::repeat(3)[h16 >> ':'] >> ls32 |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >>
-                 qi::repeat(2)[h16 >> ':'] >> ls32 |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >> h16 >>
-                 ':' >> ls32 |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >> ls32 |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" >> h16 |
-             -qi::raw[qi::repeat(1)[(h16 >> ':')] >> h16] >> "::" |
-             -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >>
-                 qi::repeat(2)[h16 >> ':'] >> ls32 |
-             -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >> h16 >>
-                 ':' >> ls32 |
-             -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >> ls32 |
-             -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" >> h16 |
-             -qi::raw[qi::repeat(2)[(h16 >> ':')] >> h16] >> "::" |
-             -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::" >> h16 >>
-                 ':' >> ls32 |
-             -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::" >> ls32 |
-             -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::" >> h16 |
-             -qi::raw[qi::repeat(3)[(h16 >> ':')] >> h16] >> "::" |
-             -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::" >> ls32 |
-             -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::" >> h16 |
-             -qi::raw[qi::repeat(4)[(h16 >> ':')] >> h16] >> "::" |
-             -qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >> "::" >> h16 |
-             -qi::raw[qi::repeat(5)[(h16 >> ':')] >> h16] >> "::" |
-             -qi::raw[qi::repeat(6)[(h16 >> ':')] >> h16] >> "::"];
-
+          [ipv6addresses[0] |
+           ipv6addresses[1] |
+           ipv6addresses[2] |
+           ipv6addresses[3] |
+           ipv6addresses[4] |
+           ipv6addresses[5] |
+           ipv6addresses[6] |
+           ipv6addresses[7] |
+           ipv6addresses[8] |
+           ipv6addresses[9] |
+           ipv6addresses[10] |
+           ipv6addresses[11] |
+           ipv6addresses[12] |
+           ipv6addresses[13] |
+           ipv6addresses[14] |
+           ipv6addresses[15] |
+           ipv6addresses[16] |
+           ipv6addresses[17] |
+           ipv6addresses[18] |
+           ipv6addresses[19] |
+           ipv6addresses[20] |
+           ipv6addresses[21] |
+           ipv6addresses[22] |
+           ipv6addresses[23] |
+           ipv6addresses[24] |
+           ipv6addresses[25] |
+           ipv6addresses[26] |
+           ipv6addresses[27] |
+           ipv6addresses[28] |
+           ipv6addresses[29]];
+          
         // ls32 = ( h16 ":" h16 ) / IPv4address
         ls32 %= (h16 >> ':' >> h16) | ipv4address;
 
@@ -132,6 +182,7 @@ namespace network {
           ipv6address, ipvfuture, ip_literal;
 
       qi::rule<iterator, string_type()> h16, ls32;
+      qi::rule<iterator, string_type()> ipv6addresses[30];
 
       qi::rule<iterator, string_type()> user_info, host, port;
 
