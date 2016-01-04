@@ -234,9 +234,11 @@ public:
   ELLE_ATTRIBUTE_R(int, j);
 
   struct serialization_tag {
-    static constexpr elle::Version version{0, 1, 0};
+    static elle::Version version;
   };
 };
+
+elle::Version Signed::serialization_tag::version{0,1,0};
 
 static
 void
