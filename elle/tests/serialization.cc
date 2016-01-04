@@ -1550,7 +1550,9 @@ convert()
     BOOST_CHECK_EQUAL(r.i, c.i);
     auto pr = serializer.template deserialize<PConvertable*>("pconvertable");
     BOOST_CHECK_EQUAL(pr->i, pc->i);
+    delete pr;
   }
+  delete pc;
 }
 
 #define FOR_ALL_SERIALIZATION_TYPES(Name)                               \
