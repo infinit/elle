@@ -25,6 +25,7 @@ static uint64 on_sendto(utp_callback_arguments* args)
     boost::asio::ip::address::from_string(inet_ntoa(sin->sin_addr)),
     ntohs(sin->sin_port));
   UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
+  ELLE_ASSERT(server);
   ELLE_DEBUG("on_sendto %s %s", args->len, ep);
   server->send_to(Buffer(args->buf, args->len), ep);
   return 0;
@@ -93,7 +94,7 @@ static uint64 on_state_change(utp_callback_arguments* args)
 		  s->on_close();
 		  break;
 		case UTP_STATE_DESTROYING:
-		  s->on_close();
+		  s->destroyed();
 		  break;
   }
   return 0;
@@ -125,7 +126,9 @@ static uint64 on_connect(utp_callback_arguments* args)
   ELLE_DEBUG("on_connect");
   UTPSocket* s = (UTPSocket*) utp_get_userdata(args->socket);
   if (!s)
+  {
     utp_close(args->socket);
+  }
   else
     s->on_connect();
   return 0;
@@ -189,22 +192,22 @@ UTPServer::_cleanup()
     reactor::scheduler().io_service().reset();
     reactor::scheduler().io_service().poll();
   }
-  if (!this->_socket)
-    // Was never initialized.
-    return;
-  if (this->_checker)
-  {
-    this->_checker->terminate();
-    reactor::wait(*_checker);
+  if (this->_socket)
+  { // Was never initialized.
+    if (this->_checker)
+    {
+      this->_checker->terminate();
+      reactor::wait(*_checker);
+    }
+    if (this->_listener)
+    {
+      this->_listener->terminate();
+      reactor::wait(*this->_listener);
+    }
+    this->_socket->socket()->close();
+    this->_socket->close();
+    this->_socket.reset(nullptr);
   }
-  if (this->_listener)
-  {
-    this->_listener->terminate();
-    reactor::wait(*this->_listener);
-  }
-  this->_socket->socket()->close();
-  this->_socket->close();
-  this->_socket.reset(nullptr);
   utp_destroy(ctx);
 }
 
@@ -278,12 +281,25 @@ UTPSocket::~UTPSocket()
   ELLE_DEBUG("~UTPSocket finished");
 }
 
+void UTPSocket::destroyed()
+{
+  _read_barrier.open();
+  _write_barrier.open();
+  _connect_barrier.open();
+  if (_socket)
+    utp_set_userdata(_socket, nullptr);
+  _socket = nullptr;
+}
+
 void UTPSocket::on_close()
 {
+  if (_closing)
+    return;
+  _closing = true;
   if (!_socket)
     return;
-  if (_open)
-    utp_close(_socket);
+  //if (_open)
+  utp_close(_socket);
   _open = false;
   _read_barrier.open();
   _write_barrier.open();
@@ -320,6 +336,7 @@ UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
 , _server(server)
 , _socket(socket)
 , _open(open)
+, _closing(false)
 {
   utp_set_userdata(_socket, this);
   if (open)

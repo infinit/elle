@@ -91,6 +91,8 @@ namespace reactor
       on_close();
       void
       on_read(elle::ConstWeakBuffer const&);
+      void
+      destroyed();
     private:
       void
       _read();
@@ -105,6 +107,7 @@ namespace reactor
       MultiLockBarrier _pending_operations;
       int _write_pos;
       bool _open;
+      bool _closing;
     };
   }
 }
