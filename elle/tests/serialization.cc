@@ -1537,18 +1537,19 @@ void
 convert()
 {
   Convertable c{1332};
-  auto pc = new PConvertable{1332};
+  std::unique_ptr<PConvertable> pc(new PConvertable{1332});
   std::stringstream stream;
   {
     typename Format::SerializerOut serializer(stream, false);
     serializer.serialize("convertable", c);
-    serializer.serialize("pconvertable", pc);
+    serializer.serialize("pconvertable", pc.get());
   }
   {
     typename Format::SerializerIn serializer(stream, false);
     auto r = serializer.template deserialize<Convertable>("convertable");
     BOOST_CHECK_EQUAL(r.i, c.i);
-    auto pr = serializer.template deserialize<PConvertable*>("pconvertable");
+    std::unique_ptr<PConvertable> pr(
+      serializer.template deserialize<PConvertable*>("pconvertable"));
     BOOST_CHECK_EQUAL(pr->i, pc->i);
     delete pr;
   }
