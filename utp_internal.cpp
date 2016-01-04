@@ -2441,7 +2441,7 @@ UTPSocket::~UTPSocket()
 
 	// Remove object from the global hash table
 	UTPSocketKeyData* kd = ctx->utp_sockets->Delete(UTPSocketKey(addr, conn_id_recv));
-	assert(kd);
+	// can be null for socket that was never initialized assert(kd);
 
 	// remove the socket from ack_sockets if it was there also
 	removeSocketFromAckList(this);
@@ -3308,6 +3308,16 @@ void utp_close(UTPSocket *conn)
 	assert(conn);
 	if (!conn) return;
 
+	if (conn->state == CS_UNINITIALIZED)
+	{
+	  sockaddr_in to;
+	  to.sin_family = AF_INET;
+	  to.sin_port = 1;
+	  to.sin_addr.s_addr = 0;
+	  utp_initialize_socket(conn, (sockaddr*)&to, sizeof(to), true, 0,0,1);
+	  conn->state = CS_DESTROY_DELAY;
+	  return;
+	}
 	assert(conn->state != CS_UNINITIALIZED
 		&& conn->state != CS_DESTROY_DELAY
 		&& conn->state != CS_FIN_SENT
