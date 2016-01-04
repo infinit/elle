@@ -1259,7 +1259,7 @@ namespace elle
       std::unordered_map<elle::TypeInfo, elle::Version>
       dependencies(elle::Version const&, ...)
       {
-        return {};
+        return std::unordered_map<elle::TypeInfo, elle::Version>();
       }
     }
 
