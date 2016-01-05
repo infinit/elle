@@ -1094,6 +1094,50 @@ namespace elle
       return res;
     }
 
+    namespace _details
+    {
+      template <typename T>
+      struct serialization_tag
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      struct serialization_tag<std::unique_ptr<T>>
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      struct serialization_tag<T const*>
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      struct serialization_tag<T*>
+      {
+        typedef typename T::serialization_tag type;
+      };
+
+      template <typename T>
+      typename std::enable_if_exists<
+        decltype(T::dependencies),
+        std::unordered_map<elle::TypeInfo, elle::Version>
+      >::type
+      dependencies(elle::Version const& version, int)
+      {
+        return T::dependencies.at(version);;
+      }
+
+      template <typename T>
+      std::unordered_map<elle::TypeInfo, elle::Version>
+      dependencies(elle::Version const&, ...)
+      {
+        return std::unordered_map<elle::TypeInfo, elle::Version>();
+      }
+    }
+
     /*--------.
     | Helpers |
     `--------*/
@@ -1112,8 +1156,15 @@ namespace elle
                 bool versioned,
                 boost::optional<Context const&> context = {})
     {
+      auto versions =
+        _details::serialization_tag<T>::type::dependencies.at(version);
+      versions.emplace(
+        elle::type_info<typename _details::serialization_tag<T>::type>(),
+        version);
       typename Serialization::SerializerIn s(
-        input, T::serialization_tag::dependencies.at(version), versioned);
+        input,
+        versions,
+        versioned);
       if (context)
         s.set_context(context.get());
       return s.template deserialize<T>();
@@ -1217,50 +1268,6 @@ namespace elle
         serialize<T, Serialization>(o, name, s, version);
       }
       return res;
-    }
-
-    namespace _details
-    {
-      template <typename T>
-      struct serialization_tag
-      {
-        typedef typename T::serialization_tag type;
-      };
-
-      template <typename T>
-      struct serialization_tag<std::unique_ptr<T>>
-      {
-        typedef typename T::serialization_tag type;
-      };
-
-      template <typename T>
-      struct serialization_tag<T const*>
-      {
-        typedef typename T::serialization_tag type;
-      };
-
-      template <typename T>
-      struct serialization_tag<T*>
-      {
-        typedef typename T::serialization_tag type;
-      };
-
-      template <typename T>
-      typename std::enable_if_exists<
-        decltype(T::dependencies),
-        std::unordered_map<elle::TypeInfo, elle::Version>
-      >::type
-      dependencies(elle::Version const& version, int)
-      {
-        return T::dependencies.at(version);;
-      }
-
-      template <typename T>
-      std::unordered_map<elle::TypeInfo, elle::Version>
-      dependencies(elle::Version const&, ...)
-      {
-        return std::unordered_map<elle::TypeInfo, elle::Version>();
-      }
     }
 
     template <typename Serialization, typename T>
