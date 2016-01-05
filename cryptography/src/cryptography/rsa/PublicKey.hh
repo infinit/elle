@@ -121,6 +121,7 @@ namespace infinit
         encrypt(elle::ConstWeakBuffer const& plain,
                 Padding const padding = defaults::encryption_padding) const;
         /// Verify the given signature against the original plain text.
+        virtual
         bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& plain,
