@@ -759,6 +759,32 @@ ELLE_TEST_SCHEDULED(keep_alive)
   BOOST_CHECK_EQUAL(content, "dead");
 }
 
+class RedirectHTTPServer
+  : public HTTPServer
+{
+  virtual
+  void
+  _response(reactor::network::Socket& socket,
+            reactor::http::StatusCode,
+            elle::ConstWeakBuffer,
+            HTTPServer::Cookies const&) override
+  {
+    std::string answer(
+      "HTTP/1.1 303 See Other\r\n"
+      "Location: http://example.org/other\r\n");
+    socket.write(elle::ConstWeakBuffer(answer));
+  }
+};
+
+ELLE_TEST_SCHEDULED(redirection)
+{
+  RedirectHTTPServer server;
+  auto url = server.url("redirect");
+  reactor::http::Request r(url);
+  BOOST_CHECK_EQUAL(r.status(), reactor::http::StatusCode::See_Other);
+  BOOST_CHECK_EQUAL(r.headers().at("Location"), "http://example.org/other");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -788,4 +814,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
   suite.add(BOOST_TEST_CASE(query_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(keep_alive), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(redirection), 0, valgrind(1));
 }
