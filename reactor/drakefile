@@ -283,10 +283,11 @@ def configure(curl_config,
   if fuse is None:
     if cxx_toolkit.os is drake.os.linux:
       fuse_version = '2.9.4'
+      fuse_version_us = fuse_version.replace(".", "_")
       fuse_basename = 'fuse-%s' % fuse_version
       fuse_url = \
-        'http://downloads.sourceforge.net/' \
-        'project/fuse/fuse-2.X/%s/%s.tar.gz' % (fuse_version, fuse_basename)
+        'https://github.com/libfuse/libfuse/releases/download/' \
+        'fuse_%s/%s.tar.gz' % (fuse_version_us, fuse_basename)
       fuse_tarball = \
         drake.node('fuse/%s.tar.gz' % fuse_basename)
       fuse_configure = \
