@@ -77,6 +77,13 @@ namespace std
   }
 
   template <typename K, typename V>
+  const_keys_iterator<K, V>
+  iter_keys_end(typename std::unordered_map<K, V> const& c)
+  {
+    return const_keys_iterator<K, V>(c.end());
+  }
+
+  template <typename K, typename V>
   class values_iterator
     : public std::unordered_map<K, V>::iterator
   {

@@ -16,6 +16,54 @@
 
 ELLE_LOG_COMPONENT("elle.serialization.test");
 
+class InPlace
+{
+public:
+  InPlace(int i)
+  {}
+
+  InPlace(elle::serialization::SerializerIn&)
+  {}
+
+  InPlace(InPlace const&) = delete;
+  InPlace(InPlace&&) = default;
+
+  bool
+  operator == (InPlace const& other) const
+  {
+    return this == &other;
+  }
+
+  void serialize(elle::serialization::Serializer&)
+  {}
+
+  typedef elle::serialization_tag serialization_tag;
+};
+
+class OutPlace
+{
+public:
+  OutPlace(OutPlace const&) = delete;
+
+  void serialize(elle::serialization::Serializer&)
+  {}
+
+  typedef elle::serialization_tag serialization_tag;
+};
+
+namespace std
+{
+  template <>
+  struct hash<InPlace>
+  {
+    std::size_t
+    operator ()(InPlace const& ip) const
+    {
+      return std::hash<void const*>()(&ip);
+    }
+  };
+}
+
 template <typename Format>
 static
 void
@@ -393,18 +441,28 @@ static
 void
 unordered_map()
 {
-  std::unordered_map<int, std::string> map{
-    {0, "zero"}, {1, "one"}, {2, "two"}};
-  std::stringstream stream;
   {
-    typename Format::SerializerOut output(stream);
-    output.serialize("map", map);
+    std::unordered_map<int, std::string> map{
+      {0, "zero"}, {1, "one"}, {2, "two"}};
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut output(stream);
+      output.serialize("map", map);
+    }
+    {
+      std::unordered_map<int, std::string> res;
+      typename Format::SerializerIn input(stream);
+      input.serialize("map", res);
+      BOOST_CHECK_EQUAL(map, res);
+    }
   }
   {
-    std::unordered_map<int, std::string> res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("map", res);
-    BOOST_CHECK_EQUAL(map, res);
+    typedef std::unordered_map<InPlace, InPlace> Map;
+    Map map;
+    map.emplace(0, 1);
+    map.emplace(2, 3);
+    auto ser = elle::serialization::serialize<Format>(map);
+    auto deser = elle::serialization::deserialize<Format, Map>(ser);
   }
 }
 
@@ -1074,32 +1132,6 @@ namespace versioning
     }
   }
 }
-
-class InPlace
-{
-public:
-  InPlace(elle::serialization::SerializerIn&)
-  {}
-
-  InPlace(InPlace const&) = delete;
-  InPlace(InPlace&&) = default;
-
-  void serialize(elle::serialization::Serializer&)
-  {}
-
-  typedef elle::serialization_tag serialization_tag;
-};
-
-class OutPlace
-{
-public:
-  OutPlace(OutPlace const&) = delete;
-
-  void serialize(elle::serialization::Serializer&)
-  {}
-
-  typedef elle::serialization_tag serialization_tag;
-};
 
 static
 void

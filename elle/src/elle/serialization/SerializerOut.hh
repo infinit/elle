@@ -42,6 +42,9 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, T const& v);
+      template <typename T1, typename T2>
+      void
+      serialize(std::pair<T1, T2> const& p);
       // Litteral strings overload
       void
       serialize(std::string const& name, char const* v);

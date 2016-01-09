@@ -10,6 +10,7 @@
 # include <elle/serialization/Error.hh>
 # include <elle/serialization/SerializerIn.hh>
 # include <elle/serialization/SerializerOut.hh>
+# include <elle/utils.hh>
 
 namespace elle
 {
@@ -198,6 +199,57 @@ namespace elle
           }
         }
         return T(self);
+      }
+
+      template <typename T>
+      struct is_pair
+      {
+        static constexpr bool value = false;
+      };
+
+      template <typename T1, typename T2>
+      struct is_pair<std::pair<T1, T2>>
+      {
+        static constexpr bool value = true;
+      };
+
+      template <typename T>
+      static
+      typename std::enable_if<is_pair<T>::value, T>::type
+      deserialize(SerializerIn& self, int)
+      {
+        typedef typename T::first_type T1;
+        typedef typename T::second_type T2;
+        int i = 0;
+        boost::optional<T1> first;
+        boost::optional<T2> second;
+        self._serialize_array(
+          "",
+          -1,
+          [&] ()
+          {
+            if (i == 0)
+            {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+              ELLE_DEBUG_SCOPE("%s: deserialize first member", self);
+              first.emplace(self.deserialize<T1>());
+            }
+            else if (i == 1)
+            {
+              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+              ELLE_DEBUG_SCOPE("%s: deserialize second member", self);
+              second.emplace(self.deserialize<T2>());
+            }
+            else
+              throw Error(elle::sprintf(
+                            "too many values to unpack for a pair: %s", i));
+            ++i;
+          });
+        if (!first || !second)
+          throw Error(elle::sprintf(
+                        "too few value to unpack for a pair: %s", i));
+        return std::pair<T1, T2>(std::move(first.get()),
+                                 std::move(second.get()));
       }
 
       // This overload initializes PODs with "= {}" to avoid warnings.
@@ -654,12 +706,12 @@ namespace elle
           map.size(),
           [&] ()
           {
-            for (std::pair<K, V> pair: map)
+            for (auto const& pair: map)
             {
               if (this->_enter(name))
               {
                 elle::SafeFinally leave([&] { this->_leave(name); });
-                this->_serialize_anonymous(name, pair);
+                static_cast<SerializerOut*>(this)->serialize(pair);
               }
             }
           });
@@ -671,10 +723,8 @@ namespace elle
           -1,
           [&] ()
           {
-            // FIXME: Use emplace if possible.
-            std::pair<K, V> p;
-            this->_serialize_anonymous(name, p);
-            map.insert(p);
+            map.emplace(
+              static_cast<SerializerIn*>(this)->deserialize<std::pair<K, V>>());
           });
       }
     }
@@ -864,58 +914,41 @@ namespace elle
 
     template <typename T1, typename T2>
     void
+    SerializerOut::serialize(std::pair<T1, T2> const& pair)
+    {
+      this->_serialize_array(
+        "",
+        2,
+        [&] ()
+        {
+          if (this->_enter(""))
+          {
+            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+            ELLE_DEBUG_SCOPE("%s: serialize first member", *this);
+            elle::SafeFinally leave([&] { this->_leave(""); });
+            this->_serialize_anonymous("", elle::unconst(pair.first));
+          }
+          if (this->_enter(""))
+          {
+            ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+            ELLE_DEBUG_SCOPE("%s: serialize second member", *this);
+            elle::SafeFinally leave([&] { this->_leave(""); });
+            this->_serialize_anonymous("", elle::unconst(pair.second));
+          }
+        });
+    }
+
+    template <typename T1, typename T2>
+    void
     Serializer::_serialize(std::string const& name, std::pair<T1, T2>& pair)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize pair \"%s\"", *this, name);
       if (this->_out())
-      {
-        this->_serialize_array(
-          name,
-          2,
-          [&] ()
-          {
-            if (this->_enter(name))
-            {
-              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              ELLE_DEBUG_SCOPE("%s: serialize first member", *this);
-              elle::SafeFinally leave([&] { this->_leave(name); });
-              this->_serialize_anonymous(name, pair.first);
-            }
-            if (this->_enter(name))
-            {
-              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              ELLE_DEBUG_SCOPE("%s: serialize second member", *this);
-              elle::SafeFinally leave([&] { this->_leave(name); });
-              this->_serialize_anonymous(name, pair.second);
-            }
-          });
-      }
+        static_cast<SerializerOut*>(this)->serialize(pair);
       else
-      {
-        int i = 0;
-        this->_serialize_array(
-          name,
-          -1,
-          [&] ()
-          {
-            if (i == 0)
-            {
-              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              ELLE_DEBUG_SCOPE("%s: deserialize first member", *this);
-              this->_serialize_anonymous(name, pair.first);
-            }
-            else if (i == 1)
-            {
-              ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              ELLE_DEBUG_SCOPE("%s: deserialize second member", *this);
-              this->_serialize_anonymous(name, pair.second);
-            }
-            else
-              throw Error("too many values to unpack for a pair");
-            ++i;
-          });
-      }
+        pair =
+          static_cast<SerializerIn*>(this)->deserialize<std::pair<T1, T2>>();
     }
 
     template <typename T>
