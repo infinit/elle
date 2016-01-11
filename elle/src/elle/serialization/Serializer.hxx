@@ -1190,6 +1190,15 @@ namespace elle
       return Details::deserialize<T>(*this, 42);
     }
 
+    template <typename ST>
+    std::unordered_map<elle::TypeInfo, elle::Version>
+    get_serialization_versions(elle::Version const& version)
+    {
+      auto versions = ST::dependencies.at(version);
+      versions.emplace(elle::type_info<ST>(), version);
+      return versions;
+    }
+
     template <typename Serialization, typename T>
     T
     deserialize(std::istream& input,
@@ -1197,11 +1206,8 @@ namespace elle
                 bool versioned,
                 boost::optional<Context const&> context = {})
     {
-      auto versions =
-        _details::serialization_tag<T>::type::dependencies.at(version);
-      versions.emplace(
-        elle::type_info<typename _details::serialization_tag<T>::type>(),
-        version);
+      auto versions = get_serialization_versions
+        <typename _details::serialization_tag<T>::type>(version);
       typename Serialization::SerializerIn s(
         input,
         versions,
@@ -1324,6 +1330,7 @@ namespace elle
       versions.emplace(
         elle::type_info<typename _details::serialization_tag<T>::type>(),
         version);
+
       typename Serialization::SerializerOut s(
         output,
         versions,
