@@ -165,6 +165,8 @@ namespace infinit
       public:
         bool
         operator ==(PublicKey const& other) const;
+        bool
+        operator <(PublicKey const& other) const;
         PublicKey&
         operator =(PublicKey&& other) = default;
 

@@ -410,11 +410,15 @@ namespace infinit
       {
         if (this == &other)
           return (true);
-
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(other._key, nullptr);
-
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
+      }
+
+      bool
+      PublicKey::operator <(PublicKey const& other) const
+      {
+        return publickey::der::encode(*this) < publickey::der::encode(other);
       }
 
       /*--------------.
