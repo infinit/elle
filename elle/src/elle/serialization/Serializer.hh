@@ -292,7 +292,15 @@ namespace elle
       template <typename V, typename ... Rest>
       void
       _serialize(std::string const& name,
-                std::unordered_map<std::string, V, Rest...>& map);
+                 std::unordered_map<std::string, V, Rest...>& map);
+      template <typename K, typename V, typename ... Rest>
+      void
+      _serialize(std::string const& name,
+                 std::map<K, V, Rest...>& map);
+      template <typename V, typename ... Rest>
+      void
+      _serialize(std::string const& name,
+                 std::map<std::string, V, Rest...>& map);
       template <typename V, typename ... Rest>
       void
       _serialize(std::string const& name,

@@ -639,6 +639,14 @@ namespace elle
       _serialize_assoc(name, map);
     }
 
+    template <typename K, typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::map<K, V, Rest...>& map)
+    {
+      _serialize_assoc(name, map);
+    }
+
     template <typename V, typename ... Rest>
     void
     Serializer::_serialize(std::string const& name,
