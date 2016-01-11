@@ -25,6 +25,13 @@ namespace std
     out << "}";
     return out;
   }
+
+  template <typename E, typename ... Args>
+  bool
+  contains(std::map<Args...> const& map, E const& e)
+  {
+    return map.find(e) != map.end();
+  }
 }
 
 #endif
