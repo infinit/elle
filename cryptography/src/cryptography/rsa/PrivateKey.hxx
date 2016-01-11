@@ -274,6 +274,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PrivateKey,
 # else
 
 #  include <elle/serialization/binary.hh>
+#  include <elle/utility/Move.hh>
 
 namespace infinit
 {
@@ -302,22 +303,33 @@ namespace infinit
       elle::Buffer
       PrivateKey::sign(T const& o, elle::Version const& version) const
       {
+        return this->sign_async(o, version)();
+      }
+
+      template <typename T>
+      std::function<elle::Buffer ()>
+      PrivateKey::sign_async(T const& o, elle::Version const& version) const
+      {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
         ELLE_TRACE_SCOPE("%s: sign %s", *this, o);
-        elle::Buffer res;
-        elle::IOStream output(res.ostreambuf());
-        elle::serialization::binary::serialize(version, output, false);
+        auto serialized =
+          elle::utility::move_on_copy(
+            elle::serialization::binary::serialize(o, version, false));
+        return [this, serialized, version] ()
         {
-          auto serialized =
-            elle::serialization::binary::serialize(o, version, false);
-          ELLE_DUMP("serialization: %s", serialized);
-          auto signature = this->sign(serialized);
-          ELLE_DUMP("signature: %s", signature);
-          ELLE_DUMP("version: %s", version);
-          output.write(reinterpret_cast<char const*>(signature.contents()),
-                       signature.size());
-        }
-        return res;
+          elle::Buffer res;
+          elle::IOStream output(res.ostreambuf());
+          elle::serialization::binary::serialize(version, output, false);
+          {
+            ELLE_DUMP("serialization: %s", serialized);
+            auto signature = this->sign(*serialized);
+            ELLE_DUMP("signature: %s", signature);
+            ELLE_DUMP("version: %s", version);
+            output.write(reinterpret_cast<char const*>(signature.contents()),
+                         signature.size());
+          }
+          return res;
+        };
       }
     }
   }

@@ -129,6 +129,10 @@ namespace infinit
         template <typename T>
         elle::Buffer
         sign(T const& o, elle::Version const& version) const;
+        /// Sign the given plain text and return the signature.
+        template <typename T>
+        std::function <elle::Buffer ()>
+        sign_async(T const& o, elle::Version const& version) const;
 # endif
         /// Write the signature in the output stream given the stream-based
         /// plain text.
