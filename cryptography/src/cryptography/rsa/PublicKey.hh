@@ -131,6 +131,9 @@ namespace infinit
         template <typename T>
         bool
         verify(elle::ConstWeakBuffer const& signature, T const& o) const;
+        template <typename T>
+        std::function<bool ()>
+        verify_async(elle::ConstWeakBuffer const& signature, T const& o) const;
 # endif
         /// Return true if the given signature matches the stream-based plain.
         bool
@@ -207,8 +210,7 @@ namespace infinit
         encrypt(T const& value) const;
         template <typename T = Plain>
         bool
-        verify(Signature const& signature,
-               T const& value) const;
+        verify(Signature const& signature, T const& value) const;
         // operators
         bool
         operator <(PublicKey const& other) const;

@@ -54,14 +54,10 @@ namespace infinit
         ELLE_TRACE_METHOD("");
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("value: %x", value);
-
         static_assert(std::is_same<T, Digest>::value == false,
                       "this call should never have occured");
-
         elle::Buffer _value = cryptography::serialize(value);
-
         elle::IOStream _plain(_value.istreambuf());
-
         return (this->verify(signature.buffer(),
                              static_cast<std::istream&>(_plain),
                              this->_signature_padding,
@@ -252,6 +248,7 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
 # else
 
 #  include <elle/serialization/binary.hh>
+#  include <elle/utility/Move.hh>
 
 namespace infinit
 {
@@ -273,19 +270,32 @@ namespace infinit
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         T const& o) const
       {
+        return this->verify_async(signature, o)();
+      }
+
+      template <typename T>
+      std::function <bool ()>
+      PublicKey::verify_async(elle::ConstWeakBuffer const& signature,
+                              T const& o) const
+      {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
         ELLE_TRACE_SCOPE("%s: verify %s", *this, o);
         elle::IOStream input(signature.istreambuf());
         auto version =
           elle::serialization::binary::deserialize<elle::Version>(input, false);
+        auto s = elle::utility::move_on_copy(
+          elle::Buffer(std::string{std::istreambuf_iterator<char>(input),
+                                   std::istreambuf_iterator<char>()}));
         auto serialized =
-          elle::serialization::binary::serialize(o, version, false);
+          elle::utility::move_on_copy(
+            elle::serialization::binary::serialize(o, version, false));
         ELLE_DUMP("serialization: %s", serialized);
-        elle::Buffer s(std::string{std::istreambuf_iterator<char>(input),
-                                   std::istreambuf_iterator<char>()});
-        ELLE_DUMP("signature: %s", s);
+        ELLE_DUMP("signature: %s", *s);
         ELLE_DUMP("version: %s", version);
-        return this->verify(s, serialized);
+        return [this, serialized, s]
+        {
+          return this->verify(*s, *serialized);
+        };
       }
     }
   }
