@@ -262,10 +262,11 @@ namespace reactor
     {
       while (true)
       {
+        std::vector<Endpoint> to_ping;
         for (int i=0; i<signed(_breach_requests.size()); ++i)
         {
           auto& b = _breach_requests[i];
-          send_ping(b.first);
+          to_ping.push_back(b.first);
           if (!--b.second)
           {
             std::swap(_breach_requests[i],
@@ -274,6 +275,8 @@ namespace reactor
             --i;
           }
         }
+        for (auto const& ep: to_ping)
+          send_ping(ep);
         reactor::sleep(500_ms);
       }
     }
