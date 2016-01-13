@@ -315,14 +315,15 @@ namespace infinit
         auto serialized =
           elle::utility::move_on_copy(
             elle::serialization::binary::serialize(o, version, false));
-        return [this, serialized, version] ()
+        auto self = this->shared_from_this();
+        return [self, serialized, version] ()
         {
           elle::Buffer res;
           elle::IOStream output(res.ostreambuf());
           elle::serialization::binary::serialize(version, output, false);
           {
             ELLE_DUMP("serialization: %s", serialized);
-            auto signature = this->sign(*serialized);
+            auto signature = self->sign(*serialized);
             ELLE_DUMP("signature: %s", signature);
             ELLE_DUMP("version: %s", version);
             output.write(reinterpret_cast<char const*>(signature.contents()),

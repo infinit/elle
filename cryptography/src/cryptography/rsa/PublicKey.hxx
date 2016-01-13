@@ -292,9 +292,10 @@ namespace infinit
         ELLE_DUMP("serialization: %s", serialized);
         ELLE_DUMP("signature: %s", *s);
         ELLE_DUMP("version: %s", version);
-        return [this, serialized, s]
+        auto self = this->shared_from_this();
+        return [self, serialized, s]
         {
-          return this->verify(*s, *serialized);
+          return self->verify(*s, *serialized);
         };
       }
     }

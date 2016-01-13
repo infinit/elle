@@ -1,6 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 
+# include <memory>
 # include <utility>
 
 # include <openssl/evp.h>
@@ -32,8 +33,9 @@ namespace infinit
     namespace rsa
     {
       /// Represent a private key in the RSA asymmetric cryptosystem.
-      class PrivateKey:
-        public elle::Printable
+      class PrivateKey
+        : public elle::Printable
+        , public std::enable_shared_from_this<PrivateKey>
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         , public elle::serialize::DynamicFormat<PrivateKey>
         , public elle::concept::MakeUniquable<PrivateKey>

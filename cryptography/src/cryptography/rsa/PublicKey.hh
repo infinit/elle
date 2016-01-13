@@ -1,6 +1,7 @@
 #ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 # define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 
+# include <memory>
 # include <utility>
 
 # include <openssl/evp.h>
@@ -35,8 +36,9 @@ namespace infinit
     namespace rsa
     {
       /// Represent a public key in the RSA asymmetric cryptosystem.
-      class PublicKey:
-        public elle::Printable
+      class PublicKey
+        : public elle::Printable
+        , public std::enable_shared_from_this<PublicKey>
 # if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         , public elle::serialize::DynamicFormat<PublicKey>
         , public elle::concept::MakeUniquable<PublicKey>
