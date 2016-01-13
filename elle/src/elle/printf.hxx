@@ -8,6 +8,7 @@
 
 # include <elle/Backtrace.hh>
 # include <elle/Exception.hh>
+# include <elle/TypeInfo.hh>
 # include <elle/assert.hh>
 # include <elle/log.hh>
 # include <elle/print.hh>
@@ -67,7 +68,7 @@ namespace elle
     {
       static boost::format parsed("%s(%x)");
       boost::format format(parsed);
-      format % demangle(typeid(T).name());
+      format % elle::type_info(value).name();
       format % reinterpret_cast<const void*>(&value);
       fmt % str(format);
     }
