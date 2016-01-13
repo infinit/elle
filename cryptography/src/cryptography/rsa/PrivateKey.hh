@@ -135,7 +135,12 @@ namespace infinit
         template <typename T>
         std::function <elle::Buffer ()>
         sign_async(T const& o, elle::Version const& version) const;
+      private:
+        template <typename T>
+        std::function<elle::Buffer (PrivateKey const* self)>
+        _sign_async(T const& o, elle::Version const& version) const;
 # endif
+      public:
         /// Write the signature in the output stream given the stream-based
         /// plain text.
         elle::Buffer

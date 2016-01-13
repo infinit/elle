@@ -270,7 +270,8 @@ namespace infinit
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         T const& o) const
       {
-        return this->verify_async(signature, o)();
+        auto data = this->_verify_data(signature, o);
+        return this->verify(data.first, data.second);
       }
 
       template <typename T>
@@ -278,25 +279,32 @@ namespace infinit
       PublicKey::verify_async(elle::ConstWeakBuffer const& signature,
                               T const& o) const
       {
+        return [self = this->shared_from_this(),
+                data = this->_verify_data(signature, o)]
+        {
+          return self->verify(data.first, data.second);
+        };
+      }
+
+      template <typename T>
+      std::pair<elle::Buffer, elle::Buffer>
+      PublicKey::_verify_data(elle::ConstWeakBuffer const& signature,
+                              T const& o) const
+      {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
         ELLE_TRACE_SCOPE("%s: verify %s", *this, o);
         elle::IOStream input(signature.istreambuf());
         auto version =
           elle::serialization::binary::deserialize<elle::Version>(input, false);
-        auto s = elle::utility::move_on_copy(
-          elle::Buffer(std::string{std::istreambuf_iterator<char>(input),
-                                   std::istreambuf_iterator<char>()}));
+        auto s = elle::Buffer(std::string{std::istreambuf_iterator<char>(input),
+                                          std::istreambuf_iterator<char>()});
         auto serialized =
           elle::utility::move_on_copy(
             elle::serialization::binary::serialize(o, version, false));
-        ELLE_DUMP("serialization: %s", serialized);
-        ELLE_DUMP("signature: %s", *s);
         ELLE_DUMP("version: %s", version);
-        auto self = this->shared_from_this();
-        return [self, serialized, s]
-        {
-          return self->verify(*s, *serialized);
-        };
+        ELLE_DUMP("serialization: %s", serialized);
+        ELLE_DUMP("signature: %s", s);
+        return std::make_pair(std::move(s), std::move(serialized));
       }
     }
   }

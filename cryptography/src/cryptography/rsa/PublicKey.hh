@@ -136,7 +136,14 @@ namespace infinit
         template <typename T>
         std::function<bool ()>
         verify_async(elle::ConstWeakBuffer const& signature, T const& o) const;
+      private:
+        template <typename T>
+        std::pair<elle::Buffer, elle::Buffer>
+        _verify_data(elle::ConstWeakBuffer const& signature,
+                     T const& o) const;
+
 # endif
+      public:
         /// Return true if the given signature matches the stream-based plain.
         bool
         verify(elle::ConstWeakBuffer const& signature,

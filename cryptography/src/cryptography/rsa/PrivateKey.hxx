@@ -303,20 +303,30 @@ namespace infinit
       elle::Buffer
       PrivateKey::sign(T const& o, elle::Version const& version) const
       {
-        return this->sign_async(o, version)();
+        return this->_sign_async(o, version)(this);
       }
 
       template <typename T>
       std::function<elle::Buffer ()>
       PrivateKey::sign_async(T const& o, elle::Version const& version) const
       {
+        return [self = this->shared_from_this(),
+                sign = this->_sign_async(o, version)]
+        {
+          return sign(self.get());
+        };
+      }
+
+      template <typename T>
+      std::function<elle::Buffer (PrivateKey const* self)>
+      PrivateKey::_sign_async(T const& o, elle::Version const& version) const
+      {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
         ELLE_TRACE_SCOPE("%s: sign %s", *this, o);
         auto serialized =
           elle::utility::move_on_copy(
             elle::serialization::binary::serialize(o, version, false));
-        auto self = this->shared_from_this();
-        return [self, serialized, version] ()
+        return [serialized, version] (PrivateKey const* self)
         {
           elle::Buffer res;
           elle::IOStream output(res.ostreambuf());
