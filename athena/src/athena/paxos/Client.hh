@@ -42,7 +42,8 @@ namespace athena
         propose(Quorum const& q, Proposal const& p) = 0;
         virtual
         Proposal
-        accept(Quorum const& q, Proposal const& p, T const& value) = 0;
+        accept(Quorum const& q, Proposal const& p,
+               elle::Option<T, Quorum> const& value) = 0;
         class Unavailable
           : public elle::Error
         {
@@ -69,20 +70,22 @@ namespace athena
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
-      boost::optional<T>
+      boost::optional<
+        elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
       choose(
         Quorum const& q,
-        typename elle::_detail::attribute_r_type<T>::type value);
+        elle::Option<T, Quorum> const& value);
       /** Submit \a value as the chosen value.
        *
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
-      boost::optional<T>
+      boost::optional<
+        elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
       choose(
         Quorum const& q,
         typename elle::_detail::attribute_r_type<Version>::type version,
-        typename elle::_detail::attribute_r_type<T>::type value);
+        elle::Option<T, Quorum> const& value);
       ELLE_ATTRIBUTE(int, round);
     private:
       /** Check a majority of members where reached.

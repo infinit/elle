@@ -9,6 +9,7 @@
 
 # include <elle/attribute.hh>
 # include <elle/Error.hh>
+# include <elle/Option.hh>
 # include <elle/Printable.hh>
 # include <elle/serialization/Serializer.hh>
 
@@ -29,6 +30,8 @@ namespace athena
     | Types |
     `------*/
     public:
+      typedef std::unordered_set<ServerId> Quorum;
+
       struct Proposal
       {
         Proposal();
@@ -54,9 +57,9 @@ namespace athena
       struct Accepted
       {
         Accepted();
-        Accepted(Proposal proposal, T value);
+        Accepted(Proposal proposal, elle::Option<T, Quorum> value);
         Proposal proposal;
-        T value;
+        elle::Option<T, Quorum> value;
         void
         serialize(elle::serialization::Serializer& s);
         typedef elle::serialization_tag serialization_tag;
@@ -84,23 +87,28 @@ namespace athena
           >
         > VersionsState;
 
-      typedef std::unordered_set<ServerId> Quorum;
-
       class WrongQuorum
         : public elle::Error
       {
       public:
         typedef elle::Error Super;
-        WrongQuorum(Quorum expected, Quorum effective, Version version);
-        WrongQuorum(elle::serialization::SerializerIn& input);
+        WrongQuorum(Quorum expected,
+                    Quorum effective,
+                    Version version,
+                    Proposal proposal);
+        WrongQuorum(elle::serialization::SerializerIn& input,
+                    elle::Version const& version);
         void
-        serialize(elle::serialization::Serializer& s);
+        serialize(elle::serialization::Serializer& s,
+                  elle::Version const& version);
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
         ELLE_ATTRIBUTE_R(Version, version);
+        ELLE_ATTRIBUTE_R(Proposal, proposal);
       private:
         void
-        _serialize(elle::serialization::Serializer& s);
+        _serialize(elle::serialization::Serializer& s,
+                   elle::Version const& version);
       };
 
     private:
@@ -123,7 +131,7 @@ namespace athena
       boost::optional<Accepted>
       propose(Quorum q, Proposal p);
       Proposal
-      accept(Quorum q, Proposal p, T value);
+      accept(Quorum q, Proposal p, elle::Option<T, Quorum> value);
       boost::optional<Accepted>
       highest_accepted() const;
       ELLE_ATTRIBUTE(VersionsState, state);

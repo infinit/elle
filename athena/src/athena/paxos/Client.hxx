@@ -45,10 +45,11 @@ namespace athena
     `----------*/
 
     template <typename T, typename Version, typename ClientId>
-    boost::optional<T>
+    boost::optional<
+      elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
     Client<T, Version, ClientId>::choose(
       Quorum const& q,
-      typename elle::_detail::attribute_r_type<T>::type value)
+      elle::Option<T, Quorum> const& value)
     {
       return this->choose(q, Version(), std::move(value));
     }
@@ -69,16 +70,16 @@ namespace athena
     }
 
     template <typename T, typename Version, typename ClientId>
-    boost::optional<T>
+    boost::optional<
+      elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
     Client<T, Version, ClientId>::choose(
       Quorum const& q,
       typename elle::_detail::attribute_r_type<Version>::type version,
-      typename elle::_detail::attribute_r_type<T>::type value_)
+      elle::Option<T, Quorum> const& value)
     {
-      T const* value = &value_;
-      boost::optional<T> new_value;
+      boost::optional<elle::Option<T, Quorum>> new_value;
       ELLE_LOG_COMPONENT("athena.paxos.Client");
-      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(*value));
+      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(value));
       ELLE_DUMP("quorum: %s", q);
       while (true)
       {
@@ -124,7 +125,6 @@ namespace athena
           {
             ELLE_DEBUG("replace value with %s", printer(previous->value));
             new_value.emplace(std::move(previous->value));
-            value = &*new_value;
             if (previous->proposal.version > version)
             {
               ELLE_DEBUG("newer version exists, replace %s",
@@ -148,7 +148,8 @@ namespace athena
                 {
                   try
                   {
-                    auto minimum = peer->accept(q, proposal, *value);
+                    auto minimum = peer->accept(
+                      q, proposal, new_value ? new_value.get() : value);
                     // FIXME: If the majority doesn't conflict, the value was
                     // still chosen - right ? Take that in account.
                     if (proposal < minimum)
@@ -183,7 +184,8 @@ namespace athena
           }
         }
       }
-      ELLE_TRACE("%s: chose %s", *this, printer(*value));
+      ELLE_TRACE("%s: chose %s", *this,
+                 printer(new_value ? new_value.get() : value));
       return new_value;
     }
 

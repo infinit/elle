@@ -29,25 +29,27 @@ class Peer
   : public paxos::Client<T, Version, ServerId>::Peer
 {
 public:
+  typedef paxos::Client<T, Version, ServerId> Client;
+
   Peer(paxos::Server<T, Version, ServerId>& paxos)
     : _paxos(paxos)
   {}
 
   virtual
-  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  boost::optional<typename Client::Accepted>
   propose(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
-    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
+    typename Client::Proposal const& p) override
   {
     return this->_paxos.propose(q, p);
   }
 
   virtual
-  typename paxos::Client<T, Version, ServerId>::Proposal
+  typename Client::Proposal
   accept(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
-    typename paxos::Client<T, Version, ServerId>::Proposal const& p,
-    T const& value) override
+    typename Client::Proposal const& p,
+    elle::Option<T, typename Client::Quorum> const& value) override
   {
     return this->_paxos.accept(q, p, value);
   }
@@ -81,22 +83,25 @@ template <typename T, typename Version, typename ServerId>
 class UnavailablePeer
   : public paxos::Client<T, Version, ServerId>::Peer
 {
+public:
+  typedef paxos::Client<T, Version, ServerId> Client;
+
   virtual
-  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  boost::optional<typename Client::Accepted>
   propose(
-    typename paxos::Client<T, Version, ServerId>::Quorum const& q,
-    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
+    typename Client::Quorum const& q,
+    typename Client::Proposal const& p) override
   {
-    throw typename paxos::Client<T, Version, ServerId>::Peer::Unavailable();
+    throw typename Client::Peer::Unavailable();
   }
 
   virtual
-  typename paxos::Client<T, Version, ServerId>::Proposal
-  accept(typename paxos::Client<T, Version, ServerId>::Quorum const& q,
-         typename paxos::Client<T, Version, ServerId>::Proposal const& p,
-         T const& value) override
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<T, typename Client::Quorum> const& value) override
   {
-    throw typename paxos::Client<T, Version, ServerId>::Peer::Unavailable();
+    throw typename Client::Peer::Unavailable();
   }
 };
 
@@ -142,7 +147,10 @@ ELLE_TEST_SCHEDULED(already_chosen)
   peers_2.push_back(elle::make_unique<Peer<int, int, int>>(server_3));
   paxos::Client<int, int, int> client_2(1, std::move(peers_2));
   BOOST_CHECK(!client_1.choose({11, 12, 13}, 42));
-  BOOST_CHECK_EQUAL(client_2.choose({11, 12, 13}, 43), 42);
+  auto chosen = client_2.choose({11, 12, 13}, 43);
+  BOOST_CHECK(chosen);
+  BOOST_CHECK(chosen->is<int>());
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
 }
 
 template <typename T, typename Version, typename ServerId>
@@ -150,6 +158,8 @@ class InstrumentedPeer
   : public Peer<T, Version, ServerId>
 {
 public:
+  typedef paxos::Client<T, Version, ServerId> Client;
+
   InstrumentedPeer(paxos::Server<T, Version, ServerId>& paxos)
     : Peer<T, Version, ServerId>(paxos)
     , fail(false)
@@ -159,10 +169,10 @@ public:
   {}
 
   virtual
-  boost::optional<typename paxos::Client<T, Version, ServerId>::Accepted>
+  boost::optional<typename Client::Accepted>
   propose(
-    typename paxos::Client<T, Version, ServerId>::Quorum const& q,
-    typename paxos::Client<T, Version, ServerId>::Proposal const& p) override
+    typename Client::Quorum const& q,
+    typename Client::Proposal const& p) override
   {
     if (fail)
       throw typename Peer<T, Version, ServerId>::Unavailable();
@@ -172,10 +182,10 @@ public:
   }
 
   virtual
-  typename paxos::Client<T, Version, ServerId>::Proposal
-  accept(typename paxos::Client<T, Version, ServerId>::Quorum const& q,
-         typename paxos::Client<T, Version, ServerId>::Proposal const& p,
-         T const& value) override
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<T, typename Client::Quorum> const& value) override
   {
     if (fail)
       throw typename Peer<T, Version, ServerId>::Unavailable();
@@ -213,10 +223,15 @@ ELLE_TEST_SCHEDULED(concurrent)
   reactor::Thread::unique_ptr t1(
     new reactor::Thread(
       "1",
-      [&] { BOOST_CHECK_EQUAL(client_1.choose({11, 12, 13}, 42), 42); }));
+      [&]
+      {
+        auto chosen = client_1.choose({11, 12, 13}, 42);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
+      }));
   reactor::wait(
     reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
-  BOOST_CHECK_EQUAL(client_2.choose({11, 12, 13}, 43), 42);
+  auto chosen = client_2.choose({11, 12, 13}, 43);
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
   peer_1_3->accept_barrier.open();
   reactor::wait(*t1);
 }
@@ -246,7 +261,11 @@ ELLE_TEST_SCHEDULED(conflict)
   reactor::Thread::unique_ptr t1(
     new reactor::Thread(
       "1",
-      [&] { BOOST_CHECK_EQUAL(client_1.choose({11, 12, 13}, 43), 42); }));
+      [&]
+      {
+        auto chosen = client_1.choose({11, 12, 13}, 43);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
+      }));
   reactor::wait(
     reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   BOOST_CHECK(!client_2.choose({11, 12, 13}, 42));
@@ -309,7 +328,8 @@ ELLE_TEST_SCHEDULED(versions_partial)
                       BOOST_CHECK(!client_1.choose({11, 12, 13}, 2, 2));
                     });
   reactor::wait(peer_1_1->accept_signal);
-  BOOST_CHECK_EQUAL(client_2.choose({11, 12, 13}, 1, 1), 2);
+  auto chosen = client_2.choose({11, 12, 13}, 1, 1);
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 2);
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
   reactor::wait(t);
