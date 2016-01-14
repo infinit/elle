@@ -251,7 +251,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
-      this->_check_quorum(q);
+      this->_check_quorum(q, p.version);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
@@ -293,7 +293,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
-      this->_check_quorum(q);
+      this->_check_quorum(q, p.version);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
@@ -350,10 +350,22 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     void
-    Server<T, Version, ClientId, ServerId>::_check_quorum(Quorum q) const
+    Server<T, Version, ClientId, ServerId>::_check_quorum(
+      Quorum q, Version const& v) const
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      if (q != this->_quorum)
+      auto expected = this->_quorum;
+      for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
+      {
+        if (it->version() >= v)
+          continue;
+        if (it->accepted && it->accepted->value.template is<Quorum>())
+        {
+          expected = it->accepted->value.template get<Quorum>();
+          break;
+        }
+      }
+      if (q != expected)
       {
         ELLE_TRACE("quorum is wrong: %s instead of %s", q, this->_quorum);
         throw WrongQuorum(this->_quorum, q, 0, {});

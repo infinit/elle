@@ -137,7 +137,7 @@ namespace athena
       ELLE_ATTRIBUTE(VersionsState, state);
     private:
       void
-      _check_quorum(Quorum q) const;
+      _check_quorum(Quorum q, Version const& version) const;
 
     /*--------------.
     | Serialization |
