@@ -147,6 +147,9 @@ namespace elle
 
       for (ifaddrs* iter = ifap; iter != nullptr; iter = iter->ifa_next)
       {
+        if (!iter->ifa_addr)
+          continue;
+
         // Apply filters
         if (filter & Interface::Filter::no_loopback &&
             bool(iter->ifa_flags & IFF_LOOPBACK))
