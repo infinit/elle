@@ -94,7 +94,7 @@ def configure(openssl_config,
 
   # Global Configuration
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_11
+  config.standard = drake.cxx.Config.cxx_14
   config.add_local_include_path('src')
   config.lib_path('lib')
   config += openssl_config
