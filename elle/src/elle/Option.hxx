@@ -9,6 +9,7 @@
 # include <elle/TypeInfo.hh>
 # include <elle/meta.hh>
 # include <elle/printf.hh>
+# include <elle/utils.hh>
 
 namespace elle
 {
@@ -254,6 +255,14 @@ namespace elle
                                       elle::type_info<T>()));
     char* buffer = this->_buffer;
     return reinterpret_cast<T&>(*buffer);
+  };
+
+  template <typename ... Types>
+  template <typename T>
+  T const&
+  Option<Types ...>::get() const
+  {
+    return elle::unconst(this)->get<T>();
   };
 
   template <typename ... Types>

@@ -35,6 +35,9 @@ namespace elle
     T&
     get();
     template <typename T>
+    T const&
+    get() const;
+    template <typename T>
     bool
     is() const;
     template <typename T>
