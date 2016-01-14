@@ -426,6 +426,7 @@ class Config:
         def __str__(self):
             return 'C++ %s' % self.__name
 
+    cxx_14 = Standard('14')
     cxx_11 = Standard('11')
     cxx_0x = Standard('0x')
     cxx_98 = Standard('98')
@@ -709,6 +710,8 @@ class GccToolkit(Toolkit):
           res.append('-std=c++0x')
       elif std is Config.cxx_11:
           res.append('-std=c++11')
+      elif std is Config.cxx_14:
+          res.append('-std=c++14')
       else:
           raise Exception('Unknown C++ standard: %s' % std)
       if cfg.warnings:
