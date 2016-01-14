@@ -11,6 +11,15 @@ namespace athena
 {
   namespace paxos
   {
+    /*-----.
+    | Peer |
+    `-----*/
+
+    template <typename T, typename Version, typename ClientId>
+    Client<T, Version, ClientId>::Peer::Peer(ClientId id)
+      : _id(id)
+    {}
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -47,11 +56,9 @@ namespace athena
     template <typename T, typename Version, typename ClientId>
     boost::optional<
       elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
-    Client<T, Version, ClientId>::choose(
-      Quorum const& q,
-      elle::Option<T, Quorum> const& value)
+    Client<T, Version, ClientId>::choose(elle::Option<T, Quorum> const& value)
     {
-      return this->choose(q, Version(), std::move(value));
+      return this->choose(Version(), std::move(value));
     }
 
     template <typename T, typename Version, typename ClientId>
@@ -73,13 +80,15 @@ namespace athena
     boost::optional<
       elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
     Client<T, Version, ClientId>::choose(
-      Quorum const& q,
       typename elle::_detail::attribute_r_type<Version>::type version,
       elle::Option<T, Quorum> const& value)
     {
       boost::optional<elle::Option<T, Quorum>> new_value;
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(value));
+      Quorum q;
+      for (auto const& peer: this->_peers)
+        q.insert(peer->id());
       ELLE_DUMP("quorum: %s", q);
       while (true)
       {

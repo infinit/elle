@@ -35,6 +35,7 @@ namespace athena
       public:
         typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
         typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
+        Peer(ClientId id);
         virtual
         ~Peer() = default;
         virtual
@@ -50,6 +51,7 @@ namespace athena
         public:
           Unavailable();
         };
+        ELLE_ATTRIBUTE_R(ClientId, id);
       };
       typedef std::vector<std::unique_ptr<Peer>> Peers;
 
@@ -72,9 +74,7 @@ namespace athena
        */
       boost::optional<
         elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
-      choose(
-        Quorum const& q,
-        elle::Option<T, Quorum> const& value);
+      choose(elle::Option<T, Quorum> const& value);
       /** Submit \a value as the chosen value.
        *
        *  \param value the submitted value
@@ -82,10 +82,8 @@ namespace athena
        */
       boost::optional<
         elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
-      choose(
-        Quorum const& q,
-        typename elle::_detail::attribute_r_type<Version>::type version,
-        elle::Option<T, Quorum> const& value);
+      choose(typename elle::_detail::attribute_r_type<Version>::type version,
+             elle::Option<T, Quorum> const& value);
       ELLE_ATTRIBUTE(int, round);
     private:
       /** Check a majority of members where reached.
