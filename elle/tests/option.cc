@@ -145,6 +145,16 @@ reset()
   BOOST_CHECK_EQUAL(count, 1);
 }
 
+static
+void
+print()
+{
+  elle::Option<int, std::string> i(42);
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", i), "42");
+  elle::Option<int, std::string> s(std::string("quarante deux"));
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "quarante deux");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -152,4 +162,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(construction));
   suite.add(BOOST_TEST_CASE(assignment));
   suite.add(BOOST_TEST_CASE(reset));
+  suite.add(BOOST_TEST_CASE(print));
 }

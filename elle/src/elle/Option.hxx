@@ -52,6 +52,12 @@ namespace elle
       _assign(T const& source)
       {}
 
+      void
+      _print(std::ostream&)
+      {
+        ELLE_ABORT("unknown option type while printing");
+      }
+
       static constexpr std::size_t size = Size;
     protected:
       char _buffer[size];
@@ -131,6 +137,18 @@ namespace elle
         }
         else
           this->Super::_assign(source);
+      }
+
+      void
+      _print(std::ostream& output)
+      {
+        if (this->_index == Index)
+        {
+          char* const buffer = this->_buffer;
+          output << *reinterpret_cast<Head*>(buffer);
+        }
+        else
+          this->Super::_print(output);
       }
 
       ~OptionHelper()
@@ -245,6 +263,14 @@ namespace elle
   {
     return this->_index == meta::List<Types ...>::template index_of<T>::value;
   };
+
+  template <typename ... Args>
+  std::ostream&
+  operator << (std::ostream& output, Option<Args...> option)
+  {
+    option._print(output);
+    return output;
+  }
 }
 
 #endif

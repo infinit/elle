@@ -3,6 +3,7 @@
 
 # include <cstddef>
 # include <type_traits>
+# include <iosfwd>
 
 namespace elle
 {
@@ -42,6 +43,11 @@ namespace elle
     template <typename T, typename ... Args>
     void
     emplace(Args&& ... value);
+  private:
+    template <typename ... Args>
+    friend
+    std::ostream&
+    operator << (std::ostream& output, Option<Args...> option);
   };
 }
 
