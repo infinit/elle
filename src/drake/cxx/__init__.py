@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2014, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -575,13 +575,14 @@ class GccToolkit(Toolkit):
       version = subprocess.check_output([self.cxx, '--version'])
     except:
       raise drake.Exception('Unable to find compiler: %s' % compiler)
-    apple, win32, win64, linux, android, clang, x86_64, arm = \
+    apple, win32, win64, linux, android, gnuc, clang, x86_64, arm = \
       self.preprocess_isdef((
         '__APPLE__',
         '_WIN32',
         '_WIN64',
         '__linux__',
         '__ANDROID__',
+        '__GNUC__',
         '__clang__',
         '__x86_64__',
         '__arm__',
@@ -617,8 +618,12 @@ class GccToolkit(Toolkit):
         raise Exception("Host OS not found")
     if clang:
       self.__kind = GccToolkit.Kind.clang
-    else:
+    elif gnuc:
       self.__kind = GccToolkit.Kind.gcc
+      vars = ['__GNUC__', '__GNUC_MINOR__', '__GNUC_PATCHLEVEL__']
+      self.__version = tuple(map(int, self.preprocess_values(vars)))
+    else:
+      raise Exception('unknown GCC kind')
     self.c = compiler_c or '%sgcc' % self.prefix
     if archiver:
       self.ar = archiver
@@ -635,14 +640,13 @@ class GccToolkit(Toolkit):
     if self.os == drake.os.windows:
       self.res = '%swindres' % self.prefix
 
-  def preprocess_istrue(self, vars, config = Config(), preamble = None):
-    if preamble:
-      content = preamble + '\n'
-    else:
-      content = ''
-    content += '\n'.join(reversed(vars))
-    content = self.preprocess(content, config).strip().split('\n')
-    return map(bool, map(int, (reversed(content[-len(vars):]))))
+  def preprocess_istrue(self, vars, **kwargs):
+    return map(lambda e: bool(int(e)),
+               self.preprocess_values(vars, **kwargs))
+
+  def preprocess_isdef(self, vars, **kwargs):
+    return map(lambda e: e[0] != e[1],
+               zip(vars, self.preprocess_values(vars, **kwargs)))
 
   def preprocess_isdef(self, vars, config = Config(), preamble = None):
     if preamble:
@@ -652,6 +656,15 @@ class GccToolkit(Toolkit):
     content += '\n'.join(reversed(vars))
     content = self.preprocess(content, config).strip().split('\n')
     return map(lambda e: e[0] != e[1], zip(vars, reversed(content)))
+
+  def preprocess_values(self, vars, config = Config(), preamble = None):
+    if preamble:
+      content = preamble + '\n'
+    else:
+      content = ''
+    content += '\n'.join(reversed(vars))
+    content = self.preprocess(content, config).strip().split('\n')
+    return reversed(content[-len(vars):])
 
   def preprocess(self, code, config = Config()):
     cmd = [self.cxx]
@@ -698,19 +711,25 @@ class GccToolkit(Toolkit):
   def cflags(self, cfg):
       res = []
       if cfg._Config__optimization:
-          res.append('-O2')
+        res.append('-O2')
       if cfg._Config__debug:
-          res.append('-g')
+        res.append('-g')
       std = cfg._Config__standard
       if std is None:
-          pass
+        pass
       elif std is Config.cxx_98:
-          res.append('-std=c++98')
+        res.append('-std=c++98')
       elif std is Config.cxx_0x:
-          res.append('-std=c++0x')
+        res.append('-std=c++0x')
       elif std is Config.cxx_11:
-          res.append('-std=c++11')
+        res.append('-std=c++11')
       elif std is Config.cxx_14:
+        if self.__kind is GccToolkit.Kind.gcc \
+           and self.__version[:2] == (4, 8):
+          # GCC 4.8 does not recognize std=c++14, but enables the
+          # features nonetheless with std=c++11
+          res.append('-std=c++11')
+        else:
           res.append('-std=c++14')
       else:
           raise Exception('Unknown C++ standard: %s' % std)
@@ -2025,4 +2044,3 @@ class PatchAndInstall(drake.Install):
     for l in lines:
       self.cmd('Localize libstdc++ of %s' % self.target,
         ['install_name_tool', '-change', l, '@rpath/%s' % (os.path.filename(l))], throw = True)
-
