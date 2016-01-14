@@ -30,7 +30,7 @@ def configure(cryptography,
   global config
   config = drake.cxx.Config()
   config.add_local_include_path('src')
-  config.standard = drake.cxx.Config.cxx_11
+  config.standard = drake.cxx.Config.cxx_14
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()

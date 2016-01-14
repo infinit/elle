@@ -55,7 +55,7 @@ def configure(curl_config,
   # Public C++ configuration
   config = drake.cxx.Config()
   config.add_local_include_path('src')
-  config.standard = drake.cxx.Config.cxx_11
+  config.standard = drake.cxx.Config.cxx_14
   config.lib_path('lib')
 
   # Local C++ configuration
