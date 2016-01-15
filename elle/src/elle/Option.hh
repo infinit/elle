@@ -5,6 +5,8 @@
 # include <type_traits>
 # include <iosfwd>
 
+# include <elle/serialization/Serializer.hh>
+
 namespace elle
 {
   namespace _details
@@ -46,6 +48,15 @@ namespace elle
     template <typename T, typename ... Args>
     void
     emplace(Args&& ... value);
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    typedef elle::serialization_tag serialization_tag;
+    Option(serialization::SerializerIn& s);
+    void
+    serialize(serialization::Serializer& s);
 
   /*----------.
   | Printable |

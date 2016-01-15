@@ -136,7 +136,7 @@ namespace elle
         if (this->_index == Index)
         {
           char* buffer = this->_buffer;
-          Operation::apply(reinterpret_cast<Head&>(*buffer),
+          Operation::apply(reinterpret_cast<Head&>(*buffer), this->_index,
                            std::forward<Args>(args)...);
         }
         else
@@ -150,7 +150,7 @@ namespace elle
         if (this->_index == Index)
         {
           char const* buffer = this->_buffer;
-          Operation::apply(reinterpret_cast<Head const&>(*buffer),
+          Operation::apply(reinterpret_cast<Head const&>(*buffer), this->_index,
                            std::forward<Args>(args)...);
         }
         else
@@ -228,7 +228,7 @@ namespace elle
     {
       template <typename V>
       static void
-      apply(V& v)
+      apply(V& v, int)
       {
         v.~V();
       }
@@ -291,6 +291,52 @@ namespace elle
     return this->_index == meta::List<Types ...>::template index_of<T>::value;
   };
 
+  /*--------------.
+  | Serialization |
+  `--------------*/
+
+  namespace _details
+  {
+    struct OptionDeserialize
+    {
+      template <typename V>
+      static void
+      apply(V& v, int, serialization::SerializerIn& s)
+      {
+        new (&v) V(s.deserialize<V>("value"));
+      }
+    };
+  }
+
+  template <typename ... Types>
+  Option<Types ...>::Option(serialization::SerializerIn& s)
+  {
+    s.serialize("type", this->_index);
+    this->template _apply<_details::OptionDeserialize>(s);
+  }
+
+  namespace _details
+  {
+    struct OptionSerialize
+    {
+      template <typename V>
+      static void
+      apply(V& v, int, serialization::Serializer& s)
+      {
+        s.serialize("value", v);
+      }
+    };
+  }
+
+  template <typename ... Types>
+  void
+  Option<Types ...>::serialize(serialization::Serializer& s)
+  {
+    if (s.in())
+      this->template _apply<_details::OptionReset>();
+    s.serialize("type", this->_index);
+    this->template _apply<_details::OptionSerialize>(s);
+  }
 
   /*----------.
   | Printable |
@@ -302,7 +348,7 @@ namespace elle
     {
       template <typename V>
       static void
-      apply(V const& v, std::ostream& output)
+      apply(V const& v, int, std::ostream& output)
       {
         output << v;
       }

@@ -1,6 +1,8 @@
 #include <elle/Option.hh>
 #include <elle/test.hh>
 #include <elle/log.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 
 class Count
 {
@@ -155,6 +157,32 @@ print()
   BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "quarante deux");
 }
 
+template <typename Format>
+static
+void
+_serialization()
+{
+  typedef elle::Option<int, std::string> Opt;
+  Opt i(42);
+  BOOST_CHECK_EQUAL(
+    (elle::serialization::deserialize<Format, Opt>(
+      elle::serialization::serialize<Format>(i))).template get<int>(),
+    42);
+  Opt s(std::string("quarante deux"));
+  BOOST_CHECK_EQUAL(
+    (elle::serialization::deserialize<Format, Opt>(
+      elle::serialization::serialize<Format>(s))).template get<std::string>(),
+    "quarante deux");
+}
+
+static
+void
+serialization()
+{
+  _serialization<elle::serialization::Binary>();
+  _serialization<elle::serialization::Json>();
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -163,4 +191,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(assignment));
   suite.add(BOOST_TEST_CASE(reset));
   suite.add(BOOST_TEST_CASE(print));
+  suite.add(BOOST_TEST_CASE(serialization));
 }
