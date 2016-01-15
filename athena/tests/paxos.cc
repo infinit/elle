@@ -1,3 +1,5 @@
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 #include <elle/test.hh>
 
 #include <reactor/Barrier.hh>
@@ -410,6 +412,42 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   }
 }
 
+// FIXME: Doesn't test incomplet rounds serialization, like proposed but
+// not-accepted rounds.
+ELLE_TEST_SCHEDULED(serialization)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Peer<int, int, int> Peer;
+  typedef Client::Peers Peers;
+  elle::Buffer s1;
+  elle::Buffer s2;
+  ELLE_LOG("choose and serialize")
+  {
+    Server server_1(11, {11, 12});
+    Server server_2(12, {11, 12});
+    Peers peers;
+    peers.emplace_back(new Peer(11, server_1));
+    peers.emplace_back(new Peer(12, server_2));
+    paxos::Client<int, int, int> client(1, std::move(peers));
+    BOOST_CHECK(!client.choose(0, 0));
+    BOOST_CHECK(!client.choose(1, 1));
+    s1 = elle::serialization::json::serialize(server_1, false);
+    s2 = elle::serialization::json::serialize(server_2, false);
+  }
+  ELLE_LOG("unserialize and choose")
+  {
+    auto server_1 = elle::serialization::json::deserialize<Server>(s1, false);
+    auto server_2 = elle::serialization::json::deserialize<Server>(s2, false);
+    Peers peers;
+    peers.emplace_back(new Peer(11, server_1));
+    peers.emplace_back(new Peer(12, server_2));
+    paxos::Client<int, int, int> client(1, std::move(peers));
+    BOOST_CHECK_EQUAL(client.choose(1, 0)->template get<int>(), 1);
+    BOOST_CHECK(!client.choose(2, 2));
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -424,4 +462,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(elect_extend), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(elect_shrink), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
 }

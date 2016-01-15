@@ -56,12 +56,12 @@ namespace athena
 
       struct Accepted
       {
-        Accepted();
+        Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
         Accepted(Proposal proposal, elle::Option<T, Quorum> value);
         Proposal proposal;
         elle::Option<T, Quorum> value;
         void
-        serialize(elle::serialization::Serializer& s);
+        serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
       };
 

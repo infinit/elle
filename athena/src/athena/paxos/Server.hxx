@@ -55,10 +55,13 @@ namespace athena
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::Accepted::Accepted()
+    Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
+      elle::serialization::SerializerIn& s, elle::Version const& v)
       : proposal()
-      , value()
-    {}
+      , value(Quorum())
+    {
+      this->serialize(s, v);
+    }
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
@@ -73,10 +76,25 @@ namespace athena
       typename T, typename Version, typename ClientId, typename ServerId>
     void
     Server<T, Version, ClientId, ServerId>::Accepted::serialize(
-      elle::serialization::Serializer& s)
+      elle::serialization::Serializer& serializer,
+      elle::Version const& version)
     {
-      s.serialize("proposal", this->proposal);
-      s.serialize("value", this->value);
+      serializer.serialize("proposal", this->proposal);
+      if (version >= elle::Version(0, 1, 0))
+        serializer.serialize("value", this->value);
+      else if (serializer.out())
+      {
+        auto& s = static_cast<elle::serialization::SerializerOut&>(serializer);
+        if (this->value.template is<T>())
+          s.serialize("value", this->value.template get<T>());
+        else
+          ELLE_ABORT("Athena cannot serialize quorum changes pre 0.1.0");
+      }
+      else
+      {
+        auto& s = static_cast<elle::serialization::SerializerIn&>(serializer);
+        this->value.template emplace<T>(s.deserialize<T>("value"));
+      }
     }
 
     template <
