@@ -412,7 +412,7 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   }
 }
 
-// FIXME: Doesn't test incomplet rounds serialization, like proposed but
+// FIXME: Doesn't test incomplete rounds serialization, like proposed but
 // not-accepted rounds.
 ELLE_TEST_SCHEDULED(serialization)
 {
