@@ -385,6 +385,31 @@ ELLE_TEST_SCHEDULED(elect_extend)
   BOOST_CHECK(!client.choose(3, 3));
 }
 
+ELLE_TEST_SCHEDULED(elect_shrink)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Peer<int, int, int> Peer;
+  typedef Client::Peers Peers;
+  Server server_1(11, {11, 12});
+  Server server_2(12, {11, 12});
+  Peers peers;
+  peers.push_back(elle::make_unique<Peer>(11, server_1));
+  peers.push_back(elle::make_unique<Peer>(12, server_2));
+  paxos::Client<int, int, int> client(1, std::move(peers));
+  ELLE_LOG("choose initial value")
+    BOOST_CHECK(!client.choose(0, 0));
+  ELLE_LOG("choose quorum of 1")
+    BOOST_CHECK(!client.choose(1, Client::Quorum{11}));
+  ELLE_LOG("fail choosing with superfluous server")
+    BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
+  ELLE_LOG("drop peer 2 and choose")
+  {
+    client.peers().pop_back();
+    BOOST_CHECK(!client.choose(2, 2));
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -398,4 +423,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(elect_extend), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(elect_shrink), 0, valgrind(1));
 }
