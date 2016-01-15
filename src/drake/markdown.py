@@ -1,5 +1,5 @@
 import drake
-import mistune
+import markdown2
 
 class Renderer(drake.Builder):
 
@@ -12,14 +12,12 @@ class Renderer(drake.Builder):
 
   def execute(self):
     self.output('Render %s' % self.__target)
-    renderer = mistune.Renderer()
-    markdown = mistune.Markdown(
-      renderer = renderer,
-      parse_inline_html = True,
-    )
     with open(str(self.__source.path())) as input:
       with open(str(self.__target.path()), 'w') as output:
-        output.write(markdown(input.read()))
+        output.write(
+          markdown2.markdown(input.read(),
+                             extras = ['header-ids'])
+        )
     return True
 
 class Source(drake.Node):
