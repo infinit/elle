@@ -57,7 +57,8 @@ namespace elle
       void
       _apply(Args&& ... args) const
       {
-        elle::unconst(this)->_apply<Operation>(std::forward<Args>(args)...);
+        elle::unconst(this)->
+          template _apply<Operation>(std::forward<Args>(args)...);
       }
 
       static constexpr std::size_t size = Size;
