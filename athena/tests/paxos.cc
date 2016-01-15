@@ -362,30 +362,27 @@ ELLE_TEST_SCHEDULED(versions_aborted)
   BOOST_CHECK(!client_2.choose(1, 1));
 }
 
-// Check a newer version overrides a previous result
 ELLE_TEST_SCHEDULED(elect_extend)
 {
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Client::Peers Peers;
-
   Server server_1(11, {11});
   Server server_2(12, {11, 12});
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-
-  BOOST_CHECK(!client_1.choose(0, 0));
-  BOOST_CHECK_EQUAL(client_1.choose(0, 0)->get<int>(), 0);
-  BOOST_CHECK_EQUAL(client_1.choose(0, Client::Quorum{11, 12})->get<int>(), 0);
-  BOOST_CHECK(!client_1.choose(1, Client::Quorum{11, 12}));
-  BOOST_CHECK_EQUAL(client_1.choose(1, 1)->get<Client::Quorum>(),
+  Peers peers;
+  peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+  paxos::Client<int, int, int> client(1, std::move(peers));
+  BOOST_CHECK(!client.choose(0, 0));
+  BOOST_CHECK_EQUAL(client.choose(0, 0)->get<int>(), 0);
+  BOOST_CHECK_EQUAL(client.choose(0, Client::Quorum{11, 12})->get<int>(), 0);
+  BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
+  BOOST_CHECK_EQUAL(client.choose(1, 1)->get<Client::Quorum>(),
                     Client::Quorum({11, 12}));
-  BOOST_CHECK_THROW(client_1.choose(2, 2), Server::WrongQuorum);
-  client_1.peers().emplace_back(
+  BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
+  client.peers().emplace_back(
     elle::make_unique<Peer<int, int, int>>(12, server_2));
-  BOOST_CHECK(!client_1.choose(2, 2));
-  BOOST_CHECK(!client_1.choose(3, 3));
+  BOOST_CHECK(!client.choose(2, 2));
+  BOOST_CHECK(!client.choose(3, 3));
 }
 
 ELLE_TEST_SUITE()
