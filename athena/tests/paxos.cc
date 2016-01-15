@@ -385,6 +385,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
   client_1.peers().emplace_back(
     elle::make_unique<Peer<int, int, int>>(12, server_2));
   BOOST_CHECK(!client_1.choose(2, 2));
+  BOOST_CHECK(!client_1.choose(3, 3));
 }
 
 ELLE_TEST_SUITE()

@@ -320,7 +320,13 @@ namespace athena
             });
           // Drop older versions
           for (auto obsolete = this->_state.begin(); obsolete != it;)
+          {
+            if (obsolete->accepted &&
+                obsolete->accepted->value.template is<Quorum>())
+              this->_quorum =
+                std::move(obsolete->accepted->value.template get<Quorum>());
             obsolete = this->_state.erase(obsolete);
+          }
         }
         else
           this->_state.modify(
@@ -367,8 +373,8 @@ namespace athena
       }
       if (q != expected)
       {
-        ELLE_TRACE("quorum is wrong: %s instead of %s", q, this->_quorum);
-        throw WrongQuorum(this->_quorum, q, 0, {});
+        ELLE_TRACE("quorum is wrong: %s instead of %s", q, expected);
+        throw WrongQuorum(expected, q, 0, {});
       }
     }
 
