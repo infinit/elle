@@ -78,6 +78,7 @@ def configure(cxx_toolkit,
   ## ----- ##
 
   local_config_tests = drake.cxx.Config(local_config)
+  local_config_tests.enable_debug_symbols()
   if cxx_toolkit.os in [
       drake.os.windows, drake.os.ios, drake.os.android]:
     local_config_tests += boost.config_test(static = True)
