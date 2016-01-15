@@ -121,7 +121,7 @@ namespace athena
     public:
       Server(ServerId id, Quorum quorum);
       Server(VersionsState state);
-      ELLE_ATTRIBUTE(ServerId, id);
+      ELLE_ATTRIBUTE_R(ServerId, id);
       ELLE_ATTRIBUTE_R(Quorum, quorum);
 
     /*----------.

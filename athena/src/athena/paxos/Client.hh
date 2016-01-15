@@ -31,6 +31,7 @@ namespace athena
     `-----*/
     public:
       class Peer
+        : public elle::Printable
       {
       public:
         typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
@@ -52,6 +53,12 @@ namespace athena
           Unavailable();
         };
         ELLE_ATTRIBUTE_R(ClientId, id);
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        void
+        print(std::ostream& output) const override;
       };
       typedef std::vector<std::unique_ptr<Peer>> Peers;
 

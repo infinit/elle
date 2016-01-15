@@ -1,4 +1,3 @@
-
 #ifndef ATHENA_PAXOS_CLIENT_HXX
 # define ATHENA_PAXOS_CLIENT_HXX
 
@@ -19,6 +18,13 @@ namespace athena
     Client<T, Version, ClientId>::Peer::Peer(ClientId id)
       : _id(id)
     {}
+
+    template <typename T, typename Version, typename ClientId>
+    void
+    Client<T, Version, ClientId>::Peer::print(std::ostream& output) const
+    {
+      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+    }
 
     /*-------------.
     | Construction |

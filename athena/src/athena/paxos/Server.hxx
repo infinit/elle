@@ -321,6 +321,7 @@ namespace athena
           // Drop older versions
           for (auto obsolete = this->_state.begin(); obsolete != it;)
           {
+            ELLE_DEBUG("drop obsolete version %s", it->version());
             if (obsolete->accepted &&
                 obsolete->accepted->value.template is<Quorum>())
               this->_quorum =
@@ -368,6 +369,8 @@ namespace athena
         if (it->accepted && it->accepted->value.template is<Quorum>())
         {
           expected = it->accepted->value.template get<Quorum>();
+          ELLE_DEBUG("check against quorum from version %s: %s",
+                     it->version(), expected);
           break;
         }
       }
@@ -412,7 +415,7 @@ namespace athena
     void
     Server<T, Version, ClientId, ServerId>::print(std::ostream& output) const
     {
-      elle::fprintf(output, "paxos::Server(%x)", this);
+      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
     }
   }
 }
