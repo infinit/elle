@@ -52,6 +52,8 @@ class GNUBuilder(drake.Builder):
         self.__env.setdefault('MAKE', make_binary.replace('\\', '/'))
     if working_directory is not None:
         self.__working_directory = working_directory
+        if not self.__working_directory.exists():
+          self.__working_directory.mkpath()
     else:
         if self.__configure is None:
             raise Exception(
@@ -137,11 +139,9 @@ class GNUBuilder(drake.Builder):
   def command_configure(self):
     if self.__configure is None:
         return None
-    basename = str(self.__configure.path().basename())
-    if self.__configure_interpreter is None:
-      config = ['./%s' % basename]
-    else:
-      config = [self.__configure_interpreter, basename]
+    config = [str(drake.path_build(absolute = True) / self.__configure.path())]
+    if self.__configure_interpreter is not None:
+      config.insert(0, self.__configure_interpreter)
     return config + self.__configure_args
 
   @property
