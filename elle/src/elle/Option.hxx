@@ -280,7 +280,7 @@ namespace elle
   T const&
   Option<Types ...>::get() const
   {
-    return elle::unconst(this)->get<T>();
+    return elle::unconst(this)->template get<T>();
   };
 
   template <typename ... Types>
