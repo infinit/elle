@@ -370,6 +370,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
   typedef Client::Peers Peers;
 
   Server server_1(11, {11});
+  Server server_2(12, {11, 12});
   Peers peers_1;
   peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
@@ -381,6 +382,9 @@ ELLE_TEST_SCHEDULED(elect_extend)
   BOOST_CHECK_EQUAL(client_1.choose(1, 1)->get<Client::Quorum>(),
                     Client::Quorum({11, 12}));
   BOOST_CHECK_THROW(client_1.choose(2, 2), Server::WrongQuorum);
+  client_1.peers().emplace_back(
+    elle::make_unique<Peer<int, int, int>>(12, server_2));
+  BOOST_CHECK(!client_1.choose(2, 2));
 }
 
 ELLE_TEST_SUITE()

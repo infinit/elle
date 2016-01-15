@@ -61,7 +61,7 @@ namespace athena
     public:
       Client(ClientId id, Peers peers);
       ELLE_ATTRIBUTE_R(ClientId, id);
-      ELLE_ATTRIBUTE_R(Peers, peers);
+      ELLE_ATTRIBUTE_RX(Peers, peers);
 
     /*----------.
     | Consensus |
