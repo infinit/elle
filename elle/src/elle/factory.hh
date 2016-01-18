@@ -30,8 +30,9 @@ namespace elle
     static Items& _items();
   };
 
-#define FACTORY_REGISTER(type, name, builder) \
-  static int unused = elle::Factory<type>::register_(name, builder)
+#define FACTORY_REGISTER(type, name, builder)                       \
+  static int __attribute__((unused))                                \
+  unused = elle::Factory<type>::register_(name, builder)
 
 }
 
