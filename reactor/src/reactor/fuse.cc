@@ -367,13 +367,14 @@ namespace reactor
       throw std::runtime_error("fuse_new failed");
   }
 
+#ifdef INFINIT_MACOSX
   static
   void
   _signal_handler(int sig)
   {
     ELLE_DEBUG("caught signal: %d", sig);
   }
-
+#endif
 
   void
   FuseContext::destroy(DurationOpt grace_time)
