@@ -65,4 +65,13 @@ namespace aws
       )
     : RequestError(message, http_status, error_code)
   {}
+
+  TemporaryRedirect::TemporaryRedirect(
+      std::string const& message,
+      std::string const& redirect_host,
+      boost::optional<reactor::http::StatusCode> http_status,
+      boost::optional<std::string> const& error_code)
+    : RequestError(message, http_status, error_code)
+    , _redirect_host(redirect_host)
+  {}
 }

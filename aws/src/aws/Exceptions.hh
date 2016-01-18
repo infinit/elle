@@ -13,8 +13,8 @@ namespace aws
   /** Error on an individual AWS request.
    * Message is set with error payload if any.
    */
-  class RequestError:
-    public elle::Exception
+  class RequestError
+    : public elle::Exception
   {
   public:
     RequestError(std::string const& message,
@@ -26,8 +26,8 @@ namespace aws
   };
 
   /// Credentials have expired.
-  class CredentialsExpired:
-    public RequestError
+  class CredentialsExpired
+    : public RequestError
   {
   public:
     CredentialsExpired(std::string const& message,
@@ -36,8 +36,8 @@ namespace aws
   };
 
   /// Error for an operation that can be retried.
-  class TransientError:
-    public RequestError
+  class TransientError
+    : public RequestError
   {
   public:
     TransientError(std::string const& message,
@@ -47,8 +47,8 @@ namespace aws
   };
 
   /// Credentials not valid for action.
-  class CredentialsNotValid:
-    public RequestError
+  class CredentialsNotValid
+    : public RequestError
   {
   public:
     CredentialsNotValid(std::string const& message,
@@ -57,8 +57,8 @@ namespace aws
   };
 
   /// S3 data corrupted.
-  class CorruptedData:
-    public RequestError
+  class CorruptedData
+    : public RequestError
   {
   public:
     CorruptedData(std::string const& message,
@@ -67,13 +67,29 @@ namespace aws
   };
 
   // S3 file not found.
-  class FileNotFound:
-    public RequestError
+  class FileNotFound
+    : public RequestError
   {
   public:
     FileNotFound(std::string const& message,
                  boost::optional<reactor::http::StatusCode> http_status = {},
                  boost::optional<std::string> const& error_code = {});
+  };
+
+  // AWS temporary redirect
+  // http://docs.aws.amazon.com/AmazonS3/latest/dev/Redirects.html
+  class TemporaryRedirect
+    : public RequestError
+  {
+  public:
+    TemporaryRedirect(
+      std::string const& message,
+      std::string const& redirect_host,
+      boost::optional<reactor::http::StatusCode> http_status = {},
+      boost::optional<std::string> const& error_code = {});
+
+  private:
+    ELLE_ATTRIBUTE_R(std::string, redirect_host);
   };
 
   /** Error when trying to perform an AWS high-level operation.

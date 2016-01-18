@@ -138,7 +138,8 @@ namespace aws
     /// credentials.
     virtual
     URL
-    hostname(Credentials const& credentials) const;
+    hostname(Credentials const& credentials,
+             boost::optional<std::string> override_host) const;
     ELLE_ATTRIBUTE(Credentials, credentials);
     ELLE_ATTRIBUTE(std::function<Credentials(bool)>, query_credentials);
 
