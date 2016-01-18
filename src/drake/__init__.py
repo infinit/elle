@@ -1682,7 +1682,8 @@ class Builder:
           cwd = None,
           leave_stdout = False,
           env = None,
-          throw = False):
+          throw = False,
+          redirect_stdout = None):
     """Run a shell command.
 
     pretty  -- A pretty version for output.
@@ -1692,32 +1693,40 @@ class Builder:
     printed, except if drake is in raw mode, in which case the
     actual command is printed.
     """
+    if all([leave_stdout, redirect_stdout]):
+      raise Exception('specify either leave_stdout or redirect_stdout')
+    if leave_stdout:
+      out_file = None
+    else:
+      out_file = str(redirect_stdout if redirect_stdout else self.path_stdout)
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
-    with open(str(self.path_stdout), 'w') as f:
-      def fun():
-        if not _RAW and pretty is not None:
-          self.output(pretty)
-        for c in cmd:
-          def convert(e):
-            if isinstance(e, Node):
-              return str(e.path())
-            else:
-              return str(e)
-          c = list(map(convert, c))
-          if _RAW or pretty is None:
-            self.output(command_flatten(c, env))
-          stdout = None
-          if not leave_stdout:
-            stdout = f
+    def fun():
+      if not _RAW and pretty is not None:
+        self.output(pretty)
+      for c in cmd:
+        def convert(e):
+          if isinstance(e, Node):
+            return str(e.path())
+          else:
+            return str(e)
+        c = list(map(convert, c))
+        if _RAW or pretty is None:
+          self.output(command_flatten(c, env))
+        def fun_command(stdout):
           if not command(c, cwd = cwd, stdout = stdout, env = env):
             if throw:
               raise Exception(
                 'command failed: %s' % command_flatten(c, env))
             else:
               return False
-        return True
-      return self._run_job(fun)
+        if out_file:
+          with open(out_file, 'w') as f:
+            fun_command(f)
+        else:
+          fun_command(None)
+      return True
+    return self._run_job(fun)
 
   def output(self, raw, pretty = None):
     """Output pretty, or raw if drake is in raw mode."""
