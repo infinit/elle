@@ -1,5 +1,18 @@
 import drake
 import mistune
+import re
+
+non_unicode_word_character = re.compile('\W')
+
+def id(text):
+  return re.sub(non_unicode_word_character, '-', text.lower())
+
+class HeaderIdsRenderer(mistune.Renderer):
+
+  def header(self, text, level, raw=None):
+    header = super().header(text, level, raw)
+    position = 3 # 1 + len('h%d' % level)
+    return header[0:position] + ' id="' + id(text) + '"' + header[position:]
 
 class Renderer(drake.Builder):
 
@@ -10,9 +23,10 @@ class Renderer(drake.Builder):
     )
     drake.Builder.__init__(self, [self.__source], [self.__target])
 
+
   def execute(self):
     self.output('Render %s' % self.__target)
-    renderer = mistune.Renderer()
+    renderer = HeaderIdsRenderer()
     markdown = mistune.Markdown(
       renderer = renderer,
       parse_inline_html = True,
