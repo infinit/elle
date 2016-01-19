@@ -1694,11 +1694,17 @@ class Builder:
     actual command is printed.
     """
     if all([leave_stdout, redirect_stdout]):
-      raise Exception('specify either leave_stdout or redirect_stdout')
+      raise Exception(
+        'specify either leave_stdout or redirect_stdout')
     if leave_stdout:
       out_file = None
+    elif redirect_stdout is not None:
+      if isinstance(redirect_stdout, Node):
+        out_file = str(redirect_stdout.path())
+      else:
+        out_file = str(redirect_stdout)
     else:
-      out_file = str(redirect_stdout if redirect_stdout else self.path_stdout)
+      out_file = str(self.path_stdout)
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     def fun():
@@ -2143,7 +2149,8 @@ class ShellCommand(Builder):
     def __init__(self, sources, targets, command,
                  pretty = None,
                  cwd = None,
-                 environment = None):
+                 environment = None,
+                 stdout = None):
         """Create a builder that runs command.
 
         sources -- List of source nodes, or source source node if
@@ -2153,18 +2160,23 @@ class ShellCommand(Builder):
         command -- The shell command to run.
         pretty  -- Optional pretty printing.
         """
+        if isinstance(stdout, Node) and stdout not in targets:
+          targets.append(stdout)
         Builder.__init__(self, sources, targets)
         self.__command = command
         self.__pretty = pretty
         self.__cwd = cwd
         self.__environment = environment
+        self.__stdout = stdout
+
 
     def execute(self):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.__command),
                         self.__command,
                         cwd = self.__cwd,
-                        env = self.__environment)
+                        env = self.__environment,
+                        redirect_stdout = self.__stdout)
 
     @property
     def command(self):
