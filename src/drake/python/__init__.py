@@ -13,7 +13,7 @@ class Package(drake.VirtualNode):
   '''A set of nodes constituting a python package making it easy to
   depend on the whole package or get the pythonpath.'''
 
-  def __init__(self, name, root, nodes):
+  def __init__(self, name, root, nodes, fullname = None):
     '''Create a python Package
 
     name  -- the node name
@@ -27,6 +27,7 @@ class Package(drake.VirtualNode):
     self.__nodes = nodes
     for node in nodes:
       self.dependency_add(node)
+    self.__fullname = fullname or name
 
   @property
   def pythonpath(self):
@@ -46,4 +47,8 @@ class Package(drake.VirtualNode):
 
   @property
   def nodes(self):
-    return self.__nodes
+    return list(self.__nodes)
+
+  @property
+  def fullname(self):
+    return self.__fullname
