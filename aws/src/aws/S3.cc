@@ -989,9 +989,12 @@ namespace aws
   S3::hostname(Credentials const& credentials,
                boost::optional<std::string> override_host) const
   {
+    // docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
+    // Use a region-specific domain to avoid being redirected.
     std::string host = override_host
       ? override_host.get()
-      : elle::sprintf("%s.s3.amazonaws.com", credentials.bucket());
+      : elle::sprintf("%s.s3-%s.amazonaws.com", credentials.bucket(),
+                      credentials.region());
     return URL{"https://", host, ""};
   }
 
