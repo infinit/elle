@@ -442,6 +442,7 @@ def configure(zlib_lib,
   )
 
   sources += drake.nodes(
+    'src/map',
     'src/set',
     'src/unordered_map',
     'src/unordered_set',
@@ -463,11 +464,6 @@ def configure(zlib_lib,
       'src/elle/windows/string_conversion.hh',
       'src/elle/windows/string_conversion.cc',
     )
-
-  sources += [drake.cxx.Header(p) for p in (
-    'src/map',
-    'src/utility',
-  )]
 
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
     cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
