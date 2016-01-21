@@ -84,7 +84,8 @@ namespace reactor
       curl_multi_setopt(this->_curl, CURLMOPT_SOCKETFUNCTION, &socket_callback);
       curl_multi_setopt(this->_curl,
                         CURLMOPT_TIMERFUNCTION, &Service::timeout_callback);
-      curl_multi_setopt(this->_curl, CURLMOPT_PIPELINING, 1L);
+      // Pipelining causes issues with S3, requests end up being stuck.
+      // curl_multi_setopt(this->_curl, CURLMOPT_PIPELINING, 1L);
     }
 
     Service::~Service()
