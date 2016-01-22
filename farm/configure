@@ -130,13 +130,13 @@ elif options.os == 'osx':
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
   parameters['qt'] = False
-elif options.os == 'win':
-  parameters['compiler'] = '%s-w64-mingw32-g++' % arch
+elif options.os == 'windows':
+  parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
-  if arch == 'x86_64':
-    parameters['python'] = '/home/buildslave/local/python-mingw-64'
+  if options.arch == 'x86_64':
+    parameters['python'] = False # '/home/buildslave/local/python-mingw-64'
   else:
-    parameters['python'] = '/home/buildslave/local/python-mingw-32'
+    parameters['python'] = False # '/home/buildslave/local/python-mingw-32'
     if options.project == 'Infinit':
       parameters['qt'] = '/home/buildslave/local/Qt-mingw-32'
 else:
