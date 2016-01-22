@@ -3908,7 +3908,8 @@ class PythonModule(Builder):
     for p in self.__dependencies + [self.__module_name]:
       shutil.rmtree(str(self.__python_path / p), ignore_errors = True)
     from os import environ as os_env
-    environment = os_env
+    import copy
+    environment = copy.copy(os_env)
     if environment.get('MACOSX_DEPLOYMENT_TARGET', None):
       del environment['MACOSX_DEPLOYMENT_TARGET']
     return self.cmd('Installing package %s' % self.__package_name,
