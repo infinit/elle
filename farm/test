@@ -10,5 +10,5 @@ os.chdir(os.environ['DIR_BUILD'])
 jobs = os.environ['JOBS']
 if osyst == 'osx':
   jobs = str(int(int(jobs) / 2))
-if subprocess.call(['python3', 'drake', '-j', jobs, '//check']) != 0:
+if subprocess.call(['python3', 'drake', '-j', jobs, '//check', '//drake/check']) != 0:
   exit(1)
