@@ -8,6 +8,7 @@
 
 _OS = __import__('os')
 import atexit
+import contextlib
 import drake.debug
 import hashlib
 import inspect
@@ -1719,18 +1720,17 @@ class Builder:
         c = list(map(convert, c))
         if _RAW or pretty is None:
           self.output(command_flatten(c, env))
-        def fun_command(stdout):
+        with contextlib.ExitStack() as stack:
+          if out_file:
+            stdout = stack.enter_context(open(out_file, 'w'))
+          else:
+            stdout = None
           if not command(c, cwd = cwd, stdout = stdout, env = env):
             if throw:
               raise Exception(
                 'command failed: %s' % command_flatten(c, env))
             else:
               return False
-        if out_file:
-          with open(out_file, 'w') as f:
-            fun_command(f)
-        else:
-          fun_command(None)
       return True
     return self._run_job(fun)
 
