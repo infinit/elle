@@ -996,7 +996,11 @@ class DepFile:
 
     Hashed = object()
     def up_to_date(self, oldest_target, oldest_mtime):
-      """Whether all registered files match the stored hash."""
+      '''Whether targets are up to date wrt sources.
+
+      False if building is needed. The most recent source mtime as
+      a float if more recent than oldest_mtime. True otherwise.
+      '''
       if self.__invalid:
         return False
       res = True
@@ -1012,10 +1016,14 @@ class DepFile:
           mtime = n.mtime
           if mtime < oldest_mtime:
             continue
-          else:
-            if res is True or res < mtime:
-              res = mtime
-        # print('hash %s because %s is older than %s' % (self.__builder, n.path(), oldest_target))
+          elif res is True or res < mtime:
+            res = mtime
+          sched.logger.log(
+            'drake.Builder.mtime',
+            drake.log.LogLevel.debug,
+            '%s: %s is more recent than %s (%s > %s)' % (
+              self.__builder, n.path(), oldest_target,
+              mtime, oldest_mtime))
         try:
           h = n.hash()
         except:
@@ -1935,9 +1943,10 @@ class Builder:
             if not res:
               execute = True
           if not execute and isinstance(res, float):
-            print('adjust mtime for %s' % self)
             for dst in self.__targets:
-              dst.touch(res)
+              if dst.mtime > oldest_mtime:
+                print('Adjust mtime of %s' % dst)
+                dst.touch(res)
         if execute:
           self._execute(depfile_builder)
         else:
