@@ -1194,6 +1194,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     Take necessary action to ensure this node is up to date. That
     is, roughly, run this node runner.
     """
+    import sys
     if not _scheduled():
       Coroutine(self.build, str(self), Drake.current.scheduler)
       Drake.current.scheduler.run()
@@ -1625,10 +1626,14 @@ class Builder:
   class Failed(Exception):
 
     def __init__(self, builder):
-      self._builder = builder
+      self.__builder = builder
 
     def __str__(self):
-      return '%s failed' % self._builder
+      return '%s failed' % self.__builder
+
+    @property
+    def builder(self):
+      return self.__builder
 
   @classmethod
   def register_deps_handler(self, name, f):

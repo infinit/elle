@@ -59,7 +59,28 @@ def configure(prefix = '.'):
   install << drake.copy(sources, prefix / lib, 'src')
   install << drake.copy(command, prefix/'bin', 'src/bin')
 
-  # Tests
+
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
+  check = drake.Rule('check')
+
+  tests = [
+    'base/failure',
+    'base/failure-cmd',
+  ]
+
+  for test in tests:
+    test = drake.node('tests/%s' % test)
+    test.dependencies_add(sources)
+    check << drake.Runner(
+      test,
+      env = {'PYTHONPATH': PYTHONPATH},
+    ).status
+
+  # Old style tests
+
   tests = [
     'base/dependency',
     'base/deps-dyn',
@@ -109,6 +130,5 @@ def configure(prefix = '.'):
     def target(self):
       return self.__target
 
-  check = drake.Rule('check')
   for test in tests:
     check << Tester(test).target()
