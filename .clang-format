@@ -1,4 +1,4 @@
-# BasedOnStyle:  Google
+BasedOnStyle:  Google
 AccessModifierOffset: -1
 ConstructorInitializerIndentWidth: 4
 AlignEscapedNewlinesLeft: true
@@ -17,7 +17,6 @@ DerivePointerBinding: true
 ExperimentalAutoDetectBinPacking: false
 IndentCaseLabels: true
 MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
 ObjCSpaceBeforeProtocolList: false
 PenaltyBreakComment: 60
 PenaltyBreakString: 1000
@@ -29,7 +28,7 @@ SpacesBeforeTrailingComments: 2
 Cpp11BracedListStyle: true
 Standard:        Auto
 IndentWidth:     2
-TabWidth:        8
+TabWidth:        4
 UseTab:          false
 BreakBeforeBraces: Attach
 IndentFunctionDeclarationAfterType: true

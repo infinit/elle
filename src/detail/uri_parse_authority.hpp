@@ -3,7 +3,6 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
 #ifndef NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 #define NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 

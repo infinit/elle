@@ -3,7 +3,6 @@
 // (See accompanying file LICENSE_1_0.txt of copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
 #ifndef URI_TEST_STRING_UTILITY_INC
 #define URI_TEST_STRING_UTILITY_INC
 
@@ -11,10 +10,9 @@
 #include <cstring>
 
 namespace boost {
-  inline
-  bool operator == (const char *lhs, string_ref rhs) {
-    return string_ref(lhs, std::strlen(lhs)) == rhs;
-  }
-} // namespace boost
+inline bool operator==(const char *lhs, string_ref rhs) {
+  return string_ref(lhs, std::strlen(lhs)) == rhs;
+}
+}  // namespace boost
 
-#endif // URI_TEST_STRING_UTILITY_INC
+#endif  // URI_TEST_STRING_UTILITY_INC
