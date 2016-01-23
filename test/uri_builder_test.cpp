@@ -557,6 +557,7 @@ TEST(builder_test, build_uri_with_hash_in_path) {
   ASSERT_EQ("http://www.example.com/%23/", builder.uri());
 }
 
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 TEST(builder_test, DISABLED_build_uri_from_filesystem_path) {
   network::uri_builder builder;
   builder
@@ -594,6 +595,7 @@ TEST(builder_test, DISABLED_build_uri_with_encoded_unreserved_characters) {
     ;
   ASSERT_EQ("http://www.example.com/~glynos/", builder.uri());
 }
+#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
 
 TEST(builder_test, simple_port) {
   network::uri_builder builder;
@@ -606,9 +608,7 @@ TEST(builder_test, simple_port) {
   ASSERT_EQ("http://www.example.com:8000/", builder.uri());
 }
 
-// This seems to work, but I don't want to add the Boost.System
-// dependency just for this.
-
+#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
 TEST(builder_test, build_uri_with_ipv4_address) {
   using namespace boost::asio::ip;
   network::uri_builder builder;
@@ -630,6 +630,7 @@ TEST(builder_test, build_uri_with_ipv6_address) {
     ;
   ASSERT_EQ("http://[::1]/", builder.uri());
 }
+#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
 
 TEST(builder_test, build_uri_with_query_item) {
   network::uri_builder builder;
