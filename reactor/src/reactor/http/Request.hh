@@ -138,6 +138,8 @@ namespace reactor
         /// Whether to check if the FQDN of the server matches the one stated in
         /// his certificate.
         ELLE_ATTRIBUTE_RW(bool, ssl_verify_host);
+        /// Force use of SSL/TLS
+        ELLE_ATTRIBUTE_RW(bool, force_ssl);
       };
 
 

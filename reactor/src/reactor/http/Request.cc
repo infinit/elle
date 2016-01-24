@@ -72,7 +72,8 @@ namespace reactor
         // XXX: not supported by wsgiref and <=nginx-1.2 ...
         _chunked_transfers(false),
         _expected_status(),
-        _ssl_verify_host(true)
+        _ssl_verify_host(true),
+        _force_ssl(false)
     {}
 
     Request::Configuration::~Configuration()
@@ -201,6 +202,16 @@ namespace reactor
       switch (this->_method)
       {
       case Method::DELETE:
+        if (this->_url.find("ftp://")!= std::string::npos
+          || this->_url.find("ftps://")!= std::string::npos)
+        {
+          struct curl_slist *list = NULL;
+          auto pos = this->_url.find_first_of('/', 8);
+          std::string filename = this->_url.substr(pos);
+          std::string ftpCommand = "DELE " + filename;
+          list = curl_slist_append(list, ftpCommand.c_str());
+          setopt(this->_handle, CURLOPT_QUOTE, list);
+        }
         setopt(this->_handle, CURLOPT_CUSTOMREQUEST, "DELETE");
         break;
       case Method::GET:
@@ -238,6 +249,8 @@ namespace reactor
       setopt(this->_handle, CURLOPT_ACCEPT_ENCODING, "");
       if (this->_conf.keep_alive())
         this->header_add("Connection", "keep-alive");
+      if (this->_conf.force_ssl())
+        setopt(this->_handle, CURLOPT_USE_SSL, CURLUSESSL_ALL);
     }
 
     Request::Impl::~Impl()
