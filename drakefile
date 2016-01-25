@@ -93,8 +93,8 @@ def configure(prefix = '.'):
     'cxx/find_library',
     'cxx/headers-deps',
     'cxx/generated-headers-deps',
-    'cxx/pkg-config',
-    # FIXME: not Travis-friendly
+    # FIXME: not CI friendly
+    # 'cxx/pkg-config',
     # 'cxx/qt/moc',
     ]
 

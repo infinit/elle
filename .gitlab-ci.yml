@@ -1,0 +1,15 @@
+stages:
+  - check
+
+variables:
+  PYTHONUNBUFFERED: "1"
+
+check:
+  stage: check
+  script:
+    - git fetch origin --tags
+    - (cd _build && ./drake //check)
+    - tests/test.py
+  tags:
+    - x86_64
+    - trusty

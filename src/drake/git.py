@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2014, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -23,13 +23,13 @@ class Git(VirtualNode):
     >>> os.chdir('/tmp')
     >>> path = Path('.drake.git')
     >>> path.remove()
-    >>> os.environ['GIT_AUTHOR_NAME'] = 'mefyl'
-    >>> os.environ['GIT_AUTHOR_EMAIL'] = 'mefyl@gruntech.org'
     >>> if 'GIT_DIR' in os.environ:
     ...   del os.environ['GIT_DIR']
     >>> import subprocess
     >>> run(['git', 'init', str(path)])
     >>> os.chdir(str(path))
+    >>> run(['git', 'config', 'user.name', 'mefyl'])
+    >>> run(['git', 'config', 'user.email', 'mefyl@gruntech.org'])
     >>> Path('somefile').touch()
     >>> run(['git', 'add', 'somefile'])
     >>> run(['git', 'commit', '-m', 'Commit message.'])
