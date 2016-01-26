@@ -193,7 +193,6 @@ namespace aws
   S3::list_remote_folder_full()
   {
     std::string marker;
-    bool first = true;
     std::vector<std::pair<std::string, S3::FileSize>> result;
     std::vector<std::pair<std::string, S3::FileSize>> chunk;
     do
@@ -202,9 +201,7 @@ namespace aws
       if (chunk.empty())
         break;
       marker = chunk.back().first;
-      result.insert(result.end(),
-                    first ? chunk.begin() : chunk.begin() + 1, chunk.end());
-      first = false;
+      result.insert(result.end(), chunk.begin(), chunk.end());
     }
     while (chunk.size() >= 1000);
     return result;
