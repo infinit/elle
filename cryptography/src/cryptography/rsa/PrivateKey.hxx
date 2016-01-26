@@ -323,17 +323,16 @@ namespace infinit
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
         ELLE_TRACE_SCOPE("%s: sign %s", *this, o);
-        auto serialized =
-          elle::utility::move_on_copy(
-            elle::serialization::binary::serialize(o, version, false));
-        return [serialized, version] (PrivateKey const* self)
+        return [serialized =
+                  elle::serialization::binary::serialize(o, version, false),
+                version] (PrivateKey const* self)
         {
           elle::Buffer res;
-          elle::IOStream output(res.ostreambuf());
-          elle::serialization::binary::serialize(version, output, false);
           {
+            elle::IOStream output(res.ostreambuf());
+            elle::serialization::binary::serialize(version, output, false);
             ELLE_DUMP("serialization: %s", serialized);
-            auto signature = self->sign(*serialized);
+            auto signature = self->sign(serialized);
             ELLE_DUMP("signature: %s", signature);
             ELLE_DUMP("version: %s", version);
             output.write(reinterpret_cast<char const*>(signature.contents()),
