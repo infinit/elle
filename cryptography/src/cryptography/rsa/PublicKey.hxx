@@ -299,8 +299,7 @@ namespace infinit
         auto s = elle::Buffer(std::string{std::istreambuf_iterator<char>(input),
                                           std::istreambuf_iterator<char>()});
         auto serialized =
-          elle::utility::move_on_copy(
-            elle::serialization::binary::serialize(o, version, false));
+          elle::serialization::binary::serialize(o, version, false);
         ELLE_DUMP("version: %s", version);
         ELLE_DUMP("serialization: %s", serialized);
         ELLE_DUMP("signature: %s", s);
