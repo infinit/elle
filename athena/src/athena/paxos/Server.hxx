@@ -359,17 +359,41 @@ namespace athena
       return version.proposal;
     }
 
+    template <typename T, typename V, typename CId, typename SId>
+    boost::optional<typename Server<T, V, CId, SId>::Accepted>
+    _highest(
+      typename Server<T, V, CId, SId>::VersionsState const& versions,
+      std::function<bool(
+        typename Server<T, V, CId, SId>::VersionState const& v)> p)
+    {
+      for (auto it = versions.rbegin(); it != versions.rend(); ++it)
+      {
+        if (p(*it))
+          return it->accepted;
+      }
+      return {};
+    }
+
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
     Server<T, Version, ClientId, ServerId>::highest_accepted() const
     {
-      for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
-      {
-        if (it->accepted)
-          return it->accepted;
-      }
-      return {};
+      return _highest<T, Version, ClientId, ServerId>(
+        this->_state, [] (VersionState const& v) { return bool(v.accepted); });
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
+    Server<T, Version, ClientId, ServerId>::highest_accepted_value() const
+    {
+      return _highest<T, Version, ClientId, ServerId>(
+        this->_state,
+        [] (VersionState const& v)
+        {
+          return v.accepted && v.accepted->template is<T>();
+        });
     }
 
     template <

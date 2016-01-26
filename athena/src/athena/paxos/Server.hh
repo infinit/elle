@@ -134,6 +134,8 @@ namespace athena
       accept(Quorum q, Proposal p, elle::Option<T, Quorum> value);
       boost::optional<Accepted>
       highest_accepted() const;
+      boost::optional<Accepted>
+      highest_accepted_value() const;
       ELLE_ATTRIBUTE(VersionsState, state);
     private:
       void
