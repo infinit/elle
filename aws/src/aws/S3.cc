@@ -193,7 +193,6 @@ namespace aws
   S3::list_remote_folder_full()
   {
     std::string marker;
-    bool first = true;
     std::vector<std::pair<std::string, S3::FileSize>> result;
     std::vector<std::pair<std::string, S3::FileSize>> chunk;
     do
@@ -202,9 +201,7 @@ namespace aws
       if (chunk.empty())
         break;
       marker = chunk.back().first;
-      result.insert(result.end(),
-                    first ? chunk.begin() : chunk.begin() + 1, chunk.end());
-      first = false;
+      result.insert(result.end(), chunk.begin(), chunk.end());
     }
     while (chunk.size() >= 1000);
     return result;
@@ -647,11 +644,27 @@ namespace aws
     return cfg;
   }
 
+  /* Get the redirect host from the error message.
+   * See: http://docs.aws.amazon.com/AmazonS3/latest/dev/Redirects.html
+   */
+  inline
+  std::string
+  handle_temporary_redirect(reactor::http::Request& request)
+  {
+    // The "Location" header contains the complete URL which means we would
+    // need to parse it to get the hostname which is used for signing.
+    using boost::property_tree::ptree;
+    ptree response;
+    read_xml(request, response);
+    return response.get<std::string>("Error.Endpoint");
+  }
+
   /* Check request status and eventual error payload.
    * Throws appropriate RequestError in case of failure. Set fatal to true if
    * error is not recoverable
    */
-  inline void
+  inline
+  void
   check_request_status(reactor::http::Request& request,
                        std::string const& url,
                        bool& fatal)
@@ -691,8 +704,7 @@ namespace aws
         ELLE_TRACE("S3: assuming fatal error code: %s", code);
         fatal = true;
 
-        throw RequestError(
-          payload.str(), status, code);
+        throw RequestError(payload.str(), status, code);
       }
       case reactor::http::StatusCode::Not_Found:
         fatal = true;
@@ -700,24 +712,36 @@ namespace aws
           elle::sprintf("error on %s: object not found",
                         url));
       case reactor::http::StatusCode::Forbidden:
+      {
+        // Consider a RequestTimeTooSkewed error as a "credentials expired",
+        // Refetching will recompute the time skew.
+        boost::property_tree::ptree response_tree;
+        read_xml(request, response_tree);
+        // reading the response stream, nobody else will get it
+        std::string code = response_tree.get<std::string>("Error.Code", "");
+        std::stringstream payload;
+        write_xml(payload, response_tree);
+        if (code == "RequestTimeTooSkewed")
         {
-          // Consider a RequestTimeTooSkewed error as a "credentials expired",
-          // Refetching will recompute the time skew.
-          boost::property_tree::ptree response_tree;
-          read_xml(request, response_tree);
-          // reading the response stream, nobody else will get it
-          std::string code = response_tree.get<std::string>("Error.Code", "");
-          std::stringstream payload;
-          write_xml(payload, response_tree);
-          if (code == "RequestTimeTooSkewed")
-          {
-            ELLE_TRACE(
-              "S3: RequestTimeTooSkewed, treating as CredentialsExpired");
-            throw CredentialsExpired(payload.str(), status, code);
-          }
-          ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
-          throw CredentialsNotValid(payload.str(), status, code);
+          ELLE_TRACE(
+            "S3: RequestTimeTooSkewed, treating as CredentialsExpired");
+          throw CredentialsExpired(payload.str(), status, code);
         }
+        ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
+        throw CredentialsNotValid(payload.str(), status, code);
+      }
+      case reactor::http::StatusCode::Temporary_Redirect:
+      {
+        std::string host = handle_temporary_redirect(request);
+        if (host.empty())
+        {
+          fatal = true;
+          ELLE_ERR("S3: unable to get redirect host");
+          throw aws::RequestError(request.response().string(), status);
+        }
+        ELLE_TRACE("S3: temporary redirect to host: %s", host);
+        throw TemporaryRedirect(request.response().string(), host, status);
+      }
       case reactor::http::StatusCode::OK:
       case reactor::http::StatusCode::No_Content:
       case reactor::http::StatusCode::Partial_Content:
@@ -741,7 +765,7 @@ namespace aws
     catch (RequestError const& e)
     {
       if (fatal)
-        ELLE_WARN("AWS fatal error on %s: %s", url, e.what());
+        ELLE_TRACE("AWS fatal error on %s: %s", url, e.what());
       else
         ELLE_TRACE("AWS transient error on %s: %s", url, e.what());
       throw;
@@ -787,9 +811,13 @@ namespace aws
       if (!opt.empty())
         max_attempts = boost::lexical_cast<int>(opt);
     }
+    // If we receive a temporary redirect, we need to use a different host.
+    boost::optional<std::string> override_host = boost::none;
     while (true)
     {
-      URL const hostname(this->hostname(this->_credentials));
+      URL const hostname(this->hostname(this->_credentials, override_host));
+      // Ensure that we reset the override_host;
+      override_host = boost::none;
       RequestTime request_time =
         boost::posix_time::second_clock::universal_time();
       ELLE_TRACE("Applying clock skew: %s - %s = %s",
@@ -925,10 +953,16 @@ namespace aws
           continue;
         }
       }
+      catch (TemporaryRedirect const& err)
+      {
+        override_host = err.redirect_host();
+        ELLE_TRACE("S3 temporary redirect to: %s", err.redirect_host())
+        continue;
+      }
       catch (aws::RequestError& err)
       { // non-transient RequestError is fatal
         ++attempt;
-        ELLE_ERR("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
+        ELLE_TRACE("S3 fatal error '%s' (attempt %s)", err.what(), attempt);
         // Debug, retry a bit on checksum error to see if value changes on
         // either side
         if (err.error_code() &&
@@ -949,11 +983,16 @@ namespace aws
   }
 
   URL
-  S3::hostname(Credentials const& credentials) const
+  S3::hostname(Credentials const& credentials,
+               boost::optional<std::string> override_host) const
   {
-    return URL{"https://",
-               elle::sprintf("%s.s3.amazonaws.com", credentials.bucket()),
-               ""};
+    // docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
+    // Use a region-specific domain to avoid being redirected.
+    std::string host = override_host
+      ? override_host.get()
+      : elle::sprintf("%s.s3-%s.amazonaws.com", credentials.bucket(),
+                      credentials.region());
+    return URL{"https://", host, ""};
   }
 
   std::string

@@ -7,6 +7,8 @@ import sys
 arch, osyst, compiler = os.environ['BUILDFARM_NAME'].split('-')
 
 os.chdir(os.environ['DIR_BUILD'])
-jobs = 2 if osyst == 'osx' else os.environ['JOBS']
-if subprocess.call(['python3', 'drake', '-j', str(jobs), '//check']) != 0:
+jobs = os.environ['JOBS']
+if osyst == 'osx':
+  jobs = str(int(int(jobs) / 2))
+if subprocess.call(['python3', 'drake', '-j', jobs, '//check']) != 0:
   exit(1)

@@ -12,6 +12,8 @@ dir_build, dir_install, dir_source = (
   os.environ['DIR_%s' % name] for name in ('BUILD', 'INSTALL', 'SOURCE'))
 
 os.chdir('%s' % os.environ['DIR_BUILD'])
-jobs = '2' if osyst == 'osx' else os.environ['JOBS']
+jobs = os.environ['JOBS']
+if osyst == 'osx':
+  jobs = str(int(int(jobs) / 2))
 if subprocess.call(['python3', 'drake', '-j', jobs, '//build']) != 0:
   exit(1)

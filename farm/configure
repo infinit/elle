@@ -1,11 +1,45 @@
 #!/usr/bin/env python3
 
 import os
+import os.path
+import shutil
 import subprocess
 import sys
 import platform
 
-arch, osyst, comp = os.environ['BUILDFARM_NAME'].split('-')
+
+def parse_options():
+  import argparse
+  parser = argparse.ArgumentParser(description = 'Create drake configuration file')
+  parser.add_argument('--arch',
+                      metavar = 'ARCHITECTURE',
+                      type = str,
+                      help = 'CPU architecture (x86_64, i386)',
+                      required = True)
+  parser.add_argument('--os',
+                      metavar = 'OPERATING_SYSTEM',
+                      type = str,
+                      help = 'Target operating system',
+                      required = True)
+  parser.add_argument('--compiler',
+                      metavar = 'COMPILER',
+                      type = str,
+                      help = 'Host compiler',
+                      required = True)
+  parser.add_argument('--project',
+                      metavar = 'PROJECT',
+                      type = str,
+                      help = 'Project name',
+                      required = True)
+  for d in ['build', 'install', 'source']:
+    parser.add_argument('--%s-dir' % d,
+                        metavar = '%s_DIR' % d.upper(),
+                        type = str,
+                        help = '%s directory' % d.capitalize(),
+                        required = True)
+  return parser.parse_args()
+
+options = parse_options()
 
 template = '''\
 #!/usr/bin/env python3
@@ -61,6 +95,7 @@ with drake.Drake(%(dir_source)r) as d:
         valgrind = valgrind,
         valgrind_tests = valgrind_tests,
         production_build = %(production_build)r,
+        prefix = %(dir_install)r,
         **extra_args)
 '''
 
@@ -75,41 +110,46 @@ parameters = {
   'valgrind': False,
   'qt': None,
   'production_build': True,
-  'arch': arch,
+  'arch': options.arch,
 }
 
-if osyst == 'android':
+if options.os == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
   parameters['qt'] = False
   parameters['valgrind'] = False
-elif osyst == 'linux_ubuntu_14':
+elif options.os == 'trusty':
   parameters['valgrind'] = True
   parameters['php'] = True
   parameters['qt'] = False
-elif osyst.startswith('linux_debian'):
+elif options.os == 'jessie':
   parameters['php'] = True
-elif osyst == 'osx':
+elif options.os == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
   parameters['qt'] = False
-elif osyst == 'win':
-  parameters['compiler'] = '%s-w64-mingw32-g++' % arch
+elif options.os == 'windows':
+  parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
-  if arch == 'x86_64':
-    parameters['python'] = '/home/buildslave/local/python-mingw-64'
+  if options.arch == 'x86_64':
+    parameters['python'] = False # '/home/buildslave/local/python-mingw-64'
   else:
-    parameters['python'] = '/home/buildslave/local/python-mingw-32'
-    if os.environ['PROJECT'] == 'Infinit':
+    parameters['python'] = False # '/home/buildslave/local/python-mingw-32'
+    if options.project == 'Infinit':
       parameters['qt'] = '/home/buildslave/local/Qt-mingw-32'
 else:
-  raise Exception('invalid OS: %s' % osyst)
+  raise Exception('invalid OS: %s' % options.os)
 
-
-with open('%s/drake' % os.environ['DIR_BUILD'], 'w') as drake:
-  parameters['dir_source'] = os.path.abspath(os.environ['DIR_SOURCE'])
+with open('%s/.drake.tmp' % options.build_dir, 'w') as drake:
+  parameters['dir_source'] = os.path.realpath(options.source_dir)
+  parameters['dir_install'] = os.path.realpath(options.install_dir)
   content = template % parameters
   print(content, file = drake)
-  print(content)
+
+build_dir = options.build_dir
+tmp = '%s/.drake.tmp' % build_dir
+drake = '%s/drake' % build_dir
+diff = subprocess.call(['diff', '-u', drake, tmp])
+shutil.move(tmp, drake)
