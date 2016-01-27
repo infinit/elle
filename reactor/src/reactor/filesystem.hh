@@ -295,7 +295,7 @@ namespace reactor
       FileSystemImpl* _impl;
       std::shared_ptr<Path>
       fetch_recurse(boost::filesystem::path path);
-      std::unique_ptr<Operations> _operations;
+      ELLE_ATTRIBUTE_RX(std::unique_ptr<Operations>, operations);
       bool _full_tree;
       std::string _where;
       std::unordered_map<boost::filesystem::path, std::shared_ptr<Path>> _cache;
