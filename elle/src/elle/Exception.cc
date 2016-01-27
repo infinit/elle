@@ -39,7 +39,8 @@ namespace elle
   {}
 
   void
-  Exception::serialize(elle::serialization::Serializer& s)
+  Exception::serialize(elle::serialization::Serializer& s,
+                       elle::Version const& version)
   {
     std::string message = this->what();
     s.serialize("message", message);

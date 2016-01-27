@@ -162,7 +162,7 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::WrongQuorum::serialize(
       elle::serialization::Serializer& s, elle::Version const& version)
     {
-      Super::serialize(s);
+      Super::serialize(s, version);
       this->_serialize(s, version);
     }
 

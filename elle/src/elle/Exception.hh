@@ -16,7 +16,7 @@ namespace elle
   /// Base class for exception, with backtrace.
   class Exception
     : public std::runtime_error
-    , public elle::serialization::VirtuallySerializable<false>
+    , public elle::serialization::VirtuallySerializable<true>
   {
   /*-------------.
   | Construction |
@@ -36,7 +36,8 @@ namespace elle
     Exception(elle::serialization::SerializerIn& input);
     virtual
     void
-    serialize(elle::serialization::Serializer& s);
+    serialize(elle::serialization::Serializer& s,
+              elle::Version const& version);
 
   private:
     template <class T>

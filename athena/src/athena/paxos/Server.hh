@@ -98,9 +98,10 @@ namespace athena
                     Proposal proposal);
         WrongQuorum(elle::serialization::SerializerIn& input,
                     elle::Version const& version);
+        virtual
         void
         serialize(elle::serialization::Serializer& s,
-                  elle::Version const& version);
+                  elle::Version const& version) override;
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
         ELLE_ATTRIBUTE_R(Version, version);
