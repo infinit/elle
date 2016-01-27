@@ -175,7 +175,7 @@ namespace athena
       s.serialize("expected", this->_expected);
       s.serialize("effective", this->_effective);
       s.serialize("version", this->_version);
-      if (version >= elle::Version(0, 5, 0))
+      if (version >= elle::Version(0, 1, 0))
         s.serialize("proposal", this->_proposal);
     }
 
