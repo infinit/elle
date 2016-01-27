@@ -79,16 +79,14 @@ namespace athena
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
-      boost::optional<
-        elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
+      boost::optional<Accepted>
       choose(elle::Option<T, Quorum> const& value);
       /** Submit \a value as the chosen value.
        *
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
-      boost::optional<
-        elle::Option<T, typename Client<T, Version, ClientId>::Quorum>>
+      boost::optional<Accepted>
       choose(typename elle::_detail::attribute_r_type<Version>::type version,
              elle::Option<T, Quorum> const& value);
       ELLE_ATTRIBUTE(int, round);
