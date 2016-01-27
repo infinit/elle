@@ -1312,7 +1312,7 @@ namespace elle
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        serialize<T, Serialization>(o, name, s, version);
+        serialize<Serialization, T>(o, name, s, version);
       }
       return res;
     }
@@ -1344,7 +1344,7 @@ namespace elle
     elle::Buffer
     serialize(T const& o, char const* name, bool version = true)
     {
-      return serialize<T, Serialization>(o, std::string(name), version);
+      return serialize<Serialization, T>(o, std::string(name), version);
     }
 
     template <typename Serialization, typename T>

@@ -1,8 +1,8 @@
 #include <elle/Option.hh>
-#include <elle/test.hh>
 #include <elle/log.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
+#include <elle/test.hh>
 
 class Count
 {
@@ -183,6 +183,28 @@ serialization()
   _serialization<elle::serialization::Json>();
 }
 
+static
+void
+serialization2()
+{
+  typedef elle::Option<int, std::shared_ptr<int>> O;
+  O o1(std::make_shared<int>(42));
+  auto s = elle::serialization::binary::serialize(o1, "option");
+  {
+    // Fry that stack.
+    char buf[sizeof(O)];
+    memset(buf, 0xd0, sizeof(O));
+  }
+  O o2(42);
+  {
+    elle::IOStream input(s.istreambuf());
+    elle::serialization::binary::SerializerIn s(input);
+    s.serialize("option", o2);
+  }
+  BOOST_CHECK(o2.is<std::shared_ptr<int>>());
+  BOOST_CHECK_EQUAL(*o2.get<std::shared_ptr<int>>(), 42);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -192,4 +214,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(reset));
   suite.add(BOOST_TEST_CASE(print));
   suite.add(BOOST_TEST_CASE(serialization));
+  suite.add(BOOST_TEST_CASE(serialization2));
 }

@@ -333,10 +333,15 @@ namespace elle
   void
   Option<Types ...>::serialize(serialization::Serializer& s)
   {
+    // FIXME: simplify with split serialization
     if (s.in())
       this->template _apply<_details::OptionReset>();
     s.serialize("type", this->_index);
-    this->template _apply<_details::OptionSerialize>(s);
+    if (s.in())
+      this->template _apply<_details::OptionDeserialize>(
+        static_cast<serialization::SerializerIn&>(s));
+    else
+      this->template _apply<_details::OptionSerialize>(s);
   }
 
   /*----------.
