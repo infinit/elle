@@ -203,7 +203,7 @@ namespace aws
       marker = chunk.back().first;
       result.insert(result.end(), chunk.begin(), chunk.end());
     }
-    while (chunk.size() >= 1000);
+    while (true);
     return result;
   }
 
