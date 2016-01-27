@@ -74,7 +74,6 @@ def configure(cxx_toolkit = None,
               valgrind = None,
               valgrind_tests = False,
               build_openssl_eay = False,
-              qt = None,
               cryptography_python = True,
               codesign = False,
   ):
