@@ -85,7 +85,6 @@ with drake.Drake(%(dir_source)r) as d:
   d.run(cxx_toolkit,
         cxx_config = cxx_config,
         python3 = python,
-        php = %(php)r,
         valgrind = valgrind,
         valgrind_tests = valgrind_tests,
         production_build = %(production_build)r,
@@ -99,7 +98,6 @@ parameters = {
   'flags': (),
   'boost': None,
   'boost_shared': True,
-  'php': False,
   'python': None,
   'valgrind': False,
   'production_build': True,
@@ -112,9 +110,6 @@ if options.os == 'android':
   parameters['valgrind'] = False
 elif options.os == 'trusty':
   parameters['valgrind'] = True
-  parameters['php'] = True
-elif options.os == 'jessie':
-  parameters['php'] = True
 elif options.os == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
