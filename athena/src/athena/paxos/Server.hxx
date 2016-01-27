@@ -392,7 +392,7 @@ namespace athena
         this->_state,
         [] (VersionState const& v)
         {
-          return v.accepted && v.accepted->template is<T>();
+          return v.accepted && v.accepted->value.template is<T>();
         });
     }
 
