@@ -1,0 +1,354 @@
+from itertools import chain
+
+import drake
+import drake.cxx
+
+# Import the GNUBuilder.
+with open(str(drake.path_source('drake-utils/gnu_builder.py')), 'r') as f:
+  exec(f.read(), globals(), globals())
+
+def configure(cxx_toolkit = None,
+              cxx_config = drake.cxx.Config()):
+
+  # Create a default C++ toolkit if none is provided.
+  # This will use the default system compiler.
+  cxx_toolkit = cxx_toolkit or drake.cxx.GccToolkit()
+
+  if cxx_toolkit.os not in [drake.os.linux, drake.os.macos, drake.os.windows]:
+    raise Exception('Unknown OS')
+
+  ## ---- ##
+  ## Zlib ##
+  ## ---- ##
+
+  # Specify a rule for building zlib.
+  # This is optional but would be useful if you just needed to build zlib.
+  zlib_rule = drake.Rule('zlib')
+
+  # Specify the variables required to fetch and extract the zlib tarball.
+  zlib_version = '1.2.8'
+  zlib_basename = 'zlib-%s' % zlib_version
+  zlib_tarball = drake.node('zlib/%s.tar.gz' % zlib_basename)
+  zlib_prefix = drake.Path('zlib')
+  zlib_build = zlib_prefix / zlib_basename
+  zlib_configure = drake.node(zlib_build / 'configure')
+  # This url does not work due to Apache messing up with content-type
+  # headers:
+  # zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
+  zlib_url = \
+    'http://downloads.sourceforge.net/project/libpng/zlib/%s/%s.tar.gz' % (
+      zlib_version,
+      zlib_basename,
+    )
+
+  # Download the zlib tarball and check that the MD5 hash of the file matches
+  # the fingerprint.
+  drake.HTTPDownload(
+    url = zlib_url,
+    dest = zlib_tarball,
+    fingerprint = '44d667c142d7cda120332623eab69f40',
+  )
+
+  # Extract the tarball.
+  # Drake will check that the specified targets are created.
+  drake.TarballExtractor(
+    tarball = zlib_tarball,
+    targets = ['%s/%s' % (zlib_basename, 'configure')],
+  )
+
+  # Different platforms may require different configure options, environments,
+  # etc. Drake knows which platform we're building for and so we can specify
+  # these differences as shown below.
+  zlib_configure_args = []
+  zlib_env = {
+    'CC': cxx_toolkit.c,
+  }
+  if cxx_toolkit.os is drake.os.windows:
+    zlib_configure_args.append('--static')
+    del zlib_env['CC']
+    zlib_configure_call = None
+    zlib_makefile = 'win32/Makefile.gcc'
+    zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
+  else:
+    zlib_env['CFLAGS'] = '-fPIC'
+    zlib_configure_call = zlib_configure
+    zlib_makefile = None
+    if cxx_toolkit.os is drake.os.macos:
+      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
+    elif cxx_toolkit.os is drake.os.linux:
+      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
+  zlib_prefix_absolute = drake.path_build(zlib_prefix, absolute = True)
+  zlib_args = [
+    "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
+    "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
+    "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
+  ]
+  if cxx_toolkit.os is drake.os.windows:
+    zlib_args.append("PREFIX=%s" % cxx_toolkit.prefix)
+
+  # We can now call configure and make to build zlib.
+  GNUBuilder(
+    cxx_toolkit = cxx_toolkit,
+    configure = zlib_configure_call,
+    configure_args = [
+      '--prefix=%s' % zlib_prefix_absolute,
+    ] + zlib_configure_args,
+    additional_env = zlib_env,
+    working_directory = drake.path_build(zlib_build),
+    targets = [zlib_lib] + drake.nodes('zlib/include/zlib.h',
+                                       'zlib/include/zconf.h'),
+    makefile = zlib_makefile,
+    sources = [zlib_configure],
+    build_args = ['install'] + list(s.replace('\\', '/') for s in zlib_args)
+  )
+
+  # Finally we add the zlib library to the //zlib rule so that zlib can be built
+  # using ./drake //zlib.
+  zlib_rule << zlib_lib
+
+  ## ------- ##
+  ## OpenSSL ##
+  ## ------- ##
+
+  # Specify a rule for building just OpenSSL.
+  openssl_rule = drake.Rule('openssl')
+
+  # Specify the parameters reuqired for fetching and extracting the OpenSSL
+  # tarball.
+  openssl_version = '1.0.2'
+  openssl_release_tag = 'd'
+  openssl_basename = 'openssl-%s' % (openssl_version + openssl_release_tag)
+  openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
+  openssl_prefix = drake.Path('openssl')
+  openssl_build = openssl_prefix / openssl_basename
+  openssl_url = 'http://www.openssl.org/source/old/%s/%s.tar.gz' % (
+    openssl_version, openssl_basename)
+
+  # Fetch the OpenSSL tarball.
+  drake.HTTPDownload(openssl_url, openssl_tarball,
+                     fingerprint = '38dd619b2e77cbac69b99f52a053d25a')
+
+  # Extract the OpenSSL tarball.
+  drake.TarballExtractor(
+    openssl_tarball,
+    targets = ['%s/Configure' % openssl_basename],
+    patch_dir = openssl_basename,
+  )
+
+  # Set platform specific configuration for building OpenSSL.
+  openssl_configure = drake.node(openssl_build / 'Configure')
+  openssl_env = {
+    'PERL': 'perl',
+    'CC': cxx_toolkit.c,
+    'CFLAGS': '-w',
+  }
+  from drake.cxx import DynLib, StaticLib
+  if cxx_toolkit.os is drake.os.linux:
+    openssl_shared = True
+    openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
+    openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.so.1.0.0')
+  elif cxx_toolkit.os is drake.os.macos:
+    openssl_shared = True
+    openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.1.0.0.dylib')
+    openssl_lib_crypto = DynLib(openssl_prefix / 'lib/libcrypto.1.0.0.dylib')
+  elif cxx_toolkit.os is drake.os.windows:
+    openssl_shared = False
+    openssl_lib_ssl = StaticLib(openssl_prefix / 'lib/libssl.a')
+    openssl_lib_crypto = StaticLib(openssl_prefix / 'lib/libcrypto.a')
+  openssl_libs = [openssl_lib_ssl, openssl_lib_crypto]
+  openssl_prefix_absolute = drake.path_build(openssl_prefix, absolute = True)
+  if cxx_toolkit.os is drake.os.linux:
+    if cxx_toolkit.architecture is drake.architecture.x86_64:
+      os_string = 'linux-x86_64'
+    elif cxx_toolkit.architecture is drake.architecture.x86:
+      os_string = 'linux-generic32'
+  elif cxx_toolkit.os is drake.os.macos:
+    os_string = 'darwin64-x86_64-cc'
+  elif cxx_toolkit.os is drake.os.windows:
+    os_string = 'mingw64'
+    del openssl_env['CC']
+    openssl_env['CROSS_COMPILE'] = '%s' % cxx_toolkit.prefix
+
+  # Build OpenSSL.
+  GNUBuilder(
+    cxx_toolkit = cxx_toolkit,
+    configure = openssl_configure,
+    configure_interpreter = 'perl',
+    targets = openssl_libs,
+    configure_args = [
+      '--prefix=%s' % openssl_prefix_absolute,
+      openssl_shared and 'shared' or 'no-shared',
+      'no-asm',
+      '-DPURIFY',
+      os_string,
+    ],
+    build_args = [
+      'all', 'install',
+    ],
+    additional_env = openssl_env,
+  )
+
+  # Add the OpenSSL libraries to the //openssl rule.
+  openssl_rule << openssl_libs
+
+  ## ---- ##
+  ## Curl ##
+  ## ---- ##
+
+  # Specify a //curl rule.
+  curl_rule = drake.Rule('curl')
+
+  # Specify the variables required to fetch and extract the cURL tarball.
+  curl_version = '7.47.0'
+  curl_basename = 'curl-%s' % curl_version
+  curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
+  curl_prefix = drake.Path('curl')
+  curl_build = curl_prefix / curl_basename
+  curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
+
+  # Fetch the cURL tarball.
+  drake.HTTPDownload(curl_url, curl_tarball,
+                     fingerprint = '5109d1232d208dfd712c0272b8360393')
+
+  # Extract the cURL tarball.
+  drake.TarballExtractor(
+    curl_tarball,
+    targets = ['%s/%s' % (curl_basename, f) for f in (
+      'configure',
+    )],
+    patches = ((drake.node('patches/curl.patch'),1),),
+    patch_dir = curl_basename,
+  )
+
+  # Specify the parameters needed to configure and build cURL.
+  # Note that we use the zlib and OpenSSL that we specified earlier.
+  curl_configure = drake.node(curl_build / 'configure')
+  from drake.cxx import DynLib, StaticLib
+  if cxx_toolkit.os is drake.os.linux:
+    curl_lib = DynLib(curl_prefix / 'lib/libcurl.so.4')
+  elif cxx_toolkit.os is drake.os.macos:
+    curl_lib = DynLib(curl_prefix / 'lib/libcurl.4.dylib')
+  elif cxx_toolkit.os is drake.os.windows:
+    curl_lib = StaticLib(curl_prefix / 'lib/libcurl.a')
+  curl_openssl_libs = drake.copy(openssl_libs, curl_prefix / 'lib',
+                                 strip_prefix = True)
+  curl_zlib_lib = drake.copy(zlib_lib, curl_prefix / 'lib',
+                             strip_prefix = True)
+  curl_configure_args = [
+    '--with-ssl=%s' % drake.path_build(openssl_prefix, absolute = True),
+    '--with-zlib=%s' % drake.path_build(zlib_prefix, absolute = True),
+    '--enable-hidden-symbols',
+    '--enable-optimize',
+    '--enable-warnings',
+    '--enable-threaded-resolver',
+    '--disable-ldap',
+    '--disable-ldaps',
+    '--disable-manual',
+    '--disable-rtmp',
+    '--disable-sspi',
+    '--disable-ssh',
+    '--disable-rtsp',
+    '--with-gssapi',
+    '--without-libidn',
+  ]
+  curl_configure_args.append(
+    '--prefix=%s' % drake.path_build(curl_prefix, absolute = True))
+  if isinstance(curl_lib, StaticLib):
+    curl_configure_args.extend([
+      '--disable-shared',
+      '--enable-static',
+    ])
+  else:
+    curl_configure_args.extend([
+      '--enable-shared',
+      '--disable-static',
+    ])
+  curl_environment = {
+    'CC': cxx_toolkit.c,
+    'CFLAGS': '-w',
+  }
+  curl_configure_args.append('--host=%s' % drake.host())
+  if cxx_toolkit.os is drake.os.linux:
+    # So curl links its curl binary with the right SSL.
+    curl_configure_args.append(
+      'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
+  elif cxx_toolkit.os is drake.os.macos:
+    path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
+    curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
+  elif cxx_toolkit.os is drake.os.windows:
+    curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
+  curl_dependency_libs = curl_openssl_libs + [curl_zlib_lib]
+
+  # As we will be using cURL in our example executable, we will add its headers
+  # to the expected targets of the GNUBuilder. Doing this will ensure that drake
+  # checks for the files once the builder has run.
+  curl_headers = [
+    'include/curl/typecheck-gcc.h',
+    'include/curl/stdcheaders.h',
+    'include/curl/easy.h',
+    'include/curl/mprintf.h',
+    'include/curl/curl.h',
+    'include/curl/curlver.h',
+    'include/curl/multi.h',
+    'include/curl/curlrules.h'
+  ]
+
+  # Build cURL.
+  GNUBuilder(
+    cxx_toolkit,
+    configure = curl_configure,
+    working_directory = drake.path_build(curl_build),
+    targets = [curl_lib] +
+      drake.nodes(*(curl_prefix / path for path in curl_headers)),
+    configure_args = curl_configure_args,
+    sources = curl_dependency_libs + [curl_configure],
+    build_args = ['all', 'install',],
+    additional_env = curl_environment,
+  )
+
+  # As we built cURL with our own zlib and OpenSSL, we need to tell drake that
+  # it depends on them.
+  for lib in curl_dependency_libs:
+    curl_lib.dependency_add(lib)
+
+  # Specify a compiler configuration for using cURL.
+  # This adds the cURL headers to the compiler includes which is useful if you
+  # would like to use cURL somewhere.
+  curl_config = drake.cxx.Config()
+  curl_config.add_local_include_path(curl_prefix / 'include')
+  if cxx_toolkit.os is drake.os.windows:
+    curl_config.define('CURL_STATICLIB', '1')
+
+  # Add the cURL library to the curl rule.
+  curl_rule << curl_lib
+
+  ## ---------- ##
+  ## Executable ##
+  ## ---------- ##
+
+  # Make a copy of the global compiler configuration for the executable.
+  exec_cxx_config = drake.cxx.Config(cxx_config)
+  # Add the cURL compiler configuration so that we get the required headers.
+  exec_cxx_config += curl_config
+  # Add the path where the libraries will be found at runtime.
+  exec_cxx_config.lib_path_runtime('../lib')
+
+  # Specify the sources for the executable.
+  sources = drake.nodes(
+    'http_request.cc',
+  )
+
+  # Add a global build rule.
+  build_rule = drake.Rule('build')
+
+  # Copy the cURL library (and it's dependencies) to the 'lib' directory in the
+  # root of the build directory.
+  curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
+
+  # Add the creation of the executable to the build rule.
+  build_rule << drake.cxx.Executable(
+    path = drake.Path('bin/http_request'),
+    sources = sources + [curl_lib],
+    tk = cxx_toolkit,
+    cfg = exec_cxx_config,
+  )

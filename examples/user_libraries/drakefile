@@ -1,0 +1,87 @@
+import drake
+import drake.cxx
+
+def configure(cxx_toolkit = None,
+              cxx_config = drake.cxx.Config()):
+
+  # Create a default C++ toolkit if none is provided.
+  # This will use the default system compiler.
+  cxx_toolkit = cxx_toolkit or drake.cxx.GccToolkit()
+
+  # Use c++14 standard.
+  cxx_config.standard = drake.cxx.Config.cxx_14
+  # Add a compiler flag.
+  cxx_config.flag('-Werror')
+
+  # Add the directory this drakefile appears in as an include path.
+  cxx_config.add_local_include_path('.')
+
+  # List sources of our geometry library.
+  geometry = drake.nodes(
+    'geometry/Shape.hh',
+    'geometry/Shape.cc',
+    'geometry/Square.hh',
+    'geometry/Square.cc',
+  )
+
+  # List sources of our color library.
+  color = drake.nodes(
+    'color/Color.hh',
+    'color/Color.cc',
+  )
+
+  # The actual application.
+  sources = drake.nodes(
+    'main.cc',
+  )
+
+  # Declare a builder for the shape dynamic library.
+  # This will create a .so, .dylib or .dll depending on the cxx_toolkit used.
+  geometry_library = drake.cxx.DynLib(
+    path = 'lib/shape', # Path to output the library to in the build directory.
+    sources = geometry, # Sources the library depends on.
+    cfg = cxx_config,   # C++ compiler configuration to use.
+    tk = cxx_toolkit,   # C++ toolkit to use.
+  )
+
+  # Declare a builder for the color static library.
+  color_library = drake.cxx.StaticLib(
+    path = 'lib/color',
+    sources = color,
+    cfg = cxx_config,
+    tk = cxx_toolkit,
+  )
+
+  # Create a rule for building just the libraries.
+  # This can be invoked using //libs.
+  # Invoking the rule will build all its targets and their dependencies.
+  libraries = drake.Rule('libs')
+  libraries << [geometry_library, color_library]
+
+  # Create a copy of the cxx_config for the executable.
+  # This will allow you to specify different include paths, compiler flags, etc.
+  # to those used in the global C++ compiler configuration.
+  executable_cxx_config = drake.cxx.Config(cxx_config)
+
+  # Add the runtime library path.
+  executable_cxx_config.lib_path_runtime('../lib')
+
+  # Declare a builder for our executable 'colored_shape'.
+  # The executable is linked any libraries passed as part of the sources.
+  colored_shape = drake.cxx.Executable(
+    path = drake.Path('bin/colored_shape'), # Path to output the executable to
+                                            # in the build directory.
+    sources = sources             # Nodes on which the executable depends.
+            + [                   # In this case, it's 'main.cc' along with the
+                geometry_library, # libraries we defined earlier.
+                color_library,
+              ],
+    tk = cxx_toolkit,             # C++ toolkit to use.
+    cfg = executable_cxx_config,  # C++ compiler configuration to use.
+  )
+
+  # Create a rule //build.
+  build = drake.Rule('build')
+
+  # Add the 'colored_shape' executable to the rule's targets.
+  build << colored_shape
