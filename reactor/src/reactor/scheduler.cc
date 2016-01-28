@@ -780,7 +780,8 @@ namespace reactor
 */
 
 
-typedef std::unordered_map<std::thread::id, __cxxabiv1::__cxa_eh_globals*> CXAThreadMap;
+typedef std::unordered_map<std::thread::id,
+  std::unique_ptr<__cxxabiv1::__cxa_eh_globals>> CXAThreadMap;
 
 static CXAThreadMap _cxa_thread_map
 // doh, init_priority fails on gcc49 on macosx
@@ -806,10 +807,10 @@ extern "C" {
     if (sched == nullptr)
     {
       CXAThreadMap& map = cxa_thread_map();
-      __cxa_eh_globals * &res = map[std::this_thread::get_id()];
-      if (res == nullptr)
-        res = new __cxa_eh_globals();
-      return res;
+      auto &res = map[std::this_thread::get_id()];
+      if (!res)
+        res.reset(new __cxa_eh_globals());
+      return res.get();
     }
     if (t == nullptr)
     {

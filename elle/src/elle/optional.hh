@@ -3,6 +3,8 @@
 
 # include <boost/optional.hpp>
 
+# include <elle/printf.hh>
+
 namespace boost
 {
   template <typename T>

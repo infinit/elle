@@ -71,12 +71,6 @@ for f in %(flags)r:
 
 extra_args = {}
 
-qt = %(qt)r
-if qt:
-  import drake.cxx.qt
-  qt = drake.cxx.qt.Qt(qt)
-extra_args['qt'] = qt
-
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
@@ -91,7 +85,6 @@ with drake.Drake(%(dir_source)r) as d:
   d.run(cxx_toolkit,
         cxx_config = cxx_config,
         python3 = python,
-        php = %(php)r,
         valgrind = valgrind,
         valgrind_tests = valgrind_tests,
         production_build = %(production_build)r,
@@ -105,10 +98,8 @@ parameters = {
   'flags': (),
   'boost': None,
   'boost_shared': True,
-  'php': False,
   'python': None,
   'valgrind': False,
-  'qt': None,
   'production_build': True,
   'arch': options.arch,
 }
@@ -116,20 +107,16 @@ parameters = {
 if options.os == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
-  parameters['qt'] = False
   parameters['valgrind'] = False
 elif options.os == 'trusty':
   parameters['valgrind'] = True
-  parameters['php'] = True
-  parameters['qt'] = False
 elif options.os == 'jessie':
-  parameters['php'] = True
+  pass
 elif options.os == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
-  parameters['qt'] = False
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
@@ -137,8 +124,6 @@ elif options.os == 'windows':
     parameters['python'] = False # '/home/buildslave/local/python-mingw-64'
   else:
     parameters['python'] = False # '/home/buildslave/local/python-mingw-32'
-    if options.project == 'Infinit':
-      parameters['qt'] = '/home/buildslave/local/Qt-mingw-32'
 else:
   raise Exception('invalid OS: %s' % options.os)
 
