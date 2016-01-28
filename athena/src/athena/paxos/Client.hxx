@@ -154,11 +154,14 @@ namespace athena
             for (auto& peer: this->_peers)
             {
               scope.run_background(
-                elle::sprintf("paxos proposal"),
+                elle::sprintf("%s: paxos acceptation",
+                              reactor::scheduler().current()->name()),
                 [&]
                 {
                   try
                   {
+                    ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
+                                     *this, proposal, *peer);
                     auto minimum = peer->accept(
                       q, proposal, previous ? previous->value : value);
                     // FIXME: If the majority doesn't conflict, the value was
