@@ -34,9 +34,22 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     bool
+    Server<T, Version, ClientId, ServerId>::Proposal::operator ==(
+      Proposal const& rhs) const
+    {
+      return this->version == rhs.version &&
+        this->round == rhs.round &&
+        this->sender == rhs.sender;
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    bool
     Server<T, Version, ClientId, ServerId>::Proposal::operator <(
       Proposal const& rhs) const
     {
+      if (this->version < rhs.version)
+        return true;
       if (this->round < rhs.round)
         return true;
       return this->sender < rhs.sender;

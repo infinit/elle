@@ -40,6 +40,8 @@ namespace athena
         int round;
         ClientId sender;
         bool
+        operator ==(Proposal const& rhs) const;
+        bool
         operator <(Proposal const& rhs) const;
         void
         serialize(elle::serialization::Serializer& s);
