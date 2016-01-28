@@ -42,7 +42,7 @@ def configure(cxx_toolkit = None,
     )
 
   # Download the zlib tarball and check that the MD5 hash of the file matches
-  # the fingerprint.
+  # the fingerprint.
   drake.HTTPDownload(
     url = zlib_url,
     dest = zlib_tarball,
