@@ -1454,15 +1454,18 @@ public:
     , _dummy(857)
   {}
 
-  SpecificError(elle::serialization::SerializerIn& s)
+  SpecificError(elle::serialization::SerializerIn& s,
+                elle::Version const& v)
     : elle::Error("much details wow")
     , _dummy(0)
   {
-    this->serialize(s);
+    this->serialize(s, v);
   }
 
+  virtual
   void
-  serialize(elle::serialization::Serializer& s)
+  serialize(elle::serialization::Serializer& s,
+            elle::Version const&) override
   {
     s.serialize("dummy", this->_dummy);
   }
