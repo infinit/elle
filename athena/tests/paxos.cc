@@ -333,7 +333,9 @@ ELLE_TEST_SCHEDULED(versions_partial)
   reactor::Thread t("client_1",
                     [&]
                     {
-                      BOOST_CHECK(!client_1.choose(2, 2));
+                      auto chosen = client_1.choose(2, 2);
+                      BOOST_CHECK(chosen);
+                      BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
                     });
   reactor::wait(peer_1_1->accept_signal);
   auto chosen = client_2.choose(1, 1);
