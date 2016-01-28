@@ -4,12 +4,29 @@ stages:
 variables:
   PYTHONUNBUFFERED: "1"
 
-check:
+x86_64-trusty-gcc4:
   stage: check
   script:
     - git fetch origin --tags
     - (cd _build && ./drake //check)
     - tests/test.py
+    - (cd examples/hello_world/_build/linux64 && ./drake //build)
+    - (cd examples/user_libraries/_build/linux64 && ./drake //build)
+    - (cd examples/gnu_builder/_build/linux64 && ./drake //build)
   tags:
     - x86_64
     - trusty
+
+x86_64-osx-clang:
+  stage: check
+  script:
+    - git fetch origin --tags
+    - (cd _build && ./drake //check)
+    - tests/test.py
+    - (cd examples/hello_world/_build/macosx64 && ./drake //build)
+    - (cd examples/user_libraries/_build/macosx64 && ./drake //build)
+    - (cd examples/gnu_builder/_build/macosx64 && ./drake //build)
+  tags:
+    - x86_64
+    - osx
+    - clang
