@@ -443,7 +443,7 @@ namespace elle
           filled = true;
           f();
         });
-      if (!filled && opt)
+      if (!filled)
       {
         ELLE_DEBUG("reset option");
         _details::option_reset(opt);
