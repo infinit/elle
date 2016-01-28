@@ -42,7 +42,7 @@ main(int argc, char** argv)
   ColoredSquare another_shape{square, red};
 
   std::cout << "Some shape: " << some_shape << std::endl;
-  std::cout << "Another shape: " << red_square << std::endl;
+  std::cout << "Another shape: " << another_shape << std::endl;
 
   return 0;
 }
