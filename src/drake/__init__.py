@@ -525,10 +525,12 @@ class Path:
       try:
           _OS.remove(str(self))
       except OSError as e:
+        import sys
         if e.errno == 2:
           if err:
             raise Exception('Path does not exist: %s' % str(self))
-        elif e.errno == 21:
+        # OS X throws an errno 1 when trying to remove a directory.
+        elif e.errno == 21 or (sys.platform == 'darwin' and e.errno == 1):
           shutil.rmtree(str(self))
         else:
           raise
