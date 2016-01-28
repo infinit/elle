@@ -16,17 +16,9 @@ def configure(cxx_toolkit = None,
   # Add the directory this drakefile appears in as an include path.
   cxx_config.add_local_include_path('.')
 
-  # List sources of our geometry library.
-  geometry = drake.nodes(
-    'geometry/Shape.hh',
-    'geometry/Shape.cc',
-    'geometry/Square.hh',
-    'geometry/Square.cc',
-  )
-
   # List sources of our color library.
   color = drake.nodes(
-    'color/Color.hh',
+    'color/Color.hh', # Source node paths are relative to the drakefile.
     'color/Color.cc',
   )
 
@@ -35,21 +27,23 @@ def configure(cxx_toolkit = None,
     'main.cc',
   )
 
-  # Declare a builder for the shape dynamic library.
-  # This will create a .so, .dylib or .dll depending on the cxx_toolkit used.
-  geometry_library = drake.cxx.DynLib(
-    path = 'lib/shape', # Path to output the library to in the build directory.
-    sources = geometry, # Sources the library depends on.
-    cfg = cxx_config,   # C++ compiler configuration to use.
-    tk = cxx_toolkit,   # C++ toolkit to use.
-  )
+  # Include the drakefile in geometry.
+  # This drakefile describes how the geometry dynamic library is built.
+  geometry = drake.include(path = 'geometry',
+                           cxx_toolkit = cxx_toolkit,
+                           cxx_config = cxx_config)
+
+  # Copy the geometry library to the 'lib' directory.
+  # Setting strip prefix to True removes the entire prefix of the file. If more
+  # than one node is specified, the first's prefix is used.
+  geometry_library = drake.copy(geometry.library, 'lib', strip_prefix = True)
 
   # Declare a builder for the color static library.
   color_library = drake.cxx.StaticLib(
-    path = 'lib/color',
-    sources = color,
-    cfg = cxx_config,
-    tk = cxx_toolkit,
+    path = 'lib/color', # Path to output the library to in the build directory.
+    sources = color,    # Sources the library depends on.
+    cfg = cxx_config,   # C++ compiler configuration to use.
+    tk = cxx_toolkit,   # C++ toolkit to use.
   )
 
   # Create a rule for building just the libraries.
