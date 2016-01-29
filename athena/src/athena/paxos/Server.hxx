@@ -151,12 +151,11 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
-      Quorum expected, Quorum effective, Version version, Proposal proposal)
+      Quorum expected, Quorum effective, Proposal proposal)
       : elle::Error(
-        elle::sprintf("wrong quorum, current version is %s", version))
+        elle::sprintf("wrong quorum, current version is %s", proposal))
       , _expected(std::move(expected))
       , _effective(std::move(effective))
-      , _version(std::move(version))
       , _proposal(std::move(proposal))
     {}
 
@@ -187,9 +186,10 @@ namespace athena
     {
       s.serialize("expected", this->_expected);
       s.serialize("effective", this->_effective);
-      s.serialize("version", this->_version);
       if (version >= elle::Version(0, 1, 0))
         s.serialize("proposal", this->_proposal);
+      else
+        s.serialize("version", this->_proposal.version);
     }
 
     template <
@@ -417,6 +417,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       auto expected = this->_quorum;
+      Proposal proposal(Version(), -1, ClientId());
       for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
       {
         if (it->version() >= v)
@@ -424,15 +425,16 @@ namespace athena
         if (it->accepted && it->accepted->value.template is<Quorum>())
         {
           expected = it->accepted->value.template get<Quorum>();
+          proposal = it->proposal;
           ELLE_DEBUG("check against quorum from version %s: %s",
-                     it->version(), expected);
+                     proposal, expected);
           break;
         }
       }
       if (q != expected)
       {
         ELLE_TRACE("quorum is wrong: %s instead of %s", q, expected);
-        throw WrongQuorum(expected, q, 0, {});
+        throw WrongQuorum(expected, std::move(q), std::move(proposal));
       }
     }
 

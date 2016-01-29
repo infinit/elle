@@ -94,10 +94,7 @@ namespace athena
       {
       public:
         typedef elle::Error Super;
-        WrongQuorum(Quorum expected,
-                    Quorum effective,
-                    Version version,
-                    Proposal proposal);
+        WrongQuorum(Quorum expected, Quorum effective, Proposal proposal);
         WrongQuorum(elle::serialization::SerializerIn& input,
                     elle::Version const& version);
         virtual
@@ -106,7 +103,6 @@ namespace athena
                   elle::Version const& version) override;
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
-        ELLE_ATTRIBUTE_R(Version, version);
         ELLE_ATTRIBUTE_R(Proposal, proposal);
       private:
         void
