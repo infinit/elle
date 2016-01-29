@@ -499,6 +499,67 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   }
 }
 
+ELLE_TEST_SCHEDULED(evict_down_lag_behind)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Peer<int, int, int> Peer;
+  typedef Client::Peers Peers;
+  Server server_1(11, {11, 12, 13});
+  Server server_2(12, {11, 12, 13});
+  Server server_3(13, {11, 12, 13});
+  auto make_client = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<Peer>(11, server_1));
+      peers.push_back(elle::make_unique<Peer>(12, server_2));
+      peers.push_back(elle::make_unique<Peer>(13, server_3));
+      return paxos::Client<int, int, int>(1, std::move(peers));
+    };
+  auto make_2client = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<Peer>(11, server_1));
+      peers.push_back(elle::make_unique<Peer>(12, server_2));
+      return paxos::Client<int, int, int>(1, std::move(peers));
+    };
+  auto make_partial_client = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<Peer>(11, server_1));
+      peers.push_back(elle::make_unique<Peer>(12, server_2));
+      peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
+      return paxos::Client<int, int, int>(1, std::move(peers));
+    };
+  ELLE_LOG("choose 1 for version 1")
+    BOOST_CHECK(!make_client().choose(1, 1));
+  ELLE_LOG("choose 2 for version 2")
+    BOOST_CHECK(!make_client().choose(2, 2));
+  ELLE_LOG("choose quorum {11, 12} for version 3")
+    BOOST_CHECK(!make_partial_client().choose(3, Client::Quorum{11, 12}));
+  ELLE_LOG("choose 21 for version 2")
+    try
+    {
+      make_2client().choose(2, 21);
+      BOOST_FAIL("quorum should have been refused");
+    }
+    catch (Server::WrongQuorum const& e)
+    {
+      BOOST_CHECK_EQUAL(e.effective(), (Client::Quorum{11, 12}));
+      BOOST_CHECK_EQUAL(e.expected(), (Client::Quorum{11, 12, 13}));
+    }
+  ELLE_LOG("choose 21 for version 2")
+  {
+    auto chosen = make_partial_client().choose(2, 21);
+    BOOST_CHECK(chosen);
+    BOOST_CHECK_EQUAL(chosen->value.get<Client::Quorum>(),
+                      (Client::Quorum{11, 12}));
+    BOOST_CHECK_EQUAL(chosen->proposal.version, 3);
+  }
+  ELLE_LOG("choose 4 for version 4")
+    BOOST_CHECK(!make_2client().choose(4, 4));
+}
+
 template <typename T, typename Version, typename ServerId>
 class ProposeOnlyPeer
   : public Peer<T, Version, ServerId>
@@ -644,6 +705,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(evict_down_lag_behind), 0, valgrind(1));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
