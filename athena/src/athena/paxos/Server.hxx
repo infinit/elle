@@ -10,9 +10,9 @@ namespace athena
 {
   namespace paxos
   {
-    /*------.
-    | Types |
-    `------*/
+    /*---------.
+    | Proposal |
+    `---------*/
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
@@ -66,6 +66,10 @@ namespace athena
       s.serialize("sender", this->sender);
     }
 
+    /*---------.
+    | Accepted |
+    `---------*/
+
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
@@ -108,40 +112,6 @@ namespace athena
         auto& s = static_cast<elle::serialization::SerializerIn&>(serializer);
         this->value.template emplace<T>(s.deserialize<T>("value"));
       }
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
-      Proposal p, boost::optional<Accepted> a)
-      : proposal(std::move(p))
-      , accepted(std::move(a))
-    {}
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
-      elle::serialization::SerializerIn& s)
-    {
-      this->serialize(s);
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    void
-    Server<T, Version, ClientId, ServerId>::VersionState::serialize(
-      elle::serialization::Serializer& s)
-    {
-      s.serialize("proposal", this->proposal);
-      s.serialize("accepted", this->accepted);
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    Version
-    Server<T, Version, ClientId, ServerId>::VersionState::version() const
-    {
-      return this->proposal.version;
     }
 
     /*------------.
@@ -255,8 +225,7 @@ namespace athena
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::Server(
-      ServerId id, Quorum quorum)
+    Server<T, Version, ClientId, ServerId>::Server(ServerId id, Quorum quorum)
       : _id(std::move(id))
       , _quorum(std::move(quorum))
       , _state()
@@ -264,12 +233,6 @@ namespace athena
       ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
       this->_register_serialization.poke();
     }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::Server(VersionsState state)
-      : _state(std::move(state))
-    {}
 
     /*----------.
     | Consensus |
@@ -372,27 +335,31 @@ namespace athena
       return version.proposal;
     }
 
-    template <typename T, typename V, typename CId, typename SId>
-    boost::optional<typename Server<T, V, CId, SId>::Accepted>
-    _highest(
-      typename Server<T, V, CId, SId>::VersionsState const& versions,
-      std::function<bool(
-        typename Server<T, V, CId, SId>::VersionState const& v)> p)
+    template <typename T, typename Version, typename CId, typename SId>
+    struct Server<T, Version, CId, SId>::_Details
     {
-      for (auto it = versions.rbegin(); it != versions.rend(); ++it)
+      static
+      boost::optional<typename Server<T, T, CId, SId>::Accepted>
+      _highest(
+        typename Server<T, T, CId, SId>::VersionsState const& versions,
+        std::function<bool(
+          typename Server<T, T, CId, SId>::VersionState const& v)> p)
       {
-        if (p(*it))
-          return it->accepted;
+        for (auto it = versions.rbegin(); it != versions.rend(); ++it)
+        {
+          if (p(*it))
+            return it->accepted;
+        }
+        return {};
       }
-      return {};
-    }
+    };
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
     Server<T, Version, ClientId, ServerId>::highest_accepted() const
     {
-      return _highest<T, Version, ClientId, ServerId>(
+      return _Details::_highest(
         this->_state, [] (VersionState const& v) { return bool(v.accepted); });
     }
 
@@ -401,7 +368,7 @@ namespace athena
     boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
     Server<T, Version, ClientId, ServerId>::highest_accepted_value() const
     {
-      return _highest<T, Version, ClientId, ServerId>(
+      return _Details::_highest(
         this->_state,
         [] (VersionState const& v)
         {
@@ -436,6 +403,40 @@ namespace athena
         ELLE_TRACE("quorum is wrong: %s instead of %s", q, expected);
         throw WrongQuorum(expected, std::move(q), std::move(proposal));
       }
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
+      Proposal p, boost::optional<Accepted> a)
+      : proposal(std::move(p))
+      , accepted(std::move(a))
+    {}
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
+      elle::serialization::SerializerIn& s)
+    {
+      this->serialize(s);
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    void
+    Server<T, Version, ClientId, ServerId>::VersionState::serialize(
+      elle::serialization::Serializer& s)
+    {
+      s.serialize("proposal", this->proposal);
+      s.serialize("accepted", this->accepted);
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Version
+    Server<T, Version, ClientId, ServerId>::VersionState::version() const
+    {
+      return this->proposal.version;
     }
 
     /*--------------.

@@ -30,8 +30,13 @@ namespace athena
     | Types |
     `------*/
     public:
+      typedef Server<T, Version, ClientId, ServerId> Self;
       typedef std::unordered_set<ServerId> Quorum;
 
+    /*---------.
+    | Proposal |
+    `---------*/
+    public:
       struct Proposal
       {
         Proposal();
@@ -56,6 +61,10 @@ namespace athena
         }
       };
 
+    /*---------.
+    | Accepted |
+    `---------*/
+    public:
       struct Accepted
       {
         Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
@@ -67,28 +76,10 @@ namespace athena
         typedef elle::serialization_tag serialization_tag;
       };
 
-      struct VersionState
-      {
-        VersionState(Proposal p, boost::optional<Accepted> a = {});
-        Proposal proposal;
-        boost::optional<Accepted> accepted;
-        Version
-        version() const;
-        VersionState(elle::serialization::SerializerIn& s);
-        void
-        serialize(elle::serialization::Serializer& s);
-        typedef elle::serialization_tag serialization_tag;
-      };
-
-      typedef boost::multi_index::multi_index_container<
-        VersionState,
-        boost::multi_index::indexed_by<
-          boost::multi_index::ordered_unique<
-            boost::multi_index::const_mem_fun<
-              VersionState, Version, &VersionState::version>>
-          >
-        > VersionsState;
-
+    /*------------.
+    | WrongQuorum |
+    `------------*/
+    public:
       class WrongQuorum
         : public elle::Error
       {
@@ -109,7 +100,6 @@ namespace athena
         _serialize(elle::serialization::Serializer& s,
                    elle::Version const& version);
       };
-
     private:
       static const elle::serialization::Hierarchy<elle::Exception>::
       Register<WrongQuorum> _register_serialization;
@@ -119,9 +109,9 @@ namespace athena
     `-------------*/
     public:
       Server(ServerId id, Quorum quorum);
-      Server(VersionsState state);
       ELLE_ATTRIBUTE_R(ServerId, id);
       ELLE_ATTRIBUTE_R(Quorum, quorum);
+      ELLE_ATTRIBUTE_R(boost::optional<T>, value);
 
     /*----------.
     | Consensus |
@@ -135,8 +125,30 @@ namespace athena
       highest_accepted() const;
       boost::optional<Accepted>
       highest_accepted_value() const;
-      ELLE_ATTRIBUTE(VersionsState, state);
     private:
+      struct _Details;
+      friend struct _Details;
+      struct VersionState
+      {
+        VersionState(Proposal p, boost::optional<Accepted> a = {});
+        Proposal proposal;
+        boost::optional<Accepted> accepted;
+        Version
+        version() const;
+        VersionState(elle::serialization::SerializerIn& s);
+        void
+        serialize(elle::serialization::Serializer& s);
+        typedef elle::serialization_tag serialization_tag;
+      };
+      typedef boost::multi_index::multi_index_container<
+        VersionState,
+        boost::multi_index::indexed_by<
+          boost::multi_index::ordered_unique<
+            boost::multi_index::const_mem_fun<
+              VersionState, Version, &VersionState::version>>
+          >
+        > VersionsState;
+      ELLE_ATTRIBUTE(VersionsState, state);
       void
       _check_quorum(Quorum q, Version const& version) const;
 
