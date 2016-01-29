@@ -48,11 +48,12 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::Proposal::operator <(
       Proposal const& rhs) const
     {
-      if (this->version < rhs.version)
-        return true;
-      if (this->round < rhs.round)
-        return true;
-      return this->sender < rhs.sender;
+      if (this->version != rhs.version)
+        return this->version < rhs.version;
+      else if (this->round != rhs.round)
+        return this->round < rhs.round;
+      else
+        return this->sender < rhs.sender;
     }
 
     template <
