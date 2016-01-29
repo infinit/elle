@@ -123,7 +123,8 @@ namespace athena
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
       Quorum expected, Quorum effective)
-      : elle::Error("wrong quorum")
+      : elle::Error(
+        elle::sprintf("wrong quorum: %s instead of %s", effective, expected))
       , _expected(std::move(expected))
       , _effective(std::move(effective))
     {}
