@@ -198,6 +198,7 @@ namespace athena
                    printer(previous ? previous->value : value));
         ELLE_DEBUG("%s: send confirmation", *this)
         {
+          auto reached = 0;
           elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
           {
             for (auto& peer: this->_peers)
@@ -212,6 +213,7 @@ namespace athena
                     ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
                                      *this, proposal, *peer);
                     peer->confirm(q, proposal);
+                    ++reached;
                   }
                   catch (typename Peer::Unavailable const& e)
                   {
@@ -222,6 +224,7 @@ namespace athena
             }
             reactor::wait(scope);
           };
+          this->_check_headcount(q, reached);
         }
         break;
       }
