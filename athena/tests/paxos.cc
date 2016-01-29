@@ -330,19 +330,20 @@ ELLE_TEST_SCHEDULED(versions_partial)
   peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
   peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
-  reactor::Thread t("client_1",
-                    [&]
-                    {
-                      auto chosen = client_1.choose(2, 2);
-                      BOOST_CHECK(chosen);
-                      BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
-                    });
+  reactor::Thread::unique_ptr t(
+    new reactor::Thread("client_1",
+                        [&]
+                        {
+                          auto chosen = client_1.choose(2, 2);
+                          BOOST_CHECK(chosen);
+                          BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+                        }));
   reactor::wait(peer_1_1->accept_signal);
   auto chosen = client_2.choose(1, 1);
   BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
-  reactor::wait(t);
+  reactor::wait(*t);
 }
 
 // Check a failed newer version doesn't block older ones
