@@ -85,7 +85,7 @@ namespace athena
       {
       public:
         typedef elle::Error Super;
-        WrongQuorum(Quorum expected, Quorum effective, Proposal proposal);
+        WrongQuorum(Quorum expected, Quorum effective);
         WrongQuorum(elle::serialization::SerializerIn& input,
                     elle::Version const& version);
         virtual
@@ -94,6 +94,31 @@ namespace athena
                   elle::Version const& version) override;
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
+      private:
+        void
+        _serialize(elle::serialization::Serializer& s,
+                   elle::Version const& version);
+      };
+    private:
+      static const elle::serialization::Hierarchy<elle::Exception>::
+      Register<WrongQuorum> _register_wrong_quorum_serialization;
+
+    /*-------------.
+    | PartialState |
+    `-------------*/
+    public:
+      class PartialState
+        : public elle::Error
+      {
+      public:
+        typedef elle::Error Super;
+        PartialState(Proposal p);
+        PartialState(elle::serialization::SerializerIn& input,
+                     elle::Version const& version);
+        virtual
+        void
+        serialize(elle::serialization::Serializer& s,
+                  elle::Version const& version) override;
         ELLE_ATTRIBUTE_R(Proposal, proposal);
       private:
         void
@@ -102,7 +127,7 @@ namespace athena
       };
     private:
       static const elle::serialization::Hierarchy<elle::Exception>::
-      Register<WrongQuorum> _register_serialization;
+      Register<PartialState> _register_partial_state_serialization;
 
     /*-------------.
     | Construction |
@@ -110,7 +135,7 @@ namespace athena
     public:
       Server(ServerId id, Quorum quorum);
       ELLE_ATTRIBUTE_R(ServerId, id);
-      ELLE_ATTRIBUTE_R(Quorum, quorum);
+      ELLE_ATTRIBUTE_R(Quorum, quorum_initial);
       ELLE_ATTRIBUTE_R(boost::optional<T>, value);
 
     /*----------.
@@ -121,6 +146,8 @@ namespace athena
       propose(Quorum q, Proposal p);
       Proposal
       accept(Quorum q, Proposal p, elle::Option<T, Quorum> value);
+      void
+      confirm(Quorum q, Proposal p);
       boost::optional<Accepted>
       highest_accepted() const;
       boost::optional<Accepted>
@@ -133,11 +160,13 @@ namespace athena
         VersionState(Proposal p, boost::optional<Accepted> a = {});
         Proposal proposal;
         boost::optional<Accepted> accepted;
+        bool confirmed;
         Version
         version() const;
-        VersionState(elle::serialization::SerializerIn& s);
+        VersionState(elle::serialization::SerializerIn& s,
+                     elle::Version const& v);
         void
-        serialize(elle::serialization::Serializer& s);
+        serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
       };
       typedef boost::multi_index::multi_index_container<
@@ -149,16 +178,14 @@ namespace athena
           >
         > VersionsState;
       ELLE_ATTRIBUTE(VersionsState, state);
-      void
-      _check_quorum(Quorum q, Version const& version) const;
 
     /*--------------.
     | Serialization |
     `--------------*/
     public:
-      Server(elle::serialization::SerializerIn& s);
+      Server(elle::serialization::SerializerIn& s, elle::Version const& v);
       void
-      serialize(elle::serialization::Serializer& s);
+      serialize(elle::serialization::Serializer& s, elle::Version const& v);
       typedef elle::serialization_tag serialization_tag;
 
     /*----------.

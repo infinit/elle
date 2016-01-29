@@ -58,6 +58,15 @@ public:
     return this->_paxos.accept(q, p, value);
   }
 
+  virtual
+  void
+  confirm(
+    typename paxos::Server<T, Version, ServerId>::Quorum const& q,
+    typename Client::Proposal const& p) override
+  {
+    return this->_paxos.confirm(q, p);
+  }
+
   ELLE_ATTRIBUTE_RW((paxos::Server<T, Version, ServerId>&), paxos);
 };
 
@@ -108,6 +117,14 @@ public:
   accept(typename Client::Quorum const& q,
          typename Client::Proposal const& p,
          elle::Option<T, typename Client::Quorum> const& value) override
+  {
+    throw typename Client::Peer::Unavailable();
+  }
+
+  virtual
+  void
+  confirm(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
   {
     throw typename Client::Peer::Unavailable();
   }
@@ -325,11 +342,20 @@ ELLE_TEST_SCHEDULED(versions_partial)
   peers_1.push_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  ELLE_LOG("select 1 for version 1 (client 2)")
+  {
+    Peers peers_2;
+    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
+    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+    paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+    BOOST_CHECK(!client_2.choose(1, 1));
+  }
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:2  |  1:1:2  |  1:1:2  |
+  //   +---------+---------+---------+
   reactor::Thread::unique_ptr t(
     new reactor::Thread("client_1",
                         [&]
@@ -339,11 +365,43 @@ ELLE_TEST_SCHEDULED(versions_partial)
                           BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
                         }));
   reactor::wait(peer_1_1->accept_signal);
-  auto chosen = client_2.choose(1, 1);
-  BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 2 |    2    |         |         | -> ?
+  //   |  2:1:1  |  2:1:1  |  2:1:1  |
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:2  |  1:1:2  |  1:1:2  |
+  //   +---------+---------+---------+
+  ELLE_LOG("select 1 for version 1 (client 3)")
+  {
+    Peers peers_3;
+    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
+    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+    paxos::Client<int, int, int> client_3(3, std::move(peers_3));
+    auto chosen = client_3.choose(1, 1);
+    BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+  }
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 2 |    2    |    2    |    2    | -> 2
+  //   |  2:2:3  |  2:2:3  |  2:2:3  |
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:2  |  1:1:2  |  1:1:2  |
+  //   +---------+---------+---------+
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
   reactor::wait(*t);
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 2 |    2    |    2    |    2    | -> 2
+  //   |  2:3:1  |  2:3:1  |  2:3:1  |
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:2  |  1:1:2  |  1:1:2  |
+  //   +---------+---------+---------+
 }
 
 // Check a failed newer version doesn't block older ones
@@ -377,18 +435,26 @@ ELLE_TEST_SCHEDULED(elect_extend)
   Peers peers;
   peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
   paxos::Client<int, int, int> client(1, std::move(peers));
-  BOOST_CHECK(!client.choose(0, 0));
-  BOOST_CHECK_EQUAL(client.choose(0, 0)->value.get<int>(), 0);
-  BOOST_CHECK_EQUAL(
-    client.choose(0, Client::Quorum{11, 12})->value.get<int>(), 0);
-  BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
-  BOOST_CHECK_EQUAL(client.choose(1, 1)->value.get<Client::Quorum>(),
-                    Client::Quorum({11, 12}));
-  BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
+  ELLE_LOG("choose 0 for version 0")
+    BOOST_CHECK(!client.choose(0, 0));
+  ELLE_LOG("fail choosing 1 for version 0")
+    BOOST_CHECK_EQUAL(client.choose(0, 1)->value.get<int>(), 0);
+  ELLE_LOG("fail choosing quorum of 2 for version 0");
+    BOOST_CHECK_EQUAL(
+      client.choose(0, Client::Quorum{11, 12})->value.get<int>(), 0);
+  ELLE_LOG("choose quorum of 2 for version 1")
+    BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
+  ELLE_LOG("fail choosing 1 for version 1")
+    BOOST_CHECK_EQUAL(client.choose(1, 1)->value.get<Client::Quorum>(),
+                      Client::Quorum({11, 12}));
+  ELLE_LOG("fail choosing 2 for version 2 with partial quorum")
+    BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
   client.peers().emplace_back(
     elle::make_unique<Peer<int, int, int>>(12, server_2));
-  BOOST_CHECK(!client.choose(2, 2));
-  BOOST_CHECK(!client.choose(3, 3));
+  ELLE_LOG("choose 2 for version 2 with extended quorum")
+    BOOST_CHECK(!client.choose(2, 2));
+  ELLE_LOG("choose 3 for version 3 with extended quorum")
+    BOOST_CHECK(!client.choose(3, 3));
 }
 
 ELLE_TEST_SCHEDULED(elect_shrink)
@@ -413,6 +479,102 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   {
     client.peers().pop_back();
     BOOST_CHECK(!client.choose(2, 2));
+  }
+}
+
+template <typename T, typename Version, typename ServerId>
+class ProposeOnlyPeer
+  : public Peer<T, Version, ServerId>
+{
+public:
+  typedef paxos::Client<T, Version, ServerId> Client;
+  typedef Peer<T, Version, ServerId> Super;
+
+  ProposeOnlyPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos)
+    : Peer<T, Version, ServerId>(id, paxos)
+  {}
+
+  virtual
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<T, typename Client::Quorum> const& value) override
+  {
+    throw typename Super::Unavailable();
+  }
+
+  bool fail;
+  reactor::Barrier propose_barrier, accept_barrier;
+  reactor::Signal propose_signal, accept_signal;
+};
+
+namespace quorum_divergence
+{
+  ELLE_TEST_SCHEDULED(one_of_three_thinks_quorum_changed)
+  {
+    typedef paxos::Server<int, int, int> Server;
+    typedef paxos::Client<int, int, int> Client;
+    typedef Client::Peers Peers;
+    Server server_1(11, {11, 12, 13});
+    Server server_2(12, {11, 12, 13});
+    Server server_3(13, {11, 12, 13});
+    auto client = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+      return paxos::Client<int, int, int>(1, std::move(peers));
+    }();
+    auto client_1_only = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.push_back(
+        elle::make_unique<ProposeOnlyPeer<int, int, int>>(12, server_2));
+      peers.push_back(
+        elle::make_unique<ProposeOnlyPeer<int, int, int>>(13, server_3));
+      return paxos::Client<int, int, int>(2, std::move(peers));
+    }();
+    auto client_partial_23 = [&]
+    {
+      Peers peers;
+      peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(11));
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
+      peers.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+      return paxos::Client<int, int, int>(3, std::move(peers));
+    }();
+    ELLE_LOG("choose 1 for version 1")
+      BOOST_CHECK(!client.choose(1, 1));
+    //        11        12        13
+    //   +---------+---------+---------+
+    // 1 |    1    |    1    |    1    | -> 1
+    //   |  1:1:1  |  1:1:1  |  1:1:1  |
+    //   +---------+---------+---------+
+    ELLE_LOG("choose quorum {11,12} for version 2 on server 11 only")
+      BOOST_CHECK_THROW(client_1_only.choose(2, Client::Quorum{11, 12}),
+                        athena::paxos::TooFewPeers);
+    //        11        12        13
+    //   +---------+---------+---------+
+    // 2 | {11,12} |         |         |
+    //   |  2:1:2  |  2:1:2  |  2:1:2  |
+    //   +---------+---------+---------+
+    // 1 |    1    |    1    |    1    | -> 1
+    //   |  1:1:1  |  1:1:1  |  1:1:1  |
+    //   +---------+---------+---------+
+    ELLE_LOG("choose 2 for version 2")
+      BOOST_CHECK(!client_partial_23.choose(2, 2));
+    //        11        12        13
+    //   +---------+---------+---------+
+    // 2 | {11,12} |    2    |    2    | -> 2
+    //   |  2:1:2  |  2:1:3  |  2:1:3  |
+    //   +---------+---------+---------+
+    // 1 |    1    |    1    |    1    | -> 1
+    //   |  1:1:1  |  1:1:1  |  1:1:1  |
+    //   +---------+---------+---------+
+    ELLE_LOG("choose 3 for version 3")
+      BOOST_CHECK_THROW(BOOST_CHECK(!client.choose(3, 3)),
+                        Server::PartialState);
   }
 }
 
@@ -464,7 +626,18 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
-  suite.add(BOOST_TEST_CASE(elect_extend), 0, valgrind(1));
-  suite.add(BOOST_TEST_CASE(elect_shrink), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
+  {
+    auto quorum = BOOST_TEST_SUITE("quorum");
+    suite.add(quorum);
+    quorum->add(BOOST_TEST_CASE(elect_extend), 0, valgrind(1));
+    quorum->add(BOOST_TEST_CASE(elect_shrink), 0, valgrind(1));
+    {
+      auto divergence = BOOST_TEST_SUITE("divergence");
+      using namespace quorum_divergence;
+      quorum->add(divergence);
+      divergence->add(
+        BOOST_TEST_CASE(one_of_three_thinks_quorum_changed), 0, valgrind(1));
+    }
+  }
 }

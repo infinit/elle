@@ -122,52 +122,93 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
-      Quorum expected, Quorum effective, Proposal proposal)
-      : elle::Error(
-        elle::sprintf("wrong quorum, current version is %s", proposal))
+      Quorum expected, Quorum effective)
+      : elle::Error("wrong quorum")
       , _expected(std::move(expected))
       , _effective(std::move(effective))
-      , _proposal(std::move(proposal))
     {}
 
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
+    template <typename T, typename Version, typename CId, typename SId>
+    Server<T, Version, CId, SId>::WrongQuorum::WrongQuorum(
       elle::serialization::SerializerIn& input, elle::Version const& v)
       : Super(input)
     {
       this->_serialize(input, v);
     }
 
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
+    template < typename T, typename Version, typename CId, typename SId>
     void
-    Server<T, Version, ClientId, ServerId>::WrongQuorum::serialize(
+    Server<T, Version, CId, SId>::WrongQuorum::serialize(
       elle::serialization::Serializer& s, elle::Version const& version)
     {
       Super::serialize(s, version);
       this->_serialize(s, version);
     }
 
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
+    template <typename T, typename Version, typename CId, typename SId>
     void
-    Server<T, Version, ClientId, ServerId>::WrongQuorum::_serialize(
+    Server<T, Version, CId, SId>::WrongQuorum::_serialize(
       elle::serialization::Serializer& s, elle::Version const& version)
     {
       s.serialize("expected", this->_expected);
       s.serialize("effective", this->_effective);
-      if (version >= elle::Version(0, 1, 0))
-        s.serialize("proposal", this->_proposal);
-      else
-        s.serialize("version", this->_proposal.version);
+      if (version < elle::Version(0, 1, 0))
+      {
+        Version dummy = Version();
+        s.serialize("version", dummy);
+      }
     }
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     const elle::serialization::Hierarchy<elle::Exception>::Register<
       typename Server<T, Version, ClientId, ServerId>::WrongQuorum>
-    Server<T, Version, ClientId, ServerId>::_register_serialization;
+    Server<T, Version, ClientId, ServerId>::
+      _register_wrong_quorum_serialization;
+
+    /*------------.
+    | PartialState |
+    `------------*/
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    Server<T, Version, ClientId, ServerId>::PartialState::PartialState(
+      Proposal p)
+      : elle::Error(elle::sprintf("partial state: %s", p))
+      , _proposal(std::move(p))
+    {}
+
+    template <typename T, typename Version, typename CId, typename SId>
+    Server<T, Version, CId, SId>::PartialState::PartialState(
+      elle::serialization::SerializerIn& input, elle::Version const& v)
+      : Super(input)
+    {
+      this->_serialize(input, v);
+    }
+
+    template < typename T, typename Version, typename CId, typename SId>
+    void
+    Server<T, Version, CId, SId>::PartialState::serialize(
+      elle::serialization::Serializer& s, elle::Version const& version)
+    {
+      Super::serialize(s, version);
+      this->_serialize(s, version);
+    }
+
+    template <typename T, typename Version, typename CId, typename SId>
+    void
+    Server<T, Version, CId, SId>::PartialState::_serialize(
+      elle::serialization::Serializer& s, elle::Version const& version)
+    {
+      s.serialize("proposal", this->_proposal);
+    }
+
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    const elle::serialization::Hierarchy<elle::Exception>::Register<
+      typename Server<T, Version, ClientId, ServerId>::PartialState>
+    Server<T, Version, ClientId, ServerId>::
+      _register_partial_state_serialization;
 
     /*--------.
     | Printer |
@@ -228,12 +269,73 @@ namespace athena
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Server(ServerId id, Quorum quorum)
       : _id(std::move(id))
-      , _quorum(std::move(quorum))
+      , _quorum_initial(quorum)
+      , _value()
       , _state()
     {
-      ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
-      this->_register_serialization.poke();
+      ELLE_ASSERT_CONTAINS(this->_quorum_initial, this->_id);
+      this->_register_wrong_quorum_serialization.poke();
+      this->_register_partial_state_serialization.poke();
     }
+
+    /*--------.
+    | Details |
+    `--------*/
+
+    template <typename T, typename Version, typename CId, typename SId>
+    struct Server<T, Version, CId, SId>::_Details
+    {
+      static
+      boost::optional<typename Server<T, T, CId, SId>::Accepted>
+      _highest(
+        typename Server<T, T, CId, SId>::VersionsState const& versions,
+        std::function<bool(
+          typename Server<T, T, CId, SId>::VersionState const& v)> p)
+      {
+        for (auto it = versions.rbegin(); it != versions.rend(); ++it)
+        {
+          if (p(*it))
+            return it->accepted;
+        }
+        return {};
+      }
+
+      static
+      void
+      check_quorum(Server<T, Version, CId, SId>& self,
+                    Quorum q, Version const& v)
+      {
+        ELLE_LOG_COMPONENT("athena.paxos.Server");
+        // FIXME: suboptimal
+        auto const* expected = &self._quorum_initial;
+        for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
+          if (it->proposal.version < v &&
+              it->accepted &&
+              it->accepted->value.template is<Quorum>())
+          {
+            expected = &it->accepted->value.template get<Quorum>();
+            break;
+          }
+        if (q != *expected)
+        {
+          ELLE_TRACE("quorum is wrong: %s instead of %s", q, *expected);
+          throw WrongQuorum(*expected, std::move(q));
+        }
+      }
+
+      static
+      void
+      check_confirmed(Server<T, Version, CId, SId>& self, Version const& v)
+      {
+        for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
+          if (it->proposal.version >= v)
+            continue;
+          else if (!it->confirmed)
+            throw PartialState(it->proposal);
+          else
+            break;
+      }
+    };
 
     /*----------.
     | Consensus |
@@ -246,7 +348,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
-      this->_check_quorum(q, p.version);
+      _Details::check_confirmed(*this, p.version);
+      _Details::check_quorum(*this, q, p.version);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
@@ -260,7 +363,8 @@ namespace athena
       auto it = this->_state.find(p.version);
       if (it == this->_state.end())
       {
-        ELLE_DEBUG("%s: accept proposal for version %s", *this, p.version);
+        ELLE_DEBUG_SCOPE(
+          "%s: accept proposal for new version %s", *this, p.version);
         this->_state.emplace(std::move(p));
         return {};
       }
@@ -288,7 +392,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
-      this->_check_quorum(q, p.version);
+      _Details::check_quorum(*this, q, p.version);
       {
         auto highest = this->highest_accepted();
         if (highest && highest->proposal.version > p.version)
@@ -313,16 +417,6 @@ namespace athena
             {
               s.accepted.emplace(std::move(p), std::move(value));
             });
-          // Drop older versions
-          for (auto obsolete = this->_state.begin(); obsolete != it;)
-          {
-            ELLE_DEBUG("drop obsolete version %s", it->version());
-            if (obsolete->accepted &&
-                obsolete->accepted->value.template is<Quorum>())
-              this->_quorum =
-                std::move(obsolete->accepted->value.template get<Quorum>());
-            obsolete = this->_state.erase(obsolete);
-          }
         }
         else
           this->_state.modify(
@@ -336,24 +430,26 @@ namespace athena
       return version.proposal;
     }
 
-    template <typename T, typename Version, typename CId, typename SId>
-    struct Server<T, Version, CId, SId>::_Details
+    template <
+      typename T, typename Version, typename ClientId, typename ServerId>
+    void
+    Server<T, Version, ClientId, ServerId>::confirm(Quorum q, Proposal p)
     {
-      static
-      boost::optional<typename Server<T, T, CId, SId>::Accepted>
-      _highest(
-        typename Server<T, T, CId, SId>::VersionsState const& versions,
-        std::function<bool(
-          typename Server<T, T, CId, SId>::VersionState const& v)> p)
+      ELLE_LOG_COMPONENT("athena.paxos.Server");
+      ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
+      _Details::check_quorum(*this, q, p.version);
+      auto it = this->_state.find(p.version);
+      // FIXME: asserts if someone malicious
+      ELLE_ASSERT(it != this->_state.end());
+      auto& version = *it;
+      ELLE_ASSERT(version.accepted);
+      if (!version.confirmed)
       {
-        for (auto it = versions.rbegin(); it != versions.rend(); ++it)
-        {
-          if (p(*it))
-            return it->accepted;
-        }
-        return {};
+        this->_state.modify(it, [] (VersionState& s) { s.confirmed = true; });
+        if (version.accepted->value.template is<T>())
+          this->_value.emplace(version.accepted->value.template get<T>());
       }
-    };
+    }
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
@@ -379,57 +475,31 @@ namespace athena
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
-    void
-    Server<T, Version, ClientId, ServerId>::_check_quorum(
-      Quorum q, Version const& v) const
-    {
-      ELLE_LOG_COMPONENT("athena.paxos.Server");
-      auto expected = this->_quorum;
-      Proposal proposal(Version(), -1, ClientId());
-      for (auto it = this->_state.rbegin(); it != this->_state.rend(); ++it)
-      {
-        if (it->version() >= v)
-          continue;
-        if (it->accepted && it->accepted->value.template is<Quorum>())
-        {
-          expected = it->accepted->value.template get<Quorum>();
-          proposal = it->proposal;
-          ELLE_DEBUG("check against quorum from version %s: %s",
-                     proposal, expected);
-          break;
-        }
-      }
-      if (q != expected)
-      {
-        ELLE_TRACE("quorum is wrong: %s instead of %s", q, expected);
-        throw WrongQuorum(expected, std::move(q), std::move(proposal));
-      }
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
       Proposal p, boost::optional<Accepted> a)
       : proposal(std::move(p))
       , accepted(std::move(a))
+      , confirmed(false)
     {}
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::VersionState::VersionState(
-      elle::serialization::SerializerIn& s)
+      elle::serialization::SerializerIn& s, elle::Version const& v)
     {
-      this->serialize(s);
+      this->serialize(s, v);
     }
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     void
     Server<T, Version, ClientId, ServerId>::VersionState::serialize(
-      elle::serialization::Serializer& s)
+      elle::serialization::Serializer& s, elle::Version const& v)
     {
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
+      if (v >= elle::Version(0, 1, 0))
+        s.serialize("confirmed", this->confirmed);
     }
 
     template <
@@ -447,10 +517,13 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Server(
-      elle::serialization::SerializerIn& s)
-      : _state()
+      elle::serialization::SerializerIn& s, elle::Version const& v)
+      : _id()
+      , _quorum_initial()
+      , _value()
+      , _state()
     {
-      this->serialize(s);
+      this->serialize(s, v);
     }
 
     // FIXME: use splitted serialization
@@ -458,10 +531,12 @@ namespace athena
       typename T, typename Version, typename ClientId, typename ServerId>
     void
     Server<T, Version, ClientId, ServerId>::serialize(
-      elle::serialization::Serializer& s)
+      elle::serialization::Serializer& s, elle::Version const& v)
     {
       s.serialize("id", this->_id);
-      s.serialize("quorum", this->_quorum);
+      s.serialize("quorum", this->_quorum_initial);
+      if (v >= elle::Version(0, 1, 0))
+        s.serialize("value", this->_value);
       s.serialize("state", this->_state);
     }
 

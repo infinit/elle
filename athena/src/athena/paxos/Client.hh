@@ -46,6 +46,9 @@ namespace athena
         Proposal
         accept(Quorum const& q, Proposal const& p,
                elle::Option<T, Quorum> const& value) = 0;
+        virtual
+        void
+        confirm(Quorum const& q, Proposal const& p) = 0;
         class Unavailable
           : public elle::Error
         {

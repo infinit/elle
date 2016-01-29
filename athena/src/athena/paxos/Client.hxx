@@ -138,7 +138,7 @@ namespace athena
             ELLE_DEBUG("replace value with %s", printer(previous->value));
             if (previous->proposal.version > version)
             {
-              ELLE_DEBUG("newer version exists, replace %s",
+              ELLE_DEBUG("replace with newer version: %s",
                          printer(previous->value));
               version = previous->proposal.version;
               this->_round = 0;
@@ -192,14 +192,39 @@ namespace athena
             continue;
           }
           else
-          {
             this->_check_headcount(q, reached);
-            break;
-          }
         }
+        ELLE_TRACE("%s: chose %s", *this,
+                   printer(previous ? previous->value : value));
+        ELLE_DEBUG("%s: send confirmation", *this)
+        {
+          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+          {
+            for (auto& peer: this->_peers)
+            {
+              scope.run_background(
+                elle::sprintf("%s: paxos confirmation",
+                              reactor::scheduler().current()->name()),
+                [&]
+                {
+                  try
+                  {
+                    ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
+                                     *this, proposal, *peer);
+                    peer->confirm(q, proposal);
+                  }
+                  catch (typename Peer::Unavailable const& e)
+                  {
+                    ELLE_TRACE("%s: peer %s unavailable: %s",
+                               *this, peer, e.what());
+                  }
+                });
+            }
+            reactor::wait(scope);
+          };
+        }
+        break;
       }
-      ELLE_TRACE("%s: chose %s", *this,
-                 printer(previous ? previous->value : value));
       return previous;
     }
 
