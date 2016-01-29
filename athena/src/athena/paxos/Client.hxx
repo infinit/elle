@@ -81,6 +81,22 @@ namespace athena
       }
     }
 
+    template <typename C, typename F>
+    void
+    for_each_parallel(C const& c, F const& f)
+    {
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+      {
+        for (auto& elt: c)
+          scope.run_background(
+            elle::sprintf("%s: %s",
+                          reactor::scheduler().current()->name(),
+                          elt),
+            [&] { f(elt, scope); });
+        reactor::wait(scope);
+      };
+    }
+
     template <typename T, typename Version, typename ClientId>
     boost::optional<typename Client<T, Version, ClientId>::Accepted>
     Client<T, Version, ClientId>::choose(
@@ -101,37 +117,30 @@ namespace athena
         ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
           int reached = 0;
-          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-          {
-            for (auto& peer: this->_peers)
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope&) -> void
             {
-              scope.run_background(
-                elle::sprintf("%s: paxos proposal",
-                              reactor::scheduler().current()->name()),
-                [&]
-                {
-                  try
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
+                                 *this, proposal, *peer);
+                if (auto p = peer->propose(q, proposal))
+                  if (!previous || previous->proposal < p->proposal)
                   {
-                    ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
-                                     *this, proposal, *peer);
-                    if (auto p = peer->propose(q, proposal))
-                      if (!previous || previous->proposal < p->proposal)
-                      {
-                        ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
-                                         *this, p->proposal, printer(p->value));
-                        previous = std::move(p);
-                      }
-                    ++reached;
+                    ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
+                                     *this, p->proposal, printer(p->value));
+                    previous = std::move(p);
                   }
-                  catch (typename Peer::Unavailable const& e)
-                  {
-                    ELLE_TRACE("%s: peer %s unavailable: %s",
-                               *this, peer, e.what());
-                  }
-                });
-            }
-            reactor::wait(scope);
-          };
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
           this->_check_headcount(q, reached);
           if (previous)
           {
@@ -149,42 +158,35 @@ namespace athena
         {
           int reached = 0;
           bool conflicted = false;
-          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-          {
-            for (auto& peer: this->_peers)
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope& scope) -> void
             {
-              scope.run_background(
-                elle::sprintf("%s: paxos acceptation",
-                              reactor::scheduler().current()->name()),
-                [&]
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
+                                 *this, proposal, *peer);
+                auto minimum = peer->accept(
+                  q, proposal, previous ? previous->value : value);
+                // FIXME: If the majority doesn't conflict, the value was
+                // still chosen - right ? Take that in account.
+                if (proposal < minimum)
                 {
-                  try
-                  {
-                    ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
-                                     *this, proposal, *peer);
-                    auto minimum = peer->accept(
-                      q, proposal, previous ? previous->value : value);
-                    // FIXME: If the majority doesn't conflict, the value was
-                    // still chosen - right ? Take that in account.
-                    if (proposal < minimum)
-                    {
-                      ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
-                                 *this, peer, minimum);
-                      this->_round = minimum.round;
-                      conflicted = true;
-                      scope.terminate_now();
-                    }
-                    ++reached;
-                  }
-                  catch (typename Peer::Unavailable const& e)
-                  {
-                    ELLE_TRACE("%s: peer %s unavailable: %s",
-                               *this, peer, e.what());
-                  }
-                });
-            }
-            reactor::wait(scope);
-          };
+                  ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
+                             *this, peer, minimum);
+                  this->_round = minimum.round;
+                  conflicted = true;
+                  scope.terminate_now();
+                }
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
           if (conflicted)
           {
             // FIXME: random wait to avoid livelock
@@ -199,31 +201,24 @@ namespace athena
         ELLE_DEBUG("%s: send confirmation", *this)
         {
           auto reached = 0;
-          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-          {
-            for (auto& peer: this->_peers)
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope&) -> void
             {
-              scope.run_background(
-                elle::sprintf("%s: paxos confirmation",
-                              reactor::scheduler().current()->name()),
-                [&]
-                {
-                  try
-                  {
-                    ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
-                                     *this, proposal, *peer);
-                    peer->confirm(q, proposal);
-                    ++reached;
-                  }
-                  catch (typename Peer::Unavailable const& e)
-                  {
-                    ELLE_TRACE("%s: peer %s unavailable: %s",
-                               *this, peer, e.what());
-                  }
-                });
-            }
-            reactor::wait(scope);
-          };
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
+                                 *this, proposal, *peer);
+                peer->confirm(q, proposal);
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
           this->_check_headcount(q, reached);
         }
         break;
