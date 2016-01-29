@@ -451,6 +451,19 @@ namespace athena
       }
     }
 
+    template <typename T, typename Version, typename CId, typename SId>
+    boost::optional<typename Server<T, Version, CId, SId>::Accepted>
+    Server<T, Version, CId, SId>::get(Quorum q)
+    {
+      return _Details::_highest(
+        this->_state,
+        [] (VersionState const& v)
+        {
+          return v.confirmed && v.accepted &&
+            v.accepted->value.template is<T>();
+        });
+    }
+
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>

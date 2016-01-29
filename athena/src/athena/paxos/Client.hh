@@ -49,6 +49,9 @@ namespace athena
         virtual
         void
         confirm(Quorum const& q, Proposal const& p) = 0;
+        virtual
+        boost::optional<Accepted>
+        get(Quorum const& q) = 0;
         class Unavailable
           : public elle::Error
         {
@@ -92,6 +95,10 @@ namespace athena
       boost::optional<Accepted>
       choose(typename elle::_detail::attribute_r_type<Version>::type version,
              elle::Option<T, Quorum> const& value);
+      /** Get the latest chosen value.
+       */
+      boost::optional<T>
+      get();
       ELLE_ATTRIBUTE(int, round);
     private:
       /** Check a majority of members where reached.

@@ -67,6 +67,14 @@ public:
     return this->_paxos.confirm(q, p);
   }
 
+  virtual
+  boost::optional<typename Client::Accepted>
+  get(
+    typename paxos::Server<T, Version, ServerId>::Quorum const& q) override
+  {
+    return this->_paxos.get(q);
+  }
+
   ELLE_ATTRIBUTE_RW((paxos::Server<T, Version, ServerId>&), paxos);
 };
 
@@ -90,6 +98,7 @@ ELLE_TEST_SCHEDULED(all_is_well)
     BOOST_CHECK_EQUAL(q.effective(), q.expected());
     throw;
   }
+  BOOST_CHECK_EQUAL(client.get(), 42);
 }
 
 template <typename T, typename Version, typename ServerId>
@@ -105,9 +114,8 @@ public:
 
   virtual
   boost::optional<typename Client::Accepted>
-  propose(
-    typename Client::Quorum const& q,
-    typename Client::Proposal const& p) override
+  propose(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
   {
     throw typename Client::Peer::Unavailable();
   }
@@ -128,6 +136,13 @@ public:
   {
     throw typename Client::Peer::Unavailable();
   }
+
+  virtual
+  boost::optional<typename Client::Accepted>
+  get(typename Client::Quorum const& q)
+  {
+    throw typename Client::Peer::Unavailable();
+  }
 };
 
 ELLE_TEST_SCHEDULED(two_of_three)
@@ -141,6 +156,7 @@ ELLE_TEST_SCHEDULED(two_of_three)
   peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK(!client.choose(42));
+  BOOST_CHECK_EQUAL(client.get(), 42);
 }
 
 ELLE_TEST_SCHEDULED(one_of_three)
@@ -152,7 +168,8 @@ ELLE_TEST_SCHEDULED(one_of_three)
   peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(12));
   peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client(1, std::move(peers));
-  BOOST_CHECK_THROW(client.choose(42), elle::Error);
+  BOOST_CHECK_THROW(client.choose(42), athena::paxos::TooFewPeers);
+  BOOST_CHECK_THROW(client.get(), athena::paxos::TooFewPeers);
 }
 
 ELLE_TEST_SCHEDULED(already_chosen)

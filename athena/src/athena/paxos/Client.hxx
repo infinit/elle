@@ -226,6 +226,45 @@ namespace athena
       return previous;
     }
 
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<T>
+    Client<T, Version, ClientId>::get()
+    {
+      ELLE_LOG_COMPONENT("athena.paxos.Client");
+      ELLE_TRACE_SCOPE("%s: get value", *this);
+      Quorum q;
+      for (auto const& peer: this->_peers)
+        q.insert(peer->id());
+      ELLE_DUMP("quorum: %s", q);
+      auto reached = 0;
+      boost::optional<typename Client<T, Version, ClientId>::Accepted> res;
+      for_each_parallel(
+        this->_peers,
+        [&] (std::unique_ptr<Peer> const& peer,
+             reactor::Scope&) -> void
+        {
+          try
+          {
+            ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
+            auto accepted = peer->get(q);
+            if (accepted)
+              if (!res || res->proposal < accepted->proposal)
+                res.emplace(std::move(accepted.get()));
+            ++reached;
+          }
+          catch (typename Peer::Unavailable const& e)
+          {
+            ELLE_TRACE("%s: peer %s unavailable: %s",
+                       *this, peer, e.what());
+          }
+        });
+      this->_check_headcount(q, reached);
+      if (res)
+        return res->value.template get<T>();
+      else
+        return {};
+    }
+
     /*----------.
     | Printable |
     `----------*/

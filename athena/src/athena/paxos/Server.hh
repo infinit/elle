@@ -149,6 +149,8 @@ namespace athena
       void
       confirm(Quorum q, Proposal p);
       boost::optional<Accepted>
+      get(Quorum q);
+      boost::optional<Accepted>
       highest_accepted() const;
       boost::optional<Accepted>
       highest_accepted_value() const;
