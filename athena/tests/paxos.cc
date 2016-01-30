@@ -139,7 +139,7 @@ public:
 
   virtual
   boost::optional<typename Client::Accepted>
-  get(typename Client::Quorum const& q)
+  get(typename Client::Quorum const& q) override
   {
     throw typename Client::Peer::Unavailable();
   }
