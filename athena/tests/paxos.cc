@@ -16,6 +16,9 @@ namespace paxos = athena::paxos;
 namespace std
 {
   std::ostream&
+  operator <<(std::ostream& output, boost::optional<int> const& v);
+
+  std::ostream&
   operator <<(std::ostream& output, boost::optional<int> const& v)
   {
     if (v)
