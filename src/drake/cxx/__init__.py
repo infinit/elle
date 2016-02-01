@@ -63,7 +63,7 @@ class Config:
             self.__standard = None
             self.__rpath = []
             self.__warnings = Config.Warnings()
-            self.__use_local_libcxx = False
+            self.__use_local_libcxx = None
             self.__whole_archive = False
         else:
             self.__debug = model.__debug
@@ -392,6 +392,7 @@ class Config:
 
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
+        res.__use_local_libcxx = merge_bool('use_local_libcxx')
 
         for key, value in rhs.__defines.items():
           if key in res.__defines:
@@ -401,7 +402,6 @@ class Config:
                               (key, old, value))
           else:
             res.__defines[key] = value
-
         res.__local_includes |= rhs.__local_includes
         res.__system_includes |= rhs.__system_includes
         res._includes.update(rhs._includes)
@@ -476,7 +476,7 @@ class Config:
 
     @property
     def use_local_libcxx(self):
-        return self.__use_local_libcxx
+        return bool(self.__use_local_libcxx)
 
     @use_local_libcxx.setter
     def use_local_libcxx(self, val):
