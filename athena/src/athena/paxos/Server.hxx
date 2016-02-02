@@ -287,11 +287,10 @@ namespace athena
     struct Server<T, Version, CId, SId>::_Details
     {
       static
-      boost::optional<typename Server<T, T, CId, SId>::Accepted>
+      boost::optional<Accepted>
       _highest(
-        typename Server<T, T, CId, SId>::VersionsState const& versions,
-        std::function<bool(
-          typename Server<T, T, CId, SId>::VersionState const& v)> p)
+        VersionsState const& versions,
+        std::function<bool(VersionState const& v)> p)
       {
         for (auto it = versions.rbegin(); it != versions.rend(); ++it)
         {

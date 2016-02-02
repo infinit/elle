@@ -154,9 +154,6 @@ namespace athena
       highest_accepted() const;
       boost::optional<Accepted>
       highest_accepted_value() const;
-    private:
-      struct _Details;
-      friend struct _Details;
       struct VersionState
       {
         VersionState(Proposal p, boost::optional<Accepted> a = {});
@@ -180,6 +177,9 @@ namespace athena
           >
         > VersionsState;
       ELLE_ATTRIBUTE(VersionsState, state);
+    private:
+      struct _Details;
+      friend struct _Details;
 
     /*--------------.
     | Serialization |
