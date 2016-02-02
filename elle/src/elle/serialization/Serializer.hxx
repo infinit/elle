@@ -419,7 +419,7 @@ namespace elle
           self._serialize_anonymous(name, opt);
           filled = true;
         });
-      if (!filled && opt)
+      if (!filled)
       {
         ELLE_DEBUG("reset option");
         _details::option_reset(opt);
@@ -443,7 +443,7 @@ namespace elle
           filled = true;
           f();
         });
-      if (!filled && opt)
+      if (!filled)
       {
         ELLE_DEBUG("reset option");
         _details::option_reset(opt);
