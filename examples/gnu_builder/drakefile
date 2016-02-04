@@ -21,6 +21,11 @@ def configure(cxx_toolkit = None,
   ## Patchelf ##
   ## -------- ##
 
+  # This is a list of other, global dependencies that is platform specific.
+  # This is used to ensure that we have patchelf before building other libraries
+  # on Linux.
+  other_deps = []
+
   # We only need patchelf for Linux.
   if cxx_toolkit.os is drake.os.linux:
 
@@ -54,6 +59,7 @@ def configure(cxx_toolkit = None,
       patchelf_tarball,
       targets = ['%s/configure' % patchelf_basename],
     )
+    print(patchelf_prefix_absolute)
 
     # Build patchelf.
     GNUBuilder(
@@ -72,6 +78,8 @@ def configure(cxx_toolkit = None,
 
     # Add the patchelf binary target to the patchelf build rule.
     patchelf_rule << patchelf
+
+    other_deps.append(patchelf)
 
   ## ---- ##
   ## Zlib ##
@@ -154,7 +162,7 @@ def configure(cxx_toolkit = None,
     targets = [zlib_lib] + drake.nodes('zlib/include/zlib.h',
                                        'zlib/include/zconf.h'),
     makefile = zlib_makefile,
-    sources = [zlib_configure],
+    sources = [zlib_configure] + other_deps,
     build_args = ['install'] + list(s.replace('\\', '/') for s in zlib_args)
   )
 
@@ -230,6 +238,7 @@ def configure(cxx_toolkit = None,
     cxx_toolkit = cxx_toolkit,
     configure = openssl_configure,
     configure_interpreter = 'perl',
+    sources = other_deps,
     targets = openssl_libs,
     configure_args = [
       '--prefix=%s' % openssl_prefix_absolute,
@@ -357,7 +366,7 @@ def configure(cxx_toolkit = None,
     targets = [curl_lib] +
       drake.nodes(*(curl_prefix / path for path in curl_headers)),
     configure_args = curl_configure_args,
-    sources = curl_dependency_libs + [curl_configure],
+    sources = curl_dependency_libs + [curl_configure] + other_deps,
     build_args = ['all', 'install',],
     additional_env = curl_environment,
   )
