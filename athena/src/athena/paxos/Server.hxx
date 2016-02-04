@@ -268,10 +268,11 @@ namespace athena
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::Server(ServerId id, Quorum quorum)
+    Server<T, Version, ClientId, ServerId>::Server(ServerId id, Quorum quorum, elle::Version version)
       : _id(std::move(id))
       , _quorum_initial(quorum)
       , _value()
+      , _version(version)
       , _state()
     {
       ELLE_ASSERT_CONTAINS(this->_quorum_initial, this->_id);
@@ -327,6 +328,8 @@ namespace athena
       void
       check_confirmed(Server<T, Version, CId, SId>& self, Version const& v)
       {
+        if (self.version() < elle::Version(0, 1, 0))
+          return;
         for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
           if (it->proposal.version >= v)
             continue;
@@ -455,12 +458,15 @@ namespace athena
     boost::optional<typename Server<T, Version, CId, SId>::Accepted>
     Server<T, Version, CId, SId>::get(Quorum q)
     {
+      ELLE_LOG_COMPONENT("athena.paxos.Server");
+      ELLE_TRACE_SCOPE("%s: get", *this);
       return _Details::_highest(
         this->_state,
         [] (VersionState const& v)
         {
-          return v.confirmed && v.accepted &&
-            v.accepted->value.template is<T>();
+          ELLE_DEBUG("candidate: conf=%s, acc=%s, typecheck=%s", v.confirmed, !!v.accepted,
+                     v.accepted->value.template is<T>());
+          return v.confirmed && v.accepted && v.accepted->value.template is<T>();
         });
     }
 
@@ -509,10 +515,14 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::VersionState::serialize(
       elle::serialization::Serializer& s, elle::Version const& v)
     {
+      ELLE_LOG_COMPONENT("athena.paxos.Server");
+      ELLE_TRACE("%s: serializing with v=%s", *this, v);
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
       if (v >= elle::Version(0, 1, 0))
         s.serialize("confirmed", this->confirmed);
+      else if (s.in())
+        this->confirmed = true;
     }
 
     template <

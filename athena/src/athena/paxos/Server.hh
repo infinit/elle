@@ -8,6 +8,7 @@
 # include <boost/multi_index/member.hpp>
 
 # include <elle/attribute.hh>
+# include <elle/elle.hh>
 # include <elle/Error.hh>
 # include <elle/Option.hh>
 # include <elle/Printable.hh>
@@ -133,10 +134,12 @@ namespace athena
     | Construction |
     `-------------*/
     public:
-      Server(ServerId id, Quorum quorum);
+      Server(ServerId id, Quorum quorum,
+        elle::Version version = elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
       ELLE_ATTRIBUTE_R(ServerId, id);
       ELLE_ATTRIBUTE_R(Quorum, quorum_initial);
       ELLE_ATTRIBUTE_R(boost::optional<T>, value);
+      ELLE_ATTRIBUTE_R(elle::Version, version);
 
     /*----------.
     | Consensus |
