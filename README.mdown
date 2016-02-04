@@ -40,7 +40,7 @@ Hello World Example
 -------------------
 This example shows how to build a simple executable from the source file *hello_world.cc*.
 
-See the [source directory](https://github.com/mefyl/drake/tree/master/examples/hello_world).
+See the [source directory](https://github.com/infinit/drake/tree/master/examples/hello_world).
 
 The *drakefile* in the root describes the build process. Each platform in the *_build* directory has it's own *drake* script which has some initial configuration.
 
@@ -70,7 +70,7 @@ User Libraries Example
 -----------------
 In this example, a static and dynamic library are built from user sources.
 
-See the [source directory](https://github.com/mefyl/drake/tree/master/examples/user_libraries).
+See the [source directory](https://github.com/infinit/drake/tree/master/examples/user_libraries).
 
 The drakefile shows how to build both a static and a dynamic library from user specified sources.
 
@@ -106,7 +106,7 @@ GNU Dependencies Example
 ------------------------
 This example is an executable that fetches the contents of *https://example.com*. To do this, we build our own cURL (which depends on zlib and OpenSSL) using drake.
 
-See the [source directory](https://github.com/mefyl/drake/tree/master/examples/gnu_builder).
+See the [source directory](https://github.com/infinit/drake/tree/master/examples/gnu_builder).
 
 The drakefile shows how cURL, OpenSSL and zlib tarballs are fetched by drake and built in the correct order so that our executable can be linked with cURL.
 
