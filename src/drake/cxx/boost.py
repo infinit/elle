@@ -49,7 +49,14 @@ class Boost(drake.Configuration):
     'context': 'context',
     'coroutine': 'coroutine',
     'iostreams': 'iostreams',
-    'python': ( 'python-3.3', 'python-3.2', 'python3', 'python')
+    'python': (
+      'python-3.5',
+      'python-3.4',
+      'python-3.3',
+      'python-3.2',
+      'python3',
+      'python',
+      )
     }
 
   def __init__(self,
