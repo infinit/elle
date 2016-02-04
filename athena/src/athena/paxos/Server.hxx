@@ -465,7 +465,7 @@ namespace athena
         [] (VersionState const& v)
         {
           ELLE_DEBUG("candidate: conf=%s, acc=%s, typecheck=%s", v.confirmed, !!v.accepted,
-                     v.accepted->value.template is<T>());
+                     v.accepted && v.accepted->value.template is<T>());
           return v.confirmed && v.accepted && v.accepted->value.template is<T>();
         });
     }
