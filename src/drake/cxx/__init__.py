@@ -392,7 +392,7 @@ class Config:
 
         res = Config(self)
         res.__export_dynamic = merge_bool('export_dynamic')
-        res.__use_local_libcxx = merge_bool('use_local_libcxx')
+        res.__use_local_libcxx = merge_bool('_Config__use_local_libcxx')
 
         for key, value in rhs.__defines.items():
           if key in res.__defines:
