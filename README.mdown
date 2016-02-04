@@ -81,11 +81,18 @@ $> ./drake //build
 ...
 ```
 
-Any of the targets could be built individually by invoking drake with their output path:
+Any of the targets can be built individually by invoking drake with their output path:
 ```
 $> ./drake geometry/Shape.o
 ...
 $> ./drake lib/libcolor.a
+...
+```
+
+If you would like to see the underlying commands that drake is launching, you can set the `DRAKE_RAW` environment variable:
+
+```
+$> DRAKE_RAW=1 ./drake //build
 ...
 ```
 
@@ -115,3 +122,13 @@ To run the resulting executable:
 $> ./bin/http_request
 ...
 ```
+
+Helpful Environment Variables
+-----------------------------
+**DRAKE_RAW**
+
+Setting `DRAKE_RAW=1` in your environment will cause drake to output the raw commands that it calls to perform your build.
+
+**DRAKE_DEBUG_BACKTRACE**
+
+Setting `DRAKE_DEBUG_BACKTRACE=1` in your environment will cause drake to output a backtrace if there is an issue with your build.
