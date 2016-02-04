@@ -230,6 +230,13 @@ namespace athena
     boost::optional<T>
     Client<T, Version, ClientId>::get()
     {
+      return this->get_quorum().first;
+    }
+
+    template <typename T, typename Version, typename CId>
+    std::pair<boost::optional<T>, typename Client<T, Version, CId>::Quorum>
+    Client<T, Version, CId>::get_quorum()
+    {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_TRACE_SCOPE("%s: get value", *this);
       Quorum q;
@@ -237,7 +244,7 @@ namespace athena
         q.insert(peer->id());
       ELLE_DUMP("quorum: %s", q);
       auto reached = 0;
-      boost::optional<typename Client<T, Version, ClientId>::Accepted> res;
+      boost::optional<typename Client<T, Version, CId>::Accepted> res;
       for_each_parallel(
         this->_peers,
         [&] (std::unique_ptr<Peer> const& peer,
@@ -259,19 +266,20 @@ namespace athena
           }
         });
       this->_check_headcount(q, reached);
+      typedef std::pair<boost::optional<T>, Quorum> Res;
       if (res)
-        return res->value.template get<T>();
+        return Res(res->value.template get<T>(), q);
       else
-        return {};
+        return Res({}, q);
     }
 
     /*----------.
     | Printable |
     `----------*/
 
-    template <typename T, typename Version, typename ClientId>
+    template <typename T, typename Version, typename CId>
     void
-    Client<T, Version, ClientId>::print(std::ostream& output) const
+    Client<T, Version, CId>::print(std::ostream& output) const
     {
       elle::fprintf(output, "paxos::Client(%f)", this->_id);
     }
@@ -280,8 +288,8 @@ namespace athena
     | Unavailable |
     `------------*/
 
-    template <typename T, typename Version, typename ClientId>
-    Client<T, Version, ClientId>::Peer::Unavailable::Unavailable()
+    template <typename T, typename Version, typename CId>
+    Client<T, Version, CId>::Peer::Unavailable::Unavailable()
       : elle::Error("paxos peer unavailable")
     {}
   }

@@ -99,6 +99,8 @@ namespace athena
        */
       boost::optional<T>
       get();
+      std::pair<boost::optional<T>, Quorum>
+      get_quorum();
       ELLE_ATTRIBUTE(int, round);
     private:
       /** Check a majority of members where reached.
