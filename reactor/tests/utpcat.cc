@@ -9,7 +9,6 @@ ELLE_LOG_COMPONENT("utpcat");
 
 using namespace reactor::network;
 
-
 ELLE_TEST_SCHEDULED(udp)
 {
   reactor::network::UDPSocket s;
@@ -148,29 +147,19 @@ ELLE_TEST_SCHEDULED(many)
   reactor::Thread w1("writer 1", [&] {
       for (iw1 =0; iw1<1000; ++iw1)
         sp.s1->reactor::network::UTPSocket::write(elle::ConstWeakBuffer(data));
-  });/*
-  reactor::Thread w2("writer 2", [&] {
-      for (int i=0; i<1000; ++i)
-        sp.s2->write(data);
   });
-  reactor::Thread r1("reader 1", [&] {
-      for (int i=0; i<1000; ++i)
-        sp.s2->read(1000);
-  });*/
   reactor::Thread r2("reader 2", [&] {
       for (ir2=0; ir2<1000; ++ir2)
         sp.s2->read(1000);
-  });
+    });
   reactor::Thread watch("watch", [&] {
       while (true)
       {
         reactor::sleep(500_ms);
         std::cerr << "**I: " << iw1 << ' ' << ir2 << std::endl;
       }
-  });
+    });
   reactor::wait(w1);
-  //reactor::wait(w2);
-  //reactor::wait(r1);
   reactor::wait(r2);
   sp.s1->stats();
   sp.s2->stats();
@@ -190,8 +179,9 @@ SocketPair::SocketPair()
   ELLE_LOG("SocketPair ready");
 }
 
-
-static void loop_socket(reactor::network::UTPSocket* ts)
+static
+void
+loop_socket(reactor::network::UTPSocket* ts)
 {
   std::unique_ptr<reactor::network::UTPSocket> s(ts);
   while (true)
@@ -201,7 +191,10 @@ static void loop_socket(reactor::network::UTPSocket* ts)
     s->write(buf);
   }
 }
-static void loop_accept(UTPServer& srv)
+
+static
+void
+loop_accept(UTPServer& srv)
 {
   while (true)
   {
@@ -210,7 +203,10 @@ static void loop_accept(UTPServer& srv)
     new reactor::Thread("socket", [&] { loop_socket(sptr);}, true);
   }
 }
-static void go(int argc, char** argv)
+
+static
+void
+go(int argc, char** argv)
 {
   UTPServer server;
   int port = 0;
@@ -224,16 +220,6 @@ static void go(int argc, char** argv)
     std::thread t([&] {
         while (true)
         {
-          /*
-          std::string line;
-          std::getline(std::cin, line);
-          if (line.empty())
-            return;
-          ELLE_LOG("writing");
-          sched.mt_run<void>("write", [&] {
-              socket.write(elle::ConstWeakBuffer(line));
-          });*/
-
           char buffer[1024];
           std::cin.read(buffer, 1024);
           int sz = std::cin.gcount();
@@ -242,7 +228,6 @@ static void go(int argc, char** argv)
           sched.mt_run<void>("write", [&] {
               s->write(elle::ConstWeakBuffer(buffer, sz));
           });
-
         }
     });
     while (true)
@@ -273,7 +258,6 @@ static void go(int argc, char** argv)
           sched.mt_run<void>("write", [&] {
               socket.write(elle::ConstWeakBuffer(line));
           });*/
-
           char buffer[1024];
           std::cin.read(buffer, 1024);
           int sz = std::cin.gcount();
@@ -282,7 +266,6 @@ static void go(int argc, char** argv)
           sched.mt_run<void>("write", [&] {
               socket.write(elle::ConstWeakBuffer(buffer, sz));
           });
-
         }
     });
     while (true)
@@ -293,15 +276,6 @@ static void go(int argc, char** argv)
     }
   }
 }
-
-/*
-int main(int argc, char** argv)
-{
-  reactor::Scheduler sched;
-  new reactor::Thread(sched, "main", [&] { go(argc, argv);}, true);
-  sched.run();
-}*/
-
 
 ELLE_TEST_SUITE()
 {
