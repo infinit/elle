@@ -144,27 +144,28 @@ ELLE_TEST_SCHEDULED(many)
   std::string data(1000, '-');
   int iw1 = 0;
   int ir2 = 0;
-  reactor::Thread w1("writer 1", [&] {
-      for (iw1 =0; iw1<1000; ++iw1)
-        sp.s1->reactor::network::UTPSocket::write(elle::ConstWeakBuffer(data));
-  });
-  reactor::Thread r2("reader 2", [&] {
-      for (ir2=0; ir2<1000; ++ir2)
-        sp.s2->read(1000);
-    });
-  reactor::Thread watch("watch", [&] {
-      while (true)
-      {
-        reactor::sleep(500_ms);
-        std::cerr << "**I: " << iw1 << ' ' << ir2 << std::endl;
-      }
-    });
-  reactor::wait(w1);
-  reactor::wait(r2);
+  reactor::Thread::unique_ptr w1(
+    new reactor::Thread("writer 1", [&] {
+        for (iw1 =0; iw1<1000; ++iw1)
+          sp.s1->reactor::network::UTPSocket::write(elle::ConstWeakBuffer(data));
+      }));
+  reactor::Thread::unique_ptr r2(
+    new reactor::Thread("reader 2", [&] {
+        for (ir2=0; ir2<1000; ++ir2)
+          sp.s2->read(1000);
+      }));
+  reactor::Thread::unique_ptr watch(
+    new reactor::Thread("watch", [&] {
+        while (true)
+        {
+          reactor::sleep(500_ms);
+          std::cerr << "**I: " << iw1 << ' ' << ir2 << std::endl;
+        }
+      }));
+  reactor::wait(*w1);
+  reactor::wait(*r2);
   sp.s1->stats();
   sp.s2->stats();
-  watch.terminate_now();
-
 }
 
 SocketPair::SocketPair()
@@ -279,7 +280,7 @@ go(int argc, char** argv)
 
 ELLE_TEST_SUITE()
 {
-  auto& suite = boost::unit_test::framework::master_test_suite().add(basics);
+  auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(udp), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(utp_close), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(basic), 0, valgrind(2));
