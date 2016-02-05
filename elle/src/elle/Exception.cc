@@ -78,7 +78,7 @@ namespace elle
   operator <<(std::ostream& s,
               Exception const& e)
   {
-    print_exception(s, e);
+    s << e.what();
     return s;
   }
 
