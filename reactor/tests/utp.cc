@@ -144,14 +144,15 @@ ELLE_TEST_SCHEDULED(many)
   std::string data(1000, '-');
   int iw1 = 0;
   int ir2 = 0;
+  auto const iterations = 100;
   reactor::Thread::unique_ptr w1(
     new reactor::Thread("writer 1", [&] {
-        for (iw1 =0; iw1<1000; ++iw1)
+        for (iw1 = 0; iw1 < iterations; ++iw1)
           sp.s1->reactor::network::UTPSocket::write(elle::ConstWeakBuffer(data));
       }));
   reactor::Thread::unique_ptr r2(
     new reactor::Thread("reader 2", [&] {
-        for (ir2=0; ir2<1000; ++ir2)
+        for (ir2 = 0; ir2 < iterations; ++ir2)
           sp.s2->read(1000);
       }));
   reactor::Thread::unique_ptr watch(
@@ -290,5 +291,5 @@ ELLE_TEST_SUITE()
 #endif
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
-  suite.add(BOOST_TEST_CASE(many), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(many), 0, valgrind(8));
 }
