@@ -16,7 +16,6 @@
 #include <iterator>
 #include <algorithm>
 #include <functional>
-#include <boost/lexical_cast.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/optional.hpp>
@@ -272,9 +271,9 @@ namespace network {
     boost::optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const {
       if (auto p = port()) {
         try {
-          return boost::lexical_cast<IntT>(string_type(std::begin(*p), std::end(*p)));
+          return std::stoi(string_type(std::begin(*p), std::end(*p)));
         }
-        catch (boost::bad_lexical_cast &) {
+        catch (std::exception &) {
           return boost::optional<IntT>();
         }
       }

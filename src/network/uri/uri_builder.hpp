@@ -75,7 +75,7 @@ namespace network {
     struct port_converter<T, typename std::enable_if<std::is_integral<typename std::decay<T>::type>::value>::type> {
 
       uri::string_type operator () (std::uint16_t port) const {
-	return boost::lexical_cast<uri::string_type>(port);
+        return std::to_string(port);
       }
 
     };
