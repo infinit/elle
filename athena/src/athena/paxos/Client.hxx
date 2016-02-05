@@ -3,6 +3,8 @@
 
 # include <elle/With.hh>
 
+# include <cryptography/random.hh>
+
 # include <reactor/Scope.hh>
 # include <reactor/scheduler.hh>
 
@@ -105,6 +107,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(value));
+      int backoff = 1;
       Quorum q;
       for (auto const& peer: this->_peers)
         q.insert(peer->id());
@@ -189,8 +192,12 @@ namespace athena
             });
           if (conflicted)
           {
-            // FIXME: random wait to avoid livelock
-            ELLE_DEBUG("%s: conflicted proposal, retry", *this);
+            auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
+            auto delay = 100_ms * rn * backoff;
+            ELLE_TRACE("%s: conflicted proposal, retry after backoff: %s",
+                       *this, delay);
+            reactor::sleep(delay);
+            backoff = std::min(backoff * 2, 64);
             continue;
           }
           else
