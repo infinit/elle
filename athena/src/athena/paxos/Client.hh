@@ -31,10 +31,12 @@ namespace athena
     `-----*/
     public:
       class Peer
+        : public elle::Printable
       {
       public:
         typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
         typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
+        Peer(ClientId id);
         virtual
         ~Peer() = default;
         virtual
@@ -42,13 +44,27 @@ namespace athena
         propose(Quorum const& q, Proposal const& p) = 0;
         virtual
         Proposal
-        accept(Quorum const& q, Proposal const& p, T const& value) = 0;
+        accept(Quorum const& q, Proposal const& p,
+               elle::Option<T, Quorum> const& value) = 0;
+        virtual
+        void
+        confirm(Quorum const& q, Proposal const& p) = 0;
+        virtual
+        boost::optional<Accepted>
+        get(Quorum const& q) = 0;
         class Unavailable
           : public elle::Error
         {
         public:
           Unavailable();
         };
+        ELLE_ATTRIBUTE_R(ClientId, id);
+      /*----------.
+      | Printable |
+      `----------*/
+      public:
+        void
+        print(std::ostream& output) const override;
       };
       typedef std::vector<std::unique_ptr<Peer>> Peers;
 
@@ -58,7 +74,7 @@ namespace athena
     public:
       Client(ClientId id, Peers peers);
       ELLE_ATTRIBUTE_R(ClientId, id);
-      ELLE_ATTRIBUTE_R(Peers, peers);
+      ELLE_ATTRIBUTE_RX(Peers, peers);
 
     /*----------.
     | Consensus |
@@ -69,20 +85,22 @@ namespace athena
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
-      boost::optional<T>
-      choose(
-        Quorum const& q,
-        typename elle::_detail::attribute_r_type<T>::type value);
+      boost::optional<Accepted>
+      choose(elle::Option<T, Quorum> const& value);
       /** Submit \a value as the chosen value.
        *
        *  \param value the submitted value
        *  \return the value that was chosen if not the one we submitted
        */
+      boost::optional<Accepted>
+      choose(typename elle::_detail::attribute_r_type<Version>::type version,
+             elle::Option<T, Quorum> const& value);
+      /** Get the latest chosen value.
+       */
       boost::optional<T>
-      choose(
-        Quorum const& q,
-        typename elle::_detail::attribute_r_type<Version>::type version,
-        typename elle::_detail::attribute_r_type<T>::type value);
+      get();
+      std::pair<boost::optional<T>, Quorum>
+      get_quorum();
       ELLE_ATTRIBUTE(int, round);
     private:
       /** Check a majority of members where reached.

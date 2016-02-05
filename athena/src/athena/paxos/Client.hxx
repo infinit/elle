@@ -1,8 +1,9 @@
-
 #ifndef ATHENA_PAXOS_CLIENT_HXX
 # define ATHENA_PAXOS_CLIENT_HXX
 
 # include <elle/With.hh>
+
+# include <cryptography/random.hh>
 
 # include <reactor/Scope.hh>
 # include <reactor/scheduler.hh>
@@ -11,6 +12,22 @@ namespace athena
 {
   namespace paxos
   {
+    /*-----.
+    | Peer |
+    `-----*/
+
+    template <typename T, typename Version, typename ClientId>
+    Client<T, Version, ClientId>::Peer::Peer(ClientId id)
+      : _id(id)
+    {}
+
+    template <typename T, typename Version, typename ClientId>
+    void
+    Client<T, Version, ClientId>::Peer::print(std::ostream& output) const
+    {
+      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+    }
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -45,12 +62,10 @@ namespace athena
     `----------*/
 
     template <typename T, typename Version, typename ClientId>
-    boost::optional<T>
-    Client<T, Version, ClientId>::choose(
-      Quorum const& q,
-      typename elle::_detail::attribute_r_type<T>::type value)
+    boost::optional<typename Client<T, Version, ClientId>::Accepted>
+    Client<T, Version, ClientId>::choose(elle::Option<T, Quorum> const& value)
     {
-      return this->choose(q, Version(), std::move(value));
+      return this->choose(Version(), std::move(value));
     }
 
     template <typename T, typename Version, typename ClientId>
@@ -68,69 +83,77 @@ namespace athena
       }
     }
 
-    template <typename T, typename Version, typename ClientId>
-    boost::optional<T>
-    Client<T, Version, ClientId>::choose(
-      Quorum const& q,
-      typename elle::_detail::attribute_r_type<Version>::type version,
-      typename elle::_detail::attribute_r_type<T>::type value_)
+    template <typename C, typename F>
+    void
+    for_each_parallel(C const& c, F const& f)
     {
-      T const* value = &value_;
-      boost::optional<T> new_value;
+      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+      {
+        for (auto& elt: c)
+          scope.run_background(
+            elle::sprintf("%s: %s",
+                          reactor::scheduler().current()->name(),
+                          elt),
+            [&] { f(elt, scope); });
+        reactor::wait(scope);
+      };
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<typename Client<T, Version, ClientId>::Accepted>
+    Client<T, Version, ClientId>::choose(
+      typename elle::_detail::attribute_r_type<Version>::type version,
+      elle::Option<T, Quorum> const& value)
+    {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
-      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(*value));
+      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(value));
+      int backoff = 1;
+      Quorum q;
+      for (auto const& peer: this->_peers)
+        q.insert(peer->id());
       ELLE_DUMP("quorum: %s", q);
+      boost::optional<Accepted> previous;
       while (true)
       {
         ++this->_round;
         Proposal proposal(std::move(version), this->_round, this->_id);
         ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
-          boost::optional<Accepted> previous;
           int reached = 0;
-          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-          {
-            for (auto& peer: this->_peers)
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope&) -> void
             {
-              scope.run_background(
-                elle::sprintf("%s: paxos proposal",
-                              reactor::scheduler().current()->name()),
-                [&]
-                {
-                  try
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
+                                 *this, proposal, *peer);
+                if (auto p = peer->propose(q, proposal))
+                  if (!previous || previous->proposal < p->proposal)
                   {
-                    ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
-                                     *this, proposal, *peer);
-                    if (auto p = peer->propose(q, proposal))
-                      if (!previous || previous->proposal < p->proposal)
-                      {
-                        ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
-                                         *this, p->proposal, printer(p->value));
-                        previous = std::move(p);
-                      }
-                    ++reached;
+                    ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
+                                     *this, p->proposal, printer(p->value));
+                    previous = std::move(p);
                   }
-                  catch (typename Peer::Unavailable const& e)
-                  {
-                    ELLE_TRACE("%s: peer %s unavailable: %s",
-                               *this, peer, e.what());
-                  }
-                });
-            }
-            reactor::wait(scope);
-          };
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
           this->_check_headcount(q, reached);
           if (previous)
           {
             ELLE_DEBUG("replace value with %s", printer(previous->value));
-            new_value.emplace(std::move(previous->value));
-            value = &*new_value;
-            if (previous->proposal.version > version)
+            if (proposal < previous->proposal)
             {
-              ELLE_DEBUG("newer version exists, replace %s",
-                         printer(previous->value));
               version = previous->proposal.version;
-              this->_round = 0;
+              this->_round = previous->proposal.round;
+              ELLE_DEBUG("retry at version %s round %s", version, this->_round);
+              continue;
             }
           }
         }
@@ -138,62 +161,132 @@ namespace athena
         {
           int reached = 0;
           bool conflicted = false;
-          elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-          {
-            for (auto& peer: this->_peers)
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope& scope) -> void
             {
-              scope.run_background(
-                elle::sprintf("paxos proposal"),
-                [&]
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
+                                 *this, proposal, *peer);
+                auto minimum = peer->accept(
+                  q, proposal, previous ? previous->value : value);
+                // FIXME: If the majority doesn't conflict, the value was
+                // still chosen - right ? Take that in account.
+                if (proposal < minimum)
                 {
-                  try
-                  {
-                    auto minimum = peer->accept(q, proposal, *value);
-                    // FIXME: If the majority doesn't conflict, the value was
-                    // still chosen - right ? Take that in account.
-                    if (proposal < minimum)
-                    {
-                      ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
-                                 *this, peer, minimum);
-                      this->_round = minimum.round;
-                      conflicted = true;
-                      scope.terminate_now();
-                    }
-                    ++reached;
-                  }
-                  catch (typename Peer::Unavailable const& e)
-                  {
-                    ELLE_TRACE("%s: peer %s unavailable: %s",
-                               *this, peer, e.what());
-                  }
-                });
-            }
-            reactor::wait(scope);
-          };
+                  ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
+                             *this, peer, minimum);
+                  this->_round = minimum.round;
+                  conflicted = true;
+                  scope.terminate_now();
+                }
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
           if (conflicted)
           {
-            // FIXME: random wait to avoid livelock
-            ELLE_DEBUG("%s: conflicted proposal, retry", *this);
+            auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
+            auto delay = 100_ms * rn * backoff;
+            ELLE_TRACE("%s: conflicted proposal, retry after backoff: %s",
+                       *this, delay);
+            reactor::sleep(delay);
+            backoff = std::min(backoff * 2, 64);
             continue;
           }
           else
-          {
             this->_check_headcount(q, reached);
-            break;
-          }
         }
+        ELLE_TRACE("%s: chose %s", *this,
+                   printer(previous ? previous->value : value));
+        ELLE_DEBUG("%s: send confirmation", *this)
+        {
+          auto reached = 0;
+          for_each_parallel(
+            this->_peers,
+            [&] (std::unique_ptr<Peer> const& peer,
+                 reactor::Scope&) -> void
+            {
+              try
+              {
+                ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
+                                 *this, proposal, *peer);
+                peer->confirm(q, proposal);
+                ++reached;
+              }
+              catch (typename Peer::Unavailable const& e)
+              {
+                ELLE_TRACE("%s: peer %s unavailable: %s",
+                           *this, peer, e.what());
+              }
+            });
+          this->_check_headcount(q, reached);
+        }
+        break;
       }
-      ELLE_TRACE("%s: chose %s", *this, printer(*value));
-      return new_value;
+      return previous;
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    boost::optional<T>
+    Client<T, Version, ClientId>::get()
+    {
+      return this->get_quorum().first;
+    }
+
+    template <typename T, typename Version, typename CId>
+    std::pair<boost::optional<T>, typename Client<T, Version, CId>::Quorum>
+    Client<T, Version, CId>::get_quorum()
+    {
+      ELLE_LOG_COMPONENT("athena.paxos.Client");
+      ELLE_TRACE_SCOPE("%s: get value", *this);
+      Quorum q;
+      for (auto const& peer: this->_peers)
+        q.insert(peer->id());
+      ELLE_DUMP("quorum: %s", q);
+      auto reached = 0;
+      boost::optional<typename Client<T, Version, CId>::Accepted> res;
+      for_each_parallel(
+        this->_peers,
+        [&] (std::unique_ptr<Peer> const& peer,
+             reactor::Scope&) -> void
+        {
+          try
+          {
+            ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
+            auto accepted = peer->get(q);
+            if (accepted)
+              if (!res || res->proposal < accepted->proposal)
+                res.emplace(std::move(accepted.get()));
+            ++reached;
+          }
+          catch (typename Peer::Unavailable const& e)
+          {
+            ELLE_TRACE("%s: peer %s unavailable: %s",
+                       *this, peer, e.what());
+          }
+        });
+      this->_check_headcount(q, reached);
+      typedef std::pair<boost::optional<T>, Quorum> Res;
+      if (res)
+        return Res(res->value.template get<T>(), q);
+      else
+        return Res({}, q);
     }
 
     /*----------.
     | Printable |
     `----------*/
 
-    template <typename T, typename Version, typename ClientId>
+    template <typename T, typename Version, typename CId>
     void
-    Client<T, Version, ClientId>::print(std::ostream& output) const
+    Client<T, Version, CId>::print(std::ostream& output) const
     {
       elle::fprintf(output, "paxos::Client(%f)", this->_id);
     }
@@ -202,8 +295,8 @@ namespace athena
     | Unavailable |
     `------------*/
 
-    template <typename T, typename Version, typename ClientId>
-    Client<T, Version, ClientId>::Peer::Unavailable::Unavailable()
+    template <typename T, typename Version, typename CId>
+    Client<T, Version, CId>::Peer::Unavailable::Unavailable()
       : elle::Error("paxos peer unavailable")
     {}
   }

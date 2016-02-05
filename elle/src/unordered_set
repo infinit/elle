@@ -35,6 +35,13 @@ namespace std
     elle::fprintf(out, "}");
     return out;
   }
+
+  template <typename T, typename ... Types>
+  bool
+  contains(std::unordered_set<Types ...> const& set, T const& e)
+  {
+    return set.find(e) != set.end();
+  }
 }
 
 #endif

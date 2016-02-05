@@ -1226,6 +1226,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     elle = elle,
     das = das,
     reactor = reactor,
+    cryptography = cryptography,
     boost = boost,
     prefix = prefix,
     valgrind = valgrind,

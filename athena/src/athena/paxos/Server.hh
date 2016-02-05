@@ -8,7 +8,9 @@
 # include <boost/multi_index/member.hpp>
 
 # include <elle/attribute.hh>
+# include <elle/elle.hh>
 # include <elle/Error.hh>
+# include <elle/Option.hh>
 # include <elle/Printable.hh>
 # include <elle/serialization/Serializer.hh>
 
@@ -29,6 +31,13 @@ namespace athena
     | Types |
     `------*/
     public:
+      typedef Server<T, Version, ClientId, ServerId> Self;
+      typedef std::unordered_set<ServerId> Quorum;
+
+    /*---------.
+    | Proposal |
+    `---------*/
+    public:
       struct Proposal
       {
         Proposal();
@@ -36,6 +45,8 @@ namespace athena
         Version version;
         int round;
         ClientId sender;
+        bool
+        operator ==(Proposal const& rhs) const;
         bool
         operator <(Proposal const& rhs) const;
         void
@@ -51,70 +62,84 @@ namespace athena
         }
       };
 
+    /*---------.
+    | Accepted |
+    `---------*/
+    public:
       struct Accepted
       {
-        Accepted();
-        Accepted(Proposal proposal, T value);
+        Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
+        Accepted(Proposal proposal, elle::Option<T, Quorum> value);
         Proposal proposal;
-        T value;
+        elle::Option<T, Quorum> value;
         void
-        serialize(elle::serialization::Serializer& s);
+        serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
       };
 
-      struct VersionState
-      {
-        VersionState(Proposal p, boost::optional<Accepted> a = {});
-        Proposal proposal;
-        boost::optional<Accepted> accepted;
-        Version
-        version() const;
-        VersionState(elle::serialization::SerializerIn& s);
-        void
-        serialize(elle::serialization::Serializer& s);
-        typedef elle::serialization_tag serialization_tag;
-      };
-
-      typedef boost::multi_index::multi_index_container<
-        VersionState,
-        boost::multi_index::indexed_by<
-          boost::multi_index::ordered_unique<
-            boost::multi_index::const_mem_fun<
-              VersionState, Version, &VersionState::version>>
-          >
-        > VersionsState;
-
-      typedef std::unordered_set<ServerId> Quorum;
-
+    /*------------.
+    | WrongQuorum |
+    `------------*/
+    public:
       class WrongQuorum
         : public elle::Error
       {
       public:
         typedef elle::Error Super;
-        WrongQuorum(Quorum expected, Quorum effective, Version version);
-        WrongQuorum(elle::serialization::SerializerIn& input);
+        WrongQuorum(Quorum expected, Quorum effective);
+        WrongQuorum(elle::serialization::SerializerIn& input,
+                    elle::Version const& version);
+        virtual
         void
-        serialize(elle::serialization::Serializer& s);
+        serialize(elle::serialization::Serializer& s,
+                  elle::Version const& version) override;
         ELLE_ATTRIBUTE_R(Quorum, expected);
         ELLE_ATTRIBUTE_R(Quorum, effective);
-        ELLE_ATTRIBUTE_R(Version, version);
       private:
         void
-        _serialize(elle::serialization::Serializer& s);
+        _serialize(elle::serialization::Serializer& s,
+                   elle::Version const& version);
       };
-
     private:
       static const elle::serialization::Hierarchy<elle::Exception>::
-      Register<WrongQuorum> _register_serialization;
+      Register<WrongQuorum> _register_wrong_quorum_serialization;
+
+    /*-------------.
+    | PartialState |
+    `-------------*/
+    public:
+      class PartialState
+        : public elle::Error
+      {
+      public:
+        typedef elle::Error Super;
+        PartialState(Proposal p);
+        PartialState(elle::serialization::SerializerIn& input,
+                     elle::Version const& version);
+        virtual
+        void
+        serialize(elle::serialization::Serializer& s,
+                  elle::Version const& version) override;
+        ELLE_ATTRIBUTE_R(Proposal, proposal);
+      private:
+        void
+        _serialize(elle::serialization::Serializer& s,
+                   elle::Version const& version);
+      };
+    private:
+      static const elle::serialization::Hierarchy<elle::Exception>::
+      Register<PartialState> _register_partial_state_serialization;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      Server(ServerId id, Quorum quorum);
-      Server(VersionsState state);
-      ELLE_ATTRIBUTE(ServerId, id);
-      ELLE_ATTRIBUTE_R(Quorum, quorum);
+      Server(ServerId id, Quorum quorum,
+        elle::Version version = elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
+      ELLE_ATTRIBUTE_R(ServerId, id);
+      ELLE_ATTRIBUTE_R(Quorum, quorum_initial);
+      ELLE_ATTRIBUTE_R(boost::optional<T>, value);
+      ELLE_ATTRIBUTE_R(elle::Version, version);
 
     /*----------.
     | Consensus |
@@ -123,23 +148,49 @@ namespace athena
       boost::optional<Accepted>
       propose(Quorum q, Proposal p);
       Proposal
-      accept(Quorum q, Proposal p, T value);
+      accept(Quorum q, Proposal p, elle::Option<T, Quorum> value);
+      void
+      confirm(Quorum q, Proposal p);
+      boost::optional<Accepted>
+      get(Quorum q);
       boost::optional<Accepted>
       highest_accepted() const;
       boost::optional<Accepted>
       highest_accepted_value() const;
+      struct VersionState
+      {
+        VersionState(Proposal p, boost::optional<Accepted> a = {});
+        Proposal proposal;
+        boost::optional<Accepted> accepted;
+        bool confirmed;
+        Version
+        version() const;
+        VersionState(elle::serialization::SerializerIn& s,
+                     elle::Version const& v);
+        void
+        serialize(elle::serialization::Serializer& s, elle::Version const& v);
+        typedef elle::serialization_tag serialization_tag;
+      };
+      typedef boost::multi_index::multi_index_container<
+        VersionState,
+        boost::multi_index::indexed_by<
+          boost::multi_index::ordered_unique<
+            boost::multi_index::const_mem_fun<
+              VersionState, Version, &VersionState::version>>
+          >
+        > VersionsState;
       ELLE_ATTRIBUTE(VersionsState, state);
     private:
-      void
-      _check_quorum(Quorum q) const;
+      struct _Details;
+      friend struct _Details;
 
     /*--------------.
     | Serialization |
     `--------------*/
     public:
-      Server(elle::serialization::SerializerIn& s);
+      Server(elle::serialization::SerializerIn& s, elle::Version const& v);
       void
-      serialize(elle::serialization::Serializer& s);
+      serialize(elle::serialization::Serializer& s, elle::Version const& v);
       typedef elle::serialization_tag serialization_tag;
 
     /*----------.

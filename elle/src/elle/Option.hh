@@ -5,6 +5,8 @@
 # include <type_traits>
 # include <iosfwd>
 
+# include <elle/serialization/Serializer.hh>
+
 namespace elle
 {
   namespace _details
@@ -35,6 +37,9 @@ namespace elle
     T&
     get();
     template <typename T>
+    T const&
+    get() const;
+    template <typename T>
     bool
     is() const;
     template <typename T>
@@ -43,11 +48,24 @@ namespace elle
     template <typename T, typename ... Args>
     void
     emplace(Args&& ... value);
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    typedef elle::serialization_tag serialization_tag;
+    Option(serialization::SerializerIn& s);
+    void
+    serialize(serialization::Serializer& s);
+
+  /*----------.
+  | Printable |
+  `----------*/
   private:
     template <typename ... Args>
     friend
     std::ostream&
-    operator << (std::ostream& output, Option<Args...> option);
+    operator << (std::ostream& output, Option<Args...> const& option);
   };
 }
 
