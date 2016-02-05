@@ -279,16 +279,15 @@ go(int argc, char** argv)
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* basics = BOOST_TEST_SUITE("Basics");
-  boost::unit_test::framework::master_test_suite().add(basics);
-  basics->add(BOOST_TEST_CASE(udp), 0, valgrind(1));
-  basics->add(BOOST_TEST_CASE(utp_close), 0, valgrind(1));
-  basics->add(BOOST_TEST_CASE(basic), 0, valgrind(1));
-  basics->add(BOOST_TEST_CASE(utp_timeout), 0, valgrind(1));
+  auto& suite = boost::unit_test::framework::master_test_suite().add(basics);
+  suite.add(BOOST_TEST_CASE(udp), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(utp_close), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(basic), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(utp_timeout), 0, valgrind(2));
 #ifdef INFINIT_LINUX
-  basics->add(BOOST_TEST_CASE(utp_failures), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(utp_failures), 0, valgrind(2));
 #endif
-  basics->add(BOOST_TEST_CASE(streams), 0, valgrind(1));
-  basics->add(BOOST_TEST_CASE(big), 0, valgrind(1));
-  basics->add(BOOST_TEST_CASE(many), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(many), 0, valgrind(2));
 }
