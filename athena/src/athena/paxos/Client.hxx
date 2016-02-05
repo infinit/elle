@@ -145,12 +145,12 @@ namespace athena
           if (previous)
           {
             ELLE_DEBUG("replace value with %s", printer(previous->value));
-            if (previous->proposal.version > version)
+            if (proposal < previous->proposal)
             {
-              ELLE_DEBUG("replace with newer version: %s",
-                         printer(previous->value));
               version = previous->proposal.version;
-              this->_round = 0;
+              this->_round = previous->proposal.round;
+              ELLE_DEBUG("retry at version %s round %s", version, this->_round);
+              continue;
             }
           }
         }
