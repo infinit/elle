@@ -716,7 +716,7 @@ def configure(curl_config,
     ('reactor', []),
     ('upnp', []), # Not an auto test, just an utility.
     ('ssl', openssl_libs),
-    ('utpcat', [utp_lib]),
+    ('utp', [utp_lib]),
     ('rdv-cat', []),
     ('rdv-utp-cat', []),
     ('rdv-server', []),
