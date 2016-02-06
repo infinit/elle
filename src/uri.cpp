@@ -31,15 +31,15 @@
 namespace network {
   namespace {
     inline detail::iterator_pair copy_range(
-        uri::string_type::iterator first, uri::string_type::iterator last,
-        uri::string_type::iterator &it) {
+        detail::iterator_pair::iterator first, detail::iterator_pair::iterator last,
+        detail::iterator_pair::iterator &it) {
       auto part_first = it;
       std::advance(it, std::distance(first, last));
-      return boost::make_iterator_range(part_first, it);
+      return detail::iterator_pair(part_first, it);
     }
 
     void advance_parts(
-        uri::string_type::iterator first, uri::string_type::iterator last,
+        detail::iterator_pair::iterator first, detail::iterator_pair::iterator last,
         detail::uri_parts &parts,
         const detail::uri_parts &existing_parts) {
       auto it = first;
@@ -95,7 +95,7 @@ namespace network {
     }
 
     void advance_parts(
-        detail::iterator_pair range,
+        std::string &range,
         detail::uri_parts &parts,
         const detail::uri_parts &existing_parts) {
       advance_parts(std::begin(range), std::end(range), parts, existing_parts);
@@ -162,7 +162,7 @@ namespace network {
       uri_.append(*fragment);
     }
 
-    auto it = std::begin(uri_);
+    detail::iterator_pair::iterator it = std::begin(uri_);
     if (scheme) {
       uri_parts_.scheme =
           copy_range(std::begin(*scheme), std::end(*scheme), it);
@@ -414,9 +414,9 @@ namespace network {
                                  std::end(*parts.fragment));
         }
 
-        string_type::iterator path_begin = std::begin(normalized);
+        detail::iterator_pair::iterator path_begin = std::begin(normalized);
         std::advance(path_begin,
-                     std::distance<string_type::iterator>(
+                     std::distance<detail::iterator_pair::iterator>(
                          path_begin, std::begin(*parts.hier_part.path)));
         normalized.erase(path_begin, std::end(normalized));
         normalized.append(path);
