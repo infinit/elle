@@ -12,7 +12,7 @@ namespace network {
   namespace detail {
     bool parse(uri::string_type::iterator first,
 	       uri::string_type::iterator last,
-	       uri_parts<uri::string_type::iterator> &parts);
+	       uri_parts &parts);
   } // namespace detail
 } // namespace network
 

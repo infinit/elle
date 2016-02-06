@@ -10,19 +10,19 @@
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include "uri_parse.hpp"
 
-BOOST_FUSION_ADAPT_TPL_STRUCT(
-    (FwdIter), (network::detail::hierarchical_part)(FwdIter),
-    (boost::optional<boost::iterator_range<FwdIter> >, user_info)(
-        boost::optional<boost::iterator_range<FwdIter> >, host)(
-        boost::optional<boost::iterator_range<FwdIter> >, port)(
-        boost::optional<boost::iterator_range<FwdIter> >, path));
+BOOST_FUSION_ADAPT_STRUCT(
+    network::detail::hierarchical_part,
+    (boost::optional<network::detail::iterator_pair>, user_info)(
+        boost::optional<network::detail::iterator_pair>, host)(
+        boost::optional<network::detail::iterator_pair>, port)(
+        boost::optional<network::detail::iterator_pair>, path));
 
-BOOST_FUSION_ADAPT_TPL_STRUCT(
-    (FwdIter), (network::detail::uri_parts)(FwdIter),
-    (boost::optional<boost::iterator_range<FwdIter> >, scheme)(
-        network::detail::hierarchical_part<FwdIter>, hier_part)(
-        boost::optional<boost::iterator_range<FwdIter> >, query)(
-        boost::optional<boost::iterator_range<FwdIter> >, fragment));
+BOOST_FUSION_ADAPT_STRUCT(
+    network::detail::uri_parts,
+    (boost::optional<network::detail::iterator_pair>, scheme)(
+        network::detail::hierarchical_part, hier_part)(
+        boost::optional<network::detail::iterator_pair>, query)(
+        boost::optional<network::detail::iterator_pair>, fragment));
 
 namespace network {
   namespace detail {
@@ -31,7 +31,7 @@ namespace network {
     template <class String>
     struct uri_grammar
         : qi::grammar<typename String::iterator,
-                      detail::uri_parts<typename String::iterator>()> {
+                      detail::uri_parts()> {
 
       typedef String string_type;
       typedef typename String::iterator iterator;
@@ -207,9 +207,9 @@ namespace network {
         hier_part %=
             ((("//" >> user_info >> '@') | "//") >> host >> -(':' >> port) >>
              path_abempty) |
-            (qi::attr(boost::optional<boost::iterator_range<iterator> >()) >>
-             qi::attr(boost::optional<boost::iterator_range<iterator> >()) >>
-             qi::attr(boost::optional<boost::iterator_range<iterator> >()) >>
+            (qi::attr(boost::optional<iterator_pair>()) >>
+             qi::attr(boost::optional<iterator_pair>()) >>
+             qi::attr(boost::optional<iterator_pair>()) >>
              (path_absolute | path_rootless | path_empty));
 
         start %=
@@ -217,12 +217,12 @@ namespace network {
              -('#' >> fragment));
       }
 
-      qi::rule<iterator, typename boost::iterator_range<iterator>::value_type()>
+      qi::rule<iterator, typename string_type::value_type()>
           gen_delims, sub_delims, reserved, unreserved;
       qi::rule<iterator, string_type()> pct_encoded, pchar;
 
       qi::rule<iterator, string_type()> segment, segment_nz, segment_nz_nc;
-      qi::rule<iterator, boost::iterator_range<iterator>()> path_abempty,
+      qi::rule<iterator, iterator_pair()> path_abempty,
           path_absolute, path_rootless, path_empty;
 
       qi::rule<iterator, string_type()> dec_octet, ipv4address, reg_name,
@@ -232,20 +232,20 @@ namespace network {
 
       qi::rule<iterator, string_type()> h16, ls32;
 
-      qi::rule<iterator, boost::iterator_range<iterator>()> host, port;
+      qi::rule<iterator, iterator_pair()> host, port;
 
-      qi::rule<iterator, boost::iterator_range<iterator>()> scheme, user_info,
+      qi::rule<iterator, iterator_pair()> scheme, user_info,
           query, fragment;
 
-      qi::rule<iterator, detail::hierarchical_part<iterator>()> hier_part;
+      qi::rule<iterator, detail::hierarchical_part()> hier_part;
 
       // actual uri parser
-      qi::rule<iterator, detail::uri_parts<iterator>()> start;
+      qi::rule<iterator, detail::uri_parts()> start;
     };
 
     bool parse(uri::string_type::iterator first,
                uri::string_type::iterator last,
-               uri_parts<uri::string_type::iterator> &parts) {
+               uri_parts &parts) {
       namespace qi = boost::spirit::qi;
       static uri_grammar<uri::string_type> grammar;
       bool is_valid = qi::parse(first, last, grammar, parts);

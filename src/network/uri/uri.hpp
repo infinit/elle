@@ -33,20 +33,20 @@
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   namespace detail {
-    template <class FwdIter>
+    using iterator_pair = boost::iterator_range<std::string::iterator>;
+
     struct hierarchical_part {
-      boost::optional<boost::iterator_range<FwdIter> > user_info;
-      boost::optional<boost::iterator_range<FwdIter> > host;
-      boost::optional<boost::iterator_range<FwdIter> > port;
-      boost::optional<boost::iterator_range<FwdIter> > path;
+      boost::optional<iterator_pair> user_info;
+      boost::optional<iterator_pair> host;
+      boost::optional<iterator_pair> port;
+      boost::optional<iterator_pair> path;
     };
 
-    template <class FwdIter>
     struct uri_parts {
-      boost::optional<boost::iterator_range<FwdIter> > scheme;
-      hierarchical_part<FwdIter> hier_part;
-      boost::optional<boost::iterator_range<FwdIter> > query;
-      boost::optional<boost::iterator_range<FwdIter> > fragment;
+      boost::optional<iterator_pair> scheme;
+      hierarchical_part hier_part;
+      boost::optional<iterator_pair> query;
+      boost::optional<iterator_pair> fragment;
     };
   }  // namespace detail
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -548,7 +548,7 @@ namespace network {
     bool initialize(const string_type &uri);
 
     string_type uri_;
-    detail::uri_parts<string_type::iterator> uri_parts_;
+    detail::uri_parts uri_parts_;
   };
 
   /**

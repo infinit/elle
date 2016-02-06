@@ -174,7 +174,7 @@ namespace network {
           (((user_info >> '@') | qi::eps) >> host >> -(':' >> port));
       }
 
-      qi::rule<iterator, typename boost::iterator_range<iterator>::value_type()>
+      qi::rule<iterator, typename string_type::value_type()>
           gen_delims, sub_delims, reserved, unreserved;
       qi::rule<iterator, string_type()> pct_encoded;
 

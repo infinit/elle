@@ -19,7 +19,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/range/iterator_range.hpp>
 #include <boost/range/as_literal.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
@@ -31,7 +30,7 @@
 
 namespace network {
   namespace {
-    inline boost::iterator_range<uri::string_type::iterator> copy_range(
+    inline detail::iterator_pair copy_range(
         uri::string_type::iterator first, uri::string_type::iterator last,
         uri::string_type::iterator &it) {
       auto part_first = it;
@@ -41,8 +40,8 @@ namespace network {
 
     void advance_parts(
         uri::string_type::iterator first, uri::string_type::iterator last,
-        detail::uri_parts<uri::string_type::iterator> &parts,
-        const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
+        detail::uri_parts &parts,
+        const detail::uri_parts &existing_parts) {
       auto it = first;
       if (auto scheme = existing_parts.scheme) {
         parts.scheme =
@@ -96,9 +95,9 @@ namespace network {
     }
 
     void advance_parts(
-        boost::iterator_range<uri::string_type::iterator> range,
-        detail::uri_parts<uri::string_type::iterator> &parts,
-        const detail::uri_parts<uri::string_type::iterator> &existing_parts) {
+        detail::iterator_pair range,
+        detail::uri_parts &parts,
+        const detail::uri_parts &existing_parts) {
       advance_parts(std::begin(range), std::end(range), parts, existing_parts);
     }
   }  // namespace
@@ -228,7 +227,7 @@ namespace network {
   uri::uri(uri &&other) NETWORK_URI_NOEXCEPT : uri_(std::move(other.uri_)) {
     advance_parts(uri_, uri_parts_, other.uri_parts_);
     other.uri_.clear();
-    other.uri_parts_ = detail::uri_parts<string_type::iterator>();
+    other.uri_parts_ = detail::uri_parts();
   }
 
   uri::~uri() NETWORK_URI_NOEXCEPT {}
@@ -251,7 +250,7 @@ namespace network {
   namespace {
     inline boost::string_ref to_string_ref(
         const uri::string_type &uri,
-        boost::iterator_range<uri::const_iterator> uri_part) {
+        detail::iterator_pair uri_part) {
       if (!uri_part.empty()) {
         const char *c_str = uri.c_str();
         const char *uri_part_begin = &(*(std::begin(uri_part)));
@@ -371,7 +370,7 @@ namespace network {
 
   uri uri::normalize(uri_comparison_level level) const {
     string_type normalized(uri_);
-    detail::uri_parts<string_type::iterator> parts;
+    detail::uri_parts parts;
     advance_parts(normalized, parts, uri_parts_);
 
     if (uri_comparison_level::syntax_based == level) {
