@@ -139,7 +139,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    ~uri_builder() NETWORK_URI_NOEXCEPT;
+    ~uri_builder() noexcept;
 
     /**
      * \brief Adds a new scheme to the uri_builder.

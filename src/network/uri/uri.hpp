@@ -206,12 +206,12 @@ namespace network {
     /**
      * \brief Move constructor.
      */
-    uri(uri &&other) NETWORK_URI_NOEXCEPT;
+    uri(uri &&other) noexcept;
 
     /**
      * \brief Destructor.
      */
-    ~uri() NETWORK_URI_NOEXCEPT;
+    ~uri() noexcept;
 
     /**
      * \brief Assignment operator.
@@ -223,7 +223,7 @@ namespace network {
      * \brief Swaps one uri object with another.
      * \param other The other uri object.
      */
-    void swap(uri &other) NETWORK_URI_NOEXCEPT;
+    void swap(uri &other) noexcept;
 
     /**
      * \brief Returns an iterator at the first element in the
@@ -369,7 +369,7 @@ namespace network {
      * \brief Checks if the uri object is empty, i.e. it has no parts.
      * \returns \c true if there are no parts, \c false otherwise.
      */
-    bool empty() const NETWORK_URI_NOEXCEPT;
+    bool empty() const noexcept;
 
     /**
      * \brief Checks if the uri is absolute, i.e. it has a scheme.
@@ -423,7 +423,7 @@ namespace network {
      *         less than other and and 1 if this is greater than
      *         other.
      */
-    int compare(const uri &other, uri_comparison_level level) const NETWORK_URI_NOEXCEPT;
+    int compare(const uri &other, uri_comparison_level level) const noexcept;
 
     /**
      * \brief Encodes a sequence according to the rules for encoding a
@@ -577,55 +577,55 @@ namespace network {
   /**
    * \brief Swaps one uri object with another.
    */
-  NETWORK_URI_DECL void swap(uri &lhs, uri &rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL void swap(uri &lhs, uri &rhs) noexcept;
 
    /**
    * \brief Equality operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator==(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL bool operator==(const uri &lhs, const uri &rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator==(const uri &lhs, const char *rhs) NETWORK_URI_NOEXCEPT;
+  NETWORK_URI_DECL bool operator==(const uri &lhs, const char *rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  inline bool operator==(const char *lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator==(const char *lhs, const uri &rhs) noexcept {
     return rhs == lhs;
   }
 
   /**
    * \brief Inequality operator for the \c uri.
    */
-  inline bool operator!=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator!=(const uri &lhs, const uri &rhs) noexcept {
     return !(lhs == rhs);
   }
 
   /**
    * \brief Less-than operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator<(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT ;
+  NETWORK_URI_DECL bool operator<(const uri &lhs, const uri &rhs) noexcept ;
 
   /**
    * \brief Greater-than operator for the \c uri.
    */
-  inline bool operator>(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator>(const uri &lhs, const uri &rhs) noexcept {
     return rhs < lhs;
   }
 
   /**
    * \brief Less-than-or-equal-to operator for the \c uri.
    */
-  inline bool operator<=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator<=(const uri &lhs, const uri &rhs) noexcept {
     return !(rhs < lhs);
   }
 
   /**
    * \brief Greater-than-or-equal-to operator for the \c uri.
    */
-  inline bool operator>=(const uri &lhs, const uri &rhs) NETWORK_URI_NOEXCEPT {
+  inline bool operator>=(const uri &lhs, const uri &rhs) noexcept {
     return !(lhs < rhs);
   }
 }  // namespace network

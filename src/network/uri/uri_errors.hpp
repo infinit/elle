@@ -69,7 +69,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~uri_syntax_error() NETWORK_URI_NOEXCEPT;
+    virtual ~uri_syntax_error() noexcept;
 
   };
 
@@ -90,7 +90,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~uri_builder_error() NETWORK_URI_NOEXCEPT;
+    virtual ~uri_builder_error() noexcept;
 
   };
 
@@ -110,7 +110,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    virtual ~percent_decoding_error() NETWORK_URI_NOEXCEPT;
+    virtual ~percent_decoding_error() noexcept;
 
   };
 } // namespace network
