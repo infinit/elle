@@ -157,7 +157,7 @@ namespace elle
               break;
           }
           if (!edition.str().empty())
-            os << "(" << edition << " Edition)";
+            os << "(" << edition.str() << " Edition)";
 
           // Build.
           if(strlen(osvi.szCSDVersion) > 0)
