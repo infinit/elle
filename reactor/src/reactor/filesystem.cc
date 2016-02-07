@@ -17,6 +17,19 @@ namespace reactor
   {
     namespace bfs = boost::filesystem;
 
+    static void normalize(std::string& path)
+    {
+      if (path == "" || path == "\\")
+        path = "/";
+      // normalize
+      auto pos = path.find_first_of("\\");
+      while (pos != path.npos)
+      {
+        path[pos] = '/';
+        pos = path.find_first_of("\\");
+      }
+    }
+
     Operations::Operations()
       : _filesystem(nullptr)
     {}
@@ -32,15 +45,15 @@ namespace reactor
     }
 
     std::shared_ptr<Path>
-    FileSystem::fetch_recurse(boost::filesystem::path path)
+    FileSystem::fetch_recurse(std::string path)
     {
-      if (path == "" || path == "\\")
-        path = "/";
+      normalize(path);
       ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
+      ELLE_DUMP("from %s", _cache);
       auto it = _cache.find(path);
       if (it != _cache.end())
       {
-        ELLE_DEBUG("%s: hit on %s", *this, path);
+        ELLE_DEBUG("%s: hit on '%s': %s", *this, path, it->second.get());
         return it->second;
       }
       else
@@ -54,8 +67,10 @@ namespace reactor
             _cache[path] = p;
           return p;
         }
-        std::shared_ptr<Path> parent = fetch_recurse(path.parent_path());
-        auto p = parent->child(path.filename().string());
+        auto bpath = boost::filesystem::path(path);
+        std::shared_ptr<Path> parent = fetch_recurse(
+          bpath.parent_path().string());
+        auto p = parent->child(bpath.filename().string());
         if (p->allow_cache())
           _cache[path] = p;
         return p;
@@ -67,8 +82,7 @@ namespace reactor
     {
       ELLE_DEBUG_SCOPE("%s: fetch \"%s\"", *this, opath);
       std::string spath(opath);
-      if (spath == "" || spath == "\\")
-        spath = "/";
+      normalize(spath);
       ELLE_ASSERT(_impl);
       if (this->_full_tree)
       {
@@ -91,8 +105,10 @@ namespace reactor
     }
 
     std::shared_ptr<Path>
-    FileSystem::extract(std::string const& path)
+    FileSystem::extract(std::string const& path_)
     {
+      std::string path(path_);
+      normalize(path);
       auto it = this->_cache.find(path);
       if (it == this->_cache.end())
         return {};
@@ -102,9 +118,11 @@ namespace reactor
     }
 
     std::shared_ptr<Path>
-    FileSystem::set(std::string const& path,
+    FileSystem::set(std::string const& path_,
                     std::shared_ptr<Path> new_content)
     {
+      std::string path(path_);
+      normalize(path);
       std::shared_ptr<Path> res = extract(path);
       this->_cache[path] =
         this->_operations->wrap(path, new_content);
@@ -112,8 +130,10 @@ namespace reactor
     }
 
     std::shared_ptr<Path>
-    FileSystem::get(std::string const& path)
+    FileSystem::get(std::string const& path_)
     {
+      std::string path(path_);
+      normalize(path);
       auto it = this->_cache.find(path);
       if (it == this->_cache.end())
         return nullptr;

@@ -292,13 +292,13 @@ namespace reactor
     | Details |
     `--------*/
     private:
-      FileSystemImpl* _impl;
+      ELLE_ATTRIBUTE_R(FileSystemImpl*, impl);
       std::shared_ptr<Path>
-      fetch_recurse(boost::filesystem::path path);
+      fetch_recurse(std::string path);
       ELLE_ATTRIBUTE_RX(std::unique_ptr<Operations>, operations);
       bool _full_tree;
       std::string _where;
-      std::unordered_map<boost::filesystem::path, std::shared_ptr<Path>> _cache;
+      std::unordered_map<std::string, std::shared_ptr<Path>> _cache;
     };
 
 
