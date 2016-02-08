@@ -117,6 +117,16 @@ namespace elle
         return boost::any_cast<uint32_t>(any);
       if (CL(any.type()) == CL(typeid(uint64_t)))
         return boost::any_cast<uint64_t>(any);
+      // on macos, uint64_t is unsigned long long, which is not the same
+      // type as unsigned long
+      if (CL(any.type()) == CL(typeid(long)))
+        return boost::any_cast<long>(any);
+      if (CL(any.type()) == CL(typeid(unsigned long)))
+        return boost::any_cast<unsigned long>(any);
+      if (CL(any.type()) == CL(typeid(long long)))
+        return boost::any_cast<long long>(any);
+      if (CL(any.type()) == CL(typeid(unsigned long long)))
+        return boost::any_cast<unsigned long long>(any);
       if (CL(any.type()) == CL(typeid(float)))
         return boost::any_cast<float>(any);
       if (CL(any.type()) == CL(typeid(double)))

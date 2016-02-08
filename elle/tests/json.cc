@@ -2,6 +2,9 @@
 
 #include <elle/json/json.hh>
 #include <elle/test.hh>
+#include <elle/log.hh>
+
+ELLE_LOG_COMPONENT("Test");
 
 static
 void
@@ -19,6 +22,54 @@ read_long()
   std::stringstream input("9437196296");
   auto json = elle::json::read(input);
   BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 9437196296);
+}
+
+static
+bool
+cycle(boost::any& v)
+{
+  try
+  {
+    std::stringstream s;
+    elle::json::write(s, v);
+    elle::json::read(s);
+    return true;
+  }
+  catch (std::exception const& e)
+  {
+    ELLE_WARN("%s", e.what());
+    return false;
+  }
+}
+
+static
+void
+write_ints()
+{
+  // test our test
+  {
+    struct Foo{int bar;};
+    boost::any v = Foo{};
+    BOOST_CHECK(!cycle(v));
+  }
+  boost::any v = 1;
+  BOOST_CHECK(cycle(v));
+  v = 1L;
+  BOOST_CHECK(cycle(v));
+  v = 1LL;
+  BOOST_CHECK(cycle(v));
+  v = 1UL;
+  BOOST_CHECK(cycle(v));
+  v = 1ULL;
+  BOOST_CHECK(cycle(v));
+  v = (unsigned long)1;
+  BOOST_CHECK(cycle(v));
+  v = (unsigned long long)1;
+  BOOST_CHECK(cycle(v));
+  v = (long)1;
+  BOOST_CHECK(cycle(v));
+  v = (long long)1;
+  BOOST_CHECK(cycle(v));
 }
 
 static
@@ -87,6 +138,7 @@ ELLE_TEST_SUITE()
 
   suite.add(BOOST_TEST_CASE(read_int), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_long), 0, timeout);
+  suite.add(BOOST_TEST_CASE(write_ints), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_object), 0, timeout);
   suite.add(BOOST_TEST_CASE(null), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_utf_8), 0, timeout);
