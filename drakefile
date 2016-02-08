@@ -1,0 +1,58 @@
+import drake
+
+rule_build = None
+rule_check = None
+rule_install = None
+rule_tests = None
+
+lib_dynamic = None
+lib_static  = None
+
+
+config = None
+
+def configure(cxx_toolkit,
+              cxx_config):
+  global lib_dynamic, lib_static
+  global rule_build, rule_check, rule_install, rule_tests
+  global config
+  
+  sources = drake.nodes(
+      'dokan/access.c',
+      'dokan/cleanup.c',
+      'dokan/close.c',
+      'dokan/create.c',
+      'dokan/directory.c',
+      'dokan/dokan.c',
+      'dokan/dokanc.h',
+      'dokan/dokan.h',
+      'dokan/dokani.h',
+      'dokan/fileinfo.c',
+      'dokan/fileinfo.h',
+      'dokan/flush.c',
+      'dokan/list.h',
+      'dokan/lock.c',
+      'dokan/mount.c',
+      'dokan/read.c',
+      'dokan/resource.h',
+      'dokan/security.c',
+      'dokan/setfile.c',
+      'dokan/timeout.c',
+      'dokan/version.c',
+      'dokan/volume.c',
+      'dokan/write.c',
+  )
+  config = drake.cxx.Config(cxx_config)
+  config.add_local_include_path('.')
+  config.define('DOKAN_STATIC_BUILD')
+  local_config = drake.cxx.Config(config)
+  local_config.add_local_include_path('sys')
+  local_config.add_local_include_path('dokan')
+  local_config.warnings.sign_compare = None
+  local_config.define('UNICODE')
+  local_config.define('_UNICODE')
+
+  lib_static = drake.cxx.StaticLib('lib/dokan', sources, cxx_toolkit, local_config)
+  rule_build = drake.Rule("build")
+  rule_build << lib_static
+  
