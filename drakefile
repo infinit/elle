@@ -51,6 +51,7 @@ def configure(cxx_toolkit,
   local_config.warnings.sign_compare = None
   local_config.define('UNICODE')
   local_config.define('_UNICODE')
+  local_config.define('MINGW_HAS_SECURE_API')
 
   lib_static = drake.cxx.StaticLib('lib/dokan', sources, cxx_toolkit, local_config)
   rule_build = drake.Rule("build")

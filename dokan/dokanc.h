@@ -23,7 +23,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dokan.h"
 #include <malloc.h>
-
+#include <sec_api/stdio_s.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
