@@ -124,9 +124,9 @@ namespace elle
       if (CL(any.type()) == CL(typeid(unsigned long)))
         return boost::any_cast<unsigned long>(any);
       if (CL(any.type()) == CL(typeid(long long)))
-        return boost::any_cast<long long>(any);
+        return (int64_t)boost::any_cast<long long>(any);
       if (CL(any.type()) == CL(typeid(unsigned long long)))
-        return boost::any_cast<unsigned long long>(any);
+        return (uint64_t)boost::any_cast<unsigned long long>(any);
       if (CL(any.type()) == CL(typeid(float)))
         return boost::any_cast<float>(any);
       if (CL(any.type()) == CL(typeid(double)))
