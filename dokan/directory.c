@@ -23,7 +23,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "fileinfo.h"
 #include "list.h"
 
-#if _MSC_VER < 1300 // VC6
+#if !defined(__MINGW32__) && _MSC_VER < 1300 // VC6
 typedef ULONG ULONG_PTR;
 #endif
 

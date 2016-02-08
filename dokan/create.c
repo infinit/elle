@@ -100,8 +100,9 @@ VOID DispatchCreate(HANDLE Handle, // This handle is not for a file. It is for
 
     // strip the last section of the file path
     WCHAR *lastP = NULL;
+    WCHAR *p;
 
-    for (WCHAR *p = fileName; *p; p++) {
+    for (p = fileName; *p; p++) {
       if ((*p == L'\\' || *p == L'/') && p[1])
         lastP = p;
     }

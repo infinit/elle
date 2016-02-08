@@ -117,20 +117,18 @@ static VOID DokanDbgPrintW(LPCWSTR format, ...) {
 #define DbgPrint(format, ...)                                                  \
   do {                                                                         \
     if (g_DebugMode) {                                                         \
-      DokanDbgPrint(format, __VA_ARGS__);                                      \
+      DokanDbgPrint(format, ## __VA_ARGS__);                                   \
     }                                                                          \
   }                                                                            \
-  __pragma(warning(push)) __pragma(warning(disable : 4127)) while (0)          \
-      __pragma(warning(pop))
+  while (0)
 
 #define DbgPrintW(format, ...)                                                 \
   do {                                                                         \
     if (g_DebugMode) {                                                         \
-      DokanDbgPrintW(format, __VA_ARGS__);                                     \
+      DokanDbgPrintW(format, ## __VA_ARGS__);                                  \
     }                                                                          \
   }                                                                            \
-  __pragma(warning(push)) __pragma(warning(disable : 4127)) while (0)          \
-      __pragma(warning(pop))
+  while (0)
 
 VOID DOKANAPI DokanUseStdErr(BOOL Status);
 

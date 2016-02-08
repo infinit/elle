@@ -23,8 +23,10 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <windows.h>
 
-#if _MSC_VER < 1300
-#define FORCEINLINE __inline
+#if defined(__MINGW32__)
+  #define FORCEINLINE static inline
+#elif _MSC_VER < 1300
+  #define FORCEINLINE __inline
 #endif
 
 FORCEINLINE

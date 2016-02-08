@@ -21,10 +21,10 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef _DOKAN_H_
 #define _DOKAN_H_
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "fileinfo.h"
-#include "public.h"
+#include "sys/public.h"
 
 #define DOKAN_DRIVER_NAME L"dokan-" DOKAN_MAJOR_API_VERSION L".sys"
 
@@ -32,7 +32,11 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #define DOKANAPI /*__declspec(dllexport)*/                                     \
   __stdcall      // exports defined in dokan.def
 #else
-#define DOKANAPI __declspec(dllimport) __stdcall
+# ifdef DOKAN_STATIC_BUILD
+#  define DOKANAPI
+# else
+#  define DOKANAPI __declspec(dllimport) __stdcall
+# endif
 #endif
 
 #define DOKAN_CALLBACK __stdcall

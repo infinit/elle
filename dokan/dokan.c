@@ -321,7 +321,8 @@ void ALIGN_ALLOCATION_SIZE(PLARGE_INTEGER size) {
       (size->QuadPart + (r > 0 ? DOKAN_ALLOCATION_UNIT_SIZE - r : 0));
 }
 
-UINT WINAPI DokanLoop(PDOKAN_INSTANCE DokanInstance) {
+UINT WINAPI DokanLoop(PVOID DokanInstance_) {
+  PDOKAN_INSTANCE DokanInstance = (PDOKAN_INSTANCE) DokanInstance_;
   HANDLE device;
   char buffer[EVENT_CONTEXT_MAX_SIZE];
   BOOL status;
@@ -731,7 +732,11 @@ BOOL SendToDevice(LPCWSTR DeviceName, DWORD IoControlCode, PVOID InputBuffer,
   return TRUE;
 }
 
-BOOL WINAPI DllMain(HINSTANCE Instance, DWORD Reason, LPVOID Reserved) {
+#ifndef DOKAN_STATIC_BUILD
+  #define DokanDllMain DllMain
+#endif
+
+BOOL WINAPI DokanDllMain(HINSTANCE Instance, DWORD Reason, LPVOID Reserved) {
   UNREFERENCED_PARAMETER(Reserved);
   UNREFERENCED_PARAMETER(Instance);
 
@@ -763,6 +768,14 @@ BOOL WINAPI DllMain(HINSTANCE Instance, DWORD Reason, LPVOID Reserved) {
   }
   return TRUE;
 }
+
+#ifdef DOKAN_STATIC_BUILD
+void init_main()  __attribute__((constructor));
+void init_main()
+{
+  DokanDllMain(0, DLL_PROCESS_ATTACH, 0);
+}
+#endif
 
 void DOKANAPI DokanMapKernelToUserCreateFileFlags(
     ULONG FileAttributes, ULONG CreateOptions, ULONG CreateDisposition,

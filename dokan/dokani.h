@@ -24,6 +24,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #define WIN32_NO_STATUS
 #include <windows.h>
 #undef WIN32_NO_STATUS
+typedef DWORD NTSTATUS;
 #include <stdio.h>
 #include <stdlib.h>
 

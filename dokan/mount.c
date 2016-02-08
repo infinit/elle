@@ -19,7 +19,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "dokani.h"
-#include <Dbt.h>
+#include <dbt.h>
 #include <stdio.h>
 #include <windows.h>
 
