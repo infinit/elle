@@ -12,7 +12,7 @@
 
 #include <elle/windows/string_conversion.hh>
 #include <elle/finally.hh>
-
+#include <ntstatus.h>
 typedef DWORD NTSTATUS;
 
 #include <dokan/dokan.h>
@@ -21,8 +21,6 @@ typedef DWORD NTSTATUS;
 
 ELLE_LOG_COMPONENT("reactor.filesystem.dokanx");
 
-static const unsigned int STATUS_ACCESS_DENIED = 0xC0000022;
-static const unsigned int STATUS_SUCCESS = 0;
 namespace reactor
 {
   namespace filesystem
@@ -31,7 +29,33 @@ namespace reactor
     // Set to true if callbacks are called in the reactor thread.
     static bool dokan_sync = false;
 
-
+    static NTSTATUS to_ntstatus(int erc)
+    {
+      switch(erc)
+      {
+      case ENOENT:
+        return STATUS_OBJECT_NAME_NOT_FOUND;
+      case EPERM:
+      case EACCES:
+        return STATUS_ACCESS_DENIED;
+      case ENOSYS:
+        return STATUS_NOT_IMPLEMENTED;
+      case EEXIST:
+        return STATUS_OBJECT_NAME_EXISTS;
+      case EISDIR:
+        return STATUS_FILE_IS_A_DIRECTORY;
+      case ENOTDIR:
+        return STATUS_NOT_A_DIRECTORY;
+      case ENODATA:
+        return STATUS_OBJECT_NAME_NOT_FOUND;
+      case EINVAL:
+        return STATUS_INVALID_PARAMETER;
+      case ENOSPC:
+        return STATUS_ALLOTTED_SPACE_EXCEEDED;
+      default:
+        return STATUS_NOT_IMPLEMENTED;
+      }
+    }
     std::wstring from_utf8(std::string const& source);
     std::wstring from_utf8(std::string const& source)
     {
@@ -144,7 +168,23 @@ namespace reactor
       {
         FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
         std::string path = to_utf8(fileName);
-        auto p = fs->path(path);
+        std::shared_ptr<Path> p;
+        try
+        {
+          p = fs->path(path);
+        }
+        catch (Error const& e)
+        {
+          if (e.error_code() == ENOENT)
+            return STATUS_OBJECT_NAME_NOT_FOUND;
+          else if (e.error_code() == EPERM)
+            return STATUS_ACCESS_DENIED;
+          else
+          {
+            ELLE_TRACE("Unhandled specific code %s", e.error_code());
+            return STATUS_OBJECT_NAME_NOT_FOUND;
+          }
+        }
         mode_t mode = 0;
         if ((desiredAccess & GENERIC_READ) && (desiredAccess & GENERIC_WRITE))
           mode = O_RDWR;
@@ -224,7 +264,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error creating: %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }
       return 0;
       };
@@ -350,7 +390,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error reading: %s", e);
-        return e.error_code();
+        return to_ntstatus(e.error_code());
       }};
       if (dokan_sync)
         return work();
@@ -364,7 +404,7 @@ namespace reactor
                              LONGLONG Offset,
                              PDOKAN_FILE_INFO context)
     {
-      auto work = [&] {
+      auto work = [&]() -> NTSTATUS{
       try
       {
         FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
@@ -389,7 +429,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error writing  %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }};
       if (dokan_sync)
         return work();
@@ -417,7 +457,7 @@ namespace reactor
                                        LPBY_HANDLE_FILE_INFORMATION buffer,
                                        PDOKAN_FILE_INFO context)
     {
-      auto work = [&] {
+      auto work = [&]() -> NTSTATUS {
       try
       {
         FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
@@ -441,7 +481,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error GetFileInformation: %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }
       return 0;
       };
@@ -454,7 +494,7 @@ namespace reactor
                               PDOKAN_FILE_INFO context)
     {
       std::vector<WIN32_FIND_DATAW> res;
-      auto work = [&]
+      auto work = [&] () -> NTSTATUS
       {
         try
         {
@@ -510,7 +550,7 @@ namespace reactor
         catch (Error const& e)
         {
           ELLE_TRACE("Filesystem error FindFileing: %s", e);
-          return -e.error_code();
+          return to_ntstatus(e.error_code());
         }
         return 0;
       };
@@ -552,7 +592,7 @@ namespace reactor
         catch (Error const& e)
         {
           ELLE_TRACE("Filesystem error deleting  %s", e);
-          return -e.error_code();
+          return to_ntstatus(e.error_code());
         }
       };
       if (dokan_sync)
@@ -593,7 +633,7 @@ namespace reactor
         catch (Error const& e)
         {
           ELLE_TRACE("Filesystem error setfiletiming %s", e);
-          return -e.error_code();
+          return to_ntstatus(e.error_code());
         }
         return 0;
       };
@@ -629,7 +669,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error moving : %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }
       return 0;
       };
@@ -653,7 +693,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error truncating: %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }
       return 0;
       };
@@ -687,7 +727,7 @@ namespace reactor
                                      PULONGLONG totalFreeBytes,
                                      PDOKAN_FILE_INFO context)
     {
-      auto work = [&] {
+      auto work = [&]() -> NTSTATUS {
       try
       {
         FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
@@ -705,7 +745,7 @@ namespace reactor
       catch (Error const& e)
       {
         ELLE_TRACE("Filesystem error getting free space: %s", e);
-        return -e.error_code();
+        return to_ntstatus(e.error_code());
       }
       return 0;
       };
