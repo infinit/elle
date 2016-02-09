@@ -565,9 +565,14 @@ def configure(curl_config,
       'src/reactor/pthread.cc',
       )
   else:
+    dokan = drake.include('dokany', cxx_toolkit, cxx_config)
     sources += drake.nodes(
-      'src/reactor/filesystem_dummy.cc'
+      'src/reactor/fuse.hh',
+      'src/reactor/filesystem_dokanx.cc'
       )
+    local_cxx_config += dokan.config
+    dokan_lib = dokan.lib_static
+
   sources += drake.nodes(
     'src/reactor/http/Client.cc',
     'src/reactor/http/Client.hh',
@@ -645,6 +650,8 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend)
     lib_static_link_libs.append(backend_boost_context)
     lib_static_link_libs.append(backend)
+  if dokan_lib is not None:
+    lib_static_link_libs.append(dokan_lib)
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   lib_static = drake.cxx.StaticLib(
