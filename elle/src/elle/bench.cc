@@ -57,7 +57,7 @@ namespace elle
   }
   void Bench::show(std::ostream& os)
   {
-    os << _name << " AVG " << (_sum/_count) << " MIN " << _min << " MAX " << _max << " COUNT " << _count;
+    os << _sum << " " << _name << " AVG " << (_sum/_count) << " MIN " << _min << " MAX " << _max << " COUNT " << _count;
   }
 
   Bench::BenchScope::BenchScope(Bench& owner)
