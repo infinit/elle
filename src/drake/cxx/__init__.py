@@ -1523,6 +1523,11 @@ class StaticLibLinker(ShellCommand):
       Builder.__init__(self, objs, [lib])
 
     def execute(self):
+      # Our 'ar' command apends files to the target, so we must rm it first
+      try:
+        os.remove(str(self.__library.path()))
+      except:
+        pass
       return self.cmd('Archive %s' % self.__library, self.command)
 
     @property_memoize
