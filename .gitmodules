@@ -22,3 +22,6 @@
 [submodule "reactor/osxfuse"]
 	path = reactor/osxfuse
 	url = https://github.com/osxfuse/osxfuse
+[submodule "reactor/dokany"]
+	path = reactor/dokany
+	url = git@git.infinit.io:dokan
