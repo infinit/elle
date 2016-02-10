@@ -901,6 +901,28 @@ class GccToolkit(Toolkit):
             cmd.append(obj.path())
       cmd += ['-shared', '-o', exe.path()]
       self.__libraries_flags(cfg, to_link, cmd)
+      if cfg.whole_archive:
+        pre=list()
+        ar=list()
+        post=list()
+        arnames=list()
+        for e in cmd:
+          e = str(e)
+          if e[-2:] == '.a':
+            if e.split('/')[-1] not in arnames:
+              ar.append(e)
+              arnames.append(e.split('/')[-1])
+            else:
+              pass
+          else:
+            if len(ar):
+              post.append(e)
+            else:
+              pre.append(e)
+        cmd = pre
+        if self.os is drake.os.windows:
+          cmd.append('-Wl,--export-all-symbols')
+        cmd += ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
       return cmd
 
   def libname_static(self, cfg, path):
