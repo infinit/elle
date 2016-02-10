@@ -1073,6 +1073,17 @@ namespace elle
         std::unordered_map<std::string,
                            std::function<std::unique_ptr<T>(SerializerIn&)>>
         TypeMap;
+#ifdef INFINIT_WINDOWS
+# ifdef ELLE_SERIALIZATION_USE_DLL
+  __declspec(dllimport) static TypeMap& _map();
+# else
+  __declspec(dllexport) static TypeMap& _map()
+  {
+    static TypeMap res;
+    return res;
+  }
+# endif
+#else
       static
       TypeMap&
       _map()
@@ -1080,6 +1091,7 @@ namespace elle
         static TypeMap res;
         return res;
       }
+#endif
 
       static
       std::map<TypeInfo, std::string>&
