@@ -348,6 +348,7 @@ namespace reactor
       auto work = [&]()->NTSTATUS {
       try
       {
+        bool temp_handle = false;
         //FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
         //std::string path = to_utf8(fileName);
         //Path& p = fs->path(path);
@@ -373,6 +374,7 @@ namespace reactor
             ELLE_WARN("CreateFile workaround failed");
             return 0xC0000185; // STATUS_IO_DEVICE_ERROR
           }
+          temp_handle = true;
         }
         DWORD res = 0;
         if (NumberOfBytesToRead > 512 * 1024)
@@ -395,6 +397,12 @@ namespace reactor
                              NumberOfBytesToRead, Offset);
         if (NumberOfBytesRead)
           *NumberOfBytesRead = res;
+        if (temp_handle)
+        {
+          handle->close();
+          delete handle;
+          context->Contex = 0;
+        }
         return 0;
       }
       catch (Error const& e)
