@@ -1599,6 +1599,8 @@ def command(cmd, cwd = None, stdout = None, env = None):
   if cwd is not None:
     cwd = str(cwd)
   try:
+    if env:
+      env = {k: str(v) for k, v in env.items()}
     p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout, env = env)
     p.wait()
     return p.returncode == 0
@@ -1609,7 +1611,7 @@ def command(cmd, cwd = None, stdout = None, env = None):
 
 def command_flatten(command, env = None):
   if env is not None:
-    output_env = ('%s=%s' % (var, pipes.quote(value))
+    output_env = ('%s=%s' % (var, pipes.quote(str(value)))
                   for var, value in env.items())
   else:
     output_env = ()
@@ -3572,7 +3574,7 @@ class Runner(Builder):
                         for var, value in self.__env.items())
         else:
           output_env = ()
-        output_cmd = map(pipes.quote, self.command)
+        output_cmd = (pipes.quote(str(a)) for a in self.command)
         self.output(' '.join(chain(output_env, output_cmd)),
                     'Run %s' % self.__exe)
         env = dict(_OS.environ)
@@ -3580,7 +3582,7 @@ class Runner(Builder):
           env.update(self.__env)
           env = { k: str(v) for k, v in env.items() }
         try:
-          p = subprocess.Popen(self.command,
+          p = subprocess.Popen(map(str, self.command),
                                stdout = out,
                                stderr = err,
                                env = env)
