@@ -151,7 +151,9 @@ namespace reactor
       return strUTF8;
     }
 
-    static NTSTATUS CreateFile(
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS CreateFile(
         LPCWSTR fileName,
         PDOKAN_IO_SECURITY_CONTEXT sctx,
         DWORD  desiredAccess,
@@ -274,7 +276,9 @@ namespace reactor
         return le_scheduler->mt_run<NTSTATUS>("createfile", work);
     }
 
-    static void Cleanup(LPCWSTR fileName, PDOKAN_FILE_INFO context)
+    static
+    __attribute__((__stdcall__))
+    void Cleanup(LPCWSTR fileName, PDOKAN_FILE_INFO context)
     {
       ELLE_TRACE("cleanup");
       auto work =  [&] {
@@ -312,11 +316,15 @@ namespace reactor
       else
         le_scheduler->mt_run<void>("cleanup", work);
     }
-    static void CloseFile(LPCWSTR fileName, PDOKAN_FILE_INFO context)
+    static
+    __attribute__((__stdcall__))
+    void CloseFile(LPCWSTR fileName, PDOKAN_FILE_INFO context)
     {
       ELLE_TRACE("closefile");
       auto work = [&] {
+      std::string path = to_utf8(fileName);
       Handle* handle = (Handle*)context->Context;
+      ELLE_DEBUG("closefile %s, h=%x", path, handle);
       if (handle)
       {
         handle->close();
@@ -328,7 +336,9 @@ namespace reactor
       else
         le_scheduler->mt_run<void>("closefile", work);
     }
-    static NTSTATUS ReadFile(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS ReadFile(LPCWSTR fileName,
                              void*    Buffer,
                              DWORD    NumberOfBytesToRead,
                              LPDWORD  NumberOfBytesRead,
@@ -397,7 +407,9 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("readfile", work);
     }
-    static NTSTATUS WriteFile(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS WriteFile(LPCWSTR fileName,
                              const void*   Buffer,
                              DWORD    NumberOfBytesToRead,
                              LPDWORD  NumberOfBytesRead,
@@ -437,7 +449,8 @@ namespace reactor
         return le_scheduler->mt_run<NTSTATUS>("writefile", work);
     }
 
-    static FILETIME to_filetime(time_t t)
+    static
+    FILETIME to_filetime(time_t t)
     { // time_t time as the number of seconds since the Epoch, 1970-01-01 00:00:00 +0000 (UTC).
       // filetime: Contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC)
       // seriously? FIXME: compute the offset once and for all
@@ -453,7 +466,9 @@ namespace reactor
       fnow /= 10000000ULL;
       return fnow;
     }
-    static NTSTATUS GetFileInformation(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS GetFileInformation(LPCWSTR fileName,
                                        LPBY_HANDLE_FILE_INFORMATION buffer,
                                        PDOKAN_FILE_INFO context)
     {
@@ -490,7 +505,9 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("getinfo", work);
     }
-    static NTSTATUS FindFiles(LPCWSTR fileName, PFillFindData cb,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS FindFiles(LPCWSTR fileName, PFillFindData cb,
                               PDOKAN_FILE_INFO context)
     {
       std::vector<WIN32_FIND_DATAW> res;
@@ -566,11 +583,15 @@ namespace reactor
       return 0;
     }
 
-    static NTSTATUS DeleteFile(LPCWSTR fileName, PDOKAN_FILE_INFO context)
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS DeleteFile(LPCWSTR fileName, PDOKAN_FILE_INFO context)
     { // see doc, action happens elsewhere
       return 0;
     }
-    static NTSTATUS DeleteDirectory(LPCWSTR fileName, PDOKAN_FILE_INFO context)
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS DeleteDirectory(LPCWSTR fileName, PDOKAN_FILE_INFO context)
     { // see doc, action happens elsewhere
       ELLE_TRACE("DeleteDirectory");
       auto work = [&]() -> NTSTATUS {
@@ -600,16 +621,22 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("deletedirectory", work);
     }
-    static NTSTATUS FlushFileBuffers(LPCWSTR fileName, PDOKAN_FILE_INFO context)
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS FlushFileBuffers(LPCWSTR fileName, PDOKAN_FILE_INFO context)
     {
       return 0;
     }
-    static NTSTATUS SetFileAttributes(LPCWSTR fileName, DWORD attributes,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS SetFileAttributes(LPCWSTR fileName, DWORD attributes,
                                       PDOKAN_FILE_INFO context)
     {
       return 0;
     }
-    static NTSTATUS SetFileTime(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS SetFileTime(LPCWSTR fileName,
                                 CONST FILETIME* creationTime,
                                 CONST FILETIME* lastAccessTime,
                                 CONST FILETIME*  lastWriteTime,
@@ -642,7 +669,9 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("setfiletime", work);
     }
-    static NTSTATUS MoveFile(LPCWSTR fileName, LPCWSTR wtarget,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS MoveFile(LPCWSTR fileName, LPCWSTR wtarget,
                              BOOL replaceExisting,
                              PDOKAN_FILE_INFO context)
     {
@@ -678,7 +707,9 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("movefile", work);
     }
-    static NTSTATUS SetEndOfFile(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS SetEndOfFile(LPCWSTR fileName,
                                  LONGLONG length,
                                  PDOKAN_FILE_INFO context)
     {
@@ -702,27 +733,35 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("truncate", work);
     }
-    static NTSTATUS SetAllocationSize(LPCWSTR fileName,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS SetAllocationSize(LPCWSTR fileName,
                                       LONGLONG length,
                                       PDOKAN_FILE_INFO context)
     {
       return STATUS_ACCESS_DENIED;
     }
-    static NTSTATUS LockFile( LPCWSTR, // FileName
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS LockFile( LPCWSTR, // FileName
                              LONGLONG, // ByteOffset
                              LONGLONG, // Length
                              PDOKAN_FILE_INFO)
     {
       return STATUS_ACCESS_DENIED;
     }
-    static NTSTATUS UnlockFile( LPCWSTR, // FileName
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS UnlockFile( LPCWSTR, // FileName
                              LONGLONG, // ByteOffset
                              LONGLONG, // Length
                              PDOKAN_FILE_INFO)
     {
       return STATUS_ACCESS_DENIED;
     }
-    static NTSTATUS GetDiskFreeSpace(PULONGLONG freeBytes,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS GetDiskFreeSpace(PULONGLONG freeBytes,
                                      PULONGLONG totalBytes,
                                      PULONGLONG totalFreeBytes,
                                      PDOKAN_FILE_INFO context)
@@ -754,7 +793,9 @@ namespace reactor
       else
         return le_scheduler->mt_run<NTSTATUS>("freespace", work);
     }
-    static NTSTATUS GetVolumeInformation(LPWSTR VolumeNameBuffer,
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS GetVolumeInformation(LPWSTR VolumeNameBuffer,
                                          DWORD  VolumeNameSize,
                                          LPDWORD VolumeSerialNumber,
                                          LPDWORD MaximumComponentLength,
@@ -778,7 +819,9 @@ namespace reactor
                         FILE_UNICODE_ON_DISK;
       return 0;
     }
-    static NTSTATUS Unmount(PDOKAN_FILE_INFO	context)
+    static
+    __attribute__((__stdcall__))
+    NTSTATUS Unmount(PDOKAN_FILE_INFO	context)
     {
       ELLE_LOG("Filesystem umonut notification received.");
       return STATUS_SUCCESS;
