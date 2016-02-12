@@ -3541,6 +3541,9 @@ class Runner(Builder):
     self.__prefix = prefix or []
     self.stdout_reporting = Runner.Reporting.never
     self.stderr_reporting = Runner.Reporting.always
+    import drake.cxx
+    if isinstance(exe, drake.cxx.Executable):
+        self.__sources += exe.dynamic_libraries
     Builder.__init__(
       self,
       self.__sources,
