@@ -26,6 +26,14 @@ test_string()
 
 static
 void
+test_null_string()
+{
+  char const* str = nullptr;
+  BOOST_CHECK_EQUAL(elle::sprintf("empty: %s", str), "empty: ");
+}
+
+static
+void
 test_too_many()
 {
   BOOST_CHECK_THROW(elle::sprintf("%s", "foo", "bar"), std::exception);
@@ -74,6 +82,7 @@ ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(test_string));
+  suite.add(BOOST_TEST_CASE(test_null_string));
   suite.add(BOOST_TEST_CASE(scoped));
   suite.add(BOOST_TEST_CASE(test_too_few));
   suite.add(BOOST_TEST_CASE(test_empty));
