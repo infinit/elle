@@ -401,7 +401,7 @@ namespace reactor
         {
           handle->close();
           delete handle;
-          context->Contex = 0;
+          context->Context = 0;
         }
         return 0;
       }
