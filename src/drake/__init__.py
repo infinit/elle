@@ -3524,7 +3524,13 @@ class Runner(Builder):
                   values = ['always', 'never', 'on_failure']):
     pass
 
-  def __init__(self, exe, args = None, env = None):
+  def __init__(self,
+               exe,
+               args = None,
+               env = None,
+               prefix = None,
+               targets = None,
+  ):
     self.__args = args or list()
     self.__exe = exe
     self.__out = node('%s.out' % exe.name_relative)
@@ -3532,14 +3538,13 @@ class Runner(Builder):
     self.__status = node('%s.status' % exe.name_relative)
     self.__sources = [exe]
     self.__env = env
-    import drake.cxx
-    if isinstance(exe, drake.cxx.Executable):
-        self.__sources += exe.dynamic_libraries
+    self.__prefix = prefix or []
     self.stdout_reporting = Runner.Reporting.never
     self.stderr_reporting = Runner.Reporting.always
-    Builder.__init__(self,
-                     self.__sources,
-                     [self.__out, self.__err, self.__status])
+    Builder.__init__(
+      self,
+      self.__sources,
+      [self.__out, self.__err, self.__status] + (targets or []))
 
   @property
   def status(self):
@@ -3612,7 +3617,7 @@ class Runner(Builder):
     path = str(self.__exe.path())
     if not self.__exe.path().absolute():
       path = './%s' % path
-    return [str(path)] + list(map(str, self.__args))
+    return self.__prefix + [path] + list(map(str, self.__args))
 
   @property
   def executable(self):
