@@ -83,7 +83,7 @@ void
 test_construct()
 {
   infinit::cryptography::dsa::KeyPair keypair1 =
-    _test_generate(2048,
+    _test_generate(RUNNING_ON_VALGRIND ? 512 : 2048,
                    infinit::cryptography::Oneway::sha);
 
   // KeyPair copy.
