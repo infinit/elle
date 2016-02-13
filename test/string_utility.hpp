@@ -6,13 +6,13 @@
 #ifndef URI_TEST_STRING_UTILITY_INC
 #define URI_TEST_STRING_UTILITY_INC
 
-#include <boost/utility/string_ref.hpp>
+#include <network/uri/string_view.hpp>
 #include <cstring>
 
-namespace boost {
-inline bool operator==(const char *lhs, string_ref rhs) {
-  return string_ref(lhs, std::strlen(lhs)) == rhs;
+namespace network {
+inline bool operator==(const char *lhs, string_view rhs) {
+  return string_view(lhs) == rhs;
 }
-}  // namespace boost
+}  // namespace network
 
 #endif  // URI_TEST_STRING_UTILITY_INC

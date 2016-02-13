@@ -10,16 +10,16 @@
 
 /**
  * \file
- * \brief Contains the uri the class.
+ * \brief Contains the uri class.
  */
 
 #include <iterator>
 #include <algorithm>
 #include <functional>
-#include <boost/utility/string_ref.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/optional.hpp>
 #include <network/uri/config.hpp>
+#include <network/uri/string_view.hpp>
 #include <network/uri/uri_errors.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>
@@ -129,7 +129,7 @@ namespace network {
     /**
      * \brief A reference to the underlying string_type parts.
      */
-    typedef boost::string_ref string_view;
+    typedef network::string_view string_view;
 
    private:
 

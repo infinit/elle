@@ -250,72 +250,72 @@ namespace network {
   uri::const_iterator uri::end() const { return uri_.end(); }
 
   namespace {
-    inline boost::string_ref to_string_ref(
+    inline uri::string_view to_string_view(
         const uri::string_type &uri,
         detail::iterator_pair uri_part) {
       if (!uri_part.empty()) {
         const char *c_str = uri.c_str();
         const char *uri_part_begin = &(*(std::begin(uri_part)));
         std::advance(c_str, std::distance(c_str, uri_part_begin));
-        return boost::string_ref(
+        return uri::string_view(
             c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
       }
-      return boost::string_ref();
+      return uri::string_view();
     }
 
-    inline boost::string_ref to_string_ref(
-        boost::string_ref::const_iterator uri_part_begin,
-        boost::string_ref::const_iterator uri_part_end) {
-      return boost::string_ref(uri_part_begin,
+    inline uri::string_view to_string_view(
+        uri::string_view::const_iterator uri_part_begin,
+        uri::string_view::const_iterator uri_part_end) {
+      return uri::string_view(uri_part_begin,
                                std::distance(uri_part_begin, uri_part_end));
     }
 
   }  // namespace
 
-  boost::optional<boost::string_ref> uri::scheme() const {
-    return uri_parts_.scheme ? to_string_ref(uri_, *uri_parts_.scheme)
-                             : boost::optional<boost::string_ref>();
+  boost::optional<uri::string_view> uri::scheme() const {
+    return uri_parts_.scheme ? to_string_view(uri_, *uri_parts_.scheme)
+                             : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::user_info() const
+  boost::optional<uri::string_view> uri::user_info() const
       {
     return uri_parts_.hier_part.user_info
-               ? to_string_ref(uri_, *uri_parts_.hier_part.user_info)
-               : boost::optional<boost::string_ref>();
+               ? to_string_view(uri_, *uri_parts_.hier_part.user_info)
+               : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::host() const {
+  boost::optional<uri::string_view> uri::host() const {
     return uri_parts_.hier_part.host
-               ? to_string_ref(uri_, *uri_parts_.hier_part.host)
-               : boost::optional<boost::string_ref>();
+               ? to_string_view(uri_, *uri_parts_.hier_part.host)
+               : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::port() const {
+  boost::optional<uri::string_view> uri::port() const {
     return uri_parts_.hier_part.port
-               ? to_string_ref(uri_, *uri_parts_.hier_part.port)
-               : boost::optional<boost::string_ref>();
+               ? to_string_view(uri_, *uri_parts_.hier_part.port)
+               : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::path() const {
+  boost::optional<uri::string_view> uri::path() const {
     return uri_parts_.hier_part.path
-               ? to_string_ref(uri_, *uri_parts_.hier_part.path)
-               : boost::optional<boost::string_ref>();
+               ? to_string_view(uri_, *uri_parts_.hier_part.path)
+               : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::query() const {
-    return uri_parts_.query ? to_string_ref(uri_, *uri_parts_.query)
-                            : boost::optional<boost::string_ref>();
+  boost::optional<uri::string_view> uri::query() const {
+    return uri_parts_.query ? to_string_view(uri_, *uri_parts_.query)
+                            : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::fragment() const {
-    return uri_parts_.fragment ? to_string_ref(uri_, *uri_parts_.fragment)
-                               : boost::optional<boost::string_ref>();
+  boost::optional<uri::string_view> uri::fragment() const {
+    return uri_parts_.fragment ? to_string_view(uri_, *uri_parts_.fragment)
+                               : boost::optional<uri::string_view>();
   }
 
-  boost::optional<boost::string_ref> uri::authority() const {
+  boost::optional<uri::string_view> uri::authority() const {
     auto host = this->host();
     if (!host) {
-      return boost::optional<boost::string_ref>();
+      return boost::optional<uri::string_view>();
     }
 
     auto first = std::begin(*host), last = std::end(*host);
@@ -343,7 +343,7 @@ namespace network {
       }
     }
 
-    return to_string_ref(first, last);
+    return to_string_view(first, last);
   }
 
   std::string uri::string() const { return uri_; }
@@ -403,7 +403,7 @@ namespace network {
 
       if (parts.hier_part.path) {
         uri::string_type path = detail::normalize_path_segments(
-            to_string_ref(normalized, *parts.hier_part.path));
+            to_string_view(normalized, *parts.hier_part.path));
 
         // put the normalized path back into the uri
         boost::optional<string_type> query, fragment;
@@ -490,7 +490,7 @@ namespace network {
     }
 
     inline boost::optional<uri::string_type> make_arg(
-        boost::optional<boost::string_ref> ref) {
+        boost::optional<uri::string_view> ref) {
       if (ref) {
         return uri::string_type(std::begin(*ref), std::end(*ref));
       }
