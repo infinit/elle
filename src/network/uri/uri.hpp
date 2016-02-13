@@ -20,6 +20,7 @@
 #include <boost/optional.hpp>
 #include <network/uri/config.hpp>
 #include <network/uri/string_view.hpp>
+#include <network/uri/optional.hpp>
 #include <network/uri/uri_errors.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>
@@ -241,68 +242,68 @@ namespace network {
 
     /**
      * \brief Returns the URI scheme.
-     * \return The scheme, if it exists, or boost::none.
+     * \return The scheme, if it exists, or nullopt.
      */
-    boost::optional<string_view> scheme() const;
+    optional<string_view> scheme() const;
 
     /**
      * \brief Returns the URI user info.
-     * \return The user info, if it exists, or boost::none.
+     * \return The user info, if it exists, or nullopt.
      */
-    boost::optional<string_view> user_info() const;
+    optional<string_view> user_info() const;
 
     /**
      * \brief Returns the URI host.
-     * \return The host, if it exists, or boost::none.
+     * \return The host, if it exists, or nullopt.
      */
-    boost::optional<string_view> host() const;
+    optional<string_view> host() const;
 
     /**
      * \brief Returns the URI port.
-     * \return The port, if it exists, or boost::none.
+     * \return The port, if it exists, or nullopt.
      */
-    boost::optional<string_view> port() const;
+    optional<string_view> port() const;
 
     /**
      * \brief Returns the URI port as an integer.
-     * \return The port, if it exists, or boost::none.
+     * \return The port, if it exists, or nullopt.
      */
     template <typename IntT>
-    boost::optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const {
+    optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const {
       if (auto p = port()) {
         try {
           return std::stoi(string_type(std::begin(*p), std::end(*p)));
         }
         catch (std::exception &) {
-          return boost::optional<IntT>();
+          return optional<IntT>();
         }
       }
-      return boost::optional<IntT>();
+      return optional<IntT>();
     }
 
     /**
      * \brief Returns the URI path.
-     * \return The path, if it exists, or boost::none.
+     * \return The path, if it exists, or nullopt.
      */
-    boost::optional<string_view> path() const;
+    optional<string_view> path() const;
 
     /**
      * \brief Returns the URI query.
-     * \return The query, if it exists, or boost::none.
+     * \return The query, if it exists, or nullopt.
      */
-    boost::optional<string_view> query() const;
+    optional<string_view> query() const;
 
     /**
      * \brief Returns the URI fragment.
-     * \return The fragment, if it exists, or boost::none.
+     * \return The fragment, if it exists, or nullopt.
      */
-    boost::optional<string_view> fragment() const;
+    optional<string_view> fragment() const;
 
     /**
      * \brief Returns the URI authority.
-     * \return The authority, if it exists, or boost::none.
+     * \return The authority, if it exists, or nullopt.
      */
-    boost::optional<string_view> authority() const;
+    optional<string_view> authority() const;
 
 #if !defined(_MSC_VER)
     /**

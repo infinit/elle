@@ -272,50 +272,50 @@ namespace network {
 
   }  // namespace
 
-  boost::optional<uri::string_view> uri::scheme() const {
+  optional<uri::string_view> uri::scheme() const {
     return uri_parts_.scheme ? to_string_view(uri_, *uri_parts_.scheme)
-                             : boost::optional<uri::string_view>();
+                             : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::user_info() const
+  optional<uri::string_view> uri::user_info() const
       {
     return uri_parts_.hier_part.user_info
                ? to_string_view(uri_, *uri_parts_.hier_part.user_info)
-               : boost::optional<uri::string_view>();
+               : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::host() const {
+  optional<uri::string_view> uri::host() const {
     return uri_parts_.hier_part.host
                ? to_string_view(uri_, *uri_parts_.hier_part.host)
-               : boost::optional<uri::string_view>();
+               : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::port() const {
+  optional<uri::string_view> uri::port() const {
     return uri_parts_.hier_part.port
                ? to_string_view(uri_, *uri_parts_.hier_part.port)
-               : boost::optional<uri::string_view>();
+               : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::path() const {
+  optional<uri::string_view> uri::path() const {
     return uri_parts_.hier_part.path
                ? to_string_view(uri_, *uri_parts_.hier_part.path)
-               : boost::optional<uri::string_view>();
+               : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::query() const {
+  optional<uri::string_view> uri::query() const {
     return uri_parts_.query ? to_string_view(uri_, *uri_parts_.query)
-                            : boost::optional<uri::string_view>();
+                            : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::fragment() const {
+  optional<uri::string_view> uri::fragment() const {
     return uri_parts_.fragment ? to_string_view(uri_, *uri_parts_.fragment)
-                               : boost::optional<uri::string_view>();
+                               : optional<uri::string_view>();
   }
 
-  boost::optional<uri::string_view> uri::authority() const {
+  optional<uri::string_view> uri::authority() const {
     auto host = this->host();
     if (!host) {
-      return boost::optional<uri::string_view>();
+      return optional<uri::string_view>();
     }
 
     auto first = std::begin(*host), last = std::end(*host);
@@ -490,7 +490,7 @@ namespace network {
     }
 
     inline boost::optional<uri::string_type> make_arg(
-        boost::optional<uri::string_view> ref) {
+        optional<uri::string_view> ref) {
       if (ref) {
         return uri::string_type(std::begin(*ref), std::end(*ref));
       }
@@ -531,7 +531,7 @@ namespace network {
           query = detail::make_arg(base.query());
         }
       } else {
-        if (this->path().get().front() == '/') {
+        if (this->path().value().front() == '/') {
           path = detail::remove_dot_segments(*this->path());
         } else {
           path = detail::merge_paths(base, *this);

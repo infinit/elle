@@ -64,7 +64,7 @@ namespace network {
       if (!base.path() || base.path()->empty()) {
         path = "/";
       } else {
-        const auto& base_path = base.path().get();
+        const auto& base_path = base.path().value();
         auto last_slash = boost::find_last(base_path, "/");
         path.append(std::begin(base_path), last_slash.end());
       }
