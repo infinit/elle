@@ -54,8 +54,7 @@ namespace network {
     }
 
     uri::string_type remove_dot_segments(uri::string_view path) {
-      return remove_dot_segments(
-          uri::string_type(std::begin(path), std::end(path)));
+      return remove_dot_segments(path.to_string());
     }
 
     // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
@@ -69,8 +68,7 @@ namespace network {
         path.append(std::begin(base_path), last_slash.end());
       }
       if (reference.path()) {
-        path.append(uri::string_type(std::begin(*reference.path()),
-                                     std::end(*reference.path())));
+        path.append(reference.path()->to_string());
       }
       return remove_dot_segments(std::move(path));
     }

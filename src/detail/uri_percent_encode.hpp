@@ -9,21 +9,21 @@
 #include <string>
 #include <vector>
 #include <cctype>
-#include <boost/optional.hpp>
+#include <network/uri/optional.hpp>
 #include <network/uri/detail/decode.hpp>
 
 namespace network {
   namespace detail {
 
     inline
-    boost::optional<char> percent_encode(std::string s) {
+    optional<char> percent_encode(std::string s) {
       try {
 	std::vector<char> output;
 	detail::decode_char(std::begin(s), std::back_inserter(output));
 	return output[0];
       }
       catch (percent_decoding_error &) {
-	return boost::optional<char>();
+	return optional<char>();
       }
     }
 

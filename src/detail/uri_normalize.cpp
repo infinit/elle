@@ -5,28 +5,27 @@
 
 #include <iterator>
 #include <vector>
-#include <boost/optional.hpp>
+#include <algorithm>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/range/as_literal.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/range/algorithm/for_each.hpp>
 #include "uri_normalize.hpp"
 #include "uri_percent_encode.hpp"
+#include "range.hpp"
 
 namespace network {
   namespace detail {
     uri::string_type normalize_path(uri::string_view path,
                                     uri_comparison_level level) {
-      uri::string_type normalized(std::begin(path), std::end(path));
+      uri::string_type normalized(path.to_string());
 
       if (uri_comparison_level::syntax_based == level) {
         // case normalization
-        boost::for_each(normalized, percent_encoded_to_upper());
+        detail::for_each(normalized, percent_encoded_to_upper());
 
         // % encoding normalization
         normalized.erase(detail::decode_encoded_unreserved_chars(std::begin(normalized),
@@ -55,8 +54,8 @@ namespace network {
 
         // remove double dot segments
         std::vector<uri::string_type> normalized_segments;
-        boost::for_each(path_segments,
-                        [&normalized_segments](const uri::string_type & s) {
+        detail::for_each(path_segments,
+                         [&normalized_segments](const uri::string_type & s) {
           if (s == "..") {
             // in a valid path, the minimum number of segments is 1
             if (normalized_segments.size() <= 1) {
@@ -70,7 +69,7 @@ namespace network {
         });
 
         // remove adjacent slashes
-        boost::optional<uri::string_type> prev_segment;
+        optional<uri::string_type> prev_segment;
         boost::remove_erase_if(
             normalized_segments,
             [&prev_segment](const uri::string_type & segment) {

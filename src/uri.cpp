@@ -12,21 +12,17 @@
 #include <vector>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/find.hpp>
-#include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/classification.hpp>
-#include <boost/range/as_literal.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/range/algorithm/for_each.hpp>
 #include "network/uri/uri.hpp"
 #include "detail/uri_parse.hpp"
 #include "detail/uri_percent_encode.hpp"
 #include "detail/uri_normalize.hpp"
 #include "detail/uri_resolve.hpp"
+#include "detail/range.hpp"
 
 namespace network {
   namespace {
@@ -102,6 +98,13 @@ namespace network {
         const detail::uri_parts &existing_parts) {
       advance_parts(std::begin(range), std::end(range), parts, existing_parts);
     }
+
+  template <class Rng>
+  inline
+  void to_lower(Rng& rng) {
+    detail::transform(rng, std::begin(rng),
+                      [](char ch) { return std::tolower(ch); });
+  }
   }  // namespace
 
   void uri::initialize(boost::optional<string_type> scheme,
@@ -257,8 +260,7 @@ namespace network {
         const char *c_str = uri.c_str();
         const char *uri_part_begin = &(*(std::begin(uri_part)));
         std::advance(c_str, std::distance(c_str, uri_part_begin));
-        return uri::string_view(
-            c_str, std::distance(std::begin(uri_part), std::end(uri_part)));
+        return uri::string_view(c_str, detail::distance(uri_part));
       }
       return uri::string_view();
     }
@@ -379,15 +381,15 @@ namespace network {
       // All alphabetic characters in the scheme and host are
       // lower-case...
       if (parts.scheme) {
-        boost::to_lower(*parts.scheme);
+        to_lower(*parts.scheme);
       }
 
       if (parts.hier_part.host) {
-        boost::to_lower(*parts.hier_part.host);
+        to_lower(*parts.hier_part.host);
       }
 
       // ...except when used in percent encoding
-      boost::for_each(normalized, detail::percent_encoded_to_upper());
+      detail::for_each(normalized, detail::percent_encoded_to_upper());
 
       // parts are invalidated here
       // there's got to be a better way of doing this that doesn't
@@ -466,13 +468,11 @@ namespace network {
 
     boost::optional<string_type> query, fragment;
     if (other.query()) {
-      query = uri::string_type(std::begin(*other.query()),
-                               std::end(*other.query()));
+      query = other.query()->to_string();
     }
 
     if (other.fragment()) {
-      fragment = uri::string_type(std::begin(*other.fragment()),
-                                  std::end(*other.fragment()));
+      fragment = other.fragment()->to_string();
     }
 
     network::uri result;
@@ -484,15 +484,10 @@ namespace network {
   }
 
   namespace detail {
-    template <typename T>
-    inline boost::optional<uri::string_type> make_arg(T &&arg) {
-      return boost::optional<uri::string_type>(std::forward<T>(arg));
-    }
-
     inline boost::optional<uri::string_type> make_arg(
-        optional<uri::string_view> ref) {
-      if (ref) {
-        return uri::string_type(std::begin(*ref), std::end(*ref));
+        optional<uri::string_view> view) {
+      if (view) {
+        return view->to_string();
       }
       return boost::optional<uri::string_type>();
     }

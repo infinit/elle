@@ -3,14 +3,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/classification.hpp>
+#include <cctype>
 #include "network/uri.hpp"
 #include "detail/uri_parse_authority.hpp"
+#include "detail/range.hpp"
 
 namespace network {
 uri_builder::uri_builder(const network::uri &base_uri) {
@@ -49,7 +45,9 @@ network::uri uri_builder::uri() const { return network::uri(*this); }
 
 void uri_builder::set_scheme(string_type scheme) {
   // validate scheme is valid and normalize
-  scheme_ = boost::to_lower_copy(scheme);
+  scheme_ = scheme;
+  detail::transform(*scheme_, std::begin(*scheme_),
+                    [] (char ch) { return std::tolower(ch); });
 }
 
 void uri_builder::set_user_info(string_type user_info) {
@@ -67,8 +65,8 @@ void uri_builder::set_host(string_type host) {
   host_ = string_type();
   auto end = network::uri::encode_host(std::begin(host), std::end(host),
                                        std::back_inserter(*host_));
-  std::transform(std::begin(*host_), std::end(*host_), std::begin(*host_),
-                 [](string_type::value_type c) { return std::tolower(c); });
+  detail::transform(*host_, std::begin(*host_),
+                    [](char ch) { return std::tolower(ch); });
 }
 
 void uri_builder::set_port(string_type port) {
