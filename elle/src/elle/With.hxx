@@ -125,20 +125,29 @@ namespace elle
     {
       ReturnHolder<Value> res(action, *this->_value);
       succeeded = true;
+      /* Compiling with mingw gcc 4.8 and 5.3 with O2 chokes on the
+      *  traces: it calls log::Send's dtor with this = 0;
+      */
+#ifndef INFINIT_WINDOWS
       ELLE_TRACE("%s: destruct", *this)
+#endif
         this->_value->~T();
       return res.value();
     }
     catch (...)
     {
+#ifndef INFINIT_WINDOWS
       ELLE_TRACE("%s: caught exception with succeeded=%s: %s",
                  *this, succeeded, elle::exception_string());
+#endif
       if (succeeded)
         throw;
       auto e = std::current_exception();
       try
       {
+#ifndef INFINIT_WINDOWS
         ELLE_TRACE("%s: destruct", *this)
+#endif
           this->_value->~T();
       }
       catch (...)
@@ -147,8 +156,10 @@ namespace elle
         ELLE_ERR("overriden by: %s", elle::exception_string());
         throw;
       }
+#ifndef INFINIT_WINDOWS
       ELLE_TRACE("%s: rethrowing exception '%s'",
                  *this, elle::exception_string(e));
+#endif
       /* Do not use 'throw;' here! ~T might have yielded and current_exception
        * might not be coroutine-safe (observed on gcc 4.8.0 linux)
        */
