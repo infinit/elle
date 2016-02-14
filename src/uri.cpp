@@ -107,13 +107,13 @@ namespace network {
   }
   }  // namespace
 
-  void uri::initialize(boost::optional<string_type> scheme,
-                       boost::optional<string_type> user_info,
-                       boost::optional<string_type> host,
-                       boost::optional<string_type> port,
-                       boost::optional<string_type> path,
-                       boost::optional<string_type> query,
-                       boost::optional<string_type> fragment) {
+  void uri::initialize(optional<string_type> scheme,
+                       optional<string_type> user_info,
+                       optional<string_type> host,
+                       optional<string_type> port,
+                       optional<string_type> path,
+                       optional<string_type> query,
+                       optional<string_type> fragment) {
     if (scheme) {
       uri_.append(*scheme);
     }
@@ -234,8 +234,6 @@ namespace network {
     other.uri_.clear();
     other.uri_parts_ = detail::uri_parts();
   }
-
-  uri::~uri() noexcept {}
 
   uri &uri::operator=(uri other) {
     other.swap(*this);
@@ -407,7 +405,7 @@ namespace network {
             to_string_view(normalized, *parts.hier_part.path));
 
         // put the normalized path back into the uri
-        boost::optional<string_type> query, fragment;
+        optional<string_type> query, fragment;
         if (parts.query) {
           query = string_type(std::begin(*parts.query), std::end(*parts.query));
         }
@@ -465,7 +463,7 @@ namespace network {
          other_path = detail::normalize_path(
              *other.path(), uri_comparison_level::syntax_based);
 
-    boost::optional<string_type> query, fragment;
+    optional<string_type> query, fragment;
     if (other.query()) {
       query = other.query()->to_string();
     }
@@ -476,19 +474,19 @@ namespace network {
 
     network::uri result;
     result.initialize(
-        boost::optional<string_type>(), boost::optional<string_type>(),
-        boost::optional<string_type>(), boost::optional<string_type>(),
+        optional<string_type>(), optional<string_type>(),
+        optional<string_type>(), optional<string_type>(),
         other_path, query, fragment);
     return std::move(result);
   }
 
   namespace detail {
-    inline boost::optional<uri::string_type> make_arg(
+    inline optional<uri::string_type> make_arg(
         optional<uri::string_view> view) {
       if (view) {
         return view->to_string();
       }
-      return boost::optional<uri::string_type>();
+      return nullopt;
     }
   }  // namespace detail
 
@@ -506,7 +504,7 @@ namespace network {
       return *this;
     }
 
-    boost::optional<uri::string_type> user_info, host, port, path, query;
+    optional<uri::string_type> user_info, host, port, path, query;
     //const uri &base = *this;
 
     if (this->authority()) {

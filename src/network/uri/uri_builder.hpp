@@ -12,6 +12,7 @@
 #include <utility>
 #include <type_traits>
 #include <network/uri/config.hpp>
+#include <network/uri/optional.hpp>
 
 #ifdef NETWORK_URI_MSVC
 #pragma warning(push)
@@ -250,7 +251,7 @@ class uri_builder {
   void set_query(string_type query);
   void set_fragment(string_type fragment);
 
-  boost::optional<string_type> scheme_, user_info_, host_, port_, path_, query_,
+  optional<string_type> scheme_, user_info_, host_, port_, path_, query_,
       fragment_;
 };
 }  // namespace network

@@ -57,7 +57,7 @@ void uri_builder::set_user_info(string_type user_info) {
 }
 
 uri_builder &uri_builder::clear_user_info() {
-  user_info_ = boost::none;
+  user_info_ = network::nullopt;
   return *this;
 }
 
@@ -76,7 +76,7 @@ void uri_builder::set_port(string_type port) {
 }
 
 uri_builder &uri_builder::clear_port() {
-  port_ = boost::none;
+  port_ = network::nullopt;
   return *this;
 }
 
@@ -104,7 +104,7 @@ void uri_builder::set_path(string_type path) {
 }
 
 uri_builder &uri_builder::clear_path() {
-  path_ = boost::none;
+  path_ = network::nullopt;
   return *this;
 }
 
@@ -115,7 +115,7 @@ void uri_builder::set_query(string_type query) {
 }
 
 uri_builder &uri_builder::clear_query() {
-  query_ = boost::none;
+  query_ = network::nullopt;
   return *this;
 }
 
@@ -126,7 +126,7 @@ void uri_builder::set_fragment(string_type fragment) {
 }
 
 uri_builder &uri_builder::clear_fragment() {
-  fragment_ = boost::none;
+  fragment_ = network::nullopt;
   return *this;
 }
 }  // namespace network

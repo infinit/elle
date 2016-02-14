@@ -203,7 +203,7 @@ namespace network {
     /**
      * \brief Destructor.
      */
-    ~uri() noexcept;
+    ~uri() noexcept = default;
 
     /**
      * \brief Assignment operator.
@@ -519,13 +519,13 @@ namespace network {
 
     bool initialize(const string_type &uri);
 
-    void initialize(boost::optional<string_type> scheme,
-                    boost::optional<string_type> user_info,
-                    boost::optional<string_type> host,
-                    boost::optional<string_type> port,
-                    boost::optional<string_type> path,
-                    boost::optional<string_type> query,
-                    boost::optional<string_type> fragment);
+    void initialize(optional<string_type> scheme,
+                    optional<string_type> user_info,
+                    optional<string_type> host,
+                    optional<string_type> port,
+                    optional<string_type> path,
+                    optional<string_type> query,
+                    optional<string_type> fragment);
 
     string_type uri_;
     detail::uri_parts uri_parts_;
