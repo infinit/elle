@@ -10,7 +10,6 @@
 #include <functional>
 #include <unordered_map>
 #include <vector>
-#include <boost/algorithm/string/trim.hpp>
 #include "network/uri/uri.hpp"
 #include "detail/uri_parse.hpp"
 #include "detail/uri_percent_encode.hpp"
@@ -521,7 +520,7 @@ int uri::compare(const uri &other, uri_comparison_level level) const noexcept {
 }
 
 bool uri::initialize(const string_type &uri) {
-  uri_ = boost::trim_copy(uri);
+  uri_ = detail::trim_copy(uri);
   if (!uri_.empty()) {
     bool is_valid = detail::parse(uri_, uri_parts_);
     return is_valid;
