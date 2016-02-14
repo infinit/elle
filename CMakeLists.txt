@@ -56,7 +56,7 @@ add_subdirectory(src)
 # Testing
 if (CMAKE_PROJECT_NAME STREQUAL "Uri" OR CPP-NETLIB_BUILD_TESTS)
   enable_testing()
-  find_package(GTest REQUIRED)
+  add_subdirectory(deps/googletest)
   add_subdirectory(test)
 endif()
 
