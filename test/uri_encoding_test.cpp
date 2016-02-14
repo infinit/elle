@@ -1,4 +1,4 @@
-// Copyright (c) Glyn Matthews 2011, 2012, 2013, 2014.
+// Copyright (c) Glyn Matthews 2011-2016.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -136,7 +136,7 @@ TEST(uri_encoding_test, decode_iterator_error_7) {
 	       network::percent_decoding_error);
 }
 
-#if defined(_MSVC)
+#if defined(NETWORK_URI_MSVC)
 TEST(uri_encoding_test, encode_euro) {
   const std::string unencoded(u8"€");
   std::string instance;

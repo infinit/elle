@@ -9,7 +9,7 @@
 #define NETWORK_URI_CONFIG_INC
 
 #ifdef _MSC_VER
-#define NETWORK_MSVC _MSC_VER
+#define NETWORK_URI_MSVC _MSC_VER
 #endif  // _MSC_VER
 
 #endif // NETWORK_URI_CONFIG_INC

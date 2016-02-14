@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <network/uri/config.hpp>
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #pragma warning(push)
 #pragma warning(disable : 4251 4231 4660)
 #endif
@@ -255,7 +255,7 @@ class uri_builder {
 };
 }  // namespace network
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #pragma warning(pop)
 #endif
 

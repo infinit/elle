@@ -14,7 +14,7 @@
 #include <system_error>
 #include <network/uri/config.hpp>
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #  pragma warning(push)
 #  pragma warning(disable : 4251 4231 4660)
    // Disable C4275 too because it's "essentially noise and can be silenced"
@@ -115,7 +115,7 @@ namespace network {
   };
 } // namespace network
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #pragma warning(pop)
 #endif
 

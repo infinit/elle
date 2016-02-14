@@ -26,7 +26,7 @@
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #  pragma warning(push)
 #  pragma warning(disable : 4251 4231 4660)
 #endif
@@ -296,7 +296,7 @@ namespace network {
      */
     optional<string_view> authority() const;
 
-#if !defined(_MSC_VER)
+#if !defined(NETWORK_URI_MSVC)
     /**
      * \brief Returns the URI as a std::basic_string object.
      * \return A URI string.
@@ -307,15 +307,6 @@ namespace network {
                                                               Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
-
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    template <typename CharT, class CharTraits = std::char_traits<CharT>,
-              class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
-                                                           Alloc()) const {
-      return to_string<CharT, CharTraits, Alloc>(alloc);
-    }
-#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #else
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     template <typename CharT, class CharTraits, class Alloc>
@@ -323,15 +314,8 @@ namespace network {
                                                               Alloc()) const {
       return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
     }
-
-    template <typename CharT, class CharTraits = std::char_traits<CharT>,
-              class Alloc = std::allocator<CharT> >
-    std::basic_string<CharT, CharTraits, Alloc> string(const Alloc &alloc =
-                                                           Alloc()) const {
-      return to_string<CharT, CharTraits, Alloc>(alloc);
-    }
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-#endif // !/defined(_MSC_VER)
+#endif // !/defined(NETWORK_URI_MSVC)
 
     /**
      * \brief Returns the URI as a std::string object.
@@ -393,10 +377,6 @@ namespace network {
      * \throws std::bad_alloc
      */
     uri make_relative(const uri &base) const;
-
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-    uri make_reference(const uri &base) const { return make_relative(base); }
-#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
     /**
      * \brief Resolves a relative reference against the given URI.
@@ -653,7 +633,7 @@ namespace std {
 }  // namespace std
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
-#ifdef NETWORK_MSVC
+#ifdef NETWORK_URI_MSVC
 #pragma warning(pop)
 #endif
 

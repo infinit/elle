@@ -16,6 +16,7 @@ set(
   uri_resolve_test
   uri_builder_test
   uri_stream_test
+  optional_test
   )
 
 foreach (test ${TESTS})

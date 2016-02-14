@@ -8,11 +8,12 @@
 #ifndef NETWORK_URI_URI_IO_INC
 #define NETWORK_URI_URI_IO_INC
 
+#include <network/uri/config.hpp>
 #include <network/uri/uri.hpp>
 #include <iosfwd>
 
 namespace network {
-#if !defined(_MSC_VER)
+#if !defined(NETWORK_URI_MSVC)
 template <typename CharT, class CharTraits = std::char_traits<CharT> >
 std::basic_ostream<CharT, CharTraits> &operator<<(
     std::basic_ostream<CharT, CharTraits> &os, const uri &uri_) {
@@ -49,7 +50,7 @@ inline std::wistream &operator>>(std::wistream &is, uri &uri_) {
   uri_ = uri(uri_string);
   return is;
 }
-#endif  // !defined(_MSC_VER)
+#endif  // !defined(NETWORK_URI_MSVC)
 
 }  // namespace network
 
