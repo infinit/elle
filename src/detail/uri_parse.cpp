@@ -5,6 +5,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+#include <cstdint>
 #include <boost/config/warning_disable.hpp>
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
@@ -178,7 +179,7 @@ namespace network {
         // dec-octet = DIGIT / %x31-39 DIGIT / "1" 2DIGIT / "2" %x30-34 DIGIT /
         // "25" %x30-35
         dec_octet %= !(qi::lit('0') >> qi::digit) >>
-                     qi::raw[qi::uint_parser<boost::uint8_t, 10, 1, 3>()];
+                     qi::raw[qi::uint_parser<std::uint8_t, 10, 1, 3>()];
 
         // IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
         ipv4address %=

@@ -167,7 +167,7 @@ namespace network {
       uri_.append(*fragment);
     }
 
-    detail::iterator_pair::iterator it = std::begin(uri_);
+    auto it = std::begin(uri_);
     if (scheme) {
       uri_parts_.scheme =
           copy_range(std::begin(*scheme), std::end(*scheme), it);
@@ -418,7 +418,7 @@ namespace network {
                                  std::end(*parts.fragment));
         }
 
-        detail::iterator_pair::iterator path_begin = std::begin(normalized);
+        auto path_begin = std::begin(normalized);
         std::advance(path_begin,
                      std::distance<detail::iterator_pair::iterator>(
                          path_begin, std::begin(*parts.hier_part.path)));
@@ -566,6 +566,7 @@ namespace network {
 
   bool uri::initialize(const string_type &uri) {
     uri_ = boost::trim_copy(uri);
+
     if (!uri_.empty()) {
       auto first = std::begin(uri_), last = std::end(uri_);
       bool is_valid = detail::parse(first, last, uri_parts_);

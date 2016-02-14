@@ -18,12 +18,12 @@ inline void for_each(Rng& rng, Pred&& pred) {
 }
 
 template <class Rng, class Iter, class Pred>
-inline void transform(const Rng& rng, Iter out, Pred&& pred) {
+inline void transform(Rng& rng, Iter out, Pred&& pred) {
   std::transform(std::begin(rng), std::end(rng), out, pred);
 }
 
 template <class Rng>
-inline typename Rng::size_type distance(const Rng& rng) {
+inline typename Rng::difference_type distance(Rng& rng) {
   return std::distance(std::begin(rng), std::end(rng));
 }
 
