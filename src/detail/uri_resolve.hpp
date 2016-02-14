@@ -8,11 +8,6 @@
 #define NETWORK_DETAIL_RESOLVE_INC
 
 #include <network/uri/uri.hpp>
-#include <boost/algorithm/string/find.hpp>
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/classification.hpp>
 
 namespace network {
 namespace detail {

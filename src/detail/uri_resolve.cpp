@@ -5,6 +5,11 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include "uri_resolve.hpp"
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 namespace network {
 namespace detail {

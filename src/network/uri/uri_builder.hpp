@@ -11,8 +11,9 @@
 #include <cstdint>
 #include <utility>
 #include <type_traits>
+#include <network/uri/config.hpp>
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #pragma warning(push)
 #pragma warning(disable : 4251 4231 4660)
 #endif
@@ -58,7 +59,7 @@ struct path_converter {
  * \brief A class that allows complex uri objects to be constructed.
  * \sa uri
  */
-class NETWORK_URI_DECL uri_builder {
+class uri_builder {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   friend class uri;
 #endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -254,7 +255,7 @@ class NETWORK_URI_DECL uri_builder {
 };
 }  // namespace network
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #pragma warning(pop)
 #endif
 

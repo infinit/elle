@@ -14,7 +14,7 @@
 #include <system_error>
 #include <network/uri/config.hpp>
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #  pragma warning(push)
 #  pragma warning(disable : 4251 4231 4660)
    // Disable C4275 too because it's "essentially noise and can be silenced"
@@ -47,9 +47,9 @@ namespace network {
     conversion_failed,
   };
 
-  NETWORK_URI_DECL const std::error_category &uri_category();
+  const std::error_category &uri_category();
 
-  NETWORK_URI_DECL std::error_code make_error_code(uri_error e);
+  std::error_code make_error_code(uri_error e);
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
   /**
@@ -57,7 +57,7 @@ namespace network {
    * \brief An exception thrown by the \c uri constructor when a URI
    *        cannot be parsed.
    */
-  class NETWORK_URI_DECL uri_syntax_error : public std::system_error {
+  class uri_syntax_error : public std::system_error {
 
   public:
 
@@ -78,7 +78,7 @@ namespace network {
    * \brief An exception thrown when the \c uri_builder cannot build a
    *        valid URI.
    */
-  class NETWORK_URI_DECL uri_builder_error : public std::system_error {
+  class uri_builder_error : public std::system_error {
 
   public:
 
@@ -98,7 +98,7 @@ namespace network {
    * \class percent_decoding_error uri.hpp network/uri.hpp
    * \brief An exception thrown when during percent decoding.
    */
-  class NETWORK_URI_DECL percent_decoding_error : public std::system_error {
+  class percent_decoding_error : public std::system_error {
 
   public:
 
@@ -115,7 +115,7 @@ namespace network {
   };
 } // namespace network
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #pragma warning(pop)
 #endif
 

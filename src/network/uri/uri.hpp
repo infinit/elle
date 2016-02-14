@@ -26,7 +26,7 @@
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #  pragma warning(push)
 #  pragma warning(disable : 4251 4231 4660)
 #endif
@@ -100,7 +100,7 @@ namespace network {
    * assert("/" == *instance.path());
    * \endcode
    */
-  class NETWORK_URI_DECL uri {
+  class uri {
 
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
     friend class uri_builder;
@@ -577,17 +577,17 @@ namespace network {
   /**
    * \brief Swaps one uri object with another.
    */
-  NETWORK_URI_DECL void swap(uri &lhs, uri &rhs) noexcept;
+  void swap(uri &lhs, uri &rhs) noexcept;
 
    /**
    * \brief Equality operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator==(const uri &lhs, const uri &rhs) noexcept;
+  bool operator==(const uri &lhs, const uri &rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator==(const uri &lhs, const char *rhs) noexcept;
+  bool operator==(const uri &lhs, const char *rhs) noexcept;
 
   /**
    * \brief Equality operator for the \c uri.
@@ -606,7 +606,7 @@ namespace network {
   /**
    * \brief Less-than operator for the \c uri.
    */
-  NETWORK_URI_DECL bool operator<(const uri &lhs, const uri &rhs) noexcept ;
+  bool operator<(const uri &lhs, const uri &rhs) noexcept ;
 
   /**
    * \brief Greater-than operator for the \c uri.
@@ -653,7 +653,7 @@ namespace std {
 }  // namespace std
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
-#ifdef BOOST_MSVC
+#ifdef NETWORK_MSVC
 #pragma warning(pop)
 #endif
 
