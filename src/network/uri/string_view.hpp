@@ -80,38 +80,37 @@ class basic_string_view {
   constexpr bool empty() const noexcept { return size_ == 0; }
 
   constexpr const_reference operator[](size_type pos) const {
-    assert(pos < size_);
     return data_[pos];
   }
 
-  constexpr const_reference at(size_type pos) const {
+  const_reference at(size_type pos) const {
     if (pos >= size_) {
       throw std::out_of_range("Index out of range.");
     }
     return data_[pos];
   }
-  constexpr const_reference front() const { return *begin(); }
+  const_reference front() const { return *begin(); }
 
-  constexpr const_reference back() const {
+  const_reference back() const {
     auto last = (end()) - 1;
     return *last;
   }
 
   constexpr const_pointer data() const noexcept { return data_; }
 
-  constexpr void clear() noexcept {
+  void clear() noexcept {
     data_ = nullptr;
     size_ = 0;
   }
 
-  constexpr void remove_prefix(size_type n) {
+  void remove_prefix(size_type n) {
     data_ += n;
     size_ -= n;
   }
 
-  constexpr void remove_suffix(size_type n) { size_ -= n; }
+  void remove_suffix(size_type n) { size_ -= n; }
 
-  constexpr void swap(basic_string_view& s) noexcept {
+  void swap(basic_string_view& s) noexcept {
     std::swap(data_, s.data_);
     std::swap(size_, s.size_);
   }

@@ -31,7 +31,7 @@ constexpr in_place_t in_place{};
 
 struct nullopt_t {
   struct init {};
-  nullopt_t(init) {}
+  constexpr nullopt_t(init) {}
 };
 const nullopt_t nullopt{nullopt_t::init{}};
 
@@ -243,7 +243,7 @@ class optional : optional_base<T> {
   }
 
   template <class U>
-  constexpr T value_or(U&& other) const & {
+  T value_or(U&& other) const & {
     if (!base_type::init_) {
       return std::forward(other);
     }
@@ -267,7 +267,7 @@ class optional : optional_base<T> {
 };
 
 template <class T>
-constexpr bool operator==(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator==(const optional<T>& lhs, const optional<T>& rhs) {
   if (bool(lhs) != bool(rhs)) {
     return false;
   } else if (!bool(lhs)) {
@@ -278,12 +278,12 @@ constexpr bool operator==(const optional<T>& lhs, const optional<T>& rhs) {
 }
 
 template <class T>
-constexpr bool operator!=(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator!=(const optional<T>& lhs, const optional<T>& rhs) {
   return !(lhs == rhs);
 }
 
 template <class T>
-constexpr bool operator<(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator<(const optional<T>& lhs, const optional<T>& rhs) {
   if (!rhs) {
     return false;
   } else if (!lhs) {
@@ -294,137 +294,137 @@ constexpr bool operator<(const optional<T>& lhs, const optional<T>& rhs) {
 }
 
 template <class T>
-constexpr bool operator>(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator>(const optional<T>& lhs, const optional<T>& rhs) {
   return rhs < lhs;
 }
 
 template <class T>
-constexpr bool operator<=(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator<=(const optional<T>& lhs, const optional<T>& rhs) {
   return !(rhs < lhs);
 }
 
 template <class T>
-constexpr bool operator>=(const optional<T>& lhs, const optional<T>& rhs) {
+bool operator>=(const optional<T>& lhs, const optional<T>& rhs) {
   return !(lhs < rhs);
 }
 
 template <class T>
-constexpr bool operator==(const optional<T>& x, nullopt_t) noexcept {
+bool operator==(const optional<T>& x, nullopt_t) noexcept {
   return !x;
 }
 
 template <class T>
-constexpr bool operator==(nullopt_t, const optional<T>& x) noexcept {
+bool operator==(nullopt_t, const optional<T>& x) noexcept {
   return !x;
 }
 
 template <class T>
-constexpr bool operator!=(const optional<T>& x, nullopt_t) noexcept {
+bool operator!=(const optional<T>& x, nullopt_t) noexcept {
   return bool(x);
 }
 
 template <class T>
-constexpr bool operator!=(nullopt_t, const optional<T>& x) noexcept {
+bool operator!=(nullopt_t, const optional<T>& x) noexcept {
   return bool(x);
 }
 
 template <class T>
-constexpr bool operator<(const optional<T>& x, nullopt_t) noexcept {
+bool operator<(const optional<T>& x, nullopt_t) noexcept {
   return false;
 }
 
 template <class T>
-constexpr bool operator<(nullopt_t, const optional<T>& x) noexcept {
+bool operator<(nullopt_t, const optional<T>& x) noexcept {
   return bool(x);
 }
 
 template <class T>
-constexpr bool operator<=(const optional<T>& x, nullopt_t) noexcept {
+bool operator<=(const optional<T>& x, nullopt_t) noexcept {
   return !x;
 }
 
 template <class T>
-constexpr bool operator<=(nullopt_t, const optional<T>& x) noexcept {
+bool operator<=(nullopt_t, const optional<T>& x) noexcept {
   return true;
 }
 
 template <class T>
-constexpr bool operator>(const optional<T>& x, nullopt_t) noexcept {
+bool operator>(const optional<T>& x, nullopt_t) noexcept {
   return bool(x);
 }
 
 template <class T>
-constexpr bool operator>(nullopt_t, const optional<T>& x) noexcept {
+bool operator>(nullopt_t, const optional<T>& x) noexcept {
   return false;
 }
 
 template <class T>
-constexpr bool operator>=(const optional<T>& x, nullopt_t) noexcept {
+bool operator>=(const optional<T>& x, nullopt_t) noexcept {
   return true;
 }
 
 template <class T>
-constexpr bool operator>=(nullopt_t, const optional<T>& x) noexcept {
+bool operator>=(nullopt_t, const optional<T>& x) noexcept {
   return !x;
 }
 
 template <class T>
-constexpr bool operator==(const optional<T>& x, const T& v) {
+bool operator==(const optional<T>& x, const T& v) {
   return bool(x) ? *x == v : false;
 }
 
 template <class T>
-constexpr bool operator==(const T& v, const optional<T>& x) {
+bool operator==(const T& v, const optional<T>& x) {
   return bool(x) ? v == *x : false;
 }
 
 template <class T>
-constexpr bool operator!=(const optional<T>& x, const T& v) {
+bool operator!=(const optional<T>& x, const T& v) {
   return bool(x) ? !(*x == v) : true;
 }
 
 template <class T>
-constexpr bool operator!=(const T& v, const optional<T>& x) {
+bool operator!=(const T& v, const optional<T>& x) {
   return bool(x) ? !(v == *x) : true;
 }
 
 template <class T>
-constexpr bool operator<(const optional<T>& x, const T& v) {
+bool operator<(const optional<T>& x, const T& v) {
   return bool(x) ? *x < v : true;
 }
 
 template <class T>
-constexpr bool operator<(const T& v, const optional<T>& x) {
+bool operator<(const T& v, const optional<T>& x) {
   return bool(x) ? v < *x : false;
 }
 
 template <class T>
-constexpr bool operator>(const optional<T>& x, const T& v) {
+bool operator>(const optional<T>& x, const T& v) {
   return bool(x) ? *x < v : true;
 }
 
 template <class T>
-constexpr bool operator>(const T& v, const optional<T>& x) {
+bool operator>(const T& v, const optional<T>& x) {
   return bool(x) ? v < *x : false;
 }
 
 template <class T>
-constexpr bool operator>=(const optional<T>& x, const T& v) {
+bool operator>=(const optional<T>& x, const T& v) {
   return !(x < v);
 }
 
 template <class T>
-constexpr bool operator>=(const T& v, const optional<T>& x) {
+bool operator>=(const T& v, const optional<T>& x) {
   return !(v < x);
 }
 
 template <class T>
-constexpr bool operator<=(const optional<T>& x, const T& v) {
+bool operator<=(const optional<T>& x, const T& v) {
   return !(x > v);
 }
 
 template <class T>
-constexpr bool operator<=(const T& v, const optional<T>& x) {
+bool operator<=(const T& v, const optional<T>& x) {
   return !(v > x);
 }
 

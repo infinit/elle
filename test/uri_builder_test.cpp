@@ -557,46 +557,6 @@ TEST(builder_test, build_uri_with_hash_in_path) {
   ASSERT_EQ("http://www.example.com/%23/", builder.uri());
 }
 
-#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
-TEST(builder_test, DISABLED_build_uri_from_filesystem_path) {
-  network::uri_builder builder;
-  builder
-    .scheme("file")
-    .path(boost::filesystem::path("/path/to/a/file.html"))
-    ;
-  ASSERT_EQ("file:///path/to/a/file.html", builder.uri());
-}
-
-TEST(builder_test, build_http_uri_from_filesystem_path) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("www.example.com")
-    .path(boost::filesystem::path("/path/to/a/file.html"))
-    ;
-  ASSERT_EQ("http://www.example.com/path/to/a/file.html", builder.uri());
-}
-
-TEST(builder_test, DISABLED_build_uri_from_filesystem_path_with_encoded_chars) {
-  network::uri_builder builder;
-  builder
-    .scheme("file")
-    .path(boost::filesystem::path("/path/to/a/file with spaces.html"))
-    ;
-  ASSERT_EQ("file:///path/to/a/file%20with%20spaces.html", builder.uri());
-}
-
-TEST(builder_test, DISABLED_build_uri_with_encoded_unreserved_characters) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("www.example.com")
-    .path("/%7Eglynos/")
-    ;
-  ASSERT_EQ("http://www.example.com/~glynos/", builder.uri());
-}
-#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM) && NETWORK_URI_HOST_CONVERTER_BOOST_FILESYSTEM == 1
-
 TEST(builder_test, simple_port) {
   network::uri_builder builder;
   builder
@@ -607,30 +567,6 @@ TEST(builder_test, simple_port) {
     ;
   ASSERT_EQ("http://www.example.com:8000/", builder.uri());
 }
-
-#if defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
-TEST(builder_test, build_uri_with_ipv4_address) {
-  using namespace boost::asio::ip;
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host(address_v4::loopback())
-    .path("/")
-    ;
-  ASSERT_EQ("http://127.0.0.1/", builder.uri());
-}
-
-TEST(builder_test, build_uri_with_ipv6_address) {
-  using namespace boost::asio::ip;
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host(address_v6::loopback())
-    .path("/")
-    ;
-  ASSERT_EQ("http://[::1]/", builder.uri());
-}
-#endif // defined(NETWORK_URI_HOST_CONVERTER_BOOST_ASIO) && NETWORK_URI_HOST_CONVERTER_BOOST_ASIO == 1
 
 TEST(builder_test, build_uri_with_query_item) {
   network::uri_builder builder;

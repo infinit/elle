@@ -1,4 +1,4 @@
-# Copyright (c) Glyn Matthews 2012, 2013.
+# Copyright (c) Glyn Matthews 2012-2016.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -19,7 +19,7 @@ else()
 endif()
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.53 REQUIRED system filesystem)
+find_package(Boost 1.53 REQUIRED)
 
 include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 

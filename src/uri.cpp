@@ -399,8 +399,7 @@ namespace network {
                        std::end(normalized));
 
       // need to parse the parts again as the underlying string has changed
-      bool is_valid =
-          detail::parse(std::begin(normalized), std::end(normalized), parts);
+      bool is_valid = detail::parse(normalized, parts);
       assert(is_valid);
 
       if (parts.hier_part.path) {
@@ -568,8 +567,7 @@ namespace network {
     uri_ = boost::trim_copy(uri);
 
     if (!uri_.empty()) {
-      auto first = std::begin(uri_), last = std::end(uri_);
-      bool is_valid = detail::parse(first, last, uri_parts_);
+      bool is_valid = detail::parse(uri_, uri_parts_);
       return is_valid;
     }
     return true;

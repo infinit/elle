@@ -1,5 +1,5 @@
 // Copyright 2009-2010 Jeroen Habraken.
-// Copyright 2009-2013 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2016 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -114,33 +114,24 @@ namespace network {
     typedef std::string string_type;
 
     /**
-     * \brief The URI iterator type.
+     * \brief A reference to the underlying string_type parts.
      */
-    typedef string_type::const_iterator iterator;
+    typedef network::string_view string_view;
+
     /**
      * \brief The URI const_iterator type.
      */
     typedef string_type::const_iterator const_iterator;
 
     /**
+     * \brief The URI iterator type.
+     */
+    typedef const_iterator iterator;
+
+    /**
      * \brief The URI value_type.
      */
     typedef std::iterator_traits<iterator>::value_type value_type;
-
-    /**
-     * \brief A reference to the underlying string_type parts.
-     */
-    typedef network::string_view string_view;
-
-   private:
-
-    void initialize(boost::optional<string_type> scheme,
-                    boost::optional<string_type> user_info,
-                    boost::optional<string_type> host,
-                    boost::optional<string_type> port,
-                    boost::optional<string_type> path,
-                    boost::optional<string_type> query,
-                    boost::optional<string_type> fragment);
 
    public:
 
@@ -547,6 +538,14 @@ namespace network {
    private:
 
     bool initialize(const string_type &uri);
+
+    void initialize(boost::optional<string_type> scheme,
+                    boost::optional<string_type> user_info,
+                    boost::optional<string_type> host,
+                    boost::optional<string_type> port,
+                    boost::optional<string_type> path,
+                    boost::optional<string_type> query,
+                    boost::optional<string_type> fragment);
 
     string_type uri_;
     detail::uri_parts uri_parts_;

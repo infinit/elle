@@ -1,4 +1,4 @@
-// Copyright 2013 Glyn Matthews.
+// Copyright 2016 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -28,7 +28,7 @@ inline typename Rng::difference_type distance(Rng& rng) {
 }
 
 template <class Rng1, class Rng2>
-inline bool equal(const Rng1& rng1, const Rng2 &rng2) {
+inline bool equal(const Rng1& rng1, const Rng2& rng2) {
   return std::equal(std::begin(rng1), std::end(rng1), std::begin(rng2));
 }
 }  // namespace detail
