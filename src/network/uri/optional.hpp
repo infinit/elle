@@ -162,6 +162,7 @@ class optional : optional_base<T> {
   optional& operator=(nullopt_t) noexcept {
     ptr()->T::~T();
     base_type::init_ = false;
+    return *this;
   }
 
   optional& operator=(const optional& other) {
@@ -199,13 +200,13 @@ class optional : optional_base<T> {
   void swap(optional& other) noexcept {
     if (bool(*this)  && !other) {
       ::new(static_cast<void*>(other.ptr())) T(std::move(**this));
-      std::swap(base_type::init_, other.base_type::init_);
       ptr()->T::~T();
+      std::swap(base_type::init_, other.base_type::init_);
     }
     else if (!(*this) && bool(other)) {
       ::new(static_cast<void*>(ptr())) T(std::move(*other));
-      std::swap(base_type::init_, other.init_);
       other.ptr()->T::~T();
+      std::swap(base_type::init_, other.init_);
     }
     else if (bool(*this) && bool(other)) {
       std::swap(**this, *other);

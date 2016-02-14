@@ -27,3 +27,113 @@ TEST(optional_test, empty_optional_string_with_nullopt) {
   network::optional<std::string> opt{network::nullopt};
   ASSERT_FALSE(opt);
 }
+
+TEST(optional_test, value_constructor) {
+  network::optional<int> opt{42};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, value_constructor_string) {
+  network::optional<std::string> opt{"banana"};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
+
+TEST(optional_test, rvalue_ref_constructor) {
+  int value = 42;
+  network::optional<int> opt{std::move(42)};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, rvalue_ref_constructor_string) {
+  std::string value = "banana";
+  network::optional<std::string> opt{std::move(value)};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
+
+TEST(optional_test, nullopt_copy_constructor) {
+  network::optional<int> other{network::nullopt};
+  network::optional<int> opt{other};
+  ASSERT_FALSE(opt);
+}
+
+TEST(optional_test, nullopt_move_constructor) {
+  network::optional<int> other{network::nullopt};
+  network::optional<int> opt{std::move(other)};
+  ASSERT_FALSE(opt);
+}
+
+TEST(optional_test, value_copy_constructor) {
+  network::optional<int> other{42};
+  network::optional<int> opt{other};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, value_move_constructor) {
+  network::optional<int> other{42};
+  network::optional<int> opt{std::move(other)};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, value_copy_constructor_string) {
+  network::optional<std::string> other{"banana"};
+  network::optional<std::string> opt{other};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
+
+TEST(optional_test, value_move_constructor_string) {
+  network::optional<std::string> other{"banana"};
+  network::optional<std::string> opt{std::move(other)};
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
+
+TEST(optional_test, nullopt_assignment) {
+  network::optional<int> opt(42);
+  opt = network::nullopt;
+  ASSERT_FALSE(opt);
+}
+
+TEST(optional_test, nullopt_assignment_string) {
+  network::optional<std::string> opt("banana");
+  opt = network::nullopt;
+  ASSERT_FALSE(opt);
+}
+
+TEST(optional_test, value_copy_assigment) {
+  network::optional<int> opt{};
+  network::optional<int> other{42};
+  opt = other;
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, value_move_assignment) {
+  network::optional<int> opt{};
+  network::optional<int> other{42};
+  opt = std::move(other);
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, 42);
+}
+
+TEST(optional_test, value_copy_assignment_string) {
+  network::optional<std::string> opt{};
+  network::optional<std::string> other{"banana"};
+  opt = other;
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
+
+TEST(optional_test, value_move_assignment_string) {
+  network::optional<std::string> opt{};
+  network::optional<std::string> other{"banana"};
+  opt = std::move(other);
+  ASSERT_TRUE(opt);
+  ASSERT_EQ(*opt, "banana");
+}
