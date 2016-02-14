@@ -31,6 +31,13 @@ template <class Rng1, class Rng2>
 inline bool equal(const Rng1& rng1, const Rng2& rng2) {
   return std::equal(std::begin(rng1), std::end(rng1), std::begin(rng2));
 }
+
+template <class Rng, class Pred>
+void remove_erase_if(Rng& rng, Pred&& pred) {
+  auto first = std::begin(rng), last = std::end(rng);
+  auto it = std::remove_if(first, last, pred);
+  rng.erase(it, last);
+}
 }  // namespace detail
 }  // namespace network
 

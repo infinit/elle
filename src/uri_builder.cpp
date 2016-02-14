@@ -6,7 +6,7 @@
 #include <cctype>
 #include "network/uri.hpp"
 #include "detail/uri_parse_authority.hpp"
-#include "detail/range.hpp"
+#include "detail/algorithm.hpp"
 
 namespace network {
 uri_builder::uri_builder(const network::uri &base_uri) {

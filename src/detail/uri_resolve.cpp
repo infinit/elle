@@ -9,7 +9,6 @@
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/classification.hpp>
 
 namespace network {
 namespace detail {
@@ -27,35 +26,34 @@ void remove_last_segment(Range& path) {
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
 uri::string_type remove_dot_segments(uri::string_type input) {
-  using namespace boost::algorithm;
-  using std::begin;
+  uri::string_type result;
 
-  uri::string_type output;
   while (!input.empty()) {
-    if (starts_with(input, "../")) {
-      erase_head(input, 3);
-    } else if (starts_with(input, "./")) {
-      erase_head(input, 2);
-    } else if (starts_with(input, "/./")) {
-      replace_head(input, 3, "/");
+    if (boost::starts_with(input, "../")) {
+      boost::erase_head(input, 3);
+    } else if (boost::starts_with(input, "./")) {
+      boost::erase_head(input, 2);
+    } else if (boost::starts_with(input, "/./")) {
+      boost::replace_head(input, 3, "/");
     } else if (input == "/.") {
-      replace_head(input, 2, "/");
-    } else if (starts_with(input, "/../")) {
-      erase_head(input, 3);
-      remove_last_segment(output);
-    } else if (starts_with(input, "/..")) {
-      replace_head(input, 3, "/");
-      remove_last_segment(output);
-    } else if (all(input, is_any_of("."))) {
+      boost::replace_head(input, 2, "/");
+    } else if (boost::starts_with(input, "/../")) {
+      boost::erase_head(input, 3);
+      remove_last_segment(result);
+    } else if (boost::starts_with(input, "/..")) {
+      boost::replace_head(input, 3, "/");
+      remove_last_segment(result);
+    } else if (boost::algorithm::all(input, [](char ch) { return ch == '.'; })) {
       input.clear();
-    } else {
-      int n = input.front() == '/' ? 1 : 0;
-      auto slash = find_nth(input, "/", n);
-      output.append(begin(input), begin(slash));
-      input.erase(begin(input), begin(slash));
+    }
+    else {
+      int n = (input.front() == '/')? 1 : 0;
+      auto slash = boost::find_nth(input, "/", n);
+      result.append(std::begin(input), std::begin(slash));
+      input.erase(std::begin(input), std::begin(slash));
     }
   }
-  return output;
+  return result;
 }
 
 uri::string_type remove_dot_segments(uri::string_view path) {
@@ -64,18 +62,19 @@ uri::string_type remove_dot_segments(uri::string_view path) {
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
 uri::string_type merge_paths(const uri& base, const uri& reference) {
-  uri::string_type path;
+  uri::string_type result;
+
   if (!base.path() || base.path()->empty()) {
-    path = "/";
+    result = "/";
   } else {
     const auto& base_path = base.path().value();
     auto last_slash = boost::find_last(base_path, "/");
-    path.append(std::begin(base_path), last_slash.end());
+    result.append(std::begin(base_path), std::end(last_slash));
   }
   if (reference.path()) {
-    path.append(reference.path()->to_string());
+    result.append(reference.path()->to_string());
   }
-  return remove_dot_segments(std::move(path));
+  return remove_dot_segments(std::move(result));
 }
 }  // namespace detail
 }  // namespace network
