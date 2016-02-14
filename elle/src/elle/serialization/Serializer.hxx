@@ -1076,10 +1076,17 @@ namespace elle
 #ifdef INFINIT_WINDOWS
 # ifdef ELLE_SERIALIZATION_USE_DLL
   __declspec(dllimport) static TypeMap& _map();
+  __declspec(dllimport) static std::map<TypeInfo, std::string>&_rmap();
 # else
   __declspec(dllexport) static TypeMap& _map()
   {
     static TypeMap res;
+    return res;
+  }
+  __declspec(dllexport) static std::map<TypeInfo, std::string>&
+  _rmap()
+  {
+    static std::map<TypeInfo, std::string> res;
     return res;
   }
 # endif
@@ -1091,7 +1098,6 @@ namespace elle
         static TypeMap res;
         return res;
       }
-#endif
 
       static
       std::map<TypeInfo, std::string>&
@@ -1100,6 +1106,7 @@ namespace elle
         static std::map<TypeInfo, std::string> res;
         return res;
       }
+#endif
     };
 
     /*--------.
