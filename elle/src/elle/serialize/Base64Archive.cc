@@ -49,7 +49,7 @@ void Base64Archive<ArchiveMode::Output>::SaveBinary(void const* data, size_t siz
 {
   if (size == 0)
     return;
-  ELLE_ASSERT_NEQ(data, nullptr);
+  ELLE_ASSERT(data != nullptr);
 
   size_t i = 0;
   unsigned char const* ptr = static_cast<unsigned char const*>(data);
