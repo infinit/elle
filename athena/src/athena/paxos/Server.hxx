@@ -514,8 +514,6 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::VersionState::serialize(
       elle::serialization::Serializer& s, elle::Version const& v)
     {
-      ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE("%s: serializing with v=%s", *this, v);
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
       if (v >= elle::Version(0, 1, 0))
