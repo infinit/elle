@@ -18,7 +18,10 @@ namespace elle
     username()
     {
 #ifdef INFINIT_WINDOWS
-      ELLE_ABORT("implement the windows version, minions!");
+      char buffer[1024];
+      DWORD sz = 1024;
+      GetUserName(buffer, &sz);
+      return buffer;
 #else
       {
         struct passwd* pw = ::getpwuid(::getuid());
