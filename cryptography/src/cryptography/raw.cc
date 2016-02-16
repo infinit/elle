@@ -140,7 +140,7 @@ namespace infinit
                             "signature: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT_NEQ(ctx, nullptr);
+          ELLE_ASSERT(ctx != nullptr);
           if (prolog)
             prolog(&context, ctx);
 
@@ -234,7 +234,7 @@ namespace infinit
                             "verify: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          ELLE_ASSERT_NEQ(ctx, nullptr);
+          ELLE_ASSERT(ctx != nullptr);
           if (prolog)
             prolog(&context, ctx);
 
@@ -441,7 +441,7 @@ namespace infinit
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          ELLE_ASSERT_NEQ(context, nullptr);
+          ELLE_ASSERT(context != nullptr);
           ELLE_ASSERT_GTE(static_cast<uint32_t>(
                             ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
                           input.size() * 8);
