@@ -18,6 +18,12 @@ namespace elle
     operator ==(TypeInfo const& rhs) const;
     bool
     operator <(TypeInfo const& rhs) const;
+    struct
+    RegisterAbbrevation
+    {
+    public:
+      RegisterAbbrevation(std::string const& full, std::string const& abbr);
+    };
 
   private:
     TypeInfo(std::type_info const* info);

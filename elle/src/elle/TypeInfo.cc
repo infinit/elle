@@ -1,5 +1,7 @@
 #include <elle/TypeInfo.hh>
 
+#include <algorithm>
+
 #include <elle/Backtrace.hh>
 
 
@@ -37,10 +39,42 @@ namespace elle
     : _info(*info)
   {}
 
+  static
+  std::vector<std::pair<std::string, std::string>>&
+  _abbreviations()
+  {
+    static std::vector<std::pair<std::string, std::string> > abbreviations;
+    return abbreviations;
+  }
+
+
+  TypeInfo::RegisterAbbrevation::RegisterAbbrevation(std::string const& full,
+                                                     std::string const& abbr)
+  {
+    _abbreviations().emplace_back(full, abbr);
+    std::sort(_abbreviations().begin(), _abbreviations().end(),
+              [] (std::pair<std::string, std::string> const& lhs,
+                  std::pair<std::string, std::string> const& rhs)
+              {
+                return lhs.first.size() > rhs.first.size();
+              });
+  }
+
   std::ostream&
   operator << (std::ostream& s, TypeInfo const& ti)
   {
-    s << ti.name();
+    bool fixed = s.flags() & std::ios::fixed;
+    auto name = ti.name();
+    if (fixed)
+    {
+      for (auto const& abbr: _abbreviations())
+      {
+        auto pos = name.find(abbr.first);
+        if (pos != std::string::npos)
+          name.replace(pos, abbr.first.size(), abbr.second);
+      }
+    }
+    s << name;
     return s;
   }
 }
