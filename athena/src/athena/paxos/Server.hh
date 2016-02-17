@@ -57,7 +57,7 @@ namespace athena
         operator <<(std::ostream& output,
                     typename Server<T, Version, ClientId>::Proposal const& p)
         {
-          output << p.version << ":" << p.round << ":" << p.sender;
+          elle::fprintf(output, "%f:%f:%f", p.version, p.round, p.sender);
           return output;
         }
       };
