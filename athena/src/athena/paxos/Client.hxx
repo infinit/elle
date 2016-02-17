@@ -128,11 +128,11 @@ namespace athena
               try
               {
                 ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
-                                 *this, proposal, *peer);
+                                 *this, proposal, peer);
                 if (auto p = peer->propose(q, proposal))
                   if (!previous || previous->proposal < p->proposal)
                   {
-                    ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
+                    ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
                                      *this, p->proposal, p->value);
                     previous = std::move(p);
                   }
@@ -203,8 +203,7 @@ namespace athena
           else
             this->_check_headcount(q, reached);
         }
-        ELLE_TRACE("%s: chose %s", *this,
-                   previous ? previous->value : value);
+        ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
         ELLE_DEBUG("%s: send confirmation", *this)
         {
           auto reached = 0;
