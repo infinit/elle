@@ -211,57 +211,6 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::
       _register_partial_state_serialization;
 
-    /*--------.
-    | Printer |
-    `--------*/
-
-    template <typename T>
-    struct Printer
-    {
-      Printer(T const& o_)
-        : o(o_)
-      {}
-
-      T const& o;
-    };
-
-    template <typename T>
-    Printer<T>
-    printer(T const& o)
-    {
-      return Printer<T>(o);
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<std::shared_ptr<T>> const& p)
-    {
-      if (p.o)
-        output << *p.o;
-      else
-        output << "nullptr";
-      return output;
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<std::unique_ptr<T>> const& p)
-    {
-      if (p.o)
-        output << *p.o;
-      else
-        output << "nullptr";
-      return output;
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<T> const& p)
-    {
-      output << p.o;
-      return output;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -394,7 +343,7 @@ namespace athena
       Quorum q, Proposal p, elle::Option<T, Quorum> value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
+      ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, value);
       _Details::check_quorum(*this, q, p.version);
       {
         auto highest = this->highest_accepted();
