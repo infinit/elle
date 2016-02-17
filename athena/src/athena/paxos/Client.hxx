@@ -132,6 +132,7 @@ namespace athena
                 if (auto p = peer->propose(q, proposal))
                   if (!previous || previous->proposal < p->proposal)
                   {
+                    // FIXME: what if previous was accepted and p is not ?
                     ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
                                      *this, p->proposal, p->value);
                     previous = std::move(p);
@@ -144,6 +145,8 @@ namespace athena
                            *this, peer, e.what());
               }
             });
+          if (previous && previous->confirmed)
+            return previous;
           this->_check_headcount(q, reached);
           if (previous)
           {
