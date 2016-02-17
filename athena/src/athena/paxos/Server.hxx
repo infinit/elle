@@ -253,13 +253,13 @@ namespace athena
       static
       void
       check_quorum(Server<T, Version, CId, SId>& self,
-                    Quorum q, Version const& v)
+                   Quorum q, boost::optional<Version const&> v)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         // FIXME: suboptimal
         auto const* expected = &self._quorum_initial;
         for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
-          if (it->proposal.version < v &&
+          if ((!v || it->proposal.version < *v) &&
               it->accepted &&
               it->accepted->value.template is<Quorum>())
           {
@@ -409,13 +409,15 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get", *this);
-      return _Details::_highest(
+      _Details::check_quorum(*this, q, {});
+      auto res = _Details::_highest(
         this->_state,
         [] (VersionState const& v)
         {
           return v.confirmed && v.accepted &&
             v.accepted->value.template is<T>();
         });
+      return res;
     }
 
     template <
