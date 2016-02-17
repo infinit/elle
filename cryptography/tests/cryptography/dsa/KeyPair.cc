@@ -46,7 +46,7 @@ test_represent()
   // These generate base64-based representations which can be used in
   // other tests.
 
-  _test_represent(1024,
+  _test_represent(RUNNING_ON_VALGRIND ? 512 : 1024,
                   infinit::cryptography::Oneway::sha1);
 }
 
@@ -70,7 +70,7 @@ static
 void
 test_generate()
 {
-  _test_generate(4096,
+  _test_generate(RUNNING_ON_VALGRIND ? 512 : 2048,
                  infinit::cryptography::Oneway::sha256);
 }
 
@@ -158,7 +158,7 @@ test_serialize()
   // Serialize/deserialize.
   {
     infinit::cryptography::dsa::KeyPair keypair1 =
-      _test_generate(1024,
+      _test_generate(RUNNING_ON_VALGRIND ? 512 : 1024,
                      infinit::cryptography::Oneway::sha512);
 
     std::stringstream stream;
