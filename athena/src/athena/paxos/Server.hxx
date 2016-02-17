@@ -124,7 +124,7 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
       Quorum expected, Quorum effective)
       : elle::Error(
-        elle::sprintf("wrong quorum: %s instead of %s", effective, expected))
+        elle::sprintf("wrong quorum: %f instead of %f", effective, expected))
       , _expected(std::move(expected))
       , _effective(std::move(effective))
     {}
@@ -268,7 +268,7 @@ namespace athena
           }
         if (q != *expected)
         {
-          ELLE_TRACE("quorum is wrong: %s instead of %s", q, *expected);
+          ELLE_TRACE("quorum is wrong: %f instead of %f", q, *expected);
           throw WrongQuorum(*expected, std::move(q));
         }
       }
@@ -343,7 +343,7 @@ namespace athena
       Quorum q, Proposal p, elle::Option<T, Quorum> value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, value);
+      ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
       _Details::check_quorum(*this, q, p.version);
       {
         auto highest = this->highest_accepted();
