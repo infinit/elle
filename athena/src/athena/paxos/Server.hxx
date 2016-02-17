@@ -569,7 +569,7 @@ namespace athena
     void
     Server<T, Version, ClientId, ServerId>::print(std::ostream& output) const
     {
-      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+      elle::fprintf(output, "athena::paxos::Server(%f)", this->id());
     }
   }
 }
