@@ -25,7 +25,7 @@ namespace athena
     void
     Client<T, Version, ClientId>::Peer::print(std::ostream& output) const
     {
-      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+      elle::fprintf(output, "%s(%f)", elle::type_info(*this), this->id());
     }
 
     /*-------------.
