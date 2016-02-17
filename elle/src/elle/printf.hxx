@@ -101,7 +101,29 @@ namespace elle
     template <typename T>
     inline
     void
+    feed(boost::format& fmt, std::unique_ptr<T>& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
     feed(boost::format& fmt, std::shared_ptr<T> const& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, std::shared_ptr<T>& value)
     {
       if (value)
         feed(fmt, *value);
