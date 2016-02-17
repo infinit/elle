@@ -69,9 +69,11 @@ namespace athena
       struct Accepted
       {
         Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
-        Accepted(Proposal proposal, elle::Option<T, Quorum> value);
+        Accepted(Proposal proposal, elle::Option<T, Quorum> value,
+                 bool confirmed);
         Proposal proposal;
         elle::Option<T, Quorum> value;
+        bool confirmed;
         void
         serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
@@ -169,7 +171,6 @@ namespace athena
         VersionState(Proposal p, boost::optional<Accepted> a = {});
         Proposal proposal;
         boost::optional<Accepted> accepted;
-        bool confirmed;
         Version
         version() const;
         VersionState(elle::serialization::SerializerIn& s,
