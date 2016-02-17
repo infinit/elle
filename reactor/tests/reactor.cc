@@ -2311,7 +2311,7 @@ namespace background
             boost::posix_time::microsec_clock::local_time() - start;
           BOOST_CHECK_EQUAL(count, iterations);
           BOOST_CHECK_EQUAL(sched.background_pool_size(), iterations);
-          BOOST_CHECK_LT(duration, sleep_time * 2);
+          BOOST_CHECK_LT(duration, sleep_time * 3);
           for (auto thread: threads)
             delete thread;
         }
