@@ -486,7 +486,7 @@ namespace reactor
         DADiskRef disk = DADiskCreateFromVolumePath(
           kCFAllocatorDefault, session, path_url);
         CFRelease(path_url);
-        ELLE_DEBUG("mac unmount disk: %s", disk);
+        ELLE_DEBUG("mac unmount disk: %s", (void*)(disk));
         if (disk)
         {
           DASessionScheduleWithRunLoop(
