@@ -481,25 +481,26 @@ namespace elle
 
     // std::unique_ptr
 
-    template <typename T>
+    template <typename T, typename D>
     void
-    Serializer::serialize(std::string const& name, std::unique_ptr<T>& opt)
+    Serializer::serialize(std::string const& name,
+                          std::unique_ptr<T, D>& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize unique pointer \"%s\"", *this, name);
       Details::serialize_named_option(*this, name, opt);
     }
 
-    template <typename T>
+    template <typename T, typename D>
     void
     Serializer::_serialize_anonymous(std::string const& name,
-                                     std::unique_ptr<T>& ptr)
+                                     std::unique_ptr<T, D>& ptr)
     {
       Details::serialize_option(
         *this, name, ptr,
         [&]
         {
-          Details::_smart_virtual_switch<std::unique_ptr<T>, T>
+          Details::_smart_virtual_switch<std::unique_ptr<T, D>, T>
             (*this, "SERIALIZE ANONYMOUS", ptr);
         });
     }

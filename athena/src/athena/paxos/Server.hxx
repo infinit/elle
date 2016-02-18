@@ -124,7 +124,7 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
       Quorum expected, Quorum effective)
       : elle::Error(
-        elle::sprintf("wrong quorum: %s instead of %s", effective, expected))
+        elle::sprintf("wrong quorum: %f instead of %f", effective, expected))
       , _expected(std::move(expected))
       , _effective(std::move(effective))
     {}
@@ -211,57 +211,6 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::
       _register_partial_state_serialization;
 
-    /*--------.
-    | Printer |
-    `--------*/
-
-    template <typename T>
-    struct Printer
-    {
-      Printer(T const& o_)
-        : o(o_)
-      {}
-
-      T const& o;
-    };
-
-    template <typename T>
-    Printer<T>
-    printer(T const& o)
-    {
-      return Printer<T>(o);
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<std::shared_ptr<T>> const& p)
-    {
-      if (p.o)
-        output << *p.o;
-      else
-        output << "nullptr";
-      return output;
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<std::unique_ptr<T>> const& p)
-    {
-      if (p.o)
-        output << *p.o;
-      else
-        output << "nullptr";
-      return output;
-    }
-
-    template <typename T>
-    std::ostream&
-    operator <<(std::ostream& output, Printer<T> const& p)
-    {
-      output << p.o;
-      return output;
-    }
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -319,7 +268,7 @@ namespace athena
           }
         if (q != *expected)
         {
-          ELLE_TRACE("quorum is wrong: %s instead of %s", q, *expected);
+          ELLE_TRACE("quorum is wrong: %f instead of %f", q, *expected);
           throw WrongQuorum(*expected, std::move(q));
         }
       }
@@ -394,7 +343,7 @@ namespace athena
       Quorum q, Proposal p, elle::Option<T, Quorum> value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE_SCOPE("%s: accept for %s: %s", *this, p, printer(value));
+      ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
       _Details::check_quorum(*this, q, p.version);
       {
         auto highest = this->highest_accepted();
@@ -514,8 +463,6 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::VersionState::serialize(
       elle::serialization::Serializer& s, elle::Version const& v)
     {
-      ELLE_LOG_COMPONENT("athena.paxos.Server");
-      ELLE_TRACE("%s: serializing with v=%s", *this, v);
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
       if (v >= elle::Version(0, 1, 0))
@@ -571,7 +518,7 @@ namespace athena
     void
     Server<T, Version, ClientId, ServerId>::print(std::ostream& output) const
     {
-      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+      elle::fprintf(output, "athena::paxos::Server(%f)", this->id());
     }
   }
 }

@@ -10,6 +10,7 @@
 
 # include <elle/Buffer.hh>
 # include <elle/Exception.hh>
+# include <elle/filesystem.hh>
 
 # include <reactor/waitable.hh>
 
@@ -35,17 +36,6 @@ struct statvfs {
 
 struct stat;
 struct statvfs;
-
-namespace std
-{
-  template<> struct hash<boost::filesystem::path>
-  {
-    inline size_t operator()(const boost::filesystem::path& p) const
-    {
-      return boost::filesystem::hash_value(p);
-    }
-  };
-}
 
 namespace reactor
 {

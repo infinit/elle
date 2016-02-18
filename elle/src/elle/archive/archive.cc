@@ -67,7 +67,7 @@ namespace elle
       void
       operator()(::archive* archive)
       {
-        ELLE_DEBUG_SCOPE("archive deleter: %s", archive);
+        ELLE_DEBUG_SCOPE("archive deleter: %s", (void*)(archive));
         check_call(archive, archive_write_close(archive));
         check_call(archive, archive_write_free(archive));
       }
@@ -79,7 +79,7 @@ namespace elle
       void
       operator()(::archive* archive)
       {
-        ELLE_DEBUG_SCOPE("archive read deleter: %s", archive);
+        ELLE_DEBUG_SCOPE("archive read deleter: %s", (void*)(archive));
         check_call(archive, archive_read_close(archive));
         check_call(archive, archive_read_free(archive));
       }
@@ -91,7 +91,7 @@ namespace elle
       void
       operator()(archive_entry* entry)
       {
-        ELLE_DEBUG_SCOPE("archive entry deleter: %s", entry);
+        ELLE_DEBUG_SCOPE("archive entry deleter: %s", (void*)(entry));
         archive_entry_free(entry);
       }
     };
@@ -141,7 +141,7 @@ namespace elle
           offset += buffer.size();
         }
       }
-      ELLE_TRACE("file %s archived into %s", file, archive);
+      ELLE_TRACE("file %s archived into %s", file, (void*)(archive));
     }
 
     void
@@ -156,7 +156,7 @@ namespace elle
       ELLE_DEBUG("files: %s", files);
       std::unordered_set<std::string> root_entries;
       ArchivePtr archive(archive_write_new());
-      ELLE_TRACE("archive: %s", archive.get());
+      ELLE_TRACE("archive: %s", (void*)(archive.get()));
       int (*format_setter)(::archive*) = nullptr;
       int (*compression_setter)(::archive*) = nullptr;
       switch (format)

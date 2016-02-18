@@ -15,22 +15,25 @@ namespace reactor
   namespace filesystem
   {
     static bool True = true;
-    #define ERROR(name)                                                  \
-      catch (Error const& e)                                             \
-        {                                                                \
-          _owner.push_fail(_full_path, name, e.error_code(), e.what());  \
-          throw;                                                         \
-        }
-    #define HERROR(name)                                                \
-      catch(Error const& e)                                             \
-      {                                                                 \
-        bool fail = false;                                              \
-        int erc = e.error_code();                                       \
-        std::string message = e.what();                                 \
-        _owner.push_out(PushSerializer(this, name)("success", fail)     \
-                        ("code", erc)("message", message)());             \
-        throw;                                                          \
-      }
+
+#define REACTOR_FILESYSTEM_ERROR(name)                                  \
+    catch (Error const& e)                                              \
+    {                                                                   \
+      _owner.push_fail(_full_path, name, e.error_code(), e.what());     \
+      throw;                                                            \
+    }                                                                   \
+
+#define REACTOR_FILESYSTEM_HERROR(name)                                 \
+    catch(Error const& e)                                               \
+    {                                                                   \
+      bool fail = false;                                                \
+      int erc = e.error_code();                                         \
+      std::string message = e.what();                                   \
+      _owner.push_out(PushSerializer(this, name)("success", fail)       \
+                      ("code", erc)("message", message)());             \
+      throw;                                                            \
+    }                                                                   \
+
     class PushSerializer
     {
     public:
@@ -173,7 +176,7 @@ namespace reactor
           _backend->close();
           _owner.push_out(PushSerializer(this, "close")("success", True)());
         }
-        HERROR("close")
+        REACTOR_FILESYSTEM_HERROR("close")
       }
       virtual void fsyncdir(int datasync) override
       {
@@ -185,7 +188,7 @@ namespace reactor
           _backend->fsyncdir(datasync);
           _owner.push_out(PushSerializer(this, "fsyncdir")("success", True)());
         }
-        HERROR("fsyncdir")
+        REACTOR_FILESYSTEM_HERROR("fsyncdir")
       }
       virtual void fsync(int datasync) override
       {
@@ -197,7 +200,7 @@ namespace reactor
           _backend->fsyncdir(datasync);
           _owner.push_out(PushSerializer(this, "fsync")("success", True)());
         }
-        HERROR("fsync")
+        REACTOR_FILESYSTEM_HERROR("fsync")
       }
       virtual void ftruncate(off_t offset) override
       {
@@ -209,7 +212,7 @@ namespace reactor
           _backend->ftruncate(offset);
           _owner.push_out(PushSerializer(this, "ftruncate")("success", True)());
         }
-        HERROR("ftruncate")
+        REACTOR_FILESYSTEM_HERROR("ftruncate")
       }
       virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
       {
@@ -224,7 +227,7 @@ namespace reactor
           _owner.push_out(PushSerializer(this, "read")("content", buf)("success", True)());
           return res;
         }
-        HERROR("read")
+        REACTOR_FILESYSTEM_HERROR("read")
       }
       virtual int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
       {
@@ -239,7 +242,7 @@ namespace reactor
           _owner.push_out(PushSerializer(this, "write")("success", True)());
           return res;
         }
-        HERROR("write")
+        REACTOR_FILESYSTEM_HERROR("write")
       }
     };
 
@@ -285,7 +288,7 @@ namespace reactor
           _owner.push_ok(_full_path, "create");
           return std::move(handle);
         }
-        ERROR("create")
+        REACTOR_FILESYSTEM_ERROR("create")
       }
       virtual std::unique_ptr<Handle> open(int flags, mode_t mode) override
       {
@@ -307,7 +310,7 @@ namespace reactor
           _owner.push_ok(_full_path, "open");
           return std::move(handle);
         }
-        ERROR("open")
+        REACTOR_FILESYSTEM_ERROR("open")
       }
       virtual void stat(struct stat* s) override
       {
@@ -342,7 +345,7 @@ namespace reactor
           }
           _owner.push_out(buf);
         }
-        ERROR("stat");
+        REACTOR_FILESYSTEM_ERROR("stat");
       }
       virtual void mkdir(mode_t mode) override
       {
@@ -355,7 +358,7 @@ namespace reactor
           _backend->mkdir(mode);
           _owner.push_ok(_full_path, "mkdir");
         }
-        ERROR("mkdir");
+        REACTOR_FILESYSTEM_ERROR("mkdir");
       }
       virtual void rmdir() override
       {
@@ -365,7 +368,7 @@ namespace reactor
           _backend->rmdir();
           _owner.push_ok(_full_path, "rmdir");
         }
-        ERROR("rmdir");
+        REACTOR_FILESYSTEM_ERROR("rmdir");
       }
       virtual void list_directory(OnDirectoryEntry cb) override
       {
@@ -382,7 +385,7 @@ namespace reactor
             ("success", True)
             ("entries", content)());
         }
-        ERROR("list_directory");
+        REACTOR_FILESYSTEM_ERROR("list_directory");
       }
       virtual void unlink() override
       {
@@ -393,7 +396,7 @@ namespace reactor
           _backend->unlink();
           _owner.push_ok(_full_path, "unlink");
         }
-        ERROR("unlink");
+        REACTOR_FILESYSTEM_ERROR("unlink");
       }
       virtual void rename(boost::filesystem::path const& where) override
       {
@@ -406,7 +409,7 @@ namespace reactor
           _backend->rename(where);
           _owner.push_ok(_full_path, "rename");
         }
-        ERROR("rename");
+        REACTOR_FILESYSTEM_ERROR("rename");
       }
       virtual boost::filesystem::path readlink() override
       {
@@ -420,7 +423,7 @@ namespace reactor
             ("target", res.string())());
           return res;
         }
-        ERROR("readlink");
+        REACTOR_FILESYSTEM_ERROR("readlink");
       }
       virtual void symlink(boost::filesystem::path const& where) override
       {
@@ -433,7 +436,7 @@ namespace reactor
           _backend->symlink(where);
           _owner.push_ok(_full_path, "symlink");
         }
-        ERROR("symlink");
+        REACTOR_FILESYSTEM_ERROR("symlink");
       }
       virtual void link(boost::filesystem::path const& where) override
       {
@@ -447,7 +450,7 @@ namespace reactor
           _backend->link(where);
           _owner.push_ok(_full_path, "link");
         }
-        ERROR("link");
+        REACTOR_FILESYSTEM_ERROR("link");
       }
       virtual void chmod(mode_t mode) override
       {
@@ -460,7 +463,7 @@ namespace reactor
           _backend->chmod(mode);
           _owner.push_ok(_full_path, "chmod");
         }
-        ERROR("chmod");
+        REACTOR_FILESYSTEM_ERROR("chmod");
       }
       virtual void chown(int uid, int gid) override
       {
@@ -473,7 +476,7 @@ namespace reactor
           _backend->chown(uid, gid);
           _owner.push_ok(_full_path, "chown");
         }
-        ERROR("chown");
+        REACTOR_FILESYSTEM_ERROR("chown");
       }
       virtual void statfs(struct statvfs* st) override
       {
@@ -501,7 +504,7 @@ namespace reactor
           }
           _owner.push_out(buf);
         }
-        ERROR("statfs");
+        REACTOR_FILESYSTEM_ERROR("statfs");
       }
       virtual void utimens(const struct timespec tv[2]) override
       {
@@ -516,7 +519,7 @@ namespace reactor
           _backend->utimens(tv);
           _owner.push_ok(_full_path, "utimens");
         }
-        ERROR("utimens");
+        REACTOR_FILESYSTEM_ERROR("utimens");
       }
       virtual void truncate(off_t new_size) override
       {
@@ -529,7 +532,7 @@ namespace reactor
           _backend->truncate(new_size);
           _owner.push_ok(_full_path, "truncate");
         }
-        ERROR("truncate");
+        REACTOR_FILESYSTEM_ERROR("truncate");
       }
       virtual void setxattr(std::string const& name, std::string const& value,
                             int flags) override
@@ -543,7 +546,7 @@ namespace reactor
           _backend->setxattr(name, value, flags);
           _owner.push_ok(_full_path, "setxattr");
         }
-        ERROR("setxattr");
+        REACTOR_FILESYSTEM_ERROR("setxattr");
       }
       virtual std::string getxattr(std::string const& name) override
       {
@@ -559,7 +562,7 @@ namespace reactor
             ("value", res)());
           return res;
         }
-        ERROR("getxattr")
+        REACTOR_FILESYSTEM_ERROR("getxattr")
       }
       std::vector<std::string> listxattr() override
       {
@@ -572,7 +575,7 @@ namespace reactor
             ("entries", res)("success", True)());
           return res;
         }
-        ERROR("listxattr");
+        REACTOR_FILESYSTEM_ERROR("listxattr");
       }
       virtual void removexattr(std::string const& name) override
       {
@@ -585,7 +588,7 @@ namespace reactor
            _backend->removexattr(name);
            _owner.push_ok(_full_path, "removexattr");
          }
-         ERROR("removexattr");
+         REACTOR_FILESYSTEM_ERROR("removexattr");
       }
       virtual std::shared_ptr<Path> unwrap() override
       {

@@ -5,35 +5,43 @@
 
 static
 void
-test_empty()
+empty()
 {
   BOOST_CHECK_EQUAL(elle::sprintf(""), "");
 }
 
 static
 void
-test_no_param()
+no_param()
 {
   BOOST_CHECK_EQUAL(elle::sprintf(" foo bar "), " foo bar ");
 }
 
 static
 void
-test_string()
+string()
 {
   BOOST_CHECK_EQUAL(elle::sprintf("foo%sbaz", "bar"), "foobarbaz");
 }
 
 static
 void
-test_too_many()
+null_string()
+{
+  char const* str = nullptr;
+  BOOST_CHECK_EQUAL(elle::sprintf("empty: %s", str), "empty: ");
+}
+
+static
+void
+too_many()
 {
   BOOST_CHECK_THROW(elle::sprintf("%s", "foo", "bar"), std::exception);
 }
 
 static
 void
-test_too_few()
+too_few()
 {
   BOOST_CHECK_THROW(elle::sprintf("%s%s", "foo"), std::exception);
 }
@@ -65,7 +73,7 @@ scoped()
 
 static
 void
-test_bool()
+boolean()
 {
   BOOST_CHECK_EQUAL(elle::sprintf("%s %s", true, false), "true false");
 }
@@ -73,11 +81,12 @@ test_bool()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(test_string));
+  suite.add(BOOST_TEST_CASE(string));
+  suite.add(BOOST_TEST_CASE(null_string));
   suite.add(BOOST_TEST_CASE(scoped));
-  suite.add(BOOST_TEST_CASE(test_too_few));
-  suite.add(BOOST_TEST_CASE(test_empty));
-  suite.add(BOOST_TEST_CASE(test_too_many));
-  suite.add(BOOST_TEST_CASE(test_no_param));
-  suite.add(BOOST_TEST_CASE(test_bool));
+  suite.add(BOOST_TEST_CASE(too_few));
+  suite.add(BOOST_TEST_CASE(empty));
+  suite.add(BOOST_TEST_CASE(too_many));
+  suite.add(BOOST_TEST_CASE(no_param));
+  suite.add(BOOST_TEST_CASE(boolean));
 }

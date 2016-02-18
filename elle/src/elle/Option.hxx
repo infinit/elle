@@ -90,7 +90,9 @@ namespace elle
       // }
 
       template <typename T, typename A>
-      typename std::enable_if<std::is_same<T, Head>::value, void>::type
+      typename std::enable_if<
+        std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
+        void>::type
       _emplace(A&& value)
       {
         new (this->_buffer) Head(std::forward<A>(value));
@@ -98,7 +100,9 @@ namespace elle
       }
 
       template <typename T, typename A>
-      typename std::enable_if<!std::is_same<T, Head>::value, void>::type
+      typename std::enable_if<
+        !std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
+        void>::type
       _emplace(A&& value)
       {
         this->Super::template _emplace<T>(std::forward<A>(value));

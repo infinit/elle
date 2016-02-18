@@ -25,7 +25,7 @@ namespace athena
     void
     Client<T, Version, ClientId>::Peer::print(std::ostream& output) const
     {
-      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->id());
+      elle::fprintf(output, "%f(%f)", elle::type_info(*this), this->id());
     }
 
     /*-------------.
@@ -106,7 +106,7 @@ namespace athena
       elle::Option<T, Quorum> const& value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
-      ELLE_TRACE_SCOPE("%s: choose %s", *this, printer(value));
+      ELLE_TRACE_SCOPE("%s: choose %f", *this, value);
       int backoff = 1;
       Quorum q;
       for (auto const& peer: this->_peers)
@@ -128,12 +128,12 @@ namespace athena
               try
               {
                 ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
-                                 *this, proposal, *peer);
+                                 *this, proposal, peer);
                 if (auto p = peer->propose(q, proposal))
                   if (!previous || previous->proposal < p->proposal)
                   {
-                    ELLE_DEBUG_SCOPE("%s: value already accepted at %s: %s",
-                                     *this, p->proposal, printer(p->value));
+                    ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
+                                     *this, p->proposal, p->value);
                     previous = std::move(p);
                   }
                 ++reached;
@@ -147,7 +147,7 @@ namespace athena
           this->_check_headcount(q, reached);
           if (previous)
           {
-            ELLE_DEBUG("replace value with %s", printer(previous->value));
+            ELLE_DEBUG("replace value with %s", previous->value);
             if (proposal < previous->proposal)
             {
               version = previous->proposal.version;
@@ -203,8 +203,7 @@ namespace athena
           else
             this->_check_headcount(q, reached);
         }
-        ELLE_TRACE("%s: chose %s", *this,
-                   printer(previous ? previous->value : value));
+        ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
         ELLE_DEBUG("%s: send confirmation", *this)
         {
           auto reached = 0;

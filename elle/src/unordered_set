@@ -22,15 +22,16 @@ namespace std
   {
     elle::fprintf(out, "{");
     bool first = true;
+    bool fixed = out.flags() & std::ios::fixed;
     for (V const& elt: v)
     {
       if (first)
       {
         first = false;
-        elle::fprintf(out, "%s", elt);
+        elle::fprintf(out, fixed ? "%f" : "%s", elt);
       }
       else
-        elle::fprintf(out, ", %s", elt);
+        elle::fprintf(out, fixed ? ", %f" : ", %s", elt);
     }
     elle::fprintf(out, "}");
     return out;

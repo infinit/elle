@@ -57,7 +57,7 @@ namespace athena
         operator <<(std::ostream& output,
                     typename Server<T, Version, ClientId>::Proposal const& p)
         {
-          output << p.version << ":" << p.round << ":" << p.sender;
+          elle::fprintf(output, "%f:%f:%f", p.version, p.round, p.sender);
           return output;
         }
       };
@@ -75,6 +75,13 @@ namespace athena
         void
         serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
+        friend
+        std::ostream&
+        operator <<(std::ostream& output, Accepted const& accepted)
+        {
+          elle::fprintf(output, "Accepted(%f)", accepted.proposal);
+          return output;
+        }
       };
 
     /*------------.

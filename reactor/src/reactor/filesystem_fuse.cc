@@ -37,11 +37,17 @@ namespace reactor
   {
     typedef std::shared_ptr<Path> PathPtr;
 
+    static const char* check_path(const char* path)
+    {
+      return path ? path : "<unlinked>";
+    }
+
     static
     int
     fusop_getattr(const char* path, struct stat* stbuf)
     {
       BENCH("getattr");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_getattr %s", path);
       try
       {
@@ -66,6 +72,7 @@ namespace reactor
                   struct fuse_file_info* fi)
     {
       BENCH("readdir");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_readdir %s", path);
       try
       {
@@ -90,6 +97,7 @@ namespace reactor
     fusop_open(const char* path, struct fuse_file_info* fi)
     {
       BENCH("open");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_open %s %s", path, fi->flags);
       try
       {
@@ -112,6 +120,7 @@ namespace reactor
     fusop_create(const char* path, mode_t mode, fuse_file_info* fi)
     {
       BENCH("create");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
       try
       {
@@ -133,6 +142,7 @@ namespace reactor
     fusop_unlink(const char* path)
     {
       BENCH("unlink");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_unlink %s", path);
       try
       {
@@ -153,6 +163,7 @@ namespace reactor
     fusop_mkdir(const char* path, mode_t mode)
     {
       BENCH("mkdir");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_mkdir %s", path);
       try
       {
@@ -173,6 +184,7 @@ namespace reactor
     fusop_rmdir(const char* path)
     {
       BENCH("rmdir");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_rmdir %s", path);
       try
       {
@@ -193,6 +205,8 @@ namespace reactor
     fusop_rename(const char* path, const char* to)
     {
       BENCH("rename");
+      ELLE_ASSERT(path);
+      ELLE_ASSERT(to);
       ELLE_TRACE_SCOPE("fusop_rename %s %s", path, to);
       try
       {
@@ -217,7 +231,8 @@ namespace reactor
                struct fuse_file_info* fi)
     {
       BENCH("read");
-      ELLE_TRACE_SCOPE("fusop_read %s sz=%s, offset=%s", path, size, offset);
+      ELLE_TRACE_SCOPE("fusop_read %s sz=%s, offset=%s",
+                       check_path(path), size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -225,7 +240,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error reading %s: %s", path, e);
+        ELLE_TRACE("Filesystem error reading %s: %s", check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -241,7 +256,7 @@ namespace reactor
     {
       BENCH("write");
       ELLE_TRACE_SCOPE("fusop_write %s(%s) sz=%s, offset=%s ",
-                       path, fi->fh, size, offset);
+                       check_path(path), fi->fh, size, offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -249,7 +264,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error writing %s: %s", path, e);
+        ELLE_TRACE("Filesystem error writing %s: %s", check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -260,7 +275,7 @@ namespace reactor
     fusop_release(const char* path, struct fuse_file_info* fi)
     {
       BENCH("release");
-      ELLE_TRACE_SCOPE("fusop_release %s", path);
+      ELLE_TRACE_SCOPE("fusop_release %s", check_path(path));
       try
       {
         std::unique_ptr<Handle> handle((Handle*)fi->fh);
@@ -269,7 +284,8 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error releasing %s: %s", path, e);
+        ELLE_TRACE("Filesystem error releasing %s: %s",
+                   check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -280,7 +296,8 @@ namespace reactor
     fusop_flush(const char* path, struct fuse_file_info* fi)
     {
       BENCH("flush");
-      ELLE_TRACE_SCOPE("fusop_flush %s(%s)", path, fi->fh);
+      ELLE_TRACE_SCOPE("fusop_flush %s(%s)",
+                       check_path(path), fi->fh);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -289,7 +306,8 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error flushing %s: %s", path, e);
+        ELLE_TRACE("Filesystem error flushing %s: %s",
+                   check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -300,7 +318,7 @@ namespace reactor
     fusop_ftruncate(const char* path, off_t offset, struct fuse_file_info* fi)
     {
       BENCH("ftruncate");
-      ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", path, offset);
+      ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", check_path(path), offset);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -308,7 +326,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error truncating %s: %s", path, e);
+        ELLE_TRACE("Filesystem error truncating %s: %s", check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -319,6 +337,7 @@ namespace reactor
     fusop_readlink(const char* path, char* buf, size_t len)
     {
       BENCH("readlink");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_readlink %s", path);
       try
       {
@@ -342,6 +361,8 @@ namespace reactor
     fusop_symlink(const char* target, const char* where)
     {
       BENCH("symlink");
+      ELLE_ASSERT(target);
+      ELLE_ASSERT(where);
       ELLE_TRACE_SCOPE("fusop_symlink %s %s", target, where);
       try
       {
@@ -362,6 +383,8 @@ namespace reactor
     fusop_link(const char* path, const char* to)
     {
       BENCH("link");
+      ELLE_ASSERT(path);
+      ELLE_ASSERT(to);
       ELLE_TRACE_SCOPE("fusop_link %s %s", path, to);
       try
       {
@@ -382,6 +405,7 @@ namespace reactor
     fusop_chmod(const char* path, mode_t mode)
     {
       BENCH("chmod");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_chmod %s %s", path, mode);
       try
       {
@@ -402,6 +426,7 @@ namespace reactor
     fusop_chown(const char* path, uid_t uid, gid_t gid)
     {
       BENCH("chown");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_chown %s", path);
       try
       {
@@ -422,6 +447,7 @@ namespace reactor
     fusop_statfs(const char* path, struct ::statvfs* svfs)
     {
       BENCH("statfs");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_statfs %s", path);
       try
       {
@@ -442,6 +468,7 @@ namespace reactor
     fusop_utimens(const char* path, const struct timespec tv[2])
     {
       BENCH("utimens");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_utimens %s", path);
       try
       {
@@ -462,6 +489,7 @@ namespace reactor
     fusop_truncate(const char* path, off_t new_size)
     {
       BENCH("truncate");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_truncate %s", path);
       try
       {
@@ -490,6 +518,8 @@ namespace reactor
       )
     {
       BENCH("setxattr");
+      ELLE_ASSERT(path);
+      ELLE_ASSERT(key);
       ELLE_TRACE_SCOPE("fusop_setxattr %s", path);
       try
       {
@@ -517,6 +547,8 @@ namespace reactor
       )
     {
       BENCH("getxattr");
+      ELLE_ASSERT(path);
+      ELLE_ASSERT(key);
       ELLE_TRACE_SCOPE("fusop_getxattr %s buf %s", path, valsize);
       try
       {
@@ -541,6 +573,7 @@ namespace reactor
     fusop_listxattr(const char* path, char* buf, size_t size)
     {
       BENCH("listxattr");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_listxattr %s", path);
       try
       {
@@ -569,6 +602,7 @@ namespace reactor
     fusop_removexattr(const char* path, const char* key)
     {
       BENCH("removexattr");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
       try
       {
@@ -590,7 +624,7 @@ namespace reactor
     fusop_fsync(const char* path, int datasync, fuse_file_info* fi)
     {
       BENCH("fsync");
-      ELLE_TRACE_SCOPE("fusop_fsync %s %s", path, datasync);
+      ELLE_TRACE_SCOPE("fusop_fsync %s %s", check_path(path), datasync);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -598,7 +632,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on fsync %s: %s", path, e);
+        ELLE_TRACE("Filesystem error on fsync %s: %s", check_path(path), e);
         return -e.error_code();
       }
       return 0;
@@ -609,7 +643,7 @@ namespace reactor
     fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
     {
       BENCH("fsyncdir");
-      ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", path, datasync);
+      ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", check_path(path), datasync);
       try
       {
         Handle* handle = (Handle*)fi->fh;
@@ -617,7 +651,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        ELLE_TRACE("Filesystem error on fsyncdir %s: %s", path, e);
+        ELLE_TRACE("Filesystem error on fsyncdir %s: %s", check_path(path), e);
         return -e.error_code();
       }
       return 0;

@@ -80,6 +80,78 @@ namespace elle
       fmt % (value ? "true" : "false");
     }
 
+    inline
+    void
+    feed(boost::format& fmt, char const* value)
+    {
+      fmt % (value ? value : "");
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, std::unique_ptr<T> const& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, std::unique_ptr<T>& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, std::shared_ptr<T> const& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, std::shared_ptr<T>& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
+    inline
+    void
+    feed(boost::format& fmt, void* value)
+    {
+      if (value)
+        fmt % value;
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    inline
+    void
+    feed(boost::format& fmt, T* value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
     template <typename ... T>
     struct Feed
     {

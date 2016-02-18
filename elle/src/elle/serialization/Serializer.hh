@@ -134,9 +134,9 @@ namespace elle
       template <typename T>
       void
       serialize(std::string const& name, boost::optional<T>& opt);
-      template <typename T>
+      template <typename T, typename D>
       void
-      serialize(std::string const& name, std::unique_ptr<T>& opt);
+      serialize(std::string const& name, std::unique_ptr<T, D>& opt);
       template <typename T>
       void
       serialize(std::string const& name, std::shared_ptr<T>& opt);
@@ -319,9 +319,9 @@ namespace elle
       typename std::enable_if<
         !_details::has_serialize_convert_api<T*>(), void>::type
       _serialize_anonymous(std::string const& name, T*& v);
-      template <typename T>
+      template <typename T, typename D>
       void
-      _serialize_anonymous(std::string const& name, std::unique_ptr<T>& v);
+      _serialize_anonymous(std::string const& name, std::unique_ptr<T, D>& v);
       template <typename T>
       void
       _serialize_anonymous(std::string const& name, std::shared_ptr<T>& v);

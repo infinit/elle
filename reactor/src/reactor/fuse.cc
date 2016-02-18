@@ -437,7 +437,7 @@ namespace reactor
     fuse_session* s = ::fuse_get_session(this->_fuse);
     ELLE_TRACE("session");
     fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
-    ELLE_TRACE("chan %s", ch);
+    ELLE_TRACE("chan %s", (void*)(ch));
     ::fuse_unmount(this->_mountpoint.c_str(), ch);
 #endif
     ELLE_TRACE("unmounted");
@@ -486,7 +486,7 @@ namespace reactor
         DADiskRef disk = DADiskCreateFromVolumePath(
           kCFAllocatorDefault, session, path_url);
         CFRelease(path_url);
-        ELLE_DEBUG("mac unmount disk: %s", disk);
+        ELLE_DEBUG("mac unmount disk: %s", (void*)(disk));
         if (disk)
         {
           DASessionScheduleWithRunLoop(
