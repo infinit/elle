@@ -41,20 +41,22 @@ inline void remove_erase_if(Rng& rng, Pred&& pred) {
   rng.erase(it, last);
 }
 
-inline
-std::string trim_front(const std::string& str) {
+inline std::string trim_front(const std::string& str) {
   auto first = std::begin(str), last = std::end(str);
-  auto it = std::find_if(first, last,
-                         [] (char ch) { return std::isspace(ch) == 0; });
+  auto it = std::find_if(first, last, [](char ch) {
+    return std::isspace(ch, std::locale()) == 0;
+  });
   return std::string(it, last);
 }
 
-inline
-std::string trim_back(const std::string& str) {
-  auto first = std::reverse_iterator<std::string::const_iterator>(std::end(str)),
-    last = std::reverse_iterator<std::string::const_iterator>(std::begin(str));
-  auto it = std::find_if(first, last,
-                         [] (char ch) { return std::isspace(ch) == 0; });
+inline std::string trim_back(const std::string& str) {
+  using reverse_iterator = std::reverse_iterator<std::string::const_iterator>;
+
+  auto first = reverse_iterator(std::end(str)),
+       last = reverse_iterator(std::begin(str));
+  auto it = std::find_if(first, last, [](char ch) {
+    return std::isspace(ch, std::locale()) == 0;
+  });
   std::string result(it, last);
   std::reverse(std::begin(result), std::end(result));
   return result;

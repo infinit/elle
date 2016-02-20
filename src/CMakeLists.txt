@@ -12,24 +12,24 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_normalize.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_resolve.cpp
   )
-if(NOT CPP-NETLIB_BUILD_SINGLE_LIB)
-  add_library(network-uri ${Uri_SRCS})
-  target_link_libraries(network-uri ${Boost_LIBRARIES})
-  if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
-    if (NOT CPP-NETLIB_DISABLE_LIBCXX)
-      target_link_libraries(network-uri "c++")
-    endif()
-  endif()
-  install(
-    TARGETS
-    network-uri
-    DESTINATION lib
-    )
 
-  install(DIRECTORY network
-    DESTINATION include
-    )
+add_definitions("-DBOOST_SPIRIT_THREADSAFE")
+add_library(network-uri ${Uri_SRCS})
+target_link_libraries(network-uri ${Boost_LIBRARIES})
+if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
+  if (NOT CPP-NETLIB_DISABLE_LIBCXX)
+    target_link_libraries(network-uri "c++")
+  endif()
 endif()
+install(
+  TARGETS
+  network-uri
+  DESTINATION lib
+  )
+
+install(DIRECTORY network
+  DESTINATION include
+  )
 
 #propagate sources to parent scope for one-lib-build
 set(Uri_SRCS ${Uri_SRCS} PARENT_SCOPE)

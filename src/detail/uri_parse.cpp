@@ -242,7 +242,7 @@ namespace network {
 namespace detail {
 bool parse(uri::string_type &str, uri_parts &parts) {
   namespace qi = boost::spirit::qi;
-  uri_grammar grammar;
+  static uri_grammar grammar;
   auto first = std::begin(str), last = std::end(str);
   bool is_valid = qi::parse(first, last, grammar, parts);
   return is_valid && (first == last);

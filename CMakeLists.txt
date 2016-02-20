@@ -4,7 +4,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.2)
 project(Uri)
 
 find_package(Threads REQUIRED)
@@ -19,7 +19,7 @@ else()
 endif()
 
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.53 REQUIRED)
+find_package(Boost 1.60 REQUIRED)
 
 include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
 

@@ -5,6 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include "uri_resolve.hpp"
+#include <algorithm>
 #include <boost/algorithm/string/find.hpp>
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>

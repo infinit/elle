@@ -189,7 +189,7 @@ bool parse_authority(uri::string_type &str,
                      boost::optional<uri::string_type> &user_info,
                      boost::optional<uri::string_type> &host,
                      boost::optional<uri::string_type> &port) {
-  authority_grammar grammar;
+  static authority_grammar grammar;
   authority_parts authority;
   auto first = std::begin(str), last = std::end(str);
   bool is_valid = qi::parse(first, last, grammar, authority);
