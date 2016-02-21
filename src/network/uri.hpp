@@ -14,6 +14,19 @@
  * This module contains a class encapsulating a URI, a URI builder and
  * percent encoding and decoding functions.
  *
+ * \defgroup optional Optional
+ *
+ * This module contains a utility to represent optional values.
+ *
+ * \defgroup string String
+ *
+ * This module contains a class for a non-owning reference to a string.
+ *
+ * \namespace network
+ *
+ * The \c network namespace contains all the classes and functions for
+ * the URI in this library.
+ *
  * \file
  * \brief Contains the uri, uri_builder classes and functions
  *        for percent encoding and decoding.
