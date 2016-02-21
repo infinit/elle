@@ -15,7 +15,7 @@ set(Uri_SRCS
 
 add_definitions("-DBOOST_SPIRIT_THREADSAFE")
 add_library(network-uri ${Uri_SRCS})
-target_link_libraries(network-uri ${Boost_LIBRARIES})
+target_link_libraries(network-uri)
 if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
   if (NOT CPP-NETLIB_DISABLE_LIBCXX)
     target_link_libraries(network-uri "c++")

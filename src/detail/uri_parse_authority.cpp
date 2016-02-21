@@ -6,25 +6,25 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdint>
-#include <boost/config/warning_disable.hpp>
-#include <boost/spirit/home/qi.hpp>
-#include <boost/fusion/adapted/struct/adapt_struct.hpp>
+#include "../boost/config/warning_disable.hpp"
+#include "../boost/spirit/home/qi.hpp"
+#include "../boost/fusion/adapted/struct/adapt_struct.hpp"
 #include "uri_parse_authority.hpp"
 
 namespace {
 struct authority_parts {
-  boost::optional<network::uri::string_type> user_info, host, port;
+  network_boost::optional<network::uri::string_type> user_info, host, port;
 };
 } // namespace
 
 BOOST_FUSION_ADAPT_STRUCT(
     authority_parts,
-    (boost::optional<network::uri::string_type>, user_info)
-    (boost::optional<network::uri::string_type>, host)
-    (boost::optional<network::uri::string_type>, port));
+    (network_boost::optional<network::uri::string_type>, user_info)
+    (network_boost::optional<network::uri::string_type>, host)
+    (network_boost::optional<network::uri::string_type>, port));
 
 namespace {
-namespace qi = boost::spirit::qi;
+namespace qi = network_boost::spirit::qi;
 
 struct authority_grammar
     : qi::grammar<typename network::uri::string_type::iterator, authority_parts()> {
@@ -186,9 +186,9 @@ struct authority_grammar
 namespace network {
 namespace detail {
 bool parse_authority(uri::string_type &str,
-                     boost::optional<uri::string_type> &user_info,
-                     boost::optional<uri::string_type> &host,
-                     boost::optional<uri::string_type> &port) {
+                     network_boost::optional<uri::string_type> &user_info,
+                     network_boost::optional<uri::string_type> &host,
+                     network_boost::optional<uri::string_type> &port) {
   static authority_grammar grammar;
   authority_parts authority;
   auto first = std::begin(str), last = std::end(str);

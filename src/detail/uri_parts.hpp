@@ -7,25 +7,25 @@
 #define NETWORK_DETAIL_URI_PARTS_INC
 
 #include <string>
-#include <boost/range/iterator_range.hpp>
-#include <boost/optional.hpp>
+#include "../boost/range/iterator_range.hpp"
+#include "../boost/optional.hpp"
 
 namespace network {
 namespace detail {
-using iterator_pair = boost::iterator_range<std::string::iterator>;
+using iterator_pair = network_boost::iterator_range<std::string::iterator>;
 
 struct hierarchical_part {
-  boost::optional<iterator_pair> user_info;
-  boost::optional<iterator_pair> host;
-  boost::optional<iterator_pair> port;
-  boost::optional<iterator_pair> path;
+  network_boost::optional<iterator_pair> user_info;
+  network_boost::optional<iterator_pair> host;
+  network_boost::optional<iterator_pair> port;
+  network_boost::optional<iterator_pair> path;
 };
 
 struct uri_parts {
-  boost::optional<iterator_pair> scheme;
+  network_boost::optional<iterator_pair> scheme;
   hierarchical_part hier_part;
-  boost::optional<iterator_pair> query;
-  boost::optional<iterator_pair> fragment;
+  network_boost::optional<iterator_pair> query;
+  network_boost::optional<iterator_pair> fragment;
 };
 } // namespace detail
 } // namespace network

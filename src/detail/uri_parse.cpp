@@ -6,28 +6,28 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cstdint>
-#include <boost/config/warning_disable.hpp>
-#include <boost/spirit/home/qi.hpp>
-#include <boost/fusion/adapted/struct/adapt_struct.hpp>
+#include "../boost/config/warning_disable.hpp"
+#include "../boost/spirit/home/qi.hpp"
+#include "../boost/fusion/adapted/struct/adapt_struct.hpp"
 #include "uri_parse.hpp"
 #include "uri_parts.hpp"
 
 BOOST_FUSION_ADAPT_STRUCT(
     network::detail::hierarchical_part,
-    (boost::optional<network::detail::iterator_pair>, user_info)(
-        boost::optional<network::detail::iterator_pair>, host)(
-        boost::optional<network::detail::iterator_pair>, port)(
-        boost::optional<network::detail::iterator_pair>, path));
+    (network_boost::optional<network::detail::iterator_pair>, user_info)(
+        network_boost::optional<network::detail::iterator_pair>, host)(
+        network_boost::optional<network::detail::iterator_pair>, port)(
+        network_boost::optional<network::detail::iterator_pair>, path));
 
 BOOST_FUSION_ADAPT_STRUCT(
     network::detail::uri_parts,
-    (boost::optional<network::detail::iterator_pair>, scheme)(
+    (network_boost::optional<network::detail::iterator_pair>, scheme)(
         network::detail::hierarchical_part, hier_part)(
-        boost::optional<network::detail::iterator_pair>, query)(
-        boost::optional<network::detail::iterator_pair>, fragment));
+        network_boost::optional<network::detail::iterator_pair>, query)(
+        network_boost::optional<network::detail::iterator_pair>, fragment));
 
 namespace {
-namespace qi = boost::spirit::qi;
+namespace qi = network_boost::spirit::qi;
 
 struct uri_grammar : qi::grammar<network::uri::string_type::iterator,
                                  network::detail::uri_parts()> {
@@ -203,9 +203,9 @@ struct uri_grammar : qi::grammar<network::uri::string_type::iterator,
     // authority = [ userinfo "@" ] host [ ":" port ]
     hier_part %= ((("//" >> user_info >> '@') | "//") >> host >>
                   -(':' >> port) >> path_abempty) |
-                 (qi::attr(boost::optional<network::detail::iterator_pair>()) >>
-                  qi::attr(boost::optional<network::detail::iterator_pair>()) >>
-                  qi::attr(boost::optional<network::detail::iterator_pair>()) >>
+                 (qi::attr(network_boost::optional<network::detail::iterator_pair>()) >>
+                  qi::attr(network_boost::optional<network::detail::iterator_pair>()) >>
+                  qi::attr(network_boost::optional<network::detail::iterator_pair>()) >>
                   (path_absolute | path_rootless | path_empty));
 
     start %=
@@ -242,7 +242,7 @@ struct uri_grammar : qi::grammar<network::uri::string_type::iterator,
 namespace network {
 namespace detail {
 bool parse(uri::string_type &str, uri_parts &parts) {
-  namespace qi = boost::spirit::qi;
+  namespace qi = network_boost::spirit::qi;
   static uri_grammar grammar;
   auto first = std::begin(str), last = std::end(str);
   bool is_valid = qi::parse(first, last, grammar, parts);

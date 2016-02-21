@@ -9,19 +9,7 @@ project(Uri)
 
 find_package(Threads REQUIRED)
 
-if(CPP-NETLIB_BUILD_SHARED_LIBS OR BUILD_SHARED_LIBS)
-  set(Boost_USE_STATIC_LIBS OFF)
-  if (MSVC)
-    add_definitions(-DBOOST_ALL_DYN_LINK -DNETWORK_URI_EXPORTS)
-  endif(MSVC)
-else()
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.60 REQUIRED)
-
-include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
+include_directories(${Uri_SOURCE_DIR}/src)
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 

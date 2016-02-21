@@ -6,8 +6,8 @@
 #include <iterator>
 #include <vector>
 #include <algorithm>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
+#include "../boost/algorithm/string/split.hpp"
+#include "../boost/algorithm/string/join.hpp"
 #include "uri_normalize.hpp"
 #include "uri_percent_encode.hpp"
 #include "algorithm.hpp"
@@ -40,7 +40,7 @@ uri::string_type normalize_path_segments(uri::string_view path) {
 
   if (!path.empty()) {
     std::vector<uri::string_type> path_segments;
-    boost::split(path_segments, path,
+    network_boost::split(path_segments, path,
                  [](char ch) { return ch == '/'; });
 
     // remove single dot segments
@@ -73,7 +73,7 @@ uri::string_type normalize_path_segments(uri::string_view path) {
           return has_adjacent_slash;
         });
 
-    result = boost::join(normalized_segments, "/");
+    result = network_boost::join(normalized_segments, "/");
   }
 
   if (result.empty()) {
