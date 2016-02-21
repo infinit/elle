@@ -5,6 +5,11 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+/**
+ * \file
+ * \brief Contains macros to configure compiler or platform-specific workarounds.
+ */
+
 #ifndef NETWORK_URI_CONFIG_INC
 #define NETWORK_URI_CONFIG_INC
 

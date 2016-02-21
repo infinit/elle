@@ -19,7 +19,8 @@
 
 namespace network {
 /**
- * \brief class basic_string_view string_view.hpp network/string_view.hpp
+ * \class basic_string_view string_view.hpp network/uri/string_view.hpp
+ * \brief An implementation of C++17 string_view (n3921)
  */
 template <class charT, class traits = std::char_traits<charT>>
 class basic_string_view {

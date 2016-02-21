@@ -29,8 +29,10 @@ inline void fail(const char* expr, const char* file, unsigned line) {}
 
 namespace network {
 struct nullopt_t {
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
   struct init {};
   constexpr nullopt_t(init) {}
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 };
 const nullopt_t nullopt{nullopt_t::init{}};
 
@@ -125,6 +127,10 @@ protected:
 } // namespace details
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+/**
+ * \class optional optional.hpp network/uri/optional.hpp
+ * \brief An implementation of C++17 optional (n3793)
+ */
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <class T>
 using optional_base = typename std::conditional<
@@ -134,7 +140,11 @@ using optional_base = typename std::conditional<
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 template <class T>
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 class optional : optional_base<T> {
+#else
+class optional {
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
   typedef optional_base<T> base_type;
 
  public:
