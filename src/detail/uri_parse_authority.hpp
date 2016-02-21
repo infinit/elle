@@ -7,6 +7,7 @@
 #define NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 
 #include <network/uri/uri.hpp>
+#include <boost/optional.hpp>
 
 namespace network {
 namespace detail {

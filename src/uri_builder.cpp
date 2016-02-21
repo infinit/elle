@@ -4,7 +4,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cctype>
-#include "network/uri.hpp"
+#include "network/uri/uri_builder.hpp"
 #include "detail/uri_parse_authority.hpp"
 #include "detail/algorithm.hpp"
 

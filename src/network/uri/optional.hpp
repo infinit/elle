@@ -17,6 +17,7 @@
 #include <memory>
 #include <algorithm>
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #ifdef NDEBUG
 #define NETWORK_ASSERTED_EXPRESSION(CHECK, EXPR) (EXPR)
 #else
@@ -24,11 +25,9 @@
   ((CHECK) ? (EXPR) : (fail(#CHECK, __FILE__, __LINE__), (EXPR)))
 inline void fail(const char* expr, const char* file, unsigned line) {}
 #endif  // NDEBUG
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 namespace network {
-struct in_place_t {};
-constexpr in_place_t in_place{};
-
 struct nullopt_t {
   struct init {};
   constexpr nullopt_t(init) {}
@@ -44,6 +43,7 @@ class bad_optional_access : public std::logic_error {
       : std::logic_error(what_arg) {}
 };
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace details {
 struct dummy_t {};
 
@@ -123,12 +123,15 @@ protected:
   optional_storage<T> storage_;
 };
 } // namespace details
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
+#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 template <class T>
 using optional_base = typename std::conditional<
   std::is_trivially_destructible<T>::value,
   details::trivially_destructible_optional_base<T>,
   details::optional_base<T>>::type;
+#endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
 template <class T>
 class optional : optional_base<T> {

@@ -11,6 +11,7 @@
 #include <utility>
 #include <string>
 #include <cctype>
+#include <locale>
 
 namespace network {
 namespace detail {

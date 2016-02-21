@@ -11,8 +11,7 @@
 #include <cstdint>
 #include <utility>
 #include <type_traits>
-#include <network/uri/config.hpp>
-#include <network/uri/optional.hpp>
+#include <network/uri/uri.hpp>
 
 #ifdef NETWORK_URI_MSVC
 #pragma warning(push)
@@ -72,7 +71,7 @@ class uri_builder {
   /**
    * \brief The uri_builder string_type.
    */
-  typedef network::uri::string_type string_type;
+  using string_type = network::uri::string_type;
 
   /**
    * \brief Constructor.

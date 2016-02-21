@@ -10,6 +10,7 @@
 #include <boost/spirit/home/qi.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include "uri_parse.hpp"
+#include "uri_parts.hpp"
 
 BOOST_FUSION_ADAPT_STRUCT(
     network::detail::hierarchical_part,
