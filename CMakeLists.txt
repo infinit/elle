@@ -4,7 +4,7 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 2.8)
 project(Uri)
 
 find_package(Threads REQUIRED)
