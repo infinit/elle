@@ -18,9 +18,9 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <network/string_view.hpp>
+#include <network/optional.hpp>
 #include <network/uri/config.hpp>
-#include <network/uri/string_view.hpp>
-#include <network/uri/optional.hpp>
 #include <network/uri/uri_errors.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>

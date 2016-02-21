@@ -3,8 +3,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef NETWORK_URI_STRING_VIEW_INC
-#define NETWORK_URI_STRING_VIEW_INC
+#ifndef NETWORK_STRING_VIEW_INC
+#define NETWORK_STRING_VIEW_INC
 
 /**
  * \file
@@ -39,21 +39,39 @@ class basic_string_view {
   typedef std::ptrdiff_t difference_type;
   static constexpr size_type npos = size_type(-1);
 
+  /**
+   * \brief Constructor.
+   */
   constexpr basic_string_view() noexcept : data_(nullptr), size_(0) {}
 
+  /**
+   * \brief Copy constructor.
+   */
   constexpr basic_string_view(const basic_string_view&) noexcept = default;
 
+  /**
+   * \brief Assignment operator.
+   */
   basic_string_view& operator=(const basic_string_view&) noexcept = default;
 
+  /**
+   * \brief Constructor.
+   */
   template <class Allocator>
   basic_string_view(
       const std::basic_string<charT, traits, Allocator>& str) noexcept
       : data_(str.data()),
         size_(str.size()) {}
 
+  /**
+   * \brief Constructor.
+   */
   constexpr basic_string_view(const charT* str)
       : data_(str), size_(traits::length(str)) {}
 
+  /**
+   * \brief Constructor.
+   */
   constexpr basic_string_view(const charT* str, size_type len)
       : data_(str), size_(len) {}
 
@@ -93,6 +111,7 @@ class basic_string_view {
     }
     return data_[pos];
   }
+
   const_reference front() const { return *begin(); }
 
   const_reference back() const {
@@ -172,42 +191,69 @@ class basic_string_view {
   size_type size_;
 };
 
+/**
+ * \brief Equality operator.
+ * \returns <tt>lhs.compare(rhs) == 0</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator==(basic_string_view<charT, traits> lhs,
                           basic_string_view<charT, traits> rhs) noexcept {
   return lhs.compare(rhs) == 0;
 }
 
+/**
+ * \brief Inequality operator.
+ * \returns <tt>!(lhs == rhs)</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator!=(basic_string_view<charT, traits> lhs,
                           basic_string_view<charT, traits> rhs) noexcept {
   return !(lhs == rhs);
 }
 
+/**
+ * \brief Comparison operator.
+ * \returns <tt>lhs.compare(rhs) < 0</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator<(basic_string_view<charT, traits> lhs,
                          basic_string_view<charT, traits> rhs) noexcept {
   return lhs.compare(rhs) < 0;
 }
 
+/**
+ * \brief Comparison operator.
+ * \returns <tt>rhs < lhs</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator>(basic_string_view<charT, traits> lhs,
                          basic_string_view<charT, traits> rhs) noexcept {
   return rhs < lhs;
 }
 
+/**
+ * \brief Comparison operator.
+ * \returns <tt>!(lhs > rhs)</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator<=(basic_string_view<charT, traits> lhs,
                           basic_string_view<charT, traits> rhs) noexcept {
   return !(lhs > rhs);
 }
 
+/**
+ * \brief Comparison operator.
+ * \returns <tt>!(lhs < rhs)</tt>.
+ */
 template <class charT, class traits>
 constexpr bool operator>=(basic_string_view<charT, traits> lhs,
                           basic_string_view<charT, traits> rhs) noexcept {
   return !(lhs < rhs);
 }
 
+/**
+ * \brief Output stream operator.
+ */
 template <class charT, class traits>
 std::basic_ostream<charT, traits>& operator<<(
     std::basic_ostream<charT, traits>& os,
@@ -218,4 +264,4 @@ std::basic_ostream<charT, traits>& operator<<(
 typedef basic_string_view<char> string_view;
 }  // namespace network
 
-#endif  // NETWORK_URI_STRING_VIEW_INC
+#endif  // NETWORK_STRING_VIEW_INC

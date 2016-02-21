@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include <cctype>
-#include <network/uri/optional.hpp>
+#include <network/optional.hpp>
 #include <network/uri/detail/decode.hpp>
 
 namespace network {

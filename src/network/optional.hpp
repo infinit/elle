@@ -8,8 +8,8 @@
  * \brief Contains an implementation of C++17 optional (n3793).
  */
 
-#ifndef NETWORK_URI_OPTIONAL_INC
-#define NETWORK_URI_OPTIONAL_INC
+#ifndef NETWORK_OPTIONAL_INC
+#define NETWORK_OPTIONAL_INC
 
 #include <stdexcept>
 #include <type_traits>
@@ -704,4 +704,4 @@ inline constexpr optional<typename std::decay<T>::type> make_optional(T&& value)
 }
 }  // namespace network
 
-#endif  // NETWORK_URI_OPTIONAL_INC
+#endif  // NETWORK_OPTIONAL_INC

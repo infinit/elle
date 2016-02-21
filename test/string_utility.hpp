@@ -6,8 +6,7 @@
 #ifndef URI_TEST_STRING_UTILITY_INC
 #define URI_TEST_STRING_UTILITY_INC
 
-#include <network/uri/string_view.hpp>
-#include <cstring>
+#include <network/string_view.hpp>
 
 namespace network {
 inline bool operator==(const char *lhs, string_view rhs) {

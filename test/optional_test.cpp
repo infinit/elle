@@ -5,8 +5,8 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include <network/uri/optional.hpp>
-#include <network/uri/string_view.hpp>
+#include <network/optional.hpp>
+#include <network/string_view.hpp>
 
 TEST(optional_test, empty_optional) {
   network::optional<int> opt;
