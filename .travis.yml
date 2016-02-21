@@ -15,8 +15,8 @@ env:
 
 install:
     - mkdir -p ${HOME}/bin
-    - if [ "${CC}" = "gcc" ]; then export TOOLSET="gcc"; ln -s `which g++-5.2` ${HOME}/bin/g++;
-      ln -s `which gcc-5.2` ${HOME}/bin/gcc; fi
+    - if [ "${CC}" = "gcc" ]; then export TOOLSET="gcc"; ln -s `which g++-4.8` ${HOME}/bin/g++;
+      ln -s `which gcc-4.8` ${HOME}/bin/gcc; fi
     - if [ "${CC}" = "clang" ]; then export TOOLSET="clang"; ln -s `which clang-3.7` ${HOME}/bin/clang;
       ln -s `which clang++-3.7` ${HOME}/bin/clang++; fi
     - export PATH=${HOME}/bin:${PATH}
@@ -24,7 +24,7 @@ install:
 
 before_script:
     # update compilers
-    - if [ "${CXX}" == "g++" ]; then export CXX="g++-5.2" CC="gcc-5.2"; fi
+    - if [ "${CXX}" == "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
     - if [ "${CXX}" == "clang++" ]; then export CXX="clang++-3.7" CC="clang-3.7"; fi
 
 script:
@@ -45,6 +45,6 @@ addons:
     - llvm-toolchain-precise-3.7
     - kalakris-cmake
     packages:
-    - g++-5.2
+    - g++-4.8
     - clang-3.7
     - cmake
