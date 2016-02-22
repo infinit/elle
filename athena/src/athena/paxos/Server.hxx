@@ -118,6 +118,7 @@ namespace athena
       {
         auto& s = static_cast<elle::serialization::SerializerIn&>(serializer);
         this->value.template emplace<T>(s.deserialize<T>("value"));
+        this->confirmed = true;
       }
     }
 
