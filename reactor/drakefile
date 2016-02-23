@@ -688,7 +688,7 @@ def configure(curl_config,
     rule_build << lib_dynamic
     library = lib_dynamic
 
-  if python3 is not None:
+  if python3 is not None and cxx_toolkit.os != drake.os.windows:
     python_cxx_config = drake.cxx.Config(local_cxx_config)
     python_cxx_config.lib_path_runtime('..')
     python_cxx_config += python3
