@@ -166,9 +166,9 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
     sched, "main",                                                    \
     [&]                                                               \
     {                                                                 \
-      ELLE_LOG_COMPONENT("elle.Test")                                 \
-      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name));        \
-      BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));                 \
+      ELLE_LOG_COMPONENT("elle.Test");                                \
+      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name))         \
+        BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));               \
     });                                                               \
   try                                                                 \
   {                                                                   \
