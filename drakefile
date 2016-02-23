@@ -854,7 +854,7 @@ def configure(cxx_toolkit = None,
       l[i] if isinstance(l, tuple) else l
       for l in boost_built_libraries]
       for i in (0, 1))
-    if python3 is not None:
+    if python3 is not None and not windows:
       boost_bootstrap_libraries.append('python')
     if boost_context_enabled:
       boost_bootstrap_libraries.append('context')
@@ -865,10 +865,10 @@ def configure(cxx_toolkit = None,
       '--prefix=%s' % boost_prefix,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
-    if python3 is not None:
+    if python3 is not None and not windows:
       boost_bootstrap_command.append('--with-python=%s' % python_version)
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
-    if python3 is not None:
+    if python3 is not None and not windows:
       boost_library_names.append('python')
       boost_library_names.append('python3')
     if boost_context_enabled:
@@ -1108,9 +1108,9 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost_rule << boost_headers
     boost_rule << boost_libraries
     # Fix ::hypot issues on windows.
-  if windows and python3:
-    boost.config_python(static = True).flag('-include')
-    boost.config_python(static = True).flag('cmath')
+  #if windows and python3:
+  #  boost.config_python(static = True).flag('-include')
+  #  boost.config_python(static = True).flag('cmath')
   set_boost(boost)
 
   ## ------------- ##
