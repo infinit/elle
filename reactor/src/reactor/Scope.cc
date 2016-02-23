@@ -106,7 +106,9 @@ namespace reactor
   void
   Scope::_terminate_now()
   {
+#ifndef INFINIT_WINDOWS
     ELLE_TRACE_SCOPE("%s: terminate now", *this);
+#endif
     auto current = reactor::Scheduler::scheduler()->current();
     std::exception_ptr e;
     bool inside = false;
@@ -119,13 +121,17 @@ namespace reactor
         inside = true;
         continue;
       }
+#ifndef INFINIT_WINDOWS
       ELLE_DEBUG("%s: terminate %s", *this, *t)
+#endif
         t->terminate();
       join.push_back(t);
     }
     while (true)
     {
+#ifndef INFINIT_WINDOWS
       ELLE_DEBUG_SCOPE("%s: wait for all threads to finish", *this);
+#endif
       try
       {
         Scheduler::scheduler()->current()->wait(join);
