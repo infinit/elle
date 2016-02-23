@@ -74,21 +74,24 @@ namespace athena
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
-      elle::serialization::SerializerIn& s, elle::Version const& v)
-      : proposal()
-      , value(Quorum())
-    {
-      this->serialize(s, v);
-    }
+      Proposal proposal_,
+      elle::Option<T, Quorum> value_,
+      bool confirmed_)
+      : proposal(std::move(proposal_))
+      , value(std::move(value_))
+      , confirmed(confirmed_)
+    {}
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
     Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
-      Proposal proposal_,
-      elle::Option<T, Quorum> value_)
-      : proposal(std::move(proposal_))
-      , value(std::move(value_))
-    {}
+      elle::serialization::SerializerIn& s, elle::Version const& v)
+      : proposal()
+      , value(Quorum())
+      , confirmed(false)
+    {
+      this->serialize(s, v);
+    }
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
@@ -99,7 +102,10 @@ namespace athena
     {
       serializer.serialize("proposal", this->proposal);
       if (version >= elle::Version(0, 1, 0))
+      {
         serializer.serialize("value", this->value);
+        serializer.serialize("confirmed", this->confirmed);
+      }
       else if (serializer.out())
       {
         auto& s = static_cast<elle::serialization::SerializerOut&>(serializer);
@@ -112,6 +118,7 @@ namespace athena
       {
         auto& s = static_cast<elle::serialization::SerializerIn&>(serializer);
         this->value.template emplace<T>(s.deserialize<T>("value"));
+        this->confirmed = true;
       }
     }
 
@@ -217,7 +224,8 @@ namespace athena
 
     template <
       typename T, typename Version, typename ClientId, typename ServerId>
-    Server<T, Version, ClientId, ServerId>::Server(ServerId id, Quorum quorum, elle::Version version)
+    Server<T, Version, ClientId, ServerId>::Server(
+      ServerId id, Quorum quorum, elle::Version version)
       : _id(std::move(id))
       , _quorum_initial(quorum)
       , _value()
@@ -253,13 +261,13 @@ namespace athena
       static
       void
       check_quorum(Server<T, Version, CId, SId>& self,
-                    Quorum q, Version const& v)
+                   Quorum q, boost::optional<Version const&> v)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         // FIXME: suboptimal
         auto const* expected = &self._quorum_initial;
         for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
-          if (it->proposal.version < v &&
+          if ((!v || it->proposal.version < *v) &&
               it->accepted &&
               it->accepted->value.template is<Quorum>())
           {
@@ -282,7 +290,7 @@ namespace athena
         for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
           if (it->proposal.version >= v)
             continue;
-          else if (!it->confirmed)
+          else if (!it->accepted || !it->accepted->confirmed)
             throw PartialState(it->proposal);
           else
             break;
@@ -367,10 +375,12 @@ namespace athena
             it,
             [&] (VersionState& s)
             {
-              s.accepted.emplace(std::move(p), std::move(value));
+              s.accepted.emplace(std::move(p), std::move(value), false);
             });
         }
         else
+        {
+          // FIXME: assert !confirmed || new_value == value ?
           this->_state.modify(
             it,
             [&] (VersionState& s)
@@ -378,6 +388,7 @@ namespace athena
               s.accepted->proposal = std::move(p);
               s.accepted->value = std::move(value);
             });
+        }
       }
       return version.proposal;
     }
@@ -395,9 +406,13 @@ namespace athena
       ELLE_ASSERT(it != this->_state.end());
       auto& version = *it;
       ELLE_ASSERT(version.accepted);
-      if (!version.confirmed)
+      if (!version.accepted->confirmed)
       {
-        this->_state.modify(it, [] (VersionState& s) { s.confirmed = true; });
+        this->_state.modify(
+          it,
+          [] (VersionState& s) {
+            s.accepted->confirmed = true;
+          });
         if (version.accepted->value.template is<T>())
           this->_value.emplace(version.accepted->value.template get<T>());
       }
@@ -409,13 +424,15 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get", *this);
-      return _Details::_highest(
+      _Details::check_quorum(*this, q, {});
+      auto res = _Details::_highest(
         this->_state,
         [] (VersionState const& v)
         {
-          return v.confirmed && v.accepted &&
+          return v.accepted && v.accepted->confirmed &&
             v.accepted->value.template is<T>();
         });
+      return res;
     }
 
     template <
@@ -446,7 +463,6 @@ namespace athena
       Proposal p, boost::optional<Accepted> a)
       : proposal(std::move(p))
       , accepted(std::move(a))
-      , confirmed(false)
     {}
 
     template <
@@ -465,10 +481,6 @@ namespace athena
     {
       s.serialize("proposal", this->proposal);
       s.serialize("accepted", this->accepted);
-      if (v >= elle::Version(0, 1, 0))
-        s.serialize("confirmed", this->confirmed);
-      else if (s.in())
-        this->confirmed = true;
     }
 
     template <
