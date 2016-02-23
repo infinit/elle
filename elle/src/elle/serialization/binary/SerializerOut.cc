@@ -93,7 +93,7 @@ namespace elle
           unsigned char c = neg? 0xFF : 0x7F;
           output().write((const char*)&c, 1);
           output().write((const char*)(const void*)&n, 8);
-          ELLE_DUMP("serialize %s as 0x%02x%08x", int(c), n);
+          ELLE_DUMP("serialize %s as 0x%02x%08x", n_, int(c), n);
           /*
           unsigned char ser[9];
           ser[0] = neg? 0xFF : 0x7F;
