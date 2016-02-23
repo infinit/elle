@@ -58,6 +58,7 @@ class Config:
             self.__libs = sched.OrderedSet()
             self.__libraries = sched.OrderedSet()
             self.flags = []
+            self.ldflags = []
             self._framework = {}
             self.__defines = collections.OrderedDict()
             self.__standard = None
@@ -76,6 +77,7 @@ class Config:
             self.__libs = sched.OrderedSet(model.__libs)
             self.__libraries = sched.OrderedSet(model.__libraries)
             self.flags = model.flags[:]
+            self.ldflags = model.ldflags[:]
             self._framework = dict(model._framework)
             self.__defines = collections.OrderedDict(model.__defines)
             self.__standard = model.__standard
@@ -253,6 +255,9 @@ class Config:
 
         self.flags.append(f)
 
+    def ldflag(self, f):
+      self.ldflags.append(f)
+
     def framework_add(self, name):
 
         self._framework[name] = None
@@ -410,6 +415,7 @@ class Config:
         res.__libs |= rhs.__libs
         res.__libraries |= rhs.__libraries
         res.flags += rhs.flags
+        res.ldflags += rhs.ldflags
         std_s = self.__standard
         std_o = rhs.__standard
         if std_s is not None and std_o is not None:
@@ -767,6 +773,7 @@ class GccToolkit(Toolkit):
       res.append('-static')
     elif self.os is drake.os.linux:
       res.append('-pthread')
+    res += cfg.ldflags
     return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
