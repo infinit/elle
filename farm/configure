@@ -120,10 +120,10 @@ elif options.os == 'osx':
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
-  if options.arch == 'x86_64':
-    parameters['python'] = False # '/home/buildslave/local/python-mingw-64'
+  if options.arch == 'x86_64': # Use native python3 in order to run tests
+    parameters['python'] = None # '/home/buildslave/local/python-mingw-64'
   else:
-    parameters['python'] = False # '/home/buildslave/local/python-mingw-32'
+    parameters['python'] = None # '/home/buildslave/local/python-mingw-32'
 else:
   raise Exception('invalid OS: %s' % options.os)
 
