@@ -11,6 +11,7 @@
 #include <reactor/Barrier.hh>
 
 #include <elle/windows/string_conversion.hh>
+#include <elle/os/environ.hh>
 #include <elle/finally.hh>
 #include <ntstatus.h>
 typedef DWORD NTSTATUS;
@@ -872,10 +873,25 @@ namespace reactor
         dokanOptions->Options |= DOKAN_OPTION_DEBUG;
         dokanOptions->Options |= DOKAN_OPTION_STDERR;
       }
-      dokanOptions->Options |= DOKAN_OPTION_REMOVABLE;
+      std::string mode = elle::os::getenv("DOKAN_MOUNT_MODE", "");
+      if (mode.empty())
+        dokanOptions->Options |= DOKAN_OPTION_REMOVABLE;
+      else
+      {
+        if (mode.find("removable")!=mode.npos)
+          dokanOptions->Options |= DOKAN_OPTION_REMOVABLE;
+        if (mode.find("network")!=mode.npos)
+          dokanOptions->Options |= DOKAN_OPTION_NETWORK;
+        if (mode.find("manager")!=mode.npos)
+          dokanOptions->Options |= DOKAN_OPTION_MOUNT_MANAGER;
+        if (mode.find("alt")!=mode.npos)
+          dokanOptions->Options |= DOKAN_OPTION_ALT_STREAM;
+        if (mode.find("session")!=mode.npos)
+          dokanOptions->Options |= DOKAN_OPTION_CURRENT_SESSION;
+      }
       dokanOptions->GlobalContext = (decltype(dokanOptions->GlobalContext))this;
       std::wstring* mountPoint = new std::wstring(from_utf8(where.string()));
-      dokanOptions->MountPoint = mountPoint->data();
+      dokanOptions->MountPoint = mountPoint->c_str();
       DOKAN_OPERATIONS* dokanOperations = new DOKAN_OPERATIONS;
       memset(dokanOperations , 0, sizeof(DOKAN_OPERATIONS));
       dokanOperations->ZwCreateFile = CreateFile;
