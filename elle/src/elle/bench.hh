@@ -27,7 +27,7 @@ namespace elle
     void
     log(); ///< log with ELLE_LOG
     void
-    show(std::ostream& os);
+    show();
     struct BenchScope
     {
       BenchScope(Bench& owner);
