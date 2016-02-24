@@ -991,7 +991,7 @@ class DepFile:
               self.__hashes = drake.Path.Unpickler(f).load()
               if self.__hashes is None:
                 self.__invalid = True
-          except:
+          except Exception:
             self.__invalid = True
       else:
         self.__hashes = {}
@@ -1028,7 +1028,7 @@ class DepFile:
               mtime, oldest_mtime))
         try:
           h = n.hash()
-        except:
+        except Exception:
           explain(self.__builder, '%s cannot be hashed' % path)
           return False
         if h != old_hash:
@@ -1936,7 +1936,7 @@ class Builder:
               try:
                 with open(str(depfile_builder), 'rb') as f:
                   stored_hash = pickle.Unpickler(f).load()
-              except:
+              except Exception:
                 explain(self, 'the builder hash is invalid')
                 execute = True
               if not execute and self._builder_hash != stored_hash:
@@ -3244,7 +3244,7 @@ class Configuration:
         res += [(res, what) for res in self._search_all(what, where)]
         if not all and prefer is None and res:
           return res[0]
-      except:
+      except Exception:
         pass
     if len(res) == 0:
       raise Exception('Unable to find %s in %s.' % \
@@ -3285,17 +3285,17 @@ class Configuration:
           try:
             what.extension = 'so.%s.%s.%s' % (major, minor, subminor)
             return self._search(what, where) / what
-          except:
+          except Exception:
             pass
         try:
           what.extension = 'so.%s.%s' % (major, minor)
           return self._search(what, where) / what
-        except:
+        except Exception:
           pass
       try:
         what.extension = 'so.%s' % (major)
         return self._search(what, where) / what
-      except:
+      except Exception:
         pass
     what.extension = 'so'
     return self._search(what, where) / what
@@ -3597,7 +3597,7 @@ class Runner(Builder):
           p.wait()
           status = p.returncode
           print(status, file = rv)
-        except:
+        except Exception:
           import traceback
           traceback.print_exc()
           return False
