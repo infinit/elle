@@ -796,13 +796,14 @@ namespace __cxxabiv1 {
 extern "C" {
   __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
   {
+    // Always fetch the map to avoid static initialization fiascos.
+    CXAThreadMap& map = cxa_thread_map();
     reactor::Scheduler* sched = reactor::Scheduler::scheduler();
     reactor::backend::Thread* t = nullptr;
     if (sched != nullptr)
       t = sched->manager().current();
     if (sched == nullptr)
     {
-      CXAThreadMap& map = cxa_thread_map();
       auto &res = map[std::this_thread::get_id()];
       if (!res)
         res.reset(new __cxa_eh_globals());
