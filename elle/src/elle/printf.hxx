@@ -87,6 +87,13 @@ namespace elle
       fmt % (value ? value : "");
     }
 
+    inline
+    void
+    feed(boost::format& fmt, char* value)
+    {
+      fmt % (value ? value : "");
+    }
+
     template <typename T>
     inline
     void

@@ -28,8 +28,18 @@ static
 void
 null_string()
 {
-  char const* str = nullptr;
-  BOOST_CHECK_EQUAL(elle::sprintf("empty: %s", str), "empty: ");
+  char const* s1 = nullptr;
+  char* s2 = nullptr;
+  BOOST_CHECK_EQUAL(elle::sprintf("empty: %s%s", s1, s2), "empty: ");
+}
+
+static
+void
+c_string()
+{
+  char const* s1 = "foo";
+  char* s2 = const_cast<char*>("bar");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s %s", s1, s2), "foo bar");
 }
 
 static
@@ -83,6 +93,7 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(string));
   suite.add(BOOST_TEST_CASE(null_string));
+  suite.add(BOOST_TEST_CASE(c_string));
   suite.add(BOOST_TEST_CASE(scoped));
   suite.add(BOOST_TEST_CASE(too_few));
   suite.add(BOOST_TEST_CASE(empty));
