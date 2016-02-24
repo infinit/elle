@@ -45,13 +45,15 @@ namespace elle
   BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem), Data)
 
 # define ELLE_ATTRIBUTE_PROPERTY__PRE
+# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRE public:
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PRE protected:
 # define ELLE_ATTRIBUTE_PROPERTY_public_PRE public:
-# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRE public:
+# define ELLE_ATTRIBUTE_PROPERTY_static_PRE
 # define ELLE_ATTRIBUTE_PROPERTY__PRETYPE
+# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRETYPE mutable
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PRETYPE
 # define ELLE_ATTRIBUTE_PROPERTY_public_PRETYPE
-# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRETYPE mutable
+# define ELLE_ATTRIBUTE_PROPERTY_static_PRETYPE static
 
 /// Define a private attribute.
 # define ELLE_ATTRIBUTE(Type, ...)                                      \
