@@ -12,7 +12,7 @@ import itertools
 import os.path
 import sys
 
-from .. import Exception, Path, Version
+from .. import Path, Version
 from .  import Config, StaticLib
 
 def find(prefix = None,

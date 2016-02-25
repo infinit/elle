@@ -278,12 +278,6 @@ profile_hashing = Profile('files hashing')
 profile_unpickling = Profile('dependencies files reading')
 profile_pickling = Profile('dependencies files writing')
 
-_Exception = Exception
-class Exception(Exception):
-    """Base type for any exception thrown within drake."""
-    pass
-
-
 class NodeRedefinition(Exception):
 
     """Thrown when a node is redefined.
@@ -1963,7 +1957,7 @@ class Builder:
             logger.log('drake.Builder',
                        drake.log.LogLevel.debug,
                        '%s: everything is up to date', self)
-      except _Exception as e:
+      except Exception as e:
         logger.log('drake.Builder',
                    drake.log.LogLevel.trace,
                    '%s: exception: %s', self, e)
@@ -2014,7 +2008,7 @@ class Builder:
                      '%s: executed', self)
       except sched.Terminate:
         raise
-      except _Exception as e:
+      except Exception as e:
         e_pretty = str(e)
         if not e_pretty:
           e_pretty = repr(e)
