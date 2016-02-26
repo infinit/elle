@@ -147,7 +147,7 @@ namespace athena
         elle::Version version = elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
       ELLE_ATTRIBUTE_R(ServerId, id);
       ELLE_ATTRIBUTE_R(Quorum, quorum_initial);
-      ELLE_ATTRIBUTE_R(boost::optional<T>, value);
+      ELLE_ATTRIBUTE_R(boost::optional<Accepted>, value);
       ELLE_ATTRIBUTE_R(elle::Version, version);
 
     /*----------.
@@ -163,9 +163,7 @@ namespace athena
       boost::optional<Accepted>
       get(Quorum q);
       boost::optional<Accepted>
-      highest_accepted() const;
-      boost::optional<Accepted>
-      highest_accepted_value() const;
+      current_value() const;
       struct VersionState
       {
         VersionState(Proposal p, boost::optional<Accepted> a = {});
@@ -179,15 +177,16 @@ namespace athena
         serialize(elle::serialization::Serializer& s, elle::Version const& v);
         typedef elle::serialization_tag serialization_tag;
       };
-      typedef boost::multi_index::multi_index_container<
-        VersionState,
-        boost::multi_index::indexed_by<
-          boost::multi_index::ordered_unique<
-            boost::multi_index::const_mem_fun<
-              VersionState, Version, &VersionState::version>>
-          >
-        > VersionsState;
-      ELLE_ATTRIBUTE(VersionsState, state);
+      ELLE_ATTRIBUTE(boost::optional<VersionState>, state);
+      // typedef boost::multi_index::multi_index_container<
+      //   VersionState,
+      //   boost::multi_index::indexed_by<
+      //     boost::multi_index::ordered_unique<
+      //       boost::multi_index::const_mem_fun<
+      //         VersionState, Version, &VersionState::version>>
+      //     >
+      //   > VersionsState;
+      // ELLE_ATTRIBUTE(VersionsState, state);
     private:
       struct _Details;
       friend struct _Details;

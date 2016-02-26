@@ -336,8 +336,10 @@ ELLE_TEST_SCHEDULED(versions)
   peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
   peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(1, std::move(peers_2));
-  BOOST_CHECK(!client_1.choose(1, 1));
-  BOOST_CHECK(!client_2.choose(2, 2));
+  ELLE_LOG("choose 1 for version 1")
+    BOOST_CHECK(!client_1.choose(1, 1));
+  ELLE_LOG("choose 2 for version 2")
+    BOOST_CHECK(!client_2.choose(2, 2));
 }
 
 // Check a newer version, even partially agreed on, is taken in account
@@ -457,6 +459,11 @@ ELLE_TEST_SCHEDULED(elect_extend)
   paxos::Client<int, int, int> client(1, std::move(peers));
   ELLE_LOG("choose 0 for version 0")
     BOOST_CHECK(!client.choose(0, 0));
+  //        11
+  //   +---------+
+  // 0 |    0    | -> 1
+  //   |  1:1:1  |
+  //   +---------+
   ELLE_LOG("fail choosing 1 for version 0")
     BOOST_CHECK_EQUAL(client.choose(0, 1)->value.get<int>(), 0);
   ELLE_LOG("fail choosing quorum of 2 for version 0");
@@ -464,6 +471,14 @@ ELLE_TEST_SCHEDULED(elect_extend)
       client.choose(0, Client::Quorum{11, 12})->value.get<int>(), 0);
   ELLE_LOG("choose quorum of 2 for version 1")
     BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
+  //        11
+  //   +---------+
+  // 1 | {11,12} | -> {11,12}
+  //   |  1:1:1  |
+  //   +---------+
+  // 0 |    0    | -> 1
+  //   |  0:1:1  |
+  //   +---------+
   ELLE_LOG("fail choosing 1 for version 1")
     BOOST_CHECK_EQUAL(client.choose(1, 1)->value.get<Client::Quorum>(),
                       Client::Quorum({11, 12}));
@@ -473,8 +488,33 @@ ELLE_TEST_SCHEDULED(elect_extend)
     elle::make_unique<Peer<int, int, int>>(12, server_2));
   ELLE_LOG("choose 2 for version 2 with extended quorum")
     BOOST_CHECK(!client.choose(2, 2));
+  //        11
+  //   +---------+---------+
+  // 2 |    2    |    2    | -> 2
+  //   |  2:1:1  |  2:1:1  |
+  //   +---------+---------+
+  // 1 | {11,12} |           -> {11,12}
+  //   |  1:1:1  |
+  //   +---------+
+  // 0 |    0    |           -> 1
+  //   |  0:1:1  |
+  //   +---------+
   ELLE_LOG("choose 3 for version 3 with extended quorum")
     BOOST_CHECK(!client.choose(3, 3));
+  //        11
+  //   +---------+---------+
+  // 3 |    3    |    3    | -> 3
+  //   |  3:1:1  |  3:1:1  |
+  //   +---------+---------+
+  // 2 |    2    |    2    | -> 2
+  //   |  2:1:1  |  3:1:1  |
+  //   +---------+---------+
+  // 1 | {11,12} |           -> {11,12}
+  //   |  1:1:1  |
+  //   +---------+
+  // 0 |    0    |           -> 1
+  //   |  0:1:1  |
+  //   +---------+
 }
 
 ELLE_TEST_SCHEDULED(elect_shrink)
@@ -538,13 +578,37 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
     BOOST_CHECK(!make_client().choose(1, 1));
   ELLE_LOG("choose 2 for version 2")
     BOOST_CHECK(!make_client().choose(2, 2));
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 2 |    2    |    2    |    2    | -> 2
+  //   |  2:1:1  |  2:1:1  |  2:1:1  |
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:1  |  1:1:1  |  1:1:1  |
+  //   +---------+---------+---------+
   ELLE_LOG("choose quorum {11, 12} for version 3")
     BOOST_CHECK(!make_partial_client().choose(3, Client::Quorum{11, 12}));
+  //        11        12        13
+  //   +---------+---------+---------+
+  // 3 | {11,12} | {11,12} |         | -> {11,12}
+  //   |  3:1:1  |  3:1:1  |         |
+  //   +---------+---------+---------+
+  // 2 |    2    |    2    |    2    | -> 2
+  //   |  2:1:1  |  2:1:1  |  2:1:1  |
+  //   +---------+---------+---------+
+  // 1 |    1    |    1    |    1    | -> 1
+  //   |  1:1:1  |  1:1:1  |  1:1:1  |
+  //   +---------+---------+---------+
   ELLE_LOG("choose 21 for version 2")
+    // Both exception and response are deemed valid behavior
     try
     {
-      make_2client().choose(2, 21);
-      BOOST_FAIL("quorum should have been refused");
+      auto res = make_2client().choose(2, 21);
+      BOOST_CHECK(res);
+      BOOST_CHECK(res->confirmed);
+      BOOST_CHECK(res->value.template is<Client::Quorum>());
+      BOOST_CHECK_EQUAL(res->value.template get<Client::Quorum>(),
+                        (Client::Quorum{11, 12}));
     }
     catch (Server::WrongQuorum const& e)
     {
@@ -708,12 +772,12 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
-  suite.add(BOOST_TEST_CASE(evict_down_lag_behind), 0, valgrind(1));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
     quorum->add(BOOST_TEST_CASE(elect_extend), 0, valgrind(1));
     quorum->add(BOOST_TEST_CASE(elect_shrink), 0, valgrind(1));
+    quorum->add(BOOST_TEST_CASE(evict_down_lag_behind), 0, valgrind(1));
     {
       auto divergence = BOOST_TEST_SUITE("divergence");
       using namespace quorum_divergence;
