@@ -178,15 +178,6 @@ namespace athena
         typedef elle::serialization_tag serialization_tag;
       };
       ELLE_ATTRIBUTE(boost::optional<VersionState>, state);
-      // typedef boost::multi_index::multi_index_container<
-      //   VersionState,
-      //   boost::multi_index::indexed_by<
-      //     boost::multi_index::ordered_unique<
-      //       boost::multi_index::const_mem_fun<
-      //         VersionState, Version, &VersionState::version>>
-      //     >
-      //   > VersionsState;
-      // ELLE_ATTRIBUTE(VersionsState, state);
     private:
       struct _Details;
       friend struct _Details;

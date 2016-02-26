@@ -478,7 +478,29 @@ namespace athena
       s.serialize("quorum", this->_quorum_initial);
       if (v >= elle::Version(0, 1, 0))
         s.serialize("value", this->_value);
-      s.serialize("state", this->_state);
+      typedef boost::multi_index::multi_index_container<
+        VersionState,
+        boost::multi_index::indexed_by<
+          boost::multi_index::ordered_unique<
+            boost::multi_index::const_mem_fun<
+              VersionState, Version, &VersionState::version>>
+          >
+        > VersionsState;
+      if (s.out())
+      {
+        VersionsState states;
+        if (this->_state)
+          states.emplace(this->_state.get());
+        s.serialize("state", states);
+      }
+      else
+      {
+        VersionsState states;
+        s.serialize("state", states);
+        auto it = states.rbegin();
+        if (it != states.rend())
+          this->_state.emplace(*it);
+      }
     }
 
     /*----------.
