@@ -813,8 +813,20 @@ namespace reactor
                                          DWORD 	FileSystemNameSize,
                                          PDOKAN_FILE_INFO context)
     {
+      FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
       if (VolumeNameBuffer)
-        wcscpy(VolumeNameBuffer, L"reactfs");
+      {
+        wcscpy(VolumeNameBuffer, L"infinit");
+        for (auto o: fs->mount_options())
+        {
+          if (o.find("volname=") == 0)
+          {
+            auto volname = o.substr(strlen("volname="));
+            auto volnamew = from_utf8(volname);
+            wcscpy(VolumeNameBuffer, volnamew.data());
+          }
+        }
+      }
       if (VolumeSerialNumber)
         *VolumeSerialNumber = 0x00000001;
       if (FileSystemNameBuffer)
@@ -861,6 +873,7 @@ namespace reactor
     void FileSystem::mount(boost::filesystem::path const& where,
                            std::vector<std::string> const& options)
     {
+      this->_mount_options = options;
       le_scheduler = &scheduler();
       DOKAN_OPTIONS* dokanOptions = new DOKAN_OPTIONS;
       memset(dokanOptions, 0, sizeof(DOKAN_OPTIONS));

@@ -286,6 +286,7 @@ namespace reactor
       std::shared_ptr<Path>
       fetch_recurse(std::string path);
       ELLE_ATTRIBUTE_RX(std::unique_ptr<Operations>, operations);
+      ELLE_ATTRIBUTE_R(std::vector<std::string>, mount_options);
       bool _full_tree;
       std::string _where;
       std::unordered_map<std::string, std::shared_ptr<Path>> _cache;
