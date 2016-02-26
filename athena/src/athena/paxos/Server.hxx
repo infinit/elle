@@ -304,7 +304,7 @@ namespace athena
         auto& accepted = this->_state->accepted;
         ELLE_ASSERT(accepted);
         if (accepted->value.template is<T>())
-          this->_value = std::move(accepted);
+          this->_value.emplace(std::move(accepted->value.template get<T>()));
         else
           this->_quorum_initial =
             std::move(accepted->value.template get<Quorum>());
@@ -394,13 +394,17 @@ namespace athena
     boost::optional<typename Server<T, Version, CId, SId>::Accepted>
     Server<T, Version, CId, SId>::current_value() const
     {
-      if (this->_state &&
-          this->_state->accepted &&
+      if (!this->_state)
+        return {};
+      if (this->_state->accepted &&
           this->_state->accepted->confirmed &&
           this->_state->accepted->value.template is<T>())
         return this->_state->accepted;
       else
-        return this->_value;
+        if (this->_value)
+          return Accepted(this->_state->proposal, *this->_value, true);
+        else
+          return {};
     }
 
     template <typename T, typename Version, typename CId, typename SId>
