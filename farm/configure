@@ -94,8 +94,7 @@ with drake.Drake(%(dir_source)r) as d:
           **extra_args)
 
   if cxx_toolkit.os == drake.os.macos and os.environ.get('MACMINI_KEYCHAIN_PASSWORD', None):
-    utils_path = os.path.dirname(os.path.realpath(__file__)) + '/../drake-utils.py'
-    with open(utils_path, 'r') as f:
+    with open(%(drake_utils)r, 'r') as f:
       exec(f.read(), globals(), globals())
     keychain_path = '~/AppSign.keychain'
     with Keychain(keychain_path, os.environ['MACMINI_KEYCHAIN_PASSWORD']):
@@ -129,6 +128,8 @@ elif options.os == 'osx':
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
+  parameters['drake_utils'] = \
+    '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
