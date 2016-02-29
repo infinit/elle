@@ -6,6 +6,17 @@
 # include <ostream>
 # include <cmath>
 
+// Avoid circular header dependencies. Maybe factor this in printf-pwd.hh or
+// something.
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
 namespace std
 {
   template <typename T, std::intmax_t Num, std::intmax_t Denom>
@@ -17,13 +28,13 @@ namespace std
     auto significant = int(std::pow(10, std::max(log - 3, 0.)));
     auto pretty = double(t.count() / significant) * significant;
     if (Denom / Num / significant >= 1000000000)
-      o << (pretty * Num * 1000000000 / Denom) << "ns";
+      elle::fprintf(o, "%sns", pretty * Num * 1000000000 / Denom);
     else if (Denom / Num / significant >= 1000000)
-      o << (pretty * Num * 1000000 / Denom) << "us";
+      elle::fprintf(o, "%sus", pretty * Num * 1000000 / Denom);
     else if (Denom / Num / significant >= 1000)
-      o << (pretty * Num * 1000 / Denom) << "ms";
+      elle::fprintf(o, "%sms", pretty * Num * 1000 / Denom);
     else
-      o << (pretty * Num / Denom) << "s";
+      elle::fprintf(o, "%ss", pretty * Num / Denom);
     return o;
   }
 }
