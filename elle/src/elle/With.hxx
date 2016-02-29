@@ -31,7 +31,7 @@ namespace elle
   {
     ELLE_LOG_COMPONENT("elle.With");
     ELLE_TRACE("%s: construct by copy", *this)
-      new (this->_value) T(std::move(*this->_value));
+      new (this->_value) T(std::move(*(value._value)));
   }
 
   template <typename T>
