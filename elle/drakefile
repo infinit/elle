@@ -278,6 +278,19 @@ def configure(zlib_lib,
     'src/elle/types.hh',
     'src/elle/utils.hh',
     )
+  sources += [drake.cxx.Header(h) for h in [
+    'src/chrono',
+    'src/deque',
+    'src/list',
+    'src/map',
+    'src/memory',
+    'src/pair',
+    'src/set',
+    'src/type_traits',
+    'src/unordered_map',
+    'src/unordered_set',
+    'src/vector',
+  ]]
   version = drake.node('src/elle/elle.hh')
   CxxVersionGenerator(output = version, git = drake.git.Git(),
                       prefix = 'ELLE')
@@ -574,6 +587,7 @@ def configure(zlib_lib,
     'archive.cc',
     'assert.cc',
     'cast.cc',
+    'chrono.cc',
     'compiler.cc',
     'filesystem/TemporaryDirectory.cc',
     'finally.cc',
