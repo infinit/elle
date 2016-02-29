@@ -113,6 +113,7 @@ parameters = {
   'valgrind': False,
   'production_build': True,
   'arch': options.arch,
+  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
 }
 
 if options.os == 'android':
@@ -128,8 +129,6 @@ elif options.os == 'osx':
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
-  parameters['drake_utils'] = \
-    '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['boost_shared'] = False
