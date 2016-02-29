@@ -3,8 +3,9 @@
 
 # include_next <chrono>
 
-# include <ostream>
+# include <algorithm>
 # include <cmath>
+# include <iosfwd>
 
 // Avoid circular header dependencies. Maybe factor this in printf-pwd.hh or
 // something.
