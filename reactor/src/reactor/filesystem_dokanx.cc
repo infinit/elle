@@ -902,6 +902,13 @@ namespace reactor
         if (mode.find("session")!=mode.npos)
           dokanOptions->Options |= DOKAN_OPTION_CURRENT_SESSION;
       }
+      for (auto o: options)
+      {
+        if (o == "ro")
+        {
+          dokanOptions->Options |= DOKAN_OPTION_WRITE_PROTECT;
+        }
+      }
       dokanOptions->GlobalContext = (decltype(dokanOptions->GlobalContext))this;
       std::wstring* mountPoint = new std::wstring(from_utf8(where.string()));
       dokanOptions->MountPoint = mountPoint->c_str();
