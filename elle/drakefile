@@ -110,6 +110,7 @@ def configure(zlib_lib,
     cxx_config.framework_add('Foundation')
 
   sources = drake.nodes(
+    'src/elle/bytes.hh',
     'src/elle/finally.cc',
     'src/elle/finally.hh',
     'src/elle/factory.hh',
@@ -586,6 +587,7 @@ def configure(zlib_lib,
     'With.cc',
     'archive.cc',
     'assert.cc',
+    'bytes.cc',
     'cast.cc',
     'chrono.cc',
     'compiler.cc',
