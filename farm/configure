@@ -96,7 +96,7 @@ with drake.Drake(%(dir_source)r) as d:
   if cxx_toolkit.os == drake.os.macos and os.environ.get('MACMINI_KEYCHAIN_PASSWORD', None):
     with open(%(drake_utils)r, 'r') as f:
       exec(f.read(), globals(), globals())
-    keychain_path = '~/AppSign.keychain'
+    keychain_path = os.path.expanduser('~/AppSign.keychain')
     with Keychain(keychain_path, os.environ['MACMINI_KEYCHAIN_PASSWORD']):
       drake_run(codesign = True)
   else:
