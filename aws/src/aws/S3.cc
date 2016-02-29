@@ -986,12 +986,19 @@ namespace aws
   S3::hostname(Credentials const& credentials,
                boost::optional<std::string> override_host) const
   {
+    static std::string us_east_1 = "us-east-1";
     // docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
     // Use a region-specific domain to avoid being redirected.
+    // http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region.
+    // us-east-1 is the exception.
     std::string host = override_host
       ? override_host.get()
-      : elle::sprintf("%s.s3-%s.amazonaws.com", credentials.bucket(),
-                      credentials.region());
+      : elle::sprintf(
+        "%s.s3%s.amazonaws.com",
+        credentials.bucket(),
+        credentials.region() != us_east_1
+        ? elle::sprintf("-%s", credentials.region())
+        : std::string{});
     return URL{"https://", host, ""};
   }
 

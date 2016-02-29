@@ -245,55 +245,36 @@ namespace athena
     struct Server<T, Version, CId, SId>::_Details
     {
       static
-      boost::optional<Accepted>
-      _highest(
-        VersionsState const& versions,
-        std::function<bool(VersionState const& v)> p)
-      {
-        for (auto it = versions.rbegin(); it != versions.rend(); ++it)
-        {
-          if (p(*it))
-            return it->accepted;
-        }
-        return {};
-      }
-
-      static
       void
-      check_quorum(Server<T, Version, CId, SId>& self,
-                   Quorum q, boost::optional<Version const&> v)
+      check_quorum(Server<T, Version, CId, SId>& self, Quorum q)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
-        // FIXME: suboptimal
-        auto const* expected = &self._quorum_initial;
-        for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
-          if ((!v || it->proposal.version < *v) &&
-              it->accepted &&
-              it->accepted->value.template is<Quorum>())
-          {
-            expected = &it->accepted->value.template get<Quorum>();
-            break;
-          }
-        if (q != *expected)
+        if (q != self._quorum_initial)
         {
-          ELLE_TRACE("quorum is wrong: %f instead of %f", q, *expected);
-          throw WrongQuorum(*expected, std::move(q));
+          ELLE_TRACE("quorum is wrong: %f instead of %f",
+                     q, self._quorum_initial);
+          throw WrongQuorum(self._quorum_initial, std::move(q));
         }
       }
 
+      /// Check we don't skip any version and the previous version was confirmed
+      /// before starting a new one.
       static
       void
-      check_confirmed(Server<T, Version, CId, SId>& self, Version const& v)
+      check_confirmed(Server<T, Version, CId, SId>& self, Proposal const& p)
       {
         if (self.version() < elle::Version(0, 1, 0))
           return;
-        for (auto it = self._state.rbegin(); it != self._state.rend(); ++it)
-          if (it->proposal.version >= v)
-            continue;
-          else if (!it->accepted || !it->accepted->confirmed)
-            throw PartialState(it->proposal);
-          else
-            break;
+        if (!self._state)
+          return;
+        auto const& version = self._state->proposal.version;
+        if (version >= p.version)
+          return;
+        if (version == p.version - 1 &&
+            self._state->accepted &&
+            self._state->accepted->confirmed)
+          return;
+        throw PartialState(self._state->proposal);
       }
     };
 
@@ -308,86 +289,75 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
-      _Details::check_confirmed(*this, p.version);
-      _Details::check_quorum(*this, q, p.version);
+      _Details::check_confirmed(*this, p);
+      if (this->_state &&
+          this->_state->accepted &&
+          this->_state->accepted->proposal.version > p.version)
       {
-        auto highest = this->highest_accepted();
-        if (highest && highest->proposal.version > p.version)
-        {
-          ELLE_DEBUG(
-            "%s: refuse proposal for version %s in favor of version %s",
-            *this, p.version, highest->proposal.version);
-          return highest.get();
-        }
+        ELLE_DEBUG(
+          "refuse proposal for version %s in favor of version %s",
+          p.version, this->_state->accepted->proposal.version);
+        return this->_state->accepted;
       }
-      auto it = this->_state.find(p.version);
-      if (it == this->_state.end())
+      if (this->_state && p.version > this->_state->proposal.version)
       {
-        ELLE_DEBUG_SCOPE(
-          "%s: accept proposal for new version %s", *this, p.version);
+        auto& accepted = this->_state->accepted;
+        ELLE_ASSERT(accepted);
+        if (accepted->value.template is<T>())
+          this->_value.emplace(std::move(accepted->value.template get<T>()));
+        else
+          this->_quorum_initial =
+            std::move(accepted->value.template get<Quorum>());
+        this->_state.reset();
+      }
+      _Details::check_quorum(*this, q);
+      if (!this->_state)
+      {
+        ELLE_DEBUG_SCOPE("accept first proposal for version %s", p.version);
         this->_state.emplace(std::move(p));
         return {};
       }
       else
       {
-        if (it->proposal < p)
+        if (this->_state->proposal < p)
         {
-          ELLE_DEBUG("%s: update minimum proposal for version %s",
-                     *this, p.version);
-          this->_state.modify(it,
-                              [&] (VersionState& s)
-                              {
-                                s.proposal = std::move(p);
-                              });
+          ELLE_DEBUG("update minimum proposal for version %s", p.version);
+          this->_state->proposal = std::move(p);
         }
-        return it->accepted;
+        return this->_state->accepted;
       }
     }
 
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    typename Server<T, Version, ClientId, ServerId>::Proposal
-    Server<T, Version, ClientId, ServerId>::accept(
+    template <typename T, typename Version, typename CId, typename SId>
+    typename Server<T, Version, CId, SId>::Proposal
+    Server<T, Version, CId, SId>::accept(
       Quorum q, Proposal p, elle::Option<T, Quorum> value)
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
-      _Details::check_quorum(*this, q, p.version);
+      _Details::check_quorum(*this, q);
+      if (!this->_state || this->_state->proposal < p)
       {
-        auto highest = this->highest_accepted();
-        if (highest && highest->proposal.version > p.version)
-        {
-          ELLE_DEBUG(
-            "%s: refuse acceptation for version %s in favor of version %s",
-            *this, p.version, highest->proposal.version);
-          return highest->proposal;
-        }
+        ELLE_WARN("%s: someone malicious sent an accept before propose",
+                  this);
+        throw elle::Error("propose before accepting");
       }
-      auto it = this->_state.find(p.version);
-      // FIXME: asserts if someone malicious accepts without a proposal
-      ELLE_ASSERT(it != this->_state.end());
-      auto& version = *it;
+      if (p < this->_state->proposal)
+      {
+        ELLE_TRACE("discard obsolete accept, current proposal is %s",
+                   this->_state->proposal);
+        return this->_state->proposal;
+      }
+      auto& version = *this->_state;
       if (!(p < version.proposal))
       {
         if (!version.accepted)
-        {
-          this->_state.modify(
-            it,
-            [&] (VersionState& s)
-            {
-              s.accepted.emplace(std::move(p), std::move(value), false);
-            });
-        }
+          version.accepted.emplace(std::move(p), std::move(value), false);
         else
         {
           // FIXME: assert !confirmed || new_value == value ?
-          this->_state.modify(
-            it,
-            [&] (VersionState& s)
-            {
-              s.accepted->proposal = std::move(p);
-              s.accepted->value = std::move(value);
-            });
+          version.accepted->proposal = std::move(p);
+          version.accepted->value = std::move(value);
         }
       }
       return version.proposal;
@@ -400,22 +370,41 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
-      _Details::check_quorum(*this, q, p.version);
-      auto it = this->_state.find(p.version);
-      // FIXME: asserts if someone malicious
-      ELLE_ASSERT(it != this->_state.end());
-      auto& version = *it;
-      ELLE_ASSERT(version.accepted);
-      if (!version.accepted->confirmed)
+      _Details::check_quorum(*this, q);
+      if (!this->_state ||
+          this->_state->proposal < p ||
+          !this->_state->accepted)
       {
-        this->_state.modify(
-          it,
-          [] (VersionState& s) {
-            s.accepted->confirmed = true;
-          });
-        if (version.accepted->value.template is<T>())
-          this->_value.emplace(version.accepted->value.template get<T>());
+        ELLE_WARN("%s: someone malicious sent a confirm before propose/accept",
+                  this);
+        throw elle::Error("propose and accept before confirming");
       }
+      if (p < this->_state->proposal)
+      {
+        ELLE_TRACE("discard obsolete confirm, current proposal is %s",
+                   this->_state->proposal);
+        return;
+      }
+      auto& accepted = *this->_state->accepted;
+      if (!accepted.confirmed)
+        accepted.confirmed = true;
+    }
+
+    template <typename T, typename Version, typename CId, typename SId>
+    boost::optional<typename Server<T, Version, CId, SId>::Accepted>
+    Server<T, Version, CId, SId>::current_value() const
+    {
+      if (!this->_state)
+        return {};
+      if (this->_state->accepted &&
+          this->_state->accepted->confirmed &&
+          this->_state->accepted->value.template is<T>())
+        return this->_state->accepted;
+      else
+        if (this->_value)
+          return Accepted(this->_state->proposal, *this->_value, true);
+        else
+          return {};
     }
 
     template <typename T, typename Version, typename CId, typename SId>
@@ -424,37 +413,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get", *this);
-      _Details::check_quorum(*this, q, {});
-      auto res = _Details::_highest(
-        this->_state,
-        [] (VersionState const& v)
-        {
-          return v.accepted && v.accepted->confirmed &&
-            v.accepted->value.template is<T>();
-        });
-      return res;
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
-    Server<T, Version, ClientId, ServerId>::highest_accepted() const
-    {
-      return _Details::_highest(
-        this->_state, [] (VersionState const& v) { return bool(v.accepted); });
-    }
-
-    template <
-      typename T, typename Version, typename ClientId, typename ServerId>
-    boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
-    Server<T, Version, ClientId, ServerId>::highest_accepted_value() const
-    {
-      return _Details::_highest(
-        this->_state,
-        [] (VersionState const& v)
-        {
-          return v.accepted && v.accepted->value.template is<T>();
-        });
+      _Details::check_quorum(*this, q);
+      return this->current_value();
     }
 
     template <
@@ -518,7 +478,29 @@ namespace athena
       s.serialize("quorum", this->_quorum_initial);
       if (v >= elle::Version(0, 1, 0))
         s.serialize("value", this->_value);
-      s.serialize("state", this->_state);
+      typedef boost::multi_index::multi_index_container<
+        VersionState,
+        boost::multi_index::indexed_by<
+          boost::multi_index::ordered_unique<
+            boost::multi_index::const_mem_fun<
+              VersionState, Version, &VersionState::version>>
+          >
+        > VersionsState;
+      if (s.out())
+      {
+        VersionsState states;
+        if (this->_state)
+          states.emplace(this->_state.get());
+        s.serialize("state", states);
+      }
+      else
+      {
+        VersionsState states;
+        s.serialize("state", states);
+        auto it = states.rbegin();
+        if (it != states.rend())
+          this->_state.emplace(*it);
+      }
     }
 
     /*----------.

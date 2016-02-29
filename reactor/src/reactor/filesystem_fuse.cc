@@ -644,10 +644,18 @@ namespace reactor
     {
       BENCH("fsyncdir");
       ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", check_path(path), datasync);
+      if (!fi)
+      {
+        ELLE_WARN("fsyncdir: file_info is null");
+        return 0;
+      }
       try
       {
         Handle* handle = (Handle*)fi->fh;
-        handle->fsyncdir(datasync);
+        if (!handle)
+          ELLE_WARN("fsyncdir: handle is null");
+        else
+          handle->fsyncdir(datasync);
       }
       catch (Error const& e)
       {
