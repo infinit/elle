@@ -514,7 +514,7 @@ class Path:
       >>> p.remove(True)
       Traceback (most recent call last):
           ...
-      drake.Exception: Path does not exist: /tmp/.drake.foo
+      Exception: Path does not exist: /tmp/.drake.foo
       """
       try:
           _OS.remove(str(self))
@@ -873,7 +873,7 @@ class Path:
       >>> p.without_suffix("baz")
       Traceback (most recent call last):
           ...
-      drake.Exception: baz is not a suffix of foo/bar/baz/quux
+      Exception: baz is not a suffix of foo/bar/baz/quux
       """
       rhs = drake.Path(rhs)
       if self.__path[-len(rhs.__path):] != rhs.__path:
@@ -1477,7 +1477,7 @@ class Node(BaseNode):
     >>> n.build()
     Traceback (most recent call last):
         ...
-    drake.Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
+    Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
     """
     super().build()
 

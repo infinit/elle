@@ -379,7 +379,7 @@ class Config:
         >>> cfg1 + cfg2
         Traceback (most recent call last):
             ...
-        drake.Exception: redefinition of B from 0 to 1
+        Exception: redefinition of B from 0 to 1
         """
         def merge_bool(attr):
           mine = getattr(self, attr, None)
@@ -580,7 +580,7 @@ class GccToolkit(Toolkit):
     try:
       version = subprocess.check_output([self.cxx, '--version'])
     except:
-      raise drake.Exception('Unable to find compiler: %s' % self.cxx)
+      raise Exception('Unable to find compiler: %s' % self.cxx)
     apple, win32, win64, linux, android, gnuc, clang, x86_64, arm = \
       self.preprocess_isdef((
         '__APPLE__',
