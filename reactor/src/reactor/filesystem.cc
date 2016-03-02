@@ -454,7 +454,7 @@ namespace reactor
     }
 
     int
-    BindHandle::write(elle::WeakBuffer buffer, size_t size, off_t offset)
+    BindHandle::write(elle::ConstWeakBuffer buffer, size_t size, off_t offset)
     {
       lseek(this->_fd, offset, SEEK_SET);
       return ::write(this->_fd, buffer.contents(), size);

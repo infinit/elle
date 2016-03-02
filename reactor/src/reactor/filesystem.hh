@@ -78,7 +78,7 @@ namespace reactor
 
       virtual
       int
-      write(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
+      write(elle::ConstWeakBuffer buffer, size_t size, off_t offset)=0;
 
       virtual
       void
@@ -302,7 +302,7 @@ namespace reactor
       int
       read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
       int
-      write(elle::WeakBuffer buffer, size_t size, off_t offset) override;
+      write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override;
       void
       ftruncate(off_t offset) override;
       void

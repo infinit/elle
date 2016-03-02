@@ -643,19 +643,18 @@ namespace reactor
     fusop_fsyncdir(const char* path, int datasync, fuse_file_info* fi)
     {
       BENCH("fsyncdir");
+      ELLE_ASSERT(path);
       ELLE_TRACE_SCOPE("fusop_fsyncdir %s %s", check_path(path), datasync);
-      if (!fi)
-      {
-        ELLE_WARN("fsyncdir: file_info is null");
-        return 0;
-      }
       try
       {
-        Handle* handle = (Handle*)fi->fh;
-        if (!handle)
-          ELLE_WARN("fsyncdir: handle is null");
+        if (fi && fi->fh)
+          reinterpret_cast<Handle*>(fi->fh)->fsync(datasync);
         else
-          handle->fsyncdir(datasync);
+        {
+          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          PathPtr p = fs->path(path);
+          // p->fsync(key);
+        }
       }
       catch (Error const& e)
       {
@@ -666,8 +665,7 @@ namespace reactor
     }
 
     class FileSystemImpl: public FuseContext
-    {
-    };
+    {};
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
       : _impl(new FileSystemImpl())

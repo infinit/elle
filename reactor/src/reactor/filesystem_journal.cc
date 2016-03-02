@@ -229,7 +229,10 @@ namespace reactor
         }
         REACTOR_FILESYSTEM_HERROR("read")
       }
-      virtual int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
+
+      virtual
+      int
+      write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override
       {
         elle::Buffer buf(buffer.contents(), buffer.size());
         uint64_t size_ = uint64_t(size);
