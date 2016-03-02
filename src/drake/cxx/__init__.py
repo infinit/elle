@@ -580,7 +580,7 @@ class GccToolkit(Toolkit):
     try:
       version = subprocess.check_output([self.cxx, '--version'])
     except:
-      raise drake.Exception('Unable to find compiler: %s' % compiler)
+      raise drake.Exception('Unable to find compiler: %s' % self.cxx)
     apple, win32, win64, linux, android, gnuc, clang, x86_64, arm = \
       self.preprocess_isdef((
         '__APPLE__',
