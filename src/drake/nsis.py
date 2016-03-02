@@ -45,7 +45,7 @@ class Script(drake.Node):
 
 drake.Node.extensions['nsi'] = Script
 
-class Compiler(drake.Converter):
+class Compiler(drake.Builder):
   """Compile the nsis script to an installer.
   """
   def __init__(self,
@@ -55,10 +55,9 @@ class Compiler(drake.Converter):
     self.__script = script
     resources = resources or self.__script.resources
     target = target or script.name().with_extension('exe')
-    self.__target = drake.node(target)
-    super().__init__(self.__script,
-                     self.__target,
-                     additional_sources = resources)
+    self.__target = target
+    super().__init__([self.__script] + resources,
+                     [self.__target])
 
   def execute(self):
     return self.cmd('Compile %s' % self.__target,
