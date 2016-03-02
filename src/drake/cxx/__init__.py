@@ -1549,7 +1549,7 @@ class StaticLibLinker(ShellCommand):
           lib.dependency_add(o)
       self.toolkit = tk
       self.config = cfg
-      Builder.__init__(self, objs, [lib])
+      super().__init__(objs, [lib], None)
 
     def execute(self):
       # Our 'ar' command apends files to the target, so we must rm it first
