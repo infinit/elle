@@ -64,8 +64,6 @@ namespace reactor
     std::unique_ptr<std::thread> _loop_thread;
     std::vector<reactor::Thread*> _workers;
     std::mutex _mutex;
-    struct fuse_operations* _ops;
-    void* _user_data;
   };
 
 }
