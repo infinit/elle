@@ -14,7 +14,7 @@ import os
 
 from itertools import chain
 
-from .. import Builder, Exception, Node, Path, node, debug
+from .. import Builder, Node, Path, node, debug
 from .  import Config, StaticLib, Header, Object, Source
 from .qt_headers import headers as per_version_headers
 import drake.cxx
