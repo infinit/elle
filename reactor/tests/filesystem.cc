@@ -26,7 +26,8 @@ namespace sum
       : num(num)
     {}
 
-    int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
+    int
+    read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
       ELLE_TRACE("read %s/%s", offset, size);
       std::string val = std::to_string(num) + "\n";
@@ -36,11 +37,17 @@ namespace sum
       strncpy((char*)buffer.contents(), val.c_str(), sz);
       return sz;
     }
-    int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
+
+    int
+    write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override
     {
       throw reactor::filesystem::Error(EPERM, "Write access denied");
     }
-    void close() override {}
+
+    void
+    close() override
+    {}
+
     int num;
   };
   class Path: public reactor::filesystem::Path
@@ -199,18 +206,21 @@ namespace xorfs
   {
   public:
     Encrypt(boost::filesystem::path const& source)
-    : rfs::BindOperations(source)
+      : rfs::BindOperations(source)
     {}
+
     std::shared_ptr<rfs::Path> path(std::string const&) override;
   };
+
   class Handle: public rfs::BindHandle
   {
   public:
     Handle(int fd, boost::filesystem::path const& where)
-    : rfs::BindHandle(fd, where)
-    {
-    }
-    int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
+      : rfs::BindHandle(fd, where)
+    {}
+
+    int
+    read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
       lseek(_fd, offset, SEEK_SET);
       int len = ::read(_fd, (void*)buffer.contents(), size);
@@ -220,7 +230,9 @@ namespace xorfs
         buffer[i] = buffer[i] ^ 0xFF;
       return len;
     }
-    int write(elle::WeakBuffer buffer, size_t size, off_t offset) override
+
+    int
+    write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override
     {
       lseek(_fd, offset, SEEK_SET);
       for (size_t i=0; i<size; ++i)
@@ -228,26 +240,32 @@ namespace xorfs
       return ::write(_fd, buffer.contents(), size);
     }
   };
+
   class Path: public rfs::BindPath
   {
   public:
     Path(bfs::path where, Encrypt& ctx)
-    : rfs::BindPath(where, ctx)
+      : rfs::BindPath(where, ctx)
     {}
-    std::unique_ptr<rfs::BindHandle> make_handle(boost::filesystem::path& where,
-                                            int fd) override
+
+    std::unique_ptr<rfs::BindHandle>
+    make_handle(boost::filesystem::path& where, int fd) override
     {
       return elle::make_unique<Handle>(fd, where);
     }
   };
-  std::shared_ptr<rfs::Path> Encrypt::path(std::string const& p)
+
+  std::shared_ptr<rfs::Path>
+  Encrypt::path(std::string const& p)
   {
     return std::make_shared<Path>(p, *this);
   }
 }
 
 
-static void test_xor(void)
+static
+void
+test_xor(void)
 {
   auto tmpmount = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
   auto tmpsource = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
