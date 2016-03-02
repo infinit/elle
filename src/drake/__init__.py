@@ -2197,6 +2197,9 @@ class ShellCommand(Builder):
     def hash(self):
       return self.__command
 
+    def __str__(self):
+      return 'ShellCommand(%s)' % (self.__pretty or '')
+
 class Dictionary(VirtualNode):
 
     """A virtual node that represents a dictionary.
