@@ -42,8 +42,14 @@ class Valgrind:
 
 class ValgrindRunner(drake.Runner):
 
-  def __init__(self, exe, args = None, env = None, valgrind = None, valgrind_args = None):
-    super().__init__(exe, args = args, env = env)
+  def __init__(self,
+               exe,
+               args = None,
+               env = None,
+               stdin = None,
+               valgrind = None,
+               valgrind_args = None):
+    super().__init__(exe, args = args, env = env, stdin = stdin)
     self.__valgrind = Valgrind(valgrind)
     self.__valgrind_status = drake.node(
       '%s.valgrind' % self.executable.name_relative)
