@@ -3525,6 +3525,7 @@ class Runner(Builder):
                exe,
                args = None,
                env = None,
+               stdin = None,
                prefix = None,
                targets = None,
   ):
@@ -3535,6 +3536,15 @@ class Runner(Builder):
     self.__status = node('%s.status' % exe.name_relative)
     self.__sources = [exe]
     self.__env = env
+    if stdin is None:
+      self.__input = None
+    elif isinstance(stdin, bytes):
+      self.__input = stdin
+    elif isinstance(stdin, str):
+      self.__input = stdin.encode('utf-8')
+    else:
+      raise Exception(
+        'stdin must be \"str\" or \"bytes\", got \"%s\"' % type(stdin).__name__)
     self.__prefix = prefix or []
     self.stdout_reporting = Runner.Reporting.never
     self.stderr_reporting = Runner.Reporting.always
@@ -3590,7 +3600,10 @@ class Runner(Builder):
           p = subprocess.Popen(map(str, self.command),
                                stdout = out,
                                stderr = err,
+                               stdin = subprocess.PIPE,
                                env = env)
+          if self.__input:
+            p.communicate(self.__input)
           p.wait()
           status = p.returncode
           print(status, file = rv)
