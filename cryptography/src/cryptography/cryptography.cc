@@ -23,8 +23,21 @@ namespace infinit
 {
   namespace cryptography
   {
-    static std::unordered_map<int, std::unique_ptr<std::mutex>> mutexes;
-    static std::mutex crypto_lock_mutex;
+    static
+    std::unordered_map<int, std::unique_ptr<std::mutex>>&
+    mutexes()
+    {
+      static std::unordered_map<int, std::unique_ptr<std::mutex>> _mutexes;
+      return _mutexes;
+    }
+
+    static
+    std::mutex&
+    crypto_lock_mutex()
+    {
+      static std::mutex _crypto_lock_mutex;
+      return _crypto_lock_mutex;
+    }
 
     static
     void
@@ -38,12 +51,12 @@ namespace infinit
     void
     crypto_lock(int mode, int n, const char* file, int line)
     {
-      std::lock_guard<std::mutex> lock(crypto_lock_mutex);
+      std::lock_guard<std::mutex> lock(crypto_lock_mutex());
       bool set = mode & CRYPTO_LOCK;
-      auto it = mutexes.find(n);
-      if (it == mutexes.end())
+      auto it = mutexes().find(n);
+      if (it == mutexes().end())
       {
-        it = mutexes.emplace(
+        it = mutexes().emplace(
           std::make_pair(n, elle::make_unique<std::mutex>())).first;
       }
       if (set)
@@ -62,6 +75,11 @@ namespace infinit
     public:
       Initializer()
       {
+        // Ensure object depends on static variables to avoid static
+        // initialization fiasco.
+        mutexes();
+        crypto_lock_mutex();
+
         // Load the crypto error strings.
         ::ERR_load_crypto_strings();
 
