@@ -24,24 +24,34 @@ namespace infinit
   namespace cryptography
   {
     static std::unordered_map<int, std::unique_ptr<std::mutex>> mutexes;
-    static void crypto_threadid(CRYPTO_THREADID *id)
+    static std::mutex crypto_lock_mutex;
+
+    static
+    void
+    crypto_threadid(CRYPTO_THREADID* id)
     {
       CRYPTO_THREADID_set_numeric(id,
         std::hash<std::thread::id>()(std::this_thread::get_id()));
     }
-    static void crypto_lock(int mode, int n, const char *file, int line)
+
+    static
+    void
+    crypto_lock(int mode, int n, const char* file, int line)
     {
+      std::lock_guard<std::mutex> lock(crypto_lock_mutex);
       bool set = mode & CRYPTO_LOCK;
       auto it = mutexes.find(n);
       if (it == mutexes.end())
       {
-        it = mutexes.emplace(std::make_pair(n, elle::make_unique<std::mutex>())).first;
+        it = mutexes.emplace(
+          std::make_pair(n, elle::make_unique<std::mutex>())).first;
       }
       if (set)
         it->second->lock();
       else
         it->second->unlock();
     }
+
     /*--------.
     | Classes |
     `--------*/
