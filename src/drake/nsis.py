@@ -51,17 +51,20 @@ class Compiler(drake.Builder):
   def __init__(self,
                script,
                target = None,
-               resources = []):
+               resources = [],
+               leave_stdout = False):
     self.__script = script
     resources = resources or self.__script.resources
     target = target or script.name().with_extension('exe')
     self.__target = target
+    self.__leave_stdout = leave_stdout
     super().__init__([self.__script] + resources,
                      [self.__target])
 
   def execute(self):
     return self.cmd('Compile %s' % self.__target,
-                    self.command)
+                    self.command,
+                    leave_stdout = self.__leave_stdout)
 
   @property
   def command(self):
