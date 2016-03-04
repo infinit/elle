@@ -43,31 +43,21 @@ namespace reactor
       }
     }
 
-    /*------------.
-    | Initializer |
-    `------------*/
-
-    class CurlInitializer
-    {
-    public:
-      CurlInitializer()
-      {
-        int code = curl_global_init(CURL_GLOBAL_DEFAULT);
-        if (code)
-          throw std::bad_alloc();
-      }
-
-      ~CurlInitializer()
-      {
-        curl_global_cleanup();
-      }
-    };
-
     /*-------------.
     | Construction |
     `-------------*/
 
     boost::asio::io_service::id Service::id;
+
+    // Reference count to ensure that we only globally initialize and destroy
+    // curl once.
+    static
+    int&
+    curl_global_ref_count()
+    {
+      static int _curl_global_ref_count = 0;
+      return _curl_global_ref_count;
+    }
 
     Service::Service(boost::asio::io_service& service):
       boost::asio::io_service::service(service),
@@ -75,7 +65,12 @@ namespace reactor
       _requests(),
       _timer(service)
     {
-      static CurlInitializer initializer;
+      if (curl_global_ref_count()++ == 0)
+      {
+        int code = curl_global_init(CURL_GLOBAL_DEFAULT);
+        if (code)
+          throw std::bad_alloc();
+      }
       this->_curl = curl_multi_init();
       if (!this->_curl)
         throw std::bad_alloc();
@@ -89,7 +84,10 @@ namespace reactor
     }
 
     Service::~Service()
-    {}
+    {
+      if (--curl_global_ref_count() == 0)
+        curl_global_cleanup();
+    }
 
     void
     Service::shutdown_service()
