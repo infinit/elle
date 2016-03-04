@@ -51,13 +51,16 @@ namespace infinit
     void
     crypto_lock(int mode, int n, const char* file, int line)
     {
-      std::lock_guard<std::mutex> lock(crypto_lock_mutex());
       bool set = mode & CRYPTO_LOCK;
-      auto it = mutexes().find(n);
-      if (it == mutexes().end())
+      std::unordered_map<int, std::unique_ptr<std::mutex>>::iterator it;
       {
-        it = mutexes().emplace(
-          std::make_pair(n, elle::make_unique<std::mutex>())).first;
+        std::lock_guard<std::mutex> lock(crypto_lock_mutex());
+        it = mutexes().find(n);
+        if (it == mutexes().end())
+        {
+          it = mutexes().emplace(
+            std::make_pair(n, elle::make_unique<std::mutex>())).first;
+        }
       }
       if (set)
         it->second->lock();
