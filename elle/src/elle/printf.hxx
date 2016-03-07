@@ -66,9 +66,9 @@ namespace elle
       !_elle_printf_details::is_streamable<T>(), void>::type
     feed(boost::format& fmt, T&& value)
     {
-      static boost::format parsed("%s(%x)");
+      static boost::format parsed("%f(%x)");
       boost::format format(parsed);
-      format % elle::type_info(value).name();
+      format % elle::type_info(value);
       format % reinterpret_cast<const void*>(&value);
       fmt % str(format);
     }
