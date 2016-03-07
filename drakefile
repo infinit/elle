@@ -797,24 +797,19 @@ def configure(cxx_toolkit = None,
       prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
     )
   else:
-    boost_version = drake.Version(1, 56, 0)
+    boost_version = drake.Version(1, 60, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = \
       drake.node('boost/%s.tar.bz2' % boost_basename)
-    # boost_prefix = drake.Path('boost')
-    # boost_build = boost_prefix / boost_basename
-    boost_url = \
-      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
+    boost_url = 'http://fossies.org/linux/misc/%s.tar.bz2' % boost_basename
+    # boost_url = \
+    #   'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
-      fingerprint = 'a744cf167b05d72335f27c88115f211d',
+      fingerprint = '65a840e1a0b13a558ff19eeb2c4f0cbe',
     )
     boost_patches = []
-    if windows:
-      boost_patches = [
-        ('https://svn.boost.org/trac/boost/raw-attachment/ticket/7506/001-unique_path_windows.patch', 'defe8a6582915b4b2f61b763bc237622', 0),
-      ]
     boost_patches = [
       (drake.download(url, fingerprint, where = 'boost',
                      disable_ssl_certificate_validation = True), strip)
@@ -823,12 +818,6 @@ def configure(cxx_toolkit = None,
       cxx_toolkit.os not in [drake.os.windows]
     boost_locale_enabled = \
       cxx_toolkit.os in [drake.os.windows]
-    if windows:
-      boost_patches.append((drake.Node('boost_context_win.patch'), 1))
-    elif cxx_toolkit.os is drake.os.ios:
-      boost_patches.append((drake.Node('boost_context_ios.patch'), 1))
-    elif cxx_toolkit.os is drake.os.macos:
-      boost_patches.append((drake.Node('boost_filesystem_apple.patch'), 1))
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
@@ -849,6 +838,7 @@ def configure(cxx_toolkit = None,
       ('test', 'unit_test_framework'),
       ('thread',
        'thread_win32' if windows else 'thread'),
+      'timer',
     ]
     boost_bootstrap_libraries, boost_library_names = ([
       l[i] if isinstance(l, tuple) else l
@@ -879,7 +869,7 @@ def configure(cxx_toolkit = None,
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = None
-      # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.56.0.dylib'
+      # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.60.0.dylib'
     elif windows:
       boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
@@ -891,7 +881,7 @@ def configure(cxx_toolkit = None,
     else:
       boost_static_format = 'boost/lib/libboost_%s.a'
       boost_dynamic_format = 'boost/lib/libboost_%s.so'
-      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.56.0'
+      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.60.0'
     boost_libraries = (
       [t(fmt % name)
        for t, fmt in (
