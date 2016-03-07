@@ -749,7 +749,7 @@ def configure(curl_config,
     cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
-    cxx_config_tests += boost.config_timer(statuc = True)
+    cxx_config_tests += boost.config_timer(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
