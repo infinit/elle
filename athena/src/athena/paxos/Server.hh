@@ -162,8 +162,12 @@ namespace athena
       confirm(Quorum q, Proposal p);
       boost::optional<Accepted>
       get(Quorum q);
+      Quorum
+      current_quorum() const;
       boost::optional<Accepted>
       current_value() const;
+      Version
+      current_version() const;
       struct VersionState
       {
         VersionState(Proposal p, boost::optional<Accepted> a = {});

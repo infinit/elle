@@ -391,6 +391,19 @@ namespace athena
     }
 
     template <typename T, typename Version, typename CId, typename SId>
+    typename Server<T, Version, CId, SId>::Quorum
+    Server<T, Version, CId, SId>::current_quorum() const
+    {
+      if (this->_state &&
+          this->_state->accepted &&
+          this->_state->accepted->confirmed &&
+          this->_state->accepted->value.template is<Quorum>())
+        return this->_state->accepted->value.template get<Quorum>();
+      else
+        return this->_quorum_initial;
+    }
+
+    template <typename T, typename Version, typename CId, typename SId>
     boost::optional<typename Server<T, Version, CId, SId>::Accepted>
     Server<T, Version, CId, SId>::current_value() const
     {
@@ -405,6 +418,22 @@ namespace athena
           return Accepted(this->_state->proposal, *this->_value, true);
         else
           return {};
+    }
+
+    template <typename T, typename Version, typename CId, typename SId>
+    Version
+    Server<T, Version, CId, SId>::current_version() const
+    {
+      if (this->_state)
+      {
+        if (this->_state->accepted &&
+            this->_state->accepted->confirmed)
+          return this->_state->version();
+        else
+          return this->_state->version() - 1;
+      }
+      else
+        return Version();
     }
 
     template <typename T, typename Version, typename CId, typename SId>
