@@ -2,11 +2,11 @@
 # define DROPBOX_DROPBOX_HH
 
 # include <boost/filesystem.hpp>
+# include <boost/optional/optional_io.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/Error.hh>
 # include <elle/attribute.hh>
-# include <elle/optional.hh>
 
 # include <das/model.hh>
 # include <das/serializer.hh>

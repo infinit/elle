@@ -14,11 +14,11 @@
 # include <boost/any.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/multi_index_container.hpp>
+# include <boost/optional/optional_io.hpp>
 
 # include <elle/Buffer.hh>
 # include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
-# include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
 
