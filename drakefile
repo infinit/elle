@@ -1092,10 +1092,10 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         return self.__command
     BoostBuilder(sources = [boost_bjam, boost_user_config],
                  targets = boost_libraries + boost_headers)
-    if cxx_toolkit.os is drake.os.macos:
-      drake.node('boost/lib/libboost_thread.dylib').dependency_add(drake.node('boost/lib/libboost_atomic.dylib'))
-    elif windows and python3:
-      python_dll = drake.node('%s/python%s%s.dll' % (python3.prefix, python_version.major, python_version.minor))
+    if windows and python3:
+      python_version_tuple = \
+        (python3.prefix, python_version.major, python_version.minor)
+      python_dll = drake.node('%s/python%s%s.dll' % python_version_tuple)
       boost_fs = drake.node('boost/lib/libboost_python3-mt-s.a')
       boost_fs.dependency_add(python_dll)
     boost = drake.cxx.boost.Boost(
