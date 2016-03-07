@@ -39,6 +39,7 @@ class Boost(drake.Configuration):
     'locale': 'locale',
     'test': 'unit_test_framework',
     'thread': 'thread',
+    'timer': 'timer',
     'system': 'system',
     'filesystem': 'filesystem',
     'signals': 'signals',
