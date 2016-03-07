@@ -71,6 +71,7 @@ def configure(openssl_config,
       boost_python = boost.config_python(static = True)
       boost_python += python
     boost_test = boost.config_test(static = True)
+    boost_timer = boost.config_timer(static = True)
     boost_thread = boost.config_thread(static = True)
     boost_filesystem = boost.config_filesystem(static = True)
   else:
@@ -80,6 +81,8 @@ def configure(openssl_config,
       boost_python += python
     boost_test = drake.cxx.Config(boost.config_test(link = False))
     boost_test.library_add(drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    boost_timer = drake.cxx.Config(boost.config_timer(link = False))
+    boost_timer.library_add(drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
     boost_thread = drake.cxx.Config(boost.config_thread(link = False))
     boost_thread.library_add(drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
     boost_filesystem = drake.cxx.Config(boost.config_filesystem(link = False))
@@ -344,6 +347,7 @@ def configure(openssl_config,
   tests_cxx_config += config
   tests_cxx_config += boost.config()
   tests_cxx_config += boost_test
+  tests_cxx_config += boost_timer
   tests_cxx_config += boost_thread
   tests_cxx_config += boost_filesystem
   tests_cxx_config += openssl_config
