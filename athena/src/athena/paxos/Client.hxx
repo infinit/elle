@@ -71,12 +71,13 @@ namespace athena
     template <typename T, typename Version, typename ClientId>
     void
     Client<T, Version, ClientId>::_check_headcount(Quorum const& q,
-                                                   int reached) const
+                                                   int reached,
+                                                   bool reading) const
     {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_DEBUG("reached %s peers", reached);
       auto size = signed(q.size());
-      if (reached <= size / 2)
+      if (reached <= (size - (reading ? 1 : 0)) / 2)
       {
         ELLE_TRACE("too few peers to reach consensus: %s of %s", reached, size);
         throw TooFewPeers(reached, size);
@@ -274,7 +275,7 @@ namespace athena
                        *this, peer, e.what());
           }
         });
-      this->_check_headcount(q, reached);
+      this->_check_headcount(q, reached, true);
       typedef std::pair<boost::optional<T>, Quorum> Res;
       if (res)
         return Res(res->value.template get<T>(), q);

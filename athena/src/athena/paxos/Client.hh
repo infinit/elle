@@ -110,7 +110,9 @@ namespace athena
        *  \throws TooFewPeers if a strict majority was not reached.
        */
       void
-      _check_headcount(Quorum const& q, int reached) const;
+      _check_headcount(Quorum const& q,
+                       int reached,
+                       bool reading = false) const;
 
     /*----------.
     | Printable |

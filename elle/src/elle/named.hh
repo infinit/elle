@@ -184,12 +184,12 @@ namespace elle
               RTail&& ... remaining,
               Store&& ... store)
       {
-        next::apply(defaults,
-                    f,
-                    std::forward<Applied>(applied)...,
-                    std::forward<RTail>(remaining)...,
-                    std::forward<Store>(store)...,
-                    std::forward<RHead>(mismatch));
+        return next::apply(defaults,
+                           f,
+                           std::forward<Applied>(applied)...,
+                           std::forward<RTail>(remaining)...,
+                           std::forward<Store>(store)...,
+                           std::forward<RHead>(mismatch));
       }
     };
 
@@ -265,7 +265,7 @@ namespace elle
       };
       template <typename F>
         static
-        void
+        typename result_of<F>::type
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
