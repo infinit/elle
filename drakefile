@@ -801,9 +801,9 @@ def configure(cxx_toolkit = None,
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = \
       drake.node('boost/%s.tar.bz2' % boost_basename)
-    boost_url = 'http://fossies.org/linux/misc/%s.tar.bz2' % boost_basename
-    # boost_url = \
-    #   'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
+    boost_url = \
+      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % \
+      (boost_version, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
@@ -903,7 +903,7 @@ def configure(cxx_toolkit = None,
         super().__init__([boost_bootstrap], [self.__user_config])
 
       def execute(self):
-        self.output('generate %s' % self.__user_config,
+        self.output('Generate %s' % self.__user_config,
                     'Generate Boost user configuration')
         with open(str(self.__user_config.path()), 'w') as f:
           print(self.format % self.params, file = f)
@@ -912,9 +912,6 @@ def configure(cxx_toolkit = None,
       @property
       def user_config(self):
         return self.__user_config
-
-      def hash(self):
-        return self.__toolkit.cxx
 
       @property
       def format(self):
@@ -967,7 +964,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         return res
 
       def hash(self):
-        return self.format, self.params
+        return self.format, self.params, self.__toolkit.cxx
 
     boost_user_config = BoostUserConfigGenerator(
       drake.node('boost/%s/user-config.jam' % boost_basename),
@@ -976,20 +973,17 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     exec(open(str(drake.path_source('boost.py')), 'r').read(),
          boost_attributes)
     boost_headers = drake.nodes(*boost_attributes['headers'])
-    if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
-      boost_bootstrap_env = {}
-    else:
-      boost_bootstrap_env = None
+
     drake.ShellCommand(
       sources = [boost_bootstrap, boost_user_config],
       targets = [boost_bjam],
       command = boost_bootstrap_command,
       pretty = 'Bootstrap boost',
-      cwd = drake.path_build('boost/%s' % boost_basename),
-      environment = boost_bootstrap_env)
+      cwd = drake.path_build('boost/%s' % boost_basename))
+
     class BoostBuilder(drake.Builder):
-      def __init__(self, version, sources, targets):
-        self.__version = version
+
+      def __init__(self, sources, targets):
         self.__targets = targets
         self.__cwd = drake.path_build('boost/%s' % boost_basename)
         super().__init__(srcs = sources, dsts = targets)
@@ -1054,6 +1048,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'cxxflags=-std=c++11',
             'linkflags=-std=c++11',
           ]
+
       def execute(self):
         with drake.CWDPrinter(
             drake.path_build('.', absolute = True) / self.__cwd):
@@ -1080,11 +1075,11 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
                 if not self.cmd('Fix %s path for %s' % (target, dep), cmd):
                   return False
         return True
-      def hash(self):
-        return self.__command + [str(self.__version)]
 
-    BoostBuilder(version = boost_version,
-                 sources = [boost_bjam, boost_user_config],
+      def hash(self):
+        return self.__command
+
+    BoostBuilder(sources = [boost_bjam, boost_user_config],
                  targets = boost_libraries + boost_headers)
     if windows and python3:
       python_version_tuple = \
