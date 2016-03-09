@@ -67,6 +67,7 @@ def configure(prefix = '.'):
   check = drake.Rule('check')
 
   tests = [
+    'base/change-dynamic-dependency',
     'base/failure',
     'base/failure-cmd',
   ]

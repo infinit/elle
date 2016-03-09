@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+'''Check that removing and then changing a dynamic dependency results in the
+   new dependency being built.'''
+
+import drake
+import os
+import shutil
+import tempfile
+
+class TestDrake:
+
+  def __init__(self, working_dir):
+    self.__working_dir = working_dir
+    super().__init__()
+
+  def __enter__(self):
+    os.chdir(self.__working_dir)
+    self.__drake = drake.Drake()
+    self.__drake.__enter__()
+    return self.__drake
+
+  def __exit__(self, *args):
+    self.__drake.__exit__(*args)
+
+class DependantBuilder(drake.TouchBuilder):
+
+  def deps_handler(builder, path, t, data):
+    return drake.node(path, t)
+
+  deps = 'some.identifier'
+
+  drake.Builder.register_deps_handler(deps, deps_handler)
+
+  def __init__(self, dsts, deps):
+    self.__deps = deps
+    super().__init__(dsts)
+
+  def dependencies(self):
+    for dep in self.__deps:
+      self.add_dynsrc(self.deps, dep)
+
+with tempfile.TemporaryDirectory() as working_dir:
+
+  def do_build(name):
+    with TestDrake(working_dir) as d:
+      dyn_dep = drake.node(name)
+      drake.TouchBuilder([dyn_dep])
+      target = drake.node('target')
+      DependantBuilder([target], [dyn_dep])
+      target.build()
+      objs = os.listdir(working_dir)
+      assert str(dyn_dep.path()) in objs
+      assert str(target.path()) in objs
+
+  # Build `target` and `dyn_dep_1` which it depends on dynamically.
+  do_build('dyn_dep_1')
+
+  # Remove the `dyn_dep_1` file.
+  os.remove('%s/dyn_dep_1' % working_dir)
+  objs = os.listdir(working_dir)
+  assert 'dyn_dep_1' not in objs
+
+  # Change the dynamic dependency to `dyn_dep_2` and rebuild.
+  do_build('dyn_dep_2')
