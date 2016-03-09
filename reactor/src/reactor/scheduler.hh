@@ -11,6 +11,7 @@
 # ifdef INFINIT_WINDOWS
 #  include <winsock2.h>
 # endif
+# include <boost/signals2.hpp>
 # include <boost/thread.hpp>
 
 # include <elle/Printable.hh>
@@ -251,13 +252,18 @@ namespace reactor
   /// Wait for \a waitables.
   bool
   wait(Waitables const& waitables, DurationOpt timeout = DurationOpt());
+  /// Wait until \a signal is emitted.
+  template <typename R, typename ... Prototype, typename ... Args>
+  void
+  wait(boost::signals2::signal<R(Prototype...)>& signal,
+       Args const& ... values);
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.
    *  \param f    Operation to run later.
    */
-  void run_later(std::string const& name,
-                 std::function<void ()> const& f);
+  void
+  run_later(std::string const& name, std::function<void ()> const& f);
 }
 
 # include <reactor/scheduler.hxx>
