@@ -104,7 +104,7 @@ namespace reactor
   {
     reactor::Signal s;
     Compare<Prototype...> compare(values...);
-    auto connection = signal.connect(
+    boost::signals2::scoped_connection connection = signal.connect(
       [&] (Prototype const& ... args)
       {
         if (compare.compare(args...))
