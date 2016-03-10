@@ -174,7 +174,7 @@ namespace reactor
   void
   Channel<T, Container>::print(std::ostream& stream) const
   {
-    elle::fprintf(stream, "Channel(%x)", this);
+    elle::fprintf(stream, "Channel(%x)", (void*)this);
   }
 }
 
