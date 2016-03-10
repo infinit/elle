@@ -1,5 +1,6 @@
 #include <elle/Plugin.hh>
 #include <elle/log/Logger.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/storage.hh>
 
@@ -80,9 +81,12 @@ namespace reactor
     std::string
     content()
     {
+      static std::string max_repr =
+        elle::os::getenv("ELLE_LOG_COROUTINE_MAX_WIDTH", "");
+      static int max = max_repr.empty() ? INT_MAX : std::atoi(max_repr.c_str());
       if (reactor::Scheduler* sched = reactor::Scheduler::scheduler())
         if (reactor::Thread* t = sched->current())
-          return t->name();
+          return t->name().substr(0, max);
       return "";
     }
   };
