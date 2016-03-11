@@ -45,22 +45,6 @@ namespace reactor
     }
   }
 
-  /*-------.
-  | Status |
-  `-------*/
-
-  const std::string&
-  Waitable::name() const
-  {
-    return _name;
-  }
-
-  const Waitable::Waiters&
-  Waitable::waiters() const
-  {
-    return _threads;
-  }
-
   /*--------.
   | Waiting |
   `--------*/

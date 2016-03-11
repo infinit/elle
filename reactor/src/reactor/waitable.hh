@@ -59,12 +59,8 @@ namespace reactor
   | Status |
   `-------*/
   public:
-    /// Pretty name.
-    const std::string& name() const;
-    /// Threads blocked on this.
-    const Waiters& waiters() const;
-  private:
-    std::string _name;
+    ELLE_ATTRIBUTE_R(std::string, name);
+    ELLE_ATTRIBUTE_R(Waiters, threads);
 
   /*--------.
   | Waiting |
@@ -114,8 +110,6 @@ namespace reactor
     private:
       /// Let threads register/unregister themselves.
       friend class Thread;
-      /// Waiting threads.
-      Waiters _threads;
       /// Exception woken thread must throw.
       ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
 
