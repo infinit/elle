@@ -36,6 +36,15 @@ namespace aws
     typedef uint64_t FileSize;
     typedef std::vector<std::pair<std::string, FileSize>> List;
 
+    enum class StorageClass
+    {
+      Standard,
+      StandardIA,
+      ReducedRedundancy,
+
+      Default, // Do not set the x-amz-storage-class header.
+    };
+
   /*-------------.
   | Construction |
   `-------------*/
@@ -62,7 +71,7 @@ namespace aws
       elle::ConstWeakBuffer const& object,
       std::string const& object_name,
       RequestQuery const& query = RequestQuery(),
-      bool ommit_redundancy = false,
+      StorageClass storage_class = StorageClass::Default,
       boost::optional<std::function<void (int)>> const& progress_callback = {});
 
     /// Returns a list of all files names and their respective sizes inside the
@@ -100,7 +109,7 @@ namespace aws
     multipart_initialize(
       std::string const& object_name,
       std::string const& mime_type = "binary/octet-stream",
-      bool ommit_redundancy = false);
+      StorageClass storage_class = StorageClass::Default);
 
     typedef std::pair<int, std::string> MultiPartChunk;
     /// Upload one part of a multipart upload

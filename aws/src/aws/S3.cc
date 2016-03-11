@@ -135,7 +135,7 @@ namespace aws
     elle::ConstWeakBuffer const& object,
     std::string const& object_name,
     RequestQuery const& query,
-    bool ommit_redundancy,
+    S3::StorageClass storage_class,
     boost::optional<std::function<void (int)>> const& progress_callback)
   {
 
@@ -143,9 +143,21 @@ namespace aws
 
     // Make headers.
     RequestHeaders headers;
-    if (!ommit_redundancy)
-      headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
+    switch (storage_class)
+    {
+      case StorageClass::Standard:
+        headers["x-amz-storage-class"] = std::string("STANDARD");
+        break;
+      case StorageClass::StandardIA:
+        headers["x-amz-storage-class"] = std::string("STANDARD_IA");
+        break;
+      case StorageClass::ReducedRedundancy:
+        headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
+        break;
 
+      default:
+        break;
+    }
     auto url = elle::sprintf(
       "/%s/%s",
       this->_credentials.folder(),
@@ -323,12 +335,25 @@ namespace aws
   std::string
   S3::multipart_initialize(std::string const& object_name,
                            std::string const& mime_type,
-                           bool ommit_redundancy)
+                           S3::StorageClass storage_class)
   {
     ELLE_TRACE_SCOPE("%s: initialize multipart: %s", *this, object_name);
     RequestHeaders headers;
-    if (!ommit_redundancy)
-      headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
+    switch (storage_class)
+    {
+      case StorageClass::Standard:
+        headers["x-amz-storage-class"] = std::string("STANDARD");
+        break;
+      case StorageClass::StandardIA:
+        headers["x-amz-storage-class"] = std::string("STANDARD_IA");
+        break;
+      case StorageClass::ReducedRedundancy:
+        headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
+        break;
+
+      default:
+        break;
+    }
     RequestQuery query;
     query["uploads"] = "";
     auto url = elle::sprintf(
@@ -364,7 +389,8 @@ namespace aws
     RequestQuery query;
     query["partNumber"] = std::to_string(chunk + 1);
     query["uploadId"] = upload_key;
-    return put_object(object, object_name, query, true, progress_callback);
+    return put_object(object, object_name, query,
+                      S3::StorageClass::Default, progress_callback);
   }
 
   void
