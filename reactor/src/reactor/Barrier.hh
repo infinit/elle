@@ -57,7 +57,9 @@ namespace reactor
     void close();
   protected:
     /// Stop the thread if and only if this is closed.
-    virtual bool _wait(Thread* thread) override;
+    virtual
+    bool
+    _wait(Thread* thread, Waker const&) override;
 
   /*----------.
   | Inversion |
@@ -68,7 +70,7 @@ namespace reactor
     {
     public:
       InvertedBarrier(Barrier& barrier);
-      virtual bool _wait(Thread* thread);
+      virtual bool _wait(Thread* thread, Waker const& waker);
       operator bool() const;
     private:
       friend class Barrier;

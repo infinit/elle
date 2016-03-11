@@ -86,12 +86,12 @@ namespace reactor
   `---------*/
 
   bool
-  MultiLockBarrier::_wait(Thread* thread)
+  MultiLockBarrier::_wait(Thread* thread, Waker const& waker)
   {
     if (this->opened())
       return false;
     else
-      return Super::_wait(thread);
+      return Super::_wait(thread, waker);
   }
 
   /*----------.

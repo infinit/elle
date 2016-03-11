@@ -281,7 +281,7 @@ namespace waitable
 
     virtual
     bool
-    _wait(reactor::Thread*) override
+    _wait(reactor::Thread*, Waker const&) override
     {
       return false;
     }

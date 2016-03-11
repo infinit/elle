@@ -233,7 +233,7 @@ namespace reactor
       /// Wait for the request to be done.
       virtual
       bool
-      _wait(Thread* thread) override;
+      _wait(Thread* thread, Waker const& waker) override;
 
     /*-------.
     | Status |

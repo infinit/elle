@@ -90,7 +90,7 @@ namespace reactor
   protected:
     /// Stop the thread if and only if this is closed.
     bool
-    _wait(Thread* thread) override;
+    _wait(Thread* thread, Waker const& waker) override;
 
   /*------.
   | Hooks |

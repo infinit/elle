@@ -31,11 +31,11 @@ namespace reactor
   }
 
   bool
-  Mutex::_wait(Thread* thread)
+  Mutex::_wait(Thread* thread, Waker const& waker)
   {
     if (_locked)
     {
-      Waitable::_wait(thread);
+      this->Waitable::_wait(thread, waker);
       _locked = true;
       return true;
     }

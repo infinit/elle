@@ -13,7 +13,9 @@ namespace reactor
       bool release() override;
 
     protected:
-      virtual bool _wait(Thread* thread) override;
+      virtual
+      bool
+      _wait(Thread* thread, Waker const& waker) override;
 
     private:
       int _count;

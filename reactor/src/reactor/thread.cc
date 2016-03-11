@@ -134,26 +134,6 @@ namespace reactor
     s << "thread " << name();
   }
 
-  static
-  std::ostream&
-  operator <<(std::ostream& s, const Waitable::Waiters& w)
-  {
-    s << '[';
-    for (auto const& t: w.get<0>())
-      s << t << ", ";
-    s << ']';
-    return s;
-  }
-
-  void
-  Thread::Dump(std::ostream& s) const
-  {
-    s << "Thread " << name()
-      << " @" << this
-      << " [ State = " << state() << "]"
-      << " waited by " << this->_threads;
-  }
-
   /*----.
   | Run |
   `----*/
@@ -319,7 +299,7 @@ namespace reactor
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
     BOOST_FOREACH (Waitable* s, waitables)
-      if (s->_wait(this))
+      if (s->_wait(this, Waker()))
       {
         freeze = true;
         _waited.insert(s);
@@ -378,7 +358,7 @@ namespace reactor
   }
 
   bool
-  Thread::_wait(Thread* thread)
+  Thread::_wait(Thread* thread, Waker const& waker)
   {
     if (_state == state::done)
       if (this->_managed && this->_exception_thrown)
@@ -386,7 +366,7 @@ namespace reactor
       else
         return false;
     else
-      return Waitable::_wait(thread);
+      return Waitable::_wait(thread, waker);
   }
 
   static

@@ -9,23 +9,23 @@ namespace reactor
   int
   Semaphore::count() const
   {
-    return _count;
+    return this->_count;
   }
 
   bool
   Semaphore::release()
   {
-    ++_count;
-    return _signal_one();
+    ++this->_count;
+    return this->_signal_one();
   }
 
   bool
-  Semaphore::_wait(Thread* thread)
+  Semaphore::_wait(Thread* thread, Waker const& waker)
   {
-    --_count;
-    if (_count < 0)
+    --this->_count;
+    if (this->_count < 0)
     {
-      Waitable::_wait(thread);
+      this->Waitable::_wait(thread, waker);
       return true;
     }
     else

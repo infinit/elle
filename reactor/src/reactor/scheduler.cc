@@ -447,36 +447,6 @@ namespace reactor
     }
   }
 
-  /*-------.
-  | Status |
-  `-------*/
-
-  static void
-  DumpSet(Scheduler::Threads const&     threads,
-          std::ostream&                 s)
-  {
-    BOOST_FOREACH (Thread const* t, threads)
-    {
-      s << "    ";
-      t->Dump(s);
-      s << std::endl;
-    }
-  }
-
-  void
-  Scheduler::dump(std::ostream& s)
-  {
-    s << "Scheduler" << std::endl;
-    DumpSet(_running, s);
-    DumpSet(_frozen, s);
-  }
-
-  void
-  Scheduler::debug()
-  {
-    dump(std::cerr);
-  }
-
   /*----------.
   | Printable |
   `----------*/

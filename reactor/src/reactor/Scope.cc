@@ -160,7 +160,7 @@ namespace reactor
   `---------*/
 
   bool
-  Scope::_wait(Thread* thread)
+  Scope::_wait(Thread* thread, Waker const& waker)
   {
     if (this->_running == 0)
     {
@@ -169,7 +169,7 @@ namespace reactor
       return false;
     }
     else
-      return Waitable::_wait(thread);
+      return Waitable::_wait(thread, waker);
   }
 
   /*----------.

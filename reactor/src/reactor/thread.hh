@@ -121,8 +121,6 @@ namespace reactor
       bool done() const;
       /// Pretty name.
       std::string name() const;
-      /// Debug dump.
-      void Dump(std::ostream& output) const;
     private:
       State _state;
 
@@ -196,7 +194,9 @@ namespace reactor
       */
       void terminate_now(bool suicide = true);
     protected:
-      virtual bool _wait(Thread* thread) override;
+      virtual
+      bool
+      _wait(Thread* thread, Waker const& waker) override;
     private:
       friend class Waitable;
       friend class TimeoutGuard;

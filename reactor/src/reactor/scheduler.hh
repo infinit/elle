@@ -92,13 +92,6 @@ namespace reactor
     Threads _running;
     Threads _frozen;
 
-    /*-------.
-    | Status |
-    `-------*/
-    public:
-      void dump(std::ostream&);
-      void debug();
-
   /*-------------------------.
   | Thread Exception Handler |
   `-------------------------*/

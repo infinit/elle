@@ -276,7 +276,7 @@ namespace reactor
     protected:
       virtual
       bool
-      _wait(Thread* thread) override;
+      _wait(Thread* thread, Waker const& waker) override;
 
     /*--------.
     | Details |

@@ -16,7 +16,7 @@ namespace reactor
     virtual bool release();
 
   protected:
-    virtual bool _wait(Thread* thread);
+    virtual bool _wait(Thread* thread, Waker const& waker);
 
   private:
     bool _locked;

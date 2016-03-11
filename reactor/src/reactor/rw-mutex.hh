@@ -9,34 +9,46 @@ namespace reactor
 {
   class RWMutex: public Lockable
   {
-    public:
-      RWMutex();
+  public:
+    RWMutex();
     bool
     locked() const;
-      virtual bool release();
+    virtual
+    bool
+    release();
 
-      class WriteMutex: public Lockable
-      {
-        public:
-          WriteMutex(RWMutex& owner);
-        bool
-        locked() const;
-          virtual bool release();
-        protected:
-          virtual bool _wait(Thread* thread);
-          virtual Thread* _signal_one();
-        private:
-          RWMutex& _owner;
-          reactor::Thread* _locked;
-          int _locked_recursive;
-          friend class RWMutex;
-      };
-      WriteMutex& write();
+    class WriteMutex: public Lockable
+    {
+    public:
+      WriteMutex(RWMutex& owner);
+      bool
+      locked() const;
+      virtual
+      bool
+      release();
 
     protected:
-      virtual bool _wait(Thread* thread);
+      virtual
+      bool
+      _wait(Thread* thread, Waker const& waker) override;
+      virtual
+      Thread*
+      _signal_one();
+
     private:
-      WriteMutex _write;
+      ELLE_ATTRIBUTE(RWMutex&, owner);
+      ELLE_ATTRIBUTE(reactor::Thread*, locked);
+      ELLE_ATTRIBUTE(int, locked_recursive);
+      friend class RWMutex;
+    };
+    WriteMutex& write();
+
+  protected:
+    virtual
+    bool
+    _wait(Thread* thread, Waker const& waker) override;
+  private:
+    WriteMutex _write;
     ELLE_ATTRIBUTE_R(int, readers);
   };
 }

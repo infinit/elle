@@ -63,7 +63,7 @@ namespace reactor
   `---------*/
   protected:
     bool
-    _wait(Thread* thread) override;
+    _wait(Thread* thread, Waker const& waker) override;
   private:
     ELLE_ATTRIBUTE(reactor::Barrier, barrier);
 

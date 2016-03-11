@@ -37,7 +37,9 @@ namespace reactor
     /// Cancel timer if possible or wait for action termination
     ~Timer();
   protected:
-    virtual bool _wait(Thread* thread) override;
+    virtual
+    bool
+    _wait(Thread* thread, Waker const& waker) override;
   private:
     void _on_timer(const boost::system::error_code& erc);
     Scheduler& _scheduler;

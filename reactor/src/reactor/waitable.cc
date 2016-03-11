@@ -17,13 +17,13 @@ namespace reactor
 
   Waitable::Waitable(const std::string& name)
     : _name(name)
-    , _threads()
+    , _waiters()
     , _exception()
   {}
 
   Waitable::Waitable(Waitable&& source)
     : _name(source._name)
-    , _threads(std::move(source._threads))
+    , _waiters(std::move(source._waiters))
     , _exception(source._exception)
   {}
 
@@ -35,11 +35,11 @@ namespace reactor
   void
   Waitable::_assert_destructible()
   {
-    if (!this->_threads.empty())
+    if (!this->_waiters.empty())
     {
       std::vector<std::string> threads;
-      for (auto thread: this->_threads)
-        threads.push_back(elle::sprintf("%s", *thread));
+      for (auto thread: this->_waiters)
+        threads.push_back(elle::sprintf("%s", *thread.first));
       ELLE_ABORT("%s destroyed while waited by %s",
                  *this, elle::join(threads.begin(), threads.end(), ", "));
     }
@@ -62,16 +62,19 @@ namespace reactor
   int
   Waitable::_signal()
   {
-    if (_threads.empty())
+    if (_waiters.empty())
     {
       _exception = std::exception_ptr{}; // An empty one.
       this->on_signaled()();
       return false;
     }
-    for (Thread* thread: this->_threads)
-      thread->_wake(this);
-    int res = _threads.size();
-    _threads.clear();
+    for (auto& thread: this->_waiters)
+      if (thread.second)
+        thread.second(thread.first);
+      else
+        thread.first->_wake(this);
+    int res = _waiters.size();
+    _waiters.clear();
     _exception = std::exception_ptr{}; // An empty one.
     this->on_signaled()();
     return res;
@@ -80,36 +83,41 @@ namespace reactor
   Thread*
   Waitable::_signal_one()
   {
-    if (_threads.empty())
+    if (this->_waiters.empty())
     {
-      _exception = std::exception_ptr{}; // An empty one.
+      this->_exception = std::exception_ptr{}; // An empty one.
       this->on_signaled()();
       return nullptr;
     }
-    Thread* thread = *_threads.begin();
-    thread->_wake(this);
-    _threads.get<1>().erase(thread);
-    _exception = std::exception_ptr{}; // An empty one.
-    if (this->_threads.empty())
+    auto& thread = *this->_waiters.begin();
+    if (thread.second)
+      thread.second(thread.first);
+    else
+      thread.first->_wake(this);
+    this->_waiters.get<1>().erase(thread.first);
+    this->_exception = std::exception_ptr{}; // An empty one.
+    if (this->_waiters.empty())
       this->on_signaled()();
-    return thread;
+    return thread.first;
   }
 
   bool
-  Waitable::_wait(Thread* t)
+  Waitable::_wait(Thread* t, Waker const& waker)
   {
-    ELLE_TRACE("%s: wait %s", *t, *this);
-    ELLE_ASSERT_EQ(_threads.get<1>().find(t), _threads.get<1>().end());
-    _threads.get<1>().insert(t);
+    ELLE_TRACE("%s: wait %s", t, this);
+    ELLE_ASSERT_EQ(this->_waiters.get<1>().find(t),
+                   this->_waiters.get<1>().end());
+    this->_waiters.emplace_back(t, waker);
     return true;
   }
 
   void
   Waitable::_unwait(Thread* t)
   {
-    ELLE_TRACE("%s: unwait %s", *t, *this);
-    ELLE_ASSERT_NEQ(_threads.get<1>().find(t), _threads.get<1>().end());
-    _threads.get<1>().erase(t);
+    ELLE_TRACE("%s: unwait %s", t, this);
+    ELLE_ASSERT_NEQ(this->_waiters.get<1>().find(t),
+                    this->_waiters.get<1>().end());
+    this->_waiters.get<1>().erase(t);
   }
 
   void

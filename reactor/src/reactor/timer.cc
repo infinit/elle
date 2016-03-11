@@ -16,20 +16,20 @@ ELLE_LOG_COMPONENT("reactor.Timer")
 namespace reactor
 {
   Timer::Timer(const std::string& name,
-    Duration d,
-    const Action& action)
-  : Timer(*Scheduler::scheduler(), name, d, action)
+               Duration d,
+               const Action& action)
+    : Timer(*Scheduler::scheduler(), name, d, action)
   {}
 
   Timer::Timer(Scheduler& s,
-    const std::string& name,
-    Duration d,
-    const Action& action)
-  : _scheduler(s)
-  , _name(name)
-  , _action(action)
-  , _timer(s.io_service())
-  , _finished(false)
+               const std::string& name,
+               Duration d,
+               const Action& action)
+    : _scheduler(s)
+    , _name(name)
+    , _action(action)
+    , _timer(s.io_service())
+    , _finished(false)
   {
     _timer.expires_from_now(d);
     ELLE_TRACE_SCOPE("%s: trigger in %s", *this, d);
@@ -41,7 +41,8 @@ namespace reactor
     cancel_now();
   }
 
-  void Timer::_on_timer(const boost::system::error_code& erc)
+  void
+  Timer::_on_timer(const boost::system::error_code& erc)
   {
     ELLE_TRACE_SCOPE("%s: timer reached, canceled: %s", *this, !!erc);
     // Warning, we are not in a Thread!
@@ -68,12 +69,14 @@ namespace reactor
     }
   }
 
-  void Timer::cancel()
+  void
+  Timer::cancel()
   {
     this->_timer.cancel();
   }
 
-  void Timer::cancel_now()
+  void
+  Timer::cancel_now()
   {
     ELLE_TRACE_SCOPE("%s: cancel now", *this);
     this->cancel();
@@ -88,7 +91,8 @@ namespace reactor
       reactor::wait(*this->_thread);
   }
 
-  void Timer::terminate()
+  void
+  Timer::terminate()
   {
     ELLE_TRACE_SCOPE("%s: terminate", *this);
     this->cancel();
@@ -96,7 +100,8 @@ namespace reactor
       this->_thread->terminate();
   }
 
-  void Timer::terminate_now(bool suicide)
+  void
+  Timer::terminate_now(bool suicide)
   {
     ELLE_TRACE_SCOPE("%s: terminate now", *this);
     this->cancel();
@@ -105,11 +110,12 @@ namespace reactor
   }
 
   // waitable interface
-  bool Timer::_wait(Thread* thread)
+  bool
+  Timer::_wait(Thread* thread, Waker const& waker)
   {
     if (this->_finished)
       return false;
     else
-      return Waitable::_wait(thread);
+      return Waitable::_wait(thread, waker);
   }
 }

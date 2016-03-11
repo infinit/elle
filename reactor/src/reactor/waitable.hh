@@ -7,9 +7,7 @@
 # include <boost/noncopyable.hpp>
 
 # include <boost/multi_index_container.hpp>
-# include <boost/multi_index/composite_key.hpp>
-# include <boost/multi_index/mem_fun.hpp>
-# include <boost/multi_index/identity.hpp>
+# include <boost/multi_index/member.hpp>
 # include <boost/multi_index/sequenced_index.hpp>
 # include <boost/multi_index/hashed_index.hpp>
 
@@ -25,21 +23,24 @@ namespace reactor
   class Waitable:
     public elle::Printable
   {
-    /*---------.
-    | Typedefs |
-    `---------*/
-    public:
-      /// Self type.
-      typedef Waitable Self;
-      /// Collection of threads blocked on this.
-      //typedef std::set<Thread*> Waiters;
-      typedef boost::multi_index_container<
-           Thread*,
-           boost::multi_index::indexed_by<
-             boost::multi_index::sequenced<>,
-             boost::multi_index::hashed_unique<boost::multi_index::identity<Thread*>>
-           >
-         > Waiters;
+  /*---------.
+  | Typedefs |
+  `---------*/
+  public:
+    /// Self
+    typedef Waitable Self;
+    /// Wake callback.
+    typedef std::function<void (Thread*)> Waker;
+    /// Waited thread and its wake callback.
+    typedef std::pair<Thread*, Waker> Handler;
+    /// Collection of threads waiting this
+    typedef boost::multi_index_container<
+      Handler,
+      boost::multi_index::indexed_by<
+        boost::multi_index::sequenced<>,
+        boost::multi_index::hashed_unique<
+          boost::multi_index::member<Handler, Thread*, &Handler::first>>>
+      > Waiters;
 
   /*-------------.
   | Construction |
@@ -60,7 +61,7 @@ namespace reactor
   `-------*/
   public:
     ELLE_ATTRIBUTE_R(std::string, name);
-    ELLE_ATTRIBUTE_R(Waiters, threads);
+    ELLE_ATTRIBUTE_R(Waiters, waiters);
 
   /*--------.
   | Waiting |
@@ -69,49 +70,58 @@ namespace reactor
     bool
     wait(DurationOpt timeout = DurationOpt());
 
-    protected:
-      /** Wake a thread when we are done, if we must be waited.
-       *
-       * If true is returned, the thread will block until we call its
-       * wake method. Otherwise it will carry on, and its wake method
-       * should not be called.
-       *
-       * The default implementation always returns true and registers
-       * the thread for wake. By overriding this method, one can
-       * create a waitable that does not always block by either
-       * returning false, either calling the parent method and
-       * returning true.
-       *
-       * @param thread The thread to wake up when we're done.
-       * @return Whether the thread needs to wait for us.
-       */
-      virtual bool _wait(Thread* thread);
-      /** Abort waking a thread when we are done.
-       *
-       * Forget about a thread previously successfully registered with
-       * _wait. This happen in the case of timeouts, for
-       * instance. Overriding this method can be useful to cancel an
-       * operation if nobody waits on it anymore, for instance. The
-       * parent method must still be called, to avoid trying to wake
-       * up the thread erroneously when we're done.
-       */
-      virtual void _unwait(Thread* thread);
-      /// Wake waiting threads.
-      int  _signal();
-      virtual Thread* _signal_one();
-      /** Register an exception waiting thread should throw when woken.
-       *
-       * @param e The exception threads must throw.
-       */
-      template <typename Exception, typename... Args>
-      void _raise(Args&&... args);
-      void _raise(std::exception_ptr e);
+  protected:
+    /** Wake a thread when we are done, if we must be waited.
+     *
+     * If true is returned, the thread will block until we call its
+     * wake method. Otherwise it will carry on, and its wake method
+     * should not be called.
+     *
+     * The default implementation always returns true and registers
+     * the thread for wake. By overriding this method, one can
+     * create a waitable that does not always block by either
+     * returning false, either calling the parent method and
+     * returning true.
+     *
+     * @param thread The thread to wake up when we're done.
+     * @return Whether the thread needs to wait for us.
+     */
+    virtual
+    bool
+    _wait(Thread* thread, Waker const& waker);
+    /** Abort waking a thread when we are done.
+     *
+     * Forget about a thread previously successfully registered with
+     * _wait. This happen in the case of timeouts, for
+     * instance. Overriding this method can be useful to cancel an
+     * operation if nobody waits on it anymore, for instance. The
+     * parent method must still be called, to avoid trying to wake
+     * up the thread erroneously when we're done.
+     */
+    virtual
+    void
+    _unwait(Thread* thread);
+    /// Wake waiting threads.
+    int
+    _signal();
+    virtual
+    Thread*
+    _signal_one();
+    /** Register an exception waiting thread should throw when woken.
+     *
+     * @param e The exception threads must throw.
+     */
+    template <typename Exception, typename... Args>
+    void
+    _raise(Args&&... args);
+    void
+    _raise(std::exception_ptr e);
 
-    private:
-      /// Let threads register/unregister themselves.
-      friend class Thread;
-      /// Exception woken thread must throw.
-      ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
+  private:
+    /// Let threads register/unregister themselves.
+    friend class Thread;
+    /// Exception woken thread must throw.
+    ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
 
   /*-------.
   | Events |

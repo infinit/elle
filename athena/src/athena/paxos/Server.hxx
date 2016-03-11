@@ -1,6 +1,9 @@
 #ifndef ATHENA_PAXOS_SERVER_HXX
 # define ATHENA_PAXOS_SERVER_HXX
 
+# include <boost/multi_index_container.hpp>
+# include <boost/multi_index/mem_fun.hpp>
+
 # include <elle/With.hh>
 # include <elle/serialization/Serializer.hh>
 

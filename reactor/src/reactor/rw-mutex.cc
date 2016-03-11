@@ -60,7 +60,7 @@ namespace reactor
   }
 
   bool
-  RWMutex::WriteMutex::_wait(Thread* thread)
+  RWMutex::WriteMutex::_wait(Thread* thread, Waker const& waker)
   {
     ELLE_TRACE_SCOPE("%s: lock for writing by %s", *this, *thread);
     if (_locked == thread)
@@ -81,7 +81,7 @@ namespace reactor
         ELLE_TRACE("%s: already locked for writing, waiting.", *this);
         ELLE_ASSERT(_locked);
       }
-      bool res = Waitable::_wait(thread);
+      bool res = Waitable::_wait(thread, waker);
       return res;
     }
     else
@@ -102,10 +102,10 @@ namespace reactor
   {}
 
   bool
-  RWMutex::_wait(Thread* thread)
+  RWMutex::_wait(Thread* thread, Waker const& waker)
   {
     ELLE_TRACE_SCOPE("%s: lock for reading by %s", *this, *thread);
-    if (_write._locked)
+    if (this->_write._locked)
       {
         if (_write._locked == thread)
           {
@@ -116,7 +116,7 @@ namespace reactor
           }
         else
           ELLE_TRACE("%s: already locked for writing, waiting", *this)
-            return Waitable::_wait(thread);
+            return Waitable::_wait(thread, waker);
       }
     else
     {

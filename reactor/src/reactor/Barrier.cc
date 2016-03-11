@@ -47,12 +47,12 @@ namespace reactor
   }
 
   bool
-  Barrier::_wait(Thread* thread)
+  Barrier::_wait(Thread* thread, Waker const& waker)
   {
     if (this->_opened)
       return false;
     else
-      return Super::_wait(thread);
+      return Super::_wait(thread, waker);
   }
 
   /*----------.
@@ -70,12 +70,12 @@ namespace reactor
   {}
 
   bool
-  Barrier::InvertedBarrier::_wait(Thread* thread)
+  Barrier::InvertedBarrier::_wait(Thread* thread, Waker const& waker)
   {
     if (!this->_barrier._opened)
       return false;
     else
-      return Super::_wait(thread);
+      return Super::_wait(thread, waker);
   }
 
   Barrier::InvertedBarrier::operator bool() const

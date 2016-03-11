@@ -36,12 +36,12 @@ namespace reactor
 
 
     bool
-    FileSystem::_wait(Thread* thread)
+    FileSystem::_wait(Thread* thread, Waker const& waker)
     {
       if (!this->_impl)
         return false;
       else
-        return Waitable::_wait(thread);
+        return Waitable::_wait(thread, waker);
     }
 
     std::shared_ptr<Path>
