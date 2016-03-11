@@ -107,6 +107,10 @@ namespace reactor
     virtual
     Thread*
     _signal_one();
+    void
+    _signal_one(Thread* thread);
+    void
+    _signal_one(Handler const& thread);
     /** Register an exception waiting thread should throw when woken.
      *
      * @param e The exception threads must throw.

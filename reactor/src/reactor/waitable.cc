@@ -89,7 +89,22 @@ namespace reactor
       this->on_signaled()();
       return nullptr;
     }
-    auto& thread = *this->_waiters.begin();
+    auto thread = *this->_waiters.begin();
+    this->_signal_one(thread);
+    return thread.first;
+  }
+
+  void
+  Waitable::_signal_one(Thread* t)
+  {
+    auto thread = this->_waiters.get<1>().find(t);
+    if (thread != this->_waiters.get<1>().end())
+      return _signal_one(*thread);
+  }
+
+  void
+  Waitable::_signal_one(Handler const& thread)
+  {
     if (thread.second)
       thread.second(thread.first);
     else
@@ -98,7 +113,6 @@ namespace reactor
     this->_exception = std::exception_ptr{}; // An empty one.
     if (this->_waiters.empty())
       this->on_signaled()();
-    return thread.first;
   }
 
   bool
