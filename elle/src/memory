@@ -75,6 +75,50 @@ namespace std
   {
     return std::make_shared<T, T&&>(std::forward<T>(o));
   }
+
+  template <typename T>
+  class ambivalent_ptr
+    : public weak_ptr<T>
+  {
+  public:
+    using weak_ptr<T>::weak_ptr;
+    using weak_ptr<T>::operator =;
+    ambivalent_ptr()
+      : weak_ptr<T>()
+      , _payload()
+    {}
+
+    explicit
+    ambivalent_ptr(T* ptr)
+      : weak_ptr<T>()
+      , _payload(ptr)
+    {
+      *this = this->_payload;
+    }
+
+    template <typename Y>
+    explicit
+    ambivalent_ptr(Y* ptr)
+      : weak_ptr<T>()
+      , _payload(ptr)
+    {
+      *this = this->_payload;
+    }
+
+    std::shared_ptr<T>&
+    payload()
+    {
+      return this->_payload;
+    }
+
+    std::shared_ptr<T> const&
+    payload() const
+    {
+      return this->_payload;
+    }
+  private:
+    std::shared_ptr<T> _payload;
+  };
 }
 
 #endif
