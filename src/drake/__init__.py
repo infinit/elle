@@ -3130,7 +3130,7 @@ def write(body, path):
 
 class TouchBuilder(WriteBuilder):
 
-    """Builder that simply creates its targets as empty files.
+    '''Builder that simply creates its targets as empty files.
 
     >>> n = node('/tmp/.drake.touchbuilder')
     >>> n.path().remove()
@@ -3139,13 +3139,13 @@ class TouchBuilder(WriteBuilder):
     Touch /tmp/.drake.touchbuilder
     >>> n.path().exists()
     True
-    """
+    '''
 
     def __init__(self, nodes):
       super().__init__('', nodes)
 
     def __str__(self):
-      return "Touch %s" % self.targets
+      return 'TouchBuilder(%r)' % self.targets()
 
 def touch(path):
   res = node(Path(path))
