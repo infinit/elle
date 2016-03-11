@@ -11,6 +11,7 @@
 #include <reactor/Barrier.hh>
 #include <reactor/Channel.hh>
 #include <reactor/MultiLockBarrier.hh>
+#include <reactor/OrWaitable.hh>
 #include <reactor/Scope.hh>
 #include <reactor/TimeoutGuard.hh>
 #include <reactor/asio.hh>
@@ -291,6 +292,39 @@ namespace waitable
   {
     ExceptionNoWait waitable;
     BOOST_CHECK_THROW(reactor::wait(waitable), BeaconException);
+  }
+
+  ELLE_TEST_SCHEDULED(logical_or)
+  {
+    reactor::Barrier a("A");
+    a.open();
+    reactor::Barrier b("B");
+    b.open();
+    ELLE_LOG("both open")
+    {
+      auto w = a || b;
+      reactor::wait(w);
+    }
+    ELLE_LOG("left closed")
+    {
+      a.close();
+      auto w = a || b;
+      reactor::wait(w);
+    }
+    ELLE_LOG("both closed")
+    {
+      b.close();
+      bool beacon = false;
+      auto w = a || b;
+      reactor::run_later("open", [&] { BOOST_CHECK(!beacon); a.open(); });
+      reactor::wait(w);
+      beacon = true;
+    }
+    ELLE_LOG("right open")
+    {
+      auto w = a || b;
+      reactor::wait(w);
+    }
   }
 }
 
@@ -2939,8 +2973,9 @@ ELLE_TEST_SUITE()
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
     boost::unit_test::framework::master_test_suite().add(subsuite);
-    auto exception_no_wait = &waitable::exception_no_wait;
+    using namespace waitable;
     subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(logical_or), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");

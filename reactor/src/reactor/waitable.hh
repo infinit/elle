@@ -122,8 +122,9 @@ namespace reactor
     _raise(std::exception_ptr e);
 
   private:
-    /// Let threads register/unregister themselves.
+    /// Let friends register/unregister themselves.
     friend class Thread;
+    friend class OrWaitable;
     /// Exception woken thread must throw.
     ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
 
