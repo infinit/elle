@@ -12,7 +12,7 @@ namespace elle
     Logger&
     logger();
     void
-    logger(elle::generic_unique_ptr<Logger> logger);
+    logger(std::unique_ptr<Logger> logger);
 
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place

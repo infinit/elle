@@ -14,10 +14,10 @@ namespace elle
   namespace log
   {
     static
-    elle::generic_unique_ptr<Logger>&
+    std::unique_ptr<Logger>&
     _logger()
     {
-      static elle::generic_unique_ptr<Logger> logger;
+      static std::unique_ptr<Logger> logger;
       return logger;
     }
 
@@ -53,7 +53,7 @@ namespace elle
     }
 
     void
-    logger(elle::generic_unique_ptr<Logger> logger)
+    logger(std::unique_ptr<Logger> logger)
     {
       std::unique_lock<std::mutex> ulock{log_mutex()};
       if (_logger() != nullptr && logger != nullptr)

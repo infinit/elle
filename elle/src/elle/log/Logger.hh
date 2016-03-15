@@ -103,7 +103,7 @@ namespace elle
       friend struct detail::Send;
       friend
       void
-      logger(elle::generic_unique_ptr<Logger> logger);
+      logger(std::unique_ptr<Logger> logger);
       unsigned int&
       indentation();
       void
