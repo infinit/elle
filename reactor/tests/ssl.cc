@@ -445,6 +445,7 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
         auto received = client->read_until("\n");
         BOOST_CHECK_EQUAL(received, data);
       });
+    (void)server;
     reactor::wait(listening);
     {
       reactor::network::SSLSocket client(
@@ -507,6 +508,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         }
         shutdown2.open();
       });
+    (void)server;
     reactor::wait(listening);
     {
       ELLE_LOG_SCOPE("connect first client");
@@ -544,6 +546,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeoutless)
         auto client = server.accept();
         exhaust(*client);
       });
+    (void)server;
     reactor::wait(listening);
     {
       reactor::network::SSLSocket client("127.0.0.1", std::to_string(port));
@@ -596,6 +599,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
           read_callback);
         reactor::wait(done);
       });
+    (void)server;
     reactor::wait(listening);
     ELLE_LOG("connect client")
     {
@@ -629,6 +633,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_concurrent)
         closed.open();
         reactor::wait(done);
       });
+    (void)server;
     reactor::wait(listening);
     ELLE_LOG("connect client")
     {
