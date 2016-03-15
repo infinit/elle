@@ -7,7 +7,8 @@
 
 namespace reactor
 {
-  class RWMutex: public Lockable
+  class RWMutex
+    : public Lockable
   {
   public:
     RWMutex();
@@ -15,9 +16,10 @@ namespace reactor
     locked() const;
     virtual
     bool
-    release();
+    release() override;
 
-    class WriteMutex: public Lockable
+    class WriteMutex
+      : public Lockable
     {
     public:
       WriteMutex(RWMutex& owner);
@@ -25,7 +27,7 @@ namespace reactor
       locked() const;
       virtual
       bool
-      release();
+      release() override;
 
     protected:
       virtual
@@ -33,7 +35,7 @@ namespace reactor
       _wait(Thread* thread, Waker const& waker) override;
       virtual
       Thread*
-      _signal_one();
+      _signal_one() override;
 
     private:
       ELLE_ATTRIBUTE(RWMutex&, owner);
