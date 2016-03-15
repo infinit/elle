@@ -98,6 +98,24 @@ ELLE_TEST_SCHEDULED(exception)
   BOOST_FAIL("generator din't throw");
 }
 
+ELLE_TEST_SCHEDULED(destruct)
+{
+  auto f = [&] (reactor::yielder<int>::type const& yield)
+    {
+      reactor::yield();
+      yield(0);
+      reactor::yield();
+      yield(1);
+      reactor::yield();
+      yield(2);
+      reactor::yield();
+    };
+  auto g = reactor::generator<int>(f);
+  auto it = g.begin();
+  it != g.end();
+  BOOST_CHECK_EQUAL(*it, 0);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -106,4 +124,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(move));
   master.add(BOOST_TEST_CASE(interleave));
   master.add(BOOST_TEST_CASE(exception));
+  master.add(BOOST_TEST_CASE(destruct));
 }

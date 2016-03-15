@@ -21,6 +21,7 @@ namespace reactor
     : _results()
     , _thread()
   {
+    ELLE_LOG_COMPONENT("reactor.Generator");
     auto yield = [this] (T elt) { this->_results.put(std::move(elt)); };
     this->_thread.reset(
       new Thread("generator",
@@ -32,6 +33,8 @@ namespace reactor
                    }
                    catch (...)
                    {
+                     ELLE_TRACE("%s: handle exception: %s",
+                                this, elle::exception_string());
                      this->_exception = std::current_exception();
                    }
                    this->_results.put({});
@@ -43,6 +46,14 @@ namespace reactor
     : _results(std::move(generator._results))
     , _thread(std::move(generator._thread))
   {}
+
+  template <typename T>
+  Generator<T>::~Generator()
+  {
+    ELLE_LOG_COMPONENT("reactor.Generator");
+    ELLE_TRACE("%s: destruct", this);
+  }
+
 
   /*--------.
   | Content |

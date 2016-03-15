@@ -35,6 +35,7 @@ namespace reactor
     typedef typename yielder<T>::type yielder;
     Generator(std::function<void (yielder const&)> const& driver);
     Generator(Generator&&b);
+    ~Generator();
 
   /*--------.
   | Content |
@@ -66,8 +67,8 @@ namespace reactor
     iterator
     end() const;
     ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
-    ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
     ELLE_ATTRIBUTE(std::exception_ptr, exception);
+    ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
   };
 
   template <typename T>
