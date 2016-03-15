@@ -1,5 +1,5 @@
 #ifndef REACTOR_OR_WAITABLE_HH
-# define REACTOR_OR_OR_WAITABLE_HH
+# define REACTOR_OR_WAITABLE_HH
 
 # include <reactor/waitable.hh>
 
