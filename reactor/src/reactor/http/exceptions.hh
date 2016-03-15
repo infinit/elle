@@ -1,7 +1,7 @@
 #ifndef REACTOR_HTTP_EXCEPTIONS_HH
 # define REACTOR_HTTP_EXCEPTIONS_HH
 
-# include <elle/Exception.hh>
+# include <elle/Error.hh>
 
 # include <reactor/duration.hh>
 
@@ -11,10 +11,10 @@ namespace reactor
   {
     /// Fatal error on a request that was not successfully completed.
     class RequestError:
-      public elle::Exception
+      public elle::Error
     {
     public:
-      typedef elle::Exception Super;
+      typedef elle::Error Super;
       RequestError(std::string const& url,
                    std::string const& error);
     private:
