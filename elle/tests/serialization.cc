@@ -421,10 +421,8 @@ raw_ptr()
     delete filled;
   }
   {
-    int padding;
     int* empty = reinterpret_cast<int*>(0x42);
     int* filled = nullptr;
-    int padding2;
     typename Format::SerializerIn input(stream);
     input.serialize("empty", empty);
     input.serialize("filled", filled);
