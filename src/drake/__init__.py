@@ -1890,7 +1890,7 @@ class Builder:
               '%s: error building dynamic dependency: %s', self, e)
             explain(
               self,
-              'some dynamic dependency couldn\'t be built')
+              'some dynamic dependency couldn\'t be built: %s' % e)
             execute = True
         # If any non-virtual target is missing, we must rebuild.
         oldest_target = None
