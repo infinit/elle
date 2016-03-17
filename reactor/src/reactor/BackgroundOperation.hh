@@ -1,7 +1,7 @@
 #ifndef REACTOR_BACKGROUND_OPERATION_HH
 # define REACTOR_BACKGROUND_OPERATION_HH
 
-# include <boost/optional/optional_io.hpp>
+# include <elle/optional.hh>
 
 # include <reactor/operation.hh>
 

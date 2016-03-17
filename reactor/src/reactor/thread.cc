@@ -1,7 +1,6 @@
 #include <reactor/thread.hh>
 
 #include <boost/foreach.hpp>
-#include <boost/optional/optional_io.hpp>
 
 #include <elle/finally.hh>
 #include <elle/log.hh>

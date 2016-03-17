@@ -1,5 +1,4 @@
 #include <boost/lexical_cast.hpp>
-#include <boost/optional/optional_io.hpp>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
