@@ -32,7 +32,7 @@ namespace reactor
             action_thread.terminate();
           triggered.signal();
         }
-        return nullptr;
+        return boost::none;
       }
 
       ELLE_DEBUG("Initializing %s", *this);
