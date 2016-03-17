@@ -66,6 +66,10 @@ class Scope:
 
   __scopes = {}
 
+  def __init__(self, exception_join = False):
+    super().__init__()
+    self.__exception_join = exception_join
+
   def __enter__(self):
     Scope.__scopes.setdefault(Coroutine.current, []).append(self)
     self.__coroutine = Coroutine.current
@@ -74,14 +78,24 @@ class Scope:
     return self
 
   def __exit__(self, type, value, traceback):
-    if value is not None:
-      self.terminate()
-    else:
-      try:
-        self.__coroutine.wait(self.__coroutines)
-      except:
+    try:
+      exception = None
+      if value is not None:
         self.terminate()
-        raise
+      else:
+        while True:
+          try:
+            self.__coroutine.wait(self.__coroutines)
+            break
+          except Exception as e:
+            exception = e
+            if self.__exception_join:
+              continue
+            else:
+              self.terminate()
+      if exception:
+        raise exception
+    finally:
       del Scope.__scopes[Coroutine.current][-1]
 
   def run(self, routine, name):
@@ -440,8 +454,6 @@ class Coroutine(Waitable):
         self.__waited.clear()
         self.__unfreeze()
 
-
-
   def run(self):
     while not self.done:
       self.step()
@@ -507,6 +519,9 @@ class Coroutine(Waitable):
   def started(self):
     return self.__started
 
+  @property
+  def exception(self):
+    return self.__exception
 
 class ThreadedOperation(Signal):
 

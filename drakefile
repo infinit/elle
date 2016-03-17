@@ -70,6 +70,7 @@ def configure(prefix = '.'):
     'base/change-dynamic-dependency',
     'base/failure',
     'base/failure-cmd',
+    'base/interrupt-dynamic-dependency',
   ]
 
   for test in tests:

@@ -1873,10 +1873,10 @@ class Builder:
         # Build dynamic dependencies
         with logger.log('drake.Builder',
                         drake.log.LogLevel.debug,
-                        '%s: build dynamic dependencies', self):
+                        '%s: build dynamic dependencies: %s', self, self.__sources_dyn):
           run_builders = set()
           try:
-            with sched.Scope() as scope:
+            with sched.Scope(exception_join = True) as scope:
               for node in self.__sources_dyn.values():
                 if node.skippable():
                   continue
@@ -1957,17 +1957,20 @@ class Builder:
             logger.log('drake.Builder',
                        drake.log.LogLevel.debug,
                        '%s: everything is up to date', self)
+      except sched.Terminate:
+        pass
       except Exception as e:
         logger.log('drake.Builder',
                    drake.log.LogLevel.trace,
                    '%s: exception: %s', self, e)
         self.__executed_exception = e
+        self.__executed = True
+        self.__executed_signal.signal()
         raise
       else:
         logger.log('drake.Builder',
                    drake.log.LogLevel.debug,
                    '%s: done', self)
-      finally:
         self.__executed = True
         self.__executed_signal.signal()
 
@@ -1991,7 +1994,7 @@ class Builder:
       with logger.log(
           'drake.Builder',
           drake.log.LogLevel.debug,
-          '%s: build dynamic dependencies', self):
+          '%s: build dynamic dependencies: %s', self, self.__sources_dyn):
         for node in self.__sources_dyn.values():
           # FIXME: parallelize
           node.build()
