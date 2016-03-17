@@ -717,26 +717,28 @@ def configure(curl_config,
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
 
+  # (bin, libs, stdin)
   tests = [
-    ('backend', []),
-    ('fsm', []),
-    ('generator', []),
-    ('http', [curl_lib]),
-    ('logger', []),
-    ('network', []),
-    ('reactor', []),
-    ('upnp', []), # Not an auto test, just an utility.
-    ('ssl', openssl_libs),
-    ('utp', [utp_lib]),
-    ('rdv-cat', []),
-    ('rdv-utp-cat', []),
-    ('rdv-server', []),
+    ('backend', [], None),
+    ('fdstream', [], 'something'),
+    ('fsm', [], None),
+    ('generator', [], None),
+    ('http', [curl_lib], None),
+    ('logger', [], None),
+    ('network', [], None),
+    ('reactor', [], None),
+    ('upnp', [], None), # Not an auto test, just a utility.
+    ('ssl', openssl_libs, None),
+    ('utp', [utp_lib], None),
+    ('rdv-cat', [], None),
+    ('rdv-utp-cat', [], None),
+    ('rdv-server', [], None),
     # 'reactor/file',
     ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
-    tests.append(('filesystem', []))
-    tests.append(('filesystem_bind', []))
-    tests.append(('filesystem_git', []))
+    tests.append(('filesystem', [], None))
+    tests.append(('filesystem_bind', [], None))
+    tests.append(('filesystem_git', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
 
@@ -749,12 +751,16 @@ def configure(curl_config,
     cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_timer(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_timer(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
 
-  for test_name, libraries in tests:
+  for test_name, libraries, stdin in tests:
     tests_config = drake.cxx.Config(cxx_config_tests)
     tests_config.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
     sources = drake.nodes('tests/%s.cc' % test_name) + [
@@ -785,10 +791,11 @@ def configure(curl_config,
         exe = test,
         valgrind = valgrind,
         env = env,
+        stdin = stdin,
         valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))
         ])
     else:
-      runner = drake.Runner(exe = test, env = env)
+      runner = drake.Runner(exe = test, env = env,stdin = stdin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
