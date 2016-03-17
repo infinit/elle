@@ -11,6 +11,7 @@
 
 #include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/optional.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDPSocket");
 
@@ -39,6 +40,7 @@ namespace reactor
     UDPSocket::UDPSocket():
       UDPSocket(reactor::scheduler(), "127.0.0.1", 60000)
     {}
+
     // UDPSocket::UDPSocket(Scheduler& sched,
     //                      int local_port,
     //                      const std::string& hostname,
