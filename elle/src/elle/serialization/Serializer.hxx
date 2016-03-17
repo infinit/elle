@@ -1048,11 +1048,20 @@ namespace elle
         {
           ELLE_LOG_COMPONENT("elle.serialization");
           auto id = type_info<U>();
-          if (name_.empty())
-            ELLE_TRACE_SCOPE("register dynamic type %s", id);
-          else
-            ELLE_TRACE_SCOPE("register dynamic type %s as %s", id, name_);
-          std::string name = name_.empty() ? id.name() : name_;
+          std::string name = name_;
+          if (name.empty())
+          {
+            name = id.name();
+            // Normalize stuff between different stdlibs
+            while (true)
+            {
+              auto pos = name.find("std::__1::");
+              if (pos == name.npos)
+                break;
+              name = name.substr(0, pos) + "std::" + name.substr(pos + 10);
+            }
+          }
+          ELLE_TRACE_SCOPE("register dynamic type %s as %s", id, name);
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s)
             {
