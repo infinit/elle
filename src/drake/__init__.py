@@ -1964,13 +1964,12 @@ class Builder:
                    drake.log.LogLevel.trace,
                    '%s: exception: %s', self, e)
         self.__executed_exception = e
-        self.__executed = True
-        self.__executed_signal.signal()
         raise
       else:
         logger.log('drake.Builder',
                    drake.log.LogLevel.debug,
                    '%s: done', self)
+      finally:
         self.__executed = True
         self.__executed_signal.signal()
 
