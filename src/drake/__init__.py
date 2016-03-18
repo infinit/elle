@@ -1873,7 +1873,7 @@ class Builder:
         # Build dynamic dependencies
         with logger.log('drake.Builder',
                         drake.log.LogLevel.debug,
-                        '%s: build dynamic dependencies: %s', self, self.__sources_dyn):
+                        '%s: build dynamic dependencies', self):
           run_builders = set()
           try:
             with sched.Scope(exception_join = True) as scope:
@@ -1993,7 +1993,7 @@ class Builder:
       with logger.log(
           'drake.Builder',
           drake.log.LogLevel.debug,
-          '%s: build dynamic dependencies: %s', self, self.__sources_dyn):
+          '%s: build dynamic dependencies', self):
         for node in self.__sources_dyn.values():
           # FIXME: parallelize
           node.build()
