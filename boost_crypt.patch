@@ -1,0 +1,13 @@
+diff --git a/boost/detail/winapi/crypt.hpp b/boost/detail/winapi/crypt.hpp
+index 4d2ebed..fbcf65b 100644
+--- a/boost/detail/winapi/crypt.hpp
++++ b/boost/detail/winapi/crypt.hpp
+@@ -12,7 +12,7 @@
+
+ #include <boost/detail/winapi/basic_types.hpp>
+ #include <boost/detail/winapi/detail/cast_ptr.hpp>
+-#if defined( BOOST_USE_WINDOWS_H ) && defined( BOOST_WINAPI_IS_MINGW )
++#if defined( BOOST_USE_WINDOWS_H ) && ( defined( BOOST_WINAPI_IS_MINGW ) || defined( BOOST_WINAPI_IS_MINGW_W64 ) )
+ // MinGW does not include this header as part of windows.h
+ #include <wincrypt.h>
+ #endif

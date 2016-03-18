@@ -812,15 +812,13 @@ def configure(cxx_toolkit = None,
       boost_tarball,
       fingerprint = '65a840e1a0b13a558ff19eeb2c4f0cbe',
     )
-    boost_patches = []
     boost_patches = [
-      (drake.download(url, fingerprint, where = 'boost',
-                     disable_ssl_certificate_validation = True), strip)
-      for url, fingerprint, strip in boost_patches] + [(drake.Node('boost.patch'), 2), (drake.Node('boost_optional.patch'), 1)]
-    boost_context_enabled = \
-      cxx_toolkit.os not in [drake.os.windows]
-    boost_locale_enabled = \
-      cxx_toolkit.os in [drake.os.windows]
+      (drake.Node('boost.patch'), 2),
+      (drake.Node('boost_crypt.patch'), 1),
+      (drake.Node('boost_optional.patch'), 1),
+    ]
+    boost_context_enabled = cxx_toolkit.os not in [drake.os.windows]
+    boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/bootstrap.sh' % boost_basename],
