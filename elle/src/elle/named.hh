@@ -219,7 +219,7 @@ namespace elle
       };
       template <typename F>
         static
-        void
+        typename next::template result_of<F>::type
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
