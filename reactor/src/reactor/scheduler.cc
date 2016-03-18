@@ -18,8 +18,6 @@
 #include <reactor/operation.hh>
 #include <reactor/thread.hh>
 
-#include <boost/foreach.hpp>
-
 ELLE_LOG_COMPONENT("reactor.Scheduler");
 
 namespace reactor
@@ -190,7 +188,7 @@ namespace reactor
     ELLE_DUMP("%s: running: %s", *this, this->_running);
     ELLE_DUMP("%s: frozen: %s", *this, this->_frozen);
     ELLE_MEASURE("Scheduler round")
-      BOOST_FOREACH (Thread* t, running)
+      for (Thread* t: running)
       {
         // If the thread was stopped during this round, skip. Can be caused by
         // terminate_now, for instance.
@@ -346,7 +344,7 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: terminate", *this);
     Threads terminated;
-    BOOST_FOREACH(Thread* t, _starting)
+    for(Thread* t: _starting)
     {
       // Threads expect to be done when deleted. For this very
       // particuliar case, hack the state before deletion.
@@ -354,13 +352,13 @@ namespace reactor
       t->_scheduler_release();
     }
     _starting.clear();
-    BOOST_FOREACH(Thread* t, Threads(_running))
+    for(Thread* t: Threads(_running))
       if (t != _current)
       {
         t->terminate();
         terminated.insert(t);
       }
-    BOOST_FOREACH(Thread* t, Threads(_frozen))
+    for(Thread* t: Threads(_frozen))
     {
       t->terminate();
       terminated.insert(t);

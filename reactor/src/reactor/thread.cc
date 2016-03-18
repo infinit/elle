@@ -1,7 +1,5 @@
 #include <reactor/thread.hh>
 
-#include <boost/foreach.hpp>
-
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/optional.hh>
@@ -299,7 +297,7 @@ namespace reactor
     ELLE_ASSERT_EQ(_state, state::running);
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
-    BOOST_FOREACH (Waitable* s, waitables)
+    for (Waitable* s: waitables)
       if (s->_wait(this, Waker()))
       {
         freeze = true;
@@ -417,7 +415,7 @@ namespace reactor
   {
     ELLE_TRACE("%s: abort wait because: %s", *this, reason);
     ELLE_ASSERT_EQ(state(), state::frozen);
-    BOOST_FOREACH (Waitable* waitable, _waited)
+    for (Waitable* waitable: _waited)
       waitable->_unwait(this);
     this->_waited.clear();
     this->_timeout_timer.cancel();
