@@ -813,15 +813,20 @@ def configure(cxx_toolkit = None,
       fingerprint = '65a840e1a0b13a558ff19eeb2c4f0cbe',
     )
     boost_patches = [
-      (drake.Node('boost.patch'), 2),
+      (drake.Node('boost_asio_ssl.patch'), 1),
       (drake.Node('boost_crypt.patch'), 1),
       (drake.Node('boost_optional.patch'), 1),
     ]
     boost_context_enabled = cxx_toolkit.os not in [drake.os.windows]
     boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
+    boost_attributes = {}
+    exec(open(str(drake.path_source('boost.py')), 'r').read(),
+         boost_attributes)
     drake.TarballExtractor(
       boost_tarball,
-      targets = ['%s/bootstrap.sh' % boost_basename],
+      targets = ['%s/%s' % (boost_basename, f)
+        for f in boost_attributes['patched_sources'] + ['bootstrap.sh']
+      ],
       patches = boost_patches,
       patch_dir = boost_basename,
     )
@@ -970,9 +975,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost_user_config = BoostUserConfigGenerator(
       drake.node('boost/%s/user-config.jam' % boost_basename),
       cxx_toolkit).user_config
-    boost_attributes = {}
-    exec(open(str(drake.path_source('boost.py')), 'r').read(),
-         boost_attributes)
     boost_headers = drake.nodes(*boost_attributes['headers'])
 
     drake.ShellCommand(
@@ -1079,8 +1081,11 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
       def hash(self):
         return self.__command
-
-    BoostBuilder(sources = [boost_bjam, boost_user_config],
+    boost_patched_sources = [
+      drake.node('boost/%s/%s' % (boost_basename, f))
+        for f in boost_attributes['patched_sources']
+    ]
+    BoostBuilder(sources = [boost_bjam, boost_user_config] + boost_patched_sources,
                  targets = boost_libraries + boost_headers)
     if windows and python3:
       python_version_tuple = \

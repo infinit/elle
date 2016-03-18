@@ -1,3 +1,9 @@
+patched_sources = [
+  'boost/asio/ssl/impl/rfc2818_verification.ipp', # boost_asio_ssl.patch
+  'boost/detail/winapi/crypt.hpp',                # boost_crypt.patch
+  'boost/optional/optional_io.hpp',               # boost_optional.patch
+]
+
 headers = [
   'boost/include/boost/accumulators/accumulators.hpp',
   'boost/include/boost/accumulators/accumulators_fwd.hpp',

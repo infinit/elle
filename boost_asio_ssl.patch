@@ -1,7 +1,7 @@
-diff --git a/include/boost/asio/ssl/impl/rfc2818_verification.ipp b/include/boost/asio/ssl/impl/rfc2818_verification.ipp
+diff --git a/boost/asio/ssl/impl/rfc2818_verification.ipp b/boost/asio/ssl/impl/rfc2818_verification.ipp
 index 769762e..4e9521b 100644
---- a/include/boost/asio/ssl/impl/rfc2818_verification.ipp
-+++ b/include/boost/asio/ssl/impl/rfc2818_verification.ipp
+--- a/boost/asio/ssl/impl/rfc2818_verification.ipp
++++ b/boost/asio/ssl/impl/rfc2818_verification.ipp
 @@ -128,8 +128,6 @@ bool rfc2818_verification::operator()(
  bool rfc2818_verification::match_pattern(const char* pattern,
      std::size_t pattern_length, const char* host)
