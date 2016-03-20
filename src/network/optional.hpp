@@ -371,10 +371,9 @@ class optional {
    */
   template <class U>
   T value_or(U&& other) const & {
-    if (!base_type::init_) {
-      return std::forward(other);
-    }
-    return *(*this);
+    static_assert(std::is_copy_constructible<value_type>::value, "Must be copy constructible.");
+    static_assert(std::is_convertible<U, value_type>::value, "U must be convertible to T.");
+    return bool(*this) ? **this : static_cast<T>(std::forward<U>(other));
   }
 
   /**
@@ -383,10 +382,9 @@ class optional {
    */
   template <class U>
   T value_or(U&& other) && {
-    if (!base_type::init_) {
-      return std::forward(other);
-    }
-    return std::move(*(*this));
+    static_assert(std::is_copy_constructible<value_type>::value, "Must be copy constructible.");
+    static_assert(std::is_convertible<U, value_type>::value, "U must be convertible to T.");
+    return bool(*this) ? std::move(**this) : static_cast<T>(std::forward<U>(other));
   }
 
  private:
