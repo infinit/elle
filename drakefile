@@ -831,7 +831,8 @@ def configure(cxx_toolkit = None,
       patch_dir = boost_basename,
     )
     boost_bootstrap = drake.node('boost/%s/bootstrap.sh' % boost_basename)
-    boost_prefix = drake.path_root() / drake.path_build('boost')
+    boost_prefix = 'boost/%s' % boost_version
+    boost_prefix_abs = drake.path_root() / drake.path_build(boost_prefix)
     boost_built_libraries = [
       'atomic',
       'chrono',
@@ -858,7 +859,7 @@ def configure(cxx_toolkit = None,
       boost_bootstrap_libraries.append('locale')
     boost_bootstrap_command = [
       './bootstrap.sh',
-      '--prefix=%s' % boost_prefix,
+      '--prefix=%s' % boost_prefix_abs,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
     if python3 is not None and not windows:
@@ -872,24 +873,24 @@ def configure(cxx_toolkit = None,
     if boost_locale_enabled:
       boost_library_names.append('locale')
     if cxx_toolkit.os is drake.os.macos:
-      boost_static_format = 'boost/lib/libboost_%s.a'
-      boost_dynamic_format = 'boost/lib/libboost_%s.dylib'
+      boost_static_format = '%s/lib/libboost_%s.a'
+      boost_dynamic_format = '%s/lib/libboost_%s.dylib'
       boost_dynamic_versioned_format = None
       # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.60.0.dylib'
     elif windows:
-      boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
+      boost_static_format = '%s/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
       boost_dynamic_versioned_format = None
     elif cxx_toolkit.os is drake.os.ios:
-      boost_static_format = 'boost/lib/libboost_%s-mt-s.a'
+      boost_static_format = '%s/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
       boost_dynamic_versioned_format = None
     else:
-      boost_static_format = 'boost/lib/libboost_%s.a'
-      boost_dynamic_format = 'boost/lib/libboost_%s.so'
-      boost_dynamic_versioned_format = 'boost/lib/libboost_%s.so.1.60.0'
+      boost_static_format = '%s/lib/libboost_%s.a'
+      boost_dynamic_format = '%s/lib/libboost_%s.so'
+      boost_dynamic_versioned_format = '%s/lib/libboost_%s.so.1.60.0'
     boost_libraries = (
-      [t(fmt % name)
+      [t(fmt % (boost_prefix, name))
        for t, fmt in (
            (drake.cxx.StaticLib, boost_static_format),
            (drake.cxx.DynLib, boost_dynamic_format),
@@ -975,7 +976,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost_user_config = BoostUserConfigGenerator(
       drake.node('boost/%s/user-config.jam' % boost_basename),
       cxx_toolkit).user_config
-    boost_headers = drake.nodes(*boost_attributes['headers'])
 
     drake.ShellCommand(
       sources = [boost_bootstrap, boost_user_config],
@@ -1014,7 +1014,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'link=static',
             'runtime-link=static',
             '--layout=tagged',
-            '--prefix=%s' % boost_prefix,
+            '--prefix=%s' % boost_prefix_abs,
             '-sBUILD=<define>BOOST_USE_WINDOWS_H=1',
             'cxxflags=-std=c++11 -include cmath -DBOOST_USE_WINDOWS_H -DBOOST_LEXICAL_CAST_ASSUME_C_LOCALE',
             'linkflags=-std=c++11',
@@ -1033,7 +1033,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'link=static',
             'runtime-link=static',
             '--layout=tagged',
-            '--prefix=%s' % boost_prefix,
+            '--prefix=%s' % boost_prefix_abs,
             'target-os=iphone',
             'architecture=arm',
             'define=_LITTLE_ENDIAN',
@@ -1085,8 +1085,13 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       drake.node('boost/%s/%s' % (boost_basename, f))
         for f in boost_attributes['patched_sources']
     ]
-    BoostBuilder(sources = [boost_bjam, boost_user_config] + boost_patched_sources,
-                 targets = boost_libraries + boost_headers)
+    boost_headers = [
+      drake.node('boost/1.60.0/%s' % n)
+        for n in boost_attributes['headers']
+    ]
+    BoostBuilder(
+      sources = [boost_bjam, boost_user_config] + boost_patched_sources,
+      targets = boost_libraries + boost_headers)
     if windows and python3:
       python_version_tuple = \
         (python3.prefix, python_version.major, python_version.minor)
@@ -1097,7 +1102,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       cxx_toolkit = cxx_toolkit,
       prefix = boost_prefix,
       version_effective = boost_version,
-      prefer_shared = cxx_toolkit.os is not drake.os.windows,
+      prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
     )
     boost_rule = drake.Rule('boost')
     boost_rule << boost_headers
