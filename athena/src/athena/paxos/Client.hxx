@@ -182,6 +182,7 @@ namespace athena
                 {
                   ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
                              *this, peer, minimum);
+                  version = minimum.version;
                   this->_round = minimum.round;
                   conflicted = true;
                   scope.terminate_now();
