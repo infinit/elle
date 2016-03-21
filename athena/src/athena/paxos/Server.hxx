@@ -249,14 +249,23 @@ namespace athena
     {
       static
       void
-      check_quorum(Server<T, Version, CId, SId>& self, Quorum q)
+      check_quorum(Server<T, Version, CId, SId>& self,
+                   Quorum q,
+                   bool get = false)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
-        if (q != self._quorum_initial)
+        auto expected = self._quorum_initial;
+        if (get &&
+            self._state &&
+            self._state->accepted &&
+            self._state->accepted->confirmed &&
+            self._state->accepted->value.template is<Quorum>())
+          expected = self._state->accepted->value.template get<Quorum>();
+        if (q != expected)
         {
           ELLE_TRACE("quorum is wrong: %f instead of %f",
-                     q, self._quorum_initial);
-          throw WrongQuorum(self._quorum_initial, std::move(q));
+                     q, expected);
+          throw WrongQuorum(expected, std::move(q));
         }
       }
 
@@ -452,7 +461,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get", *this);
-      _Details::check_quorum(*this, q);
+      _Details::check_quorum(*this, q, true);
       return this->current_value();
     }
 
