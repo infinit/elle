@@ -720,7 +720,6 @@ def configure(curl_config,
   # (bin, libs, stdin)
   tests = [
     ('backend', [], None),
-    ('fdstream', [], 'something'),
     ('fsm', [], None),
     ('generator', [], None),
     ('http', [curl_lib], None),
@@ -736,6 +735,7 @@ def configure(curl_config,
     # 'reactor/file',
     ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
+    tests.append(('fdstream', [], 'something'))
     tests.append(('filesystem', [], None))
     tests.append(('filesystem_bind', [], None))
     tests.append(('filesystem_git', [], None))
