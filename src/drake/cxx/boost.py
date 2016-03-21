@@ -87,7 +87,7 @@ class Boost(drake.Configuration):
       test = [Path(prefix)]
     for i in range(len(test)):
       if not test[i].absolute():
-        test[i] = drake.path_source() / test[i]
+        test[i] = drake.path_build() / test[i]
     token = drake.Path('boost/version.hpp')
     include_subdirs = {drake.Path('include')}
     for prefix in test:
@@ -171,7 +171,7 @@ class Boost(drake.Configuration):
         filename = cxx_toolkit.libname_dyn(libname, self.__cfg)
         tests.append(lib_path / ('%s.%s' % (filename, self.__version)))
         tests.append(lib_path / filename)
-      for test in  tests:
+      for test in tests:
         # Look for a node if we build our own boost.
         if test.absolute():
           drake_path = test.without_prefix(drake.path_root())
