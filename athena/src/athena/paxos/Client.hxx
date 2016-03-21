@@ -202,7 +202,6 @@ namespace athena
             auto delay = 100_ms * rn * backoff;
             if (this->_conflict_backoff)
             {
-              elle::unreachable();
               ELLE_TRACE("%s: conflicted proposal, retry in %s", this, delay);
               reactor::sleep(delay);
             }
