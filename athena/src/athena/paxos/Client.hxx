@@ -36,6 +36,7 @@ namespace athena
     Client<T, Version, ClientId>::Client(ClientId id, Peers peers)
       : _id(id)
       , _peers(std::move(peers))
+      , _conflict_backoff(true)
       , _round(0)
     {
       ELLE_ASSERT(!this->_peers.empty());
@@ -199,9 +200,14 @@ namespace athena
           {
             auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
             auto delay = 100_ms * rn * backoff;
-            ELLE_TRACE("%s: conflicted proposal, retry after backoff: %s",
-                       *this, delay);
-            reactor::sleep(delay);
+            if (this->_conflict_backoff)
+            {
+              elle::unreachable();
+              ELLE_TRACE("%s: conflicted proposal, retry in %s", this, delay);
+              reactor::sleep(delay);
+            }
+            else
+              ELLE_TRACE("%s: conflicted proposal, retry", this);
             backoff = std::min(backoff * 2, 64);
             continue;
           }

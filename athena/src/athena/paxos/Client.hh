@@ -75,6 +75,7 @@ namespace athena
       Client(ClientId id, Peers peers);
       ELLE_ATTRIBUTE_R(ClientId, id);
       ELLE_ATTRIBUTE_RX(Peers, peers);
+      ELLE_ATTRIBUTE_RW(bool, conflict_backoff);
 
     /*----------.
     | Consensus |
