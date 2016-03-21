@@ -3530,13 +3530,14 @@ class Runner(Builder):
                stdin = None,
                prefix = None,
                targets = None,
+               sources = []
   ):
     self.__args = args or list()
     self.__exe = exe
     self.__out = node('%s.out' % exe.name_relative)
     self.__err = node('%s.err' % exe.name_relative)
     self.__status = node('%s.status' % exe.name_relative)
-    self.__sources = [exe]
+    self.__sources = [exe] + sources
     self.__env = env
     if stdin is None:
       self.__input = None
