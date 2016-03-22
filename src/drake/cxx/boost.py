@@ -85,9 +85,6 @@ class Boost(drake.Configuration):
               if path.basename() == 'include']
     else:
       test = [Path(prefix)]
-    for i in range(len(test)):
-      if not test[i].absolute():
-        test[i] = drake.path_build() / test[i]
     token = drake.Path('boost/version.hpp')
     include_subdirs = {drake.Path('include')}
     for prefix in test:
@@ -104,6 +101,7 @@ class Boost(drake.Configuration):
       assert prefix is not None
     # Try every search path
     for path, include_subdir in prefixes:
+      path = drake.path_build(path)
       include_subdir = include_subdir.without_suffix(token)
       # Create basic configuration for version checking.
       cfg = Config()
