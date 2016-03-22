@@ -66,6 +66,7 @@ namespace reactor
     {
       while (true)
       {
+        bool set_endpoint = false;
         Size sz = UDPSocket::receive_from(buffer, endpoint, timeout);
         if (sz < 8)
           return sz;
@@ -73,6 +74,7 @@ namespace reactor
         {
           ELLE_TRACE("message from server, open reached");
           _server_reached.open();
+          set_endpoint = true;
         }
         std::string magic(buffer.data(), buffer.data() + 8);
         auto it = _readers.find(magic);
@@ -85,6 +87,10 @@ namespace reactor
           rdv::Message repl =
             elle::serialization::json::deserialize<rdv::Message>(
               elle::Buffer(buffer.data() + 8, sz - 8), false);
+          if (set_endpoint && repl.source_endpoint)
+          {
+            _public_endpoint = *repl.source_endpoint;
+          }
           ELLE_DEBUG("got message from %s, code %s", endpoint, (int)repl.command);
           switch (repl.command)
           {
