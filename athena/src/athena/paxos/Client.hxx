@@ -42,6 +42,13 @@ namespace athena
       ELLE_ASSERT(!this->_peers.empty());
     }
 
+    template <typename T, typename Version, typename ClientId>
+    void
+    Client<T, Version, ClientId>::peers(Peers peers)
+    {
+      this->_peers = std::move(peers);
+    }
+
     class TooFewPeers
       : public elle::Error
     {
