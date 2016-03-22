@@ -961,11 +961,22 @@ class DepFile:
       self.__files = []
       self.__invalid = False
       self.__hashes = None
+      self.__dirty = False
 
     @property
     def hashes(self):
       """The file hashes loaded from the disk."""
       return self.__hashes
+
+    @property
+    def dirty(self):
+      '''Whether previous build failed.'''
+      return self.__dirty
+
+    @dirty.setter
+    def dirty(self, dirty):
+      self.__dirty = dirty
+      self.save()
 
     def register(self, node, source = True):
         """Add the node to the hashed files."""
@@ -982,8 +993,16 @@ class DepFile:
         with profile_unpickling():
           try:
             with open(str(self.path()), 'rb') as f:
-              self.__hashes = drake.Path.Unpickler(f).load()
-              if self.__hashes is None:
+              unpickled = drake.Path.Unpickler(f).load()
+              if unpickled is None:
+                self.__invalid = True
+              if isinstance(unpickled, dict):
+                self.__hashes = unpickled
+              elif isinstance(unpickled, tuple):
+                content = unpickled[1]
+                self.__dirty = content['dirty']
+                self.__hashes = content['hashes']
+              else:
                 self.__invalid = True
           except Exception:
             self.__invalid = True
@@ -1032,14 +1051,19 @@ class DepFile:
 
     def update(self):
       """Rehash all files and write to the store file."""
-      value = dict(
+      self.__hashes = dict(
         (node.name_absolute(), (node.hash() if source else None,
                                 node.drake_type()))
         for node, source in self.__files)
+      self.__dirty = False
+      self.save()
+
+    def save(self):
+      content = {'hashes': self.__hashes, 'dirty': self.__dirty}
       with profile_pickling():
         path = self.path()
         with open(str(path), 'wb') as f:
-          pickle.Pickler(f).dump(value)
+          pickle.Pickler(f).dump((0, content))
 
     def remove(self):
       """Rehash all files and write to the store file."""
@@ -1913,6 +1937,9 @@ class Builder:
           explain(self,
                   'dependency file %s is invalid' % self._depfile)
           execute = True
+        if self._depfile.dirty:
+          explain(self, 'previous build failed')
+          execute = True
         # If a new dependency appeared, we must rebuild.
         if not execute:
           for source in self.__sources.values():
@@ -1975,7 +2002,6 @@ class Builder:
 
   def _execute(self, depfile_builder):
     self.cachedir.mkpath()
-    self._depfile.remove()
     for target in self.__targets:
       if isinstance(target, Node):
         target.path().dirname().mkpath()
@@ -2002,6 +2028,7 @@ class Builder:
         with logger.log('drake.Builder',
                         drake.log.LogLevel.trace,
                         '%s: execute', self):
+          self._depfile.dirty = True
           success = self.execute()
           for dst in self.__targets:
             dst._Node__mtime = None
