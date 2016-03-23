@@ -11,8 +11,8 @@ namespace reactor
     namespace rdv
     {
       using Endpoint = boost::asio::ip::udp::endpoint;
-      
-      const char* rdv_magic = "RDVMAGIK"; // 8 bytes
+
+      static const char* rdv_magic = "RDVMAGIK"; // 8 bytes
       enum class Command
       {
         ping,
