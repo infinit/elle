@@ -78,7 +78,7 @@ static void udp(std::string const& host, int port)
   }
 }
 
-static void rdv_udp(std::string const& host, int port)
+static void nat(std::string const& host, int port)
 { // check cone-nat by comparing our endpoints from rdv server and connectivity server
   try
   {
@@ -125,7 +125,7 @@ static void rdv_udp(std::string const& host, int port)
     socket.rdv_connect("connectivity-client-udp",
       reactor::network::resolve_udp("rdv.infinit.sh", "7890"),
       5_sec);
-    auto ep = socket.contact("connectivity-server-udp", {}, 5_sec);
+    auto ep = reactor::network::resolve_udp(host, std::to_string(port));
     socket.send_to(std::string("foo\n"), ep);
     reactor::wait(poller);
     spoll.abort();
@@ -178,6 +178,8 @@ static void run(int argc, char** argv)
   std::cerr << "Local IP Addresses:" << std::endl;
   for (auto i: interfaces)
   {
+    if (i.second.ipv4_address.empty())
+      continue;
     std::cerr << i.second.ipv4_address << std::endl;
     public_ips.push_back(i.second.ipv4_address);
   }
@@ -185,8 +187,8 @@ static void run(int argc, char** argv)
   std::cerr << "\nConnectivity:" << std::endl;
   tcp(host, port);
   udp(host, port);
+  nat(host, port);
   rdv_utp(host, port+1);
-  rdv_udp(host, 0);
 
   std::cerr << "\nUPNP:" << std::endl;
   auto upnp = reactor::network::UPNP::make();
