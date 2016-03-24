@@ -7,7 +7,6 @@ variables:
 x86_64-trusty-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -23,7 +22,6 @@ x86_64-trusty-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -39,7 +37,6 @@ x86_64-jessie-gcc4:
 i386-jessie-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -55,7 +52,6 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -71,7 +67,6 @@ x86_64-windows-mingw4:
 i686-windows-mingw4:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -87,7 +82,6 @@ i686-windows-mingw4:
 x86_64-osx-clang:
   stage: build
   script:
-    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -95,6 +89,8 @@ x86_64-osx-clang:
     - cd ../elle-build && python3 drake -j 4 //build
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
+    - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
+    - gtar -cvjf /tmp/$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,infinit-$(GIT_DIR=../elle/.git git describe)/,"
   tags:
     - x86_64
     - osx
