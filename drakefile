@@ -1307,7 +1307,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   rule_check << reactor.rule_check
 
   install = drake.Rule('install')
-  # install << athena.rule_install
+  install << athena.rule_install
   install << aws.rule_install
   install << cryptography.rule_install
   install << elle.rule_install
