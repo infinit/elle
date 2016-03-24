@@ -29,6 +29,9 @@ x86_64-jessie-gcc4:
     - cd ../elle-build && python3 drake -j 4 //build
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
+    - TARBALL=elle-x86_64-jessie-gcc4-$(GIT_DIR=../elle/.git git describe).tbz
+    - tar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
   tags:
     - x86_64
     - jessie
@@ -90,7 +93,8 @@ x86_64-osx-clang:
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
     - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
-    - gtar -cvjf /tmp/$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,infinit-$(GIT_DIR=../elle/.git git describe)/,"
+    - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
   tags:
     - x86_64
     - osx
