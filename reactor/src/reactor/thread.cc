@@ -26,7 +26,7 @@ namespace reactor
 
   Thread::Thread(Scheduler& scheduler,
                  std::string const& name,
-                 Action const& action,
+                 Action action,
                  bool dispose)
     : _dispose(dispose)
     , _managed(false)
@@ -38,7 +38,7 @@ namespace reactor
     , _timeout_timer(scheduler.io_service())
     , _thread(scheduler._manager->make_thread(
                 name,
-                boost::bind(&Thread::_action_wrapper, this, action)))
+                boost::bind(&Thread::_action_wrapper, this, std::move(action))))
     , _scheduler(scheduler)
     , _terminating(false)
     , _interruptible(true)
@@ -47,24 +47,26 @@ namespace reactor
   }
 
   Thread::Thread(std::string const& name,
-                 Action const& action,
+                 Action action,
                  bool dispose):
-    Thread(reactor::scheduler(), name, action, dispose)
+    Thread(reactor::scheduler(), name, std::move(action), dispose)
   {}
 
   ThreadPtr
   Thread::make_tracked(const std::string& name,
-                       const Action& action)
+                       Action action)
   {
-    return make_tracked(*reactor::Scheduler::scheduler(), name, action);
+    return make_tracked(
+      *reactor::Scheduler::scheduler(), name, std::move(action));
   }
 
   ThreadPtr
   Thread::make_tracked(Scheduler& scheduler,
                        const std::string& name,
-                       const Action& action)
+                       Action action)
   {
-    ThreadPtr res = std::make_shared<Thread>(scheduler, name, action);
+    ThreadPtr res = std::make_shared<Thread>(
+      scheduler, name, std::move(action));
     res->_self = res;
     return res;
   }

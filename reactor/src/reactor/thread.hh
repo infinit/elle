@@ -51,14 +51,14 @@ namespace reactor
   public:
     Thread(Scheduler& scheduler,
            const std::string& name,
-           const Action& action,
+           Action action,
            bool dispose = false);
     Thread(const std::string& name,
-           const Action& action,
+           Action action,
            bool dispose = false);
     template <typename ... Args>
     Thread(const std::string& name,
-           const Action& action,
+           Action action,
            Args&& ... args);
     NAMED_ARGUMENT(dispose);
     NAMED_ARGUMENT(managed);
@@ -67,12 +67,12 @@ namespace reactor
     ThreadPtr
     make_tracked(Scheduler& scheduler,
                  const std::string& name,
-                 const Action& action);
+                 Action action);
     // Returned shared ptr will be kept live until action finished
     static
     ThreadPtr
     make_tracked(const std::string& name,
-                 const Action& action);
+                 Action action);
     virtual
     ~Thread();
   protected:
@@ -258,7 +258,7 @@ namespace reactor
     public:
       VThread(Scheduler& scheduler,
               const std::string& name,
-              const Action& action);
+              Action action);
 
     /*-------.
     | Result |
