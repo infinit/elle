@@ -763,13 +763,13 @@ def configure(curl_config,
   for test_name, libraries, stdin in tests:
     tests_config = drake.cxx.Config(cxx_config_tests)
     tests_config.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
-    sources = drake.nodes('tests/%s.cc' % test_name) + [
+    test_sources = drake.nodes('tests/%s.cc' % test_name) + [
       library, elle_lib
       ] + libraries
     if cxx_toolkit.os == drake.os.macos:
-      sources += cxx_libs
+      test_sources += cxx_libs
     test = drake.cxx.Executable('tests/%s' % test_name,
-                                sources,
+                                test_sources,
                                 cxx_toolkit, tests_config)
     rule_tests << test
     if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat',
