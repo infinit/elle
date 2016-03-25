@@ -108,7 +108,15 @@ def configure(cxx_toolkit,
       cxx_toolkit,
       local_config_tests)
     rule_tests << test
-    runner = drake.Runner(test)
+    if valgrind_tests:
+      runner = drake.valgrind.ValgrindRunner(
+        exe = test,
+        valgrind_args = [
+          '--suppressions=%s' % drake.path_source('../valgrind.suppr'),
+        ],
+      )
+    else:
+      runner = drake.Runner(test)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 
