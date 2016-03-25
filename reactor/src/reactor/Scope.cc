@@ -1,5 +1,3 @@
-#define private public
-
 #include <elle/log.hh>
 
 #include <reactor/Scope.hh>
