@@ -146,7 +146,7 @@ namespace athena
       Server(ServerId id, Quorum quorum,
         elle::Version version = elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
       ELLE_ATTRIBUTE_R(ServerId, id);
-      ELLE_ATTRIBUTE_R(Quorum, quorum_initial);
+      ELLE_ATTRIBUTE_R(Quorum, quorum);
       ELLE_ATTRIBUTE_R(boost::optional<T>, value);
       ELLE_ATTRIBUTE_R(elle::Version, version);
 

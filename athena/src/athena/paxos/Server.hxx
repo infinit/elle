@@ -230,12 +230,12 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::Server(
       ServerId id, Quorum quorum, elle::Version version)
       : _id(std::move(id))
-      , _quorum_initial(quorum)
+      , _quorum(quorum)
       , _value()
       , _version(version)
       , _state()
     {
-      ELLE_ASSERT_CONTAINS(this->_quorum_initial, this->_id);
+      ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
       this->_register_wrong_quorum_serialization.poke();
       this->_register_partial_state_serialization.poke();
     }
@@ -254,7 +254,7 @@ namespace athena
                    bool get = false)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
-        auto expected = self._quorum_initial;
+        auto expected = self._quorum;
         if (get &&
             self._state &&
             self._state->accepted &&
@@ -319,7 +319,7 @@ namespace athena
           if (accepted->value.template is<T>())
             this->_value.emplace(std::move(accepted->value.template get<T>()));
           else
-            this->_quorum_initial =
+            this->_quorum =
               std::move(accepted->value.template get<Quorum>());
           this->_state.reset();
         }
@@ -419,7 +419,7 @@ namespace athena
           this->_state->accepted->value.template is<Quorum>())
         return this->_state->accepted->value.template get<Quorum>();
       else
-        return this->_quorum_initial;
+        return this->_quorum;
     }
 
     template <typename T, typename Version, typename CId, typename SId>
@@ -508,7 +508,7 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::Server(
       elle::serialization::SerializerIn& s, elle::Version const& v)
       : _id()
-      , _quorum_initial()
+      , _quorum()
       , _value()
       , _state()
     {
@@ -523,7 +523,7 @@ namespace athena
       elle::serialization::Serializer& s, elle::Version const& v)
     {
       s.serialize("id", this->_id);
-      s.serialize("quorum", this->_quorum_initial);
+      s.serialize("quorum", this->_quorum);
       if (v >= elle::Version(0, 1, 0))
         s.serialize("value", this->_value);
       typedef boost::multi_index::multi_index_container<
