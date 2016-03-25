@@ -31,7 +31,9 @@ class Packager(drake.Builder):
       os.chmod(str(self.__path / 'DEBIAN/postinst'), 0o755)
     except:
       pass
-    env = {}
+    env = {
+      'PATH': os.environ['PATH'],
+    }
     if self.__preload is not None:
       path = drake.path_root() / self.__preload.path()
       env['LD_PRELOAD'] = str(path)
@@ -40,18 +42,18 @@ class Packager(drake.Builder):
 
   @property
   def command(self):
-    chown = ['chown', '-R', 'root:root', self.__path]
+    chown = ['chown', '-R', 'root:0', self.__path]
     chmod = ['chmod', '-R', 'a+rX', self.__path]
     dpkg = ['dpkg-deb', '-b', self.__path, self.__destination]
     import pipes
     def escape(cmd):
       return (pipes.quote(str(a)) for a in cmd)
-    return ['fakeroot', 'sh', '-e', '-c',
+    return ['fakeroot', 'sh', '-e', '-c', pipes.quote(
             ' '.join(itertools.chain(escape(chown),
                                      [';'],
                                      escape(chmod),
                                      [';'],
-                                     escape(dpkg)))]
+                                     escape(dpkg))))]
 
   @property
   def package(self):
