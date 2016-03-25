@@ -37,45 +37,42 @@ namespace reactor
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
     auto thread =
-      new Thread(sched, name,
-                 [this, a, name]
-                 {
-                   try
-                   {
-                     // Make sure the action is deleted as soon as it's done,
-                     // and not when finished thread are garbage collected. It
-                     // may hold objects that are expected to be destroyed - a
-                     // captured unique_ptr to a socket for instance, and one
-                     // would expect a disconnection when the thread is done.
-                     auto action = std::move(a);
-                     ELLE_TRACE("%s: background job %s starts",
-                                *this, name)
-                       action();
-                     ELLE_TRACE("%s: background job %s finished",
-                                *this, name);
-                   }
-                   catch (Terminate const&)
-                   {
-                     ELLE_TRACE("%s: background job %s terminated",
-                                *this, name);
-                   }
-                   catch (...)
-                   {
-                     ELLE_ASSERT(!!std::current_exception());
-                     ELLE_TRACE_SCOPE("%s: background job %s threw: %s",
-                                      *this, name, elle::exception_string());
-                     if (!this->_exception)
-                     {
-                       this->_exception = std::current_exception();
-                       this->_raise(std::current_exception());
-                       this->_terminate_now();
-                     }
-                     else
-                       ELLE_WARN(
-                         "%s: exception already caught, losing exception: %s",
-                         *this, elle::exception_string());
-                   }
-                 });
+      new Thread(
+        sched, name,
+        [this, a, name]
+        {
+          try
+          {
+            // Make sure the action is deleted as soon as it's done,
+            // and not when finished thread are garbage collected. It
+            // may hold objects that are expected to be destroyed - a
+            // captured unique_ptr to a socket for instance, and one
+            // would expect a disconnection when the thread is done.
+            auto action = std::move(a);
+            ELLE_TRACE("%s: background job %s starts", *this, name)
+              action();
+            ELLE_TRACE("%s: background job %s finished", *this, name);
+          }
+          catch (Terminate const&)
+          {
+            ELLE_TRACE("%s: background job %s terminated", *this, name);
+          }
+          catch (...)
+          {
+            ELLE_ASSERT(!!std::current_exception());
+            ELLE_TRACE_SCOPE("%s: background job %s threw: %s",
+                             *this, name, elle::exception_string());
+            if (!this->_exception)
+            {
+              this->_exception = std::current_exception();
+              this->_raise(std::current_exception());
+              this->_terminate_now();
+            }
+            else
+              ELLE_WARN("%s: exception already caught, losing exception: %s",
+                        *this, elle::exception_string());
+          }
+        });
     this->_threads.push_back(thread);
     thread->on_signaled().connect([this]
                                   {
