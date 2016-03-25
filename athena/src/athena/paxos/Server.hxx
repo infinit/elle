@@ -233,6 +233,7 @@ namespace athena
       , _quorum(quorum)
       , _value()
       , _version(version)
+      , _partial(false)
       , _state()
     {
       ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
@@ -327,7 +328,7 @@ namespace athena
       }
       else
       {
-        // FIXME: if the quorum changed, we need to take note !
+        this->_partial = true;
         this->_state.reset();
       }
       if (!this->_state)
@@ -354,7 +355,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
-      _Details::check_quorum(*this, q);
+      if (!this->_partial)
+        _Details::check_quorum(*this, q);
       if (!this->_state || this->_state->proposal < p)
       {
         ELLE_WARN("%s: someone malicious sent an accept before propose",
@@ -389,7 +391,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
-      _Details::check_quorum(*this, q);
+      if (!this->_partial)
+        _Details::check_quorum(*this, q);
       if (!this->_state ||
           this->_state->proposal < p ||
           !this->_state->accepted)
@@ -406,7 +409,14 @@ namespace athena
       }
       auto& accepted = *this->_state->accepted;
       if (!accepted.confirmed)
+      {
         accepted.confirmed = true;
+        if (this->_partial)
+        {
+          this->_quorum = q;
+          this->_partial = false;
+        }
+      }
     }
 
     template <typename T, typename Version, typename CId, typename SId>
@@ -510,6 +520,8 @@ namespace athena
       : _id()
       , _quorum()
       , _value()
+      , _version()
+      , _partial(false)
       , _state()
     {
       this->serialize(s, v);
@@ -549,6 +561,8 @@ namespace athena
         if (it != states.rend())
           this->_state.emplace(*it);
       }
+      if (v >= elle::Version(0, 2, 0))
+        s.serialize("partial", this->_partial);
     }
 
     /*----------.

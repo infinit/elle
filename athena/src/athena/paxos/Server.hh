@@ -149,6 +149,7 @@ namespace athena
       ELLE_ATTRIBUTE_R(Quorum, quorum);
       ELLE_ATTRIBUTE_R(boost::optional<T>, value);
       ELLE_ATTRIBUTE_R(elle::Version, version);
+      ELLE_ATTRIBUTE_R(bool, partial);
 
     /*----------.
     | Consensus |
