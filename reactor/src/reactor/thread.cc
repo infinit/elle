@@ -38,7 +38,7 @@ namespace reactor
     , _timeout_timer(scheduler.io_service())
     , _thread(scheduler._manager->make_thread(
                 name,
-                boost::bind(&Thread::_action_wrapper, this, std::move(action))))
+                std::bind(&Thread::_action_wrapper, this, std::move(action))))
     , _scheduler(scheduler)
     , _terminating(false)
     , _interruptible(true)

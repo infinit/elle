@@ -25,7 +25,7 @@ namespace reactor
 
   template <typename R>
   static void vthread_catcher(const typename VThread<R>::Action& action,
-                       R& result)
+                              R& result)
   {
     result = action();
   }
@@ -42,8 +42,8 @@ namespace reactor
   VThread<R>::VThread(Scheduler& scheduler,
                       const std::string& name,
                       Action action)
-    : Thread(scheduler, name, boost::bind(vthread_catcher<R>, std::move(action),
-                                          boost::ref(_result)))
+    : Thread(scheduler, name, std::bind(vthread_catcher<R>, std::move(action),
+                                        std::ref(_result)))
     , _result()
   {}
 
