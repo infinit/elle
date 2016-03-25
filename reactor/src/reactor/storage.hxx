@@ -34,7 +34,7 @@ namespace reactor
         if (current != nullptr)
         {
           auto link = current->destructed().connect(
-              boost::bind(&Self::_Clean, this, current)
+            std::bind(&Self::_Clean, this, current)
           );
           this->_links[current] = link;
         }
@@ -60,7 +60,7 @@ namespace reactor
         if (current != nullptr)
         {
           auto link = current->destructed().connect(
-              boost::bind(&Self::_Clean, this, current)
+            std::bind(&Self::_Clean, this, current)
           );
           this->_links[current] = link;
         }
