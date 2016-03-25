@@ -1,3 +1,5 @@
+#define private public
+
 #include <elle/log.hh>
 
 #include <reactor/Scope.hh>
@@ -36,11 +38,13 @@ namespace reactor
     ELLE_TRACE_SCOPE("%s: register background job %s", *this, name);
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
+    auto idt = elle::log::logger().indentation();
     auto thread =
       new Thread(
         sched, name,
-        [this, a, name]
+        [this, a, name, idt]
         {
+          elle::log::logger().indentation() = idt;
           try
           {
             // Make sure the action is deleted as soon as it's done,
