@@ -249,35 +249,44 @@ namespace athena
     {
       static
       void
-      check_quorum(Server<T, Version, CId, SId>& self, Quorum q)
+      check_quorum(Server<T, Version, CId, SId>& self,
+                   Quorum q,
+                   bool get = false)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
-        if (q != self._quorum_initial)
+        auto expected = self._quorum_initial;
+        if (get &&
+            self._state &&
+            self._state->accepted &&
+            self._state->accepted->confirmed &&
+            self._state->accepted->value.template is<Quorum>())
+          expected = self._state->accepted->value.template get<Quorum>();
+        if (q != expected)
         {
           ELLE_TRACE("quorum is wrong: %f instead of %f",
-                     q, self._quorum_initial);
-          throw WrongQuorum(self._quorum_initial, std::move(q));
+                     q, expected);
+          throw WrongQuorum(expected, std::move(q));
         }
       }
 
       /// Check we don't skip any version and the previous version was confirmed
       /// before starting a new one.
       static
-      void
+      bool
       check_confirmed(Server<T, Version, CId, SId>& self, Proposal const& p)
       {
         if (self.version() < elle::Version(0, 1, 0))
-          return;
+          return true;
         if (!self._state)
-          return;
+          return true;
         auto const& version = self._state->proposal.version;
         if (version >= p.version)
-          return;
+          return true;
         if (version == p.version - 1 &&
             self._state->accepted &&
             self._state->accepted->confirmed)
-          return;
-        throw PartialState(self._state->proposal);
+          return true;
+        return false;
       }
     };
 
@@ -292,7 +301,6 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
-      _Details::check_confirmed(*this, p);
       if (this->_state &&
           this->_state->accepted &&
           this->_state->accepted->proposal.version > p.version)
@@ -302,18 +310,26 @@ namespace athena
           p.version, this->_state->accepted->proposal.version);
         return this->_state->accepted;
       }
-      if (this->_state && p.version > this->_state->proposal.version)
+      if (_Details::check_confirmed(*this, p))
       {
-        auto& accepted = this->_state->accepted;
-        ELLE_ASSERT(accepted);
-        if (accepted->value.template is<T>())
-          this->_value.emplace(std::move(accepted->value.template get<T>()));
-        else
-          this->_quorum_initial =
-            std::move(accepted->value.template get<Quorum>());
+        if (this->_state && p.version > this->_state->proposal.version)
+        {
+          auto& accepted = this->_state->accepted;
+          ELLE_ASSERT(accepted);
+          if (accepted->value.template is<T>())
+            this->_value.emplace(std::move(accepted->value.template get<T>()));
+          else
+            this->_quorum_initial =
+              std::move(accepted->value.template get<Quorum>());
+          this->_state.reset();
+        }
+        _Details::check_quorum(*this, q);
+      }
+      else
+      {
+        // FIXME: if the quorum changed, we need to take note !
         this->_state.reset();
       }
-      _Details::check_quorum(*this, q);
       if (!this->_state)
       {
         ELLE_DEBUG_SCOPE("accept first proposal for version %s", p.version);
@@ -445,7 +461,7 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: get", *this);
-      _Details::check_quorum(*this, q);
+      _Details::check_quorum(*this, q, true);
       return this->current_value();
     }
 

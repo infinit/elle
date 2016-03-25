@@ -36,9 +36,17 @@ namespace athena
     Client<T, Version, ClientId>::Client(ClientId id, Peers peers)
       : _id(id)
       , _peers(std::move(peers))
+      , _conflict_backoff(true)
       , _round(0)
     {
       ELLE_ASSERT(!this->_peers.empty());
+    }
+
+    template <typename T, typename Version, typename ClientId>
+    void
+    Client<T, Version, ClientId>::peers(Peers peers)
+    {
+      this->_peers = std::move(peers);
     }
 
     class TooFewPeers
@@ -182,6 +190,7 @@ namespace athena
                 {
                   ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
                              *this, peer, minimum);
+                  version = minimum.version;
                   this->_round = minimum.round;
                   conflicted = true;
                   scope.terminate_now();
@@ -198,9 +207,13 @@ namespace athena
           {
             auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
             auto delay = 100_ms * rn * backoff;
-            ELLE_TRACE("%s: conflicted proposal, retry after backoff: %s",
-                       *this, delay);
-            reactor::sleep(delay);
+            if (this->_conflict_backoff)
+            {
+              ELLE_TRACE("%s: conflicted proposal, retry in %s", this, delay);
+              reactor::sleep(delay);
+            }
+            else
+              ELLE_TRACE("%s: conflicted proposal, retry", this);
             backoff = std::min(backoff * 2, 64);
             continue;
           }

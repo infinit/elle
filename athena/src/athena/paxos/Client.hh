@@ -73,8 +73,12 @@ namespace athena
     `-------------*/
     public:
       Client(ClientId id, Peers peers);
+      void
+      peers(Peers peers);
       ELLE_ATTRIBUTE_R(ClientId, id);
+      // FIXME: the W is there only for unit tests
       ELLE_ATTRIBUTE_RX(Peers, peers);
+      ELLE_ATTRIBUTE_RW(bool, conflict_backoff);
 
     /*----------.
     | Consensus |

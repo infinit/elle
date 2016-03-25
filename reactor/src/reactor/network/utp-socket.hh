@@ -93,6 +93,8 @@ namespace reactor
       on_read(elle::ConstWeakBuffer const&);
       void
       destroyed();
+      EndPoint
+      peer();
     private:
       void
       _read();

@@ -11,6 +11,7 @@ library = None
 python_lib = None
 dokan_lib = None
 cxx_lib = None
+connectivity = None
 
 library_coroutine = None
 
@@ -49,6 +50,7 @@ def configure(curl_config,
   global config, lib_static, lib_dynamic, library, cxx_lib
   global rule_build, rule_install
   global python_lib, dokan_lib
+  global connectivity
 
   if cxx_toolkit.os is drake.os.macos:
     global osxfuse_package
@@ -710,6 +712,29 @@ def configure(curl_config,
     rule_build << python_lib
 
   ## ----- ##
+  ## Bins  ##
+  ## ----- ##
+  binaries_config = [
+    'connectivity-server',
+    'connectivity',
+    'rdv-server',
+  ]
+  cxx_config_bin = drake.cxx.Config(local_cxx_config)
+  for name in binaries_config:
+    source = drake.node('bin/%s.cc' % name)
+    bin = drake.cxx.Executable(
+      'bin/%s' % name, [
+        source,
+        library,
+        elle_lib,
+      ],
+      cxx_toolkit,
+      cxx_config_bin)
+    rule_build << bin
+    if name == 'connectivity':
+      connectivity = bin
+
+  ## ----- ##
   ## Tests ##
   ## ----- ##
 
@@ -731,7 +756,6 @@ def configure(curl_config,
     ('utp', [utp_lib], None),
     ('rdv-cat', [], None),
     ('rdv-utp-cat', [], None),
-    ('rdv-server', [], None),
     # 'reactor/file',
     ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
@@ -772,8 +796,7 @@ def configure(curl_config,
                                 test_sources,
                                 cxx_toolkit, tests_config)
     rule_tests << test
-    if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat',
-                     'rdv-server',]:
+    if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat',]:
       continue
     env = {
       'DIR_BUILD':  str(drake.path_build()),

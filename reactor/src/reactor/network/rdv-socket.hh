@@ -42,6 +42,7 @@ namespace reactor
       void register_reader(std::string const& magic,
                            std::function<void(Buffer, Endpoint)> data_callback);
       void unregister_reader(std::string const& magic);
+      ELLE_ATTRIBUTE_R(Endpoint, public_endpoint);
       private:
         void send_to_failsafe(Buffer buffer, Endpoint endpoint);
         void send_ping(Endpoint target, std::string const& tid = {});

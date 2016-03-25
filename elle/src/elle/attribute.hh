@@ -153,6 +153,11 @@ namespace elle
   ELLE_ATTRIBUTE_W_ACCESSOR(_type_, _name_)                             \
   ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)                             \
 
+# define ELLE_ATTRIBUTE_RwX_ACCESSORS(_type_, _name_)                   \
+  ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
+  ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_);                            \
+  ELLE_ATTRIBUTE_X_ACCESSOR(_type_, _name_)                             \
+
 # define ELLE_ATTRIBUTE_R(_type_, _name_, ...)                          \
   ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
@@ -208,5 +213,9 @@ namespace elle
 # define ELLE_ATTRIBUTE_RWX(_type_, _name_, ...)                        \
   ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
   ELLE_ATTRIBUTE_RWX_ACCESSORS(_type_, _name_)                          \
+
+# define ELLE_ATTRIBUTE_RwX(_type_, _name_, ...)                        \
+  ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
+  ELLE_ATTRIBUTE_RwX_ACCESSORS(_type_, _name_)                          \
 
 #endif

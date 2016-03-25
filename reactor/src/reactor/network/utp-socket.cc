@@ -521,6 +521,15 @@ elle::Buffer UTPSocket::read_some(size_t sz, DurationOpt opt)
   return std::move(res);
 }
 
+UTPSocket::EndPoint UTPSocket::peer()
+{
+  struct sockaddr_in addr;
+  socklen_t addrlen = sizeof(addr);
+  utp_getpeername(_socket, (sockaddr*)&addr, &addrlen);
+  return EndPoint(boost::asio::ip::address_v4(ntohl(addr.sin_addr.s_addr)),
+    ntohs(addr.sin_port));
+}
+
 void UTPServer::listen(int port)
 {
   listen(EndPoint(boost::asio::ip::address(), port));
