@@ -215,18 +215,20 @@ Name##_impl()                                                         \
 
 # ifndef ELLE_TEST_NO_MEMFRY
 
-# include <iostream>
+// Apple clang-703.0.29 doesn't like using an offset of size_t.
+static const int _memfry_offset = 2 * sizeof(std::size_t);
+
 void*
 operator new(std::size_t n, std::nothrow_t const&) throw()
 {
   if (RUNNING_ON_VALGRIND)
-    return ::malloc(n);
+    return std::malloc(n);
   else
   {
-    char* chunk = reinterpret_cast<char*>(::malloc(n + sizeof(std::size_t)));
+    char* chunk = reinterpret_cast<char*>(std::malloc(n + _memfry_offset));
     *reinterpret_cast<std::size_t*>(chunk) = n;
-    ::memset(chunk + sizeof(std::size_t), 0xd0, n);
-    void* res = chunk + sizeof(std::size_t);
+    std::memset(chunk + _memfry_offset, 0xd0, n);
+    char* res = chunk + _memfry_offset;
     return res;
   }
 }
@@ -246,15 +248,16 @@ operator delete(void* p) throw()
   if (!p)
     return;
   if (RUNNING_ON_VALGRIND)
-    ::free(p);
+    std::free(p);
   else
   {
-    char* chunk = reinterpret_cast<char*>(p) - sizeof(std::size_t);
+    char* chunk = reinterpret_cast<char*>(p) - _memfry_offset;
     std::size_t n = *(reinterpret_cast<std::size_t*>(chunk));
-    ::memset(chunk, 0xdf, n + sizeof(std::size_t));
-    ::free(chunk);
+    std::memset(chunk, 0xdf, n + _memfry_offset);
+    std::free(chunk);
   }
 }
+
 # endif
 
 # ifdef __arm__
